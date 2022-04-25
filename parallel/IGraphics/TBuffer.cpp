@@ -310,12 +310,11 @@ void BufferT<Gfx>::SetFramebufferSize(Size sz) {
 
 template <class Gfx>
 void BufferT<Gfx>::UpdateTexBuffers() {
-	auto& s = fb;
-	if (!s.is_win_fbo) {
-		ASSERT(s.channels > 0);
-		ASSERT(s.size.cx > 0 && s.size.cy > 0);
+	if (!fb.is_win_fbo) {
+		ASSERT(fb.channels > 0);
+		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
 		
-		this->BaseUpdateTexBuffers(s);
+		this->BaseUpdateTexBuffers(fb);
 		
 		ClearTex();
 		
@@ -805,7 +804,7 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		
 		// color buffer
 		Gfx::ActiveTexture(CHANNEL_NONE);
-		Gfx::GenTexture(s.color_buf[0]);
+		Gfx::GenTexture(color_buf);
 		Gfx::BindTextureRW(GVar::TEXTYPE_2D, color_buf);
 		//TODO Gfx::TexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 		TexFlags(GVar::TEXTYPE_2D, s.filter, s.wrap);

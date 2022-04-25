@@ -80,8 +80,10 @@ void FramebufferT<Gfx>::Init(NativeColorBufferRef b, int w, int h, int stride) {
 template <class Gfx>
 void FramebufferT<Gfx>::SetWindowFbo(bool b) {
 	this->is_win_fbo = b;
-	if (b)
+	if (b) {
+		ASSERT(frame_buf[0]);
 		Gfx::SetContextDefaultFramebuffer(frame_buf[0]);
+	}
 }
 
 

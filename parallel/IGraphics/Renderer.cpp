@@ -5,27 +5,32 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 SoftRendT<Gfx>::SoftRendT() {
-	viewport_size = Size(0,0);
+	viewport_size = Size(1280,720);
 	SET_ZERO(input_texture);
-	
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::ClearBuffers() {
-	for (SoftFramebuffer* fb : buffers) {
-		fb->Clear();
-	}
+void SoftRendT<Gfx>::DrawDefault(SoftFramebuffer& fb) {
+	fb.Zero(draw_buffers);
 }
 
 template <class Gfx>
 void SoftRendT<Gfx>::ClearTargets() {
-	buffers.Clear();
+	/*for (SoftFramebuffer* fb : buffers) {
+		fb->Clear();
+	}*/
+	draw_buffers = (GVar::RenderTarget)0;
+}
+
+/*template <class Gfx>
+void SoftRendT<Gfx>::ClearBuffers() {
+	buffers.SetCount(0);
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::AddTarget(SoftFramebuffer& fb) {
+void SoftRendT<Gfx>::AddBuffer(SoftFramebuffer& fb) {
 	buffers.Add(&fb);
-}
+}*/
 
 template <class Gfx>
 void SoftRendT<Gfx>::SetSmoothShading(bool b) {
@@ -69,15 +74,17 @@ void SoftRendT<Gfx>::SetViewport(Size sz) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& fb, bool elements) {
+void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
 	using NativeSurface = typename Gfx::NativeSurface;
 	
-	Vector<float> zbuf; TODO
-	
-	ASSERT(tgt_pipe && fb);
+	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
+	SoftFramebuffer& fb = *tgt_fb;
 	
-	NativeTexture& tex = fb.GetNativeTexture();
+	ASSERT(w > 0 && h > 0);
+	
+	NativeDepthBufferRef depth = tgt_fb->GetDepth();
+	NativeColorBufferRef tex = fb.GetFirst(draw_buffers);
 	NativeSurface surf = 0;
 	Rect r = RectC(0, 0, w, h);
 	if (!Gfx::LockTextureToSurface(tex, r, surf) || !surf)
@@ -114,10 +121,14 @@ void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& fb, bool elements) {
 		}
 	}
 	else {
-		ASSERT(zinfo.GetCount() == h*w);
-		ASSERT(zbuf.GetCount() == h*w);
-		DepthInfo* zinfo = (DepthInfo*)this->zinfo.Begin();
-		float* zbuffer = (float*)zbuf.Begin();
+		ASSERT(depth);
+		if (!depth)
+			return;
+		
+		ASSERT(depth->info.GetCount() == h*w);
+		ASSERT(depth->data.GetCount() == h*w);
+		DepthImage::Info* zinfo = (DepthImage::Info*)depth->info.Begin();
+		float* zbuffer = (float*)depth->data.Begin();
 		float reset_f = GetDepthResetValue();
 		//const Vertex* vertices = GetVertices().vertices.Begin();
 		//const uint32* indices = GetIndices().indices.Begin();
@@ -194,7 +205,7 @@ void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& fb, bool elements) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& tgt_fb) {
+void SoftRendT<Gfx>::RenderScreenRect() {
 	ASSERT(tgt_pipe && tgt_fb);
 	using Stage = typename SoftPipelineT<Gfx>::Stage;
 	for (Stage& stage : tgt_pipe->stages) {
@@ -202,7 +213,7 @@ void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& tgt_fb) {
 		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
-				RenderScreenRect(tgt_fb, false);
+				RenderScreenRect(false);
 			}
 		}
 	}
@@ -256,7 +267,7 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
+void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
 	vec2 bboxmin(w - 1,  h - 1);
 	vec2 bboxmax(0, 0);
 	vec2 clamp(w - 1, h - 1);
@@ -268,11 +279,13 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthInfo& info, const Vertex& a, const V
 		}
 	}
 	
-	Vector<float> zbuffer__; TODO
+	NativeDepthBufferRef depth = tgt_fb ? tgt_fb->GetDepth() : 0;
+	ASSERT(depth);
+	if (!depth) return;
 	
-	int pos_limit = zbuffer__.GetCount();
-	float* zbuffer = (float*)zbuffer__.Begin();
-	DepthInfo* zinfo = (DepthInfo*)this->zinfo.Begin();
+	int pos_limit = depth->GetSize();
+	float* zbuffer = (float*)depth->data.Begin();
+	DepthImage::Info* zinfo = (DepthImage::Info*)depth->info.Begin();
 	
 	bool greater = is_depth_order_greater;
 	vec2 P;
@@ -311,7 +324,7 @@ void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	uint32 idx_count = ebo.indices.GetCount();
 	uint32 triangles = idx_count / 3;
 	
-	DepthInfo info;
+	DepthImage::Info info;
 		
 	for(info.triangle_i = 0; info.triangle_i < triangles; info.triangle_i++) {
 		uint32 tri_a = iter[0];
@@ -333,13 +346,9 @@ void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 
 template <class Gfx>
 void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
-	TODO
-}
-
-template <class Gfx>
-void SoftRendT<Gfx>::Render(SoftFramebuffer& fb, SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
-	ASSERT(tgt_pipe && fb);
+	ASSERT(tgt_pipe && tgt_fb);
+	SoftFramebuffer& fb = *tgt_fb;
 	SoftPipeline& pipe = *tgt_pipe;
 	
 	//SoftShader* shdrs[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
@@ -380,46 +389,40 @@ void SoftRendT<Gfx>::Render(SoftFramebuffer& fb, SoftVertexArray& vao) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect() {
-	TODO // loop buffers
-	/*Begin();
-	RenderScreenRect();
-	End();*/
-}
-
-template <class Gfx>
 void SoftRendT<Gfx>::Begin() {
-	TODO
-}
-
-template <class Gfx>
-void SoftRendT<Gfx>::Begin(SoftFramebuffer& tgt_fb) {
 	ASSERT(tgt_fb && tgt_pipe);
-	
-	Vector<float> zbuffer; TODO
 	
 	tmp_sources.SetCount(0);
 	
 	// query target dimension
-	NativeTexture& tex = tgt_fb.GetNativeTexture();
+	NativeColorBufferRef tex = tgt_fb->GetFirst(draw_buffers);
+	ASSERT(tex);
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
 	Gfx::QueryTexture(tex, fmt, access, w, h);
 	
-	// reset z-buffer
-	int len = w * h;
-	zinfo.SetCount(len);
-	memset((DepthInfo*)zinfo.Begin(), 0, len * sizeof(DepthInfo));
-	zbuffer.SetCount(len);
-	float reset_f = GetDepthResetValue();
-	for (float& f : zbuffer) f = reset_f;
+	if (w == 0 || h == 0) {
+		ASSERT(viewport_size.GetArea() > 0);
+		w = viewport_size.cx;
+		h = viewport_size.cy;
+		tgt_fb->SetSize(draw_buffers, viewport_size);
+	}
 	
+	// reset color buffer
+	tgt_fb->Zero(draw_buffers);
+	
+	// reset z-buffer
+	NativeDepthBufferRef depth = tgt_fb->GetDepth();
+	if (depth) {
+		depth->Set(Size(w,h), 1);
+		depth->Zero(GetDepthResetValue());
+	}
 }
 
 template <class Gfx>
 void SoftRendT<Gfx>::End() {
-	TODO //RenderScreenRect(true);
+	RenderScreenRect(true);
 }
 
 /*

@@ -30,6 +30,7 @@ file
 	GfxClasses.h,
 	IfaceOgl.h,
 	Base.h,
+	Base.cpp,
 	FboBase.h,
 	FboBase.cpp,
 	Programs readonly separator,

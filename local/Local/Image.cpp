@@ -154,6 +154,24 @@ void ByteImage::Set(int w, int h, int stride, int src_pitch, const byte* src_dat
 	}
 }
 
+void ByteImage::Set(Size sz, int channels) {
+	if (this->sz == sz & this->channels == channels)
+		return;
+	Clear();
+	this->sz = sz;
+	this->channels = channels;
+	pitch = sz.cx * channels;
+	size = pitch * sz.cy;
+	ASSERT(channels >= 1 && channels <= 4);
+	
+	data = (byte*)malloc(sizeof(byte) * size);
+}
+
+void ByteImage::Zero() {
+	if (data)
+		memset(data, 0, size);
+}
+
 void ByteImage::Randomize() {
 	byte* it = data;
 	byte* end = data + size;

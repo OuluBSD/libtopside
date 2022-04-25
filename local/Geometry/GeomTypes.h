@@ -16,6 +16,56 @@ struct Vertex : Moveable<Vertex> {
     void Set(float x, float y, float z, float tex_x, float tex_y);
 };
 
+
+struct DepthImage {
+	struct Info : Moveable<Info> {
+		uint32 triangle_i;
+		vec3 bc_screen;
+		uint16 src_id;
+	};
+	
+	
+	Size sz;
+	int pitch = 0;
+	int channels = 0;
+	int size = 0;
+	
+public:
+	Vector<Info> info;
+	Vector<float> data;
+	
+public:
+	typedef DepthImage CLASSNAME;
+	DepthImage() : sz(0,0) {}
+	~DepthImage() {Clear();}
+	
+	void operator=(const Nuller&) {Clear();}
+	
+	bool Create() {return true;} // for IGraphics compatibility
+	void Set(Size sz, int channels);
+	void Clear();
+	void Zero(float zero_depth);
+	
+	int GetPitch() const;
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetChannels() const;
+	int GetSize() const;
+	float* GetIter(int x, int y);
+	const float* GetIter(int x, int y) const;
+	
+	float* Begin();
+	float* End();
+	float* Detach();
+	
+	bool IsEmpty() {return data.IsEmpty();}
+	operator bool() const {return !data.IsEmpty();}
+	
+};
+
+typedef const DepthImage ConstDepthImage;
+
+
 /*
 struct Texture : Moveable<Texture> {
 	Vector<byte>	data;
@@ -147,10 +197,10 @@ typedef enum {
 namespace GVar {
 
 typedef enum : uint32 {
-	COLOR0_EXT		= 1 << TEXTYPE_DIFFUSE,
-	COLOR1_EXT		= 1 << TEXTYPE_SPECULAR,
-	COLOR2_EXT		= 1 << TEXTYPE_AMBIENT,
-	COLOR3_EXT		= 1 << TEXTYPE_EMISSIVE,
+	COLOR0_EXT		= 1 << 0,
+	COLOR1_EXT		= 1 << 1,
+	COLOR2_EXT		= 1 << 2,
+	COLOR3_EXT		= 1 << 3,
 } RenderTarget;
 
 }

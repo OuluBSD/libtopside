@@ -23,11 +23,11 @@ bool SoftFramebufferT<Gfx>::Create() {
 	return true;
 }
 
-template <class Gfx>
+/*template <class Gfx>
 void SoftFramebufferT<Gfx>::operator=(NativeTexture& tex) {
 	ASSERT(!this->tex);
 	this->tex = tex;
-}
+}*/
 
 template <class Gfx>
 void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
@@ -37,6 +37,38 @@ void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
 template <class Gfx>
 void SoftFramebufferT<Gfx>::ClearDataAll() {
 	
+}
+
+template <class Gfx>
+typename Gfx::NativeColorBufferRef SoftFramebufferT<Gfx>::GetFirst(GVar::RenderTarget tgt) {
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		if ((dword)tgt & (1 << i) && color[i])
+			return color[i];
+	}
+	return NULL;
+}
+
+template <class Gfx>
+void SoftFramebufferT<Gfx>::SetColor(TexType tgt, NativeColorBufferRef b) {
+	ASSERT(b);
+	ASSERT(tgt >= TEXTYPE_NONE && tgt < TEXTYPE_COUNT);
+	color[tgt] = b;
+}
+
+template <class Gfx>
+void SoftFramebufferT<Gfx>::SetSize(GVar::RenderTarget tgt, Size sz) {
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		if ((dword)tgt & (1 << i) && color[i])
+			color[i]->Set(sz, 3);
+	}
+}
+
+template <class Gfx>
+void SoftFramebufferT<Gfx>::Zero(GVar::RenderTarget tgt) {
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		if ((dword)tgt & (1 << i) && color[i])
+			color[i]->Zero();
+	}
 }
 
 /*template <class Gfx>

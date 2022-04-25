@@ -74,8 +74,8 @@ struct CpuGfxT {
 	// using SoftVertexArray	= SoftVertexArrayT<Gfx>;
 	using NativeColorBufferRef		= ByteImage*;
 	using NativeColorBufferConstRef	= ConstByteImage*;
-	using NativeDepthBufferRef		= FloatImage*;
-	using NativeDepthBufferConstRef	= ConstFloatImage*;
+	using NativeDepthBufferRef		= DepthImage*;
+	using NativeDepthBufferConstRef	= ConstDepthImage*;
 	
 	using FramebufferBase	= GfxFramebuffer;
 	
@@ -87,7 +87,7 @@ struct CpuGfxT {
 		SoftProgram* prog = 0;
 		SoftFramebuffer* fb = 0;
 		SoftFramebuffer* ctx_default_fb = 0;
-		FloatImage* depth = 0;
+		DepthImage* depth = 0;
 		SoftPipeline* pipe = 0;
 		SoftVertexArray* vao = 0;
 		

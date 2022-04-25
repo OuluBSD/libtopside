@@ -21,7 +21,10 @@ void CpuGfxT<Gfx>::SetDebugOutput(bool b) {
 
 template <class Gfx>
 void CpuGfxT<Gfx>::ClearBuffers() {
-	Rend().ClearBuffers();
+	auto fb = Local().fb;
+	ASSERT(fb);
+	if (fb)
+		Rend().DrawDefault(*fb);
 }
 
 template <class Gfx>
@@ -83,8 +86,7 @@ void CpuGfxT<Gfx>::UnbindProgramPipeline() {
 template <class Gfx>
 void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	auto& l = Local();
-	l.rend.ClearTargets();
-	TODO
+	l.rend.SetDrawBuffers(tgt);
 	/*l.rend.SetTarget(tgt);
 	for(int i = 0; i < CHANNEL_COUNT; i++) {
 		uint32 j = 1 << i;
@@ -324,9 +326,7 @@ void CpuGfxT<Gfx>::RenderScreenRect() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	//l.rend.SetTarget(*l.pipe, *l.fb);
-	TODO // set buffers
-	l.rend.SetPipeline(*l.pipe);
+	l.rend.SetTarget(*l.pipe, *l.fb);
 	l.rend.RenderScreenRect();
 }
 
@@ -492,8 +492,21 @@ void CpuGfxT<Gfx>::BeginRender() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	//l.rend.SetTarget(*l.pipe, *l.fb);
-	l.rend.SetPipeline(*l.pipe);
+	/*GVar::RenderTarget tgt = l.rend.GetTargets();
+	ASSERT(tgt);
+	l.rend.ClearBuffers();
+	for(int i = 0; i < CHANNEL_COUNT; i++) {
+		uint32 j = 1 << i;
+		if ((uint32)tgt & j) {
+			auto rw = l.texture[i].rw;
+			ASSERT(rw);
+			if (rw)
+				l.rend.AddBuffer(*rw);
+		}
+	}
+	*/
+	l.rend.SetTarget(*l.pipe, *l.fb);
+	//l.rend.SetPipeline(*l.pipe);
 	l.rend.Begin();
 }
 
@@ -508,7 +521,7 @@ template <class Gfx> void CpuGfxT<Gfx>::ActivateVertexStructure() {}
 
 template <class Gfx> bool CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
 	ASSERT(!b);
-	b = new FloatImage();
+	b = new DepthImage();
 	return true;
 }
 

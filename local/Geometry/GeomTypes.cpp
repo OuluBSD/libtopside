@@ -134,6 +134,93 @@ void Texture::Set(Image i) {
 
 
 
+void DepthImage::Set(Size sz, int channels) {
+	Clear();
+	this->sz = sz;
+	this->channels = channels;
+	pitch = sz.cx * channels;
+	size = pitch * sz.cy;
+	ASSERT(channels >= 1 && channels <= 4);
+	
+	data.SetCount(size);
+	info.SetCount(size);
+}
+
+void DepthImage::Zero(float zero_depth) {
+	memset((Info*)info.Begin(), 0, size * sizeof(Info));
+	for (float& f : data)
+		f = zero_depth;
+}
+
+void DepthImage::Clear() {
+	if (size) {
+		data.SetCount(0);
+		sz = Size(0, 0);
+		pitch = 0;
+		channels = 0;
+		size = 0;
+	}
+}
+
+int DepthImage::GetPitch() const {
+	return pitch;
+}
+
+int DepthImage::GetWidth() const {
+	return sz.cx;
+}
+
+int DepthImage::GetHeight() const {
+	return sz.cy;
+}
+
+int DepthImage::GetChannels() const {
+	return channels;
+}
+
+int DepthImage::GetSize() const {
+	return size;
+}
+
+float* DepthImage::GetIter(int x, int y) {
+	ASSERT(x >= 0 && y >= 0 && x < sz.cx && y < sz.cy);
+	ASSERT(sz.cx && sz.cy && !data.IsEmpty() && pitch && channels);
+	return (float*)data.Begin() + y * pitch + x * channels;
+}
+
+const float* DepthImage::GetIter(int x, int y) const {
+	ASSERT(x >= 0 && y >= 0 && x < sz.cx && y < sz.cy);
+	ASSERT(sz.cx && sz.cy && !data.IsEmpty() && pitch && channels);
+	return (const float*)data.Begin() + y * pitch + x * channels;
+}
+
+float* DepthImage::Begin() {
+	return data.Begin();
+}
+
+float* DepthImage::End() {
+	if (data.IsEmpty())
+		return 0;
+	return data.Begin() + sz.cy * pitch;
+}
+
+float* DepthImage::Detach() {
+	float* f = data.Begin();
+	data = 0;
+	sz = Size(0, 0);
+	pitch = 0;
+	channels = 0;
+	size = 0;
+	return f;
+}
+
+
+
+
+
+
+
+
 
 
 

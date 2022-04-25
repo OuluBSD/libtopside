@@ -28,13 +28,13 @@ class SoftFramebufferT {
 	
 protected:
 	friend class SoftRend;
-	using NativeTexture = typename Gfx::NativeTexture;
+	//using NativeTexture = typename Gfx::NativeTexture;
 	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	
-	NativeTexture tex = 0;
+	/*NativeTexture tex = 0;
 	ByteImage* gtex = 0;
-	One<ByteImage> owned;
+	One<ByteImage> owned;*/
 	NativeDepthBufferRef depth = 0;
 	NativeColorBufferRef color[TEXTYPE_COUNT];
 	
@@ -51,19 +51,23 @@ public:
 	
 	//void SetLocalData(Size sz, byte channels);
 	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-	void SetColor(TexType tgt, NativeColorBufferRef fb) {ASSERT(tgt >= TEXTYPE_NONE && tgt < TEXTYPE_COUNT); color[tgt] = fb;}
+	void SetColor(TexType tgt, NativeColorBufferRef fb);
 	void SetDepth(NativeDepthBufferRef fb) {depth = fb;}
+	void SetSize(GVar::RenderTarget tgt, Size sz);
+	void Zero(GVar::RenderTarget tgt);
 	
-	const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
-	ByteImage& GetGeomTex() const {ASSERT(gtex); return *gtex;}
+	//const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
+	//ByteImage& GetGeomTex() const {ASSERT(gtex); return *gtex;}
+	NativeDepthBufferRef GetDepth() const {return depth;}
 	
-	void operator=(NativeTexture& tex);
-	void SetTexture(ByteImage* t) {ASSERT(tex == 0); gtex = t;}
+	//void operator=(NativeTexture& tex);
+	//void SetTexture(ByteImage* t) {ASSERT(tex == 0); gtex = t;}
 	void operator=(const Nuller&) {Clear();}
 	void operator=(const SoftFramebufferT&) = delete;
 	operator bool() const {return inited;}
 	
-	NativeTexture& GetNativeTexture() {return tex;}
+	//NativeTexture& GetNativeTexture() {return tex;}
+	NativeColorBufferRef GetFirst(GVar::RenderTarget tgt);
 	
 };
 
