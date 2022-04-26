@@ -12,7 +12,7 @@ struct FramebufferT : GfxFramebuffer {
 	using NativeFrameBuffer = typename Gfx::NativeFramebuffer;
 	using NatTex = typename Gfx::NativeTexture;
 	
-	NativeFrameBuffer fb;
+	NativeFrameBufferRef fb;
 	NatTex tex;
 	
 	
@@ -35,8 +35,9 @@ struct FramebufferT : Gfx::FramebufferBase {
 	using Base = FramebufferT<Gfx>;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
-	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
-	using SystemFrameBuffer = typename Gfx::SystemFrameBuffer;
+	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
+	using NativeFrameBufferConstRef = typename Gfx::NativeFrameBufferConstRef;
+	using SystemFrameBufferRef = typename Gfx::SystemFrameBufferRef;
 	using NativeProgram  = typename Gfx::NativeProgram;
 	using NativePipeline = typename Gfx::NativePipeline;
 	using NativeShader = typename Gfx::NativeShader;
@@ -50,7 +51,7 @@ struct FramebufferT : Gfx::FramebufferBase {
 	
 	NativeColorBufferRef	color_buf[2];
 	NativeDepthBufferRef	depth_buf[2];
-	NativeFrameBuffer		frame_buf[2];
+	NativeFrameBufferRef	frame_buf[2];
 	bool locked = false;
 	
 	
@@ -65,10 +66,10 @@ struct FramebufferT : Gfx::FramebufferBase {
 		}
 	}
 	
-	const NativeFrameBuffer& GetReadFramebuffer() const;
+	NativeFrameBufferConstRef GetReadFramebuffer() const;
 	NativeColorBufferRef GetActiveColorBuffer();
 	
-	void Init(NativeColorBufferRef b, int w, int h, int stride);
+	void Init(NativeFrameBufferRef fbo, NativeColorBufferRef clr, int w, int h, int stride);
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}

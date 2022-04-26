@@ -51,7 +51,7 @@ struct DataStateT : GfxDataState {
 	using Base = DataStateT<Gfx>;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
-	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
+	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using NativeProgram  = typename Gfx::NativeProgram;
 	using NativePipeline = typename Gfx::NativePipeline;
 	using NativeShader   = typename Gfx::NativeShader;

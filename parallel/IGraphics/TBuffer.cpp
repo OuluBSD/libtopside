@@ -424,8 +424,9 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	EnableGfxAccelDebugMessages(1);
 	
-	ASSERT(fb.is_win_fbo == (fb.frame_buf[bi] == 0));
-	if (fb.frame_buf[bi]) {
+	//ASSERT(fb.is_win_fbo == (fb.frame_buf[bi] == 0));
+	//if (fb.frame_buf[bi]) {
+	if (!fb.is_win_fbo) {
 		// backup render target
 	    //Gfx::DrawBuffer(GL_FRONT);
 	    

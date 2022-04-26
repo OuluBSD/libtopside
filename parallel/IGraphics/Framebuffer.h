@@ -24,7 +24,6 @@ public:
 
 template <class Gfx>
 class SoftFramebufferT {
-	bool inited = false;
 	
 protected:
 	friend class SoftRend;
@@ -37,6 +36,7 @@ protected:
 	One<ByteImage> owned;*/
 	NativeDepthBufferRef depth = 0;
 	NativeColorBufferRef color[TEXTYPE_COUNT];
+	Size sz;
 	
 	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
 	GVar::Filter filter[GVar::TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
@@ -45,7 +45,6 @@ public:
 	SoftFramebufferT();
 	
 	void Clear();
-	bool Create();
 	void ClearData(GVar::BufferType type);
 	void ClearDataAll();
 	
@@ -59,15 +58,16 @@ public:
 	//const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
 	//ByteImage& GetGeomTex() const {ASSERT(gtex); return *gtex;}
 	NativeDepthBufferRef GetDepth() const {return depth;}
+	Size GetSize() const {return sz;}
 	
 	//void operator=(NativeTexture& tex);
 	//void SetTexture(ByteImage* t) {ASSERT(tex == 0); gtex = t;}
 	void operator=(const Nuller&) {Clear();}
 	void operator=(const SoftFramebufferT&) = delete;
-	operator bool() const {return inited;}
 	
 	//NativeTexture& GetNativeTexture() {return tex;}
 	NativeColorBufferRef GetFirst(GVar::RenderTarget tgt);
+	NativeColorBufferRef Get(int i) {return color[i];}
 	
 };
 

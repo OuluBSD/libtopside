@@ -201,7 +201,7 @@ template <class Gfx> void OglGfxT<Gfx>::BindProgramPipeline(NativePipeline& pipe
 	glBindProgramPipeline(pipeline);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::BindFramebuffer(NativeFrameBuffer& fb) {
+template <class Gfx> void OglGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb) {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
 }
 
@@ -595,14 +595,14 @@ template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GV
 }
 
 template <class Gfx>
-bool OglGfxT<Gfx>::GenTexture(NativeFrameBuffer& fb) {
+bool OglGfxT<Gfx>::GenTexture(NativeColorBufferRef& fb) {
 	glGenTextures(1, &fb);
 	return true;
 }
 
 template <class Gfx>
-bool OglGfxT<Gfx>::CreateFramebuffer(NativeFrameBuffer& fb) {
-	glGenFramebuffersEXT(1, &fb);
+bool OglGfxT<Gfx>::CreateFramebuffer(NativeFrameBufferRef& fbo) {
+	glGenFramebuffersEXT(1, &fbo);
 	return true;
 }
 
@@ -742,10 +742,12 @@ bool OglGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
 
 template <class Gfx> void OglGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
 	glDeleteRenderbuffersEXT(1, &b);
+	b = 0;
 }
 
-template <class Gfx> void OglGfxT<Gfx>::DeleteFramebuffer(NativeFrameBuffer& b) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {
 	glDeleteFramebuffers(1, &b);
+	b = 0;
 }
 
 template <class Gfx>
@@ -776,7 +778,7 @@ template <class Gfx> void OglGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, f
 template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
 template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 
-template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
+template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
 	// pass
 }
 

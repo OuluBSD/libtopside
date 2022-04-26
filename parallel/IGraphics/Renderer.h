@@ -89,7 +89,7 @@ public:
 	void SetViewport(Size sz);
 	void SetDrawBuffers(GVar::RenderTarget t) {draw_buffers = t;}
 	
-	void RenderScreenRect(bool elements);
+	void RenderScreenRect0(bool elements);
 	void RenderScreenRect();
 	void SetTarget(SoftPipeline& pipe, SoftFramebuffer& fb) {tgt_pipe = &pipe; tgt_fb = &fb;}
 	//void SetPipeline(SoftPipeline& pipe) {tgt_pipe = &pipe;}

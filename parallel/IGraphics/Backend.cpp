@@ -4,7 +4,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 bool X11SwGfx::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
-	surf = tex;
+	surf = tex->Get(0);
+	ASSERT(surf);
 	return true;
 }
 
@@ -12,8 +13,9 @@ void X11SwGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w
 	ASSERT(tex);
 	fmt = 0;
 	access = 0;
-	w = tex->GetWidth();
-	h = tex->GetHeight();
+	Size sz = tex->GetSize();
+	w = sz.cx;
+	h = sz.cy;
 }
 
 

@@ -5,22 +5,15 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 SoftFramebufferT<Gfx>::SoftFramebufferT() {
+	sz = Size(0,0);
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		color[i] = 0;
 }
 
 template <class Gfx>
 void SoftFramebufferT<Gfx>::Clear() {
-	inited = false;
+	sz = Size(0,0);
 	
-}
-
-template <class Gfx>
-bool SoftFramebufferT<Gfx>::Create() {
-	
-	
-	inited = true;
-	return true;
 }
 
 /*template <class Gfx>

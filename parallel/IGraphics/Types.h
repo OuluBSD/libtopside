@@ -108,7 +108,8 @@ struct CpuGfxT {
 	
 	// not here: using NativeTexture = uint32;
 	using NativeShader = SoftShader;
-	using NativeFrameBuffer = SoftFramebuffer;
+	using NativeFrameBufferRef = SoftFramebuffer*;
+	using NativeFrameBufferConstRef = const SoftFramebuffer*;
 	using NativeVertexArray = SoftVertexArray;
 	using NativeVertexBuffer = SoftVertexBuffer;
 	using NativeElementBuffer = SoftElementBuffer;
@@ -142,9 +143,10 @@ struct OglGfxT {
 	using NativeColorBufferConstRef = GLuint;
 	using NativeDepthBufferRef = GLuint;
 	using NativeDepthBufferConstRef = GLuint;
-	using NativeFrameBuffer = GLuint;
+	using NativeFrameBufferRef = GLuint;
+	using NativeFrameBufferConstRef = GLuint;
 	using NativeBuffer = GLuint;
-	using SystemFrameBuffer = NativeFrameBuffer;
+	using SystemFrameBufferRef = NativeFrameBufferRef;
 	using NativeVertexArray = GLuint;
 	using NativeVertexBuffer = GLuint;
 	using NativeElementBuffer = GLuint;
@@ -191,11 +193,11 @@ struct X11Gfx {
 struct X11SwGfx : CpuGfxT<X11SwGfx>, X11Gfx {
 	static const bool is_vendor_agnostic = false;
 	
-	using SystemFrameBuffer = NativeColorBufferRef;
+	using SystemFrameBufferRef = SoftFramebuffer*;
 	using NativeGLContext = void*;
 	using BufferBase = GfxBuffer;
 	
-	using NativeTexture = SystemFrameBuffer;
+	using NativeTexture = SystemFrameBufferRef;
 	using NativeSurface = NativeColorBufferRef;
 	//using NativeColorBufferRef = void*;
 	using SoftShaderLibrary = SoftShaderLibraryT<X11SwGfx>;
@@ -296,7 +298,7 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 	static const bool is_vendor_agnostic = false;
 	
-	using SystemFrameBuffer = SDL_Texture*;
+	using SystemFrameBufferRef = SDL_Texture*;
 	
 	using NativeTexture = SDL_Texture*;
 	using NativeSurface = SDL_Surface*;

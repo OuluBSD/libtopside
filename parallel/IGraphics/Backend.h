@@ -19,7 +19,7 @@ struct X11Sw {
 	/*using ShaderPipeline = SoftPipelineT<X11Sw>;
 	using NativeRenderer = SoftRendT<X11Sw>;
 	using NativeDepthBufferRef = SoftFramebufferT<X11Sw>;
-	using NativeFrameBuffer = SoftFramebufferT<X11Sw>;
+	using NativeFrameBufferRef = SoftFramebufferT<X11Sw>;
 	using NativeProgram = SoftProgramT<X11Sw>;
 	using NativePipeline = SoftPipelineT<X11Sw>;
 	using NativeShader = SoftShaderT<X11Sw>;

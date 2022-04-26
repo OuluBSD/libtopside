@@ -122,11 +122,12 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	
 	XSync(display, False);
 	
-	dev.accel_fb.Set(width, height, bpp, width * bpp, 0);
-	dev.accel_fb.Randomize();
-	dev.accel_fb_ptr = &dev.accel_fb;
+	dev.accel_buf.Set(width, height, bpp, width * bpp, 0);
+	dev.accel_buf.Randomize();
+	dev.accel_fbo.SetColor(TEXTYPE_NONE, &dev.accel_buf);
+	dev.accel_fbo.SetDepth(&dev.accel_zbuf);
 	
-	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fb_ptr);
+	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fbo);
 	
 	if (!dev.accel.Open(Size(width, height), 4)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
@@ -181,11 +182,11 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		int height = attr.height;
 		int bpp = attr.depth / 8;
 		int len = width * height * bpp;
-		ASSERT(dev.accel_fb.GetSize() == len);
+		ASSERT(dev.accel_buf.GetSize() == len);
 		
 		ASSERT(dev.fb);
 		ASSERT(!dev.fb->data);
-	    dev.fb->data = (char*)(const unsigned char*)dev.accel_fb.Begin();
+	    dev.fb->data = (char*)(const unsigned char*)dev.accel_buf.Begin();
 	    dev.fb->bytes_per_line = width * bpp;
 	    ASSERT(width == dev.fb->width);
 	    ASSERT(height == dev.fb->height);

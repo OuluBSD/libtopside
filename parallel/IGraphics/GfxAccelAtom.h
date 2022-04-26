@@ -41,27 +41,28 @@ class GfxAccelAtom {
 protected:
 	friend class Events;
 	
-	using Buffer			= typename Gfx::Buffer;
-	using Renderer			= RendererT<Gfx>;
-	using StateDraw			= StateDrawT<Gfx>;
-	using ShaderPipeline	= typename Gfx::ShaderPipeline;
-	using DataState			= DataStateT<Gfx>;
-	using ShaderDataPack	= ShaderDataPackT<Gfx>;
-	using NativeDisplay		= typename Gfx::NativeDisplay;
-	using NativeWindow		= typename Gfx::NativeWindow;
-	using NativeRenderer	= typename Gfx::NativeRenderer;
-	using NativeFrameBuffer	= typename Gfx::NativeFrameBuffer;
-	using SystemFrameBuffer	= typename Gfx::SystemFrameBuffer;
-	using ValFormat			= typename Gfx::ValFormat;
-	using RendererInfo		= typename Gfx::NativeRendererInfo;
-	using GLContext			= typename Gfx::NativeGLContext;
+	using Buffer				= typename Gfx::Buffer;
+	using Renderer				= RendererT<Gfx>;
+	using StateDraw				= StateDrawT<Gfx>;
+	using ShaderPipeline		= typename Gfx::ShaderPipeline;
+	using DataState				= DataStateT<Gfx>;
+	using ShaderDataPack		= ShaderDataPackT<Gfx>;
+	using NativeDisplay			= typename Gfx::NativeDisplay;
+	using NativeWindow			= typename Gfx::NativeWindow;
+	using NativeRenderer		= typename Gfx::NativeRenderer;
+	using NativeColorBufferRef	= typename Gfx::NativeColorBufferRef;
+	using NativeFrameBufferRef	= typename Gfx::NativeFrameBufferRef;
+	using SystemFrameBufferRef	= typename Gfx::SystemFrameBufferRef;
+	using ValFormat				= typename Gfx::ValFormat;
+	using RendererInfo			= typename Gfx::NativeRendererInfo;
+	using GLContext				= typename Gfx::NativeGLContext;
 	using Framebuffer = FramebufferT<Gfx>;
 	
 	Buffer					buf;
     NativeWindow			win;
     NativeDisplay			display;
     NativeRenderer			nat_rend;
-    SystemFrameBuffer*		fb = 0;
+    SystemFrameBufferRef	fb = 0;
 	AtomBase*				ab = NULL;
 	int						fb_stride;
     RendererInfo			rend_info;
@@ -103,7 +104,7 @@ public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
-	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBuffer* fb);
+	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBufferRef fb);
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool ProcessPacket(PacketValue& in, PacketValue& out);

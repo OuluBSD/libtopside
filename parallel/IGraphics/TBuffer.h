@@ -27,7 +27,7 @@ struct BufferT : GfxBuffer {
 	using DataObject = DataObjectT<Gfx>;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
-	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
+	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using Sample = GVar::Sample;
 	using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;

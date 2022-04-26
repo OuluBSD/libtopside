@@ -61,17 +61,20 @@ void FramebufferT<Gfx>::DrawFill(const byte* mem, int sz) {
 }
 
 template <class Gfx>
-const typename Gfx::NativeFrameBuffer& FramebufferT<Gfx>::GetReadFramebuffer() const {return frame_buf[this->buf_i];}
+typename Gfx::NativeFrameBufferConstRef FramebufferT<Gfx>::GetReadFramebuffer() const {return frame_buf[this->buf_i];}
 
 template <class Gfx>
 typename Gfx::NativeColorBufferRef FramebufferT<Gfx>::GetActiveColorBuffer() {return color_buf[this->buf_i];}
 
 template <class Gfx>
-void FramebufferT<Gfx>::Init(NativeColorBufferRef b, int w, int h, int stride) {
+void FramebufferT<Gfx>::Init(NativeFrameBufferRef fbo, NativeColorBufferRef clr, int w, int h, int stride) {
 	//Gfx::GenTexture(color_buf[0]);
 	ASSERT(!color_buf[0]);
-	ASSERT(b);
-	color_buf[0] = b;
+	ASSERT(!frame_buf[0]);
+	ASSERT(fbo);
+	ASSERT(clr);
+	frame_buf[0] = fbo;
+	color_buf[0] = clr;
 	this->size.cx = w;
 	this->size.cy = h;
 	this->channels = stride;

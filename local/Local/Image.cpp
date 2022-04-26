@@ -155,7 +155,7 @@ void ByteImage::Set(int w, int h, int stride, int src_pitch, const byte* src_dat
 }
 
 void ByteImage::Set(Size sz, int channels) {
-	if (this->sz == sz & this->channels == channels)
+	if (this->sz == sz && this->channels == channels)
 		return;
 	Clear();
 	this->sz = sz;

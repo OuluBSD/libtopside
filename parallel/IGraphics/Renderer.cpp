@@ -74,7 +74,7 @@ void SoftRendT<Gfx>::SetViewport(Size sz) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
+void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 	using NativeSurface = typename Gfx::NativeSurface;
 	
 	ASSERT(tgt_pipe && tgt_fb);
@@ -84,10 +84,9 @@ void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
 	ASSERT(w > 0 && h > 0);
 	
 	NativeDepthBufferRef depth = tgt_fb->GetDepth();
-	NativeColorBufferRef tex = fb.GetFirst(draw_buffers);
 	NativeSurface surf = 0;
 	Rect r = RectC(0, 0, w, h);
-	if (!Gfx::LockTextureToSurface(tex, r, surf) || !surf)
+	if (!Gfx::LockTextureToSurface(tgt_fb, r, surf) || !surf)
 		return;
 	
 	int stride = Gfx::GetBytesPerPixel(surf);
@@ -201,7 +200,7 @@ void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
 		}
 	}
 	
-	Gfx::UnlockTextureToSurface(tex);
+	Gfx::UnlockTextureToSurface(tgt_fb);
 }
 
 template <class Gfx>
@@ -213,7 +212,7 @@ void SoftRendT<Gfx>::RenderScreenRect() {
 		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
-				RenderScreenRect(false);
+				RenderScreenRect0(false);
 			}
 		}
 	}
@@ -395,12 +394,11 @@ void SoftRendT<Gfx>::Begin() {
 	tmp_sources.SetCount(0);
 	
 	// query target dimension
-	NativeColorBufferRef tex = tgt_fb->GetFirst(draw_buffers);
-	ASSERT(tex);
+	ASSERT(tgt_fb);
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
-	Gfx::QueryTexture(tex, fmt, access, w, h);
+	Gfx::QueryTexture(tgt_fb, fmt, access, w, h);
 	
 	if (w == 0 || h == 0) {
 		ASSERT(viewport_size.GetArea() > 0);
@@ -422,7 +420,7 @@ void SoftRendT<Gfx>::Begin() {
 
 template <class Gfx>
 void SoftRendT<Gfx>::End() {
-	RenderScreenRect(true);
+	RenderScreenRect0(true);
 }
 
 /*

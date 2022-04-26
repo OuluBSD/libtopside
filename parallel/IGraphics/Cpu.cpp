@@ -279,10 +279,10 @@ void CpuGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GV
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindFramebuffer(NativeFrameBuffer& fb) {
+void CpuGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb) {
 	auto& l = Local();
 	ASSERT_(!l.fb || (l.ctx_default_fb && l.fb == l.ctx_default_fb), "previous frambuffer have not been unbound");
-	l.fb = &fb;
+	l.fb = fb;
 }
 
 template <class Gfx>
@@ -323,7 +323,6 @@ void CpuGfxT<Gfx>::RenderScreenRect() {
 	//ASSERT_(l.shdr, "shader is not bound yet");
 	//ASSERT_(l.prog, "program is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
-	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
 	l.rend.SetTarget(*l.pipe, *l.fb);
@@ -338,11 +337,11 @@ bool CpuGfxT<Gfx>::GenTexture(NativeColorBufferRef& b) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
+void CpuGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
 	auto& l = Local();
-	l.ctx_default_fb = &fb;
+	l.ctx_default_fb = fb;
 	if (!l.fb)
-		l.fb = &fb;
+		l.fb = fb;
 }
 
 template <class Gfx>
@@ -422,7 +421,6 @@ void CpuGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	ASSERT(l.vao->ebo);
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
-	ASSERT_(*l.fb, "framebuffer is not f");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
@@ -475,8 +473,11 @@ void CpuGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteFramebuffer(NativeFrameBuffer& b) {
-	b.Clear();
+void CpuGfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {
+	ASSERT(b);
+	if (b)
+		delete b;
+	b = 0;
 }
 
 template <class Gfx>
@@ -489,7 +490,6 @@ void CpuGfxT<Gfx>::BeginRender() {
 	auto& l = Local();
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
-	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
 	/*GVar::RenderTarget tgt = l.rend.GetTargets();
@@ -540,8 +540,9 @@ template <class Gfx> void CpuGfxT<Gfx>::UnbindRenderbuffer() {
 	Local().depth = 0;
 }
 
-template <class Gfx> bool CpuGfxT<Gfx>::CreateFramebuffer(NativeFrameBuffer& fb) {
-	return fb.Create();
+template <class Gfx> bool CpuGfxT<Gfx>::CreateFramebuffer(NativeFrameBufferRef& fb) {
+	fb = new SoftFramebuffer;
+	return true;
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef tex) {

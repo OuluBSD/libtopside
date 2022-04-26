@@ -76,12 +76,14 @@ void GfxAccelAtom<X11SwGfx>::GfxFlags(uint32& flags) {
 template <>
 bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 	ASSERT(fb);
-	ASSERT(*fb);
 	
-	rend.output.Init(*fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	NativeColorBufferRef clr = fb->Get(0);
+	ASSERT(clr);
+	
+	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
-	buf.fb.Init(*fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	buf.fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
 }
@@ -91,11 +93,10 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 
 
 template <class Gfx>
-void GfxAccelAtom<Gfx>::SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBuffer* fb) {
+void GfxAccelAtom<Gfx>::SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBufferRef fb) {
 	win = window;
 	this->display = display;
 	this->nat_rend = rend ? *rend : 0;
-	if (fb) {ASSERT(*fb);}
 	this->fb = fb;
 }
 
