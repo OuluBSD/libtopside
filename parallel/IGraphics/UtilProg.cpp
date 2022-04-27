@@ -55,8 +55,34 @@ void PassFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	#endif
 }
 
+template <class Gfx>
+void ColorTestFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
+	const vec3& res = args.generic->iResolution;
+	
+	float t = args.generic->iTime;
+	
+	vec3 shift = vec3(
+					 sin(t),
+					 sin(t + M_PI / 3.0),
+					 sin(t + M_PI * 2.0 / 3.0));
+	
+	args.frag_color_out = vec4(
+					args.frag_coord[0] / res[0] + shift[0],
+					args.frag_coord[1] / res[1] + shift[1],
+					1.0 - args.frag_coord[1] / res[1] + shift[2],
+					0);
+}
+
+template <class Gfx>
+void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
+	
+	TODO
+	
+}
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(PassVertexT)
 X11SW_EXCPLICIT_INITIALIZE_CLASS(PassFragmentT)
+X11SW_EXCPLICIT_INITIALIZE_CLASS(ColorTestFragmentT)
+X11SW_EXCPLICIT_INITIALIZE_CLASS(ProxyInput0FragmentT)
 
 NAMESPACE_PARALLEL_END

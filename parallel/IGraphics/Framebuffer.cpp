@@ -57,10 +57,10 @@ void SoftFramebufferT<Gfx>::SetSize(GVar::RenderTarget tgt, Size sz) {
 }
 
 template <class Gfx>
-void SoftFramebufferT<Gfx>::Zero(GVar::RenderTarget tgt) {
+void SoftFramebufferT<Gfx>::Zero(GVar::RenderTarget tgt, RGBA clr) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		if ((dword)tgt & (1 << i) && color[i])
-			color[i]->Zero();
+			color[i]->Zero(clr);
 	}
 }
 

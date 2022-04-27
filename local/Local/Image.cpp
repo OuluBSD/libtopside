@@ -167,6 +167,35 @@ void ByteImage::Set(Size sz, int channels) {
 	data = (byte*)malloc(sizeof(byte) * size);
 }
 
+void ByteImage::Clear() {
+	if (data) {
+		free(data);
+		sz = Size(0, 0);
+		pitch = 0;
+		channels = 0;
+		size = 0;
+		data = 0;
+	}
+}
+
+void ByteImage::Zero(RGBA clr) {
+	if (clr.r == 0 && clr.g == 0 && clr.b == 0 && clr.a == 0)
+		Zero();
+	else if (data) {
+		ASSERT(channels >= 1 && channels <= 4);
+		if (!((channels >= 1 && channels <= 4))) return;
+		
+		for(int y = 0; y < sz.cy; y++) {
+			byte* dst = data + y * pitch;
+			for (int x = 0; x < sz.cx; x++) {
+				const byte* src = &clr.r;
+				for(int i = 0; i < channels; i++)
+					*dst++ = src[i];
+			}
+		}
+	}
+}
+
 void ByteImage::Zero() {
 	if (data)
 		memset(data, 0, size);

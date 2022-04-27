@@ -83,7 +83,7 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
-	buf.fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	bf.GetBuffer().fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
 }
@@ -114,68 +114,14 @@ bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		LOG("GfxAccelAtom<Gfx>::Initialize: warning: unexpected link type");
 	}
 	
-	
-	String env_name = ws.Get(".env");
-	if (!env_name.IsEmpty()) {
-		SpaceRef l = a.GetSpace();
-		env = l->FindNearestState(env_name);
-		if (!env) {
-			LOG("GfxAccelAtom<Gfx>::Initialize: error: environment state with name '" << env_name << "' not found");
-			return false;
-		}
-	}
-	
-	close_machine = ws.Get(".close_machine") == "true";
-		
-	
-	Buffer& buf = GetBuffer();
-	buf.SetEnvState(env);
-	buf.AddLink(ws.Get(".link"));
-	
-	String loopback = ws.Get(".loopback");
-	if (loopback.GetCount() && !buf.SetLoopback(loopback)) {
-		LOG("GfxAccelAtom<Gfx>::Initialize: error: assigning loopback failed");
+	if (!bf.Initialize(a, ws))
 		return false;
-	}
-	
-	String fragment_path, vertex_path, fragment_shader, vertex_shader;
-	String program_str = ws.Get(".program");
-	if (program_str.GetCount()) {
-		fragment_path = "<builtin>";
-		vertex_path = "<builtin>";
-		fragment_shader = program_str + "_fragment";
-		vertex_shader = program_str + "_vertex";
-	}
-	else {
-		fragment_path = ws.Get(".fragment");
-		vertex_path = ws.Get(".vertex");
-		fragment_shader = ws.Get(".fragshader");
-		vertex_shader = ws.Get(".vtxshader");
-	}
-	
-	String library_path = ws.Get(".library");
-	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
-	SetShaderFile(fragment_path, vertex_path, library_path);
-	SetFragmentShader(fragment_shader);
-	SetVertexShader(vertex_shader);
 	
 	Sizeable(ws.Get(".sizeable") == "true");
 	Maximize(ws.Get(".maximize") == "true");
 	Fullscreen(ws.Get(".fullscreen") == "true");
 	
-	// ShaderBase duplicate
-	for(int i = 0; i < 4; i++) {
-		String key = ".buf" + IntStr(i);
-		String value = ws.Get(key);
-		if (value.IsEmpty())
-			;
-		else if (value == "volume")
-			buf.SetInputVolume(i);
-		else if (value == "cubemap")
-			buf.SetInputCubemap(i);
-		else
-			TODO
-	}
+	close_machine = ws.Get(".close_machine") == "true";
 	
 	a.AddAtomToUpdateList();
 	
@@ -196,6 +142,11 @@ bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	}
 	
 	return true;
+}
+
+template <class Gfx>
+bool GfxAccelAtom<Gfx>::PostInitialize() {
+	return bf.PostInitialize();
 }
 
 template <class Gfx>
@@ -232,62 +183,11 @@ bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
 	if (full_screen)
 		Gfx::SetWindowFullscreen(win);
 	
-	if (frag_path.GetCount())
-		is_user_shader = true;
-	
 	if (AcceptsOrder()) {
-		if (!this->ImageInitialize()) {
+		if (!this->bf.ImageInitialize(screen_sz)) {
 			LOG("GfxAccelAtom<Gfx>::Open: error: could not initialize image");
 			return false;
 		}
-	}
-	
-	return true;
-}
-
-template <class Gfx>
-bool GfxAccelAtom<Gfx>::ImageInitialize() {
-	auto& fb = buf.fb;
-	fb.is_win_fbo = true;
-	fb.size = screen_sz;
-	fb.fps = 60;
-	
-	frag_path = RealizeShareFile(frag_path);
-	vtx_path = RealizeShareFile(vtx_path);
-	
-	if (frag_shdr.GetCount()) {
-		if (!buf.LoadBuiltinShader(GVar::FRAGMENT_SHADER, frag_shdr)) {
-			LOG("GfxAccelAtom::ImageInitialize: error: fragment shader loading failed from '" + frag_shdr + "'");
-			return false;
-		}
-	}
-	else if (frag_path.GetCount()) {
-		if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER, frag_path, library_paths)) {
-			LOG("GfxAccelAtom::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
-			return false;
-		}
-	}
-	else {
-		LOG("GfxAccelAtom::ImageInitialize: error: no fragment shade given");
-		return false;
-	}
-	
-	if (vtx_shdr.GetCount()) {
-		if (!buf.LoadBuiltinShader(GVar::VERTEX_SHADER, vtx_shdr)) {
-			LOG("GfxAccelAtom::ImageInitialize: error: vertex shader loading failed from '" + vtx_shdr + "'");
-			return false;
-		}
-	}
-	else if (vtx_path.GetCount()) {
-		if (!buf.LoadShaderFile(GVar::VERTEX_SHADER, vtx_path, library_paths)) {
-			LOG("GfxAccelAtom::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
-			return false;
-		}
-	}
-	
-	if (!buf.Initialize()) {
-		LOG("GfxAccelAtom::ImageInitialize: error: " << buf.GetError());
-		return false;
 	}
 	
 	return true;
@@ -320,9 +220,9 @@ bool GfxAccelAtom<Gfx>::IsOpen() const {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Update(double dt) {
-	if (env) {
-		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
-		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
+	if (bf.env) {
+		Size& video_size = bf.env->template Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = bf.env->template Set<bool>(SCREEN0_CLOSE);
 		Buffer& buf = GetBuffer();
 		
 		if (close_window) {
@@ -381,7 +281,6 @@ void GfxAccelAtom<Gfx>::SetRect(Rect r) {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
-	auto& buf = this->buf;
 	
 	if (raw_packet) {
 		Format fmt = raw_packet->GetFormat();
@@ -404,17 +303,16 @@ void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 	}
 	else {
 		BeginDraw();
-		buf.Process(cfg);
+		bf.GetBuffer().Process(cfg);
 		CommitDraw();
 	}
-	
 	
 }
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 	PacketValue& pv = *p;
-	auto& buf = this->buf;
+	
 	bool succ = true;
 	Format fmt = pv.GetFormat();
 	if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
@@ -435,7 +333,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				DataState* sd = CastPtr<DataState>(gsd);
 				ASSERT(sd);
 				if (sd)
-					buf.SetDataStateOverride(sd);
+					bf.GetBuffer().SetDataStateOverride(sd);
 			}
 			else if (d.IsText("gfxvector")) {
 				fb_packet = p;
@@ -444,7 +342,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				Size3 sz = vfmt.GetSize();
 				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 				if (pv.IsData<InternalPacketData>()) {
-					succ = buf.LoadOutputLink(sz, ch_i - base, d);
+					succ = bf.GetBuffer().LoadOutputLink(sz, ch_i - base, d);
 				}
 				else {
 					RTLOG("GfxAccelAtom::Recv: cannot handle packet: " << pv.ToString());

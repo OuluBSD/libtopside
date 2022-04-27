@@ -19,6 +19,8 @@ template <class Gfx>
 void InitUtils() {
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassVertexT<Gfx>>(GVar::VERTEX_SHADER, "pass_vertex");
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "pass_fragment");
+	SoftShaderLibraryT<Gfx>::template AddShaderClass<ColorTestFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "color_test_fragment");
+	SoftShaderLibraryT<Gfx>::template AddShaderClass<ProxyInput0FragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "proxy_input0_fragment");
 }
 
 

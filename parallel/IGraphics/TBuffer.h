@@ -76,8 +76,12 @@ struct BufferT : GfxBuffer {
 	
 	DataState& GetState() {return user_data ? *user_data : data;}
 	
+private:
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
 	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
+	
+public:
+	bool LoadShader(GVar::ShaderType shader_type, String shader_id, String shader_path, String library_path);
 	//void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
 	//void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
 	

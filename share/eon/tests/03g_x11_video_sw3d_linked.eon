@@ -6,13 +6,15 @@ machine glx.app: {
 		loop video: {
 			center.customer: true;
 			x11.sw.fbo.pipe: true {
-				filepath:		"shaders/toys/simple/simple_double/stage1.glsl";
+				vtxshader:			"pass";
+				fragshader:		"color_test";
 			};
 			x11.sw.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				filepath:		"shaders/toys/simple/simple_double/stage0.glsl";
+				vtxshader:			"pass";
+				fragshader:		"proxy_input0";
 			};
 		};
 	};

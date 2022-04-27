@@ -126,6 +126,9 @@ struct CpuGfxT {
 	static Thread& Local();
 	static SoftRend& Rend();
 	
+	
+	static const bool is_builtin_shader = true;
+	
 };
 
 #ifdef flagOGL
@@ -136,6 +139,7 @@ struct OglBufferBase;
 template <class Gfx>
 struct OglGfxT {
 	static const bool is_vendor_agnostic = true;
+	static const bool is_builtin_shader = false;
 	
 	using NativeTexture = GLuint;
 	using NativeShader = GLuint;

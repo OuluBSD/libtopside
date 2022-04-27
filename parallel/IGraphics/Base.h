@@ -11,7 +11,6 @@ class BufferBaseT :
 	
 protected:
 	using Buffer = BufferT<Gfx>;
-	Buffer buf;
 	
 	RealtimeSourceConfig* last_cfg = 0;
 	
@@ -19,12 +18,14 @@ public:
 	using BufferBase = BufferBaseT<Gfx>;
 	RTTI_DECL1(BufferBaseT, Atom);
 	
-	void Visit(RuntimeVisitor& vis) override {vis % buf; vis.VisitThis<Atom>(this);}
-	void Update(double dt) override {buf.Update(dt);}
+	void Visit(RuntimeVisitor& vis) override {vis % bf; vis.VisitThis<Atom>(this);}
+	void Update(double dt) override {bf.Update(dt);}
 	RealtimeSourceConfig* GetConfig() override {return last_cfg;}
 	
-	Buffer& GetBuffer() {return buf;}
+	Buffer& GetBuffer() {return bf.buf;}
 	
+	
+	GfxBufferFieldT<Gfx> bf;
 };
 
 
@@ -32,7 +33,6 @@ template <class Gfx>
 class ShaderBaseT :
 	public BufferBaseT<Gfx>
 {
-	bool is_audio = false;
 	
 public:
 	using ShaderBase = ShaderBaseT<Gfx>;
@@ -48,83 +48,6 @@ public:
 	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	bool Recv(int sink_ch, const Packet& in) override;
 	void Finalize(RealtimeSourceConfig& cfg) override;
-	
-	/*bool ProcessPacket(PacketValue& in, PacketValue& out) override
-	bool ProcessPackets(PacketIO& io) override {
-		auto& buf = this->buf;
-		int src_ch = 0;
-		PacketIO::Sink& prim_sink = io.sink[0];
-		PacketIO::Source& src = io.src[src_ch];
-		src.from_sink_ch = 0;
-		src.p = this->ReplyPacket(src_ch, prim_sink.p);
-		
-		
-		bool succ = true;
-		
-		
-		for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
-			PacketIO::Sink& sink = io.sink[sink_ch];
-			Packet& in = sink.p;
-			if (!in) {
-				ASSERT(!sink.filled);
-				continue;
-			}
-			sink.may_remove = true;
-			
-			RTLOG("OglShaderBase::ProcessPackets: " << sink_ch << ", " << src_ch << ": " << in->ToString());
-			
-			
-			Format in_fmt = in->GetFormat();
-			if (in_fmt.vd == VD(OGL,FBO)) {
-				Size3 sz = in_fmt.fbo.GetSize();
-				int channels = in_fmt.fbo.GetChannels();
-				
-				int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
-				if (in->IsData<InternalPacketData>()) {
-					succ = buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
-				}
-				else {
-					RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
-				}
-			}
-			
-			
-			if (sink_ch == 0) {
-				
-				
-				//BeginDraw();
-				buf.Process(*this->last_cfg);
-				//CommitDraw();
-				
-				ASSERT(in->GetFormat().IsValid());
-				
-				
-			}
-		}
-		
-		InterfaceSourceRef src_iface = this->GetSource();
-		int src_count = src_iface->GetSourceCount();
-		for (int src_ch = 0; src_ch < src_count; src_ch++) {
-			PacketIO::Source& src = io.src[src_ch];
-			if (!src.val)
-				continue;
-			Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
-			if (src_fmt.vd == VD(OGL,FBO)) {
-				Packet& out = src.p;
-				if (!out) {
-					src.from_sink_ch = 0;
-					out = this->ReplyPacket(src_ch, prim_sink.p);
-				}
-				PacketValue& val = *out;
-				InternalPacketData& data = val.GetData<InternalPacketData>();
-				this->GetBuffer().StoreOutputLink(data);
-				RTLOG("OglShaderBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
-			}
-		}
-		
-		return succ;
-	}*/
-	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
 	
 	

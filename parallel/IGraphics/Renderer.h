@@ -39,6 +39,9 @@ class SoftRendT {
 	SoftPipeline* tgt_pipe = 0;
 	SoftFramebuffer* tgt_fb = 0;
 	
+	SoftShader vtx_passthrough;
+	PassthroughSoftShaderBaseT<Gfx> vtx_passthrough_base;
+	
 	//Vector<Vertex> vertices;
 	//Vector<uint32> indices;
 	
@@ -49,6 +52,7 @@ class SoftRendT {
 		SoftElementBuffer* ebo = 0;
 		SoftProgram* prog = 0;
 		SoftShader* frag = 0;
+		SoftShader* vtx = 0;
 		
 		bool use_processed_vertices = false;
 		SoftVertexBuffer processed_vertices;

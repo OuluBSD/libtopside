@@ -102,6 +102,7 @@ typedef unsigned int	Gxbf;
 #include "TContext.h"
 #include "TUtil.h"
 #include "TBuffer.h"
+#include "TBufferField.h"
 
 #include "Cpu.h"
 /*#include "CpuShader.h"

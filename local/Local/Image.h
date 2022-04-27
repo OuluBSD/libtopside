@@ -76,8 +76,9 @@ public:
 	void Set(const Image& img);
 	void Set(int w, int h, int stride, int src_pitch, const byte* data);
 	void Set(Size sz, int channels);
-	void Clear() {if (data) {free(data); sz = Size(0,0); pitch = 0; channels = 0; size = 0;}}
+	void Clear();
 	void Zero();
+	void Zero(RGBA clr);
 	void FlipVert();
 	void Randomize();
 	

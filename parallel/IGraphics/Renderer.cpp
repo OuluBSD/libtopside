@@ -11,7 +11,7 @@ SoftRendT<Gfx>::SoftRendT() {
 
 template <class Gfx>
 void SoftRendT<Gfx>::DrawDefault(SoftFramebuffer& fb) {
-	fb.Zero(draw_buffers);
+	fb.Zero(draw_buffers, clear_color);
 }
 
 template <class Gfx>
@@ -302,7 +302,7 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 			int pos = (int)P[0] + (int)P[1] * w;
 			ASSERT(pos >= 0 && pos < pos_limit);
 			float& zmem = zbuffer[pos];
-			if ((greater && z > 0.0f && zmem < z) || (!greater && z < 0.0f && zmem > z)) {
+			if ((greater && z >= 0.0f && zmem < z) || (!greater && z <= 0.0f && zmem > z)) {
 				zmem = z;
 				auto& i = zinfo[pos];
 				i.triangle_i = info.triangle_i;
@@ -371,11 +371,12 @@ void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
 		
 		//ClearTemp();
 		
+		rs.vtx = 0;
+		rs.frag = 0;
 		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::VERTEX_SHADER) {
-				ProcessVertexShader(*shader, vao, src_id);
-				DepthTest(vao, src_id);
+				rs.vtx = shader;
 			}
 			else if (type == GVar::FRAGMENT_SHADER) {
 				rs.frag = shader;
@@ -384,6 +385,14 @@ void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
 				TODO
 			}
 		}
+		
+		if (!rs.vtx) {
+			vtx_passthrough.SetPassthroughVertexShader(prog, vtx_passthrough_base);
+			rs.vtx = &vtx_passthrough;
+		}
+		
+		ProcessVertexShader(*rs.vtx, vao, src_id);
+		DepthTest(vao, src_id);
 	}
 }
 
@@ -408,7 +417,7 @@ void SoftRendT<Gfx>::Begin() {
 	}
 	
 	// reset color buffer
-	tgt_fb->Zero(draw_buffers);
+	tgt_fb->Zero(draw_buffers, Black());
 	
 	// reset z-buffer
 	NativeDepthBufferRef depth = tgt_fb->GetDepth();

@@ -58,7 +58,7 @@ protected:
 	using GLContext				= typename Gfx::NativeGLContext;
 	using Framebuffer = FramebufferT<Gfx>;
 	
-	Buffer					buf;
+	GfxBufferFieldT<Gfx>	bf;
     NativeWindow			win;
     NativeDisplay			display;
     NativeRenderer			nat_rend;
@@ -73,7 +73,6 @@ protected:
 	Renderer				rend;
 	StateDraw				draw;
 	SystemDraw				sysdraw;
-	EnvStateRef				env;
 	bool is_opengl = false;
 	bool is_sw = false;
 	bool is_dx11 = false;
@@ -81,13 +80,7 @@ protected:
 	bool is_maximized = false;
 	bool is_sizeable = false;
 	bool mouse_captured = false;
-	bool is_user_shader = false;
 	bool close_machine = false;
-	String frag_shdr;
-	String vtx_shdr;
-	String frag_path;
-	String vtx_path;
-	String library_paths;
 	
 	Packet fb_packet;
 	Packet raw_packet;
@@ -98,7 +91,7 @@ protected:
 	
 	
 	void SetWindowRect(Rect r);
-	Buffer& GetBuffer() {return buf;}
+	Buffer& GetBuffer() {return bf.GetBuffer();}
 	
 public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
@@ -107,12 +100,12 @@ public:
 	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBufferRef fb);
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
+	bool PostInitialize();
 	bool ProcessPacket(PacketValue& in, PacketValue& out);
 	void Uninitialize();
 	
 	bool Open(Size sz, int channels);
-	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}
-	bool ImageInitialize();
+	bool AcceptsOrder() const {return bf.AcceptsOrder();}
 	void Close();
 	bool IsOpen() const;
 	void Update(double dt);
@@ -130,10 +123,6 @@ public:
 	
 	Size GetSize() {return Gfx::GetWindowSize(win);}
 	bool IsCaptured() const {return mouse_captured;}
-	
-	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
-	void SetFragmentShader(String s) {frag_shdr = s;}
-	void SetVertexShader(String s) {vtx_shdr = s;}
 	
 };
 

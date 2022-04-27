@@ -18,6 +18,15 @@ struct SoftShaderBaseT : RTTIBase {
 	virtual void Process(FragmentShaderArgsT<Gfx>& args) {Panic("not implemented");}
 };
 
+template <class Gfx>
+struct PassthroughSoftShaderBaseT : SoftShaderBaseT<Gfx> {
+	using Base = SoftShaderBaseT<Gfx>;
+	RTTI_DECL1(PassthroughSoftShaderBaseT, Base);
+	
+	void Process(VertexShaderArgsT<Gfx>& args) override {}
+	void Process(FragmentShaderArgsT<Gfx>& args) override {}
+};
+
 
 struct GenericShaderArgs {
 	vec3 iResolution;
@@ -96,6 +105,9 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 		for(int i = 0; i < TEXTYPE_COUNT; i++)
 			tex_img[i] = 0;
 	}
+	
+	vec3 GetResolution() const {return generic->iResolution;}
+	float GetTime() const {return generic->iTime;}
 	
 };
 

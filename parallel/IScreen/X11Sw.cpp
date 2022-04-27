@@ -138,7 +138,7 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 }
 
 bool ScrX11Sw::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
-	return true;
+	return dev.accel.PostInitialize();
 }
 
 bool ScrX11Sw::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {

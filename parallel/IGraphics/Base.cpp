@@ -4,46 +4,14 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
-	auto& buf = this->buf;
-	String fragment_path = ws.Get(".fragment");
-	String vertex_path = ws.Get(".vertex");
-	String library_path = ws.Get(".library");
-	String loopback = ws.Get(".loopback");
 	
-	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
-	
-	if (loopback.GetCount() && !buf.SetLoopback(loopback))
-		return false;
-	
-	if (!vertex_path.IsEmpty() &&
-		!buf.LoadShaderFile(GVar::VERTEX_SHADER, vertex_path, library_path))
-		return false;
-	
-	if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER,fragment_path, library_path))
+	if (!this->bf.Initialize(*this, ws))
 		return false;
 	
 	int queue_size = 1;
 	
-	if (ws.Get(".type") == "audio") {
+	if (this->bf.IsAudio())
 		queue_size = DEFAULT_AUDIO_QUEUE_SIZE;
-		is_audio = true;
-	}
-	
-	buf.AddLink(ws.Get(".link"));
-	
-	// SDL2ScreenBase duplicate
-	for(int i = 0; i < 4; i++) {
-		String key = ".buf" + IntStr(i);
-		String value = ws.Get(key);
-		if (value.IsEmpty())
-			;
-		else if (value == "volume")
-			buf.SetInputVolume(i);
-		else if (value == "cubemap")
-			buf.SetInputCubemap(i);
-		else
-			TODO
-	}
 	
 	InterfaceSinkRef sink_iface = this->GetSink();
 	InterfaceSourceRef src_iface = this->GetSource();
@@ -71,26 +39,7 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 
 template <class Gfx>
 bool ShaderBaseT<Gfx>::PostInitialize() {
-	auto& buf = this->buf;
-	auto& fb = buf.fb;
-	fb.is_audio = is_audio;
-	fb.is_win_fbo = false;
-	if (!is_audio) {
-		fb.size = Size(1280,720);
-		fb.channels = 4;
-		fb.fps = 60;
-	}
-	else {
-		fb.size = Size(1024,1);
-		fb.channels = 2;
-		fb.fps = 44100.0 / 1024;
-	}
-	fb.sample = GVar::SAMPLE_FLOAT;
-	
-	if (!buf.Initialize())
-		return false;
-	
-	return true;
+	return this->bf.PostInitialize();
 }
 
 template <class Gfx>
@@ -108,12 +57,12 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 template <class Gfx>
 bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	//BeginDraw();
-	this->buf.Process(*this->last_cfg);
+	this->bf.GetBuffer().Process(*this->last_cfg);
 	//CommitDraw();
 	ASSERT(in.GetFormat().IsValid());
 	
 	InternalPacketData& data = out.GetData<InternalPacketData>();
-	this->buf.StoreOutputLink(data);
+	this->bf.GetBuffer().StoreOutputLink(data);
 	RTLOG("ShaderBaseT::ProcessPacket: 0, " << out.ToString());
 	return true;
 }
@@ -130,7 +79,7 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (in->IsData<InternalPacketData>()) {
-			succ = this->buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			succ = this->bf.GetBuffer().LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 		}
 		else {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
@@ -144,6 +93,83 @@ template <class Gfx>
 void ShaderBaseT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	this->last_cfg = &cfg;
 }
+
+/*bool ProcessPacket(PacketValue& in, PacketValue& out) override
+bool ProcessPackets(PacketIO& io) override {
+	auto& buf = this->buf;
+	int src_ch = 0;
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& src = io.src[src_ch];
+	src.from_sink_ch = 0;
+	src.p = this->ReplyPacket(src_ch, prim_sink.p);
+	
+	
+	bool succ = true;
+	
+	
+	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sink[sink_ch];
+		Packet& in = sink.p;
+		if (!in) {
+			ASSERT(!sink.filled);
+			continue;
+		}
+		sink.may_remove = true;
+		
+		RTLOG("OglShaderBase::ProcessPackets: " << sink_ch << ", " << src_ch << ": " << in->ToString());
+		
+		
+		Format in_fmt = in->GetFormat();
+		if (in_fmt.vd == VD(OGL,FBO)) {
+			Size3 sz = in_fmt.fbo.GetSize();
+			int channels = in_fmt.fbo.GetChannels();
+			
+			int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+			if (in->IsData<InternalPacketData>()) {
+				succ = buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			}
+			else {
+				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
+			}
+		}
+		
+		
+		if (sink_ch == 0) {
+			
+			
+			//BeginDraw();
+			buf.Process(*this->last_cfg);
+			//CommitDraw();
+			
+			ASSERT(in->GetFormat().IsValid());
+			
+			
+		}
+	}
+	
+	InterfaceSourceRef src_iface = this->GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 0; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 0;
+				out = this->ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			this->GetBuffer().StoreOutputLink(data);
+			RTLOG("OglShaderBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
+	}
+	
+	return succ;
+}*/
+
 
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)

@@ -53,7 +53,7 @@ public:
 	void SetColor(TexType tgt, NativeColorBufferRef fb);
 	void SetDepth(NativeDepthBufferRef fb) {depth = fb;}
 	void SetSize(GVar::RenderTarget tgt, Size sz);
-	void Zero(GVar::RenderTarget tgt);
+	void Zero(GVar::RenderTarget tgt, RGBA clr);
 	
 	//const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
 	//ByteImage& GetGeomTex() const {ASSERT(gtex); return *gtex;}

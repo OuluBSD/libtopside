@@ -72,6 +72,28 @@ bool BufferT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_pa
 }
 
 template <class Gfx>
+bool BufferT<Gfx>::LoadShader(GVar::ShaderType shader_type, String shader_id, String shader_path, String library_paths) {
+	if (shader_id.GetCount()) {
+		if (!LoadBuiltinShader(shader_type, shader_id)) {
+			LOG("BufferT<Gfx>::ImageInitialize: error: shader loading failed from '" + shader_id + "'");
+			return false;
+		}
+	}
+	else if (shader_path.GetCount()) {
+		if (!LoadShaderFile(shader_type, shader_path, library_paths)) {
+			LOG("BufferT<Gfx>::ImageInitialize: error: shader loading failed from '" + shader_path + "'");
+			return false;
+		}
+	}
+	else {
+		LOG("BufferT<Gfx>::ImageInitialize: error: no fragment shade given");
+		return false;
+	}
+	
+	return true;
+}
+
+template <class Gfx>
 bool BufferT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
 	int i = SoftShaderLibrary::GetMap(shader_type).Find(id);
 	if (i < 0) {
@@ -318,8 +340,7 @@ void BufferT<Gfx>::UpdateTexBuffers() {
 		
 		ClearTex();
 		
-		CreateTex(
-			true, true);
+		CreateTex(true, true);
 		
 	}
 }
@@ -906,7 +927,7 @@ bool BufferT<Gfx>::SetupLoopback() {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::BuiltinShader() {return false;}
+bool BufferT<Gfx>::BuiltinShader() {return Gfx::is_builtin_shader;}
 
 template <class Gfx>
 template <int>
@@ -933,7 +954,7 @@ bool BufferT<Gfx>::BuiltinShaderT() {
 	return succ;
 }
 
-#ifdef flagSDL2
+/*#ifdef flagSDL2
 template <>
 bool BufferT<SdlCpuGfx>::BuiltinShader() {
 	return BuiltinShaderT<0>();
@@ -945,7 +966,7 @@ template <>
 bool BufferT<X11SwGfx>::BuiltinShader() {
 	return BuiltinShaderT<0>();
 }
-#endif
+#endif*/
 
 template <class Gfx>
 bool BufferT<Gfx>::CompilePrograms() {
