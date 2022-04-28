@@ -201,6 +201,54 @@ void ByteImage::Zero() {
 		memset(data, 0, size);
 }
 
+void ByteImage::SwapRedBlue() {
+	byte* it = data;
+	byte* end = data + size;
+	int stride = this->channels;
+	if (stride >= 3 && (size % stride) == 0) {
+		while (it != end) {
+			byte s = it[0];
+			it[0] = it[2];
+			it[2] = s;
+			it += stride;
+		}
+	}
+}
+
+void ByteImage::SetSwapRedBlue(const ByteImage& i) {
+	if (this->sz != i.sz || this->channels != i.channels) {
+		Clear();
+		this->sz = i.sz;
+		this->channels = i.channels;
+		pitch = sz.cx * channels;
+		size = pitch * sz.cy;
+		ASSERT(channels >= 1 && channels <= 4);
+		
+		data = (byte*)malloc(sizeof(byte) * size);
+	}
+	
+	if (channels == 4) {
+		ASSERT(pitch == i.pitch);
+		const dword* src = (const dword*)i.data;
+		union {
+			dword* dst;
+			byte* b;
+		};
+		dst = (dword*)data;
+		dword* end = dst + size / 4;
+		while (dst != end) {
+			*dst = *src++;
+			byte s = b[0];
+			b[0] = b[2];
+			b[2] = s;
+			dst++;
+		}
+	}
+	else {
+		TODO
+	}
+}
+
 void ByteImage::Randomize() {
 	byte* it = data;
 	byte* end = data + size;

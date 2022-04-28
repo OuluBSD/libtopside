@@ -89,6 +89,16 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 
 template <class Gfx>
 bool GfxBufferFieldT<Gfx>::ImageInitialize(Size screen_sz) {
+	if (screen_sz.cx == 0 && screen_sz.cy == 0) {
+		if (env) {
+			Size* video_size = env->Get<Size>(SCREEN0_SIZE);
+			if (video_size)
+				screen_sz = *video_size;
+		}
+		if (screen_sz.cx == 0 && screen_sz.cy == 0)
+			screen_sz = Size(1280,720);
+	}
+	
 	auto& fb = buf.fb;
 	fb.is_win_fbo = true;
 	fb.size = screen_sz;
@@ -129,7 +139,7 @@ bool GfxBufferFieldT<Gfx>::PostInitialize() {
 	}
 	
 	if (!buf.Initialize()){
-		LOG("GfxBufferFieldT<Gfx>::ImageInitialize: error: " << buf.GetError());
+		LOG("GfxBufferFieldT<Gfx>::PostInitialize: error: " << buf.GetError());
 		return false;
 	}
 	

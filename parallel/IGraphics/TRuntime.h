@@ -11,13 +11,13 @@ template <class Gfx>
 struct CompilerT : GfxCompiler {
 	RTTI_DECL1(CompilerT, GfxCompiler)
 	using Base = CompilerT<Gfx>;
-	using NativeShader = typename Gfx::NativeShader;
+	using NativeShaderRef = typename Gfx::NativeShaderRef;
 	using RuntimeState = RuntimeStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
 	using ShaderState = ShaderStateT<Gfx>;
 	using ContextState = ContextStateT<Gfx>;
 	
-	bool CompileShader(String code, GVar::ShaderType type, NativeShader& shader_out);
+	bool CompileShader(String code, GVar::ShaderType type, NativeShaderRef shader_out);
 	bool Compile(	const ContextState& ctx,
 					RuntimeState& rt,
 					Framebuffer& fb,
@@ -50,10 +50,10 @@ template <class Gfx>
 struct ShaderStateT : GfxShaderState {
 	RTTI_DECL1(ShaderStateT, GfxShaderState)
 	using Base = ShaderStateT<Gfx>;
-	using NativeShader = typename Gfx::NativeShader;
+	using NativeShaderRef = typename Gfx::NativeShaderRef;
 	
 	
-	NativeShader shader;
+	NativeShaderRef shader;
 	
 	ShaderStateT() {
 		shader = Null;
@@ -143,7 +143,7 @@ struct RuntimeStateT : GfxRuntimeState {
 	
 	NativeProgram	prog;
 	NativePipeline	pipeline;
-	//NativeShader	shader;
+	//NativeShaderRef	shader;
 	bool		is_searched_vars = 0;
 	int			var_idx[GVar::VAR_COUNT];
 	bool		is_time_used = 0;

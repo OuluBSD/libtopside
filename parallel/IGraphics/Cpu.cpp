@@ -170,17 +170,19 @@ void CpuGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::CreateShader(GVar::ShaderType t, NativeShader& new_shdr) {
-	return new_shdr.Create(t);
+bool CpuGfxT<Gfx>::CreateShader(GVar::ShaderType t, NativeShaderRef& new_shdr) {
+	new_shdr = new SoftShaderT<Gfx>();
+	new_shdr->SetType(t);
+	return true;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ShaderSource(NativeShader& s, String code) {
-	s.SetSource(code);
+void CpuGfxT<Gfx>::ShaderSource(NativeShaderRef s, String code) {
+	s->SetSource(code);
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::CompileShader(NativeShader& s) {
+bool CpuGfxT<Gfx>::CompileShader(NativeShaderRef s) {
 	/*ASSERT(ctx && rt && shdr);
 	if (!ctx || !rt || !shdr)
 		return false;
@@ -189,12 +191,12 @@ bool CpuGfxT<Gfx>::CompileShader(NativeShader& s) {
 		comp.Create();
 	
 	return comp->Compile(*ctx, *rt, *shdr, s, s->GetType();*/
-	return Local().comp.Compile(s);
+	return Local().comp.Compile(*s);
 }
 
 template <class Gfx>
-String CpuGfxT<Gfx>::GetLastErrorS(NativeShader& s) {
-	return s.GetLastError();
+String CpuGfxT<Gfx>::GetLastErrorS(NativeShaderRef s) {
+	return s->GetLastError();
 }
 
 template <class Gfx>
@@ -241,13 +243,14 @@ void CpuGfxT<Gfx>::Clear(GVar::BufferType type) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShader& shdr) {
-	prog.Attach(shdr);
+void CpuGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShaderRef shdr) {
+	prog.Attach(*shdr);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteShader(NativeShader& shdr) {
-	shdr.Clear();
+void CpuGfxT<Gfx>::DeleteShader(NativeShaderRef& shdr) {
+	shdr->Clear();
+	shdr = 0;
 }
 
 template <class Gfx>

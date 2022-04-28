@@ -22,7 +22,7 @@ struct X11Sw {
 	using NativeFrameBufferRef = SoftFramebufferT<X11Sw>;
 	using NativeProgram = SoftProgramT<X11Sw>;
 	using NativePipeline = SoftPipelineT<X11Sw>;
-	using NativeShader = SoftShaderT<X11Sw>;
+	using NativeShaderRef = SoftShaderT<X11Sw>;
 	using DataObject = DataObjectT<X11Sw>;*/
 	
 	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);

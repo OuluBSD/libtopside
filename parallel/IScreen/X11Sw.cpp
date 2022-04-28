@@ -96,14 +96,11 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 		}
 		
 		// define the style of lines that will be drawn using this GC.
-		XSetLineAttributes(display, gc,
-		                 line_width, line_style, cap_style, join_style);
+		XSetLineAttributes(display, gc, line_width, line_style, cap_style, join_style);
 		
 		// define the fill style for the GC. to be 'solid filling'.
 		XSetFillStyle(display, gc, FillSolid);
 	}
-	
-	int bpp = 3;
 	
 	::XImage*& fb = dev.fb;
 	fb = XCreateImage(
@@ -120,10 +117,12 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	);
 	ASSERT(fb);
 	
+	int bpp = fb->bits_per_pixel / 8;
+	
 	XSync(display, False);
 	
 	dev.accel_buf.Set(width, height, bpp, width * bpp, 0);
-	dev.accel_buf.Randomize();
+	dev.accel_buf.Zero(Color(125,0,125));
 	dev.accel_fbo.SetColor(TEXTYPE_NONE, &dev.accel_buf);
 	dev.accel_fbo.SetDepth(&dev.accel_zbuf);
 	
@@ -180,14 +179,20 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		
 		int width = attr.width;
 		int height = attr.height;
-		int bpp = attr.depth / 8;
+		int bpp = dev.fb->bits_per_pixel / 8;
 		int len = width * height * bpp;
 		ASSERT(dev.accel_buf.GetSize() == len);
 		
+		// TODO: find how to create rgb XImage or support BGRA in full soft render implementation
+		// HACK: for now, just swap red and blue
+		// NOTE: VERY SLOW!
+		dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf);
+		
 		ASSERT(dev.fb);
 		ASSERT(!dev.fb->data);
-	    dev.fb->data = (char*)(const unsigned char*)dev.accel_buf.Begin();
+	    dev.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();
 	    dev.fb->bytes_per_line = width * bpp;
+	    
 	    ASSERT(width == dev.fb->width);
 	    ASSERT(height == dev.fb->height);
 	    if (width != dev.fb->width || height != dev.fb->height) {

@@ -40,7 +40,7 @@ struct FramebufferT : Gfx::FramebufferBase {
 	using SystemFrameBufferRef = typename Gfx::SystemFrameBufferRef;
 	using NativeProgram  = typename Gfx::NativeProgram;
 	using NativePipeline = typename Gfx::NativePipeline;
-	using NativeShader = typename Gfx::NativeShader;
+	using NativeShaderRef = typename Gfx::NativeShaderRef;
 	//using ShaderState = typename Gfx::ShaderState;
 	using ShaderState = ShaderStateT<Gfx>;
 	//using InputState  = typename Gfx::InputState;

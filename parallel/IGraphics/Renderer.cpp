@@ -11,7 +11,7 @@ SoftRendT<Gfx>::SoftRendT() {
 
 template <class Gfx>
 void SoftRendT<Gfx>::DrawDefault(SoftFramebuffer& fb) {
-	fb.Zero(draw_buffers, clear_color);
+	fb.Zero((GVar::RenderTarget)255, clear_color);
 }
 
 template <class Gfx>

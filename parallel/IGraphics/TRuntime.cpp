@@ -4,7 +4,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-bool CompilerT<Gfx>::CompileShader(String code, GVar::ShaderType type, NativeShader& shader_out) {
+bool CompilerT<Gfx>::CompileShader(String code, GVar::ShaderType type, NativeShaderRef shader_out) {
 	bool succ = Gfx::CreateShader(type, shader_out);
 	CHKLOGRET0(succ, "Compiler::CompileShader: error: Gfx::CreateShader failed unexpectedly");
 	

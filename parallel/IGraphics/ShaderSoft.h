@@ -49,7 +49,6 @@ struct ShaderLibraryT {
 
 template <class Gfx>
 class SoftShaderT {
-	bool inited = false;
 	GVar::ShaderType type;
 	String src;
 	String err;
@@ -65,15 +64,13 @@ public:
 	SoftShaderT();
 	
 	void Clear();
-	bool Create(GVar::ShaderType t);
+	void SetType(GVar::ShaderType t) {type = t;}
 	
 	void SetSource(String s);
 	GVar::ShaderType GetType() const {return type;}
 	SoftShaderBaseT<Gfx>& Get() {ASSERT(s); return *s;}
 	
-	void operator=(SoftShaderBaseT<Gfx>* s) {this->s = s;}
-	void operator=(const Nuller&) {Clear();}
-	operator bool() const {return inited;}
+	void SetShaderBase(SoftShaderBaseT<Gfx>& s) {this->s = &s;}
 	String GetLastError() const {return err;}
 	
 	SoftProgram* GetSoftProgram() const {return prog;}

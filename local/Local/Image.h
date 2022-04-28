@@ -81,6 +81,8 @@ public:
 	void Zero(RGBA clr);
 	void FlipVert();
 	void Randomize();
+	void SwapRedBlue();
+	void SetSwapRedBlue(const ByteImage& i);
 	
 	int GetPitch() const;
 	int GetWidth() const;

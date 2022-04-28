@@ -63,6 +63,7 @@ PKG(Screen, Scr, S) {
 			.Add("gc",					"::GC")
 			.Add("accel",				"GfxAccelAtom<X11SwGfx>")
 			.Add("accel_buf",			"ByteImage")
+			.Add("accel_buf_tmp",		"ByteImage")
 			.Add("accel_zbuf",			"DepthImage")
 			.Add("accel_fbo",			"SoftFramebufferT<X11SwGfx>")
 			.Add("atomWmDeleteWindow",	"::Atom")

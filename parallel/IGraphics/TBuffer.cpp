@@ -97,7 +97,7 @@ template <class Gfx>
 bool BufferT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
 	int i = SoftShaderLibrary::GetMap(shader_type).Find(id);
 	if (i < 0) {
-		last_error = "could not find shader";
+		SetError("could not find shader");
 		return false;
 	}
 	
@@ -927,46 +927,61 @@ bool BufferT<Gfx>::SetupLoopback() {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::BuiltinShader() {return Gfx::is_builtin_shader;}
+int BufferT<Gfx>::BuiltinShader() {return 0;}
 
 template <class Gfx>
 template <int>
-bool BufferT<Gfx>::BuiltinShaderT() {
+int BufferT<Gfx>::BuiltinShaderT() {
 	bool succ = false;
 	if (!rt.pipeline)
 		rt.pipeline.Create();
+	int shdr_count = 0;
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		if (soft[i]) {
+			shdr_count++;
 			GVar::ShaderType t = (GVar::ShaderType)i;
 			auto& s = rt.shaders[i];
-			s.shader.Create(t);
-			s.shader = &*soft[i];
+			ASSERT(!s.shader);
+			if (!Gfx::CreateShader((GVar::ShaderType)i, s.shader)) {
+				SetError("could not create shader (at BufferT<Gfx>::BuiltinShaderT)");
+				return -1;
+			}
+			ASSERT(s.shader);
+			if (!s.shader) continue;
+			//s.shader.Create(t);
+			s.shader->SetShaderBase(*soft[i]);
 			s.enabled = true;
 			if (!rt.prog) {
 				rt.prog.Create();
 			}
-			rt.prog.Attach(rt.shaders[i].shader);
+			rt.prog.Attach(*s.shader);
 			rt.pipeline.Use(rt.prog, 1 << i);
 			if (i == GVar::FRAGMENT_SHADER)
 				succ = true;
 		}
 	}
-	return succ;
+	if (!succ) {
+		if (shdr_count == 0)
+			SetError("RuntimeState got no shaders");
+		else
+			SetError("RuntimeState got no soft fragment shader");
+	}
+	return succ ? 1 : -1;
 }
 
-/*#ifdef flagSDL2
+#ifdef flagSDL2
 template <>
-bool BufferT<SdlCpuGfx>::BuiltinShader() {
+int BufferT<SdlCpuGfx>::BuiltinShader() {
 	return BuiltinShaderT<0>();
 }
 #endif
 
 #ifdef flagPOSIX
 template <>
-bool BufferT<X11SwGfx>::BuiltinShader() {
+int BufferT<X11SwGfx>::BuiltinShader() {
 	return BuiltinShaderT<0>();
 }
-#endif*/
+#endif
 
 template <class Gfx>
 bool BufferT<Gfx>::CompilePrograms() {
@@ -978,9 +993,10 @@ bool BufferT<Gfx>::CompilePrograms() {
 			return false;
 	}*/
 	
-	if (BuiltinShader()) {
-		use_user_data = true;
-		return true;
+	int r;
+	if ((r = BuiltinShader()) != 0) {
+		//breaks simple quad rendering: use_user_data = true;
+		return r > 0;
 	}
 	use_user_data = false;
 	
@@ -996,13 +1012,13 @@ bool BufferT<Gfx>::CompilePrograms() {
 		s.enabled = true;
 		
 		if (!comp.Compile(ctx, rt, fb, s, (GVar::ShaderType)i)) {
-			last_error = comp.GetError();
+			SetError(comp.GetError());
 			return false;
 		}
 	}
 	
 	if (!linker.Link(rt)) {
-		last_error = linker.GetError();
+		SetError(linker.GetError());
 		return false;
 	}
 	
@@ -1031,8 +1047,9 @@ void BufferT<Gfx>::TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::W
 template <class Gfx>
 void BufferT<Gfx>::OnError(const char* fn, String s) {
 	LOG("BufferT: error: " << (String)fn << ": " << s);
-	last_error.Clear();
-	last_error << fn << ": " << s;
+	String e;
+	e << fn << ": " << s;
+	SetError(e);
 }
 
 template <class Gfx>
@@ -1044,9 +1061,9 @@ void BufferT<Gfx>::StoreOutputLink(InternalPacketData& v) {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v) {
+bool BufferT<Gfx>::LoadInputLink(Size3 sz, int in_id, const InternalPacketData& v) {
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
-		//LOG("LoadOutputLink: " << name << " #" << in_id);
+		//LOG("LoadInputLink: " << name << " #" << in_id);
 		GfxBuffer* gbuf = (GfxBuffer*)v.ptr;
 		Buffer* buf = CastPtr<Buffer>(gbuf);
 		if (!buf) {
@@ -1070,14 +1087,14 @@ bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, const InternalPacketData&
 		return true;
 	}
 	
-	RTLOG("LoadOutputLink: error: unexpected data");
+	RTLOG("LoadInputLink: error: unexpected data");
 	return false;
 }
 
 
 
 template <class Gfx>
-bool BufferT<Gfx>::LoadOutputLink(int in_id, const PacketValue& v) {
+bool BufferT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 	if (in_id == 0) {
 		const Vector<byte>& data = v.GetData();
 		Format fmt = v.GetFormat();
@@ -1093,7 +1110,7 @@ bool BufferT<Gfx>::LoadOutputLink(int in_id, const PacketValue& v) {
 	TODO
 	#if 0
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
-		//LOG("LoadOutputLink: " << name << " #" << in_id);
+		//LOG("LoadInputLink: " << name << " #" << in_id);
 		
 		InputState& in = rt.inputs[in_id];
 		in.id = in_id;
@@ -1130,7 +1147,7 @@ bool BufferT<Gfx>::LoadOutputLink(int in_id, const PacketValue& v) {
 	#endif
 	
 	
-	RTLOG("LoadOutputLink: error: unexpected data");
+	RTLOG("LoadInputLink: error: unexpected data");
 	return false;
 }
 

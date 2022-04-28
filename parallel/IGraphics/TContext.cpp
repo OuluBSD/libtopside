@@ -8,7 +8,7 @@ void RendererT<Gfx>::DefaultPreFrame() {
 	//ASSERT(rend);
 	Gfx::BindFramebufferDefault();
 	Gfx::SetClearValue(RGBA(0,0,0,255), 255);
-	Gfx::ClearBuffers();
+	//TODO: useless? Gfx::ClearBuffers();
 	Gfx::SetSmoothShading();
 	Gfx::SetDepthTest();
 	Gfx::SetDepthOrderLess(true);

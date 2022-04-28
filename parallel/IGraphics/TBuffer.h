@@ -39,7 +39,6 @@ struct BufferT : GfxBuffer {
 	
 	Vector<String>				link_ids;
 	//Vector<BinderIface*>		binders;
-	String						last_error;
 	
 	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
@@ -114,15 +113,15 @@ public:
 	NativeColorBufferConstRef GetInputTex(int input_i) const;
 	GVar::TextureType GetTexType(int input_i) const;
 	bool SetupLoopback();
-	bool BuiltinShader();
-	template <int> bool BuiltinShaderT();
+	int BuiltinShader();
+	template <int> int BuiltinShaderT();
 	bool CompilePrograms();
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
-	bool LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v);
-	bool LoadOutputLink(int in_id, const PacketValue& v);
+	bool LoadInputLink(Size3 sz, int in_id, const InternalPacketData& v);
+	bool LoadInputLink(int in_id, const PacketValue& v);
 	void SetInputVolume(int in_id);
 	void SetInputCubemap(int in_id);
 	

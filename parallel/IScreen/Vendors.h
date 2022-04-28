@@ -75,6 +75,7 @@ struct ScrX11Sw {
 		::GC gc;
 		GfxAccelAtom<X11SwGfx> accel;
 		ByteImage accel_buf;
+		ByteImage accel_buf_tmp;
 		DepthImage accel_zbuf;
 		SoftFramebufferT<X11SwGfx> accel_fbo;
 		::Atom atomWmDeleteWindow;

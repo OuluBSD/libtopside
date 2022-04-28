@@ -13,18 +13,7 @@ SoftShaderT<Gfx>::SoftShaderT() {
 
 template <class Gfx>
 void SoftShaderT<Gfx>::Clear() {
-	inited = false;
-}
-
-template <class Gfx>
-bool SoftShaderT<Gfx>::Create(GVar::ShaderType t) {
-	Clear();
 	
-	type = t;
-	
-	
-	inited = true;
-	return true;
 }
 
 template <class Gfx>

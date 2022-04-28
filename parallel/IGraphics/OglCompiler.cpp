@@ -122,7 +122,7 @@ bool OglLinker::Link(OglRuntimeState& rt) {
 			continue;
 		complied_count++;
 		
-		glAttachShader(rt.prog, shd_state.shader);
+		glAttachShadttachShader(rt.prog, shd_state.shader);
 		glDeleteShader(shd_state.shader);
 		shd_state.shader = 0;
 	}

@@ -99,8 +99,6 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 		XSetFillStyle(display, gc, FillSolid);
 	}
 	
-	int bpp = 3;
-	
 	::XImage*& fb = dev.fb;
 	fb = XCreateImage(
 		dev.display,
@@ -115,6 +113,8 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 		0// does not work with: width * bpp
 	);
 	ASSERT(fb);
+	
+	int bpp = fb->bits_per_pixel / 8;
 	
 	XSync(display, False);
 	
@@ -158,6 +158,11 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		ASSERT(!dev.fb->data);
 	    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
 	    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
+	    
+	    int scr_bpp = dev.fb->bits_per_pixel / 8;
+	    int img_bpp = vfmt.GetPackedCount();
+	    ASSERT(scr_bpp == img_bpp);
+	    
 	    ASSERT(width == dev.fb->width);
 	    ASSERT(height == dev.fb->height);
 	    if (width != dev.fb->width || height != dev.fb->height) {

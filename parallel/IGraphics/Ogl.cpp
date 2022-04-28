@@ -425,7 +425,7 @@ void OglGfxT<Gfx>::HotfixShaderCode(String& s) {
 }
 
 template <class Gfx>
-bool OglGfxT<Gfx>::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
+bool OglGfxT<Gfx>::CreateShader(GVar::ShaderType type, NativeShaderRef& new_shdr) {
 	GLenum shader_type;
 	if (type == GVar::FRAGMENT_SHADER) {
 		shader_type = GL_FRAGMENT_SHADER;
@@ -440,14 +440,14 @@ bool OglGfxT<Gfx>::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
 	return new_shdr;
 }
 
-template <class Gfx> void OglGfxT<Gfx>::ShaderSource(NativeShader& s, String code) {
+template <class Gfx> void OglGfxT<Gfx>::ShaderSource(NativeShaderRef s, String code) {
 	const GLchar* src = code.Begin();
 	int len = code.GetCount();
 	glShaderSource(s, 1, &src, &len);
 }
 
 template <class Gfx>
-bool OglGfxT<Gfx>::CompileShader(NativeShader& s) {
+bool OglGfxT<Gfx>::CompileShader(NativeShaderRef s) {
 	glCompileShader(s);
 	GLint status = GL_FALSE;
 	glGetShaderiv(s, GL_COMPILE_STATUS, &status);
@@ -455,7 +455,7 @@ bool OglGfxT<Gfx>::CompileShader(NativeShader& s) {
 }
 
 template <class Gfx>
-String OglGfxT<Gfx>::GetLastErrorS(NativeShader& s) {
+String OglGfxT<Gfx>::GetLastErrorS(NativeShaderRef s) {
 	GLint loglen = 0;
 	glGetShaderiv(s, GL_INFO_LOG_LENGTH, &loglen);
 	Vector<GLchar> msg;
@@ -530,11 +530,11 @@ template <class Gfx> void OglGfxT<Gfx>::Clear(GVar::BufferType type) {
 	glClear(gl_type);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShader& shdr) {
+template <class Gfx> void OglGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShaderRef shdr) {
 	glAttachShader(prog, shdr);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::DeleteShader(NativeShader& shdr) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteShader(NativeShaderRef& shdr) {
 	glDeleteShader(shdr);
 }
 

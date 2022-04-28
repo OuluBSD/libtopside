@@ -34,6 +34,9 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 			src_iface->GetSourceValue(i).SetMinQueueSize(queue_size);
 	}
 	
+	if (!this->bf.ImageInitialize(Size(0,0)))
+		return false;
+	
 	return true;
 }
 
@@ -79,7 +82,7 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (in->IsData<InternalPacketData>()) {
-			succ = this->bf.GetBuffer().LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			succ = this->bf.GetBuffer().LoadInputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 		}
 		else {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
@@ -126,7 +129,7 @@ bool ProcessPackets(PacketIO& io) override {
 			
 			int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 			if (in->IsData<InternalPacketData>()) {
-				succ = buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+				succ = buf.LoadInputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 			}
 			else {
 				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());

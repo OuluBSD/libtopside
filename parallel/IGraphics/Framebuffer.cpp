@@ -24,7 +24,18 @@ void SoftFramebufferT<Gfx>::operator=(NativeTexture& tex) {
 
 template <class Gfx>
 void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
-	
+	if (type == GVar::COLOR_BUFFER) {
+		for(int i = 0; i < TEXTYPE_COUNT; i++) {
+			if (color[i])
+				color[i]->Zero();
+		}
+	}
+	else if (type == GVar::DEPTH_BUFFER) {
+		TODO
+	}
+	else {
+		TODO
+	}
 }
 
 template <class Gfx>

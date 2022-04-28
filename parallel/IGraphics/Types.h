@@ -107,7 +107,7 @@ struct CpuGfxT {
 	};
 	
 	// not here: using NativeTexture = uint32;
-	using NativeShader = SoftShader;
+	using NativeShaderRef = SoftShader*;
 	using NativeFrameBufferRef = SoftFramebuffer*;
 	using NativeFrameBufferConstRef = const SoftFramebuffer*;
 	using NativeVertexArray = SoftVertexArray;
@@ -142,7 +142,7 @@ struct OglGfxT {
 	static const bool is_builtin_shader = false;
 	
 	using NativeTexture = GLuint;
-	using NativeShader = GLuint;
+	using NativeShaderRef = GLuint;
 	using NativeColorBufferRef = GLuint;
 	using NativeColorBufferConstRef = GLuint;
 	using NativeDepthBufferRef = GLuint;

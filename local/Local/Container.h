@@ -630,6 +630,16 @@ public:
 			return o.Create<T>();
 	}
 	
+	template <class T>
+	T* Get(dword key) {
+		int i = data.Find(key);
+		if (i < 0)
+			return 0;
+		Object& o = data[i];
+		if (o.Is<T>())
+			return &o.Get<T>();
+		return 0;
+	}
 };
 
 using ExchangeBaseParent	= RefParent1<MetaSpaceBase>;
