@@ -34,7 +34,7 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 			src_iface->GetSourceValue(i).SetMinQueueSize(queue_size);
 	}
 	
-	if (!this->bf.ImageInitialize(Size(0,0)))
+	if (!this->bf.ImageInitialize(false, Size(0,0)))
 		return false;
 	
 	return true;

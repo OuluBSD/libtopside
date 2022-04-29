@@ -126,6 +126,7 @@ struct CpuGfxT {
 	static Thread& Local();
 	static SoftRend& Rend();
 	
+	static NativeColorBufferConstRef GetLocalTexture(int ch);
 	
 	static const bool is_builtin_shader = true;
 	

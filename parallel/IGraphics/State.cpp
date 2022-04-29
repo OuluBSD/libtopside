@@ -9,16 +9,19 @@ const char* names[GVar::VAR_COUNT+1] = {
 	"iLightDir",
 	"iViewOverride",
 	"iProjectionOverride",
+	
 	"iScale",
 	"iModel",
 	"iNone",
 	"iDiffuse",
 	"iSpecular",
+	
 	"iAmbient",
 	"iEmissive",
 	"iHeight",
 	"iNormals",
 	"iShininess",
+	
 	"iOpacity",
 	"iDisplacement",
 	"iLightmap",
@@ -30,20 +33,24 @@ const char* names[GVar::VAR_COUNT+1] = {
 	"iTimeDelta",
 	"iFrame",
 	"iMouse",
+	
 	"iDate",
 	"iSampleRate",
 	"iOffset",
 	"iChannel0",
 	"iChannel1",
+	
 	"iChannel2",
 	"iChannel3",
 	"iFrameRate",
 	"iChannelTime",
 	"iChannelResolution[0]",
+	
 	"iChannelResolution[1]",
 	"iChannelResolution[2]",
 	"iChannelResolution[3]",
 	"iBlockOffset",
+	
 	0
 };
 const bool is_obj_var[GVar::VAR_COUNT+1] = {
@@ -52,40 +59,47 @@ const bool is_obj_var[GVar::VAR_COUNT+1] = {
 	true,
 	true,
 	true,
-	true,
-	true,
-	true,
-	true,
-	true,
-	true,
-	true,
-	true,
-	true,
+	
 	true,
 	true,
 	true,
 	true,
 	true,
 	
+	true,
+	true,
+	true,
+	true,
+	true,
+	
+	true,
+	true,
+	true,
+	true,
+	false,
+	
 	false,
 	false,
 	false,
 	false,
 	false,
+	
 	false,
 	false,
 	false,
 	false,
 	false,
+	
 	false,
 	false,
 	false,
 	false,
 	false,
+	
 	false,
 	false,
 	false,
-	false,
+	
 	0
 };
 }

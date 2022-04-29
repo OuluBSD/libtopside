@@ -11,11 +11,23 @@ template <class Gfx> struct FragmentShaderArgsT;
 template <class Gfx>
 struct SoftShaderBaseT : RTTIBase {
 	RTTI_DECL0(SoftShaderBaseT)
+	Index<dword> used_uniforms;
 	
+	SoftShaderBaseT() {
+		UseUniform(GVar::VAR_VIEW);
+		UseUniform(GVar::VAR_LIGHTDIR);
+		UseUniform(GVar::VAR_COMPAT_RESOLUTION);
+		UseUniform(GVar::VAR_COMPAT_TIME);
+	}
 	virtual ~SoftShaderBaseT() {}
 	
 	virtual void Process(VertexShaderArgsT<Gfx>& args) {Panic("not implemented");}
 	virtual void Process(FragmentShaderArgsT<Gfx>& args) {Panic("not implemented");}
+	
+	void UseUniform(dword d) {used_uniforms.FindAdd(d);}
+	
+	int GetUsedUniformCount() const {return used_uniforms.GetCount();}
+	
 };
 
 template <class Gfx>
@@ -30,6 +42,14 @@ struct PassthroughSoftShaderBaseT : SoftShaderBaseT<Gfx> {
 
 struct GenericShaderArgs {
 	vec3 iResolution;
+	vec3 iChannelResolution0;
+	vec3 iChannelResolution1;
+	vec3 iChannelResolution2;
+	vec3 iChannelResolution3;
+	int iChannel0;
+	int iChannel1;
+	int iChannel2;
+	int iChannel3;
 	float iTime;
 	
 };

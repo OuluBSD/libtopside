@@ -30,8 +30,10 @@ public:
 
 template <class Gfx>
 class ProxyInput0FragmentT : public SoftShaderBaseT<Gfx> {
+	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	
 public:
+	ProxyInput0FragmentT();
 	void Process(FragmentShaderArgsT<Gfx>& args) override;
 	
 };

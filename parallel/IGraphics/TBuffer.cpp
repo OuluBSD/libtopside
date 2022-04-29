@@ -608,6 +608,12 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 			Gfx::DeactivateTexture();
 		}
 	}
+	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL1) {
+		TODO
+	}
+	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION1) {
+		TODO
+	}
 	else TODO
 	#if 0
 	if (var == VAR_VIEW) {

@@ -18,7 +18,7 @@ protected:
 	using SoftShader = SoftShaderT<Gfx>;
 	friend class SoftRend;
 	Vector<SoftShader*> shaders;
-	Vector<SoftUniform> uniforms;
+	ArrayMap<dword, SoftUniform> uniforms;
 	GenericShaderArgs args;
 	GenericVertexShaderArgs vargs;
 	GenericFragmentShaderArgs fargs;

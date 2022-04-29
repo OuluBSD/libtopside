@@ -12,6 +12,9 @@ public:
 	
 protected:
 	using Buffer = BufferT<Gfx>;
+	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	
 	Buffer buf;
 	String frag_shdr;
 	String vtx_shdr;
@@ -20,7 +23,8 @@ protected:
 	String library_paths;
 	bool is_user_shader = false;
 	bool is_audio = false;
-	
+	NativeFrameBufferRef fb = 0;
+	NativeColorBufferRef clr = 0;
 	
 	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
 	void SetFragmentShader(String s) {frag_shdr = s;}
@@ -34,7 +38,7 @@ public:
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool PostInitialize();
-	bool ImageInitialize(Size screen_sz);
+	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
 	
 	Buffer& GetBuffer() {return buf;}
 	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}

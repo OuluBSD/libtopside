@@ -215,11 +215,15 @@ void ByteImage::SwapRedBlue() {
 	}
 }
 
-void ByteImage::SetSwapRedBlue(const ByteImage& i) {
-	if (this->sz != i.sz || this->channels != i.channels) {
+void ByteImage::SetSwapRedBlue(const ByteImage& i, bool add_alpha_ch) {
+	int new_ch = i.GetChannels();
+	if (new_ch == 3 && add_alpha_ch)
+		new_ch = 4;
+	
+	if (this->sz != i.sz || this->channels != new_ch) {
 		Clear();
 		this->sz = i.sz;
-		this->channels = i.channels;
+		this->channels = new_ch;
 		pitch = sz.cx * channels;
 		size = pitch * sz.cy;
 		ASSERT(channels >= 1 && channels <= 4);
@@ -227,7 +231,7 @@ void ByteImage::SetSwapRedBlue(const ByteImage& i) {
 		data = (byte*)malloc(sizeof(byte) * size);
 	}
 	
-	if (channels == 4) {
+	if (channels == 4 && i.channels == 4) {
 		ASSERT(pitch == i.pitch);
 		const dword* src = (const dword*)i.data;
 		union {
@@ -242,6 +246,21 @@ void ByteImage::SetSwapRedBlue(const ByteImage& i) {
 			b[0] = b[2];
 			b[2] = s;
 			dst++;
+		}
+	}
+	else if (channels == 4 && i.channels == 3) {
+		ASSERT(pitch / 4 == i.pitch / 3);
+		const byte* src = (const byte*)i.data;
+		byte* dst = (byte*)data;
+		byte* end = dst + size;
+		ASSERT(size % 4 == 0);
+		while (dst != end) {
+			dst[0] = src[2];
+			dst[1] = src[1];
+			dst[2] = src[0];
+			dst[3] = 255;
+			dst += 4;
+			src += 3;
 		}
 	}
 	else {

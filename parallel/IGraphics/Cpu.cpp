@@ -13,6 +13,11 @@ template <class Gfx>
 SoftRendT<Gfx>& CpuGfxT<Gfx>::Rend() {return Local().rend;}
 
 
+template <class Gfx>
+typename CpuGfxT<Gfx>::NativeColorBufferConstRef CpuGfxT<Gfx>::GetLocalTexture(int ch) {
+	ASSERT(ch >= 0 && ch < CHANNEL_COUNT);
+	return Local().texture[ch].GetReadTexture();
+}
 
 template <class Gfx>
 void CpuGfxT<Gfx>::SetDebugOutput(bool b) {

@@ -88,7 +88,7 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 }
 
 template <class Gfx>
-bool GfxBufferFieldT<Gfx>::ImageInitialize(Size screen_sz) {
+bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	if (screen_sz.cx == 0 && screen_sz.cy == 0) {
 		if (env) {
 			Size* video_size = env->Get<Size>(SCREEN0_SIZE);
@@ -100,9 +100,10 @@ bool GfxBufferFieldT<Gfx>::ImageInitialize(Size screen_sz) {
 	}
 	
 	auto& fb = buf.fb;
-	fb.is_win_fbo = true;
+	fb.is_win_fbo = is_win_fbo;
 	fb.size = screen_sz;
 	fb.fps = 60;
+	
 	
 	
 	if (!buf.LoadShader(GVar::FRAGMENT_SHADER, frag_shdr, frag_path, library_paths))

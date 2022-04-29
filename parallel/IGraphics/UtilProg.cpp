@@ -61,23 +61,52 @@ void ColorTestFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	
 	float t = args.generic->iTime;
 	
-	vec3 shift = vec3(
-					 sin(t),
-					 sin(t + M_PI / 3.0),
-					 sin(t + M_PI * 2.0 / 3.0));
+	vec3 shift = vec3(			sin(t),
+								sin(t + M_PI / 3.0),
+								sin(t + M_PI * 2.0 / 3.0));
 	
-	args.frag_color_out = vec4(
-					args.frag_coord[0] / res[0] + shift[0],
-					args.frag_coord[1] / res[1] + shift[1],
-					1.0 - args.frag_coord[1] / res[1] + shift[2],
-					0);
+	args.frag_color_out = vec4(	args.frag_coord[0] / res[0] + shift[0],
+								args.frag_coord[1] / res[1] + shift[1],
+								1.0 - args.frag_coord[1] / res[1] + shift[2],
+								0);
+}
+
+template <class Gfx>
+ProxyInput0FragmentT<Gfx>::ProxyInput0FragmentT() {
+	this->UseUniform(GVar::VAR_COMPAT_CHANNEL0);
+	this->UseUniform(GVar::VAR_COMPAT_CHANNELRESOLUTION0);
+	
+}
+
+vec4 texture(const ByteImage* ch, const vec2& uv) {
+	int x = uv[0] * (ch->GetWidth()-1);
+	int y = uv[1] * (ch->GetHeight()-1);
+	
+	if (x >= 0 && y >= 0 &&
+		x < ch->GetWidth() && y < ch->GetHeight()) {
+		const byte* it = ch->GetIter(x, y);
+		ASSERT(ch->GetChannels() == 3 || ch->GetChannels() == 4);
+		return vec4(	it[0] / 255.0,
+						it[1] / 255.0,
+						it[2] / 255.0,
+						1.0);
+	}
+	return vec4{0,0,0,0};
 }
 
 template <class Gfx>
 void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
+	NativeColorBufferConstRef iChannel0 = Gfx::GetLocalTexture(args.generic->iChannel0);
+	ASSERT(iChannel0);
 	
-	TODO
+	const auto& iResolution = args.generic->iResolution;
+	const auto& fragCoord = args.frag_coord;
+	auto& fragColor = args.frag_color_out;
 	
+	vec2 uv = fragCoord / iResolution.Splice();
+	vec4 clr = texture(iChannel0, uv);
+	clr[0] = 1.0;
+    fragColor = clr;
 }
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(PassVertexT)

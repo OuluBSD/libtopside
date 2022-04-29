@@ -82,7 +82,7 @@ public:
 	void FlipVert();
 	void Randomize();
 	void SwapRedBlue();
-	void SetSwapRedBlue(const ByteImage& i);
+	void SetSwapRedBlue(const ByteImage& i, bool add_alpha_ch=false);
 	
 	int GetPitch() const;
 	int GetWidth() const;

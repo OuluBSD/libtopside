@@ -184,7 +184,7 @@ bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
 		Gfx::SetWindowFullscreen(win);
 	
 	if (AcceptsOrder()) {
-		if (!this->bf.ImageInitialize(screen_sz)) {
+		if (!this->bf.ImageInitialize(true, screen_sz)) {
 			LOG("GfxAccelAtom<Gfx>::Open: error: could not initialize image");
 			return false;
 		}
