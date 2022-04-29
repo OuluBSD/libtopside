@@ -109,7 +109,9 @@ bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	if (!buf.LoadShader(GVar::FRAGMENT_SHADER, frag_shdr, frag_path, library_paths))
 		return false;
 	
-	if (!buf.LoadShader(GVar::VERTEX_SHADER, vtx_shdr, vtx_path, library_paths))
+	if (vtx_shdr.IsEmpty() && vtx_path.IsEmpty())
+		; // pass
+	else if (!buf.LoadShader(GVar::VERTEX_SHADER, vtx_shdr, vtx_path, library_paths))
 		return false;
 	
 	/*if (!buf.Initialize()) {

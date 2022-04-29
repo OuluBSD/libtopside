@@ -86,7 +86,7 @@ bool BufferT<Gfx>::LoadShader(GVar::ShaderType shader_type, String shader_id, St
 		}
 	}
 	else {
-		LOG("BufferT<Gfx>::ImageInitialize: error: no fragment shade given");
+		LOG("BufferT<Gfx>::ImageInitialize: error: no shader given");
 		return false;
 	}
 	

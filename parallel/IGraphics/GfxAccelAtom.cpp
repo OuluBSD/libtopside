@@ -27,9 +27,8 @@ bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 template <>
 bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
 	ASSERT(fb);
-	ASSERT(*fb);
 	
-	rend.output.Init(*fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	rend.output.Init(*fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
 	//buf.fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);

@@ -5,7 +5,13 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void PassVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
-	
+	auto& pos = a.v.position;
+	auto& tex = a.v.tex_coord;
+	pos[0] = (pos[0] + 1) * 0.5;
+	pos[1] = (pos[1] + 1) * 0.5;
+	tex = pos.template Splice<0,2>();
+	pos[0] *= a.generic->iResolution[0];
+	pos[1] *= a.generic->iResolution[1];
 }
 
 template <class Gfx>

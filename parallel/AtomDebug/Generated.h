@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.28 14:11:55
+// Last modified: 2022.4.29 21:22:22
 
 namespace TS {
 
@@ -482,7 +482,7 @@ public:
 	RTTI_DECL1(X11OglFboAtomSA, X11OglSinkDevice)
 	COPY_PANIC(X11OglFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE(".standalone")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.fbo.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

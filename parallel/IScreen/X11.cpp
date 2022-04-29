@@ -161,7 +161,7 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	    
 	    int scr_bpp = dev.fb->bits_per_pixel / 8;
 	    int img_bpp = vfmt.GetPackedCount();
-	    ASSERT(scr_bpp == img_bpp);
+	    //ASSERT(scr_bpp == img_bpp);
 	    
 	    ASSERT(width == dev.fb->width);
 	    ASSERT(height == dev.fb->height);

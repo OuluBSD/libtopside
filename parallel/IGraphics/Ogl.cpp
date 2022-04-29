@@ -783,8 +783,9 @@ template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrame
 }
 
 template <class Gfx> void OglGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef b) {
-	TODO // decode: tgt -> GL_COLOR_ATTACH...
-	//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb, 0);
+	int i = (int)tgt;
+	GLenum gl_txt = GL_COLOR_ATTACHMENT0_EXT + i;
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, gl_txt, GL_TEXTURE_2D, b, 0);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef fb) {

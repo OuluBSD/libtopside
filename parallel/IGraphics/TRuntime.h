@@ -17,7 +17,7 @@ struct CompilerT : GfxCompiler {
 	using ShaderState = ShaderStateT<Gfx>;
 	using ContextState = ContextStateT<Gfx>;
 	
-	bool CompileShader(String code, GVar::ShaderType type, NativeShaderRef shader_out);
+	bool CompileShader(String code, GVar::ShaderType type, NativeShaderRef& shader_out);
 	bool Compile(	const ContextState& ctx,
 					RuntimeState& rt,
 					Framebuffer& fb,

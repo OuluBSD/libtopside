@@ -273,7 +273,7 @@ HEADER_ARG(			X11OglVideoAtomPipe,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11OglVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER11(			X11OglFboAtomSA,		X11OglSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
-HEADER_ACTION(		X11OglFboAtomSA,		.standalone)
+HEADER_ACTION(		X11OglFboAtomSA,		x11.ogl.fbo.standalone)
 HEADER_ARG(			X11OglFboAtomSA,		reqdef_flagOGL,			1)
 HEADER_ARG(			X11OglFboAtomSA,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11OglFboAtomSA,		POLLER_PIPE, PROCESS)

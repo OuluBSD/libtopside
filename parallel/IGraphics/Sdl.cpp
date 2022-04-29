@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 #ifdef flagSDL2
 #ifdef flagOGL
 
-void SdlOglGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef& color_buf) {
+void SdlOglGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
 	SDL_GL_SwapWindow(w);
 }
 
@@ -19,8 +19,8 @@ void SdlOglGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& 
 
 #endif
 
-void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef& color_buf) {
-	const auto& fb = color_buf.GetTex();
+void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
+	const auto& fb = color_buf;
 	//NativeColorBufferRef& fb = color_buf;
 	
 	#if 0

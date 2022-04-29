@@ -301,7 +301,7 @@ bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBas
 	
 	SDL_SetRenderTarget(dev.rend, dev.fb);
 	
-	dev.accel.SetNative(dev.display, dev.win, &dev.rend, &dev.fb);
+	dev.accel.SetNative(dev.display, dev.win, &dev.rend, dev.fb);
 	
 	if (!dev.accel.Open(screen_sz, fb_stride)) {
 		LOG("HalSdl2::CenterVideoSinkDevice_PostInitialize: error: could not open opengl atom");
