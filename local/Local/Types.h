@@ -1,6 +1,14 @@
 #ifndef _Local_Types_h_
 #define _Local_Types_h_
 
+NAMESPACE_UPP
+
+class Draw;
+
+END_UPP_NAMESPACE
+
+
+
 NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;
 
@@ -16,7 +24,6 @@ typedef void			Void;
 
 
 class RuntimeVisitor;
-class Draw;
 
 
 class BinderIfaceEvents : RTTIBase {

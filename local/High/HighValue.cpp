@@ -105,7 +105,7 @@ HiLambda& HiValue::GetLambdaRW() const
 	return *lambda;
 }
 
-Parallel::AtomBase& HiValue::GetAtom() const
+TS::Parallel::AtomBase& HiValue::GetAtom() const
 {
 	ASSERT(IsAtom());
 	return *atom;

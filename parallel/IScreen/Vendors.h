@@ -4,22 +4,6 @@
 #ifndef _IScreen_Vendors_h_
 #define _IScreen_Vendors_h_
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
-#endif
-
-#if (defined flagLINUX) || (defined flagFREEBSD)
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
-#endif
-
-#if defined flagOGL
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
-	#include <GL/glx.h>
-#endif
-
 NAMESPACE_PARALLEL_BEGIN
 
 #define SCR_CLS_LIST(x) \

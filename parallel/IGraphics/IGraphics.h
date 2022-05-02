@@ -32,11 +32,15 @@
 #undef main
 
 #ifdef flagPOSIX
+	#define Time XTime
+	#define Font XFont
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
 	#ifdef flagOGL
 		#include <GL/glx.h>
 	#endif
+	#undef Time
+	#undef Font
 #endif
 
 
