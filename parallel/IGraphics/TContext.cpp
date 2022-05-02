@@ -12,7 +12,7 @@ void RendererT<Gfx>::DefaultPreFrame() {
 	Gfx::SetSmoothShading();
 	Gfx::SetDepthTest();
 	Gfx::SetDepthOrderLess(true);
-	Gfx::SetFastPerspectiveCorrection();
+	// TODO check if supported by profile: Gfx::SetFastPerspectiveCorrection();
 	Gfx::SetTriangleBacksideCulling();
 	Gfx::SetTriangleFrontsideCCW();
 	Gfx::SetViewport(output_sz);

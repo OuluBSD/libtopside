@@ -15,5 +15,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         fragCoord.x / res.x + shift.x,
         fragCoord.y / res.y + shift.y,
         1.0 - fragCoord.y / res.y + shift.z, 0);
+    //fragColor = vec4(0.25, 0.0, 0.25, 1.0);
 }
 

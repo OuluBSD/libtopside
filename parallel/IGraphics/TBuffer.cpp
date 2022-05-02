@@ -287,6 +287,8 @@ bool BufferT<Gfx>::Initialize() {
 	if (!SetupLoopback())
 		return false;
 	
+	EnableGfxAccelDebugMessages(true);
+	
 	if (!CompilePrograms())
 		return false;
 	
@@ -295,6 +297,8 @@ bool BufferT<Gfx>::Initialize() {
 	
 	for (String& s : link_ids)
 		WhenLinkInit(s, this);
+	
+	EnableGfxAccelDebugMessages(false);
 	
 	initialized = true;
 	
@@ -828,13 +832,11 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		auto& frame_buf = s.frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
-		//auto fmt = s.GetGlFormat();
-		
 		// color buffer
 		Gfx::ActiveTexture(CHANNEL_NONE);
 		Gfx::GenTexture(color_buf);
 		Gfx::BindTextureRW(GVar::TEXTYPE_2D, color_buf);
-		//TODO Gfx::TexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		Gfx::ReserveTexture(s);
 		TexFlags(GVar::TEXTYPE_2D, s.filter, s.wrap);
 		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		Gfx::DeactivateTexture();

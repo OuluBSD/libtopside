@@ -315,6 +315,11 @@ void CpuGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 }
 
 template <class Gfx>
+void CpuGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
+	// pass
+}
+
+template <class Gfx>
 void CpuGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
 	// not supported
 }

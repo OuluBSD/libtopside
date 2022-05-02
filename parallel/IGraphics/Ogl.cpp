@@ -15,7 +15,8 @@ OpenGLMessageCallback( GLenum source,
                  const GLchar* message,
                  const void* userParam )
 {
-	if (!IsGfxAccelDebugMessages())
+	if (!IsGfxAccelDebugMessages() &&
+		severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 		return;
 	String s;
 	s << "OpenGL debug: ";
@@ -275,6 +276,12 @@ template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 	glBindTexture(GetOglTextureType(type), 0);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
+	auto fmt = fb.GetGlFormat();
+	const Size& sz = fb.size;
+	glTexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+}
+
 /*void OglRendererBase::ActivateNextFrame() {
 	// pass
 }*/
@@ -481,7 +488,13 @@ bool OglGfxT<Gfx>::CreateProgram(NativeProgram& prog) {
 }
 
 template <class Gfx> void OglGfxT<Gfx>::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
-	glProgramParameteri(prog, type, i);
+	GLenum gl_type = 0;
+	#define PARAMTYPE(x) case GVar::x: gl_type = GL_##x; break;
+	switch(type) {
+		PARAMTYPE(PROGRAM_SEPARABLE)
+		default: Panic("OglGfxT<Gfx>::ProgramParameteri: error: invalid ParamType"); return;
+	}
+	glProgramParameteri(prog, gl_type, i);
 }
 
 template <class Gfx>
@@ -527,6 +540,10 @@ template <class Gfx> void OglGfxT<Gfx>::Clear(GVar::BufferType type) {
 		default: break;
 	}
 	ASSERT(gl_type > 0);
+	#if 0
+	RGBA clr = Color(125,0,125);
+	glClearColor( clr.r/255.0f, clr.g/255.0f, clr.b/255.0f, clr.a/255.0f );
+	#endif
 	glClear(gl_type);
 }
 

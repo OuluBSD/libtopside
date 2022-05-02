@@ -60,6 +60,17 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 template <class Gfx>
 bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	//BeginDraw();
+	
+	/*Gfx::SetClearValue(RGBA(0,0,0,255), 255);
+	//TODO: useless? Gfx::ClearBuffers();
+	Gfx::SetSmoothShading();
+	Gfx::SetDepthTest();
+	Gfx::SetDepthOrderLess(true);
+	Gfx::SetFastPerspectiveCorrection();
+	Gfx::SetTriangleBacksideCulling();
+	Gfx::SetTriangleFrontsideCCW();
+	Gfx::SetViewport(this->bf.GetBuffer().fb.GetSize());*/
+	
 	this->bf.GetBuffer().Process(*this->last_cfg);
 	//CommitDraw();
 	ASSERT(in.GetFormat().IsValid());
