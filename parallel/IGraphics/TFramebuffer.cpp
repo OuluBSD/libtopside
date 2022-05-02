@@ -6,6 +6,8 @@ NAMESPACE_PARALLEL_BEGIN
 #ifdef flagSDL2
 template <>
 void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
+	TODO
+	#if 0
 	SDL_Texture* tex = color_buf[0]->GetTex();
 	//SDL_Texture* tex = color_buf[0];
 	ASSERT(tex);
@@ -43,6 +45,7 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 	}
 	
 	SDL_UnlockTexture(tex);
+	#endif
 }
 
 

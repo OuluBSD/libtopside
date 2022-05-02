@@ -45,8 +45,8 @@ struct HalSdl2 {
 		SDL_Texture* fb;
 		GfxAccelAtom<SdlCpuGfx> accel;
 	};
-
 	
+	#if defined flagOGL
 	struct NativeOglVideoSink {
 		void* display;
 		::SDL_Window* win;
@@ -56,7 +56,7 @@ struct HalSdl2 {
 		::SDL_RendererInfo rend_info;
 		::SDL_GLContext gl_ctx;
 	};
-
+	#endif
 	
 	struct Thread {
 		

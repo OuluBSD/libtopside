@@ -373,7 +373,7 @@ void HalSdl2::CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, doub
 
 
 
-
+#ifdef flagOGL
 bool HalSdl2::OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
 	
 	if (!dev.accel.Initialize(a, ws))
@@ -527,6 +527,7 @@ void HalSdl2::OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase& a, do
 	dev.accel.Update(dt);
 }
 
+#endif
 
 
 NAMESPACE_PARALLEL_END

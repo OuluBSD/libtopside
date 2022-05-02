@@ -6,9 +6,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 struct BufferT : GfxBuffer {
-	static_assert(Gfx::is_vendor_agnostic == false, "");
-	//static_assert(Gfx::is_vendor_agnostic == true, "For BufferT Gfx template argument should be vendor agnostic");
-	
 	using Base = BufferT<Gfx>;
 	using Buffer = BufferT<Gfx>;
 	//using BinderIface = typename Gfx::BinderIface;

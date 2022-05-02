@@ -22,6 +22,25 @@ Function& Class::AddFunction(String name) {
 	return funcs.Add(name).SetName(name);
 }
 
+String Class::GetPreprocessorEnabler() const {
+	String s;
+	if (!enabled.IsEmpty()) {
+		s << "#if ";
+		if (enabled.GetCount() > 1) s << "(";
+		for(int i = 0; i < enabled.GetCount(); i++) {
+			if (i) s << ") || (";
+			const EnabledFlag& f = enabled[i];
+			for(int j = 0; j < f.flags.GetCount(); j++) {
+				if (j) s << " && ";
+				const String& flag = f.flags[j];
+				s << "defined flag" << flag;
+			}
+		}
+		if (enabled.GetCount() > 1) s << ")";
+	}
+	return s;
+}
+
 
 
 
@@ -269,6 +288,25 @@ String Vendor::GetIncludes(int indent) const {
 			s.Cat('\t', indent);
 			s << "#endif\n";
 		}
+	}
+	return s;
+}
+
+String Vendor::Struct::GetPreprocessorEnabler() const {
+	String s;
+	if (!enabled.IsEmpty()) {
+		s << "#if ";
+		if (enabled.GetCount() > 1) s << "(";
+		for(int i = 0; i < enabled.GetCount(); i++) {
+			if (i) s << ") || (";
+			const EnabledFlag& f = enabled[i];
+			for(int j = 0; j < f.flags.GetCount(); j++) {
+				if (j) s << " && ";
+				const String& flag = f.flags[j];
+				s << "defined flag" << flag;
+			}
+		}
+		if (enabled.GetCount() > 1) s << ")";
 	}
 	return s;
 }
@@ -690,6 +728,10 @@ bool Package::Export() {
 					nat_this << ", ";
 				nat_this << "Native" << type << "& " << name;
 			}
+			String req = c.GetPreprocessorEnabler();
+			if (!req.IsEmpty())
+				fout << req << "\n";
+			
 			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
 			fout << "static bool " << c.name << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n";
 			fout << "static bool " << c.name << "_PostInitialize(" << nat_this_ << "AtomBase&);\n";
@@ -719,6 +761,9 @@ bool Package::Export() {
 			for (Function& f : c.funcs.GetValues()) {
 				fout << "static " << f.GetDeclarationString(true, prefix) << ";\n";
 			}
+			
+			if (!req.IsEmpty())
+				fout << "#endif\n";
 			fout << "\t\n";
 		}
 		
@@ -791,13 +836,19 @@ bool Package::Export() {
 				const auto& s = v.structs[i];
 				String struct_name = v.structs.GetKey(i);
 				
+				String req = s.GetPreprocessorEnabler();
+				if (!req.IsEmpty())
+					fout << "\t" << req << "\n";
 				fout << "\tstruct " << struct_name << " {\n";
 				for(int j = 0; j < s.fields.GetCount(); j++) {
 					String name = s.fields.GetKey(j);
 					String type = s.fields[j];
 					fout << "\t\t" << type << " " << name << ";\n";
 				}
-				fout << "\t};\n\n\t\n";
+				fout << "\t};\n";
+				if (!req.IsEmpty())
+					fout << "\t#endif\n";
+				fout << "\t\n";
 			}
 			
 			fout << "\tstruct Thread {\n";

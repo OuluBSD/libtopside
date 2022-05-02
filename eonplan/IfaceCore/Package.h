@@ -22,6 +22,14 @@ struct Function {
 	
 };
 
+struct EnabledFlag : Moveable<EnabledFlag> {
+	Vector<String> flags;
+	
+	
+	EnabledFlag& AddFlag(String f) {flags.Add(f); return *this;}
+	
+};
+
 struct Class {
 	String name;
 	String type;
@@ -32,6 +40,7 @@ struct Class {
 	VectorMap<String, String> nat_field;
 	ArrayMap<String, Function> funcs;
 	bool have_context_fns = false;
+	Vector<EnabledFlag> enabled;
 	
 	Class& SetName(String s) {name = s; return *this;}
 	Class& SetType(String s) {type = s; return *this;}
@@ -40,6 +49,8 @@ struct Class {
 	Function& AddFunction(String name);
 	void AddNativeInherit(String cls, String name);
 	void AddNativeField(String cls, String name);
+	EnabledFlag& AddEnabled() {return enabled.Add();}
+	String GetPreprocessorEnabler() const;
 };
 
 struct EnumValue {
@@ -83,19 +94,14 @@ struct Interface {
 	String GetTreeString(int indent);
 };
 
-struct EnabledFlag : Moveable<EnabledFlag> {
-	Vector<String> flags;
-	
-	
-	EnabledFlag& AddFlag(String f) {flags.Add(f); return *this;}
-	
-};
-
 struct Vendor {
 	struct Struct {
 		VectorMap<String,String> fields;
+		Vector<EnabledFlag> enabled;
 		
 		Struct& Add(String name, String type) {fields.Add(name, type); return *this;}
+		String GetPreprocessorEnabler() const;
+		void RequireFlag(const String& f) {enabled.Add().flags.Add(f);}
 	};
 	
 	String name;

@@ -12,7 +12,7 @@ template <class Gfx>
 struct DummySoftShaderLibraryT {
 	typedef SoftShaderBaseT<Gfx>* (*ShaderFactory)();
 	
-	static VectorMap<String, ShaderFactory>& GetMap(int i) {ASSERT(i>=0&&i<GL::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GL::SHADERTYPE_COUNT]; return m[i];}
+	static VectorMap<String, ShaderFactory>& GetMap(int i) {ASSERT(i >= 0 && i < GVar::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GVar::SHADERTYPE_COUNT]; return m[i];}
 	
 };
 

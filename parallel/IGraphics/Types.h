@@ -63,8 +63,6 @@ template <class Gfx> struct FramebufferT;
 
 template <class Gfx>
 struct CpuGfxT {
-	static const bool is_vendor_agnostic = false;
-	
 	using SoftRend			= SoftRendT<Gfx>;
 	using SoftCompiler		= SoftCompilerT<Gfx>;
 	using SoftShader		= SoftShaderT<Gfx>;
@@ -139,7 +137,6 @@ struct OglBufferBase;
 	
 template <class Gfx>
 struct OglGfxT {
-	static const bool is_vendor_agnostic = true;
 	static const bool is_builtin_shader = false;
 	
 	using NativeTexture = GLuint;
@@ -174,8 +171,6 @@ struct OglGfxT {
 
 #ifdef flagPOSIX
 struct X11Gfx {
-	static const bool is_vendor_agnostic = false;
-	
 	using NativeDisplay			= ::Display*;
 	using NativeWindow			= ::Window;
 	using NativeRenderer		= void*;
@@ -196,8 +191,6 @@ struct X11Gfx {
 };
 
 struct X11SwGfx : CpuGfxT<X11SwGfx>, X11Gfx {
-	static const bool is_vendor_agnostic = false;
-	
 	using SystemFrameBufferRef = SoftFramebuffer*;
 	using NativeGLContext = void*;
 	using BufferBase = GfxBuffer;
@@ -233,8 +226,6 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
-	static const bool is_vendor_agnostic = false;
-	
 	using NativeGLContext = ::GLXContext;
 	using SoftShaderLibrary = DummySoftShaderLibraryT<X11OglGfx>;
 	
@@ -248,8 +239,6 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 
 #ifdef flagSDL2
 struct SdlGfx {
-	static const bool is_vendor_agnostic = false;
-	
 	using NativeDisplay			= void*;
 	using NativeWindow			= SDL_Window*;
 	using NativeRenderer		= SDL_Renderer*;
@@ -301,8 +290,6 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 */
 
 struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
-	static const bool is_vendor_agnostic = false;
-	
 	using SystemFrameBufferRef = SDL_Texture*;
 	
 	using NativeTexture = SDL_Texture*;
@@ -321,6 +308,10 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 	static int GetPitch(NativeSurface& surf);
 	static byte* GetData(NativeSurface& surf);
 	
+	static bool LockTextureToSurface(SoftFramebuffer* tex, Rect r, NativeSurface& surf);
+	static void QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h);
+	static void UnlockTextureToSurface(SoftFramebuffer* tex);
+	
 	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);
 	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
 	static void UnlockTextureToSurface(NativeTexture& tex);
@@ -329,8 +320,6 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 
 #ifdef flagOGL
 struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
-	static const bool is_vendor_agnostic = false;
-	
 	using NativeSurface = void*;
 	using SoftShaderLibrary = DummySoftShaderLibraryT<SdlOglGfx>;
 	

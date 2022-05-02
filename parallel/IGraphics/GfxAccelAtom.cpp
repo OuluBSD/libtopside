@@ -28,11 +28,13 @@ template <>
 bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
 	ASSERT(fb);
 	
-	rend.output.Init(*fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	NativeColorBufferRef clr;
+	TODO
+	//rend.output.Init(*fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
 	//buf.fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
-	TODO
+	//TODO
 	
 	return true;
 }

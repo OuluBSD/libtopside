@@ -32,10 +32,12 @@ INITBLOCK_(Shaders) {
 	using namespace TS;
 	using namespace TS::Parallel;
 	
-	InitObjView<X11OglGfx>();
 	InitObjView<X11SwGfx>();
+	#ifdef flagOGL
+	InitObjView<X11OglGfx>();
 	#ifdef flagSDL2
 	InitObjView<SdlOglGfx>();
+	#endif
 	#endif
 	
 	InitObjViewSoft<X11SwGfx>();

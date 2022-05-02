@@ -52,7 +52,6 @@ struct ScrX11 {
 		::Visual* visual;
 		::GC gc;
 	};
-
 	
 	struct Thread {
 		
@@ -81,7 +80,6 @@ struct ScrX11Sw {
 		::Atom atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
 	};
-
 	
 	struct Thread {
 		
@@ -105,7 +103,6 @@ struct ScrX11Ogl {
 		::Atom  atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
 	};
-
 	
 	struct Thread {
 		

@@ -43,8 +43,8 @@ void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRendere
 	}
 	#endif
 	
-	
-	int ret = SDL_RenderCopy(r, fb, NULL, NULL);
+	TODO
+	int ret = 0;//SDL_RenderCopy(r, fb, NULL, NULL);
 	if (ret) {
 		LOG("SdlCpuGfx::ActivateNextFrame: error: " << SDL_GetError());
 		ASSERT(0);

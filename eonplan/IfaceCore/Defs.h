@@ -22,6 +22,7 @@
 #define VENDOR_CLASS(iface_type, nat_type) v->AddNativeTypedef(#iface_type, #nat_type);
 #define NATIVE_FIELD(cls, name) c->AddNativeField(#cls, #name);
 #define NATIVE_INHERIT(cls, name) c->AddNativeInherit(#cls, #name);
+#define NATIVE_ENABLED_FLAG(flag) c->AddEnabled().AddFlag(#flag);
 #define HAVE_VIRTUAL_CONTEXT c->have_context_fns = true;
 #define UTIL_CLASS(name) i->AddUtilClass(#name);
 #define VENDOR(name) for (Vendor* v = &AddVendor(#name); v; v = 0)

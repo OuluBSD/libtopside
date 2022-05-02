@@ -23,6 +23,7 @@ static void CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, Real
 static void CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt);
 
 	
+#if defined flagOGL
 static bool OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase&, const Script::WorldState&);
 static bool OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBase&);
 static bool OglVideoSinkDevice_Start(NativeOglVideoSink& dev, AtomBase&);
@@ -33,6 +34,7 @@ static bool OglVideoSinkDevice_Recv(NativeOglVideoSink& dev, AtomBase&, int, con
 static void OglVideoSinkDevice_Finalize(NativeOglVideoSink& dev, AtomBase&, RealtimeSourceConfig&);
 static void OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase&, double dt);
 
+#endif
 	
 static bool ContextBase_Initialize(NativeContextBase& ctx, AtomBase&, const Script::WorldState&);
 static bool ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase&);

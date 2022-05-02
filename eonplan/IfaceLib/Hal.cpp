@@ -52,6 +52,7 @@ PKG(Hal, Hal, H) {
 		
 		CLASS(OglVideoSinkDevice) {
 			NATIVE_INHERIT(OglVideoSink, dev)
+			NATIVE_ENABLED_FLAG(OGL)
 			
 			//NATIVE_FIELD(NativeWindow*, win)
 			//NATIVE_FIELD(NativeRenderer*, rend)
@@ -96,6 +97,7 @@ PKG(Hal, Hal, H) {
 			.Add("accel",		"GfxAccelAtom<SdlOglGfx>")
 			.Add("rend_info",	"::SDL_RendererInfo")
 			.Add("gl_ctx",		"::SDL_GLContext")
+			.RequireFlag("OGL");
 			;
 		
 		// POSIX: GLEW GL GLU
