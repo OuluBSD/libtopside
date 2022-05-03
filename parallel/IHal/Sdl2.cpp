@@ -338,7 +338,7 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 		const Vector<byte>& data = p->GetData();
 		const byte* mem = (const byte*)data.Begin();
 		int len = data.GetCount();
-		VideoFormat& vfmt = fmt;
+		VideoFormat& vfmt = fmt;	
 		int frame_size = vfmt.GetFrameSize();
 		
 		if (mem && len > 0 && len == frame_size) {
@@ -607,9 +607,12 @@ bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBas
 	
     int fb_stride = 3;
 	if (!dev.accel.Open(screen_sz, fb_stride)) {
-		LOG("HalSdl2::CenterVideoSinkDevice_PostInitialize: error: could not open opengl atom");
+		LOG("HalSdl2::OglVideoSinkDevice_PostInitialize: error: could not open opengl atom");
 		return false;
 	}
+	
+	if (!dev.accel.PostInitialize())
+		return false;
 	
 	if (is_fullscreen)
 		SDL_SetWindowFullscreen(dev.win, SDL_WINDOW_FULLSCREEN);
