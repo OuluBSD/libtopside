@@ -140,6 +140,9 @@ void HalSdl2::AudioSinkDevice_Update(NativeAudioSinkDevice& dev, AtomBase&, doub
 	
 }
 
+bool HalSdl2::AudioSinkDevice_IsReady(NativeAudioSinkDevice& dev, AtomBase&, PacketIO& io) {
+	return true;
+}
 
 
 
@@ -221,6 +224,10 @@ void HalSdl2::ContextBase_Finalize(NativeContextBase& ctx, AtomBase&, RealtimeSo
 
 void HalSdl2::ContextBase_Update(NativeContextBase& ctx, AtomBase&, double dt) {
 	
+}
+
+bool HalSdl2::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io) {
+	return true;
 }
 
 
@@ -357,6 +364,10 @@ void HalSdl2::CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, Re
 
 void HalSdl2::CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt) {
 	// pass
+}
+
+bool HalSdl2::CenterVideoSinkDevice_IsReady(NativeVideoSink& dev, AtomBase&, PacketIO& io) {
+	return true;
 }
 
 
@@ -500,6 +511,10 @@ bool HalSdl2::CenterFboSinkDevice_ProcessPacket(NativeSw3dVideoSink& dev, AtomBa
 
 void HalSdl2::CenterFboSinkDevice_Update(NativeSw3dVideoSink& dev, AtomBase&, double dt) {
 	
+}
+
+bool HalSdl2::CenterFboSinkDevice_IsReady(NativeSw3dVideoSink& dev, AtomBase&, PacketIO& io) {
+	return true;
 }
 
 
@@ -669,7 +684,357 @@ void HalSdl2::OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase& a, do
 	dev.accel.Update(dt);
 }
 
+bool HalSdl2::OglVideoSinkDevice_IsReady(NativeOglVideoSink& dev, AtomBase&, PacketIO& io) {
+	return true;
+}
+
 #endif
+
+
+
+
+
+
+
+
+
+bool HalSdl2::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
+	memset(&dev, 0, sizeof(NativeEventsBase));
+	
+	
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+	ASSERT(ev_ctx);
+	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
+	
+	if (!ev_ctx->AttachContext(a))
+		return false;
+	
+	// Set init flag
+	dword sdl_flag = SDL_INIT_EVENTS;
+	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
+	
+	
+	return true;
+}
+
+bool HalSdl2::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
+	AtomBaseRef dep = a.GetDependency();
+	if (dep.IsEmpty()) {
+		LOG("HalSdl2::EventsBase_PostInitialize: expected dependency atom but got null");
+		return false;
+	}
+	
+	if (!dep->IsRunning()) {
+		LOG("HalSdl2::EventsBase_PostInitialize: context is not running");
+	}
+	
+	RTLOG("HalSdl2::EventsBase_PostInitialize");
+	
+	a.AddAtomToUpdateList();
+	
+	return true;
+}
+
+bool HalSdl2::EventsBase_Start(NativeEventsBase& dev, AtomBase& a) {
+	// pass
+	return true;
+}
+
+void HalSdl2::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
+	// pass
+}
+
+void HalSdl2::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
+	a.RemoveAtomFromUpdateList();
+}
+
+bool HalSdl2::EventsBase_ProcessPacket(NativeEventsBase& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+	ASSERT(dev.ev_sendable);
+	if (!dev.ev_sendable)
+		return false;
+	
+	RTLOG("HalSdl2::EventsBase_ProcessPacket: sink #0: " << in.ToString());
+
+	Format fmt = out.GetFormat();
+	if (fmt.IsEvent()) {
+		out.seq = dev.seq++;
+		UPP::CtrlEvent& dst = out.SetData<UPP::CtrlEvent>();
+		dst = dev.ev;
+		dev.ev_sendable = false;
+	}
+	
+	return true;
+}
+
+bool HalSdl2::EventsBase_Recv(NativeEventsBase& dev, AtomBase& a, int sink_ch, const Packet& p) {
+	return true;
+}
+
+void HalSdl2::EventsBase_Finalize(NativeEventsBase& dev, AtomBase&, RealtimeSourceConfig&) {
+	
+}
+
+void HalSdl2::EventsBase_Update(NativeEventsBase& dev, AtomBase&, double dt) {
+	dev.time += dt;
+}
+
+#ifdef flagSCREEN
+void Events__PutKeyFlags(HalSdl2::NativeEventsBase& dev, dword& key) {
+	if (dev.is_lalt   || dev.is_ralt)		key |= K_ALT;
+	if (dev.is_lshift || dev.is_rshift)		key |= K_SHIFT;
+	if (dev.is_lctrl  || dev.is_rctrl)		key |= K_CTRL;
+}
+#endif
+
+bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
+	UPP::CtrlEvent& e = dev.ev;
+	
+	SDL_Event event;
+	Size screen_sz;
+	Point mouse_pt;
+#ifdef flagSCREEN
+	auto s = a.GetSpace();
+	auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
+	auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
+	auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
+	::SDL_Renderer* rend = 0;
+	if (v_sink)   rend = v_sink->dev.rend;
+	if (sw_sink)  rend = sw_sink->dev.rend;
+	if (ogl_sink) rend = ogl_sink->dev.rend;
+#endif
+	dword key;
+	int mouse_code;
+	
+	// Process the events
+	while (SDL_PollEvent(&event)) {
+		e.Clear();
+		
+	switch (event.type) {
+			
+#ifdef flagSCREEN
+			
+		case SDL_WINDOWEVENT:
+			
+			/*if (event.window.event == SDL_WINDOWEVENT_LEAVE) {
+				if (IsCaptured())
+					;//Ctrl::captured->LeftUp(prev_mouse_pt, 0);
+				else
+					DeepMouseLeave();
+			}
+			else*/
+			if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+				e.type = EVENT_SHUTDOWN;
+				return true;
+			}
+			else if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+				screen_sz.cx = event.window.data1;
+				screen_sz.cy = event.window.data2;
+				dev.sz = screen_sz;
+				/*SetFrameRect0(RectC(0, 0, screen_sz.cx, screen_sz.cy));
+				SetContentRect(RectC(0, 0, screen_sz.cx, screen_sz.cyh));
+				SetPendingLayout();
+				SetPendingEffectRedraw();
+				SetPendingRedraw();*/
+				e.type = EVENT_WINDOW_RESIZE;
+				e.sz = screen_sz;
+				return true;
+			}
+			break;
+		
+			
+		case SDL_KEYDOWN:
+		
+			switch (event.key.keysym.sym) {
+				case SDLK_ESCAPE:	event.type = SDL_QUIT; break;
+				case SDLK_LALT:		dev.is_lalt = true; break;
+				case SDLK_RALT:		dev.is_ralt = true; break;
+				case SDLK_LSHIFT:	dev.is_lshift = true; break;
+				case SDLK_RSHIFT:	dev.is_rshift = true; break;
+				case SDLK_LCTRL:	dev.is_lctrl = true; break;
+				case SDLK_RCTRL:	dev.is_rctrl = true; break;
+			}
+			
+			key = event.key.keysym.sym;
+			if (key & SDLK_SCANCODE_MASK) {
+				key &= ~SDLK_SCANCODE_MASK;
+				
+				// TODO handle codes separately
+				if (0 /*key == */) {
+					
+				}
+				else key = 0;
+			}
+			Events__PutKeyFlags(dev, key);
+			
+			e.type = EVENT_KEYDOWN;
+			e.value = key;
+			e.n = 1;
+			e.pt = Point(0,0);
+			
+			return true;
+			
+		case SDL_KEYUP:
+		
+			switch (event.key.keysym.sym) {
+				case SDLK_LALT:		dev.is_lalt = false; break;
+				case SDLK_RALT:		dev.is_ralt = false; break;
+				case SDLK_LSHIFT:	dev.is_lshift = false; break;
+				case SDLK_RSHIFT:	dev.is_rshift = false; break;
+				case SDLK_LCTRL:	dev.is_lctrl = false; break;
+				case SDLK_RCTRL:	dev.is_rctrl = false; break;
+			}
+			
+			key = event.key.keysym.sym | K_KEYUP;
+			if (key & SDLK_SCANCODE_MASK) {
+				key &= ~SDLK_SCANCODE_MASK;
+				
+				// TODO handle codes separately
+				if (0 /*key == */) {
+					
+				}
+				else key = 0;
+			}
+			Events__PutKeyFlags(dev, key);
+			
+			e.type = EVENT_KEYUP;
+			e.value = key;
+			e.n = 1;
+			e.pt = Point(0,0);
+			
+			return true;
+			
+		case SDL_MOUSEMOTION:
+			mouse_pt = Point(event.motion.x, event.motion.y);
+			key = 0;
+			Events__PutKeyFlags(dev, key);
+			
+			e.type = EVENT_MOUSEMOVE;
+			e.value = key;
+			e.pt = mouse_pt;
+			
+			dev.prev_mouse_pt = mouse_pt;
+			return true;
+		
+		case SDL_MOUSEWHEEL:
+			key = 0;
+			Events__PutKeyFlags(dev, key);
+			
+			e.type = EVENT_MOUSEWHEEL;
+			e.value = key;
+			e.pt = mouse_pt;
+			
+			return true;
+			
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			
+			mouse_code = 0;
+			//mouse_zdelta = 0;
+			if (event.button.state == SDL_PRESSED) {
+				if (event.button.clicks == 1) {
+					if (event.button.button == SDL_BUTTON_LEFT)
+						mouse_code = Ctrl::LEFTDOWN;
+					else if (event.button.button == SDL_BUTTON_MIDDLE)
+						mouse_code = Ctrl::MIDDLEDOWN;
+					else if (event.button.button == SDL_BUTTON_RIGHT)
+						mouse_code = Ctrl::RIGHTDOWN;
+				}
+				else if (event.button.clicks == 2) {
+					if (event.button.button == SDL_BUTTON_LEFT)
+						mouse_code = Ctrl::LEFTDOUBLE;
+					else if (event.button.button == SDL_BUTTON_MIDDLE)
+						mouse_code = Ctrl::MIDDLEDOUBLE;
+					else if (event.button.button == SDL_BUTTON_RIGHT)
+						mouse_code = Ctrl::RIGHTDOUBLE;
+				}
+				else {
+					if (event.button.button == SDL_BUTTON_LEFT)
+						mouse_code = Ctrl::LEFTTRIPLE;
+					else if (event.button.button == SDL_BUTTON_MIDDLE)
+						mouse_code = Ctrl::MIDDLETRIPLE;
+					else if (event.button.button == SDL_BUTTON_RIGHT)
+						mouse_code = Ctrl::RIGHTTRIPLE;
+				}
+				/*else if (event.button.button == SDL_BUTTON_WHEELUP)
+					mouse_zdelta = 120;
+				else if (event.button.button == SDL_BUTTON_WHEELDOWN)
+					mouse_zdelta = -120;*/
+			}
+			else if (event.button.state == SDL_RELEASED) {
+				if (event.button.button == SDL_BUTTON_LEFT)
+					mouse_code = Ctrl::LEFTUP;
+				else if (event.button.button == SDL_BUTTON_MIDDLE)
+					mouse_code = Ctrl::MIDDLEUP;
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+					mouse_code = Ctrl::RIGHTUP;
+			}
+			
+			if (mouse_code) {
+				mouse_pt = Point(event.button.x, event.button.y);
+				key = 0;
+				Events__PutKeyFlags(dev, key);
+				
+				e.type = EVENT_MOUSE_EVENT;
+				e.value = key;
+				e.pt = mouse_pt;
+				e.n = mouse_code;
+				
+				dev.prev_mouse_pt = mouse_pt;
+				return true;
+			}
+			
+#endif
+			
+		default:
+			break;
+		}
+	}
+	
+	
+	return false;
+}
+
+bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& io) {
+	bool b = io.full_src_mask == 0;
+	if (b) {
+		if (dev.seq == 0) {
+			auto s = a.GetSpace();
+			dev.ev.type = EVENT_WINDOW_RESIZE;
+			auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
+			auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
+			auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
+			
+			int x = 0, y = 0;
+			if (v_sink) {
+				SDL_GetWindowPosition(v_sink->dev.win, &x, &y);
+				dev.ev_sendable = true;
+			}
+			else if (sw_sink) {
+				SDL_GetWindowPosition(sw_sink->dev.win, &x, &y);
+				dev.ev_sendable = true;
+			}
+			else if (ogl_sink) {
+				SDL_GetWindowPosition(ogl_sink->dev.win, &x, &y);
+				dev.ev_sendable = true;
+			}
+			else {
+				RTLOG("HalSdl2::EventsBase_IsReady: skipping windows resize, because no screen is in context");
+				dev.seq++;
+				b = false;
+			}
+			dev.sz = Size(x,y);
+		}
+		else if (Events__Poll(dev, a)) {
+			dev.ev_sendable = true;
+		}
+		else {
+			dev.ev_sendable = false;
+			b = false;
+		}
+	}
+	RTLOG("HalSdl2::EventsBase_IsReady: " << (b ? "true" : "false"));
+	return b;
+}
 
 
 NAMESPACE_PARALLEL_END

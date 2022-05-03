@@ -224,26 +224,6 @@ AtomTypeCls EcsOglFbo::GetType() const
 }
 
 #endif
-AtomTypeCls SdlEventAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
-}
-
-LinkTypeCls SdlEventAtomPipe::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SDL2EventsBase>(this);
-}
-
-AtomTypeCls SdlEventAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
 AtomTypeCls SdlEventAtom::GetAtomType()
 {
 	return ATOM12(SDL_EVENT_ATOM, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT, CENTER, EVENT);
@@ -256,7 +236,7 @@ LinkTypeCls SdlEventAtom::GetLinkType()
 
 void SdlEventAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<SDL2EventsBase>(this);
+	vis.VisitThis<Sdl2EventsBase>(this);
 }
 
 AtomTypeCls SdlEventAtom::GetType() const

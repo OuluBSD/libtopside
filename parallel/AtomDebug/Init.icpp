@@ -76,6 +76,7 @@ INITBLOCK {
 		#ifdef flagSDL2
 			Factory::RegisterAtom<SdlVideoAtomPipe>();
 			Factory::RegisterAtom<SdlVideoAtom>();
+			Factory::RegisterAtom<SdlEventAtomPipe>();
 			#ifdef flagOGL
 				Factory::RegisterAtom<SdlFboPipe>();
 				Factory::RegisterAtom<SdlFboAtom>();

@@ -46,6 +46,14 @@ struct HalContextBase : public Atom {
 
 };
 
+struct HalEventsBase : public Atom {
+	RTTI_DECL1(HalEventsBase, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~HalEventsBase() {}
+
+};
+
 NAMESPACE_PARALLEL_END
 
 

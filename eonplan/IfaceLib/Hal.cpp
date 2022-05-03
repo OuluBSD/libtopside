@@ -11,6 +11,7 @@ PKG(Hal, Hal, H) {
 	DEPENDENCY(IGraphics)
 	HAVE_RECV_FINALIZE
 	HAVE_UPDATE
+	HAVE_IS_READY
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
@@ -18,6 +19,7 @@ PKG(Hal, Hal, H) {
 		//NATIVE_CLASS(Renderer)
 		//NATIVE_CLASS(AudioSourceDevice)
 		NATIVE_CLASS(ContextBase)
+		//NATIVE_CLASS(EventsBase)
 		//UTIL_CLASS()
 		
 	}
@@ -72,6 +74,11 @@ PKG(Hal, Hal, H) {
 			HAVE_VIRTUAL_CONTEXT
 			
 		}
+		
+		CLASS(EventsBase) {
+			NATIVE_INHERIT(EventsBase, ctx)
+			
+		}
 	}
 	
 	VENDOR(Sdl2) {
@@ -113,6 +120,21 @@ PKG(Hal, Hal, H) {
 			.Add("rend_info",	"::SDL_RendererInfo")
 			.Add("gl_ctx",		"::SDL_GLContext")
 			.RequireFlag("OGL");
+			;
+		
+		v->AddStruct("NativeEventsBase")
+			.Add("time",			"int")
+			.Add("seq",				"dword")
+			.Add("ev",				"UPP::CtrlEvent")
+			.Add("sz",				"Size")
+			.Add("ev_sendable",		"bool")
+			.Add("is_lalt",			"bool")
+			.Add("is_ralt",			"bool")
+			.Add("is_lshift",		"bool")
+			.Add("is_rshift",		"bool")
+			.Add("is_lctrl",		"bool")
+			.Add("is_rctrl",		"bool")
+			.Add("prev_mouse_pt",	"Point")
 			;
 		
 		// POSIX: GLEW GL GLU

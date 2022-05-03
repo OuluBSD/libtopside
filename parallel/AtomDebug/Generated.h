@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.3 14:00:00
+// Last modified: 2022.5.3 16:55:11
 
 namespace TS {
 
@@ -424,6 +424,21 @@ public:
 
 };
 #endif
+
+class SdlEventAtomPipe : public Sdl2EventsBase {
+
+public:
+	RTTI_DECL1(SdlEventAtomPipe, Sdl2EventsBase)
+	COPY_PANIC(SdlEventAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
 
 class TestEventSrcPipe : public TestEventSrcBase {
 

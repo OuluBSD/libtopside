@@ -366,7 +366,10 @@ bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch
 }
 
 void EventStateBase::Event(const CtrlEvent& e) {
-	if (e.type == EVENT_MOUSEMOVE) {
+	if (e.type == EVENT_INVALID) {
+		ASSERT_(0, "EventStateBase::Event: error: sender sent invalid event packet");
+	}
+	else if (e.type == EVENT_MOUSEMOVE) {
 		MouseMove(e.pt, e.value);
 	}
 	else if (e.type == EVENT_MOUSEWHEEL) {

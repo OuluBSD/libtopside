@@ -532,6 +532,26 @@ AtomTypeCls SdlContextAtom::GetType() const
 }
 
 #endif
+AtomTypeCls SdlEventAtomPipe::GetAtomType()
+{
+	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+}
+
+LinkTypeCls SdlEventAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2EventsBase>(this);
+}
+
+AtomTypeCls SdlEventAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls TestEventSrcPipe::GetAtomType()
 {
 	return ATOM11(TEST_EVENT_SRC_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);

@@ -10,6 +10,7 @@ static bool AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase&,
 static bool AudioSinkDevice_Recv(NativeAudioSinkDevice& dev, AtomBase&, int, const Packet&);
 static void AudioSinkDevice_Finalize(NativeAudioSinkDevice& dev, AtomBase&, RealtimeSourceConfig&);
 static void AudioSinkDevice_Update(NativeAudioSinkDevice& dev, AtomBase&, double dt);
+static bool AudioSinkDevice_IsReady(NativeAudioSinkDevice& dev, AtomBase&, PacketIO& io);
 
 	
 static bool CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase&, const Script::WorldState&);
@@ -21,6 +22,7 @@ static bool CenterVideoSinkDevice_ProcessPacket(NativeVideoSink& dev, AtomBase&,
 static bool CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int, const Packet&);
 static void CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, RealtimeSourceConfig&);
 static void CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt);
+static bool CenterVideoSinkDevice_IsReady(NativeVideoSink& dev, AtomBase&, PacketIO& io);
 
 	
 static bool CenterFboSinkDevice_Initialize(NativeSw3dVideoSink& dev, AtomBase&, const Script::WorldState&);
@@ -32,6 +34,7 @@ static bool CenterFboSinkDevice_ProcessPacket(NativeSw3dVideoSink& dev, AtomBase
 static bool CenterFboSinkDevice_Recv(NativeSw3dVideoSink& dev, AtomBase&, int, const Packet&);
 static void CenterFboSinkDevice_Finalize(NativeSw3dVideoSink& dev, AtomBase&, RealtimeSourceConfig&);
 static void CenterFboSinkDevice_Update(NativeSw3dVideoSink& dev, AtomBase&, double dt);
+static bool CenterFboSinkDevice_IsReady(NativeSw3dVideoSink& dev, AtomBase&, PacketIO& io);
 
 	
 #if defined flagOGL
@@ -44,6 +47,7 @@ static bool OglVideoSinkDevice_ProcessPacket(NativeOglVideoSink& dev, AtomBase&,
 static bool OglVideoSinkDevice_Recv(NativeOglVideoSink& dev, AtomBase&, int, const Packet&);
 static void OglVideoSinkDevice_Finalize(NativeOglVideoSink& dev, AtomBase&, RealtimeSourceConfig&);
 static void OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase&, double dt);
+static bool OglVideoSinkDevice_IsReady(NativeOglVideoSink& dev, AtomBase&, PacketIO& io);
 
 #endif
 	
@@ -58,5 +62,18 @@ static void ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, AtomB
 static bool ContextBase_Recv(NativeContextBase& ctx, AtomBase&, int, const Packet&);
 static void ContextBase_Finalize(NativeContextBase& ctx, AtomBase&, RealtimeSourceConfig&);
 static void ContextBase_Update(NativeContextBase& ctx, AtomBase&, double dt);
+static bool ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io);
+
+	
+static bool EventsBase_Initialize(NativeEventsBase& ctx, AtomBase&, const Script::WorldState&);
+static bool EventsBase_PostInitialize(NativeEventsBase& ctx, AtomBase&);
+static bool EventsBase_Start(NativeEventsBase& ctx, AtomBase&);
+static void EventsBase_Stop(NativeEventsBase& ctx, AtomBase&);
+static void EventsBase_Uninitialize(NativeEventsBase& ctx, AtomBase&);
+static bool EventsBase_ProcessPacket(NativeEventsBase& ctx, AtomBase&, PacketValue& in, PacketValue& out);
+static bool EventsBase_Recv(NativeEventsBase& ctx, AtomBase&, int, const Packet&);
+static void EventsBase_Finalize(NativeEventsBase& ctx, AtomBase&, RealtimeSourceConfig&);
+static void EventsBase_Update(NativeEventsBase& ctx, AtomBase&, double dt);
+static bool EventsBase_IsReady(NativeEventsBase& ctx, AtomBase&, PacketIO& io);
 
 	

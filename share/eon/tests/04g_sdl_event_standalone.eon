@@ -5,13 +5,21 @@ machine sdl.app: {
 	};
 		
 	chain program: {
+		state event.register;
 		
 		loop event: {
 			center.customer: true;
 			sdl.event.pipe: true;
-			state.event.pipe: true;
+			state.event.pipe: true {
+				target: event.register;
+			};
 		};
 		
+		loop video: {
+			center.customer: true;
+			center.video.src.dbg_generator: true {mode: "noise";};
+			sdl.video.pipe: true;
+		};
 	};
 
 };

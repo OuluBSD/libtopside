@@ -99,6 +99,7 @@ public:
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
 	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<FramePollerBase>(this);}
+	bool			IsReady(PacketIO& io) override;
 	bool			ProcessPackets(PacketIO& io) final;
 	void			SetFinalizeOnSide(bool b=true) {finalize_on_side = b;}
 	

@@ -666,6 +666,18 @@ bool Package::Export() {
 				fout << "\t}\n\n";
 				
 			}
+			
+			if (have_is_ready) {
+				fout << "\tbool IsReady(PacketIO& io) override {\n";
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String cls = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					fout << "\t\treturn " << abbr << "::" << prefix << "_IsReady(" << name << ", *this, io);\n";
+				}
+				fout << "\t}\n\n";
+				
+			}
+			
 			// Proxy functions
 			/*String nat_this;
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
@@ -755,6 +767,9 @@ bool Package::Export() {
 				fout << "static bool " << c.name << "_NegotiateSinkFormat(" << nat_this_ << "AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);\n";
 			}
 			
+			if (have_is_ready) {
+				fout << "static bool " << c.name << "_IsReady(" << nat_this_ << "AtomBase&, PacketIO& io);\n";
+			}
 			fout << "\n";
 			
 			String prefix = c.name + "_";
@@ -951,6 +966,11 @@ bool Package::Export() {
 				}
 				if (have_negotiate_fmt) {
 					fout << "bool " << cls << "::" << c.name << "_NegotiateSinkFormat(" << nat_this_ << "AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+				}
+				if (have_is_ready) {
+					fout << "bool " << cls << "::" << c.name << "_IsReady(" << nat_this_ << "AtomBase& a, PacketIO& io) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 				}

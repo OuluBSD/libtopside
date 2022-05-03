@@ -11,6 +11,7 @@ template <class Hal> struct HalCenterVideoSinkDeviceT;
 template <class Hal> struct HalCenterFboSinkDeviceT;
 template <class Hal> struct HalOglVideoSinkDeviceT;
 template <class Hal> struct HalContextBaseT;
+template <class Hal> struct HalEventsBaseT;
 
 
 template <class Hal>
@@ -62,6 +63,10 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 
 	void Update(double dt) override {
 		return Hal::AudioSinkDevice_Update(dev, *this, dt);
+	}
+
+	bool IsReady(PacketIO& io) override {
+		return Hal::AudioSinkDevice_IsReady(dev, *this, io);
 	}
 
 	
@@ -118,6 +123,10 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 		return Hal::CenterVideoSinkDevice_Update(dev, *this, dt);
 	}
 
+	bool IsReady(PacketIO& io) override {
+		return Hal::CenterVideoSinkDevice_IsReady(dev, *this, io);
+	}
+
 	
 };
 
@@ -172,6 +181,10 @@ struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 		return Hal::CenterFboSinkDevice_Update(dev, *this, dt);
 	}
 
+	bool IsReady(PacketIO& io) override {
+		return Hal::CenterFboSinkDevice_IsReady(dev, *this, io);
+	}
+
 	
 };
 
@@ -224,6 +237,10 @@ struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 
 	void Update(double dt) override {
 		return Hal::OglVideoSinkDevice_Update(dev, *this, dt);
+	}
+
+	bool IsReady(PacketIO& io) override {
+		return Hal::OglVideoSinkDevice_IsReady(dev, *this, io);
 	}
 
 	
@@ -288,6 +305,68 @@ struct HalContextBaseT : HalContextBase {
 		return Hal::ContextBase_Update(ctx, *this, dt);
 	}
 
+	bool IsReady(PacketIO& io) override {
+		return Hal::ContextBase_IsReady(ctx, *this, io);
+	}
+
+	
+};
+
+template <class Hal>
+struct HalEventsBaseT : HalEventsBase {
+	using CLASSNAME = HalEventsBaseT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalEventsBase)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalEventsBase>(this);}
+	
+	typename Hal::NativeEventsBase ctx;
+	
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::EventsBase_Initialize(ctx, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Hal::EventsBase_PostInitialize(ctx, *this))
+			return false;
+		return true;
+	}
+
+	bool Start() override {
+		return Hal::EventsBase_Start(ctx, *this);
+	}
+
+	void Stop() override {
+		Hal::EventsBase_Stop(ctx, *this);
+	}
+
+	void Uninitialize() override {
+		Hal::EventsBase_Uninitialize(ctx, *this);
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+		if (!Hal::EventsBase_ProcessPacket(ctx, *this, in, out))
+			return false;
+		return true;
+	}
+
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::EventsBase_Recv(ctx, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::EventsBase_Finalize(ctx, *this, cfg);
+	}
+
+	void Update(double dt) override {
+		return Hal::EventsBase_Update(ctx, *this, dt);
+	}
+
+	bool IsReady(PacketIO& io) override {
+		return Hal::EventsBase_IsReady(ctx, *this, io);
+	}
+
 	
 };
 
@@ -297,6 +376,7 @@ using Sdl2CenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl2>;
 using Sdl2CenterFboSinkDevice = HalCenterFboSinkDeviceT<HalSdl2>;
 using Sdl2OglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl2>;
 using Sdl2ContextBase = HalContextBaseT<HalSdl2>;
+using Sdl2EventsBase = HalEventsBaseT<HalSdl2>;
 #endif
 
 

@@ -439,6 +439,10 @@ LinkTypeCls PollerLink::GetType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
+bool PollerLink::IsReady(PacketIO& io) {
+	return atom->IsReady(io);
+}
+
 bool PollerLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
 	

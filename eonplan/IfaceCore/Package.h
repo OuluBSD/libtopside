@@ -136,6 +136,7 @@ protected:
 	bool have_recv_finalize = false;
 	bool have_update = false;
 	bool have_negotiate_fmt = false;
+	bool have_is_ready = false;
 	
 	void SetColor(int r, int g, int b) {clr.r = r; clr.b = b; clr.g = g;}
 	void AddDependency(String s) {deps.FindAdd(s);}
@@ -150,6 +151,7 @@ public:
 	void HaveRecvFinalize() {have_recv_finalize = true;}
 	void HaveUpdate() {have_update = true;}
 	void HaveNegotiateFormat() {have_negotiate_fmt = true;}
+	void HaveIsReady() {have_is_ready = true;}
 	
 	virtual const char* GetTitle() const = 0;
 	virtual const char* GetAbbreviation() const = 0;

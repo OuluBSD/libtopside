@@ -18,6 +18,7 @@ NAMESPACE_PARALLEL_BEGIN
 	HAL_CLS(CenterFboSinkDevice, x) \
 	HAL_CLS(OglVideoSinkDevice, x) \
 	HAL_CLS(ContextBase, x) \
+	HAL_CLS(EventsBase, x) \
 
 
 
@@ -65,6 +66,22 @@ struct HalSdl2 {
 		::SDL_GLContext gl_ctx;
 	};
 	#endif
+	
+	struct NativeEventsBase {
+		int time;
+		dword seq;
+		UPP::CtrlEvent ev;
+		int type;
+		Size sz;
+		bool ev_sendable;
+		bool is_lalt;
+		bool is_ralt;
+		bool is_lshift;
+		bool is_rshift;
+		bool is_lctrl;
+		bool is_rctrl;
+		Point prev_mouse_pt;
+	};
 	
 	struct Thread {
 		

@@ -35,6 +35,7 @@
 #define HAVE_RECV_FINALIZE this->HaveRecvFinalize();
 #define HAVE_UPDATE this->HaveUpdate();
 #define HAVE_NEGOTIATE_FORMAT this->HaveNegotiateFormat();
+#define HAVE_IS_READY this->HaveIsReady();
 #define MAINFLAG(x) this->AddMainFlag(#x);
 #define COLOR(r,g,b) this->SetColor(r,g,b);
 #define INHERIT(x) c->Inherit(#x);
