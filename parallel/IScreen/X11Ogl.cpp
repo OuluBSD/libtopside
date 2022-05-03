@@ -1,8 +1,8 @@
 #include "IScreen.h"
 
-#include <X11/Xlib.h>
+/*#include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <GL/glx.h>
+#include <GL/glx.h>*/
 		
 #if defined flagOGL
 NAMESPACE_PARALLEL_BEGIN

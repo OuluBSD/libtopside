@@ -50,6 +50,14 @@ PKG(Hal, Hal, H) {
 			
 		}
 		
+		CLASS(CenterFboSinkDevice) {
+			NATIVE_INHERIT(Sw3dVideoSink, dev)
+			
+			//NATIVE_FIELD(NativeWindow*, win)
+			//NATIVE_FIELD(NativeRenderer*, rend)
+			
+		}
+		
 		CLASS(OglVideoSinkDevice) {
 			NATIVE_INHERIT(OglVideoSink, dev)
 			NATIVE_ENABLED_FLAG(OGL)
@@ -85,8 +93,15 @@ PKG(Hal, Hal, H) {
 			.Add("display",	"void*")
 			.Add("win",		"SDL_Window*")
 			.Add("rend",	"SDL_Renderer*")
+			.Add("fb",		"FramebufferT<SdlCpuGfx>")
+			;
+		
+		v->AddStruct("NativeSw3dVideoSink")
+			.Add("display",	"void*")
+			.Add("win",		"SDL_Window*")
+			.Add("rend",	"SDL_Renderer*")
 			.Add("fb",		"SDL_Texture*")
-			.Add("accel",	"GfxAccelAtom<SdlCpuGfx>")
+			.Add("accel",	"GfxAccelAtom<SdlSwGfx>")
 			;
 		
 		v->AddStruct("NativeOglVideoSink")

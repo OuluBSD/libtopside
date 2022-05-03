@@ -979,7 +979,7 @@ int BufferT<Gfx>::BuiltinShaderT() {
 
 #ifdef flagSDL2
 template <>
-int BufferT<SdlCpuGfx>::BuiltinShader() {
+int BufferT<SdlSwGfx>::BuiltinShader() {
 	return BuiltinShaderT<0>();
 }
 #endif
@@ -1184,7 +1184,7 @@ void BufferT<Gfx>::SetInputCubemap(int in_id) {
 }
 
 
-GFX_EXCPLICIT_INITIALIZE_CLASS(BufferT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(BufferT)
 
 
 NAMESPACE_PARALLEL_END

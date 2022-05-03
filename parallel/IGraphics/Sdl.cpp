@@ -19,7 +19,19 @@ void SdlOglGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& 
 
 #endif
 
-void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
+int SdlSwGfx::GetBytesPerPixel(NativeSurface& surf) {
+	return surf->format->BytesPerPixel;
+}
+
+int SdlSwGfx::GetPitch(NativeSurface& surf) {
+	return surf->pitch;
+}
+
+byte* SdlSwGfx::GetData(NativeSurface& surf) {
+	return (byte*)surf->pixels;
+}
+
+void SdlSwGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
 	const auto& fb = color_buf;
 	//NativeColorBufferRef& fb = color_buf;
 	

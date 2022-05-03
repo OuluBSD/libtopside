@@ -151,7 +151,7 @@ bool GfxBufferFieldT<Gfx>::PostInitialize() {
 
 
 
-GFX_EXCPLICIT_INITIALIZE_CLASS(GfxBufferFieldT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(GfxBufferFieldT)
 
 
 NAMESPACE_PARALLEL_END

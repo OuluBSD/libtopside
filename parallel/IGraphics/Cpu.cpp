@@ -7,25 +7,25 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-typename CpuGfxT<Gfx>::Thread& CpuGfxT<Gfx>::Local() {thread_local static Thread t; return t;}
+typename SwGfxT<Gfx>::Thread& SwGfxT<Gfx>::Local() {thread_local static Thread t; return t;}
 
 template <class Gfx>
-SoftRendT<Gfx>& CpuGfxT<Gfx>::Rend() {return Local().rend;}
+SoftRendT<Gfx>& SwGfxT<Gfx>::Rend() {return Local().rend;}
 
 
 template <class Gfx>
-typename CpuGfxT<Gfx>::NativeColorBufferConstRef CpuGfxT<Gfx>::GetLocalTexture(int ch) {
+typename SwGfxT<Gfx>::NativeColorBufferConstRef SwGfxT<Gfx>::GetLocalTexture(int ch) {
 	ASSERT(ch >= 0 && ch < CHANNEL_COUNT);
 	return Local().texture[ch].GetReadTexture();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetDebugOutput(bool b) {
+void SwGfxT<Gfx>::SetDebugOutput(bool b) {
 	Rend().SetDebugOutput(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ClearBuffers() {
+void SwGfxT<Gfx>::ClearBuffers() {
 	auto fb = Local().fb;
 	ASSERT(fb);
 	if (fb)
@@ -33,63 +33,63 @@ void CpuGfxT<Gfx>::ClearBuffers() {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetSmoothShading(bool b) {
+void SwGfxT<Gfx>::SetSmoothShading(bool b) {
 	Rend().SetSmoothShading(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetDepthTest(bool b) {
+void SwGfxT<Gfx>::SetDepthTest(bool b) {
 	Rend().SetDepthTest(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetDepthOrderLess(bool b) {
+void SwGfxT<Gfx>::SetDepthOrderLess(bool b) {
 	Rend().SetDepthOrderLess(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetClearValue(RGBA clr, byte depth) {
+void SwGfxT<Gfx>::SetClearValue(RGBA clr, byte depth) {
 	Rend().SetClearValue(clr, depth);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetFastPerspectiveCorrection(bool b) {
+void SwGfxT<Gfx>::SetFastPerspectiveCorrection(bool b) {
 	Rend().SetFastPerspectiveCorrection(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetTriangleBacksideCulling(bool b) {
+void SwGfxT<Gfx>::SetTriangleBacksideCulling(bool b) {
 	Rend().SetTriangleBacksideCulling(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetTriangleFrontsideCCW(bool b) {
+void SwGfxT<Gfx>::SetTriangleFrontsideCCW(bool b) {
 	Rend().SetTriangleFrontsideCCW(b);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetViewport(Size sz) {
+void SwGfxT<Gfx>::SetViewport(Size sz) {
 	Rend().SetViewport(sz);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UseProgram(NativeProgram& prog) {
+void SwGfxT<Gfx>::UseProgram(NativeProgram& prog) {
 	Local().prog = &prog;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindProgramPipeline(NativePipeline& pipeline) {
+void SwGfxT<Gfx>::BindProgramPipeline(NativePipeline& pipeline) {
 	Local().pipe = &pipeline;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UnbindProgramPipeline() {
+void SwGfxT<Gfx>::UnbindProgramPipeline() {
 	Local().pipe = 0;
 	Local().prog = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
+void SwGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	auto& l = Local();
 	l.rend.SetDrawBuffers(tgt);
 	/*l.rend.SetTarget(tgt);
@@ -104,18 +104,18 @@ void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	}*/
 }
 
-/*void CpuGfxT<Gfx>::Clear_Color() {
+/*void SwGfxT<Gfx>::Clear_Color() {
 	glClear(GL_COLOR_BUFFER_BIT);
 }*/
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ActiveTexture(int ch) {
+void SwGfxT<Gfx>::ActiveTexture(int ch) {
 	ASSERT(ch >= 0 && ch < CHANNEL_COUNT);
 	Local().active_texture = ch;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeactivateTexture() {
+void SwGfxT<Gfx>::DeactivateTexture() {
 	Local().active_texture = -1;
 }
 
@@ -124,70 +124,70 @@ void CpuGfxT<Gfx>::DeactivateTexture() {
 }*/
 
 template <class Gfx>
-const char* CpuGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
+const char* SwGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* shader_tmpl = "";
 	return shader_tmpl;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::HotfixShaderCode(String& s) {}
+void SwGfxT<Gfx>::HotfixShaderCode(String& s) {}
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Uniform1i(int idx, int i) {
+void SwGfxT<Gfx>::Uniform1i(int idx, int i) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, i);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Uniform1f(int idx, float f) {
+void SwGfxT<Gfx>::Uniform1f(int idx, float f) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, f);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Uniform2f(int idx, float f0, float f1) {
+void SwGfxT<Gfx>::Uniform2f(int idx, float f0, float f1) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, f0, f1);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Uniform3f(int idx, float f0, float f1, float f2) {
+void SwGfxT<Gfx>::Uniform3f(int idx, float f0, float f1, float f2) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, f0, f1, f2);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
+void SwGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, f0, f1, f2, f3);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
+void SwGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, mat);
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::CreateShader(GVar::ShaderType t, NativeShaderRef& new_shdr) {
+bool SwGfxT<Gfx>::CreateShader(GVar::ShaderType t, NativeShaderRef& new_shdr) {
 	new_shdr = new SoftShaderT<Gfx>();
 	new_shdr->SetType(t);
 	return true;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ShaderSource(NativeShaderRef s, String code) {
+void SwGfxT<Gfx>::ShaderSource(NativeShaderRef s, String code) {
 	s->SetSource(code);
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::CompileShader(NativeShaderRef s) {
+bool SwGfxT<Gfx>::CompileShader(NativeShaderRef s) {
 	/*ASSERT(ctx && rt && shdr);
 	if (!ctx || !rt || !shdr)
 		return false;
@@ -200,37 +200,37 @@ bool CpuGfxT<Gfx>::CompileShader(NativeShaderRef s) {
 }
 
 template <class Gfx>
-String CpuGfxT<Gfx>::GetLastErrorS(NativeShaderRef s) {
+String SwGfxT<Gfx>::GetLastErrorS(NativeShaderRef s) {
 	return s->GetLastError();
 }
 
 template <class Gfx>
-String CpuGfxT<Gfx>::GetLastErrorP(NativeProgram& p) {
+String SwGfxT<Gfx>::GetLastErrorP(NativeProgram& p) {
 	return p.GetLastError();
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::CreateProgram(NativeProgram& prog) {
+bool SwGfxT<Gfx>::CreateProgram(NativeProgram& prog) {
 	return prog.Create();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
+void SwGfxT<Gfx>::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
 	prog.SetParameter(type, i);
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::LinkProgram(NativeProgram& prog) {
+bool SwGfxT<Gfx>::LinkProgram(NativeProgram& prog) {
 	return prog.LinkProgram();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
+void SwGfxT<Gfx>::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
 	out = prog.GetParamInt(type);
 }
 
 template <class Gfx>
-String CpuGfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
+String SwGfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
 	if (size_out)
 		*size_out = prog.GetVarSize(i);
 	if (type_out)
@@ -240,7 +240,7 @@ String CpuGfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out,
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::Clear(GVar::BufferType type) {
+void SwGfxT<Gfx>::Clear(GVar::BufferType type) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	if (fb)
@@ -248,33 +248,33 @@ void CpuGfxT<Gfx>::Clear(GVar::BufferType type) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShaderRef shdr) {
+void SwGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShaderRef shdr) {
 	prog.Attach(*shdr);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteShader(NativeShaderRef& shdr) {
+void SwGfxT<Gfx>::DeleteShader(NativeShaderRef& shdr) {
 	shdr->Clear();
 	shdr = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {
+void SwGfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {
 	pipe.Create();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
+void SwGfxT<Gfx>::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
 	pipe.Use(prog, bmask);
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pipe) {
+void SwGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pipe) {
 	pipe.Clear();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
+void SwGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	if (fb)
@@ -287,50 +287,50 @@ void CpuGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GV
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb) {
+void SwGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb) {
 	auto& l = Local();
 	ASSERT_(!l.fb || (l.ctx_default_fb && l.fb == l.ctx_default_fb), "previous frambuffer have not been unbound");
 	l.fb = fb;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
+void SwGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
 	auto& t = Local().T();
 	t.r = tex;
 	t.rw = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
+void SwGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
 	auto& t = Local().T();
 	t.r = 0;
 	t.rw = tex;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
+void SwGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 	auto& t = Local().T();
 	t.r = 0;
 	t.rw = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
+void SwGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
 	// pass
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
+void SwGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
 	// not supported
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindFramebufferDefault() {
+void SwGfxT<Gfx>::BindFramebufferDefault() {
 	Local().fb = Local().ctx_default_fb;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::RenderScreenRect() {
+void SwGfxT<Gfx>::RenderScreenRect() {
 	auto& l = Local();
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	//ASSERT_(l.shdr, "shader is not bound yet");
@@ -343,14 +343,14 @@ void CpuGfxT<Gfx>::RenderScreenRect() {
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::GenTexture(NativeColorBufferRef& b) {
+bool SwGfxT<Gfx>::GenTexture(NativeColorBufferRef& b) {
 	ASSERT(!b);
 	b = new ByteImage();
 	return true;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
+void SwGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
 	auto& l = Local();
 	l.ctx_default_fb = fb;
 	if (!l.fb)
@@ -358,34 +358,34 @@ void CpuGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GenVertexArray(NativeVertexArray& va) {
+void SwGfxT<Gfx>::GenVertexArray(NativeVertexArray& va) {
 	va.Create();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GenVertexBuffer(NativeVertexBuffer& vb) {
+void SwGfxT<Gfx>::GenVertexBuffer(NativeVertexBuffer& vb) {
 	vb.Create();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::GenElementBuffer(NativeElementBuffer& eb) {
+void SwGfxT<Gfx>::GenElementBuffer(NativeElementBuffer& eb) {
 	eb.Create();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindVertexArray(NativeVertexArray& vao) {
+void SwGfxT<Gfx>::BindVertexArray(NativeVertexArray& vao) {
 	Local().vao = &vao;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindVertexBuffer(NativeVertexBuffer& vbo) {
+void SwGfxT<Gfx>::BindVertexBuffer(NativeVertexBuffer& vbo) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	l.vao->vbo = &vbo;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::VertexBufferData(const Vector<Vertex>& vtx) {
+void SwGfxT<Gfx>::VertexBufferData(const Vector<Vertex>& vtx) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	ASSERT(l.vao->vbo);
@@ -393,14 +393,14 @@ void CpuGfxT<Gfx>::VertexBufferData(const Vector<Vertex>& vtx) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindElementBuffer(NativeElementBuffer& ebo) {
+void SwGfxT<Gfx>::BindElementBuffer(NativeElementBuffer& ebo) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	l.vao->ebo = &ebo;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::ElementBufferData(const Vector<uint32>& el) {
+void SwGfxT<Gfx>::ElementBufferData(const Vector<uint32>& el) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	ASSERT(l.vao->ebo);
@@ -408,26 +408,26 @@ void CpuGfxT<Gfx>::ElementBufferData(const Vector<uint32>& el) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UnbindVertexArray() {
+void SwGfxT<Gfx>::UnbindVertexArray() {
 	Local().vao = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UnbindVertexBuffer() {
+void SwGfxT<Gfx>::UnbindVertexBuffer() {
 	auto& l = Local();
 	ASSERT(l.vao);
 	l.vao->vbo = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::UnbindElementBuffer() {
+void SwGfxT<Gfx>::UnbindElementBuffer() {
 	auto& l = Local();
 	ASSERT(l.vao);
 	l.vao->ebo = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DrawVertexElements(int element_limit) {
+void SwGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	ASSERT(l.vao->vbo);
@@ -443,7 +443,7 @@ void CpuGfxT<Gfx>::DrawVertexElements(int element_limit) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::TexImage2D(ByteImage& tex) {
+void SwGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 	auto& t = Local().T();
 	ASSERT(!t.r);
 	ASSERT(t.rw);
@@ -451,22 +451,22 @@ void CpuGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteVertexArray(NativeVertexArray& vao) {
+void SwGfxT<Gfx>::DeleteVertexArray(NativeVertexArray& vao) {
 	vao.Clear();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
+void SwGfxT<Gfx>::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
 	vbo.Clear();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteElementBuffer(NativeElementBuffer& ebo) {
+void SwGfxT<Gfx>::DeleteElementBuffer(NativeElementBuffer& ebo) {
 	ebo.Clear();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {
+void SwGfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {
 	ASSERT(b);
 	if (b) {
 		delete b;
@@ -476,7 +476,7 @@ void CpuGfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
+void SwGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
 	ASSERT(b);
 	if (b) {
 		delete b;
@@ -486,7 +486,7 @@ void CpuGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {
+void SwGfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {
 	ASSERT(b);
 	if (b)
 		delete b;
@@ -494,12 +494,12 @@ void CpuGfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeactivateVertexStructure() {
+void SwGfxT<Gfx>::DeactivateVertexStructure() {
 	// pass
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BeginRender() {
+void SwGfxT<Gfx>::BeginRender() {
 	auto& l = Local();
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
@@ -524,41 +524,41 @@ void CpuGfxT<Gfx>::BeginRender() {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::EndRender() {
+void SwGfxT<Gfx>::EndRender() {
 	auto& l = Local();
 	l.rend.End();
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::SetupVertexStructure() {}
-template <class Gfx> void CpuGfxT<Gfx>::ActivateVertexStructure() {}
+template <class Gfx> void SwGfxT<Gfx>::SetupVertexStructure() {}
+template <class Gfx> void SwGfxT<Gfx>::ActivateVertexStructure() {}
 
-template <class Gfx> bool CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
+template <class Gfx> bool SwGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
 	ASSERT(!b);
 	b = new DepthImage();
 	return true;
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::BindRenderbuffer(NativeDepthBufferRef rb) {
+template <class Gfx> void SwGfxT<Gfx>::BindRenderbuffer(NativeDepthBufferRef rb) {
 	Local().depth = rb;
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::RenderbufferStorage(Size sz) {
+template <class Gfx> void SwGfxT<Gfx>::RenderbufferStorage(Size sz) {
 	auto& depth = Local().depth;
 	ASSERT(depth);
 	if (depth)
 		depth->Set(sz, 1);
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::UnbindRenderbuffer() {
+template <class Gfx> void SwGfxT<Gfx>::UnbindRenderbuffer() {
 	Local().depth = 0;
 }
 
-template <class Gfx> bool CpuGfxT<Gfx>::CreateFramebuffer(NativeFrameBufferRef& fb) {
+template <class Gfx> bool SwGfxT<Gfx>::CreateFramebuffer(NativeFrameBufferRef& fb) {
 	fb = new SoftFramebuffer;
 	return true;
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef tex) {
+template <class Gfx> void SwGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef tex) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	ASSERT(tex);
@@ -566,7 +566,7 @@ template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(TexType tgt, Native
 		fb->SetColor(tgt, tex);
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef depth) {
+template <class Gfx> void SwGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef depth) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	ASSERT(depth);
@@ -574,15 +574,15 @@ template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffe
 		fb->SetDepth(depth);
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::UnbindFramebuffer() {
+template <class Gfx> void SwGfxT<Gfx>::UnbindFramebuffer() {
 	Local().fb = 0;
 }
 
 #if defined flagSDL2
-template struct CpuGfxT<SdlCpuGfx>;
+template struct SwGfxT<SdlSwGfx>;
 #endif
 
-template struct CpuGfxT<X11SwGfx>;
+template struct SwGfxT<X11SwGfx>;
 
 
 NAMESPACE_PARALLEL_END

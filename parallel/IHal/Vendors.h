@@ -15,6 +15,7 @@ NAMESPACE_PARALLEL_BEGIN
 #define HAL_CLS_LIST(x) \
 	HAL_CLS(AudioSinkDevice, x) \
 	HAL_CLS(CenterVideoSinkDevice, x) \
+	HAL_CLS(CenterFboSinkDevice, x) \
 	HAL_CLS(OglVideoSinkDevice, x) \
 	HAL_CLS(ContextBase, x) \
 
@@ -42,8 +43,15 @@ struct HalSdl2 {
 		void* display;
 		SDL_Window* win;
 		SDL_Renderer* rend;
+		FramebufferT<SdlCpuGfx> fb;
+	};
+	
+	struct NativeSw3dVideoSink {
+		void* display;
+		SDL_Window* win;
+		SDL_Renderer* rend;
 		SDL_Texture* fb;
-		GfxAccelAtom<SdlCpuGfx> accel;
+		GfxAccelAtom<SdlSwGfx> accel;
 	};
 	
 	#if defined flagOGL

@@ -20,37 +20,20 @@ void X11SwGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w
 
 
 #ifdef flagSDL2
-bool SdlCpuGfx::LockTextureToSurface(SoftFramebuffer* tex, Rect r, NativeSurface& surf) {
+bool SdlSwGfx::LockTextureToSurface(SoftFramebuffer* tex, Rect r, NativeSurface& surf) {
 	TODO
 }
 
-void SdlCpuGfx::QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h) {
+void SdlSwGfx::QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h) {
 	Size sz = tex->GetSize();
 	w = sz.cx;
 	h = sz.cy;
 }
 
-void SdlCpuGfx::UnlockTextureToSurface(SoftFramebuffer* tex) {
+void SdlSwGfx::UnlockTextureToSurface(SoftFramebuffer* tex) {
 	TODO
 }
 
-bool SdlCpuGfx::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
-	SDL_Rect re {
-		r.left,
-		r.top,
-		r.GetWidth(),
-		r.GetHeight()
-	};
-	return SDL_LockTextureToSurface(tex, &re, &surf) >= 0;
-}
-
-void SdlCpuGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h) {
-	SDL_QueryTexture(tex, &fmt, &access, &w, &h);
-}
-
-void SdlCpuGfx::UnlockTextureToSurface(NativeTexture& tex) {
-	SDL_UnlockTexture(tex);
-}
 #endif
 
 

@@ -6,10 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 #ifdef flagSDL2
 template <>
 void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
-	TODO
-	#if 0
-	SDL_Texture* tex = color_buf[0]->GetTex();
-	//SDL_Texture* tex = color_buf[0];
+	SDL_Texture* tex = color_buf[0];
 	ASSERT(tex);
 	
 	uint32 fmt = 0;
@@ -45,7 +42,6 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 	}
 	
 	SDL_UnlockTexture(tex);
-	#endif
 }
 
 
@@ -68,6 +64,19 @@ typename Gfx::NativeFrameBufferConstRef FramebufferT<Gfx>::GetReadFramebuffer() 
 
 template <class Gfx>
 typename Gfx::NativeColorBufferRef FramebufferT<Gfx>::GetActiveColorBuffer() {return color_buf[this->buf_i];}
+
+template <class Gfx>
+void FramebufferT<Gfx>::Init(NativeColorBufferRef clr, int w, int h, int stride) {
+	//Gfx::GenTexture(color_buf[0]);
+	ASSERT(!color_buf[0]);
+	ASSERT(!frame_buf[0]);
+	ASSERT(clr);
+	frame_buf[0] = 0;
+	color_buf[0] = clr;
+	this->size.cx = w;
+	this->size.cy = h;
+	this->channels = stride;
+}
 
 template <class Gfx>
 void FramebufferT<Gfx>::Init(NativeFrameBufferRef fbo, NativeColorBufferRef clr, int w, int h, int stride) {
@@ -93,7 +102,7 @@ void FramebufferT<Gfx>::SetWindowFbo(bool b) {
 }
 
 
-GFX_EXCPLICIT_INITIALIZE_CLASS(InputStateT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(InputStateT)
 GFX_EXCPLICIT_INITIALIZE_CLASS(FramebufferT)
 
 

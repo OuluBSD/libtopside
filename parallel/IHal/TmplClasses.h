@@ -8,6 +8,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Hal> struct HalAudioSinkDeviceT;
 template <class Hal> struct HalCenterVideoSinkDeviceT;
+template <class Hal> struct HalCenterFboSinkDeviceT;
 template <class Hal> struct HalOglVideoSinkDeviceT;
 template <class Hal> struct HalContextBaseT;
 
@@ -115,6 +116,60 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 
 	void Update(double dt) override {
 		return Hal::CenterVideoSinkDevice_Update(dev, *this, dt);
+	}
+
+	
+};
+
+template <class Hal>
+struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
+	using CLASSNAME = HalCenterFboSinkDeviceT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalCenterFboSinkDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalCenterFboSinkDevice>(this);}
+	
+	typename Hal::NativeSw3dVideoSink dev;
+	
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::CenterFboSinkDevice_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Hal::CenterFboSinkDevice_PostInitialize(dev, *this))
+			return false;
+		return true;
+	}
+
+	bool Start() override {
+		return Hal::CenterFboSinkDevice_Start(dev, *this);
+	}
+
+	void Stop() override {
+		Hal::CenterFboSinkDevice_Stop(dev, *this);
+	}
+
+	void Uninitialize() override {
+		Hal::CenterFboSinkDevice_Uninitialize(dev, *this);
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::CenterFboSinkDevice_ProcessPacket(dev, *this, in, out))
+			return false;
+		return true;
+	}
+
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::CenterFboSinkDevice_Recv(dev, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::CenterFboSinkDevice_Finalize(dev, *this, cfg);
+	}
+
+	void Update(double dt) override {
+		return Hal::CenterFboSinkDevice_Update(dev, *this, dt);
 	}
 
 	
@@ -239,6 +294,7 @@ struct HalContextBaseT : HalContextBase {
 #if defined flagSDL2
 using Sdl2AudioSinkDevice = HalAudioSinkDeviceT<HalSdl2>;
 using Sdl2CenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl2>;
+using Sdl2CenterFboSinkDevice = HalCenterFboSinkDeviceT<HalSdl2>;
 using Sdl2OglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl2>;
 using Sdl2ContextBase = HalContextBaseT<HalSdl2>;
 #endif

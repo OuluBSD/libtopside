@@ -13,7 +13,7 @@ void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 #endif
 
 template <>
-void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
+void GfxAccelAtom<SdlSwGfx>::GfxFlags(uint32& flags) {
 	is_sw = true;
 }
 
@@ -25,7 +25,7 @@ bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 #endif
 
 template <>
-bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
+bool GfxAccelAtom<SdlSwGfx>::GfxRenderer() {
 	ASSERT(fb);
 	
 	NativeColorBufferRef clr;
@@ -40,7 +40,7 @@ bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
 }
 
 template <>
-void GfxAccelAtom<SdlCpuGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem, int len) {
+void GfxAccelAtom<SdlSwGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem, int len) {
 	int frame_size = vfmt.GetFrameSize();
 	if (mem && len > 0 && len == frame_size) {
 		rend.GetFramebuffer().DrawFill(mem, len);
@@ -411,11 +411,11 @@ template class GfxAccelAtom<SdlOglGfx>;
 #endif
 
 #ifdef flagSDL2
-template class GfxAccelAtom<SdlCpuGfx>;
+template class GfxAccelAtom<SdlSwGfx>;
 #endif*/
 
 
-GFX_EXCPLICIT_INITIALIZE_CLASS(GfxAccelAtom)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(GfxAccelAtom)
 
 
 NAMESPACE_PARALLEL_END

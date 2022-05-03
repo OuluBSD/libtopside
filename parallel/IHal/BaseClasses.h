@@ -22,6 +22,14 @@ struct HalCenterVideoSinkDevice : public Atom {
 
 };
 
+struct HalCenterFboSinkDevice : public Atom {
+	RTTI_DECL1(HalCenterFboSinkDevice, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~HalCenterFboSinkDevice() {}
+
+};
+
 struct HalOglVideoSinkDevice : public Atom {
 	RTTI_DECL1(HalOglVideoSinkDevice, Atom)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}

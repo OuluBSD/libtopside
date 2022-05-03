@@ -23,6 +23,17 @@ static void CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, Real
 static void CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt);
 
 	
+static bool CenterFboSinkDevice_Initialize(NativeSw3dVideoSink& dev, AtomBase&, const Script::WorldState&);
+static bool CenterFboSinkDevice_PostInitialize(NativeSw3dVideoSink& dev, AtomBase&);
+static bool CenterFboSinkDevice_Start(NativeSw3dVideoSink& dev, AtomBase&);
+static void CenterFboSinkDevice_Stop(NativeSw3dVideoSink& dev, AtomBase&);
+static void CenterFboSinkDevice_Uninitialize(NativeSw3dVideoSink& dev, AtomBase&);
+static bool CenterFboSinkDevice_ProcessPacket(NativeSw3dVideoSink& dev, AtomBase&, PacketValue& in, PacketValue& out);
+static bool CenterFboSinkDevice_Recv(NativeSw3dVideoSink& dev, AtomBase&, int, const Packet&);
+static void CenterFboSinkDevice_Finalize(NativeSw3dVideoSink& dev, AtomBase&, RealtimeSourceConfig&);
+static void CenterFboSinkDevice_Update(NativeSw3dVideoSink& dev, AtomBase&, double dt);
+
+	
 #if defined flagOGL
 static bool OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase&, const Script::WorldState&);
 static bool OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBase&);

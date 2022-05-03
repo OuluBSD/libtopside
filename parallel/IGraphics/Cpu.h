@@ -6,9 +6,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
 GFX_CLS_LIST(X11Sw)
-#ifdef flagSDL2
+/*#ifdef flagSDL2
 GFX_CLS_LIST(SdlCpu)
-#endif
+#endif*/
 #undef GFX_CLS
 
 

@@ -38,15 +38,15 @@ struct FramebufferT : Gfx::FramebufferBase {
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using NativeFrameBufferConstRef = typename Gfx::NativeFrameBufferConstRef;
 	using SystemFrameBufferRef = typename Gfx::SystemFrameBufferRef;
-	using NativeProgram  = typename Gfx::NativeProgram;
-	using NativePipeline = typename Gfx::NativePipeline;
-	using NativeShaderRef = typename Gfx::NativeShaderRef;
+	//using NativeProgram  = typename Gfx::NativeProgram;
+	//using NativePipeline = typename Gfx::NativePipeline;
+	//using NativeShaderRef = typename Gfx::NativeShaderRef;
 	//using ShaderState = typename Gfx::ShaderState;
-	using ShaderState = ShaderStateT<Gfx>;
+	//using ShaderState = ShaderStateT<Gfx>;
 	//using InputState  = typename Gfx::InputState;
-	using InputState  = InputStateT<Gfx>;
-	using DataObject = typename Gfx::DataObject;
-	using DataState = DataStateT<Gfx>;
+	//using InputState  = InputStateT<Gfx>;
+	//using DataObject = typename Gfx::DataObject;
+	//using DataState = DataStateT<Gfx>;
 	RTTI_DECL1(FramebufferT, GfxFramebuffer)
 	
 	NativeColorBufferRef	color_buf[2];
@@ -69,6 +69,7 @@ struct FramebufferT : Gfx::FramebufferBase {
 	NativeFrameBufferConstRef GetReadFramebuffer() const;
 	NativeColorBufferRef GetActiveColorBuffer();
 	
+	void Init(NativeColorBufferRef clr, int w, int h, int stride);
 	void Init(NativeFrameBufferRef fbo, NativeColorBufferRef clr, int w, int h, int stride);
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
