@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.3 18:00:44
+// Last modified: 2022.5.3 18:55:55
 
 namespace TS {
 
@@ -425,6 +425,7 @@ public:
 };
 #endif
 
+#if defined flagSDL2
 class SdlEventAtomPipe : public Sdl2EventsBase {
 
 public:
@@ -439,6 +440,7 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 class TestEventSrcPipe : public TestEventSrcBase {
 

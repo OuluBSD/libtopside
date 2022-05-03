@@ -237,6 +237,7 @@ HEADER_ARG(			SdlContextAtom,		reqdef_flagSDL2,			1)
 HEADER11(			SdlEventAtomPipe,	Sdl2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
 HEADER_ARG(			SdlEventAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_ARG(			SdlEventAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_LINK(		SdlEventAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER12(			SdlEventAtom,		Sdl2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterEvent)

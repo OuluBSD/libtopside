@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.3 18:00:44
+// Last modified: 2022.5.3 18:55:55
 
 namespace TS {
 
@@ -20,7 +20,6 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
-	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
 	ATOM_TYPE(SDL_EVENT_ATOM) \
 	ATOM_TYPE(EVENT_STATE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
@@ -38,7 +37,6 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
-	ATOM_CLASS(SdlEventAtomPipe) \
 	ATOM_CLASS(SdlEventAtom) \
 	ATOM_CLASS(EventState) \
 	ATOM_CLASS(TestEventSrcPipe) \
@@ -151,6 +149,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_OGL_SHADER_PIPE) \
 	ATOM_TYPE(SDL_OGL_FBO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
+	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
@@ -163,6 +162,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlOglShaderPipe) \
 	ATOM_CLASS(SdlOglFboAtomPipe) \
 	ATOM_CLASS(SdlContextAtom) \
+	ATOM_CLASS(SdlEventAtomPipe) \
 	ATOM_CLASS(SdlVideoAtomPipe) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \

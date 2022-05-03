@@ -532,6 +532,7 @@ AtomTypeCls SdlContextAtom::GetType() const
 }
 
 #endif
+#if defined flagSDL2
 AtomTypeCls SdlEventAtomPipe::GetAtomType()
 {
 	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
@@ -552,6 +553,7 @@ AtomTypeCls SdlEventAtomPipe::GetType() const
 	return GetAtomType();
 }
 
+#endif
 AtomTypeCls TestEventSrcPipe::GetAtomType()
 {
 	return ATOM11(TEST_EVENT_SRC_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
