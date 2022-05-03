@@ -42,8 +42,8 @@ struct ThreeModelT : ThrModel {
 		Thr::Model_Uninitialize(model, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Thr::Model_ProcessPacket(model, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Thr::Model_Send(model, *this, out))
 			return false;
 		return true;
 	}

@@ -18,7 +18,7 @@ void EvX11::Events_Uninitialize() {
 	TODO
 }
 
-bool EvX11::Events_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool EvX11::Events_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 

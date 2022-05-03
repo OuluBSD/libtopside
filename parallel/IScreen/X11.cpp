@@ -201,7 +201,7 @@ void ScrX11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSou
 	
 }
 
-bool ScrX11::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool ScrX11::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, PacketValue& out) {
 	return true;
 }
 

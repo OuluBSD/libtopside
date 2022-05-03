@@ -34,7 +34,7 @@ struct NeuralNetworkT : NrlNetwork {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 

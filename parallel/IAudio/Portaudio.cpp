@@ -305,7 +305,7 @@ void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&) {
 	PaStatic().Remove(dev);
 }
 
-bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& in, PacketValue& out) {
+bool AudPortaudio::SinkDevice_Send(NativeSinkDevice& dev, AtomBase&, PacketValue& out) {
 	Panic("won't implement");
 	NEVER();
 }
@@ -371,7 +371,7 @@ void AudPortaudio::SourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&)
 	TODO
 }
 
-bool AudPortaudio::SourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& in, PacketValue& out) {
+bool AudPortaudio::SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, PacketValue& out) {
 	TODO
 }
 

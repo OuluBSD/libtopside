@@ -21,7 +21,7 @@ void EvSdl::SourceDevice_Uninitialize(NativeSourceDevice& dev) {
 	TODO
 }
 
-bool EvSdl::SourceDevice_ProcessPacket(NativeSourceDevice& dev, PacketValue& v) {
+bool EvSdl::SourceDevice_Send(NativeSourceDevice& dev, PacketValue& v) {
 	TODO
 }
 

@@ -42,8 +42,8 @@ struct ImageFileImageT : ImgImage {
 		Img::Image_Uninitialize(img, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Img::Image_ProcessPacket(img, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Img::Image_Send(img, *this, out))
 			return false;
 		return true;
 	}

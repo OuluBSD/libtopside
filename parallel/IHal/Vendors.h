@@ -71,7 +71,6 @@ struct HalSdl2 {
 		int time;
 		dword seq;
 		UPP::CtrlEvent ev;
-		int type;
 		Size sz;
 		bool ev_sendable;
 		bool is_lalt;

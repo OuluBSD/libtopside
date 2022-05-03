@@ -36,7 +36,7 @@ struct OperatingSystemMessageBusT : OsMessageBus {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -68,7 +68,7 @@ struct OperatingSystemProcessManagerT : OsProcessManager {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -100,7 +100,7 @@ struct OperatingSystemDesktopManagerT : OsDesktopManager {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 

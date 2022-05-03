@@ -21,7 +21,7 @@ void EvWin32::SourceDevice_Uninitialize(NativeSourceDevice& dev) {
 	TODO
 }
 
-bool EvWin32::SourceDevice_ProcessPacket(NativeSourceDevice& dev, PacketValue& v) {
+bool EvWin32::SourceDevice_Send(NativeSourceDevice& dev, PacketValue& v) {
 	TODO
 }
 

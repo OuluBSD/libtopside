@@ -6,7 +6,7 @@ static bool Network_PostInitialize(AtomBase&);
 static bool Network_Start(AtomBase&);
 static void Network_Stop(AtomBase&);
 static void Network_Uninitialize(AtomBase&);
-static bool Network_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool Network_Send(AtomBase&, PacketValue& out);
 
 	
 bool CreateNetwork(NativeNetwork& a0);

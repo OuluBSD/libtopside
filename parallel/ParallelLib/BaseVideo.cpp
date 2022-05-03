@@ -175,7 +175,7 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 	
 }*/
 
-bool VideoGenBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VideoGenBase::Send(PacketValue& out, int src_ch) {
 	int frame = fmt.GetFrameSize();
 	dword off = out.GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -188,7 +188,7 @@ bool VideoGenBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) 
 	out.Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	
-	RTLOG("VideoGenBase::ProcessPacket: " << out.ToStringWithHash());
+	RTLOG("VideoGenBase::Send: " << out.ToStringWithHash());
 	return true;
 }
 

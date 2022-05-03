@@ -63,7 +63,7 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 }
 
 template <class Gfx>
-bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool ShaderBaseT<Gfx>::Send(PacketValue& out, int src_ch) {
 	//BeginDraw();
 	
 	/*Gfx::SetClearValue(RGBA(0,0,0,255), 255);
@@ -88,7 +88,7 @@ bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out, int src_
 		
 		InternalPacketData& data = out.GetData<InternalPacketData>();
 		this->bf.GetBuffer().StoreOutputLink(data);
-		RTLOG("ShaderBaseT::ProcessPacket: 0, " << out.ToString());
+		RTLOG("ShaderBaseT::Send: 0, " << out.ToString());
 		
 		/*Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
 		if (src_fmt.vd == VD(OGL,FBO)) {
@@ -137,7 +137,7 @@ void ShaderBaseT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	this->last_cfg = &cfg;
 }
 
-/*bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override
+/*bool Send(PacketValue& out, int src_ch) override
 bool ProcessPackets(PacketIO& io) override {
 	auto& buf = this->buf;
 	int src_ch = 0;

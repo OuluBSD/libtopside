@@ -110,7 +110,7 @@ bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 }
 
 template <class Gfx>
-bool FboAtomT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool FboAtomT<Gfx>::Send(PacketValue& out, int src_ch) {
 	RTLOG("FboAtomT::ProcessPackets:");
 	
 	#if 0

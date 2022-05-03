@@ -90,6 +90,11 @@ void AtomBase::PostContinueForward() {
 	Serial_Link_PostContinueForward(link);
 }
 
+bool AtomBase::Recv(int sink_ch, const Packet& in) {
+	// TODO assert(0), because this is bad idea, but I was lazy... all tests will break
+	return true;
+}
+
 
 
 

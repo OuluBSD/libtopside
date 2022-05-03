@@ -46,7 +46,7 @@ public:
 	bool Start() override;
 	void Uninitialize() override;
 	bool IsReady(PacketIO& io) override;
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
+	bool Send(PacketValue& out, int src_ch) override;
 	bool Recv(int sink_ch, const Packet& in) override;
 	void Finalize(RealtimeSourceConfig& cfg) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
@@ -119,7 +119,7 @@ public:
 		return b;
 	}
 	
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		TODO
 	}
 	
@@ -297,7 +297,7 @@ public:
 		return b;
 	}
 	
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		TODO
 	}
 	
@@ -426,7 +426,7 @@ public:
 		return b;
 	}
 	
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		TODO
 	}
 	
@@ -531,7 +531,7 @@ public:
 		return b;
 	}
 	
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		TODO
 	}
 	

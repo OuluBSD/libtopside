@@ -298,10 +298,10 @@ void ScrX11Ogl::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSo
 	dev.ogl.Render(cfg);
 }
 
-bool ScrX11Ogl::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	Format fmt = in.GetFormat();
+bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, PacketValue& out) {
+	/*Format fmt = in.GetFormat();
 	
-	/*int width = vfmt.res[0];
+	int width = vfmt.res[0];
 	int height = vfmt.res[1];
 	
 	ASSERT(dev.fb);

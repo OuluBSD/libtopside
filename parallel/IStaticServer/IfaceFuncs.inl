@@ -6,7 +6,7 @@ static bool ServerInstance_PostInitialize(AtomBase&);
 static bool ServerInstance_Start(AtomBase&);
 static void ServerInstance_Stop(AtomBase&);
 static void ServerInstance_Uninitialize(AtomBase&);
-static bool ServerInstance_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool ServerInstance_Send(AtomBase&, PacketValue& out);
 
 	
 bool CreateServerInstance(NativeServerInstance& a0);

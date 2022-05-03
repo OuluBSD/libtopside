@@ -6,7 +6,7 @@ static bool MidiFile_PostInitialize(NativeMidiFile& file, AtomBase&);
 static bool MidiFile_Start(NativeMidiFile& file, AtomBase&);
 static void MidiFile_Stop(NativeMidiFile& file, AtomBase&);
 static void MidiFile_Uninitialize(NativeMidiFile& file, AtomBase&);
-static bool MidiFile_ProcessPacket(NativeMidiFile& file, AtomBase&, PacketValue& in, PacketValue& out);
+static bool MidiFile_Send(NativeMidiFile& file, AtomBase&, PacketValue& out);
 
 static bool MidiFile_CreateMidiFile(NativeMidiFile& o);
 static void MidiFile_ClearMidiFile(NativeMidiFile& o);

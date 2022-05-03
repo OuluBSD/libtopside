@@ -109,6 +109,13 @@ public:
 		return *(T*)b;
 	}
 	
+	template <class T> const T& GetData() const {
+		ASSERT(custom_data == AsTypeCls<T>());
+		ASSERT(data.GetCount() == sizeof(T));
+		const byte* b = &data[0];
+		return *(T*)b;
+	}
+	
 #if HAVE_OPENGL
 	virtual bool PaintOpenGLTexture(int texture);
 #endif

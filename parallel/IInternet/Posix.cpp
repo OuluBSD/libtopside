@@ -21,7 +21,7 @@ void NetPosix::Socket_Uninitialize(NativeSocket& sock) {
 	TODO
 }
 
-bool NetPosix::Socket_ProcessPacket(NativeSocket& sock, PacketValue& v) {
+bool NetPosix::Socket_Send(NativeSocket& sock, PacketValue& v) {
 	TODO
 }
 

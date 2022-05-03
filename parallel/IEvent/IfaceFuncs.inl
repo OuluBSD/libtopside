@@ -6,7 +6,7 @@ static bool SourceDevice_PostInitialize(NativeSourceDevice& dev, AtomBase&);
 static bool SourceDevice_Start(NativeSourceDevice& dev, AtomBase&);
 static void SourceDevice_Stop(NativeSourceDevice& dev, AtomBase&);
 static void SourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&);
-static bool SourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& in, PacketValue& out);
+static bool SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, PacketValue& out);
 
 static bool SourceDevice_Poll(NativeSourceDevice& o, UPP::CtrlEvent& e);
 static uint32 SourceDevice_GetTickCount(NativeSourceDevice& o);

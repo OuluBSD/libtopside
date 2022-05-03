@@ -40,7 +40,7 @@ public:
 	bool			PostInitialize() override;
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
+	bool			Send(PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void			Finalize(RealtimeSourceConfig& cfg) override;
 	RealtimeSourceConfig* GetConfig() override {return last_cfg;}

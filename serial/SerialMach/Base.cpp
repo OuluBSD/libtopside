@@ -38,7 +38,7 @@ bool CustomerLink::ProcessPackets(PacketIO& io) {
 	src.p->SetFormat(src.val->GetFormat());
 	src.p->SetOffset(off_gen.Create());
 	
-	bool r = atom->ProcessPacket(*sink.p, *src.p, 0);
+	bool r = atom->Recv(0, sink.p) && atom->Send(*src.p, 0);
 	
 	if (r)
 		PacketTracker_Track("CustomerLink::ProcessPackets", __FILE__, __LINE__, *src.p);
@@ -124,9 +124,7 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	
 	atom.Finalize(*link.GetConfig());
 	
-	PacketValue& in = *sink.p;
-	PacketValue& out = *src.p;
-	bool b = atom.ProcessPacket(in, out, 0);
+	bool b = atom.Recv(0, sink.p) && atom.Send(*src.p, 0);
 	
 	return b;
 }
@@ -192,8 +190,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	PacketValue in_null(0);
-	b = atom->ProcessPacket(in_null, *out, 0) && b;
+	b = atom->Send(*out, 0) && b;
 	
 	
 	InterfaceSourceRef src_iface = this->GetSource();
@@ -207,7 +204,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 			src.from_sink_ch = 1;
 			out = this->ReplyPacket(src_ch, prim_sink.p);
 		}
-		b = atom->ProcessPacket(in_null, *out, src_ch) && b;
+		b = atom->Send(*out, src_ch) && b;
 	}
 	
 	
@@ -445,6 +442,7 @@ bool PollerLink::IsReady(PacketIO& io) {
 
 bool PollerLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
+	bool b = true;
 	
 	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
 		PacketIO::Sink& sink = io.sink[sink_ch];
@@ -455,7 +453,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 		
 		RTLOG("PollerLink::ProcessPackets: sink #" << sink_ch << ": " << in->ToString());
 		
-		bool b = atom->Recv(sink_ch, in);
+		b = atom->Recv(sink_ch, in) && b;
 		
 		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
 			(!finalize_on_side && sink_ch == 0))
@@ -472,8 +470,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	PacketValue in_null(0);
-	bool b = atom->ProcessPacket(in_null, *out, 0);
+	b = atom->Send(*out, 0) && b;
 	
 	return true;
 }

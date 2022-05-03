@@ -43,8 +43,8 @@ struct AudioSinkDeviceT : AudSinkDevice {
 		Aud::SinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Aud::SinkDevice_ProcessPacket(dev, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Aud::SinkDevice_Send(dev, *this, out))
 			return false;
 		return true;
 	}
@@ -113,8 +113,8 @@ struct AudioSourceDeviceT : AudSourceDevice {
 		Aud::SourceDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Aud::SourceDevice_ProcessPacket(dev, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Aud::SourceDevice_Send(dev, *this, out))
 			return false;
 		return true;
 	}

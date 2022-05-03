@@ -6,7 +6,7 @@ static bool VirtualMachine_PostInitialize(AtomBase&);
 static bool VirtualMachine_Start(AtomBase&);
 static void VirtualMachine_Stop(AtomBase&);
 static void VirtualMachine_Uninitialize(AtomBase&);
-static bool VirtualMachine_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool VirtualMachine_Send(AtomBase&, PacketValue& out);
 
 	
 static bool Thread_Initialize(AtomBase&, const Script::WorldState&);
@@ -14,7 +14,7 @@ static bool Thread_PostInitialize(AtomBase&);
 static bool Thread_Start(AtomBase&);
 static void Thread_Stop(AtomBase&);
 static void Thread_Uninitialize(AtomBase&);
-static bool Thread_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool Thread_Send(AtomBase&, PacketValue& out);
 
 	
 bool CreateVirtualMachine(NativeVirtualMachine& a0);

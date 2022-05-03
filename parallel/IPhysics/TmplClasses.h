@@ -38,7 +38,7 @@ struct PhysicsNodeT : FysNode {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -70,7 +70,7 @@ struct PhysicsObjectT : FysObject {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -102,7 +102,7 @@ struct PhysicsJointT : FysJoint {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -134,7 +134,7 @@ struct PhysicsSpaceT : FysSpace {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -166,7 +166,7 @@ struct PhysicsSystemT : FysSystem {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
+	bool Send(PacketValue& out, int src_ch) override {
 		return true;
 	}
 

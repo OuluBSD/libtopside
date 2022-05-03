@@ -21,7 +21,7 @@ void NetWin32::Socket_Uninitialize(NativeSocket& sock) {
 	TODO
 }
 
-bool NetWin32::Socket_ProcessPacket(NativeSocket& sock, PacketValue& v) {
+bool NetWin32::Socket_Send(NativeSocket& sock, PacketValue& v) {
 	TODO
 }
 

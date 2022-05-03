@@ -21,7 +21,7 @@ void VrHolo::MotionController_Uninitialize(NativeMotionController& ctrl) {
 	TODO
 }
 
-bool VrHolo::MotionController_ProcessPacket(NativeMotionController& ctrl, PacketValue& v) {
+bool VrHolo::MotionController_Send(NativeMotionController& ctrl, PacketValue& v) {
 	TODO
 }
 
@@ -45,7 +45,7 @@ void VrHolo::MotionControllerSystem_Uninitialize(NativeMotionControllerSystem& s
 	TODO
 }
 
-bool VrHolo::MotionControllerSystem_ProcessPacket(NativeMotionControllerSystem& sys, PacketValue& v) {
+bool VrHolo::MotionControllerSystem_Send(NativeMotionControllerSystem& sys, PacketValue& v) {
 	TODO
 }
 
@@ -65,7 +65,7 @@ void VrHolo::AppView_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::AppView_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::AppView_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -85,7 +85,7 @@ void VrHolo::CameraResources_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::CameraResources_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::CameraResources_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -105,7 +105,7 @@ void VrHolo::ControllerModelCache_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::ControllerModelCache_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::ControllerModelCache_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -125,7 +125,7 @@ void VrHolo::DeviceResources_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::DeviceResources_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::DeviceResources_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -145,7 +145,7 @@ void VrHolo::HolographicRenderer_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::HolographicRenderer_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::HolographicRenderer_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -165,7 +165,7 @@ void VrHolo::HolographicScene_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::HolographicScene_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::HolographicScene_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -185,7 +185,7 @@ void VrHolo::SpatialInteractionSystem_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::SpatialInteractionSystem_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::SpatialInteractionSystem_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -205,7 +205,7 @@ void VrHolo::Renderer_Uninitialize() {
 	TODO
 }
 
-bool VrHolo::Renderer_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHolo::Renderer_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 

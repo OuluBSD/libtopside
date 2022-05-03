@@ -21,7 +21,7 @@ void NetNullSerial::Socket_Uninitialize(NativeSocket& sock) {
 	TODO
 }
 
-bool NetNullSerial::Socket_ProcessPacket(NativeSocket& sock, PacketValue& v) {
+bool NetNullSerial::Socket_Send(NativeSocket& sock, PacketValue& v) {
 	TODO
 }
 

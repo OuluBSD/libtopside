@@ -21,7 +21,7 @@ void NetEnet::Socket_Uninitialize(NativeSocket& sock) {
 	TODO
 }
 
-bool NetEnet::Socket_ProcessPacket(NativeSocket& sock, PacketValue& v) {
+bool NetEnet::Socket_Send(NativeSocket& sock, PacketValue& v) {
 	TODO
 }
 

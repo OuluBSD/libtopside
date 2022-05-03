@@ -21,7 +21,7 @@ void MidPortmidi::MidiSinkDevice_Uninitialize(NativeSinkDevice& dev) {
 	TODO
 }
 
-bool MidPortmidi::MidiSinkDevice_ProcessPacket(NativeSinkDevice& dev, PacketValue& v) {
+bool MidPortmidi::MidiSinkDevice_Send(NativeSinkDevice& dev, PacketValue& v) {
 	TODO
 }
 
@@ -57,7 +57,7 @@ void MidPortmidi::MidiSourceDevice_Uninitialize(NativeSourceDevice& dev) {
 	TODO
 }
 
-bool MidPortmidi::MidiSourceDevice_ProcessPacket(NativeSourceDevice& dev, PacketValue& v) {
+bool MidPortmidi::MidiSourceDevice_Send(NativeSourceDevice& dev, PacketValue& v) {
 	TODO
 }
 

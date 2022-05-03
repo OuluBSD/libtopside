@@ -42,8 +42,8 @@ struct InternetSocketT : NetSocket {
 		Net::Socket_Uninitialize(sock, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Net::Socket_ProcessPacket(sock, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Net::Socket_Send(sock, *this, out))
 			return false;
 		return true;
 	}

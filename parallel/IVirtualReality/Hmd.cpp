@@ -21,7 +21,7 @@ void VrHmd::MotionController_Uninitialize(NativeMotionController& ctrl) {
 	TODO
 }
 
-bool VrHmd::MotionController_ProcessPacket(NativeMotionController& ctrl, PacketValue& v) {
+bool VrHmd::MotionController_Send(NativeMotionController& ctrl, PacketValue& v) {
 	TODO
 }
 
@@ -45,7 +45,7 @@ void VrHmd::MotionControllerSystem_Uninitialize(NativeMotionControllerSystem& sy
 	TODO
 }
 
-bool VrHmd::MotionControllerSystem_ProcessPacket(NativeMotionControllerSystem& sys, PacketValue& v) {
+bool VrHmd::MotionControllerSystem_Send(NativeMotionControllerSystem& sys, PacketValue& v) {
 	TODO
 }
 
@@ -65,7 +65,7 @@ void VrHmd::AppView_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::AppView_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::AppView_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -85,7 +85,7 @@ void VrHmd::CameraResources_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::CameraResources_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::CameraResources_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -105,7 +105,7 @@ void VrHmd::ControllerModelCache_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::ControllerModelCache_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::ControllerModelCache_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -125,7 +125,7 @@ void VrHmd::DeviceResources_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::DeviceResources_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::DeviceResources_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -145,7 +145,7 @@ void VrHmd::HolographicRenderer_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::HolographicRenderer_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::HolographicRenderer_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -165,7 +165,7 @@ void VrHmd::HolographicScene_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::HolographicScene_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::HolographicScene_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -185,7 +185,7 @@ void VrHmd::SpatialInteractionSystem_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::SpatialInteractionSystem_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::SpatialInteractionSystem_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -205,7 +205,7 @@ void VrHmd::Renderer_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::Renderer_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VrHmd::Renderer_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 

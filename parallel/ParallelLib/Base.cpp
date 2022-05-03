@@ -41,7 +41,12 @@ void CustomerBase::UpdateConfig(double dt) {
 	}
 }
 
-bool CustomerBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool CustomerBase::Recv(int sink_ch, const Packet& in) {
+	// pass
+	return true;
+}
+
+bool CustomerBase::Send(PacketValue& out, int src_ch) {
 	// pass
 	return true;
 }
@@ -93,10 +98,10 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool RollingValueBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool RollingValueBase::Send(PacketValue& out, int src_ch) {
 	ASSERT(internal_fmt.IsValid());
 	
-	RTLOG("RollingValueBase::ProcessPacket: time=" << time);
+	RTLOG("RollingValueBase::Send: time=" << time);
 	
 	if (internal_fmt.IsAudio()) {
 		int sz = internal_fmt.GetFrameSize();
@@ -145,7 +150,7 @@ void VoidSinkBase::Uninitialize() {
 	
 }
 
-bool VoidSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool VoidSinkBase::Send(PacketValue& out, int src_ch) {
 	Panic("Not implemented");
 	return false;
 }
@@ -241,10 +246,11 @@ bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 	return b;
 }
 
-bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
-	uint64 route_desc = out.GetRouteDescriptor();
+bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
+	const PacketValue& in = *p;
+	uint64 route_desc = in.GetRouteDescriptor();
 	
-	RTLOG("VoidPollerSinkBase::ProcessPacket: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
+	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
 	
 	Parallel::Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
@@ -254,13 +260,13 @@ bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int sr
 		if (i < 0) {
 			i = thrds.GetCount();
 			thrds.Add(route_desc);
-			RTLOG("VoidPollerSinkBase::ProcessPacket: creating new thread for route " + IntStr64(route_desc));
+			RTLOG("VoidPollerSinkBase::Recv: creating new thread for route " + IntStr64(route_desc));
 		}
 		
 		Thread& t = thrds[i];
 		const Vector<byte>& data = in.GetData();
 		if (data.IsEmpty()) {
-			LOG("VoidPollerSinkBase::ProcessPacket: error: thrd #" << i << " empty data");
+			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " empty data");
 			fail = true;
 		}
 		else if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
@@ -280,18 +286,22 @@ bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int sr
 			dbg_total_samples += dbg_count;
 			dbg_total_bytes += dbg_count * 4;
 			
-			RTLOG("VoidPollerSinkBase::ProcessPacket: thrd #" << i << " successfully verified frame size " << data.GetCount());
+			RTLOG("VoidPollerSinkBase::Recv: thrd #" << i << " successfully verified frame size " << data.GetCount());
 		}
 		else {
-			LOG("VoidPollerSinkBase::ProcessPacket: error: thrd #" << i << " invalid audio format");
+			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " invalid audio format");
 			fail = true;
 		}
 	}
 	else {
-		RTLOG("VoidPollerSinkBase::ProcessPacket: error: unexpected packet " << in.ToString());
+		RTLOG("VoidPollerSinkBase::Recv: error: unexpected packet " << in.ToString());
 		fail = true;
 	}
 	
+	return !fail;
+}
+
+bool VoidPollerSinkBase::Send(PacketValue& out, int src_ch) {
 	return true;
 }
 
@@ -352,8 +362,9 @@ bool EventStateBase::IsReady(PacketIO& io) {
 	return b;
 }
 
-bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
-	RTLOG("EventStateBase::ProcessPacket");
+bool EventStateBase::Recv(int sink_ch, const Packet& p) {
+	RTLOG("EventStateBase::Recv");
+	const PacketValue& in = *p;
 	
 	Format fmt = in.GetFormat();
 	if (fmt.vd.val == ValCls::EVENT) {
@@ -362,6 +373,11 @@ bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch
 	}
 	else TODO
 	
+	return true;
+}
+
+bool EventStateBase::Send(PacketValue& out, int src_ch) {
+	RTLOG("EventStateBase::Send");
 	return true;
 }
 
@@ -546,22 +562,16 @@ bool TestEventSrcBase::IsReady(PacketIO& io) {
 	return true;
 }
 
-bool TestEventSrcBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
-	RTLOG("TestEventSrcBase::ProcessPackets");
-	Format in_fmt = in.GetFormat();
+bool TestEventSrcBase::Send(PacketValue& out, int src_ch) {
+	RTLOG("TestEventSrcBase::Send");
 	Format out_fmt = out.GetFormat();
 	
-	if (in_fmt.vd.val == ValCls::ORDER) {
-		ASSERT(out_fmt.vd.val == ValCls::EVENT);
-		if (out_fmt.vd.val == ValCls::EVENT) {
-			CtrlEvent& ev = out.SetData<CtrlEvent>();
-			RandomizeEvent(ev);
-			sent_count++;
-			return true;
-		}
-	}
-	else {
-		TODO
+	ASSERT(out_fmt.vd.val == ValCls::EVENT);
+	if (out_fmt.vd.val == ValCls::EVENT) {
+		CtrlEvent& ev = out.SetData<CtrlEvent>();
+		RandomizeEvent(ev);
+		sent_count++;
+		return true;
 	}
 	
 	return false;

@@ -103,7 +103,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	//void Forward(FwdScope& fwd) override;
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
+	bool Send(PacketValue& out, int src_ch) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	bool LoadFile();

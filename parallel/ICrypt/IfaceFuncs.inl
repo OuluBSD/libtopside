@@ -6,7 +6,7 @@ static bool Crypt_PostInitialize(NativeCrypt& dev, AtomBase&);
 static bool Crypt_Start(NativeCrypt& dev, AtomBase&);
 static void Crypt_Stop(NativeCrypt& dev, AtomBase&);
 static void Crypt_Uninitialize(NativeCrypt& dev, AtomBase&);
-static bool Crypt_ProcessPacket(NativeCrypt& dev, AtomBase&, PacketValue& in, PacketValue& out);
+static bool Crypt_Send(NativeCrypt& dev, AtomBase&, PacketValue& out);
 
 static bool Crypt_CreateNativeCrypt(NativeCrypt& o);
 static void Crypt_ClearNativeCrypt(NativeCrypt& o);

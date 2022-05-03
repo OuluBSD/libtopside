@@ -6,7 +6,7 @@ static bool NetFile_PostInitialize(AtomBase&);
 static bool NetFile_Start(AtomBase&);
 static void NetFile_Stop(AtomBase&);
 static void NetFile_Uninitialize(AtomBase&);
-static bool NetFile_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool NetFile_Send(AtomBase&, PacketValue& out);
 
 	
 bool CreateNetFile(NativeNetFile& a0);

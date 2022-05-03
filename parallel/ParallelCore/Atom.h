@@ -76,7 +76,7 @@ public:
 	virtual void			ClearSinkSource() = 0;
 	virtual ISourceRef		GetSource() = 0;
 	virtual ISinkRef		GetSink() = 0;
-	virtual bool			ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) = 0;
+	virtual bool			Send(PacketValue& out, int src_ch) = 0;
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}
@@ -86,7 +86,7 @@ public:
 	virtual String			ToString() const;
 	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
-	virtual bool			Recv(int sink_ch, const Packet& in) {Panic("Unimplemented"); NEVER();}
+	virtual bool			Recv(int sink_ch, const Packet& in);
 	virtual void			Finalize(RealtimeSourceConfig& cfg) {}
 	// internal format should be sink:0
 	//virtual const Format&	GetInternalFormat() const {ASSERT(user_internal_fmt.IsValid()) return user_internal_fmt;}

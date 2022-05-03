@@ -42,8 +42,8 @@ struct MidiFileMidiFileT : MifMidiFile {
 		Mif::MidiFile_Uninitialize(file, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
-		if (!Mif::MidiFile_ProcessPacket(file, *this, in, out))
+	bool Send(PacketValue& out, int src_ch) override {
+		if (!Mif::MidiFile_Send(file, *this, out))
 			return false;
 		return true;
 	}

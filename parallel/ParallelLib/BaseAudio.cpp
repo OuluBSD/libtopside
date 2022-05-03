@@ -36,7 +36,7 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 */
-bool AudioGenBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool AudioGenBase::Send(PacketValue& out, int src_ch) {
 	const int sink_ch = 0;
 	
 	/*PacketIO::Sink& sink = io.sink[sink_ch];
@@ -55,7 +55,7 @@ bool AudioGenBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) 
 	out.Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	
-	RTLOG("AudioGenBase::ProcessPacket: offset " << (int)off << " " << out.ToStringWithHash());
+	RTLOG("AudioGenBase::Send: offset " << (int)off << " " << out.ToStringWithHash());
 	
 	return true;
 }

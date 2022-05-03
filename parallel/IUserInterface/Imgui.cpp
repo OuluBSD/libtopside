@@ -21,7 +21,7 @@ void UiImgui::Window_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::Window_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::Window_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void UiImgui::Splitter_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::Splitter_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::Splitter_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void UiImgui::SeparatorCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::SeparatorCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::SeparatorCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void UiImgui::ArrayCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::ArrayCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::ArrayCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void UiImgui::ColumnCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::ColumnCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::ColumnCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -121,7 +121,7 @@ void UiImgui::TreeCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::TreeCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::TreeCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -141,7 +141,7 @@ void UiImgui::IconCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::IconCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::IconCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -161,7 +161,7 @@ void UiImgui::ImageCtrl_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::ImageCtrl_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::ImageCtrl_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -181,7 +181,7 @@ void UiImgui::Button_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::Button_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::Button_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -201,7 +201,7 @@ void UiImgui::Label_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::Label_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::Label_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -221,7 +221,7 @@ void UiImgui::StringEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::StringEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::StringEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -241,7 +241,7 @@ void UiImgui::IntEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::IntEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::IntEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -261,7 +261,7 @@ void UiImgui::FloatEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::FloatEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::FloatEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -281,7 +281,7 @@ void UiImgui::TimeEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::TimeEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::TimeEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -301,7 +301,7 @@ void UiImgui::DateEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::DateEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::DateEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -321,7 +321,7 @@ void UiImgui::DocEdit_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::DocEdit_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::DocEdit_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -341,7 +341,7 @@ void UiImgui::Bar_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::Bar_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::Bar_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -361,7 +361,7 @@ void UiImgui::MenuBar_Uninitialize() {
 	TODO
 }
 
-bool UiImgui::MenuBar_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
+bool UiImgui::MenuBar_Send(PacketValue& out, int src_ch) {
 	TODO
 }
 

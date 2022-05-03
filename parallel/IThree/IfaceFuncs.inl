@@ -6,7 +6,7 @@ static bool Model_PostInitialize(NativeModel& model, AtomBase&);
 static bool Model_Start(NativeModel& model, AtomBase&);
 static void Model_Stop(NativeModel& model, AtomBase&);
 static void Model_Uninitialize(NativeModel& model, AtomBase&);
-static bool Model_ProcessPacket(NativeModel& model, AtomBase&, PacketValue& in, PacketValue& out);
+static bool Model_Send(NativeModel& model, AtomBase&, PacketValue& out);
 
 static bool Model_CreateModel(NativeModel& o);
 static void Model_ClearModel(NativeModel& o);

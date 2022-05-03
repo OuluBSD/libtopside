@@ -6,7 +6,7 @@ static bool WebBrowser_PostInitialize(AtomBase&);
 static bool WebBrowser_Start(AtomBase&);
 static void WebBrowser_Stop(AtomBase&);
 static void WebBrowser_Uninitialize(AtomBase&);
-static bool WebBrowser_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
+static bool WebBrowser_Send(AtomBase&, PacketValue& out);
 
 	
 bool CreateWebBrowser(NativeWebBrowser& a0);

@@ -124,7 +124,7 @@ void HalSdl2::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool HalSdl2::AudioSinkDevice_Send(NativeAudioSinkDevice& dev, AtomBase& a, PacketValue& out) {
 	return true;
 }
 
@@ -195,7 +195,7 @@ void HalSdl2::ContextBase_Uninitialize(NativeContextBase& ctx, AtomBase& a) {
 	SDL_Quit();
 }
 
-bool HalSdl2::ContextBase_ProcessPacket(NativeContextBase& ctx, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool HalSdl2::ContextBase_Send(NativeContextBase& ctx, AtomBase& a, PacketValue& out) {
 	return true;
 }
 
@@ -335,7 +335,7 @@ void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::CenterVideoSinkDevice_ProcessPacket(NativeVideoSink& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool HalSdl2::CenterVideoSinkDevice_Send(NativeVideoSink& dev, AtomBase& a, PacketValue& out) {
 	return true;
 }
 
@@ -494,8 +494,8 @@ void HalSdl2::CenterFboSinkDevice_Finalize(NativeSw3dVideoSink& dev, AtomBase&, 
 	dev.accel.Render(cfg);
 }
 
-bool HalSdl2::CenterFboSinkDevice_ProcessPacket(NativeSw3dVideoSink& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	Format fmt = in.GetFormat();
+bool HalSdl2::CenterFboSinkDevice_Send(NativeSw3dVideoSink& dev, AtomBase& a, PacketValue& out) {
+	/*Format fmt = in.GetFormat();
 	if (fmt.IsVideo()) {
 		const Vector<byte>& pixmap = in.Data();
 		VideoFormat& vfmt = fmt;
@@ -505,7 +505,7 @@ bool HalSdl2::CenterFboSinkDevice_ProcessPacket(NativeSw3dVideoSink& dev, AtomBa
 		int width = vfmt.res[0];
 		int height = vfmt.res[1];
 		
-	}
+	}*/
 	return true;
 }
 
@@ -657,8 +657,8 @@ void HalSdl2::OglVideoSinkDevice_Uninitialize(NativeOglVideoSink& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::OglVideoSinkDevice_ProcessPacket(NativeOglVideoSink& dev, AtomBase&, PacketValue& in, PacketValue& out) {
-	Format fmt = in.GetFormat();
+bool HalSdl2::OglVideoSinkDevice_Send(NativeOglVideoSink& dev, AtomBase&, PacketValue& out) {
+	/*Format fmt = in.GetFormat();
 	if (fmt.IsVideo()) {
 		const Vector<byte>& pixmap = in.Data();
 		VideoFormat& vfmt = fmt;
@@ -668,7 +668,7 @@ bool HalSdl2::OglVideoSinkDevice_ProcessPacket(NativeOglVideoSink& dev, AtomBase
 		int width = vfmt.res[0];
 		int height = vfmt.res[1];
 		
-	}
+	}*/
 	return true;
 }
 
@@ -748,7 +748,7 @@ void HalSdl2::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
 	a.RemoveAtomFromUpdateList();
 }
 
-bool HalSdl2::EventsBase_ProcessPacket(NativeEventsBase& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool HalSdl2::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, PacketValue& out) {
 	ASSERT(dev.ev_sendable);
 	if (!dev.ev_sendable)
 		return false;

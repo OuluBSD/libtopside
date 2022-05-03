@@ -21,7 +21,7 @@ void EvGlfw::SourceDevice_Uninitialize(NativeSourceDevice& dev) {
 	TODO
 }
 
-bool EvGlfw::SourceDevice_ProcessPacket(NativeSourceDevice& dev, PacketValue& v) {
+bool EvGlfw::SourceDevice_Send(NativeSourceDevice& dev, PacketValue& v) {
 	TODO
 }
 
