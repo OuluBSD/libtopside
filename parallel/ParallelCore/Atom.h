@@ -76,7 +76,7 @@ public:
 	virtual void			ClearSinkSource() = 0;
 	virtual ISourceRef		GetSource() = 0;
 	virtual ISinkRef		GetSink() = 0;
-	virtual bool			ProcessPacket(PacketValue& in, PacketValue& out) = 0;
+	virtual bool			ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) = 0;
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}

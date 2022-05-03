@@ -42,6 +42,11 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 
 template <class Gfx>
 bool ShaderBaseT<Gfx>::PostInitialize() {
+	return true;
+}
+
+template <class Gfx>
+bool ShaderBaseT<Gfx>::Start() {
 	return this->bf.PostInitialize();
 }
 
@@ -58,7 +63,7 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 }
 
 template <class Gfx>
-bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	//BeginDraw();
 	
 	/*Gfx::SetClearValue(RGBA(0,0,0,255), 255);
@@ -71,13 +76,37 @@ bool ShaderBaseT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	Gfx::SetTriangleFrontsideCCW();
 	Gfx::SetViewport(this->bf.GetBuffer().fb.GetSize());*/
 	
-	this->bf.GetBuffer().Process(*this->last_cfg);
-	//CommitDraw();
-	ASSERT(in.GetFormat().IsValid());
+	Format fmt = out.GetFormat();
 	
-	InternalPacketData& data = out.GetData<InternalPacketData>();
-	this->bf.GetBuffer().StoreOutputLink(data);
-	RTLOG("ShaderBaseT::ProcessPacket: 0, " << out.ToString());
+	if (fmt.vd.val == ValCls::RECEIPT) {
+		// pass
+	}
+	else if (fmt.vd.val == ValCls::FBO) {
+		this->bf.GetBuffer().Process(*this->last_cfg);
+		//CommitDraw();
+		ASSERT(fmt.IsValid());
+		
+		InternalPacketData& data = out.GetData<InternalPacketData>();
+		this->bf.GetBuffer().StoreOutputLink(data);
+		RTLOG("ShaderBaseT::ProcessPacket: 0, " << out.ToString());
+		
+		/*Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 1;
+				out = this->ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			this->GetBuffer().StoreOutputLink(data);
+			RTLOG("PipeOptSideLink::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}*/
+	}
+	else {
+		TODO
+	}
+	
 	return true;
 }
 
@@ -108,7 +137,7 @@ void ShaderBaseT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	this->last_cfg = &cfg;
 }
 
-/*bool ProcessPacket(PacketValue& in, PacketValue& out) override
+/*bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override
 bool ProcessPackets(PacketIO& io) override {
 	auto& buf = this->buf;
 	int src_ch = 0;

@@ -21,7 +21,7 @@ void FysTos::Node_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Node_ProcessPacket(PacketValue& in, PacketValue& out) {
+bool FysTos::Node_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void FysTos::Object_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Object_ProcessPacket(PacketValue& in, PacketValue& out) {
+bool FysTos::Object_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void FysTos::Joint_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Joint_ProcessPacket(PacketValue& in, PacketValue& out) {
+bool FysTos::Joint_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void FysTos::Space_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Space_ProcessPacket(PacketValue& in, PacketValue& out) {
+bool FysTos::Space_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void FysTos::System_Uninitialize() {
 	TODO
 }
 
-bool FysTos::System_ProcessPacket(PacketValue& in, PacketValue& out) {
+bool FysTos::System_ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	TODO
 }
 

@@ -599,7 +599,7 @@ bool Package::Export() {
 			}
 			fout << "\t}\n\n";
 			
-			fout << "\tbool ProcessPacket(PacketValue& in, PacketValue& out) override {\n";
+			fout << "\tbool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {\n";
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];

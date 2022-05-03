@@ -42,7 +42,7 @@ struct WebcamWebcamT : CamWebcam {
 		Cam::Webcam_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Cam::Webcam_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;

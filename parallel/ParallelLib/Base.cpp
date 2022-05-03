@@ -41,7 +41,7 @@ void CustomerBase::UpdateConfig(double dt) {
 	}
 }
 
-bool CustomerBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool CustomerBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	// pass
 	return true;
 }
@@ -93,7 +93,7 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool RollingValueBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool RollingValueBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	ASSERT(internal_fmt.IsValid());
 	
 	RTLOG("RollingValueBase::ProcessPacket: time=" << time);
@@ -145,7 +145,7 @@ void VoidSinkBase::Uninitialize() {
 	
 }
 
-bool VoidSinkBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool VoidSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	Panic("Not implemented");
 	return false;
 }
@@ -241,7 +241,7 @@ bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 	return b;
 }
 
-bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	uint64 route_desc = out.GetRouteDescriptor();
 	
 	RTLOG("VoidPollerSinkBase::ProcessPacket: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
@@ -352,7 +352,7 @@ bool EventStateBase::IsReady(PacketIO& io) {
 	return b;
 }
 
-bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	RTLOG("EventStateBase::ProcessPacket");
 	
 	Format fmt = in.GetFormat();
@@ -543,7 +543,7 @@ bool TestEventSrcBase::IsReady(PacketIO& io) {
 	return true;
 }
 
-bool TestEventSrcBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool TestEventSrcBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	RTLOG("TestEventSrcBase::ProcessPackets");
 	Format in_fmt = in.GetFormat();
 	Format out_fmt = out.GetFormat();

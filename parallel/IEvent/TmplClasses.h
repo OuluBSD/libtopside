@@ -42,7 +42,7 @@ struct EventSourceDeviceT : EvSourceDevice {
 		Ev::SourceDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Ev::SourceDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;

@@ -46,6 +46,26 @@ public:
 	
 };
 
+class PipeOptSideLink : public Link {
+	bool finalize_on_side = false;
+	
+	
+public:
+	RTTI_DECL1(PipeOptSideLink, Link)
+	typedef PipeOptSideLink CLASSNAME;
+	PipeOptSideLink();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	bool			ProcessPackets(PacketIO& io) override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
+	void			SetFinalizeOnSide(bool b=true) {finalize_on_side = b;}
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
 class IntervalPipeLink : public AsyncMemForwarderBase {
 	RunningFlag			flag;
 	

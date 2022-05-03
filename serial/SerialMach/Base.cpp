@@ -38,7 +38,7 @@ bool CustomerLink::ProcessPackets(PacketIO& io) {
 	src.p->SetFormat(src.val->GetFormat());
 	src.p->SetOffset(off_gen.Create());
 	
-	bool r = atom->ProcessPacket(*sink.p, *src.p);
+	bool r = atom->ProcessPacket(*sink.p, *src.p, 0);
 	
 	if (r)
 		PacketTracker_Track("CustomerLink::ProcessPackets", __FILE__, __LINE__, *src.p);
@@ -126,7 +126,7 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	
 	PacketValue& in = *sink.p;
 	PacketValue& out = *src.p;
-	bool b = atom.ProcessPacket(in, out);
+	bool b = atom.ProcessPacket(in, out, 0);
 	
 	return b;
 }
@@ -137,6 +137,187 @@ bool PipeLink::ProcessPackets(PacketIO& io) {
 
 LinkTypeCls PipeLink::GetType() {
 	return LINKTYPE(PIPE, PROCESS);
+}
+
+
+
+
+
+
+
+
+
+
+
+PipeOptSideLink::PipeOptSideLink() {
+	
+}
+
+bool PipeOptSideLink::Initialize(const Script::WorldState& ws) {
+	
+	return true;
+}
+
+void PipeOptSideLink::Uninitialize() {
+	
+}
+
+bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
+	bool do_finalize = false;
+	bool b = true;
+	
+	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sink[sink_ch];
+		Packet& in = sink.p;
+		if (!in)
+			continue;
+		sink.may_remove = true;
+		
+		RTLOG("PipeOptSideLink::ProcessPackets: sink #" << sink_ch << ": " << in->ToString());
+		
+		b = atom->Recv(sink_ch, in) && b;
+		
+		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
+			(!finalize_on_side && sink_ch == 0))
+			do_finalize = true;
+	}
+	
+	if (do_finalize)
+		atom->Finalize(*last_cfg);
+	
+	int src_ch = 0;
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& src = io.src[src_ch];
+	Packet& out = src.p;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(src_ch, prim_sink.p);
+	
+	PacketValue in_null(0);
+	b = atom->ProcessPacket(in_null, *out, 0) && b;
+	
+	
+	InterfaceSourceRef src_iface = this->GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Packet& out = src.p;
+		if (!out) {
+			src.from_sink_ch = 1;
+			out = this->ReplyPacket(src_ch, prim_sink.p);
+		}
+		b = atom->ProcessPacket(in_null, *out, src_ch) && b;
+	}
+	
+	
+	return b;
+	/*
+	auto& buf = this->buf;
+	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& prim_src = io.src[0];
+	PacketIO::Sink& sink = io.sink[1];
+	
+	ASSERT(prim_sink.p && sink.p);
+	prim_sink.may_remove = true;
+	sink.may_remove = true;
+	prim_src.from_sink_ch = 0;
+	prim_src.p = this->ReplyPacket(0, prim_sink.p);
+	
+	PacketValue& from = *sink.p;
+	const Vector<byte> from_data = from.GetData();
+	
+	Format from_fmt = from.GetFormat();
+	ASSERT(from_fmt.IsVideo() || from_fmt.IsVolume());
+	Size3 sz;
+	int channels;
+	if (from_fmt.IsVideo()) {
+		sz			= from_fmt.vid.GetSize();
+		channels	= from_fmt.vid.GetChannels();
+		
+		if (from_fmt.vid.IsCubemap()) {
+			if (from.seq == 0) {
+				loading_cubemap = true;
+				cubemap.Clear();
+			}
+			
+			if (loading_cubemap) {
+				if (from.seq == cubemap.GetCount())
+					cubemap.Add(sink.p);
+				
+				if (cubemap.GetCount() < 6)
+					return true;
+			}
+		}
+	}
+	else if (from_fmt.IsVolume()) {
+		sz			= from_fmt.vol.GetSize();
+		channels	= from_fmt.vol.GetChannels();
+	}
+	else
+		TODO
+	
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
+		fb.sample = GVar::SAMPLE_FLOAT;
+		fb.filter = this->filter;
+		fb.wrap = this->wrap;
+		fb.fps = 0;
+		
+		if (loading_cubemap) {
+			ASSERT(cubemap.GetCount() == 6);
+			if (!buf.InitializeCubemap(
+					fb.size,
+					fb.channels,
+					GVar::SAMPLE_U8,
+					cubemap[0]->GetData(),
+					cubemap[1]->GetData(),
+					cubemap[2]->GetData(),
+					cubemap[3]->GetData(),
+					cubemap[4]->GetData(),
+					cubemap[5]->GetData()
+				))
+				return false;
+		}
+		else if (sz.cz == 0) {
+			if (!buf.InitializeTexture(
+				fb.size,
+				fb.channels,
+				GVar::SAMPLE_U8,
+				&*from_data.Begin(),
+				from_data.GetCount()))
+				return false;
+		}
+		else {
+			if (!buf.InitializeVolume(
+				fb.size,
+				fb.channels,
+				GVar::SAMPLE_U8,
+				from_data))
+				return false;
+		}
+	}
+	else {
+		buf.ReadTexture(
+			sz,
+			channels,
+			GVar::SAMPLE_U8,
+			from.GetData());
+	}
+	
+	
+	return true;
+	*/
+}
+
+LinkTypeCls PipeOptSideLink::GetType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 
@@ -288,7 +469,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
 	PacketValue in_null(0);
-	bool b = atom->ProcessPacket(in_null, *out);
+	bool b = atom->ProcessPacket(in_null, *out, 0);
 	
 	return true;
 }

@@ -30,6 +30,7 @@ INITBLOCK {
 	
 	Serial::Factory::RegisterLink<CustomerLink>();
 	Serial::Factory::RegisterLink<PipeLink>();
+	Serial::Factory::RegisterLink<PipeOptSideLink>();
 	Serial::Factory::RegisterLink<IntervalPipeLink>();
 	Serial::Factory::RegisterLink<ExternalPipeLink>();
 	Serial::Factory::RegisterLink<DriverLink>();

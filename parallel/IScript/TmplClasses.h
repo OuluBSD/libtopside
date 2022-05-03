@@ -36,7 +36,7 @@ struct ScriptRunnerT : ScrRunner {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -68,7 +68,7 @@ struct ScriptThreadT : ScrThread {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		return true;
 	}
 

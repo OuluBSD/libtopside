@@ -36,9 +36,8 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 */
-bool AudioGenBase::ProcessPacket(PacketValue& in, PacketValue& out) {
+bool AudioGenBase::ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) {
 	const int sink_ch = 0;
-	const int src_ch = 0;
 	
 	/*PacketIO::Sink& sink = io.sink[sink_ch];
 	PacketIO::Source& src = io.src[src_ch];

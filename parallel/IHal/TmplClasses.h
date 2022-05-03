@@ -46,7 +46,7 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		Hal::AudioSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Hal::AudioSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
@@ -100,7 +100,7 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 		Hal::CenterVideoSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Hal::CenterVideoSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
@@ -154,7 +154,7 @@ struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 		Hal::CenterFboSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Hal::CenterFboSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
@@ -208,7 +208,7 @@ struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 		Hal::OglVideoSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Hal::OglVideoSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
@@ -262,7 +262,7 @@ struct HalContextBaseT : HalContextBase {
 		Hal::ContextBase_Uninitialize(ctx, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Hal::ContextBase_ProcessPacket(ctx, *this, in, out))
 			return false;
 		return true;

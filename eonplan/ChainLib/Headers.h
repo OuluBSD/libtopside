@@ -365,7 +365,7 @@ HEADER_ACTION(		SdlOglShaderAtom,	any.ogl.fbo.side)
 HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagOGL,				1)
 HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlOglShaderAtom,	HINT_PKG,					"AtomDebug")
-HEADER_LINK(		SdlOglShaderAtom,	PIPE, PROCESS)
+HEADER_LINK(		SdlOglShaderAtom,	PIPE_OPTSIDE, PROCESS)
 
 HEADER11(			SdlOglShaderAtomSA,	SdlOglShaderBase,			pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlOglShaderAtomSA,	ogl.fbo.source.standalone)

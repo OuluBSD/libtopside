@@ -802,7 +802,7 @@ AtomTypeCls SdlOglShaderAtom::GetAtomType()
 
 LinkTypeCls SdlOglShaderAtom::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void SdlOglShaderAtom::Visit(RuntimeVisitor& vis)

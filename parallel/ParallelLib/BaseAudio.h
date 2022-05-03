@@ -121,7 +121,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
 	//void Forward(FwdScope& fwd) final;
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	

@@ -23,7 +23,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	bool IsForwardReady() override;
 	void ForwardPacket(PacketValue& in, PacketValue& out) override;
 	
@@ -47,7 +47,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 };
@@ -73,7 +73,7 @@ public:
 	void Uninitialize() override;
 	//very old: void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	bool Consume(const void* data, int len) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
@@ -103,7 +103,7 @@ public:
 	void Update(double dt) override;
 	bool IsReady(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
@@ -118,7 +118,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override {return true;}
 	void Uninitialize() override {}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {return true;}
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {return true;}
 	
 };
 
@@ -138,7 +138,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool IsReady(PacketIO& io) override;
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	
 	void Event(const CtrlEvent& e);
 	void LeftDown(Point pt, dword keyflags);
@@ -170,7 +170,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool IsReady(PacketIO& io) override;
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override;
 	
 	
 };

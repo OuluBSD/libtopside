@@ -42,7 +42,7 @@ struct ImgProcImageT : ImpImage {
 		Imp::Image_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out, int src_ch) override {
 		if (!Imp::Image_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
