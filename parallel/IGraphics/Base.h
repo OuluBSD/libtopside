@@ -22,7 +22,7 @@ public:
 	void Update(double dt) override {bf.Update(dt);}
 	RealtimeSourceConfig* GetConfig() override {return last_cfg;}
 	
-	Buffer& GetBuffer() {return bf.buf;}
+	Buffer& GetBuffer() {return bf.GetBuffer();}
 	
 	
 	GfxBufferFieldT<Gfx> bf;
@@ -73,191 +73,14 @@ public:
 	
 	TextureBaseT() {}
 	
-	bool Initialize(const Script::WorldState& ws) override {
-		
-		String f = ws.Get(".filter");
-		if (!f.IsEmpty()) {
-			if (f == "nearest")
-				filter = GVar::FILTER_NEAREST;
-			else if (f == "linear")
-				filter = GVar::FILTER_LINEAR;
-			else if (f == "mipmap")
-				filter = GVar::FILTER_MIPMAP;
-			else {
-				LOG("OglTextureBase::Initialize: error: invalid filter string '" << f << "'");
-				return false;
-			}
-		}
-		
-		String w = ws.Get(".wrap");
-		if (!w.IsEmpty()) {
-			if (w == "clamp")
-				wrap = GVar::WRAP_CLAMP;
-			else if (w == "repeat")
-				wrap = GVar::WRAP_REPEAT;
-			else {
-				LOG("OglTextureBase::Initialize: error: invalid wrap string '" << w << "'");
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	bool PostInitialize() override {
-		
-		return true;
-	}
-	
-	void Uninitialize() override {
-		
-	}
-	
-	bool IsReady(PacketIO& io) override {
-		bool b = io.full_src_mask == 0 && io.active_sink_mask == 0b11;
-		RTLOG("OglTextureBase::IsReady: " << (b ? "true" : "false"));
-		return b;
-	}
-	
-	bool Send(PacketValue& out, int src_ch) override {
-		TODO
-	}
-	
-	/*bool ProcessPackets(PacketIO& io) override {
-		auto& buf = this->buf;
-		ASSERT(io.src_count == 2 && io.sink_count == 2);
-		
-		PacketIO::Sink& prim_sink = io.sink[0];
-		PacketIO::Source& prim_src = io.src[0];
-		PacketIO::Sink& sink = io.sink[1];
-		
-		ASSERT(prim_sink.p && sink.p);
-		prim_sink.may_remove = true;
-		sink.may_remove = true;
-		prim_src.from_sink_ch = 0;
-		prim_src.p = this->ReplyPacket(0, prim_sink.p);
-		
-		PacketValue& from = *sink.p;
-		const Vector<byte> from_data = from.GetData();
-		
-		Format from_fmt = from.GetFormat();
-		ASSERT(from_fmt.IsVideo() || from_fmt.IsVolume());
-		Size3 sz;
-		int channels;
-		if (from_fmt.IsVideo()) {
-			sz			= from_fmt.vid.GetSize();
-			channels	= from_fmt.vid.GetChannels();
-			
-			if (from_fmt.vid.IsCubemap()) {
-				if (from.seq == 0) {
-					loading_cubemap = true;
-					cubemap.Clear();
-				}
-				
-				if (loading_cubemap) {
-					if (from.seq == cubemap.GetCount())
-						cubemap.Add(sink.p);
-					
-					if (cubemap.GetCount() < 6)
-						return true;
-				}
-			}
-		}
-		else if (from_fmt.IsVolume()) {
-			sz			= from_fmt.vol.GetSize();
-			channels	= from_fmt.vol.GetChannels();
-		}
-		else
-			TODO
-		
-		if (!buf.IsInitialized()) {
-			ASSERT(sz.cx > 0 && sz.cy > 0);
-			auto& fb = buf.fb;
-			fb.is_win_fbo = false;
-			fb.size = sz;
-			fb.channels = channels;
-			fb.sample = GVar::SAMPLE_FLOAT;
-			fb.filter = this->filter;
-			fb.wrap = this->wrap;
-			fb.fps = 0;
-			
-			if (loading_cubemap) {
-				ASSERT(cubemap.GetCount() == 6);
-				if (!buf.InitializeCubemap(
-						fb.size,
-						fb.channels,
-						GVar::SAMPLE_U8,
-						cubemap[0]->GetData(),
-						cubemap[1]->GetData(),
-						cubemap[2]->GetData(),
-						cubemap[3]->GetData(),
-						cubemap[4]->GetData(),
-						cubemap[5]->GetData()
-					))
-					return false;
-			}
-			else if (sz.cz == 0) {
-				if (!buf.InitializeTexture(
-					fb.size,
-					fb.channels,
-					GVar::SAMPLE_U8,
-					&*from_data.Begin(),
-					from_data.GetCount()))
-					return false;
-			}
-			else {
-				if (!buf.InitializeVolume(
-					fb.size,
-					fb.channels,
-					GVar::SAMPLE_U8,
-					from_data))
-					return false;
-			}
-		}
-		else {
-			buf.ReadTexture(
-				sz,
-				channels,
-				GVar::SAMPLE_U8,
-				from.GetData());
-		}
-		
-		
-		InterfaceSourceRef src_iface = this->GetSource();
-		int src_count = src_iface->GetSourceCount();
-		for (int src_ch = 1; src_ch < src_count; src_ch++) {
-			PacketIO::Source& src = io.src[src_ch];
-			if (!src.val)
-				continue;
-			Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
-			if (src_fmt.vd == VD(OGL,FBO)) {
-				Packet& out = src.p;
-				if (!out) {
-					src.from_sink_ch = 1;
-					out = this->ReplyPacket(src_ch, prim_sink.p);
-				}
-				PacketValue& val = *out;
-				InternalPacketData& data = val.GetData<InternalPacketData>();
-				this->GetBuffer().StoreOutputLink(data);
-				RTLOG("OglTextureBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
-			}
-		}
-		
-		return true;
-	}*/
-	
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
-	
-	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override {
-		// accept all valid video formats for now
-		if (new_fmt.IsValid() && new_fmt.IsVideo()) {
-			ISinkRef sink = this->GetSink();
-			Value& val = sink->GetValue(sink_ch);
-			val.SetFormat(new_fmt);
-			return true;
-		}
-		return false;
-	}
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	bool IsReady(PacketIO& io) override;
+	bool Recv(int sink_ch, const Packet& in) override;
+	bool Send(PacketValue& out, int src_ch) override;
+	void Visit(RuntimeVisitor& vis) override;
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
 	
 	
 };

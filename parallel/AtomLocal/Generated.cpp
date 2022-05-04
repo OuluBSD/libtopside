@@ -34,7 +34,7 @@ AtomTypeCls WebcamAtom::GetAtomType()
 
 LinkTypeCls WebcamAtom::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void WebcamAtom::Visit(RuntimeVisitor& vis)
@@ -56,7 +56,7 @@ AtomTypeCls AudioLoaderAtom::GetAtomType()
 
 LinkTypeCls AudioLoaderAtom::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
@@ -78,7 +78,7 @@ AtomTypeCls VideoLoaderAtom::GetAtomType()
 
 LinkTypeCls VideoLoaderAtom::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void VideoLoaderAtom::Visit(RuntimeVisitor& vis)
@@ -188,7 +188,7 @@ AtomTypeCls EcsCpuVideo::GetAtomType()
 
 LinkTypeCls EcsCpuVideo::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void EcsCpuVideo::Visit(RuntimeVisitor& vis)
@@ -210,7 +210,7 @@ AtomTypeCls EcsOglFbo::GetAtomType()
 
 LinkTypeCls EcsOglFbo::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void EcsOglFbo::Visit(RuntimeVisitor& vis)
@@ -264,50 +264,6 @@ AtomTypeCls EventState::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagSCREEN
-AtomTypeCls SdlImageLoader::GetAtomType()
-{
-	return ATOM11_U01(SDL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
-}
-
-LinkTypeCls SdlImageLoader::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlImageLoader::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SDL2ImageBase>(this);
-}
-
-AtomTypeCls SdlImageLoader::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls VolumeLoaderAtom::GetAtomType()
-{
-	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
-}
-
-LinkTypeCls VolumeLoaderAtom::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void VolumeLoaderAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<VolumeLoaderBase>(this);
-}
-
-AtomTypeCls VolumeLoaderAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
 #if defined flagSCREEN
 AtomTypeCls SdlFboPipeSide::GetAtomType()
 {
@@ -375,50 +331,6 @@ AtomTypeCls SdlVideoAtomSA::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls OglTextureSource::GetAtomType()
-{
-	return ATOM11_U11(OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);
-}
-
-LinkTypeCls OglTextureSource::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void OglTextureSource::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OglTextureBase>(this);
-}
-
-AtomTypeCls OglTextureSource::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls OglVolumeSource::GetAtomType()
-{
-	return ATOM11_U11(OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
-}
-
-LinkTypeCls OglVolumeSource::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void OglVolumeSource::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OglTextureBase>(this);
-}
-
-AtomTypeCls OglVolumeSource::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
 AtomTypeCls OglAudioSink::GetAtomType()
 {
 	return ATOM11_U11(OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
@@ -426,7 +338,7 @@ AtomTypeCls OglAudioSink::GetAtomType()
 
 LinkTypeCls OglAudioSink::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void OglAudioSink::Visit(RuntimeVisitor& vis)
@@ -448,7 +360,7 @@ AtomTypeCls OglKeyboardSource::GetAtomType()
 
 LinkTypeCls OglKeyboardSource::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void OglKeyboardSource::Visit(RuntimeVisitor& vis)
@@ -470,7 +382,7 @@ AtomTypeCls OglAudioSource::GetAtomType()
 
 LinkTypeCls OglAudioSource::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void OglAudioSource::Visit(RuntimeVisitor& vis)
@@ -492,7 +404,7 @@ AtomTypeCls CpuKeyboardSource::GetAtomType()
 
 LinkTypeCls CpuKeyboardSource::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void CpuKeyboardSource::Visit(RuntimeVisitor& vis)

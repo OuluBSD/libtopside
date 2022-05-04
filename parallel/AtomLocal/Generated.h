@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.3 18:55:55
+// Last modified: 2022.5.4 22:11:22
 
 namespace TS {
 
@@ -209,40 +209,6 @@ public:
 };
 
 #if defined flagSCREEN
-class SdlImageLoader : public SDL2ImageBase {
-
-public:
-	RTTI_DECL1(SdlImageLoader, SDL2ImageBase)
-	COPY_PANIC(SdlImageLoader)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class VolumeLoaderAtom : public VolumeLoaderBase {
-
-public:
-	RTTI_DECL1(VolumeLoaderAtom, VolumeLoaderBase)
-	COPY_PANIC(VolumeLoaderAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.volume.loader")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class SdlFboPipeSide : public Sdl2OglVideoSinkDevice {
 
 public:
@@ -284,40 +250,6 @@ public:
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class OglTextureSource : public OglTextureBase {
-
-public:
-	RTTI_DECL1(OglTextureSource, OglTextureBase)
-	COPY_PANIC(OglTextureSource)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.image")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class OglVolumeSource : public OglTextureBase {
-
-public:
-	RTTI_DECL1(OglVolumeSource, OglTextureBase)
-	COPY_PANIC(OglVolumeSource)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -519,7 +451,7 @@ using SdlOglShaderAtomRef = Ref<SdlOglShaderAtom, AtomParent>;
 
 using SdlOglShaderAtomSARef = Ref<SdlOglShaderAtomSA, AtomParent>;
 
-using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
+using SdlOglTextureSourceRef = Ref<SdlOglTextureSource, AtomParent>;
 
 using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
 

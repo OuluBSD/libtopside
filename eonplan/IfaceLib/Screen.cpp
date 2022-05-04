@@ -88,6 +88,7 @@ PKG(Screen, Scr, S) {
 			.Add("ogl",					"GfxAccelAtom<X11OglGfx>")
 			.Add("atomWmDeleteWindow",	"::Atom ")
 			.Add("attr",				"::XSetWindowAttributes")
+			.Add("cfg",					"RealtimeSourceConfig*")
 			;
 		
 	}

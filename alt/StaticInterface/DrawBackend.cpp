@@ -49,7 +49,19 @@ void SysImage::Clear() {
 }
 
 Image ImageBuffer::GetImage() {
-	TODO
+	int len = buf.GetCount() * 4;
+	
+	RawSysImage* img = new RawSysImage();
+	img->data.SetCount(len);
+	if (len)
+		memcpy(img->data.Begin(), (RGBA*)buf.Begin(), len);
+	img->backend = 0;
+	img->w = sz.cx;
+	img->h = sz.cy;
+	img->ch = 4;
+	img->pitch = sz.cx * 4;
+	
+	return img;
 }
 
 

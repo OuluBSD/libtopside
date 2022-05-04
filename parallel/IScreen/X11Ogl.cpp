@@ -295,7 +295,7 @@ bool ScrX11Ogl::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, cons
 }
 
 void ScrX11Ogl::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg) {
-	dev.ogl.Render(cfg);
+	dev.cfg = &cfg;
 }
 
 bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, PacketValue& out) {
@@ -346,6 +346,8 @@ bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, PacketValue&
     
 	XFlush(dev.display);*/
 	//XSync(dev.display, False);
+	ASSERT(dev.cfg);
+	dev.ogl.Render(*dev.cfg);
 	
 	return true;
 }

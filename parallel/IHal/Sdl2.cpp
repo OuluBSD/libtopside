@@ -345,7 +345,7 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 		const Vector<byte>& data = p->GetData();
 		const byte* mem = (const byte*)data.Begin();
 		int len = data.GetCount();
-		VideoFormat& vfmt = fmt;	
+		VideoFormat& vfmt = fmt;
 		int frame_size = vfmt.GetFrameSize();
 		
 		if (mem && len > 0 && len == frame_size) {
@@ -669,6 +669,8 @@ bool HalSdl2::OglVideoSinkDevice_Send(NativeOglVideoSink& dev, AtomBase&, Packet
 		int height = vfmt.res[1];
 		
 	}*/
+	ASSERT(dev.cfg);
+	dev.accel.Render(*dev.cfg);
 	return true;
 }
 
@@ -677,7 +679,7 @@ bool HalSdl2::OglVideoSinkDevice_Recv(NativeOglVideoSink& dev, AtomBase&, int ch
 }
 
 void HalSdl2::OglVideoSinkDevice_Finalize(NativeOglVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
-	dev.accel.Render(cfg);
+	dev.cfg = &cfg;
 }
 
 void HalSdl2::OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase& a, double dt) {
@@ -753,9 +755,10 @@ bool HalSdl2::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, PacketValue& o
 	if (!dev.ev_sendable)
 		return false;
 	
-	RTLOG("HalSdl2::EventsBase_ProcessPacket: sink #0: " << in.ToString());
 
 	Format fmt = out.GetFormat();
+	RTLOG("HalSdl2::EventsBase_Send: " << fmt.ToString());
+	
 	if (fmt.IsEvent()) {
 		out.seq = dev.seq++;
 		UPP::CtrlEvent& dst = out.SetData<UPP::CtrlEvent>();

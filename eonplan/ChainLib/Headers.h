@@ -84,16 +84,19 @@ HEADER_ARG(			WebcamPipe,			reqdef_HAVE_OPENCV,			1)
 HEADER12_U01(		WebcamAtom,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		WebcamAtom,			center.video.webcam)
 HEADER_ARG(			WebcamAtom,			reqdef_HAVE_OPENCV,			1)
+HEADER_LINK(		WebcamAtom,			PIPE_OPTSIDE, PROCESS)
 
 HEADER12_U01(		AudioLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioLoaderAtom,	center.audio.loader)
 HEADER_ARG(			AudioLoaderAtom,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			AudioLoaderAtom,	reqdef_flagFFMPEG,			1)
+HEADER_LINK(		AudioLoaderAtom,	PIPE_OPTSIDE, PROCESS)
 
 HEADER13_U02(		VideoLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagFFMPEG,			1)
+HEADER_LINK(		VideoLoaderAtom,	PIPE_OPTSIDE, PROCESS)
 
 HEADER11(			EventStatePipe,		EventStateBase,				driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
 HEADER_ACTION(		EventStatePipe,		state.event.pipe)
@@ -110,6 +113,7 @@ HEADER_ARG(			EcsEventsAtom,		reqdef_flagSCREEN,			1)
 //HEADER12_U01(		EcsOglAtom,			EcsOglBase,					pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
 //HEADER_ACTION(		EcsOglAtom,			ecs.system.rendering)
 //HEADER_ARG(			EcsOglAtom,			reqdef_flagSCREEN,	1)
+//HEADER_LINK(		EcsOglAtom,	PIPE_OPTSIDE, PROCESS)
 
 HEADER11(			EcsCpuVideoPipe,	EcsVideoBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		EcsCpuVideoPipe,	center.video.ecs.pipe)
@@ -128,10 +132,12 @@ HEADER_ARG(			EcsOglFboPipe,		reqdef_flagSCREEN,			1)
 HEADER55_U44(		EcsCpuVideo,		EcsVideoBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		EcsCpuVideo,		center.video.ecs)
 HEADER_ARG(			EcsCpuVideo,		reqdef_flagSCREEN,			1)
+HEADER_LINK(		EcsCpuVideo,		PIPE_OPTSIDE, PROCESS)
 
 HEADER55_U44(		EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		EcsOglFbo,			ogl.fbo.ecs)
 HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,			1)
+HEADER_LINK(		EcsOglFbo,			PIPE_OPTSIDE, PROCESS)
 
 
 
@@ -251,13 +257,18 @@ HEADER_ACTION(		TestEventSrcPipe,	event.src.test.pipe)
 HEADER_LINK(		TestEventSrcPipe,	PIPE, PROCESS)
 HEADER_ARG(			TestEventSrcPipe,	HINT_PKG,					"AtomDebug")
 
-HEADER12_U01(		SdlImageLoader,		SDL2ImageBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
+HEADER12_U01(		SdlImageLoader,		Sdl2OglImageBase,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlImageLoader,		center.image.loader)
 HEADER_ARG(			SdlImageLoader,		reqdef_flagSCREEN,			1)
+HEADER_ARG(			SdlImageLoader,		reqdef_flagSDL2,			1)
+HEADER_LINK(		SdlImageLoader,		PIPE_OPTSIDE, PROCESS)
+HEADER_ARG(			SdlImageLoader,		HINT_PKG,					"AtomDebug")
 
-HEADER12_U01(		VolumeLoaderAtom,	VolumeLoaderBase,			pipe,		CenterVolume,	CenterOrder,	CenterVolume,	CenterReceipt)
+HEADER12_U01(		VolumeLoaderAtom,	RawByteStaticSource,		pipe,		CenterVolume,	CenterOrder,	CenterVolume,	CenterReceipt)
 HEADER_ACTION(		VolumeLoaderAtom,	center.volume.loader)
 HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,			1)
+HEADER_LINK(		VolumeLoaderAtom,	PIPE_OPTSIDE, PROCESS)
+HEADER_ARG(			VolumeLoaderAtom,	HINT_PKG,					"AtomDebug")
 
 
 
@@ -377,25 +388,34 @@ HEADER_ARG(			SdlOglShaderAtomSA,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlOglShaderAtomSA,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlOglShaderAtomSA,	PIPE, PROCESS)
 
-HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,			OglReceipt)
-HEADER_ACTION(		OglTextureSource,	ogl.fbo.image)
-HEADER_ARG(			OglTextureSource,	reqdef_flagSCREEN,			1)
+HEADER22_U11(		SdlOglTextureSource,	SdlOglTextureBase,			pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,			OglReceipt)
+HEADER_ACTION(		SdlOglTextureSource,	ogl.fbo.image)
+HEADER_ARG(			SdlOglTextureSource,	reqdef_flagSCREEN,			1)
+HEADER_ARG(			SdlOglTextureSource,	reqdef_flagSDL2,			1)
+HEADER_ARG(			SdlOglTextureSource,	reqdef_flagOGL,				1)
+HEADER_ARG(			SdlOglTextureSource,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		SdlOglTextureSource,	PIPE_OPTSIDE, PROCESS)
 
-HEADER22_U11(		OglVolumeSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,			OglReceipt)
+HEADER22_U11(		OglVolumeSource,	SdlOglTextureBase,			pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,			OglReceipt)
 HEADER_ACTION(		OglVolumeSource,	ogl.fbo.volume)
 HEADER_ARG(			OglVolumeSource,	reqdef_flagSCREEN,			1)
+HEADER_ARG(			OglVolumeSource,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		OglVolumeSource,	PIPE_OPTSIDE, PROCESS)
 
 HEADER22_U11(		OglAudioSink,		OglFboReaderBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			CenterAudio,	OglReceipt)
 HEADER_ACTION(		OglAudioSink,		ogl.fbo.center.audio)
 HEADER_ARG(			OglAudioSink,		reqdef_flagSCREEN,			1)
+HEADER_LINK(		OglAudioSink,		PIPE_OPTSIDE, PROCESS)
 
 HEADER12_U01(		OglKeyboardSource,	OglKeyboardBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
 HEADER_ACTION(		OglKeyboardSource,	ogl.fbo.keyboard)
 HEADER_ARG(			OglKeyboardSource,	reqdef_flagSCREEN,			1)
+HEADER_LINK(		OglKeyboardSource,	PIPE_OPTSIDE, PROCESS)
 
 HEADER22_U11(		OglAudioSource,		OglAudioBase,				pipe,		OglFbo,			OglOrder,		CenterAudio,	OglFbo,			OglReceipt)
 HEADER_ACTION(		OglAudioSource,		ogl.fbo.audio)
 HEADER_ARG(			OglAudioSource,		reqdef_flagSCREEN,			1)
+HEADER_LINK(		OglAudioSource,		PIPE_OPTSIDE, PROCESS)
 
 
 
@@ -404,4 +424,5 @@ HEADER_ARG(			OglAudioSource,		reqdef_flagSCREEN,			1)
 HEADER12_U01(		CpuKeyboardSource,	CpuKeyboardBase,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		CpuKeyboardSource,	center.video.keyboard)
 HEADER_ARG(			CpuKeyboardSource,	reqdef_flagSCREEN,			1)
+HEADER_LINK(		CpuKeyboardSource,	PIPE_OPTSIDE, PROCESS)
 

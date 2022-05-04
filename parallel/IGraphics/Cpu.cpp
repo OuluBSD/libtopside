@@ -578,6 +578,11 @@ template <class Gfx> void SwGfxT<Gfx>::UnbindFramebuffer() {
 	Local().fb = 0;
 }
 
+template <class Gfx>
+void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+	TODO
+}
+
 #if defined flagSDL2
 template struct SwGfxT<SdlSwGfx>;
 #endif

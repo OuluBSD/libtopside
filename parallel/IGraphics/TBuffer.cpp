@@ -144,12 +144,11 @@ bool BufferT<Gfx>::SetLoopback(String loopback_str) {
 template <class Gfx>
 bool BufferT<Gfx>::InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
 	RTLOG("InitializeTexture: " << sz.ToString() << ", " << HexStr((void*)data) << ", " << len);
-	TODO
-	#if 0
+	
 	UpdateTexBuffers();
 	
-	ReadTexture(sz, channels, data, len);
-	#endif
+	ReadTexture(sz, channels, sample, data, len);
+	
 	return true;
 }
 
@@ -179,32 +178,25 @@ bool BufferT<Gfx>::InitializeVolume(Size3 sz, int channels, Sample sample, const
 	return true;
 }
 
-#if 0
 template <class Gfx>
 void BufferT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
-	TODO
-	#if 0
-	GLenum type		= GL_TEXTURE_2D;
+	GVar::TextureType type = GVar::TEXTYPE_2D;
 	
-	GLuint& color_buf = this->color_buf[0];
-	ASSERT(color_buf > 0);
-	ASSERT(sz == fb_size);
-	ASSERT(s.GetSize() == len);
-	int intl_fmt = GetGfxChannelFormat(channels);
+	int exp_len = sz.cx * sz.cy * channels;
+	ASSERT(len == exp_len);
+	if (len != exp_len)
+		return;
 	
-	Gfx::BindTexture (type, color_buf);
-	Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	Gfx::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	auto& color_buf = this->fb.color_buf[0];
+	ASSERT(color_buf);
+	//ASSERT(sz == fb_size);
+	//ASSERT(s.GetSize() == len);
 	
-	Gfx::TexImage2D(type, 0, GL_RGBA32F,
-		sz.cx,
-		sz.cy,
-		0, intl_fmt, GL_UNSIGNED_BYTE,
-		data);
+	Gfx::BindTextureRW(type, color_buf);
+	Gfx::TexParameteri(type, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+	Gfx::SetTexture(type, sz, sample, channels, data);
 	
-	TexFlags(type, fb_filter, fb_wrap);
-	#endif
+	TexFlags(type, fb.filter, fb.wrap);
 }
 
 template <class Gfx>
@@ -218,7 +210,7 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 	ASSERT(color_buf);
 	//int intl_fmt = GetGfxChannelFormat(channels);
 	
-	Gfx::BindTexture (type, color_buf);
+	Gfx::BindTextureRW(type, color_buf);
 	Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	Gfx::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -235,6 +227,7 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 }
 
 
+#if 0
 template <class Gfx>
 void BufferT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
 	GLenum type		= GL_TEXTURE_CUBE_MAP;

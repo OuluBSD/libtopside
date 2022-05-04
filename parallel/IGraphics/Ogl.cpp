@@ -40,23 +40,7 @@ GLenum GetOglTextureType(GVar::TextureType type) {
 	return gl_t;
 }
 
-
-
-
-
-GLint OglFramebufferBase::GetGlType() const {
-	using namespace GVar;
-	switch (sample) {
-		case SAMPLE_FLOAT:	return GL_FLOAT;
-		case SAMPLE_U8:		return GL_UNSIGNED_BYTE;
-		case SAMPLE_U16:	return GL_UNSIGNED_SHORT;
-		case SAMPLE_U32:	return GL_UNSIGNED_INT;
-		case SAMPLE_S32:	return GL_INT;
-	}
-	return -1;
-}
-
-GLint OglFramebufferBase::GetGlFormat() const {
+GLint GetGfxChannelFormat(GVar::Sample sample, int channels) {
 	using namespace GVar;
 	ASSERT(channels >= 1 && channels <= 4);
 	if (sample != SAMPLE_FLOAT) {
@@ -78,6 +62,26 @@ GLint OglFramebufferBase::GetGlFormat() const {
 		}
 	}
 	return -1;
+}
+
+
+
+
+
+GLint OglFramebufferBase::GetGlType() const {
+	using namespace GVar;
+	switch (sample) {
+		case SAMPLE_FLOAT:	return GL_FLOAT;
+		case SAMPLE_U8:		return GL_UNSIGNED_BYTE;
+		case SAMPLE_U16:	return GL_UNSIGNED_SHORT;
+		case SAMPLE_U32:	return GL_UNSIGNED_INT;
+		case SAMPLE_S32:	return GL_INT;
+	}
+	return -1;
+}
+
+GLint OglFramebufferBase::GetGlFormat() const {
+	return GetGfxChannelFormat(sample, channels);
 }
 
 int OglFramebufferBase::GetGlSize() const {
@@ -282,6 +286,20 @@ template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
 	glTexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+	GLenum t = GetOglTextureType(type);
+	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
+	ASSERT(intl_fmt >= 0);
+	
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
+	glTexImage2D(
+		t, 0, GL_RGBA32F,
+		sz.cx,
+		sz.cy,
+		0, intl_fmt, GL_UNSIGNED_BYTE,
+		data);
+}
 /*void OglRendererBase::ActivateNextFrame() {
 	// pass
 }*/

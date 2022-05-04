@@ -574,6 +574,50 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 	return GetAtomType();
 }
 
+#if defined flagSCREEN && defined flagSDL2
+AtomTypeCls SdlImageLoader::GetAtomType()
+{
+	return ATOM11_U01(SDL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+}
+
+LinkTypeCls SdlImageLoader::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlImageLoader::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2OglImageBase>(this);
+}
+
+AtomTypeCls SdlImageLoader::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls VolumeLoaderAtom::GetAtomType()
+{
+	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
+}
+
+LinkTypeCls VolumeLoaderAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void VolumeLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<RawByteStaticSource>(this);
+}
+
+AtomTypeCls VolumeLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
 #if defined flagSCREEN
 AtomTypeCls X11VideoAtomPipe::GetAtomType()
 {
@@ -855,6 +899,50 @@ void SdlOglShaderAtomSA::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlOglShaderAtomSA::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+AtomTypeCls SdlOglTextureSource::GetAtomType()
+{
+	return ATOM11_U11(SDL_OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);
+}
+
+LinkTypeCls SdlOglTextureSource::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlOglTextureSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglTextureBase>(this);
+}
+
+AtomTypeCls SdlOglTextureSource::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls OglVolumeSource::GetAtomType()
+{
+	return ATOM11_U11(OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
+}
+
+LinkTypeCls OglVolumeSource::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void OglVolumeSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglTextureBase>(this);
+}
+
+AtomTypeCls OglVolumeSource::GetType() const
 {
 	return GetAtomType();
 }

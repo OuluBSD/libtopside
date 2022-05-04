@@ -9,6 +9,7 @@ file
 	Aud.cpp,
 	Hal.cpp,
 	Screen.cpp,
+	Volumetric.cpp,
 	Ev.cpp,
 	Fys.cpp,
 	Vr.cpp,

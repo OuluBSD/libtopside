@@ -93,12 +93,10 @@ typedef unsigned int	Gxbf;
 #include "Compiler.h"
 #include "Library.h"
 
-
-
 #include "Types.h"
 #include "State.h"
-
 #include "GfxClasses.h"
+#include "ImageBase.h"
 
 #include "TState.h"
 #include "TFramebuffer.h"

@@ -215,9 +215,197 @@ bool ProcessPackets(PacketIO& io) override {
 
 
 
-X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
+	
+	String f = ws.Get(".filter");
+	if (!f.IsEmpty()) {
+		if (f == "nearest")
+			filter = GVar::FILTER_NEAREST;
+		else if (f == "linear")
+			filter = GVar::FILTER_LINEAR;
+		else if (f == "mipmap")
+			filter = GVar::FILTER_MIPMAP;
+		else {
+			LOG("OglTextureBase::Initialize: error: invalid filter string '" << f << "'");
+			return false;
+		}
+	}
+	
+	String w = ws.Get(".wrap");
+	if (!w.IsEmpty()) {
+		if (w == "clamp")
+			wrap = GVar::WRAP_CLAMP;
+		else if (w == "repeat")
+			wrap = GVar::WRAP_REPEAT;
+		else {
+			LOG("OglTextureBase::Initialize: error: invalid wrap string '" << w << "'");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::PostInitialize() {
+	
+	return true;
+}
+
+template <class Gfx>
+void TextureBaseT<Gfx>::Uninitialize() {
+	
+}
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::IsReady(PacketIO& io) {
+	bool b = io.full_src_mask == 0 && io.active_sink_mask == 0b11;
+	RTLOG("OglTextureBase::IsReady: " << (b ? "true" : "false"));
+	return b;
+}
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
+	PacketValue& in = *p;
+	const Vector<byte> in_data = in.GetData();
+	
+	Format in_fmt = in.GetFormat();
+	if (in_fmt.IsOrder())
+		return true;
+	
+	ASSERT(in_fmt.IsVideo() || in_fmt.IsVolume());
+	Size3 sz;
+	int channels;
+	if (in_fmt.IsVideo()) {
+		sz			= in_fmt.vid.GetSize();
+		channels	= in_fmt.vid.GetChannels();
+		
+		if (in_fmt.vid.IsCubemap()) {
+			if (in.seq == 0) {
+				loading_cubemap = true;
+				cubemap.Clear();
+			}
+			
+			if (loading_cubemap) {
+				if (in.seq == cubemap.GetCount())
+					cubemap.Add(p);
+				
+				if (cubemap.GetCount() < 6)
+					return true;
+			}
+		}
+	}
+	else if (in_fmt.IsVolume()) {
+		sz			= in_fmt.vol.GetSize();
+		channels	= in_fmt.vol.GetChannels();
+	}
+	else
+		TODO
+	
+	auto& buf = this->bf.GetBuffer();
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
+		fb.sample = GVar::SAMPLE_FLOAT;
+		fb.filter = this->filter;
+		fb.wrap = this->wrap;
+		fb.fps = 0;
+		
+		if (loading_cubemap) {
+			ASSERT(cubemap.GetCount() == 6);
+			if (!buf.InitializeCubemap(
+					fb.size,
+					fb.channels,
+					GVar::SAMPLE_U8,
+					cubemap[0]->GetData(),
+					cubemap[1]->GetData(),
+					cubemap[2]->GetData(),
+					cubemap[3]->GetData(),
+					cubemap[4]->GetData(),
+					cubemap[5]->GetData()
+				))
+				return false;
+		}
+		else if (sz.cz == 0) {
+			if (!buf.InitializeTexture(
+				fb.size,
+				fb.channels,
+				GVar::SAMPLE_U8,
+				&*in_data.Begin(),
+				in_data.GetCount()))
+				return false;
+		}
+		else {
+			if (!buf.InitializeVolume(
+				fb.size,
+				fb.channels,
+				GVar::SAMPLE_U8,
+				in_data))
+				return false;
+		}
+	}
+	else {
+		buf.ReadTexture(
+			sz,
+			channels,
+			GVar::SAMPLE_U8,
+			in.GetData());
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::Send(PacketValue& out, int src_ch) {
+	if (src_ch >= 1) {
+		Format fmt = out.GetFormat();
+		
+		if (fmt.vd == VD(OGL,FBO)) {
+			InternalPacketData& data = out.GetData<InternalPacketData>();
+			this->GetBuffer().StoreOutputLink(data);
+			RTLOG("OglTextureBase::ProcessPackets: 0, " << src_ch << ": " << out.ToString());
+		}
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+void TextureBaseT<Gfx>::Visit(RuntimeVisitor& vis) {vis.VisitThis<BufferBase>(this);}
+
+template <class Gfx>
+bool TextureBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
+		ISinkRef sink = this->GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(TextureBaseT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
+/*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
-SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
+SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)*/
 
 
 NAMESPACE_PARALLEL_END

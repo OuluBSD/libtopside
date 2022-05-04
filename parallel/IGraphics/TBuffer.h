@@ -86,8 +86,8 @@ public:
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
-	//void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
-	//void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
+	void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
+	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool Initialize();
 	void RefreshPipeline();

@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.3 18:55:55
+// Last modified: 2022.5.4 22:11:22
 
 namespace TS {
 
@@ -67,7 +67,6 @@ namespace Parallel {
 	ATOM_TYPE(X11_SW_SHADER_PIPE) \
 	ATOM_TYPE(X11_SW_FBO_ATOM_PIPE) \
 	ATOM_TYPE(OGL_CUSTOMER) \
-	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(X11_SW_VIDEO_ATOM_PIPE) \
@@ -75,7 +74,6 @@ namespace Parallel {
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
-	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 	ATOM_TYPE(OGL_AUDIO_SINK) \
 	ATOM_TYPE(OGL_KEYBOARD_SOURCE) \
@@ -96,7 +94,6 @@ namespace Parallel {
 	ATOM_CLASS(X11SwShaderPipe) \
 	ATOM_CLASS(X11SwFboAtomPipe) \
 	ATOM_CLASS(OglCustomer) \
-	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \
 	ATOM_CLASS(X11VideoAtomPipe) \
 	ATOM_CLASS(X11SwVideoAtomPipe) \
@@ -104,7 +101,6 @@ namespace Parallel {
 	ATOM_CLASS(SdlFboPipeSide) \
 	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(SdlVideoAtomSA) \
-	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
 	ATOM_CLASS(OglAudioSink) \
 	ATOM_CLASS(OglKeyboardSource) \
@@ -131,6 +127,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
 	ATOM_TYPE(SDL_FBO_PIPE) \
 	ATOM_TYPE(SDL_FBO_ATOM) \
+	ATOM_TYPE(SDL_OGL_TEXTURE_SOURCE) \
 
 
 #define flagOGL_ATOM_CLASS_LIST \
@@ -142,6 +139,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlFboAtomSA) \
 	ATOM_CLASS(SdlFboPipe) \
 	ATOM_CLASS(SdlFboAtom) \
+	ATOM_CLASS(SdlOglTextureSource) \
 
 
 #define flagSDL2_ATOM_TYPE_LIST \
@@ -150,6 +148,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_OGL_FBO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
 	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
+	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
@@ -163,6 +162,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlOglFboAtomPipe) \
 	ATOM_CLASS(SdlContextAtom) \
 	ATOM_CLASS(SdlEventAtomPipe) \
+	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(SdlVideoAtomPipe) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \

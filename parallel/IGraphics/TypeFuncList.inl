@@ -20,6 +20,7 @@ static void DeactivateTexture();
 static void BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex);
 static void BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex);
 static void ReserveTexture(FramebufferT<Gfx>& fb);
+static void SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int ch, const byte* data);
 static void UnbindTexture(GVar::TextureType type);
 static void GenerateMipmap(GVar::TextureType type);
 static bool CreateShader(GVar::ShaderType t, NativeShaderRef& new_shdr);
