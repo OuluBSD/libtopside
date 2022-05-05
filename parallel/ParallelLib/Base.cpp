@@ -46,7 +46,7 @@ bool CustomerBase::Recv(int sink_ch, const Packet& in) {
 	return true;
 }
 
-bool CustomerBase::Send(PacketValue& out, int src_ch) {
+bool CustomerBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	// pass
 	return true;
 }
@@ -98,7 +98,7 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool RollingValueBase::Send(PacketValue& out, int src_ch) {
+bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	ASSERT(internal_fmt.IsValid());
 	
 	RTLOG("RollingValueBase::Send: time=" << time);
@@ -150,7 +150,7 @@ void VoidSinkBase::Uninitialize() {
 	
 }
 
-bool VoidSinkBase::Send(PacketValue& out, int src_ch) {
+bool VoidSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	Panic("Not implemented");
 	return false;
 }
@@ -301,7 +301,7 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 	return !fail;
 }
 
-bool VoidPollerSinkBase::Send(PacketValue& out, int src_ch) {
+bool VoidPollerSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
@@ -376,7 +376,7 @@ bool EventStateBase::Recv(int sink_ch, const Packet& p) {
 	return true;
 }
 
-bool EventStateBase::Send(PacketValue& out, int src_ch) {
+bool EventStateBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	RTLOG("EventStateBase::Send");
 	return true;
 }
@@ -562,7 +562,7 @@ bool TestEventSrcBase::IsReady(PacketIO& io) {
 	return true;
 }
 
-bool TestEventSrcBase::Send(PacketValue& out, int src_ch) {
+bool TestEventSrcBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	RTLOG("TestEventSrcBase::Send");
 	Format out_fmt = out.GetFormat();
 	

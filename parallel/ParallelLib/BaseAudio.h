@@ -121,7 +121,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
 	//void Forward(FwdScope& fwd) final;
-	bool Send(PacketValue& out, int src_ch) override;
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	

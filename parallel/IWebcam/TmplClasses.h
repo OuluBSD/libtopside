@@ -42,8 +42,8 @@ struct WebcamWebcamT : CamWebcam {
 		Cam::Webcam_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Cam::Webcam_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Cam::Webcam_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

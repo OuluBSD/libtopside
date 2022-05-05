@@ -9,7 +9,7 @@ machine sdl.app: {
 		loop center.image: {
 			id: "image";
 			center.customer: true;
-			center.image.loader: true [][id: "texture"] {vflip: true; cubemap: true; filepath: "imgs/488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg";};
+			center.image.loader: true [][id: "texture"] {vflip: true; cubemap: true; swap_top_bottom: true; filepath: "imgs/488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg";};
 		};
 		
 		loop ogl.fbo.tex: {

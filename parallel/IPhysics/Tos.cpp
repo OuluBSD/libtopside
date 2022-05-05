@@ -21,7 +21,7 @@ void FysTos::Node_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Node_Send(PacketValue& out, int src_ch) {
+bool FysTos::Node_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void FysTos::Object_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Object_Send(PacketValue& out, int src_ch) {
+bool FysTos::Object_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void FysTos::Joint_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Joint_Send(PacketValue& out, int src_ch) {
+bool FysTos::Joint_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void FysTos::Space_Uninitialize() {
 	TODO
 }
 
-bool FysTos::Space_Send(PacketValue& out, int src_ch) {
+bool FysTos::Space_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void FysTos::System_Uninitialize() {
 	TODO
 }
 
-bool FysTos::System_Send(PacketValue& out, int src_ch) {
+bool FysTos::System_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

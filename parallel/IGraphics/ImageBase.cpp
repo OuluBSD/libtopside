@@ -26,11 +26,9 @@ bool ImageBaseAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	String filepath = RealizeFilepathArgument(arg_filepath);
 	RTLOG("ImageBaseAtomT: filepath=\"" << filepath << "\"");
 	
-	if (ws.Get(".cubemap") == "true")
-		cubemap = true;
-	
-	if (ws.Get(".vflip") == "true")
-		vflip = true;
+	cubemap			= ws.Get(".cubemap") == "true";
+	vflip			= ws.Get(".vflip") == "true";
+	swap_top_bottom	= ws.Get(".swap_top_bottom") == "true";
 	
 	//OBJ_CREATE
 	
@@ -59,6 +57,9 @@ bool ImageBaseAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 			
 			imgs.Add(img);
 		}
+		
+		if (swap_top_bottom)
+			Swap(imgs[2], imgs[3]);
 	}
 	else {
 		Image img = StreamRaster::LoadFileAny(filepath);
@@ -111,14 +112,14 @@ bool ImageBaseAtomT<Gfx>::IsReady(PacketIO& io) {
 }
 
 template <class Gfx>
-bool ImageBaseAtomT<Gfx>::Send(PacketValue& out, int src_ch) {
+bool ImageBaseAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	if (imgs.IsEmpty()) return false;
-	
-	out.seq = seq++;
-	Image& img = imgs[0];
 	
 	Format fmt = out.GetFormat();
 	if (fmt.IsVideo()) {
+		out.seq = seq++;
+		Image& img = imgs[0];
+		
 		fmt.vid.SetSize(img.GetSize());
 		if (cubemap)
 			fmt.vid.SetCubemap();
@@ -131,6 +132,9 @@ bool ImageBaseAtomT<Gfx>::Send(PacketValue& out, int src_ch) {
 		
 		imgs.Remove(0);
 	}
+	else if (fmt.IsReceipt())
+		; // pass
+	else TODO
 	
 	return true;
 }

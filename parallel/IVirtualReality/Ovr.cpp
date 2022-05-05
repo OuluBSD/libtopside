@@ -65,7 +65,7 @@ void VrOvr::AppView_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::AppView_Send(PacketValue& out, int src_ch) {
+bool VrOvr::AppView_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -85,7 +85,7 @@ void VrOvr::CameraResources_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::CameraResources_Send(PacketValue& out, int src_ch) {
+bool VrOvr::CameraResources_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -105,7 +105,7 @@ void VrOvr::ControllerModelCache_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::ControllerModelCache_Send(PacketValue& out, int src_ch) {
+bool VrOvr::ControllerModelCache_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -125,7 +125,7 @@ void VrOvr::DeviceResources_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::DeviceResources_Send(PacketValue& out, int src_ch) {
+bool VrOvr::DeviceResources_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -145,7 +145,7 @@ void VrOvr::HolographicRenderer_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::HolographicRenderer_Send(PacketValue& out, int src_ch) {
+bool VrOvr::HolographicRenderer_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -165,7 +165,7 @@ void VrOvr::HolographicScene_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::HolographicScene_Send(PacketValue& out, int src_ch) {
+bool VrOvr::HolographicScene_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -185,7 +185,7 @@ void VrOvr::SpatialInteractionSystem_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::SpatialInteractionSystem_Send(PacketValue& out, int src_ch) {
+bool VrOvr::SpatialInteractionSystem_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -205,7 +205,7 @@ void VrOvr::Renderer_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::Renderer_Send(PacketValue& out, int src_ch) {
+bool VrOvr::Renderer_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

@@ -42,8 +42,8 @@ struct ImgProcImageT : ImpImage {
 		Imp::Image_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Imp::Image_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Imp::Image_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

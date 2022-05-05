@@ -116,7 +116,7 @@ void VolRawByte::StaticSource_Uninitialize(NativeStaticSource& dev, AtomBase& a)
 	// pass
 }
 
-bool VolRawByte::StaticSource_Send(NativeStaticSource& dev, AtomBase& a, PacketValue& out) {
+bool VolRawByte::StaticSource_Send(NativeStaticSource& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	if (dev.values.IsEmpty())
 		return false;
 	

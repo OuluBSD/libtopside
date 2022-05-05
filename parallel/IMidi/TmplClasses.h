@@ -43,8 +43,8 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 		Mid::MidiSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Mid::MidiSinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Mid::MidiSinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -101,8 +101,8 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 		Mid::MidiSourceDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Mid::MidiSourceDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Mid::MidiSourceDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

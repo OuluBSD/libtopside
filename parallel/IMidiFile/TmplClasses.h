@@ -42,8 +42,8 @@ struct MidiFileMidiFileT : MifMidiFile {
 		Mif::MidiFile_Uninitialize(file, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Mif::MidiFile_Send(file, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Mif::MidiFile_Send(file, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

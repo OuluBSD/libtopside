@@ -21,7 +21,7 @@ void VmTos::VirtualMachine_Uninitialize() {
 	TODO
 }
 
-bool VmTos::VirtualMachine_Send(PacketValue& out, int src_ch) {
+bool VmTos::VirtualMachine_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void VmTos::Thread_Uninitialize() {
 	TODO
 }
 
-bool VmTos::Thread_Send(PacketValue& out, int src_ch) {
+bool VmTos::Thread_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

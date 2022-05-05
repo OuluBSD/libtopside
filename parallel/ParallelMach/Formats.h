@@ -210,6 +210,7 @@ public:
 	double	GetFrameSeconds() const;
 	
 	bool IsOrder() const {return vd.val == ValCls::ORDER;}
+	bool IsReceipt() const {return vd.val == ValCls::RECEIPT;}
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
 	bool IsVolume() const {return vd.val == ValCls::VOLUME;}

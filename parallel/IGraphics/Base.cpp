@@ -63,7 +63,7 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 }
 
 template <class Gfx>
-bool ShaderBaseT<Gfx>::Send(PacketValue& out, int src_ch) {
+bool ShaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	//BeginDraw();
 	
 	/*Gfx::SetClearValue(RGBA(0,0,0,255), 255);
@@ -137,7 +137,7 @@ void ShaderBaseT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	this->last_cfg = &cfg;
 }
 
-/*bool Send(PacketValue& out, int src_ch) override
+/*bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override
 bool ProcessPackets(PacketIO& io) override {
 	auto& buf = this->buf;
 	int src_ch = 0;
@@ -294,6 +294,8 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 				
 				if (cubemap.GetCount() < 6)
 					return true;
+				
+				RTLOG("TextureBaseT<Gfx>::Recv: cubemap receiving succeeded");
 			}
 		}
 	}
@@ -362,8 +364,12 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 }
 
 template <class Gfx>
-bool TextureBaseT<Gfx>::Send(PacketValue& out, int src_ch) {
+bool TextureBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	if (src_ch >= 1) {
+		// non-primary channel (src_ch>0) is allowed to not send packets
+		if (!this->bf.GetBuffer().IsInitialized())
+			return false;
+		
 		Format fmt = out.GetFormat();
 		
 		if (fmt.vd == VD(OGL,FBO)) {

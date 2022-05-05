@@ -38,7 +38,7 @@ bool CustomerLink::ProcessPackets(PacketIO& io) {
 	src.p->SetFormat(src.val->GetFormat());
 	src.p->SetOffset(off_gen.Create());
 	
-	bool r = atom->Recv(0, sink.p) && atom->Send(*src.p, 0);
+	bool r = atom->Recv(0, sink.p) && atom->Send(*last_cfg, *src.p, 0);
 	
 	if (r)
 		PacketTracker_Track("CustomerLink::ProcessPackets", __FILE__, __LINE__, *src.p);
@@ -122,9 +122,10 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	src.p = link.ReplyPacket(sink_ch, sink.p);
 	src.p->AddRouteData(src.from_sink_ch);
 	
-	atom.Finalize(*link.GetConfig());
+	auto& cfg = *link.GetConfig();
+	atom.Finalize(cfg);
 	
-	bool b = atom.Recv(0, sink.p) && atom.Send(*src.p, 0);
+	bool b = atom.Recv(0, sink.p) && atom.Send(cfg, *src.p, 0);
 	
 	return b;
 }
@@ -190,7 +191,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	b = atom->Send(*out, 0) && b;
+	b = atom->Send(*last_cfg, *out, 0) && b;
 	
 	
 	InterfaceSourceRef src_iface = this->GetSource();
@@ -204,7 +205,10 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 			src.from_sink_ch = 1;
 			out = this->ReplyPacket(src_ch, prim_sink.p);
 		}
-		b = atom->Send(*out, src_ch) && b;
+		if (!atom->Send(*last_cfg, *out, src_ch)) {
+			// don't update "b" because non-primary channels are allowed to fail sending
+			src.p.Clear();
+		}
 	}
 	
 	
@@ -470,7 +474,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	b = atom->Send(*out, 0) && b;
+	b = atom->Send(*last_cfg, *out, 0) && b;
 	
 	return true;
 }

@@ -34,7 +34,7 @@ struct StreamServerStreamServerT : SvrStreamServer {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 

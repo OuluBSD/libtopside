@@ -221,7 +221,7 @@ bool MediaAtomBaseT<Backend>::IsReady(PacketIO& io) {
 }
 
 template <class Backend>
-bool MediaAtomBaseT<Backend>::Send(PacketValue& out, int src_ch) {
+bool MediaAtomBaseT<Backend>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	bool succ = true;
 	Format fmt = out.GetFormat();
 	

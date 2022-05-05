@@ -599,11 +599,11 @@ bool Package::Export() {
 			}
 			fout << "\t}\n\n";
 			
-			fout << "\tbool Send(PacketValue& out, int src_ch) override {\n";
+			fout << "\tbool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {\n";
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\tif (!" << abbr << "::" << prefix << "_Send(" << name << ", *this, out))\n";
+				fout << "\t\tif (!" << abbr << "::" << prefix << "_Send(" << name << ", *this, cfg, out, src_ch))\n";
 				fout << "\t\t\treturn false;\n";
 			}
 			fout << "\t\treturn true;\n";
@@ -750,7 +750,7 @@ bool Package::Export() {
 			fout << "static bool " << c.name << "_Start(" << nat_this_ << "AtomBase&);\n";
 			fout << "static void " << c.name << "_Stop(" << nat_this_ << "AtomBase&);\n";
 			fout << "static void " << c.name << "_Uninitialize(" << nat_this_ << "AtomBase&);\n";
-			fout << "static bool " << c.name << "_Send(" << nat_this_ << "AtomBase&, PacketValue& out);\n";
+			fout << "static bool " << c.name << "_Send(" << nat_this_ << "AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);\n";
 			if (c.have_context_fns) {
 				fout << "static bool " << c.name << "_AttachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
 				fout << "static void " << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
@@ -936,7 +936,7 @@ bool Package::Export() {
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "bool " << cls << "::" << c.name << "_Send(" << nat_this_ << "AtomBase& a, PacketValue& out) {\n";
+				fout << "bool " << cls << "::" << c.name << "_Send(" << nat_this_ << "AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				

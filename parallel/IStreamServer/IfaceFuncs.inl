@@ -6,7 +6,7 @@ static bool StreamServer_PostInitialize(AtomBase&);
 static bool StreamServer_Start(AtomBase&);
 static void StreamServer_Stop(AtomBase&);
 static void StreamServer_Uninitialize(AtomBase&);
-static bool StreamServer_Send(AtomBase&, PacketValue& out);
+static bool StreamServer_Send(AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 
 	
 bool CreateServerInstance(NativeStreamServer& a0);

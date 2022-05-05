@@ -64,7 +64,6 @@ struct HalSdl2 {
 		GfxAccelAtom<SdlOglGfx> accel;
 		::SDL_RendererInfo rend_info;
 		::SDL_GLContext gl_ctx;
-		RealtimeSourceConfig* cfg;
 	};
 	#endif
 	

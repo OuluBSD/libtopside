@@ -18,7 +18,7 @@ void EvSdl::Events_Uninitialize() {
 	TODO
 }
 
-bool EvSdl::Events_Send(PacketValue& out, int src_ch) {
+bool EvSdl::Events_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

@@ -26,6 +26,7 @@ OpenGLMessageCallback( GLenum source,
 	s << ", severity = " << HexStr(severity);
 	s << ", message = " << String(message);
 	LOG(s);
+	ASSERT(0);
 }
 
 GLenum GetOglTextureType(GVar::TextureType type) {
@@ -34,6 +35,12 @@ GLenum GetOglTextureType(GVar::TextureType type) {
 		#define TEX_TYPE(x) case GVar::TEXTYPE##x: gl_t = GL_TEXTURE##x; break;
 		GVAR_TEXTYPE_LIST
 		#undef TEX_TYPE
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_0: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0;
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_1: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1;
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_2: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2;
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_3: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3;
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_4: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4;
+		case GVar::TEXTYPE_CUBE_MAP_SIDE_5: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5;
 		default: break;
 	}
 	ASSERT(gl_t > 0);
@@ -283,10 +290,13 @@ template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureType type, FramebufferT<Gfx>& fb) {
 	auto fmt = fb.GetGlFormat();
 	const Size& sz = fb.size;
-	if (type == GVar::TEXTYPE_3D)
-		glTexImage3D(GetOglTextureType(type), 0, fmt, sz.cx, sz.cy, fb.depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	GLenum target = GetOglTextureType(type);
+	if (type == GVar::TEXTYPE_CUBE_MAP)
+		; // never
+	else if (type == GVar::TEXTYPE_3D)
+		glTexImage3D(target, 0, fmt, sz.cx, sz.cy, fb.depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	else
-		glTexImage2D(GetOglTextureType(type), 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(target, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {

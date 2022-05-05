@@ -51,7 +51,7 @@ struct UserInterfaceWindowT : UiWindow {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -83,7 +83,7 @@ struct UserInterfaceSplitterT : UiSplitter {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -115,7 +115,7 @@ struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -147,7 +147,7 @@ struct UserInterfaceArrayCtrlT : UiArrayCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -179,7 +179,7 @@ struct UserInterfaceColumnCtrlT : UiColumnCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -211,7 +211,7 @@ struct UserInterfaceTreeCtrlT : UiTreeCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -243,7 +243,7 @@ struct UserInterfaceIconCtrlT : UiIconCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -275,7 +275,7 @@ struct UserInterfaceImageCtrlT : UiImageCtrl {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -307,7 +307,7 @@ struct UserInterfaceButtonT : UiButton {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -339,7 +339,7 @@ struct UserInterfaceLabelT : UiLabel {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -371,7 +371,7 @@ struct UserInterfaceStringEditT : UiStringEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -403,7 +403,7 @@ struct UserInterfaceIntEditT : UiIntEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -435,7 +435,7 @@ struct UserInterfaceFloatEditT : UiFloatEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -467,7 +467,7 @@ struct UserInterfaceTimeEditT : UiTimeEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -499,7 +499,7 @@ struct UserInterfaceDateEditT : UiDateEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -531,7 +531,7 @@ struct UserInterfaceDocEditT : UiDocEdit {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -563,7 +563,7 @@ struct UserInterfaceBarT : UiBar {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -595,7 +595,7 @@ struct UserInterfaceMenuBarT : UiMenuBar {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 

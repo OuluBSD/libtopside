@@ -42,8 +42,8 @@ struct ScreenSinkDeviceT : ScrSinkDevice {
 		Scr::SinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Scr::SinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Scr::SinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

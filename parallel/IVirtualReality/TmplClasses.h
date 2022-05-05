@@ -51,8 +51,8 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 		Vr::MotionController_Uninitialize(ctrl, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Vr::MotionController_Send(ctrl, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Vr::MotionController_Send(ctrl, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -97,8 +97,8 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 		Vr::MotionControllerSystem_Uninitialize(sys, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Vr::MotionControllerSystem_Send(sys, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Vr::MotionControllerSystem_Send(sys, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -131,7 +131,7 @@ struct VirtualRealityAppViewT : VrAppView {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -163,7 +163,7 @@ struct VirtualRealityCameraResourcesT : VrCameraResources {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -195,7 +195,7 @@ struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -227,7 +227,7 @@ struct VirtualRealityDeviceResourcesT : VrDeviceResources {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -259,7 +259,7 @@ struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -291,7 +291,7 @@ struct VirtualRealityHolographicSceneT : VrHolographicScene {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -323,7 +323,7 @@ struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 
@@ -355,7 +355,7 @@ struct VirtualRealityRendererT : VrRenderer {
 	void Uninitialize() override {
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		return true;
 	}
 

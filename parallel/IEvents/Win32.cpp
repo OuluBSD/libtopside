@@ -18,7 +18,7 @@ void EvWin32::Events_Uninitialize() {
 	TODO
 }
 
-bool EvWin32::Events_Send(PacketValue& out, int src_ch) {
+bool EvWin32::Events_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

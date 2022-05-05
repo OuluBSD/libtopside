@@ -9,13 +9,19 @@ machine sdl.app: {
 		loop center.image: {
 			id: "image";
 			center.customer: true;
-			center.image.loader: true [][id: "texture0"] {vflip: true; filepath: "3083c722c0c738cad0f468383167a0d246f91af2bfa373e9c5c094fb8c8413e0.png";};
+			center.image.loader: true [][id: "texture0"] {
+				vflip: true;
+				filepath: "3083c722c0c738cad0f468383167a0d246f91af2bfa373e9c5c094fb8c8413e0.png";
+			};
 		};
 		
 		loop center.volume: {
 			id: "volume";
 			center.customer: true;
-			center.volume.loader: true [][id: "texture1"] {vflip: true; filepath: "aea6b99da1d53055107966b59ac5444fc8bc7b3ce2d0bbb6a4a3cbae1d97f3aa.bin";};
+			center.volume.loader: true [][id: "texture1"] {
+				vflip: true;
+				filepath: "aea6b99da1d53055107966b59ac5444fc8bc7b3ce2d0bbb6a4a3cbae1d97f3aa.bin";
+			};
 		};
 		
 		loop ogl.fbo.tex0: {

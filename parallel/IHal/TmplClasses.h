@@ -47,8 +47,8 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		Hal::AudioSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::AudioSinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::AudioSinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -105,8 +105,8 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 		Hal::CenterVideoSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::CenterVideoSinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::CenterVideoSinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -163,8 +163,8 @@ struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 		Hal::CenterFboSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::CenterFboSinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::CenterFboSinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -221,8 +221,8 @@ struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 		Hal::OglVideoSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::OglVideoSinkDevice_Send(dev, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::OglVideoSinkDevice_Send(dev, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -279,8 +279,8 @@ struct HalContextBaseT : HalContextBase {
 		Hal::ContextBase_Uninitialize(ctx, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::ContextBase_Send(ctx, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::ContextBase_Send(ctx, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}
@@ -345,8 +345,8 @@ struct HalEventsBaseT : HalEventsBase {
 		Hal::EventsBase_Uninitialize(ctx, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Hal::EventsBase_Send(ctx, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::EventsBase_Send(ctx, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

@@ -42,8 +42,8 @@ struct InternetSocketT : NetSocket {
 		Net::Socket_Uninitialize(sock, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Net::Socket_Send(sock, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Net::Socket_Send(sock, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

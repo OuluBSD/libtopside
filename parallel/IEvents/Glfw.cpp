@@ -18,7 +18,7 @@ void EvGlfw::Events_Uninitialize() {
 	TODO
 }
 
-bool EvGlfw::Events_Send(PacketValue& out, int src_ch) {
+bool EvGlfw::Events_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

@@ -56,7 +56,7 @@ void VideoLoaderBaseT<Backend>::Forward(FwdScope& fwd) {
 }*/
 
 template <class Backend>
-bool VideoLoaderBaseT<Backend>::Send(PacketValue& out, int src_ch) {
+bool VideoLoaderBaseT<Backend>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	
 	TODO
 }

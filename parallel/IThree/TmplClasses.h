@@ -42,8 +42,8 @@ struct ThreeModelT : ThrModel {
 		Thr::Model_Uninitialize(model, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Thr::Model_Send(model, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Thr::Model_Send(model, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

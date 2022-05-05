@@ -14,6 +14,7 @@ struct ImageBaseAtomT :
 	dword						seq = 0;
 	bool						cubemap = false;
 	bool						vflip = false;
+	bool						swap_top_bottom = false;
 	
 public:
 	RTTI_DECL1(ImageBaseAtomT, Atom)
@@ -25,7 +26,7 @@ public:
 	bool			Initialize(const Script::WorldState& ws) override;
 	bool			PostInitialize() override;
 	void			Uninitialize() override;
-	bool			Send(PacketValue& out, int src_ch) override;
+	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	bool			IsReady(PacketIO& io) override;
 	
 	//OOSDL2::Component&	GetObj() override {return *obj;}

@@ -101,7 +101,7 @@ public:
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool PostInitialize();
-	bool Send(PacketValue& out, int src_ch);
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 	void Uninitialize();
 	
 	bool Open(Size sz, int channels);

@@ -36,7 +36,7 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 */
-bool AudioGenBase::Send(PacketValue& out, int src_ch) {
+bool AudioGenBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	const int sink_ch = 0;
 	
 	/*PacketIO::Sink& sink = io.sink[sink_ch];

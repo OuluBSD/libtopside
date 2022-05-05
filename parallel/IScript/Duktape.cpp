@@ -21,7 +21,7 @@ void ScrDuktape::Runner_Uninitialize() {
 	TODO
 }
 
-bool ScrDuktape::Runner_Send(PacketValue& out, int src_ch) {
+bool ScrDuktape::Runner_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void ScrDuktape::Thread_Uninitialize() {
 	TODO
 }
 
-bool ScrDuktape::Thread_Send(PacketValue& out, int src_ch) {
+bool ScrDuktape::Thread_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

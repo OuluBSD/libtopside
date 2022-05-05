@@ -21,7 +21,7 @@ void ScrEsc::Runner_Uninitialize() {
 	TODO
 }
 
-bool ScrEsc::Runner_Send(PacketValue& out, int src_ch) {
+bool ScrEsc::Runner_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void ScrEsc::Thread_Uninitialize() {
 	TODO
 }
 
-bool ScrEsc::Thread_Send(PacketValue& out, int src_ch) {
+bool ScrEsc::Thread_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

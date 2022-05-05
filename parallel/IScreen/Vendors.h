@@ -86,7 +86,6 @@ struct ScrX11Ogl {
 		GfxAccelAtom<X11OglGfx> ogl;
 		::Atom  atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
-		RealtimeSourceConfig* cfg;
 	};
 	
 	struct Thread {

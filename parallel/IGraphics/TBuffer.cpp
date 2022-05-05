@@ -149,20 +149,20 @@ bool BufferT<Gfx>::InitializeTexture(Size sz, int channels, Sample sample, const
 	
 	ReadTexture(sz, channels, sample, data, len);
 	
+	initialized = true;
 	return true;
 }
 
 template <class Gfx>
 bool BufferT<Gfx>::InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
 	RTLOG("InitializeCubemap: " << sz.ToString());
-	TODO
-	#if 0
-	is_cubemap = true;
+	fb.is_cubemap = true;
 	
 	UpdateTexBuffers();
 	
 	ReadCubemap(sz, channels, d0, d1, d2, d3, d4, d5);
-	#endif
+	
+	initialized = true;
 	return true;
 }
 
@@ -178,6 +178,8 @@ bool BufferT<Gfx>::InitializeVolume(Size3 sz, int channels, Sample sample, const
 	UpdateTexBuffers();
 	
 	ReadTexture(sz, channels, sample, data);
+	
+	initialized = true;
 	return true;
 }
 
@@ -219,19 +221,18 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 }
 
 
-#if 0
 template <class Gfx>
 void BufferT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
-	GLenum type		= GL_TEXTURE_CUBE_MAP;
-	GLuint& tex		= color_buf[0];
-	int ch_code		= GetGfxChannelFormat(channels);
+	GVar::TextureType type = GVar::TEXTYPE_CUBE_MAP;
+	auto& tex		= fb.color_buf[0];
+	//int ch_code		= GetGfxChannelFormat(channels);
 	
-	Gfx::BindTexture (type, tex);
+	Gfx::BindTextureRW(type, tex);
 	
-	ASSERT(tex > 0);
+	ASSERT(tex);
 	
 	for(int i = 0; i < 6; i++) {
-		GLenum tex_type	= GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
+		GVar::TextureType tex_type = (GVar::TextureType)(GVar::TEXTYPE_CUBE_MAP_SIDE_0 + i);
 		const Vector<byte>* data = 0;
 		switch (i) {
 			case 0: data = &d0; break;
@@ -241,23 +242,23 @@ void BufferT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, co
 			case 4: data = &d4; break;
 			case 5: data = &d5; break;
 		}
-		Gfx::TexImage2D(tex_type, 0, GL_RGBA,
-					 sz.cx, sz.cy,
-					 0, ch_code,
-					 GL_UNSIGNED_BYTE,
-					 data->Begin());
+		Gfx::SetTexture(
+					tex_type,
+					sz,
+					GVar::Sample::SAMPLE_U8,
+					channels,
+					data->Begin());
 	}
 	
-	TexFlags(type, fb_filter, fb_wrap);
+	TexFlags(type, fb.filter, fb.wrap);
 	
-	GLenum err = Gfx::GetError();
-	if (err != GL_NO_ERROR)
-		OnError("ReadCubemap", "Gfx error " + HexStr(err));
+	//GLenum err = Gfx::GetError();
+	//if (err != GL_NO_ERROR)
+	//	OnError("ReadCubemap", "Gfx error " + HexStr(err));
 	
-	Gfx::BindTexture(type, 0);
+	Gfx::UnbindTexture(type);
 }
 
-#endif
 
 template <class Gfx>
 bool BufferT<Gfx>::Initialize() {
@@ -720,7 +721,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 		int ch = var - VAR_COMPAT_CHANNEL0;
 		int tex_ch = COMPAT_OFFSET + ch;
 		NativeColorBufferConstRef tex = GetInputTex(ch);
-		ASSERT(tex);
+		// may fail in early program: ASSERT(tex);
 		if (tex) {
 			//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
 			Gfx::ActiveTexture(tex_ch);
@@ -810,6 +811,10 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 	GVar::TextureType type = GVar::TEXTYPE_2D;
 	if (fb.depth > 0) {
 		type = GVar::TEXTYPE_3D;
+		create_depth = create_fbo = false;
+	}
+	else if (fb.is_cubemap) {
+		type = GVar::TEXTYPE_CUBE_MAP;
 		create_depth = create_fbo = false;
 	}
 	
@@ -1074,7 +1079,7 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 		
 		ASSERT(buf->fb.size.cx > 0 && buf->fb.size.cy > 0);
 		
-		if (fb.is_cubemap)
+		if (buf->fb.is_cubemap)
 			in.type = GVar::CUBEMAP_INPUT;
 		else if (buf->fb.depth > 0)
 			in.type = GVar::VOLUME_INPUT;

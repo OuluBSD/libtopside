@@ -46,7 +46,7 @@ public:
 	bool Start() override;
 	void Uninitialize() override;
 	bool IsReady(PacketIO& io) override;
-	bool Send(PacketValue& out, int src_ch) override;
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	bool Recv(int sink_ch, const Packet& in) override;
 	void Finalize(RealtimeSourceConfig& cfg) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
@@ -78,7 +78,7 @@ public:
 	void Uninitialize() override;
 	bool IsReady(PacketIO& io) override;
 	bool Recv(int sink_ch, const Packet& in) override;
-	bool Send(PacketValue& out, int src_ch) override;
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void Visit(RuntimeVisitor& vis) override;
 	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
 	
@@ -120,7 +120,7 @@ public:
 		return b;
 	}
 	
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		TODO
 	}
 	
@@ -249,7 +249,7 @@ public:
 		return b;
 	}
 	
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		TODO
 	}
 	
@@ -354,7 +354,7 @@ public:
 		return b;
 	}
 	
-	bool Send(PacketValue& out, int src_ch) override {
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
 		TODO
 	}
 	

@@ -18,7 +18,7 @@ void EvX11::Events_Uninitialize() {
 	TODO
 }
 
-bool EvX11::Events_Send(PacketValue& out, int src_ch) {
+bool EvX11::Events_Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 

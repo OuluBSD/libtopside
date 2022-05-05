@@ -42,8 +42,8 @@ struct ImageFileImageT : ImgImage {
 		Img::Image_Uninitialize(img, *this);
 	}
 
-	bool Send(PacketValue& out, int src_ch) override {
-		if (!Img::Image_Send(img, *this, out))
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Img::Image_Send(img, *this, cfg, out, src_ch))
 			return false;
 		return true;
 	}

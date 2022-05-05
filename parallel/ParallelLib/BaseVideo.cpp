@@ -175,7 +175,7 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 	
 }*/
 
-bool VideoGenBase::Send(PacketValue& out, int src_ch) {
+bool VideoGenBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	int frame = fmt.GetFrameSize();
 	dword off = out.GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;

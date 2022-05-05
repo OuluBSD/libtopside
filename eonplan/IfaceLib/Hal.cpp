@@ -119,7 +119,6 @@ PKG(Hal, Hal, H) {
 			.Add("accel",		"GfxAccelAtom<SdlOglGfx>")
 			.Add("rend_info",	"::SDL_RendererInfo")
 			.Add("gl_ctx",		"::SDL_GLContext")
-			.Add("cfg",			"RealtimeSourceConfig*")
 			.RequireFlag("OGL");
 			;
 		

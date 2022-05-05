@@ -6,7 +6,7 @@ static bool SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&);
 static bool SinkDevice_Start(NativeSinkDevice& dev, AtomBase&);
 static void SinkDevice_Stop(NativeSinkDevice& dev, AtomBase&);
 static void SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&);
-static bool SinkDevice_Send(NativeSinkDevice& dev, AtomBase&, PacketValue& out);
+static bool SinkDevice_Send(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 static bool SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);
 
 static int SinkDevice_GetSinkDeviceCount();
@@ -21,7 +21,7 @@ static bool SourceDevice_PostInitialize(NativeSourceDevice& dev, AtomBase&);
 static bool SourceDevice_Start(NativeSourceDevice& dev, AtomBase&);
 static void SourceDevice_Stop(NativeSourceDevice& dev, AtomBase&);
 static void SourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&);
-static bool SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, PacketValue& out);
+static bool SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 static bool SourceDevice_NegotiateSinkFormat(NativeSourceDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);
 
 static int SourceDevice_GetSourceDeviceCount();
