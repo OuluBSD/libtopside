@@ -135,7 +135,7 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 		}
 		
 		if (!(l.link_opts.GetCount() || total_count == 0))  {
-			LOG("ScriptConnectionSolver::MakeOptionLinkVector: error: dead end in a loop. Probably one of your atom keys is wrong");
+			LOG("ScriptConnectionSolver::MakeOptionLinkVector: error: dead end in a loop. Your atom key does not match to any built-in atoms");
 			DUMPI(ll.def.stmts);
 			return false;
 		}

@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class VolumeLoaderBase:
+/*class VolumeLoaderBase:
 	public virtual AtomBase
 {
 	Vector<byte>	values;
@@ -27,7 +27,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
-};
+};*/
 
 NAMESPACE_SERIAL_END
 

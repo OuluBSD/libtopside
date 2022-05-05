@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.4 22:11:22
+// Last modified: 2022.5.5 11:11:11
 
 namespace TS {
 
@@ -474,7 +474,6 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
 class VolumeLoaderAtom : public RawByteStaticSource {
 
 public:
@@ -489,7 +488,6 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
-#endif
 
 #if defined flagSCREEN
 class X11VideoAtomPipe : public X11SinkDevice {

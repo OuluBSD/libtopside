@@ -117,12 +117,12 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 	
 	Format in_fmt = in->GetFormat();
 	if (in_fmt.vd == VD(OGL,FBO)) {
-		Size3 sz = in_fmt.fbo.GetSize();
+		//Size3 sz = in_fmt.fbo.GetSize();
 		int channels = in_fmt.fbo.GetChannels();
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (in->IsData<InternalPacketData>()) {
-			succ = this->bf.GetBuffer().LoadInputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			succ = this->bf.GetBuffer().LoadInputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 		}
 		else {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
@@ -310,6 +310,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		auto& fb = buf.fb;
 		fb.is_win_fbo = false;
 		fb.size = sz;
+		fb.depth = sz.cz;
 		fb.channels = channels;
 		fb.sample = GVar::SAMPLE_FLOAT;
 		fb.filter = this->filter;
@@ -342,7 +343,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		}
 		else {
 			if (!buf.InitializeVolume(
-				fb.size,
+				Size3(fb.size.cx, fb.size.cy, fb.depth),
 				fb.channels,
 				GVar::SAMPLE_U8,
 				in_data))

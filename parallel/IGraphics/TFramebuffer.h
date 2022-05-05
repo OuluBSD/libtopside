@@ -110,14 +110,15 @@ struct InputStateT : GfxInputState {
 	using Base = InputStateT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
 	
-	const Buffer* in_buf = 0;
+	const Buffer* buf = 0;
 	//One<StandaloneFramebufferT<Gfx>> fb_for_rawdata;
 	
 	void Clear() {
 		this->GfxInputState::Clear();
-		in_buf = 0;
+		buf = 0;
 	}
 	
+	const Buffer& GetBuffer() const {ASSERT(buf); return *buf;}
 };
 
 

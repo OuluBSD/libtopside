@@ -266,7 +266,7 @@ HEADER_ARG(			SdlImageLoader,		HINT_PKG,					"AtomDebug")
 
 HEADER12_U01(		VolumeLoaderAtom,	RawByteStaticSource,		pipe,		CenterVolume,	CenterOrder,	CenterVolume,	CenterReceipt)
 HEADER_ACTION(		VolumeLoaderAtom,	center.volume.loader)
-HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,			1)
+//HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,			1)
 HEADER_LINK(		VolumeLoaderAtom,	PIPE_OPTSIDE, PROCESS)
 HEADER_ARG(			VolumeLoaderAtom,	HINT_PKG,					"AtomDebug")
 

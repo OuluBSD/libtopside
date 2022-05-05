@@ -28,6 +28,7 @@ file
 	State.cpp,
 	Shader.cpp,
 	GfxClasses.h,
+	GfxClasses.cpp,
 	IfaceOgl.h,
 	Atoms readonly separator,
 	Base.h,

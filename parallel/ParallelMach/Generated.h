@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.4 22:11:22
+// Last modified: 2022.5.5 11:11:11
 
 namespace TS {
 
@@ -23,6 +23,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_EVENT_ATOM) \
 	ATOM_TYPE(EVENT_STATE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
+	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 
 
 #define ATOM_CLASS_LIST \
@@ -40,6 +41,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlEventAtom) \
 	ATOM_CLASS(EventState) \
 	ATOM_CLASS(TestEventSrcPipe) \
+	ATOM_CLASS(VolumeLoaderAtom) \
 
 
 #define flagFFMPEG_ATOM_TYPE_LIST \
@@ -67,7 +69,6 @@ namespace Parallel {
 	ATOM_TYPE(X11_SW_SHADER_PIPE) \
 	ATOM_TYPE(X11_SW_FBO_ATOM_PIPE) \
 	ATOM_TYPE(OGL_CUSTOMER) \
-	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(X11_SW_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(X11_SW_FBO_ATOM_S_A) \
@@ -94,7 +95,6 @@ namespace Parallel {
 	ATOM_CLASS(X11SwShaderPipe) \
 	ATOM_CLASS(X11SwFboAtomPipe) \
 	ATOM_CLASS(OglCustomer) \
-	ATOM_CLASS(VolumeLoaderAtom) \
 	ATOM_CLASS(X11VideoAtomPipe) \
 	ATOM_CLASS(X11SwVideoAtomPipe) \
 	ATOM_CLASS(X11SwFboAtomSA) \

@@ -33,7 +33,7 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true [id: "texture0"; id: "texture1";;;] {buf1: "volume"; filepath: "shaders/toys/simple/simple_volume/stage0.glsl";};
+			sdl.fbo: true [id: "texture0"; id: "texture1";;;] {buf1: "volume"; fragment: "shaders/toys/simple/simple_volume/stage0.glsl";};
 		};
 	};
 	

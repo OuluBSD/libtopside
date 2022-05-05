@@ -7,5 +7,6 @@ static bool StaticSource_Start(NativeStaticSource& dev, AtomBase&);
 static void StaticSource_Stop(NativeStaticSource& dev, AtomBase&);
 static void StaticSource_Uninitialize(NativeStaticSource& dev, AtomBase&);
 static bool StaticSource_Send(NativeStaticSource& dev, AtomBase&, PacketValue& out);
+static bool StaticSource_IsReady(NativeStaticSource& dev, AtomBase&, PacketIO& io);
 
 	

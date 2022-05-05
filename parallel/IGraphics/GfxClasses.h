@@ -93,6 +93,8 @@ struct GfxInputState : ErrorReporter {
 	
 	void Clear() {id = -1; type = GVar::InputType::INVALID;}
 	
+	String GetSamplerString() const;
+	
 };
 
 

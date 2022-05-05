@@ -48,6 +48,10 @@ struct VolumetricStaticSourceT : VolStaticSource {
 		return true;
 	}
 
+	bool IsReady(PacketIO& io) override {
+		return Vol::StaticSource_IsReady(dev, *this, io);
+	}
+
 	
 };
 

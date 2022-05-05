@@ -117,7 +117,7 @@ public:
 	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
-	bool LoadInputLink(Size3 sz, int in_id, const InternalPacketData& v);
+	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	bool LoadInputLink(int in_id, const PacketValue& v);
 	void SetInputVolume(int in_id);
 	void SetInputCubemap(int in_id);

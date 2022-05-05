@@ -315,7 +315,7 @@ void SwGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
+void SwGfxT<Gfx>::ReserveTexture(GVar::TextureType type, FramebufferT<Gfx>& fb) {
 	// pass
 }
 
@@ -580,6 +580,11 @@ template <class Gfx> void SwGfxT<Gfx>::UnbindFramebuffer() {
 
 template <class Gfx>
 void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+	TODO
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
 	TODO
 }
 

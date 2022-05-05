@@ -280,15 +280,19 @@ template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 	glBindTexture(GetOglTextureType(type), 0);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(FramebufferT<Gfx>& fb) {
+template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureType type, FramebufferT<Gfx>& fb) {
 	auto fmt = fb.GetGlFormat();
 	const Size& sz = fb.size;
-	glTexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	if (type == GVar::TEXTYPE_3D)
+		glTexImage3D(GetOglTextureType(type), 0, fmt, sz.cx, sz.cy, fb.depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	else
+		glTexImage2D(GetOglTextureType(type), 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
 	GLenum t = GetOglTextureType(type);
 	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
+	GLenum intl_type = sample != GVar::Sample::SAMPLE_FLOAT ? GL_UNSIGNED_BYTE : GL_FLOAT;
 	ASSERT(intl_fmt >= 0);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -297,7 +301,24 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size 
 		t, 0, GL_RGBA32F,
 		sz.cx,
 		sz.cy,
-		0, intl_fmt, GL_UNSIGNED_BYTE,
+		0, intl_fmt, intl_type,
+		data);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
+	GLenum t = GetOglTextureType(type);
+	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
+	GLenum intl_type = sample != GVar::Sample::SAMPLE_FLOAT ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	ASSERT(intl_fmt >= 0);
+	
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
+	glTexImage3D(
+		t, 0, GL_RGBA32F,
+		sz.cx,
+		sz.cy,
+		sz.cz,
+		0, intl_fmt, intl_type,
 		data);
 }
 /*void OglRendererBase::ActivateNextFrame() {

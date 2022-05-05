@@ -596,7 +596,6 @@ AtomTypeCls SdlImageLoader::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
 AtomTypeCls VolumeLoaderAtom::GetAtomType()
 {
 	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
@@ -617,7 +616,6 @@ AtomTypeCls VolumeLoaderAtom::GetType() const
 	return GetAtomType();
 }
 
-#endif
 #if defined flagSCREEN
 AtomTypeCls X11VideoAtomPipe::GetAtomType()
 {

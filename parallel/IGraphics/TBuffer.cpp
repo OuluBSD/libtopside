@@ -169,12 +169,15 @@ bool BufferT<Gfx>::InitializeCubemap(Size sz, int channels, Sample sample, const
 template <class Gfx>
 bool BufferT<Gfx>::InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data) {
 	RTLOG("InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
-	TODO
-	#if 0
+	fb.size = Size(sz.cx, sz.cy);
+	fb.depth = sz.cz;
+	fb.sample = sample;
+	ASSERT(sz.cx > 0 && sz.cy > 0);
+	ASSERT(sz.cz > 0);
+	
 	UpdateTexBuffers();
 	
-	ReadTexture(sz, channels, data);
-	#endif
+	ReadTexture(sz, channels, sample, data);
 	return true;
 }
 
@@ -201,9 +204,7 @@ void BufferT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const byte*
 
 template <class Gfx>
 void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data) {
-	TODO
-	#if 0
-	GLenum type		= GL_TEXTURE_3D;
+	GVar::TextureType type = GVar::TEXTYPE_3D;
 	
 	ASSERT(fb.size.cx == sz.cx && fb.size.cy == sz.cy);
 	auto& color_buf = fb.color_buf[0];
@@ -211,19 +212,10 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 	//int intl_fmt = GetGfxChannelFormat(channels);
 	
 	Gfx::BindTextureRW(type, color_buf);
-	Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	Gfx::PixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	Gfx::TexImage3D(type, 0, GL_RGBA32F,
-		sz.cx,
-		sz.cy,
-		sz.cz,
-		//0, intl_fmt, GL_UNSIGNED_BYTE,
-		0, fb.fmt, fb.type,
-		data.Begin());
+	Gfx::TexParameteri(type, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+	Gfx::SetTexture(type, sz, sample, channels, data.Begin());
 	
 	TexFlags(type, fb.filter, fb.wrap);
-	#endif
 }
 
 
@@ -747,7 +739,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 		double values[INPUT_COUNT];
 		for(int j = 0; j < INPUT_COUNT; j++) {
 			InputState& in = rt.inputs[j];
-			values[j] = in.in_buf ? in.in_buf->ctx.time_total : 0;
+			values[j] = in.buf ? in.buf->ctx.time_total : 0;
 		}
 		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
 	}
@@ -756,7 +748,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 		int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 		float values[3] = {0,0,0};
 		InputState& in = rt.inputs[ch];
-		const BufferT* in_buf = in.in_buf;
+		const BufferT* in_buf = in.buf;
 		if (in_buf) {
 			values[0] = (float)in_buf->fb.size.cx;
 			values[1] = (float)in_buf->fb.size.cy;
@@ -809,29 +801,33 @@ void BufferT<Gfx>::ClearTex() {
 
 template <class Gfx>
 void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
-	auto& s = fb;
-	
 	int buf_count = 1;
-	if (s.is_doublebuf)
+	if (fb.is_doublebuf)
 		buf_count++;
 	
-	Size sz = s.size;
+	Size sz = fb.size;
+	
+	GVar::TextureType type = GVar::TEXTYPE_2D;
+	if (fb.depth > 0) {
+		type = GVar::TEXTYPE_3D;
+		create_depth = create_fbo = false;
+	}
 	
 	EnableGfxAccelDebugMessages(1);
 	
 	for(int bi = 0; bi < buf_count; bi++) {
-		auto& color_buf = s.color_buf[bi];
-		auto& depth_buf = s.depth_buf[bi];
-		auto& frame_buf = s.frame_buf[bi];
+		auto& color_buf = fb.color_buf[bi];
+		auto& depth_buf = fb.depth_buf[bi];
+		auto& frame_buf = fb.frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
 		// color buffer
 		Gfx::ActiveTexture(CHANNEL_NONE);
 		Gfx::GenTexture(color_buf);
-		Gfx::BindTextureRW(GVar::TEXTYPE_2D, color_buf);
-		Gfx::ReserveTexture(s);
-		TexFlags(GVar::TEXTYPE_2D, s.filter, s.wrap);
-		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
+		Gfx::BindTextureRW(type, color_buf);
+		Gfx::ReserveTexture(type, fb);
+		TexFlags(type, fb.filter, fb.wrap);
+		Gfx::UnbindTexture(type);
 		Gfx::DeactivateTexture();
 		
 		// depth buffer
@@ -870,12 +866,12 @@ TNG NativeColorBufferConstRef BufferT<Gfx>::GetInputTex(int input_i) const {
 		return 0;
 	
 	const InputState& in = rt.inputs[input_i];
-	if (in.in_buf == 0) {
+	if (in.buf == 0) {
 		RTLOG("GetInputTex: warning: no input fbo buffer");
 		return 0;
 	}
 	
-	const BufferT* in_comp = in.in_buf;
+	const BufferT* in_comp = in.buf;
 	if (!in_comp)
 		return 0;
 	
@@ -919,10 +915,10 @@ bool BufferT<Gfx>::SetupLoopback() {
 	}
 	
 	InputState& in = rt.inputs[loopback];
-	in.in_buf = this;
+	in.buf = this;
 	in.id = rt.id;
 	in.type = GVar::BUFFER_INPUT;
-	ASSERT(in.in_buf);
+	ASSERT(in.buf);
 	
 	return true;
 }
@@ -1062,7 +1058,7 @@ void BufferT<Gfx>::StoreOutputLink(InternalPacketData& v) {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::LoadInputLink(Size3 sz, int in_id, const InternalPacketData& v) {
+bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
 		//LOG("LoadInputLink: " << name << " #" << in_id);
 		GfxBuffer* gbuf = (GfxBuffer*)v.ptr;
@@ -1074,16 +1070,18 @@ bool BufferT<Gfx>::LoadInputLink(Size3 sz, int in_id, const InternalPacketData& 
 		ASSERT(v.ptr);
 		InputState& in = rt.inputs[in_id];
 		in.id = in_id;
-		in.in_buf = buf;
+		in.buf = buf;
 		
-		ASSERT(sz.cx > 0 && sz.cy > 0);
+		ASSERT(buf->fb.size.cx > 0 && buf->fb.size.cy > 0);
 		
 		if (fb.is_cubemap)
 			in.type = GVar::CUBEMAP_INPUT;
-		else if (sz.cz > 0)
+		else if (buf->fb.depth > 0)
 			in.type = GVar::VOLUME_INPUT;
-		else
+		else {
+			ASSERT(in.type != GVar::VOLUME_INPUT);
 			in.type = GVar::TEXTURE_INPUT;
+		}
 		
 		return true;
 	}
@@ -1107,7 +1105,10 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 				fb.DrawFill(data.Begin(), frame_sz);
 		}
 	}
-	
+	else {
+		TODO
+	}
+	// if data is InternalPacketData call other LoadInputLink
 	TODO
 	#if 0
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
@@ -1140,8 +1141,10 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 			in.type = GVar::CUBEMAP_INPUT;
 		else if (sz.cz > 0)
 			in.type = GVar::VOLUME_INPUT;
-		else
+		else {
+			ASSERT(in.type != GVar::VOLUME_INPUT);
 			in.type = GVar::TEXTURE_INPUT;
+		}
 		
 		return true;
 	}
@@ -1154,26 +1157,16 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 
 template <class Gfx>
 void BufferT<Gfx>::SetInputVolume(int in_id) {
-	TODO
-	#if 0
-	if (in_id >= in_buf.GetCount())
-		in_buf.SetCount(in_id+1);
-	
-	BufferTInput& in = in_buf[in_id];
-	in.type = BufferTInput::VOLUME;
-	#endif
+	ASSERT(in_id >= 0 && in_id < GVar::INPUT_COUNT);
+	InputState& in = rt.inputs[in_id];
+	in.type = GVar::VOLUME_INPUT;
 }
 
 template <class Gfx>
 void BufferT<Gfx>::SetInputCubemap(int in_id) {
-	TODO
-	#if 0
-	if (in_id >= in_buf.GetCount())
-		in_buf.SetCount(in_id+1);
-	
-	BufferTInput& in = in_buf[in_id];
-	in.type = BufferTInput::CUBEMAP;
-	#endif
+	ASSERT(in_id >= 0 && in_id < GVar::INPUT_COUNT);
+	InputState& in = rt.inputs[in_id];
+	in.type = GVar::CUBEMAP_INPUT;
 }
 
 

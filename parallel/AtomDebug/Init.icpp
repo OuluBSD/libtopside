@@ -38,6 +38,7 @@ INITBLOCK {
 	Factory::RegisterAtom<AudioJoinerUser>();
 	Factory::RegisterAtom<AudioJoiner2User>();
 	Factory::RegisterAtom<TestEventSrcPipe>();
+	Factory::RegisterAtom<VolumeLoaderAtom>();
 	
 	#ifdef flagFFMPEG
 	Factory::RegisterAtom<AudioDecoderSrc>();
@@ -59,6 +60,7 @@ INITBLOCK {
 		Factory::RegisterAtom<X11SwFboAtomSA>();
 		Factory::RegisterAtom<X11SwFboProg>();
 		Factory::RegisterAtom<X11SwVideoAtomPipe>();
+		Factory::RegisterAtom<OglVolumeSource>();
 		
 		#if defined flagPOSIX
 			Factory::RegisterAtom<X11VideoAtomPipe>();

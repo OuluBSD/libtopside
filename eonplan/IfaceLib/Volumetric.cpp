@@ -9,6 +9,7 @@ PKG(Volumetric, Vol, V) {
 	
 	COLOR(28, 85, 0)
 	DEPENDENCY(ParallelLib)
+	HAVE_IS_READY
 	
 	PKG_IFACE {
 		//NATIVE_CLASS(StaticSource)

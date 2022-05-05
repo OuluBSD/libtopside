@@ -36,10 +36,10 @@ bool CompilerT<Gfx>::Compile(
 	Gfx::HotfixShaderCode(library);
 	Gfx::HotfixShaderCode(user_code);
 	
-	String sampler0 = "sampler2D";
-	String sampler1 = "sampler2D";
-	String sampler2 = "sampler2D";
-	String sampler3 = "sampler2D";
+	String sampler0 = rt.inputs[0].GetSamplerString();
+	String sampler1 = rt.inputs[1].GetSamplerString();
+	String sampler2 = rt.inputs[2].GetSamplerString();
+	String sampler3 = rt.inputs[3].GetSamplerString();
 	
 	bool is_fragment = type == GVar::FRAGMENT_SHADER;
 	bool is_vertex = type == GVar::VERTEX_SHADER;
