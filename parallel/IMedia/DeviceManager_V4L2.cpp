@@ -1,4 +1,4 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 
 #if HAVE_V4L2_DEVMGR
 
@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #if 0
 MediaStream* V4L2_Device::FindOpenDevice() {
@@ -117,6 +117,6 @@ void V4L2_DeviceManager::Refresh() {
 	}
 }
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

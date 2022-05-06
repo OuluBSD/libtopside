@@ -1,9 +1,9 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 
 #if 0
 #if HAVE_V4L2_CAP
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 bool CaptureDevice_V4L2::OpenDevice0(int fmt_i, int res_i) {
@@ -70,7 +70,7 @@ int CaptureDevice_V4L2::FillVideoBuffer() {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

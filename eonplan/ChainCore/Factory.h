@@ -135,6 +135,7 @@ public:
 	
 	template <class T> static
 	void RegVal(const char* name) {
+		ASSERT(String(name).GetCount());
 		Val& v = Vals().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
@@ -143,6 +144,7 @@ public:
 	
 	template <class T> static
 	void RegDev(const char* name) {
+		ASSERT(String(name).GetCount());
 		Dev& v = Devs().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
@@ -151,6 +153,7 @@ public:
 	
 	template <class T> static
 	void RegValDev(const char* name) {
+		ASSERT(String(name).GetCount());
 		ValDev& v = ValDevs().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
@@ -159,6 +162,7 @@ public:
 	
 	template <class T> static
 	void RegBase(const char* name) {
+		ASSERT(String(name).GetCount());
 		Base& v = Bases().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
@@ -167,38 +171,44 @@ public:
 	
 	template <class T> static
 	void BaseFlag(const char* name, const char* flag) {
+		ASSERT(String(name).GetCount());
 		Base& v = Bases().GetAdd(name);
 		v.flags.FindAdd(flag);
 	}
 	
 	template <class T> static
 	void BaseAction(const char* name, const char* action) {
+		ASSERT(String(name).GetCount());
 		Base& v = Bases().GetAdd(name);
 		v.actions.FindAdd(action);
 	}
 	
 	template <class T> static
 	void HeaderAction(const char* name, const char* action) {
-		Header& v = Headers().GetAdd(name);
+		ASSERT(String(name).GetCount());
+		Header& v = Headers().Get(name);
 		v.actions.FindAdd(action);
 	}
 	
 	template <class T> static
 	void HeaderLinktype(const char* name, const char* key, const char* role) {
-		Header& v = Headers().GetAdd(name);
+		ASSERT(String(name).GetCount());
+		Header& v = Headers().Get(name);
 		v.link_key = key;
 		v.link_role = role;
 	}
 	
 	template <class T> static
 	void HeaderInherits(const char* name, const char* cls) {
-		Header& v = Headers().GetAdd(name);
+		ASSERT(String(name).GetCount());
+		Header& v = Headers().Get(name);
 		v.inherits.FindAdd(cls);
 	}
 	
 	template <class T> static
 	void HeaderArg(const char* name, const char* key, const char* value) {
-		Header& v = Headers().GetAdd(name);
+		ASSERT(String(name).GetCount());
+		Header& v = Headers().Get(name);
 		v.args.GetAdd(key) = value;
 	}
 	
@@ -220,6 +230,7 @@ public:
 		const char* src2,
 		const char* src3,
 		const char* src4) {
+		ASSERT(String(name).GetCount());
 		Header& v = Headers().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;

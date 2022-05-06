@@ -18,7 +18,7 @@ INITBLOCK {
 	#endif
 	
 	#ifdef flagOPENCV
-	HAVE_OPENCV_ATOM_CLASS_LIST
+	flagOPENCV_ATOM_CLASS_LIST
 	#endif
 	
 	#ifdef flagSDL2_ATOM_CLASS_LIST

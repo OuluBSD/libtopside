@@ -268,6 +268,50 @@ AtomTypeCls VideoDbgSrc::GetType() const
 }
 
 #endif
+#if defined flagOPENCV && defined flagLINUX
+AtomTypeCls WebcamPipe::GetAtomType()
+{
+	return ATOM11(WEBCAM_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+}
+
+LinkTypeCls WebcamPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void WebcamPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<V4L2OpenCVCamera>(this);
+}
+
+AtomTypeCls WebcamPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagOPENCV && defined flagLINUX
+AtomTypeCls WebcamAtom::GetAtomType()
+{
+	return ATOM11_U01(WEBCAM_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+}
+
+LinkTypeCls WebcamAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void WebcamAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<V4L2OpenCVCamera>(this);
+}
+
+AtomTypeCls WebcamAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
 #if defined flagSCREEN && defined flagFFMPEG
 AtomTypeCls VideoLoaderAtom::GetAtomType()
 {

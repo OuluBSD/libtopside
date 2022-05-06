@@ -2,7 +2,6 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.6 10:44:33
 
 namespace TS {
 
@@ -207,6 +206,40 @@ public:
 	COPY_PANIC(VideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOPENCV && defined flagLINUX
+class WebcamPipe : public V4L2OpenCVCamera {
+
+public:
+	RTTI_DECL1(WebcamPipe, V4L2OpenCVCamera)
+	COPY_PANIC(WebcamPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOPENCV && defined flagLINUX
+class WebcamAtom : public V4L2OpenCVCamera {
+
+public:
+	RTTI_DECL1(WebcamAtom, V4L2OpenCVCamera)
+	COPY_PANIC(WebcamAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

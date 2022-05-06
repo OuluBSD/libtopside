@@ -1,8 +1,8 @@
-#ifndef _AtomLocal_DeviceManager_Win32_h_
-#define _AtomLocal_DeviceManager_Win32_h_
+#ifndef _IMedia_DeviceManager_Win32_h_
+#define _IMedia_DeviceManager_Win32_h_
 #if HAVE_WIN32_DEVMGR
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class WIN32_Device {
@@ -33,7 +33,7 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

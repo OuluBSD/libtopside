@@ -146,6 +146,25 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 };
 #endif
 
+
+
+#ifdef flagLINUX
+struct V4L2Media {
+	
+};
+#endif
+
+
+
+#if defined flagOPENCV && defined flagLINUX
+struct V4L2OpenCVMedia : V4L2Media {
+	
+	
+};
+#endif
+
+
+
 NAMESPACE_PARALLEL_END
 
 #endif

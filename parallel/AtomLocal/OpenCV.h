@@ -1,7 +1,7 @@
 #ifndef _AtomLocal_OpenCV_h_
 #define _AtomLocal_OpenCV_h_
 
-#if HAVE_OPENCV
+#if flagOPENCV
 
 NAMESPACE_SERIAL_BEGIN
 

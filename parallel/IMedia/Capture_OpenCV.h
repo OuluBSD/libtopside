@@ -1,9 +1,9 @@
 #ifndef _Multimedia_OpenCV_Capture_h_
 #define _Multimedia_OpenCV_Capture_h_
 
-#if HAVE_OPENCV
+#if flagOPENCV
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -13,6 +13,9 @@ class OpenCVCaptureDevice :
 	
 protected:
 	friend class V4L2_DeviceManager;
+	
+	using VideoSourceFormat = VideoSourceFormatT<V4L2Media>;
+	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<V4L2Media>;
 	
 	Array<VideoSourceFormat>	fmts;
 	
@@ -97,7 +100,7 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

@@ -1,9 +1,9 @@
-#ifndef _AtomLocal_V4L2_DeviceManager_h_
-#define _AtomLocal_V4L2_DeviceManager_h_
+#ifndef _IMedia_V4L2_DeviceManager_h_
+#define _IMedia_V4L2_DeviceManager_h_
 
 #if HAVE_V4L2_DEVMGR
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 class V4L2_Device {
 	
@@ -39,6 +39,9 @@ class V4L2_DeviceManager {
 	
 	
 public:
+	using VideoSourceFormat = VideoSourceFormatT<V4L2Media>;
+	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<V4L2Media>;
+	
 	typedef V4L2_DeviceManager CLASSNAME;
 	V4L2_DeviceManager();
 	~V4L2_DeviceManager() {}
@@ -57,7 +60,7 @@ public:
 	
 };
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

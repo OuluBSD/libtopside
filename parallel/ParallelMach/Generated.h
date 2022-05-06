@@ -2,7 +2,6 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.6 10:44:33
 
 namespace TS {
 
@@ -108,12 +107,18 @@ namespace Parallel {
 	ATOM_CLASS(CpuKeyboardSource) \
 
 
-#define HAVE_OPENCV_ATOM_TYPE_LIST \
+#define flagOPENCV_ATOM_TYPE_LIST \
+
+
+#define flagOPENCV_ATOM_CLASS_LIST \
+
+
+#define flagLINUX_ATOM_TYPE_LIST \
 	ATOM_TYPE(WEBCAM_PIPE) \
 	ATOM_TYPE(WEBCAM_ATOM) \
 
 
-#define HAVE_OPENCV_ATOM_CLASS_LIST \
+#define flagLINUX_ATOM_CLASS_LIST \
 	ATOM_CLASS(WebcamPipe) \
 	ATOM_CLASS(WebcamAtom) \
 

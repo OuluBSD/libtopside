@@ -5,6 +5,14 @@ uses
 
 library(FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
+library(LINUX & OPENCV) v4l2;
+
+library(OPENCV & POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_shape";
+
+library(WIN32 & DEBUG) opencv_world454d;
+
+library(WIN32 & !DEBUG) opencv_world454;
+
 file
 	IMedia.h,
 	Types.h,
@@ -18,5 +26,17 @@ file
 	Video.h,
 	Video.cpp,
 	Media.h,
-	Media.cpp;
+	Media.cpp,
+	"Support classes" readonly separator,
+	DeviceManager_V4L2.h,
+	DeviceManager_V4L2.cpp,
+	DeviceManager_Win32.h,
+	DeviceManager_Win32.cpp,
+	Capture_DShow.h,
+	Capture_DShow.cpp,
+	Capture_OpenCV.h,
+	Capture_OpenCV.cpp,
+	Capture_V4L2.h,
+	Capture_V4L2.cpp,
+	_ readonly separator;
 

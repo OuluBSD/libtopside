@@ -13,6 +13,7 @@
 #include <IScreen/IScreen.h>
 #include <IMedia/IMedia.h>
 #include <IVolumetric/IVolumetric.h>
+#include <ICamera/ICamera.h>
 
 
 

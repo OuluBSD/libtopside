@@ -1,16 +1,16 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-#ifndef _IWebcam_BaseClasses_h_
-#define _IWebcam_BaseClasses_h_
+#ifndef _ICamera_BaseClasses_h_
+#define _ICamera_BaseClasses_h_
 
 NAMESPACE_PARALLEL_BEGIN
 
-struct CamWebcam : public Atom {
-	RTTI_DECL1(CamWebcam, Atom)
+struct CamCamera : public Atom {
+	RTTI_DECL1(CamCamera, Atom)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
-	virtual ~CamWebcam() {}
+	virtual ~CamCamera() {}
 
 };
 

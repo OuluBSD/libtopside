@@ -50,6 +50,11 @@ INITBLOCK {
 	Factory::RegisterAtom<SdlContextAtom>();
 	#endif
 	
+	#ifdef flagOPENCV
+	Factory::RegisterAtom<WebcamPipe>();
+	Factory::RegisterAtom<WebcamAtom>();
+	#endif
+	
 	#if defined flagSCREEN
 		
 		#ifdef flagOGL

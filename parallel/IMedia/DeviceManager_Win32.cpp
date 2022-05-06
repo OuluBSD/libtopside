@@ -1,7 +1,7 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 #ifdef flagWIN32
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 WIN32_Device::WIN32_Device() {
@@ -36,5 +36,5 @@ void WIN32_DeviceManager::Refresh() {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 #endif

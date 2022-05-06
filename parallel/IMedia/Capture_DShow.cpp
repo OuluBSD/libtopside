@@ -1,4 +1,4 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 
 
 #if HAVE_DIRECTSHOW

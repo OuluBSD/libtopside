@@ -1,8 +1,8 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-#ifndef _IWebcam_Enums_h_
-#define _IWebcam_Enums_h_
+#ifndef _ICamera_Enums_h_
+#define _ICamera_Enums_h_
 
 NAMESPACE_PARALLEL_BEGIN
 

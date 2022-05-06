@@ -4,7 +4,7 @@
 #if defined flagGCC && defined flagFREEBSD
 	#include "Internal.h"
 	
-	#if HAVE_OPENCV
+	#if flagOPENCV
 		#undef CPU_SSE2
 		#include <opencv2/core.hpp>
 		#include <opencv2/imgproc.hpp>
@@ -12,11 +12,11 @@
 		#include <opencv2/videoio.hpp>
 	#endif
 	
-	#include "AtomLocal.h"
+	#include "IMedia.h"
 #else
-	#include "AtomLocal.h"
+	#include "IMedia.h"
 	
-	#if HAVE_OPENCV
+	#if flagOPENCV
 		#undef CPU_SSE2
 		#include <opencv2/core.hpp>
 		#include <opencv2/imgproc.hpp>
@@ -25,7 +25,7 @@
 	#endif
 #endif
 
-#if HAVE_OPENCV
+#if flagOPENCV
 
 
 
@@ -36,7 +36,7 @@ bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<ch
 #endif
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class OpenCVCaptureDevice::Data {
@@ -244,6 +244,6 @@ bool OpenCVCaptureDevice::IsOpen() const {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

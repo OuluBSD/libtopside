@@ -2,45 +2,10 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.6 10:44:33
 
 namespace TS {
 
 namespace Parallel {
-
-#if defined HAVE_OPENCV
-class WebcamPipe : public OpenCVBase {
-
-public:
-	RTTI_DECL1(WebcamPipe, OpenCVBase)
-	COPY_PANIC(WebcamPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined HAVE_OPENCV
-class WebcamAtom : public OpenCVBase {
-
-public:
-	RTTI_DECL1(WebcamAtom, OpenCVBase)
-	COPY_PANIC(WebcamAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
 
 #if defined flagSCREEN && defined flagFFMPEG
 class AudioLoaderAtom : public FfmpegSourceDevice {
@@ -340,7 +305,7 @@ using AudioJoiner2UserRef = Ref<AudioJoiner2User, AtomParent>;
 using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
 #endif
 
-#if defined HAVE_OPENCV
+#if defined flagLINUX
 using WebcamPipeRef = Ref<WebcamPipe, AtomParent>;
 #endif
 

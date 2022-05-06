@@ -26,5 +26,11 @@ extern "C" {
 #include "FileIn.h"
 #include "MediaAtomBase.h"
 
+#include "Capture_OpenCV.h"
+#include "DeviceManager_V4L2.h"
+#include "DeviceManager_Win32.h"
+#include "Capture_V4L2.h"
+#include "Capture_DShow.h"
+
 
 #endif

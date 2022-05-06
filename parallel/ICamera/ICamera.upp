@@ -1,16 +1,18 @@
-description "\377B54,157,186";;
+description "\377B54,157,186";
 
 uses
-	ParallelLib;
+	ParallelLib,
+	IMedia;
 
 file
-	IWebcam.h,
+	ICamera.h,
 	Enums.h,
 	Vendors.h,
+	V4L2OpenCV.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 
 mainconfig
-	"" = ""
+	"" = "";
 

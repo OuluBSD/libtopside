@@ -239,8 +239,8 @@ String GetSubAtomString(SubAtomCls t) {
 		flagSCREEN_ATOM_TYPE_LIST
 		#endif
 		
-		#ifdef HAVE_OPENCV
-		HAVE_OPENCV_ATOM_TYPE_LIST
+		#ifdef flagOPENCV
+		flagOPENCV_ATOM_TYPE_LIST
 		#endif
 		
 		#undef ATOM_TYPE

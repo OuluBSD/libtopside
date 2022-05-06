@@ -4,50 +4,6 @@ namespace TS {
 
 namespace Parallel {
 
-#if defined HAVE_OPENCV
-AtomTypeCls WebcamPipe::GetAtomType()
-{
-	return ATOM11(WEBCAM_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
-}
-
-LinkTypeCls WebcamPipe::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void WebcamPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OpenCVBase>(this);
-}
-
-AtomTypeCls WebcamPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined HAVE_OPENCV
-AtomTypeCls WebcamAtom::GetAtomType()
-{
-	return ATOM11_U01(WEBCAM_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
-}
-
-LinkTypeCls WebcamAtom::GetLinkType()
-{
-	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
-}
-
-void WebcamAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OpenCVBase>(this);
-}
-
-AtomTypeCls WebcamAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
 #if defined flagSCREEN && defined flagFFMPEG
 AtomTypeCls AudioLoaderAtom::GetAtomType()
 {
