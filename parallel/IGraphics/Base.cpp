@@ -353,11 +353,21 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		}
 	}
 	else {
-		buf.ReadTexture(
-			sz,
-			channels,
-			GVar::SAMPLE_U8,
-			in.GetData());
+		if (sz.cz == 0) {
+			const Vector<byte>& data = in.GetData();
+			buf.ReadTexture(
+				(Size)sz,
+				channels,
+				GVar::SAMPLE_U8,
+				data.Begin(), data.GetCount());
+		}
+		else {
+			buf.ReadTexture(
+				sz,
+				channels,
+				GVar::SAMPLE_U8,
+				in.GetData());
+		}
 	}
 	
 	return true;

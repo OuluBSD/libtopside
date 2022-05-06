@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.5.5 15:55:33
+// Last modified: 2022.5.6 10:44:33
 
 namespace TS {
 
@@ -50,23 +50,6 @@ public:
 	COPY_PANIC(AudioLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN && defined flagFFMPEG
-class VideoLoaderAtom : public FfmpegSourceDevice {
-
-public:
-	RTTI_DECL1(VideoLoaderAtom, FfmpegSourceDevice)
-	COPY_PANIC(VideoLoaderAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

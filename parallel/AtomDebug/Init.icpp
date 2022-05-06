@@ -42,6 +42,7 @@ INITBLOCK {
 	
 	#ifdef flagFFMPEG
 	Factory::RegisterAtom<AudioDecoderSrc>();
+	Factory::RegisterAtom<VideoLoaderAtom>();
 	#endif
 	
 	#ifdef flagSDL2

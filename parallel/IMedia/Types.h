@@ -77,16 +77,16 @@ struct FfmpegT {
 	using VideoFrameQueueRef	= Ref<VideoFrameQueue, RefParent1<PacketBufferParent>>;
 	
 	using AVFrame = ::AVFrame;
-	using AVCodecContext = ::AVCodecContext*;
+	using AVCodecContextRef = ::AVCodecContext*;
 	using AVFormatContext = ::AVFormatContext;
-	using AVCodecParserContext = ::AVCodecParserContext*;
+	using AVCodecParserContextRef = ::AVCodecParserContext*;
 	using AVCodecParameters = ::AVCodecParameters;
 	using AVCodec = ::AVCodec*;
 	using AVPacket = ::AVPacket;
 	using AVStream = ::AVStream;
 	using AVDictionary = ::AVDictionary;
 	using AVSampleFormat = ::AVSampleFormat;
-	using ImgConvContext = struct ::SwsContext*;
+	using ImgConvContextRef = struct ::SwsContext*;
 	
 	struct Thread {
 		
@@ -109,7 +109,7 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 		~Frame() {Clear();}
 		void	Init(const VideoFormat& vid_fmt);
 		void	Clear();
-		void	Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, ImgConvContext img_convert_ctx);
+		void	Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, ImgConvContextRef img_convert_ctx);
 		bool	PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
 		void	MakePacket(Packet& p);
 	};
@@ -119,10 +119,10 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 	static void DeletePacket(AVPacket* p);
 	static AVFrame* NewFrame();
 	static void DeletePacket(AVFrame* f);
-	static void CloseCodecParserContext(AVCodecParserContext& ctx);
-	static void CloseCodecContext(AVCodecContext& ctx);
-	static int SendPacket(AVCodecContext& ctx, const AVPacket& p);
-	static int ReceiveFrame(AVCodecContext& ctx, AVFrame& f);
+	static void CloseCodecParserContext(AVCodecParserContextRef& ctx);
+	static void CloseCodecContext(AVCodecContextRef& ctx);
+	static int SendPacket(AVCodecContextRef& ctx, const AVPacket& p);
+	static int ReceiveFrame(AVCodecContextRef& ctx, AVFrame& f);
 	static int FindVideoStream(AVFormatContext& ctx);
 	static int FindAudioStream(AVFormatContext& ctx);
 	static AVStream& GetStream(AVFormatContext& ctx, int i);
@@ -134,13 +134,13 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 	static int GetSampleRate(const AVCodecParameters& c);
 	static int GetFrequency(const AVCodecParameters& c);
 	static SoundSample::Type GetAudioSampleType(const AVCodecParameters& c);
-	static bool InitParser(AVCodec& c, AVCodecParserContext& ctx);
+	static bool InitParser(AVCodec& c, AVCodecParserContextRef& ctx);
 	static bool FindDecoder(AVFormatContext& ctx, AVCodec& c, int stream_i);
-	static AVCodecContext CreateCodecContext(AVCodec& c);
+	static AVCodecContextRef CreateCodecContext(AVCodec& c);
 	static void CopyFramePixels(const Format& fmt, const AVFrame& f, Vector<byte>& data);
-	static ImgConvContext GetImgConvContext(AVCodecContext& ctx, Size sz);
+	static ImgConvContextRef GetImgConvContextRef(AVCodecContextRef& ctx, Size sz);
 	static int CreateImage(uint8_t *video_dst_data[4], int video_dst_linesize[4], Size sz);
-	static void DeleteImgConvContext(ImgConvContext ctx);
+	static void DeleteImgConvContextRef(ImgConvContextRef ctx);
 	static void FreeData(uint8_t*& data, int& len);
 	
 };

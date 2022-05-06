@@ -97,6 +97,7 @@ HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagFFMPEG,			1)
 HEADER_LINK(		VideoLoaderAtom,	PIPE_OPTSIDE, PROCESS)
+HEADER_ARG(			VideoLoaderAtom,	HINT_PKG,					"AtomDebug")
 
 HEADER11(			EventStatePipe,		EventStateBase,				driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
 HEADER_ACTION(		EventStatePipe,		state.event.pipe)

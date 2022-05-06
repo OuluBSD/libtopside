@@ -25,21 +25,21 @@ void FfmpegMedia::DeletePacket(AVFrame* f) {
 	av_frame_free(&f);
 }
 
-void FfmpegMedia::CloseCodecParserContext(AVCodecParserContext& parser) {
+void FfmpegMedia::CloseCodecParserContext(AVCodecParserContextRef& parser) {
 	if (parser) {
 		av_parser_close(parser);
 		parser = NULL;
 	}
 }
 
-void FfmpegMedia::CloseCodecContext(AVCodecContext& ctx) {
+void FfmpegMedia::CloseCodecContext(AVCodecContextRef& ctx) {
 	if (ctx) {
 		avcodec_free_context(&ctx);
 		ctx = 0;
 	}
 }
 
-int FfmpegMedia::SendPacket(AVCodecContext& ctx, const AVPacket& p) {
+int FfmpegMedia::SendPacket(AVCodecContextRef& ctx, const AVPacket& p) {
 	int ret = avcodec_send_packet(ctx, &p);
 	if (ret == AVERROR_EOF)
 		return -1;
@@ -49,7 +49,7 @@ int FfmpegMedia::SendPacket(AVCodecContext& ctx, const AVPacket& p) {
 		return 0;
 }
 
-int FfmpegMedia::ReceiveFrame(AVCodecContext& ctx, AVFrame& frame) {
+int FfmpegMedia::ReceiveFrame(AVCodecContextRef& ctx, AVFrame& frame) {
 	int ret = avcodec_receive_frame(ctx, &frame);
 	if (ret == AVERROR_EOF)
 		return -1;
@@ -165,7 +165,7 @@ SoundSample::Type FfmpegMedia::GetAudioSampleType(const AVCodecParameters& c) {
 	return SoundSample::INVALID;
 }
 
-bool FfmpegMedia::InitParser(AVCodec& c, AVCodecParserContext& parser) {
+bool FfmpegMedia::InitParser(AVCodec& c, AVCodecParserContextRef& parser) {
 	parser = av_parser_init(c->id);
 	if (!parser) {
 		// codecs like AV_CODEC_ID_PCM_F32LE doesn't require parser...
@@ -185,7 +185,7 @@ bool FfmpegMedia::FindDecoder(AVFormatContext& ctx, AVCodec& codec, int stream_i
 	return codec != NULL;
 }
 
-FfmpegMedia::AVCodecContext FfmpegMedia::CreateCodecContext(AVCodec& c) {
+FfmpegMedia::AVCodecContextRef FfmpegMedia::CreateCodecContext(AVCodec& c) {
 	return avcodec_alloc_context3(c);
 }
 
@@ -237,7 +237,7 @@ void FfmpegMedia::CopyFramePixels(const Format& fmt, const AVFrame& frame, Vecto
 	
 }
 
-FfmpegMedia::ImgConvContext FfmpegMedia::GetImgConvContext(AVCodecContext& ctx, Size sz) {
+FfmpegMedia::ImgConvContextRef FfmpegMedia::GetImgConvContextRef(AVCodecContextRef& ctx, Size sz) {
 	return sws_getContext(
 		sz.cx, sz.cy, ctx->pix_fmt,
 		sz.cx, sz.cy, AV_PIX_FMT_RGBA,
@@ -249,7 +249,7 @@ int FfmpegMedia::CreateImage(uint8_t *video_dst_data[4], int video_dst_linesize[
 					sz.cx, sz.cy, AV_PIX_FMT_RGBA, 1);
 }
 
-void FfmpegMedia::DeleteImgConvContext(ImgConvContext ctx) {
+void FfmpegMedia::DeleteImgConvContextRef(ImgConvContextRef ctx) {
 	if (ctx) {
 		sws_freeContext(ctx);
 		ctx = 0;
@@ -275,7 +275,7 @@ void FfmpegMedia::Frame::Clear() {
 	FfmpegMedia::FreeData(video_dst_data[0], video_dst_bufsize);
 }
 
-void FfmpegMedia::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, ImgConvContext img_convert_ctx) {
+void FfmpegMedia::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, ImgConvContextRef img_convert_ctx) {
 	Size size = vid_fmt.GetSize();
 	
 	this->time_pos = time_pos;

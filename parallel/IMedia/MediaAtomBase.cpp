@@ -178,22 +178,24 @@ bool MediaAtomBaseT<Backend>::IsReady(PacketIO& io) {
 	audio_packet_ready = false;
 	
 	if (mode == AUDIO_ONLY || mode == AUDIOVIDEO) {
-		bool invalid_fmt = file_in.GetAudio().GetFormat().IsValid();
+		bool was_valid_fmt = file_in.GetAudio().GetFormat().IsValid();
 		
 		file_in.FillAudioBuffer();
 		
-		if (!invalid_fmt && file_in.GetAudio().GetFormat().IsValid()) {
+		bool is_valid_fmt = file_in.GetAudio().GetFormat().IsValid();
+		if (!was_valid_fmt && is_valid_fmt) {
 			// first packet fixed format. Now, negotiate connection format again...
 			RealizeAudioFormat();
 		}
 	}
 	
 	if (mode == VIDEO_ONLY || mode == AUDIOVIDEO) {
-		bool invalid_fmt = file_in.GetVideo().GetFormat().IsValid();
+		bool was_valid_fmt = file_in.GetVideo().GetFormat().IsValid();
 		
 		file_in.FillVideoBuffer();
 		
-		if (!invalid_fmt && file_in.GetVideo().GetFormat().IsValid()) {
+		bool is_valid_fmt = file_in.GetVideo().GetFormat().IsValid();
+		if (!was_valid_fmt && is_valid_fmt) {
 			// first packet fixed format. Now, negotiate connection format again...
 			RealizeVideoFormat();
 		}
@@ -205,7 +207,7 @@ bool MediaAtomBaseT<Backend>::IsReady(PacketIO& io) {
 	
 	if (mode == VIDEO_ONLY && video_ch >= 0)
 		//video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
-		video_packet_ready = file_in.GetVideo().IsQueueEmpty();
+		video_packet_ready = !file_in.GetVideo().IsQueueEmpty();
 	
 	if (mode == AUDIOVIDEO) {
 		if (audio_ch >= 0)

@@ -268,6 +268,28 @@ AtomTypeCls VideoDbgSrc::GetType() const
 }
 
 #endif
+#if defined flagSCREEN && defined flagFFMPEG
+AtomTypeCls VideoLoaderAtom::GetAtomType()
+{
+	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
+}
+
+LinkTypeCls VideoLoaderAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void VideoLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<FfmpegSourceDevice>(this);
+}
+
+AtomTypeCls VideoLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
 #if defined flagSCREEN
 AtomTypeCls EventStatePipe::GetAtomType()
 {

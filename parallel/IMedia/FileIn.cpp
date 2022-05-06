@@ -617,7 +617,7 @@ bool AudioFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
 
 
 template <class Backend>
-void VideoFrameQueueT<Backend>::Init(AVCodecContext& ctx) {
+void VideoFrameQueueT<Backend>::Init(AVCodecContextRef& ctx) {
 	Clear();
 	
 	Format& fmt = this->fmt;
@@ -626,7 +626,7 @@ void VideoFrameQueueT<Backend>::Init(AVCodecContext& ctx) {
 	VideoFormat& vfmt = fmt;
 	Size sz = vfmt.GetSize();
 	
-	img_convert_ctx = Backend::GetImgConvContext(ctx, sz);
+	img_convert_ctx = Backend::GetImgConvContextRef(ctx, sz);
 }
 
 /*
@@ -639,7 +639,7 @@ template <class Backend>
 void VideoFrameQueueT<Backend>::Clear() {
 	Base::Clear();
 	frames.Clear();
-	Backend::DeleteImgConvContext(img_convert_ctx);
+	//Backend::DeleteImgConvContextRef(img_convert_ctx);
 }
 
 /*

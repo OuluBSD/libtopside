@@ -42,8 +42,8 @@ class VideoFrameQueueT :
 	public VideoInputFrameT<Backend>
 {
 	using AVFrame = typename Backend::AVFrame;
-	using AVCodecContext = typename Backend::AVCodecContext;
-	using ImgConvContext = typename Backend::ImgConvContext;
+	using AVCodecContextRef = typename Backend::AVCodecContextRef;
+	using ImgConvContextRef = typename Backend::ImgConvContextRef;
 	using Frame = typename Backend::Frame;
 	using Recycler = TS::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
@@ -63,7 +63,7 @@ public:
 	~VideoFrameQueueT() {Clear();}
 	
 	void				Visit(RuntimeVisitor& vis) {}
-	void				Init(AVCodecContext& ctx);
+	void				Init(AVCodecContextRef& ctx);
 	//void				FillBuffersNull();
 	
 	void				Close() override;
@@ -84,9 +84,9 @@ class FileChannelT
 protected:
 	using FileInput = class FileInputT<Backend>;
 	using AVFrame = typename Backend::AVFrame;
-	using AVCodecContext = typename Backend::AVCodecContext;
+	using AVCodecContextRef = typename Backend::AVCodecContextRef;
 	using AVFormatContext = typename Backend::AVFormatContext;
-	using AVCodecParserContext = typename Backend::AVCodecParserContext;
+	using AVCodecParserContextRef = typename Backend::AVCodecParserContextRef;
 	using AVCodec = typename Backend::AVCodec;
 	using AVPacket = typename Backend::AVPacket;
 	using AVStream = typename Backend::AVStream;
@@ -95,8 +95,8 @@ protected:
 	friend FileInput;
 	
 	AVFormatContext* file_fmt_ctx = NULL;
-	AVCodecContext codec_ctx = NULL;
-	AVCodecParserContext parser = NULL;
+	AVCodecContextRef codec_ctx = NULL;
+	AVCodecParserContextRef parser = NULL;
 	AVFrame* frame = NULL;
 	AVCodec codec = NULL;
 	double frame_pos_time = 0;
