@@ -9,7 +9,7 @@ machine sdl.app: {
 		loop ogl.fbo.audio.buffer: {
 			id: "audio_gen";
 			ogl.customer: true;
-			ogl.fbo.source: true [][id: "audio_conv";;;;] {type: "audio"; filepath: "shaders/toys/fm/synth_fm/stage1.glsl";};
+			sdl.ogl.fbo.side: true [][id: "audio_conv";;;;] {type: "audio"; retarded_local_time: true; filepath: "shaders/toys/fm/synth_fm/stage1.glsl";};
 		};
 				
 		loop ogl.fbo.screen: {
@@ -21,7 +21,7 @@ machine sdl.app: {
 		loop ogl.fbo.audio.conv: {
 			id: "audio_conv";
 			ogl.customer: true;
-			ogl.fbo.center.audio: true [id: "audio_gen"][id: "audio_out"];
+			sdl.ogl.fbo.center.audio: true [id: "audio_gen"][id: "audio_out"];
 		};
 		
 		loop audio: {

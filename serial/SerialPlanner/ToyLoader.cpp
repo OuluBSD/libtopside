@@ -482,13 +482,13 @@ bool ToyLoader::MakeScript() {
 			if (is_screen)
 				s << "			sdl.fbo.standalone: true";
 			else
-				s << "			ogl.fbo.source.standalone: true";
+				s << "			sdl.ogl.fbo.source.standalone: true";
 		}
 		else {
 			if (is_screen)
 				s << "			sdl.fbo: true";
 			else
-				s << "			ogl.fbo.source: true";
+				s << "			sdl.ogl.fbo.side: true";
 		}
 		
 		
@@ -515,7 +515,10 @@ bool ToyLoader::MakeScript() {
 		for (int cubemap : cubemaps)
 			s << "				buf" << cubemap << ": \"cubemap\";\n";
 		
-		if (is_audio)	s << "				type: \"audio\";\n";
+		if (is_audio) {
+			s << "				type: \"audio\";\n";
+			s << "				retarded_local_time: \"true\";\n";
+		}
 		
 		if (is_screen) {
 			s << "				close_machine:	true;\n";
