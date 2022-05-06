@@ -596,7 +596,7 @@ void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample samp
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, int channels, float* dst) {
+void SwGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst) {
 	TODO
 }
 

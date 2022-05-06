@@ -815,6 +815,23 @@ public:
 };
 #endif
 
+#if defined flagOGL && defined flagSDL2
+class SdlOglAudioSource : public SdlOglAudioBase {
+
+public:
+	RTTI_DECL1(SdlOglAudioSource, SdlOglAudioBase)
+	COPY_PANIC(SdlOglAudioSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.center.fbo.audio")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 }
 
 }

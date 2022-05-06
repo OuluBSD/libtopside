@@ -68,9 +68,22 @@ GLint GetGfxChannelFormat(GVar::Sample sample, int channels) {
 			default: return -1;
 		}
 	}
+	ASSERT(0);
 	return -1;
 }
 
+GLint GetGfxType(GVar::Sample sample) {
+	using namespace GVar;
+	switch (sample) {
+		case SAMPLE_FLOAT:	return GL_FLOAT;
+		case SAMPLE_U8:		return GL_UNSIGNED_BYTE;
+		case SAMPLE_U16:	return GL_UNSIGNED_SHORT;
+		case SAMPLE_U32:	return GL_UNSIGNED_INT;
+		case SAMPLE_S32:	return GL_INT;
+	}
+	ASSERT(0);
+	return -1;
+}
 
 
 
@@ -113,13 +126,9 @@ int OglFramebufferBase::GetGlSampleSize() const {
 
 
 void OglBufferBase::BaseUpdateTexBuffers(OglFramebufferBase& fb) {
-	
-	//TODO improve this sample reading
-	ASSERT(fb.sample == GVar::SAMPLE_U8 || fb.sample == GVar::SAMPLE_FLOAT);
-	
-	fb.gl_sample_size		= fb.sample == GVar::SAMPLE_U8 ? 1 : 4;
-	fb.gl_type				= fb.sample == GVar::SAMPLE_U8 ? GL_UNSIGNED_BYTE : GL_FLOAT;
-	fb_accel_type			= fb_accel_sampletype == GVar::SAMPLE_U8 ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	fb.gl_sample_size		= GetSampleSize(fb.sample);
+	fb.gl_type				= GetGfxType(fb.sample);
+	fb_accel_type			= GetGfxType(fb_accel_sampletype);
 	
 	int sample_size = GVar::GetSampleSize(fb.sample);
 	fb_size_bytes			= fb.size.cx * fb.size.cy * sample_size * fb.channels;
@@ -295,24 +304,30 @@ template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureType type, F
 	auto fmt = fb.GetGlFormat();
 	const Size& sz = fb.size;
 	GLenum target = GetOglTextureType(type);
+	//GLint intl_fmt = GetGfxChannelFormat(fb.sample, fb.channels);
+	//GLenum intl_type = GetGfxType(fb.sample);
+	GLint intl_fmt = GetGfxChannelFormat(GVar::SAMPLE_U8, 4);
+	GLenum intl_type = GetGfxType(GVar::SAMPLE_U8);
+	
 	if (type == GVar::TEXTYPE_CUBE_MAP)
 		; // never
 	else if (type == GVar::TEXTYPE_3D)
-		glTexImage3D(target, 0, fmt, sz.cx, sz.cy, fb.depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage3D(target, 0, fmt, sz.cx, sz.cy, fb.depth, 0, intl_fmt, intl_type, 0);
 	else
-		glTexImage2D(target, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(target, 0, fmt, sz.cx, sz.cy, 0, intl_fmt, intl_type, 0);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
 	GLenum t = GetOglTextureType(type);
-	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
-	GLenum intl_type = sample != GVar::Sample::SAMPLE_FLOAT ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
+	GLint intl_fmt = GetGfxChannelFormat(sample, sample);
+	GLenum intl_type = GetGfxType(sample);
 	ASSERT(intl_fmt >= 0);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
 	glTexImage2D(
-		t, 0, GL_RGBA32F,
+		t, 0, intl_tgt_fmt,
 		sz.cx,
 		sz.cy,
 		0, intl_fmt, intl_type,
@@ -321,14 +336,15 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size 
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
 	GLenum t = GetOglTextureType(type);
+	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
 	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
-	GLenum intl_type = sample != GVar::Sample::SAMPLE_FLOAT ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	GLenum intl_type = GetGfxType(sample);
 	ASSERT(intl_fmt >= 0);
 	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
 	glTexImage3D(
-		t, 0, GL_RGBA32F,
+		t, 0, intl_tgt_fmt,
 		sz.cx,
 		sz.cy,
 		sz.cz,
@@ -862,9 +878,9 @@ template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffe
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, int channels, float* dst) {
+template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst) {
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadPixels(x, y, w, h, GetOglChCode(channels), GL_FLOAT, dst);
+	glReadPixels(x, y, w, h, GetOglChCode(channels), GetGfxType(sample), dst);
 }
 
 

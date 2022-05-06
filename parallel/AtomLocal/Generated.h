@@ -225,23 +225,6 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglAudioSource : public OglAudioBase {
-
-public:
-	RTTI_DECL1(OglAudioSource, OglAudioBase)
-	COPY_PANIC(OglAudioSource)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.audio")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class CpuKeyboardSource : public CpuKeyboardBase {
 
 public:
@@ -390,7 +373,7 @@ using SdlOglAudioSinkRef = Ref<SdlOglAudioSink, AtomParent>;
 
 using OglKeyboardSourceRef = Ref<OglKeyboardSource, AtomParent>;
 
-using OglAudioSourceRef = Ref<OglAudioSource, AtomParent>;
+using SdlOglAudioSourceRef = Ref<SdlOglAudioSource, AtomParent>;
 
 using CpuKeyboardSourceRef = Ref<CpuKeyboardSource, AtomParent>;
 

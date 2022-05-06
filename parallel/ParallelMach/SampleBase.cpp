@@ -186,4 +186,21 @@ bool BinarySample::IsBigEndian(Type t) {
 }
 
 
+
+
+
+GVar::Sample GetGVarType(BinarySample::Type s) {
+	switch (s) {
+		case BinarySample::U8_LE: return GVar::SAMPLE_U8;
+		case BinarySample::U16_LE: return GVar::SAMPLE_U16;
+		case BinarySample::U32_LE: return GVar::SAMPLE_U32;
+		case BinarySample::S32_LE: return GVar::SAMPLE_S32;
+		case BinarySample::FLT_LE: return GVar::SAMPLE_FLOAT;
+		default: break;
+	}
+	ASSERT(0);
+	return GVar::SAMPLE_U8;
+}
+
+
 NAMESPACE_PARALLEL_END

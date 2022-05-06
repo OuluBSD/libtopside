@@ -187,7 +187,7 @@ template <class Gfx>
 void BufferT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
 	GVar::TextureType type = GVar::TEXTYPE_2D;
 	
-	int exp_len = sz.cx * sz.cy * channels;
+	int exp_len = sz.cx * sz.cy * channels * GVar::GetSampleSize(sample);
 	ASSERT(len == exp_len);
 	if (len != exp_len)
 		return;
@@ -829,6 +829,9 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		type = GVar::TEXTYPE_CUBE_MAP;
 		create_depth = create_fbo = false;
 	}
+	/*else if (fb.is_audio) {
+		create_depth = create_fbo = false;
+	}*/
 	
 	EnableGfxAccelDebugMessages(1);
 	

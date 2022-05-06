@@ -96,6 +96,7 @@ INITBLOCK {
 				Factory::RegisterAtom<SdlOglShaderAtomSA>();
 				Factory::RegisterAtom<SdlOglTextureSource>();
 				Factory::RegisterAtom<SdlOglAudioSink>();
+				Factory::RegisterAtom<SdlOglAudioSource>();
 			#endif
 		#endif
 	#endif

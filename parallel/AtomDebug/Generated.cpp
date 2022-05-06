@@ -795,7 +795,7 @@ AtomTypeCls X11SwFboAtomSA::GetType() const
 #if defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglFboAtomSA::GetAtomType()
 {
-	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+	return ATOM11(SDL_OGL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
 }
 
 LinkTypeCls SdlOglFboAtomSA::GetLinkType()
@@ -817,7 +817,7 @@ AtomTypeCls SdlOglFboAtomSA::GetType() const
 #if defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglFboPipe::GetAtomType()
 {
-	return ATOM11(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+	return ATOM11(SDL_OGL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
 }
 
 LinkTypeCls SdlOglFboPipe::GetLinkType()
@@ -839,7 +839,7 @@ AtomTypeCls SdlOglFboPipe::GetType() const
 #if defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglFboAtom::GetAtomType()
 {
-	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+	return ATOM11_U44(SDL_OGL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
 }
 
 LinkTypeCls SdlOglFboAtom::GetLinkType()
@@ -1029,6 +1029,28 @@ void SdlOglAudioSink::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlOglAudioSink::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagOGL && defined flagSDL2
+AtomTypeCls SdlOglAudioSource::GetAtomType()
+{
+	return ATOM11_U11(SDL_OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);
+}
+
+LinkTypeCls SdlOglAudioSource::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlOglAudioSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglAudioBase>(this);
+}
+
+AtomTypeCls SdlOglAudioSource::GetType() const
 {
 	return GetAtomType();
 }

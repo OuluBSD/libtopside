@@ -394,7 +394,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.audio: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "			sdl.ogl.center.fbo.audio: true [loop: " << a << "][loop: " << l << "];\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;

@@ -79,6 +79,7 @@ public:
 	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
 };
 
+GVar::Sample GetGVarType(BinarySample::Type s);
 
 
 

@@ -420,10 +420,12 @@ HEADER_ACTION(		OglKeyboardSource,	ogl.fbo.keyboard)
 HEADER_ARG(			OglKeyboardSource,	reqdef_flagSCREEN,			1)
 HEADER_LINK(		OglKeyboardSource,	PIPE_OPTSIDE, PROCESS)
 
-HEADER22_U11(		OglAudioSource,		OglAudioBase,				pipe,		OglFbo,			OglOrder,		CenterAudio,	OglFbo,			OglReceipt)
-HEADER_ACTION(		OglAudioSource,		ogl.fbo.audio)
-HEADER_ARG(			OglAudioSource,		reqdef_flagSCREEN,			1)
-HEADER_LINK(		OglAudioSource,		PIPE_OPTSIDE, PROCESS)
+HEADER22_U11(		SdlOglAudioSource,	SdlOglAudioBase,			pipe,		OglFbo,			OglOrder,		CenterAudio,	OglFbo,			OglReceipt)
+HEADER_ACTION(		SdlOglAudioSource,	sdl.ogl.center.fbo.audio)
+HEADER_ARG(			SdlOglAudioSource,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglAudioSource,	reqdef_flagSDL2,			1)
+HEADER_LINK(		SdlOglAudioSource,	PIPE_OPTSIDE, PROCESS)
+HEADER_ARG(			SdlOglAudioSource,	HINT_PKG,					"AtomDebug")
 
 
 

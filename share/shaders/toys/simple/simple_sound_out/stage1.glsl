@@ -23,6 +23,6 @@ vec2 mainSound(float time)
     float freq = 440.0;
     float wave_time = 1.0 / freq;
     float wave_phase = mod(time, wave_time) / wave_time;
-    float v = sin(wave_phase * 2.0 * M_PI);
+    float v = (1.0 + sin(wave_phase * 2.0 * M_PI)) * 0.5;
     return vec2(v,0);
 }

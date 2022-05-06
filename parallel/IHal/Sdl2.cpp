@@ -63,7 +63,7 @@ bool HalSdl2::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBas
 	
 	SDL_zero(audio_desired);
 	audio_desired.freq = 44100;
-	audio_desired.format = AUDIO_F32;
+	audio_desired.format = AUDIO_U16;
 	audio_desired.channels = 2;
 	audio_desired.samples = 1024;
 	audio_desired.callback = StaticAudioOutputSinkCallback;

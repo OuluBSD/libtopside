@@ -201,7 +201,7 @@ AtomTypeCls EventState::GetType() const
 #if defined flagSCREEN
 AtomTypeCls SdlOglFboPipeSide::GetAtomType()
 {
-	return ATOM21(SDL_FBO_PIPE_SIDE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
+	return ATOM21(SDL_OGL_FBO_PIPE_SIDE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
 }
 
 LinkTypeCls SdlOglFboPipeSide::GetLinkType()
@@ -281,28 +281,6 @@ void OglKeyboardSource::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglKeyboardSource::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls OglAudioSource::GetAtomType()
-{
-	return ATOM11_U11(OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);
-}
-
-LinkTypeCls OglAudioSource::GetLinkType()
-{
-	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
-}
-
-void OglAudioSource::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OglAudioBase>(this);
-}
-
-AtomTypeCls OglAudioSource::GetType() const
 {
 	return GetAtomType();
 }

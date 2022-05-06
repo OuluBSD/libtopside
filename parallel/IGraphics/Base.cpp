@@ -461,7 +461,7 @@ bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int 
 		//out.AddRouteData(src.from_sink_ch);
 		AudioFormat& afmt = fmt;
 		
-		ASSERT(afmt.IsSampleFloat());
+		//ASSERT(afmt.IsSampleFloat());
 		/*int src_queue = src.val->GetMinPackets();
 		int sink_queue = sink.val->GetMinPackets();
 		ASSERT(src_queue > 1);
@@ -471,16 +471,15 @@ bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int 
 		auto& fb = src_buf->fb;
 		int afmt_size = afmt.GetSize();
 		ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
-		int len = afmt.sample_rate * fb.channels * sizeof(float);
+		int len = afmt.sample_rate * fb.channels * GVar::GetSampleSize(fb.sample);
 		ASSERT(len > 0);
 		Vector<byte>& out_data = out.Data();
 		out_data.SetCount(len);
-		float* flt = (float*)(byte*)out_data.Begin();
 		
 		NativeFrameBufferConstRef frame_buf = fb.GetReadFramebuffer();
 		ASSERT(frame_buf);
 		Gfx::BindFramebufferRO(frame_buf);
-		Gfx::ReadPixels(0, 0, afmt.sample_rate, 1, fb.channels, flt);
+		Gfx::ReadPixels(0, 0, afmt.sample_rate, 1, fb.sample, fb.channels, out_data.Begin());
 		Gfx::UnbindFramebuffer();
 		
 		src_buf = 0;
@@ -506,9 +505,209 @@ void FboReaderBaseT<Gfx>::Visit(RuntimeVisitor& vis) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
+	return true;
+}
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::PostInitialize() {
+	return true;
+}
+
+template <class Gfx>
+void AudioBaseT<Gfx>::Uninitialize() {
+	
+}
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::IsReady(PacketIO& io) {
+	dword iface_sink_mask = this->iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("AudioBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
+	RTLOG("AudioBaseT<Gfx>::Recv");
+	
+	const PacketValue& in = *p;
+	Format fmt = in.GetFormat();
+	if (fmt.IsAudio()) {
+		auto& buf = this->bf.GetBuffer();
+		AudioFormat& afmt = fmt;
+		Size sz(afmt.sample_rate, 1);
+		int channels = afmt.GetSize();
+		const Vector<byte>& data = in.GetData();
+		
+		//ASSERT(afmt.type == SoundSample::FLT_LE || afmt.type == SoundSample::U8_LE);
+		GVar::Sample sample = GetGVarType(afmt.type);
+		int sample_size = GVar::GetSampleSize(sample);
+		
+		if (!buf.IsInitialized()) {
+			ASSERT(sz.cx > 0 && sz.cy > 0);
+			auto& fb = buf.fb;
+			fb.is_win_fbo = false;
+			fb.is_audio = true;
+			fb.size = sz;
+			fb.channels = channels;
+			fb.sample = sample;
+			fb.fps = 0;
+			
+			// opengl fails with 2 channel internal format, so force it to 3
+			//if (fb.channels == 2)
+			//	fb.channels = 4;
+			
+			if (!buf.InitializeTexture(
+				Size(sz.cx, sz.cy),
+				channels,
+				sample,
+				&*data.Begin(),
+				data.GetCount()))
+				return false;
+		}
+		else {
+			buf.ReadTexture(
+				sz,
+				channels,
+				sample,
+				&*data.Begin(),
+				data.GetCount());
+		}
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	RTLOG("AudioBaseT<Gfx>::Send");
+	Format fmt = out.GetFormat();
+	if (fmt.IsFbo()) {
+		InternalPacketData& data = out.GetData<InternalPacketData>();
+		this->GetBuffer().StoreOutputLink(data);
+		RTLOG("AudioBaseT<Gfx>::Send: 0, " << src_ch << ": " << out-ToString());
+	}
+	return true;
+}
+
+/*bool ProcessPackets(PacketIO& io) {
+	RTLOG("OglAudioBase::ProcessPackets");
+	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	auto& buf = this->buf;
+	
+	PacketIO::Sink&		prim_sink	= io.sink[0];
+	PacketIO::Source&	prim_src	= io.src[0];
+	PacketIO::Sink&		sink		= io.sink[1];
+	PacketIO::Source&	src			= io.src[1];
+	
+	ASSERT(prim_sink.p);
+	prim_sink.may_remove = true;
+	prim_src.from_sink_ch = 0;
+	prim_src.p = this->ReplyPacket(0, prim_sink.p);
+	
+	ASSERT(sink.p);
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = this->ReplyPacket(1, sink.p);
+	
+	Packet& from = sink.p;
+	Format from_fmt = from->GetFormat();
+	ASSERT(from_fmt.IsAudio());
+	AudioFormat& afmt = from_fmt;
+	Size sz(afmt.sample_rate, 1);
+	int channels = afmt.GetSize();
+	const Vector<byte>& data = from->GetData();
+	
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
+		ASSERT(afmt.IsSampleFloat());
+		fb.sample = GVar::SAMPLE_FLOAT;
+		fb.fps = 0;
+		
+		if (!buf.InitializeTexture(
+			Size(sz.cx, sz.cy),
+			channels,
+			GVar::SAMPLE_U8,
+			&*data.Begin(),
+			data.GetCount() * sizeof(byte)))
+			return false;
+	}
+	else {
+		buf.ReadTexture(
+			sz,
+			channels,
+			GVar::SAMPL
+template <class Gfx>
+void AudioBaseT<Gfx>::E_U8,
+			&*data.Begin(),
+			data.GetCount() * sizeof(byte));
+	}
+	
+	
+	InterfaceSourceRef src_iface = this->GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 1;
+				out = this->ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			this->GetBuffer().StoreOutputLink(data);
+			RTLOG("OglKeyboardBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
+	}
+	
+	return true;
+}*/
+
+template <class Gfx>
+bool AudioBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
+		ISinkRef sink = this->GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(TextureBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(FboReaderBaseT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(AudioBaseT)
 /*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)*/

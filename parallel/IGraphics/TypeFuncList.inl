@@ -78,7 +78,7 @@ static void Uniform2f(int idx, float f0, float f1);
 static void Uniform3f(int idx, float f0, float f1, float f2);
 static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
 static void UniformMatrix4fv(int idx, const mat4& mat);
-static void ReadPixels(int x, int y, int w, int h, int channels, float* dst);
+static void ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst);
 
 static void ClearBuffers();
 static void SetSmoothShading(bool b=true);
