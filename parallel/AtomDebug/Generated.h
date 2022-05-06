@@ -626,11 +626,11 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlFboAtomSA : public Sdl2OglVideoSinkDevice {
+class SdlOglFboAtomSA : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboAtomSA, Sdl2OglVideoSinkDevice)
-	COPY_PANIC(SdlFboAtomSA)
+	RTTI_DECL1(SdlOglFboAtomSA, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlOglFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
 	ATOM_MAKE_ACTION_END
@@ -643,11 +643,11 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlFboPipe : public Sdl2OglVideoSinkDevice {
+class SdlOglFboPipe : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboPipe, Sdl2OglVideoSinkDevice)
-	COPY_PANIC(SdlFboPipe)
+	RTTI_DECL1(SdlOglFboPipe, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlOglFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink")
 	ATOM_MAKE_ACTION_END
@@ -660,11 +660,11 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlFboAtom : public Sdl2OglVideoSinkDevice {
+class SdlOglFboAtom : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboAtom, Sdl2OglVideoSinkDevice)
-	COPY_PANIC(SdlFboAtom)
+	RTTI_DECL1(SdlOglFboAtom, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlOglFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
 	ATOM_MAKE_ACTION_END
@@ -782,13 +782,30 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglVolumeSource : public SdlOglTextureBase {
+class OglVolumeSource : public SdlOglFboReaderBase {
 
 public:
-	RTTI_DECL1(OglVolumeSource, SdlOglTextureBase)
+	RTTI_DECL1(OglVolumeSource, SdlOglFboReaderBase)
 	COPY_PANIC(OglVolumeSource)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.volume")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSDL2 && defined flagOGL
+class SdlOglAudioSink : public SdlOglFboReaderBase {
+
+public:
+	RTTI_DECL1(SdlOglAudioSink, SdlOglFboReaderBase)
+	COPY_PANIC(SdlOglAudioSink)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.center.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

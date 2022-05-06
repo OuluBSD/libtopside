@@ -294,6 +294,13 @@ void SwGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb) {
 }
 
 template <class Gfx>
+void SwGfxT<Gfx>::BindFramebufferRO(NativeFrameBufferConstRef fb) {
+	auto& l = Local();
+	ASSERT_(!l.fb || (l.ctx_default_fb && l.fb == l.ctx_default_fb), "previous frambuffer have not been unbound");
+	l.fb = (NativeFrameBufferRef)fb;
+}
+
+template <class Gfx>
 void SwGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
 	auto& t = Local().T();
 	t.r = tex;
@@ -585,6 +592,11 @@ void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sampl
 
 template <class Gfx>
 void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
+	TODO
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, int channels, float* dst) {
 	TODO
 }
 

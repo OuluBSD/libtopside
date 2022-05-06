@@ -95,6 +95,29 @@ bool AtomBase::Recv(int sink_ch, const Packet& in) {
 	return true;
 }
 
+void AtomBase::SetQueueSize(int queue_size) {
+	InterfaceSinkRef sink_iface = this->GetSink();
+	InterfaceSourceRef src_iface = this->GetSource();
+	if (queue_size == 1) {
+		int c = sink_iface->GetSinkCount();
+		for(int i = 0; i < c; i++)
+			sink_iface->GetValue(i).SetMaxQueueSize(queue_size);
+		
+		c = src_iface->GetSourceCount();
+		for(int i = 0; i < c; i++)
+			src_iface->GetSourceValue(i).SetMaxQueueSize(queue_size);
+	}
+	else {
+		int c = sink_iface->GetSinkCount();
+		for(int i = 0; i < c; i++)
+			sink_iface->GetValue(i).SetMinQueueSize(queue_size);
+		
+		c = src_iface->GetSourceCount();
+		for(int i = 0; i < c; i++)
+			src_iface->GetSourceValue(i).SetMinQueueSize(queue_size);
+	}
+}
+
 
 
 

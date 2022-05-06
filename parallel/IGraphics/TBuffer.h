@@ -52,6 +52,7 @@ struct BufferT : GfxBuffer {
 	DataState					data;
 	DataState*					user_data = 0;
 	bool						use_user_data = false;
+	bool						is_local_time = false;
 	
 	
 	
@@ -121,6 +122,7 @@ public:
 	bool LoadInputLink(int in_id, const PacketValue& v);
 	void SetInputVolume(int in_id);
 	void SetInputCubemap(int in_id);
+	void SetLocalTime(bool b=true) {is_local_time = b;}
 	
 };
 

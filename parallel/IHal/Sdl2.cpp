@@ -19,6 +19,10 @@ void StaticAudioOutputSinkCallback(void* userdata, Uint8* stream, int len) {
 		RTLOG("StaticAudioOutputSinkCallback: reading memory failed");
 		memset(stream, 0, len);
 	}
+	else {
+		float* flt = (float*)stream;
+		RTLOG("StaticAudioOutputSinkCallback: reading success");
+	}
 }
 
 
@@ -34,6 +38,8 @@ bool HalSdl2::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a
 	// Set init flag
 	dword sdl_flag = SDL_INIT_AUDIO;
 	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
+	
+	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }

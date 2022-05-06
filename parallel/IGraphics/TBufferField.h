@@ -23,6 +23,9 @@ protected:
 	String library_paths;
 	bool is_user_shader = false;
 	bool is_audio = false;
+	bool is_retarded_local_time = false;
+	int sample_rate = 44100;
+	int frame_samples = 1024;
 	NativeFrameBufferRef fb = 0;
 	NativeColorBufferRef clr = 0;
 	

@@ -217,6 +217,10 @@ template <class Gfx> void OglGfxT<Gfx>::BindFramebuffer(NativeFrameBufferRef fb)
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::BindFramebufferRO(NativeFrameBufferConstRef fb) {
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
+}
+
 template <class Gfx> void OglGfxT<Gfx>::UnbindFramebuffer() {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
@@ -856,6 +860,11 @@ template <class Gfx> void OglGfxT<Gfx>::FramebufferTexture2D(TexType tgt, Native
 
 template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef fb) {
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, int channels, float* dst) {
+	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glReadPixels(x, y, w, h, GetOglChCode(channels), GL_FLOAT, dst);
 }
 
 

@@ -361,7 +361,12 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	RTLOG("Process " << HexStr(this) << " time: " << ctx.time_total);
 	
-	ctx.time_total = cfg.time_total;
+	if (is_local_time) {
+		ASSERT(ctx.frame_time != 0.0);
+		ctx.time_total += ctx.frame_time;
+	}
+	else
+		ctx.time_total = cfg.time_total;
 	//RTLOG("Process: " << time_total);
 	ctx.frames++;
 	
@@ -569,7 +574,11 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 	using namespace GVar;
 	int uindex = rt.var_idx[var];
 	ASSERT(uindex >= 0);
-	if (var == VAR_VIEW) {
+	if (var == VAR_AUDIOTIME) {
+		//LOG("VAR_AUDIOTIME: " << ctx.time_total);
+		Gfx::Uniform1f(uindex, (float)ctx.time_total);
+	}
+	else if (var == VAR_VIEW) {
 		Gfx::UniformMatrix4fv(uindex, data.view);
 	}
 	else if (var == VAR_LIGHTDIR) {
@@ -604,7 +613,9 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION1) {
 		TODO
 	}
-	else TODO
+	else {
+		TODO
+	}
 	#if 0
 	if (var == VAR_VIEW) {
 		if (o.is_global_view)
@@ -704,6 +715,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 	}
 	
 	else if (var == VAR_COMPAT_SAMPLERATE) {
+		ASSERT(ctx.sample_rate > 0);
 		Gfx::Uniform1f(uindex, (float)ctx.sample_rate);
 	}
 	

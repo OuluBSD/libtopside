@@ -108,6 +108,7 @@ public:
 	void					ClearDependency() {atom_dependency.Clear();}
 	void					UpdateSinkFormat(ValCls val, Format fmt);
 	void					PostContinueForward();
+	void					SetQueueSize(int queue_size);
 	
 	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
 		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);

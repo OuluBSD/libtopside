@@ -1,4 +1,6 @@
 #include "IGraphics.h"
+#include <SerialMach/SerialMach.h>
+
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -13,26 +15,7 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (this->bf.IsAudio())
 		queue_size = DEFAULT_AUDIO_QUEUE_SIZE;
 	
-	InterfaceSinkRef sink_iface = this->GetSink();
-	InterfaceSourceRef src_iface = this->GetSource();
-	if (queue_size == 1) {
-		int c = sink_iface->GetSinkCount();
-		for(int i = 0; i < c; i++)
-			sink_iface->GetValue(i).SetMaxQueueSize(queue_size);
-		
-		c = src_iface->GetSourceCount();
-		for(int i = 0; i < c; i++)
-			src_iface->GetSourceValue(i).SetMaxQueueSize(queue_size);
-	}
-	else {
-		int c = sink_iface->GetSinkCount();
-		for(int i = 0; i < c; i++)
-			sink_iface->GetValue(i).SetMinQueueSize(queue_size);
-		
-		c = src_iface->GetSourceCount();
-		for(int i = 0; i < c; i++)
-			src_iface->GetSourceValue(i).SetMinQueueSize(queue_size);
-	}
+	this->SetQueueSize(queue_size);
 	
 	if (!this->bf.ImageInitialize(false, Size(0,0)))
 		return false;
@@ -418,8 +401,114 @@ bool TextureBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, con
 
 
 
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
+	ISourceRef src = this->GetSource();
+	Format out_fmt = src->GetSourceValue(src->GetSourceCount()-1).GetFormat();
+	if (out_fmt.IsAudio()) {
+		this->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	}
+	return true;
+}
+
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::PostInitialize() {
+	return true;
+}
+
+template <class Gfx>
+void FboReaderBaseT<Gfx>::Uninitialize() {
+	
+}
+
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::IsReady(PacketIO& io) {
+	dword iface_sink_mask = this->iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
+	Format fmt = in->GetFormat();
+		
+	if (fmt.IsFbo()) {
+		/*int src_queue = src.val->GetMinPackets();
+		int sink_queue = sink.val->GetMinPackets();
+		ASSERT(src_queue > 1);
+		ASSERT(sink_queue > 1);*/
+		
+		//DUMP(fmt);
+		InternalPacketData& v = in->GetData<InternalPacketData>();
+		src_buf = (Buffer*)v.ptr;
+		ASSERT(src_buf);
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	Format fmt = out.GetFormat();
+	if (fmt.IsReceipt()) {
+		//out.AddRouteData(src.from_sink_ch);
+	}
+	else if (fmt.IsAudio()) {
+		if (!src_buf)
+			return false;
+		
+		//out.AddRouteData(src.from_sink_ch);
+		AudioFormat& afmt = fmt;
+		
+		ASSERT(afmt.IsSampleFloat());
+		/*int src_queue = src.val->GetMinPackets();
+		int sink_queue = sink.val->GetMinPackets();
+		ASSERT(src_queue > 1);
+		ASSERT(sink_queue > 1);*/
+		
+		//DUMP(fmt);
+		auto& fb = src_buf->fb;
+		int afmt_size = afmt.GetSize();
+		ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
+		int len = afmt.sample_rate * fb.channels * sizeof(float);
+		ASSERT(len > 0);
+		Vector<byte>& out_data = out.Data();
+		out_data.SetCount(len);
+		float* flt = (float*)(byte*)out_data.Begin();
+		
+		NativeFrameBufferConstRef frame_buf = fb.GetReadFramebuffer();
+		ASSERT(frame_buf);
+		Gfx::BindFramebufferRO(frame_buf);
+		Gfx::ReadPixels(0, 0, afmt.sample_rate, 1, fb.channels, flt);
+		Gfx::UnbindFramebuffer();
+		
+		src_buf = 0;
+	}
+	else TODO
+	
+	return true;
+}
+
+template <class Gfx>
+bool FboReaderBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	
+	TODO
+	
+}
+
+template <class Gfx>
+void FboReaderBaseT<Gfx>::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<BufferBase>(this);
+}
+
+
+
+
+
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(TextureBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(FboReaderBaseT)
 /*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)*/

@@ -552,7 +552,15 @@ JoinerLink::JoinerLink() {
 }
 
 bool JoinerLink::Initialize(const Script::WorldState& ws) {
+	Format fmt = GetSink()->GetValue(1).GetFormat();
+	if (fmt.IsAudio()) {
+		GetAtom()->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	}
 	
+	return true;
+}
+
+bool JoinerLink::PostInitialize() {
 	return true;
 }
 

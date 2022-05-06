@@ -152,6 +152,7 @@ public:
 	RTTI_DECL1(JoinerLink, Link)
 	JoinerLink();
 	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	bool IsReady(PacketIO& io) override;

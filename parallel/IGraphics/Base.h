@@ -90,105 +90,25 @@ template <class Gfx>
 class FboReaderBaseT :
 	public BufferBaseT<Gfx>
 {
+	using Buffer = BufferT<Gfx>;
+	
+	Buffer* src_buf = 0;
+	
 public:
 	using BufferBase = BufferBaseT<Gfx>;
-	using Buffer = BufferT<Gfx>;
+	using NativeFrameBufferConstRef = typename Gfx::NativeFrameBufferConstRef;
 	RTTI_DECL1(FboReaderBaseT, BufferBase);
 	
 	FboReaderBaseT() {}
 	
-	bool Initialize(const Script::WorldState& ws) override {
-		ISourceRef src = this->GetSource();
-		Format out_fmt = src->GetSourceValue(src->GetSourceCount()-1).GetFormat();
-		if (out_fmt.IsAudio())
-			this->SetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
-		return true;
-	}
-	
-	bool PostInitialize() override {
-		return true;
-	}
-	
-	void Uninitialize() override {
-		
-	}
-	
-	bool IsReady(PacketIO& io) override {
-		dword iface_sink_mask = this->iface.GetSinkMask();
-		bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-		RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
-		return b;
-	}
-	
-	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
-		TODO
-	}
-	
-	/*bool ProcessPackets(PacketIO& io) override {
-		ASSERT(io.nonempty_sinks == 2);
-		
-		{
-			PacketIO::Sink& sink = io.sink[0];
-			PacketIO::Source& src = io.src[0];
-			sink.may_remove = true;
-			src.from_sink_ch = 0;
-			src.p = this->ReplyPacket(0, sink.p);
-			src.p->AddRouteData(src.from_sink_ch);
-		}
-		
-		{
-			PacketIO::Sink& sink = io.sink[1];
-			PacketIO::Source& src = io.src[1];
-			ASSERT(sink.p && src.val && !src.is_full);
-			Packet& in = sink.p;
-			sink.may_remove = true;
-			src.from_sink_ch = 1;
-			src.p = this->ReplyPacket(1, sink.p);
-			src.p->AddRouteData(src.from_sink_ch);
-			
-			Format fmt = src.p->GetFormat();
-			
-			if (fmt.IsAudio()) {
-				int src_queue = src.val->GetMinPackets();
-				int sink_queue = sink.val->GetMinPackets();
-				ASSERT(src_queue > 1);
-				ASSERT(sink_queue > 1);
-				
-				//DUMP(fmt);
-				AudioFormat& afmt = fmt;
-				InternalPacketData& v = in->GetData<InternalPacketData>();
-				Buffer* src_buf = (Buffer*)v.ptr;
-				ASSERT(src_buf);
-				
-				auto& fb = src_buf->fb;
-				int afmt_size = afmt.GetSize();
-				ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
-				int len = afmt.sample_rate * fb.channels * sizeof(float);
-				ASSERT(len > 0);
-				Vector<byte>& out_data = src.p->Data();
-				out_data.SetCount(len);
-				
-				GLuint frame_buf = fb.GetReadFramebuffer();
-				ASSERT(frame_buf > 0);
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
-				glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-				glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(fb.channels), GL_FLOAT, out_data.Begin());
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-				
-			}
-			else TODO
-		}
-		
-		return true;
-	}*/
-	
-	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override {
-		
-		TODO
-		
-	}
-	
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	bool IsReady(PacketIO& io) override;
+	bool Recv(int sink_ch, const Packet& in) override;
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
+	void Visit(RuntimeVisitor& vis) override;
 	
 };
 

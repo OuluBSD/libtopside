@@ -793,66 +793,66 @@ AtomTypeCls X11SwFboAtomSA::GetType() const
 
 #endif
 #if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlFboAtomSA::GetAtomType()
+AtomTypeCls SdlOglFboAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
 }
 
-LinkTypeCls SdlFboAtomSA::GetLinkType()
+LinkTypeCls SdlOglFboAtomSA::GetLinkType()
 {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlFboAtomSA::Visit(RuntimeVisitor& vis)
+void SdlOglFboAtomSA::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlFboAtomSA::GetType() const
+AtomTypeCls SdlOglFboAtomSA::GetType() const
 {
 	return GetAtomType();
 }
 
 #endif
 #if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlFboPipe::GetAtomType()
+AtomTypeCls SdlOglFboPipe::GetAtomType()
 {
 	return ATOM11(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
 }
 
-LinkTypeCls SdlFboPipe::GetLinkType()
+LinkTypeCls SdlOglFboPipe::GetLinkType()
 {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlFboPipe::Visit(RuntimeVisitor& vis)
+void SdlOglFboPipe::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlFboPipe::GetType() const
+AtomTypeCls SdlOglFboPipe::GetType() const
 {
 	return GetAtomType();
 }
 
 #endif
 #if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlFboAtom::GetAtomType()
+AtomTypeCls SdlOglFboAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
 }
 
-LinkTypeCls SdlFboAtom::GetLinkType()
+LinkTypeCls SdlOglFboAtom::GetLinkType()
 {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlFboAtom::Visit(RuntimeVisitor& vis)
+void SdlOglFboAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlFboAtom::GetType() const
+AtomTypeCls SdlOglFboAtom::GetType() const
 {
 	return GetAtomType();
 }
@@ -1003,10 +1003,32 @@ LinkTypeCls OglVolumeSource::GetLinkType()
 
 void OglVolumeSource::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<SdlOglTextureBase>(this);
+	vis.VisitThis<SdlOglFboReaderBase>(this);
 }
 
 AtomTypeCls OglVolumeSource::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSDL2 && defined flagOGL
+AtomTypeCls SdlOglAudioSink::GetAtomType()
+{
+	return ATOM11_U11(SDL_OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
+}
+
+LinkTypeCls SdlOglAudioSink::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlOglAudioSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglFboReaderBase>(this);
+}
+
+AtomTypeCls SdlOglAudioSink::GetType() const
 {
 	return GetAtomType();
 }

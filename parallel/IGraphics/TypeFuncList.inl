@@ -5,6 +5,7 @@ static void UseProgram(NativeProgram& prog);
 static void FramebufferTexture2D(TexType tgt, NativeColorBufferRef b);
 static void FramebufferRenderbuffer(NativeDepthBufferRef fb);
 static void BindFramebuffer(NativeFrameBufferRef fb);
+static void BindFramebufferRO(NativeFrameBufferConstRef fb);
 static void BindRenderbuffer(NativeDepthBufferRef rb);
 static void UnbindRenderbuffer();
 static void RenderbufferStorage(Size sz);
@@ -77,6 +78,7 @@ static void Uniform2f(int idx, float f0, float f1);
 static void Uniform3f(int idx, float f0, float f1, float f2);
 static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
 static void UniformMatrix4fv(int idx, const mat4& mat);
+static void ReadPixels(int x, int y, int w, int h, int channels, float* dst);
 
 static void ClearBuffers();
 static void SetSmoothShading(bool b=true);

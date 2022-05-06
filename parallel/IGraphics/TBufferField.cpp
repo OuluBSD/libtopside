@@ -6,7 +6,10 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Gfx>
 bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	
+	sample_rate = ws.GetInt(".samplerate", 44100);
+	frame_samples = ws.GetInt(".frame_samples", 1024);
 	is_audio = ws.Get(".type") == "audio";
+	buf.SetLocalTime(ws.GetBool(".retarded_local_time", false));
 	
 	buf.AddLink(ws.Get(".link"));
 	
@@ -83,6 +86,8 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	SetFragmentShader(frag_shdr);
 	SetVertexShader(vtx_shdr);
 	
+	//if (is_audio)
+	//	a.GetSink()->GetValue(0).SetMinQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }
@@ -134,9 +139,10 @@ bool GfxBufferFieldT<Gfx>::PostInitialize() {
 			fb.fps = 60;
 		}
 		else {
-			fb.size = Size(1024,1);
+			fb.size = Size(frame_samples,1);
 			fb.channels = 2;
-			fb.fps = 44100.0 / 1024;
+			fb.fps = (double)sample_rate / frame_samples;
+			buf.ctx.sample_rate = sample_rate;
 		}
 		fb.sample = GVar::SAMPLE_FLOAT;
 	}

@@ -75,7 +75,6 @@ namespace Parallel {
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
-	ATOM_TYPE(OGL_AUDIO_SINK) \
 	ATOM_TYPE(OGL_KEYBOARD_SOURCE) \
 	ATOM_TYPE(OGL_AUDIO_SOURCE) \
 	ATOM_TYPE(CPU_KEYBOARD_SOURCE) \
@@ -97,11 +96,10 @@ namespace Parallel {
 	ATOM_CLASS(X11VideoAtomPipe) \
 	ATOM_CLASS(X11SwVideoAtomPipe) \
 	ATOM_CLASS(X11SwFboAtomSA) \
-	ATOM_CLASS(SdlFboPipeSide) \
+	ATOM_CLASS(SdlOglFboPipeSide) \
 	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(SdlVideoAtomSA) \
 	ATOM_CLASS(OglVolumeSource) \
-	ATOM_CLASS(OglAudioSink) \
 	ATOM_CLASS(OglKeyboardSource) \
 	ATOM_CLASS(OglAudioSource) \
 	ATOM_CLASS(CpuKeyboardSource) \
@@ -133,6 +131,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_FBO_PIPE) \
 	ATOM_TYPE(SDL_FBO_ATOM) \
 	ATOM_TYPE(SDL_OGL_TEXTURE_SOURCE) \
+	ATOM_TYPE(SDL_OGL_AUDIO_SINK) \
 
 
 #define flagOGL_ATOM_CLASS_LIST \
@@ -141,10 +140,11 @@ namespace Parallel {
 	ATOM_CLASS(X11OglFboAtomPipe) \
 	ATOM_CLASS(X11OglVideoAtomPipe) \
 	ATOM_CLASS(X11OglFboAtomSA) \
-	ATOM_CLASS(SdlFboAtomSA) \
-	ATOM_CLASS(SdlFboPipe) \
-	ATOM_CLASS(SdlFboAtom) \
+	ATOM_CLASS(SdlOglFboAtomSA) \
+	ATOM_CLASS(SdlOglFboPipe) \
+	ATOM_CLASS(SdlOglFboAtom) \
 	ATOM_CLASS(SdlOglTextureSource) \
+	ATOM_CLASS(SdlOglAudioSink) \
 
 
 #define flagSDL2_ATOM_TYPE_LIST \

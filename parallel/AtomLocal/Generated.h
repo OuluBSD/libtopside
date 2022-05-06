@@ -157,11 +157,11 @@ public:
 };
 
 #if defined flagSCREEN
-class SdlFboPipeSide : public Sdl2OglVideoSinkDevice {
+class SdlOglFboPipeSide : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboPipeSide, Sdl2OglVideoSinkDevice)
-	COPY_PANIC(SdlFboPipeSide)
+	RTTI_DECL1(SdlOglFboPipeSide, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlOglFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink.side")
 	ATOM_MAKE_ACTION_END
@@ -198,23 +198,6 @@ public:
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class OglAudioSink : public OglFboReaderBase {
-
-public:
-	RTTI_DECL1(OglAudioSink, OglFboReaderBase)
-	COPY_PANIC(OglAudioSink)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.center.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -377,13 +360,13 @@ using X11SwVideoAtomPipeRef = Ref<X11SwVideoAtomPipe, AtomParent>;
 
 using X11SwFboAtomSARef = Ref<X11SwFboAtomSA, AtomParent>;
 
-using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
+using SdlOglFboAtomSARef = Ref<SdlOglFboAtomSA, AtomParent>;
 
-using SdlFboPipeRef = Ref<SdlFboPipe, AtomParent>;
+using SdlOglFboPipeRef = Ref<SdlOglFboPipe, AtomParent>;
 
-using SdlFboPipeSideRef = Ref<SdlFboPipeSide, AtomParent>;
+using SdlOglFboPipeSideRef = Ref<SdlOglFboPipeSide, AtomParent>;
 
-using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
+using SdlOglFboAtomRef = Ref<SdlOglFboAtom, AtomParent>;
 
 using SdlVideoAtomPipeRef = Ref<SdlVideoAtomPipe, AtomParent>;
 
@@ -403,7 +386,7 @@ using SdlOglTextureSourceRef = Ref<SdlOglTextureSource, AtomParent>;
 
 using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
 
-using OglAudioSinkRef = Ref<OglAudioSink, AtomParent>;
+using SdlOglAudioSinkRef = Ref<SdlOglAudioSink, AtomParent>;
 
 using OglKeyboardSourceRef = Ref<OglKeyboardSource, AtomParent>;
 
