@@ -853,7 +853,7 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		if (create_depth) {
 			Gfx::CreateRenderbuffer(depth_buf);
 			Gfx::BindRenderbuffer(depth_buf);
-			//minor api error: Gfx::RenderbufferStorage(sz);
+			Gfx::RenderbufferStorage(sz);
 			Gfx::UnbindRenderbuffer();
 		}
 		

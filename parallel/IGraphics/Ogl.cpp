@@ -26,7 +26,7 @@ OpenGLMessageCallback( GLenum source,
 	s << ", severity = " << HexStr(severity);
 	s << ", message = " << String(message);
 	LOG(s);
-	//ASSERT(0);
+	ASSERT(0);
 }
 
 GLenum GetOglTextureType(GVar::TextureType type) {
