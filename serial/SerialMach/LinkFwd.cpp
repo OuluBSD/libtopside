@@ -462,8 +462,38 @@ void LinkBase::ForwardSideConnections() {
 			if (sink_val.IsQueueFull())
 				Panic("internal error: Atom sent packet to already full source interface. Improve custom atom IsReady function to prevent this.");
 			PacketBuffer& sink_buf = sink_val.GetBuffer();
+			
+			#if 1
+			Format sink_fmt = sink_val.GetFormat();
+			while (src_buf.GetCount()) {
+				Packet p = src_buf.First();
+				src_buf.RemoveFirst();
+				Packet to_p;
+				
+				Format in_fmt = p->GetFormat();
+				if (sink_fmt.IsCopyCompatible(in_fmt)) {
+					to_p = p;
+				}
+				else {
+					to_p = CreatePacket(p->GetOffset());
+					to_p->SetFormat(sink_fmt);
+					to_p->CopyRouteData(*p);
+					if (Convert(p, to_p)) {
+						RTLOG("LinkBase::ForwardSideConnections: converted packet: " << to_p->ToString());
+					}
+					else {
+						RTLOG("LinkBase::ForwardSideConnections: packet conversion failed from " << to_p->ToString());
+						to_p.Clear();
+						break;
+					}
+				}
+				
+				sink_buf.Add(to_p);
+			}
+			#else
 			sink_buf.PickAppend(src_buf);
 			ASSERT(src_buf.IsEmpty());
+			#endif
 		}
 	}
 }

@@ -4,28 +4,6 @@ namespace TS {
 
 namespace Parallel {
 
-#if defined flagSCREEN && defined flagFFMPEG
-AtomTypeCls AudioLoaderAtom::GetAtomType()
-{
-	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
-}
-
-LinkTypeCls AudioLoaderAtom::GetLinkType()
-{
-	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
-}
-
-void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<FfmpegSourceDevice>(this);
-}
-
-AtomTypeCls AudioLoaderAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
 #if defined flagSCREEN
 AtomTypeCls EcsEventsAtom::GetAtomType()
 {
@@ -259,28 +237,6 @@ void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlVideoAtomSA::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls OglKeyboardSource::GetAtomType()
-{
-	return ATOM11_U01(OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT, OGL, FBO);
-}
-
-LinkTypeCls OglKeyboardSource::GetLinkType()
-{
-	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
-}
-
-void OglKeyboardSource::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<OglKeyboardBase>(this);
-}
-
-AtomTypeCls OglKeyboardSource::GetType() const
 {
 	return GetAtomType();
 }

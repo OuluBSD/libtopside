@@ -80,7 +80,7 @@ void ColorTestFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 template <class Gfx>
 ProxyInput0FragmentT<Gfx>::ProxyInput0FragmentT() {
 	this->UseUniform(GVar::VAR_COMPAT_CHANNEL0);
-	this->UseUniform(GVar::VAR_COMPAT_CHANNELRESOLUTION0);
+	this->UseUniform(GVar::VAR_COMPAT_CHANNELRESOLUTION);
 	
 }
 

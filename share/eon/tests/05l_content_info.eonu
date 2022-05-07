@@ -22,7 +22,9 @@ machine sdl.app: {
 		
 		loop center.audio: {
 			center.customer: true;
-			center.audio.loader: true [][loop: ogl.fbo.audio;] {filepath: "sounds/toymusic.mp3";};
+			center.audio.loader: true [][loop: ogl.fbo.audio;] {
+				filepath: "sounds/8_bit_mentality.mp3";
+			};
 		};
 		
 		loop center.events: {
@@ -35,22 +37,22 @@ machine sdl.app: {
 		
 		loop ogl.fbo.font: {
 			ogl.customer: true;
-			ogl.fbo.image: true [loop: center.font.image][loop: ogl.fbo.screen];
+			sdl.ogl.fbo.image: true [loop: center.font.image][loop: ogl.fbo.screen];
 		};
 		
 		loop ogl.fbo.video: {
 			ogl.customer: true;
-			ogl.fbo.image: true [loop: center.video][loop: ogl.fbo.screen] {filter: mipmap;};
+			sdl.ogl.fbo.image: true [loop: center.video][loop: ogl.fbo.screen] {filter: mipmap;};
 		};
 		
 		loop ogl.fbo.audio: {
 			ogl.customer: true;
-			ogl.fbo.audio: true [loop: center.audio][loop: ogl.fbo.screen];
+			sdl.ogl.center.fbo.audio: true [loop: center.audio][loop: ogl.fbo.screen];
 		};
 		
 		loop ogl.fbo.keyboard: {
 			ogl.customer: true;
-			ogl.fbo.keyboard: true [][loop: ogl.fbo.screen] {target: event.register;};
+			sdl.ogl.fbo.keyboard: true [][loop: ogl.fbo.screen] {target: event.register;};
 		};
 		
 		

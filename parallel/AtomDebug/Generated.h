@@ -250,6 +250,23 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagFFMPEG
+class AudioLoaderAtom : public FfmpegSourceDevice {
+
+public:
+	RTTI_DECL1(AudioLoaderAtom, FfmpegSourceDevice)
+	COPY_PANIC(AudioLoaderAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagFFMPEG
 class VideoLoaderAtom : public FfmpegSourceDevice {
 
 public:
@@ -771,7 +788,7 @@ public:
 	RTTI_DECL1(SdlOglTextureSource, SdlOglTextureBase)
 	COPY_PANIC(SdlOglTextureSource)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.image")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.image")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -782,11 +799,11 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglVolumeSource : public SdlOglFboReaderBase {
+class SdlOglVolumeSource : public SdlOglFboReaderBase {
 
 public:
-	RTTI_DECL1(OglVolumeSource, SdlOglFboReaderBase)
-	COPY_PANIC(OglVolumeSource)
+	RTTI_DECL1(SdlOglVolumeSource, SdlOglFboReaderBase)
+	COPY_PANIC(SdlOglVolumeSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.volume")
 	ATOM_MAKE_ACTION_END
@@ -806,6 +823,23 @@ public:
 	COPY_PANIC(SdlOglAudioSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.center.audio")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class SdlOglKeyboardSource : public SdlOglKeyboardBase {
+
+public:
+	RTTI_DECL1(SdlOglKeyboardSource, SdlOglKeyboardBase)
+	COPY_PANIC(SdlOglKeyboardSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.keyboard")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

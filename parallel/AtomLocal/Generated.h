@@ -7,23 +7,6 @@ namespace TS {
 
 namespace Parallel {
 
-#if defined flagSCREEN && defined flagFFMPEG
-class AudioLoaderAtom : public FfmpegSourceDevice {
-
-public:
-	RTTI_DECL1(AudioLoaderAtom, FfmpegSourceDevice)
-	COPY_PANIC(AudioLoaderAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
 #if defined flagSCREEN
 class EcsEventsAtom : public EcsEventsBase {
 
@@ -208,23 +191,6 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglKeyboardSource : public OglKeyboardBase {
-
-public:
-	RTTI_DECL1(OglKeyboardSource, OglKeyboardBase)
-	COPY_PANIC(OglKeyboardSource)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.keyboard")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class CpuKeyboardSource : public CpuKeyboardBase {
 
 public:
@@ -367,11 +333,11 @@ using SdlOglShaderAtomSARef = Ref<SdlOglShaderAtomSA, AtomParent>;
 
 using SdlOglTextureSourceRef = Ref<SdlOglTextureSource, AtomParent>;
 
-using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
+using SdlOglVolumeSourceRef = Ref<SdlOglVolumeSource, AtomParent>;
 
 using SdlOglAudioSinkRef = Ref<SdlOglAudioSink, AtomParent>;
 
-using OglKeyboardSourceRef = Ref<OglKeyboardSource, AtomParent>;
+using SdlOglKeyboardSourceRef = Ref<SdlOglKeyboardSource, AtomParent>;
 
 using SdlOglAudioSourceRef = Ref<SdlOglAudioSource, AtomParent>;
 

@@ -516,12 +516,129 @@ void FboReaderBaseT<Gfx>::Visit(RuntimeVisitor& vis) {
 
 
 template <class Gfx>
+bool KeyboardBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
+	
+	target = ws.Get(".target");
+	if (target.IsEmpty()) {
+		LOG("EventStateBase::Initialize: error: target state argument is required");
+		return false;
+	}
+	
+	Space& space = this->GetParent();
+	state = space.FindNearestState(target);
+	if (!state) {
+		LOG("EventStateBase::Initialize: error: state '" << target << "' not found in parent space: " << space.GetDeepName());
+		return false;
+	}
+	
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	data.SetAll(false);
+	
+	return true;
+}
+
+template <class Gfx>
+bool KeyboardBaseT<Gfx>::PostInitialize() {
+	
+	return true;
+}
+
+template <class Gfx>
+void KeyboardBaseT<Gfx>::Uninitialize() {
+	
+}
+
+template <class Gfx>
+bool KeyboardBaseT<Gfx>::IsReady(PacketIO& io) {
+	if (!state) return false;
+	ASSERT(io.src_count == 2);
+	if (io.src_count != 2) return false;
+	
+	dword iface_sink_mask = this->iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("KeyboardBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+template <class Gfx>
+bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	RTLOG("KeyboardBaseT<Gfx>::Send");
+	auto& buf = this->bf.GetBuffer();
+	
+	Format fmt = out.GetFormat();
+	if (fmt.IsFbo()) {
+		Size sz(FboKbd::key_tex_w, FboKbd::key_tex_h);
+		int channels = 1;
+		FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+		
+		if (!buf.IsInitialized()) {
+			ASSERT(sz.cx > 0 && sz.cy > 0);
+			auto& fb = buf.fb;
+			fb.is_win_fbo = false;
+			fb.size = sz;
+			fb.channels = channels;
+			fb.sample = GVar::SAMPLE_FLOAT;
+			fb.fps = 0;
+			
+			if (!buf.InitializeTexture(
+				Size(sz.cx, sz.cy),
+				channels,
+				GVar::SAMPLE_U8,
+				data.Get(),
+				data.GetCount() * sizeof(byte)))
+				return false;
+		}
+		else {
+			buf.ReadTexture(
+				sz,
+				channels,
+				GVar::SAMPLE_U8,
+				data.Get(),
+				data.GetCount() * sizeof(byte));
+		}
+		
+		
+		InternalPacketData& d = out.GetData<InternalPacketData>();
+		this->GetBuffer().StoreOutputLink(d);
+		RTLOG("KeyboardBaseT<Gfx>::Send: 0, " << src_ch << ": " << out.ToString());
+	}
+	
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+template <class Gfx>
 bool AudioBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
+	
 	return true;
 }
 
 template <class Gfx>
 bool AudioBaseT<Gfx>::PostInitialize() {
+	
+	// e.g. opengl doesn't support 2-channel float input always, so request 16-bit uint
+	ISinkRef sink = this->GetSink();
+	for(int i = 0; i < sink->GetSinkCount(); i++) {
+		Value& v = sink->GetValue(i);
+		Format fmt = v.GetFormat();
+		if (fmt.IsAudio()) {
+			AudioFormat& afmt = fmt;
+			afmt.SetType(SoundSample::U16_LE);
+			if (!this->GetLink()->NegotiateSinkFormat(i, fmt))
+				return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -547,6 +664,11 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 	if (fmt.IsAudio()) {
 		auto& buf = this->bf.GetBuffer();
 		AudioFormat& afmt = fmt;
+		
+		Format sink_fmt = this->GetSink()->GetValue(sink_ch).GetFormat();
+		AudioFormat& sink_afmt = sink_fmt;
+		ASSERT_(sink_afmt.type == afmt.type, "packet conversion did not happen");
+		
 		Size sz(afmt.sample_rate, 1);
 		int channels = afmt.GetSize();
 		const Vector<byte>& data = in.GetData();
@@ -597,7 +719,7 @@ bool AudioBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	if (fmt.IsFbo()) {
 		InternalPacketData& data = out.GetData<InternalPacketData>();
 		this->GetBuffer().StoreOutputLink(data);
-		RTLOG("AudioBaseT<Gfx>::Send: 0, " << src_ch << ": " << out-ToString());
+		RTLOG("AudioBaseT<Gfx>::Send: 0, " << src_ch << ": " << out.ToString());
 	}
 	return true;
 }
@@ -707,6 +829,7 @@ bool AudioBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(TextureBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(FboReaderBaseT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(KeyboardBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(AudioBaseT)
 /*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)

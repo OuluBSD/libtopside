@@ -29,7 +29,10 @@ vec4 char(vec2 p, int c) {
       //     First only determine the valid char id at cur pixel 
       //     then call the draw char once at the end.
 
-int char_id = -1; vec2 char_pos, dfdx, dfdy; 
+int char_id = -1;
+vec2 char_pos = vec2(0,0);
+vec2 dfdx = vec2(0,0);
+vec2 dfdy = vec2(0,0);
 vec4 char(vec2 p, int c) {
     vec2 dFdx = dFdx(p/16.), dFdy = dFdy(p/16.);
  // if ( p.x>.25&& p.x<.75 && p.y>.0&& p.y<1. )  // normal char box
@@ -133,6 +136,8 @@ void mainImage( out vec4 O,  vec2 uv )
 {
     O -= O;
     vec2 R = iResolution.xy, U;
+    //R.x = 1280;
+    //R.y = 720;
     uv /= R.y;    
     int lod = int(mod(iTime,10.));
     
@@ -256,4 +261,6 @@ void mainImage( out vec4 O,  vec2 uv )
 		vec4 col = vec4(texture(iChannel1, coord).xyz, 1);
 		O = col;
 	}
+
+    //O = vec4(uv.x,uv.y,0.0,1.0);
 }

@@ -26,7 +26,7 @@ OpenGLMessageCallback( GLenum source,
 	s << ", severity = " << HexStr(severity);
 	s << ", message = " << String(message);
 	LOG(s);
-	ASSERT(0);
+	//ASSERT(0);
 }
 
 GLenum GetOglTextureType(GVar::TextureType type) {
@@ -318,9 +318,10 @@ template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureType type, F
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+	ASSERT_(!(sample == GVar::SAMPLE_FLOAT && channels == 2), "2-channel float input is not usually supported by opengl");
 	GLenum t = GetOglTextureType(type);
 	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
-	GLint intl_fmt = GetGfxChannelFormat(sample, sample);
+	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
 	GLenum intl_type = GetGfxType(sample);
 	ASSERT(intl_fmt >= 0);
 	
@@ -335,6 +336,7 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size 
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
+	ASSERT_(!(sample == GVar::SAMPLE_FLOAT && channels == 2), "2-channel float input is not usually supported by opengl");
 	GLenum t = GetOglTextureType(type);
 	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
 	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
@@ -597,6 +599,9 @@ String OglGfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out,
 	int last = max(0, min(79, (int)namelen));
 	name[last] = '\0';
 	
+	if (size_out) *size_out = size;
+	if (type_out) *type_out = type;
+	
 	return name;
 }
 
@@ -653,14 +658,24 @@ template <class Gfx> void OglGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pi
 template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
 	GLenum gl_t = GetOglTextureType(type);
 	
-	GLenum gl_filter = 0;
+	GLenum min_gl_filter = 0;
+	GLenum mag_gl_filter = 0;
 	switch (filter) {
-		#define FILTER(x) case GVar::FILTER_##x: gl_filter = GL_##x; break;
-		FILTER_LIST
-		#undef FILTER
+		case GVar::FILTER_NEAREST:
+			min_gl_filter = GL_NEAREST;
+			mag_gl_filter = GL_NEAREST;
+			break;
+		case GVar::FILTER_LINEAR:
+			min_gl_filter = GL_LINEAR;
+			mag_gl_filter = GL_LINEAR;
+			break;
+		case GVar::FILTER_MIPMAP:
+			min_gl_filter = GL_LINEAR_MIPMAP_LINEAR;
+			mag_gl_filter = GL_LINEAR;
+			break;
 		default: break;
 	}
-	ASSERT(gl_filter > 0);
+	ASSERT(min_gl_filter > 0);
 	
 	GLenum gl_wrap = 0;
 	switch (wrap) {
@@ -671,8 +686,8 @@ template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GV
 	}
 	ASSERT(gl_wrap > 0);
 	
-	glTexParameteri(gl_t, GL_TEXTURE_MIN_FILTER, gl_filter);
-	glTexParameteri(gl_t, GL_TEXTURE_MAG_FILTER, gl_filter);
+	glTexParameteri(gl_t, GL_TEXTURE_MIN_FILTER, min_gl_filter);
+	glTexParameteri(gl_t, GL_TEXTURE_MAG_FILTER, mag_gl_filter);
 	
 	glTexParameteri(gl_t, GL_TEXTURE_WRAP_S, gl_wrap);
 	glTexParameteri(gl_t, GL_TEXTURE_WRAP_T, gl_wrap);
@@ -845,6 +860,14 @@ template <class Gfx> void OglGfxT<Gfx>::Uniform1i(int idx, int i) {
 	glUniform1i(idx, i);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::Uniform2i(int idx, int i0, int i1) {
+	glUniform2i(idx, i0, i1);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::Uniform3i(int idx, int i0, int i1, int i2) {
+	glUniform3i(idx, i0, i1, i2);
+}
+
 template <class Gfx> void OglGfxT<Gfx>::Uniform1f(int idx, float f) {
 	glUniform1f(idx, f);
 }
@@ -859,6 +882,18 @@ template <class Gfx> void OglGfxT<Gfx>::Uniform3f(int idx, float f0, float f1, f
 
 template <class Gfx> void OglGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	glUniform4f(idx, f0, f1, f2, f3);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::Uniform1fv(int idx, int count, float* f) {
+	glUniform1fv(idx, count, f);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::Uniform3fv(int idx, int count, float* f) {
+	glUniform3fv(idx, count, f);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, int idx, float f0, float f1, float f2) {
+	glProgramUniform3f(prog, idx, f0, f1, f2);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}

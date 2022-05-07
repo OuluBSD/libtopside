@@ -43,12 +43,9 @@ const char* names[GVar::VAR_COUNT+1] = {
 	"iChannel2",
 	"iChannel3",
 	"iFrameRate",
-	"iChannelTime",
+	"iChannelTime[0]",
 	"iChannelResolution[0]",
 	
-	"iChannelResolution[1]",
-	"iChannelResolution[2]",
-	"iChannelResolution[3]",
 	"iBlockOffset",
 	
 	0
@@ -96,8 +93,6 @@ const bool is_obj_var[GVar::VAR_COUNT+1] = {
 	false,
 	false,
 	
-	false,
-	false,
 	false,
 	
 	0

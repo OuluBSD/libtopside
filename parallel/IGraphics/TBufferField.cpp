@@ -132,6 +132,8 @@ bool GfxBufferFieldT<Gfx>::PostInitialize() {
 	auto& fb = buf.fb;
 	fb.is_audio = is_audio;
 	
+	buf.ctx.sample_rate = sample_rate;
+	
 	if (!fb.is_win_fbo) {
 		if (!is_audio) {
 			fb.size = Size(1280,720);
@@ -143,7 +145,6 @@ bool GfxBufferFieldT<Gfx>::PostInitialize() {
 			fb.size = Size(frame_samples,1);
 			fb.channels = 2;
 			fb.fps = (double)sample_rate / frame_samples;
-			buf.ctx.sample_rate = sample_rate;
 			fb.sample = GVar::SAMPLE_U16;
 		}
 	}

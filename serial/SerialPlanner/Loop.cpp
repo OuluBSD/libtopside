@@ -201,6 +201,7 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
 	SideLink& l = atom.src_side_conns[side_ch_i];
 	ASSERT(!l.link);
+	if (l.link) {SetError("ScriptLoopLoader::SetSideSourceConnected: internal error: atom already linked"); return;}
 	l.link = &sink;
 	
 	MACHVER_STATUS(LoopLoader_AtomLinked, this);

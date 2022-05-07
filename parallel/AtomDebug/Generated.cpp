@@ -313,6 +313,28 @@ AtomTypeCls WebcamAtom::GetType() const
 
 #endif
 #if defined flagSCREEN && defined flagFFMPEG
+AtomTypeCls AudioLoaderAtom::GetAtomType()
+{
+	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioLoaderAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<FfmpegSourceDevice>(this);
+}
+
+AtomTypeCls AudioLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagFFMPEG
 AtomTypeCls VideoLoaderAtom::GetAtomType()
 {
 	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
@@ -991,22 +1013,22 @@ AtomTypeCls SdlOglTextureSource::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls OglVolumeSource::GetAtomType()
+AtomTypeCls SdlOglVolumeSource::GetAtomType()
 {
-	return ATOM11_U11(OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
+	return ATOM11_U11(SDL_OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
 }
 
-LinkTypeCls OglVolumeSource::GetLinkType()
+LinkTypeCls SdlOglVolumeSource::GetLinkType()
 {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void OglVolumeSource::Visit(RuntimeVisitor& vis)
+void SdlOglVolumeSource::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<SdlOglFboReaderBase>(this);
 }
 
-AtomTypeCls OglVolumeSource::GetType() const
+AtomTypeCls SdlOglVolumeSource::GetType() const
 {
 	return GetAtomType();
 }
@@ -1029,6 +1051,28 @@ void SdlOglAudioSink::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlOglAudioSink::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls SdlOglKeyboardSource::GetAtomType()
+{
+	return ATOM11_U01(SDL_OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT, OGL, FBO);
+}
+
+LinkTypeCls SdlOglKeyboardSource::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlOglKeyboardSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglKeyboardBase>(this);
+}
+
+AtomTypeCls SdlOglKeyboardSource::GetType() const
 {
 	return GetAtomType();
 }

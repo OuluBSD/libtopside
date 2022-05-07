@@ -15,7 +15,7 @@ machine sdl.app: {
 		loop ogl.fbo.tex: {
 			id: "texture";
 			ogl.customer: true;
-			ogl.fbo.image: true [id: "image"][id: "screen"];
+			sdl.ogl.fbo.image: true [id: "image"][id: "screen"];
 		};
 		
 		loop ogl.fbo.screen: {

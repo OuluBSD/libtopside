@@ -30,6 +30,7 @@ struct BufferT : GfxBuffer {
 	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
+	using NativeProgram = typename Gfx::NativeProgram;
 	
 	RTTI_DECL1(BufferT, GfxBuffer)
 	
@@ -102,10 +103,10 @@ public:
 	void ClearPipeline();
 	void CreatePipeline();
 	void FindVariables();
-	void SetVars(DataState&, int gl_prog, const DataObject& o);
-	void SetVar(DataState&, int var, int gl_prog, const DataObject& o);
-	void SetVars(int gl_prog, const RealtimeSourceConfig& cfg);
-	void SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg);
+	void SetVars(DataState&, NativeProgram& gl_prog, const DataObject& o);
+	void SetVar(DataState&, int var, NativeProgram& gl_prog, const DataObject& o);
+	void SetVars(NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
+	void SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
 	void ClearTex();
 	void CreateTex(bool create_depth, bool create_fbo);
 	NativeColorBufferConstRef GetInputTex(int input_i) const;

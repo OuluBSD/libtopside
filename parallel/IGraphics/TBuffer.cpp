@@ -563,14 +563,14 @@ void BufferT<Gfx>::FindVariables() {
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVars(DataState& d, int gl_prog, const DataObject& o) {
+void BufferT<Gfx>::SetVars(DataState& d, NativeProgram& gl_prog, const DataObject& o) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
 		if (GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
 			SetVar(d, i, gl_prog, o);
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObject& o) {
+void BufferT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog, const DataObject& o) {
 	using namespace GVar;
 	int uindex = rt.var_idx[var];
 	ASSERT(uindex >= 0);
@@ -610,7 +610,7 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL1) {
 		TODO
 	}
-	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION1) {
+	else if (var == VAR_COMPAT_CHANNELRESOLUTION) {
 		TODO
 	}
 	else {
@@ -639,19 +639,21 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVars(int gl_prog, const RealtimeSourceConfig& cfg) {
+void BufferT<Gfx>::SetVars(NativeProgram& gl_prog, const RealtimeSourceConfig& cfg) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
 		if (!GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
 			SetVar(i, gl_prog, cfg);
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg) {
+void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceConfig& cfg) {
 	using namespace GVar;
 	int uindex = rt.var_idx[var];
 	ASSERT(uindex >= 0);
 	if (uindex < 0)
 		return;
+	
+	//RTLOG("BufferT<Gfx>::SetVar: " << GVar::names[var]);
 	
 	RendVer1(OnUpdateVar, GVar::names[var]);
 	
@@ -676,6 +678,13 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 	}
 	else if (var == VAR_COMPAT_RESOLUTION) {
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
+		//Gfx::UseProgram(gl_prog);
+		float f[3];
+		f[0] = (float)fb.size.cx;
+		f[1] = (float)fb.size.cy;
+		f[2] = 1.0f;
+		//Gfx::Uniform1fv(uindex, 3, f);
+		//Gfx::ProgramUniform3f(gl_prog, uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 		Gfx::Uniform3f(uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 	}
 	
@@ -757,29 +766,19 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
 	}
 	
-	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
-		int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
-		float values[3] = {0,0,0};
-		InputState& in = rt.inputs[ch];
-		const BufferT* in_buf = in.buf;
-		if (in_buf) {
-			values[0] = (float)in_buf->fb.size.cx;
-			values[1] = (float)in_buf->fb.size.cy;
-			values[2] = (float)in_buf->fb.depth;
-		}
-		/*else if (
-			in.type == BufferTInput::TEXTURE ||
-			in.type == BufferTInput::CUBEMAP ||
-			in.type == BufferTInput::VOLUME) {
-			ASSERT(in.id >= 0);
-			if (in.id >= 0 && ctx) {
-				BufferT& comp = ctx->GetComponentById(in.id);
-				values[0] = in.res.cx;
-				values[1] = in.res.cy;
-				values[2] = in.vol_depth;
+	else if (var == VAR_COMPAT_CHANNELRESOLUTION) {
+		float values[3*4] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
+		for(int j = 0; j < INPUT_COUNT; j++) {
+			InputState& in = rt.inputs[j];
+			const BufferT* in_buf = in.buf;
+			if (in_buf){
+				int off = j * 3;
+				values[off + 0] = (float)in_buf->fb.size.cx;
+				values[off + 1] = (float)in_buf->fb.size.cy;
+				values[off + 2] = (float)in_buf->fb.depth;
 			}
-		}*/
-		Gfx::Uniform3f(uindex, values[0], values[1], values[2]);
+		}
+		Gfx::Uniform3fv(uindex, 4, values);
 	}
 	
 	else if (var == VAR_COMPAT_BLOCKOFFSET) {
@@ -854,7 +853,7 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		if (create_depth) {
 			Gfx::CreateRenderbuffer(depth_buf);
 			Gfx::BindRenderbuffer(depth_buf);
-			Gfx::RenderbufferStorage(sz);
+			//minor api error: Gfx::RenderbufferStorage(sz);
 			Gfx::UnbindRenderbuffer();
 		}
 		

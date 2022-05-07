@@ -92,7 +92,7 @@ public:
 	bool					LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i);
 	
 	bool					NegotiateSourceFormat(int src_ch, const Format& fmt);
-	virtual bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt);
+	virtual bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt, bool chk_other=true);
 	
 	int						GetSinkPacketCount();
 	int						GetSourcePacketCount();

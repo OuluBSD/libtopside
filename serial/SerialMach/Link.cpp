@@ -75,14 +75,14 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 			return false;
 		}
 		
-		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
+		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt, false)) {
 			LOG("LinkBase::NegotiateSourceFormat: error: format negotiation failed");
 			return false;
 		}
 	}
 	else {
 		DUMP(*prim_link_sink);
-		if (!prim_link_sink->NegotiateSinkFormat(0, fmt)) {
+		if (!prim_link_sink->NegotiateSinkFormat(0, fmt, false)) {
 			LOG("LinkBase::NegotiateSourceFormat: error: format negotiation failed");
 			return false;
 		}
@@ -111,8 +111,38 @@ void LinkBase::UpdateLinkedExchangeFormats(int src_ch, const Format& fmt) {
 	
 }
 
-bool LinkBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
-	return atom->NegotiateSinkFormat(*this, sink_ch, new_fmt);
+bool LinkBase::NegotiateSinkFormat(int sink_ch, const Format& fmt, bool chk_other) {
+	if (!chk_other) {
+		if (!atom->NegotiateSinkFormat(*this, sink_ch, fmt))
+			return false;
+		return true;
+	}
+	
+	// Negotiation is started from the linked source (not this link)
+	if (sink_ch > 0) {
+		Exchange* e = 0;
+		for (Exchange& ex : side_src_conn)
+			if (ex.local_ch_i == sink_ch)
+				e = &ex;
+		if (!e) {
+			LOG("LinkBase::NegotiateSinkFormat: error: exchange not found");
+			return false;
+		}
+		
+		if (!e->other->NegotiateSourceFormat(e->other_ch_i, fmt)) {
+			LOG("LinkBase::NegotiateSinkFormat: error: format negotiation failed");
+			return false;
+		}
+	}
+	else {
+		DUMP(*prim_link_sink);
+		if (!prim_link_sink->NegotiateSourceFormat(0, fmt)) {
+			LOG("LinkBase::NegotiateSinkFormat: error: format negotiation failed");
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 Packet LinkBase::InitialPacket(int src_ch, off32 off) {

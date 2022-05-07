@@ -72,10 +72,7 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 		case GVar::VAR_COMPAT_CHANNEL2:
 		case GVar::VAR_COMPAT_CHANNEL3:
 											return sizeof(void*);
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION0:	return sizeof(GenericShaderArgs::iChannelResolution0);
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION1:	return sizeof(GenericShaderArgs::iChannelResolution1);
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION2:	return sizeof(GenericShaderArgs::iChannelResolution2);
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION3:	return sizeof(GenericShaderArgs::iChannelResolution3);
+		case GVar::VAR_COMPAT_CHANNELRESOLUTION:	return sizeof(GenericShaderArgs::iChannelResolution0);
 		default: break;
 	}
 	
@@ -138,10 +135,7 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
 	switch (idx) {
 		case GVar::VAR_COMPAT_RESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
 		case GVar::VAR_LIGHTDIR: fargs.light_dir = vec3(f0,f1,f2); return;
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION0: args.iChannelResolution0 = vec3(f0,f1,f2); return;
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION1: args.iChannelResolution1 = vec3(f0,f1,f2); return;
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION2: args.iChannelResolution2 = vec3(f0,f1,f2); return;
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION3: args.iChannelResolution3 = vec3(f0,f1,f2); return;
+		case GVar::VAR_COMPAT_CHANNELRESOLUTION: args.iChannelResolution0 = vec3(f0,f1,f2); return;
 		default: break;
 	}
 	ASSERT(0);

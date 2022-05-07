@@ -74,8 +74,8 @@ namespace Parallel {
 	ATOM_TYPE(SDL_OGL_FBO_PIPE_SIDE) \
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
-	ATOM_TYPE(OGL_VOLUME_SOURCE) \
-	ATOM_TYPE(OGL_KEYBOARD_SOURCE) \
+	ATOM_TYPE(SDL_OGL_VOLUME_SOURCE) \
+	ATOM_TYPE(SDL_OGL_KEYBOARD_SOURCE) \
 	ATOM_TYPE(CPU_KEYBOARD_SOURCE) \
 
 
@@ -98,8 +98,8 @@ namespace Parallel {
 	ATOM_CLASS(SdlOglFboPipeSide) \
 	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(SdlVideoAtomSA) \
-	ATOM_CLASS(OglVolumeSource) \
-	ATOM_CLASS(OglKeyboardSource) \
+	ATOM_CLASS(SdlOglVolumeSource) \
+	ATOM_CLASS(SdlOglKeyboardSource) \
 	ATOM_CLASS(CpuKeyboardSource) \
 
 

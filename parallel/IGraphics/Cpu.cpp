@@ -140,6 +140,20 @@ void SwGfxT<Gfx>::Uniform1i(int idx, int i) {
 }
 
 template <class Gfx>
+void SwGfxT<Gfx>::Uniform2i(int idx, int i0, int i1) {
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, i0, i1);
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::Uniform3i(int idx, int i0, int i1, int i2) {
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, i0, i1, i2);
+}
+
+template <class Gfx>
 void SwGfxT<Gfx>::Uniform1f(int idx, float f) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
@@ -165,6 +179,21 @@ void SwGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	auto& prog = Local().prog;
 	ASSERT(prog)
 	if (prog) prog->SetVar(idx, f0, f1, f2, f3);
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::Uniform1fv(int idx, int count, float* f) {
+	TODO
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::Uniform3fv(int idx, int count, float* f) {
+	TODO
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, int idx, float f0, float f1, float f2) {
+	TODO
 }
 
 template <class Gfx>
