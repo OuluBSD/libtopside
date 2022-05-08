@@ -709,10 +709,10 @@ void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceC
 			Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 			Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
 			Gfx::Uniform4f(uindex,
-				(float)mouse_click.x,
-				(float)mouse_click.y,
 				(float)mouse_drag.x,
-				(float)mouse_drag.y);
+				(float)mouse_drag.y,
+				(float)mouse_click.x,
+				(float)mouse_click.y);
 			#endif
 		}
 	}

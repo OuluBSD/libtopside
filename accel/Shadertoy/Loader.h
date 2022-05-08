@@ -29,6 +29,12 @@ public:
 };
 
 
+struct SerialShadertoyLoader : SerialLoaderBase {
+	
+	virtual String LoadFile(String file_path) override;
+	
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

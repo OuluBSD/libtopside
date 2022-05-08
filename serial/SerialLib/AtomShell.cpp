@@ -38,24 +38,10 @@ bool DefaultInitializer(bool skip_eon_file) {
 	
 	
 	if (GetFileExt(eon_file) == ".toy") {
-		TODO // use some extension thingy here to allow later file extension hooks
-		#if 0
-		ShadertoyContextLoader toy_loader;
-		Object o;
-		if (!toy_loader.Load(eon_file, o)) {
-			LOG("Toy file loading failed: " << eon_file);
-			return false;
-		}
-		
-		Serial::ToyLoader ser_loader;
-		if (!ser_loader.Load(o)) {
-			LOG("Toy object loading failed");
-			return false;
-		}
-		
-		eon_script = ser_loader.GetResult();
+		eon_script = SerialLoaderFactory::LoadFile(eon_file);
 		//DUMP(eon_script);
-		#endif
+		if (eon_script.IsEmpty())
+			return false;
 	}
 	
 	return true;

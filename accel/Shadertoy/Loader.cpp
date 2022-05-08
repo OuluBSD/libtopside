@@ -179,4 +179,34 @@ int ShadertoyContextLoader::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+String SerialShadertoyLoader::LoadFile(String file_path) {
+	ShadertoyContextLoader toy_loader;
+	Object o;
+	if (!toy_loader.Load(file_path, o)) {
+		LOG("SerialShadertoyLoader::LoadFile: error: toy file loading failed: " << file_path);
+		return String();
+	}
+	
+	Serial::ToyLoader ser_loader;
+	if (!ser_loader.Load(o)) {
+		LOG("SerialShadertoyLoader::LoadFile: error: toy object loading failed");
+		return String();
+	}
+	
+	String eon_script = ser_loader.GetResult();
+	
+	return eon_script;
+}
+
+
 NAMESPACE_TOPSIDE_END

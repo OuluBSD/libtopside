@@ -9,10 +9,10 @@ class Engine;
 
 NAMESPACE_SERIAL_BEGIN
 
-Ecs::Engine* CreateEcsEngine();
+TS::Ecs::Engine* CreateEcsEngine();
 
 class EntitySystem : public System<EntitySystem> {
-	Ecs::Engine* engine = 0;
+	TS::Ecs::Engine* engine = 0;
 	ObjectMap reg;
 	
 	

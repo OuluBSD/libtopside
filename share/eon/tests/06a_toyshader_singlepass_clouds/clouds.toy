@@ -1,0 +1,29 @@
+{
+	name: "Clouds",
+	description: "Raymarching some fbm (you can move the mouse around). This is my first shader in the  \"one shader a week for a year \" challenge that I have committed to.",
+	owner: "iq",
+	likes: 1344,
+	date: 20130225,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "f735bee5b64ef98879dc618b016ecf7939a5756040c2cde21ccb15e69a6e1cfb.png",
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

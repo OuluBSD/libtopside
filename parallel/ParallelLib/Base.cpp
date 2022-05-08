@@ -463,11 +463,10 @@ void EventStateBase::LeftDown(Point pt, dword keyflags) {
 void EventStateBase::LeftUp(Point pt, dword keyflags) {
 	EnvState& s = GetState();
 	
-	TODO
-	/*SetBool(MOUSE_LEFTDOWN, false);
+	SetBool(MOUSE_LEFTDOWN, false);
 	
 	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
-	drag.y = -drag.y;*/ // observed behaviour
+	drag.y = -drag.y; // observed behaviour
 }
 
 void EventStateBase::MouseMove(Point pt, dword keyflags) {

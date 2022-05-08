@@ -1025,7 +1025,7 @@ LinkTypeCls SdlOglVolumeSource::GetLinkType()
 
 void SdlOglVolumeSource::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<SdlOglFboReaderBase>(this);
+	vis.VisitThis<SdlOglTextureBase>(this);
 }
 
 AtomTypeCls SdlOglVolumeSource::GetType() const

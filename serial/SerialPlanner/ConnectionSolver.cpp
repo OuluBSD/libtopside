@@ -390,7 +390,7 @@ bool ScriptConnectionSolver::LinkPlanner() {
 	n.estimate_to_goal = n.unfinished_loops.GetCount() * 1000;
 	
 	AStar<LinkGeneratorNode> as;
-	as.TrimWorst(0);
+	as.TrimWorst(1000, 800);
 	
 	as.SetLimit(10000);
 	Vector<LinkGeneratorNode*> ans = as.Search(n);
@@ -426,6 +426,25 @@ bool ScriptConnectionSolver::LinkPlanner() {
 	}
 	else {
 		LOG("ScriptConnectionSolver::LinkPlanner: error: could not find plan");
+		ans = as.GetBestKnownPath();
+		if (!ans.IsEmpty()) {
+			LOG("\tgot stuck here:");
+			for(int i = 0; i < ans.GetCount(); i++) {
+				LOG("\t\t[" << i << "]: " << ans[i]->ToString());
+			}
+			
+			LOG("unfinished loops:");
+			auto& top = ans.Top();
+			for(int i = 0; i < top->unfinished_loops.GetCount(); i++) {
+				LOG("[" << i << "]: " << top->unfinished_loops[i]->ToString());
+			}
+			
+			LOG("available links:");
+			for(int i = 0; i < top->available_links.GetCount(); i++) {
+				LOG("[" << i << "]: " << top->available_links[i]->ToString());
+			}
+		}
+		ans = as.ContinueSearch(n);
 		return false;
 	}
 }

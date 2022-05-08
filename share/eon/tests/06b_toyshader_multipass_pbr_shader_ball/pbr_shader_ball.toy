@@ -1,0 +1,103 @@
+{
+	name: "PBR Shader Ball",
+	description: "Revisiting my PBR code on a shader ball model. Best viewed in full-screen. \n \n * Cook Torrance Specular with Lambertian Diffuse \n * Single bounce reflection with IBL environment mapping \n * Scene-based Ambient Occlusion \n * AA + DoF",
+	owner: "ssell",
+	likes: 24,
+	date: 20170926,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			name: "Buf A",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 2,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "1f7dca9c22f324751f2a5a59c9b181dfe3b5564a04b724c657732d0bf09c99db.jpg",
+				},
+				{
+					id: 3,
+					type: volume,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "27012b4eadd0c3ce12498b867058e4f717ce79e10a99568cca461682d84a4b04.bin",
+				},
+				{},
+				{
+					id: 4,
+					type: cubemap,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: false,
+					filename: "94284d43be78f00eb6b298e6d78656a1b34e2b91b34940d02f1ca8b22310e8a0.png",
+				},
+			],
+			outputs: [
+				{
+					id: 5,
+				},
+			],
+		},
+		{
+			name: "Buf B",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 5,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 6,
+				},
+			],
+		},
+		{
+			name: "Buf C",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 6,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

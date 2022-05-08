@@ -333,7 +333,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "			sdl.ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -351,7 +351,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "			sdl.ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -370,7 +370,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "			sdl.ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
 				s << "		};\n";
 				input.stage_name = b;
 			}
@@ -403,7 +403,7 @@ bool ToyLoader::MakeScript() {
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.keyboard: true [][loop: " << l << "] {target: event.register;};\n";
+				s << "			sdl.ogl.fbo.keyboard: true [][loop: " << l << "] {target: event.register;};\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -421,7 +421,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.volume: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "			sdl.ogl.fbo.volume: true [loop: " << a << "][loop: " << l << "];\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -443,7 +443,7 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
-				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "] {filter: mipmap;};\n";
+				s << "			sdl.ogl.fbo.image: true [loop: " << a << "][loop: " << l << "] {filter: mipmap;};\n";
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -544,14 +544,14 @@ bool ToyLoader::MakeScript() {
 					return false;
 			}
 			
-			s << "		loop ogl.fbo.audio.conv: {\n";
+			/*s << "		loop ogl.fbo.audio.conv: {\n";
 			s << "			ogl.customer: true;\n";
 			s << "			ogl.fbo.center.audio: true [loop: " << l << "][loop: center.audio.sink];\n";
 			s << "		};\n";
-			s << "		\n";
+			s << "		\n";*/
 			s << "		loop center.audio.sink: {\n";
 			s << "			center.customer: true;\n";
-			s << "			center.audio.side.sink.center.user: true [loop: ogl.fbo.audio.conv];\n";
+			s << "			center.audio.side.sink.center.user: true [loop: " << l << "];\n";
 			s << "			sdl.audio: true;\n";
 			s << "		};\n";
 			s << "		\n";

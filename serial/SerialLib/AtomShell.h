@@ -11,6 +11,51 @@ void DefaultSerialInitializer();
 void DefaultSerialInitializer0(bool skip_eon_file=false);
 void DefaultSerialInitializerInternalEon();
 
+
+struct SerialLoaderBase {
+	
+	virtual ~SerialLoaderBase() {}
+	virtual String LoadFile(String file_path) = 0;
+	
+};
+
+struct SerialLoaderFactory {
+	typedef SerialLoaderBase*(*NewFn)();
+	struct Loader : Moveable<Loader> {
+		NewFn fn;
+		
+	};
+	
+	static VectorMap<String,Loader>& GetLoaders() {static VectorMap<String,Loader> l; return l;}
+	
+	
+	template <class T>
+	static SerialLoaderBase* New() {return new T();}
+	
+	
+	template <class T>
+	static void Register(String file_ext) {
+		Loader& l = GetLoaders().Add(file_ext);
+		l.fn = &New<T>;
+	}
+	
+	
+	static String LoadFile(String file_path) {
+		const auto& l = GetLoaders();
+		String ext = GetFileExt(file_path);
+		int i = l.Find(ext);
+		if (i < 0) {
+			LOG("SerialLoaderFactory: error: no loader for file extension: " << ext);
+			return String();
+		}
+		const Loader& el = l[i];
+		One<SerialLoaderBase> loader = el.fn();
+		return loader->LoadFile(file_path);
+	}
+};
+
+
+
 NAMESPACE_TOPSIDE_END
 
 

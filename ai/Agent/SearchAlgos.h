@@ -413,6 +413,8 @@ class AStar : public Searcher<T> {
 	int max_worst;
 	bool do_search;
 	int limit;
+	int rm_limit = 1000;
+	int smallest_id = -1;
 	
 	// The set of nodes already evaluated.
 	Array<NodePtr> nodes;
@@ -446,7 +448,16 @@ public:
 	void SetLimit(int i) {limit = i;}
 	void Stop() {do_search = false;}
 	
-	void TrimWorst(int count) {max_worst = count; ASSERT(count >= 0);}
+	void TrimWorst(int limit, int count) {rm_limit = limit; max_worst = count; ASSERT(count >= 0);}
+	
+	Vector<T*> GetBestKnownPath() {
+		if (smallest_id < 0)
+			return Vector<T*>();
+		
+		NodePtr* t_ptr = open_set[smallest_id];
+		NodeT& t = *t_ptr->ptr;
+		return ReconstructPath(t, closed_set, open_set);
+	}
 	
 	Vector<T*> ReconstructPath(NodeT& current, Vector<NodePtr*>& closed_set, Vector<NodePtr*>& open_set) {
 		Vector<T*> path;
@@ -548,40 +559,30 @@ public:
 					do_search = 0;
 			}
 			
-			double smallest_f_score = DBL_MAX;
-			int smallest_id = -1;
-			
-			bool rm = open_set.GetCount() > 1000;
-			
+			bool rm = open_set.GetCount() > rm_limit;
 			if (rm) {
 				for(int i = 0; i < max_worst; i++) {
 					worst_f_score[i] = -DBL_MAX;
 					worst_id[i] = -1;
 				}
-			}
-			
-			for(int i = 0; i < open_set.GetCount(); i++) {
-				const NodePtr& nptr = *open_set[i];
-				double f_score = nptr.f_score;
-				if (f_score < smallest_f_score) {
-					smallest_f_score = f_score;
-					smallest_id = i;
-				}
-				
-				if (rm) for(int j = 0; j < max_worst; j++) {
-					if (f_score > worst_f_score[j]) {
-						for(int k = max_worst-1; k > j; k--) {
-							worst_f_score[k] = worst_f_score[k-1];
-							worst_id[k] = worst_id[k-1];
+
+				for(int i = 0; i < open_set.GetCount(); i++) {
+					const NodePtr& nptr = *open_set[i];
+					double f_score = nptr.f_score;
+					
+					for(int j = 0; j < max_worst; j++) {
+						if (f_score > worst_f_score[j]) {
+							for(int k = max_worst-1; k > j; k--) {
+								worst_f_score[k] = worst_f_score[k-1];
+								worst_id[k] = worst_id[k-1];
+							}
+							worst_f_score[j] = f_score;
+							worst_id[j] = i;
+							break;
 						}
-						worst_f_score[j] = f_score;
-						worst_id[j] = i;
-						break;
 					}
 				}
-			}
-			
-			if (rm) {
+				
 				int count = 0;
 				Vector<int> rm_list;
 				for(int i = 0; i < max_worst; i++) {
@@ -596,6 +597,19 @@ public:
 						Sort(rm_list, StdLess<int>());
 					}
 					open_set.Remove(rm_list);
+				}
+			}
+			
+			
+			double smallest_f_score = DBL_MAX;
+			smallest_id = -1;
+			
+			for(int i = 0; i < open_set.GetCount(); i++) {
+				const NodePtr& nptr = *open_set[i];
+				double f_score = nptr.f_score;
+				if (f_score < smallest_f_score) {
+					smallest_f_score = f_score;
+					smallest_id = i;
 				}
 			}
 			
@@ -621,6 +635,7 @@ public:
 				break;
 			
 			open_set.Remove(smallest_id);
+			smallest_id = -1;
 			closed_set.Add(t_ptr);
 			
 			

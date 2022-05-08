@@ -234,7 +234,7 @@ String GetSubAtomString(SubAtomCls t) {
 	switch (t) {
 		#define ATOM_TYPE(x) case x:	return #x;
 		ATOM_TYPE_LIST
-		
+			
 		#ifdef flagSCREEN
 		flagSCREEN_ATOM_TYPE_LIST
 		#endif
@@ -243,8 +243,30 @@ String GetSubAtomString(SubAtomCls t) {
 		flagOPENCV_ATOM_TYPE_LIST
 		#endif
 		
+		#ifdef flagLINUX
+		flagLINUX_ATOM_TYPE_LIST
+		#endif
+		
+		#ifdef flagSDL2
+		flagSDL2_ATOM_TYPE_LIST
+		#endif
+		
+		#ifdef flagOGL
+		flagOGL_ATOM_TYPE_LIST
+		#endif
+		
+		#ifdef flagPOSIX
+		#ifdef flagPOSIX_ATOM_TYPE_LIST
+		flagPOSIX_ATOM_TYPE_LIST
+		#endif
+		#endif
+		
+		#ifdef flagFFMPEG
+		flagFFMPEG_ATOM_TYPE_LIST
+		#endif
+		
 		#undef ATOM_TYPE
-		default: return "invalid";
+		default: TODO return "invalid";
 	}
 }
 

@@ -403,7 +403,7 @@ HEADER_ARG(			SdlOglTextureSource,	reqdef_flagOGL,				1)
 HEADER_ARG(			SdlOglTextureSource,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlOglTextureSource,	PIPE_OPTSIDE, PROCESS)
 
-HEADER22_U11(		SdlOglVolumeSource,		SdlOglFboReaderBase,		pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,			OglReceipt)
+HEADER22_U11(		SdlOglVolumeSource,		SdlOglTextureBase,			pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,			OglReceipt)
 HEADER_ACTION(		SdlOglVolumeSource,		sdl.ogl.fbo.volume)
 HEADER_ARG(			SdlOglVolumeSource,		reqdef_flagSCREEN,			1)
 HEADER_ARG(			SdlOglVolumeSource,		HINT_PKG,					"AtomDebug")

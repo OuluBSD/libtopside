@@ -799,10 +799,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlOglVolumeSource : public SdlOglFboReaderBase {
+class SdlOglVolumeSource : public SdlOglTextureBase {
 
 public:
-	RTTI_DECL1(SdlOglVolumeSource, SdlOglFboReaderBase)
+	RTTI_DECL1(SdlOglVolumeSource, SdlOglTextureBase)
 	COPY_PANIC(SdlOglVolumeSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.volume")

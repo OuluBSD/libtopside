@@ -6,6 +6,7 @@
 //#include <EcsCore/EcsCore.h>
 //#include <EcsLib/EcsLib.h>
 #include <Structural/Structural.h>
+#include <SerialLib/SerialLib.h>
 
 #include "Loader.h"
 
