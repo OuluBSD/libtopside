@@ -279,7 +279,7 @@ bool BufferT<Gfx>::Initialize() {
 		return false;
 	
 	RefreshPipeline();
-	FindVariables();
+	// not here, because opengl will crash: FindVariables();
 	
 	for (String& s : link_ids)
 		WhenLinkInit(s, this);
@@ -371,22 +371,23 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	ctx.frames++;
 	
 	if (env) {
-		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
-		if (video_size.cx == 0 || video_size.cy == 0)
-			video_size = fb.size;
-		else if (video_size != fb.size) {
-			fb.size = video_size;
-			UpdateTexBuffers();
+		if (fb.is_audio) {
+			
+		}
+		else {
+			Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+			if (video_size.cx == 0 || video_size.cy == 0)
+				video_size = fb.size;
+			else if (video_size != fb.size) {
+				fb.size = video_size;
+				UpdateTexBuffers();
+			}
 		}
 	}
 	
 	Gfx::BindProgramPipeline(pipeline);
 	Gfx::UseProgram(prog);
 
-	
-	if (!rt.is_searched_vars)
-		FindVariables();
-	
 	int bi = NewWriteBuffer();
 	
 	if (!fb.is_win_fbo) {
@@ -394,8 +395,10 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	    Gfx::BindFramebuffer(fb.frame_buf[bi]);
 	    Gfx::DrawBuffers(GVar::COLOR0_EXT);
 	}
-
-
+	
+	if (!rt.is_searched_vars)
+		FindVariables();
+	
 	SetVars(prog, cfg);
 
 	RendVer(OnProcess);
@@ -679,11 +682,11 @@ void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceC
 	else if (var == VAR_COMPAT_RESOLUTION) {
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
 		//Gfx::UseProgram(gl_prog);
-		float f[3];
+		/*float f[3];
 		f[0] = (float)fb.size.cx;
 		f[1] = (float)fb.size.cy;
 		f[2] = 1.0f;
-		//Gfx::Uniform1fv(uindex, 3, f);
+		Gfx::Uniform1fv(uindex, 3, f);*/
 		//Gfx::ProgramUniform3f(gl_prog, uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 		Gfx::Uniform3f(uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 	}
@@ -696,6 +699,8 @@ void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceC
 	else if (var == VAR_COMPAT_TIMEDELTA) {
 		ASSERT(ctx.frame_time != 0.0);
 		Gfx::Uniform1f(uindex, (float)ctx.frame_time);
+		//float f = (float)ctx.frame_time;
+		//Gfx::Uniform1fv(uindex, 1, &f);
 	}
 	
 	else if (var == VAR_COMPAT_FRAME) {
@@ -758,11 +763,12 @@ void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceC
 	}
 	
 	else if (var == VAR_COMPAT_CHANNELTIME) {
-		double values[INPUT_COUNT];
+		float values[INPUT_COUNT];
 		for(int j = 0; j < INPUT_COUNT; j++) {
 			InputState& in = rt.inputs[j];
 			values[j] = in.buf ? in.buf->ctx.time_total : 0;
 		}
+		//Gfx::Uniform1fv(uindex, 4, values);
 		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
 	}
 	

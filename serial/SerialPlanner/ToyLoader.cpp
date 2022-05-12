@@ -301,7 +301,9 @@ bool ToyLoader::MakeScript() {
 	  << "			state.event.pipe: true {target: event.register;};\n"
 	  << "		};\n"
 	  << "		\n";
-	 
+	
+	Index<String> keyboard_input_stages;
+	
 	for (ToyStage& stage : stages) {
 		String l;
 		l << "ogl." << stage.name << "." << stage.type;
@@ -390,6 +392,8 @@ bool ToyLoader::MakeScript() {
 				s << "		loop " << a << ": {\n";
 				s << "			center.customer: true;\n";
 				s << "			center.audio.loader: true [][loop: " << b << "] {filepath: \"" << input.filename << "\";};\n";
+				//s << "			perma.audio.source.decoder: true {filepath: \"" << input.filename << "\";};\n";
+				//s << "			center.audio.side.src: true [][loop: " << b << "] {filepath: \"" << input.filename << "\";};\n";
 				s << "		};\n";
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
@@ -400,6 +404,9 @@ bool ToyLoader::MakeScript() {
 				input.stage_name = b;
 			}
 			else if (input.type == "keyboard") {
+				keyboard_input_stages.Add(l);
+				input.stage_name = "ogl.keyboard.source";
+				/*
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << b << ": {\n";
 				s << "			ogl.customer: true;\n";
@@ -407,6 +414,7 @@ bool ToyLoader::MakeScript() {
 				s << "		};\n";
 				s << "		\n";
 				input.stage_name = b;
+				*/
 			}
 			else if (input.type == "volume") {
 				a << "center." << stage.name << ".ct" << input.id;
@@ -544,20 +552,37 @@ bool ToyLoader::MakeScript() {
 					return false;
 			}
 			
-			/*s << "		loop ogl.fbo.audio.conv: {\n";
+			s << "		loop ogl.fbo.audio.conv: {\n";
 			s << "			ogl.customer: true;\n";
-			s << "			ogl.fbo.center.audio: true [loop: " << l << "][loop: center.audio.sink];\n";
+			s << "			sdl.ogl.fbo.center.audio: true [loop: " << l << "][loop: center.audio.sink];\n";
 			s << "		};\n";
-			s << "		\n";*/
+			s << "		\n";
 			s << "		loop center.audio.sink: {\n";
 			s << "			center.customer: true;\n";
-			s << "			center.audio.side.sink.center.user: true [loop: " << l << "];\n";
+			s << "			center.audio.side.sink.center.user: true [loop: ogl.fbo.audio.conv];\n";
 			s << "			sdl.audio: true;\n";
 			s << "		};\n";
 			s << "		\n";
 			
 			has_audio_output = true;
 		}
+	}
+	
+	if (keyboard_input_stages.GetCount()) {
+		s << "		loop ogl.keyboard.source: {\n";
+		s << "			ogl.customer: true;\n";
+		s << "			sdl.ogl.fbo.keyboard: true [][";
+		for(int i = 0; i < 4; i++) {
+			if (i < keyboard_input_stages.GetCount()) {
+				if (i) s << " ";
+				s << "loop: " << keyboard_input_stages[i] << ";";
+			}
+			else
+				s << ";";
+		}
+		s << "] {target: event.register;};\n";
+		s << "		};\n";
+		s << "		\n";
 	}
 	
 	s << __eon_script_end;

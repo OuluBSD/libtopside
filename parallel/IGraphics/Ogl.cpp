@@ -367,7 +367,7 @@ template <class Gfx> const char* OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderTyp
 )SH4D3R";
 
 	static const char* frag_tmpl = R"SH4D3R(
-#version 410
+#version 430
 #define GL_ES
 
 uniform sampler2D iNone;
@@ -892,6 +892,10 @@ template <class Gfx> void OglGfxT<Gfx>::Uniform3fv(int idx, int count, float* f)
 	glUniform3fv(idx, count, f);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::Uniform4fv(int idx, int count, float* f) {
+	glUniform4fv(idx, count, f);
+}
+
 template <class Gfx> void OglGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, int idx, float f0, float f1, float f2) {
 	glProgramUniform3f(prog, idx, f0, f1, f2);
 }
@@ -900,7 +904,7 @@ template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
 template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 
 template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
-	// pass
+	// pass2
 }
 
 template <class Gfx> void OglGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef b) {

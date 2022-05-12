@@ -1,0 +1,108 @@
+{
+	name: "Teletext",
+	description: "Type Number to select Page e.g. 300 (up / down arrow for prev / next) \nSpace / Mouse Click = Reveal \nM = Mix (change channel 2 in the image shader to video for a more authentic feel) \nEnter = Index \nGallery images from @horsenburger - https://www.horsenburger",
+	owner: "P_Malin",
+	likes: 37,
+	date: 20181009,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+				{
+					id: 1,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: false,
+					filename: "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png",
+				},
+				{
+					id: 2,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "fb918796edc3d2221218db0811e240e72e340350008338b0c07a52bd353666a6.jpg",
+				},
+				{
+					id: 3,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 4,
+				},
+			],
+		},
+		{
+			name: "Common",
+			type: library,
+			
+		},
+		{
+			name: "Buf A",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 5,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+				{
+					id: 3,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 5,
+				},
+			],
+		},
+		{
+			name: "Buf B",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 5,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+				{
+					id: 3,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

@@ -53,7 +53,7 @@ bool CompilerT<Gfx>::Compile(
 	code.Replace("${SAMPLER2}", sampler2);
 	code.Replace("${SAMPLER3}", sampler3);
 	
-	LOG(code);
+	LOG(GetLineNumStr(code));
 	
 	{
 		EnableGfxAccelDebugMessages(1);
@@ -65,9 +65,9 @@ bool CompilerT<Gfx>::Compile(
 		EnableGfxAccelDebugMessages(0);
 	}
 	
-	if (!succ) {
+	/*if (!succ) {
 		LOG(GetLineNumStr(code));
-	}
+	}*/
 	return succ;
 }
 

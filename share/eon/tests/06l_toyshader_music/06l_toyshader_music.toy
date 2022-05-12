@@ -1,0 +1,32 @@
+{
+	name: "Kaleidoscope Visualizer",
+	description: "This is an adaption of https://www.shadertoy.com/view/Xs23zm . Now the shader reacts to music in an -i dare say so myself- awesome way. \n \nChange the MIN_SIZE and REACT_INTENSITY  if you load a different song.",
+	owner: "Qqwy",
+	likes: 24,
+	date: 20140507,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: false,
+					filename: "f735bee5b64ef98879dc618b016ecf7939a5756040c2cde21ccb15e69a6e1cfb.png",
+				},
+				{
+					id: 1,
+					type: music,
+					filter: linear,
+					wrap: clamp,
+					vflip: false,
+					filename: "894a09f482fb9b2822c093630fc37f0ce6cfec02b652e4e341323e4b6e4a4543.mp3",
+				},
+			],
+		},
+	]
+}

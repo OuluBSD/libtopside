@@ -1,0 +1,37 @@
+{
+	name: "Spherical Volumetric Fog",
+	description: "Similar to iq's fog [url]http://www.iquilezles.org/www/articles/fog/fog.htm[/url] but applied around a spherical domain instead. Useful when you want a cheap planet atmosphere that still retain some volumetric properties.",
+	owner: "Klems",
+	likes: 12,
+	date: 20190203,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: volume,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "27012b4eadd0c3ce12498b867058e4f717ce79e10a99568cca461682d84a4b04.bin",
+				},
+				{
+					id: 1,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "92d7758c402f0927011ca8d0a7e40251439fba3a1dac26f5b8b62026323501aa.jpg",
+				},
+			],
+			outputs: [
+				{
+					id: 2,
+				},
+			],
+		},
+	]
+}

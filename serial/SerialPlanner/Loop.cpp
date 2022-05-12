@@ -200,6 +200,8 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " src ch #" << ch_i << " set " << HexStr(&sink));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
 	SideLink& l = atom.src_side_conns[side_ch_i];
+	if (l.link == &sink)
+		return; // todo: prevent this call happening
 	ASSERT(!l.link);
 	if (l.link) {SetError("ScriptLoopLoader::SetSideSourceConnected: internal error: atom already linked"); return;}
 	l.link = &sink;
@@ -233,6 +235,8 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " sink ch #" << ch_i << " set " << HexStr(&src));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.sink_side_conns.GetCount());
 	SideLink& l = atom.sink_side_conns[side_ch_i];
+	if (l.link == &src)
+		return; // todo: prevent this call happening
 	ASSERT(!l.link);
 	l.link = &src;
 	

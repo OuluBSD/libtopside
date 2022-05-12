@@ -1,0 +1,46 @@
+{
+	name: "Keycode Viewer",
+	description: "Just put this together to check what keycode is what.",
+	owner: "fb39ca4",
+	likes: 15,
+	date: 20160717,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 1,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 2,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

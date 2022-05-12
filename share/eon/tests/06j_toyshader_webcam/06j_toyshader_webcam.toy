@@ -1,0 +1,28 @@
+{
+	name: "Basic Webcam Effects",
+	description: "The things you would see in a webcam app.",
+	owner: "splizard",
+	likes: 1,
+	date: 20170503,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: webcam,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

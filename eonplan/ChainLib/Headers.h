@@ -416,7 +416,7 @@ HEADER_ARG(			SdlOglAudioSink,		reqdef_flagOGL,				1)
 HEADER_ARG(			SdlOglAudioSink,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlOglAudioSink,		PIPE_OPTSIDE, PROCESS)
 
-HEADER12_U01(		SdlOglKeyboardSource,	SdlOglKeyboardBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
+HEADER55_U44(		SdlOglKeyboardSource,	SdlOglKeyboardBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
 HEADER_ACTION(		SdlOglKeyboardSource,	sdl.ogl.fbo.keyboard)
 HEADER_ARG(			SdlOglKeyboardSource,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			SdlOglKeyboardSource,	HINT_PKG,					"AtomDebug")

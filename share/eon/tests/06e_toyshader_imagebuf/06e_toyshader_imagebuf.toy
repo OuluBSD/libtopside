@@ -1,0 +1,105 @@
+{
+	name: "Diamond Bokeh",
+	description: "Cool effect.",
+	owner: "oneshade",
+	likes: 6,
+	date: 20210424,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			name: "Buffer A",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 2,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "fb918796edc3d2221218db0811e240e72e340350008338b0c07a52bd353666a6.jpg",
+				},
+			],
+			outputs: [
+				{
+					id: 3,
+				},
+			],
+		},
+		{
+			name: "Buffer B",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 3,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 4,
+				},
+			],
+		},
+		{
+			name: "Buffer C",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 4,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 5,
+				},
+			],
+		},
+		{
+			name: "Buffer D",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 5,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

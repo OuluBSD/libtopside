@@ -470,6 +470,12 @@ bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int 
 		//DUMP(fmt);
 		auto& fb = src_buf->fb;
 		int afmt_size = afmt.GetSize();
+		/*if (fb.size.cx != afmt.sample_rate && fb.size.cy != 1) {
+			afmt.res[0] = afmt.sample_rate;
+			afmt.res[1] = 1;
+			out.SetFormat(fmt);
+			afmt_size = afmt.GetSize();
+		}*/
 		ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
 		int len = afmt.sample_rate * fb.channels * GVar::GetSampleSize(fb.sample);
 		ASSERT(len > 0);
@@ -551,8 +557,8 @@ void KeyboardBaseT<Gfx>::Uninitialize() {
 template <class Gfx>
 bool KeyboardBaseT<Gfx>::IsReady(PacketIO& io) {
 	if (!state) return false;
-	ASSERT(io.src_count == 2);
-	if (io.src_count != 2) return false;
+	ASSERT(io.src_count >= 2);
+	if (io.src_count < 2) return false;
 	
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
@@ -570,6 +576,8 @@ bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 		Size sz(FboKbd::key_tex_w, FboKbd::key_tex_h);
 		int channels = 1;
 		FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+		
+		//LOG("KeyboardBaseT<Gfx>::Send: " << HexStr(data.GetHashValue()));
 		
 		if (!buf.IsInitialized()) {
 			ASSERT(sz.cx > 0 && sz.cy > 0);

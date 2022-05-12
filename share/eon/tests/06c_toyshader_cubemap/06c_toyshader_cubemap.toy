@@ -1,0 +1,29 @@
+{
+	name: "How to use Cubemaps",
+	description: "Using cubemaps is hard. I've taken apart a shader that uses a cubemap and added comments explaining how it works.",
+	owner: "Bitzawolf",
+	likes: 7,
+	date: 20170719,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: cubemap,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: false,
+					filename: "488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg",
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

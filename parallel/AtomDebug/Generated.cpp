@@ -1059,7 +1059,7 @@ AtomTypeCls SdlOglAudioSink::GetType() const
 #if defined flagSCREEN
 AtomTypeCls SdlOglKeyboardSource::GetAtomType()
 {
-	return ATOM11_U01(SDL_OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT, OGL, FBO);
+	return ATOM11_U44(SDL_OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
 }
 
 LinkTypeCls SdlOglKeyboardSource::GetLinkType()

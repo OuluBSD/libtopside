@@ -82,6 +82,7 @@ static void ProgramUniform3f(NativeProgram& prog, int idx, float f0, float f1, f
 static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
 static void Uniform1fv(int idx, int count, float* f);
 static void Uniform3fv(int idx, int count, float* f);
+static void Uniform4fv(int idx, int count, float* f);
 static void UniformMatrix4fv(int idx, const mat4& mat);
 static void ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst);
 

@@ -192,6 +192,11 @@ void SwGfxT<Gfx>::Uniform3fv(int idx, int count, float* f) {
 }
 
 template <class Gfx>
+void SwGfxT<Gfx>::Uniform4fv(int idx, int count, float* f) {
+	TODO
+}
+
+template <class Gfx>
 void SwGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, int idx, float f0, float f1, float f2) {
 	TODO
 }

@@ -1,0 +1,36 @@
+{
+	name: "Sound Synthesis: Trumpet",
+	description: "A simple trumpet sound, based on smooth sawtooth ([url]https://www.shadertoy.com/view/llByWR[/url]).",
+	owner: "jt",
+	likes: 4,
+	date: 20171016,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{},
+				{},
+				{},
+				{
+					id: 0,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png",
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			type: sound,
+			
+		},
+	]
+}

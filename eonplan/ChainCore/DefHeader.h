@@ -6,6 +6,7 @@
 #define HEADER12(x, base, role, content, sink, side, src)		using x = HeaderT<base, sink, src>;
 #define HEADER12_U01(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define HEADER13_U02(x, base, role, content, sink, s0, s1, src)	using x = HeaderT<base, sink, src>;
+#define HEADER15_U04(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define HEADER21(x, base, role, content, sink, side, src)		using x = HeaderT<base, sink, src>;
 #define HEADER21_U10(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define HEADER22_U11(x, base, role, content, sink, s0, s1, src)	using x = HeaderT<base, sink, src>;

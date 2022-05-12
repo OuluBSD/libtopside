@@ -1,0 +1,29 @@
+{
+	name: "Kernel - Edge detection",
+	description: "My first experiment with Shadertoy, accessing textures in GLSL and convolution matrices.",
+	owner: "diogotito",
+	likes: 1,
+	date: 20171127,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: texture,
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+					filename: "8de3a3924cb95bd0e95a443fff0326c869f9d4979cd1d5b6e94e2a01f5be53e9.jpg",
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

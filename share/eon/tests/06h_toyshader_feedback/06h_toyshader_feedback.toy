@@ -1,0 +1,54 @@
+{
+	name: "Text Editor",
+	description: "Write your next masterpiece in a nice 640x480 screen with an authentic 8x12 raster font, as seen in the Windows cmd. \nProbably only works properly with US keyboards, but hey. \nSupports tab, backspace, newlines. Use ESC key to clear. Now arrows too!",
+	owner: "JamPetNZ",
+	likes: 24,
+	date: 20170301,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			name: "Buf A",
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 0,
+					type: buffer,
+					filter: nearest,
+					wrap: clamp,
+					vflip: true,
+				},
+				{
+					id: 2,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

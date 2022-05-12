@@ -48,9 +48,11 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	
 	
 	String loopback = ws.Get(".loopback");
-	if (loopback.GetCount() && !buf.SetLoopback(loopback)) {
-		LOG("GfxBufferFieldT<Gfx>::Initialize: error: assigning loopback failed");
-		return false;
+	if (loopback.GetCount()) {
+		if (!buf.SetLoopback(loopback)) {
+			LOG("GfxBufferFieldT<Gfx>::Initialize: error: assigning loopback failed");
+			return false;
+		}
 	}
 	
 	
@@ -86,6 +88,21 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	SetFragmentShader(frag_shdr);
 	SetVertexShader(vtx_shdr);
 	
+	
+	
+	/*ISourceRef src = a.GetSource();
+	if (is_audio) {
+		for(int i = 1; i < src->GetSourceCount(); i++) {
+			Value& val = src->GetSourceValue(i);
+			Format fmt = val.GetFormat();
+			if (fmt.IsFbo()) {
+				FboFormat& ffmt = fmt;
+				ffmt.res[0] = frame_samples;
+				ffmt.res[1] = 1;
+				val.SetFormat(fmt);
+			}
+		}
+	}*/
 	//if (is_audio)
 	//	a.GetSink()->GetValue(0).SetMinQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	

@@ -52,7 +52,7 @@ machine sdl.app: {
 		
 		loop ogl.fbo.keyboard: {
 			ogl.customer: true;
-			sdl.ogl.fbo.keyboard: true [][loop: ogl.fbo.screen] {target: event.register;};
+			sdl.ogl.fbo.keyboard: true [][loop: ogl.fbo.screen;;;;] {target: event.register;};
 		};
 		
 		
