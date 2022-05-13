@@ -14,10 +14,11 @@ Instead of these commands, you may use U++ TheIDE editor and create new assembly
 
 ```
 sudo pkg install upp git
+sudo pkg install ffmpeg sdl2 sdl2_mixer sdl2_image sdl2_ttf opencv
 cd ~
 git clone https://github.com/OuluBSD/libtopside.git
 cd libtopside
-umk examples,reference,tutorial,ai,serial,video,audio,compiler,local,alt,lib AtomShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +GUI,SHARED ~/
+umk examples,reference,tutorial,accel,ai,ecs,serial,parallel,video,audio,compiler,local,alt,lib AtomShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +GUI,SHARED,FFMPEG,SCREEN,OGL,SDL2,OPENCV ~/
 
-Test run e.g:   ~/AtomShell -e tests/04a_sdl_audio.eon -MACHINE_TIME_LIMIT=3
+Test run e.g:   ~/AtomShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3
 ```
