@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Aenc> struct AutoencoderSystemT;
 
 
+
 template <class Aenc>
 struct AutoencoderSystemT : AencSystem {
 	using CLASSNAME = AutoencoderSystemT<Aenc>;
@@ -43,8 +44,6 @@ struct AutoencoderSystemT : AencSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

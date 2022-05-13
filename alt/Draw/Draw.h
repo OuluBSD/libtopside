@@ -4,12 +4,8 @@
 #include <Core/Core.h>
 #include <guiplatform.h>
 
-#ifdef GUIPLATFORM_VIRTUALGUI_BACKEND_INCLUDE
-	#include GUIPLATFORM_VIRTUALGUI_BACKEND_INCLUDE
-#endif
-
-#ifdef NONCTRLPLATFORM_BACKEND_INCLUDE
-	#include NONCTRLPLATFORM_BACKEND_INCLUDE
+#ifdef GUIPLATFORM_BACKEND_INCLUDE
+	#include GUIPLATFORM_BACKEND_INCLUDE
 #endif
 
 #include "Image.h"
@@ -18,8 +14,8 @@
 #include "SDraw.h"
 #include "Chameleon.h"
 
-#ifdef NONCTRLPLATFORM_INCLUDE
-	#include NONCTRLPLATFORM_INCLUDE
+#ifdef GUIPLATFORM_INCLUDE
+	#include GUIPLATFORM_INCLUDE
 #endif
 
 

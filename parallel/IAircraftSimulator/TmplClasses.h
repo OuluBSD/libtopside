@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Asim> struct AircraftSimulatorSystemT;
 
 
+
 template <class Asim>
 struct AircraftSimulatorSystemT : AsimSystem {
 	using CLASSNAME = AircraftSimulatorSystemT<Asim>;
@@ -43,8 +44,6 @@ struct AircraftSimulatorSystemT : AsimSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

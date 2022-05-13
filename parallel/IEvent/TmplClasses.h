@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Ev> struct EventSourceDeviceT;
 
 
+
 template <class Ev>
 struct EventSourceDeviceT : EvSourceDevice {
 	using CLASSNAME = EventSourceDeviceT<Ev>;
@@ -85,8 +86,6 @@ using Win32SourceDevice = EventSourceDeviceT<EvWin32>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -30,8 +30,7 @@ PKG(Camera, Cam, W) {
 	}
 	
 	VENDOR(V4L2OpenCV) {
-		VENDOR_ENABLED_FLAG(OPENCV)
-		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG2(OPENCV, LINUX)
 		//ENDOR_CLASS(Camera, void*)
 		
 		v->AddStruct("NativeCamera")

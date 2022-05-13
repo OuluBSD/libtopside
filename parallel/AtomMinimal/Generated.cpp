@@ -1,4 +1,4 @@
-#include "AtomDebug.h"
+#include "AtomMinimal.h"
 
 namespace TS {
 
@@ -379,6 +379,28 @@ AtomTypeCls EventStatePipe::GetType() const
 
 #endif
 #if defined flagSCREEN
+AtomTypeCls EcsProgVideo::GetAtomType()
+{
+	return ATOM11(ECS_PROG_VIDEO, PIPE, CENTER, PROG, CENTER, ORDER, CENTER, PROG);
+}
+
+LinkTypeCls EcsProgVideo::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void EcsProgVideo::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<EcsVideoBase>(this);
+}
+
+AtomTypeCls EcsProgVideo::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
 AtomTypeCls X11SwFboProg::GetAtomType()
 {
 	return ATOM11(X11_SW_FBO_PROG, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
@@ -662,23 +684,23 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagSCREEN && defined flagSDL2
-AtomTypeCls SdlImageLoader::GetAtomType()
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+AtomTypeCls SdlOglImageLoader::GetAtomType()
 {
-	return ATOM11_U01(SDL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+	return ATOM11_U01(SDL_OGL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
 }
 
-LinkTypeCls SdlImageLoader::GetLinkType()
+LinkTypeCls SdlOglImageLoader::GetLinkType()
 {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlImageLoader::Visit(RuntimeVisitor& vis)
+void SdlOglImageLoader::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Sdl2OglImageBase>(this);
 }
 
-AtomTypeCls SdlImageLoader::GetType() const
+AtomTypeCls SdlOglImageLoader::GetType() const
 {
 	return GetAtomType();
 }
@@ -903,6 +925,28 @@ AtomTypeCls SdlVideoAtomPipe::GetType() const
 
 #endif
 #if defined flagSCREEN && defined flagSDL2
+AtomTypeCls SdlProgAtomPipe::GetAtomType()
+{
+	return ATOM11(SDL_PROG_ATOM_PIPE, PIPE, CENTER, PROG, CENTER, PROG, CENTER, RECEIPT);
+}
+
+LinkTypeCls SdlProgAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlProgAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlProgAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagSDL2
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);
@@ -946,7 +990,7 @@ AtomTypeCls SdlAudioAtom::GetType() const
 }
 
 #endif
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglShaderAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
@@ -968,7 +1012,7 @@ AtomTypeCls SdlOglShaderAtom::GetType() const
 }
 
 #endif
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglShaderAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -1012,7 +1056,7 @@ AtomTypeCls SdlOglTextureSource::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglVolumeSource::GetAtomType()
 {
 	return ATOM11_U11(SDL_OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
@@ -1034,7 +1078,7 @@ AtomTypeCls SdlOglVolumeSource::GetType() const
 }
 
 #endif
-#if defined flagSDL2 && defined flagOGL
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglAudioSink::GetAtomType()
 {
 	return ATOM11_U11(SDL_OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
@@ -1056,7 +1100,7 @@ AtomTypeCls SdlOglAudioSink::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglKeyboardSource::GetAtomType()
 {
 	return ATOM11_U44(SDL_OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
@@ -1078,7 +1122,7 @@ AtomTypeCls SdlOglKeyboardSource::GetType() const
 }
 
 #endif
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlOglAudioSource::GetAtomType()
 {
 	return ATOM11_U11(SDL_OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);

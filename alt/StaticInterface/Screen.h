@@ -9,7 +9,7 @@
 NAMESPACE_UPP
 
 
-class SystemDraw : public DrawProxy {
+/*class SystemDraw : public DrawProxy {
 public:
 	RTTI_DECL1(SystemDraw, DrawProxy)
 	
@@ -21,11 +21,11 @@ class ImageDraw : public SImageDraw {
 public:
 	ImageDraw(Size sz) : SImageDraw(sz) {}
 	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
-};
+};*/
 
 
 
-enum {
+/*enum {
 	K_DELTA        = 0x010000,
 
 	K_ALT          = 0x080000,
@@ -50,9 +50,9 @@ enum {
 	
 	K_MOUSE_FORWARD = 0x80000001,
 	K_MOUSE_BACKWARD = 0x80000002,
-};
+};*/
 
-class Ctrl : public Pte<Ctrl> {
+/*class Ctrl : public Pte<Ctrl> {
 	
 public:
 	enum {
@@ -79,7 +79,7 @@ public:
 		MIDDLEREPEAT,
 		MIDDLEUP,
 	};
-};
+};*/
 
 
 

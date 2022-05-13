@@ -125,7 +125,7 @@ HiAnimProgram& HiAnimProgram::Set(HiValue *self, HiValue fn, HiValue a0, HiValue
 	if (self)
 		e.Self() = *self;
 	for(int i = 0; i < l.arg.GetCount(); i++)
-		e.Var().GetPut(l.arg[i]) = arg[i];
+		e.Var().GetAdd(l.arg[i]) = arg[i];
 	
 	//e.no_return = e.no_break = e.no_continue = true;
 	//e.loop = 0;

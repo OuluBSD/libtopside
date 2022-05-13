@@ -31,10 +31,10 @@ public:
 	typedef SubMenuFrame CLASSNAME;
 	SubMenuFrame(Windows* wins);
 	
-	virtual void Paint(Draw& w);
-	virtual void LeftDown(Point p, dword keyflags);
-	virtual void RightDown(Point p, dword keyflags);
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags);
+	virtual void Paint(Draw& w) override;
+	virtual void LeftDown(Point p, dword keyflags) override;
+	virtual void RightDown(Point p, dword keyflags) override;
+	virtual void MouseWheel(Point p, int zdelta, dword keyflags) override;
 	
 	void LocalMenu(Bar& bar);
 };

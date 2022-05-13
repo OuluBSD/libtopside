@@ -1,7 +1,7 @@
 description "Example TopWindow usage, which is similar to U++ CtrlLib TopWindow usage.\377";
 
 uses
-	EcsCompleteDebug;
+	EcsMinimal;
 
 file
 	main.cpp,
@@ -11,5 +11,7 @@ file
 mainconfig
 	"" = "GUI VIRTUALGUI3DALT SDL2GUI3DALT",
 	"" = "GUI VIRTUALGUI3D SDL2GUI3D",
-	"" = "GUI";
+	"" = "GUI",
+	"" = "GUI SDL2",
+	"" = "DEBUG_RT GUI SDL2";
 

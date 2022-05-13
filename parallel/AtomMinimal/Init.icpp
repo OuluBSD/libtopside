@@ -1,4 +1,4 @@
-#include "AtomDebug.h"
+#include "AtomMinimal.h"
 
 NAMESPACE_UPP
 
@@ -42,8 +42,10 @@ INITBLOCK {
 	
 	#ifdef flagFFMPEG
 	Factory::RegisterAtom<AudioDecoderSrc>();
-	Factory::RegisterAtom<AudioLoaderAtom>();
-	Factory::RegisterAtom<VideoLoaderAtom>();
+		#ifdef flagSCREEN
+		Factory::RegisterAtom<AudioLoaderAtom>();
+		Factory::RegisterAtom<VideoLoaderAtom>();
+		#endif
 	#endif
 	
 	#ifdef flagSDL2
@@ -67,8 +69,7 @@ INITBLOCK {
 		Factory::RegisterAtom<X11SwFboAtomSA>();
 		Factory::RegisterAtom<X11SwFboProg>();
 		Factory::RegisterAtom<X11SwVideoAtomPipe>();
-		Factory::RegisterAtom<SdlOglVolumeSource>();
-		Factory::RegisterAtom<SdlOglKeyboardSource>();
+		Factory::RegisterAtom<EcsProgVideo>();
 		
 		#if defined flagPOSIX
 			Factory::RegisterAtom<X11VideoAtomPipe>();
@@ -87,8 +88,11 @@ INITBLOCK {
 			Factory::RegisterAtom<SdlVideoAtomPipe>();
 			Factory::RegisterAtom<SdlVideoAtom>();
 			Factory::RegisterAtom<SdlEventAtomPipe>();
-			Factory::RegisterAtom<SdlImageLoader>();
+			Factory::RegisterAtom<SdlProgAtomPipe>();
 			#ifdef flagOGL
+				Factory::RegisterAtom<SdlOglImageLoader>();
+				Factory::RegisterAtom<SdlOglVolumeSource>();
+				Factory::RegisterAtom<SdlOglKeyboardSource>();
 				Factory::RegisterAtom<SdlOglFboPipe>();
 				Factory::RegisterAtom<SdlOglFboAtom>();
 				Factory::RegisterAtom<SdlOglFboAtomSA>();

@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Cls> struct ClassifierSystemT;
 
 
+
 template <class Cls>
 struct ClassifierSystemT : ClsSystem {
 	using CLASSNAME = ClassifierSystemT<Cls>;
@@ -43,8 +44,6 @@ struct ClassifierSystemT : ClsSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Fin> struct FinanceSystemT;
 
 
+
 template <class Fin>
 struct FinanceSystemT : FinSystem {
 	using CLASSNAME = FinanceSystemT<Fin>;
@@ -43,8 +44,6 @@ struct FinanceSystemT : FinSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -762,6 +762,9 @@ public:
 		hashes <<= a.hashes;
 		values <<= a.values;
 	}
+	
+	const Vector<K>& GetKeys() const {return values;}
+	
 };
 
 template <class K, class V, template<typename> class Array>

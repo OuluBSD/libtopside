@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Web> struct WebBrowserWebBrowserT;
 
 
+
 template <class Web>
 struct WebBrowserWebBrowserT : WebWebBrowser {
 	using CLASSNAME = WebBrowserWebBrowserT<Web>;
@@ -43,8 +44,6 @@ struct WebBrowserWebBrowserT : WebWebBrowser {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

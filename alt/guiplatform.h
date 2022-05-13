@@ -1,3 +1,22 @@
+// Just enable virtual-gui always. It's virtual, after all.
+#define HAVE_VIRTUALGUI 1
+
+#if HAVE_VIRTUALGUI
+	#define GUIPLATFORM_KEYCODES_INCLUDE       <VirtualGui3D/Keys.h>
+	#define GUIPLATFORM_INCLUDE                <VirtualGui3D/VirtualGui3D.h>
+	#define VIRTUALGUI 1
+#else
+	#define GUIPLATFORM_INCLUDE                <StaticInterface/Screen.h>
+#endif
+
+/*#if defined(flagSCREEN) && defined(flagGUI)
+	#define GUIPLATFORM_KEYCODES_INCLUDE       <VirtualGui3D/Keys.h>
+	#define GUIPLATFORM_INCLUDE                <VirtualGui3D/VirtualGui3D.h>
+	#define VIRTUALGUI 1
+#else
+	#define GUIPLATFORM_INCLUDE                <StaticInterface/Screen.h>
+#endif
+*/
 /*#if defined(flagSCREEN)
 	#if defined(flagGUI)
 		#define GUIPLATFORM_KEYCODES_INCLUDE       <VirtualGui3D/Keys.h>
@@ -16,7 +35,7 @@
 #else
 	#define NONCTRLPLATFORM_BACKEND_INCLUDE         <NonScreen/DrawBackend.h>
 	#define NONCTRLPLATFORM_INCLUDE                 <NonScreen/NonScreen.h>
-#endif
-*/
-#define NONCTRLPLATFORM_BACKEND_INCLUDE         <StaticInterface/DrawBackend.h>
-#define NONCTRLPLATFORM_INCLUDE                 <StaticInterface/Screen.h>
+#endif*/
+
+#define GUIPLATFORM_BACKEND_INCLUDE         <StaticInterface/DrawBackend.h>
+//#define GUIPLATFORM_INCLUDE                 <StaticInterface/Screen.h>

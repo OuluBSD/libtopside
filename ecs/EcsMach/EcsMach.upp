@@ -1,7 +1,8 @@
 description "\377B128,0,0";
 
 uses
-	AtomComplete;
+	AtomMinimal,
+	SerialLib;
 
 file
 	EcsMach.h,

@@ -44,11 +44,22 @@ public:
 using RenderableRef = Ref<Renderable>;
 
 
+class VirtualGui;
+
 
 class RenderingSystem :
 	public System<RenderingSystem>
 {
-	OglBufferT* buf = 0;
+	
+protected:
+	friend class Ecs::VirtualGui;
+	
+	#ifdef flagSDL2
+	Parallel::BufferT<SdlSwGfx>* sdl_sw_buf = 0;
+	#ifdef flagOGL
+	Parallel::BufferT<SdlOglGfx>* sdl_ogl_buf = 0;
+	#endif
+	#endif
 	Array<RenderableRef> rends;
 	Array<ViewableRef> views;
 	
@@ -72,7 +83,12 @@ public:
 	void AddRenderable(RenderableRef b);
 	void RemoveViewable(ViewableRef v);
 	void RemoveRenderable(RenderableRef b);
-	void Attach(String key, OglBufferT* b);
+	#ifdef flagSDL2
+	void Attach(String key, Parallel::BufferT<SdlSwGfx>* b);
+	#ifdef flagOGL
+	void Attach(String key, Parallel::BufferT<SdlOglGfx>* b);
+	#endif
+	#endif
 	
 };
 

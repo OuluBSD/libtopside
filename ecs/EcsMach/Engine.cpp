@@ -5,6 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 bool EntitySystem::Initialize() {
 	engine = new Ecs::Engine;
+	engine->sys = this;
 	SetActiveEngine(*engine);
 	return true;
 }
@@ -240,18 +241,19 @@ void MachineEcsInit() {
 	mach.Add<EntitySystem>();
 	
 	
-    /*mach.Add<HolographicScene>();
-    mach.Add<EasingSystem>();
-    mach.Add<MotionControllerSystem>();
-    mach.Add<WorldLogicSystem>();*/
+	/*Ecs::Engine& eng = Ecs::GetActiveEngine();
+	
+    #ifdef flagOPENVR
+    eng.Add<OpenVR>();
+    #endif*/
+    /*eng.Add<HolographicScene>();
+    eng.Add<EasingSystem>();
+    eng.Add<MotionControllerSystem>();
+    eng.Add<WorldLogicSystem>();*/
 	   
     //if (flags.HaveOdePhysics())
-	//	mach.Add<OdeSystem>();
+	//	eng.Add<OdeSystem>();
 	
-    
-    #ifdef flagOPENVR
-    mach.Add<OpenVR>();
-    #endif
     
 }
 

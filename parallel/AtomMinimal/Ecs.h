@@ -1,12 +1,12 @@
-#ifndef _AtomLocal_Ecs_h_
-#define _AtomLocal_Ecs_h_
+#ifndef _AtomMinimal_Ecs_h_
+#define _AtomMinimal_Ecs_h_
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class EcsEventsBase :
-	public AtomBase
+	public Atom
 {
 	Vector<BinderIfaceEvents*> binders;
 	String			target;
@@ -14,7 +14,7 @@ class EcsEventsBase :
 	int				prev_iter = -1;
 	
 public:
-	RTTI_DECL0(EcsEventsBase);
+	RTTI_DECL1(EcsEventsBase, Atom);
 	
 	EcsEventsBase();
 	
@@ -22,7 +22,9 @@ public:
 	bool			PostInitialize() override;
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPackets(PacketIO& io) override;
+	bool			Recv(int sink_ch, const Packet& in) override;
+	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
 	void AddBinder(BinderIfaceEvents* iface);
@@ -34,28 +36,28 @@ public:
 
 
 class EcsVideoBase :
-	public AtomBase
+	public Atom
 {
 	Vector<BinderIfaceVideo*> binders;
 	String				target;
 	EnvStateRef			state;
 	int					prev_iter = -1;
 	ValDevCls			src_type;
-	ImageDraw			id;
+	//ImageDraw			id;
 	ProgDraw			pd;
-	CpuStateDraw		cpu_sd;
+	/*CpuStateDraw		cpu_sd;
 	CpuDataState		cpu_state;
 	CpuFramebuffer		cpu_fb;
 	#if HAVE_OPENGL
 	OglStateDraw		ogl_sd;
 	OglDataState		ogl_state;
-	#endif
+	#endif*/
 	bool draw_mem = false;
 	
 	static EcsVideoBase* latest;
 	
 public:
-	RTTI_DECL0(EcsVideoBase);
+	RTTI_DECL1(EcsVideoBase, Atom);
 	
 	EcsVideoBase();
 	
@@ -63,7 +65,9 @@ public:
 	bool			PostInitialize() override;
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPackets(PacketIO& io) override;
+	bool			Recv(int sink_ch, const Packet& in) override;
+	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
 	void AddBinder(BinderIfaceVideo* iface);
@@ -90,7 +94,9 @@ public:
 	bool			PostInitialize() override;
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPackets(PacketIO& io) override;
+	bool			Recv(int sink_ch, const Packet& in) override;
+	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
 	void AddBinder(BinderIfaceOgl* iface);
@@ -102,6 +108,6 @@ public:
 #endif
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

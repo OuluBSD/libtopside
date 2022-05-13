@@ -11,6 +11,7 @@ template <class Os> struct OperatingSystemProcessManagerT;
 template <class Os> struct OperatingSystemDesktopManagerT;
 
 
+
 template <class Os>
 struct OperatingSystemMessageBusT : OsMessageBus {
 	using CLASSNAME = OperatingSystemMessageBusT<Os>;
@@ -43,6 +44,7 @@ struct OperatingSystemMessageBusT : OsMessageBus {
 	
 };
 
+
 template <class Os>
 struct OperatingSystemProcessManagerT : OsProcessManager {
 	using CLASSNAME = OperatingSystemProcessManagerT<Os>;
@@ -74,6 +76,7 @@ struct OperatingSystemProcessManagerT : OsProcessManager {
 
 	
 };
+
 
 template <class Os>
 struct OperatingSystemDesktopManagerT : OsDesktopManager {
@@ -109,8 +112,6 @@ struct OperatingSystemDesktopManagerT : OsDesktopManager {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

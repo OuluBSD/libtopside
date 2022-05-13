@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Mif> struct MidiFileMidiFileT;
 
 
+
 template <class Mif>
 struct MidiFileMidiFileT : MifMidiFile {
 	using CLASSNAME = MidiFileMidiFileT<Mif>;
@@ -61,8 +62,6 @@ struct MidiFileMidiFileT : MifMidiFile {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

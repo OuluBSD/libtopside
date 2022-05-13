@@ -7,7 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // DUMMY
-class ProgDraw : public Draw {
+/*class ProgDraw : public Draw {
 	
 public:
 	DrawCommand cmd_screen_begin, cmd_screen_end;
@@ -15,32 +15,31 @@ public:
 	
 public:
 	RTTI_DECL1(ProgDraw, Draw)
-	ProgDraw() {}
-	ProgDraw(Size sz) {TODO}
-	ProgDraw(int w, int h) {TODO}
+	ProgDraw();
+	ProgDraw(Size sz);
+	ProgDraw(int w, int h);
 	
-	void Create(Size sz) {TODO}
-	void Clear() {TODO}
-	void Finish() {TODO}
+	void Create(Size sz);
+	void Clear();
+	void Finish();
 	
-	operator Image() const {TODO}
+	operator Image() const;
 	
 	
-	Size GetPageSize() const override {TODO}
-	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override {TODO}
-	void DrawRectOp(int x, int y, int cx, int cy, Color color) override {TODO}
+	Size GetPageSize() const override;
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		            Color ink, int n, const int *dx) override {TODO}
+		            Color ink, int n, const int *dx) override;
 	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                        const int *counts, int count_count,
-	                        int width, Color color, Color doxor) override {TODO}
-	bool ClipOp(const Rect& r) override {TODO}
-	void EndOp() override {TODO}
-	Draw& Alpha() {TODO}
+	                        int width, Color color, Color doxor) override;
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
+	Draw& Alpha();
 	
-};
+};*/
 
-#if 0
 
 class ProgPainter {
 	DrawCommand *prev;
@@ -82,6 +81,7 @@ public:
 	void Link();
 };
 
+#if 0
 
 class ProgCpuShader : public CpuShader {
 	
@@ -93,14 +93,15 @@ public:
 	
 };
 
+#endif
 
 class ProgDraw : public Draw {
 	One<ProgPainter> d;
-	CpuDataObject fb;
+	/*CpuDataObject fb;
 	CpuFramebufferState state;
-	ProgCpuShader shader;
+	ProgCpuShader shader;*/
 	
-	Size GetFrameSize() const {return state.size;}
+	Size GetFrameSize() const;
 	
 public:
 	DrawCommand cmd_screen_begin, cmd_screen_end;
@@ -120,7 +121,7 @@ public:
 	operator Image() const;
 	
 	
-	Size GetPageSize() const override {return state.size;}
+	Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
@@ -134,6 +135,7 @@ public:
 	
 };
 
+#if 0
 
 class ModelProg {
 	

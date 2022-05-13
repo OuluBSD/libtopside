@@ -73,7 +73,7 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 		return;
 	
 	if (verify) {
-		TODO // some extension thing is required here to work with only AtomDebug
+		TODO // some extension thing is required here to work with only AtomMinimal
 		#if 0
 		verifier.AddSystem<RegistrySystem>();
 		verifier.AddSystem<LoopStore>();
@@ -203,14 +203,19 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 				String path = RealizeEonFile(script_file);
 				
 				String script_str;
-				if (script_content.IsEmpty())
+				if (script_content.IsEmpty()) {
 					script_str = LoadFile(path);
+					if (script_str.IsEmpty()) {
+						LOG("Empty file in " << path);
+						return;
+					}
+				}
 				else
 					script_str = script_content;
 				//script_str.DebugFollow();
 				
 				if (script_str.IsEmpty()) {
-					LOG("No script file in " << path);
+					LOG("No script");
 					return;
 				}
 				for(int i = 0; i < args.GetCount(); i++) {

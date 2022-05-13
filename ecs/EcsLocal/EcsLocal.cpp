@@ -8,13 +8,21 @@ void BindEcsEventsBase(Serial::EcsEventsBase* b) {
 	Ecs::GetActiveEngine().Get<Ecs::EventSystem>()->Attach(b);
 }
 
-void BindOglBuffer(String id, OglBufferT* b) {
+template <class Gfx>
+void BindGfxBuffer(String id, Parallel::BufferT<Gfx>* b) {
 	Ecs::GetActiveEngine().Get<Ecs::RenderingSystem>()->Attach(id, b);
 }
 
 void BindEcsToSerial() {
+	using namespace Parallel;
 	Serial::EcsEventsBase::WhenInitialize << callback(BindEcsEventsBase);
-	OglBuffer::WhenLinkInit.Add(callback(BindOglBuffer));
+	#ifdef flagSDL2
+	//BufferT<SdlCpuGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlCpuGfx>));
+	BufferT<SdlSwGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlSwGfx>));
+	#ifdef flagOGL
+	BufferT<SdlOglGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlOglGfx>));
+	#endif
+	#endif
 }
 
 

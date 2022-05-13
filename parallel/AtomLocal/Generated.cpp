@@ -49,28 +49,6 @@ AtomTypeCls EcsCpuVideoPipe::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls EcsProgVideo::GetAtomType()
-{
-	return ATOM11(ECS_PROG_VIDEO, PIPE, CENTER, PROG, CENTER, ORDER, CENTER, PROG);
-}
-
-LinkTypeCls EcsProgVideo::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void EcsProgVideo::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<EcsVideoBase>(this);
-}
-
-AtomTypeCls EcsProgVideo::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
 AtomTypeCls EcsOglFboPipe::GetAtomType()
 {
 	return ATOM11(ECS_OGL_FBO_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);

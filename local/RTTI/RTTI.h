@@ -108,11 +108,11 @@ public:
 			return Type::TypeIdClass(); \
 		} \
         ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_ELSE(RTTI, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_ELSE(RTTI, GetTypeInfo) \
         } \
         void* GetBasePtr(::UPP::TypeCls id) const override { \
@@ -144,11 +144,11 @@ public:
 			return Type::TypeIdClass(); \
 		} \
         ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_ELSE(ParentType, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_ELSE(ParentType, GetTypeInfo) \
         } \
         void* GetBasePtr(::UPP::TypeCls id) const override { \
@@ -181,12 +181,12 @@ public:
 			return Type::TypeIdClass(); \
 		}\
         ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_ELSE(ParentType1, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_ELSE(ParentType1, GetTypeInfo) \
         } \
@@ -226,13 +226,13 @@ public:
 			return Type::TypeIdClass();                                \
 		} \
         ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override {             \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_ELSE(ParentType2, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_ELSE(ParentType2, GetTypeInfo) \
@@ -276,14 +276,14 @@ public:
 			return Type::TypeIdClass();                                \
 		} \
         ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override {             \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_IF1(::UPP::RTTI, ParentType2, GetTypeInfo) \
             RTTI_ELSE(ParentType3, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_IF1(const ::UPP::RTTI, ParentType2, GetTypeInfo) \
@@ -333,7 +333,7 @@ public:
 			return Type::TypeIdClass();                                \
 		} \
         ::UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override {             \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_IF1(UPP::RTTI, ParentType2, GetTypeInfo) \
@@ -341,7 +341,7 @@ public:
             RTTI_ELSE(ParentType4, GetTypeInfo) \
         } \
         const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
-            RTTI_IF0(&RTTI::GetRTTI()) \
+            RTTI_IF0(&this->RTTI::GetRTTI()) \
             RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_IF1(const ::UPP::RTTI, ParentType2, GetTypeInfo) \

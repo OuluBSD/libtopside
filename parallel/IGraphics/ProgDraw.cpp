@@ -1,6 +1,5 @@
 #include "IGraphics.h"
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -331,22 +330,31 @@ void ProgPainter::Clear() {
 
 
 
-
-ProgDraw::ProgDraw() : fb(state), shader(state) {
+ProgDraw::ProgDraw() /*: fb(state), shader(state)*/ {
 	
 }
 
-ProgDraw::ProgDraw(Size sz) : fb(state), shader(state) {
+ProgDraw::ProgDraw(Size sz) /*: fb(state), shader(state)*/ {
 	Create(sz);
 }
 
-ProgDraw::ProgDraw(int w, int h) : fb(state), shader(state) {
+ProgDraw::ProgDraw(int w, int h) /*: fb(state), shader(state)*/ {
 	Create(Size(w,h));
+}
+
+Size ProgDraw::GetFrameSize() const {
+	TODO
+	//return state.size;
+}
+
+Size ProgDraw::GetPageSize() const {
+	TODO
+	//return state.size;
 }
 
 void ProgDraw::Create(Size sz){
 	Clear();
-	state.size = sz;
+	//state.size = sz;
 	d = new ProgPainter(cmd_screen_begin, render_begin, render_end, cmd_screen_end);
 }
 
@@ -398,7 +406,10 @@ void ProgDraw::EndOp() {
 	d->End();
 }
 
+Draw& ProgDraw::Alpha() {
+	TODO
+}
+
 
 NAMESPACE_PARALLEL_END
 
-#endif

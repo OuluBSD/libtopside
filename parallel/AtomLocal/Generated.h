@@ -42,23 +42,6 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsProgVideo : public EcsVideoBase {
-
-public:
-	RTTI_DECL1(EcsProgVideo, EcsVideoBase)
-	COPY_PANIC(EcsProgVideo)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class EcsOglFboPipe : public EcsVideoBase {
 
 public:
@@ -295,7 +278,7 @@ using EventStateRef = Ref<EventState, AtomParent>;
 
 using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 
-using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
+using SdlOglImageLoaderRef = Ref<SdlOglImageLoader, AtomParent>;
 
 using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
 
@@ -318,6 +301,8 @@ using SdlOglFboPipeSideRef = Ref<SdlOglFboPipeSide, AtomParent>;
 using SdlOglFboAtomRef = Ref<SdlOglFboAtom, AtomParent>;
 
 using SdlVideoAtomPipeRef = Ref<SdlVideoAtomPipe, AtomParent>;
+
+using SdlProgAtomPipeRef = Ref<SdlProgAtomPipe, AtomParent>;
 
 using SdlVideoProgAtomRef = Ref<SdlVideoProgAtom, AtomParent>;
 

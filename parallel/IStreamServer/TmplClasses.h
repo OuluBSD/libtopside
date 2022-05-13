@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Svr> struct StreamServerStreamServerT;
 
 
+
 template <class Svr>
 struct StreamServerStreamServerT : SvrStreamServer {
 	using CLASSNAME = StreamServerStreamServerT<Svr>;
@@ -43,8 +44,6 @@ struct StreamServerStreamServerT : SvrStreamServer {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -19,11 +19,11 @@ public:
 	
 	void SetImage(Image& img);
 	
-	virtual void Paint(Draw& d);
-	virtual void LeftDown(Point p, dword keyflags) {is_pressed = true; Refresh();}
-	virtual void LeftUp(Point p, dword keyflags) {WhenAction(); is_pressed = false; Refresh();}
-	virtual void MouseEnter(Point p, dword keyflags) {Refresh();}
-	virtual void MouseLeave() {is_pressed = false; Refresh();}
+	void Paint(Draw& d) override;
+	void LeftDown(Point p, dword keyflags) override {is_pressed = true; Refresh();}
+	void LeftUp(Point p, dword keyflags) override {WhenAction(); is_pressed = false; Refresh();}
+	void MouseEnter(Point p, dword keyflags) override {Refresh();}
+	void MouseLeave() override {is_pressed = false; Refresh();}
 	
 	void PostRefresh() {PostCallback(THISBACK(Refresh));}
 	void Refresh() {Ctrl::Refresh();}

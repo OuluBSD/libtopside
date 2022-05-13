@@ -13,6 +13,7 @@ template <class Fys> struct PhysicsSpaceT;
 template <class Fys> struct PhysicsSystemT;
 
 
+
 template <class Fys>
 struct PhysicsNodeT : FysNode {
 	using CLASSNAME = PhysicsNodeT<Fys>;
@@ -44,6 +45,7 @@ struct PhysicsNodeT : FysNode {
 
 	
 };
+
 
 template <class Fys>
 struct PhysicsObjectT : FysObject {
@@ -77,6 +79,7 @@ struct PhysicsObjectT : FysObject {
 	
 };
 
+
 template <class Fys>
 struct PhysicsJointT : FysJoint {
 	using CLASSNAME = PhysicsJointT<Fys>;
@@ -109,6 +112,7 @@ struct PhysicsJointT : FysJoint {
 	
 };
 
+
 template <class Fys>
 struct PhysicsSpaceT : FysSpace {
 	using CLASSNAME = PhysicsSpaceT<Fys>;
@@ -140,6 +144,7 @@ struct PhysicsSpaceT : FysSpace {
 
 	
 };
+
 
 template <class Fys>
 struct PhysicsSystemT : FysSystem {
@@ -191,8 +196,6 @@ using OdeSystem = PhysicsSystemT<FysOde>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

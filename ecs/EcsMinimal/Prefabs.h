@@ -1,5 +1,5 @@
-#ifndef _EcsComplete_Prefabs_h_
-#define _EcsComplete_Prefabs_h_
+#ifndef _EcsMinimal_Prefabs_h_
+#define _EcsMinimal_Prefabs_h_
 
 
 
@@ -158,7 +158,7 @@ void DefaultEcsStartup();
 	 \
 	ECS_PREFAB_MAIN(App) { \
 		using namespace UPP; \
-		String eon_file  = Serial::RealizeEonFile(eon_path); \
+		String eon_file  = Parallel::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
 			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
 			TS::DefaultRunner(#ecs_component, eon_file, 0, eon_args); \
@@ -169,6 +169,35 @@ void DefaultEcsStartup();
 	}
 
 #define SIMPLE_ECS_APP(ecs_component, eon_path) SIMPLE_ECS_APP_(ecs_component, eon_path, "")
+
+
+
+#define GUI_APP_MAIN_ \
+	void UserGuiMainFn_(); \
+	\
+	PREFAB_BEGIN(App) \
+		TS::Ecs::DefaultGuiAppComponent \
+	PREFAB_END \
+	\
+	APP_INITIALIZE_STARTUP2_2_ECS(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial, UserGuiMainFn_) \
+	\
+	ECS_PREFAB_MAIN(App) { \
+		using namespace UPP; \
+		String eon_file  = Parallel::RealizeEonFile("DefaultGuiApp.eon"); \
+		if (FileExists(eon_file)) { \
+			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
+			TS::DefaultRunner("Gui App", eon_file, 0, 0); \
+		} \
+		else { \
+			LOG("Eon file was not found"); \
+		} \
+	} \
+	void UserGuiMainFn_()
+
+
+#undef GUI_APP_MAIN
+#define GUI_APP_MAIN GUI_APP_MAIN_
+
 
 NAMESPACE_ECS_END
 

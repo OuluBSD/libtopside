@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Nef> struct NetFileNetFileT;
 
 
+
 template <class Nef>
 struct NetFileNetFileT : NefNetFile {
 	using CLASSNAME = NetFileNetFileT<Nef>;
@@ -43,8 +44,6 @@ struct NetFileNetFileT : NefNetFile {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

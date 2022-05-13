@@ -23,19 +23,39 @@ bool RenderingSystem::Initialize() {
 	return true;
 }
 
-void RenderingSystem::Attach(String key, OglBufferT* b) {
+
+#ifdef flagSDL2
+void RenderingSystem::Attach(String key, Parallel::BufferT<SdlSwGfx>* b) {
 	if (key != "ecs") {
 		RTLOG("RenderingSystem::Attach: warning: skipping unrelated key '" << key << "'");
 		return;
 	}
 	
-	/*ASSERT(!buf);
-	if (buf) buf->RemoveBinder(this);
+	TODO
+	/*ASSERT(!sdl_sw_buf);
+	if (sdl_sw_buf) sdl_sw_buf->RemoveBinder(this);
 	
 	ASSERT(b);
 	b->AddBinder(this);
-	buf = b;*/
+	sdl_sw_buf = b;*/
 }
+#ifdef flagOGL
+void RenderingSystem::Attach(String key, Parallel::BufferT<SdlOglGfx>* b) {
+	if (key != "ecs") {
+		RTLOG("RenderingSystem::Attach: warning: skipping unrelated key '" << key << "'");
+		return;
+	}
+	
+	TODO
+	/*ASSERT(!buf);
+	if (sdl_ogl_buf) sdl_ogl_buf->RemoveBinder(this);
+	
+	ASSERT(b);
+	b->AddBinder(this);
+	sdl_ogl_buf = b;*/
+}
+#endif
+#endif
 
 void RenderingSystem::AddViewable(ViewableRef v) {
 	ASSERT(v);

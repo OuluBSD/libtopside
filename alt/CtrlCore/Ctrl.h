@@ -6,6 +6,7 @@ namespace TS { namespace Ecs {
 class Windows;
 class WindowManager;
 class CoreWindow;
+class VirtualGui;
 
 }}
 
@@ -122,6 +123,12 @@ public:
 	Bar& Add(String title, Callback cb);
 	Bar& Separator();
 	
+	virtual void   Paint(Draw& w) {}
+	virtual int    OverPaint() const {return 0;}
+	virtual bool   HotKey(dword key) {return false;}
+	virtual Bar::Item& AddItem(Callback cb) {NEVER()}
+	virtual Bar::Item& AddSubMenu(Callback1<Bar&> proc) {NEVER()}
+	
 };
 
 
@@ -146,36 +153,11 @@ class TopWindow;
 
 class Ctrl :
 	public Pte<Ctrl>,
-	RTTIBase
+	public VirtualCtrl
 {
 	
 public:
-	RTTI_DECL0(Ctrl)
-	
-	enum {
-		UNKNOWN,
-		LEFT_DOWN,
-		LEFT_DOUBLE,
-		LEFT_TRIPLE,
-		LEFT_DRAG,
-		LEFT_HOLD,
-		LEFT_REPEAT,
-		LEFT_UP,
-		RIGHT_DOWN,
-		RIGHT_DOUBLE,
-		RIGHT_TRIPLE,
-		RIGHT_DRAG,
-		RIGHT_HOLD,
-		RIGHT_REPEAT,
-		RIGHT_UP,
-		MIDDLE_DOWN,
-		MIDDLE_DOUBLE,
-		MIDDLE_TRIPLE,
-		MIDDLE_DRAG,
-		MIDDLE_HOLD,
-		MIDDLE_REPEAT,
-		MIDDLE_UP,
-	};
+	RTTI_DECL1(Ctrl, VirtualCtrl)
 	
 protected:
 	
@@ -228,7 +210,7 @@ protected:
 	void Layout0() {Layout();}
 	
 protected:
-	friend class SDL2GUI3D;
+	friend class TS::Ecs::VirtualGui;
 	
 	void SetFrameRect0(const Rect& r) {this->frame_r = r;}
 	
@@ -351,6 +333,13 @@ public:
 	virtual void ClearModify();
 	void    Update();
 	
+	virtual Size   GetMinSize() const {return Size(0,0);}
+	virtual String GetDesc() const {return String();}
+	virtual void   FrameLayout(Rect& r) {}
+	virtual void   FrameAddSize(Size& sz) {}
+	virtual bool   HotKey(dword key) {return false;}
+	virtual int    OverPaint() const {return 0;}
+	
 	Callback WhenAction;
 	
 	
@@ -363,64 +352,6 @@ public:
 	
 	
 	
-	enum PlacementConstants {
-		CENTER   = 0,
-		MIDDLE   = 0,
-		LEFT     = 1,
-		RIGHT    = 2,
-		TOP      = 1,
-		BOTTOM   = 2,
-		SIZE     = 3,
-
-		MINSIZE  = -16380,
-		MAXSIZE  = -16381,
-		STDSIZE  = -16382,
-	};
-	
-	enum MouseEvents {
-		BUTTON        = 0x0F,
-		ACTION        = 0xF0,
-
-		MOUSEENTER    = 0x10,
-		MOUSEMOVE     = 0x20,
-		MOUSELEAVE    = 0x30,
-		CURSORIMAGE   = 0x40,
-		MOUSEWHEEL    = 0x50,
-
-		DOWN          = 0x80,
-		UP            = 0x90,
-		DOUBLE        = 0xa0,
-		REPEAT        = 0xb0,
-		DRAG          = 0xc0,
-		HOLD          = 0xd0,
-		TRIPLE        = 0xe0,
-		PEN           = 0xf0,
-		PENLEAVE      = 0x100,
-
-		LEFTDOWN      = LEFT|DOWN,
-		LEFTDOUBLE    = LEFT|DOUBLE,
-		LEFTREPEAT    = LEFT|REPEAT,
-		LEFTUP        = LEFT|UP,
-		LEFTDRAG      = LEFT|DRAG,
-		LEFTHOLD      = LEFT|HOLD,
-		LEFTTRIPLE    = LEFT|TRIPLE,
-
-		RIGHTDOWN     = RIGHT|DOWN,
-		RIGHTDOUBLE   = RIGHT|DOUBLE,
-		RIGHTREPEAT   = RIGHT|REPEAT,
-		RIGHTUP       = RIGHT|UP,
-		RIGHTDRAG     = RIGHT|DRAG,
-		RIGHTHOLD     = RIGHT|HOLD,
-		RIGHTTRIPLE   = RIGHT|TRIPLE,
-
-		MIDDLEDOWN     = MIDDLE|DOWN,
-		MIDDLEDOUBLE   = MIDDLE|DOUBLE,
-		MIDDLEREPEAT   = MIDDLE|REPEAT,
-		MIDDLEUP       = MIDDLE|UP,
-		MIDDLEDRAG     = MIDDLE|DRAG,
-		MIDDLEHOLD     = MIDDLE|HOLD,
-		MIDDLETRIPLE   = MIDDLE|TRIPLE
-	};
 	
 	
 	#include GUIPLATFORM_CTRL_DECLS_INCLUDE

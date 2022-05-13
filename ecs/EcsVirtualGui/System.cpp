@@ -1,27 +1,27 @@
-#include "System.h"
+#include "EcsVirtualGui.h"
 
 NAMESPACE_ECS_BEGIN
 
 
 
 
-bool SDL2GUI3DSystem::Initialize() {
+bool VirtualGuiSystem::Initialize() {
 	return gui.Open();
 }
 
-void SDL2GUI3DSystem::Start() {
+void VirtualGuiSystem::Start() {
 	
 }
 
-void SDL2GUI3DSystem::Update(double dt) {
+void VirtualGuiSystem::Update(double dt) {
 	
 }
 
-void SDL2GUI3DSystem::Stop() {
+void VirtualGuiSystem::Stop() {
 	
 }
 
-void SDL2GUI3DSystem::Uninitialize() {
+void VirtualGuiSystem::Uninitialize() {
 	gui.Close();
 }
 
@@ -36,7 +36,7 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	EntityStoreRef ents = mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
     mach.Add<SDL2System>();
-    mach.Add<SDL2GUI3DSystem>();
+    mach.Add<VirtualGuiSystem>();
     mach.Add<HumanSystem>();
     mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();

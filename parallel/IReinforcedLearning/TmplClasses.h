@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Rl> struct ReinforcedLearningSystemT;
 
 
+
 template <class Rl>
 struct ReinforcedLearningSystemT : RlSystem {
 	using CLASSNAME = ReinforcedLearningSystemT<Rl>;
@@ -43,8 +44,6 @@ struct ReinforcedLearningSystemT : RlSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

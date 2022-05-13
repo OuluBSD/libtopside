@@ -312,16 +312,13 @@ bool AudPortaudio::SinkDevice_Send(NativeSinkDevice& dev, AtomBase&, RealtimeSou
 
 bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	
-	// Accept any audio format! Data is converted automatically for raw audio data!
-	
-	/*
-	// accept all valid video formats for now
+	// accept all valid audio formats for now (because packets can be converted)
 	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
-		ISinkRef sink = a.GetSink();
+		/*ISinkRef sink = a.GetSink();
 		Value& val = sink->GetValue(sink_ch);
-		val.SetFormat(new_fmt);
+		val.SetFormat(new_fmt);*/
 		return true;
-	}*/
+	}
 	
 	return false;
 }

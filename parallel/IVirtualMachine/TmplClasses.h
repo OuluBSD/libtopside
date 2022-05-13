@@ -10,6 +10,7 @@ template <class Vm> struct VirtualMachineVirtualMachineT;
 template <class Vm> struct VirtualMachineThreadT;
 
 
+
 template <class Vm>
 struct VirtualMachineVirtualMachineT : VmVirtualMachine {
 	using CLASSNAME = VirtualMachineVirtualMachineT<Vm>;
@@ -41,6 +42,7 @@ struct VirtualMachineVirtualMachineT : VmVirtualMachine {
 
 	
 };
+
 
 template <class Vm>
 struct VirtualMachineThreadT : VmThread {
@@ -81,8 +83,6 @@ using TosThread = VirtualMachineThreadT<VmTos>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

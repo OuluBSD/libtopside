@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Thr> struct ThreeModelT;
 
 
+
 template <class Thr>
 struct ThreeModelT : ThrModel {
 	using CLASSNAME = ThreeModelT<Thr>;
@@ -61,8 +62,6 @@ struct ThreeModelT : ThrModel {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

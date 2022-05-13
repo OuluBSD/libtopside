@@ -2,7 +2,7 @@ description "\377B113,42,150";
 
 uses
 	AtomLocal,
-	AtomDebug,
+	AtomMinimal,
 	ParallelMach;
 
 mainconfig

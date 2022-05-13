@@ -23,10 +23,12 @@
 #define NATIVE_FIELD(cls, name) c->AddNativeField(#cls, #name);
 #define NATIVE_INHERIT(cls, name) c->AddNativeInherit(#cls, #name);
 #define NATIVE_ENABLED_FLAG(flag) c->AddEnabled().AddFlag(#flag);
+#define NATIVE_ENABLED_FLAG2(f0, f1) c->AddEnabled().AddFlag(#f0).AddFlag(#f1);
 #define HAVE_VIRTUAL_CONTEXT c->have_context_fns = true;
 #define UTIL_CLASS(name) i->AddUtilClass(#name);
 #define VENDOR(name) for (Vendor* v = &AddVendor(#name); v; v = 0)
 #define VENDOR_ENABLED_FLAG(flag) v->AddEnabled().AddFlag(#flag);
+#define VENDOR_ENABLED_FLAG2(f0, f1) v->AddEnabled().AddFlag(#f0).AddFlag(#f1);
 #define VENDOR_INCLUDE(macro_if_str, filepath) v->AddInclude(macro_if_str, #filepath);
 #define VENDOR_HEADER_REQUIRES_INCLUDES v->SetIncludeInHeader(true);
 #define LIBRARY(upp_if_str, lib) this->AddLibrary(upp_if_str, #lib);

@@ -47,15 +47,15 @@ public:
     
 	void GetModels(VectorRendModel& models);
 	void Attach(ModelMesh* m) {loader.model = m;}
-	void LoadModel(CpuDataState& state);
+	/*void LoadModel(CpuDataState& state);
 	void LoadModel(OglDataState& state);
 	void RefreshModel(CpuDataState& state);
-	void RefreshModel(OglDataState& state);
+	void RefreshModel(OglDataState& state);*/
 	
 protected:
 	ModelLoader loader;
-	CpuDataObject* cpu_obj = 0;
-	OglDataObject* ogl_obj = 0;
+	//CpuDataObject* cpu_obj = 0;
+	//OglDataObject* ogl_obj = 0;
 	
 	
 	

@@ -1,4 +1,4 @@
-#include "EcsCompleteDebug.h"
+#include "EcsMinimal.h"
 
 
 

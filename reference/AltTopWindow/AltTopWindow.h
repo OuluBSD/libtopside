@@ -1,7 +1,7 @@
 #ifndef _AltTopWindow_AltTopWindow_h_
 #define _AltTopWindow_AltTopWindow_h_
 
-#include <EcsLib/EcsLib.h>
+#include <EcsMinimal/EcsMinimal.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN

@@ -60,12 +60,12 @@ public:
 	typedef TextCtrl CLASSNAME;
 	TextCtrl(bool multiline=false);
 	
-	virtual bool Key(dword key, int count);
-	virtual void Paint(Draw& d);
-	virtual void MouseMove(Point p, dword keyflags);
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags);
-	virtual void MouseLeave() {Refresh();}
-	virtual void LeftDown(Point p, dword keyflags);
+	bool Key(dword key, int count) override;
+	void Paint(Draw& d) override;
+	void MouseMove(Point p, dword keyflags) override;
+	void MouseWheel(Point p, int zdelta, dword keyflags) override;
+	void MouseLeave() override {Refresh();}
+	void LeftDown(Point p, dword keyflags) override;
 	
 	int			GetCount() const {return data.GetCount();}
 	int			Get(int pos) const {return data.Get(pos);}

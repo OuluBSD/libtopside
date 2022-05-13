@@ -1,7 +1,7 @@
 description "\377B0,131,159";
 
 uses
-	AtomDebug,
+	AtomMinimal,
 	AtomLocal,
 	AtomMusic,
 	AtomEssential,

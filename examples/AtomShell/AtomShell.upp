@@ -24,5 +24,6 @@ mainconfig
 	"" = "DEBUG_RT SCREEN SDL2 OGL FFMPEG",
 	"" = "DEBUG_RT SCREEN SDL2 OGL FFMPEG OPENCV",
 	"" = "DEBUG_RT BUILTIN_PORTAUDIO",
-	"" = "SDL2";
+	"" = "SDL2",
+	"" = "FFMPEG";
 

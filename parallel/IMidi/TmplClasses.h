@@ -10,6 +10,7 @@ template <class Mid> struct MidiMidiSinkDeviceT;
 template <class Mid> struct MidiMidiSourceDeviceT;
 
 
+
 template <class Mid>
 struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 	using CLASSNAME = MidiMidiSinkDeviceT<Mid>;
@@ -67,6 +68,7 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 	
 	
 };
+
 
 template <class Mid>
 struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
@@ -133,8 +135,6 @@ using PortmidiMidiSourceDevice = MidiMidiSourceDeviceT<MidPortmidi>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

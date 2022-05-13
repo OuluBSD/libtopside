@@ -1,4 +1,4 @@
-#include "EcsComplete.h"
+#include "EcsMinimal.h"
 
 NAMESPACE_ECS_BEGIN
 
@@ -11,12 +11,44 @@ void DefaultEcsInitializer() {
 	#ifdef flagODE
 	eng.GetAdd<OdeSystem>();
 	#else
-	eng.GetAdd<TosSystem>();
+	//eng.GetAdd<TosSystem>();
 	#endif
 	eng.GetAdd<EventSystem>();
 	
-	Serial::Machine& mach = Serial::GetActiveMachine();
+	#if HAVE_WINDOWSYSTEM
+	eng.GetAdd<VirtualGuiSystem>();
+	eng.GetAdd<WindowSystem>();
+	#endif
+	
+	//Serial::Machine& mach = Serial::GetActiveMachine();
 	//eng.GetAdd<PhysicsSystem>();
+	
+	/*
+	mach.Add<RegistrySystem>();
+    mach.Add<HumanSystem>();
+    mach.Add<DisplaySystem>();
+    mach.Add<WindowSystem>();
+    #ifdef flagOPENVR
+    mach.Add<OpenVR>();
+    #endif
+    
+    EntityStore& ents = *mach.Add<EntityStore>();
+    mach.Add<ComponentStore>();
+    mach.Add<HolographicScene>();
+    mach.Add<EasingSystem>();
+    mach.Add<AudioSystem>();
+    mach.Add<ControllerSystem>();
+    mach.Add<MotionControllerSystem>();
+    mach.Add<WorldLogicSystem>();
+    
+    bool physics = false;
+    if (physics)
+		mach.Add<PhysicsSystem>();
+
+    mach.Start();
+    
+	ents.Create<CameraPrefab>();
+	*/
 	
 	DefaultSerialInitializerInternalEon();
 }

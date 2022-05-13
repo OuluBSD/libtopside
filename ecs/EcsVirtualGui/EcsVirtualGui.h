@@ -1,22 +1,21 @@
-#ifndef _SDL2GUI3D_SDL2GUI3D_h_
-#define _SDL2GUI3D_SDL2GUI3D_h_
+#ifndef _EcsVirtualGui_EcsVirtualGui_h_
+#define _EcsVirtualGui_EcsVirtualGui_h_
 
-#include <VirtualGui3D/VirtualGui3D.h>
-
-
-NAMESPACE_UPP
+#include <EcsLocal/EcsLocal.h>
 
 
-class SDL2GUI3D;
+NAMESPACE_ECS_BEGIN
+
+class VirtualGuiSystem;
 
 
-class SDL2GUI3D : VirtualGui3DAlt
+class VirtualGui : public VirtualGui3D
 {
 	
 	
 protected:
-	friend class SDL2GUI3DSystem;
-	//SDL2GUI3D_MachineData* data = 0;
+	friend class VirtualGuiSystem;
+	//EcsVirtualGui_MachineData* data = 0;
 	
 	/*TS::OOSDL2::AudioOutput* aout = 0;
 	TS::OOSDL2::Screen* scr = 0;
@@ -24,9 +23,14 @@ protected:
 	
 	//TS::AudioProxy			empty_aud;
 	SystemDraw					empty_draw;
-	String						desired_title;
-	void*						sys;
+	VirtualGuiSystem*			sys;
+	Ecs::RenderingSystemRef		rend;
+	Ecs::EntityStoreRef			ents;
+	Ref<Entity>					cam;
+	GfxBuffer*					buf = 0;
 	
+	String						title;
+	Size						screen_sz;
 	
 public:
 	bool            Poll(UPP::CtrlEvent& e) override;// {return ev ? ev->Poll(e) : false;}
@@ -50,28 +54,32 @@ public:
 	
 	bool			Open();
 	void			Close();
+	void			Clear();
 	//bool			IsOpen() const {return is_open;}
-	//SDL2GUI3D_MachineData* GetData() {return data;}
-	void			RecvAudio(Uint8* stream, int len);
-	
+	//EcsVirtualGui_MachineData* GetData() {return data;}
+	void			RecvAudio(byte* stream, int len);
+	void			Render(bool do_render) override;
 	
 	//bool			InitMachine();
 	//bool			DeinitMachine();
 	//void			Render(bool do_render);
-	//void			RenderFrame();
+	void			RenderFrame();
 	//void			RenderCamera();
-	//void			RenderWindows();
+	void			RenderWindows();
 	
-	SDL2GUI3D(void* sys);
-	~SDL2GUI3D();
+	VirtualGui(VirtualGuiSystem* sys);
+	~VirtualGui();
 	
-	static SDL2GUI3D* Current();
+	static VirtualGui* Current();
 	
 };
 
 
 
-END_UPP_NAMESPACE
+NAMESPACE_ECS_END
+
+
+#include "System.h"
 
 
 #endif

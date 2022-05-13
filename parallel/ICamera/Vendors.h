@@ -24,7 +24,7 @@ CAM_VNDR_LIST
 
 
 
-#if (defined flagOPENCV) || (defined flagLINUX)
+#if defined flagOPENCV && defined flagLINUX
 struct CamV4L2OpenCV {
 	
 	struct NativeCamera {

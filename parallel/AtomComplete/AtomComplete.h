@@ -5,7 +5,7 @@
 #include <AtomMusic/AtomMusic.h>
 
 #include <AtomLocal/AtomLocal.h>
-#include <AtomDebug/AtomDebug.h>
+#include <AtomMinimal/AtomMinimal.h>
 //#include <AtomAudioCore/AtomAudioCore.h>
 
 #ifdef flagSCREEN

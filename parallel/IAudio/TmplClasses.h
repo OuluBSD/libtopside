@@ -10,6 +10,7 @@ template <class Aud> struct AudioSinkDeviceT;
 template <class Aud> struct AudioSourceDeviceT;
 
 
+
 template <class Aud>
 struct AudioSinkDeviceT : AudSinkDevice {
 	using CLASSNAME = AudioSinkDeviceT<Aud>;
@@ -79,6 +80,7 @@ struct AudioSinkDeviceT : AudSinkDevice {
 	
 	
 };
+
 
 template <class Aud>
 struct AudioSourceDeviceT : AudSourceDevice {
@@ -157,8 +159,6 @@ using PortaudioSourceDevice = AudioSourceDeviceT<AudPortaudio>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -14,6 +14,7 @@ template <class Hal> struct HalContextBaseT;
 template <class Hal> struct HalEventsBaseT;
 
 
+
 template <class Hal>
 struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 	using CLASSNAME = HalAudioSinkDeviceT<Hal>;
@@ -71,6 +72,7 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 
 	
 };
+
 
 template <class Hal>
 struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
@@ -130,6 +132,7 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 	
 };
 
+
 template <class Hal>
 struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 	using CLASSNAME = HalCenterFboSinkDeviceT<Hal>;
@@ -188,6 +191,7 @@ struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 	
 };
 
+#if defined flagOGL
 template <class Hal>
 struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 	using CLASSNAME = HalOglVideoSinkDeviceT<Hal>;
@@ -245,6 +249,8 @@ struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 
 	
 };
+#endif
+
 
 template <class Hal>
 struct HalContextBaseT : HalContextBase {
@@ -311,6 +317,7 @@ struct HalContextBaseT : HalContextBase {
 
 	
 };
+
 
 template <class Hal>
 struct HalEventsBaseT : HalEventsBase {
@@ -381,8 +388,6 @@ using Sdl2EventsBase = HalEventsBaseT<HalSdl2>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

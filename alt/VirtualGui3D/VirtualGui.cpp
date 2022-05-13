@@ -3,7 +3,7 @@
 
 NAMESPACE_UPP
 
-VirtualGui3DAlt* VirtualGui3DAltPtr;
+VirtualGui3D* VirtualGui3DPtr;
 
 
 

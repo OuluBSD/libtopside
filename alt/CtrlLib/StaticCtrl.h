@@ -11,8 +11,8 @@ public:
 	RTTI_DECL1(SeparatorCtrl, Ctrl)
 	SeparatorCtrl();
 	
-	virtual Size GetMinSize() const;
-	virtual void Paint(Draw& w);
+	Size GetMinSize() const override;
+	void Paint(Draw& w) override;
 
 	struct Style : ChStyle<Style> {
 		Value l1, l2;
@@ -27,8 +27,8 @@ public:
 	RTTI_DECL1(StaticRect, Ctrl)
 	StaticRect();
 	
-	virtual Size GetMinSize() const;
-	virtual void Paint(Draw& w);
+	Size GetMinSize() const override;
+	void Paint(Draw& w) override;
 	
 	StaticRect& Background(const Value& chvalue);
 	StaticRect& SetColor(typename UPP::Color c)                { Background(c); return *this; }

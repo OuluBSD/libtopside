@@ -26,6 +26,7 @@ template <class Ui> struct UserInterfaceBarT;
 template <class Ui> struct UserInterfaceMenuBarT;
 
 
+
 template <class Ui>
 struct UserInterfaceWindowT : UiWindow {
 	using CLASSNAME = UserInterfaceWindowT<Ui>;
@@ -57,6 +58,7 @@ struct UserInterfaceWindowT : UiWindow {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceSplitterT : UiSplitter {
@@ -90,6 +92,7 @@ struct UserInterfaceSplitterT : UiSplitter {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
 	using CLASSNAME = UserInterfaceSeparatorCtrlT<Ui>;
@@ -121,6 +124,7 @@ struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceArrayCtrlT : UiArrayCtrl {
@@ -154,6 +158,7 @@ struct UserInterfaceArrayCtrlT : UiArrayCtrl {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceColumnCtrlT : UiColumnCtrl {
 	using CLASSNAME = UserInterfaceColumnCtrlT<Ui>;
@@ -185,6 +190,7 @@ struct UserInterfaceColumnCtrlT : UiColumnCtrl {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceTreeCtrlT : UiTreeCtrl {
@@ -218,6 +224,7 @@ struct UserInterfaceTreeCtrlT : UiTreeCtrl {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceIconCtrlT : UiIconCtrl {
 	using CLASSNAME = UserInterfaceIconCtrlT<Ui>;
@@ -249,6 +256,7 @@ struct UserInterfaceIconCtrlT : UiIconCtrl {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceImageCtrlT : UiImageCtrl {
@@ -282,6 +290,7 @@ struct UserInterfaceImageCtrlT : UiImageCtrl {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceButtonT : UiButton {
 	using CLASSNAME = UserInterfaceButtonT<Ui>;
@@ -313,6 +322,7 @@ struct UserInterfaceButtonT : UiButton {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceLabelT : UiLabel {
@@ -346,6 +356,7 @@ struct UserInterfaceLabelT : UiLabel {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceStringEditT : UiStringEdit {
 	using CLASSNAME = UserInterfaceStringEditT<Ui>;
@@ -377,6 +388,7 @@ struct UserInterfaceStringEditT : UiStringEdit {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceIntEditT : UiIntEdit {
@@ -410,6 +422,7 @@ struct UserInterfaceIntEditT : UiIntEdit {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceFloatEditT : UiFloatEdit {
 	using CLASSNAME = UserInterfaceFloatEditT<Ui>;
@@ -441,6 +454,7 @@ struct UserInterfaceFloatEditT : UiFloatEdit {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceTimeEditT : UiTimeEdit {
@@ -474,6 +488,7 @@ struct UserInterfaceTimeEditT : UiTimeEdit {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceDateEditT : UiDateEdit {
 	using CLASSNAME = UserInterfaceDateEditT<Ui>;
@@ -505,6 +520,7 @@ struct UserInterfaceDateEditT : UiDateEdit {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceDocEditT : UiDocEdit {
@@ -538,6 +554,7 @@ struct UserInterfaceDocEditT : UiDocEdit {
 	
 };
 
+
 template <class Ui>
 struct UserInterfaceBarT : UiBar {
 	using CLASSNAME = UserInterfaceBarT<Ui>;
@@ -569,6 +586,7 @@ struct UserInterfaceBarT : UiBar {
 
 	
 };
+
 
 template <class Ui>
 struct UserInterfaceMenuBarT : UiMenuBar {
@@ -625,8 +643,6 @@ using ImguiMenuBar = UserInterfaceMenuBarT<UiImgui>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

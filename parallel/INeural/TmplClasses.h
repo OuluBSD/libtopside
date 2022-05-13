@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Nrl> struct NeuralNetworkT;
 
 
+
 template <class Nrl>
 struct NeuralNetworkT : NrlNetwork {
 	using CLASSNAME = NeuralNetworkT<Nrl>;
@@ -43,8 +44,6 @@ struct NeuralNetworkT : NrlNetwork {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

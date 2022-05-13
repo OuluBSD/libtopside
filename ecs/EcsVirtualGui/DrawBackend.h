@@ -1,3 +1,5 @@
+#if 0
+
 #ifdef flagSCREEN
 	#include GLEW_INCLUDE
 	#include <GL/gl.h>
@@ -71,3 +73,5 @@ struct SysAccelImage {
 };
 
 END_UPP_NAMESPACE
+
+#endif

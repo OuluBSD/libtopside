@@ -1,7 +1,8 @@
 #ifndef _EcsMach_EcsMach_h_
 #define _EcsMach_EcsMach_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <AtomMinimal/AtomMinimal.h>
+#include <SerialLib/SerialLib.h>
 
 #define NAMESPACE_ECS_NAME		Ecs
 #define ECS						Ecs

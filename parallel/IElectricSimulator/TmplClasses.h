@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Esim> struct ElectricSimulatorSystemT;
 
 
+
 template <class Esim>
 struct ElectricSimulatorSystemT : EsimSystem {
 	using CLASSNAME = ElectricSimulatorSystemT<Esim>;
@@ -43,8 +44,6 @@ struct ElectricSimulatorSystemT : EsimSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

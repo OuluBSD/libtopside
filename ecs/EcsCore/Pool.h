@@ -93,7 +93,7 @@ public:
 			auto requested_components = object->TryGetComponents<ComponentTs...>();
 			
 			if (AllValidComponents(requested_components)) {
-				RTuple<EntityRef, RefT_Entity<ComponentTs>...> t(object.Get(), requested_components);
+				RTuple<EntityRef, RefT_Entity<ComponentTs>...> t(object, requested_components);
 				components.Add(t);
 			}
 		}

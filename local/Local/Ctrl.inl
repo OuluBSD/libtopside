@@ -8,7 +8,7 @@ enum EventStateKey {
 	SCREEN0_OFFSET,
 	
 	
-	#if defined flagSCREEN || defined flagGUI
+	//#if defined flagSCREEN || defined flagGUI
 	
 	MOUSE_EVENT_BASE = 0x1000,
 	
@@ -71,6 +71,6 @@ enum EventStateKey {
 	MOUSE_POSITION,
 	MOUSE_STATE_ITER,
 	
-	#endif
+	//#endif
 	
 };

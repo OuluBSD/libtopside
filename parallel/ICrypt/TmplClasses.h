@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Cry> struct CryptCryptT;
 
 
+
 template <class Cry>
 struct CryptCryptT : CryCrypt {
 	using CLASSNAME = CryptCryptT<Cry>;
@@ -69,8 +70,6 @@ struct CryptCryptT : CryCrypt {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

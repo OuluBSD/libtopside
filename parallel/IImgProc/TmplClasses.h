@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Imp> struct ImgProcImageT;
 
 
+
 template <class Imp>
 struct ImgProcImageT : ImpImage {
 	using CLASSNAME = ImgProcImageT<Imp>;
@@ -61,8 +62,6 @@ struct ImgProcImageT : ImpImage {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

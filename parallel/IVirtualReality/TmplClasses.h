@@ -18,6 +18,7 @@ template <class Vr> struct VirtualRealitySpatialInteractionSystemT;
 template <class Vr> struct VirtualRealityRendererT;
 
 
+
 template <class Vr>
 struct VirtualRealityMotionControllerT : VrMotionController {
 	using CLASSNAME = VirtualRealityMotionControllerT<Vr>;
@@ -64,6 +65,7 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 	
 };
 
+
 template <class Vr>
 struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 	using CLASSNAME = VirtualRealityMotionControllerSystemT<Vr>;
@@ -106,6 +108,7 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 	
 };
 
+
 template <class Vr>
 struct VirtualRealityAppViewT : VrAppView {
 	using CLASSNAME = VirtualRealityAppViewT<Vr>;
@@ -137,6 +140,7 @@ struct VirtualRealityAppViewT : VrAppView {
 
 	
 };
+
 
 template <class Vr>
 struct VirtualRealityCameraResourcesT : VrCameraResources {
@@ -170,6 +174,7 @@ struct VirtualRealityCameraResourcesT : VrCameraResources {
 	
 };
 
+
 template <class Vr>
 struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 	using CLASSNAME = VirtualRealityControllerModelCacheT<Vr>;
@@ -201,6 +206,7 @@ struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 
 	
 };
+
 
 template <class Vr>
 struct VirtualRealityDeviceResourcesT : VrDeviceResources {
@@ -234,6 +240,7 @@ struct VirtualRealityDeviceResourcesT : VrDeviceResources {
 	
 };
 
+
 template <class Vr>
 struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 	using CLASSNAME = VirtualRealityHolographicRendererT<Vr>;
@@ -265,6 +272,7 @@ struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 
 	
 };
+
 
 template <class Vr>
 struct VirtualRealityHolographicSceneT : VrHolographicScene {
@@ -298,6 +306,7 @@ struct VirtualRealityHolographicSceneT : VrHolographicScene {
 	
 };
 
+
 template <class Vr>
 struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 	using CLASSNAME = VirtualRealitySpatialInteractionSystemT<Vr>;
@@ -329,6 +338,7 @@ struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 
 	
 };
+
 
 template <class Vr>
 struct VirtualRealityRendererT : VrRenderer {
@@ -403,8 +413,6 @@ using HmdRenderer = VirtualRealityRendererT<VrHmd>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

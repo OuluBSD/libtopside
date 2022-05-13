@@ -1,3 +1,5 @@
+#if 0
+
 #include <AtomSDL2/AtomSDL2.h>
 
 NAMESPACE_UPP_BEGIN
@@ -48,3 +50,5 @@ void SysImage::Clear() {
 
 
 NAMESPACE_UPP_END
+
+#endif

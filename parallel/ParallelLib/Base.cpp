@@ -396,21 +396,21 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	}
 	else if (e.type == EVENT_MOUSE_EVENT) {
 		switch (e.n) {
-			case Ctrl::LEFTDOWN:		LeftDown(e.pt, e.value);break;
-			case Ctrl::MIDDLEDOWN:		break;
-			case Ctrl::RIGHTDOWN:		break;
+			case VirtualCtrl::LEFTDOWN:		LeftDown(e.pt, e.value);break;
+			case VirtualCtrl::MIDDLEDOWN:	break;
+			case VirtualCtrl::RIGHTDOWN:	break;
 			
-			case Ctrl::LEFTDOUBLE:		break;
-			case Ctrl::MIDDLEDOUBLE:	break;
-			case Ctrl::RIGHTDOUBLE:	break;
+			case VirtualCtrl::LEFTDOUBLE:	break;
+			case VirtualCtrl::MIDDLEDOUBLE:	break;
+			case VirtualCtrl::RIGHTDOUBLE:	break;
 			
-			case Ctrl::LEFTTRIPLE:		break;
-			case Ctrl::MIDDLETRIPLE:	break;
-			case Ctrl::RIGHTTRIPLE:		break;
+			case VirtualCtrl::LEFTTRIPLE:	break;
+			case VirtualCtrl::MIDDLETRIPLE:	break;
+			case VirtualCtrl::RIGHTTRIPLE:	break;
 			
-			case Ctrl::LEFTUP:			LeftUp(e.pt, e.value); break;
-			case Ctrl::MIDDLEUP:		break;
-			case Ctrl::RIGHTUP:			break;
+			case VirtualCtrl::LEFTUP:		LeftUp(e.pt, e.value); break;
+			case VirtualCtrl::MIDDLEUP:		break;
+			case VirtualCtrl::RIGHTUP:		break;
 		}
 	}
 	else if (e.type == EVENT_WINDOW_RESIZE) {

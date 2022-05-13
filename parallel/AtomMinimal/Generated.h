@@ -1,5 +1,5 @@
-#ifndef _AtomDebug_Generated_h_
-#define _AtomDebug_Generated_h_
+#ifndef _AtomMinimal_Generated_h_
+#define _AtomMinimal_Generated_h_
 
 // This file is generated. Do not modify this file.
 
@@ -301,6 +301,23 @@ public:
 #endif
 
 #if defined flagSCREEN
+class EcsProgVideo : public EcsVideoBase {
+
+public:
+	RTTI_DECL1(EcsProgVideo, EcsVideoBase)
+	COPY_PANIC(EcsProgVideo)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class X11SwFboProg : public X11SwFboBase {
 
 public:
@@ -524,12 +541,12 @@ public:
 
 };
 
-#if defined flagSCREEN && defined flagSDL2
-class SdlImageLoader : public Sdl2OglImageBase {
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+class SdlOglImageLoader : public Sdl2OglImageBase {
 
 public:
-	RTTI_DECL1(SdlImageLoader, Sdl2OglImageBase)
-	COPY_PANIC(SdlImageLoader)
+	RTTI_DECL1(SdlOglImageLoader, Sdl2OglImageBase)
+	COPY_PANIC(SdlOglImageLoader)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
 	ATOM_MAKE_ACTION_END
@@ -712,6 +729,24 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagSDL2
+class SdlProgAtomPipe : public Sdl2CenterVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlProgAtomPipe, Sdl2CenterVideoSinkDevice)
+	COPY_PANIC(SdlProgAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.prog.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.prog.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
 class SdlVideoAtom : public Sdl2CenterVideoSinkDevice {
 
 public:
@@ -746,7 +781,7 @@ public:
 };
 #endif
 
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglShaderAtom : public SdlOglShaderBase {
 
 public:
@@ -764,7 +799,7 @@ public:
 };
 #endif
 
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglShaderAtomSA : public SdlOglShaderBase {
 
 public:
@@ -798,7 +833,7 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglVolumeSource : public SdlOglTextureBase {
 
 public:
@@ -815,7 +850,7 @@ public:
 };
 #endif
 
-#if defined flagSDL2 && defined flagOGL
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglAudioSink : public SdlOglFboReaderBase {
 
 public:
@@ -832,7 +867,7 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglKeyboardSource : public SdlOglKeyboardBase {
 
 public:
@@ -849,7 +884,7 @@ public:
 };
 #endif
 
-#if defined flagOGL && defined flagSDL2
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
 class SdlOglAudioSource : public SdlOglAudioBase {
 
 public:

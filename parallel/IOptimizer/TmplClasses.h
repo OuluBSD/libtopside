@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Opt> struct OptimizerSolverT;
 
 
+
 template <class Opt>
 struct OptimizerSolverT : OptSolver {
 	using CLASSNAME = OptimizerSolverT<Opt>;
@@ -43,8 +44,6 @@ struct OptimizerSolverT : OptSolver {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

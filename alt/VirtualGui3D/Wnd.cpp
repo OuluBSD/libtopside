@@ -29,7 +29,7 @@ void Ctrl::GuiSleep(int ms) {
 	ASSERT(IsMainThread());
 	LLOG("GuiSleep");
 	int level = LeaveGuiMutexAll();
-	VirtualGui3DAltPtr->WaitEvent(ms);
+	VirtualGui3DPtr->WaitEvent(ms);
 	EnterGuiMutex(level);
 }
 
@@ -37,7 +37,7 @@ bool Ctrl::ProcessEvents(bool *quit) {
 	bool ret = ProcessEvent(quit);
 	while(ProcessEvent(quit))
 		;
-	TimerProc(VirtualGui3DAltPtr->GetTickCount());
+	TimerProc(VirtualGui3DPtr->GetTickCount());
 	//SweepMkImageCache();
 	DoPaint();
 	return ret;
@@ -48,7 +48,7 @@ bool Ctrl::ProcessEvent(bool *quit) {
 	ASSERT(IsMainThread());
 	//if(!GetMouseLeft() && !GetMouseRight() && !GetMouseMiddle())
 	//	ReleaseCtrlCapture();
-	bool ret = VirtualGui3DAltPtr->ProcessEvent(quit);
+	bool ret = VirtualGui3DPtr->ProcessEvent(quit);
 	//DefferedFocusSync();
 	//SyncCaret();
 	//SyncTopWindows();
@@ -65,10 +65,10 @@ bool Ctrl::ProcessEvent(bool *quit) {
 }*/
 
 void Ctrl::DoPaint() {
-	SystemDraw& draw = VirtualGui3DAltPtr->BeginDraw();
+	SystemDraw& draw = VirtualGui3DPtr->BeginDraw();
 	PaintScene(draw);
 	//PaintCaretCursor(draw);
-	VirtualGui3DAltPtr->CommitDraw();
+	VirtualGui3DPtr->CommitDraw();
 }
 
 void Ctrl::PaintScene(SystemDraw& draw) {

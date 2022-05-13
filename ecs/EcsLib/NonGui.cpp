@@ -8,7 +8,7 @@ bool Open_NonGUI_ECS() {
 	using namespace TS::ECS;
 	Engine mach;
 	
-	RegistrySystem& reg = *mach.Add<RegistrySystem>();
+	Ecs::RegistrySystem& reg = *mach.Add<Ecs::RegistrySystem>();
 	EntityStore& ents = *mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
     

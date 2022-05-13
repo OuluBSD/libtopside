@@ -5,7 +5,7 @@
 
 #if defined LIBTOPSIDE && (defined flagSCREEN || defined flagGUI)
 	#include <Draw/Draw.h>
-	#include <Graphics/Graphics.h>
+	//#include <Graphics/Graphics.h>
 #else
 	#include <Draw/Draw.h>
 	#include <Geometry/Geometry.h>

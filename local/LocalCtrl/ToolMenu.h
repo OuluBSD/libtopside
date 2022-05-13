@@ -12,7 +12,7 @@ public:
 	RTTI_DECL1(ToolBackground, Ctrl)
 	ToolBackground();
 	
-	virtual void Paint(Draw& d);
+	virtual void Paint(Draw& d) override;
 	void Horz(bool b=true) {horz = b;}
 	
 	ToolBackground& SetLabel(String l) {label = l; return *this;}
@@ -32,7 +32,7 @@ public:
 	typedef ToolGrid CLASSNAME;
 	ToolGrid();
 	
-	virtual void Layout();
+	virtual void Layout() override;
 	void Select(int id);
 	
 	ButtonOption& AddButton(const Image& img, String text="");
@@ -60,7 +60,7 @@ public:
 	ToolGrid& AddGrid(String name);
 	ToolGrid& GetGrid(int i) {return grids[i];}
 	
-	virtual void Layout();
+	virtual void Layout() override;
 	
 };
 

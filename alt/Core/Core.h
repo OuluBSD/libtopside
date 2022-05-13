@@ -12,6 +12,7 @@
 #include "Stream.h"
 #include "Math.h"
 #include "Callback.h"
+#include "Gate.h"
 #include "Util.h"
 #include "Sort.h"
 #include "Chrono.h"

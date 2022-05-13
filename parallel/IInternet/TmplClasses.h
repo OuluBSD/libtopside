@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Net> struct InternetSocketT;
 
 
+
 template <class Net>
 struct InternetSocketT : NetSocket {
 	using CLASSNAME = InternetSocketT<Net>;
@@ -77,8 +78,6 @@ using NullSerialSocket = InternetSocketT<NetNullSerial>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

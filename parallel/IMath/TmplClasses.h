@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Math> struct MathSystemT;
 
 
+
 template <class Math>
 struct MathSystemT : MathSystem {
 	using CLASSNAME = MathSystemT<Math>;
@@ -43,8 +44,6 @@ struct MathSystemT : MathSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

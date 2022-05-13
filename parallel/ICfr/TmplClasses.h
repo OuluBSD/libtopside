@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Cfr> struct CfrSystemT;
 
 
+
 template <class Cfr>
 struct CfrSystemT : CfrSystem {
 	using CLASSNAME = CfrSystemT<Cfr>;
@@ -43,8 +44,6 @@ struct CfrSystemT : CfrSystem {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -2,6 +2,7 @@
 #define _ParallelMach_ParallelMach_h_
 
 #include <Local/Local.h>
+#include <VirtualGui3D/VirtualGui3D.h>
 #include <High/High.h>
 
 

@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Vol> struct VolumetricStaticSourceT;
 
 
+
 template <class Vol>
 struct VolumetricStaticSourceT : VolStaticSource {
 	using CLASSNAME = VolumetricStaticSourceT<Vol>;
@@ -61,8 +62,6 @@ using RawByteStaticSource = VolumetricStaticSourceT<VolRawByte>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

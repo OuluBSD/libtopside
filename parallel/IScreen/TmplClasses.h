@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Scr> struct ScreenSinkDeviceT;
 
 
+
 template <class Scr>
 struct ScreenSinkDeviceT : ScrSinkDevice {
 	using CLASSNAME = ScreenSinkDeviceT<Scr>;
@@ -77,8 +78,6 @@ using X11OglSinkDevice = ScreenSinkDeviceT<ScrX11Ogl>;
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

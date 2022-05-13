@@ -65,6 +65,7 @@ file
 	Socket.cpp,
 	Callback.h,
 	Callback.cpp,
+	Gate.h,
 	Graph.h,
 	Graph.cpp,
 	Geom.h,

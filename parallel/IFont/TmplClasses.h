@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Fnt> struct FontFontT;
 
 
+
 template <class Fnt>
 struct FontFontT : FntFont {
 	using CLASSNAME = FontFontT<Fnt>;
@@ -43,8 +44,6 @@ struct FontFontT : FntFont {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

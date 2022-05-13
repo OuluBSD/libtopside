@@ -6,7 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 
 bool WindowSystem::Initialize() {
-	Size sz = VirtualGui3DAltPtr->GetSize();
+	Size sz = VirtualGui3DPtr->GetSize();
 	SetFrameRect0(RectC(0, 0, sz.cx, sz.cy));
 	Ctrl::SetContentRect(RectC(0, 0, sz.cx, sz.cy));
 	//simple_shader.Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
@@ -30,8 +30,9 @@ void WindowSystem::Start() {
 void WindowSystem::Update(double dt) {
 	bool closed = ProcessCloseQueue();
 	
-	TODO
-	//Render(closed);
+	ASSERT(VirtualGui3DPtr);
+	if (VirtualGui3DPtr)
+		VirtualGui3DPtr->Render(closed);
 }
 
 void WindowSystem::Stop() {

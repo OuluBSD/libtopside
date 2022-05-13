@@ -9,7 +9,7 @@ public:
 	RTTI_DECL1(ToolBarBg, Ctrl)
 	ToolBarBg();
 	
-	virtual void Paint(Draw& d);
+	virtual void Paint(Draw& d) override;
 	
 };
 

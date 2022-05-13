@@ -1,5 +1,5 @@
-#ifndef _VirtualGui3DAlt_Direct_h_
-#define _VirtualGui3DAlt_Direct_h_
+#ifndef _VirtualGui3D_Direct_h_
+#define _VirtualGui3D_Direct_h_
 
 
 NAMESPACE_ECS_BEGIN

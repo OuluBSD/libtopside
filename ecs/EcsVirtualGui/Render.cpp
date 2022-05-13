@@ -1,21 +1,22 @@
-#include <EcsLocal/EcsLocal.h>
-#include "After.h"
+#include "EcsVirtualGui.h"
 
-NAMESPACE_UPP
+NAMESPACE_ECS_BEGIN
 using namespace TS;
 
 
-#if 0
 
-void SDL2GUI3D::Render(bool do_render) {
-	if (data->ents.IsEmpty())
-		data->ents = GetMachine().Get<EntityStore>();
+void VirtualGui::Render(bool do_render) {
+	if (ents.IsEmpty())
+		ents = rend->GetEngine().Get<EntityStore>();
 	
-	Vector<Tuple<Entity*, Transform2D*, CoreWindow*>> wins = data->ents->GetComponentsWithEntity<Transform2D, CoreWindow>();
+	PoolRef root = ents->GetRoot();
+	Vector<RTuple<EntityRef, Transform2DRef, CoreWindowRef>> wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
+	//auto wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
 	Windows* windows = Ctrl::GetWindows();
 	
 	for(int i = 0; i < wins.GetCount(); i++) {
-		Tuple<Entity*, Transform2D*, CoreWindow*>& tuple = wins[i];
+		RTuple<EntityRef, Transform2DRef, CoreWindowRef>& tuple = wins[i];
+		//auto& tuple = wins[i];
 		Transform2D& t = *tuple.b.a;
 		CoreWindow& cw = *tuple.b.b.a;
 		
@@ -44,7 +45,7 @@ void SDL2GUI3D::Render(bool do_render) {
 		do_render = cw.Redraw(true) || do_render;
 	}
 	
-	Vector<Tuple<Entity*, Transform*, Renderable*>> rends = data->ents->GetComponentsWithEntity<Transform, Renderable>();
+	Vector<RTuple<EntityRef, TransformRef, RenderableRef>> rends = root->GetComponentsWithEntity<Transform, Renderable>();
 	if (rends.GetCount())
 		do_render = true;
 	
@@ -55,7 +56,7 @@ void SDL2GUI3D::Render(bool do_render) {
 	//Panic("");
 }
 
-void SDL2GUI3D::RenderFrame() {
+void VirtualGui::RenderFrame() {
 	
 	/*if (data->cam.IsEmpty()) {
 		Vector<Tuple<Entity*, Viewable*>> wins = data->ents->GetComponentsWithEntity<Viewable>();
@@ -80,13 +81,15 @@ void SDL2GUI3D::RenderFrame() {
 
 
 
-void SDL2GUI3D::RenderWindows() {
+void VirtualGui::RenderWindows() {
 	
 	glDisable(GL_DEPTH_TEST);
 	
-	Transform& t = *data->cam->Get<Transform>();
-	Viewable& c = *data->cam->Get<Viewable>();
+	Transform& t = *cam->Get<Transform>();
+	Viewable& c = *cam->Get<Viewable>();
 	
+	TODO
+	/*
 	int width = screen_sz.cx;
 	int height = screen_sz.cy;
 	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
@@ -98,7 +101,8 @@ void SDL2GUI3D::RenderWindows() {
     mat4 ident = identity<mat4>();
     simple_shader.SetMat4("model", ident);
 	
-	Vector<Tuple<Entity*, Transform2D*, CoreWindow*>> wins = data->ents->GetComponentsWithEntity<Transform2D, CoreWindow>();
+	PoolRef root = ents->GetRoot();
+	Vector<Tuple<Entity*, Transform2D*, CoreWindow*>> wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
 	
 	for(int i = 0; i < wins.GetCount(); i++) {
 		Tuple<Entity*, Transform2D*, CoreWindow*>& tuple = wins[i];
@@ -140,10 +144,9 @@ void SDL2GUI3D::RenderWindows() {
 		simple_shader.Refresh(model);
 	}
 	
-	
+	*/
 }
 
-#endif
 
 
 
@@ -158,4 +161,4 @@ void SDL2GUI3D::RenderWindows() {
 
 
 
-END_UPP_NAMESPACE
+NAMESPACE_ECS_END

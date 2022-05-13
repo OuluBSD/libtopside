@@ -29,17 +29,17 @@ public:
 	typedef WindowDecoration CLASSNAME;
 	WindowDecoration(CoreWindow*);
 	
-	virtual void Paint(Draw& draw);
+	virtual void Paint(Draw& draw) override;
 	
 	void SetLabel(String str) {label = str;}
 	
 	String GetLabel() const {return label;}
 	
-	virtual void LeftDown(Point p, dword keyflags);
-	virtual void LeftDouble(Point p, dword keyflags);
-	virtual void LeftUp(Point p, dword keyflags);
-	virtual void MouseMove(Point p, dword keyflags);
-	virtual void RightDown(Point p, dword keyflags);
+	virtual void LeftDown(Point p, dword keyflags) override;
+	virtual void LeftDouble(Point p, dword keyflags) override;
+	virtual void LeftUp(Point p, dword keyflags) override;
+	virtual void MouseMove(Point p, dword keyflags) override;
+	virtual void RightDown(Point p, dword keyflags) override;
 	
 	void LocalMenu(Bar& bar);
 	
@@ -73,19 +73,19 @@ class CoreWindow :
 		enum {CENTER, TL, TR, BL, BR, TOP, BOTTOM, LEFT, RIGHT};
 		int GetArea(Point pt);
 		void SetActive(bool b) {frame_width = b ? 8 : 0;}
-		virtual void FrameLayout(Rect& r);
-		virtual void FramePaint(Draw& w, const Rect& r);
-		virtual void FrameAddSize(Size& sz);
-		virtual void MouseEnter(Point frame_p, dword keyflags);
-		virtual void MouseMove(Point frame_p, dword keyflags);
-		virtual void MouseLeave();
-		virtual void LeftDown(Point p, dword keyflags);
-		virtual void LeftUp(Point p, dword keyflags);
-		virtual void ContinueGlobalMouseMomentum();
+		virtual void FrameLayout(Rect& r) override;
+		virtual void FramePaint(Draw& w, const Rect& r) override;
+		virtual void FrameAddSize(Size& sz) override;
+		virtual void MouseEnter(Point frame_p, dword keyflags) override;
+		virtual void MouseMove(Point frame_p, dword keyflags) override;
+		virtual void MouseLeave() override;
+		virtual void LeftDown(Point p, dword keyflags) override;
+		virtual void LeftUp(Point p, dword keyflags) override;
+		virtual void ContinueGlobalMouseMomentum() override;
 		void DoResize();
 	};
 	
-	One<Shader> shader;
+	//One<Shader> shader;
 	
 	One<TopWindow> tw;
 	void (CoreWindow::*reset_fn)();

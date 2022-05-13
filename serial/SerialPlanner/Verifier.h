@@ -1,5 +1,5 @@
-#ifndef _AtomDebug_Verifier_h_
-#define _AtomDebug_Verifier_h_
+#ifndef _AtomMinimal_Verifier_h_
+#define _AtomMinimal_Verifier_h_
 
 NAMESPACE_SERIAL_BEGIN
 

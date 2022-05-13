@@ -32,12 +32,15 @@
 #include "RenderingSystem.h"
 #include "EventSystem.h"
 #include "Prefab.h"
+#include "Gui.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 #endif
 
 #endif
+
+
 
 /*#if defined flagGUI && defined flagGUI
 	#include <SDL2GUI3D/System.h>

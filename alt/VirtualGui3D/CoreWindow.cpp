@@ -100,7 +100,7 @@ void CoreWindow::ResizeFrame::ContinueGlobalMouseMomentum() {
 				break;
 			case RIGHT:
 				if (resize_diff.x < 0) resize_diff.x * -1;
-				break;
+				break;/
 		}*/
 		/*resize_diff.x = min(max(-1, resize_diff.x), +1);
 		resize_diff.y = min(max(-1, resize_diff.y), +1);*/
@@ -251,11 +251,12 @@ CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 	resize_frame.win = this;
 	SetMaximized(false);
 	
-	cmd_screen_begin.next = &cmd_begin;
+	TODO
+	/*cmd_screen_begin.next = &cmd_begin;
 	cmd_begin.prev = &cmd_screen_begin;
 	
 	cmd_end.next = &cmd_screen_end;
-	cmd_screen_end.prev = &cmd_end;
+	cmd_screen_end.prev = &cmd_end;*/
 	
 	AddFrame(resize_frame);
 	Add(decor.SizePos());
@@ -279,12 +280,13 @@ CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 	maximize.WhenAction = THISBACK(ToggleMaximized);
 	minimize.WhenAction = THISBACK(Minimize);
 	
-	shader = Shader::NewDefault();
+	TODO
+	/*shader = Shader::NewDefault();
 	if (!shader->IsLoaded()) {
 		shader->Load(
 			FindLocalFile("shaders" DIR_SEPS "shader->vs"),
 			FindLocalFile("shaders" DIR_SEPS "shader->fs"));
-	}
+	}*/
 }
 
 void CoreWindow::SetMaximized(bool b) {

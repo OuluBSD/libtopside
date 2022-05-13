@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Img> struct ImageFileImageT;
 
 
+
 template <class Img>
 struct ImageFileImageT : ImgImage {
 	using CLASSNAME = ImageFileImageT<Img>;
@@ -61,8 +62,6 @@ struct ImageFileImageT : ImgImage {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

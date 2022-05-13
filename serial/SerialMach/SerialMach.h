@@ -1,7 +1,7 @@
 #ifndef _SerialMach_SerialMach_h_
 #define _SerialMach_SerialMach_h_
 
-#include <AtomDebug/AtomDebug.h>
+#include <AtomMinimal/AtomMinimal.h>
 
 
 #undef Serial

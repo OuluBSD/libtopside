@@ -1,7 +1,6 @@
 description "ECS and base classes for machin abstraction\377B0,0,128";
 
 uses
-	Graphics,
 	Agent,
 	EcsMach;
 

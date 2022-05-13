@@ -3,17 +3,22 @@ description "\3770,128,128";
 uses
 	ParallelLib,
 	IAudio,
-	IHal,
-	IGraphics,
-	IScreen,
 	IMedia,
 	IVolumetric,
 	ICamera;
 
+uses(GUI) IGraphics;
+
+uses(GUI) IHal;
+
+uses(GUI) IScreen;
+
 file
-	AtomDebug.h,
+	AtomMinimal.h,
 	Init.icpp,
 	Prefabs.h,
 	Generated.h,
-	Generated.cpp;
+	Generated.cpp,
+	Ecs.h,
+	Ecs.cpp;
 

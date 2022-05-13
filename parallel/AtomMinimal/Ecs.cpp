@@ -1,7 +1,7 @@
-#include "AtomLocal.h"
+#include "AtomMinimal.h"
+#include <SerialMach/SerialMach.h>
 
-
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -20,10 +20,10 @@ bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	Loop& loop = GetParent();
-	state = loop.FindNearestState(target);
+	Space& space = GetParent();
+	state = space.FindNearestState(target);
 	if (!state) {
-		LOG("EcsEventsBase::Initialize: error: state '" << target << "' not found in parent loop: " << loop.GetDeepName());
+		LOG("EcsEventsBase::Initialize: error: state '" << target << "' not found in parent space: " << space.GetDeepName());
 		return false;
 	}
 	
@@ -58,6 +58,14 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 	return b;
 }
 
+bool EcsEventsBase::Recv(int sink_ch, const Packet& in) {
+	TODO
+}
+
+bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	TODO
+}
+/*
 bool EcsEventsBase::ProcessPackets(PacketIO& io) {
 	
 	RTLOG("EcsEventsBase::ProcessPackets: TODO");
@@ -80,7 +88,7 @@ bool EcsEventsBase::ProcessPackets(PacketIO& io) {
 	
 	return true;
 }
-
+*/
 void EcsEventsBase::AddBinder(BinderIfaceEvents* iface) {
 	VectorFindAdd(binders, iface);
 }
@@ -115,17 +123,20 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 }
 
 bool EcsVideoBase::PostInitialize() {
+	
 	// Remove alpha channel
 	if (src_type == VD(CENTER, VIDEO)) {
 		ISourceRef src = this->GetSource();
 		int src_count = src->GetSourceCount();
-		int src_ch = side_sink_conn.GetCount() == 1 ? side_sink_conn.First().local_ch_i : src_count-1;
+		Serial::Link* link = GetLink();
+		int src_ch = link->SideSinks().GetCount() == 1 ? link->SideSources().First().local_ch_i : src_count-1;
 		Value& val = src->GetSourceValue(src_ch);
 		Format fmt = val.GetFormat();
 		fmt.vid.SetType(LightSampleFD::RGB_U8_LE);
-		if (!NegotiateSourceFormat(src_ch, fmt))
+		if (!link->NegotiateSourceFormat(src_ch, fmt))
 			return false;
 	}
+	
 	return true;
 }
 
@@ -139,10 +150,42 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
 		binders.GetCount() > 0;
-	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
+bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
+	
+	Format fmt = in->GetFormat();
+	if (fmt.IsOrder()) {
+		return true;
+	}
+	
+	TODO
+	return false;
+}
+
+bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	
+	Format fmt = out.GetFormat();
+	if (fmt.IsProg()) {
+		Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
+		
+		pd.Create(sz);
+		for (BinderIfaceVideo* b : binders)
+			b->Render(pd);
+		pd.Finish();
+		
+		InternalPacketData& data = out.SetData<InternalPacketData>();
+		data.ptr = &pd.cmd_screen_begin;
+	}
+	else {
+		TODO
+	}
+	
+	return true;
+}
+/*
 bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EcsVideoBase::ProcessPackets:");
 	
@@ -150,28 +193,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	int sink_ch = 0; //io.sink_count > 1 ? 1 : 0;
 	
 	if (src_type == VD(CENTER, PROG)) {
-		Size sz(800, 600);
 		
-		pd.Create(sz);
-		for (BinderIfaceVideo* b : binders)
-			b->Render(pd);
-		pd.Finish();
-		
-		if (io.sink_count == 1) {
-			PacketIO::Sink& sink = io.sink[sink_ch];
-			PacketIO::Source& src = io.src[src_ch];
-			
-			ASSERT(sink.p);
-			sink.may_remove = true;
-			src.from_sink_ch = 0;
-			src.p = ReplyPacket(src_ch, sink.p);
-			
-			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			data.ptr = &pd.cmd_screen_begin;
-		}
-		else {
-			TODO
-		}
 	}
 	else if (src_type == VD(CENTER, VIDEO)) {
 		Format fmt = io.src[src_ch].val->GetFormat();
@@ -281,7 +303,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	
 	return true;
 }
-
+*/
 void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
 	VectorFindAdd(binders, iface);
 }
@@ -329,6 +351,14 @@ bool EcsOglBase::IsReady(PacketIO& io) {
 	return b;
 }
 
+bool EcsOglBase::Recv(int sink_ch, const Packet& in) {
+	TODO
+}
+
+bool EcsOglBase::end(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	TODO
+}
+/*
 bool EcsOglBase::ProcessPackets(PacketIO& io) {
 	int src_ch = 0;
 	PacketIO::Sink& prim_sink = io.sink[0];
@@ -402,7 +432,7 @@ bool EcsOglBase::ProcessPackets(PacketIO& io) {
 	
 	return succ;
 }
-
+*/
 void EcsOglBase::AddBinder(BinderIfaceOgl* iface) {
 	VectorFindAdd(binders, iface);
 }
@@ -413,4 +443,4 @@ void EcsOglBase::RemoveBinder(BinderIfaceOgl* iface) {
 #endif
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

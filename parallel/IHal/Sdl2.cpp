@@ -804,11 +804,13 @@ bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
 	auto s = a.GetSpace();
 	auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
 	auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
-	auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
 	::SDL_Renderer* rend = 0;
 	if (v_sink)   rend = v_sink->dev.rend;
 	if (sw_sink)  rend = sw_sink->dev.rend;
+#ifdef flagOGL
+	auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
 	if (ogl_sink) rend = ogl_sink->dev.rend;
+#endif
 #endif
 	dword key;
 	int mouse_code;
@@ -1010,7 +1012,9 @@ bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& i
 			dev.ev.type = EVENT_WINDOW_RESIZE;
 			auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
 			auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
+			#ifdef flagOGL
 			auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
+			#endif
 			
 			int x = 0, y = 0;
 			if (v_sink) {
@@ -1021,10 +1025,12 @@ bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& i
 				SDL_GetWindowPosition(sw_sink->dev.win, &x, &y);
 				dev.ev_sendable = true;
 			}
+			#ifdef flagOGL
 			else if (ogl_sink) {
 				SDL_GetWindowPosition(ogl_sink->dev.win, &x, &y);
 				dev.ev_sendable = true;
 			}
+			#endif
 			else {
 				RTLOG("HalSdl2::EventsBase_IsReady: skipping windows resize, because no screen is in context");
 				dev.seq++;

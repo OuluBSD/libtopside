@@ -21,10 +21,10 @@ NAMESPACE_ECS_BEGIN
 
 
 
-bool ModelComponent::LoadModel(String path) {
+/*bool ModelComponent::LoadModel(String path) {
 	loader.Clear();
 	return loader.LoadModel(path);
-}
+}*/
 
 bool ModelComponent::AddTextureFile(int mesh_i, TexType type, String path) {
 	if (loader)
@@ -42,7 +42,7 @@ void ModelComponent::GetModels(VectorRendModel& models) {
 
 #endif
 
-void ModelComponent::LoadModel(CpuDataState& state) {
+/*void ModelComponent::LoadModel(CpuDataState& state) {
 	auto& o = cpu_obj ? *cpu_obj : state.AddObject();
 	cpu_obj = cpu_obj ? cpu_obj : &o;
 	if (!state.LoadModel(loader, o))
@@ -58,9 +58,9 @@ void ModelComponent::LoadModel(OglDataState& state) {
 		Panic("Couldn't load model: ModelComponent");
 	if (!state.LoadModelTextures(loader, o))
 		Panic("Couldn't load model textures: ModelComponent");
-}
+}*/
 
-void ModelComponent::RefreshModel(CpuDataState& state) {
+/*void ModelComponent::RefreshModel(CpuDataState& state) {
 	ASSERT(cpu_obj);
 	TODO
 }
@@ -68,7 +68,7 @@ void ModelComponent::RefreshModel(CpuDataState& state) {
 void ModelComponent::RefreshModel(OglDataState& state) {
 	ASSERT(ogl_obj);
 	TODO
-}
+}*/
 
 
 

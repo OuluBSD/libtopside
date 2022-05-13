@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Svt> struct StaticServerServerInstanceT;
 
 
+
 template <class Svt>
 struct StaticServerServerInstanceT : SvtServerInstance {
 	using CLASSNAME = StaticServerServerInstanceT<Svt>;
@@ -43,8 +44,6 @@ struct StaticServerServerInstanceT : SvtServerInstance {
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

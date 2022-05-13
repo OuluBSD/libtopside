@@ -1,12 +1,9 @@
 description "\3770,128,128";
 
-uses
-	Core;
-
 file
 	VirtualGui3D.h,
+	VirtualGui.cpp,
 	Local.h,
-	VirtualGuiAlt.cpp,
 	Keys.h,
 	After.h,
 	Ctrl.h,

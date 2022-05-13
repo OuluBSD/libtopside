@@ -1,0 +1,12 @@
+description "\3770,128,128";
+
+uses
+	EcsLocal,
+	EcsVirtualGui;
+
+file
+	EcsMinimal.h,
+	EcsMinimal.cpp,
+	Prefabs.h,
+	Prefabs.cpp;
+

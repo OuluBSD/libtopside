@@ -533,6 +533,10 @@ bool Package::Export() {
 		fout << "\n\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
+			String cond_str = c.GetPreprocessorEnabler();
+			
+			fout << cond_str << "\n";
+			
 			fout << "template <class " << abbr << ">\nstruct " << c.t_name << " : " << c.cpp_name << " {\n";
 			fout << "\tusing CLASSNAME = " << c.t_name << "<" << abbr << ">;\n";
 			fout << "\tRTTI_DECL1(CLASSNAME, " << c.cpp_name << ")\n";
@@ -699,10 +703,12 @@ bool Package::Export() {
 			}
 			
 			fout << "\t\n";
+			fout << "};\n";
 			
+			if (cond_str.GetCount())
+				fout << "#endif\n";
 			
-			
-			fout << "};\n\n";
+			fout << "\n";
 		}
 		
 		for (Vendor& v : vendors.GetValues()) {
@@ -718,7 +724,7 @@ bool Package::Export() {
 		fout << "\n";
 		
 		fout << "NAMESPACE_PARALLEL_END\n\n";
-		fout << "\n\n#endif\n\n";
+		fout << "#endif\n\n";
 	}
 	
 	// Function declarations file

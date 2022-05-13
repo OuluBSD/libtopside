@@ -2,6 +2,7 @@
 #define _EcsLib_Camera_h_
 
 NAMESPACE_ECS_BEGIN
+using namespace Parallel;
 
 
 class Viewable :

@@ -1,4 +1,4 @@
-description "\3770,128,128";
+description "\377B0,0,255";
 
 noblitz;
 
@@ -6,9 +6,10 @@ uses
 	VirtualGui3D;
 
 file
-	SDL2GUI3D.h,
+	EcsVirtualGui.h,
+	EcsVirtualGui.cpp,
+	EcsVirtualGuiInit.icpp,
 	After.h,
-	SDL2GUI3D.cpp,
 	Render.cpp,
 	System.h,
 	System.cpp,

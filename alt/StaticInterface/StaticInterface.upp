@@ -1,5 +1,7 @@
 description "\3770,128,128";
 
+uses(GUI) VirtualGui3D;
+
 file
 	StaticInterface.h,
 	StaticInterface.icpp,
@@ -9,6 +11,7 @@ file
 	Screen.cpp,
 	DrawBackend.h,
 	DrawBackend.cpp,
+	Keys.h,
 	Backends readonly separator,
 	Sdl2.h,
 	Sdl2.cpp,

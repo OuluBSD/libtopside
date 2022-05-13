@@ -139,6 +139,13 @@ public:
 	static Callback WhenInitialize;
 	static Callback WhenPreFirstUpdate;
 	
+	Serial::EntitySystem& GetEntitySystem() {ASSERT(sys); return *sys;}
+	
+protected:
+	friend class Serial::EntitySystem;
+	
+	Serial::EntitySystem* sys = 0;
+	
 private:
     using SystemCollection = RefTypeMapIndirect<SystemBase> ;
     SystemCollection systems;

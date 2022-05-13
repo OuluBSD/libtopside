@@ -24,6 +24,9 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     
     reg->SetAppName("Non-screen machine");
     
+    if (arg_fn)
+        arg_fn();
+    
     if (!mach.Start())
 		return false;
     

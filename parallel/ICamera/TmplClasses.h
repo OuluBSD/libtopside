@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Cam> struct CameraCameraT;
 
 
+
 template <class Cam>
 struct CameraCameraT : CamCamera {
 	using CLASSNAME = CameraCameraT<Cam>;
@@ -55,14 +56,12 @@ struct CameraCameraT : CamCamera {
 	
 };
 
-#if (defined flagOPENCV) || (defined flagLINUX)
+#if defined flagOPENCV && defined flagLINUX
 using V4L2OpenCVCamera = CameraCameraT<CamV4L2OpenCV>;
 #endif
 
 
 NAMESPACE_PARALLEL_END
-
-
 
 #endif
 

@@ -1,7 +1,7 @@
 #include "ICamera.h"
 #include <SerialMach/SerialMach.h>
 
-#if (defined flagOPENCV) || (defined flagLINUX)
+#if (defined flagOPENCV) && (defined flagLINUX)
 
 
 NAMESPACE_PARALLEL_BEGIN

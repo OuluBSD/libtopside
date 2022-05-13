@@ -1,5 +1,5 @@
-#ifndef _AtomDebug_AtomDebug_h_
-#define _AtomDebug_AtomDebug_h_
+#ifndef _AtomMinimal_AtomMinimal_h_
+#define _AtomMinimal_AtomMinimal_h_
 
 
 #include <ParallelLib/ParallelLib.h>
@@ -17,6 +17,7 @@
 
 
 #include "Prefabs.h"
+#include "Ecs.h"
 #include "Generated.h"
 
 
