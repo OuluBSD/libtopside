@@ -12,6 +12,11 @@ struct Sdl2FileBackend : StaticIfaceBackend {
 	
 	Image LoadFileAny(String path) override;
 	Image LoadStringAny(String str) override;
+	void ClearImage(SysImage& img) override;
+	
+	Font LoadFont(String dir, String name, int ptsize, int weight, bool italic) override;
+	Size GetTextSize(const SysFont& fnt, const String& s) override;
+	void ClearFont(SysFont& fnt) override;
 	
 };
 

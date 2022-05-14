@@ -20,7 +20,5 @@ file
 	EventSystem.h,
 	EventSystem.cpp,
 	Prefab.h,
-	Gui.h,
-	Gui.cpp,
 	Trash readonly separator;
 

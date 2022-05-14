@@ -10,13 +10,6 @@ class Font {
 		SysFont font;
 		int refs = 1;
 		
-		String dir;
-		String name;
-		int ptsize = 0;
-		int weight = 1;
-		bool italic = false;
-		
-		FontRef() {}
 		FontRef(RawSysFont* f) : font(f) {}
 		void Inc() {refs++;}
 		void Dec() {refs--; if (refs <= 0) delete this;}
@@ -53,6 +46,8 @@ public:
 	static int		GetFaceCount();
 	static String	GetFaceName(int i);
 	
+	FontRef*	GetNative() {return ref;}
+	
 };
 
 
@@ -69,8 +64,6 @@ inline Font StdFont(int size=-1) {return GetStdFont();}
 Size GetTextSize(String s, Font fnt);
 Size GetTextSize(WString ws, Font fnt);
 
-RawSysFont* LoadSysFont(String path, int size);
-Size GetSysFontTextSize(RawSysFont* fnt, String s);
 
 END_UPP_NAMESPACE
 

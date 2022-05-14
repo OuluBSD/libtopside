@@ -72,7 +72,7 @@ using AtomBaseRef			= Ref<AtomBase,				AtomParent>;
 using AtomStoreRef			= Ref<AtomStore,			ParallelSystemParent>;
 using AtomSystemRef			= Ref<AtomSystem,			ParallelSystemParent>;
 
-using StateVec				= RefLinkedList<EnvState,		EnvStateParent>;
+using StateVec				= RefLinkedList<EnvState,	EnvStateParent>;
 
 template <class T> using RefT_Atom = Ref<T, AtomParent>;
 

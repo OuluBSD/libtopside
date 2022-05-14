@@ -7,6 +7,7 @@ class Windows;
 class WindowManager;
 class CoreWindow;
 class VirtualGui;
+class WindowSystem;
 
 }}
 
@@ -211,6 +212,7 @@ protected:
 	
 protected:
 	friend class TS::Ecs::VirtualGui;
+	friend class TS::Ecs::WindowSystem;
 	
 	void SetFrameRect0(const Rect& r) {this->frame_r = r;}
 	
@@ -229,6 +231,9 @@ public:
 	static Image DefaultCursor();
 	
 	//void EventLoop(Ctrl *ctrl);
+	
+	DrawCommand& GetCommandBegin() {return cmd_begin;}
+	DrawCommand& GetCommandEnd() {return cmd_end;}
 	
 	void Add(Ctrl& c);
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
@@ -369,20 +374,21 @@ class EmptySpaceCtrl : public Ctrl {
 
 
 
-/*class Screen : public Ctrl {
+class Screen : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(Screen, Ctrl)
 	virtual ~Screen() {}
 	
 	virtual bool Init() = 0;
-	virtual void AddWindow(CoreWindow&) = 0;
-	virtual bool Poll(ScreenEvent& e) = 0;
+	virtual void AddWindow(Ecs::CoreWindow&) = 0;
+	//virtual bool Poll(ScreenEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;
-	virtual void ProcessCloseQueue() = 0;
+	virtual bool ProcessCloseQueue() = 0;
 	
-};*/
+};
 
 
 class ParentCtrl : public Ctrl {

@@ -22,5 +22,7 @@ file
 	PhysicsSystem.h,
 	PhysicsSystem.cpp,
 	Prefabs.h,
+	Gui.h,
+	Gui.cpp,
 	_ readonly separator;
 

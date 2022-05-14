@@ -53,7 +53,7 @@ public:
 	operator bool() const {return data;}
 	
 	void MakeSysAccel();
-	
+	String ToString() const;
 	
 private:
 	ImageDataRef* data = NULL;

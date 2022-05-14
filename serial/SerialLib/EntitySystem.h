@@ -33,6 +33,8 @@ public:
 	
 	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::ENTITY_SYSTEM;}
 	
+	TS::Ecs::Engine& GetEngine() {return *engine;}
+	
 };
 
 NAMESPACE_SERIAL_END

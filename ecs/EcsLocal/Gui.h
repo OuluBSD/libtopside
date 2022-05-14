@@ -10,6 +10,8 @@ struct DefaultGuiAppComponent :
 {
 	RTTI_DECL2(DefaultGuiAppComponent, ComponentT, BinderIfaceVideo)
 	
+	WindowSystemRef wins;
+	
 	
 	DefaultGuiAppComponent();
 	void operator=(const DefaultGuiAppComponent& t) {Panic("Can't copy DefaultGuiAppComponent");}
@@ -17,7 +19,7 @@ struct DefaultGuiAppComponent :
 	void Initialize() override;
 	void Uninitialize() override;
 	void Update(double dt) override;
-	bool Render(Draw& draw) override;
+	bool Render(Draw& d) override;
 	
 	void DrawObj(GfxStateDraw& fb, bool use_texture);
 	void StateStartup(GfxDataState& s);

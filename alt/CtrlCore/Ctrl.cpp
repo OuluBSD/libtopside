@@ -295,14 +295,16 @@ Ctrl& Ctrl::RightPos(int i, int size) {
 
 
 bool Ctrl::Redraw(bool only_pending) {
-	TODO
-	/*
 	Size sz(GetFrameSize());
 	Rect new_content_r(sz);
 	bool did_draw = false;
 	
+	bool was_pending_fx_redraw = pending_fx_redraw;
+	
 	if (pending_fx_redraw) {
-		Draw fx(*cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
+		ASSERT(cmd_begin.prev);
+		ASSERT(cmd_frame.next);
+		ProgPainter fx(*cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
 		
 		fx.Offset(frame_r);
 		
@@ -313,8 +315,12 @@ bool Ctrl::Redraw(bool only_pending) {
 	}
 	
 	
+	
+	
 	if (pending_redraw) {
-		Draw pre(*cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
+		ASSERT(cmd_frame.prev);
+		ASSERT(cmd_pre.next);
+		ProgPainter pre(*cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
 		
 		for(int i = 0; i < frames.GetCount(); i++) {
 			CtrlFrame& f = *frames[i];
@@ -328,13 +334,12 @@ bool Ctrl::Redraw(bool only_pending) {
 		Paint(pre);
 		if (do_debug_draw) {
 			if (has_mouse) {
-				Rgba c{1, 0, 0, 1};
-				c.a = 0.5;
+				RGBA c{255, 0, 0, 125};
 				pre.DrawRect(new_content_r.GetSize(), c);
 			}
 			else {
-				Rgba c(RandomColor(64, 128));
-				c.a = 0.5;
+				RGBA c(RandomColor(64, 128));
+				c.a = 127;
 				pre.DrawRect(new_content_r.GetSize(), c);
 			}
 		}
@@ -353,7 +358,9 @@ bool Ctrl::Redraw(bool only_pending) {
 	
 	
 	if (pending_redraw) {
-		Draw post(*cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
+		ASSERT(cmd_post.prev);
+		ASSERT(cmd_end.next);
+		ProgPainter post(*cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
 		
 		if (frames.GetCount())
 			post.End();
@@ -366,7 +373,7 @@ bool Ctrl::Redraw(bool only_pending) {
 		pending_redraw = false;
 	}
 	
-	return did_draw;*/
+	return did_draw;
 }
 
 Ctrl* Ctrl::GetCaptured() {
@@ -405,8 +412,7 @@ void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
 
 
 void Ctrl::DeepLayout() {
-	TODO
-	/*Rect prev_frame_r = frame_r;
+	Rect prev_frame_r = frame_r;
 	
 	const LogPos& lp = GetLogPos();
 	if ((lp.htype || lp.vtype) && parent) {
@@ -451,7 +457,7 @@ void Ctrl::DeepLayout() {
 	}
 	
 	
-	PostLayout();*/
+	PostLayout();
 }
 
 bool Ctrl::DeepKey(dword key, int count) {

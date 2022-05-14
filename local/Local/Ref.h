@@ -126,6 +126,7 @@ template <class T, class Parent = RefParent1<typename T::Parent> >
 class Ref : public RefCommon /*, RTTIBase*/
 {
 	T* o = 0;
+	LockedScopeRefCounter* c = 0; // unfortunately, this must be resolved while setting ".o", because of incomplete type support
 	Parent p;
 	
 	
@@ -153,7 +154,7 @@ public:
 	
 	Ref() {Dump("empty-ctor"); DBG_REF_CTOR}
 	Ref(Nuller) {Dump("null-ctor"); DBG_REF_CTOR}
-	Ref(Parent p, T* o) : p(p), o(o) {Dump("ptr-ctor"); if (o) o->IncRef(); DBG_REF_CTOR}
+	Ref(Parent p, T* o) : p(p), o(o), c(o) {Dump("ptr-ctor"); if (c) c->IncRef(); DBG_REF_CTOR}
 	Ref(const Ref& r) {Dump("copy-ctor"); *this = r; DBG_REF_CTOR}
 	~Ref() {Clear(); DBG_REF_DTOR}
 	
@@ -161,7 +162,7 @@ public:
 	#if 1
 	Ref(Ref&& r) {Dump("move-ctor"); *this = r; r.Clear(); DBG_REF_CTOR}
 	#elif 0
-	Ref(Ref&& r) {Dump("move-ctor"); if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();} DBG_REF_CTOR}
+	Ref(Ref&& r) {Dump("move-ctor"); if (r.o) {o = r.o; r.o = 0; c = r.c; r.c = 0; p = r.p; r.p.Clear();} DBG_REF_CTOR}
 	#endif
 	
 	template <class V>
@@ -173,8 +174,9 @@ public:
 			std::is_base_of<T,V>(), "T must inherit V or vice versa");
 		if (!r.IsEmpty()) {
 			o = CastPtr<T>(r.Get());
-			ASSERT(o);
-			o->IncRef();
+			c = o;
+			ASSERT(o && c);
+			c->IncRef();
 			p = r.GetRefParent();
 		}
 		DBG_REF_CTOR
@@ -199,7 +201,7 @@ public:
 	
 	bool IsEmpty() const {return o == NULL;}
 	T* Get() const {return o;}
-	void Clear() {if (o) o->DecRef(); o = 0; p.Clear();}
+	void Clear() {if (o) {c->DecRef(); o = 0; c = 0;} p.Clear();}
 	template <class V>	V* As() {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		return CastPtr<V>(o);
@@ -215,6 +217,7 @@ public:
 		Clear();
 		this->p = p;
 		o = CastPtr<T>(v);
+		c = o;
 		o->IncRef();
 		ASSERT(o);
 	}
@@ -222,6 +225,7 @@ public:
 	Ref& Set(const Ref& r) {
 		Clear();
 		o = r.o;
+		c = o;
 		p = r.GetRefParent();
 		if (o)
 			o->IncRef();
@@ -233,6 +237,7 @@ public:
 		Clear();
 		V* v = r.GetRefPtr();
 		o = CastPtr<T>(v);
+		c = o;
 		p = r.GetRefParent();
 		if (o)
 			o->IncRef();

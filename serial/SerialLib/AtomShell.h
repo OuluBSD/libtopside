@@ -5,12 +5,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 void DefaultStartup();
-void DefaultRunner(String app_name, String override_eon_file="", VectorMap<String,Object>* extra_args=0, const char* extra_str=0);
+void DefaultRunner(bool main_loop, String app_name, String override_eon_file="", VectorMap<String,Object>* extra_args=0, const char* extra_str=0);
+void DefaultRunnerStop();
 bool DefaultInitializer(bool skip_eon_file);
 void DefaultSerialInitializer();
 void DefaultSerialInitializer0(bool skip_eon_file=false);
 void DefaultSerialInitializerInternalEon();
-
+void DebugMainLoop();
 
 struct SerialLoaderBase {
 	

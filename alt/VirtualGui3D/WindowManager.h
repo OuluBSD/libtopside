@@ -1,13 +1,16 @@
 #ifndef _CtrlCore_WindowManager_h_
 #define _CtrlCore_WindowManager_h_
 
-#if 0
 
 NAMESPACE_ECS_BEGIN
 
 
 class WindowManager {
-	Array<Screen> screens;
+	
+protected:
+	friend class WindowSystem;
+	
+	Array<Windows> screens;
 	Array<TopWindow> owned_wins;
 	RunningFlag flag;
 	Mutex lock;
@@ -21,6 +24,7 @@ public:
 	
 	template <class T>
 	T& AddScreen() {
+		ASSERT_(screens.IsEmpty(), "only 1 screen support is implemented for now: see static Ctrl::SetWindows");
 		T* t = new T();
 		t->wm = this;
 		if (!t->Init())
@@ -32,23 +36,29 @@ public:
 	}
 	
 	
-	template <class T> T& AddWindow(int screen, T* obj_ptr) {
+	/*template <class T> CoreWindow& AddWindow(int screen, T* obj_ptr) {
 		lock.Enter();
-		TopWindow* swc = obj_ptr;
-		owned_wins.Add(swc); // Class must inherit TopWindow
-		CoreWindow& cw = screens[screen].AddWindow(*swc);
+		TopWindow* tw = obj_ptr;
+		CoreWindow& cw = owned_wins.Add();
+		cw.tw = tw;
+		screens[screen].AddWindow(cw);
 		lock.Leave();
-		return *obj_ptr;
-	}
+		return cw;
+	}*/
 	
-	template <class T> T& AddWindow(int screen) {
+	/*template <class T> T& AddWindow(int screen) {
 		T* obj_ptr = new T();
 		return AddWindow(screen, obj_ptr);
-	}
+	}*/
 	
 	void CloseWindow(TopWindow* tw);
 	
 	void Run();
+	
+	
+	int GetScreenCount() const {return screens.GetCount();}
+	Windows& GetScreen(int i) {return screens[i];}
+	
 };
 
 
@@ -58,5 +68,4 @@ public:
 
 NAMESPACE_ECS_END
 
-#endif
 #endif

@@ -103,7 +103,7 @@ I FindIf(I begin, I end, std::function<T> fn) {
 
 #ifndef flagSTDRTTI
 template <class T, class S> T*			CastPtr(S* o) {
-	void* p = o->GetBasePtr(AsTypeCls<T>());
+	void* p = o ->GetBasePtr(AsTypeCls<T>());
 	return (T*)p;
 }
 

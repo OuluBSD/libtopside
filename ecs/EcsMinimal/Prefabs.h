@@ -161,7 +161,7 @@ void DefaultEcsStartup();
 		String eon_file  = Parallel::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
 			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
-			TS::DefaultRunner(#ecs_component, eon_file, 0, eon_args); \
+			TS::DefaultRunner(true, #ecs_component, eon_file, 0, eon_args); \
 		} \
 		else { \
 			LOG("Eon file was not found"); \
@@ -186,11 +186,14 @@ void DefaultEcsStartup();
 		String eon_file  = Parallel::RealizeEonFile("DefaultGuiApp.eon"); \
 		if (FileExists(eon_file)) { \
 			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
-			TS::DefaultRunner("Gui App", eon_file, 0, 0); \
+			TS::DefaultRunner(false, "Gui App", eon_file, 0, 0); \
 		} \
 		else { \
 			LOG("Eon file was not found"); \
+			Exit(1); \
 		} \
+		UserGuiMainFn_(); \
+		TS::DefaultRunnerStop(); \
 	} \
 	void UserGuiMainFn_()
 

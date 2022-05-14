@@ -43,40 +43,6 @@ int Font::GetHeight() const {
 	TODO
 }
 
-Font Font::LoadFont(String dir, String name, int ptsize, int weight, bool italic) {
-	String path = AppendFileName(dir, name);
-	switch (weight) {
-		case 0:	path += "-Thin";	break;
-		case 1:	path += "-Regular";	break;
-		case 2:	path += "-Medium";	break;
-		case 3:	path += "-Bold";	break;
-	}
-	path += ".ttf";
-	
-	if (!FileExists(path)) {
-		return Font();
-	}
-	
-	FontRef* ref = new FontRef();
-	
-	DLOG("Opening font " << path);
-	ref->font.raw = LoadSysFont(path, ptsize);
-	ref->dir = dir;
-	ref->name = name;
-	ref->ptsize = ptsize;
-	ref->weight = weight;
-	ref->italic = italic;
-	
-	if (ref->font.IsEmpty()) {
-		#if HAVE_SDL2
-		DLOG("Opening font failed: " << TTF_GetError());
-		#else
-		DLOG("Opening font failed");
-		#endif
-	}
-	return ref;
-}
-
 int Font::GetFaceCount() {
 	TODO
 }
@@ -110,10 +76,12 @@ void SetStdFont(Font fnt) {
 	__std_font = fnt;
 }
 
+Size GetSysFontTextSize(const SysFont& fnt, const String& s);
+
 Size GetTextSize(String s, Font fnt) {
 	if (fnt.IsEmpty())
 		return Size(0,0);
-	return GetSysFontTextSize(fnt.GetSysFont()->GetRaw(), s);
+	return GetSysFontTextSize(*fnt.GetSysFont(), s);
 }
 
 Size GetTextSize(WString s, Font fnt) {

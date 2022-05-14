@@ -96,7 +96,7 @@ void DefaultSerialInitializerInternalEon() {
 	DefaultSerialInitializer0(true);
 }
 
-void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args, const char* extra_str) {
+void DefaultRunner(bool main_loop, String app_name, String override_eon_file, VectorMap<String,Object>* extra_args, const char* extra_str) {
 	//DUMP(eon_script);
 	//DUMP(eon_file);
 	//DUMPC(args);
@@ -124,12 +124,13 @@ void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,O
 		}
 	}
 	
+	
 	if (!break_addr)
 		//Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0);
-		DebugMain(eon_script, eon_file, __def_args, 0);
+		DebugMain(main_loop, eon_script, eon_file, __def_args, 0);
 	else
 		//Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0, 1, break_addr);
-		DebugMain(eon_script, eon_file, __def_args, 0, 1, break_addr);
+		DebugMain(main_loop, eon_script, eon_file, __def_args, 0, 1, break_addr);
 }
 
 void DefaultStartup() {
@@ -139,12 +140,34 @@ void DefaultStartup() {
 
 
 
+int __dbg_time_limit;
 
 
+void DebugMainLoop() {
+	using namespace Parallel;
+	
+	Machine& mach = GetActiveMachine();
+	int iter = 0;
+    TimeStop t, total;
+    double sleep_dt_limit = 1.0 / 300.0;
+    while (mach.IsRunning()) {
+        double dt = ResetSeconds(t);
+        mach.Update(dt);
+        
+        //if (!iter++) mach.Get<LoopStore>()->GetRoot()->Dump();
+		
+		if (dt < sleep_dt_limit)
+			Sleep(1);
+        
+        double total_seconds = total.Seconds();
+        if (__dbg_time_limit > 0 && total_seconds >= __dbg_time_limit)
+            mach.SetNotRunning();
+    }
+    
+    RuntimeDiagnostics::Static().CaptureSnapshot();
+}
 
-
-
-void DebugMain(String script_content, String script_file, VectorMap<String,Object>& args, Serial::MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
+void DebugMain(bool main_loop, String script_content, String script_file, VectorMap<String,Object>& args, Serial::MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	using namespace Parallel;
 	
 	SetCoutLog();
@@ -158,7 +181,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 	if (dbg_ref)
 		BreakRefAdd(dbg_ref);
 	
-	double time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
+	__dbg_time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
 	
 	{
 		Machine& mach = GetActiveMachine();
@@ -234,25 +257,8 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 					fail = !mach.Start();
 		    }
 		    
-		    if (!fail) {
-			    int iter = 0;
-			    TimeStop t, total;
-			    double sleep_dt_limit = 1.0 / 300.0;
-			    while (mach.IsRunning()) {
-			        double dt = ResetSeconds(t);
-			        mach.Update(dt);
-			        
-			        //if (!iter++) mach.Get<LoopStore>()->GetRoot()->Dump();
-					
-					if (dt < sleep_dt_limit)
-						Sleep(1);
-			        
-			        double total_seconds = total.Seconds();
-			        if (time_limit > 0 && total_seconds >= time_limit)
-			            mach.SetNotRunning();
-			    }
-			    
-			    RuntimeDiagnostics::Static().CaptureSnapshot();
+		    if (!fail && main_loop) {
+		        DebugMainLoop();
 		    }
 		#ifdef flagSTDEXC
 	    }
@@ -262,12 +268,23 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 	    }
 	    #endif
 	    
-	    mach.Stop();
-	    mach.Clear();
+	    if (main_loop) {
+		    mach.Stop();
+		    mach.Clear();
+	    }
 	}
     
     //RefDebugVisitor::Static().DumpUnvisited();
 }
+
+void DefaultRunnerStop() {
+	using namespace Parallel;
+	Machine& mach = GetActiveMachine();
+	mach.SetNotRunning();
+	mach.Stop();
+	mach.Clear();
+}
+
 
 
 NAMESPACE_TOPSIDE_END

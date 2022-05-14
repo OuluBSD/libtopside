@@ -42,7 +42,7 @@ public:
 	RTTI_DECL0(BinderIfaceVideo);
 	virtual ~BinderIfaceVideo() {}
 	
-	virtual bool Render(Draw& draw) = 0;
+	virtual bool Render(Draw& d) = 0;
 	
 	virtual void Initialize() {}
 	virtual void Visit(RuntimeVisitor& vis) {}

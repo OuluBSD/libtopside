@@ -20,7 +20,7 @@ struct FboAtomT :
 	int						prev_iter = -1;
 	ValDevCls				src_type;
 	One<ImageDraw>			id;
-	ProgDraw				pd;
+	//ProgDraw				pd;
 	StateDraw				accel_sd;
 	Framebuffer				cpu_fb;
 	bool					draw_mem = false;

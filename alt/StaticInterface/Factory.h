@@ -12,6 +12,11 @@ struct StaticIfaceBackend : RTTIBase {
 	
 	virtual Image LoadStringAny(String str) {Panic("internal error: unimplemented"); return Image();}
 	virtual Image LoadFileAny(String path) {Panic("internal error: unimplemented"); return Image();}
+	virtual void ClearImage(SysImage& img) {Panic("internal error: unimplemented");}
+	
+	virtual Font LoadFont(String dir, String name, int ptsize, int weight, bool italic) {Panic("internal error: unimplemented"); return Font();}
+	virtual Size GetTextSize(const SysFont& fnt, const String& s) {Panic("internal error: unimplemented"); return Size();}
+	virtual void ClearFont(SysFont& fnt) {Panic("internal error: unimplemented");}
 	
 };
 
@@ -44,6 +49,7 @@ struct StaticIfaceFactory {
 	
 	static StaticIfaceBackend& GetAdd(const Backend& b);
 	static StaticIfaceBackend* GetReader(String ext);
+	static StaticIfaceBackend* GetReader(TypeCls type);
 	static StaticIfaceBackend* GetWriter(String ext);
 	
 };

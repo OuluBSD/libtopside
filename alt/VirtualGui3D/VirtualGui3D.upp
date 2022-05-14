@@ -16,10 +16,10 @@ file
 	Direct.h,
 	Direct.cpp,
 	ECS readonly separator,
+	Windows.h,
 	Windows.cpp,
 	CoreWindow.h,
 	CoreWindow.cpp,
-	SubWindows.h,
 	WindowManager.h,
 	WindowFrame.cpp,
 	WindowManager.cpp;

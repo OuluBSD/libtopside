@@ -3,6 +3,6 @@
 using namespace UPP;
 
 
-GUI_APP_MAIN_ {
+GUI_APP_MAIN {
 	ExampleApp().Run();
 }

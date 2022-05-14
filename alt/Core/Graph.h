@@ -23,6 +23,10 @@ struct RGBAT : Moveable<RGBAT<T>> {
 	
 	T& operator[](int i) {ASSERT(i >= 0 && i < 4); return *(&r + i);}
 	
+	
+	String ToString() const {return "[" + AsString(r) + ", " + AsString(g) + ", " + AsString(b) + ", " + AsString(a) + "]";}
+	
+	
 };
 
 typedef RGBAT<byte>		RGBA;

@@ -5,6 +5,14 @@ NAMESPACE_UPP
 
 
 TopWindow::TopWindow() : id(-1) {
+	using namespace Ecs;
+	Engine& eng = GetActiveEngine();
+	
+	EntityStoreRef ents = eng.Get<EntityStore>();
+	EntityRef e = ents->GetRoot()->Create<Window2D>();
+	Ref<CoreWindow> win = e->Get<CoreWindow>();
+	ASSERT(win);
+	win->tw = this;
 	
 }
 
@@ -30,7 +38,8 @@ void TopWindow::SetFrameRect(const Rect& r) {
 }
 
 int TopWindow::Run(bool appmodal) {
-	TODO
+	DebugMainLoop();
+	return 0;
 }
 
 TopWindow& TopWindow::Sizeable(bool b) {

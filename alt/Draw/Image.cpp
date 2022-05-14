@@ -19,6 +19,12 @@ const byte* Image::GetIter(int x, int y) const {
 	return d + y * pitch + x * stride;
 }
 
+String Image::ToString() const {
+	String s;
+	s << GetSize().ToString() << ", data=" << HexStr(data);
+	return s;
+}
+
 
 
 

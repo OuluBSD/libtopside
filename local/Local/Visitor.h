@@ -32,14 +32,15 @@ public:
 	
 };
 
+
 template <class T, bool is_base>
 struct LockedScopeRefCounterCaster {
-	LockedScopeRefCounter* Cast(T* o) {return CastPtr<LockedScopeRefCounter>(o);}
+	static LockedScopeRefCounter* Cast(T* o) {return CastPtr<LockedScopeRefCounter>(o);}
 };
 
 template <class T>
 struct LockedScopeRefCounterCaster<T,false> {
-	LockedScopeRefCounter* Cast(T* o) {return 0;}
+	static LockedScopeRefCounter* Cast(T* o) {return 0;}
 };
 	
 

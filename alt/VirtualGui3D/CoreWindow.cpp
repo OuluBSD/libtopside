@@ -251,12 +251,13 @@ CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 	resize_frame.win = this;
 	SetMaximized(false);
 	
-	TODO
+	
 	/*cmd_screen_begin.next = &cmd_begin;
 	cmd_begin.prev = &cmd_screen_begin;
 	
 	cmd_end.next = &cmd_screen_end;
 	cmd_screen_end.prev = &cmd_end;*/
+	
 	
 	AddFrame(resize_frame);
 	Add(decor.SizePos());
@@ -280,7 +281,7 @@ CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 	maximize.WhenAction = THISBACK(ToggleMaximized);
 	minimize.WhenAction = THISBACK(Minimize);
 	
-	TODO
+	
 	/*shader = Shader::NewDefault();
 	if (!shader->IsLoaded()) {
 		shader->Load(
@@ -298,7 +299,7 @@ void CoreWindow::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
-	if (!tw.IsEmpty()) {
+	if (tw) {
 		Add(tw->VSizePos(24, 1).HSizePos(1, 1));
 	
 		tw->SetFocus();
@@ -429,6 +430,7 @@ bool CoreWindow::Redraw(bool only_pending) {
 		
 		cmd = cmd->next;
 	}*/
+	TODO
 	
 	Swap(begin_prev, cmd_begin.prev);
 	Swap(cmd_end.next, end_next);

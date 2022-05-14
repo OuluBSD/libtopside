@@ -13,6 +13,8 @@ class RTTI;
 
 
 #define RTTIBase virtual public ::UPP::RTTI
+template <class T>       ::UPP::RTTI& GetRTTIBase(T& o)       {return o;}
+template <class T> const ::UPP::RTTI& GetRTTIBase(const T& o) {return o;}
 
 class RTTI {
 	

@@ -28,6 +28,13 @@ StaticIfaceBackend* StaticIfaceFactory::GetReader(String ext) {
 	return 0;
 }
 
+StaticIfaceBackend* StaticIfaceFactory::GetReader(TypeCls type) {
+	int i = backends.Find(type);
+	if (i >= 0)
+		return &backends[i];
+	return 0;
+}
+
 StaticIfaceBackend* StaticIfaceFactory::GetWriter(String ext) {
 	ASSERT(ext.Left(1) != ".");
 	int i = new_fns.Find(ext);

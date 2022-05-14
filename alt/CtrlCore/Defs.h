@@ -3,6 +3,7 @@
 
 
 #include <Draw/Draw.h>
+#include <Local/Local.h>
 
 #ifndef GUIPLATFORM_INCLUDE
 	#error Build flags prevents CtrlCore usage. Probably CTRL flag is not set and CtrlCore.h is included indirectly.

@@ -1,4 +1,3 @@
-#if 0
 #include <EcsLocal/EcsLocal.h>
 
 
@@ -9,7 +8,7 @@ WindowManager::WindowManager() {
 	
 }
 
-void WindowManager::Run() {
+/*void WindowManager::Run() {
 	flag.Start();
 	
 	
@@ -35,7 +34,7 @@ void WindowManager::Run() {
 	
 	
 	flag.SetStopped();
-}
+}*/
 
 void WindowManager::Close() {
 	for(int i = 0; i < screens.GetCount(); i++) {
@@ -68,5 +67,3 @@ void WindowManager::CloseWindow(TopWindow* tw) {
 
 
 NAMESPACE_ECS_END
-
-#endif

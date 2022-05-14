@@ -27,10 +27,20 @@
 
 NAMESPACE_UPP
 
-typedef stbtt_fontinfo		RawSysFont;
+
+struct RawSysFont {
+	void* native;
+	TypeCls backend;
+	String dir;
+	String name;
+	int ptsize = 0;
+	int weight = 1;
+	bool italic = false;
+};
 
 struct RawSysImage {
 	Vector<byte> data;
+	void* native = 0;
 	TypeCls backend;
 	int w, h, ch, pitch;
 };
@@ -41,7 +51,6 @@ typedef RGBA			SysColor;
 struct SysFont {
 	RawSysFont* raw = 0;
 	
-	SysFont() {}
 	SysFont(RawSysFont* f) : raw(f) {}
 	~SysFont() {Clear();}
 	

@@ -13,6 +13,7 @@
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
 #include "Prefabs.h"
+#include "Gui.h"
 
 
 NAMESPACE_ECS_BEGIN

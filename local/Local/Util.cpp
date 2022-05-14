@@ -433,6 +433,10 @@ String RealizeShareFile(String rel_path) {
 			return path;
 	}
 	
+	String local_file = FindLocalFile(rel_path);
+	if (FileExists(local_file))
+		return local_file;
+	
 	return rel_path;
 }
 

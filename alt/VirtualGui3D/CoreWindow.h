@@ -87,7 +87,8 @@ class CoreWindow :
 	
 	//One<Shader> shader;
 	
-	One<TopWindow> tw;
+	One<TopWindow> owned_tw;
+	TopWindow* tw = 0;
 	void (CoreWindow::*reset_fn)();
 	Windows* wins = NULL;
 	
@@ -140,15 +141,19 @@ public:
 	T& Create() {
 		Clear();
 		T* t = new T();
-		tw = static_cast<TopWindow*>(t);
+		owned_tw = static_cast<TopWindow*>(t);
+		tw = &*owned_tw;
 		reset_fn = &CoreWindow::ResetTopWindow<T>;
 		return *t;
 	}
 	
 	void Clear() {
-		if (tw.IsEmpty()) return;
-		RemoveChild(tw.Get());
-		tw.Clear();
+		if (!tw) return;
+		//if (tw->IsEmpty()) return;
+		//RemoveChild(tw->Get());
+		RemoveChild(tw);
+		tw = 0;
+		owned_tw.Clear();
 	}
 	
 	Point GetGlobalMouse();
@@ -165,7 +170,7 @@ public:
 	int GetId() const {return id;}
 	Rect GetStoredRect() const {return stored_rect;}
 	String GetTitle() const {return decor.GetLabel();}
-	TopWindow* GetTopWindow() {return tw.Get();}
+	TopWindow* GetTopWindow() {return tw;}
 	bool IsMaximized() const {return maximized;}
 	bool IsActive() const;
 	void MoveWindow(Point pt);
@@ -216,7 +221,6 @@ struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
 
 
 
-template <class T>
 struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
     static Components Make(Entity& e)
     {
@@ -228,10 +232,10 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
 		components.Get<Transform2DRef>()->position = vec2(0, 0);
 		components.Get<Transform2DRef>()->size = vec2(320, 240);
 		
-		T& t = components.Get<CoreWindowRef>()->Create<T>();
+		/*T& t = components.Get<CoreWindowRef>()->Create<T>();
 		ASSERT(&t);
 		
-		TODO // renderable
+		TODO // renderable*/
 		
         return components;
     }

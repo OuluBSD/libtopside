@@ -1,4 +1,4 @@
-#include "EcsLib.h"
+#include "EcsLocal.h"
 
 NAMESPACE_ECS_BEGIN
 
@@ -11,6 +11,8 @@ void DefaultGuiAppComponent::Initialize() {
 	//if (CommandLine().GetCount() != 1)
 	//	Panic("invalid commandline argument");
 	
+	//wins = GetEngine().Get<WindowSystem>();
+	//ASSERT(wins);
 	
 	
 	AddToUpdateList();
@@ -51,11 +53,25 @@ void DefaultGuiAppComponent::StateStartup(GfxDataState& state) {
 	chaser = cam->Add<ChaseCam>();
 	chaser->SetTarget(car->Get<Transform>());
 	rend->AddViewable(cam->Get<Viewable>());*/
+	TODO
 }
 
-bool DefaultGuiAppComponent::Render(Draw& fb) {
+bool DefaultGuiAppComponent::Render(Draw& d) {
 	
-	TODO
+	ProgDraw* pd = CastPtr<ProgDraw>(&d);
+	ASSERT(pd);
+	if (!pd) {
+		return false;
+	}
+	// loop windowsystem windows and render them
+	//ProgDraw& pd = Serial::EcsVideoBase::Latest().GetProgDraw();
+	
+	/*int win_count = wins->GetCount();
+	for(int i = 0; i < win_count; i++) {
+		wins->Redraw(i, true);
+	}*/
+	
+	
 	
 	/*SdlCpuStateDraw* sd = CastPtr<SdlCpuStateDraw>(&fb);
 	ASSERT(sd);
@@ -140,6 +156,7 @@ void DefaultGuiAppComponent::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	state.view = port * perspective * lookat;
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	*/
+	TODO
 }
 
 

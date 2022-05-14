@@ -10,6 +10,7 @@ INITBLOCK_(StaticInterface) {
 	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("png", true, false);
 	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("tiff", true, false);
 	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("tga", true, false);
+	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("ttf", true, false);
 	#endif
 	
 	StaticIfaceFactory::AddFileFormat<TgaReaderBackend>("tga", true, false);

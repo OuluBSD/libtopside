@@ -8,7 +8,7 @@ Button::Button() {
 }
 
 void Button::SetImage(Image& img) {
-	TODO
+	this->img = img;
 }
 
 void Button::Paint(Draw& d) {

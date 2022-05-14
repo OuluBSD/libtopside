@@ -90,7 +90,23 @@ using RefLinkTypeMapIndirect	= RefLinkedMapIndirect<LinkTypeCls, T, Parent>;
 #define LINKTYPE(type, role) LinkTypeCls(SubLinkCls::LINK_##type, LinkRole::LINKROLE_##role)
 
 
+
+
+class EntitySystem;
+using EntitySystemRef		= Ref<EntitySystem, ParallelSystemParent>;
+
 }
+
+
+
+namespace Ecs {
+class Engine;
+class WindowSystem;
+using WindowSystemRef = Ref<WindowSystem, RefParent1<Engine>>;
+}
+
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

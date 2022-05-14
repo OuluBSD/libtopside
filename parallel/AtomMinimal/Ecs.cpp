@@ -1,5 +1,6 @@
 #include "AtomMinimal.h"
-#include <SerialMach/SerialMach.h>
+#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -119,6 +120,11 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	
 	draw_mem = ws.Get(".drawmem") == "true";
 	
+	ents = GetMachine().Get<EntitySystem>();
+	if (ents) {
+		wins = ents->GetEngine().Get<Ecs::WindowSystem>();
+	}
+	
 	return true;
 }
 
@@ -146,6 +152,13 @@ void EcsVideoBase::Uninitialize() {
 
 bool EcsVideoBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
+	
+	if (wins && binders.IsEmpty() && screen_id < wins->GetScreenCount()) {
+		Ecs::Windows& w = wins->GetScreen(screen_id);
+		if (!w.CheckRender())
+			return false;
+	}
+	
 	bool b =
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
@@ -171,10 +184,20 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	if (fmt.IsProg()) {
 		Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 		
+		ASSERT(sz.cx > 0 && sz.cy > 0);
 		pd.Create(sz);
 		for (BinderIfaceVideo* b : binders)
 			b->Render(pd);
+		if (wins && screen_id < wins->GetScreenCount()) {
+			Ecs::Windows& w = wins->GetScreen(screen_id);
+			ProgPainter& pp = pd.GetProgPainter();
+			pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
+			w.CheckRender();
+		}
 		pd.Finish();
+		
+		LOG("EcsVideoBase::Send: prog:");
+		LOG(pd.Dump());
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		data.ptr = &pd.cmd_screen_begin;

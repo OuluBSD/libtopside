@@ -13,28 +13,28 @@ NAMESPACE_ECS_BEGIN
 Image& WindowsImg::close() {
 	static Image img;
 	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "close.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "close.png"));
 	return img;
 }
 
 Image& WindowsImg::maximize() {
 	static Image img;
 	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "maximize.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "maximize.png"));
 	return img;
 }
 
 Image& WindowsImg::minimize() {
 	static Image img;
 	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "minimize.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "minimize.png"));
 	return img;
 }
 
 Image& WindowsImg::nwse() {
 	static Image img;
 	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "nwse.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
 		img.CenterHotSpot();
 	}
 	return img;
@@ -43,7 +43,7 @@ Image& WindowsImg::nwse() {
 Image& WindowsImg::nesw() {
 	static Image img;
 	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "nesw.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
 		img.CenterHotSpot();
 	}
 	return img;
@@ -52,7 +52,7 @@ Image& WindowsImg::nesw() {
 Image& WindowsImg::ns() {
 	static Image img;
 	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "ns.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
 		img.CenterHotSpot();
 	}
 	return img;
@@ -61,15 +61,24 @@ Image& WindowsImg::ns() {
 Image& WindowsImg::ew() {
 	static Image img;
 	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(FindLocalFile("imgs" DIR_SEPS "ew.png"));
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
 		img.CenterHotSpot();
 	}
 	return img;
 }
 
 
+
+
+
+
+
+
+
+
+
 Windows::Windows() {
-	Ctrl::SetWindows(this);
+	//Ctrl::SetWindows(this);
 	win_counter = 0;
 	maximize_all = false;
 	active_pos = -1;
@@ -194,7 +203,7 @@ void Windows::CloseWindow(int win_id) {
 	if (tw) {
 		bool found = false;
 		for(int i = 0; i < wins.GetCount(); i++) {
-			if (wins[i]->tw.Get() == tw) {
+			if (wins[i]->tw == tw) {
 				wins.Remove(i);
 				tw->CloseWindow();
 				found = true;
@@ -478,7 +487,7 @@ bool Windows::CheckRender() {
 		}
 	}
 	
-	do_render = Redraw(true) || do_render;
+	do_render = Ctrl::Redraw(true) || do_render;
 	
 	return do_render;
 }
@@ -491,9 +500,15 @@ bool Windows::DeepKey(dword key, int count) {
 	return false;
 }
 
-/*void Windows::Redraw(int child_id, bool only_pending) {
+/*void Windows::Redraw(ProgDraw& pd, bool only_pending) {
+	for(int i = 0; i < GetCount(); i++) {
+		Redraw(pd, i, only_pending);
+	}
+}
+
+void Windows::Redraw(ProgDraw& pd, int child_id, bool only_pending) {
 	DrawCommand* prev;
-	if (child_id == 0) {
+	if (child_id == 0) {
 		prev = &cmd_begin;
 	}
 	else {
@@ -501,19 +516,20 @@ bool Windows::DeepKey(dword key, int count) {
 	}
 	
 	DrawCommand* next;
-	if (child_id == sub_area.GetCount()-1) {
+	if (child_id == sub_area.GetCount()-1) {
 		next = &cmd_end;
 	}
 	else {
 		next = &sub_area[child_id+1]->GetBeginCommand();
 	}
 	
+	TODO
 	
 	Ctrl& c = *sub_area[child_id];
-	//Draw pre(*prev, c.GetBeginCommand(), c.GetEndCommand(), *next);
+	Draw d(*prev, c.GetBeginCommand(), c.GetEndCommand(), *next);
 	
 	d.Offset(c.GetRect());
-	c.Redraw(d, only_pending);
+	c.Redraw(only_pending);
 	d.End();
 	
 	d.Link();

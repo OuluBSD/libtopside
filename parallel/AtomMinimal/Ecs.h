@@ -52,9 +52,11 @@ class EcsVideoBase :
 	OglStateDraw		ogl_sd;
 	OglDataState		ogl_state;
 	#endif*/
-	bool draw_mem = false;
-	
-	static EcsVideoBase* latest;
+	bool					draw_mem = false;
+	EntitySystemRef			ents;
+	Ecs::WindowSystemRef	wins;
+	static EcsVideoBase*	latest;
+	int					screen_id = 0;
 	
 public:
 	RTTI_DECL1(EcsVideoBase, Atom);
@@ -75,6 +77,8 @@ public:
 	
 	static Callback1<EcsVideoBase*>	WhenInitialize;
 	static EcsVideoBase& Latest();
+	
+	ProgDraw& GetProgDraw() {return pd;}
 	
 };
 

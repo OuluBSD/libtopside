@@ -39,9 +39,9 @@ public:
 	void LocalMenu(Bar& bar);
 };
 
-class Windows : public Ctrl {
-	RTTI_DECL1(Windows, Ctrl)
-	void Visit(RuntimeVisitor& vis) {}
+class Windows : public Screen {
+	RTTI_DECL1(Windows, Screen)
+	virtual void Visit(RuntimeVisitor& vis) {}
 	
 protected:
 	friend class OpenVR;
@@ -110,7 +110,9 @@ public:
 	
 	hash_t GetHashValue() const {return (hash_t)(size_t)this;}
 	
-	void AddWindow(CoreWindow&);
+	void AddWindow(CoreWindow&) override;
+	bool ProcessCloseQueue() override {bool ret = close_window_queue.GetCount(); for(int i = 0; i < close_window_queue.GetCount(); i++) CloseWindow(close_window_queue[i]); close_window_queue.Clear(); return ret;}
+	
 	CoreWindow& GetWindow(TopWindow& ctrl);
 	CoreWindow* GetActiveWindow() {int i = wins.Find(active_id); return i >= 0 ? wins[i] : NULL;}
 	int GetActiveWindowPos() {return active_pos;}
@@ -121,10 +123,10 @@ public:
 	void OrderTileWindows();
 	void OrderTileWindowsVert();
 	void CloseAll();
-	//void Redraw(int child_id, bool only_pending);
+	//void Redraw(ProgDraw& pd, bool only_pending);
+	//void Redraw(ProgDraw& pd, int child_id, bool only_pending);
 	void SetEmptySpaceCtrl(EmptySpaceCtrl& esc) {this->esc = &esc;}
 	
-	bool ProcessCloseQueue() {bool ret = close_window_queue.GetCount(); for(int i = 0; i < close_window_queue.GetCount(); i++) CloseWindow(close_window_queue[i]); close_window_queue.Clear(); return ret;}
 	virtual bool CheckRender();
 	virtual bool DeepKey(dword key, int count);
 	virtual void CloseWindow(CoreWindow& cw) = 0;
