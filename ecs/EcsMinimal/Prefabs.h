@@ -143,7 +143,13 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 void DefaultEcsInitializer();
 void DefaultEcsStartup();
 
-#define ECS_PREFAB_MAIN(x) \
+#define ECS_PREFAB_MAIN \
+	NAMESPACE_UPP \
+	INITBLOCK {TS::Ecs::Engine::WhenInitialize << callback(TS::Ecs::DefaultEcsInitializer); TS::Ecs::Engine::WhenPreFirstUpdate << callback(TS::Ecs::DefaultEcsStartup);} \
+	END_UPP_NAMESPACE \
+	ECS_APP_MAIN
+
+#define ECS_PREFAB_MAIN_(x) \
 	NAMESPACE_UPP \
 	INITBLOCK {TS::Ecs::Engine::WhenInitialize << callback(TS::Ecs::DefaultEcsInitializer); TS::Ecs::Engine::WhenPreFirstUpdate << callback(TS::Ecs::DefaultEcsStartup); TS::Ecs::DefaultCreateOnStart<x>();} \
 	END_UPP_NAMESPACE \
@@ -156,7 +162,7 @@ void DefaultEcsStartup();
 	PREFAB_END \
 	APP_STARTUP_(TS::BindEcsToSerial) \
 	 \
-	ECS_PREFAB_MAIN(App) { \
+	ECS_PREFAB_MAIN_(App) { \
 		using namespace UPP; \
 		String eon_file  = Parallel::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
@@ -172,7 +178,7 @@ void DefaultEcsStartup();
 
 
 
-#define GUI_APP_MAIN_ \
+#define GUI_APP_MAIN__ \
 	void UserGuiMainFn_(); \
 	\
 	PREFAB_BEGIN(App) \
@@ -181,7 +187,28 @@ void DefaultEcsStartup();
 	\
 	APP_INITIALIZE_STARTUP2_2_ECS(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial, UserGuiMainFn_) \
 	\
-	ECS_PREFAB_MAIN(App) { \
+	ECS_PREFAB_MAIN_(App) { \
+		using namespace UPP; \
+		String eon_file  = Parallel::RealizeEonFile("DefaultGuiApp.eon"); \
+		if (FileExists(eon_file)) { \
+			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
+			TS::DefaultRunner(false, "Gui App", eon_file, 0, 0); \
+		} \
+		else { \
+			LOG("Eon file was not found"); \
+			Exit(1); \
+		} \
+		UserGuiMainFn_(); \
+		TS::DefaultRunnerStop(); \
+	} \
+	void UserGuiMainFn_()
+
+#define GUI_APP_MAIN_ \
+	void UserGuiMainFn_(); \
+	\
+	APP_INITIALIZE_STARTUP2_2_ECS(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial, UserGuiMainFn_) \
+	\
+	ECS_PREFAB_MAIN { \
 		using namespace UPP; \
 		String eon_file  = Parallel::RealizeEonFile("DefaultGuiApp.eon"); \
 		if (FileExists(eon_file)) { \

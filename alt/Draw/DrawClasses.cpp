@@ -47,7 +47,7 @@ void Draw::DrawPolyline(const Vector<Point>& vertices, int width, Color color, C
 }
 
 void Draw::DrawImage(int x, int y, const Image& img) {
-	TODO
+	DrawImage(x, y, img, 255);
 }
 
 void Draw::DrawImage(int x, int y, const Image& img, const Rect& src) {
@@ -103,6 +103,10 @@ bool DrawProxy::ClipOp(const Rect& r) {
 
 void DrawProxy::EndOp() {
 	ptr->EndOp();
+}
+
+void DrawProxy::DrawImage(int x, int y, Image img, byte alpha) {
+	ptr->DrawImage(x, y, img, alpha);
 }
 
 

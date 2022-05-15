@@ -25,7 +25,7 @@ struct DrawCommand {
 	int i[5];
 	RGBA clr;
 	Image img;
-	Vector<Trif> triangles;
+	Vector<float> triangles;
 	Vector<Point> pts;
 	bool is_cached = false;
 	
@@ -58,14 +58,16 @@ class ProgPainter : public Draw {
 	DrawCommand *cur_begin = NULL;
 	DrawCommand *cur = NULL;
 	
-	Vector<Point> tmp0, tmp1;
+	Vector<Point> tmp0;
 	Vector<double> angles;
+	Size sz;
 	
 	DrawCommand& GetNext();
 	
 	
 public:
-	ProgPainter(DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : prev(&prev), begin(&begin), end(&end), next(&next) {}
+	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : sz(sz), prev(&prev), begin(&begin), end(&end), next(&next) {}
+	ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
 	~ProgPainter() {/*Clear();*/}
 	
 	void Clear();
@@ -82,13 +84,12 @@ public:
 	void EndOp() override;
 	
 	
-	
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
-	void DrawImage(int x, int y, Image img, Byte alpha=255);
+	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	void DrawRect(Rect r, RGBA clr);
 	void DrawRect(int x, int y, int w, int h, RGBA clr);
 	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);
-	void DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c);
+	void DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c);
 	void DrawPolygon(const Vector<Point>& pts, RGBA c);
 	
 	void Offset(const Rect& r);
@@ -99,6 +100,7 @@ public:
 	
 	//void Attach(Ctrl& c);
 	void Attach(DrawCommand& begin, DrawCommand& end);
+	void AppendPick(DrawCommand* begin, DrawCommand* end);
 	
 };
 

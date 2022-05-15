@@ -72,10 +72,9 @@ struct VirtualGui3D {
 	virtual void        WaitEvent(int ms) = 0;
 	virtual void        WakeUpGuiThread() = 0;
 	virtual bool        IsWaitingEvent() = 0;
-	virtual void		Render(bool do_render) = 0;
 	
 	/*
-	
+	/virtual void		Render(bool do_render) = 0;
 	virtual dword       GetMouseButtons() = 0;
 	virtual dword       GetModKeys() = 0;
 	virtual bool        IsMouseIn() = 0;

@@ -7,9 +7,9 @@ Image DefaultImages::Arrow;
 
 
 
-void Image::MakeSysAccel() {
+/*void Image::MakeSysAccel() {
 	TODO
-}
+}*/
 
 const byte* Image::GetIter(int x, int y) const {
 	if (!data) return 0;

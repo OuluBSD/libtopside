@@ -24,14 +24,39 @@ Size ProgDraw::GetFrameSize() const {
 }
 
 Size ProgDraw::GetPageSize() const {
-	TODO
-	//return state.size;
+	if (!d.IsEmpty())
+		return d->GetPageSize();
+	return Size(0,0);
 }
 
 void ProgDraw::Create(Size sz){
 	Clear();
 	//state.size = sz;
-	d = new ProgPainter(cmd_screen_begin, render_begin, render_end, cmd_screen_end);
+	
+	LinkRender();
+	
+	d = new ProgPainter(sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
+}
+
+void ProgDraw::Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
+	Clear();
+	//state.size = sz;
+	
+	LinkRender();
+	
+	sub_begin.prev = &cmd_screen_begin;
+	sub_end.next = &cmd_screen_end;
+	cmd_screen_begin.next = &sub_begin;
+	cmd_screen_end.prev = &sub_end;
+	
+	d = new ProgPainter(sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
+}
+
+void ProgDraw::LinkRender() {
+	cmd_screen_begin.next = &render_begin;
+	render_begin.prev = &cmd_screen_begin;
+	cmd_screen_end.prev = &render_end;
+	render_end.next = &cmd_screen_end;
 }
 
 void ProgDraw::Clear(){
@@ -86,6 +111,10 @@ void ProgDraw::EndOp() {
 	d->End();
 }
 
+void ProgDraw::DrawImage(int x, int y, Image img, byte alpha) {
+	TODO
+}
+
 Draw& ProgDraw::Alpha() {
 	TODO
 }
@@ -93,6 +122,11 @@ Draw& ProgDraw::Alpha() {
 ProgPainter& ProgDraw::GetProgPainter() {
 	ASSERT(d);
 	return *d;
+}
+
+void ProgDraw::DetachTo(ProgPainter& pp) {
+	if (cmd_screen_begin.next)
+		pp.AppendPick(cmd_screen_begin.next, cmd_screen_end.prev);
 }
 
 

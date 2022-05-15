@@ -4,7 +4,7 @@ NAMESPACE_ECS_BEGIN
 using namespace TS;
 
 
-
+#if 0
 void VirtualGui::Render(bool do_render) {
 	if (ents.IsEmpty())
 		ents = rend->GetEngine().Get<EntityStore>();
@@ -12,7 +12,7 @@ void VirtualGui::Render(bool do_render) {
 	PoolRef root = ents->GetRoot();
 	Vector<RTuple<EntityRef, Transform2DRef, CoreWindowRef>> wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
 	//auto wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
-	Windows* windows = Ctrl::GetWindows();
+	//Windows* windows = Ctrl::GetWindows();
 	
 	for(int i = 0; i < wins.GetCount(); i++) {
 		RTuple<EntityRef, Transform2DRef, CoreWindowRef>& tuple = wins[i];
@@ -55,9 +55,10 @@ void VirtualGui::Render(bool do_render) {
 	
 	//Panic("");
 }
+#endif
 
 void VirtualGui::RenderFrame() {
-	
+	TODO
 	/*if (data->cam.IsEmpty()) {
 		Vector<Tuple<Entity*, Viewable*>> wins = data->ents->GetComponentsWithEntity<Viewable>();
 		

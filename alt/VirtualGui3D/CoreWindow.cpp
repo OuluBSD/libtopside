@@ -336,11 +336,12 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 }
 
 bool CoreWindow::Redraw(bool only_pending) {
+	return Ctrl::Redraw(only_pending);
+	
+	#if 0
 	if (!Ctrl::Redraw(only_pending))
 		return false;
 	
-	TODO
-	#if 0
 	Rect r = GetFrameRect();
 	Size sz = GetFrameSize();
 	int width = sz.cx;
@@ -441,9 +442,9 @@ bool CoreWindow::Redraw(bool only_pending) {
 	
     glClearColor(0, 0, 0, 1.0);
     
-    #endif
-    
 	return true;
+    
+    #endif
 }
 
 void CoreWindow::LeftDown(Point p, dword keyflags) {

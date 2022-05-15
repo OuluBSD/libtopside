@@ -68,6 +68,7 @@ public:
 	DrawCommand render_begin, render_end;
 	
 	
+	void LinkRender();
 public:
 	RTTI_DECL1(ProgDraw, Draw)
 	ProgDraw();
@@ -75,8 +76,10 @@ public:
 	ProgDraw(int w, int h);
 	
 	void Create(Size sz);
+	void Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end);
 	void Clear();
 	void Finish();
+	void DetachTo(ProgPainter& pp);
 	
 	operator Image() const;
 	
@@ -91,6 +94,7 @@ public:
 	                        int width, Color color, Color doxor) override;
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
+	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	Draw& Alpha();
 	
 	ProgPainter& GetProgPainter();

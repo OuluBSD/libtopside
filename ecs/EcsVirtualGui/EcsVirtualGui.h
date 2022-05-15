@@ -22,6 +22,7 @@ protected:
 	TS::OOSDL2::Events* ev = 0;*/
 	
 	//TS::AudioProxy			empty_aud;
+	Windows*					windows = 0;
 	SystemDraw					empty_draw;
 	VirtualGuiSystem*			sys;
 	Ecs::RenderingSystemRef		rend;
@@ -58,7 +59,7 @@ public:
 	//bool			IsOpen() const {return is_open;}
 	//EcsVirtualGui_MachineData* GetData() {return data;}
 	void			RecvAudio(byte* stream, int len);
-	void			Render(bool do_render) override;
+	//void			Render(bool do_render) override;
 	
 	//bool			InitMachine();
 	//bool			DeinitMachine();

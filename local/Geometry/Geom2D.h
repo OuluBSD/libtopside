@@ -269,7 +269,7 @@ class Triangulate {
 
 public:
 
-	static bool Process(const Vector<vec2>& contour, Vector<tri2>& result);
+	static bool Process(const Vector<vec2>& contour, Vector<float>& result);
 
 	static double Area(const Vector<vec2>& contour);
 

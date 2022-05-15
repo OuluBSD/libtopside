@@ -697,7 +697,7 @@ bool Triangulate::Snip(const Vector<vec2> &contour,int u,int v,int w,int n,int *
 	return true;
 }
 
-bool Triangulate::Process(const Vector<vec2> &contour, Vector<tri2> &result) {
+bool Triangulate::Process(const Vector<vec2> &contour, Vector<float> &result) {
 	/* allocate and initialize list of Vertices in polygon */
 	result.SetCount(0);
 	
@@ -755,10 +755,22 @@ bool Triangulate::Process(const Vector<vec2> &contour, Vector<tri2> &result) {
 			c = V[w];
 			
 			/* output Triangle */
+			#if 0
 			tri2& tri = result.Add();
 			tri.a = contour[a];
 			tri.b = contour[b];
 			tri.c = contour[c];
+			#else
+			const auto& aa = contour[a];
+			const auto& bb = contour[b];
+			const auto& cc = contour[c];
+			result.Add(aa[0]);
+			result.Add(aa[1]);
+			result.Add(bb[0]);
+			result.Add(bb[1]);
+			result.Add(cc[0]);
+			result.Add(cc[1]);
+			#endif
 			
 			m++;
 			

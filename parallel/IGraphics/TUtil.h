@@ -58,6 +58,7 @@ struct StateDrawT : GfxStateDraw {
 	                        int width, Color color, Color doxor) override {TODO}
 	bool ClipOp(const Rect& r) override {TODO}
 	void EndOp() override {TODO}
+	void DrawImage(int x, int y, Image img, byte alpha=255) override {TODO}
 	Draw& Alpha() {TODO}
 };
 

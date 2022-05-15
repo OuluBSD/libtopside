@@ -152,18 +152,34 @@ void EcsVideoBase::Uninitialize() {
 
 bool EcsVideoBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
+	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 	
-	if (wins && binders.IsEmpty() && screen_id < wins->GetScreenCount()) {
+	bool render_win = false;
+	if (wins && screen_id < wins->GetScreenCount()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		if (pd.GetPageSize() != sz)
+			pd.Create(sz);
+		ProgPainter& pp = pd.GetProgPainter();
 		Ecs::Windows& w = wins->GetScreen(screen_id);
-		if (!w.CheckRender())
-			return false;
+		
+		#if 0
+		ProgDraw sub;
+		sub.Create(sz, w.GetCommandBegin(), w.GetCommandEnd());
+		render_win = w.CheckRender();
+		sub.DetachTo(pp);
+		#else
+		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
+		render_win = w.CheckRender();
+		#endif
+		
+		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
 	
-	bool b =
-		io.active_sink_mask == iface_sink_mask &&
-		io.full_src_mask == 0 &&
-		binders.GetCount() > 0;
+	bool b =	io.active_sink_mask == iface_sink_mask &&
+				io.full_src_mask == 0 &&
+				(binders.GetCount() > 0 || render_win);
 	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	
 	return b;
 }
 
@@ -182,22 +198,18 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
-		Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 		
-		ASSERT(sz.cx > 0 && sz.cy > 0);
-		pd.Create(sz);
 		for (BinderIfaceVideo* b : binders)
 			b->Render(pd);
-		if (wins && screen_id < wins->GetScreenCount()) {
+		
+		/*if (wins && screen_id < wins->GetScreenCount()) {
 			Ecs::Windows& w = wins->GetScreen(screen_id);
 			ProgPainter& pp = pd.GetProgPainter();
 			pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
-			w.CheckRender();
-		}
-		pd.Finish();
+			TODO // redraw, not w.CheckRender();
+		}*/
 		
-		LOG("EcsVideoBase::Send: prog:");
-		LOG(pd.Dump());
+		LOG("EcsVideoBase::Send: prog:"); LOG(pd.cmd_screen_begin.GetQueueString());
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		data.ptr = &pd.cmd_screen_begin;

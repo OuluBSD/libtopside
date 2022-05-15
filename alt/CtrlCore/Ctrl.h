@@ -213,6 +213,7 @@ protected:
 protected:
 	friend class TS::Ecs::VirtualGui;
 	friend class TS::Ecs::WindowSystem;
+	friend class TopWindow;
 	
 	void SetFrameRect0(const Rect& r) {this->frame_r = r;}
 	

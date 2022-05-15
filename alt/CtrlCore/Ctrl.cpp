@@ -1,4 +1,5 @@
 #include "CtrlCore.h"
+#include <EcsLib/EcsLib.h>
 
 NAMESPACE_UPP
 
@@ -167,9 +168,7 @@ void Ctrl::SetFrameRect(const Rect& r) {
 }
 
 void Ctrl::SetFocus() {
-	TODO
-	/*
-	CoreWindow* w = GetWindow();
+	Ecs::CoreWindow* w = GetWindow();
 	if (w) w->DeepUnfocus();
 	
 	has_focus = true;
@@ -184,7 +183,7 @@ void Ctrl::SetFocus() {
 		if (c == w)
 			break;
 		c = c->GetParent();
-	}*/
+	}
 }
 
 
@@ -201,11 +200,10 @@ void Ctrl::SetPendingRedrawDeep() {
 }
 
 void Ctrl::Refresh() {
-	TODO
-	/*SetPendingRedrawDeep();
-	CoreWindow* win = GetWindow();
+	SetPendingRedrawDeep();
+	Ecs::CoreWindow* win = GetWindow();
 	if (win)
-		win->SetPendingPartialRedraw();*/
+		win->SetPendingPartialRedraw();
 }
 
 void Ctrl::PostCallback(Callback cb) {
@@ -304,7 +302,7 @@ bool Ctrl::Redraw(bool only_pending) {
 	if (pending_fx_redraw) {
 		ASSERT(cmd_begin.prev);
 		ASSERT(cmd_frame.next);
-		ProgPainter fx(*cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
+		ProgPainter fx(sz, *cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
 		
 		fx.Offset(frame_r);
 		
@@ -320,7 +318,7 @@ bool Ctrl::Redraw(bool only_pending) {
 	if (pending_redraw) {
 		ASSERT(cmd_frame.prev);
 		ASSERT(cmd_pre.next);
-		ProgPainter pre(*cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
+		ProgPainter pre(sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
 		
 		for(int i = 0; i < frames.GetCount(); i++) {
 			CtrlFrame& f = *frames[i];
@@ -360,7 +358,7 @@ bool Ctrl::Redraw(bool only_pending) {
 	if (pending_redraw) {
 		ASSERT(cmd_post.prev);
 		ASSERT(cmd_end.next);
-		ProgPainter post(*cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
+		ProgPainter post(sz, *cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
 		
 		if (frames.GetCount())
 			post.End();

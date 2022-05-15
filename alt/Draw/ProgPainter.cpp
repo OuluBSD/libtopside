@@ -1,38 +1,51 @@
 #include "Draw.h"
+#include <Geometry/Geometry.h>
 
 NAMESPACE_UPP
 
 
+ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
+	: sz(sz), begin(&begin), end(&end) {
+	prev = p.cur ? p.cur : p.begin;
+	next = p.end;
+	begin.prev = prev;
+	end.next = next;
+	prev->next = &begin;
+	next->prev = &end;
+}
+
 Size ProgPainter::GetPageSize() const {
-	TODO
+	return sz;
 }
 
 void ProgPainter::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
-	TODO
+	DrawLine(x1,y1,x2,y2,width,RGBA(color));
 }
 
 void ProgPainter::DrawRectOp(int x, int y, int cx, int cy, Color color) {
-	TODO
+	DrawRect(x,y,cx,cy,RGBA(color));
 }
 
 void ProgPainter::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
 	                    Color ink, int n, const int *dx) {
-	TODO
+	DrawText(x, y, WString(text).ToString(), font, RGBA(ink));
 }
 
 void ProgPainter::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
                                 const int *counts, int count_count,
                                 int width, Color color, Color doxor) {
-	TODO
+	DrawPolyline(vertices, vertex_count, width, color);
 }
 
 bool ProgPainter::ClipOp(const Rect& r) {
-	TODO
+	Offset(r);
+	return true;
 }
 
 void ProgPainter::EndOp() {
-	TODO
+	End();
 }
+
 
 
 
@@ -86,13 +99,13 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 	}
 }
 
-void ProgPainter::DrawImage(int x, int y, Image img, Byte alpha) {
+void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
 	DrawCommand& cmd = GetNext();
 	cmd.type = DRAW_IMAGE;
 	cmd.i[0] = x;
 	cmd.i[1] = y;
 	cmd.img = img;
-	cmd.img.MakeSysAccel();
+	//cmd.img.MakeSysAccel();
 	cmd.clr.a = (byte)(alpha / 255.0);
 }
 
@@ -134,28 +147,31 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 	cmd.i[0] = x;
 	cmd.i[1] = y;
 	cmd.img = Image(surf);
-	cmd.img.MakeSysAccel();
+	//cmd.img.MakeSysAccel();
 	cmd.clr.a = clr.a;
 }
 
-void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c) {
-	ASSERT(pts.GetCount() >= 3);
+void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c) {
+	ASSERT(pt_count >= 3);
 	DrawCommand& cmd = GetNext();
 	cmd.clr = c;
+	
+	static thread_local Vector<vec2> tmp1; // can't inherit Geometry to headers
 	
 	if (line_width == 1) {
 		cmd.type = DRAW_POLYLINE;
 		cmd.i[0] = line_width;
-		cmd.pts <<= pts;
+		cmd.pts.SetCount(pt_count);
+		memcpy(cmd.pts.Begin(), pts, pt_count * sizeof(Point));
 	}
 	else {
 		
-		tmp0.SetCount(pts.GetCount()-1);
+		tmp0.SetCount(pt_count-1);
 		tmp1.SetCount(0);
-		angles.SetCount(pts.GetCount()-1);
+		angles.SetCount(pt_count-1);
 		const Point* a = NULL;
 		const Point* b = &pts[0];
-		for(int i = 0; i < pts.GetCount()-1; i++) {
+		for(int i = 0; i < pt_count-1; i++) {
 			a = b;
 			b = &pts[i+1];
 			tmp0[i] = GetOffsets(*a, *b, line_width);
@@ -185,10 +201,10 @@ void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c)
 			o0 = o1;
 			o1 = &tmp0[i+1];
 			
-			Point al	(a->x - o0->x, a->y - o0->y);
-			Point b0l	(b->x - o0->x, b->y - o0->y);
-			Point b1l	(b->x - o1->x, b->y - o1->y);
-			Point cl	(c->x - o1->x, c->y - o1->y);
+			vec2 al	(a->x - o0->x, a->y - o0->y);
+			vec2 b0l(b->x - o0->x, b->y - o0->y);
+			vec2 b1l(b->x - o1->x, b->y - o1->y);
+			vec2 cl	(c->x - o1->x, c->y - o1->y);
 			
 			if (!i)
 				tmp1.Add(al);
@@ -197,7 +213,7 @@ void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c)
 				tmp1.Add(b0l);
 			}
 			else if (diff > 0) {
-				Point is = Intersect(al, b0l, b1l, cl);
+				vec2 is = Intersect(al, b0l, b1l, cl);
 				tmp1.Add(is);
 			}
 			else {
@@ -225,10 +241,10 @@ void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c)
 			o1 = o0;
 			o0 = &tmp0[i];
 			
-			Point ar	(a->x + o0->x, a->y + o0->y);
-			Point b0r	(b->x + o0->x, b->y + o0->y);
-			Point b1r	(b->x + o1->x, b->y + o1->y);
-			Point cr	(c->x + o1->x, c->y + o1->y);
+			vec2 ar	(a->x + o0->x, a->y + o0->y);
+			vec2 b0r	(b->x + o0->x, b->y + o0->y);
+			vec2 b1r	(b->x + o1->x, b->y + o1->y);
+			vec2 cr	(c->x + o1->x, c->y + o1->y);
 			
 			if (i == angles.GetCount()-2)
 				tmp1.Add(cr);
@@ -237,7 +253,7 @@ void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c)
 				tmp1.Add(b0r);
 			}
 			else if (diff < 0) {
-				Point is = Intersect(ar, b0r, b1r, cr);
+				vec2 is = Intersect(ar, b0r, b1r, cr);
 				tmp1.Add(is);
 			}
 			else {
@@ -249,12 +265,8 @@ void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c)
 				tmp1.Add(ar);
 		}
 		
-		TODO
-		
-		#if 0
 		cmd.type = DRAW_TRIANGLES;
 		Triangulate::Process(tmp1, cmd.triangles);
-		#endif
 		
 		//cmd.type = DRAW_POLYLINE;
 		//cmd.pts <<= tmp1;
@@ -296,20 +308,20 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		cur->next = &begin;
 		begin.prev = cur;
 		cur = &end;
-		cur_begin = cur;
+		//cur_begin = &begin;
 	}
 	else {
 		ASSERT(this->begin && this->end);
-		/*begin.prev = this->begin;
+		begin.prev = this->begin;
 		this->begin->next = &begin;
 		end.next = this->end;
 		this->end->prev = &end;
 		cur = &end;
-		cur_begin = cur;*/
-		prev->next = &begin;
+		cur_begin = &begin;
+		/*prev->next = &begin;
 		begin.prev = prev,
 		end.next = &begin;
-		begin.prev = &end;
+		begin.prev = &end;*/
 	}
 	/*if (cur) {
 		end.next = cur->next;
@@ -322,6 +334,29 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 	else {
 		TODO
 	}*/
+}
+
+void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
+	ASSERT(begin && end);
+	
+	if (cur) {
+		end->next = cur->next;
+		ASSERT(end->next);
+		end->next->prev = end;
+		cur->next = begin;
+		begin->prev = cur;
+		cur = end;
+		//cur_begin = begin;
+	}
+	else {
+		ASSERT(this->begin && this->end);
+		begin->prev = this->begin;
+		this->begin->next = begin;
+		end->next = this->end;
+		this->end->prev = end;
+		cur = end;
+		cur_begin = begin;
+	}
 }
 
 void ProgPainter::Link() {

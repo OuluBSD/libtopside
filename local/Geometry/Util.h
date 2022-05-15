@@ -242,6 +242,9 @@ void SetCrossMatrixPlus(mat3& res, const vec3& a);
 bool FactorCholesky(const mat3& A, vec3& out);
 bool IsPositiveDefinite(const mat3& m);
 
+
+vec2 Intersect(const vec2& a, const vec2& b, const vec2& c, const vec2& d);
+
 NAMESPACE_TOPSIDE_END
 
 

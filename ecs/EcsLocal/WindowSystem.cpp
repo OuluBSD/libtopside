@@ -42,9 +42,9 @@ void WindowSystem::Update(double dt) {
 		closed = w.ProcessCloseQueue() || closed;
 	}
 	
-	ASSERT(VirtualGui3DPtr);
+	/*ASSERT(VirtualGui3DPtr);
 	if (VirtualGui3DPtr)
-		VirtualGui3DPtr->Render(closed);
+		VirtualGui3DPtr->Render(closed);*/
 }
 
 void WindowSystem::Stop() {

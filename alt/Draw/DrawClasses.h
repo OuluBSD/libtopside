@@ -66,6 +66,7 @@ public:
 	                                int width, Color color, Color doxor) = 0;
 	virtual bool ClipOp(const Rect& r) = 0;
 	virtual void EndOp() = 0;
+	virtual void DrawImage(int x, int y, Image img, byte alpha) = 0;
 	
 	
 };
@@ -94,6 +95,7 @@ struct DrawProxy : Draw {
 	
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
+	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	
 };
 
