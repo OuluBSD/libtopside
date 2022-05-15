@@ -13,6 +13,8 @@ void SImageDraw::Create(Size sz, int stride) {
 	int len = sz.cx * sz.cy * stride;
 	pitch = sz.cx * stride;
 	pixels.SetCount(len);
+	
+	cur_area = sz;
 	//Zero();
 }
 
@@ -55,7 +57,7 @@ void SImageDraw::DrawTextOp(int x, int y, int angle, const wchar *text, Font fon
 void SImageDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
                         const int *counts, int count_count,
                         int width, Color color, Color doxor) {
-	if (width == 1) {
+	if (width <= 1) {
 	    const Point *it = vertices;
 		for(int i = 0; i < count_count; i++) {
 			int count = counts[i];
@@ -76,14 +78,71 @@ void SImageDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 }
 
 bool SImageDraw::ClipOp(const Rect& r) {
-	TODO
+	/*ASSERT(r == cur_area);
+	Op& o = ops.Add();
+	o.cur_area = cur_area;
+	cur_area = r;*/
+	return true;
 }
 
 void SImageDraw::EndOp() {
-	TODO
+	/*Op& o = ops.Top();
+	cur_area = o.cur_area;
+	ops.SetCount(ops.GetCount()-1);*/
 }
 
+void SImageDraw::DrawImage(int x, int y, Image img, byte alpha) {
+	//TODO
+}
 
+void SImageDraw::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
+	// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!)
+	if (a.y > b.y) Swap(a, b);
+	if (a.y > c.y) Swap(a, c);
+	if (b.y > c.y) Swap(b, c);
+	
+	bool lower = true;
+	bool upper = true;
+	
+	int total_height = c.y - a.y;
+	if (lower) {
+		for (int y = a.y; y <= b.y; y++) {
+			int segment_height = b.y - a.y + 1;
+			float alpha = (float)(y - a.y) / total_height;
+			float beta  = (float)(y - a.y) / segment_height; // be careful with divisions by zero
+			Point A = a + (c - a) * alpha;
+			Point B = a + (b - a) * beta;
+			if (A.x > B.x) Swap(A, B);
+			/*if (border) {
+				fb.DrawLine(A.x, y, A.x, y, 1, red);
+				fb.DrawLine(B.x, y, B.x, y, 1, green);
+				if (fill)
+					fb.DrawHLine(A.x, B.x, y, 1, white);
+			}
+			else*/
+				DrawHLine(A.x, B.x, y, clr);
+		}
+	}
+	
+	if (upper) {
+		for (int y = b.y; y <= c.y; y++) {
+			int segment_height =  c.y - b.y + 1;
+			float alpha = (float)(y - a.y) / total_height;
+			float beta  = (float)(y - b.y) / segment_height; // be careful with divisions by zero
+			Point A = a + (c - a) * alpha;
+			Point B = b + (c - b) * beta;
+			if (A.x > B.x) Swap(A, B);
+			/*if (border) {
+				fb.DrawLine(A.x, y, A.x, y, 1, red);
+				fb.DrawLine(B.x, y, B.x, y, 1, green);
+				if (fill)
+					fb.DrawHLine(A.x, B.x, y, 1, white);
+			}
+			else*/
+				DrawHLine(A.x, B.x, y, clr);
+		}
+	}
+}
 
 byte* SImageDraw::GetIterator(int x, int y) {
 	ASSERT(!pixels.IsEmpty());
@@ -251,6 +310,7 @@ void SImageDraw::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 		}
 	}
 }
+
 
 
 

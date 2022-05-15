@@ -1,6 +1,5 @@
 #include "IGraphics.h"
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -31,6 +30,8 @@ void DrawProg::Process(const DrawCommand* ptr) {
 		
 		ASSERT(cmd->next != cmd);
 		cmd = cmd->next;
+		if (cmd && cmd->next && cmd->next->prev != cmd)
+			break; // failsafe break
 	}
 }
 
@@ -66,11 +67,14 @@ void DrawProg::DrawRect(const DrawCommand& cmd) {
 void DrawProg::DrawTriangles(const DrawCommand& cmd) {
 	thread_local static Vector<Point> v;
 	v.SetCount(0);
-	for (const Trif& t : cmd.triangles) {
-		v << Point(t.a.x, t.a.y)
-		  << Point(t.c.x, t.c.y)
-		  << Point(t.b.x, t.b.y);
+	int triangles_count = cmd.triangles.GetCount() / 6;
+	const float* f = cmd.triangles.Begin();
+	for(int i = 0; i < triangles_count; i++) {
+		v << Point(f[0], f[1])
+		  << Point(f[2], f[3])
+		  << Point(f[4], f[5]);
 		((Draw*)this)->DrawPolygon(v, cmd.clr);
+		f += 6;
 	}
 }
 
@@ -83,15 +87,15 @@ void DrawProg::DrawPolygon(const DrawCommand& cmd) {
 }
 
 void DrawProg::DrawOffset(const DrawCommand& cmd) {
-	TODO
+	Rect r {cmd.i[0], cmd.i[1], cmd.i[2], cmd.i[3]};
+	((Draw*)this)->ClipOp(r);
 }
 
 void DrawProg::DrawEnd(const DrawCommand& cmd) {
-	TODO
+	((Draw*)this)->EndOp();
 }
 
 
 
 NAMESPACE_PARALLEL_END
 
-#endif

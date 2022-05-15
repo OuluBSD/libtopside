@@ -88,9 +88,10 @@ extern VirtualGui3D* VirtualGui3DPtr;
 class ImageDraw : public SImageDraw {
 public:
 	ImageDraw(Size sz) : SImageDraw(sz) {}
+	ImageDraw(Size sz, int stride) : SImageDraw(sz, stride) {}
 	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
 	
-	Size GetPageSize() const override;
+	/*Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
@@ -100,8 +101,9 @@ public:
 	                        int width, Color color, Color doxor) override;
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
+	void DrawImage(int x, int y, Image img, byte alpha) override;
 	
-	Draw& Alpha();
+	Draw& Alpha();*/
 	
 };
 

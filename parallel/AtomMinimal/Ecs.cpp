@@ -172,6 +172,7 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 		render_win = w.CheckRender();
 		#endif
 		
+		render_win = true;
 		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
 	
@@ -209,7 +210,8 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 			TODO // redraw, not w.CheckRender();
 		}*/
 		
-		LOG("EcsVideoBase::Send: prog:"); LOG(pd.cmd_screen_begin.GetQueueString());
+		//LOG("EcsVideoBase::Send: prog:"); LOG(pd.cmd_screen_begin.GetQueueString());
+		//pd.cmd_screen_begin.Check();
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		data.ptr = &pd.cmd_screen_begin;

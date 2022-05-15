@@ -59,7 +59,14 @@ void Draw::DrawImage(int x, int y, int cx, int cy, const Image& img) {
 }
 
 void Draw::DrawPolygon(const Vector<Point>& vertices, Color color, int width, Color outline, uint64 pattern, Color doxor) {
-	TODO
+	int tris = vertices.GetCount() / 3;
+	for(int i = 0; i < tris; i++) {
+		int off = i * 3;
+		const Point& a = vertices[off + 0];
+		const Point& b = vertices[off + 1];
+		const Point& c = vertices[off + 2];
+		DrawTriangle(a, b, c, color);
+	}
 }
 
 void Draw::DrawEllipse(const Rect& r, Color color, int pen, Color pencolor) {
@@ -107,6 +114,10 @@ void DrawProxy::EndOp() {
 
 void DrawProxy::DrawImage(int x, int y, Image img, byte alpha) {
 	ptr->DrawImage(x, y, img, alpha);
+}
+
+void DrawProxy::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
+	ptr->DrawTriangle(a, b, c, clr);
 }
 
 

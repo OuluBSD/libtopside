@@ -68,6 +68,7 @@ public:
 	virtual void EndOp() = 0;
 	virtual void DrawImage(int x, int y, Image img, byte alpha) = 0;
 	
+	virtual void DrawTriangle(Point a, Point b, Point c, RGBA clr) {Panic("unimplemented");}
 	
 };
 
@@ -96,6 +97,7 @@ struct DrawProxy : Draw {
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
+	void DrawTriangle(Point a, Point b, Point c, RGBA clr) override;
 	
 };
 

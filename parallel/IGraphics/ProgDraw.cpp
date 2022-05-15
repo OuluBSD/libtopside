@@ -130,5 +130,21 @@ void ProgDraw::DetachTo(ProgPainter& pp) {
 }
 
 
+
+
+
+ProgImage::ProgImage() {
+	
+}
+
+void ProgImage::Paint(DrawCommand& c, ImageDraw& id) {
+	draw.SetTarget(id);
+	draw.Process(&c);
+}
+
+
+//SDLCPU_EXCPLICIT_INITIALIZE_CLASS(ProgImage)
+
+
 NAMESPACE_PARALLEL_END
 

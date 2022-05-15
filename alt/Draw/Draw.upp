@@ -14,7 +14,6 @@ file
 	iml_header.h,
 	iml_source.h,
 	SDraw.h,
-	ProgPainter.cpp,
 	SDraw.cpp,
 	SImageDraw.cpp,
 	Chameleon.h;

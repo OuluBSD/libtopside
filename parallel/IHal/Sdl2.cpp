@@ -242,8 +242,10 @@ bool HalSdl2::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& i
 
 
 
-
-
+/*enum {
+	RENDSRC_BUF,
+	RENDSRC_IMAGEDRAW,
+};*/
 
 bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
@@ -254,20 +256,21 @@ bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a
 		return false;
 
 	String title = ws.GetString(".title", "SDL2 Window");
-	Size sz = ws.GetSize(".cx", ".cy", Size(1280,720));
+	dev.sz = ws.GetSize(".cx", ".cy", Size(1280,720));
 	bool fullscreen = ws.GetBool(".fullscreen", false);
 	bool sizeable = ws.GetBool(".sizeable", false);
 	bool maximized = ws.GetBool(".maximized", false);
 
 	HiValue& data = a.UserData();
-	data.Set("cx", sz.cx);
-	data.Set("cy", sz.cy);
+	data.Set("cx", dev.sz.cx);
+	data.Set("cy", dev.sz.cy);
 	data.Set("fullscreen", fullscreen);
 	data.Set("sizeable", sizeable);
 	data.Set("maximized", maximized);
 	data.Set("title", title);
 
-
+	//dev.render_src = RENDSRC_BUF;
+	
 	// Set init flag
 	dword sdl_flag = SDL_INIT_VIDEO;
 	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
@@ -356,6 +359,46 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 		
 		if (mem && len > 0 && len == frame_size) {
 			dev.fb.DrawFill(mem, len);
+		}
+		
+		return true;
+	}
+	else if (fmt.IsProg()) {
+		if (dev.id.IsEmpty())
+			dev.id.Create(dev.sz, 3);
+		
+		//Size sz = fb.GetSize();
+		//int channels = fb.GetChannels();
+		InternalPacketData& data = p->GetData<InternalPacketData>();
+		DrawCommand* cmd_screen_begin = (DrawCommand*)data.ptr;
+		
+		//pi.Create(sz, channels);
+		dev.pi.Paint(*cmd_screen_begin, dev.id);
+		
+		//dev.render_src = RENDSRC_IMAGEDRAW;
+		{
+			RTLOG("HalSdl2::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
+			
+			auto fb = dev.fb.GetActiveColorBuffer();
+			ASSERT(fb);
+			uint32 fmt = 0;
+			int access, w = 0, h = 0;
+			if (SDL_QueryTexture(fb, &fmt, &access, &w, &h) < 0 || w == 0 || h == 0)
+				return false;
+			SDL_Surface* surf = 0;
+			SDL_Rect r {0, 0, w, h};
+			if (SDL_LockTextureToSurface(fb, &r, &surf) < 0 || !surf)
+				return false;
+			int stride = surf->format->BytesPerPixel;
+			int pitch = surf->pitch;
+			byte* pixels = (byte*)surf->pixels;
+			int len = h * pitch;
+			int id_len = dev.id->Data().GetCount();
+			ASSERT(len == id_len);
+			if (len == id_len)
+				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
+			//memset(pixels, Random(0x100), len);
+			SDL_UnlockTexture(fb);
 		}
 		
 		return true;

@@ -55,6 +55,18 @@ String DrawCommand::ToString() const {
 	return s;
 }
 
+void DrawCommand::Check() const {
+	const DrawCommand* it = this;
+	while (it) {
+		it = it->next;
+		if (it == this)
+			break;
+		if (it && it->next->prev != it) {
+			Panic("DrawCommand::Check failed");
+		}
+	}
+}
+	
 String DrawCommand::GetQueueString() const {
 	String s;
 	const DrawCommand* it = this;
@@ -64,6 +76,10 @@ String DrawCommand::GetQueueString() const {
 		it = it->next;
 		if (it == this)
 			break;
+		if (it && it->next->prev != it) {
+			s << "<error: iterator moved to non-reversable item>\n";
+			break; // failsafe break
+		}
 	}
 	return s;
 }

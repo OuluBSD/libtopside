@@ -128,6 +128,8 @@ public:
 	
 };
 
+#endif
+
 class DrawProg : public DrawProxy {
 	
 public:
@@ -147,7 +149,15 @@ public:
 	
 };
 
-#endif
+class ProgImage {
+	DrawProg draw;
+	
+public:
+	ProgImage();
+	void Paint(DrawCommand& c, ImageDraw& id);
+	
+};
+
 
 NAMESPACE_PARALLEL_END
 

@@ -45,6 +45,9 @@ struct HalSdl2 {
 		SDL_Window* win;
 		SDL_Renderer* rend;
 		FramebufferT<SdlCpuGfx> fb;
+		One<ImageDraw> id;
+		Size sz;
+		ProgImage pi;
 	};
 	
 	struct NativeSw3dVideoSink {

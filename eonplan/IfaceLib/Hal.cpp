@@ -97,18 +97,22 @@ PKG(Hal, Hal, H) {
 		//VENDOR_CLASS(Renderer, SDL_Renderer*)
 		
 		v->AddStruct("NativeVideoSink")
-			.Add("display",	"void*")
-			.Add("win",		"SDL_Window*")
-			.Add("rend",	"SDL_Renderer*")
-			.Add("fb",		"FramebufferT<SdlCpuGfx>")
+			.Add("display",		"void*")
+			.Add("win",			"SDL_Window*")
+			.Add("rend",		"SDL_Renderer*")
+			.Add("fb",			"FramebufferT<SdlCpuGfx>")
+			.Add("id",			"One<ImageDraw>")
+			//.Add("render_src",	"int")
+			.Add("sz",			"Size")
+			.Add("pi",			"ProgImage")
 			;
 		
 		v->AddStruct("NativeSw3dVideoSink")
-			.Add("display",	"void*")
-			.Add("win",		"SDL_Window*")
-			.Add("rend",	"SDL_Renderer*")
-			.Add("fb",		"SDL_Texture*")
-			.Add("accel",	"GfxAccelAtom<SdlSwGfx>")
+			.Add("display",		"void*")
+			.Add("win",			"SDL_Window*")
+			.Add("rend",		"SDL_Renderer*")
+			.Add("fb",			"SDL_Texture*")
+			.Add("accel",		"GfxAccelAtom<SdlSwGfx>")
 			;
 		
 		v->AddStruct("NativeOglVideoSink")

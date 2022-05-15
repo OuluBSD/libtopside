@@ -37,6 +37,7 @@ file
 	ModelBuilder.cpp,
 	Draw.h,
 	Draw.cpp,
+	ProgPainter.cpp,
 	Frustum.h,
 	Frustum.cpp,
 	Compare.h,
