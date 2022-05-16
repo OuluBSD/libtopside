@@ -57,15 +57,20 @@ String DrawCommand::ToString() const {
 
 void DrawCommand::Check() const {
 	const DrawCommand* it = this;
+	int i = 0;
 	while (it) {
-		it = it->next;
-		if (it == this)
-			break;
-		if (it && it->next->prev != it) {
+		if (it && it->next && it->next->prev != it) {
+			LOG(GetQueueString());
 			Panic("DrawCommand::Check failed");
 		}
+		if (it->next == this) {
+			Panic("Circular command loop");
+		}
+		it = it->next;
+		i++;
 	}
 }
+
 	
 String DrawCommand::GetQueueString() const {
 	String s;
@@ -73,13 +78,13 @@ String DrawCommand::GetQueueString() const {
 	int i = 0;
 	while (it) {
 		s << i++ << ": " << it->ToString() << "\n";
-		it = it->next;
-		if (it == this)
-			break;
-		if (it && it->next->prev != it) {
+		if (it && it->next && it->next->prev != it) {
 			s << "<error: iterator moved to non-reversable item>\n";
 			break; // failsafe break
 		}
+		it = it->next;
+		if (it == this)
+			break;
 	}
 	return s;
 }

@@ -395,8 +395,21 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 			int len = h * pitch;
 			int id_len = dev.id->Data().GetCount();
 			ASSERT(len == id_len);
-			if (len == id_len)
+			if (len == id_len) {
+				// optional vertical invert
+				#if 1
 				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
+				#else
+				byte* to = pixels;
+				byte* from = dev.id->Data().Begin();
+				from += (h - 1) * pitch;
+				for (int y = 0; y < h; y++) {
+					memcpy(to, from, pitch);
+					to += pitch;
+					from -= pitch;
+				}
+				#endif
+			}
 			//memset(pixels, Random(0x100), len);
 			SDL_UnlockTexture(fb);
 		}

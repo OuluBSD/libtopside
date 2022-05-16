@@ -153,12 +153,12 @@ void EcsVideoBase::Uninitialize() {
 bool EcsVideoBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
+	if (pd.GetPageSize() != sz)
+		pd.Create(sz);
 	
 	bool render_win = false;
 	if (wins && screen_id < wins->GetScreenCount()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		if (pd.GetPageSize() != sz)
-			pd.Create(sz);
 		ProgPainter& pp = pd.GetProgPainter();
 		Ecs::Windows& w = wins->GetScreen(screen_id);
 		
@@ -168,9 +168,12 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 		render_win = w.CheckRender();
 		sub.DetachTo(pp);
 		#else
+		pd.cmd_screen_begin.Check();
 		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
+		pd.cmd_screen_begin.Check();
 		render_win = w.CheckRender();
 		#endif
+		pd.cmd_screen_begin.Check();
 		
 		render_win = true;
 		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
@@ -211,7 +214,7 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 		}*/
 		
 		//LOG("EcsVideoBase::Send: prog:"); LOG(pd.cmd_screen_begin.GetQueueString());
-		//pd.cmd_screen_begin.Check();
+		pd.cmd_screen_begin.Check();
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		data.ptr = &pd.cmd_screen_begin;

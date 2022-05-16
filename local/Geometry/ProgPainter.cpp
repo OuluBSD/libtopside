@@ -301,7 +301,17 @@ void ProgPainter::End() {
 
 void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 	//ASSERT(!begin.prev && !end.next);
+	if (this->begin->next == &begin && this->end->prev == &end) {
+		//cur = &end;
+		//cur_begin = &begin;
+		cur = 0;
+		cur_begin = 0;
+		return;
+	}
 	if (cur) {
+		TODO
+	}
+	/*if (cur) {
 		end.next = cur->next;
 		ASSERT(end.next);
 		end.next->prev = &end;
@@ -309,8 +319,9 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		begin.prev = cur;
 		cur = &end;
 		//cur_begin = &begin;
-	}
-	else {
+	}*/
+	else
+	{
 		ASSERT(this->begin && this->end);
 		begin.prev = this->begin;
 		this->begin->next = &begin;

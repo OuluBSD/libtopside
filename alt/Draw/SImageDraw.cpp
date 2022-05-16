@@ -2,7 +2,22 @@
 
 NAMESPACE_UPP
 
-
+/*
+Clipping places:
+DrawLineOp
+        DrawPixel
+DrawRectOp
+        DrawHLine
+DrawPolyPolylineOp
+        DrawLine
+DrawTriangle
+        DrawHLine
+DrawPixel0
+x DrawPixel
+x DrawHLine
+x DrawLine
+        DrawPixel0
+*/
 void SImageDraw::Create(Size sz) {
 	Create(sz, 4);
 }
@@ -77,22 +92,86 @@ void SImageDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	}
 }
 
-bool SImageDraw::ClipOp(const Rect& r) {
-	/*ASSERT(r == cur_area);
+bool SImageDraw::ClipOp(const Rect& r0) {
+	Rect r = r0;
+	r.left = max(0, r.left);
+	r.right = max(0, r.right);
+	r.top = max(0, r.top);
+	r.bottom = max(0, r.bottom);
+	
+	Rect new_area = RectC(
+		cur_area.left + r.left,
+		cur_area.top + r.top,
+		r.GetWidth(),
+		r.GetHeight());
+	
+	new_area.left = min(cur_area.right, new_area.left);
+	new_area.right = min(cur_area.right, new_area.right);
+	new_area.top = min(cur_area.bottom, new_area.top);
+	new_area.bottom = min(cur_area.bottom, new_area.bottom);
+	
 	Op& o = ops.Add();
 	o.cur_area = cur_area;
-	cur_area = r;*/
-	return true;
+	cur_area = new_area;
+	
+	return new_area.GetWidth() > 0 && new_area.GetHeight() > 0;
 }
 
 void SImageDraw::EndOp() {
-	/*Op& o = ops.Top();
+	Op& o = ops.Top();
 	cur_area = o.cur_area;
-	ops.SetCount(ops.GetCount()-1);*/
+	ops.SetCount(ops.GetCount()-1);
 }
 
 void SImageDraw::DrawImage(int x, int y, Image img, byte alpha) {
-	//TODO
+	Size sz = img.GetSize();
+	Rect r = RectC(x, y, sz.cx, sz.cy);
+	if (!DoOps(r))
+		return;
+	
+	int x0 = x, y0 = y;
+	DoOpsX(x0);
+	DoOpsY(y0);
+	
+	int src_x0 = r.left - x0;
+	int src_y0 = r.top - y0;
+	int src_x1 = r.right - x0;
+	int src_y1 = r.bottom - y0;
+	int src_stride = img.GetStride();
+	int src_pitch = img.GetPitch();
+	const byte* begin = img.Begin();
+	const byte* row_begin = begin +(src_x0 * src_stride + src_y0 * src_pitch);
+	bool src_alpha = src_stride == 4;
+	
+	int stride = GetStride();
+	int common_stride = min(stride, src_stride);
+	
+	for (int yi = src_y0; yi < src_y1; yi++) {
+		int dst_x = r.left + src_x0;
+		int dst_y = r.top + yi;
+		byte* it = GetIterator(dst_x, dst_y);
+		const byte* src = row_begin;
+		
+		for (int xi = src_x0; xi < src_x1; xi++) {
+			byte pix_alpha = src_alpha ? (byte)(((int)alpha * (int)src[3]) / 256) : alpha;
+			if (pix_alpha == 255) {
+				for(int i = 0; i < common_stride; i++) {
+					//it[i] = 255;
+					it[i] = src[i];
+				}
+			}
+			else {
+				for(int i = 0; i < common_stride; i++) {
+					it[i] = ((int)src[i] * (int)pix_alpha + (int)it[i] * (int)(255 - pix_alpha)) / (int)255;
+				}
+			}
+			
+			it += stride;
+			src += src_stride;
+		}
+		
+		row_begin += src_pitch;
+	}
 }
 
 void SImageDraw::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
@@ -188,6 +267,9 @@ byte SImageDraw::AtRGBA(RGBA rgba, int i) {
 }
 
 void SImageDraw::DrawPixel(int x, int y, RGBA color) {
+	if (!DoOpsX(x) || !DoOpsY(y))
+		return;
+	
 	int width = GetWidth();
 	int height = GetHeight();
 	if (x >= 0 && x < width &&
@@ -201,6 +283,9 @@ void SImageDraw::DrawPixel(int x, int y, RGBA color) {
 }
 
 void SImageDraw::DrawPixel(int x, int y, Color color) {
+	if (!DoOpsX(x) || !DoOpsY(y))
+		return;
+	
 	int width = GetWidth();
 	int height = GetHeight();
 	RGBA c = color;
@@ -229,11 +314,14 @@ void SImageDraw::DrawPixel(int x, int y, Color color) {
 }
 
 void SImageDraw::DrawHLine(int x0, int x1, int y, Color color) {
+	if (!DoOpsHorz(x0, x1) || !DoOpsY(y))
+		return;
+	
 	if (x0 > x1) Swap(x0, x1);
 	
 	int width = GetWidth();
 	int height = GetHeight();
-	y = height - 1 - y;
+	//y = height - 1 - y;
 	if (y < 0 || y >= height) return;
 	x0 = std::max(0, std::min(width-1, x0));
 	x1 = std::max(0, std::min(width-1, x1));
@@ -270,13 +358,18 @@ void SImageDraw::DrawHLine(int x0, int x1, int y, Color color) {
 }
 
 void SImageDraw::DrawLine(int x0, int y0, int x1, int y1, Color color) {
+	DoOpsX(x0);
+	DoOpsX(x1);
+	DoOpsY(y0);
+	DoOpsY(y1);
+	
 	byte* data = GetIterator(0, 0);
 	int pitch = GetPitch();
 	int stride = GetStride();
 	int width = GetWidth();
 	int height = GetHeight();
-	y0 = height - 1 - y0;
-	y1 = height - 1 - y1;
+	//y0 = height - 1 - y0;
+	//y1 = height - 1 - y1;
 	
 	bool steep = false;
 	if (std::abs(x0 - x1) < std::abs(y0 - y1)) {
@@ -294,6 +387,7 @@ void SImageDraw::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 	int error2 = 0;
 	int y = y0;
 	for (int x = x0; x <= x1; x++) {
+		
 		if (steep) {
 			if (x >= 0 && x < height && y >= 0 && y < width)
 				DrawPixel0(data, stride, pitch, y, x, color);
@@ -310,6 +404,38 @@ void SImageDraw::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 		}
 	}
 }
+
+bool SImageDraw::DoOpsX(int& x) {
+	x += cur_area.left;
+	return x < cur_area.right && x >= cur_area.left;
+}
+
+bool SImageDraw::DoOpsY(int& y) {
+	y += cur_area.top;
+	return y < cur_area.bottom && y >= cur_area.top;
+}
+
+bool SImageDraw::DoOpsHorz(int& x0, int& x1) {
+	x0 += cur_area.left;
+	x1 += cur_area.left;
+	if ((x0 < cur_area.left && x1 < cur_area.left) || (x0 >= cur_area.right && x1 >= cur_area.right))
+		return false;
+	x0 = max(cur_area.left, min(cur_area.right-1, x0));
+	x1 = max(cur_area.left, min(cur_area.right-1, x1));
+	return true;
+}
+
+bool SImageDraw::DoOps(Rect& r) {
+	r.left += cur_area.left;
+	r.right += cur_area.left;
+	r.top += cur_area.top;
+	r.bottom += cur_area.top;
+	if (r.right <= cur_area.left || r.left >= cur_area.right ||
+		r.bottom <= cur_area.top || r.top >= cur_area.bottom)
+		return false;
+	return true;
+}
+
 
 
 

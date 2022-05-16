@@ -13,7 +13,7 @@ void Button::SetImage(Image& img) {
 
 void Button::Paint(Draw& d) {
 	Size sz = GetSize();
-	d.DrawRect(sz, GrayColor());
+	d.DrawRect(sz, GrayColor(256-64));
 	if (img) {
 		Size isz = img.GetSize();
 		int x = (sz.cx - isz.cx) / 2;

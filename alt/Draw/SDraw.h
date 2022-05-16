@@ -78,6 +78,11 @@ struct SImageDraw : Draw {
 	byte AtRGBA(RGBA rgba, int i);
 	void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color);
 	
+	bool DoOpsX(int& x);
+	bool DoOpsY(int& y);
+	bool DoOpsHorz(int& x0, int& x1);
+	bool DoOps(Rect& r);
+	
 public:
 	SImageDraw() {}
 	SImageDraw(Size sz) : sz(0,0) {Create(sz);}
