@@ -2,7 +2,7 @@
 #define _BuggyCar_BuggyCar_h_
 
 #include <EcsComplete/EcsComplete.h>
-#include <Physics/Physics.h>
+#include <IPhysics/Physics.h>
 
 
 #define SOFTGL 0

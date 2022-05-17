@@ -12,7 +12,6 @@ file
 	Volumetric.cpp,
 	Camera.cpp,
 	Ev.cpp,
-	Fys.cpp,
 	Vr.cpp,
 	Midi.cpp,
 	Net.cpp,

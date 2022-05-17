@@ -5,7 +5,7 @@ uses
 	EcsEssential,
 	EcsLocal,
 	EcsMinimal,
-	Physics;
+	IPhysics;
 
 uses(GUI) EcsCtrl;
 

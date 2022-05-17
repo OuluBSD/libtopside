@@ -1854,21 +1854,21 @@ void GetCorners(const Frustum& f, vec3* outCorners) {
 
 bool Intersects(const Frustum& f, const Point& p) {
 	for (int i = 0; i < 6; ++i) {
-		vec3 normal = f.planes[i].normal;
-		float dist = f.planes[i].distance;
+		vec3 normal = f[i].normal;
+		float dist = f[i].distance;
 		float side = Dot(p, normal) + dist;
 		if (side < 0.0f) {
 			return false;
 		}
 	}
-
+	
 	return true;
 }
 
 bool Intersects(const Frustum& f, const Sphere& s) {
 	for (int i = 0; i < 6; ++i) {
-		vec3 normal = f.planes[i].normal;
-		float dist = f.planes[i].distance;
+		vec3 normal = f[i].normal;
+		float dist = f[i].distance;
 		float side = Dot(s.position, normal) + dist;
 		if (side < -s.radius) {
 			return false;
@@ -1922,7 +1922,7 @@ float Classify(const OBB& obb, const Plane& plane) {
 
 bool Intersects(const Frustum& f, const OBB& obb) {
 	for (int i = 0; i < 6; ++i) {
-		float side = Classify(obb, f.planes[i]);
+		float side = Classify(obb, f[i]);
 		if (side < 0) {
 			return false;
 		}
@@ -1932,7 +1932,7 @@ bool Intersects(const Frustum& f, const OBB& obb) {
 
 bool Intersects(const Frustum& f, const AABB& aabb) {
 	for (int i = 0; i < 6; ++i) {
-		float side = Classify(aabb, f.planes[i]);
+		float side = Classify(aabb, f[i]);
 		if (side < 0) {
 			return false;
 		}

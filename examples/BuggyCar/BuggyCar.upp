@@ -1,5 +1,5 @@
 uses
-	Physics,
+	IPhysics,
 	EcsComplete;
 
 file
