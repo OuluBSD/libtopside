@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void BuggyCarVertexShader::Process(SdlCpuVertexShaderArgs& a) {
+void BuggyCarVertexShader::Process(VertexShaderArgsT<SdlSwGfx>& a) {
 	int width = a.generic->iResolution[0];
 	int height = a.generic->iResolution[1];
 	vec4 pos = a.v.position.Splice().Embed();
@@ -21,7 +21,7 @@ void BuggyCarVertexShader::Process(SdlCpuVertexShaderArgs& a) {
 	//ASSERT(a.v.position[2] >= 0.0f);
 }
 
-void BuggyCarFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
+void BuggyCarFragmentShader::Process(FragmentShaderArgsT<SdlSwGfx>& args) {
 	#if 0
 	float w = args.generic->iResolution[0];
 	float h = args.generic->iResolution[1];
@@ -52,6 +52,8 @@ void BuggyCarFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
 	
 	intensity = intensity * 0.5 + 0.5;
 	
+	TODO
+	/*
 	auto& diffuse = args.tex_img[TEXTYPE_DIFFUSE];
 	if (diffuse) {
 		Texture& tex = diffuse->GetGeomTex();
@@ -81,6 +83,7 @@ void BuggyCarFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
 		used_clr[1] = intensity;
 		used_clr[2] = intensity;
 	}
+	*/
 	#endif
 }
 

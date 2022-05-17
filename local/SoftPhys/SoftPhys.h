@@ -8,10 +8,10 @@
 #define SOFTPHYS SoftPhys
 	
 #if 1 // flagDEBUGSOFTPHYS
-#define SOFTPHYS_RENDER 1
+#define SOFTPHYS_RENDER 0
 
 #define SOFTPHYS_RENDER_COMMON \
-	void Refresh(GfxDataState& s);
+	void Refresh(Parallel::GfxDataState& s);
 
 #else
 #define SOFTPHYS_RENDER_COMMON

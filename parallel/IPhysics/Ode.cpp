@@ -1,8 +1,8 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
 #ifdef flagODE
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void OdeFys::InitializeLibrary() {
@@ -391,6 +391,6 @@ void OdeFys::SetMass(NativeMass& mass, float kg) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

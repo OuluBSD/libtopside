@@ -18,6 +18,8 @@ OpenGLMessageCallback( GLenum source,
 	if (!IsGfxAccelDebugMessages() &&
 		severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 		return;
+	if (type == GL_DEBUG_TYPE_PERFORMANCE_ARB)
+		return;
 	String s;
 	s << "OpenGL debug: ";
 	if (type == GL_DEBUG_TYPE_ERROR)

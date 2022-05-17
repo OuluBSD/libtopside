@@ -3,13 +3,24 @@
 NAMESPACE_ECS_BEGIN
 
 
+void DefaultEcsSerialInitializer() {
+	Machine& mach = GetActiveMachine();
+	
+	#ifdef flagODE
+	mach.FindAdd<SystemT<OdeFys>>();
+	#else
+	mach.FindAdd<SystemT<TosFys>>();
+	#endif
+}
+
 void DefaultEcsInitializer() {
 	Engine& eng = GetActiveEngine();
+	
 	eng.GetAdd<RenderingSystem>();
 	eng.GetAdd<EntityStore>();
 	eng.GetAdd<ComponentStore>();
 	#ifdef flagODE
-	eng.GetAdd<OdeSystem>();
+	//eng.GetAdd<SystemT<OdeFys>>();
 	#else
 	//eng.GetAdd<TosSystem>();
 	#endif
@@ -20,7 +31,7 @@ void DefaultEcsInitializer() {
 	eng.GetAdd<WindowSystem>();
 	#endif
 	
-	//Serial::Machine& mach = Serial::GetActiveMachine();
+	//
 	//eng.GetAdd<PhysicsSystem>();
 	
 	/*

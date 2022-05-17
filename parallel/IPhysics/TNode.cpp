@@ -1,6 +1,6 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Fys>
@@ -12,7 +12,7 @@ typename Fys::System* NodeT<Fys>::GetSystem() {
 }
 
 template <class Fys>
-typename Ecs::SystemT<Fys>* NodeT<Fys>::GetSystemT() {
+SystemT<Fys>* NodeT<Fys>::GetSystemT() {
 	NodeT* n = this;
 	while (n->owner)
 		n = n->owner;
@@ -48,4 +48,4 @@ typename Fys::NativeSpace& NodeT<Fys>::GetNativeWorldSpace(bool dbg_chk) {
 
 FYS_EXCPLICIT_INITIALIZE_CLASS(NodeT)
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

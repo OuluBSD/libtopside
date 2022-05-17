@@ -1,62 +1,69 @@
-#ifndef _System_PhysicsPrefab_h_
-#define _System_PhysicsPrefab_h_
+#ifndef _IPhysics_TModel_h_
+#define _IPhysics_TModel_h_
 
-#if 0
-#ifdef flagODE
-
-NAMESPACE_ECS_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-
-struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane> {
-	RTTI_DECL2(StaticGroundPlane, OdeObject, Component<StaticGroundPlane>)
+template <class Fys>
+class ScalarObject : public Fys::Object {
+	using Object = typename Fys::Object;
+	using Float = typename Fys::Float;
 	
-	typedef StaticGroundPlane CLASSNAME;
+protected:
+	vec3 sides;
 	
-	using Parent = Entity;
-	
-	void operator=(const StaticGroundPlane& ) {Panic("Not implemented");}
-	COMP_DEF_VISIT
-	
-	void OnAttach() override {
-		OdeObject::OnAttach();
-		
-		geom = dCreatePlane(GetSpace()->GetSpaceId(), 0, 1, 0, 0);
-		
-		is_override_phys_geom = true;
-		override_geom = identity<mat4>();
-		
-		ModelBuilder mb;
-		mb	.AddPlane(vec3(-50, 0, -50), vec2(100, 100))
-			.SetMaterial(DefaultMaterial());
-		loader = mb.AsModel();
+public:
+	RTTI_DECL1(ScalarObject, Object)
+	ScalarObject() {
+		for (int k = 0; k < 3; k++) sides[k] = 1.0;
+	}
+	void SetRandomSize() {
+		for (int k = 0; k < 3; k++) sides[k] = Randomf() * 0.5 + 0.1;
 	}
 	
-	String ToString() override {return "StaticGroundPlane";}
+	String ToString() override {return "ScalarObject";}
 };
 
-using StaticGroundPlaneRef = Ref<StaticGroundPlane>;
-
-struct StaticGroundPlanePrefab :
-	EntityPrefab<Transform, Renderable, StaticGroundPlane>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-		auto ground = components.Get<StaticGroundPlaneRef>();
+template <class Fys>
+struct Sphere : public ScalarObject<Fys> {
+	using ScalarObject = ScalarObject<Fys>;
+	using Object = typename Fys::Object;
+	
+	double radius = 0.102;
+	double wmass  = 0.1;
+	
+	RTTI_DECL1(Sphere, ScalarObject)
+	
+	void OnAttach() override {
+		Object::OnAttach();
 		
-		components.Get<TransformRef>()->position[1] = -5.0;
-		components.Get<RenderableRef>()->cb.Add(ground->GetRefreshCallback());
+		// Set orientation from axis (1i+0j+0k) and it's (angle 90 degrees)
+		this->SetOrientation(1, 0, 0, M_PI*0.5);
 		
-		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
-		OdeSystem& ow = CastRef<OdeSystem>(*w);
-		StaticGroundPlaneRef plane = components.Get<StaticGroundPlaneRef>();
-		ASSERT(plane);
-		ow.OdeNode::Attach(*plane);
+		// Set mass function for physics body as sphere
+		Fys::SetMassFunctionSphere(this->mass, this->sides[0], radius);
 		
-        return components;
-    }
+		// Set mass for the mass function
+		Fys::SetMass(this->mass, wmass);
+		
+		// Set 3D geometry for the object as sphere
+		Fys::SetGeomModelSphere(this->geom, radius);
+		
+		ModelBuilder mb;
+		mb	.AddSphere(vec3(0., 0., 0.), radius)
+			.SetMaterial(DefaultMaterial());
+		this->loader = mb;
+		
+		this->AttachContent();
+	}
+	
+	String ToString() override {return "Sphere";}
 };
+
+
+
+#if 0
+
 
 struct StaticBox : public OdeObject {
 	double width = 1.0, height = 1.0, length = 1.0;
@@ -127,9 +134,9 @@ struct OdeSphere : public OdeScalarObject {
 	String ToString() override {return "Sphere";}
 };
 
-
-NAMESPACE_ECS_END
-
 #endif
-#endif
+
+
+NAMESPACE_PARALLEL_END
+
 #endif

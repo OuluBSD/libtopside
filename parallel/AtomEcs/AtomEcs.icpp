@@ -1,0 +1,16 @@
+#include "AtomEcs.h"
+
+NAMESPACE_UPP
+
+
+INITBLOCK_(AtomEcs) {
+	using namespace TS::Parallel;
+	using namespace TS::Serial;
+	using namespace TS;
+	
+	Factory::RegisterAtom<EcsProgVideo>();
+	
+}
+
+
+END_UPP_NAMESPACE

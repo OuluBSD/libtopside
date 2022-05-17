@@ -1,18 +1,18 @@
-#ifndef _Physics_TSystem_h_
-#define _Physics_TSystem_h_
+#ifndef _IPhysics_TSystem_h_
+#define _IPhysics_TSystem_h_
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Fys>
 struct SystemT :
-	System<SystemT<Fys>>,
+	Parallel::System<SystemT<Fys>>,
 	NodeT<Fys>
 {
 	using Base = SystemT<Fys>;
 	using Node = NodeT<Fys>;
 	using Space = SpaceT<Fys>;
-	using EcsSystem = System<SystemT<Fys>>;
+	using System = System<SystemT<Fys>>;
 	using NativeWorld = typename Fys::NativeWorld;
 	using NativeSpace = typename Fys::NativeSpace;
 	using NativeJointGroup = typename Fys::NativeJointGroup;
@@ -30,14 +30,16 @@ protected:
 	Space space;
 	
 	
-	typedef SystemT<Fys> CLASSNAME;
-	SystemT(Engine& e) {
+public:
+	RTTI_DECL2(SystemT, System, Node)
+	
+	static vec3 EarthGravity() {return vec3(0, -9.81, 0);}
+	
+	SystemT(Machine& m) : RefScopeParent<RefParent1<MetaMachineBase>>(m) {
 		world = Null;
 		contactgroup = Null;
 		threading = Null;
 		pool = Null;
-		
-		this->SetParent(e);
 		
 		Fys::InitializeLibrary();
 		Fys::CreateWorld(world);
@@ -55,12 +57,6 @@ protected:
 		Fys::AttachThreadPool(threading, pool);
 		Fys::AttachThreading(world, threading);
 	}
-	
-public:
-	RTTI_DECL2(SystemT, EcsSystem, Node)
-	using Parent = Engine;
-	
-	static vec3 EarthGravity() {return vec3(0, -9.81, 0);}
 	
 	~SystemT() {
 		Fys::DetachThreading(threading);
@@ -113,11 +109,11 @@ public:
 	static void StaticNearCallbackC(void *data, NativeGeom o1, NativeGeom o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	static void StaticNearCallbackR(void *data, NativeGeom& o1, NativeGeom& o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	
-	static void AddEngineSystem();
+	static void AddMachineSystem();
 	
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_PARALLEL_END
 
 #endif

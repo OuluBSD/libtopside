@@ -1,16 +1,14 @@
-#ifndef _Physics_Types_h_
-#define _Physics_Types_h_
+#ifndef _IPhysics_Types_h_
+#define _IPhysics_Types_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define FYS_CLS_LIST(f) \
+	FYS_CLS(System, f) \
 	FYS_CLS(Node, f) \
 	FYS_CLS(Object, f) \
 	FYS_CLS(Joint, f) \
 	FYS_CLS(Space, f)
-
-#define FYS_ECS_CLS_LIST(f) \
-	FYS_CLS(System, f)
 
 
 #ifdef flagODE
@@ -36,16 +34,20 @@ NAMESPACE_TOPSIDE_BEGIN
 		template struct x <TosFys>;
 #endif
 
-#define FYS_CLS(x, f) struct f##x;
-#define FYS_SYS(x) FYS_CLS_LIST(x)
-FYS_FYSSYS_LIST
-#undef FYS_SYS
-namespace Ecs {
-#define FYS_SYS(x) FYS_ECS_CLS_LIST(x)
-FYS_FYSSYS_LIST
-#undef FYS_SYS
-}
+
+
+/*#define FYS_CLS(x, f) struct f##x;
+	#define FYS_SYS(x) FYS_CLS_LIST(x)
+		FYS_FYSSYS_LIST
+	#undef FYS_SYS
+#undef FYS_CLS*/
+
+#define FYS_CLS(x, f) template <class Fys> struct x##T;
+	#define FYS_SYS(x) FYS_CLS_LIST(x)
+		FYS_FYSSYS_LIST
+	#undef FYS_SYS
 #undef FYS_CLS
+
 
 
 namespace FVar {
@@ -55,11 +57,11 @@ namespace FVar {
 
 
 struct TosFys {
-	using Node		= TosNode;
-	using Object	= TosObject;
-	using Joint		= TosJoint;
-	using Space		= TosSpace;
-	using System	= Ecs::TosSystem;
+	using Node		= NodeT<TosFys>;
+	using Object	= ObjectT<TosFys>;
+	using Joint		= JointT<TosFys>;
+	using Space		= SpaceT<TosFys>;
+	using System	= SystemT<TosFys>;
 	
 	using NativeGeom		= SoftPhys::Geometry;
 	using NativeBody		= SoftPhys::Body;
@@ -164,11 +166,11 @@ struct TosFys {
 
 #ifdef flagODE
 struct OdeFys {
-	using Node		= OdeNode;
-	using Object	= OdeObject;
-	using Joint		= OdeJoint;
-	using Space		= OdeSpace;
-	using System	= Ecs::OdeSystem;
+	using Node		= NodeT<OdeFys>;
+	using Object	= ObjectT<OdeFys>;
+	using Joint		= JointT<OdeFys>;
+	using Space		= SpaceT<OdeFys>;
+	using System	= SystemT<OdeFys>;
 	
 	using NativeGeom		= dGeomID;
 	using NativeBody		= dBodyID;
@@ -276,6 +278,6 @@ struct OdeFys {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

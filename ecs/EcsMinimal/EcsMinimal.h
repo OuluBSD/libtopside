@@ -3,6 +3,7 @@
 
 #include <EcsLocal/EcsLocal.h>
 #include <EcsVirtualGui/EcsVirtualGui.h>
+#include <EcsPhysics/EcsPhysics.h>
 
 #include "Prefabs.h"
 

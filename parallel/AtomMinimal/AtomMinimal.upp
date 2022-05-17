@@ -5,20 +5,19 @@ uses
 	IAudio,
 	IMedia,
 	IVolumetric,
-	ICamera;
+	ICamera,
+	IPhysics;
 
-uses(GUI) IGraphics;
+uses(GUI | SCREEN) IGraphics;
 
-uses(GUI) IHal;
+uses(GUI | SCREEN) IHal;
 
-uses(GUI) IScreen;
+uses(GUI | SCREEN) IScreen;
 
 file
 	AtomMinimal.h,
 	Init.icpp,
 	Prefabs.h,
 	Generated.h,
-	Generated.cpp,
-	Ecs.h,
-	Ecs.cpp;
+	Generated.cpp;
 

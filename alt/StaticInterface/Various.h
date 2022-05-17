@@ -12,6 +12,7 @@ struct TgaReaderBackend : StaticIfaceBackend {
 	
 	Image LoadFileAny(String path) override;
 	Image LoadStringAny(String str) override;
+	void ClearImage(SysImage& img) override;
 	
 };
 

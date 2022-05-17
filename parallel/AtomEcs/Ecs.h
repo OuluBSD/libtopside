@@ -1,5 +1,5 @@
-#ifndef _AtomMinimal_Ecs_h_
-#define _AtomMinimal_Ecs_h_
+#ifndef _AtomEcs_Ecs_h_
+#define _AtomEcs_Ecs_h_
 
 
 NAMESPACE_PARALLEL_BEGIN

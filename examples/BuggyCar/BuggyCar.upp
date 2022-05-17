@@ -1,6 +1,5 @@
 uses
-	IPhysics,
-	EcsComplete;
+	EcsMinimal;
 
 file
 	BuggyCar.h,
@@ -16,8 +15,8 @@ file
 	image.txt highlight cpp;
 
 mainconfig
-	"" = "SCREEN",
-	"" = "SCREEN ODE",
-	"" = "SCREEN ODE VR",
-	"" = "SCREEN ODE DEBUG_RT";
+	"" = "GUI SDL2",
+	"" = "GUI ODE SDL2",
+	"" = "GUI ODE VR",
+	"" = "GUI ODE DEBUG_RT";
 

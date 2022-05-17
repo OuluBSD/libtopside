@@ -1,8 +1,7 @@
 #ifndef _BuggyCar_BuggyCar_h_
 #define _BuggyCar_BuggyCar_h_
 
-#include <EcsComplete/EcsComplete.h>
-#include <IPhysics/Physics.h>
+#include <EcsMinimal/EcsMinimal.h>
 
 
 #define SOFTGL 0
@@ -10,40 +9,41 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
+using namespace Parallel;
 
 
 #ifdef flagODE
 using DefFys = OdeFys;
-using DefSpace = OdeSpace;
-using DefNode = OdeNode;
-using DefJoint = OdeJoint;
-using DefObject = OdeObject;
-using DefSystem = Ecs::OdeSystem;
+using DefSpace = SpaceT<OdeFys>;
+using DefNode = NodeT<OdeFys>;
+using DefJoint = JointT<OdeFys>;
+using DefObject = ObjectT<OdeFys>;
+using DefSystem = SystemT<OdeFys>;
 using DefStaticGroundPlane = Ecs::StaticGroundPlane<OdeFys>;
 using DefStaticGroundPlanePrefab = Ecs::StaticGroundPlanePrefab<OdeFys>;
 #else
 using DefFys = TosFys;
-using DefSpace = TosSpace;
-using DefNode = TosNode;
-using DefJoint = TosJoint;
-using DefObject = TosObject;
-using DefSystem = Ecs::TosSystem;
+using DefSpace = SpaceT<TosFys>;
+using DefNode = NodeT<TosFys>;
+using DefJoint = JointT<TosFys>;
+using DefObject = ObjectT<TosFys>;
+using DefSystem = SystemT<TosFys>;
 using DefStaticGroundPlane = Ecs::StaticGroundPlane<TosFys>;
 using DefStaticGroundPlanePrefab = Ecs::StaticGroundPlanePrefab<TosFys>;
 #endif
 
 
-class BuggyCarVertexShader : public SoftShaderBase {
+class BuggyCarVertexShader : public SoftShaderBaseT<SdlSwGfx> {
 	
 public:
-	void Process(SdlCpuVertexShaderArgs& args) override;
+	void Process(VertexShaderArgsT<SdlSwGfx>& args) override;
 	
 };
 
-class BuggyCarFragmentShader : public SoftShaderBase {
+class BuggyCarFragmentShader : public SoftShaderBaseT<SdlSwGfx> {
 	
 public:
-	void Process(SdlCpuFragmentShaderArgs& args) override;
+	void Process(FragmentShaderArgsT<SdlSwGfx>& args) override;
 	
 };
 
@@ -221,7 +221,10 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
 		components.Get<TransformRef>()->position[1] = 3.0;
 		components.Get<RenderableRef>()->cb.Add(components.Get<Ref<BuggyCar>>()->GetRefreshCallback());
 		
-		Ref<DefSystem> w = e.GetEngine().Get<DefSystem>();
+		//Ref<DefSystem> w = e.GetEngine().Get<DefSystem>();
+		//w->Attach(*components.Get<Ref<BuggyCar>>());
+		
+		Ref<DefSystem> w = Parallel::GetActiveMachine().Get<DefSystem>();
 		w->Attach(*components.Get<Ref<BuggyCar>>());
 		
         return components;
@@ -254,7 +257,7 @@ struct BuggyCarApp :
 	
 	void operator=(const BuggyCarApp& t) {Panic("Can't copy BuggyCarApp");}
 	void Initialize() override;
-	void Render(Draw& draw) override;
+	bool Render(Draw& draw) override;
 	
 	void DrawObj(GfxStateDraw& fb, bool use_texture);
 	

@@ -1,12 +1,16 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 template <class Fys>
 void SystemT<Fys>::Visit(RuntimeVisitor& vis) {VIS_THIS(Node); vis % space;}
 
 template <>
-void SystemT<TosFys>::Visit(RuntimeVisitor& vis) {VIS_THIS(Node); vis % world % contactgroup % threading % pool % space;}
+void SystemT<TosFys>::Visit(RuntimeVisitor& vis) {
+	VIS_THIS(System);
+	VIS_THIS(Node);
+	vis % world % contactgroup % threading % pool % space;
+}
 
 
 template <class Fys>
@@ -33,11 +37,11 @@ void SystemT<Fys>::NearCallback(void*, NativeGeom& o1, NativeGeom& o2) {
 }
 
 template <class Fys>
-void SystemT<Fys>::AddEngineSystem() {
-	GetActiveEngine().Add<FysSystem>();
+void SystemT<Fys>::AddMachineSystem() {
+	GetActiveMachine().Add<SystemT<Fys>>();
 }
 
 
 FYS_EXCPLICIT_INITIALIZE_CLASS(SystemT)
 
-NAMESPACE_ECS_END
+NAMESPACE_PARALLEL_END

@@ -3,25 +3,7 @@
 NAMESPACE_UPP
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-INITBLOCK {
+INITBLOCK_(AtomMinimal) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
@@ -69,7 +51,6 @@ INITBLOCK {
 		Factory::RegisterAtom<X11SwFboAtomSA>();
 		Factory::RegisterAtom<X11SwFboProg>();
 		Factory::RegisterAtom<X11SwVideoAtomPipe>();
-		Factory::RegisterAtom<EcsProgVideo>();
 		
 		#if defined flagPOSIX
 			Factory::RegisterAtom<X11VideoAtomPipe>();

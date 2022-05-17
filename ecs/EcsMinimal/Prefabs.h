@@ -142,10 +142,15 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 
 void DefaultEcsInitializer();
 void DefaultEcsStartup();
+void DefaultEcsSerialInitializer();
 
 #define ECS_PREFAB_MAIN \
 	NAMESPACE_UPP \
-	INITBLOCK {TS::Ecs::Engine::WhenInitialize << callback(TS::Ecs::DefaultEcsInitializer); TS::Ecs::Engine::WhenPreFirstUpdate << callback(TS::Ecs::DefaultEcsStartup);} \
+	INITBLOCK {\
+		TS::Parallel::Machine::WhenInitialize << callback(TS::Ecs::DefaultEcsSerialInitializer);\
+		TS::Ecs::Engine::WhenInitialize << callback(TS::Ecs::DefaultEcsInitializer);\
+		TS::Ecs::Engine::WhenPreFirstUpdate << callback(TS::Ecs::DefaultEcsStartup);\
+	} \
 	END_UPP_NAMESPACE \
 	ECS_APP_MAIN
 

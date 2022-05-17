@@ -1,7 +1,7 @@
-#ifndef _Physics_FysClasses_h_
-#define _Physics_FysClasses_h_
+#ifndef _IPhysics_FysClasses_h_
+#define _IPhysics_FysClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 struct FysNode : RTTIBase {
@@ -36,6 +36,6 @@ struct FysSpace : FysNode {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

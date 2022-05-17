@@ -76,7 +76,8 @@ void WindowSystemScreen::Render() {
 }
 
 void WindowSystemScreen::Shutdown() {
-	TODO
+	//wm.Shutdown();
+	CloseAll();
 }
 
 void WindowSystemScreen::CloseWindow(CoreWindow& cw) {

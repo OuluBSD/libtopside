@@ -1,6 +1,6 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void TosFys::InitializeLibrary() {
@@ -315,4 +315,4 @@ void TosFys::SetMass(SoftPhys::Mass& mass, float kg) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

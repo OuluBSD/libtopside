@@ -1,6 +1,6 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Fys>
@@ -119,4 +119,4 @@ void ObjectT<Fys>::LoadModel(OglDataState& state) {
 
 FYS_EXCPLICIT_INITIALIZE_CLASS(ObjectT)
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

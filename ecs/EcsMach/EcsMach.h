@@ -2,6 +2,7 @@
 #define _EcsMach_EcsMach_h_
 
 #include <AtomMinimal/AtomMinimal.h>
+#include <AtomEcs/AtomEcs.h>
 #include <SerialLib/SerialLib.h>
 
 #define NAMESPACE_ECS_NAME		Ecs

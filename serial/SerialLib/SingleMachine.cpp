@@ -22,6 +22,7 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	
     mach.Add<ScriptLoader>();
     
+	
     reg->SetAppName("Non-screen machine");
     
     if (arg_fn)

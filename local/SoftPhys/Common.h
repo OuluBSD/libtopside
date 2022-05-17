@@ -3,8 +3,9 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-
+namespace Parallel {
 struct GfxDataState;
+}
 
 
 namespace SoftPhys {

@@ -41,5 +41,9 @@ Image TgaReaderBackend::LoadStringAny(String str) {
 	
 }
 
+void TgaReaderBackend::ClearImage(SysImage& img) {
+	
+}
+
 
 NAMESPACE_TOPSIDE_END

@@ -1,7 +1,7 @@
-#ifndef _Physics_TObject_h_
-#define _Physics_TObject_h_
+#ifndef _IPhysics_TObject_h_
+#define _IPhysics_TObject_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Fys>
@@ -71,6 +71,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

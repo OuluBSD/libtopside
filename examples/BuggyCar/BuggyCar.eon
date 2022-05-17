@@ -1,5 +1,5 @@
 
-machine sdl.app: {
+/*machine sdl.app: {
 	
 	driver context: {
 		sdl.context: true;
@@ -43,5 +43,28 @@ machine sdl.app: {
 		
 	};
 	
-};
+};*/
 
+machine sdl.app: {
+	
+	chain program: {
+		state event.register;
+		
+		loop ogl.fbo: {
+			ogl.customer: true;
+			x11.ogl.fbo.program: true {
+				drawmem:		"false";
+				program:		"obj_view";
+			};
+			x11.ogl.fbo.sink: true {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				fragment:		"shaders/tests/03f_fragment.glsl";
+				vertex:			"shaders/tests/03f_vertex.glsl";
+			};
+		};
+		
+	};
+
+};

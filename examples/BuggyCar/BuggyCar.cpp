@@ -5,8 +5,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 INITBLOCK_(Shaders) {
 	using namespace TS;
-	SoftShaderLibrary::AddShaderClass<BuggyCarVertexShader>(GVar::VERTEX_SHADER, "BuggyCar_vertex");
-	SoftShaderLibrary::AddShaderClass<BuggyCarFragmentShader>(GVar::FRAGMENT_SHADER, "BuggyCar_fragment");
+	SoftShaderLibraryT<SdlSwGfx>::AddShaderClass<BuggyCarVertexShader>(GVar::VERTEX_SHADER, "BuggyCar_vertex");
+	SoftShaderLibraryT<SdlSwGfx>::AddShaderClass<BuggyCarFragmentShader>(GVar::FRAGMENT_SHADER, "BuggyCar_fragment");
 	
 }
 
@@ -49,11 +49,11 @@ void BuggyCarInitializer() {
 	eng.GetAdd<RenderingSystem>();
 	eng.GetAdd<EntityStore>();
 	eng.GetAdd<ComponentStore>();
-	eng.GetAdd<DefSystem>();
 	eng.GetAdd<EventSystem>();
 	
 	Serial::Machine& mach = Serial::GetActiveMachine();
-	//eng.GetAdd<PhysicsSystem>();
+	mach.FindAdd<DefSystem>();
+	//eng.FindAdd<PhysicsSystem>();
 }
 
 template <class T>
@@ -98,20 +98,31 @@ BuggyCarApp::BuggyCarApp() {
 }
 
 void BuggyCarApp::Initialize() {
-	Serial::EcsVideoBase::Latest().AddBinder(this);
+	//Serial::EcsVideoBase::Latest().AddBinder(this);
 }
 
-void BuggyCarApp::Render(Draw& fb) {
+bool BuggyCarApp::Render(Draw& fb) {
+	#ifdef flagOGL
+	using SdlOglStateDraw = StateDrawT<SdlOglGfx>;
+	using SdlOglDataState = DataStateT<SdlOglGfx>;
 	SdlOglStateDraw* od = CastPtr<SdlOglStateDraw>(&fb);
+	ASSERT(od);
+	#endif
+	
+	using SdlCpuStateDraw = StateDrawT<SdlSwGfx>;
+	using SdlCpuDataState = DataStateT<SdlSwGfx>;
 	SdlCpuStateDraw* cd = CastPtr<SdlCpuStateDraw>(&fb);
-	ASSERT(od || cd);
+	ASSERT(cd);
 	
 	if (frame == 0) {
+		#ifdef flagOGL
 		if (od) {
 			SdlOglDataState& state = od->GetState();
 			BuggyCarStartup(state);
 		}
-		else {
+		else
+		#endif
+		{
 			SdlCpuDataState& state = cd->GetState();
 			BuggyCarStartup(state);
 		}
@@ -129,11 +140,14 @@ void BuggyCarApp::Render(Draw& fb) {
 			Panic("Couldn't load model textures: " + obj_path);*/
 	}
 	
+	#ifdef flagOGL
 	if (od) {
 		SdlOglDataState& state = od->GetState();
 		BuggyCarUpdate(state);
 	}
-	else {
+	else
+	#endif
+	{
 		SdlCpuDataState& state = cd->GetState();
 		BuggyCarUpdate(state);
 	}
@@ -145,7 +159,11 @@ void BuggyCarApp::Render(Draw& fb) {
 	height = 720;
 	
 	//chaser->Refresh(od ? (GfxDataState&)od->GetState() : (GfxDataState&)cd->GetState());
+	#ifdef flagOGL
 	DrawObj(od ? *(GfxStateDraw*)od : *(GfxStateDraw*)cd, true);
+	#else
+	DrawObj(*(GfxStateDraw*)cd, true);
+	#endif
 	
 	iter++;
 	frame++;
@@ -154,6 +172,8 @@ void BuggyCarApp::Render(Draw& fb) {
 		ts.Reset();
 		phase = (phase + 1) % phases;
 	}
+	
+	return true;
 }
 
 void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {

@@ -78,7 +78,10 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
         
         SystemCollection::Iterator it = FindSystem(AsTypeCls<SystemT>());
-        return it ? it->AsRef<SystemT>() : Ref<SystemT>();
+        if (it)
+            return it->AsRef<SystemT>();
+        
+        return Ref<SystemT>();
     }
 
     template<typename SystemT, typename... Args>

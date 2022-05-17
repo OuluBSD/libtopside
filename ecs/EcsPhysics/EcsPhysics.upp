@@ -1,0 +1,10 @@
+description "\377B56,85,200";
+
+file
+	EcsPhysics.h,
+	OdePrefab.h,
+	OdePrefab.cpp,
+	System.h,
+	TPrefab.h,
+	TPrefab.cpp;
+

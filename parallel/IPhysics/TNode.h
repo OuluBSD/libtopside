@@ -1,17 +1,15 @@
-#ifndef _Physics_TNode_h_
-#define _Physics_TNode_h_
+#ifndef _IPhysics_TNode_h_
+#define _IPhysics_TNode_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-namespace Ecs {
 template <class Fys> struct SystemT;
-}
 
 
 template <class Fys>
 struct NodeT : FysNode {
 	using Base = NodeT<Fys>;
-	using SystemT = Ecs::SystemT<Fys>;
+	using SystemT = SystemT<Fys>;
 	using Node = typename Fys::Node;
 	using Object = typename Fys::Object;
 	using Joint = typename Fys::Joint;
@@ -60,6 +58,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

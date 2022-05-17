@@ -1,6 +1,7 @@
 #ifndef _CtrlCore_WindowManager_h_
 #define _CtrlCore_WindowManager_h_
 
+#ifdef flagGUI
 
 NAMESPACE_ECS_BEGIN
 
@@ -52,6 +53,7 @@ public:
 	}*/
 	
 	void CloseWindow(TopWindow* tw);
+	void Shutdown();
 	
 	void Run();
 	
@@ -68,4 +70,5 @@ public:
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

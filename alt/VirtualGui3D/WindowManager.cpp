@@ -1,5 +1,6 @@
 #include <EcsLocal/EcsLocal.h>
 
+#ifdef flagGUI
 
 NAMESPACE_ECS_BEGIN
 
@@ -61,9 +62,18 @@ void WindowManager::CloseWindow(TopWindow* tw) {
 	lock.Leave();
 }
 
+void WindowManager::Shutdown() {
+	for (Windows& w : screens) {
+		w.CloseAll();
+	}
+	screens.Clear();
+}
+
 
 
 
 
 
 NAMESPACE_ECS_END
+
+#endif

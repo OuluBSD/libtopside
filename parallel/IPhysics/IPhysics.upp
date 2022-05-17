@@ -10,7 +10,7 @@ library(!DEBUG & WIN32) ode_double;
 library(!WIN32) ode;
 
 file
-	Physics.h,
+	IPhysics.h,
 	Enums.h,
 	Types.h,
 	Ode.cpp,
@@ -27,11 +27,8 @@ file
 	TSpace.cpp,
 	TSystem.h,
 	TSystem.cpp,
-	TPrefab.h,
-	TPrefab.cpp,
+	TModel.h,
 	"Open Dynamics Engine" readonly separator,
 	OdeSystem.h,
-	OdeSystem.cpp,
-	OdePrefab.h,
-	OdePrefab.cpp;
+	OdeSystem.cpp;
 

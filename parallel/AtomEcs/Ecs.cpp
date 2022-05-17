@@ -1,4 +1,4 @@
-#include "AtomMinimal.h"
+#include "AtomEcs.h"
 #include <SerialLib/SerialLib.h>
 #include <EcsLocal/EcsLocal.h>
 

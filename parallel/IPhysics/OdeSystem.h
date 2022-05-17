@@ -5,14 +5,7 @@
 #ifdef flagODE
 
 
-NAMESPACE_ECS_BEGIN
-
-class OdeSystem;
-
-NAMESPACE_ECS_END
-
-
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class OdeSpace;
@@ -50,7 +43,7 @@ public:
 	virtual void OnDetach() {}
 	virtual String ToString() {return "OdeNode";}
 	
-	Ecs::OdeSystem* GetWorld();
+	OdeSystem* GetWorld();
 	OdeSpace* GetSpace();
 	dWorldID GetWorldId();
 	dSpaceID GetWorldSpaceId();
@@ -178,7 +171,7 @@ public:
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 NAMESPACE_ECS_BEGIN

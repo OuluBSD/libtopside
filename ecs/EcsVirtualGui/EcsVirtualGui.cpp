@@ -138,7 +138,6 @@ bool VirtualGui::Open() {
 }
 
 void VirtualGui::Close() {
-	TODO
 	//OOSDL2::Bundle::Close();
 }
 

@@ -1,7 +1,7 @@
-#ifndef _Physics_TSpace_h_
-#define _Physics_TSpace_h_
+#ifndef _IPhysics_TSpace_h_
+#define _IPhysics_TSpace_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Fys>
@@ -35,6 +35,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -130,7 +130,7 @@ HEADER_ARG(			EcsCpuVideoPipe,	reqdef_flagSCREEN,			1)
 
 HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	CenterProg)
 HEADER_ACTION(		EcsProgVideo,		center.video.prog.ecs)
-HEADER_ARG(			EcsProgVideo,		HINT_PKG,					"AtomMinimal")
+HEADER_ARG(			EcsProgVideo,		HINT_PKG,					"AtomEcs")
 HEADER_LINK(		EcsProgVideo,		PIPE, PROCESS)
 HEADER_ARG(			EcsProgVideo,		reqdef_flagSCREEN,			1)
 
@@ -174,6 +174,18 @@ HEADER_ARG(			SdlOglShaderProg,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlOglShaderProg,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlOglShaderProg,	PIPE, PROCESS)
 
+
+
+
+
+
+
+HEADER11(			X11OglFboProg,		X11OglFboBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		X11OglFboProg,		x11.ogl.fbo.program)
+HEADER_ARG(			X11OglFboProg,		HINT_PKG,					"AtomMinimal")
+HEADER_LINK(		X11OglFboProg,		PIPE, PROCESS)
+HEADER_ARG(			X11OglFboProg,		reqdef_flagSCREEN,			1)
+HEADER_ARG(			X11OglFboProg,		reqdef_flagOGL,				1)
 
 
 

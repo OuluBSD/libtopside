@@ -1,20 +1,20 @@
-#include "Physics.h"
+#include "IPhysics.h"
 
 #if 0
 #ifdef flagODE
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
 
 
 
-Ecs::OdeSystem* OdeNode::GetWorld() {
+OdeSystem* OdeNode::GetWorld() {
 	OdeNode* n = this;
 	while (n->portal)
 		n = n->portal;
-	return CastPtr<Ecs::OdeSystem>(n);
+	return CastPtr<OdeSystem>(n);
 }
 
 OdeSpace* OdeNode::GetSpace() {
@@ -155,7 +155,7 @@ void OdeObject::LoadModel(OglDataState& state) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

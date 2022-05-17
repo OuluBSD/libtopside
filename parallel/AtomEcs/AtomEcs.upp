@@ -1,0 +1,10 @@
+description "\3770,128,128";
+
+file
+	AtomEcs.h,
+	AtomEcs.icpp,
+	Generated.h,
+	Generated.cpp,
+	Ecs.h,
+	Ecs.cpp;
+
