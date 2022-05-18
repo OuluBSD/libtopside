@@ -1,7 +1,7 @@
 #ifndef _AtomShellProto_AtomShellProto_h_
 #define _AtomShellProto_AtomShellProto_h_
 
-#include <SerialLib/SerialLib.h>
+#include <EcsMinimal/EcsMinimal.h>
 #include <Shadertoy/Shadertoy.h>
 
 

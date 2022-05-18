@@ -2,8 +2,9 @@ description "\377B85,42,255";
 
 uses
 	High,
-	LocalCtrl,
 	Geometry;
+
+uses(GUI) LocalCtrl;
 
 file
 	HighAnim.h,

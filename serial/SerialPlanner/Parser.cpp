@@ -328,12 +328,230 @@ bool Parser::ParseGlobalScope(Script::GlobalScope& list) {
 				State& state = list.states.Add();
 				ParseState(state);
 			}
+			else if (IsId("engine")) {
+				EngineDefinition& state = list.engs.Add();
+				ParseEngine(state);
+			}
 			else {
 				AddError("Unexpected input");
 				return false;
 			}
 		}
 	}
+	return true;
+}
+
+bool Parser::ParseEngine(Script::EngineDefinition& eng) {
+	PASS_ID("engine")
+	
+	if (!ParseId(eng.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseEngineScope(eng))
+			return false;
+	}
+	else {
+		AddError("Expected engine scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseEngineScope(Script::EngineDefinition& eng) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		if (IsId("system")) {
+			if (!ParseEcsSystem(eng.systems.Add()))
+				return false;
+		}
+		else if (IsId("pool")) {
+			if (!ParsePool(eng.pools.Add()))
+				return false;
+		}
+		else {
+			AddError("Unexpected token");
+			return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseEcsSystem(Script::EcsSysDefinition& sys) {
+	PASS_ID("system")
+	
+	if (!ParseId(sys.id))
+		return false;
+	
+	if (Char(':')) {
+		if (IsChar('{')) {
+			if (!ParseEcsSystemScope(sys))
+				return false;
+		}
+		else {
+			AddError("Expected pool scope");
+			return false;
+		}
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseEcsSystemScope(Script::EcsSysDefinition& sys) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		{
+			AddError("Unexpected token");
+			return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParsePool(Script::PoolDefinition& pool) {
+	PASS_ID("pool")
+	
+	if (!ParseId(pool.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParsePoolScope(pool))
+			return false;
+	}
+	else {
+		AddError("Expected pool scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParsePoolScope(Script::PoolDefinition& pool) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		if (IsId("entity")) {
+			if (!ParseEntity(pool.ents.Add()))
+				return false;
+		}
+		else if (IsId("pool")) {
+			if (!ParsePool(pool.pools.Add()))
+				return false;
+		}
+		else {
+			AddError("Unexpected token");
+			return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseEntity(Script::EntityDefinition& ent) {
+	PASS_ID("entity")
+	
+	if (!ParseId(ent.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseEntityScope(ent))
+			return false;
+	}
+	else {
+		AddError("Expected entity scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseEntityScope(Script::EntityDefinition& ent) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		if (IsId("comp")) {
+			if (!ParseComponentDefinition(ent.comps.Add()))
+				return false;
+		}
+		else {
+			AddError("Unexpected token");
+			return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseComponentDefinition(Script::ComponentDefinition& comp) {
+	PASS_ID("comp")
+	
+	if (!ParseId(comp.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseComponentDefinitionScope(comp))
+			return false;
+	}
+	else {
+		AddError("Expected machine scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseComponentDefinitionScope(Script::ComponentDefinition& comp) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		/*if (IsId("")) {
+			if (!(mach..Add()))
+				return false;
+		}
+		else*/ {
+			if (!ParseStmt(comp.stmts.Add()))
+				return false;
+		}
+	}
+	
+	PASS_CHAR('}')
 	return true;
 }
 
@@ -678,12 +896,14 @@ bool Parser::ParseId(Script::Id& id) {
 	}
 	id.parts.Add(ReadId());
 	
-	while (Char('.')) {
-		if (!IsId()) {
-			AddError("Expected id");
-			return false;
+	if (IsChar('.')) {
+		while (Char('.')) {
+			if (!IsId()) {
+				AddError("Expected id");
+				return false;
+			}
+			id.parts.Add(ReadId());
 		}
-		id.parts.Add(ReadId());
 	}
 	return true;
 }

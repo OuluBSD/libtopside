@@ -1,6 +1,6 @@
-#include "AtomShellProto.h"
+#include "EcsShell.h"
 
 
 
 // Just call default macro in AtomComplete
-DEFAULT_ATOMSHELL
+DEFAULT_ECS_SHELL

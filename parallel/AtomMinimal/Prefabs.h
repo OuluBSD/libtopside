@@ -27,6 +27,10 @@ NAMESPACE_TOPSIDE_BEGIN
 	NAMESPACE_UPP \
 	INITBLOCK_(AppInitStartup) {TS::Serial::Machine::WhenInitialize << callback(init); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup0); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup1); TS::Ecs::Engine::WhenGuiProgram << Callback(ecs_gui);} \
 	END_UPP_NAMESPACE
+#define APP_INITIALIZE_STARTUP2_2(init, startup0, startup1) \
+	NAMESPACE_UPP \
+	INITBLOCK_(AppInitStartup) {TS::Serial::Machine::WhenInitialize << callback(init); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup0); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup1);} \
+	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \
 	INITBLOCK_(AppDefaultGfx) {TS::Serial::GetAppFlags().gfx = TS::AppFlags::x;} \

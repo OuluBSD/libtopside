@@ -2,7 +2,9 @@
 #define _HighAnim_HighAnim_h_
 
 #include <High/High.h>
-#include <LocalCtrl/LocalCtrl.h>
+#ifdef flagGUI
+	#include <LocalCtrl/LocalCtrl.h>
+#endif
 
 #include "Common.h"
 #include "Object.h"

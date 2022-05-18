@@ -2,8 +2,9 @@ description "\3770,128,128";
 
 uses
 	EcsLocal,
-	EcsVirtualGui,
 	EcsPhysics;
+
+uses(GUI) EcsVirtualGui;
 
 file
 	EcsMinimal.h,

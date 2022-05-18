@@ -381,7 +381,7 @@ bool ScriptLoopLoader::InitSegments() {
 		#ifdef flagSCREEN
 		consumer = AsAtomTypeCls<OglCustomer>();
 		#else
-		SetError("OGL device not supported without this program compiled with GUI compilation flag");
+		SetError("OpenGL device not supported without this program compiled with OGL compilation flag");
 		return false;
 		#endif
 	}
@@ -396,6 +396,7 @@ bool ScriptLoopLoader::InitSegments() {
 	customer.sink = ValDevCls(dev, ValCls::RECEIPT);
 	customer.side = ValDevCls(dev, ValCls::ORDER);
 	customer.src  = ValDevCls(dev, ValCls::ORDER);
+	
 	
 	//start = scope.current_state;
 	start.SetActionPlanner(planner);

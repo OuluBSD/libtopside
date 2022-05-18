@@ -35,6 +35,7 @@ public:
 };
 
 
+#if defined flagSCREEN
 class EcsVideoBase :
 	public Atom
 {
@@ -81,6 +82,7 @@ public:
 	ProgDraw& GetProgDraw() {return pd;}
 	
 };
+#endif
 
 
 #if 0

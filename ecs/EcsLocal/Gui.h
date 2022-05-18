@@ -4,6 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
+#ifdef flagGUI
 struct DefaultGuiAppComponent :
 	public Component<DefaultGuiAppComponent>,
 	public BinderIfaceVideo
@@ -26,6 +27,7 @@ struct DefaultGuiAppComponent :
 	
 	
 };
+#endif
 
 
 NAMESPACE_ECS_END

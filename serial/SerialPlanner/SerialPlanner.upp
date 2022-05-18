@@ -12,6 +12,7 @@ file
 	Parser.cpp,
 	Planner.h,
 	Planner.cpp,
+	ScriptBase.h,
 	Script.h,
 	Script.cpp,
 	ConnectionSolver.cpp,
@@ -27,5 +28,12 @@ file
 	Verifier.cpp,
 	ToyLoader.h,
 	ToyLoader.cpp,
+	Ecs readonly separator,
+	Ecs.h,
+	Component.cpp,
+	Entity.cpp,
+	Pool.cpp,
+	EcsSystem.cpp,
+	Engine.cpp,
 	_ readonly separator;
 

@@ -104,6 +104,8 @@ void EcsEventsBase::RemoveBinder(BinderIfaceEvents* iface) {
 
 
 
+#if defined flagSCREEN
+
 EcsVideoBase* EcsVideoBase::latest;
 EcsVideoBase& EcsVideoBase::Latest() {ASSERT(latest); return *latest;}
 
@@ -351,6 +353,8 @@ void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
 void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 	VectorRemoveKey(binders, iface);
 }
+
+#endif
 
 
 

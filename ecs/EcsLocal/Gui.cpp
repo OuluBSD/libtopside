@@ -3,6 +3,8 @@
 NAMESPACE_ECS_BEGIN
 
 
+#ifdef flagGUI
+
 DefaultGuiAppComponent::DefaultGuiAppComponent() {
 	
 }
@@ -158,6 +160,8 @@ void DefaultGuiAppComponent::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	*/
 	TODO
 }
+
+#endif
 
 
 NAMESPACE_ECS_END

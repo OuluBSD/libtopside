@@ -1,0 +1,55 @@
+machine ecs.app: {
+
+	driver context: {
+		ecs.context: true;
+	};
+	
+};
+
+engine ecs.dummy: {
+    system rendering;
+    system entity.store;
+    system component.store;
+    system event.system;
+    system simple.topdown.physics: {};
+    
+    
+    pool world: {
+        entity ground: {
+            comp transform3: {
+                
+            };
+            comp model.plane: {
+            
+            };
+            comp physics.binder: {
+                bind: simple.topdown.physics;
+            };
+        };
+        
+        entity ball: {
+            comp transform3: {
+                
+            };
+            comp mass: {
+                
+            };
+            comp model.sphere: {
+            
+            };
+            comp physics.binder: {
+                bind: simple.topdown.physics;
+            };
+        };
+        
+        entity player: {
+            comp transform3: {
+                
+            };
+            comp physics.binder: {
+                bind: simple.topdown.physics;
+            };
+        };
+    };
+    
+};

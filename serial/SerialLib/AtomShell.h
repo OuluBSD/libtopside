@@ -70,21 +70,18 @@ NAMESPACE_TOPSIDE_END
 	APP_INITIALIZE_STARTUP_2(TS::DefaultSerialInitializerInternalEon, TS::DefaultStartup, x)
 
 
-#ifdef flagSCREEN
 
 #define DEFAULT_ATOMSHELL_(title_str) \
 	APP_INITIALIZE_DEFAULT \
 	RENDER_APP_MAIN {TS::DefaultRunner(true, title_str);}
 
-#else
+#define DEFAULT_ECS_SHELL_(title_str) \
+	APP_INITIALIZE_STARTUP2_2(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial) \
+	ECS_APP_MAIN {TS::DefaultRunner(true, title_str);}
 
-#define DEFAULT_ATOMSHELL_(title_str) \
-	APP_INITIALIZE_DEFAULT \
-	RENDER_APP_MAIN {TS::DefaultRunner(true, title_str);}
-
-#endif
 
 #define DEFAULT_ATOMSHELL DEFAULT_ATOMSHELL_("AtomShell")
+#define DEFAULT_ECS_SHELL DEFAULT_ECS_SHELL_("EcsShell")
 
 
 

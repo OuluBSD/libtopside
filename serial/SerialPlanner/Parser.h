@@ -135,6 +135,54 @@ struct Value {
 	
 };
 
+struct ComponentDefinition {
+	LinkedList<ComponentDefinition>	comps;
+	LinkedList<Statement>			stmts;
+	Id								id;
+	
+	void operator=(const ComponentDefinition& v) {id = v.id; comps <<= v.comps; stmts <<= v.stmts;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
+struct EntityDefinition {
+	LinkedList<ComponentDefinition>	comps;
+	Id								id;
+	
+	void operator=(const EntityDefinition& v) {id = v.id; comps <<= v.comps;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
+struct EcsSysDefinition {
+	LinkedList<Statement>			stmts;
+	Id								id;
+	
+	void operator=(const EcsSysDefinition& v) {id = v.id; stmts <<= v.stmts;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
+struct PoolDefinition {
+	LinkedList<EntityDefinition>	ents;
+	LinkedList<PoolDefinition>		pools;
+	Id								id;
+	
+	void operator=(const PoolDefinition& v) {id = v.id; ents <<= v.ents; pools <<= v.pools;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
+struct EngineDefinition {
+	LinkedList<EcsSysDefinition>	systems;
+	LinkedList<PoolDefinition>		pools;
+	Id								id;
+	
+	void operator=(const EngineDefinition& v) {id = v.id; systems <<= v.systems; pools <<= v.pools;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
 struct MachineDefinition {
 	LinkedList<ChainDefinition>		chains;
 	LinkedList<Statement>			stmts;
@@ -158,6 +206,7 @@ struct State {
 
 struct GlobalScope {
 	Array<MachineDefinition>		machs;
+	Array<EngineDefinition>			engs;
 	Array<State>					states;
 	Script::Id						id;
 	
@@ -195,6 +244,16 @@ class Parser : public CParser {
 	bool ChainScope(Script::ChainDefinition&);
 	bool ParseLoopScope(Script::LoopDefinition&);
 	bool ParseGlobalScope(Script::GlobalScope&);
+	bool ParseEngine(Script::EngineDefinition&);
+	bool ParseEngineScope(Script::EngineDefinition&);
+	bool ParseEcsSystem(Script::EcsSysDefinition&);
+	bool ParseEcsSystemScope(Script::EcsSysDefinition&);
+	bool ParsePool(Script::PoolDefinition&);
+	bool ParsePoolScope(Script::PoolDefinition&);
+	bool ParseEntity(Script::EntityDefinition&);
+	bool ParseEntityScope(Script::EntityDefinition&);
+	bool ParseComponentDefinition(Script::ComponentDefinition&);
+	bool ParseComponentDefinitionScope(Script::ComponentDefinition&);
 	bool ParseMachine(Script::MachineDefinition&);
 	bool ParseMachineScope(Script::MachineDefinition&);
 	bool ParseState(Script::State&);

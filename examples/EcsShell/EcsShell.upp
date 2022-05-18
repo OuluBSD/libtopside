@@ -1,10 +1,10 @@
 uses
-	SerialLib,
-	Shadertoy;
+	Shadertoy,
+	EcsMinimal;
 
 file
-	AtomShell.h,
-	AtomShell.cpp;
+	EcsShell.h,
+	EcsShell.cpp;
 
 mainconfig
 	"" = "",

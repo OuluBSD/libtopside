@@ -268,8 +268,14 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 		ASSERT_(dbg_i < 100, "Something probably broke");
 	}
 	
-	
 	scopes.Remove(scopes.GetCount()-1);
+	
+	if (loader->IsReady()) {
+		if (!loader->LoadEcs()) {
+			AddError("ecs loading failed: " + loader->GetErrorString());
+			return false;
+		}
+	}
 	
 	return loader->IsReady();
 }

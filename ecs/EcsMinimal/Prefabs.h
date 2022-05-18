@@ -211,7 +211,7 @@ void DefaultEcsSerialInitializer();
 #define GUI_APP_MAIN_ \
 	void UserGuiMainFn_(); \
 	\
-	APP_INITIALIZE_STARTUP2_2_ECS(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial, UserGuiMainFn_) \
+	APP_INITIALIZE_STARTUP2_2(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial) \
 	\
 	ECS_PREFAB_MAIN { \
 		using namespace UPP; \
@@ -232,6 +232,28 @@ void DefaultEcsSerialInitializer();
 
 #undef GUI_APP_MAIN
 #define GUI_APP_MAIN GUI_APP_MAIN_
+
+
+
+#define DEFAULT_ECSSHELL \
+	void UserGuiMainFn_(); \
+	\
+	APP_INITIALIZE_STARTUP2_2_ECS(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial, UserGuiMainFn_) \
+	\
+	ECS_PREFAB_MAIN { \
+		using namespace UPP; \
+		String eon_file  = Parallel::RealizeEonFile("DefaultGuiApp.eon"); \
+		if (FileExists(eon_file)) { \
+			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
+			TS::DefaultRunner(true, "Gui App", eon_file, 0, 0); \
+		} \
+		else { \
+			LOG("Eon file was not found"); \
+			Exit(1); \
+		} \
+	} \
+	void UserGuiMainFn_()
+
 
 
 NAMESPACE_ECS_END
