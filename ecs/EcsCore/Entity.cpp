@@ -99,6 +99,15 @@ EntityRef Entity::Clone() const {
 	return ent;
 }
 
+ComponentBaseRef Entity::CreateEon(String id) {
+	int i = ComponentFactory::CompEonIds().Find(id);
+	if (i < 0)
+		return ComponentBaseRef();
+	
+	const auto& d = ComponentFactory::CompDataMap()[i];
+	return GetAddTypeCls(d.rtti_cls);
+}
+
 void Entity::Destroy() {
 	Destroyable::Destroy();
 	
@@ -149,6 +158,7 @@ bool Entity::HasPoolParent(PoolRef pool) const {
 	}
 	return false;
 }
+
 
 
 

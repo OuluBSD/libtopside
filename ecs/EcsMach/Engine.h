@@ -18,6 +18,7 @@ public:
 
     virtual TypeCls GetType() const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
+    virtual bool Arg(String key, Object value) {return true;}
 	
 	Engine& GetEngine() const;
 protected:
@@ -102,6 +103,8 @@ public:
         return Add<SystemT>(args...);
     }
     
+    
+    
     template<typename SystemT>
     void Remove()
     {
@@ -131,7 +134,9 @@ public:
 	void AddToUpdateList(ComponentBase* c);
 	void RemoveFromUpdateList(ComponentBase* c);
 	
-	
+	Ref<SystemBase> Add(TypeCls type);
+	Ref<SystemBase> GetAdd(String id);
+    
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;
 	
@@ -152,11 +157,12 @@ protected:
 private:
     using SystemCollection = RefTypeMapIndirect<SystemBase> ;
     SystemCollection systems;
-
-    bool is_started = false;
+	
+	bool is_started = false;
     bool is_initialized = false;
     bool is_suspended = false;
     bool is_running = false;
+    bool is_looping_systems = false;
     
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
     void Add(TypeCls type_id, SystemBase* system);
@@ -164,6 +170,27 @@ private:
     
     Vector<ComponentBase*> update_list;
     
+private:
+	typedef SystemBase* (*NewSystemFn)(Ecs::Engine&);
+    static VectorMap<String, TypeCls>& EonToType() {static VectorMap<String, TypeCls> m; return m;}
+    static VectorMap<TypeCls, NewSystemFn>& TypeNewFn() {static VectorMap<TypeCls, NewSystemFn> m; return m;}
+	
+	template <class T>
+	static SystemBase* NewSystem(Ecs::Engine& e) {return new T(e);}
+	
+public:
+	
+	template <class T>
+	static void Register(String id) {
+		//String id = T::GetEonId();
+		ASSERT(id.GetCount() > 0);
+		TypeCls type = T::TypeIdClass();
+		ASSERT(EonToType().Find(id) < 0);
+		EonToType().Add(id, type);
+		ASSERT(TypeNewFn().Find(type) < 0);
+		TypeNewFn().Add(type, &NewSystem<T>);
+	}
+	
 };
 
 

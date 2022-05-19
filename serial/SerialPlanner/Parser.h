@@ -129,6 +129,7 @@ struct Value {
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 	String GetValue() const;
+	Object ToObject() const;
 	bool IsBoolean() const {return type == VAL_BOOLEAN;}
 	bool IsString() const {return type == VAL_STRING;}
 	bool IsId() const {return type == VAL_ID;}
@@ -136,11 +137,10 @@ struct Value {
 };
 
 struct ComponentDefinition {
-	LinkedList<ComponentDefinition>	comps;
 	LinkedList<Statement>			stmts;
 	Id								id;
 	
-	void operator=(const ComponentDefinition& v) {id = v.id; comps <<= v.comps; stmts <<= v.stmts;}
+	void operator=(const ComponentDefinition& v) {id = v.id; stmts <<= v.stmts;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 };

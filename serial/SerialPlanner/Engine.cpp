@@ -34,21 +34,11 @@ String ScriptEngineLoader::GetTreeString(int indent) {
 	return s;
 }
 
-bool ScriptEngineLoader::Load() {
-	for (ScriptEcsSystemLoader& loader : systems) {
-		if (!loader.Load()) {
-			SetError(def.id.ToString() + ": " + loader.GetErrorString());
-			return false;
-		}
-	}
-	for (ScriptPoolLoader& loader : pools) {
-		if (!loader.Load()) {
-			SetError(def.id.ToString() + ": " + loader.GetErrorString());
-			return false;
-		}
-	}
-	return true;
-}
+
+
+
+ExtScriptEngineLoaderBase* __ecs_script_loader;
+
 
 /*
 void ScriptEngineLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {

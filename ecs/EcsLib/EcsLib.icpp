@@ -1,0 +1,26 @@
+#include "EcsLib.h"
+
+using namespace TS;
+
+MAKE_STATIC(Serial::ExtScriptEngineLoader, __ext_script_loader);
+
+INITBLOCK_(EcsLib) {
+	using namespace Serial;
+	using namespace Ecs;
+	
+	__ecs_script_loader = &__ext_script_loader;
+	
+	// System
+	Engine::Register<Ecs::RegistrySystem>("registry");
+	Engine::Register<RenderingSystem>("rendering");
+	Engine::Register<EventSystem>("events");
+	
+	// Component
+	ComponentFactory::Register<Transform>("transform3");
+	ComponentFactory::Register<Transform2D>("transform2");
+	ComponentFactory::Register<Viewable>("viewable");
+	ComponentFactory::Register<Viewport>("viewport");
+	ComponentFactory::Register<ChaseCam>("camera.chase");
+	ComponentFactory::Register<Renderable>("renderable");
+	
+}

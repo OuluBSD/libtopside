@@ -25,9 +25,14 @@ bool ScriptSystemLoader::LoadEcs() {
 		return false;
 	}
 	
+	if (engs.GetCount() && !__ecs_script_loader) {
+		SetError("Script defines ecs engines, but no ecs loading is built-in to the executable program.");
+		return false;
+	}
+	
 	for (ScriptEngineLoader& e : engs) {
-		if (!e.Load()) {
-			SetError(e.GetErrorString());
+		if (!__ecs_script_loader->Load(e)) {
+			SetError(__ecs_script_loader->GetErrorString());
 			return false;
 		}
 	}

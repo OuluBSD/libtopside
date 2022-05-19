@@ -1,0 +1,32 @@
+#include "EcsLocal.h"
+
+using namespace TS;
+
+INITBLOCK_(EcsLocal) {
+	using namespace Serial;
+	using namespace Ecs;
+	
+	
+	// System
+	Engine::Register<EasingSystem>("easing");
+	Engine::Register<WorldLogicSystem>("world.logic");
+	Engine::Register<PhysicsSystem>("physics");
+	
+	#if HAVE_WINDOWSYSTEM
+	Engine::Register<WindowSystem>("windows");
+	#endif
+	
+	
+	// Component
+	ComponentFactory::Register<ModelComponent>("model");
+	ComponentFactory::Register<RigidBody>("body");
+	//ComponentFactory::Register<StaticVolumeComponent>("");
+	ComponentFactory::Register<TextRenderable>("text");
+	ComponentFactory::Register<Easing>("easing");
+	ComponentFactory::Register<PhysicsBody>("physics");
+#ifdef flagGUI
+	ComponentFactory::Register<DefaultGuiAppComponent>("");
+#endif
+	
+	
+}

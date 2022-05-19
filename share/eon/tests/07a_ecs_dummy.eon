@@ -1,17 +1,14 @@
-machine ecs.app: {
+machine ecs.app: {};
 
-	driver context: {
-		ecs.context: true;
-	};
-	
-};
 
 engine ecs.dummy: {
     system rendering;
     system entity.store;
     system component.store;
-    system event.system;
-    system simple.topdown.physics: {};
+    system events;
+    system physics: {
+        log: debug;
+    };
     
     
     pool world: {
@@ -19,11 +16,11 @@ engine ecs.dummy: {
             comp transform3: {
                 
             };
-            comp model.plane: {
-            
+            comp model: {
+                builtin: plane;
             };
-            comp physics.binder: {
-                bind: simple.topdown.physics;
+            comp physics: {
+                bind: physics;
             };
         };
         
@@ -31,14 +28,15 @@ engine ecs.dummy: {
             comp transform3: {
                 
             };
-            comp mass: {
+            comp body: {
                 
             };
-            comp model.sphere: {
+            comp model: {
+                builtin: sphere;
             
             };
-            comp physics.binder: {
-                bind: simple.topdown.physics;
+            comp physics: {
+                bind: physics;
             };
         };
         
@@ -46,8 +44,8 @@ engine ecs.dummy: {
             comp transform3: {
                 
             };
-            comp physics.binder: {
-                bind: simple.topdown.physics;
+            comp physics: {
+                bind: physics;
             };
         };
     };

@@ -173,6 +173,32 @@ String Value::GetValue() const {
 	return s;
 }
 
+Object Value::ToObject() const {
+	Object v;
+	
+	if (type == VAL_CUSTOMER) {
+		return customer.ToString();
+	}
+	else if (type == VAL_STRING) {
+		v = str;
+	}
+	else if (type == VAL_INT) {
+		v = i;
+	}
+	else if (type == VAL_DOUBLE) {
+		v = f;
+	}
+	else if (type == VAL_BOOLEAN) {
+		v = b;
+	}
+	else if (type == VAL_ID) {
+		v = id.ToString();
+	}
+	else TODO
+		
+	return v;
+}
+
 String Value::GetTreeString(int indent) const {
 	String s;
 	if (type == VAL_INVALID) {
@@ -415,7 +441,10 @@ bool Parser::ParseEcsSystemScope(Script::EcsSysDefinition& sys) {
 		if (EmptyStatement())
 			continue;
 		
-		{
+		if (ParseStmt(sys.stmts.Add())) {
+			continue;
+		}
+		else {
 			AddError("Unexpected token");
 			return false;
 		}

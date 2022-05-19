@@ -91,6 +91,9 @@ void Machine::Update(double dt) {
 		system->Update(dt);
 		
 		WhenLeaveSystemUpdate();
+		
+		if (!IsRunning())
+			break;
 	}
 	
 	++ticks;

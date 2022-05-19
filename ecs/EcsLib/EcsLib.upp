@@ -7,6 +7,7 @@ uses
 file
 	TODO.txt,
 	EcsLib.h,
+	EcsLib.icpp,
 	NonGui.cpp,
 	Defs.h,
 	CommonComponents.h,
@@ -20,5 +21,7 @@ file
 	EventSystem.h,
 	EventSystem.cpp,
 	Prefab.h,
+	EonLoader.h,
+	EonLoader.cpp,
 	Trash readonly separator;
 

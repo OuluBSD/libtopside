@@ -4,34 +4,36 @@
 NAMESPACE_ECS_BEGIN
 
 
-class Factory {
-	
-public:
-	
-	// Components
-	
+struct ComponentFactory {
 	typedef ComponentBase* (*NewFn)();
 	struct CompData : Moveable<CompData> {
 		NewFn new_fn;
 		String name;
-		TypeCls cls;
+		String eon_id;
 		TypeCls rtti_cls;
 	};
+	
 	typedef VectorMap<TypeCls,CompData> CompMap;
 	static CompMap& CompDataMap() {MAKE_STATIC(CompMap, m); return m;}
+	static Index<String>& CompEonIds() {MAKE_STATIC(Index<String>, idx); return idx;}
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	
-	template <class T> static void RegisterComponent(TypeCls cls) {
-		CompData& d = CompDataMap().GetAdd(cls);
-		d.rtti_cls = AsTypeCls<T>();
-		d.cls = cls;
+	template <class T> static void Register(String eon_id) {
+		TypeCls cls = AsTypeCls<T>();
+		ASSERT(CompDataMap().Find(cls) < 0);
+		int a = CompEonIds().GetCount();
+		int b = CompDataMap().GetCount();
+		ASSERT(a == b);
+		CompEonIds().Add(eon_id);
+		CompData& d = CompDataMap().Add(cls);
+		d.eon_id = eon_id;
+		d.rtti_cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
 	}
 	
 	static void Dump();
-	
 	
 };
 
@@ -44,7 +46,7 @@ public:
 	c.src.dev = Ecs::DevCls::src_d; \
 	c.src.val = Ecs::ValCls::src_v; \
 	c.sub = Ecs::SubTypeCls::subcomp; \
-	Ecs::Factory::RegisterExtension<type>(c, ValDevCls()); \
+	Ecs::ComponentFactory::Register<type>(c, ValDevCls()); \
 }
 
 #define REG_EXT_(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v, sc_d,sc_v, is_multi_conn) {\
@@ -58,7 +60,7 @@ public:
 	c.sub = Ecs::SubTypeCls::subcomp; \
 	c.multi_conn = is_multi_conn; \
 	ValDevCls side_vd(Ecs::DevCls::sc_d, Ecs::ValCls::sc_v); \
-	Ecs::Factory::RegisterExtension<type>(c, side_vd); \
+	Ecs::ComponentFactory::Register<type>(c, side_vd); \
 }
 
 

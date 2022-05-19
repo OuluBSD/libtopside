@@ -11,10 +11,5 @@ ScriptEntityLoader::ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script:
 	
 }
 
-bool ScriptEntityLoader::Load() {
-	
-	TODO
-	
-}
 
 NAMESPACE_SERIAL_END

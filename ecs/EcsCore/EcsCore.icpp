@@ -1,0 +1,14 @@
+#include "EcsCore.h"
+
+using namespace TS;
+
+
+INITBLOCK_(EcsCore) {
+	using namespace Serial;
+	using namespace Ecs;
+	
+	// Core
+	Engine::Register<EntityStore>("entity.store");
+	Engine::Register<ComponentStore>("component.store");
+	
+}

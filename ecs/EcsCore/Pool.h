@@ -12,7 +12,7 @@ class Pool :
 	public RefScopeEnabler<Pool, EntityStore, PoolParent>,
 	RTTIBase
 {
-	Engine*			machine = 0;
+	Engine*				machine = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
 	PoolId				id;

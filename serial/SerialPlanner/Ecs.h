@@ -24,7 +24,6 @@ public:
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) {TODO}
-	virtual bool		Load() = 0;
 	void				SetError(String s) {err_str = s;}
 	String				GetErrorString() const {return err_str;}
 	
@@ -36,12 +35,13 @@ public:
 	using Base = EcsLoaderBase<Script::EcsSysDefinition, ScriptEngineLoader>;
 	RTTI_DECL1(ScriptEcsSystemLoader, Base)
 	
+	LinkedList<Script::Statement> stmts;
+	
 public:
 	
 	
 	ScriptEcsSystemLoader(ScriptEngineLoader& parent, int id, Script::EcsSysDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {/*vis | systems | pools;*/}
-	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -62,7 +62,6 @@ public:
 	
 	ScriptComponentLoader(ScriptEntityLoader& parent, int id, Script::ComponentDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {/*vis | comps;*/}
-	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -84,7 +83,6 @@ public:
 	
 	ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script::EntityDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | comps;}
-	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -114,7 +112,6 @@ public:
 	void		ForwardChainLoops();
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | entities | pools;}
-	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
@@ -137,7 +134,6 @@ public:
 	ScriptEngineLoader(ScriptSystemLoader& parent, int id, Script::EngineDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | systems | pools;}
 	String		GetTreeString(int indent) override;
-	bool		Load() override;
 	/*void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
@@ -146,6 +142,24 @@ public:
 	void		CheckStatusDeep() override;*/
 	
 };
+
+
+struct ExtScriptEngineLoaderBase {
+	String err_str;
+	
+	virtual ~ExtScriptEngineLoaderBase() {}
+	
+	virtual bool Load(ScriptEngineLoader& l) = 0;
+	virtual void Clear() {}
+	
+	void SetError(String s) {err_str = s;}
+	
+	String GetErrorString() const {return err_str;}
+	
+};
+
+
+extern ExtScriptEngineLoaderBase* __ecs_script_loader;
 
 
 NAMESPACE_SERIAL_END

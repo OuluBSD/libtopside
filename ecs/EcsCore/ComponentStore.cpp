@@ -40,7 +40,7 @@ ComponentBase* ComponentStore::CreateComponent(TypeCls cls) {
 ComponentBase* ComponentStore::CreateComponentTypeCls(TypeCls cls) {
 	auto it = Factory::producers.Find(cls);
 	if (!it) {
-		auto new_fn = Ecs::Factory::CompDataMap().Get(cls).new_fn;
+		auto new_fn = Ecs::ComponentFactory::CompDataMap().Get(cls).new_fn;
 		std::function<ComponentBase*()> p([new_fn] { return new_fn();});
 		std::function<void(ComponentBase*)> r([] (Base* b){ delete b;});
 		Factory::producers.Add(cls) = p;

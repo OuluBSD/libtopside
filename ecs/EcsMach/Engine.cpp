@@ -78,6 +78,8 @@ bool Engine::Start() {
 	
 	WhenInitialize();
 	
+	is_looping_systems = true;
+	
 	for (auto system : systems) {
 		if (!system->Initialize()) {
 			LOG("Could not initialize system " << system->GetDynamicName());
@@ -90,6 +92,8 @@ bool Engine::Start() {
 	for (auto& system : systems) {
 		system->Start();
 	}
+	
+	is_looping_systems = false;
 	
 	is_started = true;
 	is_running = true;
@@ -116,6 +120,8 @@ void Engine::Update(double dt) {
 		return;
 	}
 	
+	is_looping_systems = true;
+	
 	for (auto& system : systems) {
 		SystemBase* b = &*system;
 		WhenEnterSystemUpdate(*b);
@@ -124,6 +130,8 @@ void Engine::Update(double dt) {
 		
 		WhenLeaveSystemUpdate();
 	}
+	
+	is_looping_systems = false;
 	
 	++ticks;
 	
@@ -139,6 +147,8 @@ void Engine::Stop() {
 	
 	DBG_BEGIN_UNREF_CHECK
 	
+	is_looping_systems = true;
+	
 	for (auto it = systems.rbegin(); it != systems.rend(); --it) {
 		(*it)->Stop();
 	}
@@ -148,6 +158,8 @@ void Engine::Stop() {
 	for (auto it = systems.rbegin(); it != systems.rend(); --it) {
 		(*it)->Uninitialize();
 	}
+	
+	is_looping_systems = false;
 }
 
 void Engine::Suspend() {
@@ -163,17 +175,27 @@ bool Engine::HasStarted() const {
 }
 
 void Engine::Add(TypeCls type_id, SystemBase* system) {
-	ASSERT_(!is_started, "Invalid to add systems after the machine has started");
+	//ASSERT_(!is_started, "adding systems after the machine has started" is error-prone);
+	ASSERT_(!is_looping_systems, "adding systems while systems are being iterated is error-prone");
 	
 	auto it = FindSystem(type_id);
 	ASSERT(!it);
 	
 	ASSERT(system->GetParent());
-	systems.Add(type_id, system);
+	if (is_started) {
+		if (system->Initialize()) {
+			RTLOG("Engine::Add: added system to already running engine: " << system->GetDynamicName());
+			systems.Add(type_id, system);
+		}
+		else {
+			RTLOG("Engine::Add: error: could not initialize system in already running engine: " << system->GetDynamicName());
+			delete system;
+		}
+	}
 }
 
 void Engine::Remove(TypeCls type_id) {
-	ASSERT_(!is_started, "Invalid to remove systems after the machine has started");
+	ASSERT_(!is_started, "removing systems after the machine has started is error-prone");
 	
 	Engine::SystemCollection::Iterator it = FindSystem(type_id);
 	ASSERT(it);
@@ -194,9 +216,27 @@ void Engine::RemoveFromUpdateList(ComponentBase* c) {
 	VectorRemoveKey(update_list, c);
 }
 
+Ref<SystemBase> Engine::Add(TypeCls type)
+{
+    NewSystemFn fn = TypeNewFn().Get(type, 0);
+    ASSERT(fn);
+    if (!fn)
+        return Ref<SystemBase>();
+	SystemBase* syst = fn(*this);
+    Add(type, syst);
+    return syst->AsRefT<SystemBase>();
+}
 
-
-
+Ref<SystemBase> Engine::GetAdd(String id) {
+    int i = EonToType().Find(id);
+    if (i < 0)
+        return Ref<SystemBase>();
+    TypeCls type = EonToType()[i];
+    SystemCollection::Iterator it = FindSystem(type);
+    if (it)
+        return it->AsRef<SystemBase>();
+    return Add(type);
+}
 
 
 

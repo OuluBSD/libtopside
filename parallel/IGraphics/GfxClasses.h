@@ -99,7 +99,6 @@ struct GfxInputState : ErrorReporter {
 
 
 struct GfxRenderer;
-class Viewable;
 
 struct GfxFramebuffer : ErrorReporter {
 	using Sample = GVar::Sample;

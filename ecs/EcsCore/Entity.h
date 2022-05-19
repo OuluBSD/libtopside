@@ -133,7 +133,7 @@ public:
 	void				Destroy() override;
 	void				SetEnabled(bool) override;
 	
-	Engine&			GetEngine();
+	Engine&				GetEngine();
 	const Engine&		GetEngine() const;
 	Pool&				GetPool() const;
 	
@@ -155,6 +155,9 @@ public:
 		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
 		return tuple;
 	}
+	
+	ComponentBaseRef CreateEon(String id);
+	
 	
 	//void CloneComponents(const Entity& e);
 	

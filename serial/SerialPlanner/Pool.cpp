@@ -17,10 +17,5 @@ ScriptPoolLoader::ScriptPoolLoader(ScriptEngineLoader& parent, ScriptPoolLoader*
 	
 }
 
-bool ScriptPoolLoader::Load() {
-	
-	TODO
-	
-}
 
 NAMESPACE_SERIAL_END

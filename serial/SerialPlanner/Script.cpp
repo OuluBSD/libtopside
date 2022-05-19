@@ -272,7 +272,9 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 	
 	if (loader->IsReady()) {
 		if (!loader->LoadEcs()) {
-			AddError("ecs loading failed: " + loader->GetErrorString());
+			String e = "ecs loading failed: " + loader->GetErrorString();
+			AddError(e);
+			//loader->SetError(e);
 			return false;
 		}
 	}
