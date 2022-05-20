@@ -72,6 +72,15 @@ AtomBaseRef Space::FindTypeCls(AtomTypeCls atom_type) {
 	return AtomBaseRef();
 }
 
+AtomBaseRef Space::FindAtom(TypeCls atom_type) {
+	for (AtomBaseRef& comp : atoms) {
+		TypeCls type = comp->GetTypeId();
+		if (type == atom_type)
+			return comp;
+	}
+	return AtomBaseRef();
+}
+
 AtomBaseRef Space::AddPtr(AtomBase* comp) {
 	comp->SetParent(this);
 	TypeCls type = comp->GetTypeId();
@@ -247,6 +256,18 @@ SpaceRef Space::FindSpaceByName(String name) {
 		if (object->GetName() == name)
 			return object;
 	return SpaceRef();
+}
+
+AtomBaseRef Space::FindDeepCls(TypeCls type) {
+	AtomBaseRef b = FindAtom(type);
+	if (b)
+		return b;
+	for (SpaceRef object : spaces) {
+		b = object->FindDeepCls(type);
+		if (b)
+			return b;
+	}
+	return b;
 }
 
 void Space::Dump() {

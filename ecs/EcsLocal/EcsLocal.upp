@@ -9,8 +9,6 @@ file
 	EcsLocal.cpp,
 	Camera.h,
 	Camera.cpp,
-	Model.h,
-	Model.cpp,
 	Viewport.h,
 	Viewport.cpp,
 	CommonComponents.h,

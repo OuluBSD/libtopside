@@ -18,7 +18,6 @@ INITBLOCK_(EcsLocal) {
 	
 	
 	// Component
-	ComponentFactory::Register<ModelComponent>("model");
 	ComponentFactory::Register<RigidBody>("body");
 	//ComponentFactory::Register<StaticVolumeComponent>("");
 	ComponentFactory::Register<TextRenderable>("text");

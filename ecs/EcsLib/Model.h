@@ -32,13 +32,17 @@ protected:
 class ModelComponent :
 	public Component<ModelComponent>
 {
+	
 public:
 	RTTI_COMP0(ModelComponent);
 	COMP_DEF_VISIT
 	
 	
+	void Initialize() override;
+	void Uninitialize() override;
     void operator=(const ModelComponent& src) {}
     
+    bool Load(GfxDataState& state);
     bool LoadModel(String path);
     //void Refresh(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
@@ -60,6 +64,9 @@ protected:
 	
 	
 };
+
+using ModelComponentRef = Ref<ModelComponent>;
+
 
 
 NAMESPACE_ECS_END

@@ -84,7 +84,11 @@ public:
 	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type);
 	SpaceRef			FindSpaceByName(String name);
+	AtomBaseRef			FindAtom(TypeCls type);
+	AtomBaseRef			FindDeepCls(TypeCls type);
 	
+	template <class T>
+	RefT_Atom<T> FindDeep() {return FindDeepCls(T::TypeIdClass())->template AsRefT<T>();}
 	
 	
 	AtomBaseRef			AddPtr(AtomBase* atom);

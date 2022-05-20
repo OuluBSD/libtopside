@@ -1,4 +1,4 @@
-#include "EcsLocal.h"
+#include "EcsLib.h"
 
 
 NAMESPACE_ECS_BEGIN
@@ -41,6 +41,26 @@ void ModelComponent::GetModels(VectorRendModel& models) {
 }
 
 #endif
+
+void ModelComponent::Initialize() {
+	
+	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
+	rend->AddModel(AsRefT());
+	
+}
+
+void ModelComponent::Uninitialize() {
+	
+	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
+	rend->RemoveModel(AsRefT());
+	
+}
+
+bool ModelComponent::Load(GfxDataState& state) {
+	
+	TODO
+	
+}
 
 /*void ModelComponent::LoadModel(CpuDataState& state) {
 	auto& o = cpu_obj ? *cpu_obj : state.AddObject();

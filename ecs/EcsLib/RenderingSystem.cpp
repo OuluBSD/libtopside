@@ -77,11 +77,42 @@ void RenderingSystem::RemoveRenderable(RenderableRef b) {
 	ArrayRemoveKey(rends, b);
 }
 
+void RenderingSystem::AddModel(ModelComponentRef m) {
+	ASSERT(m);
+	ArrayFindAdd(models, m);
+}
+
+void RenderingSystem::RemoveModel(ModelComponentRef m) {
+	ASSERT(m);
+	ArrayRemoveKey(models, m);
+}
+
 void RenderingSystem::Start() {
 	
 }
 
 void RenderingSystem::Update(double dt) {
+	
+	//if (state.IsEmpty()) {
+	if (!state) {
+		Serial::Machine& mach = Serial::GetActiveMachine();
+		SpaceStoreRef ents = mach.Get<SpaceStore>();
+		
+		#ifdef flagSCREEN
+		RefT_Atom<X11SwFboProg> fbo = ents->GetRoot()->FindDeep<X11SwFboProg>();
+		if (!state && fbo) {
+			state = &fbo->data.accel_state;
+		}
+		#endif
+		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
+		if (!state) TODO
+	}
+	
+	for (ModelComponentRef& m : models) {
+		
+		m->Load(*state);
+		
+	}
 	
 }
 

@@ -1,5 +1,5 @@
-#ifndef _EcsLib_RenderingSystem_h_
-#define _EcsLib_RenderingSystem_h_
+#ifndef _EcsLocal_RenderingSystem_h_
+#define _EcsLocal_RenderingSystem_h_
 
 NAMESPACE_ECS_BEGIN
 
@@ -47,6 +47,7 @@ using RenderableRef = Ref<Renderable>;
 class VirtualGui;
 
 
+
 class RenderingSystem :
 	public System<RenderingSystem>
 {
@@ -62,6 +63,10 @@ protected:
 	#endif
 	Array<RenderableRef> rends;
 	Array<ViewableRef> views;
+	Array<ModelComponentRef> models;
+	
+	//One<GfxDataState> state;
+	GfxDataState* state = 0;
 	
 protected:
     bool Initialize() override;
@@ -81,8 +86,14 @@ public:
 	
 	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);
+	void AddModel(ModelComponentRef m);
+	
 	void RemoveViewable(ViewableRef v);
 	void RemoveRenderable(RenderableRef b);
+	void RemoveModel(ModelComponentRef m);
+	
+	
+	
 	#ifdef flagSDL2
 	void Attach(String key, Parallel::BufferT<SdlSwGfx>* b);
 	#ifdef flagOGL

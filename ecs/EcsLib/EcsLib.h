@@ -29,6 +29,7 @@
 #include "CommonComponents.h"
 #include "Camera.h"
 #include "RegistrySystem.h"
+#include "Model.h"
 #include "RenderingSystem.h"
 #include "EventSystem.h"
 #include "Prefab.h"

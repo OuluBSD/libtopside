@@ -122,10 +122,12 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	
 	draw_mem = ws.Get(".drawmem") == "true";
 	
+	#ifdef flagGUI
 	ents = GetMachine().Get<EntitySystem>();
 	if (ents) {
 		wins = ents->GetEngine().Get<Ecs::WindowSystem>();
 	}
+	#endif
 	
 	return true;
 }
@@ -154,11 +156,17 @@ void EcsVideoBase::Uninitialize() {
 
 bool EcsVideoBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
+	#ifdef flagGUI
 	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
+	#else
+	Size sz = Size(800, 600);
+	#endif
+	
 	if (pd.GetPageSize() != sz)
 		pd.Create(sz);
 	
 	bool render_win = false;
+	#ifdef flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		ProgPainter& pp = pd.GetProgPainter();
@@ -180,6 +188,7 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 		render_win = true;
 		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
+	#endif
 	
 	bool b =	io.active_sink_mask == iface_sink_mask &&
 				io.full_src_mask == 0 &&

@@ -12,8 +12,8 @@ INITBLOCK_(EcsLib) {
 	
 	// System
 	Engine::Register<Ecs::RegistrySystem>("registry");
-	Engine::Register<RenderingSystem>("rendering");
 	Engine::Register<EventSystem>("events");
+	Engine::Register<RenderingSystem>("rendering");
 	
 	// Component
 	ComponentFactory::Register<Transform>("transform3");
@@ -22,5 +22,7 @@ INITBLOCK_(EcsLib) {
 	ComponentFactory::Register<Viewport>("viewport");
 	ComponentFactory::Register<ChaseCam>("camera.chase");
 	ComponentFactory::Register<Renderable>("renderable");
+	ComponentFactory::Register<ModelComponent>("model");
+	
 	
 }
