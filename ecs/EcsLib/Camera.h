@@ -49,17 +49,28 @@ class ChaseCam :
 {
 	TransformRef trans;
 	TransformRef target;
-	ViewableRef view;
+	ViewableRef viewable;
 	ViewportRef vport;
+	
+	mat4 look;
+	mat4 view;
+	mat4 projection;
+	vec2 viewport_sz;
+	
+	bool test_log = false;
 	
 public:
 	typedef ChaseCam CLASSNAME;
 	RTTI_COMP0(ChaseCam)
 	
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & view & vport;}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & viewable & vport;}
 	void Initialize() override;
+	void Uninitialize() override;
+	void Update(double dt) override;
+	bool Arg(String key, Object value) override;
 	void Refresh(GfxDataState& s);
 	
+	void SetViewportSize(Size sz);
 	void SetTarget(TransformRef tgt) {target = tgt;}
 	
 	void operator=(const ChaseCam& vp) {

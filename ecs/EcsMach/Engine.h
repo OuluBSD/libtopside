@@ -56,6 +56,13 @@ public:
 #define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
 
+struct ComponentBaseUpdater {
+	
+	virtual void Update(double dt) {Panic("unimplemented");}
+	
+};
+
+
 class Engine :
 	public RefScopeEnabler<Engine,RefRoot>
 {
@@ -131,8 +138,8 @@ public:
 	void SetNotRunning() {is_running = false;}
 	void Visit(RuntimeVisitor& vis);
 	
-	void AddToUpdateList(ComponentBase* c);
-	void RemoveFromUpdateList(ComponentBase* c);
+	void AddToUpdateList(ComponentBaseUpdater* c);
+	void RemoveFromUpdateList(ComponentBaseUpdater* c);
 	
 	Ref<SystemBase> Add(TypeCls type);
 	Ref<SystemBase> GetAdd(String id);
@@ -168,7 +175,7 @@ private:
     void Add(TypeCls type_id, SystemBase* system);
     void Remove(TypeCls typeId);
     
-    Vector<ComponentBase*> update_list;
+    Vector<ComponentBaseUpdater*> update_list;
     
 private:
 	typedef SystemBase* (*NewSystemFn)(Ecs::Engine&);

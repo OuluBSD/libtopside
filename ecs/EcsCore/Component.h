@@ -13,6 +13,7 @@ namespace Eon {class WorldState;}
 template <class T> inline RefT_Entity<T> ComponentBase_Static_As(ComponentBase*) {return RefT_Entity<T>();}
 
 class ComponentBase :
+	public ComponentBaseUpdater,
 	public Destroyable,
 	public Enableable,
 	public RefScopeEnabler<ComponentBase,Entity>
@@ -25,7 +26,7 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) = 0; // linking errors here means invalid derived visit
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
-	virtual void Update(double dt) {Panic("unimplemented");}
+	// moved to inherited: virtual void Update(double dt) {Panic("unimplemented");}
 	virtual String ToString() const;
 	
 	

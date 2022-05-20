@@ -179,6 +179,37 @@ String Pool::GetTreeString(int indent) {
 	return s;
 }
 
+PoolRef Pool::FindPool(String name) {
+	for (PoolRef& p : pools) {
+		if (p->GetName() == name)
+			return p;
+	}
+	return PoolRef();
+}
+
+EntityRef Pool::FindEntityByName(String name) {
+	for (EntityRef object : objects)
+		if (object->GetName() == name)
+			return object;
+	return EntityRef();
+}
+
+PoolRef Pool::AddPool(String name) {
+	Pool& p = pools.Add();
+	p.SetParent(PoolParent(0, this));
+	p.SetName(name);
+	p.SetId(GetNextId());
+	return p;
+}
+
+PoolRef Pool::GetAddPool(String name) {
+	for (PoolRef& pool : pools)
+		if (pool->GetName() == name)
+			return pool;
+	return AddPool(name);
+}
+
+
 
 
 

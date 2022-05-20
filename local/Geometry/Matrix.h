@@ -353,7 +353,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 			s << (r == 0 ? "[[\t" : " [\t");
 			for(int c = 0; c < C; c++) {
 				if (c) s << ",\t";
-				s << ToString(data[r][c]);
+				s << AsString(data[r][c]);
 			}
 			s << (r == R-1 ? "\t]]" : "\t],\n");
 		}
@@ -369,23 +369,27 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 					data[c][r] = data[r][c];
 		return *this;
 	}
+	
 	Matrix& SetColumn(int col, const vecR& v) {
 		ASSERT(col >= 0 && col < C);
 		for(int r = 0; r < R; r++)
 			data[r][col] = v[r];
 		return *this;
 	}
+	
 	Matrix& SetConst(const T& value) {
 		for(int r = 0; r < R; r++)
 			data[r].SetConst(value);
 		return *this;
 	}
+	
 	Matrix& SetIdentity() {
 		for(int r = 0; r < R; r++)
 			for(int c = 0; c < C; c++)
 				data[r].data[c] = (T)(r == c ? 1 : 0);
 		return *this;
 	}
+	
 	Matrix& SetComponentTranslate(T x, T y, T z) {
 		data[3][0] = x;
 		data[3][1] = y;
@@ -402,6 +406,12 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	
 	Matrix& SetTranslate(T x, T y, T z) {SetIdentity().SetComponentTranslate(x, y, z); return *this;}
 	Matrix& SetScale(T scale) {SetIdentity().SetComponentScale(scale, scale, scale); return *this;}
+	
+	vec3 GetTranslation() const {
+		return vec3(	data[3][0],
+						data[3][1],
+						data[3][2]);
+	}
 	
 	Matrix& SetRotation(int axis, float angle_rad) {
 		static_assert(R == C && R >= 3, "Expecting square matrix of at least size 3");

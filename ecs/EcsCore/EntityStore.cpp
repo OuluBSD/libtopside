@@ -35,6 +35,26 @@ void EntityStore::Update(double dt) {
 	
 }
 
+EntityRef EntityStore::FindEntity(String path) {
+	Vector<String> parts = Split(path, ".", false);
+	
+	PoolRef pool = GetRoot();
+	for(int i = 0; i < parts.GetCount(); i++) {
+		bool is_ent = i == parts.GetCount()-1;
+		const String& p = parts[i];
+		
+		if (is_ent) {
+			return pool->FindEntityByName(p);
+		}
+		else {
+			pool = pool->FindPool(p);
+			if (!pool)
+				break;
+		}
+	}
+	return EntityRef();
+}
+
 /*int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
 	Engine& mach = GetEngine();
 	

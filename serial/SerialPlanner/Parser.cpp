@@ -548,15 +548,16 @@ bool Parser::ParseComponentDefinition(Script::ComponentDefinition& comp) {
 	if (!ParseId(comp.id))
 		return false;
 	
-	PASS_CHAR(':')
-	
-	if (IsChar('{')) {
-		if (!ParseComponentDefinitionScope(comp))
+	if (Char(':')) {
+		
+		if (IsChar('{')) {
+			if (!ParseComponentDefinitionScope(comp))
+				return false;
+		}
+		else {
+			AddError("Expected machine scope");
 			return false;
-	}
-	else {
-		AddError("Expected machine scope");
-		return false;
+		}
 	}
 	
 	PASS_CHAR(';')

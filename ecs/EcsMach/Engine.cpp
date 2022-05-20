@@ -120,6 +120,10 @@ void Engine::Update(double dt) {
 		return;
 	}
 	
+	for (ComponentBaseUpdater* cb : update_list) {
+		cb->Update(dt);
+	}
+	
 	is_looping_systems = true;
 	
 	for (auto& system : systems) {
@@ -208,11 +212,11 @@ void Engine::Visit(RuntimeVisitor& vis) {
 		vis.Visit(iter());
 }
 
-void Engine::AddToUpdateList(ComponentBase* c) {
+void Engine::AddToUpdateList(ComponentBaseUpdater* c) {
 	VectorFindAdd(update_list, c);
 }
 
-void Engine::RemoveFromUpdateList(ComponentBase* c) {
+void Engine::RemoveFromUpdateList(ComponentBaseUpdater* c) {
 	VectorRemoveKey(update_list, c);
 }
 

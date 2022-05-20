@@ -28,7 +28,10 @@ bool ExtScriptEngineLoader::Load(ScriptEngineLoader& l) {
 	PoolRef pool = ents->GetRoot();
 	
 	for (ScriptPoolLoader& loader : l.pools) {
-		if (!Load(loader, *pool)) {
+		String name = loader.def.id.ToString();
+		PoolRef pool0 = pool->GetAddPool(name);
+		ASSERT(pool0);
+		if (!Load(loader, *pool0)) {
 			l.SetError(l.def.id.ToString() + ": " + loader.GetErrorString());
 			return false;
 		}

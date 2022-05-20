@@ -144,12 +144,7 @@ public:
 		return EntityRef();
 	}
 	
-	EntityRef FindEntityByName(String name) {
-		for (EntityRef object : objects)
-			if (object->GetName() == name)
-				return object;
-		return EntityRef();
-	}
+	EntityRef FindEntityByName(String name);
 	
 	template<typename Tuple>
 	bool AllValidComponents(const Tuple& components) {
@@ -163,21 +158,9 @@ public:
 	EntityVec& GetEntities() {return objects;}
 	PoolVec& GetPools() {return pools;}
 	
-	PoolRef AddPool(String name="") {
-		Pool& p = pools.Add();
-		p.SetParent(PoolParent(0, this));
-		p.SetName(name);
-		p.SetId(GetNextId());
-		return p;
-	}
-	
-	PoolRef GetAddPool(String name) {
-		for (PoolRef& pool : pools)
-			if (pool->GetName() == name)
-				return pool;
-		return AddPool(name);
-	}
-	
+	PoolRef FindPool(String name);
+	PoolRef AddPool(String name="");
+	PoolRef GetAddPool(String name);
 	EntityVec::Iterator			begin()			{return objects.begin();}
 	EntityVec::Iterator			end()			{return objects.end();}
 	PoolVec::Iterator			BeginPool()		{return pools.begin();}

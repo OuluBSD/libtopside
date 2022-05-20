@@ -15,27 +15,12 @@ public:
 	vec3 size = one<vec3>();
 	quat orientation = identity<quat>();
 	
-	void SetFromMatrix(const mat4& matrix) {
-		vec3 skew;
-		vec4 persp;
-		bool succ = Decompose(matrix, size, orientation, position, skew, persp);
-		ASSERT(succ);
-	}
+	void SetFromMatrix(const mat4& matrix);
+	void operator=(const Transform& t);
+	mat4 GetMatrix() const;
 	
-	void operator=(const Transform& t) {
-		position		= t.position;
-		size			= t.size;
-		orientation		= t.orientation;
-	}
-	mat4 GetMatrix() const {
-		return scale(size) * ToMat4(orientation) * translate(position);
-	}
-	
-	String ToString() const override {
-		String s;
-		s << "pos" << position.ToString() << ", size" << size.ToString() << ", orient" << orientation.ToString();
-		return s;
-	}
+	bool Arg(String key, Object value) override;
+	String ToString() const override;
 	
 	
 };
@@ -52,11 +37,8 @@ public:
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
 	
-    void operator=(const Transform2D& t) {
-        position = t.position;
-        size = t.size;
-    }
-    
+	void operator=(const Transform2D& t);
+	
 	
 };
 

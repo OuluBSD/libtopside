@@ -8,6 +8,7 @@ class CParser : public RtErr {
 	String input;
 	
 	bool pass_whitespace = true;
+	bool pass_comments = true;
 	void SkipSpaces();
 	void ChkNewline(int chr) {if (chr == '\n') {pos.line++; pos.col = 0;}}
 	
@@ -43,6 +44,7 @@ public:
 	Pos GetPos() const {return pos;}
 	void SetPos(const Pos& p) {pos = p;}
 	void Set(const String& input, const String&  fn, int line=0) {this->input = input; pos.fn = fn; pos.line = line;}
+	void PassComments(bool b) {pass_comments = b;}
 	
 	String ReadId();
 	String ReadString(char delim='\"', bool checkend=true);
@@ -55,8 +57,9 @@ public:
 	void PassChar(char chr);
 	void SkipTerm();
 	void SkipChar();
-	void DoSpaces() {if (pass_whitespace) SkipSpaces();}
-	void Spaces() {DoSpaces();}
+	void DoSpaces();
+	void Spaces();
+	void DoComments();
 	
 	int PeekChar() const;
 	bool Char(char chr);

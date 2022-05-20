@@ -170,6 +170,29 @@ void CParser::SkipChar() {
 	pos.col++;
 }
 
+void CParser::DoSpaces() {
+	if (pass_whitespace)
+		SkipSpaces();
+	if (pass_comments)
+		DoComments();
+}
+
+void CParser::Spaces() {
+	DoSpaces();
+}
+
+void CParser::DoComments() {
+	if (Char2('/', '/')) {
+		while (pos.cursor < input.GetCount()) {
+			if (IsChar('\n') || IsChar2('\r','\n'))
+				break;
+			pos.cursor++;
+			pos.col++;
+		}
+		SkipSpaces();
+	}
+}
+
 void CParser::PassId(String id) {
 	if (IsId(id))
 		ReadId();

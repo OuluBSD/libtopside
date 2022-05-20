@@ -25,6 +25,7 @@ public:
 	PoolRef GetRoot()	{return *root.begin();}
 	PoolVec& GetRootVec()	{return root;}
 	
+	EntityRef FindEntity(String path);
 	
 	//int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
 	
