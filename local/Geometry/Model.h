@@ -141,6 +141,9 @@ public:
 using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;
 
 
+class ModelBuilder;
+
+
 class ModelLoader :
 	public RefScopeEnabler<ModelLoader,RefRoot>
 {
@@ -152,6 +155,7 @@ public:
 	void Clear() {model.Clear();}
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
+    void operator=(ModelBuilder& mb);
 	operator bool() const {return !model.IsEmpty();}
     void Visit(RuntimeVisitor& vis) {if (model) vis % *model;}
 	

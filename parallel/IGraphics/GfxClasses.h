@@ -66,10 +66,13 @@ struct GfxDataState : ErrorReporter {
 	// renderer
     mat4		view;
     vec3		light_dir;
+    bool		user_view = false;
     bool		dbg_render = false;
 	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
 	virtual GfxDataObject& CreateObject() = 0;
+	virtual int GetObjectCount() const = 0;
+	virtual GfxDataObject& GetObject(int i) = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
 	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o) = 0;
 	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;

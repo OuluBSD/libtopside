@@ -16,8 +16,12 @@ machine sdl.app: {
 				program:		"obj_view";
 			};
 		};
+		
 	};
+
 };
+
+
 
 
 engine ecs.dummy: {
@@ -46,7 +50,7 @@ engine ecs.dummy: {
             comp transform3;
             comp body;
             comp model: {
-                builtin: sphere;
+                builtin: box;
             
             };
             comp physics: {

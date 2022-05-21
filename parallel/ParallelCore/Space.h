@@ -88,7 +88,7 @@ public:
 	AtomBaseRef			FindDeepCls(TypeCls type);
 	
 	template <class T>
-	RefT_Atom<T> FindDeep() {return FindDeepCls(T::TypeIdClass())->template AsRefT<T>();}
+	RefT_Atom<T> FindDeep() {auto r = FindDeepCls(T::TypeIdClass()); return r ? r->template AsRefT<T>() : RefT_Atom<T>();}
 	
 	
 	AtomBaseRef			AddPtr(AtomBase* atom);

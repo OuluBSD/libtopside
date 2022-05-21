@@ -87,6 +87,14 @@ void RenderingSystem::RemoveModel(ModelComponentRef m) {
 	ArrayRemoveKey(models, m);
 }
 
+void RenderingSystem::AddCamera(CameraBase& c) {
+	VectorFindAdd(cams, &c);
+}
+
+void RenderingSystem::RemoveCamera(CameraBase& c) {
+	VectorRemoveKey(cams, &c);
+}
+
 void RenderingSystem::Start() {
 	
 }
@@ -103,6 +111,12 @@ void RenderingSystem::Update(double dt) {
 		if (!state && fbo) {
 			state = &fbo->data.accel_state;
 		}
+		#ifdef flagOGL
+		RefT_Atom<X11OglFboProg> ogl_fbo = ents->GetRoot()->FindDeep<X11OglFboProg>();
+		if (!state && ogl_fbo) {
+			state = &ogl_fbo->data.accel_state;
+		}
+		#endif
 		#endif
 		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
 		if (!state) TODO
@@ -114,6 +128,11 @@ void RenderingSystem::Update(double dt) {
 		
 	}
 	
+	for (CameraBase* cb : cams) {
+		
+		cb->Load(*state);
+		
+	}
 }
 
 void RenderingSystem::Stop() {

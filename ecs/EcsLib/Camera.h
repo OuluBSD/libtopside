@@ -44,8 +44,15 @@ struct Viewport : public Component<Viewport> {
 };
 
 
+struct CameraBase {
+	
+	virtual bool Load(GfxDataState& state) = 0;
+	
+};
+
 class ChaseCam :
-	public Component<ChaseCam>
+	public Component<ChaseCam>,
+	public CameraBase
 {
 	TransformRef trans;
 	TransformRef target;
@@ -58,6 +65,7 @@ class ChaseCam :
 	vec2 viewport_sz;
 	
 	bool test_log = false;
+	double time = 0;
 	
 public:
 	typedef ChaseCam CLASSNAME;
@@ -68,7 +76,7 @@ public:
 	void Uninitialize() override;
 	void Update(double dt) override;
 	bool Arg(String key, Object value) override;
-	void Refresh(GfxDataState& s);
+	bool Load(GfxDataState& state) override;
 	
 	void SetViewportSize(Size sz);
 	void SetTarget(TransformRef tgt) {target = tgt;}

@@ -44,7 +44,7 @@ void SoftRendT<Gfx>::SetDepthTest(bool b) {
 
 template <class Gfx>
 void SoftRendT<Gfx>::SetDepthOrderLess(bool b) {
-	is_depth_order_greater = !b;
+	is_depth_order_less = b;
 }
 
 template <class Gfx>
@@ -178,7 +178,6 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 					
 					bc_screen = zinfo->bc_screen;
 					
-					
 					tex_coord.Clear();
 					for(int i = 0; i < 2; i++) tex_coord[i] += a.tex_coord[i] * bc_screen[0];
 					for(int i = 0; i < 2; i++) tex_coord[i] += b.tex_coord[i] * bc_screen[1];
@@ -286,11 +285,12 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 	float* zbuffer = (float*)depth->data.Begin();
 	DepthImage::Info* zinfo = (DepthImage::Info*)depth->info.Begin();
 	
-	bool greater = is_depth_order_greater;
+	bool greater = is_depth_order_less;
 	vec2 P;
 	for (P[0] = bboxmin[0]; P[0] <= bboxmax[0]; P[0]++) {
 		for (P[1] = bboxmin[1]; P[1] <= bboxmax[1]; P[1]++) {
 			vec3 bc_screen = GetBarycentric(pts, P);
+			
 			if (bc_screen[0] < 0 || bc_screen[1] < 0 || bc_screen[2] < 0)
 				continue;
 			

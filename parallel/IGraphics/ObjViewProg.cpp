@@ -24,24 +24,27 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 	
 	if (frame == 0) {
 		DataState& state = sd->GetState();
-		String data_dir = ShareDirFile("models");
-		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
-		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-		auto& o = state.AddObject();
 		
-		if (!state.LoadModel(loader, o, obj_path)) {
-			RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
-			return false;
-		}
-		
-		if (!loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path)) {
-			RTLOG("ObjViewProg::Render: error: could not load texture '" << tex_path << "'");
-			return false;
-		}
-		
-		if (!state.LoadModelTextures(loader, o)) {
-			RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
-			return false;
+		if (sd->GetState().GetObjectCount() == 0) {
+			String data_dir = ShareDirFile("models");
+			String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
+			String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
+			auto& o = state.AddObject();
+			
+			if (!state.LoadModel(loader, o, obj_path)) {
+				RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
+				return false;
+			}
+			
+			if (!loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path)) {
+				RTLOG("ObjViewProg::Render: error: could not load texture '" << tex_path << "'");
+				return false;
+			}
+			
+			if (!state.LoadModelTextures(loader, o)) {
+				RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
+				return false;
+			}
 		}
 	}
 	
@@ -77,33 +80,37 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
 	float angle = f * (2.0 * M_PI);
-	float x = cos(angle);
-	float y = sin(angle);
 	
-	float eye_angle = (use_texture ? -1 : +1) * f /** 0.25*/ * M_2PI;
-	float eye_x = cos(eye_angle);
-	float eye_y = sin(eye_angle);
-	float x_mod = 0.2 * eye_x;
-	float y_mod = 0.2 * eye_y;
-	mat4 perspective {
-		vec4{1,		0,	    0,		0},
-		vec4{0,		1,	    0,		0},
-		vec4{0,		0,	    1,		0},
-		vec4{0,		0, -1./5.,		1}
-	};
+	if (!state.user_view) {
+		float x = cos(angle);
+		float y = sin(angle);
+		
+		float eye_angle = (use_texture ? -1 : +1) * f /** 0.25*/ * M_2PI;
+		float eye_x = cos(eye_angle);
+		float eye_y = sin(eye_angle);
+		float x_mod = 0.2 * eye_x;
+		float y_mod = 0.2 * eye_y;
+		mat4 perspective {
+			vec4{1,		0,	    0,		0},
+			vec4{0,		1,	    0,		0},
+			vec4{0,		0,	    1,		0},
+			vec4{0,		0, -1./5.,		1}
+		};
+		
+		vec3 eye {0.3f * eye_x, 0.3f * eye_y, 1};
+		vec3 center {0, 0, -1};
+		vec3 up {0, 1, 0};
+		mat4 lookat = LookAt(eye, center, up);
+		mat4 port;
+		
+		/*if (phase == 0)
+			port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 1);
+		else*/
+			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	
-	vec3 eye {0.3f * eye_x, 0.3f * eye_y, 1};
-	vec3 center {0, 0, -1};
-	vec3 up {0, 1, 0};
-	mat4 lookat = LookAt(eye, center, up);
-	mat4 port;
+		state.view = port * perspective * lookat;
+	}
 	
-	/*if (phase == 0)
-		port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 1);
-	else*/
-		port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
-	
-	state.view = port * perspective * lookat;
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	
 }
@@ -113,13 +120,14 @@ void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	int width = a.generic->iResolution[0];
 	int height = a.generic->iResolution[1];
 	vec4 pos = a.v.position.Splice().Embed();
-	pos[2] = -pos[2] + 2; // hack
+	//pos[2] = -pos[2] + 2; // hack
 	vec4 screen = a.va->view * pos;
 	screen.Project();
 	a.v.position[0] = (int)((screen[0] + 1.0) * width  / 2.0);
 	a.v.position[1] = (int)((screen[1] + 1.0) * height / 2.0);
 	a.v.position[2] = screen[2];
 	a.v.position[3] = 1.0f;
+	//LOG(a.v.position.ToString());
 	//ASSERT(a.v.position[2] >= 0.0f);
 }
 
@@ -171,8 +179,8 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	}
 	else {
 		used_clr[0] = intensity;
-		used_clr[1] = intensity;
-		used_clr[2] = intensity;
+		used_clr[1] = 255;
+		used_clr[2] = 0;
 	}
 }
 

@@ -24,7 +24,7 @@ class SoftRendT {
 	RGBA clear_color;
 	byte clear_depth = 0;
 	bool is_depth_test = false;
-	bool is_depth_order_greater = false;
+	bool is_depth_order_less = false;
 	bool is_fast_perspective_correction = false;
 	bool is_triangle_backside_culling = false;
 	bool is_triangle_frontside_cw = false;
@@ -99,7 +99,7 @@ public:
 	//void SetPipeline(SoftPipeline& pipe) {tgt_pipe = &pipe;}
 	void Render(SoftVertexArray& vao);
 	
-	float GetDepthResetValue() const {return is_depth_order_greater ? -1e10f : +1e10f;}
+	float GetDepthResetValue() const {return is_depth_order_less ? -1e10f : +1e10f;}
 	
 	void BindTexture(int type, NativeColorBufferConstRef tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
 	

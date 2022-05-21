@@ -50,16 +50,54 @@ void ModelComponent::Initialize() {
 }
 
 void ModelComponent::Uninitialize() {
+	obj = 0;
 	
 	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
 	rend->RemoveModel(AsRefT());
 	
 }
 
+bool ModelComponent::Arg(String key, Object value) {
+	
+	if (key == "builtin") {
+		String name = value;
+		ModelBuilder mb;
+		if (name == "plane") {
+			vec3 pos(-5,0,-5);
+			vec2 size(10,10);
+			mb.AddPlane(pos, size);
+		}
+		else if (name == "box") {
+			vec3 pos(0,0,0);
+			vec3 dim(2,2,2);
+			mb.AddBox(pos, dim, true);
+		}
+		else if (name == "sphere") {
+			vec3 pos(0,0,0);
+			mb.AddSphere(pos, 2, 3, 3);
+		}
+		else if (name == "cylinder") {
+			vec3 pos(0,0,0);
+			mb.AddCylinder(pos, 2, 2);
+		}
+		else {
+			LOG("ModelComponent::Arg: error: invalid model name '" + name + "'");
+			return false;
+		}
+		loader = mb;
+	}
+	else return false;
+	
+	return true;
+}
+
 bool ModelComponent::Load(GfxDataState& state) {
-	
-	TODO
-	
+	obj = &state.CreateObject();
+	bool b = state.LoadModel(loader, *obj);
+	if (!b) {
+		LOG("ModelComponent::Load: error: model loading failed");
+	}
+	return b;
 }
 
 /*void ModelComponent::LoadModel(CpuDataState& state) {

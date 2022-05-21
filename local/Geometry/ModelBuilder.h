@@ -88,8 +88,8 @@ public:
 	
 	Mesh& AddPlane(const vec3& pos, const vec2& size);
 	Mesh& AddBox(const vec3& pos, const vec3& dim, bool centered=false);
-	Mesh& AddSphere(const vec3& pos, float radius);
-	Mesh& AddCylinder(const vec3& pos, float radius, float length);
+	Mesh& AddSphere(const vec3& pos, float radius, int slices=16, int stacks=16);
+	Mesh& AddCylinder(const vec3& pos, float radius, float length, int slices=16);
 	
 	
 	operator const ModelMesh&() const {return *model;}

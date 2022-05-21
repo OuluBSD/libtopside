@@ -1,7 +1,7 @@
 #include "Geometry.h"
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
@@ -426,4 +426,4 @@ void ProgPainter::Clear() {
 
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END

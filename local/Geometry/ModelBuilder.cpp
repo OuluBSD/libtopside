@@ -41,11 +41,11 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	return m;
 }
 
-Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
+Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int stacks) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::create_sphere(m, 16, 16, radius);
+	PrimitiveFactory::create_sphere(m, slices, stacks, radius);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -57,11 +57,11 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
 	return m;
 }
 
-Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length) {
+Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int slices) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::create_cylinder(m, 16, radius, length);
+	PrimitiveFactory::create_cylinder(m, slices, radius, length);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;

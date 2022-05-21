@@ -1,0 +1,13 @@
+library
+	"allegro GL GLEW glut ";
+
+file
+	main.cpp,
+	matrix.cpp,
+	matrix.h,
+	frag.glsl highlight cpp,
+	vert.glsl highlight cpp;
+
+mainconfig
+	"" = "";
+

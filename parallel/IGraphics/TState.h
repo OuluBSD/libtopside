@@ -70,6 +70,8 @@ struct DataStateT : GfxDataState {
 	~DataStateT();
 	DataObject& AddObject();
 	GfxDataObject& CreateObject() override {return AddObject();}
+	int GetObjectCount() const override {return objects.GetCount();}
+	GfxDataObject& GetObject(int i) override {return objects[i];}
 	
 	void Free();
 	void Refresh(ModelMesh& m) override {TODO}

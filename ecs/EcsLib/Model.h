@@ -40,6 +40,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
     void operator=(const ModelComponent& src) {}
     
     bool Load(GfxDataState& state);
@@ -58,6 +59,8 @@ public:
 	
 protected:
 	ModelLoader loader;
+	GfxDataObject* obj = 0;
+	
 	//CpuDataObject* cpu_obj = 0;
 	//OglDataObject* ogl_obj = 0;
 	

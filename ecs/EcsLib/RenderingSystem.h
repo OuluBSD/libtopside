@@ -64,6 +64,7 @@ protected:
 	Array<RenderableRef> rends;
 	Array<ViewableRef> views;
 	Array<ModelComponentRef> models;
+	Vector<CameraBase*> cams;
 	
 	//One<GfxDataState> state;
 	GfxDataState* state = 0;
@@ -87,10 +88,12 @@ public:
 	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);
 	void AddModel(ModelComponentRef m);
+	void AddCamera(CameraBase& c);
 	
 	void RemoveViewable(ViewableRef v);
 	void RemoveRenderable(RenderableRef b);
 	void RemoveModel(ModelComponentRef m);
+	void RemoveCamera(CameraBase& c);
 	
 	
 	

@@ -119,6 +119,10 @@ bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) 
 
 #endif
 
+void ModelLoader::operator=(ModelBuilder& mb) {
+	model = mb.Detach();
+}
+
 
 
 
