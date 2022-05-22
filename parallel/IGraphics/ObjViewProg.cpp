@@ -141,18 +141,10 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 
 template <class Gfx>
 void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
-	int width = a.generic->iResolution[0];
-	int height = a.generic->iResolution[1];
 	vec4 pos = a.v.position.Splice().Embed();
-	//pos[2] = -pos[2] + 2; // hack
 	vec4 screen = a.va->view * pos;
 	screen.Project();
-	a.v.position[0] = (int)((screen[0] + 1.0) * width  / 2.0);
-	a.v.position[1] = (int)((screen[1] + 1.0) * height / 2.0);
-	a.v.position[2] = screen[2];
-	a.v.position[3] = 1.0f;
-	//LOG(a.v.position.ToString());
-	//ASSERT(a.v.position[2] >= 0.0f);
+	a.v.position = screen;
 }
 
 template <class Gfx>
@@ -163,7 +155,7 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	float x = args.frag_coord[0] / w;
 	float y = args.frag_coord[1] / h;
 	args.frag_color_out = vec4(x, y, 0, 1);
-	#endif
+	#else
 	
 	ASSERT(args.fa);
 	vec3& n = args.normal;
@@ -203,9 +195,10 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	}
 	else {
 		used_clr[0] = intensity;
-		used_clr[1] = 255;
-		used_clr[2] = 0;
+		used_clr[1] = intensity;
+		used_clr[2] = intensity;
 	}
+	#endif
 }
 
 

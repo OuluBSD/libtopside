@@ -242,9 +242,16 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	Vertex*       iter_out    = (Vertex*)processed_vertices.vertices.Begin();
 	
 	#if 1
+	int width = vtx_args.generic->iResolution[0];
+	int height = vtx_args.generic->iResolution[1];
 	while (iter_in != iter_in_end) {
 		vtx_args.v = *iter_in++;
 		vs.Process(vtx_args);
+		
+		auto& pos = vtx_args.v.position;
+		pos[0] = (int)((pos[0] + 1.0) * width  / 2.0);
+		pos[1] = (int)((pos[1] + 1.0) * height / 2.0);
+		
 		*iter_out++ = vtx_args.v;
 	}
 	#else
