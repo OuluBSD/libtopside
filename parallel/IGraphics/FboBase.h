@@ -41,7 +41,7 @@ public:
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	void			Visit(RuntimeVisitor& vis) override {vis & state; vis % data; vis.VisitThis<Atom>(this);}
 	void			Finalize(RealtimeSourceConfig& cfg) override;
 	RealtimeSourceConfig* GetConfig() override {return last_cfg;}
 	

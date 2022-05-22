@@ -208,7 +208,7 @@ bool OrientedRectangle::Contains(const vec2& pt) const {
 	F c = (F)FastCos(theta);
 	F s = (F)FastSin(theta);
 	mat2 zrot {	vec2 { c, s}, vec2 {-s, c} }; // rotation vector for local space
-	local_pt = AsMatrix(local_pt) * zrot; // move the point fully to local space (with rotation)
+	local_pt = zrot * AsMatrix(local_pt); // move the point fully to local space (with rotation)
 	Rectangle local_rc(hext * -1, hext * (F)2); // Create un-oriented rectangle in local (with [0,0] center)
 	return local_rc.Contains(local_pt);
 }
@@ -224,11 +224,11 @@ bool OrientedRectangle::Intersects(const line2& l) const {
 	mat2 zrot {	vec2 { c, s}, vec2 {-s, c} };
 	
 	local_pt = l.a - ct;
-	local_pt = AsMatrix(local_pt) * zrot;
+	local_pt = zrot * AsMatrix(local_pt);
 	local_line.a = local_pt + hext;
 	
 	local_pt = l.b - ct;
-	local_pt = AsMatrix(local_pt) * zrot;
+	local_pt = zrot * AsMatrix(local_pt);
 	local_line.b = local_pt + hext;
 	
 	Rectangle local_rc(hext * (F)2);
@@ -243,7 +243,7 @@ bool OrientedRectangle::Intersects(const Circle& c) const {
 	F cos = FastCos(theta);
 	F sin = FastSin(theta);
 	mat2 zrot {	vec2 { cos, sin}, vec2 {-sin, cos} };
-	r = AsMatrix(r) * zrot;
+	r = zrot * AsMatrix(r);
 	Circle lc(r + hext, c.rad);
 	Rectangle lr(hext * (F)2);
 	return lr.Intersects(lc);
@@ -262,7 +262,7 @@ ival1 OrientedRectangle::GetInterval(const vec2& axis) const {
 	mat2 zrot {	vec2 { c, s}, vec2 {-s, c} };
 	for(int i = 0; i < 4; i++) {
 		vec2 d = verts[i] - ct;
-		d = AsMatrix(d) * zrot;
+		d = zrot * AsMatrix(d);
 		verts[i] = d + ct;
 	}
 	ival1 res;
@@ -292,10 +292,10 @@ bool OrientedRectangle::Intersects(const Rectangle& r) const {
 	mat2 zrot {	vec2 { cos, sin}, vec2 {-sin, cos} };
 	
 	axis = vec2{ hext[0], 0 }.Normalize();
-	test_axis[2] = AsMatrix(axis) * zrot;
+	test_axis[2] = zrot * AsMatrix(axis);
 	
 	axis = vec2{ 0, hext[1] }.Normalize();
-	test_axis[3] = AsMatrix(axis) * zrot;
+	test_axis[3] = zrot * AsMatrix(axis);
 	
 	for(int i = 0; i < 4; i++)
 		if (!OverlapsOnAxis(r, test_axis[i]))
@@ -312,7 +312,7 @@ bool OrientedRectangle::Intersects(const OrientedRectangle& rect) const {
 	F theta = -rot;
 	F cos = FastCos(theta), sin = FastSin(theta);
 	mat2 zrot {	vec2 { cos, sin}, vec2 {-sin, cos} };
-	r = AsMatrix(r) * zrot;
+	r = zrot * AsMatrix(r);
 	local1.ct = r + hext;
 	return local1.Intersects(local0);
 }
@@ -327,8 +327,8 @@ void Shape2DWrapper::ShapeLine::Rotate(float rad) {
 	vec2 ct = l.GetCenter();
 	float c = FastCos(rad), s = FastSin(rad);
 	mat2 zrot {	vec2 { c, s}, vec2 {-s, c} };
-	l.a = vec2(AsMatrix(l.a - ct) * zrot) + ct;
-	l.b = vec2(AsMatrix(l.b - ct) * zrot) + ct;
+	l.a = vec2(zrot * AsMatrix(l.a - ct)) + ct;
+	l.b = vec2(zrot * AsMatrix(l.b - ct)) + ct;
 }
 
 void Shape2DWrapper::ShapeLine::GetFaces(Vector<tri3>& faces) {
@@ -424,10 +424,10 @@ void Shape2DWrapper::ShapeOrientedRect::GetFaces(Vector<line2>& faces) {
 	b[0] = -o.hext[0]; b[1] = +o.hext[1];
 	c[0] = +o.hext[0]; c[1] = +o.hext[1];
 	d[0] = +o.hext[0]; d[1] = -o.hext[1];
-	a = vec2(AsMatrix(a) * zrot) + o.ct;
-	b = vec2(AsMatrix(b) * zrot) + o.ct;
-	c = vec2(AsMatrix(c) * zrot) + o.ct;
-	d = vec2(AsMatrix(d) * zrot) + o.ct;
+	a = vec2(zrot * AsMatrix(a)) + o.ct;
+	b = vec2(zrot * AsMatrix(b)) + o.ct;
+	c = vec2(zrot * AsMatrix(c)) + o.ct;
+	d = vec2(zrot * AsMatrix(d)) + o.ct;
 	faces.Add().Set(a, b);
 	faces.Add().Set(b, c);
 	faces.Add().Set(c, d);
@@ -443,10 +443,10 @@ void Shape2DWrapper::ShapeOrientedRect::GetFaces(Vector<tri3>& faces) {
 	b[0] = -o.hext[0]; b[1] = +o.hext[1];
 	c[0] = +o.hext[0]; c[1] = +o.hext[1];
 	d[0] = +o.hext[0]; d[1] = -o.hext[1];
-	a = vec2(AsMatrix(a) * zrot) + o.ct;
-	b = vec2(AsMatrix(b) * zrot) + o.ct;
-	c = vec2(AsMatrix(c) * zrot) + o.ct;
-	d = vec2(AsMatrix(d) * zrot) + o.ct;
+	a = vec2(zrot * AsMatrix(a)) + o.ct;
+	b = vec2(zrot * AsMatrix(b)) + o.ct;
+	c = vec2(zrot * AsMatrix(c)) + o.ct;
+	d = vec2(zrot * AsMatrix(d)) + o.ct;
 	vec3 A = a.Extend();
 	vec3 B = b.Extend();
 	vec3 C = c.Extend();

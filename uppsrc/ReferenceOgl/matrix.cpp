@@ -1,7 +1,7 @@
-/*since these fucntions use each other, make sure they're declared before they're defined*/
+//since these fucntions use each other, make sure they're declared before they're defined
 #include "matrix.h"
 
-/*can't make matrices without using some maths*/
+//can't make matrices without using some maths
 #include <math.h>
 
 
@@ -25,19 +25,39 @@ void crossproduct(float a[4], float b[4], float result[4]) {
 }
 
 void multmatrix(float a[4][4], float b[4][4], float result[4][4]) {
+	#if 1
+	int r;
+	int c2;
+	int c;
+	float total;
+	
+	for (r = 0; r < 4; r++) {
+		for (c2 = 0; c2 < 4; c2++) {
+			total = 0;
+			for (c = 0; c < 4; c++) {
+				float aa = a[c][c2];
+				float bb = b[r][c];
+				float mul = aa * bb;
+				total += mul;
+			}
+			result[r][c2] = total;
+		}
+	}
+	#else
 	int i;
 	int j;
 	int k;
 	float total;
-	
-	for (i = 0; i < 4; i++)
+
+	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
 			total = 0;
 			for (k = 0; k < 4; k++)
 				total += a[k][i] * b[j][k];
 			result[j][i] = total;
 		}
-		
+	}
+	#endif
 }
 
 void translate(float x, float y, float z, float result[4][4]) {

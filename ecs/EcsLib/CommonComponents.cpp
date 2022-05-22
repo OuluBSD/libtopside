@@ -17,7 +17,7 @@ void Transform::operator=(const Transform& t) {
 }
 
 mat4 Transform::GetMatrix() const {
-	return scale(size) * ToMat4(orientation) * translate(position);
+	return translate(position) * ToMat4(orientation) * scale(size);
 }
 
 bool Transform::Arg(String key, Object value) {

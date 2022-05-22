@@ -70,7 +70,7 @@ void ObjectT<Fys>::Refresh() {
 	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
-		mat4 v = override_geom * model_geom;
+		mat4 v = model_geom * override_geom;
 		fb_obj->Set(v, identity<mat4>());
 	}
 	else {
@@ -78,7 +78,7 @@ void ObjectT<Fys>::Refresh() {
 		mat4 trans = translate(identity<mat4>(), v3);
 		quat q = Fys::GetGeomQuaternion(geom);
 		mat4 rot = ToMat4(q);
-		mat4 v = trans * rot * model_geom;
+		mat4 v = model_geom * rot * trans;
 		fb_obj->Set(v, identity<mat4>());
 	}
 }

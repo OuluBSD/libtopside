@@ -1680,14 +1680,14 @@ void Model::SetContent(Mesh* mesh) {
 mat4 GetWorldMatrix(const Model& model) {
 	mat4 translation = Translation(model.position);
 	mat4 rotation = Rotation(model.rotation[0], model.rotation[1], model.rotation[2]);
-	mat4 localMat = /* Scale * */ rotation * translation;
+	mat4 localMat = translation * rotation /* * Scale */;
 	
 	mat4 parentMat;
 	if (model.parent != 0) {
 		parentMat = GetWorldMatrix(*model.parent);
 	}
 
-	return localMat * parentMat;
+	return parentMat * localMat;
 }
 
 OBB GetOBB(const Model& model) {
@@ -1757,7 +1757,7 @@ bool ModelOBB(const Model& model, const OBB& obb) {
 	OBB local;
 	local.size = obb.size;
 	local.position = MultiplyPoint(obb.position, inv);
-	local.orientation = obb.orientation * Cut(inv, 3, 3);
+	local.orientation = Cut(inv, 3, 3) * obb.orientation;
 	if (model.GetMesh() != 0) {
 		return MeshOBB(*(model.GetMesh()), local);
 	}

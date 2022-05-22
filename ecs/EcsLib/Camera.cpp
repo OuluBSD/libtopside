@@ -57,7 +57,7 @@ void ChaseCam::Update(double dt) {
 			//LOG(pos.ToString());
 			//LOG(tgt.ToString());
 		    look = LookAt(pos, tgt, vec3(0.0f, 1.0f, 0.0f));
-		    view = projection * look;
+		    view = look * projection;
 		    
 			if (test_log) {
 				vec3 ori(0,0,0);
@@ -164,7 +164,8 @@ bool ChaseCam::Load(GfxDataState& s) {
 		else*/
 			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, -1);
 	
-		s.view = port * proj * lookat;
+		TODO
+		//s.view = port * proj * lookat;
 	}
 	s.user_view = true;
 	//s.view = view;

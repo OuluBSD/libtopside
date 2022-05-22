@@ -16,6 +16,16 @@ struct TgaReaderBackend : StaticIfaceBackend {
 	
 };
 
+struct LibPngBackend : StaticIfaceBackend {
+	RTTI_DECL1(LibPngBackend, StaticIfaceBackend)
+	
+	
+	Image LoadFileAny(String path) override;
+	Image LoadStringAny(String str) override;
+	void ClearImage(SysImage& img) override;
+	
+};
+
 
 NAMESPACE_TOPSIDE_END
 

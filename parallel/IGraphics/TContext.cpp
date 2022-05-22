@@ -8,13 +8,13 @@ void RendererT<Gfx>::DefaultPreFrame() {
 	//ASSERT(rend);
 	Gfx::BindFramebufferDefault();
 	Gfx::SetClearValue(RGBA(0,0,0,255), 255);
-	//TODO: useless? Gfx::ClearBuffers();
+	Gfx::ClearBuffers();
 	Gfx::SetSmoothShading();
-	Gfx::SetDepthTest();
-	Gfx::SetDepthOrderLess(true);
+	Gfx::SetDepthTest(1);
+	Gfx::SetDepthOrderLess(1);
 	// TODO check if supported by profile: Gfx::SetFastPerspectiveCorrection();
 	Gfx::SetTriangleBacksideCulling();
-	Gfx::SetTriangleFrontsideCCW(true);
+	Gfx::SetTriangleFrontsideCCW(1);
 	Gfx::SetViewport(output_sz);
 }
 

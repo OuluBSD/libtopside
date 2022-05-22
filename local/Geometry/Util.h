@@ -229,7 +229,7 @@ inline mat4 RemoveScale(const mat4& transform)
     vec3 scale, translation, skew;
     vec4 pers;
     Decompose(transform, scale, rotation, translation, skew, pers);
-    return ToMat4(rotation) * translate(translation);
+    return translate(translation) * ToMat4(rotation);
 }
 
 

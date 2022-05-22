@@ -266,6 +266,7 @@ void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, 
     }
     
     // process indices
+    out.indices.SetCount(0);
     out.indices.Reserve(mesh->mNumFaces*3);
     for(unsigned int i = 0; i < mesh->mNumFaces; i++) {
 	    aiFace face = mesh->mFaces[i];

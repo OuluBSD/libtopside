@@ -24,14 +24,17 @@ template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val
 
 
 template <class Gfx>
-struct ShaderDataPackT {
+struct ShaderDataPackT : RTTIBase {
 	using DataState = DataStateT<Gfx>;
+	
+	RTTI_DECL0(ShaderDataPackT)
 	
 	One<SoftShaderBaseT<Gfx>>	frag_prog;
 	One<SoftShaderBaseT<Gfx>>	vtx_prog;
 	One<BinderIfaceVideo>		prog;
 	DataState					accel_state;
 	
+	void Visit(RuntimeVisitor& vis) {if (prog) vis % *prog;}
 };
 
 

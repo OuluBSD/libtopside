@@ -242,7 +242,8 @@ float OrbitCamera::ClampAngle(float angle, float min, float max) {
 Frustum Camera::GetFrustum() {
 	Frustum result;
 
-	mat4 vp = GetViewMatrix() * GetProjectionMatrix();
+	mat4 vp;
+	vp = GetProjectionMatrix() * GetViewMatrix();
 	float vp41 = vp[3][0];
 	float vp42 = vp[3][1];
 	float vp43 = vp[3][3];

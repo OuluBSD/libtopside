@@ -285,7 +285,7 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 	float* zbuffer = (float*)depth->data.Begin();
 	DepthImage::Info* zinfo = (DepthImage::Info*)depth->info.Begin();
 	
-	bool greater = is_depth_order_less;
+	bool less_or_equal = is_depth_order_less;
 	vec2 P;
 	for (P[0] = bboxmin[0]; P[0] <= bboxmax[0]; P[0]++) {
 		for (P[1] = bboxmin[1]; P[1] <= bboxmax[1]; P[1]++) {
@@ -302,7 +302,7 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 			int pos = (int)P[0] + (int)P[1] * w;
 			ASSERT(pos >= 0 && pos < pos_limit);
 			float& zmem = zbuffer[pos];
-			if ((greater && z >= 0.0f && zmem < z) || (!greater && z <= 0.0f && zmem > z)) {
+			if ((!less_or_equal && z <= 0.0f && zmem < z) || (less_or_equal && z >= 0.0f && zmem > z)) {
 				zmem = z;
 				auto& i = zinfo[pos];
 				i.triangle_i = info.triangle_i;

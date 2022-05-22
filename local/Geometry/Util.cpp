@@ -14,10 +14,42 @@ quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor) {
 
 
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
-    vec3 z = normalize(eye - center);
+    #if 1
+	vec3 f = (center - eye);
+	vec3 u = up;
+	f.Normalize();
+	u.Normalize();
+	vec3 s = cross(f, u);
+	s.Normalize();
+	u = cross(s, f);
+	
+	mat4 minv;
+	minv[0][0] = s[0];
+	minv[1][0] = s[1];
+	minv[2][0] = s[2];
+	minv[3][0] = 0;
+	minv[0][1] = u[0];
+	minv[1][1] = u[1];
+	minv[2][1] = u[2];
+	minv[3][1] = 0;
+	minv[0][2] = -f[0];
+	minv[1][2] = -f[1];
+	minv[2][2] = -f[2];
+	minv[3][2] = 0;
+	minv[0][3] = 0;
+	minv[1][3] = 0;
+	minv[2][3] = 0;
+	minv[3][3] = 1;
+	
+	mat4 t;
+	t.SetTranslate(-eye[0], -eye[1], -eye[2]);
+	mat4 res = minv * t;
+	return res;
+	#else
+    mat4 minv = zero<mat4>();
+	vec3 z = normalize(eye - center);
     vec3 x = normalize(cross(up, z));
     vec3 y = cross(z,x);
-    mat4 minv = zero<mat4>();
     for (int i=0; i<3; i++) {
         minv[i][0] = x[i];
         minv[i][1] = y[i];
@@ -28,6 +60,7 @@ mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
     minv[3][2] = -dot(z, eye);
     minv[3][3] = 1.0f;
     return minv;
+    #endif
 }
 
 mat4 GetViewport(float x, float y, float w, float h, float depth) {
@@ -366,7 +399,7 @@ mat4 make_mat4_from_quat(const quat& q) {
 		{q[0], q[1], q[2], q[3]}
 	};
 	
-	return m1 * m2;
+	return m2 * m1;
 }
 
 quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll)
@@ -492,11 +525,11 @@ vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
 }
 
 mat4 Rotation(float pitch, float yaw, float roll) {
-	return  ZRotation(roll) * XRotation(pitch) * YRotation(yaw);
+	return YRotation(yaw) * XRotation(pitch) * ZRotation(roll);
 }
 
 mat3 Rotation3x3(float pitch, float yaw, float roll) {
-	return ZRotation3x3(roll) * XRotation3x3(pitch) * YRotation3x3(yaw);
+	return YRotation3x3(yaw) * XRotation3x3(pitch) *  ZRotation3x3(roll);
 }
 
 mat2 Rotation2x2(float angle) {

@@ -1,22 +1,28 @@
-/*stdlibs we need*/
+// stdlibs we need
 #include <stdio.h>
 #include <math.h>
 
-/*basic allegro functions to give us a window and an OpenGL context*/
+// basic allegro functions to give us a window and an OpenGL context
 #include <allegro5/allegro.h>
 
-/*all matrix maths functions*/
+//all matrix maths functions
 #include "matrix.h"
 
-/*openggl functions*/
+// opengl functions
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-/*basic window constants*/
+// basic window constants
 #define FPS 60
 #define SCREEN_W 1280
 #define SCREEN_H 720
+
+// for getpwuid
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 
 struct glinfo {
 	GLuint program;
@@ -37,19 +43,19 @@ struct allegroinfo {
 	ALLEGRO_EVENT ev;
 };
 
-GLint makeshader(char * filename, GLenum type);
-void print_log(GLuint object);
-int init_resources(struct glinfo * glpointers);
-void draw(int rotation, struct glinfo * glpointers);
-struct allegroinfo * startallegro(void);
+GLint	MakeShader(const char * filename, GLenum type);
+void	PrintLog(GLuint object);
+int		InitResources(struct glinfo * glpointers);
+void	Draw(int rotation, struct glinfo * glpointers);
+struct allegroinfo* StartAllegro(void);
 
-int main(void) {
+int main() {
 	bool redraw = true;
-	struct allegroinfo * alinfo = startallegro();
+	struct allegroinfo* alinfo = StartAllegro();
 	int rotation = 0;
 	struct glinfo* glpointers = (struct glinfo*)malloc(sizeof(struct glinfo));
 	
-	init_resources(glpointers);
+	InitResources(glpointers);
 	
 	while (1) {
 		ALLEGRO_EVENT ev;
@@ -67,16 +73,15 @@ int main(void) {
 		if (redraw && al_is_event_queue_empty(alinfo -> event_queue)) {
 			redraw = false;
 			
-			draw(rotation, glpointers);
+			Draw(rotation, glpointers);
 			al_flip_display();
 		}
 	}
 	
 	return 0;
-	
 }
 
-struct allegroinfo * startallegro(void) {
+struct allegroinfo* StartAllegro(void) {
 	struct allegroinfo* retval = (struct allegroinfo*)malloc(sizeof(struct allegroinfo));
 	
 	if (!al_init()) {
@@ -84,7 +89,7 @@ struct allegroinfo * startallegro(void) {
 		return 0;
 	}
 	
-	retval -> timer = al_create_timer(1.0 / FPS);
+	retval->timer = al_create_timer(1.0 / FPS);
 	if (!retval -> timer) {
 		fprintf(stderr, "failed to create timer!\n");
 		return 0;
@@ -93,8 +98,10 @@ struct allegroinfo * startallegro(void) {
 	
 	al_set_new_display_flags(ALLEGRO_OPENGL);
 	printf("%d\n", al_get_new_display_option(ALLEGRO_DEPTH_SIZE, NULL));
+	
 	al_set_new_display_option(ALLEGRO_DEPTH_SIZE, 24, ALLEGRO_SUGGEST);
 	printf("%d\n", al_get_new_display_option(ALLEGRO_DEPTH_SIZE, NULL));
+	
 	retval -> display =  al_create_display(SCREEN_W , SCREEN_H);
 	if (!retval -> display) {
 		fprintf(stderr, "failed to create display!\n");
@@ -114,19 +121,19 @@ struct allegroinfo * startallegro(void) {
 	return retval;
 }
 
-int init_resources(struct glinfo * glpointers) {
+int InitResources(struct glinfo * glpointers) {
 	GLint link_ok = GL_FALSE;
 	GLuint vs;
 	GLuint fs;
 	const char* attribute_name;
 	
 	GLfloat cube_vertices[] = {
-		/* front */
+		// front
 		-1.0, -1.0,  1.0,
 		1.0, -1.0,  1.0,
 		1.0,  1.0,  1.0,
 		-1.0,  1.0,  1.0,
-		/* back */
+		// back
 		-1.0, -1.0, -1.0,
 		1.0, -1.0, -1.0,
 		1.0,  1.0, -1.0,
@@ -134,12 +141,12 @@ int init_resources(struct glinfo * glpointers) {
 	};
 	
 	GLfloat cube_colours[] = {
-		/*front colors*/
+		//front colors
 		1.0, 0.0, 0.0,
 		0.0, 1.0, 0.0,
 		0.0, 0.0, 1.0,
 		1.0, 1.0, 1.0,
-		/* back colors*/
+		// back colors
 		1.0, 0.0, 0.0,
 		0.0, 1.0, 0.0,
 		0.0, 0.0, 1.0,
@@ -147,22 +154,22 @@ int init_resources(struct glinfo * glpointers) {
 	};
 	
 	GLushort cube_elements[] = {
-		/*front*/
+		//front
 		0, 1, 2,
 		2, 3, 0,
-		/*top*/
+		//top
 		1, 5, 6,
 		6, 2, 1,
-		/*back*/
+		//back
 		7, 6, 5,
 		5, 4, 7,
-		/*bottom*/
+		//bottom
 		4, 0, 3,
 		3, 7, 4,
-		/*left*/
+		//left
 		4, 5, 1,
 		1, 0, 4,
-		/*right*/
+		//right
 		3, 2, 6,
 		6, 7, 3
 	};
@@ -171,24 +178,42 @@ int init_resources(struct glinfo * glpointers) {
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	glGenBuffers(1, & (glpointers -> cube_vertices));
+	
+	// vertices
+	glGenBuffers(1, &(glpointers -> cube_vertices));
 	glBindBuffer(GL_ARRAY_BUFFER, glpointers -> cube_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
 	
-	glGenBuffers(1, & (glpointers -> cube_colours));
+	// colors
+	glGenBuffers(1, &(glpointers -> cube_colours));
 	glBindBuffer(GL_ARRAY_BUFFER, glpointers -> cube_colours);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colours), cube_colours, GL_STATIC_DRAW);
 	
-	glGenBuffers(1, & (glpointers -> cube_elements));
+	// elements
+	glGenBuffers(1, &(glpointers -> cube_elements));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glpointers -> cube_elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_elements), cube_elements, GL_STATIC_DRAW);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	if ((vs = makeshader("vert.glsl", GL_VERTEX_SHADER)) == 0)
+	
+	// load shaders
+	struct passwd *pw = getpwuid(getuid());
+	char vert[100];
+	char frag[100];
+	
+	strcpy(vert, pw->pw_dir);
+	strcat(vert, "/libtopside/uppsrc/ReferenceOgl/vert.glsl");
+	if ((vs = MakeShader(vert, GL_VERTEX_SHADER)) == 0)
 		return 0;
-	if ((fs = makeshader("frag.glsl", GL_FRAGMENT_SHADER)) == 0)
+	
+	strcpy(frag, pw->pw_dir);
+	strcat(frag, "/libtopside/uppsrc/ReferenceOgl/frag.glsl");
+	if ((fs = MakeShader(frag, GL_FRAGMENT_SHADER)) == 0)
 		return 0;
+	
+	
+	// link shaders
 	glpointers -> program = glCreateProgram();
 	glAttachShader(glpointers -> program, vs);
 	glAttachShader(glpointers -> program, fs);
@@ -196,10 +221,12 @@ int init_resources(struct glinfo * glpointers) {
 	glGetProgramiv(glpointers -> program, GL_LINK_STATUS, &link_ok);
 	if (!link_ok) {
 		fprintf(stderr, "glLinkProgram:");
-		print_log(glpointers -> program);
+		PrintLog(glpointers -> program);
 		return 0;
 	}
 	
+	
+	// read input value coordinates from compiled program
 	attribute_name = "coord2d";
 	glpointers -> attribute_coord2d = glGetAttribLocation(glpointers -> program, attribute_name);
 	if (glpointers -> attribute_coord2d == -1) {
@@ -224,13 +251,13 @@ int init_resources(struct glinfo * glpointers) {
 	return 1;
 }
 
-void draw(int rotation, struct glinfo * glpointers) {
+void Draw(int rotation, struct glinfo * glpointers) {
 	int size;
-	float r[4][4];	/*holds a rotation, to be applied before m, so multiplied in before it*/
-	float m[4][4];	/*holds a translation to move the cube away from the scree */
-	float v[4][4];	/*holds the view matrix output by lookat() */
-	float p[4][4];	/*holds the projection matrix we get from perspective */
-	float mvp[4][4];/*holds the final matrix equal to p * v * m * r */
+	float r[4][4];	//holds a rotation, to be applied before m, so multiplied in before it
+	float m[4][4];	//holds a translation to move the cube away from the scree
+	float v[4][4];	//holds the view matrix output by lookat()
+	float p[4][4];	//holds the projection matrix we get from perspective
+	float mvp[4][4];//holds the final matrix equal to p * v * m * r
 	float temp[4][4];
 	float temp2[4][4];
 	
@@ -242,11 +269,13 @@ void draw(int rotation, struct glinfo * glpointers) {
 	if (rotation % 360 == 0) {
 		printf("Full turn!\n");
 	}
+	
+	// rotation * model * lookat * perspective
 	multmatrix(p, v, temp);
 	multmatrix(temp, m, temp2);
 	multmatrix(temp2, r, mvp);
 	
-	/* Clear the background as white */
+	// Clear the background as white
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -258,14 +287,14 @@ void draw(int rotation, struct glinfo * glpointers) {
 	
 	glEnableVertexAttribArray(glpointers -> attribute_coord2d);
 	
-	/* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+	// Describe our vertices array to OpenGL (it can't guess its format automatically)
 	glVertexAttribPointer(
-		glpointers -> attribute_coord2d,	/* attribute */
-		3,									/* number of elements per vertex, here (x,y,z) */
-		GL_FLOAT,							/* the type of each element */
-		GL_FALSE,							/* take our values as-is */
-		0,									/*stride */
-		0									/* offset of first element */
+		glpointers -> attribute_coord2d,	// attribute
+		3,									// number of elements per vertex, here (x,y,z)
+		GL_FLOAT,							// the type of each element
+		GL_FALSE,							// take our values as-is
+		0,									// stride
+		0									// offset of first element
 	);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, glpointers -> cube_colours);
@@ -280,7 +309,7 @@ void draw(int rotation, struct glinfo * glpointers) {
 		0
 	);
 	
-	/* Push each element in buffer_vertices to the vertex shader */
+	// Push each element in buffer_vertices to the vertex shader
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glpointers -> cube_elements);
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 	glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
@@ -293,10 +322,10 @@ void draw(int rotation, struct glinfo * glpointers) {
 #define BLOCKSIZE 512
 #define BLOCK (BLOCKSIZE*sizeof(char))
 
-char * readfile(char * filename) {
-	int size;
-	int read = 0; /*total we've read*/
-	char * retval = (char*)malloc(size = (BLOCK));
+char* readfile(const char* filename) {
+	int size = BLOCK;
+	int read = 0; // total we've read
+	char * retval = (char*)malloc(size);
 	char * temp;
 	FILE * in = fopen(filename, "r");
 	
@@ -328,37 +357,35 @@ char * readfile(char * filename) {
 	return retval;
 }
 
-/*
- *   Display compilation errors from the OpenGL shader compiler
- */
-void print_log(GLuint object) {
+// Display compilation errors from the OpenGL shader compiler
+
+void PrintLog(GLuint object) {
 	GLint log_length = 0;
 	char *log;
 	
 	if (glIsShader(object))
 		glGetShaderiv(object, GL_INFO_LOG_LENGTH, &log_length);
 	else
-		if (glIsProgram(object))
-			glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
-		else {
-			fprintf(stderr, "printlog: Not a shader or a program\n");
-			return;
-		}
+	if (glIsProgram(object))
+		glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
+	else {
+		fprintf(stderr, "printlog: Not a shader or a program\n");
+		return;
+	}
 		
 	log = (char*) malloc(log_length);
 	
 	if (glIsShader(object))
 		glGetShaderInfoLog(object, log_length, NULL, log);
-	else
-		if (glIsProgram(object))
-			glGetProgramInfoLog(object, log_length, NULL, log);
+	else if (glIsProgram(object))
+		glGetProgramInfoLog(object, log_length, NULL, log);
 			
 	fprintf(stderr, "%s", log);
 	free(log);
 }
 
-GLint makeshader(char * filename, GLenum type) {
-	const GLchar * source = readfile(filename);
+GLint MakeShader(const char * filename, GLenum type) {
+	const GLchar* source = readfile(filename);
 	GLuint shader = glCreateShader(type);
 	GLint compile_ok = GL_FALSE;
 	
@@ -369,15 +396,16 @@ GLint makeshader(char * filename, GLenum type) {
 	
 	glShaderSource(shader, 1, &source, NULL);
 	
-	free((void *) source);
+	free((void*)source);
 	
 	glCompileShader(shader);
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_ok);
 	if (!compile_ok) {
 		fprintf(stderr, "%s", filename);
-		print_log(shader);
+		PrintLog(shader);
 		glDeleteShader(shader);
 		return 0;
 	}
+	
 	return shader;
 }

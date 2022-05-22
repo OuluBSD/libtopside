@@ -99,7 +99,7 @@ public:
 	//void SetPipeline(SoftPipeline& pipe) {tgt_pipe = &pipe;}
 	void Render(SoftVertexArray& vao);
 	
-	float GetDepthResetValue() const {return is_depth_order_less ? -1e10f : +1e10f;}
+	float GetDepthResetValue() const {return is_depth_order_less ? +1e10f : -1e10f;}
 	
 	void BindTexture(int type, NativeColorBufferConstRef tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
 	

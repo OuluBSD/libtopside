@@ -439,16 +439,17 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return *this;
 	}
 	Matrix& SetRotation(const vec3& axis, float angle_rad) {*this = GetRotation(axis, angle_rad); return *this;}
-	Matrix& SetProjection(T fov_rad, T aspect, T near, T far) {
-		T tan_half_fov = FastTan(fov_rad * 0.5);
+	Matrix& SetProjection(T fov_hal_angle, T aspect, T near, T far) {
+		T fov_rad = fov_hal_angle * M_PI / 360;
+		T tan_half_fov = FastTan(fov_rad);
 		T fov_y = (T)1 / tan_half_fov;
 		T fov_x = fov_y / aspect;
 		Clear();
 		data[0][0] = fov_x;
 		data[1][1] = fov_y;
-		data[2][2] = far / (far - near);
-		data[2][3] = 1.0f;
-		data[3][2] = -near * data[2][2];
+		data[2][2] = (far + near) / (near - far); //far / (far - near);
+		data[2][3] = -1.0f; //1.0f;
+		data[3][2] = (2 * near * far) / (near - far);//-near * data[2][2];
 		return *this;
 	}
 	Matrix& SetOrtographic(T left, T right, T bottom, T top, T near, T far) {
@@ -480,6 +481,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 						vec{0.0f,        0.0f,        0.0f,        1.0f}};
 	}
 	
+	#if 0
 	vecR operator*(const vec& src) const {
 		vecR ret;
 		for(int r = 0; r < R; r++) {
@@ -491,6 +493,18 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		}
 		return ret;
 	}
+	#else
+	vecR operator*(const vec& src) const {
+		vecR ret;
+		for(int r = 0; r < R; r++) {
+			T& v = ret[r];
+			v = 0;
+			for(int c = 0; c < C; c++)
+				v += data[c][r] * src[c];
+		}
+		return ret;
+	}
+	#endif
 	
 	bool operator==(const Matrix& m) const {
 		for(int r = 0; r < R; r++)
@@ -513,7 +527,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	Matrix& operator/=(T v) {for(int i = 0; i < R; i++) data[i] /= v; return *this;}
 	
 	Matrix operator*(T m) const {return Multiply(m);}
-	template<int C2> Matrix<T,R,C2> operator*(const Matrix<T,C,C2>& src) const {return Multiply(src);}
+	template<int R2> Matrix<T,R2,C> operator*(const Matrix<T,R2,R>& src) const {return Multiply(src);}
 	
 	Matrix Multiply(T f) const {
 		Matrix m;
@@ -522,24 +536,54 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 				m.data[r].data[c] = data[r].data[c] * f;
 		return m;
 	}
+	#if 0
 	template<int C2> Matrix<T,R,C2> Multiply(const Matrix<T,C,C2>& src) const {
 		Matrix<T,R,C2> m;
 		for(int r = 0; r < R; r++) {
 			for(int c2 = 0; c2 < C2; c2++) {
+				#if 0
 				T& o = m[r][c2];
 				o = 0;
 				for(int c = 0; c < C; c++)
-					o += data[r][c] * src.data[c][c2];
+					o += data[r][c] * src.data[c2][c];
+				#else
+				T o = 0;
+				for(int c = 0; c < C; c++) {
+					T aa = data[r][c];
+					T bb = src.data[c][c2];
+					T mul = aa * bb;
+					o += mul;
+				}
+				m[r][c2] = o;
+				#endif
 			}
 		}
 		return m;
 	}
+	#else
+	template<int R2> Matrix<T,R2,C> Multiply(const Matrix<T,R2,R>& src) const {
+		Matrix<T,R2,C> m;
+		for(int c = 0; c < C; c++) {
+			for(int r2 = 0; r2 < R2; r2++) {
+				T o = 0;
+				for(int r = 0; r < R; r++) {
+					T aa = src.data[r2][r];
+					T bb = data[r][c];
+					T mul = aa * bb;
+					o += mul;
+				}
+				m[r2][c] = o;
+			}
+		}
+		return m;
+	}
+	#endif
 	Matrix Translate(const MinorVec& v) const {
 		static_assert(R == C, "must be square matrix");
 		Matrix m;
 		m.SetIdentity();
-		for(int i = 0; i < R-1; i++)
-			m.data[i][R-1] = v.data[i];
+		for(int i = 0; i < C-1; i++)
+			m.data[R-1][i] = v.data[i];
 		return m.Multiply(*this);
 	}
 	Matrix Scale(const MinorVec& v) const {
