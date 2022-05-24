@@ -2,14 +2,11 @@ uses
 	AtomComplete,
 	EcsComplete;
 
-uses(WIN32) ports/Pbr;
-
 uses(WIN32) ports/DirectXTK;
 
 file
 	DemoRoom.h,
-	DemoRoomMain.h,
-	DemoRoomMain.cpp;
+	DemoRoom.cpp;
 
 mainconfig
 	"" = "GUI VR OGL",

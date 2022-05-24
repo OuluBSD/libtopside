@@ -79,6 +79,10 @@ NAMESPACE_TOPSIDE_END
 	APP_INITIALIZE_STARTUP2_2(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial) \
 	ECS_APP_MAIN {TS::DefaultRunner(true, title_str);}
 
+#define DEFAULT_ECS_SHELL_EON(title_str, eon_path) \
+	APP_INITIALIZE_STARTUP2_2(TS::DefaultSerialInitializer, TS::DefaultStartup, TS::BindEcsToSerial) \
+	ECS_APP_MAIN {TS::DefaultRunner(true, title_str, eon_path);}
+
 
 #define DEFAULT_ATOMSHELL DEFAULT_ATOMSHELL_("AtomShell")
 #define DEFAULT_ECS_SHELL DEFAULT_ECS_SHELL_("EcsShell")

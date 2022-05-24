@@ -1,8 +1,7 @@
 description "\377B0,86,131";
 
 uses
-	ports/DirectXTK,
-	ports/Pbr;
+	ports/DirectXTK;
 
 file
 	Copying,

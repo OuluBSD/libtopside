@@ -4,23 +4,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-// Loads and initializes application assets when the application is loaded.
-DemoRoomMain::DemoRoomMain() {
-	
-}
 
-void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
-{
+
+
+
+void DemoRoomInit() {
 	using namespace Ecs;
 	
 	Ecs::Engine& e = GetActiveEngine();
-
-    if (!holospace) {
-        return;
-    }
 	
-    
 	#ifdef flagUWP
+	DeviceResources				dev_res;
+    Pbr::Resources				pbr_res;
+	
     LoadDefaultResources(
 		dev_res,
 		holospace,
@@ -33,33 +29,37 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 	
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
-
+	
     e.Add<EntityStore>();
     e.Add<ComponentStore>();
     e.Add<HolographicScene>();//->SetResources(holospace);
     e.Add<EasingSystem>();
     e.Add<PhysicsSystem>();
     e.Add<PbrModelCache>();//->SetResources(pbr_res);
-
+	
     e.Add<SpatialInteractionSystem>();
     e.Add<MotionControllerSystem>();
     e.Add<WorldLogicSystem>();
-
+	
     e.Add<ToolboxSystem>();
     e.Add<ShootingInteractionSystem>();
     e.Add<PaintingInteractionSystem>();
     e.Add<ThrowingInteractionSystem>();
-
+	
     e.Add<PaintStrokeSystem>();//->SetResources(pbr_res);
     e.Add<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
+	
+}
 
-    e.Start();
-
+void DemoRoomStartup() {
+	using namespace Ecs;
+	
+	Ecs::Engine& e = GetActiveEngine();
+	
     // Seed model cache
     auto pbr_model_cache = e.Get<PbrModelCache>();
-
-	TODO
-	#if 0
+    
+    
     // Register a low poly sphere model.
     {
         Pbr::Primitive sphere_prim(
@@ -131,30 +131,11 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
     loadGLBModels(L"ms-appx:///Media/Models/Gun.glb", KnownModelNames::Gun, gunScale);
 
     loadGLBModels(L"ms-appx:///Media/Models/PaintBrush.glb", KnownModelNames::PaintBrush);
-	#endif
+	
 	
 	
     // We don't store the returned Floor Entity locally, so it lives foreeevvverrr
     e.Get<EntityStore>()->GetRoot()->GetAddPool("models")->Create<FloorPrefab>();
-
-    // Reset timer on startup so the first update's delta time is sensible (albeit still small)
-    timer.ResetElapsedTime();
-}
-
-
-
-
-
-void DemoRoomInit() {
-	
-	TODO
-	
-}
-
-void DemoRoomStartup() {
-	
-	TODO
-	
 }
 
 
@@ -170,9 +151,9 @@ NAMESPACE_TOPSIDE_END
 
 
 
-DEFAULT_ECS_SHELL
-
+DEFAULT_ECS_SHELL_EON("DemoRoom", "tests/07c_ecs_ogl.eon")
 ECS_INITIALIZE_STARTUP__(DemoRoom, DemoRoomInit, DemoRoomStartup)
+
 
 
 

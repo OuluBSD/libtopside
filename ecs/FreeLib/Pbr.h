@@ -1,6 +1,8 @@
 #ifndef _FreeLib_Pbr_h_
 #define _FreeLib_Pbr_h_
 
+#if 0
+
 NAMESPACE_PBR_BEGIN
 
 
@@ -103,4 +105,5 @@ struct Model {
 
 NAMESPACE_PBR_END
 
+#endif
 #endif

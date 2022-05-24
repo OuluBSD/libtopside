@@ -1,5 +1,7 @@
 #include "FreeLib.h"
 
+#if 0
+
 NAMESPACE_PBR_BEGIN
 
 
@@ -78,3 +80,5 @@ Primitive& Model::GetPrimitive(int i) {
 
 
 NAMESPACE_PBR_END
+
+#endif

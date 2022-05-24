@@ -7,6 +7,8 @@
 	#include <Esc/Esc.h>
 #endif
 
+#include <Pbr/Pbr.h>
+
 #ifdef flagVR
 	#if defined flagUWP
 		#include <WinLib/WinLib.h>

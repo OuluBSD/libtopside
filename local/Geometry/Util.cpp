@@ -524,6 +524,15 @@ vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
 	return (vec.Extend() * mat).Splice();
 }
 
+mat4 MultiplyMatrix(const mat4& m0, const mat4& m1) {
+	TODO
+	// check right order from XMMatrixMultiply! no guesses!
+}
+
+void StoreMatrix(mat4* dst, const mat4& src) {
+	dst = src;
+}
+
 mat4 Rotation(float pitch, float yaw, float roll) {
 	return YRotation(yaw) * XRotation(pitch) * ZRotation(roll);
 }

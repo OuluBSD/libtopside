@@ -36,7 +36,6 @@
 #include <wrl\client.h>
 #include <ppl.h>
 
-#include <ports/Pbr/Pbr.h>
 #include <ports/DirectXTK\DirectXTK.h>
 
 

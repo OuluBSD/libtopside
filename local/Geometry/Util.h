@@ -44,6 +44,8 @@ quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
 vec3 MultiplyPoint(const vec3& vec, const mat4& mat);
 vec3 MultiplyVector(const vec3& v, const mat3& m);
 vec3 MultiplyVector(const vec3& v, const mat4& m);
+mat4 MultiplyMatrix(const mat4& m0, const mat4& m1);
+void StoreMatrix(mat4* dst, const mat4& src);
 mat4 FastInverse(const mat4& mat);
 vec2 Project(const vec2& length, const vec2& direction);
 vec3 Project(const vec3& length, const vec3& direction);
