@@ -4,12 +4,13 @@ NAMESPACE_PLAN_BEGIN
 
 
 
-PKG(VirtualReality, Vr, V) {
+PKG(VR, Vr, V) {
 	IfaceLib::Add(this);
 	
 	COLOR(28, 85, 150)
 	MAINFLAG(Screen)
 	MAINFLAG(Vr)
+	DEPENDENCY(ParallelLib)
 	DEPENDENCY(Geometry)
 	
 	PKG_IFACE {
@@ -56,19 +57,29 @@ PKG(VirtualReality, Vr, V) {
 	}
 	
 	
+	VENDOR(Fake) {
+		VENDOR_ENABLED_FLAG(OGL)
+		
+		
+		
+	}
+	
 	VENDOR(Holo) {
+		VENDOR_ENABLED_FLAG(UWP)
 		
 		
 		
 	}
 	
 	VENDOR(Ovr) {
+		VENDOR_ENABLED_FLAG2(OGL, OVR)
 		
 		
 		
 	}
 	
 	VENDOR(Hmd) {
+		VENDOR_ENABLED_FLAG2(OGL, OHMD)
 		
 		
 		

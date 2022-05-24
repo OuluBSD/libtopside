@@ -39,6 +39,10 @@ NAMESPACE_TOPSIDE_BEGIN
 	NAMESPACE_UPP \
 	INITBLOCK_(EscInitStartup) {TS::Ecs::Engine::WhenInitialize << callback(init); TS::Ecs::Engine::WhenPreFirstUpdate << callback(startup);} \
 	END_UPP_NAMESPACE
+#define ECS_INITIALIZE_STARTUP__(x, init, startup) \
+	NAMESPACE_UPP \
+	INITBLOCK_(x) {TS::Ecs::Engine::WhenInitialize << callback(init); TS::Ecs::Engine::WhenPreFirstUpdate << callback(startup);} \
+	END_UPP_NAMESPACE
 
 
 NAMESPACE_TOPSIDE_END

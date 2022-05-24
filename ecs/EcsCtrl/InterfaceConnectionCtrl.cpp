@@ -13,6 +13,7 @@ void InterfaceConnectionGraph::Updated() {
 
 
 
+#if 0
 
 InterfaceConnectionCtrl::InterfaceConnectionCtrl() {
 	Add(hsplit.SizePos());
@@ -96,5 +97,6 @@ void InterfaceConnectionCtrl::Updated() {
 	ent_browser.Updated();
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END

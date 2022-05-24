@@ -1,16 +1,13 @@
-description "\377B114,157,142";;
+description "\377B114,157,142";
 
 uses
 	ParallelLib;
 
 file
 	IMidiFile.h,
-	Enums.h,
-	Vendors.h,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	Midi.h,
+	Midi.cpp;
 
 mainconfig
-	"" = ""
+	"" = "";
 

@@ -1,5 +1,5 @@
-#ifndef _FFT_FFT_h_
-#define _FFT_FFT_h_
+#ifndef _Local_FFT_h_
+#define _Local_FFT_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;

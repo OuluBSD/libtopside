@@ -16,6 +16,8 @@ public:
 	
 };
 
+#if 0
+
 class InterfaceConnectionCtrl : public ParentCtrl {
 	EntityBrowserCtrl			ent_browser;
 	ParentCtrl					graph_cont;
@@ -64,6 +66,8 @@ public:
 	void SetEngine(Engine& m) {ent_browser.SetEngine(m);}
 	
 };
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

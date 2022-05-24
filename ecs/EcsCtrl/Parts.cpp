@@ -2,6 +2,7 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
+using namespace Ecs;
 
 
 PoolTreeCtrl::PoolTreeCtrl() {
@@ -9,7 +10,7 @@ PoolTreeCtrl::PoolTreeCtrl() {
 	tree.WhenCursor << THISBACK(OnCursor);
 }
 
-void PoolTreeCtrl::SetEngine(Engine& m) {
+void PoolTreeCtrl::SetEngine(Ecs::Engine& m) {
 	mach = &m;
 	es = m.TryGet<EntityStore>();
 }
@@ -19,16 +20,17 @@ void PoolTreeCtrl::OnCursor() {
 		return;
 	
 	int cursor = tree.GetCursor();
-	Value val = tree.Get(cursor);
+	UPP::Value val = tree.Get(cursor);
 	
-	if (IsTypeRaw<PoolRef>(val)) {
+	TODO
+	/*if (IsTypeRaw<PoolRef>(val)) {
 		PoolRef new_sel = val.To<PoolRef>();
 		
 		if (new_sel != selected) {
 			selected = new_sel;
 			WhenPoolChanged();
 		}
-	}
+	}*/
 }
 
 hash_t PoolTreeCtrl::GetPoolTreeHash() const {
@@ -173,9 +175,9 @@ void EntityListCtrl::Data() {
 			list.Set(i, 3, e->GetId());
 		}
 		else {
-			list.Set(i, 1, Value());
-			list.Set(i, 2, Value());
-			list.Set(i, 3, Value());
+			list.Set(i, 1, UPP::Value());
+			list.Set(i, 2, UPP::Value());
+			list.Set(i, 3, UPP::Value());
 		}
 		i++;
 	}
@@ -283,7 +285,7 @@ void EntityContentCtrl::GetCursor(ComponentBaseRef& c) {
 
 
 EntityBrowserCtrl::EntityBrowserCtrl() {
-	ent_list.WhenEntityChanged = Proxy(WhenEntityChanged);
+	ent_list.WhenEntityChanged = Proxy0(WhenEntityChanged);
 	
 	Add(vsplit.SizePos());
 	
@@ -361,7 +363,8 @@ void InterfaceListCtrl::Data() {
 	if (!ent)
 		return;
 	
-	ifaces.Clear();
+	TODO
+	/*ifaces.Clear();
 	write_cursor = 0;
 	ComponentMap& comps = ent->GetComponents();
 	int i = 0;
@@ -378,7 +381,7 @@ void InterfaceListCtrl::Data() {
 		++i;
 	}
 	list.SetCount(write_cursor);
-	
+	*/
 	WhenInterfaceCursor();
 }
 

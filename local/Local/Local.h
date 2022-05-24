@@ -41,6 +41,7 @@
 #include "Tokenizer.h"
 #include "Upp.h"
 #include "FFT.h"
+#include "Record.h"
 #include "Color.h"
 #include "UnitTest.h"
 #include "Image.h"

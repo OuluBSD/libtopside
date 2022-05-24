@@ -1,0 +1,17 @@
+description "\377B198,85,150";;
+
+uses
+	ParallelLib;
+
+file
+	IMidiHw.h,
+	Enums.h,
+	Vendors.h,
+	Portmidi.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = ""
+

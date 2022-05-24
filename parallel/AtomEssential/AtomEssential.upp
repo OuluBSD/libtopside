@@ -1,10 +1,4 @@
 description "\377B128,0,255";
 
-uses(SCREEN & !GUI) ScreenSDL2;
-
-uses(GUI) SDL2GUI3D;
-
 uses(GUI) VirtualGui3D;
-
-uses(SCREEN | GUI) AtomSDL2;
 

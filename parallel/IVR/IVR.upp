@@ -1,0 +1,21 @@
+description "\377B28,85,150";
+
+uses
+	ParallelLib,
+	Geometry;
+
+file
+	IVR.h,
+	Enums.h,
+	Vendors.h,
+	Fake.cpp,
+	Holo.cpp,
+	Ovr.cpp,
+	Hmd.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = "SCREEN VR";
+

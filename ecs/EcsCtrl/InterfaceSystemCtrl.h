@@ -12,9 +12,9 @@ struct InterfaceDataCtrl : public InterfaceCtrl {
 	InterfaceDataCtrl();
 	
 	void UpdateInterfaceData(ExchangeProviderBaseRef e);
-	void AddInterfaceDataRow(Value key, Value value);
+	void AddInterfaceDataRow(UPP::Value key, UPP::Value value);
 	
-	void SetInterface(ComponentBaseRef, ExchangeProviderBaseRef) override {}
+	void SetInterface(Ecs::ComponentBaseRef, ExchangeProviderBaseRef) override {}
 	
 };
 
@@ -27,7 +27,7 @@ class InterfaceSystemCtrl : public ParentCtrl {
 	ParentCtrl							ent_cont;
 	
 	VectorMap<int, int>					node_ifaces;
-	EntityRef							sel_ent;
+	Ecs::EntityRef						sel_ent;
 	ExchangeProviderBaseRef				sel_iface;
 	InterfaceCtrl*						active_ctrl = 0;
 	
@@ -36,14 +36,14 @@ class InterfaceSystemCtrl : public ParentCtrl {
 	void OnEntityCursorChanged();
 	void OnInterfaceCursorChanged();
 	void ClearActiveCtrl();
-	void SetInterfaceCtrl(ComponentBaseRef c, ExchangeProviderBaseRef b);
+	void SetInterfaceCtrl(Ecs::ComponentBaseRef c, ExchangeProviderBaseRef b);
 	
 public:
 	typedef InterfaceSystemCtrl CLASSNAME;
 	InterfaceSystemCtrl();
 	
 	void Updated() override;
-	void SetEngine(Engine& m) {ent_browser.SetEngine(m);}
+	void SetEngine(Ecs::Engine& m) {ent_browser.SetEngine(m);}
 	
 };
 

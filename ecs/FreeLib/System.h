@@ -27,7 +27,7 @@ class MotionControllerComponent :
 {
 	
 public:
-	RTTI_COMM0(MotionControllerComponent);
+	RTTI_COMP0(MotionControllerComponent);
 	COPY_PANIC(MotionControllerComponent)
 	COMP_DEF_VISIT
 	

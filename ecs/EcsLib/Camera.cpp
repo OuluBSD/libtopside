@@ -139,22 +139,15 @@ bool ChaseCam::Load(GfxDataState& s) {
 		float eye_y = sin(eye_angle);
 		float x_mod = 0.2 * eye_x;
 		float y_mod = 0.2 * eye_y;
-		/*mat4 proj {
-			vec4{1,		0,	    0,		0},
-			vec4{0,		1,	    0,		0},
-			vec4{0,		0,	    1,		0},
-			vec4{0,		0, -1./5.,		1}
-		};*/
-		mat4 proj = perspective(90, 1, 0.01, 10);
+		float fov = 110;
+		float fov_2 = fov * 0.5;
+		mat4 proj = perspective(fov_2, 1.0, 0.1, 100.0);
+		mat4 model = translate(vec3(0.0, 0.0, -4.0));
 		
-		#if 1
-		vec3 eye {0.3f * eye_x, 0+0.3f * eye_y, -6};
-		vec3 center {0, 0, -2};
-		//vec3 center {0, 0, -2};
-		#else
-		vec3 eye {0, 0, 2};
-		vec3 center {0, 1, 4};
-		#endif
+		
+		vec3 eye {0.3f * eye_x, 2.0f + 0.3f * eye_y, 0.0};
+		//vec3 eye {0.f, 2.f, 0.f};
+		vec3 center {0, 0, -4};
 		vec3 up {0, 1, 0};
 		mat4 lookat = LookAt(eye, center, up);
 		mat4 port;
@@ -162,10 +155,17 @@ bool ChaseCam::Load(GfxDataState& s) {
 		/*if (phase == 0)
 			port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 1);
 		else*/
-			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, -1);
-	
-		TODO
-		//s.view = port * proj * lookat;
+			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+		
+		mat4 rot = rotate(identity<mat4>(), angle, up);
+		
+		/*mat4 pl = lookat * proj;
+		mat4 mpl = model * pl;
+		mat4 rmpl = rot * mpl;*/
+		//mat4 rmpl = rot * model * lookat * proj * port;
+		mat4 rmpl = port * proj * lookat * model * rot;
+		
+		s.view = /*port **/ rmpl;
 	}
 	s.user_view = true;
 	//s.view = view;

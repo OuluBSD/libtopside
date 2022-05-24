@@ -1,0 +1,17 @@
+description "\377B200,179,81";;
+
+uses
+	ParallelLib;
+
+file
+	ISynth.h,
+	Enums.h,
+	Vendors.h,
+	Fluidsynth.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = ""
+

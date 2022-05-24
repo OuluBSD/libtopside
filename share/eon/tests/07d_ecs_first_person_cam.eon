@@ -1,0 +1,83 @@
+machine sdl.app: {
+	
+	chain program: {
+		state event.register;
+		
+		loop ogl.fbo: {
+			ogl.customer: true;
+			x11.ogl.fbo.program: true {
+				drawmem:		"false";
+				program:		"obj_view";
+			};
+			x11.ogl.fbo.sink: true {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				fragment:		"shaders/tests/03f_fragment.glsl";
+				vertex:			"shaders/tests/03f_vertex.glsl";
+			};
+		};
+		
+	};
+
+};
+
+
+
+
+
+engine ecs.dummy: {
+    system rendering;
+    system entity.store;
+    system component.store;
+    system events;
+    system physics: {
+        //log: debug;
+    };
+    
+    
+    pool world: {
+        entity ground: {
+            comp transform3;
+            comp model: {
+                builtin: plane;
+            };
+            comp physics: {
+                bind: physics;
+                test.fn: fixed;
+            };
+        };
+        
+        entity ball: {
+            comp transform3;
+            comp body;
+            comp model: {
+                builtin: box;
+            
+            };
+            comp physics: {
+                bind: physics;
+                test.fn: do.circle;
+            };
+        };
+        
+        entity player: {
+            comp transform3: {
+                x: 0;
+                y: 0;
+                z: 6;
+            };
+            comp viewable;
+            comp viewport;
+            comp camera.chase: {
+                target: world.ball;
+                log: test;
+            };
+            comp physics: {
+                bind: physics;
+                test.fn: fixed;
+            };
+        };
+    };
+    
+};

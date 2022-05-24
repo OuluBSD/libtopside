@@ -364,9 +364,8 @@ inline Callback callback2(void (T::* fn)(A0, A1), T* obj) {
 #define THISBACK2(x, a0, a1) callback2<CLASSNAME, decltype(a0), decltype(a1)>(this, &CLASSNAME::x, a0, a1)
 
 
-inline Callback Proxy(const Callback& cb) {
-	return Callback(new ProxyCaller(cb));
-}
+inline Callback Proxy(const Callback& cb) {return Callback(new ProxyCaller(cb));}
+inline Callback Proxy0(const Callback& cb) {return Callback(new ProxyCaller(cb));}
 
 template <class A0>
 inline Callback1<A0> Proxy(const Callback1<A0>& cb) {

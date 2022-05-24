@@ -1,6 +1,6 @@
 uses
-	EcsComplete,
-	AtomComplete;
+	AtomComplete,
+	EcsComplete;
 
 uses(WIN32) ports/Pbr;
 
@@ -12,8 +12,8 @@ file
 	DemoRoomMain.cpp;
 
 mainconfig
-	"" = "GUI",
-	"" = "GUI UWP",
-	"" = "GUI STEAM",
-	"" = "GUI VR";
+	"" = "GUI VR OGL",
+	"" = "GUI VR OGL OVR",
+	"" = "GUI VR OGL OHMD",
+	"" = "GUI VR UWP";
 

@@ -2,6 +2,7 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
+using namespace Ecs;
 
 
 InterfaceDataCtrl::InterfaceDataCtrl() {
@@ -68,7 +69,8 @@ void InterfaceSystemCtrl::ClearActiveCtrl() {
 void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBaseRef c, ExchangeProviderBaseRef b) {
 	ClearActiveCtrl();
 	
-	TypeId type = b->GetTypeCls();
+	TODO
+	/*TypeId type = b->GetTypeCls();
 	int i = iface_ctrls.Find(type);
 	if (i < 0) {
 		active_ctrl = NewInterfaceCtrl(type);
@@ -79,7 +81,7 @@ void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBaseRef c, ExchangeProviderB
 	else {
 		active_ctrl = &iface_ctrls[i];
 		ASSERT(active_ctrl);
-	}
+	}*/
 	
 	ent_cont.Add(active_ctrl->SizePos());
 	

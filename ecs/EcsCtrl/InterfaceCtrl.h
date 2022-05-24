@@ -12,7 +12,7 @@ public:
 	typedef InterfaceCtrl CLASSNAME;
 	InterfaceCtrl() {}
 	
-	virtual void SetInterface(ComponentBaseRef c, ExchangeProviderBaseRef b) = 0;
+	virtual void SetInterface(Ecs::ComponentBaseRef c, ExchangeProviderBaseRef b) = 0;
 	
 };
 

@@ -49,6 +49,16 @@ private:
 	
 };
 
+
+class MidiFrame {
+	
+public:
+	Vector<const Event*> midi;
+	
+	void Reset() {midi.SetCount(0);}
+};
+
+
 NAMESPACE_MIDI_END
 
 #endif

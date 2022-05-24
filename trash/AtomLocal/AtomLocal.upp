@@ -1,0 +1,52 @@
+description "\377B51,138,51";
+
+uses
+	SerialLib,
+	SerialPlanner;
+
+library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
+
+library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
+
+library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_shape";
+
+library(POSIX) v4l2;
+
+library(WIN32 & DEBUG) opencv_world454d;
+
+library(WIN32 & !DEBUG) opencv_world454;
+
+file
+	AtomLocal.h,
+	Internal.h,
+	Init.icpp,
+	Debug.h,
+	Debug.cpp,
+	Util.h,
+	Util.cpp,
+	Volume.h,
+	Volume.cpp,
+	Capture_OpenCV.h,
+	Capture_OpenCV.cpp,
+	DeviceManager_V4L2.h,
+	DeviceManager_V4L2.cpp,
+	DeviceManager_Win32.h,
+	DeviceManager_Win32.cpp,
+	OpenCV.h,
+	OpenCV.cpp,
+	Capture_V4L2.h,
+	Capture_V4L2.cpp,
+	Capture_DShow.h,
+	Capture_DShow.cpp,
+	Portaudio.h,
+	Portaudio.cpp,
+	Fluidsynth.h,
+	Fluidsynth.cpp,
+	Midi.h,
+	Midi.cpp,
+	Ecs.h,
+	Ecs.cpp,
+	Generated.h,
+	Generated.cpp,
+	Trash readonly separator;
+

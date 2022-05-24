@@ -180,12 +180,6 @@ HEADER_LINK(		SdlOglShaderProg,	PIPE, PROCESS)
 
 
 
-HEADER11(			X11OglFboProg,		X11OglFboBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
-HEADER_ACTION(		X11OglFboProg,		x11.ogl.fbo.program)
-HEADER_ARG(			X11OglFboProg,		HINT_PKG,					"AtomMinimal")
-HEADER_LINK(		X11OglFboProg,		PIPE, PROCESS)
-HEADER_ARG(			X11OglFboProg,		reqdef_flagSCREEN,			1)
-HEADER_ARG(			X11OglFboProg,		reqdef_flagOGL,				1)
 
 
 

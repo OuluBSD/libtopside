@@ -1,6 +1,7 @@
 #include "EcsCtrl.h"
 
 NAMESPACE_TOPSIDE_BEGIN
+using namespace Ecs;
 
 
 EntityDataCtrl::EntityDataCtrl() {
@@ -76,7 +77,8 @@ void EntityCtrl::SetEntityDataCtrl() {
 void EntityCtrl::SetComponentCtrl(ComponentBase& c) {
 	ClearActiveCtrl();
 	
-	TypeId type = c.GetType();
+	TODO
+	/*TypeId type = c.GetType();
 	int i = comp_ctrls.Find(type);
 	if (i < 0) {
 		active_ctrl = NewComponentCtrl(type);
@@ -89,7 +91,7 @@ void EntityCtrl::SetComponentCtrl(ComponentBase& c) {
 		ASSERT(active_ctrl);
 	}
 	
-	ent_cont.Add(active_ctrl->SizePos());
+	ent_cont.Add(active_ctrl->SizePos());*/
 	
 	active_ctrl->SetComponent(c);
 	active_ctrl->Update();
@@ -118,7 +120,7 @@ void EntityDataCtrl::UpdateEntityData(Entity& e) {
 	list.SetCount(ent_cursor);
 }
 
-void EntityDataCtrl::AddEntityDataRow(Value key, Value value) {
+void EntityDataCtrl::AddEntityDataRow(UPP::Value key, UPP::Value value) {
 	list.Set(ent_cursor, 0, key);
 	list.Set(ent_cursor, 1, value);
 	ent_cursor++;
