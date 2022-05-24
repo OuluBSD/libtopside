@@ -1,6 +1,9 @@
 #pragma once
 
 
+NAMESPACE_TOPSIDE_BEGIN
+
+
 namespace Pbr {
 
 namespace ShaderSlots {
@@ -17,6 +20,7 @@ enum PSMaterial // For both samplers and textures.
     Normal,
     Occlusion,
     Emissive,
+    
     LastMaterialSlot = Emissive
 };
 
@@ -43,38 +47,41 @@ enum ConstantBuffers
 // Global PBR resources required for rendering a scene.
 struct Resources
 {
-    explicit Resources(_In_ ID3D11Device* d3dDevice);
+    explicit Resources(ID3D11Device* d3dDevice);
 
     // Sets the Bidirectional Reflectance Distribution Function Lookup Table texture, required by the shader to compute surface reflectance from the IBL.
-    void SetBrdfLut(_In_ ID3D11ShaderResourceView* brdfLut);
+    void SetBrdfLut(ID3D11ShaderResourceView* brdfLut);
 
     // Create device-dependent resources.
-    void CreateDeviceDependentResources(_In_ ID3D11Device* device);
+    void CreateDeviceDependentResources(ID3D11Device* device);
 
     // Release device-dependent resources.
     void ReleaseDeviceDependentResources();
 
     // Get the D3D11Device that the PBR resources are associated with.
-    Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const;
+    ComPtr<ID3D11Device> GetDevice() const;
 
-    // Set the directional light. 
-    void XM_CALLCONV SetLight(DirectX::XMVECTOR direction, DirectX::XMVECTOR diffuseColor);
+    // Set the directional light.
+    void SetLight(const vec4& direction, const vec4& diffuseColor);
 
     // Set the specular and diffuse image-based lighting (IBL) maps. ShaderResourceViews must be TextureCubes.
-    void SetEnvironmentMap(_In_ ID3D11DeviceContext3* context, _In_ ID3D11ShaderResourceView* specularEnvironmentMap, _In_ ID3D11ShaderResourceView* diffuseEnvironmentMap);
+    void SetEnvironmentMap(ID3D11DeviceContext3* context, ID3D11ShaderResourceView* specularEnvironmentMap, ID3D11ShaderResourceView* diffuseEnvironmentMap);
 
     // Set the current view and projection matrices.
-    void XM_CALLCONV SetViewProjection(DirectX::FXMMATRIX viewLeft, DirectX::CXMMATRIX viewRight, DirectX::CXMMATRIX projectionLeft, DirectX::CXMMATRIX projectionRight);
+    void SetViewProjection(const mat4& viewLeft, const mat4& viewRight, const mat4& projectionLeft, const mat4& projectionRight);
 
     // Many 1x1 pixel colored textures are used in the PBR system. This is used to create textures backed by a cache to reduce the number of textures created.
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateSolidColorTexture(DirectX::CXMVECTOR color) const;
+    ComPtr<ID3D11ShaderResourceView> CreateSolidColorTexture(const vec4& color) const;
 
     // Bind the the PBR resources to the current context.
-    void Bind(_In_ ID3D11DeviceContext3* context) const;
+    void Bind(ID3D11DeviceContext3* context) const;
 
 private:
     struct Impl;
-    std::shared_ptr<Impl> m_impl;
+    Shared<Impl> impl;
 };
 
 }
+
+
+NAMESPACE_TOPSIDE_END

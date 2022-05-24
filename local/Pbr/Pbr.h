@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+/*#include <memory>
 #include <numeric>
 #include <optional>
 #include <vector>
@@ -16,6 +16,9 @@
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <DirectXTK/GltfHelper.h>
+*/
+
+#include <Geometry/Geometry.h>
 
 #include <ports/tiny_gltf/tiny_gltf.h>
 #include <ports/stb/stb_image.h>
