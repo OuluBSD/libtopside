@@ -15,57 +15,58 @@ class DeviceResources;
 class CameraResources
 {
 public:
-    CameraResources(const HoloCam& holographicCamera);
+    CameraResources(const HoloCam& holocam);
 
     void CreateResourcesForBackBuffer(
-        const GfxDevResources* pDeviceResources,
-        const HoloCamRendParams& cameraParameters
+        const GfxDevResources* dev_resources,
+        const HoloCamRendParams& cam_params
         );
     void ReleaseResourcesForBackBuffer(
-        const GfxDevResources* pDeviceResources
+        const GfxDevResources* dev_resources
         );
 
     bool GetViewProjectionTransform(
-        Shared<GfxDevResources> deviceResources,
-        const HoloCamPose& cameraPose,
-        const SpatialCoordinateSystem& coordinateSystem,
-        _Out_ HoloStereoTransform* viewTransform,
-        _Out_ HoloStereoTransform* projectionTransform);
+        Shared<GfxDevResources> dev_resources,
+        const HoloCamPose& cam_pose,
+        const SpatialCoordinateSystem& coord_system,
+        HoloStereoTransform* view_transform,
+        HoloStereoTransform* proj_transform);
 
     void CommitDirect3D11DepthBuffer(
-        const HoloCamRendParams& renderingParameters) const;
+        const HoloCamRendParams& rend_params) const;
 
     // Direct3D device resources.
-    NativeRenderTargetViewRef	GetBackBufferRenderTargetView()     const { return m_d3dRenderTargetView.Get();     }
-    NativeDepthStencilViewRef	GetDepthStencilView()               const { return m_d3dDepthStencilView.Get();     }
-    NativeTexture2DRef			GetBackBufferTexture2D()            const { return m_d3dBackBuffer.Get();           }
-    D3D11_VIEWPORT          GetViewport()                       const { return m_d3dViewport;                   }
-    DXGI_FORMAT             GetBackBufferDXGIFormat()           const { return m_dxgiFormat;                    }
+    NativeRenderTargetViewRef	GetBackBufferRenderTargetView()     const { return gfx_rend_tgt_view.Get(); }
+    NativeDepthStencilViewRef	GetDepthStencilView()               const { return gfx_depth_stencil_view.Get(); }
+    NativeTexture2DRef			GetBackBufferTexture2D()            const { return gfx_back_buffer.Get(); }
+    D3D11_VIEWPORT				GetViewport()                       const { return gfx_viewport; }
+    DXGI_FORMAT					GetBackBufferDXGIFormat()           const { return gfxlib_fmt; }
 
     // Render target properties.
-    vec2 GetRenderTargetSize()      const& { return m_d3dRenderTargetSize;           }
-    bool                    IsRenderingStereoscopic()           const  { return m_isStereo;                      }
+    vec2 GetRenderTargetSize() const& { return gfx_rend_tgt_size; }
+    bool IsRenderingStereoscopic() const { return is_stereo; }
 
     // The holographic camera these resources are for.
-    HoloCam const& GetHolographicCamera() const { return m_holographicCamera; }
+    const HoloCam& GetHolographicCamera() const { return holocam; }
 
 private:
     // Direct3D rendering objects. Required for 3D.
-    NativeRenderTargetViewRef				m_d3dRenderTargetView;
-    NativeDepthStencilViewRef				m_d3dDepthStencilView;
-    NativeTexture2DRef						m_d3dDepthStencil;
-    NativeTexture2DRef						m_d3dBackBuffer;
+    NativeRenderTargetViewRef				gfx_rend_tgt_view;
+    NativeDepthStencilViewRef				gfx_depth_stencil_view;
+    NativeTexture2DRef						gfx_depth_stencil;
+    NativeTexture2DRef						gfx_back_buffer;
 
     // Direct3D rendering properties.
-    DXGI_FORMAT                                                 m_dxgiFormat;
-    vec2                            m_d3dRenderTargetSize;
-    D3D11_VIEWPORT                                              m_d3dViewport;
+    DXGI_FORMAT								gfxlib_fmt;
+    Size									gfx_rend_tgt_size;
+    D3D11_VIEWPORT							gfx_viewport;
 
     // Indicates whether the camera supports stereoscopic rendering.
-    bool                                                        m_isStereo = false;
+    bool									is_stereo = false;
 
     // Pointer to the holographic camera these resources are for.
-    HoloCam    m_holographicCamera = nullptr;
+    HoloCam									holocam = 0;
+    
 };
 
 }

@@ -6,64 +6,66 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 SkyboxRenderer::SkyboxRenderer(
-    Shared<GfxDevResources> deviceResources,
-    ID3D11ShaderResourceView* skyboxTexture) :
-    dev_res(std::move(deviceResources)),
-    m_skyboxTexture(skyboxTexture)
+    Shared<GfxDevResources> dev_resources,
+    NativeShaderResourceViewRef skybox_tex) :
+    dev_res(std::move(dev_resources)),
+    skybox_tex(skybox_tex)
 {
     CreateDeviceDependentResources();
 }
 
-void SkyboxRenderer::SetTexture(ID3D11ShaderResourceView* skyboxTexture)
+void SkyboxRenderer::SetTexture(NativeShaderResourceViewRef skybox_tex)
 {
-    m_skyboxTexture = skyboxTexture;
+    this->skybox_tex = skybox_tex;
 }
 
 void SkyboxRenderer::SetViewProjection(
-    const float4x4& cameraToViewLeft,
-    const float4x4& viewToProjLeft,
-    const float4x4& cameraToViewRight,
-    const float4x4& viewToProjRight)
+    const mat4& camera_to_view_left,
+    const mat4& view_to_proj_left,
+    const mat4& camera_to_view_right,
+    const mat4& view_to_proj_right)
 {
-    float4x4 invViewProjection[2];
+    mat4 inv_view_projection[2];
 
-    fail_fast_if(!invert(cameraToViewLeft * viewToProjLeft, &invViewProjection[0]));
-    fail_fast_if(!invert(cameraToViewRight * viewToProjRight, &invViewProjection[1]));
+    fail_fast_if(!invert(camera_to_view_left * view_to_proj_left, &inv_view_projection[0]));
+    fail_fast_if(!invert(camera_to_view_right * view_to_proj_right, &inv_view_projection[1]));
 
-    invViewProjection[0] = transpose(invViewProjection[0]);
-    invViewProjection[1] = transpose(invViewProjection[1]);
+    inv_view_projection[0] = transpose(inv_view_projection[0]);
+    inv_view_projection[1] = transpose(inv_view_projection[1]);
 
-    dev_res->GetD3DDeviceContext()->UpdateSubresource(m_constantBuffer.Get(), 0, nullptr, &invViewProjection, 0, 0);
+    dev_res->GetD3DDeviceContext()->UpdateSubresource(constant_buffer.Get(), 0, nullptr, &inv_view_projection, 0, 0);
 }
 
 void SkyboxRenderer::CreateDeviceDependentResources()
 {
+	TODO
+	
+	#if 0
     const auto device = dev_res->GetD3DDevice();
 
-    DirectX::ThrowIfFailed(device->CreatePixelShader(
-        g_SkyBoxPixelShader, sizeof(g_SkyBoxPixelShader), nullptr, &m_pixelShader));
+    Holo::ThrowIfFailed(device->CreatePixelShader(
+        g_SkyBoxPixelShader, sizeof(g_SkyBoxPixelShader), nullptr, &pixel_shader));
 
-    const bool useVprt = dev_res->GetDeviceSupportsVprt();
-    const void* vertexShader = (useVprt) ? g_SkyBoxVertexShaderVprt : g_SkyBoxVertexShaderNoVprt;
-    const size_t vertexShaderSize = (useVprt) ? _countof(g_SkyBoxVertexShaderVprt) : _countof(g_SkyBoxVertexShaderNoVprt);
+    const bool use_vprt = dev_res->GetDeviceSupportsVprt();
+    const void* vertex_shader = (use_vprt) ? g_SkyBoxVertexShaderVprt : g_SkyBoxVertexShaderNoVprt;
+    const size_t vertex_shader_size = (use_vprt) ? _countof(g_SkyBoxVertexShaderVprt) : _countof(g_SkyBoxVertexShaderNoVprt);
 
-    if (!useVprt)
-    {
-        DirectX::ThrowIfFailed(device->CreateGeometryShader(
-            g_SkyBoxGeometryShaderNoVprt, sizeof(g_SkyBoxGeometryShaderNoVprt), nullptr, &m_geometryShader));
+    if (!use_vprt) {
+        Holo::ThrowIfFailed(device->CreateGeometryShader(
+            g_SkyBoxGeometryShaderNoVprt, sizeof(g_SkyBoxGeometryShaderNoVprt), nullptr, &geom_shader));
     }
 
-    DirectX::ThrowIfFailed(device->CreateVertexShader(
-        vertexShader, vertexShaderSize, nullptr, &m_vertexShader));
+    Holo::ThrowIfFailed(device->CreateVertexShader(
+        vertex_shader, vertex_shader_size, nullptr, &vertex_shader));
 
     {
         const CD3D11_SAMPLER_DESC desc{ CD3D11_DEFAULT() };
 
-        DirectX::ThrowIfFailed(device->CreateSamplerState(
-            &desc, &m_samplerState));
+        Holo::ThrowIfFailed(device->CreateSamplerState(
+            &desc, &sampler_state));
     }
     {
-        static const float4 NdcQuad[] = {
+        static const float4 ndc_quad[] = {
             { -1.0f, +1.0f, 1.0f, 1.0f },
             { +1.0f, +1.0f, 1.0f, 1.0f },
             { +1.0f, -1.0f, 1.0f, 1.0f },
@@ -74,25 +76,25 @@ void SkyboxRenderer::CreateDeviceDependentResources()
         };
 
         const CD3D11_BUFFER_DESC desc{
-            sizeof(NdcQuad),
+            sizeof(ndc_quad),
             D3D11_BIND_VERTEX_BUFFER
         };
 
         const D3D11_SUBRESOURCE_DATA data{
-            NdcQuad, 0, 0
+            ndc_quad, 0, 0
         };
 
-        DirectX::ThrowIfFailed(device->CreateBuffer(
-            &desc, &data, &m_vertexBuffer));
+        Holo::ThrowIfFailed(device->CreateBuffer(
+            &desc, &data, &vertex_buffer));
     }
     {
         const CD3D11_BUFFER_DESC desc{
-            sizeof(float4x4) * 2,
+            sizeof(mat4) * 2,
             D3D11_BIND_CONSTANT_BUFFER
         };
 
-        DirectX::ThrowIfFailed(device->CreateBuffer(
-            &desc, nullptr, &m_constantBuffer));
+        Holo::ThrowIfFailed(device->CreateBuffer(
+            &desc, nullptr, &constant_buffer));
     }
     {
         CD3D11_DEPTH_STENCIL_DESC desc{
@@ -102,8 +104,8 @@ void SkyboxRenderer::CreateDeviceDependentResources()
         desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
         desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-        DirectX::ThrowIfFailed(device->CreateDepthStencilState(
-            &desc, &m_depthStencilState));
+        Holo::ThrowIfFailed(device->CreateDepthStencilState(
+            &desc, &depth_stencil_state));
     }
 
     const D3D11_INPUT_ELEMENT_DESC NdcDesc[] =
@@ -111,43 +113,45 @@ void SkyboxRenderer::CreateDeviceDependentResources()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
-    DirectX::ThrowIfFailed(device->CreateInputLayout(
-        NdcDesc, _countof(NdcDesc), vertexShader, vertexShaderSize, &m_inputLayout));
+    Holo::ThrowIfFailed(device->CreateInputLayout(
+        NdcDesc, _countof(NdcDesc), vertex_shader, vertex_shader_size, &input_layout));
+    
+    #endif
 }
 
 void SkyboxRenderer::ReleaseDeviceDependentResources()
 {
-    m_skyboxTexture = nullptr;
-    m_vertexShader = nullptr;
-    m_geometryShader = nullptr;
-    m_pixelShader = nullptr;
-    m_samplerState = nullptr;
-    m_depthStencilState = nullptr;
-    m_vertexBuffer = nullptr;
-    m_constantBuffer = nullptr;
-    m_inputLayout = nullptr;
+    skybox_tex = nullptr;
+    vertex_shader = nullptr;
+    geom_shader = nullptr;
+    pixel_shader = nullptr;
+    sampler_state = nullptr;
+    depth_stencil_state = nullptr;
+    vertex_buffer = nullptr;
+    constant_buffer = nullptr;
+    input_layout = nullptr;
 }
 
 void SkyboxRenderer::Bind()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
-    context->OMGetDepthStencilState(&m_depthStencilState_Backup, &m_stencilRef_Backup);
+    context->OMGetDepthStencilState(&depth_stencil_state_backup, &stencil_backup);
 
-    const UINT strides[1] = { sizeof(float4) };
-    const UINT offsets[1] = { 0 };
+    const uint32 strides[1] = { sizeof(float4) };
+    const uint32 offsets[1] = { 0 };
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    context->IASetInputLayout(m_inputLayout.Get());
-    context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), strides, offsets);
-    context->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+    context->IASetInputLayout(input_layout.Get());
+    context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), strides, offsets);
+    context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
 
-    context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-    context->GSSetShader(m_geometryShader.Get(), nullptr, 0);
-    context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+    context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+    context->GSSetShader(geom_shader.Get(), nullptr, 0);
+    context->PSSetShader(pixel_shader.Get(), nullptr, 0);
 
-    context->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
-    context->PSSetShaderResources(0, 1, m_skyboxTexture.GetAddressOf());
-    context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+    context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+    context->PSSetShaderResources(0, 1, skybox_tex.GetAddressOf());
+    context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 }
 
 void SkyboxRenderer::Render()
@@ -162,10 +166,10 @@ void SkyboxRenderer::Unbind()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
-    context->OMSetDepthStencilState(m_depthStencilState_Backup.Get(), m_stencilRef_Backup);
+    context->OMSetDepthStencilState(depth_stencil_state_backup.Get(), stencil_backup);
 
-    m_depthStencilState_Backup = nullptr;
-    m_stencilRef_Backup = 0;
+    depth_stencil_state_backup = nullptr;
+    stencil_backup = 0;
 }
 
 

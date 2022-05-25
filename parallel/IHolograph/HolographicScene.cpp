@@ -8,81 +8,81 @@ HolographicScene::HolographicScene(
     Engine& core,
     HoloSpace holospace) :
     System(core),
-    m_holospace(std::move(holospace))
+    holospace(std::move(holospace))
 {}
 
 void HolographicScene::Initialize()
 {
-    m_stageFrameOfReference = SpatialStageFrameOfReference::Current();
+    stage_frame_of_reference = SpatialStageFrameOfReference::Current();
 
     // Create a fallback frame of reference 1.5 meters under the HMD when we start-up
-    m_stationaryFrameOfReference = SpatialLocator::GetDefault().CreateStationaryFrameOfReferenceAtCurrentLocation(
+    stationary_frame_of_reference = SpatialLocator::GetDefault().CreateStationaryFrameOfReferenceAtCurrentLocation(
         vec3{0.0f, -1.5f, 0.0f});
 
-    m_spatialStageCurrentChanged = SpatialStageFrameOfReference::CurrentChanged(
+    spatial_stage_current_changed = SpatialStageFrameOfReference::CurrentChanged(
         std::bind(&HolographicScene::OnCurrentStageChanged, this));
 }
 
 void HolographicScene::Update(double)
 {
-    m_currentFrame = m_holospace.CreateNextFrame();
+    current_frame = holospace.CreateNextFrame();
 
     OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicSpaceCreateNextFrame);
 }
 
 void HolographicScene::Uninitialize()
 {
-    SpatialStageFrameOfReference::CurrentChanged(m_spatialStageCurrentChanged);
+    SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
 
-    m_currentFrame = nullptr;
-    m_stationaryFrameOfReference = nullptr;
-    m_stageFrameOfReference = nullptr;
+    current_frame = nullptr;
+    stationary_frame_of_reference = nullptr;
+    stage_frame_of_reference = nullptr;
 }
 
 void HolographicScene::UpdateCurrentPrediction()
 {
-    m_currentFrame.UpdateCurrentPrediction();
+    current_frame.UpdateCurrentPrediction();
 
     OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicFrameUpdatePrediction);
 }
 
 void HolographicScene::OnCurrentStageChanged()
 {
-    std::unique_lock<std::shared_mutex> lock(m_mutex);
-    m_stageFrameOfReference = SpatialStageFrameOfReference::Current();
+    std::unique_lock<std::shared_mutex> lock(lock);
+    stage_frame_of_reference = SpatialStageFrameOfReference::Current();
 }
 
 void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason)
 {
-    const HolographicFramePrediction prediction = m_currentFrame.CurrentPrediction();
-    const SpatialCoordinateSystem coordinateSystem = WorldCoordinateSystem();
+    const HolographicFramePrediction prediction = current_frame.CurrentPrediction();
+    const SpatialCoordinateSystem coord_system = WorldCoordinateSystem();
 
-    for (const auto& listener : m_predictionUpdatelisteners.PurgeAndGetListeners())
+    for (const auto& listener : prediction_update_listeners.PurgeAndGetListeners())
     {
-        listener->OnPredictionUpdated(reason, coordinateSystem, prediction);
+        listener->OnPredictionUpdated(reason, coord_system, prediction);
     }
 }
 
 void HolographicScene::AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
 {
-    m_predictionUpdatelisteners.Add(std::move(listener));
+    prediction_update_listeners.Add(std::move(listener));
 }
 
 void HolographicScene::RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
 {
-    m_predictionUpdatelisteners.Remove(std::move(listener));
+    prediction_update_listeners.Remove(std::move(listener));
 }
 
 SpatialCoordinateSystem HolographicScene::WorldCoordinateSystem() const
 {
-    std::shared_lock<std::shared_mutex> lock(m_mutex);
-    if (m_stageFrameOfReference)
+    std::shared_lock<std::shared_mutex> lock(lock);
+    if (stage_frame_of_reference)
     {
-        return m_stageFrameOfReference.CoordinateSystem();
+        return stage_frame_of_reference.CoordinateSystem();
     }
     else
     {
-        return m_stationaryFrameOfReference.CoordinateSystem();
+        return stationary_frame_of_reference.CoordinateSystem();
     }
 }
 
@@ -93,14 +93,14 @@ PerceptionTimestamp HolographicScene::CurrentTimestamp() const
 
 HolographicFrame HolographicScene::CurrentFrame() const
 {
-    fail_fast_if(m_currentFrame == nullptr);
-    return m_currentFrame;
+    fail_fast_if(current_frame == nullptr);
+    return current_frame;
 }
 
 HolographicSpace HolographicScene::HolographicSpace() const
 {
-    fail_fast_if(m_holospace == nullptr);
-    return m_holospace;
+    fail_fast_if(holospace == nullptr);
+    return holospace;
 }
 
 

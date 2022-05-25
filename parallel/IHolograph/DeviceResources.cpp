@@ -27,7 +27,7 @@ void GfxDevResources::CreateDeviceIndependentResources()
             D2D1_FACTORY_TYPE_SINGLE_THREADED,
             __uuidof(ID2D1Factory2),
             &options,
-            &m_d2dFactory
+            &gfx_2d_factory
         ));
 
     // Initialize the DirectWrite Factory.
@@ -35,7 +35,7 @@ void GfxDevResources::CreateDeviceIndependentResources()
         DWriteCreateFactory(
             DWRITE_FACTORY_TYPE_SHARED,
             __uuidof(IDWriteFactory2),
-            &m_dwriteFactory
+            &gfx_hw_factory
         ));
 
     // Initialize the Windows Imaging Component (WIC) Factory.
@@ -44,14 +44,14 @@ void GfxDevResources::CreateDeviceIndependentResources()
             CLSID_WICImagingFactory2,
             nullptr,
             CLSCTX_INPROC_SERVER,
-            IID_PPV_ARGS(&m_wicFactory)
+            IID_PPV_ARGS(&vr_camlib)
         ));
 }
 
 void GfxDevResources::SetHolographicSpace(HolographicSpace holospace)
 {
     // Cache the holographic space. Used to re-initalize during device-lost scenarios.
-    m_holospace = holospace;
+    holospace = holospace;
 
     InitializeUsingHolographicSpace();
 }
@@ -62,8 +62,8 @@ void GfxDevResources::InitializeUsingHolographicSpace()
     // holograms, in which case it will specify a non-zero PrimaryAdapterId.
     LUID id =
     {
-        m_holospace.PrimaryAdapterId().LowPart,
-        m_holospace.PrimaryAdapterId().HighPart
+        holospace.PrimaryAdapterId().LowPart,
+        holospace.PrimaryAdapterId().HighPart
     };
 
     // When a primary adapter ID is given to the app, the app should find
@@ -72,38 +72,38 @@ void GfxDevResources::InitializeUsingHolographicSpace()
     // adapter the app can use.
     if ((id.HighPart != 0) || (id.LowPart != 0))
     {
-        UINT createFlags = 0;
+        uint32 create_flags = 0;
 #ifdef DEBUG
         if (DX::SdkLayersAvailable())
         {
-            createFlags |= DXGI_CREATE_FACTORY_DEBUG;
+            create_flags |= DXGI_CREATE_FACTORY_DEBUG;
         }
 #endif
         // Create the DXGI factory.
-        ComPtr<IDXGIFactory1> dxgiFactory;
+        ComPtr<IDXGIFactory1> gfxlib_factory;
         Holo::CheckResult(
             CreateDXGIFactory2(
-                createFlags,
-                IID_PPV_ARGS(&dxgiFactory)
+                create_flags,
+                IID_PPV_ARGS(&gfxlib_factory)
             ));
-        ComPtr<IDXGIFactory4> dxgiFactory4;
-        Holo::CheckResult(dxgiFactory.As(&dxgiFactory4));
+        ComPtr<IDXGIFactory4> gfxlib_factory4;
+        Holo::CheckResult(gfxlib_factory.As(&gfxlib_factory4));
 
         // Retrieve the adapter specified by the holographic space.
         Holo::CheckResult(
-            dxgiFactory4->EnumAdapterByLuid(
+            gfxlib_factory4->EnumAdapterByLuid(
                 id,
-                IID_PPV_ARGS(&m_dxgiAdapter)
+                IID_PPV_ARGS(&gfxlib_adapter)
             ));
     }
     else
     {
-        m_dxgiAdapter.Reset();
+        gfxlib_adapter.Reset();
     }
 
     CreateDeviceResources();
 
-    m_holospace.SetDirect3D11Device(m_d3dInteropDevice);
+    holospace.SetDirect3D11Device(gfx_interop_dev);
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.
@@ -111,13 +111,13 @@ void GfxDevResources::CreateDeviceResources()
 {
     // This flag adds support for surfaces with a different color channel ordering
     // than the API default. It is required for compatibility with Direct2D.
-    UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+    uint32 creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 #if defined(_DEBUG)
     if (DX::SdkLayersAvailable())
     {
         // If the project is in a debug build, enable debugging via SDK Layers with this flag.
-        creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+        creation_flags |= D3D11_CREATE_DEVICE_DEBUG;
     }
 #endif
 
@@ -125,7 +125,7 @@ void GfxDevResources::CreateDeviceResources()
     // Note the ordering should be preserved.
     // Note that HoloLens supports feature level 11.1. The HoloLens emulator is also capable
     // of running on graphics cards starting with feature level 10.0.
-    D3D_FEATURE_LEVEL featureLevels[] =
+    D3D_FEATURE_LEVEL feature_levels[] =
     {
         D3D_FEATURE_LEVEL_12_1,
         D3D_FEATURE_LEVEL_12_0,
@@ -139,17 +139,17 @@ void GfxDevResources::CreateDeviceResources()
     ComPtr<ID3D11Device> device;
     ComPtr<ID3D11DeviceContext> context;
 
-    const D3D_DRIVER_TYPE driverType = m_dxgiAdapter == nullptr ? D3D_DRIVER_TYPE_HARDWARE : D3D_DRIVER_TYPE_UNKNOWN;
+    const D3D_DRIVER_TYPE driver_type = gfxlib_adapter == nullptr ? D3D_DRIVER_TYPE_HARDWARE : D3D_DRIVER_TYPE_UNKNOWN;
     const HRESULT hr = D3D11CreateDevice(
-        m_dxgiAdapter.Get(),        // Either nullptr, or the primary adapter determined by Windows Holographic.
-        driverType,                 // Create a device using the hardware graphics driver.
+        gfxlib_adapter.Get(),       // Either nullptr, or the primary adapter determined by Windows Holographic.
+        driver_type,                // Create a device using the hardware graphics driver.
         0,                          // Should be 0 unless the driver is D3D_DRIVER_TYPE_SOFTWARE.
-        creationFlags,              // Set debug and Direct2D compatibility flags.
-        featureLevels,              // List of feature levels this app can support.
-        ARRAYSIZE(featureLevels),   // Size of the list above.
+        creation_flags,             // Set debug and Direct2D compatibility flags.
+        feature_levels,             // List of feature levels this app can support.
+        ARRAYSIZE(feature_levels),  // Size of the list above.
         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Windows Store apps.
         &device,                    // Returns the Direct3D device created.
-        &m_d3dFeatureLevel,         // Returns feature level of device created.
+        &gfx_feature_level,         // Returns feature level of device created.
         &context                    // Returns the device immediate context.
     );
 
@@ -163,43 +163,42 @@ void GfxDevResources::CreateDeviceResources()
                 nullptr,              // Use the default DXGI adapter for WARP.
                 D3D_DRIVER_TYPE_WARP, // Create a WARP device instead of a hardware device.
                 0,
-                creationFlags,
-                featureLevels,
-                ARRAYSIZE(featureLevels),
+                creation_flags,
+                feature_levels,
+                ARRAYSIZE(feature_levels),
                 D3D11_SDK_VERSION,
                 &device,
-                &m_d3dFeatureLevel,
+                &gfx_feature_level,
                 &context
             ));
     }
 
     // Store pointers to the Direct3D device and immediate context.
-    Holo::CheckResult(device.As(&m_d3dDevice));
-    Holo::CheckResult(context.As(&m_d3dContext));
+    Holo::CheckResult(device.As(&gfx_dev));
+    Holo::CheckResult(context.As(&gfx_ctx_dev));
 
     // Acquire the DXGI interface for the Direct3D device.
-    ComPtr<IDXGIDevice3> dxgiDevice;
-    Holo::CheckResult(m_d3dDevice.As(&dxgiDevice));
+    ComPtr<IDXGIDevice3> gfxlib_dev;
+    Holo::CheckResult(gfx_dev.As(&gfxlib_dev));
 
     // Wrap the native device using a WinRT interop object.
     NativeInspectableRef object;
     TODO /*Holo::CheckResult(CreateDirect3D11DeviceFromDXGIDevice(
-        dxgiDevice.Get(),
+        gfxlib_dev.Get(),
         winrt::put_abi(object)));*/
-    m_d3dInteropDevice = object.as<IDirect3DDevice>();
+    gfx_interop_dev = object.as<IDirect3DDevice>();
 
     // Cache the DXGI adapter.
     // This is for the case of no preferred DXGI adapter, or fallback to WARP.
-    ComPtr<IDXGIAdapter> dxgiAdapter;
-    Holo::CheckResult(dxgiDevice->GetAdapter(&dxgiAdapter));
-    Holo::CheckResult(dxgiAdapter.As(&m_dxgiAdapter));
+    ComPtr<IDXGIAdapter> gfxlib_adapter;
+    Holo::CheckResult(gfxlib_dev->GetAdapter(&gfxlib_adapter));
+    Holo::CheckResult(gfxlib_adapter.As(&gfxlib_adapter));
 
     // Check for device support for the optional feature that allows setting the render target array index from the vertex shader stage.
     D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
-    m_d3dDevice->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
-    if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer)
-    {
-        m_supportsVprt = true;
+    gfx_dev->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
+    if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer) {
+        supports_vprt = true;
     }
 }
 
@@ -210,14 +209,14 @@ void GfxDevResources::EnsureCameraResources(
     HolographicFrame frame,
     HolographicFramePrediction prediction)
 {
-    UseHolographicCameraResources<void>([this, frame, prediction](std::map<UINT32, std::unique_ptr<CameraResources>>& cameraResourceMap)
+    UseHolographicCameraResources<void>([this, frame, prediction](ArrayMap<uint32, CameraResources>& camera_resource_map)
     {
-        for (HolographicCameraPose const& cameraPose : prediction.CameraPoses())
+        for (HolographicCameraPose const& cam_pose : prediction.CameraPoses())
         {
-            HolographicCameraRenderingParameters renderingParameters = frame.GetRenderingParameters(cameraPose);
-            CameraResources* pCameraResources = cameraResourceMap[cameraPose.HolographicCamera().Id()].get();
+            HolographicCameraRenderingParameters rend_params = frame.GetRenderingParameters(cam_pose);
+            CameraResources* cam_resources = camera_resource_map[cam_pose.HolographicCamera().Id()].get();
 
-            pCameraResources->CreateResourcesForBackBuffer(this, renderingParameters);
+            cam_resources->CreateResourcesForBackBuffer(this, rend_params);
         }
     });
 }
@@ -226,9 +225,9 @@ void GfxDevResources::EnsureCameraResources(
 // Locks the set of holographic camera resources until the function exits.
 void GfxDevResources::AddHolographicCamera(HolographicCamera camera)
 {
-    UseHolographicCameraResources<void>([this, camera](std::map<UINT32, std::unique_ptr<CameraResources>>& cameraResourceMap)
+    UseHolographicCameraResources<void>([this, camera](ArrayMap<uint32, CameraResources>& camera_resource_map)
     {
-        cameraResourceMap[camera.Id()] = std::make_unique<CameraResources>(camera);
+        camera_resource_map[camera.Id()] = std::make_unique<CameraResources>(camera);
     });
 }
 
@@ -236,14 +235,14 @@ void GfxDevResources::AddHolographicCamera(HolographicCamera camera)
 // Locks the set of holographic camera resources until the function exits.
 void GfxDevResources::RemoveHolographicCamera(HolographicCamera camera)
 {
-    UseHolographicCameraResources<void>([this, camera](std::map<UINT32, std::unique_ptr<CameraResources>>& cameraResourceMap)
+    UseHolographicCameraResources<void>([this, camera](ArrayMap<uint32, CameraResources>& camera_resource_map)
     {
-        CameraResources* pCameraResources = cameraResourceMap[camera.Id()].get();
+        CameraResources* cam_resources = camera_resource_map[camera.Id()].get();
 
-        if (pCameraResources != nullptr)
+        if (cam_resources != nullptr)
         {
-            pCameraResources->ReleaseResourcesForBackBuffer(this);
-            cameraResourceMap.erase(camera.Id());
+            cam_resources->ReleaseResourcesForBackBuffer(this);
+            camera_resource_map.erase(camera.Id());
         }
     });
 }
@@ -252,43 +251,43 @@ void GfxDevResources::RemoveHolographicCamera(HolographicCamera camera)
 // Locks the set of holographic camera resources until the function exits.
 void GfxDevResources::HandleDeviceLost()
 {
-    if (m_deviceNotify != nullptr)
+    if (dev_notify != nullptr)
     {
-        m_deviceNotify->OnDeviceLost();
+        dev_notify->OnDeviceLost();
     }
 
-    UseHolographicCameraResources<void>([this](std::map<UINT32, std::unique_ptr<CameraResources>>& cameraResourceMap)
+    UseHolographicCameraResources<void>([this](ArrayMap<uint32, CameraResources>& camera_resource_map)
     {
-        for (auto& pair : cameraResourceMap)
+        for (auto& pair : camera_resource_map)
         {
-            CameraResources* pCameraResources = pair.second.get();
-            pCameraResources->ReleaseResourcesForBackBuffer(this);
+            CameraResources* cam_resources = pair.second.get();
+            cam_resources->ReleaseResourcesForBackBuffer(this);
         }
     });
 
     InitializeUsingHolographicSpace();
 
-    if (m_deviceNotify != nullptr)
+    if (dev_notify != nullptr)
     {
-        m_deviceNotify->OnDeviceRestored();
+        dev_notify->OnDeviceRestored();
     }
 }
 
 // Register our DeviceNotify to be informed on device lost and creation.
-void GfxDevResources::RegisterDeviceNotify(GfxDeviceNotify* deviceNotify)
+void GfxDevResources::RegisterDeviceNotify(GfxDeviceNotify* dev_notify)
 {
-    m_deviceNotify = deviceNotify;
+    this->dev_notify = dev_notify;
 }
 
 // Call this method when the app suspends. It provides a hint to the driver that the app
 // is entering an idle state and that temporary buffers can be reclaimed for use by other apps.
 void GfxDevResources::Trim()
 {
-    m_d3dContext->ClearState();
+    gfx_ctx_dev->ClearState();
 
-    ComPtr<IDXGIDevice3> dxgiDevice;
-    Holo::CheckResult(m_d3dDevice.As(&dxgiDevice));
-    dxgiDevice->Trim();
+    ComPtr<IDXGIDevice3> gfxlib_dev;
+    Holo::CheckResult(gfx_dev.As(&gfxlib_dev));
+    gfxlib_dev->Trim();
 }
 
 // Present the contents of the swap chain to the screen.
@@ -299,12 +298,12 @@ void GfxDevResources::Present(HolographicFrame frame)
     // Holographic apps should wait for the previous frame to finish before
     // starting work on a new frame. This allows for better results from
     // holographic frame predictions.
-    HolographicFramePresentResult presentResult = frame.PresentUsingCurrentPrediction();
+    HolographicFramePresentResult present_result = frame.PresentUsingCurrentPrediction();
 
     // The PresentUsingCurrentPrediction API will detect when the graphics device
     // changes or becomes invalid. When this happens, it is considered a Direct3D
     // device lost scenario.
-    if (presentResult == HolographicFramePresentResult::DeviceRemoved)
+    if (present_result == HolographicFramePresentResult::DeviceRemoved)
     {
         // The Direct3D device, context, and resources should be recreated.
         HandleDeviceLost();
@@ -324,38 +323,38 @@ using HolographicSpace = HoloSpace;
 
 
 void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String diff, String spec, String skybox, String lut) {
-	hs = std::make_shared<GfxDevResources>();
+	hs = MakeShared<GfxDevResources>();
 	
 	dev_res.SetHolographicSpace(hs);
 	
-	const auto pbr_res = std::make_shared<Pbr::Resources>(dev_res.GetD3DDevice());
+	const auto pbr_res = MakeShared<Pbr::Resources>(dev_res.GetD3DDevice());
 
-    NativeShaderResourceViewRef diffuseEnvironmentMap;
-    NativeShaderResourceViewRef specularEnvironmentMap;
-    NativeShaderResourceViewRef brdlutTexture;
-    NativeShaderResourceViewRef skyboxTexture;
+    NativeShaderResourceViewRef diffuse_env_map;
+    NativeShaderResourceViewRef specular_env_map;
+    NativeShaderResourceViewRef brdf_lut_tex;
+    NativeShaderResourceViewRef skybox_tex;
 
-    auto resourceLoadingTask = std::async(std::launch::async, [&]
+    auto resource_loading_task = std::async(std::launch::async, [&]
     {
-        auto diffuseTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), diff);
-        auto specularTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), spec);
-        auto skyboxTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), skybox);
-        auto brdfLutFileDataFuture = DX::ReadDataAsync(lut);
+        auto diffuse_texture_future = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), diff);
+        auto specular_texture_future = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), spec);
+        auto skybox_texture_future = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), skybox);
+        auto brdf_lut_file_data_future = DX::ReadDataAsync(lut);
 
-        diffuseEnvironmentMap = diffuseTextureFuture.get();
-        specularEnvironmentMap = specularTextureFuture.get();
-        skyboxTexture = skyboxTextureFuture.get();
-        std::vector<byte> brdfLutFileData = brdfLutFileDataFuture.get();
+        diffuse_env_map = diffuse_texture_future.get();
+        specular_env_map = specular_texture_future.get();
+        skybox_tex = skybox_texture_future.get();
+        Vector<byte> brdf_lut_file_data = brdf_lut_file_data_future.get();
 
         // Read the BRDF Lookup Table used by the PBR system into a DirectX texture.
-        brdlutTexture = Pbr::Texture::LoadImage(dev_res.GetD3DDevice(), brdfLutFileData.data(), static_cast<uint32_t>(brdfLutFileData.size()));
+        brdf_lut_tex = Pbr::Texture::LoadImage(dev_res.GetD3DDevice(), brdf_lut_file_data.data(), static_cast<uint32>(brdf_lut_file_data.size()));
     });
 
     // Launch the loading tasks on another thread and wait for them to complete
-    resourceLoadingTask.wait();
+    resource_loading_task.wait();
 
-    pbr_res->SetBrdfLut(brdlutTexture.Get());
-    pbr_res->SetEnvironmentMap(dev_res.GetD3DDeviceContext(), specularEnvironmentMap.Get(), diffuseEnvironmentMap.Get());
+    pbr_res->SetBrdfLut(brdf_lut_tex.Get());
+    pbr_res->SetEnvironmentMap(dev_res.GetD3DDeviceContext(), specular_env_map.Get(), diffuse_env_map.Get());
 }
 
 

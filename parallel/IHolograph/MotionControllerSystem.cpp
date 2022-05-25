@@ -6,9 +6,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 namespace {
 
-std::string ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, SpatialInteractionSourceHandedness>& tuple)
+String ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, SpatialInteractionSourceHandedness>& tuple)
 {
-    std::stringstream ss;
+    String ss;
 
     ss << "MotionController_"
         << std::get<0>(tuple) << "_"
@@ -16,29 +16,29 @@ std::string ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, 
         << std::get<2>(tuple) << "_"
         << static_cast<uint16>(std::get<3>(tuple));
 
-    return ss.str();
+    return ss;
 }
 
 std::future<void> LoadAndCacheModel(
     const SpatialInteractionSource& source,
     Engine& engine)
 {
-    const auto controllerModelName = ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(source));
+    const auto ctrl_model_name = ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(source));
 
     auto pbr_model_cache = engine.Get<PbrModelCache>();
-    if (!pbr_model_cache->ModelExists(controllerModelName.c_str()))
+    if (!pbr_model_cache->ModelExists(ctrl_model_name.c_str()))
     {
         const auto pbr_res = engine.Get<HolographicRenderer>()->GetPbrResources();
 
         const auto model = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
 
-        if (model) 
+        if (model)
         {
-            pbr_model_cache->RegisterModel(controllerModelName, model->Clone(*pbr_res));
+            pbr_model_cache->RegisterModel(ctrl_model_name, model->Clone(*pbr_res));
         }
         else
         {
-            debug_log("Failed to load model for source %d", source.Id());
+            LOG("Failed to load model for source %d", source.Id());
         }
     }
 }
@@ -55,21 +55,21 @@ void MotionControllerSystem::Start()
 
 void MotionControllerSystem::OnPredictionUpdated(
     IPredictionUpdateListener::PredictionUpdateReason /*reason*/,
-    const SpatialCoordinateSystem& coordinateSystem,
+    const SpatialCoordinateSystem& coord_system,
     const HolographicFramePrediction& prediction)
 {
     // Update the positions of the controllers based on the current timestamp.
-    for (auto& sourceState : machine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
+    for (auto& src_state : machine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
     {
         for (auto& comp_set : machine.Get<EntityStore>()->GetComponents<Transform, MotionControllerComponent>())
         {
             auto[transform, controller] = comp_set;
 
-            RefreshComponentsForSource(sourceState.Source());
+            RefreshComponentsForSource(src_state.Source());
 
-            if (controller->IsSource(sourceState.Source()))
+            if (controller->IsSource(src_state.Source()))
             {
-                const SpatialInteractionSourceLocation location = sourceState.Properties().TryGetLocation(coordinateSystem);
+                const SpatialInteractionSourceLocation location = src_state.Properties().TryGetLocation(coord_system);
 
                 controller->location = location;
 
@@ -100,7 +100,7 @@ void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteraction
         if (controller->source == nullptr && source.Handedness() == controller->req_hand)
         {
             controller->source = source;
-            debug_log("Attached source id %d to entity %lld with requested handedness %d", source.Id(), entity->Id(), static_cast<uint32_t>(controller->req_hand));
+            LOG("Attached source id %d to entity %lld with requested handedness %d", source.Id(), entity->Id(), static_cast<uint32>(controller->req_hand));
         }
     }
 }
@@ -113,7 +113,7 @@ void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEvent
         {
             auto[pbr, controller] = comp_set;
 
-            if (controller->IsSource(args.State().Source()) && controller->attachControllerModel)
+            if (controller->IsSource(args.State().Source()) && controller->attach_ctrl_model)
             {
                 // If we don't have a model yet, set the ModelName so PbrModelCache will update the model
                 if (!pbr->Model)

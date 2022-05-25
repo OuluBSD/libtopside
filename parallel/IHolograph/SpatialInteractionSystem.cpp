@@ -6,52 +6,52 @@ NAMESPACE_PARALLEL_BEGIN
 
 void SpatialInteractionSystem::Initialize()
 {
-    m_spatialInteractionManager = SpatialInteractionManager::GetForCurrentView();
+    spatial_interaction_manager = SpatialInteractionManager::GetForCurrentView();
     BindEventHandlers();
 }
 
 void SpatialInteractionSystem::Uninitialize()
 {
     ReleaseEventHandlers();
-    m_spatialInteractionManager = nullptr;
+    spatial_interaction_manager = nullptr;
 }
 
 void SpatialInteractionSystem::BindEventHandlers()
 {
-    fail_fast_if(m_spatialInteractionManager == nullptr);
+    fail_fast_if(spatial_interaction_manager == nullptr);
 
-    m_sourceTokens[Detected] = m_spatialInteractionManager.SourceDetected(
+    source_tokens[Detected] = spatial_interaction_manager.SourceDetected(
         std::bind(&SpatialInteractionSystem::HandleSourceDetected, this, _1, _2));
 
-    m_sourceTokens[Pressed] = m_spatialInteractionManager.SourcePressed(
+    source_tokens[Pressed] = spatial_interaction_manager.SourcePressed(
         std::bind(&SpatialInteractionSystem::HandleSourcePressed, this, _1, _2));
 
-    m_sourceTokens[Updated] = m_spatialInteractionManager.SourceUpdated(
+    source_tokens[Updated] = spatial_interaction_manager.SourceUpdated(
         std::bind(&SpatialInteractionSystem::HandleSourceUpdated, this, _1, _2));
 
-    m_sourceTokens[Released] = m_spatialInteractionManager.SourceReleased(
+    source_tokens[Released] = spatial_interaction_manager.SourceReleased(
         std::bind(&SpatialInteractionSystem::HandleSourceReleased, this, _1, _2));
 
-    m_sourceTokens[Lost] = m_spatialInteractionManager.SourceLost(
+    source_tokens[Lost] = spatial_interaction_manager.SourceLost(
         std::bind(&SpatialInteractionSystem::HandleSourceLost, this, _1, _2));
 }
 
 void SpatialInteractionSystem::ReleaseEventHandlers()
 {
-    fail_fast_if(m_spatialInteractionManager == nullptr);
+    fail_fast_if(spatial_interaction_manager == nullptr);
 
-    m_spatialInteractionManager.SourceLost(m_sourceTokens[Lost]);
-    m_spatialInteractionManager.SourceReleased(m_sourceTokens[Released]);
-    m_spatialInteractionManager.SourceUpdated(m_sourceTokens[Updated]);
-    m_spatialInteractionManager.SourcePressed(m_sourceTokens[Pressed]);
-    m_spatialInteractionManager.SourceDetected(m_sourceTokens[Detected]);
+    spatial_interaction_manager.SourceLost(source_tokens[Lost]);
+    spatial_interaction_manager.SourceReleased(source_tokens[Released]);
+    spatial_interaction_manager.SourceUpdated(source_tokens[Updated]);
+    spatial_interaction_manager.SourcePressed(source_tokens[Pressed]);
+    spatial_interaction_manager.SourceDetected(source_tokens[Detected]);
 }
 
 void SpatialInteractionSystem::HandleSourceDetected(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
-    for (const auto& listener : m_spatialInteractionListeners.PurgeAndGetListeners())
+    for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
     {
         listener->OnSourceDetected(args);
     }
@@ -61,7 +61,7 @@ void SpatialInteractionSystem::HandleSourceLost(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
-    for (const auto& listener : m_spatialInteractionListeners.PurgeAndGetListeners())
+    for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
     {
         listener->OnSourceLost(args);
     }
@@ -71,7 +71,7 @@ void SpatialInteractionSystem::HandleSourcePressed(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
-    for (const auto& listener : m_spatialInteractionListeners.PurgeAndGetListeners())
+    for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
     {
         listener->OnSourcePressed(args);
     }
@@ -81,7 +81,7 @@ void SpatialInteractionSystem::HandleSourceUpdated(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
-    for (const auto& listener : m_spatialInteractionListeners.PurgeAndGetListeners())
+    for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
     {
         listener->OnSourceUpdated(args);
     }
@@ -91,7 +91,7 @@ void SpatialInteractionSystem::HandleSourceReleased(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
-    for (const auto& listener : m_spatialInteractionListeners.PurgeAndGetListeners())
+    for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
     {
         listener->OnSourceReleased(args);
     }

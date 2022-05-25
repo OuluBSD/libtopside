@@ -4,35 +4,29 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-// The main function bootstraps into the IFrameworkView.
-int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
-{
-    winrt::init_apartment();
-    CoreApplication::Run(AppViewSource());
-    return 0;
-}
+
 
 // IFrameworkViewSource methods
 
 IFrameworkView AppViewSource::CreateView()
 {
-    return holographicView;
+    return holographic_view;
 }
 
 // IFrameworkView methods
 
 // The first method called when the IFrameworkView is being created.
 // Use this method to subscribe for Windows shell events and to initialize your app.
-void AppView::Initialize(const CoreApplicationView& applicationView)
+void AppView::Initialize(const CoreApplicationView& app_view)
 {
-    applicationView.Activated(std::bind(&AppView::OnViewActivated, this, _1, _2));
+    app_view.Activated(std::bind(&AppView::OnViewActivated, this, _1, _2));
 
     // Register event handlers for app lifecycle.
-    m_suspendingEventToken = CoreApplication::Suspending(std::bind(&AppView::OnSuspending, this, _1, _2));
+    suspending_event = CoreApplication::Suspending(std::bind(&AppView::OnSuspending, this, _1, _2));
 
-    m_resumingEventToken = CoreApplication::Resuming(std::bind(&AppView::OnResuming, this, _1, _2));
+    resuming_event = CoreApplication::Resuming(std::bind(&AppView::OnResuming, this, _1, _2));
 
-    m_main = std::make_unique<DemoRoomMain>();
+    main = std::make_unique<DemoRoomMain>();
 }
 
 void AppView::OnKeyPressed(const CoreWindow& sender, const KeyEventArgs& args)
@@ -47,46 +41,44 @@ void AppView::OnPointerPressed(const CoreWindow& sender, const PointerEventArgs&
 void AppView::SetWindow(const CoreWindow& window)
 {
     // Register for keypress notifications.
-    m_keyDownEventToken = window.KeyDown(std::bind(&AppView::OnKeyPressed, this, _1, _2));
+    keydown_event = window.KeyDown(std::bind(&AppView::OnKeyPressed, this, _1, _2));
 
     // Register for pointer pressed notifications.
-    m_pointerPressedEventToken = window.PointerPressed(std::bind(&AppView::OnPointerPressed, this, _1, _2));
+    pointer_pressed_event = window.PointerPressed(std::bind(&AppView::OnPointerPressed, this, _1, _2));
 
     // Register for notification that the app window is being closed.
-    m_windowClosedEventToken = window.Closed(std::bind(&AppView::OnWindowClosed, this, _1, _2));
+    window_closed_event = window.Closed(std::bind(&AppView::OnWindowClosed, this, _1, _2));
 
     // Register for notifications that the app window is losing focus.
-    m_visibilityChangedEventToken = window.VisibilityChanged(std::bind(&AppView::OnVisibilityChanged, this, _1, _2));
+    visibility_changed_event = window.VisibilityChanged(std::bind(&AppView::OnVisibilityChanged, this, _1, _2));
 
     // Create a holographic space for the core window for the current view.
     // Presenting holographic frames that are created by this holographic space will put
     // the app into exclusive mode.
-    m_holospace = HolographicSpace::CreateForCoreWindow(window);
+    holospace = HolographicSpace::CreateForCoreWindow(window);
 
     // The main class uses the holographic space for updates and rendering.
-    m_main->SetHolographicSpace(m_holospace);
+    main->SetHolographicSpace(holospace);
 }
 
 // The Load method can be used to initialize scene resources or to load a
 // previously saved app state.
-void AppView::Load(winrt::hstring const& entryPoint)
-{
+void AppView::Load(const NativeString& entry_point) {
+	
 }
 
 // This method is called after the window becomes active. It oversees the
 // update, draw, and present loop, and it also oversees window message processing.
 void AppView::Run()
 {
-    while (!m_windowClosed)
+    while (!is_window_closed)
     {
-        if (m_windowVisible && (m_holospace != nullptr))
-        {
+        if (is_window_visible && (holospace != nullptr)) {
             CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-            m_main->Update();
+            main->Update();
         }
-        else
-        {
+        else {
             CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
         }
     }
@@ -96,16 +88,16 @@ void AppView::Run()
 // class is torn down while the app is in the foreground, for example if the Run method exits.
 void AppView::Uninitialize()
 {
-    m_main.reset();
+    main.reset();
 
-    CoreApplication::Suspending(m_suspendingEventToken);
-    CoreApplication::Resuming(m_resumingEventToken);
+    CoreApplication::Suspending(suspending_event);
+    CoreApplication::Resuming(resuming_event);
 
     auto const& window = CoreWindow::GetForCurrentThread();
-    window.KeyDown(m_keyDownEventToken);
-    window.PointerPressed(m_pointerPressedEventToken);
-    window.Closed(m_windowClosedEventToken);
-    window.VisibilityChanged(m_visibilityChangedEventToken);
+    window.KeyDown(keydown_event);
+    window.PointerPressed(pointer_pressed_event);
+    window.Closed(window_closed_event);
+    window.VisibilityChanged(visibility_changed_event);
 }
 
 
@@ -140,9 +132,8 @@ void AppView::OnSuspending(const IInspectable& sender, SuspendingEventArgs const
 
     create_task([this, deferral]
     {
-        if (m_main)
-        {
-            m_main->SaveAppState();
+        if (main) {
+            main->SaveAppState();
         }
 
         deferral.Complete();
@@ -155,9 +146,9 @@ void AppView::OnResuming(const IInspectable& sender, const IInspectable& args)
     // and state are persisted when resuming from suspend. Note that this event
     // does not occur if the app was previously terminated.
 
-    if (m_main)
+    if (main)
     {
-        m_main->LoadAppState();
+        main->LoadAppState();
     }
 }
 
@@ -166,12 +157,12 @@ void AppView::OnResuming(const IInspectable& sender, const IInspectable& args)
 
 void AppView::OnVisibilityChanged(const CoreWindow& sender, const VisibilityChangedEventArgs& args)
 {
-    m_windowVisible = args.Visible();
+    is_window_visible = args.Visible();
 }
 
 void AppView::OnWindowClosed(const CoreWindow& sender, const CoreWindowEventArgs& args)
 {
-    m_windowClosed = true;
+    is_window_closed = true;
 }
 
 

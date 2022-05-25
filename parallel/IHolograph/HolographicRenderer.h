@@ -26,9 +26,9 @@ class HolographicRenderer :
 public:
     HolographicRenderer(
         Engine& core,
-        Shared<GfxDevResources> deviceResources,
+        Shared<GfxDevResources> dev_resources,
         Shared<Pbr::Resources> pbr_res,
-        NativeShaderResourceViewRef skyboxTexture);
+        NativeShaderResourceViewRef skybox_tex);
 
     ~HolographicRenderer();
 
@@ -49,35 +49,30 @@ protected:
     void ReleaseEventHandlers(const HoloSpace& holospace);
 
 private:
-    Shared<EntityStore> m_entityStore;
-    Shared<HolographicScene> m_holoScene;
-
-    One<SkyboxRenderer> m_skyboxRenderer;
-
-    ArrayMap<float, TextRenderer> m_textRenderers;
-    One<QuadRenderer> m_quadRenderer;
-
-    Shared<Pbr::Resources> pbr_res;
-
-    NativeEventToken m_cameraAddedToken{};
-    NativeEventToken m_cameraRemovedToken{};
-
-    Shared<GfxDevResources> dev_res;
-
-    TextRenderer* GetTextRendererForFontSize(float fontSize);
-
+    Shared<EntityStore>				entity_store;
+    Shared<HolographicScene>		holo_scene;
+    One<SkyboxRenderer>				skybox_rend;
+    ArrayMap<float, TextRenderer>	text_rend;
+    One<QuadRenderer>				quad_rend;
+    Shared<Pbr::Resources>			pbr_res;
+    NativeEventToken				camera_added_event;
+    NativeEventToken				camera_removed_event;
+    Shared<GfxDevResources>			dev_res;
+	
+    TextRenderer* GetTextRendererForFontSize(float font_size);
+	
     bool RenderAtCameraPose(
-        GfxCamResources *pCameraResources,
-        const SpatialCoordinateSystem& coordinateSystem,
+        GfxCamResources *cam_resources,
+        const SpatialCoordinateSystem& coord_system,
         HoloFramePred& prediction,
-        const HoloCamRendParams& renderingParameters,
-        const HoloCamPose& cameraPose);
-
+        const HoloCamRendParams& rend_params,
+        const HoloCamPose& cam_pose);
+	
     // Asynchronously creates resources for new holographic cameras.
     void OnCameraAdded(
         const HoloSpace& sender,
         const HoloSpaceCameraAddedEventArgs& args);
-
+	
     // Synchronously releases resources for holographic cameras that are no longer
     // attached to the system.
     void OnCameraRemoved(

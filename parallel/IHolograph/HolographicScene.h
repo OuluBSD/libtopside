@@ -16,7 +16,7 @@ public:
 
     virtual void OnPredictionUpdated(
         PredictionUpdateReason reason,
-        const SpatialCoordinateSystem& coordinateSystem,
+        const SpatialCoordinateSystem& coord_system,
         const HoloFramePred& prediction) = 0;
     
 };
@@ -53,15 +53,15 @@ protected:
     void OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason);
 
 private:
-    mutable std::shared_mutex			m_mutex;
-    SpatialStageFrameOfReference		m_stageFrameOfReference{ nullptr };
-    SpatialStationaryFrameOfReference	m_stationaryFrameOfReference{ nullptr };
-    NativeEventToken					m_spatialStageCurrentChanged;
+    mutable std::shared_mutex			lock;
+    SpatialStageFrameOfReference		stage_frame_of_reference = 0;
+    SpatialStationaryFrameOfReference	stationary_frame_of_reference = 0;
+    NativeEventToken					spatial_stage_current_changed;
 
-    HoloSpace							m_holospace;
-    HoloFrame							m_currentFrame;
+    HoloSpace							holospace;
+    HoloFrame							current_frame;
 
-    ListenerCollection<IPredictionUpdateListener> m_predictionUpdatelisteners;
+    ListenerCollection<IPredictionUpdateListener>	prediction_update_listeners;
     
 };
 

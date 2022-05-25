@@ -11,19 +11,19 @@ class SkyboxRenderer
 {
 public:
     SkyboxRenderer(
-        Shared<GfxDevResources> deviceResources,
-        ID3D11ShaderResourceView* skyboxTexture);
+        Shared<GfxDevResources> dev_resources,
+        NativeShaderResourceViewRef skybox_tex);
 
     ~SkyboxRenderer() = default;
 
     void SetTexture(
-        ID3D11ShaderResourceView* skyboxTexture);
+        NativeShaderResourceViewRef skybox_tex);
 
     void SetViewProjection(
-        const mat4& cameraToViewLeft,
-        const mat4& viewToProjLeft,
-        const mat4& cameraToViewRight,
-        const mat4& viewToProjRight);
+        const mat4& camera_to_view_left,
+        const mat4& view_to_proj_left,
+        const mat4& camera_to_view_right,
+        const mat4& view_to_proj_right);
         
     void CreateDeviceDependentResources();
     void ReleaseDeviceDependentResources();
@@ -33,21 +33,18 @@ public:
     void Unbind();
 
 private:
-    Shared<GfxDevResources> dev_res;
-
-    NativeShaderResourceViewRef		m_skyboxTexture;
-    NativeVertexShaderRef			m_vertexShader;
-    NativeGeometryShaderRef			m_geometryShader;
-    NativePixelShaderRef			m_pixelShader;
-    NativeSamplerStateRef			m_samplerState;
-    NativeDepthStencilStateRef		m_depthStencilState;
-    NativeBufferRef					m_vertexBuffer;
-    NativeBufferRef					m_constantBuffer;
-    NativeInputLayoutRef			m_inputLayout;
-
-    NativeDepthStencilStateRef		m_depthStencilState_Backup;
-    
-    uint32							m_stencilRef_Backup;
+    Shared<GfxDevResources>			dev_res;
+    NativeShaderResourceViewRef		skybox_tex;
+    NativeVertexShaderRef			vertex_shader;
+    NativeGeometryShaderRef			geom_shader;
+    NativePixelShaderRef			pixel_shader;
+    NativeSamplerStateRef			sampler_state;
+    NativeDepthStencilStateRef		depth_stencil_state;
+    NativeBufferRef					vertex_buffer;
+    NativeBufferRef					constant_buffer;
+    NativeInputLayoutRef			input_layout;
+	NativeDepthStencilStateRef		depth_stencil_state_backup;
+    uint32							stencil_backup;
     
 };
 

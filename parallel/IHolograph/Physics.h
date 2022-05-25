@@ -11,24 +11,24 @@ namespace SpatialInputUtilities::Physics {
 // wrist. The angular velocity from snapping will contribute to the linear velocity of the object being thrown
 // proportional to how far the object is from the pivot location (SpatialInteractionSourceLocation).
 static inline Optional<vec3> GetVelocityNearSourceLocation(
-    SpatialSourceLocation const& sourceLocation,
-    vec3 const& positionNearSourceLocation)
+    const SpatialSourceLocation& source_location,
+    const vec3& position_near_source_location)
 {
-    const IReference<float3> graspVelocity = sourceLocation.Velocity();
-    const IReference<float3> graspPosition = sourceLocation.Position();
-    const IReference<float3> angular_velocity = sourceLocation.AngularVelocity();
+    const IReference<vec3> grasp_velocity = source_location.Velocity();
+    const IReference<vec3> grasp_position = source_location.Position();
+    const IReference<vec3> angular_velocity = source_location.AngularVelocity();
 
-    if (!graspVelocity || !graspPosition || !angular_velocity)
+    if (!grasp_velocity || !grasp_position || !angular_velocity)
     {
         return {};
     }
 
-    // Compute the tangential velocity at positionNearSourceLocation due to angular velocity.
-    const float3 positionNearSourceLocationOffset = positionNearSourceLocation - graspPosition.Value();
-    const float3 angularTangentialVelocity = cross(angular_velocity.Value(), positionNearSourceLocationOffset);
+    // Compute the tangential velocity at position_near_source_location due to angular velocity.
+    const vec3 position_near_source_locationOffset = position_near_source_location - grasp_position.Value();
+    const vec3 angularTangentialVelocity = cross(angular_velocity.Value(), position_near_source_locationOffset);
 
     // Combine the tangential velocity with the velocity to get the combined velocity.
-    return graspVelocity.Value() + angularTangentialVelocity;
+    return grasp_velocity.Value() + angularTangentialVelocity;
 }
 
 }

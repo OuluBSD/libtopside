@@ -5,14 +5,14 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 TextRenderer::TextRenderer(
-    Shared<GfxDevResources> deviceResources,
-    uint32_t textureWidth,
-    uint32_t textureHeight,
-    float fontSize) :
-    dev_res(std::move(deviceResources)),
-    m_textureWidth(textureWidth),
-    m_textureHeight(textureHeight),
-    m_fontSize(fontSize)
+    Shared<GfxDevResources> dev_resources,
+    uint32 tex_width,
+    uint32 tex_height,
+    float font_size) :
+    dev_res(std::move(dev_resources)),
+    tex_width(tex_width),
+    tex_height(tex_height),
+    font_size(font_size)
 {
     CreateDeviceDependentResources();
 }
@@ -22,81 +22,81 @@ TextRenderer::~TextRenderer() = default;
 void TextRenderer::RenderTextOffscreen(const String& str)
 {
     // Clear the off-screen render target.
-    dev_res->GetD3DDeviceContext()->ClearRenderTargetView(m_renderTargetView.Get(), Colors::Transparent);
+    dev_res->GetD3DDeviceContext()->ClearRenderTargetView(render_target_view.Get(), Colors::Transparent);
 
     // Begin drawing with D2D.
-    m_d2dRenderTarget->BeginDraw();
+    rend2d_tgt->BeginDraw();
 
     // Create a text layout to match the screen.
-    Microsoft::WRL::ComPtr<IDWriteTextLayout> textLayout;
+    Microsoft::WRL::ComPtr<IDWriteTextLayout> text_layout;
     dev_res->GetDWriteFactory()->CreateTextLayout(
         str.c_str(),
-        static_cast<UINT32>(str.length()),
-        m_textFormat.Get(),
-        (float)m_textureWidth,
-        (float)m_textureHeight,
-        &textLayout
+        static_cast<uint32>(str.length()),
+        text_format.Get(),
+        (float)tex_width,
+        (float)tex_height,
+        &text_layout
     );
 
     // Get the text metrics from the text layout.
     DWRITE_TEXT_METRICS metrics;
-    DirectX::ThrowIfFailed(textLayout->GetMetrics(&metrics));
+    Holo::ThrowIfFailed(text_layout->GetMetrics(&metrics));
 
     // In this example, we position the text in the center of the off-screen render target.
-    D2D1::Matrix3x2F screenTranslation = D2D1::Matrix3x2F::Translation(
-        m_textureWidth * 0.5f,
-        m_textureHeight * 0.5f + metrics.height * 0.5f
+    D2D1::Matrix3x2F screen_translation = D2D1::Matrix3x2F::Translation(
+        tex_width * 0.5f,
+        tex_height * 0.5f + metrics.height * 0.5f
     );
-    m_whiteBrush->SetTransform(screenTranslation);
+    white_brush->SetTransform(screen_translation);
 
     // Render the text using DirectWrite.
-    m_d2dRenderTarget->DrawTextLayout(
+    rend2d_tgt->DrawTextLayout(
         D2D1::Point2F(0.0f, 0.0f),
-        textLayout.Get(),
-        m_whiteBrush.Get()
+        text_layout.Get(),
+        white_brush.Get()
     );
 
     // End drawing with D2D.
-    HRESULT hr = m_d2dRenderTarget->EndDraw();
+    HRESULT hr = rend2d_tgt->EndDraw();
     if (hr != D2DERR_RECREATE_TARGET)
     {
         // Catch errors from D2D.
-        DirectX::ThrowIfFailed(hr);
+        Holo::ThrowIfFailed(hr);
     }
 }
 
 void TextRenderer::ReleaseDeviceDependentResources()
 {
-    m_texture.Reset();
-    m_shaderResourceView.Reset();
-    m_pointSampler.Reset();
-    m_renderTargetView.Reset();
-    m_d2dRenderTarget.Reset();
-    m_whiteBrush.Reset();
-    m_textFormat.Reset();
+    texture.Reset();
+    shader_resource_view.Reset();
+    point_sampler.Reset();
+    render_target_view.Reset();
+    rend2d_tgt.Reset();
+    white_brush.Reset();
+    text_format.Reset();
 }
 
 void TextRenderer::CreateDeviceDependentResources()
 {
     // Create a default sampler state, which will use point sampling.
     const CD3D11_SAMPLER_DESC desc{ CD3D11_DEFAULT{} };
-    DirectX::ThrowIfFailed(dev_res->GetD3DDevice()->CreateSamplerState(&desc, &m_pointSampler));
+    Holo::ThrowIfFailed(dev_res->GetD3DDevice()->CreateSamplerState(&desc, &point_sampler));
 
     // Create the texture that will be used as the offscreen render target.
     const CD3D11_TEXTURE2D_DESC textureDesc{
         DXGI_FORMAT_B8G8R8A8_UNORM,
-        m_textureWidth,
-        m_textureHeight,
+        tex_width,
+        tex_height,
         1,
         1,
         D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET
     };
-    DirectX::ThrowIfFailed(dev_res->GetD3DDevice()->CreateTexture2D(&textureDesc, nullptr, &m_texture));
+    Holo::ThrowIfFailed(dev_res->GetD3DDevice()->CreateTexture2D(&textureDesc, nullptr, &texture));
 
     // Create read and write views for the offscreen render target.
-    DirectX::ThrowIfFailed(dev_res->GetD3DDevice()->CreateShaderResourceView(m_texture.Get(), nullptr, &m_shaderResourceView));
+    Holo::ThrowIfFailed(dev_res->GetD3DDevice()->CreateShaderResourceView(texture.Get(), nullptr, &shader_resource_view));
 
-    DirectX::ThrowIfFailed(dev_res->GetD3DDevice()->CreateRenderTargetView(m_texture.Get(), nullptr, &m_renderTargetView));
+    Holo::ThrowIfFailed(dev_res->GetD3DDevice()->CreateRenderTargetView(texture.Get(), nullptr, &render_target_view));
 
     // In this example, we are using D2D and DirectWrite; so, we need to create a D2D render target as well.
     D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
@@ -107,28 +107,28 @@ void TextRenderer::CreateDeviceDependentResources()
     );
 
     // The DXGI surface is used to create the render target.
-    Microsoft::WRL::ComPtr<IDXGISurface> dxgiSurface;
-    DirectX::ThrowIfFailed(m_texture.As(&dxgiSurface));
-    DirectX::ThrowIfFailed(dev_res->GetD2DFactory()->CreateDxgiSurfaceRenderTarget(dxgiSurface.Get(), &props, &m_d2dRenderTarget));
+    NativeGfxLibSurfaceRef gfxlib_surface;
+    Holo::ThrowIfFailed(texture.As(&gfxlib_surface));
+    Holo::ThrowIfFailed(dev_res->GetD2DFactory()->CreateDxgiSurfaceRenderTarget(gfxlib_surface.Get(), &props, &rend2d_tgt));
 
     // Create a solid color brush that will be used to render the text.
-    DirectX::ThrowIfFailed(m_d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Cornsilk), &m_whiteBrush));
+    Holo::ThrowIfFailed(rend2d_tgt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Cornsilk), &white_brush));
 
     // This is where we format the text that will be written on the render target.
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetDWriteFactory()->CreateTextFormat(
             "Consolas",
             NULL,
             DWRITE_FONT_WEIGHT_NORMAL,
             DWRITE_FONT_STYLE_NORMAL,
             DWRITE_FONT_STRETCH_NORMAL,
-            m_fontSize,
+            font_size,
             "",
-            m_textFormat.ReleaseAndGetAddressOf()
+            text_format.ReleaseAndGetAddressOf()
         )
     );
-    DirectX::ThrowIfFailed(m_textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
-    DirectX::ThrowIfFailed(m_textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
+    Holo::ThrowIfFailed(text_format->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
+    Holo::ThrowIfFailed(text_format->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
 }
 
 

@@ -8,21 +8,14 @@ NAMESPACE_PARALLEL_BEGIN
 // SpatialInteraction event listener
 class ISpatialInteractionListener abstract
 {
+	
 public:
-    virtual void OnSourceDetected(
-        const SpatialSourceEventArgs& args) {};
-
-    virtual void OnSourceLost(
-        const SpatialSourceEventArgs& args) {};
-
-    virtual void OnSourcePressed(
-        const SpatialSourceEventArgs& args) {};
-
-    virtual void OnSourceUpdated(
-        const SpatialSourceEventArgs& args) {};
-
-    virtual void OnSourceReleased(
-        const SpatialSourceEventArgs& args) {};
+    virtual void OnSourceDetected(const SpatialSourceEventArgs& args) {};
+    virtual void OnSourceLost(const SpatialSourceEventArgs& args) {};
+    virtual void OnSourcePressed(const SpatialSourceEventArgs& args) {};
+    virtual void OnSourceUpdated(const SpatialSourceEventArgs& args) {};
+    virtual void OnSourceReleased(const SpatialSourceEventArgs& args) {};
+    
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,18 +28,18 @@ public:
 
     void AddListener(Shared<ISpatialInteractionListener> listener)
     {
-        m_spatialInteractionListeners.Add(std::move(listener));
+        spatial_interaction_listeners.Add(std::move(listener));
     }
 
     void RemoveListener(Shared<ISpatialInteractionListener> listener)
     {
-        m_spatialInteractionListeners.Remove(std::move(listener));
+        spatial_interaction_listeners.Remove(std::move(listener));
     }
 
     ISpatialInteractionManager GetInteractionManager() const
     {
-        fail_fast_if(m_spatialInteractionManager == nullptr);
-        return m_spatialInteractionManager;
+        fail_fast_if(spatial_interaction_manager == nullptr);
+        return spatial_interaction_manager;
     }
 
 protected:
@@ -54,15 +47,15 @@ protected:
     void Uninitialize() override;
 
 private:
-    ISpatialInteractionManager m_spatialInteractionManager{ nullptr };
+    ISpatialInteractionManager spatial_interaction_manager = 0;
 
     enum SourceEvent {
         Detected, Pressed, Updated, Released, Lost, Count
     };
 
-    NativeEventToken m_sourceTokens[SourceEvent::Count];
+    NativeEventToken source_tokens[SourceEvent::Count];
 
-    ListenerCollection<ISpatialInteractionListener> m_spatialInteractionListeners;
+    ListenerCollection<ISpatialInteractionListener> spatial_interaction_listeners;
 
     void BindEventHandlers();
     void ReleaseEventHandlers();

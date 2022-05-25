@@ -6,64 +6,62 @@ NAMESPACE_PARALLEL_BEGIN
 
 namespace {
 
-constexpr PCSTR TouchIndicatorMaterialName = "TouchIndicator";
+constexpr const char* TouchIndicatorMaterialName = "TouchIndicator";
 
 // Decompose, interpolate each component, and then recompose.
 void InterpolateNode(const Pbr::Node& min, const Pbr::Node& max, float t, Pbr::Node& result)
 {
-    vec4 minScale, minRot, minTrans;
-    vec4 maxScale, maxRot, maxTrans;
-    if (XMMatrixDecompose(&minScale, &minRot, &minTrans, min.GetTransform()) &&
-        XMMatrixDecompose(&maxScale, &maxRot, &maxTrans, max.GetTransform()))
+    vec4 min_scale, min_rot, min_trans;
+    vec4 max_scale, max_rot, max_trans;
+    if (XMMatrixDecompose(&min_scale, &min_rot, &min_trans, min.GetTransform()) &&
+        XMMatrixDecompose(&max_scale, &max_rot, &max_trans, max.GetTransform()))
     {
-        const mat4 interpolatedMatrix =
-            XMMatrixScalingFromVector(XMVectorLerp(minScale, maxScale, t)) *
-            XMMatrixRotationQuaternion(XMQuaternionSlerp(minRot, maxRot, t)) *
-            XMMatrixTranslationFromVector(XMVectorLerp(minTrans, maxTrans, t));
-        result.SetTransform(interpolatedMatrix);
+        const mat4 interpolated_matrix =
+            XMMatrixScalingFromVector(XMVectorLerp(min_scale, max_scale, t)) *
+            XMMatrixRotationQuaternion(XMQuaternionSlerp(min_rot, max_rot, t)) *
+            XMMatrixTranslationFromVector(XMVectorLerp(min_trans, max_trans, t));
+        result.SetTransform(interpolated_matrix);
     }
 }
 
-void AddTouchpadTouchIndicator(Pbr::Model& controllerModel, Pbr::Resources& pbr_res)
+void AddTouchpadTouchIndicator(Pbr::Model& ctrl_model, Pbr::Resources& pbr_res)
 {
     // Create a material for the touch indicator. Use emissive color so it is visible in all light conditions.
-    Shared<Pbr::Material> touchIndicatorMaterial = Pbr::Material::CreateFlat(
+    Shared<Pbr::Material> touch_indi_material = Pbr::Material::CreateFlat(
         pbr_res,
         Colors::Black /* base color */,
         0.5f /* roughness */,
         0.0f /* metallic */,
         Colors::DarkSlateBlue /* emissive */);
-    touchIndicatorMaterial->Name = TouchIndicatorMaterialName;
-    touchIndicatorMaterial->Hidden = true;
+    touch_indi_material->name = TouchIndicatorMaterialName;
+    touch_indi_material->hidden = true;
 
     // Add a touch indicator primitive parented to the TOUCH node. This material will be hidden or visible based on the touch state.
-    for (auto i = 0; i < controllerModel.GetNodeCount(); i++)
+    for (auto i = 0; i < ctrl_model.GetNodeCount(); i++)
     {
-        Pbr::Node& node = controllerModel.GetNode(i);
+        Pbr::Node& node = ctrl_model.GetNode(i);
         if (node.Name == "TOUCH") // Add a touch indicator sphere to the TOUCH node.
         {
             // Create a new node parented to the TOUCH node. This node will positioned at the correct place.
-            const Pbr::Node& touchIndicatorNode = controllerModel.AddNode(XMMatrixIdentity(), node.Index, "TouchIndicator");
+            const Pbr::Node& touch_indi_node = ctrl_model.AddNode(XMMatrixIdentity(), node.index, "TouchIndicator");
 
             // Create a sphere primitive which is rooted on the TOUCH node.
-            Pbr::PrimitiveBuilder touchSphere;
-            touchSphere.AddSphere(0.004f /* Diameter */, 5 /* Tessellation */, touchIndicatorNode.Index);
+            Pbr::PrimitiveBuilder touch_sphere;
+            touch_sphere.AddSphere(0.004f /* Diameter */, 5 /* Tessellation */, touch_indi_node.index);
 
-            controllerModel.AddPrimitive(Pbr::Primitive(pbr_res, touchSphere, touchIndicatorMaterial));
+            ctrl_model.AddPrimitive(Pbr::Primitive(pbr_res, touch_sphere, touch_indi_material));
         }
     }
 }
+
 }
 
-namespace ControllerRendering
-{
-ControllerModelKey GetControllerModelKey(SpatialInteractionSource const& source)
-{
-    if (!source.Controller())
-    {
+namespace ControllerRendering {
+
+ControllerModelKey GetControllerModelKey(const SpatialInteractionSource& source) {
+    if (!source.Controller()) {
         return {};
     }
-
     return std::make_tuple(source.Controller().ProductId(), source.Controller().VendorId(), source.Controller().Version(), source.Handedness());
 }
 
@@ -77,8 +75,8 @@ std::future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsy
         co_return nullptr;
     }
 
-    IRandomAccessStreamWithContentType modelStream = co_await controller.TryGetRenderableModelAsync();
-    if (modelStream == nullptr) // Mesh data is optional. If not available, a null stream is returned.
+    IRandomAccessStreamWithContentType model_stream = co_await controller.TryGetRenderableModelAsync();
+    if (model_stream == nullptr) // Mesh data is optional. If not available, a null stream is returned.
     {
         co_return nullptr;
     }
@@ -87,18 +85,18 @@ std::future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsy
     ResumeBackground();
 
     // Read all data out of the stream.
-    DataReader dr(modelStream.GetInputStreamAt(0));
-    const uint32_t readAmount = co_await dr.LoadAsync(static_cast<unsigned int>(modelStream.Size()));
+    DataReader dr(model_stream.GetInputStreamAt(0));
+    uint32 read_amount = co_await dr.LoadAsync(static_cast<unsigned int>(model_stream.Size()));
     const IBuffer buffer = dr.DetachBuffer();
 
-    uint8_t* rawBuffer;
-    Holo::CheckResult(buffer.as<::Windows::Storage::Streams::IBufferByteAccess>()->Buffer(&rawBuffer));
+    uint8* raw_buffer;
+    Holo::CheckResult(buffer.as<::Windows::Storage::Streams::IBufferByteAccess>()->Buffer(&raw_buffer));
 
     // Load the binary controller model data into a Pbr::Model
-    const Shared<Pbr::Model> model = Gltf::FromGltfBinary(*pbr_res, rawBuffer, buffer.Length());
+    const Shared<Pbr::Model> model = Gltf::FromGltfBinary(*pbr_res, raw_buffer, buffer.Length());
 
     // Give the model a debug friendly name.
-    model->Name = source.Handedness() == SpatialInteractionSourceHandedness::Left ? "Left" :
+    model->name = source.Handedness() == SpatialInteractionSourceHandedness::Left ? "Left" :
                   source.Handedness() == SpatialInteractionSourceHandedness::Right ? "Right" : "Unspecified";
 
     // Add a touchpad touch indicator node and primitive/material to the model.
@@ -107,64 +105,63 @@ std::future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsy
     co_return model;
 }
 
-ArticulateValues GetArticulateValues(SpatialSourceState const& sourceState)
+ArticulateValues GetArticulateValues(constSpatialSourceState& src_state)
 {
-    ArticulateValues articulateValues;
+    ArticulateValues arti_vals;
 
-    articulateValues.GraspPress = sourceState.IsGrasped() ? 1.0f : 0.0f;
-    articulateValues.MenuPress = sourceState.IsMenuPressed() ? 1.0f : 0.0f;
-    articulateValues.SelectPress = (float)sourceState.SelectPressedValue();
-    articulateValues.ThumbstickPress = sourceState.ControllerProperties().IsThumbstickPressed() ? 1.0f : 0.0f;
-    articulateValues.ThumbstickX = (float)(sourceState.ControllerProperties().ThumbstickX() / 2) + 0.5f;
-    articulateValues.ThumbstickY = (float)(sourceState.ControllerProperties().ThumbstickY() / 2) + 0.5f;
-    articulateValues.TouchpadPress = sourceState.ControllerProperties().IsTouchpadPressed() ? 1.0f : 0.0f;
+    arti_vals.grasp_press = src_state.IsGrasped() ? 1.0f : 0.0f;
+    arti_vals.menu_press = src_state.IsMenuPressed() ? 1.0f : 0.0f;
+    arti_vals.select_press = (float)src_state.SelectPressedValue();
+    arti_vals.thumbstick_press = src_state.ControllerProperties().IsThumbstickPressed() ? 1.0f : 0.0f;
+    arti_vals.thumbstick_x = (float)(src_state.ControllerProperties().thumbstick_x() / 2) + 0.5f;
+    arti_vals.thumbstick_y = (float)(src_state.ControllerProperties().thumbstick_y() / 2) + 0.5f;
+    arti_vals.touchpad_press = src_state.ControllerProperties().IsTouchpadPressed() ? 1.0f : 0.0f;
 
     // If the the touchpad is pressed, use the touch location to control touchpad tilting, otherwise keep it centered.
-    articulateValues.TouchIndicatorVisible = sourceState.ControllerProperties().IsTouchpadTouched();
-    articulateValues.TouchpadTouchX = (float)(sourceState.ControllerProperties().TouchpadX() / 2) + 0.5f;
-    articulateValues.TouchpadTouchY = (float)(sourceState.ControllerProperties().TouchpadY() / 2) + 0.5f;
-    articulateValues.TouchpadPressX = sourceState.ControllerProperties().IsTouchpadPressed() ? articulateValues.TouchpadTouchX : 0.5f;
-    articulateValues.TouchpadPressY = sourceState.ControllerProperties().IsTouchpadPressed() ? articulateValues.TouchpadTouchY : 0.5f;
+    arti_vals.touch_indicator_visible = src_state.ControllerProperties().IsTouchpadTouched();
+    arti_vals.touchpad_touch_x = (float)(src_state.ControllerProperties().TouchpadX() / 2) + 0.5f;
+    arti_vals.touchpad_touch_y = (float)(src_state.ControllerProperties().TouchpadY() / 2) + 0.5f;
+    arti_vals.touchpad_press_x = src_state.ControllerProperties().IsTouchpadPressed() ? arti_vals.touchpad_touch_x : 0.5f;
+    arti_vals.touchpad_press_y = src_state.ControllerProperties().IsTouchpadPressed() ? arti_vals.touchpad_touch_y : 0.5f;
 
-    return articulateValues;
+    return arti_vals;
 }
 
-void ArticulateControllerModel(ArticulateValues const& articulateValues, Pbr::Model& model)
+void ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
 {
     // Every articulatable node in the model has three children, two which define the extents of the motion and one (VALUE) which holds the interpolated value.
     // In some cases, there nodes are nested to create combined transformations, like the X and Y movements of the thumbstick.
-    auto interpolateNode = [&](Pbr::Node& rootNode, PCSTR minName, PCSTR maxName, float t)
+    auto interpolate_node = [&](Pbr::Node& root_node, const char* min_name, const char* max_name, float t)
     {
-        const std::optional<Pbr::NodeIndex> minChild = model.FindFirstNode(minName, rootNode.Index);
-        const std::optional<Pbr::NodeIndex> maxChild = model.FindFirstNode(maxName, rootNode.Index);
-        const std::optional<Pbr::NodeIndex> valueChild = model.FindFirstNode("VALUE", rootNode.Index);
-        if (minChild && maxChild && valueChild)
-        {
-            InterpolateNode(model.GetNode(minChild.value()), model.GetNode(maxChild.value()), t, model.GetNode(valueChild.value()));
+        const Optional<Pbr::NodeIndex> min_child = model.FindFirstNode(min_name, root_node.index);
+        const Optional<Pbr::NodeIndex> max_child = model.FindFirstNode(max_name, root_node.index);
+        const Optional<Pbr::NodeIndex> value_child = model.FindFirstNode("VALUE", root_node.index);
+        if (min_child && max_child && value_child) {
+            InterpolateNode(model.GetNode(min_child.value()), model.GetNode(max_child.value()), t, model.GetNode(value_child.value()));
         }
     };
 
-    for (uint32_t i = 0; i < model.GetNodeCount(); i++)
+    for (uint32 i = 0; i < model.GetNodeCount(); i++)
     {
         Pbr::Node& node = model.GetNode(i);
-        if (node.Name == "GRASP") { interpolateNode(node, "UNPRESSED", "PRESSED", articulateValues.GraspPress); }
-        else if (node.Name == "MENU") { interpolateNode(node, "UNPRESSED", "PRESSED", articulateValues.MenuPress); }
-        else if (node.Name == "SELECT") { interpolateNode(node, "UNPRESSED", "PRESSED", articulateValues.SelectPress); }
-        else if (node.Name == "THUMBSTICK_PRESS") { interpolateNode(node, "UNPRESSED", "PRESSED", articulateValues.ThumbstickPress); }
-        else if (node.Name == "THUMBSTICK_X") { interpolateNode(node, "MIN", "MAX", articulateValues.ThumbstickX); }
-        else if (node.Name == "THUMBSTICK_Y") { interpolateNode(node, "MAX", "MIN", articulateValues.ThumbstickY); }
-        else if (node.Name == "TOUCHPAD_PRESS") { interpolateNode(node, "UNPRESSED", "PRESSED", articulateValues.TouchpadPress); }
-        else if (node.Name == "TOUCHPAD_PRESS_X") { interpolateNode(node, "MIN", "MAX", articulateValues.TouchpadPressX); }
-        else if (node.Name == "TOUCHPAD_PRESS_Y") { interpolateNode(node, "MAX", "MIN", articulateValues.TouchpadPressY); }
-        else if (node.Name == "TOUCHPAD_TOUCH_X") { interpolateNode(node, "MIN", "MAX", articulateValues.TouchpadTouchX); }
-        else if (node.Name == "TOUCHPAD_TOUCH_Y") { interpolateNode(node, "MAX", "MIN", articulateValues.TouchpadTouchY); }
+        if (node.Name == "GRASP") { interpolate_node(node, "UNPRESSED", "PRESSED", arti_vals.grasp_press); }
+        else if (node.Name == "MENU") { interpolate_node(node, "UNPRESSED", "PRESSED", arti_vals.menu_press); }
+        else if (node.Name == "SELECT") { interpolate_node(node, "UNPRESSED", "PRESSED", arti_vals.select_press); }
+        else if (node.Name == "THUMBSTICK_PRESS") { interpolate_node(node, "UNPRESSED", "PRESSED", arti_vals.thumbstick_press); }
+        else if (node.Name == "THUMBSTICK_X") { interpolate_node(node, "MIN", "MAX", arti_vals.thumbstick_x); }
+        else if (node.Name == "THUMBSTICK_Y") { interpolate_node(node, "MAX", "MIN", arti_vals.thumbstick_y); }
+        else if (node.Name == "TOUCHPAD_PRESS") { interpolate_node(node, "UNPRESSED", "PRESSED", arti_vals.touchpad_press); }
+        else if (node.Name == "TOUCHPAD_PRESS_X") { interpolate_node(node, "MIN", "MAX", arti_vals.touchpad_press_x); }
+        else if (node.Name == "TOUCHPAD_PRESS_Y") { interpolate_node(node, "MAX", "MIN", arti_vals.touchpad_press_y); }
+        else if (node.Name == "TOUCHPAD_TOUCH_X") { interpolate_node(node, "MIN", "MAX", arti_vals.touchpad_touch_x); }
+        else if (node.Name == "TOUCHPAD_TOUCH_Y") { interpolate_node(node, "MAX", "MIN", arti_vals.touchpad_touch_y); }
     }
 
     // Show or hide touch indicator by showing or hiding the material exclusively used by the touch indicator.
-    for (uint32_t i = 0; i < model.GetPrimitiveCount(); i++)
+    for (uint32 i = 0; i < model.GetPrimitiveCount(); i++)
     {
-        Shared<Pbr::Material>& primitiveMaterial = model.GetPrimitive(i).GetMaterial();
-        if (primitiveMaterial->Name == TouchIndicatorMaterialName) { primitiveMaterial->Hidden = !articulateValues.TouchIndicatorVisible; }
+        Shared<Pbr::Material>& prim_material = model.GetPrimitive(i).GetMaterial();
+        if (prim_material->name == TouchIndicatorMaterialName) { prim_material->hidden = !arti_vals.touch_indicator_visible; }
     }
 }
 
@@ -172,33 +169,33 @@ std::future<Shared<const Pbr::Model>> ControllerModelCache::TryGetControllerMode
     Shared<Pbr::Resources> pbr_res,
     SpatialInteractionSource source)
 {
-    const ControllerRendering::ControllerModelKey modelKey = ControllerRendering::GetControllerModelKey(source);
+    const ControllerRendering::ControllerModelKey model_key = ControllerRendering::GetControllerModelKey(source);
 
     // Check the cache for the model. If one is found, return it.
     {
-        std::scoped_lock<std::mutex> guard{ m_lock };
-        auto controllerMeshIt = m_controllerMeshes.find(modelKey);
-        if (controllerMeshIt != std::end(m_controllerMeshes))
+        Mutex::Lock guard(lock);
+        auto ctrl_mesh_it = ctrl_meshes.find(model_key);
+        if (ctrl_mesh_it != std::end(ctrl_meshes))
         {
-            co_return controllerMeshIt->second;
+            co_return ctrl_mesh_it->second;
         }
     }
 
-    const Shared<const Pbr::Model> controllerModel = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
-    if (controllerModel)
+    const Shared<const Pbr::Model> ctrl_model = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
+    if (ctrl_model)
     {
-        std::scoped_lock<std::mutex> guard{ m_lock };
-        m_controllerMeshes[modelKey] = std::move(controllerModel);
+        Mutex::Lock guard(lock);
+        ctrl_meshes[model_key] = std::move(ctrl_model);
     }
 
-    co_return controllerModel;
+    co_return ctrl_model;
 }
 
 
 void ControllerModelCache::ReleaseDeviceDependentResources()
 {
-    std::scoped_lock<std::mutex> guard{ m_lock };
-    m_controllerMeshes.clear();
+    Mutex::Lock guard(lock);
+    ctrl_meshes.clear();
 }
 
 }

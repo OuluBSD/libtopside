@@ -9,9 +9,9 @@ class AppView sealed : public winrt::implements<AppView, IFrameworkView>
 {
 public:
     // IFrameworkView methods.
-    void Initialize(const CoreApplicationView& applicationView);
-    void SetWindow(CoreWindow const& window);
-    void Load(winrt::hstring const& entryPoint);
+    void Initialize(const CoreApplicationView& app_view);
+    void SetWindow(const CoreWindow& window);
+    void Load(const NativeString& entry_point);
     void Run();
     void Uninitialize();
 
@@ -31,21 +31,22 @@ protected:
     void OnPointerPressed(const CoreWindow& sender, const PointerEventArgs& args);
 
 private:
-    One<DemoRoomMain>					m_main;
+    One<DemoRoomMain>					main;
 
-    bool								m_windowClosed  = false;
-    bool								m_windowVisible = true;
+    bool								is_window_closed  = false;
+    bool								is_window_visible = true;
 
     // Event registration tokens.
-    NativeEventToken					m_suspendingEventToken;
-    NativeEventToken					m_resumingEventToken;
-    NativeEventToken					m_keyDownEventToken;
-    NativeEventToken					m_pointerPressedEventToken;
-    NativeEventToken					m_windowClosedEventToken;
-    NativeEventToken					m_visibilityChangedEventToken;
+    NativeEventToken					suspending_event;
+    NativeEventToken					resuming_event;
+    NativeEventToken					keydown_event;
+    NativeEventToken					pointer_pressed_event;
+    NativeEventToken					window_closed_event;
+    NativeEventToken					visibility_changed_event;
 
     // The holographic space the app will use for rendering.
-    HoloSpace					m_holospace = nullptr;
+    HoloSpace							holospace = 0;
+    
 };
 
 class AppViewSource sealed : public winrt::implements<AppViewSource, IFrameworkViewSource>
@@ -55,7 +56,7 @@ public:
     IFrameworkView CreateView();
 
 private:
-    AppView holographicView;
+    AppView holographic_view;
     
 };
 

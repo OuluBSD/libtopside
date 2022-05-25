@@ -28,7 +28,7 @@ public:
 
     // Public methods related to Direct3D devices.
     void HandleDeviceLost();
-    void RegisterDeviceNotify(IDeviceNotify* deviceNotify);
+    void RegisterDeviceNotify(IDeviceNotify* dev_notify);
     void Trim();
     void Present(HoloFrame frame);
 
@@ -45,21 +45,21 @@ public:
     template<typename RetType, typename LCallback>
     RetType						UseHolographicCameraResources(LCallback const& callback);
 
-    GfxDevice					GetD3DInteropDevice()           const { return m_d3dInteropDevice;    }
+    GfxDevice					GetD3DInteropDevice()           const { return gfx_interop_dev;    }
 
     // D3D accessors.
-    NativeGfxDeviceRef          GetD3DDevice()                  const { return m_d3dDevice.Get();     }
-    NativeGfxDeviceContextRef   GetD3DDeviceContext()           const { return m_d3dContext.Get();    }
-    D3D_FEATURE_LEVEL			GetDeviceFeatureLevel()         const { return m_d3dFeatureLevel;     }
-    bool						GetDeviceSupportsVprt()         const { return m_supportsVprt;        }
+    NativeGfxDeviceRef          GetD3DDevice()                  const { return gfx_dev.Get();     }
+    NativeGfxDeviceContextRef   GetD3DDeviceContext()           const { return gfx_ctx_dev.Get();    }
+    D3D_FEATURE_LEVEL			GetDeviceFeatureLevel()         const { return gfx_feature_level;     }
+    bool						GetDeviceSupportsVprt()         const { return supports_vprt;        }
 
     // DXGI acessors.
-    NativeGfxLibRef				GetDXGIAdapter()                const { return m_dxgiAdapter.Get();   }
+    NativeGfxLibRef				GetDXGIAdapter()                const { return gfxlib_adapter.Get();   }
 
     // D2D accessors.
-    Native2DLibRef				GetD2DFactory()                 const { return m_d2dFactory.Get();    }
-    NativeHwLibRef				GetDWriteFactory()              const { return m_dwriteFactory.Get(); }
-    NativeVrCamLibRef			GetWicImagingFactory()          const { return m_wicFactory.Get();    }
+    Native2DLibRef				GetD2DFactory()                 const { return gfx_2d_factory.Get();    }
+    NativeHwLibRef				GetDWriteFactory()              const { return gfx_hw_factory.Get(); }
+    NativeVrCamLibRef			GetWicImagingFactory()          const { return vr_camlib.Get();    }
 
 private:
     // Private methods related to the Direct3D device, and resources based on that device.
@@ -68,34 +68,34 @@ private:
     void CreateDeviceResources();
 
     // Direct3D objects.
-    NativeGfxDeviceRef						m_d3dDevice;
-    NativeGfxDeviceContextRef				m_d3dContext;
-    NativeGfxLibRef							m_dxgiAdapter;
+    NativeGfxDeviceRef						gfx_dev;
+    NativeGfxDeviceContextRef				gfx_ctx_dev;
+    NativeGfxLibRef							gfxlib_adapter;
 
     // Direct3D interop objects.
-    GfxDevice								m_d3dInteropDevice;
+    GfxDevice								gfx_interop_dev;
 
     // Direct2D factories.
-    Native2DLibRef							m_d2dFactory;
-    NativeHwLibRef							m_dwriteFactory;
-    NativeVrCamLibRef						m_wicFactory;
+    Native2DLibRef							gfx_2d_factory;
+    NativeHwLibRef							gfx_hw_factory;
+    NativeVrCamLibRef						vr_camlib;
 
     // The holographic space provides a preferred DXGI adapter ID.
-    HoloSpace								m_holospace = nullptr;
+    HoloSpace								holospace = 0;
 
     // Properties of the Direct3D device currently in use.
-    D3D_FEATURE_LEVEL						m_d3dFeatureLevel = D3D_FEATURE_LEVEL_10_0;
+    D3D_FEATURE_LEVEL						gfx_feature_level = D3D_FEATURE_LEVEL_10_0;
 
     // The IDeviceNotify can be held directly as it owns the DeviceResources.
-    IDeviceNotify*							m_deviceNotify = nullptr;
+    IDeviceNotify*							dev_notify = 0;
 
     // Whether or not the current Direct3D device supports the optional feature
     // for setting the render target array index from the vertex shader stage.
-    bool									m_supportsVprt = false;
+    bool									supports_vprt = false;
 
     // Back buffer resources, etc. for attached holographic cameras.
-    VectorMap<uint32, One<CameraResources>>	m_cameraResources;
-    Mutex									m_cameraResourcesLock;
+    VectorMap<uint32, One<CameraResources>>	cam_resources;
+    Mutex									cam_resources_lock;
     
 };
 
@@ -106,14 +106,14 @@ private:
 // callback to this function, and the std::map will be guarded from add and remove
 // events until the callback returns. The callback is processed immediately and must
 // not contain any nested calls to UseHolographicCameraResources.
-// The callback takes a parameter of type std::map<UINT32, std::unique_ptr<GfxCamResources>>&
+// The callback takes a parameter of type ArrayMap<uint32, std::unique_ptr<GfxCamResources>>&
 // through which the list of cameras will be accessed.
 template<typename RetType, typename LCallback>
 RetType GfxDevResources::UseHolographicCameraResources(LCallback const& callback)
 {
 	TODO
-    /*Mutex::Lock guard(m_cameraResourcesLock);
-    return callback(m_cameraResources);*/
+    /*Mutex::Lock guard(cam_resources_lock);
+    return callback(cam_resources);*/
 }
 
 

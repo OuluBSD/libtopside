@@ -208,6 +208,7 @@ struct Dx11Holo {
 	using SpatialStationaryFrameOfReference = winrt::Windows::Perception::Spatial::SpatialStationaryFrameOfReference;
 	using ISpatialInteractionManager = winrt::Windows::UI::Input::Spatial:: ISpatialInteractionManager;
 	using SpatialInteractionManager = winrt::Windows::UI::Input::Spatial:: SpatialInteractionManager;
+	using GfxLibInterfaceAccess = winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess;
 	
 	using GfxDevResources = DX:: DeviceResources;
 	using GfxCamResources = DX:: CameraResources;
@@ -230,18 +231,35 @@ struct Dx11Holo {
 	using NativePixelShaderRef = ComPtr<ID3D11PixelShader>;
 	using NativeSamplerStateRef = ComPtr<ID3D11SamplerState>;
 	using NativeDepthStencilStateRef = ComPtr<ID3D11DepthStencilState>;
+	using NativeRenderTargetRef = ComPtr<ID2D1RenderTarget>;
+	using NativeSolidColorBrushRef = ComPtr<ID2D1SolidColorBrush>;
+	using NativeWriteTextFormatRef = ComPtr<IDWriteTextFormat>;
+	using NativeGfxLibSurfaceRef = ComPtr<IDXGISurface>;
 	
 	using NativeInspectableRef = ComPtr<::IInspectable>;
 	
 	using NativeEventToken = winrt:: event_token;
+	using NativeString = winrt::hstring;
 	
 	// mat4 == mat4;
 	
 	void CheckResult(uint32 hr); // winrt:: check_hresult
 	void ResumeBackground(); // co_await winrt::resume_background();
 	
+	static void Initialize(); // winrt::init_apartment();
 	static uint16 BuzzContinuous(); // winrt::Windows::Devices::Haptics::KnownSimpleHapticsControllerWaveforms::BuzzContinuous();
 	static void ThrowLastError(); // winrt::throw_last_error
+	static void ThrowIfFailed(bool b); // Holo::ThrowIfFailed
+	
+	/* TODO
+	// The main function bootstraps into the IFrameworkView.
+	int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
+	{
+	    winrt::init_apartment();
+	    CoreApplication::Run(AppViewSource());
+	    return 0;
+	}
+	*/
 	
 };
 

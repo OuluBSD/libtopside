@@ -8,7 +8,7 @@ namespace DX {
 
 
 // Function that reads from a binary file asynchronously.
-inline std::future<std::vector<byte>> ReadDataAsync(const String& filename)
+inline std::future<Vector<byte>> ReadDataAsync(const String& filename)
 {
     //using namespace winrt::Windows::Storage;
     //using namespace winrt::Windows::Storage::Streams;
@@ -17,32 +17,32 @@ inline std::future<std::vector<byte>> ReadDataAsync(const String& filename)
 	
     /*IBuffer fileBuffer = co_await PathIO::ReadBufferAsync(filename);
     
-    std::vector<byte> returnBuffer(fileBuffer.Length());
-    DataReader::FromBuffer(fileBuffer).ReadBytes(winrt::array_view<uint8_t>(returnBuffer));
+    Vector<byte> returnBuffer(fileBuffer.Length());
+    DataReader::FromBuffer(fileBuffer).ReadBytes(winrt::array_view<uint8>(returnBuffer));
     co_return returnBuffer;*/
 }
 
 inline std::future<NativeShaderResourceViewRef> LoadDDSTextureAsync(ID3D11Device* device, const String& filename)
 {
-    const std::vector<byte> fileData = co_await ReadDataAsync(filename);
+    const Vector<byte> fileData = co_await ReadDataAsync(filename);
 
-    NativeShaderResourceViewRef textureView;
+    NativeShaderResourceViewRef tex_view;
 
     Holo::CheckResult(DirectX::CreateDDSTextureFromMemory(
         device,
         fileData.data(),
         fileData.size(),
         nullptr,
-        textureView.GetAddressOf()));
+        tex_view.GetAddressOf()));
 
-    co_return textureView;
+    co_return tex_view;
 };
 
 // Converts a length in device-independent pixels (DIPs) to a length in physical pixels.
 inline float ConvertDipsToPixels(float dips, float dpi)
 {
-    constexpr float dipsPerInch = 96.0f;
-    return floorf(dips * dpi / dipsPerInch + 0.5f); // Round to nearest integer.
+    constexpr float dips_per_inch = 96.0f;
+    return floorf(dips * dpi / dips_per_inch + 0.5f); // Round to nearest integer.
 }
 
 #if defined(_DEBUG)

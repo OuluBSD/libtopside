@@ -11,7 +11,7 @@ struct QuadModelConstantBuffer
 
 struct QuadRenderingParametersConstantBuffer
 {
-    mat4 viewProj[2];
+    mat4 view_proj[2];
 };
 
 
@@ -26,8 +26,8 @@ struct VertexPositionTex
 };
 
 // Loads vertex and pixel shaders from files and instantiates the quad geometry.
-QuadRenderer::QuadRenderer(Shared<GfxDevResources> deviceResources) :
-    dev_res(std::move(deviceResources))
+QuadRenderer::QuadRenderer(Shared<GfxDevResources> dev_resources) :
+    dev_res(std::move(dev_resources))
 {
     CreateDeviceDependentResources();
 }
@@ -39,25 +39,25 @@ void QuadRenderer::Bind()
     const uint32 strides[] = { sizeof(VertexPositionTex) };
     const uint32 offsets[] = { 0 };
 
-    context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), strides, offsets);
-    context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+    context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), strides, offsets);
+    context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0);
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    context->IASetInputLayout(m_inputLayout.Get());
+    context->IASetInputLayout(input_layout.Get());
 
-    context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-    context->VSSetConstantBuffers(0, 1, m_modelConstantBuffer.GetAddressOf());
-    context->VSSetConstantBuffers(1, 1, m_renderingConstantBuffer.GetAddressOf());
+    context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+    context->VSSetConstantBuffers(0, 1, model_constant_buffer.GetAddressOf());
+    context->VSSetConstantBuffers(1, 1, rendering_constant_buffer.GetAddressOf());
 
     if (!dev_res->GetDeviceSupportsVprt())
     {
         // On devices that do not support the D3D11_FEATURE_D3D11_OPTIONS3::
         // VPAndRTArrayIndexFromAnyShaderFeedingRasterizer optional feature,
         // a pass-through geometry shader sets the render target ID.
-        context->GSSetShader(m_geometryShader.Get(), nullptr, 0);
+        context->GSSetShader(geom_shader.Get(), nullptr, 0);
     }
 
-    context->PSSetShader(m_pixelShaderRGB.Get(), nullptr, 0);
-    context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+    context->PSSetShader(pixel_shader_rgb.Get(), nullptr, 0);
+    context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 }
 
 void QuadRenderer::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
@@ -67,104 +67,104 @@ void QuadRenderer::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
     QuadModelConstantBuffer cb;
     cb.model = transpose(matrix);
 
-    context->UpdateSubresource(m_modelConstantBuffer.Get(), 0, nullptr, &cb, 0, 0);
+    context->UpdateSubresource(model_constant_buffer.Get(), 0, nullptr, &cb, 0, 0);
 
     context->PSSetShaderResources(0, 1, &texture);
 
-    context->DrawIndexedInstanced(m_indexCount, 2, 0, 0, 0);
+    context->DrawIndexedInstanced(index_count, 2, 0, 0, 0);
 }
 
 void QuadRenderer::Unbind()
 {}
 
 void QuadRenderer::SetViewProjection(
-    const float4x4& worldToViewLeft,
-    const float4x4& viewToProjLeft,
-    const float4x4& worldToViewRight,
-    const float4x4& viewToProjRight)
+    const mat4& world_to_view_left,
+    const mat4& view_to_proj_left,
+    const mat4& world_to_view_right,
+    const mat4& view_to_proj_right)
 {
-    float4x4 viewProjection[2];
+    mat4 view_projection[2];
 
-    viewProjection[0] = transpose(worldToViewLeft * viewToProjLeft);
-    viewProjection[1] = transpose(worldToViewRight * viewToProjRight);
+    view_projection[0] = transpose(world_to_view_left * view_to_proj_left);
+    view_projection[1] = transpose(world_to_view_right * view_to_proj_right);
 
-    dev_res->GetD3DDeviceContext()->UpdateSubresource(m_renderingConstantBuffer.Get(), 0, nullptr, &viewProjection, 0, 0);
+    dev_res->GetD3DDeviceContext()->UpdateSubresource(rendering_constant_buffer.Get(), 0, nullptr, &view_projection, 0, 0);
 }
 
 void QuadRenderer::CreateDeviceDependentResources()
 {
-    const bool usingVprt = dev_res->GetDeviceSupportsVprt();
-    const void* vertexShader = (usingVprt) ? g_QuadVPRTVertexShader : g_QuadVertexShader;
-    const size_t vertexShaderSize = (usingVprt) ? _countof(g_QuadVPRTVertexShader) : _countof(g_QuadVertexShader);
+    const bool using_vprt = dev_res->GetDeviceSupportsVprt();
+    const void* vertex_shader = (using_vprt) ? g_QuadVPRTVertexShader : g_QuadVertexShader;
+    const size_t vertex_shader_size = (using_vprt) ? _countof(g_QuadVPRTVertexShader) : _countof(g_QuadVertexShader);
 
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateVertexShader(
-            vertexShader,
-            vertexShaderSize,
+            vertex_shader,
+            vertex_shader_size,
             nullptr,
-            &m_vertexShader
+            &vertex_shader
         )
     );
 
-    constexpr std::array<D3D11_INPUT_ELEMENT_DESC, 2> vertexDesc = {{
+    constexpr FixedArray<D3D11_INPUT_ELEMENT_DESC, 2> vtx_desc = {{
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     }};
 
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateInputLayout(
-            vertexDesc.data(),
-            static_cast<UINT>(vertexDesc.size()),
-            vertexShader,
-            vertexShaderSize,
-            &m_inputLayout
+            vtx_desc.data(),
+            static_cast<uint32>(vtx_desc.size()),
+            vertex_shader,
+            vertex_shader_size,
+            &input_layout
         )
     );
 
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreatePixelShader(
             g_QuadPixelShaderRGB,
             _countof(g_QuadPixelShaderRGB),
             nullptr,
-            &m_pixelShaderRGB
+            &pixel_shader_rgb
         )
     );
 
-    if (!usingVprt)
+    if (!using_vprt)
     {
-        DirectX::ThrowIfFailed(
+        Holo::ThrowIfFailed(
             dev_res->GetD3DDevice()->CreateGeometryShader(
                 g_QuadGeometryShader,
                 _countof(g_QuadGeometryShader),
                 nullptr,
-                &m_geometryShader
+                &geom_shader
             )
         );
     }
 
-    static const std::array<VertexPositionTex, 4> quadVertices = {{
-        { float3(-0.5f, +0.5f, +0.0f), float2(+0.0f, +0.0f) },
-        { float3(+0.5f, +0.5f, +0.0f), float2(+1.0f, +0.0f) },
-        { float3(+0.5f, -0.5f, +0.0f), float2(+1.0f, +1.0f) },
-        { float3(-0.5f, -0.5f, +0.0f), float2(+0.0f, +1.0f) },
+    static const FixedArray<VertexPositionTex, 4> quadVertices = {{
+        { vec3(-0.5f, +0.5f, +0.0f), float2(+0.0f, +0.0f) },
+        { vec3(+0.5f, +0.5f, +0.0f), float2(+1.0f, +0.0f) },
+        { vec3(+0.5f, -0.5f, +0.0f), float2(+1.0f, +1.0f) },
+        { vec3(-0.5f, -0.5f, +0.0f), float2(+0.0f, +1.0f) },
     }};
 
-    const D3D11_SUBRESOURCE_DATA vertexBufferData = { quadVertices.data() };
+    const D3D11_SUBRESOURCE_DATA vertex_buffer_data = { quadVertices.data() };
 
-    const CD3D11_BUFFER_DESC vertexBufferDesc{
-        static_cast<UINT>(sizeof(VertexPositionTex) * quadVertices.size()),
+    const CD3D11_BUFFER_DESC vertex_buffer_desc{
+        static_cast<uint32>(sizeof(VertexPositionTex) * quadVertices.size()),
         D3D11_BIND_VERTEX_BUFFER
     };
 
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateBuffer(
-            &vertexBufferDesc,
-            &vertexBufferData,
-            &m_vertexBuffer
+            &vertex_buffer_desc,
+            &vertex_buffer_data,
+            &vertex_buffer
         )
     );
 
-    constexpr std::array<uint16, 12> quadIndices = {{
+    constexpr FixedArray<uint16, 12> quad_indices = {{
         // -z
         0,2,3,
         0,1,2,
@@ -174,55 +174,55 @@ void QuadRenderer::CreateDeviceDependentResources()
         1,0,2,
     }};
 
-    m_indexCount = static_cast<uint32_t>(quadIndices.size());
+    index_count = static_cast<uint32>(quad_indices.size());
 
-    const D3D11_SUBRESOURCE_DATA indexBufferData = { quadIndices.data() };
+    const D3D11_SUBRESOURCE_DATA index_buffer_data = { quad_indices.data() };
 
-    const CD3D11_BUFFER_DESC indexBufferDesc{
-        static_cast<UINT>(sizeof(uint16) * quadIndices.size()),
+    const CD3D11_BUFFER_DESC index_buffer_desc {
+        static_cast<uint32>(sizeof(uint16) * quad_indices.size()),
         D3D11_BIND_INDEX_BUFFER
     };
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateBuffer(
-            &indexBufferDesc,
-            &indexBufferData,
-            &m_indexBuffer
+            &index_buffer_desc,
+            &index_buffer_data,
+            &index_buffer
         )
     );
 
     const D3D11_SAMPLER_DESC desc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
 
-    DirectX::ThrowIfFailed(
+    Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateSamplerState(
             &desc,
-            &m_samplerState
+            &sampler_state
         )
     );
     {
-        const CD3D11_BUFFER_DESC constantBufferDesc{
+        const CD3D11_BUFFER_DESC constant_buffer_desc{
             sizeof(QuadModelConstantBuffer),
             D3D11_BIND_CONSTANT_BUFFER
         };
 
-        DirectX::ThrowIfFailed(
+        Holo::ThrowIfFailed(
             dev_res->GetD3DDevice()->CreateBuffer(
-                &constantBufferDesc,
+                &constant_buffer_desc,
                 nullptr,
-                &m_modelConstantBuffer
+                &model_constant_buffer
             )
         );
     }
     {
-        const CD3D11_BUFFER_DESC constantBufferDesc{
-            sizeof(float4x4) * 2,
+        const CD3D11_BUFFER_DESC constant_buffer_desc{
+            sizeof(mat4) * 2,
             D3D11_BIND_CONSTANT_BUFFER
         };
 
-        DirectX::ThrowIfFailed(
+        Holo::ThrowIfFailed(
             dev_res->GetD3DDevice()->CreateBuffer(
-                &constantBufferDesc,
+                &constant_buffer_desc,
                 nullptr,
-                &m_renderingConstantBuffer
+                &rendering_constant_buffer
             )
         );
     }
@@ -230,18 +230,18 @@ void QuadRenderer::CreateDeviceDependentResources()
 
 void QuadRenderer::ReleaseDeviceDependentResources()
 {
-    m_vertexShader.Reset();
-    m_inputLayout.Reset();
-    m_pixelShaderRGB.Reset();
-    m_geometryShader.Reset();
+    vertex_shader.Reset();
+    input_layout.Reset();
+    pixel_shader_rgb.Reset();
+    geom_shader.Reset();
 
-    m_modelConstantBuffer.Reset();
-    m_renderingConstantBuffer.Reset();
+    model_constant_buffer.Reset();
+    rendering_constant_buffer.Reset();
 
-    m_vertexBuffer.Reset();
-    m_indexBuffer.Reset();
+    vertex_buffer.Reset();
+    index_buffer.Reset();
 
-    m_samplerState.Reset();
+    sampler_state.Reset();
 }
 
 
