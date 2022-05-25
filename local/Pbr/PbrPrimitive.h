@@ -12,7 +12,7 @@ struct Primitive
     using Collection = Vector<Primitive>;
 
     Primitive() = delete;
-    Primitive(UINT idx_count, ID3D11Buffer* index_buffer, ID3D11Buffer* vertex_buffer, Shared<Material> material);
+    Primitive(int idx_count, ID3D11Buffer* index_buffer, ID3D11Buffer* vertex_buffer, Shared<Material> material);
     Primitive(Pbr::Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Material> material);
 
     // Get the material for the primitive.
@@ -25,7 +25,7 @@ protected:
     Primitive Clone(Pbr::Resources const& pbr_res) const;
 
 private:
-    UINT idx_count;
+    int idx_count;
     ComPtr<ID3D11Buffer> index_buffer;
     ComPtr<ID3D11Buffer> vertex_buffer;
     Shared<Material> material;

@@ -6,11 +6,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 struct SceneConstantBuffer
 {
-    alignas(16) mat4 ViewProjection[2];
-    alignas(16) vec4 Eyeposition[2];
-    alignas(16) vec3 LightDirection{};
-    alignas(16) vec3 LightDiffuseColor{};
-    alignas(16) int NumSpecularMipLevels{ 1 };
+    alignas(16) mat4 view_proj[2];
+    alignas(16) vec4 eye_pos[2];
+    alignas(16) vec3 light_dir{};
+    alignas(16) vec3 light_diffuse_clr{};
+    alignas(16) int specular_mip_level_count{ 1 };
 };
 
 }
@@ -22,7 +22,7 @@ struct Resources::Impl
     void Initialize(ID3D11Device* device)
     {
         // Set up pixel shader.
-        Internal::ThrowIfFailed(device->CreatePixelShader(g_psPbrMain, sizeof(g_psPbrMain), nullptr, &Resources.PixelShader));
+        Internal::ThrowIfFailed(device->CreatePixelShader(g_psPbrMain, sizeof(g_psPbrMain), nullptr, &resources.PixelShader));
 
         // Check for device support for the optional feature that allows setting the render target array index from the vertex shader stage.
         D3D11_FEATURE_DATA_D3D11_OPTIONS3 options{};
@@ -30,155 +30,155 @@ struct Resources::Impl
         if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer)
         {
             // Set up vertex shader with VPRT support.
-            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::vtx_desc, ARRAYSIZE(Pbr::Vertex::vtx_desc), g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), &Resources.InputLayout));
-            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), nullptr, &Resources.VertexShader));
+            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::vtx_desc, ARRAYSIZE(Pbr::Vertex::vtx_desc), g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), &resources.input_layout));
+            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), nullptr, &resources.VertexShader));
         }
         else
         {
             // Set up vertex shader with geometry shader due to no VPRT support.
-            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::vtx_desc, ARRAYSIZE(Pbr::Vertex::vtx_desc), g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), &Resources.InputLayout));
-            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), nullptr, &Resources.VertexShader));
-            Internal::ThrowIfFailed(device->CreateGeometryShader(g_gsPbrNoVprtMain, sizeof(g_gsPbrNoVprtMain), nullptr, &Resources.GeometryShader));
+            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::vtx_desc, ARRAYSIZE(Pbr::Vertex::vtx_desc), g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), &resources.input_layout));
+            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), nullptr, &resources.VertexShader));
+            Internal::ThrowIfFailed(device->CreateGeometryShader(g_gsPbrNoVprtMain, sizeof(g_gsPbrNoVprtMain), nullptr, &resources.GeometryShader));
         }
 
         // Set up the constant buffers.
         static_assert((sizeof(SceneConstantBuffer) % 16) == 0, "Constant Buffer must be divisible by 16 bytes");
-        const CD3D11_BUFFER_DESC pbrConstantBufferDesc(sizeof(SceneConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
-        Internal::ThrowIfFailed(device->CreateBuffer(&pbrConstantBufferDesc, nullptr, &Resources.ConstantBuffer));
+        const CD3D11_BUFFER_DESC pbr_constant_buffer_desc(sizeof(SceneConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+        Internal::ThrowIfFailed(device->CreateBuffer(&pbr_constant_buffer_desc, nullptr, &resources.ConstantBuffer));
 
         // Samplers for environment map and BRDF.
-        Resources.EnvironmentMapSampler = Texture::CreateSampler(device);
-        Resources.BrdfSampler = Texture::CreateSampler(device);
+        resources.env_map_sampler = Texture::CreateSampler(device);
+        resources.brdf_sampler = Texture::CreateSampler(device);
     }
 
     struct DeviceResources
     {
-        ComPtr<ID3D11SamplerState> BrdfSampler;
-        ComPtr<ID3D11SamplerState> EnvironmentMapSampler;
-        ComPtr<ID3D11InputLayout> InputLayout;
-        ComPtr<ID3D11VertexShader> VertexShader;
-        ComPtr<ID3D11GeometryShader> GeometryShader;
-        ComPtr<ID3D11PixelShader> PixelShader;
-        ComPtr<ID3D11Buffer> ConstantBuffer;
-        ComPtr<ID3D11ShaderResourceView> BrdfLut;
-        ComPtr<ID3D11ShaderResourceView> SpecularEnvironmentMap;
-        ComPtr<ID3D11ShaderResourceView> DiffuseEnvironmentMap;
-        mutable std::map<uint32, ComPtr<ID3D11ShaderResourceView>> SolidColorTextureCache;
+        ComPtr<ID3D11SamplerState> brdf_sampler;
+        ComPtr<ID3D11SamplerState> env_map_sampler;
+        ComPtr<ID3D11InputLayout> input_layout;
+        ComPtr<ID3D11VertexShader> vtx_shader;
+        ComPtr<ID3D11GeometryShader> geom_shader;
+        ComPtr<ID3D11PixelShader> pixel_shader;
+        ComPtr<ID3D11Buffer> constant_buffer;
+        ComPtr<ID3D11ShaderResourceView> brdf_lut;
+        ComPtr<ID3D11ShaderResourceView> specular_env_map;
+        ComPtr<ID3D11ShaderResourceView> diffuse_env_map;
+        mutable VectorMap<uint32, ComPtr<ID3D11ShaderResourceView>> solid_clr_tex_cache;
     };
 
-    DeviceResources Resources;
-    TrackChanges<SceneConstantBuffer> SceneBuffer;
-    uint32 SceneChangeCountBookmark{ 0 };
+    DeviceResources resources;
+    TrackChanges<SceneConstantBuffer> scene_buffer;
+    uint32 scene_change_count_bookmark { 0 };
 };
 
 /* static */
 Resources::Resources(ID3D11Device* device)
-    : m_impl(std::make_shared<Impl>())
+    : impl(std::make_shared<Impl>())
 {
-    m_impl->Initialize(device);
+    impl->Initialize(device);
 }
 
-void Resources::SetBrdfLut(ID3D11ShaderResourceView* brdfLut)
+void Resources::SetBrdfLut(ID3D11ShaderResourceView* brdf_lut)
 {
-    m_impl->Resources.BrdfLut = brdfLut;
+    impl->resources.brdf_lut = brdf_lut;
 }
 
 void Resources::CreateDeviceDependentResources(ID3D11Device* device)
 {
-    m_impl->Initialize(device);
+    impl->Initialize(device);
 }
 
 void Resources::ReleaseDeviceDependentResources()
 {
-    m_impl->Resources = {};
+    impl->Resources = {};
 }
 
 ComPtr<ID3D11Device> Resources::GetDevice() const
 {
     ComPtr<ID3D11Device> device;
-    m_impl->Resources.ConstantBuffer->GetDevice(&device);
+    impl->resources.constant_buffer->GetDevice(&device);
     return device;
 }
 
-void Resources::SetLight(const vec4& direction, const vec4& diffuseColor)
+void Resources::SetLight(const vec4& direction, const vec4& diffuse_color)
 {
-    m_impl->SceneBuffer.Set([&](SceneConstantBuffer& sceneBuffer) {
-        XMStoreFloat3(&sceneBuffer.LightDirection, direction);
-        XMStoreFloat3(&sceneBuffer.LightDiffuseColor, diffuseColor);
+    impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
+        XMStoreFloat3(&scene_buffer.light_dir, direction);
+        XMStoreFloat3(&scene_buffer.light_diffuse_clr, diffuse_color);
     });
 }
 
-void Resources::SetViewProjection(const mat4& viewLeft, const mat4& viewRight, const mat4& projectionLeft, const mat4& projectionRight)
+void Resources::SetViewProjection(const mat4& view_left, const mat4& view_right, const mat4& proj_left, const mat4& proj_right)
 {
-    m_impl->SceneBuffer.Set([&](SceneConstantBuffer& sceneBuffer) {
-        StoreMatrix(&sceneBuffer.ViewProjection[0], XMMatrixTranspose(MultiplyMatrix(viewLeft, projectionLeft)));
-        StoreMatrix(&sceneBuffer.ViewProjection[1], XMMatrixTranspose(MultiplyMatrix(viewRight, projectionRight)));
-        XMStoreFloat4(&sceneBuffer.Eyeposition[0], XMMatrixInverse(nullptr, viewLeft).r[3]);
-        XMStoreFloat4(&sceneBuffer.Eyeposition[1], XMMatrixInverse(nullptr, viewRight).r[3]);
+    impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
+        StoreMatrix(&scene_buffer.view_proj[0], XMMatrixTranspose(MultiplyMatrix(view_left, proj_left)));
+        StoreMatrix(&scene_buffer.view_proj[1], XMMatrixTranspose(MultiplyMatrix(view_right, proj_right)));
+        XMStoreFloat4(&scene_buffer.eye_pos[0], XMMatrixInverse(nullptr, view_left).r[3]);
+        XMStoreFloat4(&scene_buffer.eye_pos[1], XMMatrixInverse(nullptr, view_right).r[3]);
     });
 }
 
-void Resources::SetEnvironmentMap(ID3D11DeviceContext3* context, ID3D11ShaderResourceView* specularEnvironmentMap, ID3D11ShaderResourceView* diffuseEnvironmentMap)
+void Resources::SetEnvironmentMap(ID3D11DeviceContext3* context, ID3D11ShaderResourceView* specular_env_map, ID3D11ShaderResourceView* diffuse_env_map)
 {
     D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-    diffuseEnvironmentMap->GetDesc(&desc);
-    if (desc.ViewDimension != D3D_SRV_DIMENSION_TEXTURECUBE)
+    diffuse_env_map->GetDesc(&desc);
+    if (desc.view_dimension != D3D_SRV_DIMENSION_TEXTURECUBE)
     {
-        throw std::exception("Diffuse Resource View Type is not D3D_SRV_DIMENSION_TEXTURECUBE");
+        throw Exc("Diffuse Resource View Type is not D3D_SRV_DIMENSION_TEXTURECUBE");
     }
 
-    specularEnvironmentMap->GetDesc(&desc);
-    if (desc.ViewDimension != D3D_SRV_DIMENSION_TEXTURECUBE)
+    specular_env_map->GetDesc(&desc);
+    if (desc.view_dimension != D3D_SRV_DIMENSION_TEXTURECUBE)
     {
-        throw std::exception("Specular Resource View Type is not D3D_SRV_DIMENSION_TEXTURECUBE");
+        throw Exc("Specular Resource View Type is not D3D_SRV_DIMENSION_TEXTURECUBE");
     }
     
-    m_impl->SceneBuffer.Set([&](SceneConstantBuffer& sceneBuffer) {
-        sceneBuffer.NumSpecularMipLevels = desc.TextureCube.MipLevels;
+    impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
+        scene_buffer.specular_mip_level_count = desc.TextureCube.MipLevels;
     });
-    m_impl->Resources.SpecularEnvironmentMap = specularEnvironmentMap;
-    m_impl->Resources.DiffuseEnvironmentMap = diffuseEnvironmentMap;
+    impl->resources.specular_env_map = specular_env_map;
+    impl->resources.diffuse_env_map = diffuse_env_map;
 }
 
-ComPtr<ID3D11ShaderResourceView> Resources::CreateSolidColorTexture(Cvec4 color) const
+ComPtr<ID3D11ShaderResourceView> Resources::CreateSolidColorTexture(const vec4& color) const
 {
     const FixedArray<byte, 4> rgba = Texture::CreateRGBA(color);
 
     // Check cache to see if this flat texture already exists.
-    const uint32 colorKey = *reinterpret_cast<const uint32*>(rgba.data());
-    auto textureIt = m_impl->Resources.SolidColorTextureCache.find(colorKey);
-    if (textureIt != m_impl->Resources.SolidColorTextureCache.end())
+    const uint32 color_key = *reinterpret_cast<const uint32*>(rgba.data());
+    auto texture_iter = impl->resources.solid_clr_tex_cache.find(color_key);
+    if (texture_iter != impl->resources.solid_clr_tex_cache.end())
     {
-        return textureIt->second;
+        return texture_iter->second;
     }
 
     ComPtr<ID3D11ShaderResourceView> texture = Pbr::Texture::CreateTexture(GetDevice().Get(), rgba.data(), 1, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM);
-    m_impl->Resources.SolidColorTextureCache.insert(std::make_pair(colorKey, texture));
+    impl->resources.solid_clr_tex_cache.insert(std::make_pair(color_key, texture));
     return texture;
 }
 
 void Resources::Bind(ID3D11DeviceContext3* context) const
 {
     // If the constant buffer parameters changed, update the D3D constant buffer.
-    if (m_impl->SceneBuffer.UpdateChangeCountBookmark(&m_impl->SceneChangeCountBookmark))
+    if (impl->scene_buffer.UpdateChangeCountBookmark(&impl->scene_change_count_bookmark))
     {
-        context->UpdateSubresource(m_impl->Resources.ConstantBuffer.Get(), 0, nullptr, &m_impl->SceneBuffer, 0, 0);
+        context->UpdateSubresource(impl->resources.constant_buffer.Get(), 0, nullptr, &impl->scene_buffer, 0, 0);
     }
 
-    context->VSSetShader(m_impl->Resources.VertexShader.Get(), nullptr, 0);
-    context->PSSetShader(m_impl->Resources.PixelShader.Get(), nullptr, 0);
-    context->GSSetShader(m_impl->Resources.GeometryShader.Get(), nullptr, 0);
+    context->VSSetShader(impl->resources.vtx_shader.Get(), nullptr, 0);
+    context->PSSetShader(impl->resources.pixel_shader.Get(), nullptr, 0);
+    context->GSSetShader(impl->resources.geom_shader.Get(), nullptr, 0);
 
-    ID3D11Buffer* buffers[] = { m_impl->Resources.ConstantBuffer.Get() };
+    ID3D11Buffer* buffers[] = { impl->resources.constant_buffer.Get() };
     context->VSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Scene, _countof(buffers), buffers);
     context->PSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Scene, _countof(buffers), buffers);
-    context->IASetInputLayout(m_impl->Resources.InputLayout.Get());
+    context->IASetinput_layout(impl->resources.input_layout.Get());
 
     static_assert(ShaderSlots::DiffuseTexture == ShaderSlots::SpecularTexture + 1, "Diffuse must follow Specular slot");
     static_assert(ShaderSlots::SpecularTexture == ShaderSlots::Brdf + 1, "Specular must follow BRDF slot");
-    ID3D11ShaderResourceView* shaderResources[] = { m_impl->Resources.BrdfLut.Get(), m_impl->Resources.SpecularEnvironmentMap.Get(), m_impl->Resources.DiffuseEnvironmentMap.Get() };
+    ID3D11ShaderResourceView* shaderResources[] = { impl->resources.brdf_lut.Get(), impl->resources.specular_env_map.Get(), impl->Resources.diffuse_env_map.Get() };
     context->PSSetShaderResources(Pbr::ShaderSlots::Brdf, _countof(shaderResources), shaderResources);
-    ID3D11SamplerState* samplers[] = { m_impl->Resources.BrdfSampler.Get(), m_impl->Resources.EnvironmentMapSampler.Get() };
+    ID3D11SamplerState* samplers[] = { impl->resources.brdf_sampler.Get(), impl->resources.env_map_sampler.Get() };
     context->PSSetSamplers(ShaderSlots::Brdf, _countof(samplers), samplers);
 }
 

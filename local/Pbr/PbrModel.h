@@ -12,17 +12,18 @@ struct Node
 {
     using Collection = Vector<Node>;
 
-    Node(const mat4& localTransform, String name, NodeIndex_t index, NodeIndex_t parent_node_index)
+    Node(const mat4& local_transform, String name, NodeIndex_t index, NodeIndex_t parent_node_index)
         : name(name), index(index), parent_node_index(parent_node_index)
     {
-        SetTransform(localTransform);
+        modify_count = 0;
+        SetTransform(local_transform);
     }
 
     // Set the local transform for this node.
     void SetTransform(const mat4& transform)
     {
         StoreMatrix(&local_transform, transform);
-        InterlockedIncrement(&modify_count);
+        ++modify_count;
     }
 
     // Get the local transform for this node.
@@ -37,7 +38,7 @@ struct Node
 
 private:
     friend struct Model;
-    uint32 modify_count{ 0 };
+    AtomicInt modify_count;
     mat4 local_transform;
 };
 
@@ -61,7 +62,7 @@ struct Model
     // Create a clone of this model.
     Shared<Model> Clone(Pbr::Resources const& pbr_res) const;
 
-    NodeIndex_t GetNodeCount() const { return (NodeIndex_t)nodes.size(); }
+    NodeIndex_t GetNodeCount() const { return (NodeIndex_t)nodes.GetCount(); }
     Node& GetNode(NodeIndex_t nodeIndex) { return nodes[nodeIndex]; }
     const Node& GetNode(NodeIndex_t nodeIndex) const { return nodes[nodeIndex]; }
 
@@ -71,11 +72,11 @@ struct Model
     // Compute the world transform for a given node.
     mat4 GetNodeWorldTransform(NodeIndex_t nodeIndex) const;
 
-    uint32 GetPrimitiveCount() const { return (uint32)primitives.size(); }
+    uint32 GetPrimitiveCount() const { return (uint32)primitives.GetCount(); }
     Primitive& GetPrimitive(uint32 index) { return primitives[index]; }
     const Primitive& GetPrimitive(uint32 index) const { return primitives[index]; }
 
-    String Name;
+    String name;
 
 private:
     // Updated the transforms used to render the model. This needs to be called any time a node transform is changed.

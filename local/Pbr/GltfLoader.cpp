@@ -8,106 +8,106 @@ NAMESPACE_TOPSIDE_BEGIN
 ComPtr<ID3D11ShaderResourceView> LoadImage(ID3D11Device* device, const tinygltf::Image& image, bool sRGB)
 {
     // First convert the image to RGBA if it isn't already.
-    Vector<byte> tempBuffer;
-    const byte* rgbaBuffer = GltfHelper::ReadImageAsRGBA(image, &tempBuffer);
-    if (rgbaBuffer == nullptr)
+    Vector<byte> tmp_buffer;
+    const byte* rgba_buf = GltfHelper::ReadImageAsRGBA(image, &tmp_buffer);
+    if (rgba_buf == nullptr)
     {
         return nullptr;
     }
 
     const DXGI_FORMAT format = sRGB ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
-    return Pbr::Texture::CreateTexture(device, rgbaBuffer, image.width * image.height * 4, image.width, image.height, format);
+    return Pbr::Texture::CreateTexture(device, rgba_buf, image.width * image.height * 4, image.width, image.height, format);
 }
 
 // Create a DirectX sampler state from a tinygltf Sampler.
 ComPtr<ID3D11SamplerState> CreateSampler(ID3D11Device* device, const tinygltf::Model& gltf_model, const tinygltf::Sampler& sampler)
 {
-    D3D11_SAMPLER_DESC samplerDesc{};
+    D3D11_SAMPLER_DESC sampler_desc{};
     // Not supported: Mipmap filters (NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR)
-    samplerDesc.Filter =
-        (sampler.magFilter == TINYGLTF_TEXTURE_FILTER_NEAREST && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_NEAREST) ? D3D11_FILTER_MIN_MAG_MIP_POINT :
-        (sampler.magFilter == TINYGLTF_TEXTURE_FILTER_NEAREST && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_LINEAR) ? D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR :
-        (sampler.magFilter == TINYGLTF_TEXTURE_FILTER_LINEAR  && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_NEAREST) ? D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR :
-        (sampler.magFilter == TINYGLTF_TEXTURE_FILTER_LINEAR  && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_LINEAR) ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    samplerDesc.AddressU =
-        sampler.wrapS == TINYGLTF_TEXTURE_WRAP_CLAMP_TO_EDGE ? D3D11_TEXTURE_ADDRESS_CLAMP :
-        sampler.wrapS == TINYGLTF_TEXTURE_WRAP_MIRRORED_REPEAT ? D3D11_TEXTURE_ADDRESS_MIRROR : D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressV =
-        sampler.wrapT == TINYGLTF_TEXTURE_WRAP_CLAMP_TO_EDGE ? D3D11_TEXTURE_ADDRESS_CLAMP :
-        sampler.wrapT == TINYGLTF_TEXTURE_WRAP_MIRRORED_REPEAT ? D3D11_TEXTURE_ADDRESS_MIRROR : D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    samplerDesc.MaxAnisotropy = 1;
-    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-    samplerDesc.MinLOD = 0;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    sampler_desc.Filter =
+        (sampler.mag_filter == TINYGLTF_TEXTURE_FILTER_NEAREST && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_NEAREST) ? D3D11_FILTER_MIN_MAG_MIP_POINT :
+        (sampler.mag_filter == TINYGLTF_TEXTURE_FILTER_NEAREST && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_LINEAR) ? D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR :
+        (sampler.mag_filter == TINYGLTF_TEXTURE_FILTER_LINEAR  && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_NEAREST) ? D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR :
+        (sampler.mag_filter == TINYGLTF_TEXTURE_FILTER_LINEAR  && sampler.minFilter == TINYGLTF_TEXTURE_FILTER_LINEAR) ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampler_desc.AddressU =
+        sampler.wrap_s == TINYGLTF_TEXTURE_WRAP_CLAMP_TO_EDGE ? D3D11_TEXTURE_ADDRESS_CLAMP :
+        sampler.wrap_s == TINYGLTF_TEXTURE_WRAP_MIRRORED_REPEAT ? D3D11_TEXTURE_ADDRESS_MIRROR : D3D11_TEXTURE_ADDRESS_WRAP;
+    sampler_desc.AddressV =
+        sampler.wrap_t == TINYGLTF_TEXTURE_WRAP_CLAMP_TO_EDGE ? D3D11_TEXTURE_ADDRESS_CLAMP :
+        sampler.wrap_t == TINYGLTF_TEXTURE_WRAP_MIRRORED_REPEAT ? D3D11_TEXTURE_ADDRESS_MIRROR : D3D11_TEXTURE_ADDRESS_WRAP;
+    sampler_desc.addr_w = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampler_desc.max_anistropy = 1;
+    sampler_desc.comparison_func = D3D11_COMPARISON_ALWAYS;
+    sampler_desc.min_lod = 0;
+    sampler_desc.max_lod = D3D11_FLOAT32_MAX;
 
-    ComPtr<ID3D11SamplerState> samplerState;
-    Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&samplerDesc, &samplerState));
-    return samplerState;
+    ComPtr<ID3D11SamplerState> sampler_state;
+    Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&sampler_desc, &sampler_state));
+    return sampler_state;
 }
 
 // Maps a glTF material to a PrimitiveBuilder. This optimization combines all primitives which use
 // the same material into a single primitive for reduced draw calls. Each primitive's vertex specifies
 // which node it corresponds to any appropriate node transformation be happen in the shader.
-using PrimitiveBuilderMap = std::map<int, Pbr::PrimitiveBuilder>;
+using PrimitiveBuilderMap = VectorMap<int, Pbr::PrimitiveBuilder>;
 
 // Load a glTF node from the tinygltf object model. This will process the node's mesh (if specified) and then recursively load the child nodes too.
 void LoadNode(Pbr::NodeIndex_t parent_node_index, const tinygltf::Model& gltf_model, int nodeId, PrimitiveBuilderMap& prim_builder_map, Pbr::Model& model)
 {
-    const tinygltf::Node& gltfNode = gltf_model.nodes.at(nodeId);
+    const tinygltf::Node& gltf_node = gltf_model.nodes.at(nodeId);
 
     // Read the local transform for this node and add it into the Pbr Model.
-    const mat4 nodeLocalTransform = GltfHelper::ReadNodeLocalTransform(gltfNode);
-    const Pbr::NodeIndex_t transform_idx = model.AddNode(nodeLocalTransform, parent_node_index, gltfNode.name).Index;
+    const mat4 node_local_transform = GltfHelper::ReadNodeLocalTransform(gltf_node);
+    const Pbr::NodeIndex_t transform_idx = model.AddNode(node_local_transform, parent_node_index, gltf_node.name).Index;
 
-    if (gltfNode.mesh != -1) // Load the node's optional mesh when specified.
+    if (gltf_node.mesh != -1) // Load the node's optional mesh when specified.
     {
         // A glTF mesh is composed of primitives.
-        const tinygltf::Mesh& gltfMesh = gltf_model.meshes.at(gltfNode.mesh);
-        for (const tinygltf::Primitive& gltfPrimitive : gltfMesh.primitives)
+        const tinygltf::Mesh& gltf_mesh = gltf_model.meshes.at(gltf_node.mesh);
+        for (const tinygltf::Primitive& gltf_primitive : gltf_mesh.primitives)
         {
             // Read the primitive data from the glTF buffers.
-            const GltfHelper::Primitive primitive = GltfHelper::ReadPrimitive(gltf_model, gltfPrimitive);
+            const GltfHelper::Primitive primitive = GltfHelper::ReadPrimitive(gltf_model, gltf_primitive);
 
             // Insert or append the primitive into the PBR primitive builder. Primitives which use the same
             // material are appended to reduce the number of draw calls.
-            Pbr::PrimitiveBuilder& prim_builder = prim_builder_map[gltfPrimitive.material];
+            Pbr::PrimitiveBuilder& prim_builder = prim_builder_map[gltf_primitive.material];
 
             // Use the starting offset for vertices and indices since multiple glTF primitives can
             // be put into the same primitive builder.
-            const uint32 startVertex = (uint32)prim_builder.vertices.size();
-            const uint32 startIndex = (uint32)prim_builder.indices.size();
+            const uint32 start_vertex = (uint32)prim_builder.vertices.GetCount();
+            const uint32 start_index = (uint32)prim_builder.indices.GetCount();
 
             // Convert the GltfHelper vertices into the PBR vertex format.
-            prim_builder.vertices.resize(startVertex + primitive.vertices.size());
-            for (size_t i = 0; i < primitive.vertices.size(); i++)
+            prim_builder.vertices.SetCount(start_vertex + primitive.vertices.GetCount());
+            for (size_t i = 0; i < primitive.vertices.GetCount(); i++)
             {
                 const GltfHelper::Vertex& vertex = primitive.vertices[i];
-                Pbr::Vertex pbrVertex;
-                pbrVertex.position = vertex.position;
-                pbrVertex.normal = vertex.normal;
-                pbrVertex.tangent = vertex.tangent;
-                pbrVertex.tex_coord = vertex.tex_coord;
-                pbrVertex.mdl_transform_idx = transform_idx;
+                Pbr::Vertex pbr_vtx;
+                pbr_vtx.position = vertex.position;
+                pbr_vtx.normal = vertex.normal;
+                pbr_vtx.tangent = vertex.tangent;
+                pbr_vtx.tex_coord = vertex.tex_coord;
+                pbr_vtx.mdl_transform_idx = transform_idx;
 
-                prim_builder.vertices[i + startVertex] = pbrVertex;
+                prim_builder.vertices[i + start_vertex] = pbr_vtx;
             }
 
             // Insert indicies with reverse winding order.
-            prim_builder.indices.resize(startIndex + primitive.indices.size());
-            for (size_t i = 0; i < primitive.indices.size(); i += 3)
+            prim_builder.indices.SetCount(start_index + primitive.indices.GetCount());
+            for (size_t i = 0; i < primitive.indices.GetCount(); i += 3)
             {
-                prim_builder.indices[startIndex + i + 0] = startVertex + primitive.indices[i + 0];
-                prim_builder.indices[startIndex + i + 1] = startVertex + primitive.indices[i + 2];
-                prim_builder.indices[startIndex + i + 2] = startVertex + primitive.indices[i + 1];
+                prim_builder.indices[start_index + i + 0] = start_vertex + primitive.indices[i + 0];
+                prim_builder.indices[start_index + i + 1] = start_vertex + primitive.indices[i + 2];
+                prim_builder.indices[start_index + i + 2] = start_vertex + primitive.indices[i + 1];
             }
         }
     }
 
     // Recursively load all children.
-    for (const int childNodeId : gltfNode.children)
+    for (const int child_node_id : gltf_node.children)
     {
-        LoadNode(transform_idx, gltf_model, childNodeId, prim_builder_map, model);
+        LoadNode(transform_idx, gltf_model, child_node_id, prim_builder_map, model);
     }
 }
 }
@@ -132,22 +132,22 @@ Shared<Pbr::Model> FromGltfObject(
         // The Pbr::Model will already have a root node, which is often used to dynamically move the object. This node
         // is the root of the glTF model and can be used to create a persistent transform. This is useful if the model
         // is not positioned or scaled correctly.
-        const Pbr::NodeIndex_t gltfRootNodeIndex = model->AddNode(rootGltfTransform, Pbr::RootNodeIndex, "gltf_root").Index;
+        const Pbr::NodeIndex_t gltfroot_node_idx = model->AddNode(rootGltfTransform, Pbr::root_node_idx, "gltf_root").Index;
 
         // Process the root scene nodes. The children will be processed recursively.
         for (const int rootNodeId : defaultScene.nodes)
         {
-            LoadNode(gltfRootNodeIndex, gltf_model, rootNodeId, prim_builder_map, *model);
+            LoadNode(gltfroot_node_idx, gltf_model, rootNodeId, prim_builder_map, *model);
         }
     }
 
     // Load the materials referenced by the primitives
-    std::map<int, Shared<Pbr::Material>> materialMap;
+    VectorMap<int, Shared<Pbr::Material>> materialMap;
     {
         // Create D3D cache for reuse of texture views and samplers when possible.
         using ImageKey = std::tuple<const tinygltf::Image*, bool>; // Item1 is a pointer to the image, Item2 is sRGB.
-        std::map<ImageKey, ComPtr<ID3D11ShaderResourceView>> imageMap;
-        std::map<const tinygltf::Sampler*, ComPtr<ID3D11SamplerState>> samplerMap;
+        VectorMap<ImageKey, ComPtr<ID3D11ShaderResourceView>> imageMap;
+        VectorMap<const tinygltf::Sampler*, ComPtr<ID3D11SamplerState>> samplerMap;
 
         // prim_builder_map is grouped by material. Loop through the referenced materials and load their resources. This will only
         // load materials which are used by the active scene.
@@ -185,16 +185,16 @@ Shared<Pbr::Model> FromGltfObject(
                     }
 
                     // Find or create the sampler referenced by the texture.
-                    ComPtr<ID3D11SamplerState> samplerState = samplerMap[texture.Sampler];
-                    if (!samplerState) // If not cached, create the sampler and store it in the sampler cache.
+                    ComPtr<ID3D11SamplerState> sampler_state = samplerMap[texture.Sampler];
+                    if (!sampler_state) // If not cached, create the sampler and store it in the sampler cache.
                     {
-                        samplerState = texture.Sampler != nullptr ?
+                        sampler_state = texture.Sampler != nullptr ?
                             CreateSampler(pbr_res.GetDevice().Get(), gltf_model, *texture.Sampler) :
                             Pbr::Texture::CreateSampler(pbr_res.GetDevice().Get(), D3D11_TEXTURE_ADDRESS_WRAP);
-                        samplerMap[texture.Sampler] = samplerState;
+                        samplerMap[texture.Sampler] = sampler_state;
                     }
 
-                    pbrMaterial->SetTexture(slot, tex_view.Get(), samplerState.Get());
+                    pbrMaterial->SetTexture(slot, tex_view.Get(), sampler_state.Get());
                 };
 
                 pbrMaterial->Name = gltfMaterial.name;
@@ -247,7 +247,7 @@ Shared<Pbr::Model> FromGltfBinary(
     if (!loader.LoadBinaryFromMemory(&gltf_model, &errorMsg, &warnMsg, buffer, buffer_bytes, "."))
     {
         const auto msg = String("\r\nFailed to load gltf model (") + std::to_string(buffer_bytes) + " bytes). Error: " + errorMsg;
-        throw std::exception(msg.c_str());
+        throw Exc(msg.c_str());
     }
 
     return FromGltfObject(pbr_res, gltf_model, root_transform);

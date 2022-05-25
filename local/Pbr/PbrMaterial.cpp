@@ -8,8 +8,8 @@ namespace Pbr
 {
 Material::Material(Pbr::Resources const& pbr_res)
 {
-    const CD3D11_BUFFER_DESC constantBufferDesc(sizeof(ConstantBufferData), D3D11_BIND_CONSTANT_BUFFER);
-    Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBuffer(&constantBufferDesc, nullptr, &constant_buffer));
+    const CD3D11_BUFFER_DESC constant_buffer_desc(sizeof(ConstantBufferData), D3D11_BIND_CONSTANT_BUFFER);
+    Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBuffer(&constant_buffer_desc, nullptr, &constant_buffer));
 
     D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc;
     rtBlendDesc.BlendEnable = TRUE;
@@ -21,13 +21,13 @@ Material::Material(Pbr::Resources const& pbr_res)
     rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
     rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-    CD3D11_BLEND_DESC blendStateDesc(D3D11_DEFAULT);
+    CD3D11_BLEND_DESC blend_state_desc(D3D11_DEFAULT);
     for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
     {
-        blendStateDesc.RenderTarget[i] = rtBlendDesc;
+        blend_state_desc.RenderTarget[i] = rtBlendDesc;
     }
 
-    Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBlendState(&blendStateDesc, &blend_state));
+    Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBlendState(&blend_state_desc, &blend_state));
 }
 
 Shared<Material> Material::Clone(Pbr::Resources const& pbr_res) const
@@ -53,12 +53,12 @@ Shared<Material> Material::CreateFlat(const Resources& pbr_res, Cvec4 base_color
         data.roughness_factor = roughness_factor;
     });
 
-    const ComPtr<ID3D11SamplerState> defaultSampler = Pbr::Texture::CreateSampler(pbr_res.GetDevice().Get());
-    material->SetTexture(ShaderSlots::BaseColor, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), defaultSampler.Get());
-    material->SetTexture(ShaderSlots::MetallicRoughness, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), defaultSampler.Get());
-    material->SetTexture(ShaderSlots::Occlusion, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), defaultSampler.Get()); // No occlusion.
-    material->SetTexture(ShaderSlots::normal, pbr_res.CreateSolidColorTexture(vec4loader{ 0.5f, 0.5f, 1, 1 }).Get(), defaultSampler.Get()); // Flat normal.
-    material->SetTexture(ShaderSlots::Emissive, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), defaultSampler.Get());
+    const ComPtr<ID3D11SamplerState> def_sampler = Pbr::Texture::CreateSampler(pbr_res.GetDevice().Get());
+    material->SetTexture(ShaderSlots::BaseColor, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
+    material->SetTexture(ShaderSlots::MetallicRoughness, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
+    material->SetTexture(ShaderSlots::Occlusion, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), def_sampler.Get()); // No occlusion.
+    material->SetTexture(ShaderSlots::normal, pbr_res.CreateSolidColorTexture(vec4loader{ 0.5f, 0.5f, 1, 1 }).Get(), def_sampler.Get()); // Flat normal.
+    material->SetTexture(ShaderSlots::Emissive, pbr_res.CreateSolidColorTexture(vec4loader{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
 
     return material;
 }
@@ -79,12 +79,12 @@ void Material::Bind(ID3D11DeviceContext3* context) const
 
     context->OMSetBlendState(blend_state.Get(), nullptr, 0xFFFFFF);
 
-    ID3D11Buffer* psConstantBuffers[] = { constant_buffer.Get() };
-    context->PSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Material, 1, psConstantBuffers);
+    ID3D11Buffer* constant_buf[] = { constant_buffer.Get() };
+    context->PSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Material, 1, constant_buf);
 
     static_assert(Pbr::ShaderSlots::BaseColor == 0, "BaseColor must be the first slot");
-    context->PSSetShaderResources(Pbr::ShaderSlots::BaseColor, (uint32)textures.size(), textures[0].GetAddressOf());
-    context->PSSetSamplers(Pbr::ShaderSlots::BaseColor, (uint32)samplers.size(), samplers[0].GetAddressOf());
+    context->PSSetShaderResources(Pbr::ShaderSlots::BaseColor, (uint32)textures.GetCount(), textures[0].GetAddressOf());
+    context->PSSetSamplers(Pbr::ShaderSlots::BaseColor, (uint32)samplers.GetCount(), samplers[0].GetAddressOf());
 }
 
 }

@@ -42,7 +42,7 @@ struct Material
         const vec4& emissive_factor = DirectX::Colors::Black);
 
     // Set a Metallic-Roughness texture.
-    void SetTexture(ShaderSlots::PSMaterial slot, ID3D11ShaderResourceView* tex_view, _In_opt_ ID3D11SamplerState* sampler);
+    void SetTexture(ShaderSlots::PSMaterial slot, ID3D11ShaderResourceView* tex_view, ID3D11SamplerState* sampler=0);
 
     // Bind this material to current context.
     void Bind(ID3D11DeviceContext3* context) const;
