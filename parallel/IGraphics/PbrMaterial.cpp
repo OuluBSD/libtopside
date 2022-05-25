@@ -1,7 +1,7 @@
-#include "Pbr.h"
+#include "IGraphics.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 namespace Pbr
@@ -89,5 +89,5 @@ void Material::Bind(ID3D11DeviceContext3* context) const
 
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

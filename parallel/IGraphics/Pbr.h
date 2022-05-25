@@ -18,10 +18,6 @@
 #include <DirectXTK/GltfHelper.h>
 */
 
-#include <Geometry/Geometry.h>
-
-#include <ports/tiny_gltf/tiny_gltf.h>
-#include <ports/stb/stb_image.h>
 
 
 #ifndef flagVISUALSTUDIO
@@ -31,10 +27,3 @@ extern char g_vsPbrNoVprtMain[1024];
 extern char g_gsPbrNoVprtMain[1024];
 #endif
 
-
-#include "PbrCommon.h"
-#include "PbrResources.h"
-#include "PbrMaterial.h"
-#include "PbrPrimitive.h"
-#include "PbrModel.h"
-#include "GltfLoader.h"

@@ -3,7 +3,7 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 interface ID3D11Device;
@@ -46,5 +46,5 @@ inline Shared<Pbr::Model> FromGltfBinary(
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

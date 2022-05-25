@@ -1,7 +1,7 @@
-#include "Pbr.h"
+#include "IGraphics.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
@@ -154,5 +154,5 @@ void Model::UpdateTransforms(Pbr::Resources const& pbr_res, ID3D11DeviceContext3
 
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

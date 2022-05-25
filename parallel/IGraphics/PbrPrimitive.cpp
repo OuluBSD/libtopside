@@ -1,7 +1,7 @@
-#include "Pbr.h"
+#include "IGraphics.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 ComPtr<ID3D11Buffer> CreateVertexBuffer(ID3D11Device* device, const Pbr::PrimitiveBuilder& prim_builder)
@@ -80,4 +80,4 @@ void Primitive::Render(ID3D11DeviceContext3* context) const
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

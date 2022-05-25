@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 namespace Pbr {
@@ -34,4 +34,4 @@ private:
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

@@ -1,4 +1,4 @@
-#include "Pbr.h"
+#include "IGraphics.h"
 
 // Implementation is in the Gltf library so this isn't needed: #define STB_IMAGE_IMPLEMENTATION
 
@@ -289,5 +289,5 @@ ComPtr<ID3D11SamplerState> CreateSampler(ID3D11Device* device, D3D11_TEXTURE_ADD
 
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

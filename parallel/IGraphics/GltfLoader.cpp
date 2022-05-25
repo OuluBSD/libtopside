@@ -1,7 +1,7 @@
-#include "Pbr.h"
+#include "IGraphics.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 // Create a DirectX texture view from a tinygltf Image.
@@ -255,5 +255,5 @@ Shared<Pbr::Model> FromGltfBinary(
 
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

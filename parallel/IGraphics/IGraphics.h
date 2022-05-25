@@ -104,6 +104,15 @@ typedef unsigned int	Gxbf;
 #include "TRuntime.h"
 #include "TContext.h"
 #include "TUtil.h"
+
+#include "IGraphics.h"
+#include "PbrCommon.h"
+#include "PbrResources.h"
+#include "PbrMaterial.h"
+#include "PbrPrimitive.h"
+#include "PbrModel.h"
+#include "GltfLoader.h"
+
 #include "TBuffer.h"
 #include "TBufferField.h"
 
