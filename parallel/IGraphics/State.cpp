@@ -3,7 +3,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 namespace GVar {
-const char* names[GVar::VAR_COUNT+1] = {
+const char* names[TS::GVar::VAR_COUNT+1] = {
 	"iAudioSeconds",
 	"iView",
 	"iLightDir",
@@ -50,7 +50,7 @@ const char* names[GVar::VAR_COUNT+1] = {
 	
 	0
 };
-const bool is_obj_var[GVar::VAR_COUNT+1] = {
+const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	true,
 	true,
 	true,

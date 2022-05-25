@@ -6,12 +6,13 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
 
-constexpr Pbr::NodeIndex_t root_parent_node_index = -1;
+constexpr Pbr::NodeIndex root_parent_node_index = -1;
 
 
 namespace Pbr {
 
-Model::Model(bool create_root_node /*= true*/)
+template <class Gfx>
+ModelT<Gfx>::ModelT(bool create_root_node /*= true*/)
 {
     if (create_root_node)
     {
@@ -19,14 +20,15 @@ Model::Model(bool create_root_node /*= true*/)
     }
 }
 
-void Model::Render(Pbr::Resources const& pbr_res, ID3D11DeviceContext3* context) const
+template <class Gfx>
+void ModelT<Gfx>::Render(Resources const& pbr_res, NativeDeviceContextRef context) const
 {
     UpdateTransforms(pbr_res, context);
 
-    ID3D11ShaderResourceView* vs_shader_resources[] = { model_transforms_resource_view.Get() };
+    NativeShaderResourcesRef vs_shader_resources[] = { model_transforms_resource_view.Get() };
     context->VSSetShaderResources(Pbr::ShaderSlots::Transforms, _countof(vs_shader_resources), vs_shader_resources);
 
-    for (const Pbr::Primitive& primitive : primitives)
+    for (const Pbr::PrimitiveT<Gfx>& primitive : primitives)
     {
         if (primitive.GetMaterial()->hidden) continue;
 
@@ -38,57 +40,61 @@ void Model::Render(Pbr::Resources const& pbr_res, ID3D11DeviceContext3* context)
     context->GSSetShader(nullptr, nullptr, 0);
 }
 
-Node& Model::AddNode(const mat4& transform, Pbr::NodeIndex_t parent_index, String name)
+template <class Gfx>
+Node& ModelT<Gfx>::AddNode(const mat4& transform, Pbr::NodeIndex parent_index, String name)
 {
-    auto newNodeIndex = (Pbr::NodeIndex_t)nodes.GetCount();
+    auto newNodeIndex = (Pbr::NodeIndex)nodes.GetCount();
     if (newNodeIndex != root_node_idx && parent_index == root_parent_node_index)
     {
         throw new Exc("Only the first node can be the root");
     }
 
-    nodes.emplace_back(transform, std::move(name), newNodeIndex, parent_index);
+    TODO //nodes.Add(transform, std::move(name), newNodeIndex, parent_index);
+    
     model_transforms_structured_buffer = nullptr; // Structured buffer will need to be recreated.
-    return nodes.back();
+    return nodes.Top();
 }
 
-void Model::Clear()
+template <class Gfx>
+void ModelT<Gfx>::Clear()
 {
-    primitives.clear();
+    primitives.Clear();
 }
 
-Shared<Model> Model::Clone(Pbr::Resources const& pbr_res) const
+template <class Gfx>
+Shared<ModelT<Gfx>> ModelT<Gfx>::Clone(Resources const& pbr_res) const
 {
-    auto clone = std::make_shared<Model>(false /* create_root_node */);
+    auto clone = MakeShared<ModelT>(false /* create_root_node */);
 
-    for (const Node& node : nodes)
-    {
-        clone->AddNode(node.GetTransform(), node.parent_node_index, node.Name);
+    for (const Node& node : nodes) {
+        clone->AddNode(node.GetTransform(), node.parent_node_index, node.name);
     }
 
-    for (const Primitive& primitive : primitives)
-    {
+    for (const Primitive& primitive : primitives) {
         clone->AddPrimitive(primitive.Clone(pbr_res));
     }
 
     return clone;
 }
 
-std::optional<NodeIndex_t> Model::FindFirstNode(char const* name, std::optional<NodeIndex_t> const& parent_node_index) const
+template <class Gfx>
+Optional<NodeIndex> ModelT<Gfx>::FindFirstNode(char const* name, Optional<NodeIndex> const& parent_node_index) const
 {
     // Children are guaranteed to come after their parents, so start looking after the parent index if one is provided.
-    const NodeIndex_t start_index = parent_node_index ? parent_node_index.value() + 1 : Pbr::root_node_idx;
+    const NodeIndex start_index = parent_node_index ? parent_node_index.value() + 1 : Pbr::root_node_idx;
     for (const Pbr::Node& node : nodes)
     {
         if ((!parent_node_index || node.parent_node_index == parent_node_index.value()) &&
             node.name == name) {
-            return node.Index;
+            return node.index;
         }
     }
 
     return {};
 }
 
-mat4 Model::GetNodeWorldTransform(NodeIndex_t nodeIndex) const
+template <class Gfx>
+mat4 ModelT<Gfx>::GetNodeWorldTransform(NodeIndex nodeIndex) const
 {
     const Pbr::Node& node = GetNode(nodeIndex);
 
@@ -97,17 +103,22 @@ mat4 Model::GetNodeWorldTransform(NodeIndex_t nodeIndex) const
 		node.index == Pbr::root_node_idx ?
 			identity<mat4>() :
 			GetNodeWorldTransform(node.parent_node_index);
+	
     return MultiplyMatrix(node.GetTransform(), parent_transform);
 }
 
-void Model::AddPrimitive(Pbr::Primitive primitive)
+template <class Gfx>
+void ModelT<Gfx>::AddPrimitive(const Pbr::PrimitiveT<Gfx>& primitive)
 {
     primitives.Add(std::move(primitive));
 }
 
-void Model::UpdateTransforms(Pbr::Resources const& pbr_res, ID3D11DeviceContext3* context) const
+template <class Gfx>
+void ModelT<Gfx>::UpdateTransforms(Resources const& pbr_res, NativeDeviceContextRef context) const
 {
-    const uint32 newtotal_modify_count = std::accumulate(
+	TODO
+	
+    /*const uint32 newtotal_modify_count = std::accumulate(
         nodes.begin(),
         nodes.end(),
         0,
@@ -143,13 +154,13 @@ void Model::UpdateTransforms(Pbr::Resources const& pbr_res, ID3D11DeviceContext3
         {
             ASSERT(node.parent_node_index == root_parent_node_index || node.parent_node_index < node.Index);
             const mat4 parent_transform = (node.parent_node_index == root_parent_node_index) ? identity<mat4>() : XMLoadFloat4x4(&model_transforms[node.parent_node_index]);
-            StoreMatrix(&model_transforms[node.Index], MultiplyMatrix(parent_transform, XMMatrixTranspose(node.GetTransform())));
+            StoreMatrix(&model_transforms[node.Index], MultiplyMatrix(parent_transform, MatrixTranspose(node.GetTransform())));
         }
 
         // Update node transform structured buffer.
         context->UpdateSubresource(model_transforms_structured_buffer.Get(), 0, nullptr, this->model_transforms.data(), 0, 0);
         total_modify_count = newtotal_modify_count;
-    }
+    }*/
 }
 
 }

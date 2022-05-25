@@ -7,16 +7,8 @@
 	#include <Esc/Esc.h>
 #endif
 
-#include <Pbr/Pbr.h>
-
 #ifdef flagVR
-	#if defined flagUWP
-		#include <WinLib/WinLib.h>
-	#elif defined flagSTEAM
-		#include <SteamLib/SteamLib.h>
-	#else
-		#include <FreeLib/FreeLib.h>
-	#endif
+	#include <IHolograph/IHolograph.h>
 #endif
 
 #if !defined LIBTOPSIDE && defined flagGUI

@@ -170,6 +170,60 @@ struct OglGfxT {
 #endif
 
 
+
+
+#ifdef flagDX11
+
+struct Dx11FramebufferBase;
+struct Dx11BufferBase;
+	
+template <class Gfx>
+struct Dx11GfxT {
+	static const bool is_builtin_shader = false;
+	
+	using NativeDeviceRef = ComPtr<ID3D11Device>;
+	using NativeDeviceContextRef = ID3D11DeviceContext3 *;
+	using NativeShaderResourcesRef = ComPtr<ID3D11ShaderResourceView>;
+	using NativeBlendStateRef = ComPtr<ID3D11BlendState>;
+	using NativeSamplerStateRef = ComPtr <ID3D11SamplerState>;
+	using NativeBufferRef = ComPtr <ID3D11Buffer>;
+	using NativeInputLayoutRef = ComPtr <ID3D11InputLayout>;
+	using NativeVertexShaderRef = ComPtr <ID3D11VertexShader>;
+	using NativeGeometryShaderRef = ComPtr <ID3D11GeometryShader>;
+	using NativePixelShaderRef = ComPtr <ID3D11PixelShader>;
+	
+	/*using NativeTexture = GLuint;
+	using NativeShaderRef = GLuint;
+	using NativeColorBufferRef = GLuint;
+	using NativeColorBufferConstRef = GLuint;
+	using NativeDepthBufferRef = GLuint;
+	using NativeDepthBufferConstRef = GLuint;
+	using NativeFrameBufferRef = GLuint;
+	using NativeFrameBufferConstRef = GLuint;
+	using NativeBuffer = GLuint;
+	using SystemFrameBufferRef = NativeFrameBufferRef;
+	using NativeVertexArray = GLuint;
+	using NativeVertexBuffer = GLuint;
+	using NativeElementBuffer = GLuint;
+	using NativeProgram = GLuint;
+	using NativePipeline = GLuint;
+	using ValFormat = Serial::FboFormat;*/
+	
+	using FramebufferBase = DxFramebufferBase;
+	using BufferBase = DxBufferBase;
+	
+	static const GVar::GfxType Type = GVar::DX;
+	
+	#include "TypeFuncList.inl"
+	
+	static Serial::FboFormat& GetFormat(Parallel::Format& fmt);
+	
+};
+#endif
+
+
+
+
 #ifdef flagPOSIX
 struct X11Gfx {
 	using NativeDisplay			= ::Display*;
@@ -236,6 +290,24 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 };
 #endif
 #endif
+
+#if defined flagPOSIX
+	#define X11SW_GFXTYPE GFXTYPE(X11Sw)
+	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11SwGfx>;
+#else
+	#define X11SW_GFXTYPE
+	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x)
+#endif
+
+#if defined flagPOSIX && defined flagOGL
+	#define X11OGL_GFXTYPE GFXTYPE(X11Ogl)
+	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11OglGfx>;
+#else
+	#define X11OGL_GFXTYPE
+	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x)
+#endif
+
+
 
 
 struct CpuGfx {
@@ -406,21 +478,17 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 
 #endif
 
-#if defined flagPOSIX
-	#define X11SW_GFXTYPE GFXTYPE(X11Sw)
-	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11SwGfx>;
-#else
-	#define X11SW_GFXTYPE
-	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x)
-#endif
 
-#if defined flagPOSIX && defined flagOGL
-	#define X11OGL_GFXTYPE GFXTYPE(X11Ogl)
-	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11OglGfx>;
-#else
-	#define X11OGL_GFXTYPE
-	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x)
-#endif
+
+
+
+
+
+
+
+
+
+
 
 
 #define GFXTYPE_LIST \

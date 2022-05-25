@@ -723,7 +723,7 @@ void BufferT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceC
 	}
 	
 	else if (var == VAR_COMPAT_DATE) {
-		double sec = ((int)ctx.time.hour * 60 + (int)ctx.time.minute) * 60 + (int)ctx.time.second;
+		double sec = ((int)ctx.time.hour * 60 + (int)ctx.time.minute) * 60 + (int)ctx.time.b;
 		sec += ctx.time_us;
 		Gfx::Uniform4f(uindex, (float)ctx.time.year, (float)ctx.time.month, (float)ctx.time.day, (float)sec);
 	}

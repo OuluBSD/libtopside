@@ -15,38 +15,43 @@ namespace Internal
     void ThrowIfFailed(dword hr);
 }
 
-using NodeIndex_t = uint16; // This type must align with the type used in the Pbr shaders.
 
-constexpr Pbr::NodeIndex_t root_node_idx = 0;
+template <class Gfx> struct PrimitiveT;
+template <class Gfx> struct ResourcesT;
+template <class Gfx> struct ModelT;
+
+
+using NodeIndex = uint16; // This type must align with the type used in the Pbr shaders.
+
+constexpr Pbr::NodeIndex root_node_idx = 0;
 
 // Vertex structure used by the PBR shaders.
 struct Vertex
 {
-    vec3 position;
-    vec3 normal;
-    vec4 tangent;
-    vec2 tex_coord;
-    NodeIndex_t mdl_transform_idx; // Index into the node transforms
+    vec3			position;
+    vec3			normal;
+    vec4			tangent;
+    vec2			tex_coord;
+    NodeIndex		mdl_transform_idx; // Index into the node transforms
 
     //static const D3D11_INPUT_ELEMENT_DESC vtx_desc[5];
 };
 
 struct PrimitiveBuilder
 {
-    Vector<Pbr::Vertex> vertices;
-    Vector<uint32> indices;
+    Vector<Pbr::Vertex>		vertices;
+    Vector<uint32>			indices;
 
-    PrimitiveBuilder& AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex_t transform_idx = Pbr::root_node_idx);
-    PrimitiveBuilder& AddCube(float side_length, Pbr::NodeIndex_t transform_idx = Pbr::root_node_idx);
+    PrimitiveBuilder& AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
+    PrimitiveBuilder& AddCube(float side_length, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
 };
 
 /*namespace Texture
 {
-    FixedArray<byte, 4> CreateRGBA(const vec4& color);
-    ComPtr<ID3D11ShaderResourceView> LoadImage(ID3D11Device* device, const byte* file_data, uint32 file_size);
-    ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(ID3D11Device* device, const vec4& color, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM);
-    ComPtr<ID3D11ShaderResourceView> CreateTexture(ID3D11Device* device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format);
-    ComPtr<ID3D11SamplerState> CreateSampler(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode = D3D11_TEXTURE_ADDRESS_CLAMP);
+    NativeShaderResourcesRef LoadImage(NativeDeviceRef device, const byte* file_data, uint32 file_size);
+    NativeShaderResourcesRef CreateFlatCubeTexture(NativeDeviceRef device, const vec4& color, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM);
+    NativeShaderResourcesRef CreateTexture(NativeDeviceRef device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format);
+    NativeSamplerStateRef CreateSampler(NativeDeviceRef device, D3D11_TEXTURE_ADDRESS_MODE addressMode = D3D11_TEXTURE_ADDRESS_CLAMP);
 }*/
 
 // Catch changes to a value of type T for lazy sync with DirectX.

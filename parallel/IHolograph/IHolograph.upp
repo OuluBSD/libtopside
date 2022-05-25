@@ -1,0 +1,37 @@
+description "\377B0,86,131";
+
+uses
+	ports/DirectXTK;
+
+file
+	Copying,
+	IHolograph.h,
+	IHolograph.cpp,
+	Dx11.h,
+	DirectXHelper.h,
+	MotionControllerSystem.h,
+	MotionControllerSystem.cpp,
+	AppView.h,
+	AppView.cpp,
+	CameraResources.h,
+	CameraResources.cpp,
+	ControllerRendering.h,
+	ControllerRendering.cpp,
+	DeviceResources.h,
+	DeviceResources.cpp,
+	Haptics.h,
+	HolographicRenderer.h,
+	HolographicRenderer.cpp,
+	HolographicScene.h,
+	HolographicScene.cpp,
+	Physics.h,
+	QuadRenderer.h,
+	QuadRenderer.cpp,
+	SkyboxRenderer.h,
+	SkyboxRenderer.cpp,
+	SpatialInteractionSystem.h,
+	SpatialInteractionSystem.cpp,
+	StepTimer.h,
+	TextRenderer.h,
+	TextRenderer.cpp;
+

@@ -512,27 +512,6 @@ quat make_quat_from_rotation_matrix(const mat4& m) {
     }
 }
 
-vec3 MultiplyPoint(const vec3& vec, const mat4& mat) {
-	return (vec.Embed() * mat).Splice(); // notice Embed = Extend(1)
-}
-
-vec3 MultiplyVector(const vec3& vec, const mat3& mat) {
-	return vec * mat;
-}
-
-vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
-	return (vec.Extend() * mat).Splice();
-}
-
-mat4 MultiplyMatrix(const mat4& m0, const mat4& m1) {
-	TODO
-	// check right order from XMMatrixMultiply! no guesses!
-}
-
-void StoreMatrix(mat4* dst, const mat4& src) {
-	dst = src;
-}
-
 mat4 Rotation(float pitch, float yaw, float roll) {
 	return YRotation(yaw) * XRotation(pitch) * ZRotation(roll);
 }
@@ -994,6 +973,74 @@ void ToMat3_(mat3& m, const quat& q) {
     m[2][2] = 1 - qq1 - qq2;
 }
 
+void StoreMatrix(mat4* dst, const mat4& src) {
+	*dst = src;
+}
+
+void StoreVec2(vec2* dst, const vec4& src) {
+	*dst = src.Splice<0,2>();
+}
+
+void StoreVec3(vec3* dst, const vec4& src) {
+	*dst = src.Splice<0,3>();
+}
+
+void StoreVec4(vec4* dst, const vec4& src) {
+	*dst = src;
+}
+
+void ScalarSinCos(float* f_sin, float* f_cos, float rad) {
+	ASSERT(f_sin && f_cos);
+	if (f_sin) *f_sin = FastSin(rad);
+	if (f_cos) *f_cos = FastCos(rad);
+}
+
+vec4 VectorScale(const vec4& v, float f) {
+	return v * f;
+}
+
+RGBA CreateRGBA(const vec4& color) {
+    vec4 colorf = color * 255.f;
+    return RGBA { (byte)colorf.x, (byte)colorf.y, (byte)colorf.z, (byte)colorf.w };
+}
+
+vec3 MultiplyPoint(const vec3& vec, const mat4& mat) {
+	return (vec.Embed() * mat).Splice(); // notice Embed = Extend(1)
+}
+
+vec3 MultiplyVector(const vec3& vec, const mat3& mat) {
+	return vec * mat;
+}
+
+vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
+	return (vec.Extend() * mat).Splice();
+}
+
+mat4 MultiplyMatrix(const mat4& m0, const mat4& m1) {
+	TODO
+	// check right order from XMMatrixMultiply! no guesses!
+}
+
+mat4 MatrixInverse(const mat4* l, const mat4& r) {
+	TODO
+}
+
+vec4 VectorSet(float x, float y, float z, float d) {
+	return vec4 {x, y, z, d};
+}
+
+vec4 VectorCross(const vec4& a, const vec4& b) {
+	TODO // XMVector3Cross
+}
+
+const vec4 IdentityR0            = vec4{ 1.0f, 0.0f, 0.0f, 0.0f };
+const vec4 IdentityR1            = vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+const vec4 IdentityR2            = vec4{ 0.0f, 0.0f, 1.0f, 0.0f };
+const vec4 IdentityR3            = vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+const vec4 NegIdentityR0         = vec4{ -1.0f, 0.0f, 0.0f, 0.0f };
+const vec4 NegIdentityR1         = vec4{ 0.0f, -1.0f, 0.0f, 0.0f };
+const vec4 NegIdentityR2         = vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
+const vec4 NegIdentityR3         = vec4{ 0.0f, 0.0f, 0.0f, -1.0f };
 
 
 NAMESPACE_TOPSIDE_END

@@ -1,25 +1,30 @@
 #include "IGraphics.h"
 
+
+NAMESPACE_PARALLEL_BEGIN
+
+
 // Implementation is in the Gltf library so this isn't needed: #define STB_IMAGE_IMPLEMENTATION
 
-using namespace Microsoft::WRL;
-using namespace DirectX;
+//using namespace Microsoft::WRL;
+//using namespace DirectX;
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
 
 namespace Pbr {
 
-namespace Internal
+namespace Internal {
+
+void ThrowIfFailed(dword hr)
 {
-    void ThrowIfFailed(dword hr)
+    if (hr != 0)
     {
-        if (hr != 0)
-        {
-            StringStream ss;
-            ss << std::hex << "Error in PBR renderer: 0x" << hr;
-            throw Exc(ss.str().c_str());
-        }
+        String s;
+        s << "Error in PBR renderer: " << HexStr(hr);
+        throw Exc(s);
     }
+}
+
 }
 
 /*const D3D11_INPUT_ELEMENT_DESC Vertex::vtx_desc[5] =
@@ -32,7 +37,7 @@ namespace Internal
 };*/
 
 // Based on code from DirectXTK
-PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex_t transform_idx)
+PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx)
 {
     if (tessellation < 3)
     {
@@ -51,36 +56,36 @@ PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellatio
     {
         const float v = 1 - (float)i / vert_segments;
 
-        const float latitude = (i * XM_PI / vert_segments) - XM_PIDIV2;
+        const float latitude = (i * M_PI / vert_segments) - M_PIDIV2;
         float dy, dxz;
-        XMScalarSinCos(&dy, &dxz, latitude);
+        ScalarSinCos(&dy, &dxz, latitude);
 
         // Create a single ring of vertices at this latitude.
         for (uint32 j = 0; j <= horz_segments; j++)
         {
-            const float longitude = j * XM_2PI / horz_segments;
+            const float longitude = j * M_2PI / horz_segments;
             float dx, dz;
-            XMScalarSinCos(&dx, &dz, longitude);
+            ScalarSinCos(&dx, &dz, longitude);
             dx *= dxz;
             dz *= dxz;
 
             // Compute tangent at 90 degrees along longitude.
             float tdx, tdz;
-            XMScalarSinCos(&tdx, &tdz, longitude + XM_PI);
+            ScalarSinCos(&tdx, &tdz, longitude + M_PI);
             tdx *= dxz;
             tdz *= dxz;
 
-            const vec4 normal = XMVectorSet(dx, dy, dz, 0);
-            const vec4 tangent = XMVectorSet(tdx, 0, tdz, 0);
+            const vec4 normal = VectorSet(dx, dy, dz, 0);
+            const vec4 tangent = VectorSet(tdx, 0, tdz, 0);
 
             const float u = (float)j / horz_segments;
-            const vec4 textureCoordinate = XMVectorSet(u, v, 0, 0);
+            const vec4 tex_coord = VectorSet(u, v, 0, 0);
 
             Pbr::Vertex vert;
-            XMStoreFloat3(&vert.position, normal * radius);
-            XMStoreFloat3(&vert.normal, normal);
-            XMStoreFloat4(&vert.tangent, tangent);
-            XMStoreFloat2(&vert.tex_coord, textureCoordinate);
+            StoreVec3(&vert.position, normal * radius);
+            StoreVec3(&vert.normal, normal);
+            StoreVec4(&vert.tangent, tangent);
+            StoreVec2(&vert.tex_coord, tex_coord);
 
             vert.mdl_transform_idx = transform_idx;
             vertices.Add(vert);
@@ -111,27 +116,27 @@ PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellatio
 }
 
 // Based on code from DirectXTK
-PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex_t transform_idx)
+PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex transform_idx)
 {
     // A box has six faces, each one pointing in a different direction.
     const int face_count = 6;
 
-    static const vec4loader face_normals[face_count] =
+    static const vec4 face_normals[face_count] =
     {
-        { { {  0,  0,  1, 0 } } },
-        { { {  0,  0, -1, 0 } } },
-        { { {  1,  0,  0, 0 } } },
-        { { { -1,  0,  0, 0 } } },
-        { { {  0,  1,  0, 0 } } },
-        { { {  0, -1,  0, 0 } } },
+        { {  0,  0,  1, 0 } } ,
+        { {  0,  0, -1, 0 } },
+        { {  1,  0,  0, 0 } },
+        { { -1,  0,  0, 0 } },
+        { {  0,  1,  0, 0 } },
+        { {  0, -1,  0, 0 } },
     };
 
-    static const vec4loader tex_coords[4] =
+    static const vec4 tex_coords[4] =
     {
-        { { { 1, 0, 0, 0 } } },
-        { { { 1, 1, 0, 0 } } },
-        { { { 0, 1, 0, 0 } } },
-        { { { 0, 0, 0, 0 } } },
+        { { 1, 0, 0, 0 } },
+        { { 1, 1, 0, 0 } },
+        { { 0, 1, 0, 0 } },
+        { { 0, 0, 0, 0 } },
     };
 
     // Create each face in turn.
@@ -142,10 +147,10 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex_t 
         vec4 tangent = face_normals[i];
 
         // Get two vectors perpendicular both to the face normal and to each other.
-        vec4 basis = (i >= 4) ? g_XMIdentityR2 : g_XMIdentityR1;
+        vec4 basis = (i >= 4) ? IdentityR2 : IdentityR1;
 
-        vec4 side1 = XMVector3Cross(normal, basis);
-        vec4 side2 = XMVector3Cross(normal, side1);
+        vec4 side1 = VectorCross(normal, basis);
+        vec4 side2 = VectorCross(normal, side1);
 
         // Six indices (two triangles) per face.
         size_t vbase = vertices.GetCount();
@@ -168,10 +173,10 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex_t 
         for (int i = 0; i < 4; i++)
         {
             Pbr::Vertex vert;
-            XMStoreFloat3(&vert.position, positions[i]);
-            XMStoreFloat3(&vert.normal, normal);
-            XMStoreFloat4(&vert.tangent, side1); // TODO arbitrarily picked side 1
-            XMStoreFloat2(&vert.tex_coord, tex_coords[i]);
+            StoreVec3(&vert.position, positions[i]);
+            StoreVec3(&vert.normal, normal);
+            StoreVec4(&vert.tangent, side1); // TODO arbitrarily picked side 1
+            StoreVec2(&vert.tex_coord, tex_coords[i]);
             vert.mdl_transform_idx = transform_idx;
             vertices.Add(vert);
         }
@@ -182,16 +187,13 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex_t 
 
 namespace Texture {
 
-FixedArray<byte, 4> CreateRGBA(const vec4& color)
-{
-    vec4 colorf;
-    DirectX::XMStoreFloat4(&colorf, DirectX::XMVectorScale(color, 255));
-    return FixedArray<byte, 4> { (byte)colorf.x, (byte)colorf.y, (byte)colorf.z, (byte)colorf.w };
-}
+#if 0
 
-ComPtr<ID3D11ShaderResourceView> LoadImage(ID3D11Device* device, const byte* file_data, uint32 file_size)
+NativeShaderResourcesRef LoadImage(NativeDeviceRef device, const byte* file_data, uint32 file_size)
 {
-    auto free_img_data = [](unsigned char* ptr) { ::free(ptr); };
+	TODO
+	
+    /*auto free_img_data = [](unsigned char* ptr) { ::free(ptr); };
     using stbi_unique_ptr = std::unique_ptr<unsigned char, decltype(free_img_data)>;
 
     int w, h, c;
@@ -201,12 +203,14 @@ ComPtr<ID3D11ShaderResourceView> LoadImage(ID3D11Device* device, const byte* fil
         throw Exc("Failed to load image file data.");
     }
 
-    return CreateTexture(device, rgba_data.get(), w * h * c, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);
+    return CreateTexture(device, rgba_data.get(), w * h * c, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);*/
 }
 
-ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(ID3D11Device* device, const vec4& color, DXGI_FORMAT format)
+NativeShaderResourcesRef CreateFlatCubeTexture(NativeDeviceRef device, const vec4& color, DXGI_FORMAT format)
 {
-    D3D11_TEXTURE2D_DESC desc{};
+	TODO
+	
+    /*D3D11_TEXTURE2D_DESC desc{};
     desc.Width = 1;
     desc.Height = 1;
     desc.MipLevels = 1;
@@ -219,7 +223,7 @@ ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(ID3D11Device* device, con
     desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
     // Each side is a 1x1 pixel (RGBA) image.
-    const FixedArray<byte, 4> rgba_clr = CreateRGBA(color);
+    const RGBA rgba_clr = CreateRGBA(color);
     D3D11_SUBRESOURCE_DATA init_data[6];
     for (int i = 0; i < _countof(init_data); i++)
     {
@@ -236,15 +240,17 @@ ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(ID3D11Device* device, con
     srv_desc.Texture2D.MipLevels = desc.MipLevels;
     srv_desc.Texture2D.MostDetailedMip = 0;
 
-    ComPtr<ID3D11ShaderResourceView> tex_view;
+    NativeShaderResourcesRef tex_view;
     Internal::ThrowIfFailed(device->CreateShaderResourceView(cube_tex.Get(), &srv_desc, &tex_view));
 
-    return tex_view;
+    return tex_view;*/
 }
 
-ComPtr<ID3D11ShaderResourceView> CreateTexture(ID3D11Device* device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format)
+NativeShaderResourcesRef CreateTexture(NativeDeviceRef device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format)
 {
-    D3D11_TEXTURE2D_DESC desc{};
+    TODO
+	
+    /*D3D11_TEXTURE2D_DESC desc{};
     desc.Width = width;
     desc.Height = height;
     desc.MipLevels = 1;
@@ -269,21 +275,25 @@ ComPtr<ID3D11ShaderResourceView> CreateTexture(ID3D11Device* device, const byte*
     srv_desc.Texture2D.MipLevels = desc.MipLevels;
     srv_desc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
 
-    ComPtr<ID3D11ShaderResourceView> tex_view;
+    NativeShaderResourcesRef tex_view;
     Internal::ThrowIfFailed(device->CreateShaderResourceView(texture2D.Get(), &srv_desc, &tex_view));
 
-    return tex_view;
+    return tex_view;*/
 }
 
-ComPtr<ID3D11SamplerState> CreateSampler(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
+NativeSamplerStateRef CreateSampler(NativeDeviceRef device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
 {
-    CD3D11_SAMPLER_DESC sampler_desc(CD3D11_DEFAULT{});
+    TODO
+	
+    /*CD3D11_SAMPLER_DESC sampler_desc(CD3D11_DEFAULT{});
     sampler_desc.AddressU = sampler_desc.AddressV = sampler_desc.addr_w = addressMode;
 
-    ComPtr<ID3D11SamplerState> sampler_state;
+    NativeSamplerStateRef sampler_state;
     Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&sampler_desc, &sampler_state));
-    return sampler_state;
+    return sampler_state;*/
 }
+
+#endif
 
 }
 

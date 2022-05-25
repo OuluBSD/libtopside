@@ -41,11 +41,6 @@ vec3 transform(const vec3& v, const quat& m);
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
 quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
 
-vec3 MultiplyPoint(const vec3& vec, const mat4& mat);
-vec3 MultiplyVector(const vec3& v, const mat3& m);
-vec3 MultiplyVector(const vec3& v, const mat4& m);
-mat4 MultiplyMatrix(const mat4& m0, const mat4& m1);
-void StoreMatrix(mat4* dst, const mat4& src);
 mat4 FastInverse(const mat4& mat);
 vec2 Project(const vec2& length, const vec2& direction);
 vec3 Project(const vec3& length, const vec3& direction);
@@ -97,6 +92,31 @@ mat4 YRotation(float angle);
 mat3 YRotation3x3(float angle);
 mat4 ZRotation(float angle);
 mat3 ZRotation3x3(float angle);
+
+void StoreMatrix(mat4* dst, const mat4& src);
+void StoreVec2(vec2* dst, const vec4& src);
+void StoreVec3(vec3* dst, const vec4& src);
+void StoreVec4(vec4* dst, const vec4& src);
+void ScalarSinCos(float* f_sin, float* f_cos, float rad);
+mat4 MatrixTranspose(const mat4& m);
+vec4 VectorScale(const vec4& v, float f);
+RGBA CreateRGBA(const vec4& color);
+vec3 MultiplyPoint(const vec3& vec, const mat4& mat);
+vec3 MultiplyVector(const vec3& v, const mat3& m);
+vec3 MultiplyVector(const vec3& v, const mat4& m);
+mat4 MultiplyMatrix(const mat4& m0, const mat4& m1);
+mat4 MatrixInverse(const mat4* l, const mat4& r);
+vec4 VectorSet(float x, float y, float z, float d);
+vec4 VectorCross(const vec4& a, const vec4& b);
+
+extern const vec4 IdentityR0;
+extern const vec4 IdentityR1;
+extern const vec4 IdentityR2;
+extern const vec4 IdentityR3;
+extern const vec4 NegIdentityR0;
+extern const vec4 NegIdentityR1;
+extern const vec4 NegIdentityR2;
+extern const vec4 NegIdentityR3;
 
 
 template <class T> T Min(const T& a, const T& b) {return T::GetMin(a, b);}

@@ -5,7 +5,8 @@ noblitz;
 uses
 	Local,
 	Geometry,
-	ParallelLib;
+	ParallelLib,
+	ports/MingwDx;
 
 uses(MSC & NEVER) ports/glew;
 
@@ -49,14 +50,16 @@ file
 	Pbr.cpp,
 	PbrCommon.h,
 	PbrCommon.cpp,
-	PbrMaterial.h,
-	PbrMaterial.cpp,
-	PbrModel.h,
-	PbrModel.cpp,
-	PbrPrimitive.h,
-	PbrPrimitive.cpp,
 	PbrResources.h,
 	PbrResources.cpp,
+	PbrMaterial.h,
+	PbrMaterial.cpp,
+	PbrPrimitive.h,
+	PbrPrimitive.cpp,
+	PbrModel.h,
+	PbrModel.cpp,
+	GltfLoader.h,
+	GltfLoader.cpp,
 	Templates readonly separator,
 	TState.h,
 	TState.cpp,

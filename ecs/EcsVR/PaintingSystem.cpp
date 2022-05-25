@@ -128,7 +128,7 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
 		const auto& paint_brush_model = paint->paint_brush->Get<PbrRenderable>()->model;
 		
 		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
-			Optional<Pbr::NodeIndex_t> touch_node = paint_brush_model->FindFirstNode("PaintTip");
+			Optional<Pbr::NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
 			
 			if (touch_node) {
 				// Calcluate paint tip offset from holding pose
