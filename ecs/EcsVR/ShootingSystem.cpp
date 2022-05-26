@@ -22,6 +22,9 @@ EntityRef ShootingInteractionSystem::CreateToolSelector() const {
 }
 
 void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) {
+	TODO // override funcs
+	
+	/*
 	ToolSystem::Register(std::move(entities));
 	// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
 	// In this scenario, we need to generate two transforms.
@@ -43,9 +46,12 @@ void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) 
 		entity->Get<ShootingComponent>()->gun = std::move(gun);
 		entity->Get<ShootingComponent>()->SetEnabled(false);
 	}
+	*/
 }
 
 void ShootingInteractionSystem::Activate(EntityRef entity) {
+	TODO // override funcs
+	
 	ToolSystem::Activate(entity);
 	entity->Get<PbrRenderable>()->SetEnabled(false);
 }
@@ -55,6 +61,7 @@ void ShootingInteractionSystem::Deactivate(EntityRef entity) {
 	ToolSystem::Deactivate(entity);
 }
 
+#if 0
 void ShootingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
 	if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 		auto shooting = enabled_entity->Get<ToolComponentRef>().AsRef<ShootingComponent>();
@@ -87,7 +94,7 @@ void ShootingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
 		shooting->gun->Get<PbrRenderable>()->alpha_multiplier = should_render_controller ? MakeOptional(0.25) : null_opt;
 	}
 }
-
+#endif
 void ShootingComponent::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	

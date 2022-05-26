@@ -1,16 +1,15 @@
 description "\377B0,86,131";
 
 uses
-	ports/DirectXTK;
+	IGraphics;
 
 file
 	Copying,
 	IHolograph.h,
 	IHolograph.cpp,
 	Dx11.h,
+	Dx11.cpp,
 	DirectXHelper.h,
-	MotionControllerSystem.h,
-	MotionControllerSystem.cpp,
 	AppView.h,
 	AppView.cpp,
 	CameraResources.h,
@@ -19,11 +18,6 @@ file
 	ControllerRendering.cpp,
 	DeviceResources.h,
 	DeviceResources.cpp,
-	Haptics.h,
-	HolographicRenderer.h,
-	HolographicRenderer.cpp,
-	HolographicScene.h,
-	HolographicScene.cpp,
 	Physics.h,
 	QuadRenderer.h,
 	QuadRenderer.cpp,
@@ -31,7 +25,19 @@ file
 	SkyboxRenderer.cpp,
 	SpatialInteractionSystem.h,
 	SpatialInteractionSystem.cpp,
-	StepTimer.h,
 	TextRenderer.h,
-	TextRenderer.cpp;
+	TextRenderer.cpp,
+	Additional readonly separator,
+	Toolkit.h,
+	dds.h,
+	DDSTextureLoader.cpp,
+	DDSTextureLoader.h,
+	DirectXHelper.h,
+	DirectXHelpers.h,
+	GltfHelper.cpp,
+	GltfHelper.h,
+	LoaderHelpers.h,
+	PlatformHelpers.h,
+	Trash readonly separator,
+	StepTimer.h;
 

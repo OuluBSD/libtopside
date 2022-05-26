@@ -1,20 +1,35 @@
 #pragma once
 
-#if 1
-
-
-NAMESPACE_PBR_BEGIN
-struct Model;
-struct Resources;
-NAMESPACE_PBR_END
-
-
-
 
 NAMESPACE_ECS_BEGIN
 
 
-struct PbrRenderable;
+
+class PbrRenderable :
+	public Component<PbrRenderable>
+{
+	
+	
+public:
+	RTTI_COMP0(PbrRenderable)
+	COPY_PANIC(PbrRenderable)
+	COMP_DEF_VISIT
+	
+    void ResetModel(String name, Optional<mat4> offset = null_opt) {
+        model_name = name;
+        offset = offset;
+    }
+
+    String				model_name;
+    //One<Pbr::Model>		model;
+    Optional<vec4>		color;
+    Optional<mat4>		offset;
+    Optional<double>	alpha_multiplier;
+    
+};
+
+
+#if 0
 
 class PbrModelCache : public System<PbrModelCache>
 {
@@ -47,8 +62,8 @@ private:
     
 };
 
+#endif
 
 NAMESPACE_ECS_END
 
 
-#endif

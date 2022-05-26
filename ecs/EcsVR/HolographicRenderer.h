@@ -1,12 +1,7 @@
 #pragma once
 
 
-NAMESPACE_PBR_BEGIN
-struct Resources;
-NAMESPACE_PBR_END
-
-
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class HolographicScene;
@@ -19,20 +14,34 @@ class SkyboxRenderer;
 // HolographicRenderer
 // A stereoscopic 3D rendering system, manages rendering everything in the scene
 // through DirectX 11 and Windows::Perception APIs
-class HolographicRenderer :
-	public System<HolographicRenderer>,
-	public GfxDeviceNotify
+template <class Holo>
+class HolographicRendererT :
+	public System<HolographicRendererT<Holo>>,
+	public Holo::GfxDeviceNotify
 {
 public:
-    HolographicRenderer(
-        Engine& core,
+	using Resources = Pbr::ResourcesT<Holo>;
+	using HoloSpace = typename Holo::HoloSpace;
+	using HoloFramePred = typename Holo::HoloFramePred;
+	using HoloCamRendParams = typename Holo::HoloCamRendParams;
+	using HoloCamPose = typename Holo::HoloCamPose;
+	using HoloSpaceCameraAddedEventArgs = typename Holo::HoloSpaceCameraAddedEventArgs;
+	using HoloSpaceCameraRemovedEventArgs = typename Holo::HoloSpaceCameraRemovedEventArgs;
+	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
+	using GfxDevResources = typename Holo::GfxDevResources;
+	using GfxCamResources = typename Holo::GfxCamResources;
+	using NativeEventToken = typename Holo::NativeEventToken;
+	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
+	
+    HolographicRendererT(
+        Ecs::Engine& core,
         Shared<GfxDevResources> dev_resources,
-        Shared<Pbr::Resources> pbr_res,
+        Shared<Resources> pbr_res,
         NativeShaderResourceViewRef skybox_tex);
 
-    ~HolographicRenderer();
+    ~HolographicRendererT();
 
-    Shared<Pbr::Resources> GetPbrResources();
+    Shared<Resources> GetPbrResources();
     Shared<GfxDevResources> GetDeviceResources();
 
     void OnDeviceLost() override;
@@ -49,12 +58,12 @@ protected:
     void ReleaseEventHandlers(const HoloSpace& holospace);
 
 private:
-    Shared<EntityStore>				entity_store;
+    Shared<Ecs::EntityStore>		entity_store;
     Shared<HolographicScene>		holo_scene;
     One<SkyboxRenderer>				skybox_rend;
     ArrayMap<float, TextRenderer>	text_rend;
     One<QuadRenderer>				quad_rend;
-    Shared<Pbr::Resources>			pbr_res;
+    Shared<Resources>				pbr_res;
     NativeEventToken				camera_added_event;
     NativeEventToken				camera_removed_event;
     Shared<GfxDevResources>			dev_res;
@@ -83,4 +92,4 @@ private:
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_ECS_END

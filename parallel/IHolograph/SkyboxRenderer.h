@@ -4,17 +4,28 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-////////////////////////////////////////////////////////////////////////////////
 // SkyboxRenderer
 // Responsible for rendering a cube-map Skybox in a 3D scene provided a cube-map texture
-class SkyboxRenderer
+template <class Holo>
+class SkyboxRendererT
 {
 public:
-    SkyboxRenderer(
+	using GfxDevResources = typename Holo::GfxDevResources;
+	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
+	using NativeVertexShaderRef = typename Holo::NativeVertexShaderRef;
+	using NativeGeometryShaderRef = typename Holo::NativeGeometryShaderRef;
+	using NativePixelShaderRef = typename Holo::NativePixelShaderRef;
+	using NativeSamplerStateRef = typename Holo::NativeSamplerStateRef;
+	using NativeDepthStencilStateRef = typename Holo::NativeDepthStencilStateRef;
+	using NativeBufferRef = typename Holo::NativeBufferRef;
+	using NativeInputLayoutRef = typename Holo::NativeInputLayoutRef;
+	
+	
+    SkyboxRendererT(
         Shared<GfxDevResources> dev_resources,
         NativeShaderResourceViewRef skybox_tex);
 
-    ~SkyboxRenderer() = default;
+    ~SkyboxRendererT() = default;
 
     void SetTexture(
         NativeShaderResourceViewRef skybox_tex);

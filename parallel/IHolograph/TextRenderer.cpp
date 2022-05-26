@@ -1,10 +1,11 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-TextRenderer::TextRenderer(
+template <class Holo>
+TextRendererT<Holo>::TextRendererT(
     Shared<GfxDevResources> dev_resources,
     uint32 tex_width,
     uint32 tex_height,
@@ -17,9 +18,11 @@ TextRenderer::TextRenderer(
     CreateDeviceDependentResources();
 }
 
-TextRenderer::~TextRenderer() = default;
+template <class Holo>
+TextRendererT<Holo>::~TextRendererT() = default;
 
-void TextRenderer::RenderTextOffscreen(const String& str)
+template <class Holo>
+void TextRendererT<Holo>::RenderTextOffscreen(const String& str)
 {
     // Clear the off-screen render target.
     dev_res->GetD3DDeviceContext()->ClearRenderTargetView(render_target_view.Get(), Colors::Transparent);
@@ -65,7 +68,8 @@ void TextRenderer::RenderTextOffscreen(const String& str)
     }
 }
 
-void TextRenderer::ReleaseDeviceDependentResources()
+template <class Holo>
+void TextRendererT<Holo>::ReleaseDeviceDependentResources()
 {
     texture.Reset();
     shader_resource_view.Reset();
@@ -76,7 +80,8 @@ void TextRenderer::ReleaseDeviceDependentResources()
     text_format.Reset();
 }
 
-void TextRenderer::CreateDeviceDependentResources()
+template <class Holo>
+void TextRendererT<Holo>::CreateDeviceDependentResources()
 {
     // Create a default sampler state, which will use point sampling.
     const CD3D11_SAMPLER_DESC desc{ CD3D11_DEFAULT{} };

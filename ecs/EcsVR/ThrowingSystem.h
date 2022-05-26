@@ -51,8 +51,8 @@ protected:
 	EntityRef CreateToolSelector() const override;
 	
 	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
+	//void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	//void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
 	
 };
 

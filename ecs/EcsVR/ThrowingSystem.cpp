@@ -22,13 +22,16 @@ EntityRef ThrowingInteractionSystem::CreateToolSelector() const {
 }
 
 void ThrowingInteractionSystem::Update(double dt) {
+	TODO // override funcs
+	
 	Vector<RTuple<EntityRef, ToolComponentRef>> enabled_ents = GetEnabledEntities();
 	
 	for (RTuple<EntityRef, ToolComponentRef>& enabled_entity : enabled_ents) {
 		EntityRef& entity = enabled_entity.a;
 		ToolComponentRef& throwing = enabled_entity.b.a;
 		
-		if (throwing->ball_object) {
+		TODO
+		/*if (throwing->ball_object) {
 			if (const SpatialInteractionSourceLocation location = entity->Get<MotionControllerComponent>()->location) {
 				if (const SpatialPointerInteractionSourcePose pointer_pose = location.SourcePointerPose()) {
 					auto transform = throwing->ball_object->Get<Transform>();
@@ -40,10 +43,10 @@ void ThrowingInteractionSystem::Update(double dt) {
 					}
 				}
 			}
-		}
+		}*/
 	}
 }
-
+#if 0
 void ThrowingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
 	if (args.PressKind() == SpatialInteractionPressKind::Select) {
 		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
@@ -94,7 +97,7 @@ void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 		}
 	}
 }
-
+#endif
 void ThrowingComponent::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	

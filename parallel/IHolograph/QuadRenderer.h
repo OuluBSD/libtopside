@@ -7,10 +7,21 @@ NAMESPACE_PARALLEL_BEGIN
 ////////////////////////////////////////////////////////////////////////////////
 // QuadRenderer
 // Responsible for rendering quads in a 3D scene provided a transform matrix and texture
-class QuadRenderer
-{
+template <class Holo>
+class QuadRendererT {
+	
 public:
-    QuadRenderer(Shared<GfxDevResources> dev_resources);
+	using GfxDevResources = typename Holo::GfxDevResources;
+	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
+	using NativeInputLayoutRef = typename Holo::NativeInputLayoutRef;
+	using NativeBufferRef = typename Holo::NativeBufferRef;
+	using NativeVertexShaderRef = typename Holo::NativeVertexShaderRef;
+	using NativeGeometryShaderRef = typename Holo::NativeGeometryShaderRef;
+	using NativePixelShaderRef = typename Holo::NativePixelShaderRef;
+	using NativeSamplerStateRef = typename Holo::NativeSamplerStateRef;
+	
+	
+    QuadRendererT(Shared<GfxDevResources> dev_resources);
 
     void SetViewProjection(
         const mat4& world_to_view_left,
@@ -22,9 +33,7 @@ public:
     void ReleaseDeviceDependentResources();
 
     void Bind();
-    void Render(
-        const mat4& matrix,
-        ID3D11ShaderResourceView* texture);
+    void Render(const mat4& matrix, NativeShaderResourceViewRef texture);
     void Unbind();
 
 private:

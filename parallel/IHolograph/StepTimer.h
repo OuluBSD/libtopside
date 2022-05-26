@@ -1,5 +1,5 @@
 #pragma once
-
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -196,3 +196,4 @@ private:
 
 
 NAMESPACE_PARALLEL_END
+#endif

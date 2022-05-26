@@ -45,7 +45,7 @@ public:
 	
 	bool wait_touchpad_release = false;
 	
-	SpatialInteractionSourceLocation prev_manip_loc;
+	//SpatialInteractionSourceLocation prev_manip_loc;
 	
 	Optional<mat4> brush_tip_offset_from_holding_pose;
 	
@@ -87,9 +87,9 @@ protected:
 	void Deactivate(EntityRef entity) override;
 	
 	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	/*void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
 	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
+	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;*/
 	
 private:
 	vec4 SelectColor(double x, double y);

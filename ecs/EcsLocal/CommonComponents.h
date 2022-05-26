@@ -1,9 +1,6 @@
 #ifndef _System_CommonComponents_h_
 #define _System_CommonComponents_h_
 
-NAMESPACE_PBR_BEGIN
-    struct Model;
-NAMESPACE_PBR_END
 
 NAMESPACE_ECS_BEGIN
 

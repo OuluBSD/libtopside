@@ -6,6 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 
 void PaintingInteractionSystem::Start() {
+	TODO // override funcs
 	GetEngine().Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
 }
 
@@ -33,6 +34,9 @@ EntityRef PaintingInteractionSystem::CreateToolSelector() const {
 }
 
 void PaintingInteractionSystem::Register(const LinkedList<EntityRef>& entities) {
+	TODO // override funcs
+	
+	/*
 	ToolSystem::Register(std::move(entities));
 	auto es = GetEngine().Get<EntityStore>();
 	
@@ -63,6 +67,7 @@ void PaintingInteractionSystem::Register(const LinkedList<EntityRef>& entities) 
 	}
 	
 	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
+	*/
 }
 
 void PaintingInteractionSystem::Activate(EntityRef entity) {
@@ -87,6 +92,7 @@ void PaintingInteractionSystem::Deactivate(EntityRef entity) {
 	ToolSystem::Deactivate(entity);
 }
 
+#if 0
 void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
 	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
 		// Destroy all the paint strokes currently active
@@ -218,9 +224,14 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
 }
 
 void PaintingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
+	
 }
+#endif
 
 void PaintingInteractionSystem::Update(double dt) {
+	TODO // override funcs
+	
+	/*
 	for (auto& enabled_entity : GetEnabledEntities()) {
 		auto entity		= enabled_entity.Get<EntityRef>();
 		auto paint		= enabled_entity.Get<PaintComponentRef>();
@@ -303,6 +314,7 @@ void PaintingInteractionSystem::Update(double dt) {
 			}
 		}
 	}
+	*/
 }
 
 vec4 PaintingInteractionSystem::SelectColor(double x, double y) {

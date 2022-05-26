@@ -1,18 +1,16 @@
-#include "WinLib.h"
+#include "EcsVR.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Holographic Renderer
-////////////////////////////////////////////////////////////////////////////////
-HolographicRenderer::HolographicRenderer(
+template <class Holo>
+HolographicRendererT<Holo>::HolographicRendererT(
     Engine& core,
     Shared<GfxDevResources> dev_resources,
-    Shared<Pbr::Resources> pbr_res,
+    Shared<Pbr::ResourcesT<Holo>> pbr_res,
     NativeShaderResourceViewRef skybox_tex) :
-    System(core),
+    System<HolographicRendererT<Holo>>(core),
     dev_res(std::move(dev_resources)),
     pbr_res(std::move(pbr_res))
 {
@@ -20,22 +18,28 @@ HolographicRenderer::HolographicRenderer(
     skybox_rend = std::make_unique<SkyboxRenderer>(dev_res, skybox_tex);
 }
 
-HolographicRenderer::~HolographicRenderer() = default;
+template <class Holo>
+HolographicRendererT<Holo>::~HolographicRendererT() = default;
 
-Shared<Pbr::Resources> HolographicRenderer::GetPbrResources()
+template <class Holo>
+Shared<Pbr::ResourcesT<Holo>> HolographicRendererT<Holo>::GetPbrResources()
 {
     fail_fast_if(pbr_res == nullptr);
     return pbr_res;
 }
 
-Shared<GfxDevResources> HolographicRenderer::GetDeviceResources()
+template <class Holo>
+Shared<typename Holo::GfxDevResources> HolographicRendererT<Holo>::GetDeviceResources()
 {
     fail_fast_if(dev_res == nullptr);
     return dev_res;
 }
 
-void HolographicRenderer::OnDeviceLost()
+template <class Holo>
+void HolographicRendererT<Holo>::OnDeviceLost()
 {
+	TODO
+	/*
     pbr_res->ReleaseDeviceDependentResources();
     for (auto& renderer_pair : text_rend)
     {
@@ -43,10 +47,14 @@ void HolographicRenderer::OnDeviceLost()
     }
     quad_rend->ReleaseDeviceDependentResources();
     skybox_rend->ReleaseDeviceDependentResources();
+    */
 }
 
-void HolographicRenderer::OnDeviceRestored()
+template <class Holo>
+void HolographicRendererT<Holo>::OnDeviceRestored()
 {
+	TODO
+	/*
     pbr_res->CreateDeviceDependentResources(dev_res->GetD3DDevice());
     for (auto& renderer_pair : text_rend)
     {
@@ -54,37 +62,51 @@ void HolographicRenderer::OnDeviceRestored()
     }
     quad_rend->CreateDeviceDependentResources();
     skybox_rend->CreateDeviceDependentResources();
+    */
 }
 
-void HolographicRenderer::Initialize()
+template <class Holo>
+void HolographicRendererT<Holo>::Initialize()
 {
     dev_res->RegisterDeviceNotify(this);
     pbr_res->SetLight(vec4{ 0.0f, 0.7071067811865475f, -0.7071067811865475f }, Colors::White);
 }
 
-void HolographicRenderer::Uninitialize()
+template <class Holo>
+void HolographicRendererT<Holo>::Uninitialize()
 {
     dev_res->RegisterDeviceNotify(nullptr);
 }
 
-void HolographicRenderer::Start()
+template <class Holo>
+void HolographicRendererT<Holo>::Start()
 {
+	TODO
+	/*
     entity_store = machine.Get<EntityStore>();
     holo_scene = machine.Get<HolographicScene>();
 
     BindEventHandlers(holo_scene->HolographicSpace());
+    */
 }
 
-void HolographicRenderer::Stop()
+template <class Holo>
+void HolographicRendererT<Holo>::Stop()
 {
+	TODO
+	/*
     ReleaseEventHandlers(holo_scene->HolographicSpace());
 
     holo_scene = 0;
     entity_store = 0;
+    */
 }
 
-void HolographicRenderer::Update(double)
+template <class Holo>
+void HolographicRendererT<Holo>::Update(double)
 {
+	TODO
+	/*
     auto holographic_frame = holo_scene->CurrentFrame();
 
     dev_res->EnsureCameraResources(holographic_frame, holographic_frame.CurrentPrediction());
@@ -118,27 +140,33 @@ void HolographicRenderer::Update(double)
     {
         dev_res->Present(holographic_frame);
     }
+    */
 }
 
-TextRenderer* HolographicRenderer::GetTextRendererForFontSize(float font_size)
+template <class Holo>
+TextRenderer* HolographicRendererT<Holo>::GetTextRendererForFontSize(float font_size)
 {
-    auto it = text_rend.find(font_size);
+	TODO
+    /*auto it = text_rend.find(font_size);
     if (it == text_rend.end())
     {
         auto text_rend = std::make_unique<TextRenderer>(dev_res, 1024u, 1024u, font_size);
         it = text_rend.insert(it, { font_size, std::move(text_rend) });
     }
 
-    return it->second.get();
+    return it->second.get();*/
 }
 
-bool HolographicRenderer::RenderAtCameraPose(
+template <class Holo>
+bool HolographicRendererT<Holo>::RenderAtCameraPose(
     GfxCamResources *cam_resources,
     const SpatialCoordinateSystem& coord_system,
     HoloFramePred& prediction,
     const HoloCamRendParams& rend_params,
     const HoloCamPose& cam_pose)
 {
+	TODO
+	/*
     // Get the device context.
     const auto context = dev_res->GetD3DDeviceContext();
     const auto depth_stencil_view = cam_resources->GetDepthStencilView();
@@ -232,22 +260,27 @@ bool HolographicRenderer::RenderAtCameraPose(
         cam_resources->CommitDirect3D11DepthBuffer(rend_params);
     }
 
-    return true;
+    return true;*/
 }
 
-void HolographicRenderer::BindEventHandlers(
+template <class Holo>
+void HolographicRendererT<Holo>::BindEventHandlers(
     const HoloSpace& holospace)
 {
+	TODO
+	/*
     fail_fast_if(holospace == nullptr);
 
     camera_added_event = holospace.CameraAdded(
-        std::bind(&HolographicRenderer::OnCameraAdded, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&HolographicRendererT<Holo>::OnCameraAdded, this, std::placeholders::_1, std::placeholders::_2));
 
     camera_removed_event = holospace.CameraRemoved(
-        std::bind(&HolographicRenderer::OnCameraRemoved, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&HolographicRendererT<Holo>::OnCameraRemoved, this, std::placeholders::_1, std::placeholders::_2));
+    */
 }
 
-void HolographicRenderer::ReleaseEventHandlers(
+template <class Holo>
+void HolographicRendererT<Holo>::ReleaseEventHandlers(
     const HoloSpace& holospace)
 {
     fail_fast_if(holospace == nullptr);
@@ -257,10 +290,13 @@ void HolographicRenderer::ReleaseEventHandlers(
 }
 
 // Asynchronously creates resources for new holographic cameras.
-void HolographicRenderer::OnCameraAdded(
+template <class Holo>
+void HolographicRendererT<Holo>::OnCameraAdded(
     const HoloSpace& sender,
     HoloSpaceCameraAddedEventArgs const& args)
 {
+	TODO
+	#if 0
     Deferral deferral = args.GetDeferral();
     HolographicCamera holocam = args.Camera();
     concurrency::create_task([this, deferral, holocam]()
@@ -286,15 +322,19 @@ void HolographicRenderer::OnCameraAdded(
         // the deferral is completed.
         deferral.Complete();
     });
+    #endif
 }
 
 // Synchronously releases resources for holographic cameras that are no longer
 // attached to the system.
 
-void HolographicRenderer::OnCameraRemoved(
+template <class Holo>
+void HolographicRendererT<Holo>::OnCameraRemoved(
     const HoloSpace& sender,
     HoloSpaceCameraRemovedEventArgs const& args)
 {
+	TODO
+	/*
     concurrency::create_task([this]()
     {
         //
@@ -310,7 +350,8 @@ void HolographicRenderer::OnCameraRemoved(
     // deallocating resources for this camera. At 60 frames per second this wait should
     // not take long.
     dev_res->RemoveHolographicCamera(args.Camera());
+    */
 }
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_ECS_END

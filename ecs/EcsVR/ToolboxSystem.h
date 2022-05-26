@@ -21,11 +21,18 @@ public:
 };
 
 
+typedef enum {
+	Unspecified,
+	Left,
+	Right
+} SpatialInteractionSourceHandedness;
+
+
 // ToolboxSystem
 // This system manages the ToolSystems and manages the two Entities that represent the left and right Motion Controllers
 class ToolboxSystem :
-	public System<ToolboxSystem>,
-	public ISpatialInteractionListener {
+	public System<ToolboxSystem>
+	/*public ISpatialInteractionListener*/ {
 	LinkedList<EntityRef> entities;
 	
 public:
@@ -47,7 +54,7 @@ protected:
 	void Uninitialize() override;
 	
 	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	//void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
 	
 private:
 	TypeMap<ToolSystemBaseRef> selectors;

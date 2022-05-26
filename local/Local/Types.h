@@ -22,6 +22,7 @@ typedef unsigned int	Uint;
 typedef unsigned char	Byte;
 typedef void			Void;
 
+typedef float			TimeSpan;
 
 class RuntimeVisitor;
 

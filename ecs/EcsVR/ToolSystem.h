@@ -58,8 +58,8 @@ struct ToolSelectorPrefab :
 // that actually have the associated ToolComponent attached and enabled
 template<typename T, typename ToolComponent>
 class ToolSystem :
-	public ToolSystemBase,
-	public ISpatialInteractionListener
+	public ToolSystemBase/*,
+	public ISpatialInteractionListener*/
 {
 	
 public:
@@ -72,6 +72,7 @@ public:
 protected:
 	// System
 	void Start() override {
+		TODO // fix inherit
 		Engine& m = GetEngine();
 		m.Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
 	}
@@ -90,12 +91,12 @@ protected:
 		}
 		
 		Engine& m = GetEngine();
-		m.Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
+		TODO //m.Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
 	}
 	
 	void Unregister() override {
 		Engine& m = GetEngine();
-		m.Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
+		TODO //m.Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
 		
 		for (auto& entity : m_entities) {
 			entity->Remove<ToolComponent>();
@@ -128,7 +129,8 @@ protected:
 	}
 	
 	Optional<RTuple<EntityRef, ToolComponentRef>> TryGetEntityFromSource(const SpatialInteractionSource& source) const {
-		for (auto& entity : m_entities) {
+		TODO
+		/*for (auto& entity : m_entities) {
 			auto comp = entity->Get<ToolComponent>();
 			
 			if (comp->IsEnabled()) {
@@ -138,7 +140,7 @@ protected:
 			}
 		}
 		
-		return null_opt;
+		return null_opt;*/
 	}
 	
 	LinkedList<EntityRef> m_entities;

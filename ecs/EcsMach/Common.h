@@ -2,14 +2,14 @@
 #define _EcsMech_Common_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+/*NAMESPACE_TOPSIDE_BEGIN
 
 
 class ISpatialInteractionListener;
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_TOPSIDE_END*/
 
 
 
@@ -31,7 +31,7 @@ class RegistrySystem;
 class Overlap;
 class ToolSystemBase;
 class ToolComponent;
-class MotionControllerComponent;
+//class MotionControllerComponent;
 class PbrRenderable;
 class CoreWindow;
 class DebugAudioGeneratorExt;
@@ -78,8 +78,8 @@ using ExtComponentRef		= Ref<ExtComponent,			RefParent1<Entity>>;
 using DebugAudioGeneratorExtRef	= Ref<DebugAudioGeneratorExt,		RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
-using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
-using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		EcsSystemParent>;
+//using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
+//using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		EcsSystemParent>;
 
 //using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;

@@ -1,4 +1,4 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -9,11 +9,12 @@ GfxCamResources::CameraResources(const HolographicCamera& camera) :
     is_stereo(camera.IsStereo()),
     gfx_rend_tgt_size(camera.RenderTargetSize())
 {
-    gfx_viewport = CD3D11_VIEWPORT(
+    gfx_viewport = Viewport{
         0.f, 0.f,
         gfx_rend_tgt_size.cx,
-        gfx_rend_tgt_size.cy
-        );
+        gfx_rend_tgt_size.cy,
+        0, 1
+        };
 };
 
 // Updates resources associated with a holographic camera's swap chain.
@@ -135,12 +136,13 @@ bool GfxCamResources::GetViewProjectionTransform(
     // The system changes the viewport on a per-frame basis for system optimizations.
     auto viewport = cam_pose.Viewport();
     
-    gfx_viewport = CD3D11_VIEWPORT(
+    gfx_viewport = Viewport{
         viewport.X,
         viewport.Y,
         viewport.Width,
-        viewport.Height
-    );
+        viewport.Height,
+        0, 1
+    };
 
     // The projection transform for each frame is provided by the HolographicCameraPose.
     *proj_transform = cam_pose.ProjectionTransform();

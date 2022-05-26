@@ -8,7 +8,7 @@ namespace DX {
 
 
 // Function that reads from a binary file asynchronously.
-inline std::future<Vector<byte>> ReadDataAsync(const String& filename)
+inline Future<Vector<byte>> ReadDataAsync(const String& filename)
 {
     //using namespace winrt::Windows::Storage;
     //using namespace winrt::Windows::Storage::Streams;
@@ -22,7 +22,7 @@ inline std::future<Vector<byte>> ReadDataAsync(const String& filename)
     co_return returnBuffer;*/
 }
 
-inline std::future<NativeShaderResourceViewRef> LoadDDSTextureAsync(ID3D11Device* device, const String& filename)
+inline Future<NativeShaderResourceViewRef> LoadDDSTextureAsync(ID3D11Device* device, const String& filename)
 {
     const Vector<byte> fileData = co_await ReadDataAsync(filename);
 

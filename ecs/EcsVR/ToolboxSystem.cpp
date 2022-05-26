@@ -48,6 +48,9 @@ void ToolboxSystem::RemoveToolSystem(ToolSystemBaseRef system) {
 }
 
 void ToolboxSystem::Start() {
+	TODO // inherit fixed?
+	
+	/*
 	auto es = GetEngine().Get<EntityStore>();
 	
 	for (size_t i = 0; i < ctrls.GetCount(); ++i) {
@@ -74,13 +77,16 @@ void ToolboxSystem::Start() {
 	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
 	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
+	*/
 }
 
 void ToolboxSystem::Stop() {
-	GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
+	TODO //GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
 }
 
 void ToolboxSystem::Update(double dt) {
+	TODO // override funcs
+	
 	static const int fps_sz = 32;
 	static float fps[fps_sz] = {};
 	static uint32 curr_fps = 0;
@@ -137,7 +143,7 @@ void ToolboxSystem::Update(double dt) {
 	}
 }
 
-
+#if 0
 void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
 	if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
 		return;
@@ -196,6 +202,7 @@ void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& arg
 		}
 	}
 }
+#endif
 
 String ToolboxSystem::ControllerHandToString(ControllerHand hand) {
 	return hand == Left ? "Left" : "Right";
@@ -231,9 +238,9 @@ void ToolboxSystem::SwitchToolType(EntityRef entity, const TypeId& new_type) {
 
 EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source) {
 	for (auto& context : ctrls) {
-		if (context.ctrl->Get<MotionControllerComponent>()->IsSource(source)) {
+		TODO /*if (context.ctrl->Get<MotionControllerComponent>()->IsSource(source)) {
 			return context.ctrl;
-		}
+		}*/
 	}
 	
 	return EntityRef();

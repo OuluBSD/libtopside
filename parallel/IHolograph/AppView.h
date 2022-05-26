@@ -5,9 +5,25 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // IFrameworkView class. Connects the app with the Windows shell and handles application lifecycle events.
-class AppView sealed : public winrt::implements<AppView, IFrameworkView>
+template <class Holo>
+class AppViewT : public Holo::template AppViewBase<AppViewT<Holo>>
 {
 public:
+	using HoloSpace = typename Holo::HoloSpace;
+	using CoreApplicationView = typename Holo::CoreApplicationView;
+	using CoreWindow = typename Holo::CoreWindow;
+	using NativeString = typename Holo::NativeString;
+	using LaunchActivatedEventArgs = typename Holo::LaunchActivatedEventArgs;
+	using IActivatedEventArgs = typename Holo::IActivatedEventArgs;
+	using SuspendingEventArgs = typename Holo::SuspendingEventArgs;
+	using IInspectable = typename Holo::IInspectable;
+	using VisibilityChangedEventArgs = typename Holo::VisibilityChangedEventArgs;
+	using CoreWindowEventArgs = typename Holo::CoreWindowEventArgs;
+	using PointerEventArgs = typename Holo::PointerEventArgs;
+	using KeyEventArgs = typename Holo::KeyEventArgs;
+	using NativeEventToken = typename Holo::NativeEventToken;
+	
+	
     // IFrameworkView methods.
     void Initialize(const CoreApplicationView& app_view);
     void SetWindow(const CoreWindow& window);
@@ -31,7 +47,7 @@ protected:
     void OnPointerPressed(const CoreWindow& sender, const PointerEventArgs& args);
 
 private:
-    One<DemoRoomMain>					main;
+    //One<DemoRoomMain>					main;
 
     bool								is_window_closed  = false;
     bool								is_window_visible = true;
@@ -49,14 +65,17 @@ private:
     
 };
 
-class AppViewSource sealed : public winrt::implements<AppViewSource, IFrameworkViewSource>
-{
+template <class Holo>
+class AppViewSourceT : public Holo::template AppViewSourceBase<AppViewSourceT<Holo>> {
+	
 public:
+	using IFrameworkView = typename Holo::IFrameworkView;
+	
     // IFrameworkViewSource method.
     IFrameworkView CreateView();
 
 private:
-    AppView holographic_view;
+    AppViewT<Holo> holographic_view;
     
 };
 

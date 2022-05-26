@@ -1,42 +1,48 @@
-#include "WinLib.h"
+#include "EcsVR.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-void SpatialInteractionSystem::Initialize()
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::Initialize()
 {
     spatial_interaction_manager = SpatialInteractionManager::GetForCurrentView();
     BindEventHandlers();
 }
 
-void SpatialInteractionSystem::Uninitialize()
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::Uninitialize()
 {
     ReleaseEventHandlers();
     spatial_interaction_manager = nullptr;
 }
 
-void SpatialInteractionSystem::BindEventHandlers()
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::BindEventHandlers()
 {
-    fail_fast_if(spatial_interaction_manager == nullptr);
+	TODO
+	
+    /*fail_fast_if(spatial_interaction_manager == nullptr);
 
     source_tokens[Detected] = spatial_interaction_manager.SourceDetected(
-        std::bind(&SpatialInteractionSystem::HandleSourceDetected, this, _1, _2));
+        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceDetected, this, _1, _2));
 
     source_tokens[Pressed] = spatial_interaction_manager.SourcePressed(
-        std::bind(&SpatialInteractionSystem::HandleSourcePressed, this, _1, _2));
+        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourcePressed, this, _1, _2));
 
     source_tokens[Updated] = spatial_interaction_manager.SourceUpdated(
-        std::bind(&SpatialInteractionSystem::HandleSourceUpdated, this, _1, _2));
+        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceUpdated, this, _1, _2));
 
     source_tokens[Released] = spatial_interaction_manager.SourceReleased(
-        std::bind(&SpatialInteractionSystem::HandleSourceReleased, this, _1, _2));
+        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceReleased, this, _1, _2));
 
     source_tokens[Lost] = spatial_interaction_manager.SourceLost(
-        std::bind(&SpatialInteractionSystem::HandleSourceLost, this, _1, _2));
+        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceLost, this, _1, _2));*/
 }
 
-void SpatialInteractionSystem::ReleaseEventHandlers()
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::ReleaseEventHandlers()
 {
     fail_fast_if(spatial_interaction_manager == nullptr);
 
@@ -47,8 +53,11 @@ void SpatialInteractionSystem::ReleaseEventHandlers()
     spatial_interaction_manager.SourceDetected(source_tokens[Detected]);
 }
 
-void SpatialInteractionSystem::HandleSourceDetected(
-    const SpatialInteractionManager& /*sender*/,
+#if 0
+
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::HandleSourceDetected(
+    const SpatialInteractionManager& sender,
     const SpatialInteractionSourceEventArgs& args)
 {
     for (const auto& listener : spatial_interaction_listeners.PurgeAndGetListeners())
@@ -57,7 +66,8 @@ void SpatialInteractionSystem::HandleSourceDetected(
     }
 }
 
-void SpatialInteractionSystem::HandleSourceLost(
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::HandleSourceLost(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -67,7 +77,8 @@ void SpatialInteractionSystem::HandleSourceLost(
     }
 }
 
-void SpatialInteractionSystem::HandleSourcePressed(
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::HandleSourcePressed(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -77,7 +88,8 @@ void SpatialInteractionSystem::HandleSourcePressed(
     }
 }
 
-void SpatialInteractionSystem::HandleSourceUpdated(
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::HandleSourceUpdated(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -87,7 +99,8 @@ void SpatialInteractionSystem::HandleSourceUpdated(
     }
 }
 
-void SpatialInteractionSystem::HandleSourceReleased(
+template <class Holo>
+void SpatialInteractionSystemT<Holo>::HandleSourceReleased(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -97,5 +110,7 @@ void SpatialInteractionSystem::HandleSourceReleased(
     }
 }
 
+#endif
 
-NAMESPACE_PARALLEL_END
+
+NAMESPACE_ECS_END

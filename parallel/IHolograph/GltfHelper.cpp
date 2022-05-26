@@ -1,6 +1,5 @@
-#include "DirectXTK.h"
+#include "IHolograph.h"
 
-using namespace DirectX;
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
 

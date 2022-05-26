@@ -6,16 +6,29 @@ NAMESPACE_PARALLEL_BEGIN
 
 namespace DX {
 
-	
-class DeviceResources;
+
+template <class Holo>
+class DeviceResourcesT;
 
 
 // Manages DirectX device resources that are specific to a holographic camera, such as the
 // back buffer, ViewProjection constant buffer, and viewport.
-class CameraResources
+template <class Holo>
+class CameraResourcesT
 {
 public:
-    CameraResources(const HoloCam& holocam);
+	using HoloCam = typename Holo::HoloCam;
+	using GfxDevResources = typename Holo::GfxDevResources;
+	using HoloCamRendParams = typename Holo::HoloCamRendParams;
+	using HoloCamPose = typename Holo::HoloCamPose;
+	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
+	using HoloStereoTransform = typename Holo::HoloStereoTransform;
+	using NativeRenderTargetViewRef = typename Holo::NativeRenderTargetViewRef;
+	using NativeDepthStencilViewRef = typename Holo::NativeDepthStencilViewRef;
+	using NativeTexture2DRef = typename Holo::NativeTexture2DRef;
+	
+	
+    CameraResourcesT(const HoloCam& holocam);
 
     void CreateResourcesForBackBuffer(
         const GfxDevResources* dev_resources,
@@ -39,11 +52,11 @@ public:
     NativeRenderTargetViewRef	GetBackBufferRenderTargetView()     const { return gfx_rend_tgt_view.Get(); }
     NativeDepthStencilViewRef	GetDepthStencilView()               const { return gfx_depth_stencil_view.Get(); }
     NativeTexture2DRef			GetBackBufferTexture2D()            const { return gfx_back_buffer.Get(); }
-    D3D11_VIEWPORT				GetViewport()                       const { return gfx_viewport; }
-    DXGI_FORMAT					GetBackBufferDXGIFormat()           const { return gfxlib_fmt; }
+    ViewportParams				GetViewport()                       const { return gfx_viewport; }
+    LightSampleFD				GetBackBufferDXGIFormat()           const { return gfxlib_fmt; }
 
     // Render target properties.
-    vec2 GetRenderTargetSize() const& { return gfx_rend_tgt_size; }
+    Size GetRenderTargetSize() const { return gfx_rend_tgt_size; }
     bool IsRenderingStereoscopic() const { return is_stereo; }
 
     // The holographic camera these resources are for.
@@ -57,9 +70,9 @@ private:
     NativeTexture2DRef						gfx_back_buffer;
 
     // Direct3D rendering properties.
-    DXGI_FORMAT								gfxlib_fmt;
+    LightSampleFD							gfxlib_fmt;
     Size									gfx_rend_tgt_size;
-    D3D11_VIEWPORT							gfx_viewport;
+    ViewportParams							gfx_viewport;
 
     // Indicates whether the camera supports stereoscopic rendering.
     bool									is_stereo = false;

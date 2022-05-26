@@ -1,14 +1,15 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-
+#if 0
 
 // IFrameworkViewSource methods
 
-IFrameworkView AppViewSource::CreateView()
+typename Holo::IFrameworkView
+	AppViewSource::CreateView()
 {
     return holographic_view;
 }
@@ -165,5 +166,7 @@ void AppView::OnWindowClosed(const CoreWindow& sender, const CoreWindowEventArgs
     is_window_closed = true;
 }
 
+
+#endif
 
 NAMESPACE_PARALLEL_END

@@ -46,6 +46,9 @@ void PaintStrokeComponent::AddPoint(const mat4& transformation, float width) {
 }
 
 Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData() {
+	TODO // override funcs
+	
+	/*
 	Pbr::PrimitiveBuilder primitive_builder;
 	
 	if (squares.GetCount() > 0) {
@@ -105,6 +108,7 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData() {
 	}
 	
 	return primitive_builder;
+	*/
 }
 
 

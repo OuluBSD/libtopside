@@ -1,4 +1,4 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -58,14 +58,16 @@ void AddTouchpadTouchIndicator(Pbr::Model& ctrl_model, Pbr::Resources& pbr_res)
 
 namespace ControllerRendering {
 
-ControllerModelKey GetControllerModelKey(const SpatialInteractionSource& source) {
+/*ControllerModelKey GetControllerModelKey(const SpatialInteractionSource& source) {
     if (!source.Controller()) {
         return {};
     }
     return std::make_tuple(source.Controller().ProductId(), source.Controller().VendorId(), source.Controller().Version(), source.Handedness());
-}
+}*/
 
-std::future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsync(
+/*
+template <class Holo>
+Future<Shared<const Pbr::Model>> ControllerRenderingT<Holo>::TryLoadRenderModelAsync(
     Shared<Pbr::Resources> pbr_res,
     SpatialInteractionSource source)
 {
@@ -104,8 +106,10 @@ std::future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsy
 
     co_return model;
 }
+*/
 
-ArticulateValues GetArticulateValues(constSpatialSourceState& src_state)
+template <class Holo>
+ArticulateValues ControllerRenderingT<Holo>::GetArticulateValues(constSpatialSourceState& src_state)
 {
     ArticulateValues arti_vals;
 
@@ -127,7 +131,8 @@ ArticulateValues GetArticulateValues(constSpatialSourceState& src_state)
     return arti_vals;
 }
 
-void ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
+template <class Holo>
+void ControllerRenderingT<Holo>::ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
 {
     // Every articulatable node in the model has three children, two which define the extents of the motion and one (VALUE) which holds the interpolated value.
     // In some cases, there nodes are nested to create combined transformations, like the X and Y movements of the thumbstick.
@@ -165,11 +170,14 @@ void ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& mo
     }
 }
 
-std::future<Shared<const Pbr::Model>> ControllerModelCache::TryGetControllerModelAsync(
-    Shared<Pbr::Resources> pbr_res,
-    SpatialInteractionSource source)
+/*
+template <class Holo>
+Future<Shared<const Pbr::Model>>
+	ControllerRenderingT<Holo>::ControllerModelCache::TryGetControllerModelAsync(
+	    Shared<Pbr::Resources> pbr_res,
+	    SpatialInteractionSource source)
 {
-    const ControllerRendering::ControllerModelKey model_key = ControllerRendering::GetControllerModelKey(source);
+    const ControllerRenderingT<Holo>::ControllerModelKey model_key = ControllerRenderingT<Holo>::GetControllerModelKey(source);
 
     // Check the cache for the model. If one is found, return it.
     {
@@ -181,7 +189,7 @@ std::future<Shared<const Pbr::Model>> ControllerModelCache::TryGetControllerMode
         }
     }
 
-    const Shared<const Pbr::Model> ctrl_model = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
+    const Shared<const Pbr::Model> ctrl_model = co_await ControllerRenderingT<Holo>::TryLoadRenderModelAsync(pbr_res, source);
     if (ctrl_model)
     {
         Mutex::Lock guard(lock);
@@ -190,9 +198,10 @@ std::future<Shared<const Pbr::Model>> ControllerModelCache::TryGetControllerMode
 
     co_return ctrl_model;
 }
+*/
 
-
-void ControllerModelCache::ReleaseDeviceDependentResources()
+template <class Holo>
+void ControllerRenderingT<Holo>::ControllerModelCache::ReleaseDeviceDependentResources()
 {
     Mutex::Lock guard(lock);
     ctrl_meshes.clear();

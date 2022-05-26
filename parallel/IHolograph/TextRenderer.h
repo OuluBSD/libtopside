@@ -3,28 +3,38 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-	
-////////////////////////////////////////////////////////////////////////////////
+
 // TextRenderer
 // Responsible for rendering text onto a 2D texture provided a string
-class TextRenderer
+template <class Holo>
+class TextRendererT
 {
 public:
-    TextRenderer(
+	using GfxDevResources = typename Holo::GfxDevResources;
+	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
+	using NativeSamplerStateRef = typename Holo::NativeSamplerStateRef;
+	using NativeTexture2DRef = typename Holo::NativeTexture2DRef;
+	using NativeRenderTargetViewRef = typename Holo::NativeRenderTargetViewRef;
+	using NativeRenderTargetRef = typename Holo::NativeRenderTargetRef;
+	using NativeSolidColorBrushRef = typename Holo::NativeSolidColorBrushRef;
+	using NativeWriteTextFormatRef = typename Holo::NativeWriteTextFormatRef;
+	
+	
+    TextRendererT(
         Shared<GfxDevResources> dev_resources,
         uint32 tex_width,
         uint32 tex_height,
         float font_size);
 
-    ~TextRenderer();
+    ~TextRendererT();
 
     void RenderTextOffscreen(const String& str);
 
     void CreateDeviceDependentResources();
     void ReleaseDeviceDependentResources();
 
-    ID3D11ShaderResourceView*	GetTexture() const { return shader_resource_view.Get(); };
-    NativeSamplerStateRef		GetSampler() const { return point_sampler.Get(); };
+    NativeShaderResourceViewRef	GetTexture() const { return shader_resource_view; };
+    NativeSamplerStateRef		GetSampler() const { return point_sampler; };
 
 private:
     // Cached pointer to device resources.

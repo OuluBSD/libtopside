@@ -1,4 +1,4 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -26,13 +26,15 @@ struct VertexPositionTex
 };
 
 // Loads vertex and pixel shaders from files and instantiates the quad geometry.
-QuadRenderer::QuadRenderer(Shared<GfxDevResources> dev_resources) :
+template <class Holo>
+QuadRendererT<Holo>::QuadRendererT(Shared<GfxDevResources> dev_resources) :
     dev_res(std::move(dev_resources))
 {
     CreateDeviceDependentResources();
 }
 
-void QuadRenderer::Bind()
+template <class Holo>
+void QuadRendererT<Holo>::Bind()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
@@ -60,7 +62,8 @@ void QuadRenderer::Bind()
     context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 }
 
-void QuadRenderer::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
+template <class Holo>
+void QuadRendererT<Holo>::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
@@ -74,10 +77,12 @@ void QuadRenderer::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
     context->DrawIndexedInstanced(index_count, 2, 0, 0, 0);
 }
 
-void QuadRenderer::Unbind()
+template <class Holo>
+void QuadRendererT<Holo>::Unbind()
 {}
 
-void QuadRenderer::SetViewProjection(
+template <class Holo>
+void QuadRendererT<Holo>::SetViewProjection(
     const mat4& world_to_view_left,
     const mat4& view_to_proj_left,
     const mat4& world_to_view_right,
@@ -91,7 +96,8 @@ void QuadRenderer::SetViewProjection(
     dev_res->GetD3DDeviceContext()->UpdateSubresource(rendering_constant_buffer.Get(), 0, nullptr, &view_projection, 0, 0);
 }
 
-void QuadRenderer::CreateDeviceDependentResources()
+template <class Holo>
+void QuadRendererT<Holo>::CreateDeviceDependentResources()
 {
     const bool using_vprt = dev_res->GetDeviceSupportsVprt();
     const void* vertex_shader = (using_vprt) ? g_QuadVPRTVertexShader : g_QuadVertexShader;
@@ -228,7 +234,8 @@ void QuadRenderer::CreateDeviceDependentResources()
     }
 }
 
-void QuadRenderer::ReleaseDeviceDependentResources()
+template <class Holo>
+void QuadRendererT<Holo>::ReleaseDeviceDependentResources()
 {
     vertex_shader.Reset();
     input_layout.Reset();

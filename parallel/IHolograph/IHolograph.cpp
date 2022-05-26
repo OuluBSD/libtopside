@@ -1,4 +1,4 @@
-#include "WinLib.h"
+#include "IHolograph.h"
 
 #if flagVISUALSTUDIO
 

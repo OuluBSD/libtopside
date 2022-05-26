@@ -2,8 +2,6 @@ uses
 	AtomComplete,
 	EcsComplete;
 
-uses(WIN32) ports/DirectXTK;
-
 file
 	DemoRoom.h,
 	DemoRoom.cpp;

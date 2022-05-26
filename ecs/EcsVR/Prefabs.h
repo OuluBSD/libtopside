@@ -17,6 +17,8 @@ constexpr auto Gun = "Gun";
 
 struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
 {
+	using Component = EntityPrefab<Transform, PbrRenderable>::Components;
+	
     static Components Make(Entity& e)
     {
         auto components = EntityPrefab::Make(e);
@@ -90,7 +92,8 @@ struct PaintStroke : EntityPrefab<Transform, PbrRenderable, PaintStrokeComponent
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<PbrRenderable>().model.Create();
+		TODO
+        //components.Get<PbrRenderable>().model.Create();
 
         return components;
     }

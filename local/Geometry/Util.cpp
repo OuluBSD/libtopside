@@ -63,6 +63,10 @@ mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
     #endif
 }
 
+mat4 GetViewport(const ViewportParams& vp) {
+	return GetViewport(vp.x, vp.y, vp.w, vp.h, vp.max_depth);
+}
+
 mat4 GetViewport(float x, float y, float w, float h, float depth) {
 	#if 1
 	mat4 m = zero<mat4>();
@@ -1001,7 +1005,7 @@ vec4 VectorScale(const vec4& v, float f) {
 
 RGBA CreateRGBA(const vec4& color) {
     vec4 colorf = color * 255.f;
-    return RGBA { (byte)colorf.x, (byte)colorf.y, (byte)colorf.z, (byte)colorf.w };
+    return RGBA { (byte)colorf[0], (byte)colorf[1], (byte)colorf[2], (byte)colorf[3] };
 }
 
 vec3 MultiplyPoint(const vec3& vec, const mat4& mat) {

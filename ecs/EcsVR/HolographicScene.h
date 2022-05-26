@@ -1,12 +1,16 @@
 #pragma once
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 // PredictionUpdated event listener
-class IPredictionUpdateListener abstract
+template <class Holo>
+struct IPredictionUpdateListenerT
 {
+	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
+	using HoloFramePred = typename Holo::HoloFramePred;
+	
 public:
     enum PredictionUpdateReason
     {
@@ -24,13 +28,21 @@ public:
 
 // HolographicScene
 // Maintains a list of our current state of Windows::Perception objects, ensuring the rest of the systems
-// use the same coordinate system, timestamp, etc. 
-class HolographicScene : public System<HolographicScene>
+// use the same coordinate system, timestamp, etc.
+template <class Holo>
+class HolographicSceneT : public Ecs::System<HolographicSceneT<Holo>>
 {
 public:
-    using System::System;
-
-    HolographicScene(Engine& core, HoloSpace holospace);
+	using HoloSpace = typename Holo::HoloSpace;
+	using HoloFrame = typename Holo::HoloFrame;
+	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
+	using SpatialStageFrameOfReference = typename Holo::SpatialStageFrameOfReference;
+	using SpatialStationaryFrameOfReference = typename Holo::SpatialStationaryFrameOfReference;
+	using NativeEventToken = typename Holo::NativeEventToken;
+	using IPredictionUpdateListener = IPredictionUpdateListenerT<Holo>;
+	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;
+	
+    HolographicSceneT(Ecs::Engine& core, HoloSpace holospace);
 
     HoloFrame CurrentFrame() const;
     HoloSpace HolographicSpace() const;
@@ -48,12 +60,12 @@ protected:
     void Update(double) override;
     void Uninitialize() override;
 
-    void OnCurrentStageChanged();
+    /*void OnCurrentStageChanged();
 
-    void OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason);
+    void OnPredictionChanged(PredictionUpdateReason reason);*/
 
 private:
-    mutable std::shared_mutex			lock;
+    mutable Mutex						lock;
     SpatialStageFrameOfReference		stage_frame_of_reference = 0;
     SpatialStationaryFrameOfReference	stationary_frame_of_reference = 0;
     NativeEventToken					spatial_stage_current_changed;
@@ -61,9 +73,9 @@ private:
     HoloSpace							holospace;
     HoloFrame							current_frame;
 
-    ListenerCollection<IPredictionUpdateListener>	prediction_update_listeners;
+    Array<Shared<IPredictionUpdateListener>>		prediction_update_listeners;
     
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_ECS_END

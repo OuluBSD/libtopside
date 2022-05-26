@@ -38,8 +38,6 @@
 #include <wrl\client.h>
 #include <ppl.h>
 
-#include <ports/DirectXTK\DirectXTK.h>
-
 
 #pragma comment(lib, "windowsapp")
 #pragma comment(lib, "ole32")
@@ -180,6 +178,9 @@ struct Dx11Holo {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::UI::Input::Spatial;
 	
+	template <class T> using AppViewBase = winrt::implements<T, IFrameworkView>;
+	template <class T> using AppViewSourceBase = winrt::implements<T, IFrameworkViewSource>;
+	
 	using HoloCam = winrt::Windows::Graphics::Holographic::HolographicCamera;
 	using HoloCamRendParams = winrt::Windows::Graphics::Holographic:: HolographicCameraRenderingParameters;
 	using HoloCamPose = winrt::Windows::Graphics::Holographic:: HolographicCameraPose;
@@ -188,6 +189,8 @@ struct Dx11Holo {
 	using HoloFramePred = winrt::Windows::Graphics::Holographic:: HolographicFramePrediction;
 	using GfxInteropDevice = winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice;
 	using SpatialSource = winrt::Windows::UI::Input::Spatial:: SpatialInteractionSource;
+	using SpatialSourceHandedness = winrt::Windows::UI::Input::Spatial:: SpatialSourceHandedness;
+	using SpatialInteractionController = winrt::Windows::UI::Input::Spatial:: SpatialInteractionController;
 	using TimeSpan = winrt::Windows::Foundation:: TimeSpan;
 	using SpatialCoordinateSystem = winrt::Windows::Perception::Spatial:: SpatialCoordinateSystem;
 	using CoreWindow = winrt::Windows::UI::Core:: CoreWindow;
@@ -241,6 +244,8 @@ struct Dx11Holo {
 	using NativeEventToken = winrt:: event_token;
 	using NativeString = winrt::hstring;
 	
+	using FeatureLevel = D3D_FEATURE_LEVEL;
+	
 	// mat4 == mat4;
 	
 	void CheckResult(uint32 hr); // winrt:: check_hresult
@@ -250,6 +255,8 @@ struct Dx11Holo {
 	static uint16 BuzzContinuous(); // winrt::Windows::Devices::Haptics::KnownSimpleHapticsControllerWaveforms::BuzzContinuous();
 	static void ThrowLastError(); // winrt::throw_last_error
 	static void ThrowIfFailed(bool b); // Holo::ThrowIfFailed
+	static FeatureLevel GetDefaultFeatureLevel(); // D3D_FEATURE_LEVEL_10_0
+	static void SendContinuousBuzzForDuration(const SpatialSource& source, const TimeSpan& play_duration, float intensity = 1.0f);
 	
 	/* TODO
 	// The main function bootstraps into the IFrameworkView.

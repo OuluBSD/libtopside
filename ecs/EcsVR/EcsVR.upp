@@ -1,10 +1,13 @@
 description "\377B51,138,51";
 
 uses
-	EcsLib;
+	EcsLib,
+	IHolograph;
 
 file
 	EcsVR.h,
+	HolographicRenderer.h,
+	HolographicRenderer.cpp,
 	PbrModelCache.h,
 	PbrModelCache.cpp,
 	PaintStrokeSystem.h,
@@ -20,5 +23,11 @@ file
 	ShootingSystem.cpp,
 	ThrowingSystem.h,
 	ThrowingSystem.cpp,
+	HolographicScene.h,
+	HolographicScene.cpp,
+	MotionControllerSystem.h,
+	MotionControllerSystem.cpp,
+	SpatialInteractionSystem.h,
+	SpatialInteractionSystem.cpp,
 	_ readonly separator;
 

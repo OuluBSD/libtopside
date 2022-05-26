@@ -1,5 +1,5 @@
 #include "EcsVR.h"
-#if 1
+#if 0
 
 NAMESPACE_ECS_BEGIN
 

@@ -128,7 +128,18 @@ DEF_MINMAX(int)
 DEF_MINMAX(float)
 DEF_MINMAX(double)
 
+struct ViewportParams {
+	float x;
+	float y;
+	float w;
+	float h;
+	float min_depth;
+	float max_depth;
+};
+
+
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up);
+mat4 GetViewport(const ViewportParams& vp);
 mat4 GetViewport(float x, float y, float w, float h, float depth);
 bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
 

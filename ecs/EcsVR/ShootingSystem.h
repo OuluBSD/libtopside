@@ -53,8 +53,8 @@ protected:
 	void Deactivate(EntityRef entity) override;
 	
 	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
+	//void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	//void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
 	
 };
 

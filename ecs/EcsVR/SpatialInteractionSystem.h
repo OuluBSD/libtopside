@@ -1,15 +1,15 @@
 #pragma once
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-////////////////////////////////////////////////////////////////////////////////
 // SpatialInteraction event listener
-class ISpatialInteractionListener abstract
+template <class Holo>
+struct ISpatialInteractionListenerT
 {
+	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
 	
-public:
     virtual void OnSourceDetected(const SpatialSourceEventArgs& args) {};
     virtual void OnSourceLost(const SpatialSourceEventArgs& args) {};
     virtual void OnSourcePressed(const SpatialSourceEventArgs& args) {};
@@ -18,14 +18,18 @@ public:
     
 };
 
-////////////////////////////////////////////////////////////////////////////////
 // SpatialInteractionSystem
 // Responsible for managing the events from SpatialInteractionManager with additional filtering
-class SpatialInteractionSystem final : public System<SpatialInteractionSystem>
+template <class Holo>
+class SpatialInteractionSystemT final : public Ecs::System<SpatialInteractionSystemT<Holo>>
 {
 public:
-    using System::System;
-
+	using ISpatialInteractionListener = ISpatialInteractionListenerT<Holo>;
+	using ISpatialInteractionManager = typename Holo::ISpatialInteractionManager;
+	using SpatialInteractionManager = typename Holo::SpatialInteractionManager;
+	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
+	using NativeEventToken = typename Holo::NativeEventToken;
+	
     void AddListener(Shared<ISpatialInteractionListener> listener)
     {
         spatial_interaction_listeners.Add(std::move(listener));
@@ -55,13 +59,13 @@ private:
 
     NativeEventToken source_tokens[SourceEvent::Count];
 
-    ListenerCollection<ISpatialInteractionListener> spatial_interaction_listeners;
+    Array<Shared<ISpatialInteractionListener>> spatial_interaction_listeners;
 
     void BindEventHandlers();
     void ReleaseEventHandlers();
 
     // Events Handlers
-    void HandleSourceDetected(
+    /*void HandleSourceDetected(
         const SpatialInteractionManager& sender,
         const SpatialSourceEventArgs&  args);
 
@@ -80,8 +84,8 @@ private:
     void HandleSourceReleased(
         const SpatialInteractionManager& sender,
         const SpatialSourceEventArgs& args);
-
+*/
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_ECS_END

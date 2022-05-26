@@ -16,15 +16,25 @@ struct IDeviceNotify
 
 // Creates and manages a Direct3D device and immediate context, Direct2D device and context (for debug), and the holographic swap chain.
 template <class Holo>
-class DeviceResources
+class DeviceResourcesT
 {
+	using CameraResources = CameraResourcesT<Holo>;
 	using HoloCam = typename Holo::HoloCam;
 	using HoloFrame = typename Holo::HoloFrame;
 	using HoloFramePred = typename Holo::HoloFramePred;
+	using HoloSpace = typename Holo::HoloSpace;
+	using GfxDevice = typename Holo::GfxDevice;
+	using NativeGfxDeviceRef = typename Holo::NativeGfxDeviceRef;
+	using NativeGfxDeviceContextRef = typename Holo::NativeGfxDeviceContextRef;
+	using NativeGfxLibRef = typename Holo::NativeGfxLibRef;
+	using Native2DLibRef = typename Holo::Native2DLibRef;
+	using NativeHwLibRef = typename Holo::NativeHwLibRef;
+	using NativeVrCamLibRef = typename Holo::NativeVrCamLibRef;
+	using FeatureLevel = typename Holo::FeatureLevel;
 	
 	
 public:
-    DeviceResources();
+    DeviceResourcesT();
 
     // Public methods related to Direct3D devices.
     void HandleDeviceLost();
@@ -50,7 +60,7 @@ public:
     // D3D accessors.
     NativeGfxDeviceRef          GetD3DDevice()                  const { return gfx_dev.Get();     }
     NativeGfxDeviceContextRef   GetD3DDeviceContext()           const { return gfx_ctx_dev.Get();    }
-    D3D_FEATURE_LEVEL			GetDeviceFeatureLevel()         const { return gfx_feature_level;     }
+    FeatureLevel				GetDeviceFeatureLevel()         const { return gfx_feature_level;     }
     bool						GetDeviceSupportsVprt()         const { return supports_vprt;        }
 
     // DXGI acessors.
@@ -84,7 +94,7 @@ private:
     HoloSpace								holospace = 0;
 
     // Properties of the Direct3D device currently in use.
-    D3D_FEATURE_LEVEL						gfx_feature_level = D3D_FEATURE_LEVEL_10_0;
+    FeatureLevel							gfx_feature_level;
 
     // The IDeviceNotify can be held directly as it owns the DeviceResources.
     IDeviceNotify*							dev_notify = 0;
@@ -100,7 +110,6 @@ private:
 };
 
 
-}
 
 // Device-based resources for holographic cameras are stored in a std::map. Access this list by providing a
 // callback to this function, and the std::map will be guarded from add and remove
@@ -108,8 +117,9 @@ private:
 // not contain any nested calls to UseHolographicCameraResources.
 // The callback takes a parameter of type ArrayMap<uint32, std::unique_ptr<GfxCamResources>>&
 // through which the list of cameras will be accessed.
+template<class Holo>
 template<typename RetType, typename LCallback>
-RetType GfxDevResources::UseHolographicCameraResources(LCallback const& callback)
+RetType DeviceResourcesT<Holo>::UseHolographicCameraResources(LCallback const& callback)
 {
 	TODO
     /*Mutex::Lock guard(cam_resources_lock);
@@ -118,13 +128,16 @@ RetType GfxDevResources::UseHolographicCameraResources(LCallback const& callback
 
 
 
+}
 
 
 
 /*using SharedDeviceResources = Shared<GfxDevResources>;
 using HolographicSpace = HoloSpace;*/
 
+/*
+template<class Holo>
 void LoadDefaultResources(DeviceResources& dr, HolographicSpace& hs, String diff, String spec, String skybox, String lut);
-
+*/
 
 NAMESPACE_PARALLEL_END

@@ -1,10 +1,9 @@
-#include "WinLib.h"
+#include "EcsVR.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-namespace {
 
 String ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, SpatialInteractionSourceHandedness>& tuple)
 {
@@ -19,18 +18,21 @@ String ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, Spati
     return ss;
 }
 
-std::future<void> LoadAndCacheModel(
+#if 0
+Future<void> LoadAndCacheModel(
     const SpatialInteractionSource& source,
     Engine& engine)
 {
-    const auto ctrl_model_name = ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(source));
+	TODO
+	/*
+    const auto ctrl_model_name = ControllerModelKeyToString(ControllerRenderingT<Holo>::GetControllerModelKey(source));
 
     auto pbr_model_cache = engine.Get<PbrModelCache>();
     if (!pbr_model_cache->ModelExists(ctrl_model_name.c_str()))
     {
         const auto pbr_res = engine.Get<HolographicRenderer>()->GetPbrResources();
 
-        const auto model = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
+        TODO //const auto model = co_await ControllerRenderingT<Holo>::TryLoadRenderModelAsync(pbr_res, source);
 
         if (model)
         {
@@ -41,18 +43,21 @@ std::future<void> LoadAndCacheModel(
             LOG("Failed to load model for source %d", source.Id());
         }
     }
+    */
 }
+#endif
 
-}
 
-NAMESPACE_PARALLEL_BEGIN
+
 
 void MotionControllerSystem::Start()
 {
-    machine.Get<HolographicScene>()->AddPredictionUpdateListener(shared_from_this());
-    machine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+	TODO // func overrides
+    //machine.Get<HolographicScene>()->AddPredictionUpdateListener(shared_from_this());
+    //machine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
 }
 
+#if 0
 void MotionControllerSystem::OnPredictionUpdated(
     IPredictionUpdateListener::PredictionUpdateReason /*reason*/,
     const SpatialCoordinateSystem& coord_system,
@@ -82,13 +87,16 @@ void MotionControllerSystem::OnPredictionUpdated(
         }
     }
 }
+#endif
 
 void MotionControllerSystem::Stop()
 {
-    machine.Get<HolographicScene>()->RemovePredictionUpdateListener(shared_from_this());
-    machine.Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
+	TODO
+    //machine.Get<HolographicScene>()->RemovePredictionUpdateListener(shared_from_this());
+    //machine.Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
 }
 
+#if 0
 void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteractionSource& source)
 {
     for (auto& comp_set : machine.Get<EntityStore>()->GetComponentsWithEntity<MotionControllerComponent>())
@@ -118,11 +126,11 @@ void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEvent
                 // If we don't have a model yet, set the ModelName so PbrModelCache will update the model
                 if (!pbr->Model)
                 {
-                    pbr->ResetModel(ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(controller->source)));
+                    pbr->ResetModel(ControllerModelKeyToString(ControllerRenderingT<Holo>::GetControllerModelKey(controller->source)));
                 }
                 else
                 {
-                    ControllerRendering::ArticulateControllerModel(ControllerRendering::GetArticulateValues(args.State()), *pbr->Model);
+                    ControllerRenderingT<Holo>::ArticulateControllerModel(ControllerRenderingT<Holo>::GetArticulateValues(args.State()), *pbr->Model);
                 }
             }
         }
@@ -158,10 +166,11 @@ void MotionControllerSystem::OnSourceLost(const SpatialInteractionSourceEventArg
     }
 }
 
-bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const 
+bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const
 {
     return (this->source && rhs) ? this->source.Id() == rhs.Id() : false;
 }
 
+#endif
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_ECS_END

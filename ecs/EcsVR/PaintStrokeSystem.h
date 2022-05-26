@@ -31,13 +31,14 @@ public:
 	SYS_DEF_VISIT
 	~PaintStrokeSystem() = default;
 	
-	void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
+	//void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
 	
 protected:
 	void Update(double) override;
 	
 private:
-	Shared<Pbr::Resources> pbr_res;
+	//Shared<Pbr::Resources> pbr_res;
+	
 };
 
 
