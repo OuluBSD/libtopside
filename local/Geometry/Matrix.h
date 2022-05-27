@@ -32,8 +32,16 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec(T x, T y, T z) {Set(x,y,z); ClearFrom(3);}
 	Vec(T x, T y, T z, T w) {Set(x,y,z,w); ClearFrom(4);}
 	Vec(std::initializer_list<T> list) {
-		ASSERT(list.size() == I);
-		int i = 0; for(auto& v : list) data[i++] = v;
+		if (list.size() == 1) {
+			for(auto& v : list) {
+				for(int i = 0; i < I; i++) data[i] = v;
+			}
+		}
+		else {
+			int i = 0;
+			for(auto& v : list) {data[i++] = v; if (i >= I) break;}
+			while (i < I) data[i++] = 0;
+		}
 	}
 	Vec(Nuller) {SetNull();}
 	//Vec(const byte* b, T mul, T offset) {Set(b, mul, offset);}

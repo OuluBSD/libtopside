@@ -6,6 +6,7 @@
 
 #include "HolographicRenderer.h"
 #include "HolographicScene.h"
+#include "SpatialInteractionSystem.h"
 #include "MotionControllerSystem.h"
 #include "PbrModelCache.h"
 #include "PaintStrokeSystem.h"
@@ -15,6 +16,5 @@
 #include "PaintingSystem.h"
 #include "ShootingSystem.h"
 #include "ThrowingSystem.h"
-#include "SpatialInteractionSystem.h"
 
 #endif

@@ -22,9 +22,7 @@ EntityRef ShootingInteractionSystem::CreateToolSelector() const {
 }
 
 void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) {
-	TODO // override funcs
-	
-	/*
+	ASSERT(!entities.IsEmpty());
 	ToolSystem::Register(std::move(entities));
 	// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
 	// In this scenario, we need to generate two transforms.
@@ -46,12 +44,9 @@ void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) 
 		entity->Get<ShootingComponent>()->gun = std::move(gun);
 		entity->Get<ShootingComponent>()->SetEnabled(false);
 	}
-	*/
 }
 
 void ShootingInteractionSystem::Activate(EntityRef entity) {
-	TODO // override funcs
-	
 	ToolSystem::Activate(entity);
 	entity->Get<PbrRenderable>()->SetEnabled(false);
 }

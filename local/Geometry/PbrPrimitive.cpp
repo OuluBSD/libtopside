@@ -49,8 +49,8 @@ NativeBufferRef CreateIndexBuffer(NativeDeviceRef device, const Pbr::PrimitiveBu
 namespace Pbr {
 
 
-template <class Gfx>
-PrimitiveT<Gfx>::PrimitiveT(int idx_count, NativeBufferRef index_buffer, NativeBufferRef vertex_buffer, Shared<MaterialT<Gfx>> material)
+
+Primitive::Primitive(int idx_count, NativeBufferRef index_buffer, NativeBufferRef vertex_buffer, Shared<Material<Gfx>> material)
     : idx_count(idx_count)
     , vertex_buffer(vertex_buffer)
     , index_buffer(index_buffer)
@@ -59,9 +59,9 @@ PrimitiveT<Gfx>::PrimitiveT(int idx_count, NativeBufferRef index_buffer, NativeB
 	
 }
 
-template <class Gfx>
-PrimitiveT<Gfx>::PrimitiveT(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Pbr::MaterialT<Gfx>> material)
-    : PrimitiveT(
+
+Primitive::Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Pbr::Material<Gfx>> material)
+    : Primitive(
         (uint32)prim_builder.indices.GetCount(),
         CreateIndexBuffer(pbr_res.GetDevice().Get(), prim_builder).Get(),
         CreateVertexBuffer(pbr_res.GetDevice().Get(), prim_builder).Get(),
@@ -70,14 +70,14 @@ PrimitiveT<Gfx>::PrimitiveT(Resources const& pbr_res, const Pbr::PrimitiveBuilde
 	
 }
 
-template <class Gfx>
-PrimitiveT<Gfx> PrimitiveT<Gfx>::Clone(Resources const& pbr_res) const
+
+Primitive<Gfx> Primitive::Clone(Resources const& pbr_res) const
 {
-    return PrimitiveT(idx_count, index_buffer.Get(), vertex_buffer.Get(), material->Clone(pbr_res));
+    return Primitive(idx_count, index_buffer.Get(), vertex_buffer.Get(), material->Clone(pbr_res));
 }
 
-template <class Gfx>
-void PrimitiveT<Gfx>::Render(NativeDeviceContextRef context) const
+
+void Primitive::Render(NativeDeviceContextRef context) const
 {
     TODO
     
@@ -85,7 +85,7 @@ void PrimitiveT<Gfx>::Render(NativeDeviceContextRef context) const
     const int offset = 0;
     context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
     context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    context->IASetPrimitiveopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->DrawIndexedInstanced(idx_count, 2, 0, 0, 0);*/
 }
 

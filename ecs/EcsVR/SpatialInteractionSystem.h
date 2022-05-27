@@ -5,10 +5,10 @@ NAMESPACE_ECS_BEGIN
 
 
 // SpatialInteraction event listener
-template <class Holo>
-struct ISpatialInteractionListenerT
+struct SpatialInteractionListener : WeakRefScopeEnabler<SpatialInteractionListener, Engine>, RTTIBase
 {
-	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
+	RTTI_DECL0(SpatialInteractionListener)
+	using SpatialSourceEventArgs = int;
 	
     virtual void OnSourceDetected(const SpatialSourceEventArgs& args) {};
     virtual void OnSourceLost(const SpatialSourceEventArgs& args) {};
@@ -17,6 +17,10 @@ struct ISpatialInteractionListenerT
     virtual void OnSourceReleased(const SpatialSourceEventArgs& args) {};
     
 };
+
+using SpatialInteractionListenerRef = Ref<SpatialInteractionListener, RefParent1<Ecs::Engine>>;
+
+
 
 // SpatialInteractionSystem
 // Manages events from SpatialInteractionManager with additional filtering
@@ -31,16 +35,16 @@ public:
 	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
 	using NativeEventToken = typename Holo::NativeEventToken;*/
 	
-    /*void AddListener(Shared<ISpatialInteractionListener> listener)
+    void AddListener(SpatialInteractionListenerRef listener)
     {
-        spatial_interaction_listeners.Add(std::move(listener));
+        spatial_interaction_listeners.Add(listener);
     }
 
-    void RemoveListener(Shared<ISpatialInteractionListener> listener)
+    void RemoveListener(SpatialInteractionListenerRef listener)
     {
-        spatial_interaction_listeners.Remove(std::move(listener));
+        spatial_interaction_listeners.Remove(listener);
     }
-
+/*
     ISpatialInteractionManager GetInteractionManager() const
     {
         fail_fast_if(spatial_interaction_manager == nullptr);
@@ -52,6 +56,8 @@ protected:
     void Uninitialize() override;
 
 private:
+    Array<SpatialInteractionListenerRef> spatial_interaction_listeners;
+    
     /*ISpatialInteractionManager spatial_interaction_manager = 0;
 
     enum SourceEvent {
@@ -60,7 +66,6 @@ private:
 
     NativeEventToken source_tokens[SourceEvent::Count];
 
-    Array<Shared<ISpatialInteractionListener>> spatial_interaction_listeners;
 
     void BindEventHandlers();
     void ReleaseEventHandlers();*/

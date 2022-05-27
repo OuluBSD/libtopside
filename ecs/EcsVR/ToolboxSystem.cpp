@@ -48,9 +48,6 @@ void ToolboxSystem::RemoveToolSystem(ToolSystemBaseRef system) {
 }
 
 void ToolboxSystem::Start() {
-	TODO // inherit fixed?
-	
-	/*
 	auto es = GetEngine().Get<EntityStore>();
 	
 	for (size_t i = 0; i < ctrls.GetCount(); ++i) {
@@ -76,8 +73,8 @@ void ToolboxSystem::Start() {
 	ctrls[Right].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, -M_PI * 0.15f);
 	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
-	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
-	*/
+	
+	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
 }
 
 void ToolboxSystem::Stop() {
@@ -208,8 +205,8 @@ String ToolboxSystem::ControllerHandToString(ControllerHand hand) {
 	return hand == Left ? "Left" : "Right";
 }
 
-SpatialInteractionSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
-	return hand == Left ? SpatialInteractionSourceHandedness::Left : SpatialInteractionSourceHandedness::Right;
+SpatialSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
+	return hand == Left ? SpatialSourceHandedness::Left : SpatialSourceHandedness::Right;
 }
 
 void ToolboxSystem::SwitchToolType(EntityRef entity, const TypeId& new_type) {

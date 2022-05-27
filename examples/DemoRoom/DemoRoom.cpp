@@ -30,6 +30,7 @@ void DemoRoomInit() {
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
 	
+	e.GetAdd<RenderingSystem>();
     e.GetAdd<EntityStore>();
     e.GetAdd<ComponentStore>();
     e.GetAdd<HolographicScene>();//->SetResources(holospace);
@@ -59,9 +60,6 @@ void DemoRoomStartup() {
     // Seed model cache
     auto pbr_model_cache = e.Get<PbrModelCache>();
     
-    TODO
-    #if 0
-    
     // Register a low poly sphere model.
     {
         Pbr::Primitive sphere_prim(
@@ -70,9 +68,9 @@ void DemoRoomStartup() {
             Pbr::Material::CreateFlat(*pbr_res, Colors::White, 0.15f));
 
         // Add the primitive into a new model.
-        auto sphereModel = std::make_shared<Pbr::Model>();
-        sphereModel->AddPrimitive(std::move(sphere_prim));
-        pbr_model_cache->RegisterModel(KnownModelNames::UnitSphere, std::move(sphereModel));
+        auto sphere_model = std::make_shared<Pbr::Model>();
+        sphere_model->AddPrimitive(std::move(sphere_prim));
+        pbr_model_cache->RegisterModel(KnownModelNames::UnitSphere, std::move(sphere_model));
     }
 
     // Register a cube model.
@@ -84,35 +82,35 @@ void DemoRoomStartup() {
             Pbr::Material::CreateFlat(*pbr_res, Colors::White, 0.15f));
 
         // Add the primitive into a new model.
-        auto cubeModel = std::make_shared<Pbr::Model>();
-        cubeModel->AddPrimitive(std::move(cube_prim));
-        pbr_model_cache->RegisterModel(KnownModelNames::UnitCube, std::move(cubeModel));
+        auto cube_model = std::make_shared<Pbr::Model>();
+        cube_model->AddPrimitive(std::move(cube_prim));
+        pbr_model_cache->RegisterModel(KnownModelNames::UnitCube, std::move(cube_model));
     }
 
     // Register glb models.
-    auto loadGLBModels = [this](
+    auto load_glb_models = [this](
         String path,
         String name,
-        std::optional<DirectX::XMFLOAT4X4> transform = std::nullopt,
-        std::optional<DirectX::XMFLOAT4> color = std::nullopt) -> std::future<void>
+        std::optional<mat4> transform = std::nullopt,
+        std::optional<vec4> color = std::nullopt) -> std::future<void>
     {
         auto pbr_model_cache = e.Get<PbrModelCache>();
         auto pbr_res = e.Get<HolographicRenderer>()->GetPbrResources();
 
         std::vector<byte> fileData = co_await DX::ReadDataAsync(std::wstring(path));
 
-        const DirectX::XMMATRIX modelTransform = transform.has_value()
-            ? DirectX::XMLoadFloat4x4(&transform.value())
-            : DirectX::XMMatrixIdentity();
+        const mat4 model_transform = transform.has_value()
+            ? mat4(&transform.value())
+            : identity<mat4>();
 
         Shared<Pbr::Model> pbr_model = Gltf::FromGltfBinary(
             *pbr_res,
             fileData.data(),
-            (uint32_t)fileData.size(),
-            modelTransform);
+            (uint32)fileData.size(),
+            model_transform);
 
         if (color) {
-            for (uint32_t i = 0; i < pbr_model->GetPrimitiveCount(); ++i) {
+            for (uint32 i = 0; i < pbr_model->GetPrimitiveCount(); ++i) {
                 pbr_model->GetPrimitive(i).GetMaterial()->Parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
                     data.BaseColorFactor = color.value();
                 });
@@ -124,22 +122,21 @@ void DemoRoomStartup() {
         pbr_model_cache->RegisterModel(name, std::move(pbr_model));
     };
 
-    DirectX::XMFLOAT4X4 baseballScale;
-    DirectX::XMStoreFloat4x4(&baseballScale, DirectX::XMMatrixScaling(0.15f, 0.15f, 0.15f));
-    loadGLBModels(L"ms-appx:///Media/Models/Baseball.glb", KnownModelNames::Baseball, baseballScale, DirectX::XMFLOAT4{ 2.0f, 2.0f, 2.0f, 1.0f });
+    mat4 baseball_scale;
+    DirectX::XMStoreFloat4x4(&baseball_scale, DirectX::XMMatrixScaling(0.15f, 0.15f, 0.15f));
+    load_glb_models(L"ms-appx:///Media/Models/Baseball.glb", KnownModelNames::Baseball, baseball_scale, DirectX::XMFLOAT4{ 2.0f, 2.0f, 2.0f, 1.0f });
 
-    DirectX::XMFLOAT4X4 gunScale;
-    DirectX::XMStoreFloat4x4(&gunScale, DirectX::XMMatrixScaling(0.35f, 0.35f, 0.35f));
-    loadGLBModels(L"ms-appx:///Media/Models/Gun.glb", KnownModelNames::Gun, gunScale);
+    mat4 gun_scale;
+    DirectX::XMStoreFloat4x4(&gun_scale, DirectX::XMMatrixScaling(0.35f, 0.35f, 0.35f));
+    load_glb_models(L"ms-appx:///Media/Models/Gun.glb", KnownModelNames::Gun, gun_scale);
 
-    loadGLBModels(L"ms-appx:///Media/Models/PaintBrush.glb", KnownModelNames::PaintBrush);
+    load_glb_models(L"ms-appx:///Media/Models/PaintBrush.glb", KnownModelNames::PaintBrush);
 	
 	
 	
     // We don't store the returned Floor Entity locally, so it lives foreeevvverrr
     e.Get<EntityStore>()->GetRoot()->GetAddPool("models")->Create<FloorPrefab>();
     
-    #endif
 }
 
 

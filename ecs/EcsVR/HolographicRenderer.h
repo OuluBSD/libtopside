@@ -9,6 +9,7 @@ class TextRenderer;
 class QuadRenderer;
 class SkyboxRenderer;
 
+using HolographicSceneRef = Ref<HolographicScene, RefParent1<Engine>>;
 
 
 // HolographicRenderer
@@ -55,17 +56,17 @@ protected:
     void Stop() override;
     void Uninitialize() override;
 
-    /*void BindEventHandlers(const HoloSpace& holospace);
-    void ReleaseEventHandlers(const HoloSpace& holospace);*/
+    void BindEventHandlers(HoloSpace& holospace);
+    //void ReleaseEventHandlers(const HoloSpace& holospace);
 
 private:
+    Ref<EntityStore>				entity_store;
+    HolographicSceneRef				holo_scene;
+    //Ref<PbrResources>				pbr_res;
     /*
-    Shared<Ecs::EntityStore>		entity_store;
-    Shared<HolographicScene>		holo_scene;
     One<SkyboxRenderer>				skybox_rend;
     ArrayMap<float, TextRenderer>	text_rend;
     One<QuadRenderer>				quad_rend;
-    Shared<Resources>				pbr_res;
     NativeEventToken				camera_added_event;
     NativeEventToken				camera_removed_event;
     Shared<GfxDevResources>			dev_res;
@@ -78,18 +79,19 @@ private:
         HoloFramePred& prediction,
         const HoloCamRendParams& rend_params,
         const HoloCamPose& cam_pose);
+	*/
 	
     // Asynchronously creates resources for new holographic cameras.
     void OnCameraAdded(
         const HoloSpace& sender,
-        const HoloSpaceCameraAddedEventArgs& args);
+        const CameraAddedEventArgs& args);
 	
     // Synchronously releases resources for holographic cameras that are no longer
     // attached to the system.
     void OnCameraRemoved(
         const HoloSpace& sender,
-        const HoloSpaceCameraRemovedEventArgs& args);
-    */
+        const CameraRemovedEventArgs& args);
+    
     
 };
 

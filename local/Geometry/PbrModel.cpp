@@ -11,8 +11,8 @@ constexpr Pbr::NodeIndex root_parent_node_index = -1;
 
 namespace Pbr {
 
-template <class Gfx>
-ModelT<Gfx>::ModelT(bool create_root_node /*= true*/)
+
+Model::Model(bool create_root_node /*= true*/)
 {
     if (create_root_node)
     {
@@ -20,15 +20,15 @@ ModelT<Gfx>::ModelT(bool create_root_node /*= true*/)
     }
 }
 
-template <class Gfx>
-void ModelT<Gfx>::Render(Resources const& pbr_res, NativeDeviceContextRef context) const
+
+void Model::Render(Resources const& pbr_res, NativeDeviceContextRef context) const
 {
     UpdateTransforms(pbr_res, context);
 
     NativeShaderResourcesRef vs_shader_resources[] = { model_transforms_resource_view.Get() };
     context->VSSetShaderResources(Pbr::ShaderSlots::Transforms, _countof(vs_shader_resources), vs_shader_resources);
 
-    for (const Pbr::PrimitiveT<Gfx>& primitive : primitives)
+    for (const Pbr::Primitive<Gfx>& primitive : primitives)
     {
         if (primitive.GetMaterial()->hidden) continue;
 
@@ -40,8 +40,8 @@ void ModelT<Gfx>::Render(Resources const& pbr_res, NativeDeviceContextRef contex
     context->GSSetShader(nullptr, nullptr, 0);
 }
 
-template <class Gfx>
-Node& ModelT<Gfx>::AddNode(const mat4& transform, Pbr::NodeIndex parent_index, String name)
+
+Node& Model::AddNode(const mat4& transform, Pbr::NodeIndex parent_index, String name)
 {
     auto newNodeIndex = (Pbr::NodeIndex)nodes.GetCount();
     if (newNodeIndex != root_node_idx && parent_index == root_parent_node_index)
@@ -55,16 +55,16 @@ Node& ModelT<Gfx>::AddNode(const mat4& transform, Pbr::NodeIndex parent_index, S
     return nodes.Top();
 }
 
-template <class Gfx>
-void ModelT<Gfx>::Clear()
+
+void Model::Clear()
 {
     primitives.Clear();
 }
 
-template <class Gfx>
-Shared<ModelT<Gfx>> ModelT<Gfx>::Clone(Resources const& pbr_res) const
+
+Shared<Model<Gfx>> Model::Clone(Resources const& pbr_res) const
 {
-    auto clone = MakeShared<ModelT>(false /* create_root_node */);
+    auto clone = MakeShared<Model>(false /* create_root_node */);
 
     for (const Node& node : nodes) {
         clone->AddNode(node.GetTransform(), node.parent_node_index, node.name);
@@ -77,8 +77,8 @@ Shared<ModelT<Gfx>> ModelT<Gfx>::Clone(Resources const& pbr_res) const
     return clone;
 }
 
-template <class Gfx>
-Optional<NodeIndex> ModelT<Gfx>::FindFirstNode(char const* name, Optional<NodeIndex> const& parent_node_index) const
+
+Optional<NodeIndex> Model::FindFirstNode(char const* name, Optional<NodeIndex> const& parent_node_index) const
 {
     // Children are guaranteed to come after their parents, so start looking after the parent index if one is provided.
     const NodeIndex start_index = parent_node_index ? parent_node_index.value() + 1 : Pbr::root_node_idx;
@@ -93,8 +93,8 @@ Optional<NodeIndex> ModelT<Gfx>::FindFirstNode(char const* name, Optional<NodeIn
     return {};
 }
 
-template <class Gfx>
-mat4 ModelT<Gfx>::GetNodeWorldTransform(NodeIndex nodeIndex) const
+
+mat4 Model::GetNodeWorldTransform(NodeIndex nodeIndex) const
 {
     const Pbr::Node& node = GetNode(nodeIndex);
 
@@ -107,14 +107,14 @@ mat4 ModelT<Gfx>::GetNodeWorldTransform(NodeIndex nodeIndex) const
     return MultiplyMatrix(node.GetTransform(), parent_transform);
 }
 
-template <class Gfx>
-void ModelT<Gfx>::AddPrimitive(const Pbr::PrimitiveT<Gfx>& primitive)
+
+void Model::AddPrimitive(const Pbr::Primitive<Gfx>& primitive)
 {
     primitives.Add(std::move(primitive));
 }
 
-template <class Gfx>
-void ModelT<Gfx>::UpdateTransforms(Resources const& pbr_res, NativeDeviceContextRef context) const
+
+void Model::UpdateTransforms(Resources const& pbr_res, NativeDeviceContextRef context) const
 {
 	TODO
 	

@@ -43,5 +43,21 @@ file
 	Compare.h,
 	Compare.cpp,
 	Camera.h,
-	Camera.cpp;
+	Camera.cpp,
+	Pbr readonly separator,
+	Copying.Pbr,
+	Pbr.h,
+	Pbr.cpp,
+	PbrCommon.h,
+	PbrCommon.cpp,
+	PbrResources.h,
+	PbrResources.cpp,
+	PbrMaterial.h,
+	PbrMaterial.cpp,
+	PbrPrimitive.h,
+	PbrPrimitive.cpp,
+	PbrModel.h,
+	PbrModel.cpp,
+	GltfLoader.h,
+	GltfLoader.cpp;
 

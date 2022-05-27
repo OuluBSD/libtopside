@@ -23,49 +23,49 @@ enum euler_index_t {
 class PrimitiveFactory
 {
 public:
-    static void get_box_corners(vec3        (&points)[8],
-                                const vec3* origin = NULL,
-                                const vec3* dim    = NULL);
-    static void create_grid(Mesh& mesh,
+    static void GetBoxCorners(vec3        (&points)[8],
+                              const vec3* origin = NULL,
+                              const vec3* dim    = NULL);
+    static void CreateGrid(Mesh& mesh,
                                    int          cols             = 1,
                                    int          rows             = 1,
                                    float        width            = 1,
                                    float        length           = 1,
                                    float        tex_width_scale  = 1,
                                    float        tex_length_scale = 1);
-    static void create_sphere(Mesh& mesh,
+    static void CreateSphere(Mesh& mesh,
                                      int          slices = DEFAULT_SLICES,
                                      int          stacks = DEFAULT_STACKS,
                                      float        radius = 1);
-    static void create_hemisphere(Mesh& mesh,
+    static void CreateHemisphere(Mesh& mesh,
                                          int          slices = DEFAULT_SLICES,
                                          int          stacks = DEFAULT_STACKS,
                                          float        radius = 1);
-    static void create_cylinder(Mesh& mesh,
+    static void CreateCylinder(Mesh& mesh,
                                        int          slices = DEFAULT_SLICES,
                                        float        radius = 1,
                                        float        height = 1);
-    static void create_cone(Mesh& mesh,
+    static void CreateCone(Mesh& mesh,
                                    int          slices = DEFAULT_SLICES,
                                    float        radius = 1,
                                    float        height = 1);
-    static void create_torus(Mesh& mesh,
+    static void CreateTorus(Mesh& mesh,
                                     int          slices       = DEFAULT_SLICES,
                                     int          stacks       = DEFAULT_STACKS,
                                     float        radius_major = 1,
                                     float        radius_minor = 0.5);
-    static void create_box(Mesh& mesh,
+    static void CreateBox(Mesh& mesh,
                                   float        width  = 1,
                                   float        height = 1,
                                   float        length = 1);
-    static void create_tetrahedron(Mesh& mesh,
+    static void CreateTetrahedron(Mesh& mesh,
                                           float        width  = 1,
                                           float        height = 1,
                                           float        length = 1);
-    static void create_geosphere(Mesh& mesh,
+    static void CreateGeosphere(Mesh& mesh,
                                         float        radius             = 1,
                                         int          tessellation_iters = 3);
-    static void create_diamond_brilliant_cut(Mesh& mesh,
+    static void CreateDiamondBrilliantCut(Mesh& mesh,
                                                     float        radius                                     = 0.5,
                                                     float        table_radius                               = 0.25,
                                                     float        height                                     = 1,
@@ -74,9 +74,9 @@ public:
                                                     float        lower_girdle_depth_to_pavilion_depth_ratio = 0.5,
                                                     float        girdle_thick_part_thickness                = 0.05,
                                                     float        girdle_thin_part_thickness                 = 0.0125);
-    static void create_viewport_quad(Mesh& mesh)
+    static void CreateViewportQuad(Mesh& mesh)
     {
-        return create_grid(mesh, 1, 1);
+        return CreateGrid(mesh, 1, 1);
     }
 };
 

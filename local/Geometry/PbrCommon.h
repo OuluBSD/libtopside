@@ -16,9 +16,9 @@ namespace Internal
 }
 
 
-template <class Gfx> struct PrimitiveT;
-template <class Gfx> struct ResourcesT;
-template <class Gfx> struct ModelT;
+struct Primitive;
+struct Resources;
+struct Model;
 
 
 using NodeIndex = uint16; // This type must align with the type used in the Pbr shaders.

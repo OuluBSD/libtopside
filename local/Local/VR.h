@@ -3,7 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-
+#if 0
 
 struct PerceptionTimestamp {
 	double ts = 0;
@@ -56,7 +56,7 @@ struct HolographicSpace {
 	
 };
 
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 

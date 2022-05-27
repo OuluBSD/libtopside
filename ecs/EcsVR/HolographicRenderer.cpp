@@ -71,11 +71,10 @@ void HolographicRenderer::OnDeviceRestored()
 
 bool HolographicRenderer::Initialize()
 {
-	TODO
-	/*
-    dev_res->RegisterDeviceNotify(this);
-    pbr_res->SetLight(vec4{ 0.0f, 0.7071067811865475f, -0.7071067811865475f }, Colors::White);
-    */
+	LOG("HolographicRenderer::Initialize: TODO attach atom");
+    //dev_res->RegisterDeviceNotify(this);
+    //pbr_res->SetLight(vec4{ 0.0f, 0.707f, -0.707f }, Colors::White);
+    return true;
 }
 
 
@@ -90,13 +89,11 @@ void HolographicRenderer::Uninitialize()
 
 void HolographicRenderer::Start()
 {
-	TODO
-	/*
-    entity_store = machine.Get<EntityStore>();
-    holo_scene = machine.Get<HolographicScene>();
+	Engine& e = GetEngine();
+    entity_store = e.Get<EntityStore>();
+    holo_scene = e.Get<HolographicScene>();
 
-    BindEventHandlers(holo_scene->HolographicSpace());
-    */
+    BindEventHandlers(holo_scene->GetHolographicSpace());
 }
 
 
@@ -273,22 +270,14 @@ bool HolographicRenderer::RenderAtCameraPose(
     return true;*/
 }
 
+#endif
 
-void HolographicRenderer::BindEventHandlers(
-    const HoloSpace& holospace)
-{
-	TODO
-	/*
-    fail_fast_if(holospace == nullptr);
-
-    camera_added_event = holospace.CameraAdded(
-        std::bind(&HolographicRenderer::OnCameraAdded, this, std::placeholders::_1, std::placeholders::_2));
-
-    camera_removed_event = holospace.CameraRemoved(
-        std::bind(&HolographicRenderer::OnCameraRemoved, this, std::placeholders::_1, std::placeholders::_2));
-    */
+void HolographicRenderer::BindEventHandlers(HoloSpace& holospace) {
+	holospace.WhenCameraAdded.Add(THISBACK(OnCameraAdded));
+    holospace.WhenCameraRemoved.Add(THISBACK(OnCameraRemoved));
 }
 
+#if 0
 
 void HolographicRenderer::ReleaseEventHandlers(
     const HoloSpace& holospace)
@@ -299,11 +288,13 @@ void HolographicRenderer::ReleaseEventHandlers(
     holospace.CameraAdded(camera_added_event);
 }
 
+#endif
+
 // Asynchronously creates resources for new holographic cameras.
 
 void HolographicRenderer::OnCameraAdded(
     const HoloSpace& sender,
-    HoloSpaceCameraAddedEventArgs const& args)
+    CameraAddedEventArgs const& args)
 {
 	TODO
 	#if 0
@@ -341,7 +332,7 @@ void HolographicRenderer::OnCameraAdded(
 
 void HolographicRenderer::OnCameraRemoved(
     const HoloSpace& sender,
-    HoloSpaceCameraRemovedEventArgs const& args)
+    CameraRemovedEventArgs const& args)
 {
 	TODO
 	/*
@@ -363,6 +354,5 @@ void HolographicRenderer::OnCameraRemoved(
     */
 }
 
-#endif
 
 NAMESPACE_ECS_END

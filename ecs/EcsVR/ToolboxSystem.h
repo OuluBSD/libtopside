@@ -31,13 +31,13 @@ typedef enum {
 // ToolboxSystem
 // This system manages the ToolSystems and manages the two Entities that represent the left and right Motion Controllers
 class ToolboxSystem :
-	public System<ToolboxSystem>
-	/*public ISpatialInteractionListener*/ {
+	public System<ToolboxSystem>,
+	public SpatialInteractionListener {
 	LinkedList<EntityRef> entities;
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
-	SYS_RTTI(ToolboxSystem)
+	RTTI_DECL2(ToolboxSystem, System<ToolboxSystem>, SpatialInteractionListener)
 	ECS_SYS_CTOR(ToolboxSystem);
 	
 	using Parent = Engine;
@@ -67,7 +67,7 @@ private:
 	};
 	
 	static String ControllerHandToString(ControllerHand hand);
-	static SpatialInteractionSourceHandedness ControllerHandToHandedness(ControllerHand hand);
+	static SpatialSourceHandedness ControllerHandToHandedness(ControllerHand hand);
 	
 	struct ControllerContext {
 		EntityRef ctrl;

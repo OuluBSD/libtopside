@@ -301,8 +301,8 @@ class WeakRefScopeEnabler :
 {
 	
 public:
-	using SP = RefScopeParent<RParent>;
-	RTTI_DECL2(WeakRefScopeEnabler, LockedScopeRefCounter, SP)
+	using SP_Weak = RefScopeParent<RParent>;
+	RTTI_DECL2(WeakRefScopeEnabler, LockedScopeRefCounter, SP_Weak)
 	
 	WeakRefScopeEnabler() {
 		#ifdef flagDEBUG_STACK

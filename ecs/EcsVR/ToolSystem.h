@@ -45,9 +45,11 @@ struct ToolSelectorPrefab :
 	
 	static Components Make(Entity& e) {
 		auto components = EntityPrefab::Make(e);
-		components.Get<RigidBody>().angular_velocity = { 0.0f, -3.0f, 0.0f }; // Spin in place
-		components.Get<RigidBody>().damping_factor = 1.0f;
-		components.Get<Easing>().position_easing_factor = 0.1f;
+		RigidBodyRef rb = components.Get<RigidBodyRef>();
+		EasingRef ea = components.Get<EasingRef>();
+		rb->angular_velocity = { 0.0f, -3.0f, 0.0f }; // Spin in place
+		rb->damping_factor = 1.0f;
+		ea->position_easing_factor = 0.1f;
 		return components;
 	}
 };
@@ -58,11 +60,12 @@ struct ToolSelectorPrefab :
 // that actually have the associated ToolComponent attached and enabled
 template<typename T, typename ToolComponent>
 class ToolSystem :
-	public ToolSystemBase/*,
-	public ISpatialInteractionListener*/
+	public ToolSystemBase,
+	public SpatialInteractionListener
 {
 	
 public:
+	RTTI_DECL2(ToolSystem, ToolSystemBase, SpatialInteractionListener)
 	void Visit(RuntimeVisitor& vis) override {TODO}
 	TypeCls GetType() const override {return AsTypeCls<T>();}
 	
@@ -72,7 +75,6 @@ public:
 protected:
 	// System
 	void Start() override {
-		TODO // fix inherit
 		Engine& m = GetEngine();
 		m.Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
 	}
@@ -91,7 +93,7 @@ protected:
 		}
 		
 		Engine& m = GetEngine();
-		TODO //m.Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
+		m.Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
 	}
 	
 	void Unregister() override {

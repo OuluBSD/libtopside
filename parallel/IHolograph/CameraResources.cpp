@@ -1,6 +1,6 @@
 #include "IHolograph.h"
 
-
+#if 0
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -12,9 +12,9 @@ CameraResourcesT<Holo>::CameraResourcesT(const HoloCam& camera) :
 {
     gfx_viewport = ViewportParams {
         0.f, 0.f,
-        gfx_rend_tgt_size.cx,
-        gfx_rend_tgt_size.cy,
-        0, 1
+        (float)gfx_rend_tgt_size.cx,
+        (float)gfx_rend_tgt_size.cy,
+        0.f, 1.f
     };
 };
 
@@ -206,4 +206,8 @@ void CameraResourcesT<Holo>::CommitDirect3D11DepthBuffer(const HoloCamRendParams
 }
 
 
+HOLO_EXCPLICIT_INITIALIZE_CLASS(CameraResourcesT)
+
+
 NAMESPACE_PARALLEL_END
+#endif

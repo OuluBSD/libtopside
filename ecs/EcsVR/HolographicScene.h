@@ -5,11 +5,9 @@ NAMESPACE_ECS_BEGIN
 
 
 // PredictionUpdated event listener
-template <class Holo>
-struct IPredictionUpdateListenerT
+struct PredictionUpdateListener : WeakRefScopeEnabler<PredictionUpdateListener, Engine>, RTTIBase
 {
-	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
-	using HoloFramePred = typename Holo::HoloFramePred;
+	RTTI_DECL0(PredictionUpdateListener)
 	
 public:
     enum PredictionUpdateReason
@@ -24,6 +22,8 @@ public:
         const HoloFramePred& prediction) = 0;
     
 };
+
+using PredictionUpdateListenerRef = Ref<PredictionUpdateListener, RefParent1<Ecs::Engine>>;
 
 
 // HolographicScene
@@ -45,37 +45,41 @@ public:
 	
     //HolographicScene(Ecs::Engine& core, HoloSpace holospace);
 
-    /*HoloFrame CurrentFrame() const;
-    HoloSpace HolographicSpace() const;
+    //HoloFrame CurrentFrame() const;
+    
+    const HoloSpace& GetHolographicSpace() const {return holospace;}
+    HoloSpace& GetHolographicSpace() {return holospace;}
 
-    SpatialCoordinateSystem WorldCoordinateSystem() const;
+    /*SpatialCoordinateSystem WorldCoordinateSystem() const;
     PerceptionTimestamp CurrentTimestamp() const;*/
 
     void UpdateCurrentPrediction();
 
-    /*void AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
-    void RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener);*/
+    void AddPredictionUpdateListener(PredictionUpdateListenerRef listener);
+    void RemovePredictionUpdateListener(PredictionUpdateListenerRef listener);
 
 protected:
     bool Initialize() override;
     void Update(double dt) override;
     void Uninitialize() override;
 
-    /*void OnCurrentStageChanged();
-
-    void OnPredictionChanged(PredictionUpdateReason reason);*/
+    void OnCurrentStageChanged();
+	
+    //void OnPredictionChanged(PredictionUpdateReason reason);
 
 private:
     mutable Mutex						lock;
     
-    /*SpatialStageFrameOfReference		stage_frame_of_reference = 0;
-    SpatialStationaryFrameOfReference	stationary_frame_of_reference = 0;
-    NativeEventToken					spatial_stage_current_changed;
+    VirtualRoomAnchor*					vr_room_anchor = 0;
+    SpatialDynamicAnchor				stationary_frame_of_reference;
+    
+    //NativeEventToken					spatial_stage_current_changed;
 
     HoloSpace							holospace;
-    HoloFrame							current_frame;
-
-    Array<Shared<IPredictionUpdateListener>>		prediction_update_listeners;*/
+    //HoloFrame							current_frame;
+	
+	
+    Array<PredictionUpdateListenerRef>	prediction_update_listeners;
     
 };
 

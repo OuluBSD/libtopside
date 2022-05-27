@@ -13,15 +13,16 @@ NAMESPACE_ECS_BEGIN
 
 bool HolographicScene::Initialize()
 {
-	TODO // also override funcs
-    /*stage_frame_of_reference = SpatialStageFrameOfReference::Current();
-
+	vr_room_anchor = GetActiveVirtualRoomAnchor();
+	
     // Create a fallback frame of reference 1.5 meters under the HMD when we start-up
-    stationary_frame_of_reference = SpatialLocator::GetDefault().CreateStationaryFrameOfReferenceAtCurrentLocation(
-        vec3{0.0f, -1.5f, 0.0f});
-
-    spatial_stage_current_changed = SpatialStageFrameOfReference::CurrentChanged(
-        std::bind(&HolographicScene::OnCurrentStageChanged, this));*/
+    stationary_frame_of_reference =
+		GetActiveSpatialDynamicAnchor()
+			.GetRelative(vec3{0.0f, -1.5f, 0.0f});
+	
+	VirtualRoomAnchor::WhenActiveChanged << THISBACK(OnCurrentStageChanged);
+	
+	return true;
 }
 
 void HolographicScene::Update(double)
@@ -35,11 +36,11 @@ void HolographicScene::Update(double)
 void HolographicScene::Uninitialize()
 {
 	TODO
-    /*SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
+    /*VirtualRoomAnchor::WhenActiveChanged.RemoveThis(this); //SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
 
     current_frame = nullptr;
     stationary_frame_of_reference = nullptr;
-    stage_frame_of_reference = nullptr;*/
+    vr_room_anchor = nullptr;*/
 }
 
 void HolographicScene::UpdateCurrentPrediction()
@@ -50,12 +51,13 @@ void HolographicScene::UpdateCurrentPrediction()
     OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicFrameUpdatePrediction);*/
 }
 
-#if 0
 void HolographicScene::OnCurrentStageChanged()
 {
     Mutex::Lock lock(this->lock);
-    stage_frame_of_reference = SpatialStageFrameOfReference::Current();
+    vr_room_anchor = GetActiveVirtualRoomAnchor();
 }
+
+#if 0
 
 void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason)
 {
@@ -68,23 +70,27 @@ void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::Prediction
     }
 }
 
-void HolographicScene::AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
+#endif
+
+void HolographicScene::AddPredictionUpdateListener(PredictionUpdateListenerRef listener)
 {
-    prediction_update_listeners.Add(std::move(listener));
+    prediction_update_listeners.Add(listener);
 }
 
-void HolographicScene::RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
+void HolographicScene::RemovePredictionUpdateListener(PredictionUpdateListenerRef listener)
 {
-    prediction_update_listeners.Remove(std::move(listener));
+    prediction_update_listeners.Remove(listener);
 }
+
+#if 0
 
 typename Holo::SpatialCoordinateSystem
 HolographicScene::WorldCoordinateSystem() const
 {
     Mutex::Lock lock(this->lock);
-    if (stage_frame_of_reference)
+    if (vr_room_anchor)
     {
-        return stage_frame_of_reference.CoordinateSystem();
+        return vr_room_anchor.CoordinateSystem();
     }
     else
     {
@@ -102,12 +108,6 @@ HolographicScene::CurrentFrame() const
 {
     fail_fast_if(current_frame == nullptr);
     return current_frame;
-}
-
-typename Holo::HoloSpace HolographicScene::HolographicSpace() const
-{
-    fail_fast_if(holospace == nullptr);
-    return holospace;
 }
 
 #endif

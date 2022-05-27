@@ -10,7 +10,7 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::create_grid(m, 1, 1, size[0], size[1]);
+	PrimitiveFactory::CreateGrid(m, 1, 1, size[0], size[1]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -29,7 +29,7 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	
 	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
 	
-	PrimitiveFactory::create_box(m, dim[0], dim[1], dim[2]);
+	PrimitiveFactory::CreateBox(m, dim[0], dim[1], dim[2]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += off;
@@ -45,7 +45,7 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int sta
 	this->model.Create();
 	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::create_sphere(m, slices, stacks, radius);
+	PrimitiveFactory::CreateSphere(m, slices, stacks, radius);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -61,7 +61,7 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int
 	this->model.Create();
 	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::create_cylinder(m, slices, radius, length);
+	PrimitiveFactory::CreateCylinder(m, slices, radius, length);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -92,7 +92,7 @@ vec3 euler_to_offset(vec3  euler,
 class Mesh;
 
 
-void PrimitiveFactory::get_box_corners(vec3        (&points)[8],
+void PrimitiveFactory::GetBoxCorners(vec3        (&points)[8],
                                        const vec3* origin,
                                        const vec3* dim)
 {
@@ -129,7 +129,7 @@ void PrimitiveFactory::get_box_corners(vec3        (&points)[8],
     }
 }
 
-void PrimitiveFactory::create_grid(Mesh& mesh,
+void PrimitiveFactory::CreateGrid(Mesh& mesh,
                                           int          cols,
                                           int          rows,
                                           float        width,
@@ -194,14 +194,14 @@ void PrimitiveFactory::create_grid(Mesh& mesh,
     ASSERT(tri_index  == num_tri);
 }
 
-void PrimitiveFactory::create_sphere(Mesh& mesh,
+void PrimitiveFactory::CreateSphere(Mesh& mesh,
                                             int          slices,
                                             int          stacks,
                                             float        radius)
 {
     int       cols = slices;
     int       rows = stacks;
-    create_grid(mesh, cols, rows);
+    CreateGrid(mesh, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -228,14 +228,14 @@ void PrimitiveFactory::create_sphere(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_hemisphere(Mesh& mesh,
+void PrimitiveFactory::CreateHemisphere(Mesh& mesh,
                                                 int          slices,
                                                 int          stacks,
                                                 float        radius)
 {
     int       cols = slices;
     int       rows = stacks * 0.5 + 2;
-    create_grid(mesh, cols, rows);
+    CreateGrid(mesh, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -273,14 +273,14 @@ void PrimitiveFactory::create_hemisphere(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_cylinder(Mesh& mesh,
+void PrimitiveFactory::CreateCylinder(Mesh& mesh,
                                               int          slices,
                                               float        radius,
                                               float        height)
 {
     int       cols = slices;
     int       rows = 5;
-    create_grid(mesh, cols, rows);
+    CreateGrid(mesh, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -336,14 +336,14 @@ void PrimitiveFactory::create_cylinder(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_cone(Mesh& mesh,
+void PrimitiveFactory::CreateCone(Mesh& mesh,
                                           int          slices,
                                           float        radius,
                                           float        height)
 {
     int       cols = slices;
     int       rows = 3;
-    create_grid(mesh, cols, rows);
+    CreateGrid(mesh, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -394,7 +394,7 @@ void PrimitiveFactory::create_cone(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_torus(Mesh& mesh,
+void PrimitiveFactory::CreateTorus(Mesh& mesh,
                                            int          slices,
                                            int          stacks,
                                            float        radius_major,
@@ -402,7 +402,7 @@ void PrimitiveFactory::create_torus(Mesh& mesh,
 {
     int       cols = slices;
     int       rows = stacks;
-    create_grid(mesh, cols, rows);
+    CreateGrid(mesh, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -432,7 +432,7 @@ void PrimitiveFactory::create_torus(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_box(Mesh& mesh,
+void PrimitiveFactory::CreateBox(Mesh& mesh,
                                          float        width,
                                          float        height,
                                          float        length)
@@ -459,7 +459,7 @@ void PrimitiveFactory::create_box(Mesh& mesh,
     // z
 
     vec3 dim(width, height, length);
-    get_box_corners(points, NULL, &dim);
+    GetBoxCorners(points, NULL, &dim);
 
     int tri_indices[6][4];
     vec3 tri_normals[6];
@@ -643,7 +643,7 @@ void PrimitiveFactory::create_box(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::create_tetrahedron(Mesh& mesh,
+void PrimitiveFactory::CreateTetrahedron(Mesh& mesh,
                                                  float        width,
                                                  float        height,
                                                  float        length)
@@ -679,11 +679,11 @@ void PrimitiveFactory::create_tetrahedron(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-/*void PrimitiveFactory::create_geosphere(Mesh& mesh,
+/*void PrimitiveFactory::CreateGeosphere(Mesh& mesh,
                                                float        radius,
                                                int          tessellation_iters)
 {
-    create_sphere(mesh, 4, 2, radius);
+    CreateSphere(mesh, 4, 2, radius);
     mesh.CenterAxis();
     for(int i = 0; i < tessellation_iters; i++) {
         mesh_tessellate(mesh, TESSELLATION_TYPE_EDGE_CENTER, true);
@@ -695,7 +695,7 @@ void PrimitiveFactory::create_tetrahedron(Mesh& mesh,
     }
 }*/
 
-void PrimitiveFactory::create_diamond_brilliant_cut(Mesh& mesh,
+void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
                                                            float        radius,
                                                            float        table_radius,
                                                            float        height,

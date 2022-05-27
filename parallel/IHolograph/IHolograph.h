@@ -7,10 +7,16 @@
 
 
 #ifdef flagDX11
-#include "Dx11.h"
-#include "DirectXHelper.h"
+	#include "Dx11.h"
+	#include "DirectXHelper.h"
 #endif
 
+#ifdef flagOGL
+	#include "Ogl.h"
+#endif
+
+#include "Types.h"
+#include "Various.h"
 #include "CameraResources.h"
 #include "DeviceResources.h"
 #include "ControllerRendering.h"

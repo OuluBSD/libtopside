@@ -5,7 +5,7 @@
 
 NAMESPACE_ECS_BEGIN
 
-namespace Knownmodel_names 
+namespace KnownModelNames 
 {
 constexpr auto UnitSphere = "UnitSphere_LowPoly";
 constexpr auto UnitCube = "UnitCube";
@@ -24,7 +24,7 @@ struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
         auto components = EntityPrefab::Make(e);
 
         components.Get<Transform>().size = { 10.0f, 0.00001f, 10.0f };
-        //components.Get<PbrRenderable>().ResetModel(Knownmodel_names::UnitCube);
+        //components.Get<PbrRenderable>().ResetModel(KnownModelNames::UnitCube);
         //components.Get<PbrRenderable>().color = Rgba(0.15f, 0.15f, 0.15f, 1.0f);
         TODO
 
@@ -40,8 +40,8 @@ struct Baseball : EntityPrefab<Transform, PbrRenderable, RigidBody>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<RigidBody>().acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
-        components.Get<PbrRenderable>().ResetModel(Knownmodel_names::Baseball);
+        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::Baseball);
 
         return components;
     }
@@ -53,10 +53,10 @@ struct Bullet : EntityPrefab<Transform, PbrRenderable, RigidBody>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<RigidBody>().acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
-        components.Get<PbrRenderable>().ResetModel(Knownmodel_names::UnitSphere);
-        components.Get<PbrRenderable>().color = vec4(0, 0, 1, 1);
-        components.Get<Transform>().size = vec3(0.025f);
+        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::UnitSphere);
+        components.Get<PbrRenderableRef>()->color = vec4(0, 0, 1, 1);
+        components.Get<TransformRef>()->size = vec3(0.025f);
 
         return components;
     }
@@ -68,7 +68,7 @@ struct PaintBrush : EntityPrefab<Transform, PbrRenderable, MotionControllerCompo
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<PbrRenderable>().ResetModel(Knownmodel_names::PaintBrush);
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::PaintBrush);
 
         return components;
     }
@@ -80,7 +80,7 @@ struct Gun : EntityPrefab<Transform, PbrRenderable, MotionControllerComponent>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<PbrRenderable>().ResetModel(Knownmodel_names::Gun);
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::Gun);
 
         return components;
     }
@@ -92,36 +92,33 @@ struct PaintStroke : EntityPrefab<Transform, PbrRenderable, PaintStrokeComponent
     {
         auto components = EntityPrefab::Make(e);
 
-		TODO
-        //components.Get<PbrRenderable>().model.Create();
+        TODO //components.Get<PbrRenderableRef>()->model.Create();
 
         return components;
     }
 };
 
-struct StaticSphere : EntityPrefab<Transform, ModelComponent>
+struct StaticSphere : EntityPrefab<Transform, PbrRenderable, ModelComponent>
 {
     static Components Make(Entity& e)
     {
         auto components = EntityPrefab::Make(e);
 
-        //components.Get<PbrRenderable>().ResetModel(Knownmodel_names::UnitSphere);
-        //components.Get<PbrRenderable>().color = Rgba(0.5, 0.5, 0.5, 1.0);
-        TODO
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::UnitSphere);
+        components.Get<PbrRenderableRef>()->color = vec4(0.5, 0.5, 0.5, 1.0);
 
         return components;
     }
 };
 
-struct StaticCube : EntityPrefab<Transform, ModelComponent>
+struct StaticCube : EntityPrefab<Transform, PbrRenderable, ModelComponent>
 {
     static Components Make(Entity& e)
     {
         auto components = EntityPrefab::Make(e);
 
-        //components.Get<PbrRenderable>().ResetModel(Knownmodel_names::UnitCube);
-        //components.Get<PbrRenderable>().color = Rgba(0.5, 0.5, 0.5, 1.0);
-		TODO
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::UnitCube);
+        components.Get<PbrRenderableRef>()->color = vec4(0.5, 0.5, 0.5, 1.0);
 		
         return components;
     }

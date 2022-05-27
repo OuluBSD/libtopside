@@ -8,15 +8,15 @@ namespace Pbr {
 
 // A Material contains the metallic roughness parameters and textures.
 // Primitives specify which Material to use when being rendered.
-template <class Gfx>
-struct MaterialT
+
+struct Material
 {
-	using Resources = ResourcesT<Gfx>;
+	/*using Resources = Resources<Gfx>;
 	using NativeShaderResourcesRef = typename Gfx::NativeShaderResourcesRef;
 	using NativeSamplerStateRef = typename Gfx::NativeSamplerStateRef;
 	using NativeDeviceContextRef = typename Gfx::NativeDeviceContextRef;
 	using NativeBlendStateRef = typename Gfx::NativeBlendStateRef;
-	using NativeBufferRef = typename Gfx::NativeBufferRef;
+	using NativeBufferRef = typename Gfx::NativeBufferRef;*/
 	
     // Coefficients used by the shader. Each texture is sampled and multiplied by these coefficients.
     struct ConstantBufferData
@@ -43,13 +43,13 @@ struct MaterialT
     static_assert((sizeof(ConstantBufferData) % 16) == 0, "Constant Buffer must be divisible by 16 bytes");
 
     // Create a uninitialized material. Textures and shader coefficients must be set.
-    MaterialT(const Resources& pbr_res);
+    Material(const Resources& pbr_res);
 
     // Create a clone of this material.
-    Shared<MaterialT> Clone(const Resources& pbr_res) const;
+    Shared<Material> Clone(const Resources& pbr_res) const;
 
     // Create a flat (no texture) material.
-    static Shared<MaterialT> CreateFlat(
+    static Shared<Material> CreateFlat(
         const Resources&	pbr_res,
         const vec4&			base_color_factor,
         float				roughness_factor = 1.0f,

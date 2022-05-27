@@ -7,8 +7,8 @@ NAMESPACE_PARALLEL_BEGIN
 namespace Pbr
 {
 
-template <class Gfx>
-MaterialT<Gfx>::MaterialT(Resources const& pbr_res)
+
+Material::Material(Resources const& pbr_res)
 {
 	TODO
 	
@@ -34,8 +34,8 @@ MaterialT<Gfx>::MaterialT(Resources const& pbr_res)
     Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBlendState(&blend_state_desc, &blend_state));*/
 }
 
-template <class Gfx>
-Shared<MaterialT<Gfx>> MaterialT<Gfx>::Clone(const Resources& pbr_res) const
+
+Shared<Material<Gfx>> Material::Clone(const Resources& pbr_res) const
 {
     auto clone = MakeShared<Material>(pbr_res);
     clone->name = name;
@@ -47,12 +47,12 @@ Shared<MaterialT<Gfx>> MaterialT<Gfx>::Clone(const Resources& pbr_res) const
 }
 
 
-template <class Gfx>
-Shared<MaterialT<Gfx>> MaterialT<Gfx>::CreateFlat(const Resources& pbr_res, const vec4& base_color_factor, float roughness_factor /* = 1.0f */, float metallic_factor /* = 0.0f */, const vec4& emissive_factor /* = XMFLOAT3(0, 0, 0) */)
-{
-    Shared<MaterialT> material = MakeShared<MaterialT>(pbr_res);
 
-    material->parameters.Set([&](Pbr::MaterialT<Gfx>::ConstantBufferData& data) {
+Shared<Material<Gfx>> Material::CreateFlat(const Resources& pbr_res, const vec4& base_color_factor, float roughness_factor /* = 1.0f */, float metallic_factor /* = 0.0f */, const vec4& emissive_factor /* = XMFLOAT3(0, 0, 0) */)
+{
+    Shared<Material> material = MakeShared<Material>(pbr_res);
+
+    material->parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
         StoreVec4(&data.base_clr_factor, base_color_factor);
         StoreVec3(&data.emissive_factor, emissive_factor);
         data.metallic_factor = metallic_factor;
@@ -71,15 +71,15 @@ Shared<MaterialT<Gfx>> MaterialT<Gfx>::CreateFlat(const Resources& pbr_res, cons
     return material;
 }
 
-template <class Gfx>
-void MaterialT<Gfx>::SetTexture(ShaderSlots::PSMaterial slot, NativeShaderResourcesRef tex_view, NativeSamplerStateRef sampler)
+
+void Material::SetTexture(ShaderSlots::PSMaterial slot, NativeShaderResourcesRef tex_view, NativeSamplerStateRef sampler)
 {
     textures[slot] = tex_view;
     samplers[slot] = sampler;
 }
 
-template <class Gfx>
-void MaterialT<Gfx>::Bind(NativeDeviceContextRef context) const
+
+void Material::Bind(NativeDeviceContextRef context) const
 {
     // If the parameters of the constant buffer have changed, update the constant buffer.
     if (parameters.UpdateChangeCountBookmark(&constant_buffer_bookmark))

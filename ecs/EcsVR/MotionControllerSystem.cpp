@@ -52,17 +52,19 @@ Future<void> LoadAndCacheModel(
 
 void MotionControllerSystem::Start()
 {
-	TODO // func overrides
-    //machine.Get<HolographicScene>()->AddPredictionUpdateListener(shared_from_this());
-    //machine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+	Engine& e = GetEngine();
+    e.Get<HolographicScene>()->AddPredictionUpdateListener(AsRefT<PredictionUpdateListener>());
+    e.Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
 }
 
-#if 0
+
 void MotionControllerSystem::OnPredictionUpdated(
-    IPredictionUpdateListener::PredictionUpdateReason /*reason*/,
+    PredictionUpdateReason reason,
     const SpatialCoordinateSystem& coord_system,
-    const HolographicFramePrediction& prediction)
+    const HoloFramePred& prediction)
 {
+	TODO
+	#if 0
     // Update the positions of the controllers based on the current timestamp.
     for (auto& src_state : machine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
     {
@@ -86,8 +88,8 @@ void MotionControllerSystem::OnPredictionUpdated(
             }
         }
     }
+	#endif
 }
-#endif
 
 void MotionControllerSystem::Stop()
 {

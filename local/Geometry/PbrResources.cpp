@@ -17,14 +17,14 @@ struct SceneConstantBuffer
 
 namespace Pbr {
 
-template <class Gfx>
-struct ResourcesT<Gfx>::Impl
+
+struct Resources::Impl
 {
     void Initialize(NativeDeviceRef device)
     {
         TODO
     
-    	/*
+		/*
 		// Set up pixel shader.
         Internal::ThrowIfFailed(device->CreatePixelShader(g_psPbrMain, sizeof(g_psPbrMain), nullptr, &resources.PixelShader));
 
@@ -77,42 +77,42 @@ struct ResourcesT<Gfx>::Impl
     
 };
 
-template <class Gfx>
-ResourcesT<Gfx>::ResourcesT(NativeDeviceRef device)
+
+Resources::Resources(NativeDeviceRef device)
     : impl(MakeShared<Impl>())
 {
     impl->Initialize(device);
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::SetBrdfLut(NativeShaderResourcesRef brdf_lut)
+
+void Resources::SetBrdfLut(NativeShaderResourcesRef brdf_lut)
 {
     impl->resources.brdf_lut = brdf_lut;
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::CreateDeviceDependentResources(NativeDeviceRef device)
+
+void Resources::CreateDeviceDependentResources(NativeDeviceRef device)
 {
     impl->Initialize(device);
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::ReleaseDeviceDependentResources()
+
+void Resources::ReleaseDeviceDependentResources()
 {
     impl->Resources = {};
 }
 
-template <class Gfx>
+
 typename Gfx::NativeDeviceRef
-ResourcesT<Gfx>::GetDevice() const
+Resources::GetDevice() const
 {
     NativeDeviceRef device;
     impl->resources.constant_buffer->GetDevice(&device);
     return device;
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::SetLight(const vec4& direction, const vec4& diffuse_color)
+
+void Resources::SetLight(const vec4& direction, const vec4& diffuse_color)
 {
     impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
         StoreVec3(&scene_buffer.light_dir, direction);
@@ -120,8 +120,8 @@ void ResourcesT<Gfx>::SetLight(const vec4& direction, const vec4& diffuse_color)
     });
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::SetViewProjection(const mat4& view_left, const mat4& view_right, const mat4& proj_left, const mat4& proj_right)
+
+void Resources::SetViewProjection(const mat4& view_left, const mat4& view_right, const mat4& proj_left, const mat4& proj_right)
 {
     impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
         StoreMatrix(&scene_buffer.view_proj[0], MatrixTranspose(MultiplyMatrix(view_left, proj_left)));
@@ -131,8 +131,8 @@ void ResourcesT<Gfx>::SetViewProjection(const mat4& view_left, const mat4& view_
     });
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::SetEnvironmentMap(NativeDeviceContextRef context, NativeShaderResourcesRef specular_env_map, NativeShaderResourcesRef diffuse_env_map)
+
+void Resources::SetEnvironmentMap(NativeDeviceContextRef context, NativeShaderResourcesRef specular_env_map, NativeShaderResourcesRef diffuse_env_map)
 {
 	TODO
 	
@@ -158,9 +158,9 @@ void ResourcesT<Gfx>::SetEnvironmentMap(NativeDeviceContextRef context, NativeSh
     */
 }
 
-template <class Gfx>
+
 typename Gfx::NativeShaderResourcesRef
-ResourcesT<Gfx>::CreateSolidColorTexture(const vec4& color) const
+Resources::CreateSolidColorTexture(const vec4& color) const
 {
 	TODO
     /*const RGBA rgba = Texture::CreateRGBA(color);
@@ -178,8 +178,8 @@ ResourcesT<Gfx>::CreateSolidColorTexture(const vec4& color) const
     return texture;*/
 }
 
-template <class Gfx>
-void ResourcesT<Gfx>::Bind(NativeDeviceContextRef context) const
+
+void Resources::Bind(NativeDeviceContextRef context) const
 {
     TODO
 	/*

@@ -6,8 +6,14 @@ uses
 
 file
 	EcsVR.h,
+	HolographicScene.h,
+	HolographicScene.cpp,
+	SpatialInteractionSystem.h,
+	SpatialInteractionSystem.cpp,
 	HolographicRenderer.h,
 	HolographicRenderer.cpp,
+	MotionControllerSystem.h,
+	MotionControllerSystem.cpp,
 	PbrModelCache.h,
 	PbrModelCache.cpp,
 	PaintStrokeSystem.h,
@@ -23,11 +29,5 @@ file
 	ShootingSystem.cpp,
 	ThrowingSystem.h,
 	ThrowingSystem.cpp,
-	HolographicScene.h,
-	HolographicScene.cpp,
-	MotionControllerSystem.h,
-	MotionControllerSystem.cpp,
-	SpatialInteractionSystem.h,
-	SpatialInteractionSystem.cpp,
 	_ readonly separator;
 

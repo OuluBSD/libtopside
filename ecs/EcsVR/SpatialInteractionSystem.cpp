@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 
 bool SpatialInteractionSystem::Initialize()
 {
-    TODO
+	LOG("SpatialInteractionSystem::Initialize: TODO attach atom");
     /*spatial_interaction_manager = SpatialInteractionManager::GetForCurrentView();
     BindEventHandlers();*/
     return true;

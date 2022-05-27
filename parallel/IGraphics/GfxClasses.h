@@ -351,6 +351,25 @@ struct OglBufferBase : GfxBuffer {
 #endif
 
 
+
+
+
+
+
+
+
+//////// PBR
+
+struct PbrResources : RTTIBase {
+	RTTI_DECL0(PbrResources)
+	
+	
+	virtual void SetLight(const vec4& direction, const vec4& diffuse_color) = 0;
+	
+	
+};
+
+
 NAMESPACE_PARALLEL_END
 
 #endif

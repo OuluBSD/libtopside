@@ -46,16 +46,16 @@ private:
 };
 
 // A model is a collection of primitives (which reference a material) and transforms referenced by the primitives' vertices.
-template <class Gfx>
-struct ModelT
+
+struct Model
 {
-	using Resources = ResourcesT<Gfx>;
-	using Primitive = PrimitiveT<Gfx>;
+	/*using Resources = Resources<Gfx>;
+	using Primitive = Primitive<Gfx>;
 	using NativeShaderResourcesRef = typename Gfx::NativeShaderResourcesRef;
 	using NativeDeviceContextRef = typename Gfx::NativeDeviceContextRef;
-	using NativeBufferRef = typename Gfx::NativeBufferRef;
+	using NativeBufferRef = typename Gfx::NativeBufferRef;*/
 	
-    ModelT(bool create_root_node = true);
+    Model(bool create_root_node = true);
 
     // Add a node to the model.
     Node& AddNode(const mat4& transform, NodeIndex parent_index, String name);
@@ -70,7 +70,7 @@ struct ModelT
     void Clear();
 
     // Create a clone of this model.
-    Shared<ModelT> Clone(Resources const& pbr_res) const;
+    Shared<Model> Clone(Resources const& pbr_res) const;
 
     NodeIndex GetNodeCount() const { return (NodeIndex)nodes.GetCount(); }
     Node& GetNode(NodeIndex nodeIndex) { return nodes[nodeIndex]; }

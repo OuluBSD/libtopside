@@ -6,7 +6,6 @@ NAMESPACE_ECS_BEGIN
 
 
 void PaintingInteractionSystem::Start() {
-	TODO // override funcs
 	GetEngine().Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
 }
 
@@ -34,9 +33,6 @@ EntityRef PaintingInteractionSystem::CreateToolSelector() const {
 }
 
 void PaintingInteractionSystem::Register(const LinkedList<EntityRef>& entities) {
-	TODO // override funcs
-	
-	/*
 	ToolSystem::Register(std::move(entities));
 	auto es = GetEngine().Get<EntityStore>();
 	
@@ -66,8 +62,7 @@ void PaintingInteractionSystem::Register(const LinkedList<EntityRef>& entities) 
 		paint->SetEnabled(false);
 	}
 	
-	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
-	*/
+	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
 }
 
 void PaintingInteractionSystem::Activate(EntityRef entity) {

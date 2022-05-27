@@ -26,6 +26,8 @@ public:
     }
 };
 
+using EasingRef = Ref<Easing>;
+
 
 
 class EasingSystem : public System<EasingSystem>

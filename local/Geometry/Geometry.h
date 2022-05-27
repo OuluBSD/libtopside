@@ -42,6 +42,13 @@
 #include "Compare.h"
 #include "Camera.h"
 
+#include "Pbr.h"
+#include "PbrCommon.h"
+#include "PbrResources.h"
+#include "PbrMaterial.h"
+#include "PbrPrimitive.h"
+#include "PbrModel.h"
+#include "GltfLoader.h"
 
 NAMESPACE_UPP_BEGIN
 

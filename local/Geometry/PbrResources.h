@@ -45,10 +45,11 @@ enum ConstantBuffers
 }
 
 // Global PBR resources required for rendering a scene.
-template <class Gfx>
-struct ResourcesT
+struct Resources : RTTIBase
 {
-	using DataState = DataStateT<Gfx>;
+	RTTI_DECL0(Resources)
+	
+	/*using DataState = DataStateT<Gfx>;
 	using NativeDeviceRef = typename Gfx::NativeDeviceRef;
 	using NativeShaderResourcesRef = typename Gfx::NativeShaderResourcesRef;
 	using NativeDeviceContextRef = typename Gfx::NativeDeviceContextRef;
@@ -58,8 +59,8 @@ struct ResourcesT
 	using NativeGeometryShaderRef = typename Gfx::NativeGeometryShaderRef;
 	using NativePixelShaderRef = typename Gfx::NativePixelShaderRef;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;
-	
-    explicit ResourcesT(NativeDeviceRef d3dDevice);
+	*/
+    explicit Resources(NativeDeviceRef dev);
 	
     // Sets the Bidirectional Reflectance Distribution Function Lookup Table texture, required by the shader to compute surface reflectance from the IBL.
     void SetBrdfLut(NativeShaderResourcesRef brdf_lut);
@@ -74,7 +75,7 @@ struct ResourcesT
     NativeDeviceRef GetDevice() const;
 
     // Set the directional light.
-    void SetLight(const vec4& direction, const vec4& diffuse_color);
+    void SetLight(const vec4& direction, const vec4& diffuse_color) override;
 
     // Set the specular and diffuse image-based lighting (IBL) maps. ShaderResourceViews must be TextureCubes.
     void SetEnvironmentMap(NativeDeviceContextRef context, NativeShaderResourcesRef specular_env_map, NativeShaderResourcesRef diffuse_env_map);
@@ -87,7 +88,11 @@ struct ResourcesT
 
     // Bind the the PBR resources to the current context.
     void Bind(NativeDeviceContextRef context) const;
-
+	
+	
+	
+	static Resources& Local() {static Resources r; return r;}
+	
 private:
     struct Impl;
     Shared<Impl> impl;

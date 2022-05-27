@@ -30,6 +30,7 @@ public:
 	
 };
 
+using RigidBodyRef = Ref<RigidBody>;
 
 
 
