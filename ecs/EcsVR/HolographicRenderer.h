@@ -14,13 +14,12 @@ class SkyboxRenderer;
 // HolographicRenderer
 // A stereoscopic 3D rendering system, manages rendering everything in the scene
 // through DirectX 11 and Windows::Perception APIs
-template <class Holo>
-class HolographicRendererT :
-	public System<HolographicRendererT<Holo>>,
-	public Holo::GfxDeviceNotify
+class HolographicRenderer :
+	public System<HolographicRenderer>/*,
+	public Holo::GfxDeviceNotify*/
 {
 public:
-	using Resources = Pbr::ResourcesT<Holo>;
+	/*using Resources = Pbr::ResourcesT<Holo>;
 	using HoloSpace = typename Holo::HoloSpace;
 	using HoloFramePred = typename Holo::HoloFramePred;
 	using HoloCamRendParams = typename Holo::HoloCamRendParams;
@@ -31,9 +30,11 @@ public:
 	using GfxDevResources = typename Holo::GfxDevResources;
 	using GfxCamResources = typename Holo::GfxCamResources;
 	using NativeEventToken = typename Holo::NativeEventToken;
-	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
+	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;*/
 	
-    HolographicRendererT(
+	ECS_SYS_CTOR(HolographicRenderer)
+	
+    /*HolographicRendererT(
         Ecs::Engine& core,
         Shared<GfxDevResources> dev_resources,
         Shared<Resources> pbr_res,
@@ -45,19 +46,20 @@ public:
     Shared<GfxDevResources> GetDeviceResources();
 
     void OnDeviceLost() override;
-    void OnDeviceRestored() override;
+    void OnDeviceRestored() override;*/
 
 protected:
-    void Initialize() override;
+    bool Initialize() override;
     void Start() override;
     void Update(double) override;
     void Stop() override;
     void Uninitialize() override;
 
-    void BindEventHandlers(const HoloSpace& holospace);
-    void ReleaseEventHandlers(const HoloSpace& holospace);
+    /*void BindEventHandlers(const HoloSpace& holospace);
+    void ReleaseEventHandlers(const HoloSpace& holospace);*/
 
 private:
+    /*
     Shared<Ecs::EntityStore>		entity_store;
     Shared<HolographicScene>		holo_scene;
     One<SkyboxRenderer>				skybox_rend;
@@ -87,7 +89,7 @@ private:
     void OnCameraRemoved(
         const HoloSpace& sender,
         const HoloSpaceCameraRemovedEventArgs& args);
-    
+    */
     
 };
 

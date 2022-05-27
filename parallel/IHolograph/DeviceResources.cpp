@@ -3,6 +3,7 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+#if 0
 
 // Constructor for DeviceResources.
 template <class Holo>
@@ -362,7 +363,7 @@ void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String
         Vector<byte> brdf_lut_file_data = brdf_lut_file_data_future.get();
 
         // Read the BRDF Lookup Table used by the PBR system into a DirectX texture.
-        brdf_lut_tex = Pbr::Texture::LoadImage(dev_res.GetD3DDevice(), brdf_lut_file_data.data(), static_cast<uint32>(brdf_lut_file_data.size()));
+        brdf_lut_tex = Pbr::Texture::LoadImage(dev_res.GetD3DDevice(), brdf_lut_file_data.data(), static_cast<uint32>(brdf_lut_file_data.GetCount()));
     });
 
     // Launch the loading tasks on another thread and wait for them to complete
@@ -373,5 +374,6 @@ void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String
 }
 */
 
+#endif
 
 NAMESPACE_PARALLEL_END

@@ -1,9 +1,8 @@
 #include "EcsVR.h"
-#if 0
 
 NAMESPACE_ECS_BEGIN
 
-
+#if 0
 
 void PbrModelCache::RegisterModel(String name, Shared<Pbr::Model> model) {
 	if (name.IsEmpty()) {
@@ -36,7 +35,11 @@ bool PbrModelCache::ModelExists(String name) {
 	return model_map.Find(name);
 }
 
+#endif
+
 void PbrModelCache::Update(double dt) {
+	TODO
+	/*
 	for (auto& comp_set : GetPool()->GetComponents<PbrRenderable>()) {
 		auto pbr_renderable = comp_set.Get<PbrRenderableRef>();
 		
@@ -70,13 +73,13 @@ void PbrModelCache::Update(double dt) {
 			}
 		}
 	}
+	*/
 }
 
 void PbrModelCache::Uninitialize() {
-	model_map.Clear();
+	TODO //model_map.Clear();
 }
 
 
 NAMESPACE_ECS_END
 
-#endif

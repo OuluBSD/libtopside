@@ -30,24 +30,24 @@ void DemoRoomInit() {
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
 	
-    e.Add<EntityStore>();
-    e.Add<ComponentStore>();
-    e.Add<HolographicScene>();//->SetResources(holospace);
-    e.Add<EasingSystem>();
-    e.Add<PhysicsSystem>();
-    e.Add<PbrModelCache>();//->SetResources(pbr_res);
+    e.GetAdd<EntityStore>();
+    e.GetAdd<ComponentStore>();
+    e.GetAdd<HolographicScene>();//->SetResources(holospace);
+    e.GetAdd<EasingSystem>();
+    e.GetAdd<PhysicsSystem>();
+    e.GetAdd<PbrModelCache>();//->SetResources(pbr_res);
 	
-    e.Add<SpatialInteractionSystem>();
-    e.Add<MotionControllerSystem>();
-    e.Add<WorldLogicSystem>();
+    e.GetAdd<SpatialInteractionSystem>();
+    e.GetAdd<MotionControllerSystem>();
+    e.GetAdd<WorldLogicSystem>();
 	
-    e.Add<ToolboxSystem>();
-    e.Add<ShootingInteractionSystem>();
-    e.Add<PaintingInteractionSystem>();
-    e.Add<ThrowingInteractionSystem>();
+    e.GetAdd<ToolboxSystem>();
+    e.GetAdd<ShootingInteractionSystem>();
+    e.GetAdd<PaintingInteractionSystem>();
+    e.GetAdd<ThrowingInteractionSystem>();
 	
-    e.Add<PaintStrokeSystem>();//->SetResources(pbr_res);
-    e.Add<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
+    e.GetAdd<PaintStrokeSystem>();//->SetResources(pbr_res);
+    e.GetAdd<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
 	
 }
 
@@ -59,6 +59,8 @@ void DemoRoomStartup() {
     // Seed model cache
     auto pbr_model_cache = e.Get<PbrModelCache>();
     
+    TODO
+    #if 0
     
     // Register a low poly sphere model.
     {
@@ -136,6 +138,8 @@ void DemoRoomStartup() {
 	
     // We don't store the returned Floor Entity locally, so it lives foreeevvverrr
     e.Get<EntityStore>()->GetRoot()->GetAddPool("models")->Create<FloorPrefab>();
+    
+    #endif
 }
 
 

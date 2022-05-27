@@ -4,16 +4,14 @@
 NAMESPACE_ECS_BEGIN
 
 
-template <class Holo>
-HolographicSceneT<Holo>::HolographicSceneT(
+/*HolographicScene::HolographicScene(
     Engine& core,
     HoloSpace holospace) :
-    Ecs::System<HolographicSceneT<Holo>>(core),
+    Ecs::System<HolographicScene>(core),
     holospace(std::move(holospace))
-{}
+{}*/
 
-template <class Holo>
-void HolographicSceneT<Holo>::Initialize()
+bool HolographicScene::Initialize()
 {
 	TODO // also override funcs
     /*stage_frame_of_reference = SpatialStageFrameOfReference::Current();
@@ -23,45 +21,43 @@ void HolographicSceneT<Holo>::Initialize()
         vec3{0.0f, -1.5f, 0.0f});
 
     spatial_stage_current_changed = SpatialStageFrameOfReference::CurrentChanged(
-        std::bind(&HolographicSceneT<Holo>::OnCurrentStageChanged, this));*/
+        std::bind(&HolographicScene::OnCurrentStageChanged, this));*/
 }
 
-template <class Holo>
-void HolographicSceneT<Holo>::Update(double)
+void HolographicScene::Update(double)
 {
-    current_frame = holospace.CreateNextFrame();
+	TODO
+    /*current_frame = holospace.CreateNextFrame();
 
-    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicSpaceCreateNextFrame);
+    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicSpaceCreateNextFrame);*/
 }
 
-template <class Holo>
-void HolographicSceneT<Holo>::Uninitialize()
+void HolographicScene::Uninitialize()
 {
-    SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
+	TODO
+    /*SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
 
     current_frame = nullptr;
     stationary_frame_of_reference = nullptr;
-    stage_frame_of_reference = nullptr;
+    stage_frame_of_reference = nullptr;*/
 }
 
-template <class Holo>
-void HolographicSceneT<Holo>::UpdateCurrentPrediction()
+void HolographicScene::UpdateCurrentPrediction()
 {
-    current_frame.UpdateCurrentPrediction();
+	TODO
+    /*current_frame.UpdateCurrentPrediction();
 
-    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicFrameUpdatePrediction);
+    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicFrameUpdatePrediction);*/
 }
 
 #if 0
-template <class Holo>
-void HolographicSceneT<Holo>::OnCurrentStageChanged()
+void HolographicScene::OnCurrentStageChanged()
 {
     Mutex::Lock lock(this->lock);
     stage_frame_of_reference = SpatialStageFrameOfReference::Current();
 }
 
-template <class Holo>
-void HolographicSceneT<Holo>::OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason)
+void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason)
 {
     const HolographicFramePrediction prediction = current_frame.CurrentPrediction();
     const SpatialCoordinateSystem coord_system = WorldCoordinateSystem();
@@ -71,23 +67,19 @@ void HolographicSceneT<Holo>::OnPredictionChanged(IPredictionUpdateListener::Pre
         listener->OnPredictionUpdated(reason, coord_system, prediction);
     }
 }
-#endif
 
-template <class Holo>
-void HolographicSceneT<Holo>::AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
+void HolographicScene::AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
 {
     prediction_update_listeners.Add(std::move(listener));
 }
 
-template <class Holo>
-void HolographicSceneT<Holo>::RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
+void HolographicScene::RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener)
 {
     prediction_update_listeners.Remove(std::move(listener));
 }
 
-template <class Holo>
 typename Holo::SpatialCoordinateSystem
-HolographicSceneT<Holo>::WorldCoordinateSystem() const
+HolographicScene::WorldCoordinateSystem() const
 {
     Mutex::Lock lock(this->lock);
     if (stage_frame_of_reference)
@@ -100,26 +92,24 @@ HolographicSceneT<Holo>::WorldCoordinateSystem() const
     }
 }
 
-template <class Holo>
-PerceptionTimestamp HolographicSceneT<Holo>::CurrentTimestamp() const
+PerceptionTimestamp HolographicScene::CurrentTimestamp() const
 {
     return CurrentFrame().CurrentPrediction().Timestamp();
 }
 
-template <class Holo>
 typename Holo::HoloFrame
-HolographicSceneT<Holo>::CurrentFrame() const
+HolographicScene::CurrentFrame() const
 {
     fail_fast_if(current_frame == nullptr);
     return current_frame;
 }
 
-template <class Holo>
-typename Holo::HoloSpace HolographicSceneT<Holo>::HolographicSpace() const
+typename Holo::HoloSpace HolographicScene::HolographicSpace() const
 {
     fail_fast_if(holospace == nullptr);
     return holospace;
 }
 
+#endif
 
 NAMESPACE_ECS_END

@@ -4,45 +4,47 @@
 NAMESPACE_ECS_BEGIN
 
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::Initialize()
+
+bool SpatialInteractionSystem::Initialize()
 {
-    spatial_interaction_manager = SpatialInteractionManager::GetForCurrentView();
-    BindEventHandlers();
+    TODO
+    /*spatial_interaction_manager = SpatialInteractionManager::GetForCurrentView();
+    BindEventHandlers();*/
+    return true;
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::Uninitialize()
+
+void SpatialInteractionSystem::Uninitialize()
 {
-    ReleaseEventHandlers();
-    spatial_interaction_manager = nullptr;
+    TODO
+    /*ReleaseEventHandlers();
+    spatial_interaction_manager = nullptr;*/
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::BindEventHandlers()
+#if 0
+
+void SpatialInteractionSystem::BindEventHandlers()
 {
-	TODO
-	
-    /*fail_fast_if(spatial_interaction_manager == nullptr);
+	fail_fast_if(spatial_interaction_manager == nullptr);
 
     source_tokens[Detected] = spatial_interaction_manager.SourceDetected(
-        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceDetected, this, _1, _2));
+        std::bind(&SpatialInteractionSystem::HandleSourceDetected, this, _1, _2));
 
     source_tokens[Pressed] = spatial_interaction_manager.SourcePressed(
-        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourcePressed, this, _1, _2));
+        std::bind(&SpatialInteractionSystem::HandleSourcePressed, this, _1, _2));
 
     source_tokens[Updated] = spatial_interaction_manager.SourceUpdated(
-        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceUpdated, this, _1, _2));
+        std::bind(&SpatialInteractionSystem::HandleSourceUpdated, this, _1, _2));
 
     source_tokens[Released] = spatial_interaction_manager.SourceReleased(
-        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceReleased, this, _1, _2));
+        std::bind(&SpatialInteractionSystem::HandleSourceReleased, this, _1, _2));
 
     source_tokens[Lost] = spatial_interaction_manager.SourceLost(
-        std::bind(&SpatialInteractionSystemT<Holo>::HandleSourceLost, this, _1, _2));*/
+        std::bind(&SpatialInteractionSystem::HandleSourceLost, this, _1, _2));
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::ReleaseEventHandlers()
+
+void SpatialInteractionSystem::ReleaseEventHandlers()
 {
     fail_fast_if(spatial_interaction_manager == nullptr);
 
@@ -53,10 +55,7 @@ void SpatialInteractionSystemT<Holo>::ReleaseEventHandlers()
     spatial_interaction_manager.SourceDetected(source_tokens[Detected]);
 }
 
-#if 0
-
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::HandleSourceDetected(
+void SpatialInteractionSystem::HandleSourceDetected(
     const SpatialInteractionManager& sender,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -66,8 +65,8 @@ void SpatialInteractionSystemT<Holo>::HandleSourceDetected(
     }
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::HandleSourceLost(
+
+void SpatialInteractionSystem::HandleSourceLost(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -77,8 +76,8 @@ void SpatialInteractionSystemT<Holo>::HandleSourceLost(
     }
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::HandleSourcePressed(
+
+void SpatialInteractionSystem::HandleSourcePressed(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -88,8 +87,8 @@ void SpatialInteractionSystemT<Holo>::HandleSourcePressed(
     }
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::HandleSourceUpdated(
+
+void SpatialInteractionSystem::HandleSourceUpdated(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {
@@ -99,8 +98,8 @@ void SpatialInteractionSystemT<Holo>::HandleSourceUpdated(
     }
 }
 
-template <class Holo>
-void SpatialInteractionSystemT<Holo>::HandleSourceReleased(
+
+void SpatialInteractionSystem::HandleSourceReleased(
     const SpatialInteractionManager& /*sender*/,
     const SpatialInteractionSourceEventArgs& args)
 {

@@ -1,5 +1,6 @@
 #include "IHolograph.h"
 
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -11,6 +12,8 @@ constexpr const char* TouchIndicatorMaterialName = "TouchIndicator";
 // Decompose, interpolate each component, and then recompose.
 void InterpolateNode(const Pbr::Node& min, const Pbr::Node& max, float t, Pbr::Node& result)
 {
+	TODO
+	/*
     vec4 min_scale, min_rot, min_trans;
     vec4 max_scale, max_rot, max_trans;
     if (XMMatrixDecompose(&min_scale, &min_rot, &min_trans, min.GetTransform()) &&
@@ -22,8 +25,10 @@ void InterpolateNode(const Pbr::Node& min, const Pbr::Node& max, float t, Pbr::N
             XMMatrixTranslationFromVector(XMVectorLerp(min_trans, max_trans, t));
         result.SetTransform(interpolated_matrix);
     }
+    */
 }
 
+#if 0
 void AddTouchpadTouchIndicator(Pbr::Model& ctrl_model, Pbr::Resources& pbr_res)
 {
     // Create a material for the touch indicator. Use emissive color so it is visible in all light conditions.
@@ -53,6 +58,7 @@ void AddTouchpadTouchIndicator(Pbr::Model& ctrl_model, Pbr::Resources& pbr_res)
         }
     }
 }
+#endif
 
 }
 
@@ -108,7 +114,7 @@ Future<Shared<const Pbr::Model>> ControllerRenderingT<Holo>::TryLoadRenderModelA
 }
 */
 
-template <class Holo>
+/*template <class Holo>
 ArticulateValues ControllerRenderingT<Holo>::GetArticulateValues(constSpatialSourceState& src_state)
 {
     ArticulateValues arti_vals;
@@ -129,8 +135,9 @@ ArticulateValues ControllerRenderingT<Holo>::GetArticulateValues(constSpatialSou
     arti_vals.touchpad_press_y = src_state.ControllerProperties().IsTouchpadPressed() ? arti_vals.touchpad_touch_y : 0.5f;
 
     return arti_vals;
-}
+}*/
 
+#if 0
 template <class Holo>
 void ControllerRenderingT<Holo>::ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
 {
@@ -169,6 +176,7 @@ void ControllerRenderingT<Holo>::ArticulateControllerModel(ArticulateValues cons
         if (prim_material->name == TouchIndicatorMaterialName) { prim_material->hidden = !arti_vals.touch_indicator_visible; }
     }
 }
+#endif
 
 /*
 template <class Holo>
@@ -210,3 +218,5 @@ void ControllerRenderingT<Holo>::ControllerModelCache::ReleaseDeviceDependentRes
 }
 
 NAMESPACE_PARALLEL_END
+
+#endif

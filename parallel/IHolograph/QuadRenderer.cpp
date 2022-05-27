@@ -1,5 +1,6 @@
 #include "IHolograph.h"
 
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -120,7 +121,7 @@ void QuadRendererT<Holo>::CreateDeviceDependentResources()
     Holo::ThrowIfFailed(
         dev_res->GetD3DDevice()->CreateInputLayout(
             vtx_desc.data(),
-            static_cast<uint32>(vtx_desc.size()),
+            static_cast<uint32>(vtx_desc.GetCount()),
             vertex_shader,
             vertex_shader_size,
             &input_layout
@@ -158,7 +159,7 @@ void QuadRendererT<Holo>::CreateDeviceDependentResources()
     const D3D11_SUBRESOURCE_DATA vertex_buffer_data = { quadVertices.data() };
 
     const CD3D11_BUFFER_DESC vertex_buffer_desc{
-        static_cast<uint32>(sizeof(VertexPositionTex) * quadVertices.size()),
+        static_cast<uint32>(sizeof(VertexPositionTex) * quadVertices.GetCount()),
         D3D11_BIND_VERTEX_BUFFER
     };
 
@@ -180,12 +181,12 @@ void QuadRendererT<Holo>::CreateDeviceDependentResources()
         1,0,2,
     }};
 
-    index_count = static_cast<uint32>(quad_indices.size());
+    index_count = static_cast<uint32>(quad_indices.GetCount());
 
     const D3D11_SUBRESOURCE_DATA index_buffer_data = { quad_indices.data() };
 
     const CD3D11_BUFFER_DESC index_buffer_desc {
-        static_cast<uint32>(sizeof(uint16) * quad_indices.size()),
+        static_cast<uint32>(sizeof(uint16) * quad_indices.GetCount()),
         D3D11_BIND_INDEX_BUFFER
     };
     Holo::ThrowIfFailed(
@@ -253,3 +254,5 @@ void QuadRendererT<Holo>::ReleaseDeviceDependentResources()
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

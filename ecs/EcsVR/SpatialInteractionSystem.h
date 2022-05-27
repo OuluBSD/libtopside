@@ -19,18 +19,19 @@ struct ISpatialInteractionListenerT
 };
 
 // SpatialInteractionSystem
-// Responsible for managing the events from SpatialInteractionManager with additional filtering
-template <class Holo>
-class SpatialInteractionSystemT final : public Ecs::System<SpatialInteractionSystemT<Holo>>
+// Manages events from SpatialInteractionManager with additional filtering
+class SpatialInteractionSystem final : public Ecs::System<SpatialInteractionSystem>
 {
 public:
-	using ISpatialInteractionListener = ISpatialInteractionListenerT<Holo>;
+	ECS_SYS_CTOR(SpatialInteractionSystem)
+	
+	/*using ISpatialInteractionListener = ISpatialInteractionListenerT<Holo>;
 	using ISpatialInteractionManager = typename Holo::ISpatialInteractionManager;
 	using SpatialInteractionManager = typename Holo::SpatialInteractionManager;
 	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
-	using NativeEventToken = typename Holo::NativeEventToken;
+	using NativeEventToken = typename Holo::NativeEventToken;*/
 	
-    void AddListener(Shared<ISpatialInteractionListener> listener)
+    /*void AddListener(Shared<ISpatialInteractionListener> listener)
     {
         spatial_interaction_listeners.Add(std::move(listener));
     }
@@ -44,14 +45,14 @@ public:
     {
         fail_fast_if(spatial_interaction_manager == nullptr);
         return spatial_interaction_manager;
-    }
+    }*/
 
 protected:
-    void Initialize() override;
+    bool Initialize() override;
     void Uninitialize() override;
 
 private:
-    ISpatialInteractionManager spatial_interaction_manager = 0;
+    /*ISpatialInteractionManager spatial_interaction_manager = 0;
 
     enum SourceEvent {
         Detected, Pressed, Updated, Released, Lost, Count
@@ -62,7 +63,7 @@ private:
     Array<Shared<ISpatialInteractionListener>> spatial_interaction_listeners;
 
     void BindEventHandlers();
-    void ReleaseEventHandlers();
+    void ReleaseEventHandlers();*/
 
     // Events Handlers
     /*void HandleSourceDetected(

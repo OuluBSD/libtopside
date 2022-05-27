@@ -196,6 +196,7 @@ void Engine::Add(TypeCls type_id, SystemBase* system) {
 			delete system;
 		}
 	}
+	else systems.Add(type_id, system);
 }
 
 void Engine::Remove(TypeCls type_id) {

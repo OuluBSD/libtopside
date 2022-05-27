@@ -1,7 +1,8 @@
 description "\377B0,86,131";
 
 uses
-	IGraphics;
+	IGraphics,
+	ports/mikktspace;
 
 file
 	Copying,
@@ -9,7 +10,6 @@ file
 	IHolograph.cpp,
 	Dx11.h,
 	Dx11.cpp,
-	DirectXHelper.h,
 	AppView.h,
 	AppView.cpp,
 	CameraResources.h,
@@ -23,21 +23,11 @@ file
 	QuadRenderer.cpp,
 	SkyboxRenderer.h,
 	SkyboxRenderer.cpp,
-	SpatialInteractionSystem.h,
-	SpatialInteractionSystem.cpp,
 	TextRenderer.h,
 	TextRenderer.cpp,
 	Additional readonly separator,
-	Toolkit.h,
-	dds.h,
-	DDSTextureLoader.cpp,
-	DDSTextureLoader.h,
-	DirectXHelper.h,
-	DirectXHelpers.h,
-	GltfHelper.cpp,
 	GltfHelper.h,
-	LoaderHelpers.h,
-	PlatformHelpers.h,
+	GltfHelper.cpp,
 	Trash readonly separator,
 	StepTimer.h;
 

@@ -47,6 +47,9 @@ class MotionControllerSystem :
 	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
 	using SpatialSource = typename Holo::SpatialSource;*/
 	
+public:
+	ECS_SYS_CTOR(MotionControllerSystem)
+	
 protected:
     // System
     void Start() override;

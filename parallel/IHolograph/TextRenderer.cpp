@@ -1,5 +1,6 @@
 #include "IHolograph.h"
 
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -138,3 +139,5 @@ void TextRendererT<Holo>::CreateDeviceDependentResources()
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

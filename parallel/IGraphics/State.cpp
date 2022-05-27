@@ -1,6 +1,6 @@
 #include "IGraphics.h"
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 namespace GVar {
 const char* names[TS::GVar::VAR_COUNT+1] = {
@@ -132,4 +132,4 @@ void StateDraw::EndOp() {
 
 #endif
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END

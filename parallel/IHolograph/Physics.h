@@ -18,7 +18,7 @@ struct SpatialInputUtilitiesT {
 	    const vec3& position_near_source_location)
 	{
 	    const vec3 grasp_velocity = source_location.Velocity();
-	    const vec3 grasp_position = source_location.Position();
+	    const vec3 grasp_position = source_location.position();
 	    const vec3 angular_velocity = source_location.AngularVelocity();
 		
 		TODO // value is optional

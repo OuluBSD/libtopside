@@ -492,4 +492,12 @@ String FormatScientific(double d) {
 }
 
 
+
+float ConvertDipsToPixels(float dips, float dpi) {
+    constexpr float dips_per_inch = 96.0f;
+    return floorf(dips * dpi / dips_per_inch + 0.5f); // Round to nearest integer.
+}
+
+
+
 NAMESPACE_TOPSIDE_END

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ports/tiny_gltf/tiny_gltf.h>
+#include <ports/mikktspace/mikktspace.h>
+
 #include <IGraphics/IGraphics.h>
 
 
@@ -19,6 +22,7 @@
 //#include "PbrModelCache.h"
 #include "AppView.h"
 //#include "MotionControllerSystem.h"
+#include "GltfHelper.h"
 
 
 

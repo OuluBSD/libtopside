@@ -4,9 +4,6 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-namespace DX {
-
-
 template <class Holo>
 class DeviceResourcesT;
 
@@ -81,8 +78,6 @@ private:
     HoloCam									holocam = 0;
     
 };
-
-}
 
 
 NAMESPACE_PARALLEL_END

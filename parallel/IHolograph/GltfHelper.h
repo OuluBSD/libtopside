@@ -14,23 +14,27 @@ struct Image;
 struct Sampler;
 }
 
+
+NAMESPACE_PARALLEL_BEGIN
+
+
 namespace GltfHelper {
 
 // Vertex data.
-struct Vertex
+struct Vertex : Moveable<Vertex>
 {
-    DirectX::XMFLOAT3 Position;
-    DirectX::XMFLOAT3 Normal;
-    DirectX::XMFLOAT4 Tangent;
-    DirectX::XMFLOAT2 TexCoord0;
+    vec3 position;
+    vec3 normal;
+    vec4 tangent;
+    vec2 tex_coord;
     // Note: This implementation does not currently support glTF 2's Color0 and TexCoord1 attributes.
 };
 
 // A primitive is a collection of vertices and indices.
 struct Primitive
 {
-    std::vector<Vertex> Vertices;
-    std::vector<uint32_t> Indices;
+    Vector<Vertex> vertices;
+    Vector<uint32> indices;
 };
 
 // Metallic-roughness material definition.
@@ -38,35 +42,38 @@ struct Material
 {
     struct Texture
     {
-        const tinygltf::Image* Image;
-        const tinygltf::Sampler* Sampler;
+        const tinygltf::Image* image;
+        const tinygltf::Sampler* sampler;
     };
 
-    Texture BaseColorTexture;
-    Texture MetallicRoughnessTexture;
-    Texture EmissiveTexture;
-    Texture NormalTexture;
-    Texture OcclusionTexture;
+    Texture base_color_texture;
+    Texture metallic_roughness_texture;
+    Texture emissive_texture;
+    Texture normal_texture;
+    Texture occlusion_texture;
 
-    DirectX::XMFLOAT4 BaseColorFactor;
-    float MetallicFactor;
-    float RoughnessFactor;
-    DirectX::XMFLOAT3 EmissiveFactor;
+    vec4 base_color_factor;
+    float metallic_factor;
+    float roughness_factor;
+    vec3 emissive_factor;
 
-    float NormalScale;
-    float OcclusionStrength;
+    float normal_scale;
+    float occlusion_strength;
 };
 
 // Reads the "transform" or "TRS" data for a Node as an XMMATRIX.
-DirectX::XMMATRIX XM_CALLCONV ReadNodeLocalTransform(const tinygltf::Node& gltfNode);
+mat4 ReadNodeLocalTransform(const tinygltf::Node& gltf_node);
 
 // Parses the primitive attributes and indices from the glTF accessors/bufferviews/buffers into a common simplified data structure, the Primitive.
-Primitive ReadPrimitive(const tinygltf::Model& gltfModel, const tinygltf::Primitive& gltfPrimitive);
+Primitive ReadPrimitive(const tinygltf::Model& gltf_model, const tinygltf::Primitive& gltf_primitive);
 
 // Parses the material values into a simplified data structure, the Material.
-Material ReadMaterial(const tinygltf::Model& gltfModel, const tinygltf::Material& gltfMaterial);
+Material ReadMaterial(const tinygltf::Model& gltf_model, const tinygltf::Material& gltf_material);
 
 // Converts the image to RGBA if necessary. Requires a temporary buffer only if it needs to be converted.
-const uint8_t* ReadImageAsRGBA(const tinygltf::Image& image, _Inout_ std::vector<uint8_t>* tempBuffer);
+const byte* ReadImageAsRGBA(const tinygltf::Image& image, Vector<byte>* temp_buffer);
 
 }
+
+
+NAMESPACE_PARALLEL_END

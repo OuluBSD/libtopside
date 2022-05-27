@@ -29,35 +29,36 @@ public:
 // HolographicScene
 // Maintains a list of our current state of Windows::Perception objects, ensuring the rest of the systems
 // use the same coordinate system, timestamp, etc.
-template <class Holo>
-class HolographicSceneT : public Ecs::System<HolographicSceneT<Holo>>
+class HolographicScene : public Ecs::System<HolographicScene>
 {
 public:
-	using HoloSpace = typename Holo::HoloSpace;
+	/*using HoloSpace = typename Holo::HoloSpace;
 	using HoloFrame = typename Holo::HoloFrame;
 	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
 	using SpatialStageFrameOfReference = typename Holo::SpatialStageFrameOfReference;
 	using SpatialStationaryFrameOfReference = typename Holo::SpatialStationaryFrameOfReference;
 	using NativeEventToken = typename Holo::NativeEventToken;
 	using IPredictionUpdateListener = IPredictionUpdateListenerT<Holo>;
-	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;
+	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;*/
 	
-    HolographicSceneT(Ecs::Engine& core, HoloSpace holospace);
+	ECS_SYS_CTOR(HolographicScene)
+	
+    //HolographicScene(Ecs::Engine& core, HoloSpace holospace);
 
-    HoloFrame CurrentFrame() const;
+    /*HoloFrame CurrentFrame() const;
     HoloSpace HolographicSpace() const;
 
     SpatialCoordinateSystem WorldCoordinateSystem() const;
-    PerceptionTimestamp CurrentTimestamp() const;
+    PerceptionTimestamp CurrentTimestamp() const;*/
 
     void UpdateCurrentPrediction();
 
-    void AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
-    void RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
+    /*void AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
+    void RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener);*/
 
 protected:
-    void Initialize() override;
-    void Update(double) override;
+    bool Initialize() override;
+    void Update(double dt) override;
     void Uninitialize() override;
 
     /*void OnCurrentStageChanged();
@@ -66,14 +67,15 @@ protected:
 
 private:
     mutable Mutex						lock;
-    SpatialStageFrameOfReference		stage_frame_of_reference = 0;
+    
+    /*SpatialStageFrameOfReference		stage_frame_of_reference = 0;
     SpatialStationaryFrameOfReference	stationary_frame_of_reference = 0;
     NativeEventToken					spatial_stage_current_changed;
 
     HoloSpace							holospace;
     HoloFrame							current_frame;
 
-    Array<Shared<IPredictionUpdateListener>>		prediction_update_listeners;
+    Array<Shared<IPredictionUpdateListener>>		prediction_update_listeners;*/
     
 };
 

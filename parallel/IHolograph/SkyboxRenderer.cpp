@@ -1,5 +1,6 @@
 #include "IHolograph.h"
 
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -182,3 +183,5 @@ void SkyboxRendererT<Holo>::Unbind()
 
 
 NAMESPACE_PARALLEL_END
+
+#endif
