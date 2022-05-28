@@ -108,6 +108,22 @@ mat4 MultiplyMatrix(const mat4& m0, const mat4& m1);
 mat4 MatrixInverse(const mat4* l, const mat4& r);
 vec4 VectorSet(float x, float y, float z, float d);
 vec4 VectorCross(const vec4& a, const vec4& b);
+mat4 DoubleToMatrix4(const std::vector<double>& v);
+vec3 DoubleToVector3(const std::vector<double>& v);
+vec3 DoubleToVector4(const std::vector<double>& v);
+quat DoubleToQuat(const std::vector<double>& v);
+mat4 MatrixTransformation(
+    const vec3& scaling_origin,
+    const quat& scaling_orientation_quaternion,
+    const vec3& scaling,
+    const vec3& rotation_origin,
+    const quat& rotation_quaternion,
+    const vec3& translation
+);
+mat4 MatrixTranslationFromVector(const vec3& v);
+mat4 MatrixRotationQuaternion(quat q);
+mat4 MatrixScalingFromVector(const vec3& scale);
+mat4 MatrixMultiply(const mat4& m1, const mat4& m2);
 
 extern const vec4 IdentityR0;
 extern const vec4 IdentityR1;

@@ -1,8 +1,10 @@
 description "\377I28,212,255";
 
 uses
-	ports/modernjson;
+	ports/modernjson,
+	ports/stb;
 
 file
-	tiny_gltf.h;
+	tiny_gltf.h,
+	tiny_gltf.cpp;
 

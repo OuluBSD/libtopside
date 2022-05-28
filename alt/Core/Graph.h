@@ -27,6 +27,10 @@ struct RGBAT : Moveable<RGBAT<T>> {
 	String ToString() const {return "[" + AsString(r) + ", " + AsString(g) + ", " + AsString(b) + ", " + AsString(a) + "]";}
 	
 	
+	unsigned GetHashValue() const {
+		if (sizeof(T) == 1)	return *reinterpret_cast<const uint32*>(&r);
+		else				return CombineHash().Put(r).Put(g).Put(b).Put(a);
+	}
 };
 
 typedef RGBAT<byte>		RGBA;

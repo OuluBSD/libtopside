@@ -2,6 +2,12 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+Pbr::Model& PbrModelCache::AddModel(String name) {
+	ASSERT(!model_map.Find(name));
+	return model_map.Add(name);
+}
+
 #if 0
 
 void PbrModelCache::RegisterModel(String name, Shared<Pbr::Model> model) {

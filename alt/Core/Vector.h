@@ -108,6 +108,7 @@ public:
 	T& value() const {return *obj;}
 	T* operator->() {ASSERT(obj); return obj;}
 	operator bool () const {return obj != NULL;}
+	bool has_value() const {return obj != NULL;}
 	T& operator*() {return *obj;}
 };
 
@@ -875,6 +876,12 @@ public:
 		if (i >= 0) return values[i];
 		keys.Add(key);
 		return values.Add(value);
+	}
+	
+	V* Detach(int i) {
+		V* v = values.Detach(i);
+		keys.Remove(i);
+		return v;
 	}
 
 	Iterator InsertIterator(const Iterator& it, const K& key, const V& value) {int pos = GetPos(it); Insert(pos, key, value); Iterator cur = Begin(); cur += pos; return cur;}

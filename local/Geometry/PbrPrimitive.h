@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 namespace Pbr {
@@ -12,28 +12,34 @@ struct Primitive
 {
     /*using Collection = Vector<Primitive>;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;
-	using NativeDeviceContextRef = typename Gfx::NativeDeviceContextRef;
-	using Resources = Resources<Gfx>;
-	using Model = Model<Gfx>;
-	using Material = Material<Gfx>;*/
+	using GfxContext& = typename Gfx::GfxContext&;
+	using Resources = Resources;
+	using Model = Model;
+	using Material = Material;*/
 	
-    Primitive() = delete;
-    Primitive(int idx_count, NativeBufferRef index_buffer, NativeBufferRef vertex_buffer, Shared<Material> material);
-    Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Material> material);
+	Primitive() {}
+    /*Primitive() = delete;
+    Primitive(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material);
+    Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Material> material);*/
+    
+    //void Set(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer);
+    //void Set(const Resources& pbr_res, const Pbr::PrimitiveBuilder& prim_builder);
 	
     // Get the material for the primitive.
-    Shared<Material>& GetMaterial() { return material; }
-    const Shared<Material>& GetMaterial() const { return material; }
+    Material& GetMaterial() { ASSERT(material); return *material; }
+    const Material& GetMaterial() const { ASSERT(material); return *material; }
+    
+    void SetMaterial(Material* mat) {material = mat;}
 	
 //protected:
-    void Render(NativeDeviceContextRef context) const;
+    void Render(GfxContext& context) const;
     Primitive Clone(const Resources& pbr_res) const;
 	
-private:
-    int					idx_count;
-    NativeBufferRef		index_buffer;
-    NativeBufferRef		vertex_buffer;
-    Shared<Material>	material;
+    
+public:
+    Vector<Pbr::Vertex>		vertices;
+    Vector<uint32>			indices;
+    Material*				material = 0;
     
     
 };
@@ -41,4 +47,4 @@ private:
 }
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END

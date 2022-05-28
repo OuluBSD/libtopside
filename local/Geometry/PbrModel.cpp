@@ -1,7 +1,7 @@
-#include "IGraphics.h"
+#include "Geometry.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
@@ -12,6 +12,12 @@ constexpr Pbr::NodeIndex root_parent_node_index = -1;
 namespace Pbr {
 
 
+
+
+Node::Node() {
+	modify_count = 0;
+}
+
 Model::Model(bool create_root_node /*= true*/)
 {
     if (create_root_node)
@@ -21,14 +27,16 @@ Model::Model(bool create_root_node /*= true*/)
 }
 
 
-void Model::Render(Resources const& pbr_res, NativeDeviceContextRef context) const
+void Model::Render(Resources const& pbr_res, GfxContext& context) const
 {
+	TODO
+	/*
     UpdateTransforms(pbr_res, context);
 
-    NativeShaderResourcesRef vs_shader_resources[] = { model_transforms_resource_view.Get() };
+    ShaderResources vs_shader_resources[] = { model_transforms_resource_view.Get() };
     context->VSSetShaderResources(Pbr::ShaderSlots::Transforms, _countof(vs_shader_resources), vs_shader_resources);
 
-    for (const Pbr::Primitive<Gfx>& primitive : primitives)
+    for (const Pbr::Primitive& primitive : primitives)
     {
         if (primitive.GetMaterial()->hidden) continue;
 
@@ -38,20 +46,21 @@ void Model::Render(Resources const& pbr_res, NativeDeviceContextRef context) con
 
     // Expect the caller to reset other state, but the geometry shader is cleared specially.
     context->GSSetShader(nullptr, nullptr, 0);
+    */
 }
 
 
 Node& Model::AddNode(const mat4& transform, Pbr::NodeIndex parent_index, String name)
 {
-    auto newNodeIndex = (Pbr::NodeIndex)nodes.GetCount();
-    if (newNodeIndex != root_node_idx && parent_index == root_parent_node_index)
+    auto new_node_idx = (Pbr::NodeIndex)nodes.GetCount();
+    if (new_node_idx != root_node_idx && parent_index == root_parent_node_index)
     {
         throw new Exc("Only the first node can be the root");
     }
 
-    TODO //nodes.Add(transform, std::move(name), newNodeIndex, parent_index);
+    nodes.Add().Set(transform, name, new_node_idx, parent_index);
     
-    model_transforms_structured_buffer = nullptr; // Structured buffer will need to be recreated.
+    model_transforms_structured_buffer.Clear(); // Structured buffer will need to be recreated.
     return nodes.Top();
 }
 
@@ -62,8 +71,10 @@ void Model::Clear()
 }
 
 
-Shared<Model<Gfx>> Model::Clone(Resources const& pbr_res) const
+Shared<Model> Model::Clone(Resources const& pbr_res) const
 {
+	TODO
+	#if 0
     auto clone = MakeShared<Model>(false /* create_root_node */);
 
     for (const Node& node : nodes) {
@@ -75,6 +86,7 @@ Shared<Model<Gfx>> Model::Clone(Resources const& pbr_res) const
     }
 
     return clone;
+    #endif
 }
 
 
@@ -94,9 +106,9 @@ Optional<NodeIndex> Model::FindFirstNode(char const* name, Optional<NodeIndex> c
 }
 
 
-mat4 Model::GetNodeWorldTransform(NodeIndex nodeIndex) const
+mat4 Model::GetNodeWorldTransform(NodeIndex node_idx) const
 {
-    const Pbr::Node& node = GetNode(nodeIndex);
+    const Pbr::Node& node = GetNode(node_idx);
 
     // Compute the transform recursively.
     const mat4 parent_transform =
@@ -108,13 +120,27 @@ mat4 Model::GetNodeWorldTransform(NodeIndex nodeIndex) const
 }
 
 
-void Model::AddPrimitive(const Pbr::Primitive<Gfx>& primitive)
+/*void Model::AddPrimitive(const Pbr::Primitive& primitive)
 {
     primitives.Add(std::move(primitive));
+}*/
+Pbr::Primitive& Model::AddPrimitive()
+{
+    Pbr::Primitive& prim = primitives.Add();
+    //prim.res = &pbr_res;
+    //prim.GetMaterial().res = &pbr_res;
+    return prim;
 }
 
+Primitive& Model::AddPrimitive(Primitive* p)
+{
+    Pbr::Primitive& prim = primitives.Add(p);
+    //prim.res = &pbr_res;
+    //prim.GetMaterial().res = &pbr_res;
+    return prim;
+}
 
-void Model::UpdateTransforms(Resources const& pbr_res, NativeDeviceContextRef context) const
+void Model::UpdateTransforms(Resources const& pbr_res, GfxContext& context) const
 {
 	TODO
 	
@@ -165,5 +191,5 @@ void Model::UpdateTransforms(Resources const& pbr_res, NativeDeviceContextRef co
 
 }
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 

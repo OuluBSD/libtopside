@@ -1034,7 +1034,194 @@ vec4 VectorSet(float x, float y, float z, float d) {
 }
 
 vec4 VectorCross(const vec4& a, const vec4& b) {
-	TODO // XMVector3Cross
+	return cross(a, b);
+}
+
+mat4 MatrixTranspose(const mat4& m) {
+	return m.GetTransposed();
+}
+
+mat4 DoubleToMatrix4(const std::vector<double>& v) {
+	ASSERT(v.size() == 16);
+	mat4 m;
+	int k = 0;
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < 4; j++) {
+			m[i][j] = k < v.size() ? v[k] : 0;
+			k++;
+		}
+	}
+	return m;
+}
+
+vec3 DoubleToVector3(const std::vector<double>& v) {
+	ASSERT(v.size() == 3);
+	vec3 r;
+	for(int i = 0; i < 3; i++)
+		r[i] = v[i];
+	return r;
+}
+
+vec3 DoubleToVector4(const std::vector<double>& v) {
+	ASSERT(v.size() == 4);
+	vec3 r;
+	for(int i = 0; i < 4; i++)
+		r[i] = v[i];
+	return r;
+}
+
+quat DoubleToQuat(const std::vector<double>& v) {
+	ASSERT(v.size() == 4);
+	quat r;
+	for(int i = 0; i < 4; i++)
+		r[i] = v[i];
+	return r;
+}
+
+mat4 MatrixTransformation(
+    const vec3& scaling_origin,
+    const quat& scaling_orientation_quaternion,
+    const vec3& scaling,
+    const vec3& rotation_origin,
+    const quat& rotation_quaternion,
+    const vec3& translation
+)
+{
+    vec4 v_scaling_origin			= scaling_origin.Extend();
+    vec3 neg_scaling_origin			= -scaling_origin;
+
+    mat4 m_scaling_origin_i			= MatrixTranslationFromVector(neg_scaling_origin);
+    mat4 m_scaling_orientation		= MatrixRotationQuaternion(scaling_orientation_quaternion);
+    mat4 m_scaling_orientation_t	= MatrixTranspose(m_scaling_orientation);
+    mat4 m_scaling					= MatrixScalingFromVector(scaling);
+    vec4 v_rotation_origin			= rotation_origin.Extend();
+    mat4 m_rotation					= MatrixRotationQuaternion(rotation_quaternion);
+    vec4 v_translation				= translation.Extend();
+
+    mat4 m;
+    m		= MatrixMultiply(m_scaling_origin_i, m_scaling_orientation_t);
+    m		= MatrixMultiply(m, m_scaling);
+    m		= MatrixMultiply(m, m_scaling_orientation);
+    m[3]	= m[3] + v_scaling_origin;
+    m[3]	= m[3] - v_rotation_origin;
+    m		= MatrixMultiply(m, m_rotation);
+    m[3]	= m[3] + v_rotation_origin + v_translation;
+    return m;
+}
+
+mat4 MatrixTranslationFromVector(const vec3& v) {
+	mat4 m;
+	m.SetIdentity();
+	m.SetComponentTranslate(v[0], v[1], v[2]);
+	return m;
+}
+
+mat4 MatrixRotationQuaternion(quat q) {
+    float qx = q[0];
+    float qxx = qx * qx;
+
+    float qy = q[1];
+    float qyy = qy * qy;
+
+    float qz = q[2];
+    float qzz = qz * qz;
+
+    float qw = q[3];
+
+    mat4 m;
+    m[0][0] = 1.f - 2.f * qyy - 2.f * qzz;
+    m[0][1] = 2.f * qx * qy + 2.f * qz * qw;
+    m[0][2] = 2.f * qx * qz - 2.f * qy * qw;
+    m[0][3] = 0.f;
+
+    m[1][0] = 2.f * qx * qy - 2.f * qz * qw;
+    m[1][1] = 1.f - 2.f * qxx - 2.f * qzz;
+    m[1][2] = 2.f * qy * qz + 2.f * qx * qw;
+    m[1][3] = 0.f;
+
+    m[2][0] = 2.f * qx * qz + 2.f * qy * qw;
+    m[2][1] = 2.f * qy * qz - 2.f * qx * qw;
+    m[2][2] = 1.f - 2.f * qxx - 2.f * qyy;
+    m[2][3] = 0.f;
+
+    m[3][0] = 0.f;
+    m[3][1] = 0.f;
+    m[3][2] = 0.f;
+    m[3][3] = 1.0f;
+    
+    return m;
+}
+
+mat4 MatrixScalingFromVector(const vec3& scale)
+{
+    mat4 m;
+    
+    m[0][0] = scale[0];
+    m[0][1] = 0.0f;
+    m[0][2] = 0.0f;
+    m[0][3] = 0.0f;
+
+    m[1][0] = 0.0f;
+    m[1][1] = scale[1];
+    m[1][2] = 0.0f;
+    m[1][3] = 0.0f;
+
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = scale[2];
+    m[2][3] = 0.0f;
+
+    m[3][0] = 0.0f;
+    m[3][1] = 0.0f;
+    m[3][2] = 0.0f;
+    m[3][3] = 1.0f;
+    return m;
+}
+
+mat4 MatrixMultiply(const mat4& m1, const mat4& m2) {
+    mat4 r;
+    
+    // Cache the invariants in registers
+    float x = m1[0][0];
+    float y = m1[0][1];
+    float z = m1[0][2];
+    float w = m1[0][3];
+    
+    // Perform the operation on the first row
+    r[0][0] = (m2[0][0] * x) + (m2[1][0] * y) + (m2[2][0] * z) + (m2[3][0] * w);
+    r[0][1] = (m2[0][1] * x) + (m2[1][1] * y) + (m2[2][1] * z) + (m2[3][1] * w);
+    r[0][2] = (m2[0][2] * x) + (m2[1][2] * y) + (m2[2][2] * z) + (m2[3][2] * w);
+    r[0][3] = (m2[0][3] * x) + (m2[1][3] * y) + (m2[2][3] * z) + (m2[3][3] * w);
+    
+    // Repeat for all the other rows
+    x = m1[1][0];
+    y = m1[1][1];
+    z = m1[1][2];
+    w = m1[1][3];
+    r[1][0] = (m2[0][0] * x) + (m2[1][0] * y) + (m2[2][0] * z) + (m2[3][0] * w);
+    r[1][1] = (m2[0][1] * x) + (m2[1][1] * y) + (m2[2][1] * z) + (m2[3][1] * w);
+    r[1][2] = (m2[0][2] * x) + (m2[1][2] * y) + (m2[2][2] * z) + (m2[3][2] * w);
+    r[1][3] = (m2[0][3] * x) + (m2[1][3] * y) + (m2[2][3] * z) + (m2[3][3] * w);
+    
+    x = m1[2][0];
+    y = m1[2][1];
+    z = m1[2][2];
+    w = m1[2][3];
+    r[2][0] = (m2[0][0] * x) + (m2[1][0] * y) + (m2[2][0] * z) + (m2[3][0] * w);
+    r[2][1] = (m2[0][1] * x) + (m2[1][1] * y) + (m2[2][1] * z) + (m2[3][1] * w);
+    r[2][2] = (m2[0][2] * x) + (m2[1][2] * y) + (m2[2][2] * z) + (m2[3][2] * w);
+    r[2][3] = (m2[0][3] * x) + (m2[1][3] * y) + (m2[2][3] * z) + (m2[3][3] * w);
+    
+    x = m1[3][0];
+    y = m1[3][1];
+    z = m1[3][2];
+    w = m1[3][3];
+    r[3][0] = (m2[0][0] * x) + (m2[1][0] * y) + (m2[2][0] * z) + (m2[3][0] * w);
+    r[3][1] = (m2[0][1] * x) + (m2[1][1] * y) + (m2[2][1] * z) + (m2[3][1] * w);
+    r[3][2] = (m2[0][2] * x) + (m2[1][2] * y) + (m2[2][2] * z) + (m2[3][2] * w);
+    r[3][3] = (m2[0][3] * x) + (m2[1][3] * y) + (m2[2][3] * z) + (m2[3][3] * w);
+    
+    return r;
 }
 
 const vec4 IdentityR0            = vec4{ 1.0f, 0.0f, 0.0f, 0.0f };

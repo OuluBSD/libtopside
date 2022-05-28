@@ -25,7 +25,7 @@ bool HolographicScene::Initialize()
 	return true;
 }
 
-void HolographicScene::Update(double)
+void HolographicScene::Update(double dt)
 {
 	TODO
     /*current_frame = holospace.CreateNextFrame();

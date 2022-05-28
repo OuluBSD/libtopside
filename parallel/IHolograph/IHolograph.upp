@@ -30,8 +30,6 @@ file
 	TextRenderer.h,
 	TextRenderer.cpp,
 	Additional readonly separator,
-	GltfHelper.h,
-	GltfHelper.cpp,
 	Trash readonly separator,
 	StepTimer.h;
 

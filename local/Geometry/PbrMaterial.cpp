@@ -1,13 +1,18 @@
-#include "IGraphics.h"
+#include "Geometry.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 namespace Pbr
 {
 
 
+Material::Material() {
+	
+}
+
+#if 0
 Material::Material(Resources const& pbr_res)
 {
 	TODO
@@ -33,9 +38,11 @@ Material::Material(Resources const& pbr_res)
 
     Internal::ThrowIfFailed(pbr_res.GetDevice()->CreateBlendState(&blend_state_desc, &blend_state));*/
 }
+#endif
 
 
-Shared<Material<Gfx>> Material::Clone(const Resources& pbr_res) const
+
+/*Shared<Material> Material::Clone(const Resources& pbr_res) const
 {
     auto clone = MakeShared<Material>(pbr_res);
     clone->name = name;
@@ -44,42 +51,36 @@ Shared<Material<Gfx>> Material::Clone(const Resources& pbr_res) const
     clone->textures = textures;
     clone->samplers = samplers;
     return clone;
-}
+}*/
 
 
-
-Shared<Material<Gfx>> Material::CreateFlat(const Resources& pbr_res, const vec4& base_color_factor, float roughness_factor /* = 1.0f */, float metallic_factor /* = 0.0f */, const vec4& emissive_factor /* = XMFLOAT3(0, 0, 0) */)
+void Material::SetFlat(const vec4& base_color_factor, float roughness_factor /* = 1.0f */, float metallic_factor /* = 0.0f */, const vec4& emissive_factor /* = XMFLOAT3(0, 0, 0) */)
 {
-    Shared<Material> material = MakeShared<Material>(pbr_res);
-
-    material->parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
+    parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
         StoreVec4(&data.base_clr_factor, base_color_factor);
         StoreVec3(&data.emissive_factor, emissive_factor);
         data.metallic_factor = metallic_factor;
         data.roughness_factor = roughness_factor;
     });
-
-	TODO
-	/*
-    const NativeSamplerStateRef def_sampler = Pbr::Texture::CreateSampler(pbr_res.GetDevice().Get());
-    material->SetTexture(ShaderSlots::BaseColor,			pbr_res.CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
-    material->SetTexture(ShaderSlots::MetallicRoughness,	pbr_res.CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
-    material->SetTexture(ShaderSlots::Occlusion,			pbr_res.CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }).Get(), def_sampler.Get()); // No occlusion.
-    material->SetTexture(ShaderSlots::normal,				pbr_res.CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 }).Get(), def_sampler.Get()); // Flat normal.
-    material->SetTexture(ShaderSlots::Emissive,				pbr_res.CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }).Get(), def_sampler.Get());
-	*/
-    return material;
+	
+	ASSERT(res);
+	
+    SetTexture(ShaderSlots::BaseColor,			res->CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
+    SetTexture(ShaderSlots::MetallicRoughness,	res->CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
+    SetTexture(ShaderSlots::Occlusion,			res->CreateSolidColorTexture(vec4{ 1, 1, 1, 1 })); // No occlusion.
+    SetTexture(ShaderSlots::Normal,				res->CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 })); // Flat normal.
+    SetTexture(ShaderSlots::Emissive,			res->CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
+	
 }
 
-
-void Material::SetTexture(ShaderSlots::PSMaterial slot, NativeShaderResourcesRef tex_view, NativeSamplerStateRef sampler)
+void Material::SetTexture(ShaderSlots::PSMaterial slot, Texture& tex_view)
 {
-    textures[slot] = tex_view;
-    samplers[slot] = sampler;
+    textures[slot] = &tex_view;
+    //samplers[slot] = &sampler;
 }
 
 
-void Material::Bind(NativeDeviceContextRef context) const
+/*void Material::Bind(GfxContext& context) const
 {
     // If the parameters of the constant buffer have changed, update the constant buffer.
     if (parameters.UpdateChangeCountBookmark(&constant_buffer_bookmark))
@@ -96,9 +97,9 @@ void Material::Bind(NativeDeviceContextRef context) const
     
     context->PSSetShaderResources(Pbr::ShaderSlots::BaseColor, (uint32)textures.GetCount(), textures[0].GetAddressOf());
     context->PSSetSamplers(Pbr::ShaderSlots::BaseColor, (uint32)samplers.GetCount(), samplers[0].GetAddressOf());
-}
+}*/
 
 }
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 

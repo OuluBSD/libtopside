@@ -1,7 +1,8 @@
 description "Classes for 2D/3D/etc operations.\377B128,0,54";
 
 uses
-	Local;
+	Local,
+	ports/tiny_gltf;
 
 uses(BUILTIN_ASSIMP | MSC) ports/assimp;
 
@@ -58,6 +59,8 @@ file
 	PbrPrimitive.cpp,
 	PbrModel.h,
 	PbrModel.cpp,
+	GltfHelper.h,
+	GltfHelper.cpp,
 	GltfLoader.h,
 	GltfLoader.cpp;
 

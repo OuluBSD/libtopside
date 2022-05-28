@@ -1,7 +1,7 @@
-#include "IGraphics.h"
+#include "Geometry.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 // Implementation is in the Gltf library so this isn't needed: #define STB_IMAGE_IMPLEMENTATION
@@ -36,13 +36,20 @@ void ThrowIfFailed(dword hr)
     { "TRANSFORMINDEX", 0, DXGI_FORMAT_R16_UINT,            0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };*/
 
+void Texture::SetSolidColorTexture(const vec4& color) {
+	const RGBA rgba = CreateRGBA(color);
+	Set(rgba, 1, 1, 1, 4);
+}
+
 // Based on code from DirectXTK
-PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx)
+void PrimitiveBuilder::CreateSphere(Primitive& prim, float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx)
 {
-    if (tessellation < 3)
-    {
+    if (tessellation < 3) {
         throw std::out_of_range("tesselation parameter out of range");
     }
+    
+    auto& vertices = prim.vertices;
+    auto& indices = prim.indices;
 
     const uint32 vert_segments = tessellation;
     const uint32 horz_segments = tessellation * 2;
@@ -111,13 +118,14 @@ PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32 tessellatio
             indices.Add(start_vtx_idx + (next_i * stride + next_j));
         }
     }
-
-    return *this;
 }
 
 // Based on code from DirectXTK
-PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex transform_idx)
+void PrimitiveBuilder::CreateCube(Primitive& prim, float side_length, Pbr::NodeIndex transform_idx)
 {
+    auto& vertices = prim.vertices;
+    auto& indices = prim.indices;
+    
     // A box has six faces, each one pointing in a different direction.
     const int face_count = 6;
 
@@ -181,15 +189,13 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float side_length, Pbr::NodeIndex tr
             vertices.Add(vert);
         }
     }
-
-    return *this;
 }
-
-namespace Texture {
 
 #if 0
 
-NativeShaderResourcesRef LoadImage(NativeDeviceRef device, const byte* file_data, uint32 file_size)
+namespace Texture {
+
+ShaderResources& LoadImage(NativeDeviceRef device, const byte* file_data, uint32 file_size)
 {
 	TODO
 	
@@ -206,7 +212,7 @@ NativeShaderResourcesRef LoadImage(NativeDeviceRef device, const byte* file_data
     return CreateTexture(device, rgba_data.get(), w * h * c, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);*/
 }
 
-NativeShaderResourcesRef CreateFlatCubeTexture(NativeDeviceRef device, const vec4& color, DXGI_FORMAT format)
+ShaderResources& CreateFlatCubeTexture(NativeDeviceRef device, const vec4& color, DXGI_FORMAT format)
 {
 	TODO
 	
@@ -240,13 +246,13 @@ NativeShaderResourcesRef CreateFlatCubeTexture(NativeDeviceRef device, const vec
     srv_desc.Texture2D.MipLevels = desc.MipLevels;
     srv_desc.Texture2D.MostDetailedMip = 0;
 
-    NativeShaderResourcesRef tex_view;
+    ShaderResources& tex_view;
     Internal::ThrowIfFailed(device->CreateShaderResourceView(cube_tex.Get(), &srv_desc, &tex_view));
 
     return tex_view;*/
 }
 
-NativeShaderResourcesRef CreateTexture(NativeDeviceRef device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format)
+ShaderResources& CreateTexture(NativeDeviceRef device, const byte* rgba, uint32 size, int width, int height, DXGI_FORMAT format)
 {
     TODO
 	
@@ -275,29 +281,29 @@ NativeShaderResourcesRef CreateTexture(NativeDeviceRef device, const byte* rgba,
     srv_desc.Texture2D.MipLevels = desc.MipLevels;
     srv_desc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
 
-    NativeShaderResourcesRef tex_view;
+    ShaderResources& tex_view;
     Internal::ThrowIfFailed(device->CreateShaderResourceView(texture2D.Get(), &srv_desc, &tex_view));
 
     return tex_view;*/
 }
 
-NativeSamplerStateRef CreateSampler(NativeDeviceRef device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
+SamplerState& CreateSampler(NativeDeviceRef device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
 {
     TODO
 	
     /*CD3D11_SAMPLER_DESC sampler_desc(CD3D11_DEFAULT{});
     sampler_desc.AddressU = sampler_desc.AddressV = sampler_desc.addr_w = addressMode;
 
-    NativeSamplerStateRef sampler_state;
+    SamplerState& sampler_state;
     Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&sampler_desc, &sampler_state));
     return sampler_state;*/
+}
+
 }
 
 #endif
 
 }
 
-}
-
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 

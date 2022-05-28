@@ -16,6 +16,10 @@ template <class T> struct PartVec<T, 3> {
 	static inline T GetCrossProduct(const T& a, const T& b);
 };
 
+template <class T> struct PartVec<T, 4> {
+	static inline T GetCrossProduct(const T& a, const T& b);
+};
+
 template <class T, int I>
 struct Vec : Moveable<Vec<T, I> > {
 	static const int size = I;
@@ -646,6 +650,15 @@ template <class T> inline T PartVec<T,3>::GetCrossProduct(const T& a, const T& b
     r[0] =  ( a[1] * b[2] ) - ( a[2] * b[1] );
     r[1] =  ( a[2] * b[0] ) - ( a[0] * b[2] );
     r[2] =  ( a[0] * b[1] ) - ( a[1] * b[0] );
+    return r;
+}
+
+template <class T> inline T PartVec<T,4>::GetCrossProduct(const T& a, const T& b) {
+	T r;
+    r[0] =  ( a[1] * b[2] ) - ( a[2] * b[1] );
+    r[1] =  ( a[2] * b[0] ) - ( a[0] * b[2] );
+    r[2] =  ( a[0] * b[1] ) - ( a[1] * b[0] );
+    r[3] =  0;
     return r;
 }
 

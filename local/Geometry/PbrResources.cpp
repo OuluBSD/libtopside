@@ -1,26 +1,17 @@
-#include "IGraphics.h"
+#include "Geometry.h"
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
-
-struct SceneConstantBuffer
-{
-    alignas(16) mat4 view_proj[2];
-    alignas(16) vec4 eye_pos[2];
-    alignas(16) vec3 light_dir{};
-    alignas(16) vec3 light_diffuse_clr{};
-    alignas(16) int specular_mip_level_count{ 1 };
-};
 
 
 
 namespace Pbr {
 
-
+#if 0
 struct Resources::Impl
 {
-    void Initialize(NativeDeviceRef device)
+    void Initialize(GfxDevice& device)
     {
         TODO
     
@@ -57,18 +48,18 @@ struct Resources::Impl
 
     struct DeviceResources
     {
-        NativeSamplerStateRef			brdf_sampler;
-        NativeSamplerStateRef			env_map_sampler;
-        NativeInputLayoutRef			input_layout;
-        NativeVertexShaderRef			vtx_shader;
-        NativeGeometryShaderRef			geom_shader;
-        NativePixelShaderRef			pixel_shader;
-        NativeBufferRef					constant_buffer;
-        NativeShaderResourcesRef		brdf_lut;
-        NativeShaderResourcesRef		specular_env_map;
-        NativeShaderResourcesRef		diffuse_env_map;
+        SamplerState				brdf_sampler;
+        SamplerState				env_map_sampler;
+        InputLayout					input_layout;
+        VertexShader				vtx_shader;
+        GeometryShader				geom_shader;
+        PixelShader					pixel_shader;
+        DataBuffer					constant_buffer;
+        ShaderResources				brdf_lut;
+        ShaderResources				specular_env_map;
+        ShaderResources				diffuse_env_map;
         
-        mutable VectorMap<uint32, NativeShaderResourcesRef> solid_clr_tex_cache;
+        mutable ArrayMap<uint32, ShaderResources> solid_clr_tex_cache;
     };
 
     DeviceResources						resources;
@@ -76,16 +67,16 @@ struct Resources::Impl
     uint32								scene_change_count_bookmark { 0 };
     
 };
+#endif
 
-
-Resources::Resources(NativeDeviceRef device)
-    : impl(MakeShared<Impl>())
+Resources::Resources(GfxDevice& device)
 {
-    impl->Initialize(device);
+	//impl.Create();
+    //impl->Initialize(device);
 }
 
 
-void Resources::SetBrdfLut(NativeShaderResourcesRef brdf_lut)
+/*void Resources::SetBrdfLut(ShaderResources& brdf_lut)
 {
     impl->resources.brdf_lut = brdf_lut;
 }
@@ -109,12 +100,12 @@ Resources::GetDevice() const
     NativeDeviceRef device;
     impl->resources.constant_buffer->GetDevice(&device);
     return device;
-}
+}*/
 
 
 void Resources::SetLight(const vec4& direction, const vec4& diffuse_color)
 {
-    impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
+    scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
         StoreVec3(&scene_buffer.light_dir, direction);
         StoreVec3(&scene_buffer.light_diffuse_clr, diffuse_color);
     });
@@ -123,16 +114,34 @@ void Resources::SetLight(const vec4& direction, const vec4& diffuse_color)
 
 void Resources::SetViewProjection(const mat4& view_left, const mat4& view_right, const mat4& proj_left, const mat4& proj_right)
 {
-    impl->scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
-        StoreMatrix(&scene_buffer.view_proj[0], MatrixTranspose(MultiplyMatrix(view_left, proj_left)));
-        StoreMatrix(&scene_buffer.view_proj[1], MatrixTranspose(MultiplyMatrix(view_right, proj_right)));
-        StoreVec4(&scene_buffer.eye_pos[0], MatrixInverse(nullptr, view_left)[3]);
-        StoreVec4(&scene_buffer.eye_pos[1], MatrixInverse(nullptr, view_right)[3]);
+    scene_buffer.Set([&](SceneConstantBuffer& scene_buffer) {
+        StoreMatrix(&scene_buffer.view_proj[0], transpose(MultiplyMatrix(view_left, proj_left)));
+        StoreMatrix(&scene_buffer.view_proj[1], transpose(MultiplyMatrix(view_right, proj_right)));
+        StoreVec4(&scene_buffer.eye_pos[0], inverse(view_left)[3]);
+        StoreVec4(&scene_buffer.eye_pos[1], inverse(view_right)[3]);
     });
 }
 
+Pbr::Material& Resources::AddMaterial() {
+	Material& m = materials.Add();
+	m.res = this;
+	return m;
+}
 
-void Resources::SetEnvironmentMap(NativeDeviceContextRef context, NativeShaderResourcesRef specular_env_map, NativeShaderResourcesRef diffuse_env_map)
+Texture& Resources::AddTexture() {
+	Texture& t = textures.Add();
+	//t.res = this;
+	return t;
+}
+
+SamplerState& Resources::AddSampler() {
+	SamplerState& s = samplers.Add();
+	//s.res = this;
+	return s;
+}
+
+#if 0
+void Resources::SetEnvironmentMap(GfxContext& context, ShaderResources& specular_env_map, ShaderResources& diffuse_env_map)
 {
 	TODO
 	
@@ -158,28 +167,26 @@ void Resources::SetEnvironmentMap(NativeDeviceContextRef context, NativeShaderRe
     */
 }
 
+#endif
 
-typename Gfx::NativeShaderResourcesRef
-Resources::CreateSolidColorTexture(const vec4& color) const
+Texture& Resources::CreateSolidColorTexture(const vec4& color) const
 {
-	TODO
-    /*const RGBA rgba = Texture::CreateRGBA(color);
+	const RGBA rgba = CreateRGBA(color);
 
     // Check cache to see if this flat texture already exists.
-    const uint32 color_key = *reinterpret_cast<const uint32*>(rgba.data());
-    auto texture_iter = impl->resources.solid_clr_tex_cache.find(color_key);
-    if (texture_iter != impl->resources.solid_clr_tex_cache.end())
-    {
-        return texture_iter->b;
+    int i = resources.solid_clr_tex_cache.Find(rgba);
+    if (i >= 0) {
+        return resources.solid_clr_tex_cache[i];
     }
 
-    NativeShaderResourcesRef texture = Pbr::Texture::CreateTexture(GetDevice().Get(), rgba.data(), 1, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM);
-    impl->resources.solid_clr_tex_cache.insert(std::make_pair(color_key, texture));
-    return texture;*/
+    Texture& texture = resources.solid_clr_tex_cache.Add(rgba);
+    texture.Set(rgba, 1, 1, 1, 4);
+	return texture;
 }
 
+#if 0
 
-void Resources::Bind(NativeDeviceContextRef context) const
+void Resources::Bind(GfxContext& context) const
 {
     TODO
 	/*
@@ -193,7 +200,7 @@ void Resources::Bind(NativeDeviceContextRef context) const
     context->PSSetShader(impl->resources.pixel_shader.Get(), nullptr, 0);
     context->GSSetShader(impl->resources.geom_shader.Get(), nullptr, 0);
 
-    NativeBufferRef buffers[] = { impl->resources.constant_buffer.Get() };
+    DataBuffer buffers[] = { impl->resources.constant_buffer.Get() };
     context->VSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Scene, _countof(buffers), buffers);
     context->PSSetConstantBuffers(Pbr::ShaderSlots::ConstantBuffers::Scene, _countof(buffers), buffers);
     context->IASetinput_layout(impl->resources.input_layout.Get());
@@ -201,21 +208,23 @@ void Resources::Bind(NativeDeviceContextRef context) const
     static_assert(ShaderSlots::DiffuseTexture == ShaderSlots::SpecularTexture + 1, "Diffuse must follow Specular slot");
     static_assert(ShaderSlots::SpecularTexture == ShaderSlots::Brdf + 1, "Specular must follow BRDF slot");
     
-    NativeShaderResourcesRef shader_resources[] = {
+    ShaderResources& shader_resources[] = {
 		impl->resources.brdf_lut.Get(),
 		impl->resources.specular_env_map.Get(),
 		impl->Resources.diffuse_env_map.Get()
 	};
     context->PSSetShaderResources(Pbr::ShaderSlots::Brdf, _countof(shader_resources), shader_resources);
     
-    NativeSamplerStateRef samplers[] = {
+    SamplerState& samplers[] = {
 		impl->resources.brdf_sampler.Get(),
 		impl->resources.env_map_sampler.Get()
 	};
     context->PSSetSamplers(ShaderSlots::Brdf, _countof(samplers), samplers);*/
 }
 
+#endif
+
 }
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END

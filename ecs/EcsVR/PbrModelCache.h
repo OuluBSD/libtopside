@@ -37,6 +37,7 @@ public:
 	ECS_SYS_CTOR(PbrModelCache);
 	SYS_DEF_VISIT
 	
+	Pbr::Model& AddModel(String name);
     /*void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
 
     void RegisterModel(String name, Shared<Pbr::Model> model);
@@ -55,8 +56,8 @@ protected:
 
 private:
     /*Shared<Pbr::Resources> pbr_res;
-    LinkedMap<String, Shared<Pbr::Model>> model_map;
     */
+    LinkedMap<String, Pbr::Model> model_map;
     
 };
 

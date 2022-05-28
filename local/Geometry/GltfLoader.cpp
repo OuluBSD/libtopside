@@ -1,34 +1,31 @@
-#include "IGraphics.h"
+#include "Geometry.h"
 #include <ports/tiny_gltf/tiny_gltf.h>
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 // Maps a glTF material to a PrimitiveBuilder. This optimization combines all primitives which use
 // the same material into a single primitive for reduced draw calls. Each primitive's vertex specifies
 // which node it corresponds to any appropriate node transformation be happen in the shader.
-using PrimitiveBuilderMap = VectorMap<int, Pbr::PrimitiveBuilder>;
+using PrimitiveMap = ArrayMap<int, Pbr::Primitive>;
 
-#if 0
 
 // Create a DirectX texture view from a tinygltf Image.
-NativeShaderResourcesRef LoadImage(NativeDeviceRef device, const tinygltf::Image& image, bool sRGB)
+void LoadImage(Pbr::Texture& tex, const tinygltf::Image& image, bool sRGB)
 {
     // First convert the image to RGBA if it isn't already.
     Vector<byte> tmp_buffer;
     const byte* rgba_buf = GltfHelper::ReadImageAsRGBA(image, &tmp_buffer);
-    if (rgba_buf == nullptr)
-    {
-        return nullptr;
+    if (rgba_buf != nullptr) {
+	    int channels = sRGB ? 4 : 3;
+	    tex.Set(rgba_buf, image.width * image.height * 4, image.width, image.height, channels);
     }
-
-    const DXGI_FORMAT format = sRGB ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
-    return Pbr::Texture::CreateTexture(device, rgba_buf, image.width * image.height * 4, image.width, image.height, format);
 }
 
+#if 0
 // Create a DirectX sampler state from a tinygltf Sampler.
-NativeSamplerStateRef CreateSampler(NativeDeviceRef device, const tinygltf::Model& gltf_model, const tinygltf::Sampler& sampler)
+SamplerState& CreateSampler(NativeDeviceRef device, const tinygltf::Model& gltf_model, const tinygltf::Sampler& sampler)
 {
 	TODO
 	
@@ -51,21 +48,20 @@ NativeSamplerStateRef CreateSampler(NativeDeviceRef device, const tinygltf::Mode
     sampler_desc.min_lod = 0;
     sampler_desc.max_lod = D3D11_FLOAT32_MAX;
 
-    NativeSamplerStateRef sampler_state;
+    SamplerState& sampler_state;
     Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&sampler_desc, &sampler_state));
     return sampler_state;*/
 }
+#endif
 
 // Load a glTF node from the tinygltf object model. This will process the node's mesh (if specified) and then recursively load the child nodes too.
-void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_model, int nodeId, PrimitiveBuilderMap& prim_builder_map, Pbr::Model& model)
+void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_model, int nodeId, PrimitiveMap& prim_builder_map, Pbr::Model& model)
 {
-    TODO
-	
-    /*const tinygltf::Node& gltf_node = gltf_model.nodes.at(nodeId);
+    const tinygltf::Node& gltf_node = gltf_model.nodes.at(nodeId);
 
     // Read the local transform for this node and add it into the Pbr Model.
     const mat4 node_local_transform = GltfHelper::ReadNodeLocalTransform(gltf_node);
-    const Pbr::NodeIndex transform_idx = model.AddNode(node_local_transform, parent_node_index, gltf_node.name).Index;
+    const Pbr::NodeIndex transform_idx = model.AddNode(node_local_transform, parent_node_index, gltf_node.name.c_str()).index;
 
     if (gltf_node.mesh != -1) // Load the node's optional mesh when specified.
     {
@@ -78,7 +74,7 @@ void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_mode
 
             // Insert or append the primitive into the PBR primitive builder. Primitives which use the same
             // material are appended to reduce the number of draw calls.
-            Pbr::PrimitiveBuilder& prim_builder = prim_builder_map[gltf_primitive.material];
+            Pbr::Primitive& prim_builder = prim_builder_map.GetAdd(gltf_primitive.material);
 
             // Use the starting offset for vertices and indices since multiple glTF primitives can
             // be put into the same primitive builder.
@@ -112,36 +108,31 @@ void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_mode
     }
 
     // Recursively load all children.
-    for (const int child_node_id : gltf_node.children)
-    {
+    for (const int child_node_id : gltf_node.children) {
         LoadNode(transform_idx, gltf_model, child_node_id, prim_builder_map, model);
-    }*/
+    }
 }
 
-}
-
-#endif
 
 namespace Gltf
 {
 
-template <class Gfx>
-Shared<Pbr::ModelT<Gfx>> FromGltfObject(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
+
+bool FromGltfObject(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
     const tinygltf::Model& gltf_model,
     const mat4& root_gltf_transform)
 {
-	using namespace Pbr;
-	using NativeShaderResourcesRef = typename Gfx::NativeShaderResourcesRef;
-	using NativeSamplerStateRef = typename Gfx::NativeSamplerStateRef;
-	using Material = Pbr::MaterialT<Gfx>;
-	using Primitive = Pbr::PrimitiveT<Gfx>;
+	/*using namespace Pbr;
+	using ShaderResources& = typename Gfx::ShaderResources;
+	using SamplerState& = typename Gfx::SamplerState;
+	using Material = Pbr::Material;
+	using Primitive = Pbr::Primitive;*/
 	
-    // Start off with an empty Pbr Model.
-    auto model = MakeShared<Pbr::ModelT<Gfx>>();
-
+	
     // Read and transform mesh/node data. Primitives with the same material are merged to reduce draw calls.
-    PrimitiveBuilderMap prim_builder_map;
+    PrimitiveMap prim_builder_map;
     {
         const int def_scene_id = (gltf_model.defaultScene == -1) ? 0 : gltf_model.defaultScene;
         const tinygltf::Scene& def_scene = gltf_model.scenes.at(def_scene_id);
@@ -149,78 +140,71 @@ Shared<Pbr::ModelT<Gfx>> FromGltfObject(
         // The Pbr::Model will already have a root node, which is often used to dynamically move the object. This node
         // is the root of the glTF model and can be used to create a persistent transform. This is useful if the model
         // is not positioned or scaled correctly.
-        const Pbr::NodeIndex gltf_root_node_idx = model->AddNode(root_gltf_transform, Pbr::root_node_idx, "gltf_root").Index;
+        const Pbr::NodeIndex gltf_root_node_idx = model.AddNode(root_gltf_transform, Pbr::root_node_idx, "gltf_root").index;
 
         // Process the root scene nodes. The children will be processed recursively.
-        for (const int rootNodeId : def_scene.nodes)
-        {
-            LoadNode(gltf_root_node_idx, gltf_model, rootNodeId, prim_builder_map, *model);
+        for (const int root_node_id : def_scene.nodes) {
+            LoadNode(gltf_root_node_idx, gltf_model, root_node_id, prim_builder_map, model);
         }
     }
-
+	
     // Load the materials referenced by the primitives
-    VectorMap<int, Shared<Material>> material_map;
+    VectorMap<int, Pbr::Material*> material_map;
     {
-        TODO
-        
-        #if 0
         // Create D3D cache for reuse of texture views and samplers when possible.
-        using ImageKey = std::tuple<const tinygltf::Image*, bool>; // Item1 is a pointer to the image, Item2 is sRGB.
-        VectorMap<ImageKey, NativeShaderResourcesRef> image_map;
-        VectorMap<const tinygltf::Sampler*, NativeSamplerStateRef> sampler_map;
-
+        using ImageKey = Tuple<const tinygltf::Image*, bool>; // Item1 is a pointer to the image, Item2 is sRGB.
+        VectorMap<ImageKey, Pbr::Texture*> image_map;
+        
+        
         // prim_builder_map is grouped by material. Loop through the referenced materials and load their resources. This will only
         // load materials which are used by the active scene.
-        for (const auto& prim_builder_pair : prim_builder_map)
-        {
-            Shared<Material> pbr_material;
-
-            const int material_idx = prim_builder_pair.a;
+        for(int i = 0; i < prim_builder_map.GetCount(); i++) {
+			const int material_idx = prim_builder_map.GetKey(i);
+			Pbr::Primitive& prim = prim_builder_map[i];
+			
+            Pbr::Material*& pbr_material = material_map.GetAdd(material_idx, (Pbr::Material*)0);
+            if (pbr_material)
+                continue;
+            
+            pbr_material = &pbr_res.AddMaterial();
+            
             if (material_idx == -1) // No material was referenced. Make up a material for it.
             {
                 // Default material is a grey material, 50% roughness, non-metallic.
-                pbr_material = Pbr::Material::CreateFlat(pbr_res, Colors::Gray, 0.5f);
+                pbr_material->SetFlat(Colors::Gray, 0.5f);
             }
             else
             {
                 const tinygltf::Material& gltf_material = gltf_model.materials.at(material_idx);
-
                 const GltfHelper::Material material = GltfHelper::ReadMaterial(gltf_model, gltf_material);
-                pbr_material = MakeShared<Pbr::Material>(pbr_res);
-
+                
                 // Read a tinygltf texture and sampler into the Pbr Material.
-                auto loadTexture = [&](Pbr::ShaderSlots::PSMaterial slot, const GltfHelper::Material::Texture& texture, bool sRGB, const vec4& def_rgba)
+                auto load_tex = [&](Pbr::ShaderSlots::PSMaterial slot, const GltfHelper::Material::Texture& texture, bool sRGB, const vec4& def_rgba)
                 {
                     // Find or load the image referenced by the texture.
-                    const ImageKey imageKey = std::make_tuple(texture.Image, sRGB);
-                    NativeShaderResourcesRef tex_view = image_map[imageKey];
-                    if (!tex_view) // If not cached, load the image and store it in the texture cache.
+                    const ImageKey image_key = MakeTuple(texture.image, sRGB);
+                    int tex_i = image_map.Find(image_key);
+                    if (tex_i < 0) // If not cached, load the image and store it in the texture cache.
                     {
+                        tex_i = image_map.GetCount();
+                        Pbr::Texture*& tex_view = image_map.Add(image_key);
+                        
                         // TODO: Generate mipmaps if sampler's minification filter (minFilter) uses mipmapping.
                         // TODO: If texture is not power-of-two and (sampler has wrapping=repeat/mirrored_repeat OR minFilter uses mipmapping), resize to power-of-two.
-                        tex_view = texture.Image != nullptr ?
-                            LoadImage(pbr_res.GetDevice().Get(), *texture.image, sRGB) :
-                            pbr_res.CreateSolidColorTexture(def_rgba);
-                        image_map[imageKey] = tex_view;
+                        if (texture.image)
+                            LoadImage(*tex_view, *texture.image, sRGB);
+                        else
+                            tex_view->SetSolidColorTexture(def_rgba);
                     }
-
-                    // Find or create the sampler referenced by the texture.
-                    NativeSamplerStateRef sampler_state = sampler_map[texture.Sampler];
-                    if (!sampler_state) // If not cached, create the sampler and store it in the sampler cache.
-                    {
-                        sampler_state = texture.Sampler != nullptr ?
-                            CreateSampler(pbr_res.GetDevice().Get(), gltf_model, *texture.sampler) :
-                            Pbr::Texture::CreateSampler(pbr_res.GetDevice().Get(), D3D11_TEXTURE_ADDRESS_WRAP);
-                        sampler_map[texture.Sampler] = sampler_state;
-                    }
-
-                    pbr_material->SetTexture(slot, tex_view.Get(), sampler_state.Get());
+					Pbr::Texture*& tex_view = image_map[tex_i];
+					
+                    pbr_material->SetTexture(slot, *tex_view);
                 };
 
-                pbr_material->Name = gltf_material.name;
+                pbr_material->name = gltf_material.name.c_str();
 
                 pbr_material->parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
-                    data.base_clr_factor = material.base_clr_factor;
+                    data.base_clr_factor = material.base_color_factor;
                     data.metallic_factor = material.metallic_factor;
                     data.roughness_factor = material.roughness_factor;
                     data.emissive_factor = material.emissive_factor;
@@ -228,37 +212,37 @@ Shared<Pbr::ModelT<Gfx>> FromGltfObject(
                     data.normal_scale = material.normal_scale;
                 });
 
-                loadTexture(Pbr::ShaderSlots::BaseColor, material.BaseColorTexture,	false /* sRGB */, vec4{ 1, 1, 1, 1 });
-                loadTexture(Pbr::ShaderSlots::MetallicRoughness,material.MetallicRoughnessTexture, false /* sRGB */, vec4{ 1, 1, 1, 1 });
-                loadTexture(Pbr::ShaderSlots::Emissive, material.EmissiveTexture, true /* sRGB */, vec4{ 1, 1, 1, 1 });
-                loadTexture(Pbr::ShaderSlots::Normal, material.normalTexture, false /* sRGB */, vec4{ 0.5f, 0.5f, 1, 1 });
-                loadTexture(Pbr::ShaderSlots::Occlusion, material.OcclusionTexture, false /* sRGB */, vec4{ 1, 1, 1, 1 });
+                load_tex(Pbr::ShaderSlots::BaseColor, material.base_color_texture,	false /* sRGB */, vec4{ 1, 1, 1, 1 });
+                load_tex(Pbr::ShaderSlots::MetallicRoughness, material.metallic_roughness_texture, false /* sRGB */, vec4{ 1, 1, 1, 1 });
+                load_tex(Pbr::ShaderSlots::Emissive, material.emissive_texture, true /* sRGB */, vec4{ 1, 1, 1, 1 });
+                load_tex(Pbr::ShaderSlots::Normal, material.normal_texture, false /* sRGB */, vec4{ 0.5f, 0.5f, 1, 1 });
+                load_tex(Pbr::ShaderSlots::Occlusion, material.occlusion_texture, false /* sRGB */, vec4{ 1, 1, 1, 1 });
 
                 // Not supported: alphaMode ("OPAQUE", "MASK", "BLEND")
                 // Not supported: alphaCutoff (default: 0.5)
                 // Not supported: doubleSided
             }
-
-            material_map.insert(std::make_pair(material_idx, std::move(pbr_material)));
         }
-        #endif
     }
-
+	
     // Convert the primitive builders into primitives with their respective material and add it into the Pbr Model.
-    for (const auto& prim_builder_pair : prim_builder_map)
-    {
-        const Pbr::PrimitiveBuilder& prim_builder = prim_builder_pair.b;
-        const Shared<Material>& material = material_map.find(prim_builder_pair.a)->b;
-        model->AddPrimitive(Primitive(pbr_res, prim_builder, material));
+    while (prim_builder_map.GetCount()) {
+		int a = prim_builder_map.GetKey(0);
+        Pbr::Primitive* prim = prim_builder_map.Detach(0);
+        Pbr::Material* material = material_map[a];
+        prim->SetMaterial(material);
+        model.AddPrimitive(prim);
+        //prim->Set(pbr_res, prim_builder, *material);
     }
-
-    return model;
+    
+    return true;
 }
 
-template <class Gfx>
-Shared<Pbr::ModelT<Gfx>> FromGltfBinary(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
-    const byte* buffer,
+
+bool FromGltfBinary(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
+    const char* buffer,
     uint32 buffer_bytes,
     const mat4& root_transform)
 {
@@ -266,20 +250,20 @@ Shared<Pbr::ModelT<Gfx>> FromGltfBinary(
     tinygltf::Model gltf_model;
     std::string error_msg, warn_msg;
     tinygltf::TinyGLTF loader;
-    if (!loader.LoadBinaryFromMemory(&gltf_model, &error_msg, &warn_msg, buffer, buffer_bytes, "."))
+    if (!loader.LoadBinaryFromMemory(&gltf_model, &error_msg, &warn_msg, (const unsigned char*)buffer, buffer_bytes, "."))
     {
-        String msg =
-			"\r\nFailed to load gltf model (" +
+        LOG("FromGltfBinary: error: failed to load gltf model (" +
 			IntStr(buffer_bytes) +
 			" bytes). Error: " +
-			String(error_msg.c_str());
-        throw Exc(msg);
+			String(error_msg.c_str()));
+		ASSERT(0);
+        return false;
     }
 
-    return FromGltfObject(pbr_res, gltf_model, root_transform);
+    return FromGltfObject(model, pbr_res, gltf_model, root_transform);
 }
 
 }
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 

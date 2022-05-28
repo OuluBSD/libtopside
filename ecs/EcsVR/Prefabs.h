@@ -23,10 +23,9 @@ struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<Transform>().size = { 10.0f, 0.00001f, 10.0f };
-        //components.Get<PbrRenderable>().ResetModel(KnownModelNames::UnitCube);
-        //components.Get<PbrRenderable>().color = Rgba(0.15f, 0.15f, 0.15f, 1.0f);
-        TODO
+        components.Get<TransformRef>()->size = { 10.0f, 0.00001f, 10.0f };
+        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::UnitCube);
+        components.Get<PbrRenderableRef>()->color = vec4(0.15f, 0.15f, 0.15f, 1.0f);
 
         return components;
     }
@@ -98,7 +97,7 @@ struct PaintStroke : EntityPrefab<Transform, PbrRenderable, PaintStrokeComponent
     }
 };
 
-struct StaticSphere : EntityPrefab<Transform, PbrRenderable, ModelComponent>
+struct StaticSphere : EntityPrefab<Transform, PbrRenderable>
 {
     static Components Make(Entity& e)
     {
@@ -111,7 +110,7 @@ struct StaticSphere : EntityPrefab<Transform, PbrRenderable, ModelComponent>
     }
 };
 
-struct StaticCube : EntityPrefab<Transform, PbrRenderable, ModelComponent>
+struct StaticCube : EntityPrefab<Transform, PbrRenderable>
 {
     static Components Make(Entity& e)
     {

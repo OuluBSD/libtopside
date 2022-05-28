@@ -56,81 +56,82 @@ void DemoRoomStartup() {
 	using namespace Ecs;
 	
 	Ecs::Engine& e = GetActiveEngine();
+	RenderingSystemRef rs = e.Get<RenderingSystem>();
+	Pbr::Resources& pbr_res = rs->pbr_res;
 	
     // Seed model cache
     auto pbr_model_cache = e.Get<PbrModelCache>();
     
     // Register a low poly sphere model.
     {
-        Pbr::Primitive sphere_prim(
-            *pbr_res,
-            Pbr::PrimitiveBuilder().AddSphere(1.0f, 3),
-            Pbr::Material::CreateFlat(*pbr_res, Colors::White, 0.15f));
-
-        // Add the primitive into a new model.
-        auto sphere_model = std::make_shared<Pbr::Model>();
-        sphere_model->AddPrimitive(std::move(sphere_prim));
-        pbr_model_cache->RegisterModel(KnownModelNames::UnitSphere, std::move(sphere_model));
+        Pbr::Model& sphere_model = pbr_model_cache->AddModel(KnownModelNames::UnitSphere);
+        Pbr::Primitive& sphere_prim = sphere_model.AddPrimitive();
+        Pbr::Material& mat = pbr_res.AddMaterial();
+        sphere_prim.SetMaterial(&mat);
+        mat.SetFlat(Colors::White, 0.15f);
+        Pbr::PrimitiveBuilder().CreateSphere(sphere_prim, 1.0f, 3);
     }
 
     // Register a cube model.
     {
-        // Load the primitive into D3D buffers with associated material
-        Pbr::Primitive cube_prim(
-            *pbr_res,
-            Pbr::PrimitiveBuilder().AddCube(1.0f),
-            Pbr::Material::CreateFlat(*pbr_res, Colors::White, 0.15f));
-
-        // Add the primitive into a new model.
-        auto cube_model = std::make_shared<Pbr::Model>();
-        cube_model->AddPrimitive(std::move(cube_prim));
-        pbr_model_cache->RegisterModel(KnownModelNames::UnitCube, std::move(cube_model));
+        Pbr::Model& cube_model = pbr_model_cache->AddModel(KnownModelNames::UnitCube);
+        Pbr::Primitive& cube_prim = cube_model.AddPrimitive();
+        Pbr::Material& mat = pbr_res.AddMaterial();
+        cube_prim.SetMaterial(&mat);
+        mat.SetFlat(Colors::White, 0.15f);
+        Pbr::PrimitiveBuilder().CreateCube(cube_prim, 1.0f);
     }
 
     // Register glb models.
-    auto load_glb_models = [this](
+    auto load_glb_models = [&](
         String path,
         String name,
-        std::optional<mat4> transform = std::nullopt,
-        std::optional<vec4> color = std::nullopt) -> std::future<void>
+        Optional<mat4> transform = NullOpt(),
+        Optional<vec4> color = NullOpt())
     {
+        path = ShareDirFile(path);
+        
         auto pbr_model_cache = e.Get<PbrModelCache>();
-        auto pbr_res = e.Get<HolographicRenderer>()->GetPbrResources();
+        //auto pbr_res = e.Get<HolographicRenderer>()->GetPbrResources();
 
-        std::vector<byte> fileData = co_await DX::ReadDataAsync(std::wstring(path));
+        String file_data = LoadFile(path);
+        if (file_data.IsEmpty()) {
+            LOG("DemoRoomStartup: error: model file does not exist: " << path);
+            Exit(1);
+        }
 
         const mat4 model_transform = transform.has_value()
-            ? mat4(&transform.value())
+            ? transform.value()
             : identity<mat4>();
 
-        Shared<Pbr::Model> pbr_model = Gltf::FromGltfBinary(
-            *pbr_res,
-            fileData.data(),
-            (uint32)fileData.size(),
+        Pbr::Model& pbr_model = pbr_model_cache->AddModel(name);
+        Gltf::FromGltfBinary(
+            pbr_model,
+            pbr_res,
+            file_data.Begin(),
+            file_data.GetCount(),
             model_transform);
 
         if (color) {
-            for (uint32 i = 0; i < pbr_model->GetPrimitiveCount(); ++i) {
-                pbr_model->GetPrimitive(i).GetMaterial()->Parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
-                    data.BaseColorFactor = color.value();
+            for (uint32 i = 0; i < pbr_model.GetPrimitiveCount(); ++i) {
+                pbr_model.GetPrimitive(i).GetMaterial().parameters.Set([&](Pbr::Material::ConstantBufferData& data) {
+                    data.base_clr_factor = color.value();
                 });
             }
         }
 
-        debug_log("Loaded Model: %s", name.data());
-
-        pbr_model_cache->RegisterModel(name, std::move(pbr_model));
+        LOG("Loaded Model: " << name);
     };
 
     mat4 baseball_scale;
-    DirectX::XMStoreFloat4x4(&baseball_scale, DirectX::XMMatrixScaling(0.15f, 0.15f, 0.15f));
-    load_glb_models(L"ms-appx:///Media/Models/Baseball.glb", KnownModelNames::Baseball, baseball_scale, DirectX::XMFLOAT4{ 2.0f, 2.0f, 2.0f, 1.0f });
+    baseball_scale = scale(vec3(0.15f, 0.15f, 0.15f));
+    load_glb_models("models/ms/Baseball.glb", KnownModelNames::Baseball, baseball_scale, vec4{ 2.0f, 2.0f, 2.0f, 1.0f });
 
     mat4 gun_scale;
-    DirectX::XMStoreFloat4x4(&gun_scale, DirectX::XMMatrixScaling(0.35f, 0.35f, 0.35f));
-    load_glb_models(L"ms-appx:///Media/Models/Gun.glb", KnownModelNames::Gun, gun_scale);
+    gun_scale = scale(vec3(0.35f, 0.35f, 0.35f));
+    load_glb_models("models/ms/Gun.glb", KnownModelNames::Gun, gun_scale);
 
-    load_glb_models(L"ms-appx:///Media/Models/PaintBrush.glb", KnownModelNames::PaintBrush);
+    load_glb_models("models/ms/PaintBrush.glb", KnownModelNames::PaintBrush);
 	
 	
 	

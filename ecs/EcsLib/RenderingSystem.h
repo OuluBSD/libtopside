@@ -61,13 +61,16 @@ protected:
 	Parallel::BufferT<SdlOglGfx>* sdl_ogl_buf = 0;
 	#endif
 	#endif
-	Array<RenderableRef> rends;
-	Array<ViewableRef> views;
-	Array<ModelComponentRef> models;
-	Vector<CameraBase*> cams;
+	Array<RenderableRef>		rends;
+	Array<ViewableRef>			views;
+	Array<ModelComponentRef>	models;
+	Vector<CameraBase*>			cams;
 	
 	//One<GfxDataState> state;
-	GfxDataState* state = 0;
+	GfxDataState*				state = 0;
+	
+public:
+	Pbr::Resources				pbr_res;
 	
 protected:
     bool Initialize() override;

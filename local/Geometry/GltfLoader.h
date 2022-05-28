@@ -6,7 +6,7 @@
 namespace tinygltf { class Model; }
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 //interface ID3D11Device;
@@ -15,45 +15,41 @@ NAMESPACE_PARALLEL_BEGIN
 namespace Gltf {
 
 // Creates a Pbr Model from tinygltf model with the specified root transform.
-template <class Gfx>
-Shared<Pbr::ModelT<Gfx>>
-FromGltfObject(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
+bool FromGltfObject(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
     const tinygltf::Model& gltf_model,
     const mat4& root_transform);
 
 // Creates a Pbr Model from tinygltf model.
-template <class Gfx>
-inline Shared<Pbr::ModelT<Gfx>>
-FromGltfObject(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
+inline bool FromGltfObject(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
     const tinygltf::Model& gltf_model)
 {
-    return FromGltfObject(pbr_res, gltf_model, identity<mat4>());
+    return FromGltfObject(model, pbr_res, gltf_model, identity<mat4>());
 }
 
 // Creates a Pbr Model from glTF 2.0 GLB file content with the specified root transform.
-template <class Gfx>
-Shared<Pbr::ModelT<Gfx>>
-FromGltfBinary(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
-    const byte* buffer,
+bool FromGltfBinary(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
+    const char* buffer,
     uint32 buffer_bytes,
     const mat4& root_transform);
 
 // Creates a Pbr Model from glTF 2.0 GLB file content.
-template <class Gfx>
-inline Shared<Pbr::ModelT<Gfx>>
-FromGltfBinary(
-    const Pbr::ResourcesT<Gfx>& pbr_res,
-    const byte* buffer,
+inline bool FromGltfBinary(
+	Pbr::Model& model,
+    Pbr::Resources& pbr_res,
+    const char* buffer,
     uint32 buffer_bytes)
 {
-    return FromGltfBinary(pbr_res, buffer, buffer_bytes, identity<mat4>());
+    return FromGltfBinary(model, pbr_res, buffer, buffer_bytes, identity<mat4>());
 }
 
 }
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
