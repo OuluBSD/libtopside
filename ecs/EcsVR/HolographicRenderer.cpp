@@ -24,6 +24,7 @@ HolographicRenderer::HolographicRendererT(
 HolographicRenderer::~HolographicRenderer() = default;
 
 
+
 Shared<Pbr::Resources> HolographicRenderer::GetPbrResources()
 {
     fail_fast_if(pbr_res == nullptr);
@@ -74,7 +75,18 @@ bool HolographicRenderer::Initialize()
 	LOG("HolographicRenderer::Initialize: TODO attach atom");
     //dev_res->RegisterDeviceNotify(this);
     //pbr_res->SetLight(vec4{ 0.0f, 0.707f, -0.707f }, Colors::White);
-    return true;
+    
+    Engine& e = GetEngine();
+    
+    pbr_model_cache = e.Get<PbrModelCache>();
+    
+	RenderingSystemRef rs = e.Get<RenderingSystem>();
+	if (!rs)
+		return false;
+	
+	this->pbr_res = &rs->pbr_res;
+	
+	return true;
 }
 
 
@@ -109,29 +121,30 @@ void HolographicRenderer::Stop()
 }
 
 
-void HolographicRenderer::Update(double)
+void HolographicRenderer::Update(double dt)
 {
-	TODO
-	/*
-    auto holographic_frame = holo_scene->CurrentFrame();
+    auto& holographic_frame = holo_scene->GetCurrentFrame();
 
-    dev_res->EnsureCameraResources(holographic_frame, holographic_frame.CurrentPrediction());
+    dev_res.EnsureCameraResources(holographic_frame, holographic_frame.GetCurrentPrediction());
 
-    const bool shouldPresent = dev_res->UseHolographicCameraResources<bool>(
-        [this, holographic_frame](ArrayMap<uint32, GfxCamResources>& camera_resource_map)
+    const bool should_present = dev_res.UseHolographicCameraResources(
+        [this](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
+        auto& holographic_frame = holo_scene->GetCurrentFrame();
+        
         // Up-to-date frame predictions enhance the effectiveness of image stablization and
         // allow more accurate positioning of holograms.
         holo_scene->UpdateCurrentPrediction();
 
-        HolographicFramePrediction prediction = holographic_frame.CurrentPrediction();
-        SpatialCoordinateSystem coord_system = holo_scene->WorldCoordinateSystem();
+        const HolographicFramePrediction& prediction = holographic_frame.GetCurrentPrediction();
+        SpatialCoordinateSystem& coord_system = holo_scene->GetWorldCoordinateSystem();
 
         bool at_least_one_camera_rendered = false;
-        for (const HolographicCameraPose& cam_pose : prediction.CameraPoses())
+        for (const HolographicCameraPose& cam_pose : prediction.GetCameraPoses())
         {
             // This represents the device-based resources for a HolographicCamera.
-            GfxCamResources* cam_resources = camera_resource_map[cam_pose.HolographicCamera().Id()].get();
+            int i = camera_resource_map.Find(cam_pose.GetHolographicCamera().GetId());
+            CameraResources* cam_resources = i >= 0 ? &camera_resource_map[i] : 0;
 
             if (RenderAtCameraPose(cam_resources, coord_system, prediction, holographic_frame.GetRenderingParameters(cam_pose), cam_pose))
             {
@@ -139,14 +152,13 @@ void HolographicRenderer::Update(double)
             }
         }
 
-        return at_least_one_camera_rendered;
+        ret = at_least_one_camera_rendered;
     });
 
-    if (shouldPresent)
+    if (should_present)
     {
-        dev_res->Present(holographic_frame);
+        dev_res.Present(holographic_frame);
     }
-    */
 }
 
 #if 0
@@ -164,15 +176,15 @@ TextRenderer* HolographicRenderer::GetTextRendererForFontSize(float font_size)
     return it->second.get();*/
 }
 
+#endif
 
 bool HolographicRenderer::RenderAtCameraPose(
-    GfxCamResources *cam_resources,
+    CameraResources *cam_resources,
     const SpatialCoordinateSystem& coord_system,
-    HoloFramePred& prediction,
-    const HoloCamRendParams& rend_params,
-    const HoloCamPose& cam_pose)
+    const HolographicFramePrediction& prediction,
+    const HolographicCameraRenderingParameters& rend_params,
+    const HolographicCameraPose& cam_pose)
 {
-	TODO
 	/*
     // Get the device context.
     const auto context = dev_res->GetD3DDeviceContext();
@@ -186,6 +198,7 @@ bool HolographicRenderer::RenderAtCameraPose(
     // Clear the back buffer and depth stencil view.
     context->ClearRenderTargetView(targets[0], Colors::Transparent);
     context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	*/
 
     // The view and projection matrices for each holographic camera will change
     // every frame. This function will return false when positional tracking is lost.
@@ -198,30 +211,31 @@ bool HolographicRenderer::RenderAtCameraPose(
         ////////////////////////////////////////////////////////////////////////////////
         // Pbr Rendering
         pbr_res->SetViewProjection(
-            XMLoadFloat4x4(&coord_system_to_view.Left),
-            XMLoadFloat4x4(&coord_system_to_view.Right),
-            XMLoadFloat4x4(&view_to_projection.Left),
-            XMLoadFloat4x4(&view_to_projection.Right));
+            coord_system_to_view.left,
+            coord_system_to_view.right,
+            view_to_projection.left,
+            view_to_projection.right);
 
-        pbr_res->Bind(dev_res->GetD3DDeviceContext());
-
-        for (auto[transform, pbr] : entity_store->GetComponents<Transform, PbrRenderable>())
+        //pbr_res->Bind(dev_res->GetD3DDeviceContext());
+		const Vector<PbrRenderable*>& comps = pbr_model_cache->GetComponents();
+        for (PbrRenderable* pbr : comps)
         {
-            if (pbr->Model)
+            if (pbr->model)
             {
+                TransformRef transform = pbr->GetEntity()->Get<Transform>();
                 mat4 transform_matrix = transform->GetMatrix();
-
-                if (pbr->Offset)
+                
+                if (pbr->offset)
                 {
-                    transform_matrix = *pbr->Offset * transform_matrix;
+                    transform_matrix = *pbr->offset * transform_matrix;
                 }
 
-                pbr->Model->GetNode(Pbr::RootNodeIndex).SetTransform(XMLoadFloat4x4(&transform_matrix));
-                pbr->Model->Render(*pbr_res, dev_res->GetD3DDeviceContext());
+                pbr->model->GetNode(/*root_parent_node_index*/-1).SetTransform(transform_matrix);
+                pbr->model->Render(*pbr_res/*, dev_res.GetD3DDeviceContext()*/);
             }
         }
-
-        ////////////////////////////////////////////////////////////////////////////////
+        
+        
         // Text Rendering
         quad_rend->SetViewProjection(
             coord_system_to_view.left,
@@ -234,6 +248,8 @@ bool HolographicRenderer::RenderAtCameraPose(
         float prev_font_size = std::numeric_limits<float>::quiet_NaN();
         TextRenderer* text_rend = nullptr;
 
+		TODO
+		/*
         for (auto[transform, text_renderable] : entity_store->GetComponents<Transform, TextRenderable>())
         {
             if (prev_font_size != text_renderable->font_size)
@@ -245,34 +261,33 @@ bool HolographicRenderer::RenderAtCameraPose(
             text_rend->RenderTextOffscreen(text_renderable->Text);
             quad_rend->Render(transform->GetMatrix(), text_rend->GetTexture());
         }
+        */
 
         quad_rend->Unbind();
 
         ////////////////////////////////////////////////////////////////////////////////
         // Skybox Rendering
-        mat4 camera_to_coord_sys = mat4::identity();
-        if (auto location = SpatialLocator::GetDefault().TryLocateAtTimestamp(prediction.Timestamp(), coord_system))
+        mat4 camera_to_coord_sys = identity<mat4>();
+        if (auto location = GetActiveSpatialLocator().TryLocateAtTimestamp(prediction.GetTimestamp(), coord_system))
         {
-            camera_to_coord_sys = make_mat4_translation(location.Position());
+            camera_to_coord_sys = make_mat4_translation(location.GetPosition());
         }
 
         skybox_rend->SetViewProjection(
-            camera_to_coord_sys * coord_system_to_view.Left,  view_to_projection.Left,
-            camera_to_coord_sys * coord_system_to_view.Right, view_to_projection.Right);
+            camera_to_coord_sys * coord_system_to_view.left,  view_to_projection.left,
+            camera_to_coord_sys * coord_system_to_view.right, view_to_projection.right);
 
         skybox_rend->Bind();
         skybox_rend->Render();
         skybox_rend->Unbind();
 
-        cam_resources->CommitDirect3D11DepthBuffer(rend_params);
+        TODO //cam_resources->CommitDirect3D11DepthBuffer(rend_params);
     }
 
-    return true;*/
+    return true;
 }
 
-#endif
-
-void HolographicRenderer::BindEventHandlers(HoloSpace& holospace) {
+void HolographicRenderer::BindEventHandlers(HolographicSpace& holospace) {
 	holospace.WhenCameraAdded.Add(THISBACK(OnCameraAdded));
     holospace.WhenCameraRemoved.Add(THISBACK(OnCameraRemoved));
 }
@@ -280,7 +295,7 @@ void HolographicRenderer::BindEventHandlers(HoloSpace& holospace) {
 #if 0
 
 void HolographicRenderer::ReleaseEventHandlers(
-    const HoloSpace& holospace)
+    const HolographicSpace& holospace)
 {
     fail_fast_if(holospace == nullptr);
 
@@ -293,7 +308,7 @@ void HolographicRenderer::ReleaseEventHandlers(
 // Asynchronously creates resources for new holographic cameras.
 
 void HolographicRenderer::OnCameraAdded(
-    const HoloSpace& sender,
+    const HolographicSpace& sender,
     CameraAddedEventArgs const& args)
 {
 	TODO
@@ -331,7 +346,7 @@ void HolographicRenderer::OnCameraAdded(
 
 
 void HolographicRenderer::OnCameraRemoved(
-    const HoloSpace& sender,
+    const HolographicSpace& sender,
     CameraRemovedEventArgs const& args)
 {
 	TODO

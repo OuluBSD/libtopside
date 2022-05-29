@@ -1,15 +1,19 @@
 #include "IHolograph.h"
 
-#if 0
+
 NAMESPACE_PARALLEL_BEGIN
 
 
-template <class Holo>
-CameraResourcesT<Holo>::CameraResourcesT(const HoloCam& camera) :
-    holocam(camera),
-    is_stereo(camera.IsStereo()),
-    gfx_rend_tgt_size(camera.RenderTargetSize())
+CameraResources::CameraResources() {
+	
+}
+
+void CameraResources::SetCamera(HolographicCamera& camera)
 {
+	holocam = &camera;
+	is_stereo = camera.IsStereo();
+	gfx_rend_tgt_size = camera.GetRenderTargetSize();
+	
     gfx_viewport = ViewportParams {
         0.f, 0.f,
         (float)gfx_rend_tgt_size.cx,
@@ -21,10 +25,9 @@ CameraResourcesT<Holo>::CameraResourcesT(const HoloCam& camera) :
 // Updates resources associated with a holographic camera's swap chain.
 // The app does not access the swap chain directly, but it does create
 // resource views for the back buffer.
-template <class Holo>
-void CameraResourcesT<Holo>::CreateResourcesForBackBuffer(
-    const GfxDevResources* dev_resources,
-    const HoloCamRendParams& cam_params
+void CameraResources::CreateResourcesForBackBuffer(
+    const DeviceResources* dev_resources,
+    const HolographicCameraRenderingParameters& cam_params
     )
 {
 	TODO
@@ -32,11 +35,11 @@ void CameraResourcesT<Holo>::CreateResourcesForBackBuffer(
     ID3D11Device* device = dev_resources->GetD3DDevice();
 
     // Get the WinRT object representing the holographic camera's back buffer.
-    IDirect3DSurface surface = cam_params.Direct3D11BackBuffer();
+    IgraphicsSurface surface = cam_params.graphics11BackBuffer();
 
     // Get the holographic camera's back buffer.
     // Holographic apps do not create a swap chain themselves; instead, buffers are
-    // owned by the system. The Direct3D back buffer resources are provided to the
+    // owned by the system. The graphics back buffer resources are provided to the
     // app using WinRT interop APIs.
     ComPtr<ID3D11Texture2D> cam_back_buf;
     Holo::CheckResult(surface.as<GfxLibInterfaceAccess>()->GetInterface(IID_PPV_ARGS(&cam_back_buf)));
@@ -113,8 +116,7 @@ void CameraResourcesT<Holo>::CreateResourcesForBackBuffer(
 }
 
 // Releases resources associated with a back buffer.
-template <class Holo>
-void CameraResourcesT<Holo>::ReleaseResourcesForBackBuffer(const GfxDevResources* dev_resources)
+void CameraResources::ReleaseResourcesForBackBuffer(const DeviceResources* dev_resources)
 {
 	TODO
 	/*
@@ -127,7 +129,7 @@ void CameraResourcesT<Holo>::ReleaseResourcesForBackBuffer(const GfxDevResources
     gfx_depth_stencil_view.Reset();
 
     // Ensure system references to the back buffer are released by clearing the render
-    // target from the graphics pipeline state, and then flushing the Direct3D context.
+    // target from the graphics pipeline state, and then flushing the graphics context.
     NativeRenderTargetViewRef null_views[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = 0;
     context->OMSetRenderTargets(ARRAYSIZE(null_views), null_views, nullptr);
     context->Flush();
@@ -135,13 +137,12 @@ void CameraResourcesT<Holo>::ReleaseResourcesForBackBuffer(const GfxDevResources
 }
 
 // Gets the view/projection transforms for a holographic camera.
-template <class Holo>
-bool CameraResourcesT<Holo>::GetViewProjectionTransform(
-    Shared<GfxDevResources> dev_resources,
-    const HoloCamPose& cam_pose,
+bool CameraResources::GetViewProjectionTransform(
+    DeviceResources& dev_resources,
+    const HolographicCameraPose& cam_pose,
     const SpatialCoordinateSystem& coord_system,
-    HoloStereoTransform* view_transform,
-    HoloStereoTransform* proj_transform)
+    HolographicStereoTransform* view_transform,
+    HolographicStereoTransform* proj_transform)
 {
 	TODO
 	/*
@@ -183,12 +184,11 @@ bool CameraResourcesT<Holo>::GetViewProjectionTransform(
     return false;*/
 }
 
-template <class Holo>
-void CameraResourcesT<Holo>::CommitDirect3D11DepthBuffer(const HoloCamRendParams& rend_params) const
+void CameraResources::Commitgraphics11DepthBuffer(const HolographicCameraRenderingParameters& rend_params) const
 {
 	TODO
 	/*
-    // Direct3D interop APIs are used to provide the buffer to the WinRT API.
+    // graphics interop APIs are used to provide the buffer to the WinRT API.
     ComPtr<IDXGIResource1> depth_stencil_resource;
     Holo::CheckResult(gfx_depth_stencil.As(&depth_stencil_resource));
 
@@ -196,18 +196,14 @@ void CameraResourcesT<Holo>::CommitDirect3D11DepthBuffer(const HoloCamRendParams
     Holo::CheckResult(depth_stencil_resource->CreateSubresourceSurface(0, &depth_gfxlib_surface));
 
     NativeInspectableRef inspectable_surface;
-    TODO //Holo::CheckResult(CreateDirect3D11SurfaceFromDXGISurface(depth_gfxlib_surface.Get(), winrt::put_abi(inspectable_surface)));
+    TODO //Holo::CheckResult(Creategraphics11SurfaceFromDXGISurface(depth_gfxlib_surface.Get(), winrt::put_abi(inspectable_surface)));
 
-    // Calling CommitDirect3D11DepthBuffer causes the system to queue Direct3D commands to
+    // Calling Commitgraphics11DepthBuffer causes the system to queue graphics commands to
     // read the depth buffer. It will then use that information to stabilize the image as
     // the HolographicFrame is presented.
-    rend_params.CommitDirect3D11DepthBuffer(inspectable_surface.as<IDirect3DSurface>());
+    rend_params.Commitgraphics11DepthBuffer(inspectable_surface.as<IgraphicsSurface>());
     */
 }
 
 
-HOLO_EXCPLICIT_INITIALIZE_CLASS(CameraResourcesT)
-
-
 NAMESPACE_PARALLEL_END
-#endif

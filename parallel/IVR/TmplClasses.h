@@ -385,7 +385,7 @@ using FakeSpatialInteractionSystem = VRSpatialInteractionSystemT<VrFake>;
 using FakeRenderer = VRRendererT<VrFake>;
 #endif
 
-#if 0
+#if defined flagUWP
 using HoloMotionController = VRMotionControllerT<VrHolo>;
 using HoloMotionControllerSystem = VRMotionControllerSystemT<VrHolo>;
 using HoloAppView = VRAppViewT<VrHolo>;
@@ -398,7 +398,7 @@ using HoloSpatialInteractionSystem = VRSpatialInteractionSystemT<VrHolo>;
 using HoloRenderer = VRRendererT<VrHolo>;
 #endif
 
-#if 0
+#if defined flagOGL && defined flagOVR
 using OvrMotionController = VRMotionControllerT<VrOvr>;
 using OvrMotionControllerSystem = VRMotionControllerSystemT<VrOvr>;
 using OvrAppView = VRAppViewT<VrOvr>;
@@ -411,7 +411,7 @@ using OvrSpatialInteractionSystem = VRSpatialInteractionSystemT<VrOvr>;
 using OvrRenderer = VRRendererT<VrOvr>;
 #endif
 
-#if 0
+#if defined flagOGL && defined flagOHMD
 using HmdMotionController = VRMotionControllerT<VrHmd>;
 using HmdMotionControllerSystem = VRMotionControllerSystemT<VrHmd>;
 using HmdAppView = VRAppViewT<VrHmd>;

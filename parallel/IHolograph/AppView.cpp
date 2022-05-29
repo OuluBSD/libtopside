@@ -30,16 +30,16 @@ void AppView::Initialize(const CoreApplicationView& app_view)
     main = std::make_unique<DemoRoomMain>();
 }
 
-void AppView::OnKeyPressed(const CoreWindow& sender, const KeyEventArgs& args)
+void AppView::OnKeyPressed(const GfxCoreWindow& sender, const KeyEventArgs& args)
 {
 }
 
-void AppView::OnPointerPressed(const CoreWindow& sender, const PointerEventArgs& args)
+void AppView::OnPointerPressed(const GfxCoreWindow& sender, const PointerEventArgs& args)
 {
 }
 
-// Called when the CoreWindow object is created (or re-created).
-void AppView::SetWindow(const CoreWindow& window)
+// Called when the GfxCoreWindow object is created (or re-created).
+void AppView::SetWindow(const GfxCoreWindow& window)
 {
     // Register for keypress notifications.
     keydown_event = window.KeyDown(std::bind(&AppView::OnKeyPressed, this, _1, _2));
@@ -56,7 +56,7 @@ void AppView::SetWindow(const CoreWindow& window)
     // Create a holographic space for the core window for the current view.
     // Presenting holographic frames that are created by this holographic space will put
     // the app into exclusive mode.
-    holospace = HolographicSpace::CreateForCoreWindow(window);
+    holospace = HolographicSpace::CreateForGfxCoreWindow(window);
 
     // The main class uses the holographic space for updates and rendering.
     main->SetHolographicSpace(holospace);
@@ -64,7 +64,7 @@ void AppView::SetWindow(const CoreWindow& window)
 
 // The Load method can be used to initialize scene resources or to load a
 // previously saved app state.
-void AppView::Load(const NativeString& entry_point) {
+void AppView::Load(const String& entry_point) {
 	
 }
 
@@ -75,12 +75,12 @@ void AppView::Run()
     while (!is_window_closed)
     {
         if (is_window_visible && (holospace != nullptr)) {
-            CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+            GfxCoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
             main->Update();
         }
         else {
-            CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
+            GfxCoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
         }
     }
 }
@@ -94,7 +94,7 @@ void AppView::Uninitialize()
     CoreApplication::Suspending(suspending_event);
     CoreApplication::Resuming(resuming_event);
 
-    auto const& window = CoreWindow::GetForCurrentThread();
+    auto const& window = GfxCoreWindow::GetForCurrentThread();
     window.KeyDown(keydown_event);
     window.PointerPressed(pointer_pressed_event);
     window.Closed(window_closed_event);
@@ -116,11 +116,11 @@ void AppView::OnLaunched(const LaunchActivatedEventArgs& args)
     }
 }
 
-// Called when the app view is activated. Activates the app's CoreWindow.
+// Called when the app view is activated. Activates the app's GfxCoreWindow.
 void AppView::OnViewActivated(const CoreApplicationView& sender, const IActivatedEventArgs& args)
 {
-    // Run() won't start until the CoreWindow is activated.
-    sender.CoreWindow().Activate();
+    // Run() won't start until the GfxCoreWindow is activated.
+    sender.GfxCoreWindow().Activate();
 }
 
 void AppView::OnSuspending(const IInspectable& sender, SuspendingEventArgs const& args)
@@ -156,12 +156,12 @@ void AppView::OnResuming(const IInspectable& sender, const IInspectable& args)
 
 // Window event handlers
 
-void AppView::OnVisibilityChanged(const CoreWindow& sender, const VisibilityChangedEventArgs& args)
+void AppView::OnVisibilityChanged(const GfxCoreWindow& sender, const VisibilityChangedEventArgs& args)
 {
     is_window_visible = args.Visible();
 }
 
-void AppView::OnWindowClosed(const CoreWindow& sender, const CoreWindowEventArgs& args)
+void AppView::OnWindowClosed(const GfxCoreWindow& sender, const GfxCoreWindowEventArgs& args)
 {
     is_window_closed = true;
 }

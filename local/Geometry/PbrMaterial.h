@@ -49,7 +49,7 @@ struct Material
     //Material(const Resources& pbr_res);
 
     // Create a clone of this material.
-    Shared<Material> Clone(const Resources& pbr_res) const;
+    Shared<Material> Copy(const Resources& pbr_res) const;
 
     // Create a flat (no texture) material.
     void SetFlat(
@@ -63,7 +63,11 @@ struct Material
 
     // Bind this material to current context.
     //void Bind(GfxContext& context) const;
-
+	
+	
+	void IncRef();
+	void DecRef();
+	
     String								name;
     TrackChanges<ConstantBufferData>	parameters;
     bool								hidden { false };
@@ -72,6 +76,7 @@ protected:
 	friend class Resources;
 	friend class Model;
 	Resources* res = 0;
+	int refs = 0;
 	
 private:
 	static const int C = ShaderSlots::LastMaterialSlot + 1;

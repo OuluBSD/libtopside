@@ -45,7 +45,7 @@ public:
 	
 	bool wait_touchpad_release = false;
 	
-	//SpatialInteractionSourceLocation prev_manip_loc;
+	SpatialSourceLocation* prev_manip_loc = 0;
 	
 	Optional<mat4> brush_tip_offset_from_holding_pose;
 	

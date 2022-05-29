@@ -10,16 +10,11 @@ struct PredictionUpdateListener : WeakRefScopeEnabler<PredictionUpdateListener, 
 	RTTI_DECL0(PredictionUpdateListener)
 	
 public:
-    enum PredictionUpdateReason
-    {
-        HolographicSpaceCreateNextFrame,
-        HolographicFrameUpdatePrediction,
-    };
 
     virtual void OnPredictionUpdated(
         PredictionUpdateReason reason,
         const SpatialCoordinateSystem& coord_system,
-        const HoloFramePred& prediction) = 0;
+        const HolographicFramePrediction& prediction) = 0;
     
 };
 
@@ -32,8 +27,8 @@ using PredictionUpdateListenerRef = Ref<PredictionUpdateListener, RefParent1<Ecs
 class HolographicScene : public Ecs::System<HolographicScene>
 {
 public:
-	/*using HoloSpace = typename Holo::HoloSpace;
-	using HoloFrame = typename Holo::HoloFrame;
+	/*using HolographicSpace = typename Holo::HolographicSpace;
+	using HolographicFrame = typename Holo::HolographicFrame;
 	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
 	using SpatialStageFrameOfReference = typename Holo::SpatialStageFrameOfReference;
 	using SpatialStationaryFrameOfReference = typename Holo::SpatialStationaryFrameOfReference;
@@ -43,15 +38,16 @@ public:
 	
 	ECS_SYS_CTOR(HolographicScene)
 	
-    //HolographicScene(Ecs::Engine& core, HoloSpace holospace);
+    //HolographicScene(Ecs::Engine& core, HolographicSpace holospace);
 
-    //HoloFrame CurrentFrame() const;
+    const HolographicFrame& GetCurrentFrame() const {return current_frame;}
+    HolographicFrame& GetCurrentFrame() {return current_frame;}
     
-    const HoloSpace& GetHolographicSpace() const {return holospace;}
-    HoloSpace& GetHolographicSpace() {return holospace;}
+    const HolographicSpace& GetHolographicSpace() const {return holospace;}
+    HolographicSpace& GetHolographicSpace() {return holospace;}
 
-    /*SpatialCoordinateSystem WorldCoordinateSystem() const;
-    PerceptionTimestamp CurrentTimestamp() const;*/
+    SpatialCoordinateSystem& GetWorldCoordinateSystem() const;
+    /*PerceptionTimestamp CurrentTimestamp() const;*/
 
     void UpdateCurrentPrediction();
 
@@ -65,18 +61,18 @@ protected:
 
     void OnCurrentStageChanged();
 	
-    //void OnPredictionChanged(PredictionUpdateReason reason);
+    void OnPredictionChanged(PredictionUpdateReason reason);
 
 private:
     mutable Mutex						lock;
     
     VirtualRoomAnchor*					vr_room_anchor = 0;
-    SpatialDynamicAnchor				stationary_frame_of_reference;
+    SpatialLocator				stationary_frame_of_reference;
     
     //NativeEventToken					spatial_stage_current_changed;
 
-    HoloSpace							holospace;
-    //HoloFrame							current_frame;
+    HolographicSpace					holospace;
+    HolographicFrame					current_frame;
 	
 	
     Array<PredictionUpdateListenerRef>	prediction_update_listeners;

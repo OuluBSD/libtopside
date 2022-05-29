@@ -21,7 +21,8 @@ public:
 	
 	bool Arg(String key, Object value) override;
 	String ToString() const override;
-	
+	void Initialize() override;
+	void Uninitialize() override;
 	
 };
 

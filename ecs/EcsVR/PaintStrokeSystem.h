@@ -17,6 +17,9 @@ public:
 	Vector<Square> squares;
 	bool stroke_changed = true;
 	
+	
+	void Initialize() override;
+	void Uninitialize() override;
 	void AddPoint(const mat4& trans_mtx, float width);
 	Pbr::PrimitiveBuilder GetPrimitiveData();
 	
@@ -33,11 +36,17 @@ public:
 	
 	//void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
 	
+	void Attach(PaintStrokeComponent* comp);
+	void Detach(PaintStrokeComponent* comp);
+	
 protected:
 	void Update(double) override;
+	bool Initialize() override;
+    // void Uninitialize() override;
 	
 private:
-	//Shared<Pbr::Resources> pbr_res;
+	Vector<PaintStrokeComponent*> comps;
+    Pbr::Resources* pbr_res = 0;
 	
 };
 

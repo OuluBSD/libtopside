@@ -89,6 +89,8 @@ struct Vec : Moveable<Vec<T, I> > {
 	
 	bool operator==(const Vec& v) const {for(int i = 0; i < I; i++) if (data[i] != v.data[i]) return false; return true;}
 	bool operator!=(const Vec& v) const {return !(*this == v);}
+	bool operator<=(const Vec& v) const {for(int i = 0; i < I; i++) if (data[i] > v.data[i]) return false; return true;}
+	bool operator>=(const Vec& v) const {for(int i = 0; i < I; i++) if (data[i] < v.data[i]) return false; return true;}
 	
 	T GetMagnitude() const {return FastSqrt(Dot(*this));}
 	T GetMagnitudeSq() const {return Dot(*this);}
@@ -213,8 +215,15 @@ struct quat {
 	quat GetConjugate() const;
 	quat GetInverse() const {return GetConjugate();}
 	
+	quat operator-() const;
+	quat operator+(const quat& q) const;
 	quat operator*(const quat& q) const;
+	quat operator*(float f) const;
+	quat operator/(float f) const;
 	void operator*=(const quat& q) {quat n = *this * q; data = n.data;}
+	
+	float GetDotProduct(const quat& q) const;
+	quat Mix(const quat& q, float f) const;
 	
 	String ToString() const {return data.ToString();}
 };

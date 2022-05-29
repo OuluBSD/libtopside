@@ -15,7 +15,6 @@ file
 	CommonComponents.cpp,
 	EasingSystem.h,
 	EasingSystem.cpp,
-	WorldLogic.h,
 	WindowSystem.h,
 	WindowSystem.cpp,
 	PhysicsSystem.h,

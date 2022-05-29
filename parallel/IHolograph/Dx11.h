@@ -1,6 +1,7 @@
 #ifndef _IHolograph_Dx_h_
 #define _IHolograph_Dx_h_
 
+#if 0
 /*
 
 #ifndef flagWIN32
@@ -83,7 +84,7 @@
 #include <dwrite_2.h>
 #include <wincodec.h>
 #include <WindowsNumerics.h>
-#include <Windows.Graphics.Directx.Direct3D11.Interop.h>
+#include <Windows.Graphics.Directx.graphics11.Interop.h>
 
 #include <wrl\client.h>
 #include <ppl.h>
@@ -131,7 +132,7 @@ NAMESPACE_PARALLEL_BEGIN
 using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace winrt::Windows::Foundation::Numerics;
-using namespace winrt::Windows::Graphics::DirectX::Direct3D11;
+using namespace winrt::Windows::Graphics::DirectX::graphics11;
 using namespace winrt::Windows::Graphics::Holographic;
 using namespace winrt::Windows::Perception::Spatial;
 
@@ -143,7 +144,7 @@ using namespace winrt::Windows::UI::Input::Spatial;
 
 using namespace D2D1;
 using namespace Microsoft::WRL;
-using namespace winrt::Windows::Graphics::DirectX::Direct3D11;
+using namespace winrt::Windows::Graphics::DirectX::graphics11;
 using namespace winrt::Windows::Graphics::Display;
 using namespace winrt::Windows::Graphics::Holographic;
 
@@ -231,19 +232,19 @@ struct Dx11Holo {
 	template <class T> using AppViewBase = winrt::implements<T, IFrameworkView>;
 	template <class T> using AppViewSourceBase = winrt::implements<T, IFrameworkViewSource>;
 	
-	using HoloCam = winrt::Windows::Graphics::Holographic::HolographicCamera;
-	using HoloCamRendParams = winrt::Windows::Graphics::Holographic:: HolographicCameraRenderingParameters;
-	using HoloCamPose = winrt::Windows::Graphics::Holographic:: HolographicCameraPose;
-	using HoloFrame = winrt::Windows::Graphics::Holographic::HolographicFrame;
-	using HoloSpace = winrt::Windows::Graphics::Holographic:: HolographicSpace;
-	using HoloFramePred = winrt::Windows::Graphics::Holographic:: HolographicFramePrediction;
-	using GfxInteropDevice = winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice;
+	using HolographicCamera = winrt::Windows::Graphics::Holographic::HolographicCamera;
+	using HolographicCameraRenderingParameters = winrt::Windows::Graphics::Holographic:: HolographicCameraRenderingParameters;
+	using HolographicCameraPose = winrt::Windows::Graphics::Holographic:: HolographicCameraPose;
+	using HolographicFrame = winrt::Windows::Graphics::Holographic::HolographicFrame;
+	using HolographicSpace = winrt::Windows::Graphics::Holographic:: HolographicSpace;
+	using HolographicFramePrediction = winrt::Windows::Graphics::Holographic:: HolographicFramePrediction;
+	using GfxInteropDevice = winrt::Windows::Graphics::DirectX::graphics11::IgraphicsDevice;
 	using SpatialSource = winrt::Windows::UI::Input::Spatial:: SpatialInteractionSource;
-	using SpatialSourceHandedness = winrt::Windows::UI::Input::Spatial:: SpatialSourceHandedness;
+	using SpatialInteractionSourceHandedness = winrt::Windows::UI::Input::Spatial:: SpatialInteractionSourceHandedness;
 	using SpatialInteractionController = winrt::Windows::UI::Input::Spatial:: SpatialInteractionController;
 	using TimeSpan = winrt::Windows::Foundation:: TimeSpan;
 	using SpatialCoordinateSystem = winrt::Windows::Perception::Spatial:: SpatialCoordinateSystem;
-	using CoreWindow = winrt::Windows::UI::Core:: CoreWindow;
+	using GfxCoreWindow = winrt::Windows::UI::Core:: GfxCoreWindow;
 	using KeyEventArgs = winrt::Windows::UI::Core:: KeyEventArgs;
 	using IFrameworkView = winrt::Windows::ApplicationModel::Core:: IFrameworkView;
 	using IFrameworkViewSource = winrt::Windows::ApplicationModel::Core:: IFrameworkViewSource;
@@ -254,14 +255,14 @@ struct Dx11Holo {
 	using SuspendingEventArgs = winrt::Windows::ApplicationModel:: SuspendingEventArgs;
 	using VisibilityChangedEventArgs = winrt::Windows::UI::Core:: VisibilityChangedEventArgs;
 	using PointerEventArgs = winrt::Windows::UI::Core:: PointerEventArgs;
-	using HoloStereoTransform = winrt::Windows::Graphics::Holographic:: HolographicStereoTransform;
+	using HolographicStereoTransform = winrt::Windows::Graphics::Holographic:: HolographicStereoTransform;
 	using Deferral = winrt::Windows::Foundation:: Deferral;
 	using PerceptionTimestamp = winrt::Windows::Perception:: PerceptionTimestamp;
 	using SpatialStageFrameOfReference = winrt::Windows::Perception::Spatial::SpatialStageFrameOfReference;
 	using SpatialStationaryFrameOfReference = winrt::Windows::Perception::Spatial::SpatialStationaryFrameOfReference;
 	using ISpatialInteractionManager = winrt::Windows::UI::Input::Spatial:: ISpatialInteractionManager;
 	using SpatialInteractionManager = winrt::Windows::UI::Input::Spatial:: SpatialInteractionManager;
-	using GfxLibInterfaceAccess = winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess;
+	using GfxLibInterfaceAccess = winrt::Windows::Graphics::DirectX::graphics11::IgraphicsDxgiInterfaceAccess;
 	
 	using GfxDevResources = DX:: DeviceResources;
 	using GfxCamResources = DX:: CameraResources;
@@ -324,4 +325,5 @@ struct Dx11Holo {
 NAMESPACE_PARALLEL_END
 
 
+#endif
 #endif

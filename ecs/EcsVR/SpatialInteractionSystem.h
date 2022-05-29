@@ -8,7 +8,6 @@ NAMESPACE_ECS_BEGIN
 struct SpatialInteractionListener : WeakRefScopeEnabler<SpatialInteractionListener, Engine>, RTTIBase
 {
 	RTTI_DECL0(SpatialInteractionListener)
-	using SpatialSourceEventArgs = int;
 	
     virtual void OnSourceDetected(const SpatialSourceEventArgs& args) {};
     virtual void OnSourceLost(const SpatialSourceEventArgs& args) {};
@@ -44,34 +43,41 @@ public:
     {
         spatial_interaction_listeners.Remove(listener);
     }
-/*
-    ISpatialInteractionManager GetInteractionManager() const
-    {
-        fail_fast_if(spatial_interaction_manager == nullptr);
-        return spatial_interaction_manager;
-    }*/
 
+    SpatialInteractionManager& GetInteractionManager()
+    {
+        //ASSERT(spatial_interaction_manager);
+        //return *spatial_interaction_manager;
+        return spatial_interaction_manager;
+    }
+	
+	const SpatialInteractionManager& GetInteractionManager() const {return spatial_interaction_manager;}
+	
 protected:
     bool Initialize() override;
     void Uninitialize() override;
+    void Update(double dt) override;
 
 private:
     Array<SpatialInteractionListenerRef> spatial_interaction_listeners;
     
-    /*ISpatialInteractionManager spatial_interaction_manager = 0;
-
-    enum SourceEvent {
+    //SpatialInteractionManager* spatial_interaction_manager = 0;
+    SpatialInteractionManager spatial_interaction_manager;
+    
+    void BindEventHandlers();
+    
+    /*enum SourceEvent {
         Detected, Pressed, Updated, Released, Lost, Count
     };
 
     NativeEventToken source_tokens[SourceEvent::Count];
+    */
+    
 
-
-    void BindEventHandlers();
-    void ReleaseEventHandlers();*/
+    void ReleaseEventHandlers();
 
     // Events Handlers
-    /*void HandleSourceDetected(
+    void HandleSourceDetected(
         const SpatialInteractionManager& sender,
         const SpatialSourceEventArgs&  args);
 
@@ -90,7 +96,7 @@ private:
     void HandleSourceReleased(
         const SpatialInteractionManager& sender,
         const SpatialSourceEventArgs& args);
-*/
+    
 };
 
 

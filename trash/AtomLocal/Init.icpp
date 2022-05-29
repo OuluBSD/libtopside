@@ -28,6 +28,10 @@ INITBLOCK {
 	#ifdef flagPOSIX_ATOM_CLASS_LIST
 	flagPOSIX_ATOM_CLASS_LIST
 	#endif
+
+	#ifdef flagVR_ATOM_CLASS_LIST
+	flagVR_ATOM_CLASS_LIST
+	#endif
 	
 	#undef ATOM_CLASS
 	

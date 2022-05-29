@@ -24,6 +24,10 @@ public:
 };
 #endif
 
+#if defined flagSCREEN
+using EcsProgVideoRef = Ref<EcsProgVideo, AtomParent>;
+#endif
+
 }
 
 }

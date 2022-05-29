@@ -8,7 +8,6 @@
 #include "Camera.h"
 #include "Viewport.h"
 #include "EasingSystem.h"
-#include "WorldLogic.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
 #include "Prefabs.h"

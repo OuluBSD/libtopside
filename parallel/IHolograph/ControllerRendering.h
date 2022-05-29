@@ -5,17 +5,16 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // Helper functionality related to controller rendering.
-template <class Holo>
-struct ControllerRenderingT {
-	/*using Model = Pbr::ModelT<Holo>;
-	using Resources = Pbr::ResourcesT<Holo>;
-	using SpatialSourceHandedness = typename Holo::SpatialSourceHandedness;
+struct ControllerRendering {
+	/*using Model = Pbr::Model;
+	using Resources = Pbr::Resources;
+	using SpatialInteractionSourceHandedness = typename Holo::SpatialInteractionSourceHandedness;
 	using SpatialSource = typename Holo::SpatialSource;
 	using SpatialSourceState = typename Holo::SpatialSourceState;*/
 	
 	
 	// A controller model can be cached using a key based on the Vendor ID, Product ID, Version, and Handedness.
-	using ControllerModelKey = std::tuple<uint16, uint16, uint16, SpatialSourceHandedness>;
+	using ControllerModelKey = std::tuple<uint16, uint16, uint16, SpatialInteractionSourceHandedness>;
 	
 	// Values for articulating a controller, with defaults in the neutral state.
 	// All floating point values range from 0 to 1.

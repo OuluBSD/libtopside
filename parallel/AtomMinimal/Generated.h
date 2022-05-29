@@ -884,6 +884,188 @@ public:
 };
 #endif
 
+using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
+
+using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
+
+using TestRealtimeSinkRef = Ref<TestRealtimeSink, AtomParent>;
+
+using TestPollerSinkRef = Ref<TestPollerSink, AtomParent>;
+
+using PortaudioSinkRef = Ref<PortaudioSink, AtomParent>;
+
+#if defined flagFFMPEG
+using AudioDecoderSrcRef = Ref<AudioDecoderSrc, AtomParent>;
+#endif
+
+using AudioDbgSrcRef = Ref<AudioDbgSrc, AtomParent>;
+
+using AudioSplitterRef = Ref<AudioSplitter, AtomParent>;
+
+using AudioSplitterUserRef = Ref<AudioSplitterUser, AtomParent>;
+
+using AudioJoinerRef = Ref<AudioJoiner, AtomParent>;
+
+using AudioJoinerUserRef = Ref<AudioJoinerUser, AtomParent>;
+
+using AudioJoiner2UserRef = Ref<AudioJoiner2User, AtomParent>;
+
+#if defined flagSCREEN
+using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
+#endif
+
+#if defined flagOPENCV && defined flagLINUX
+using WebcamPipeRef = Ref<WebcamPipe, AtomParent>;
+#endif
+
+#if defined flagOPENCV && defined flagLINUX
+using WebcamAtomRef = Ref<WebcamAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagFFMPEG
+using AudioLoaderAtomRef = Ref<AudioLoaderAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagFFMPEG
+using VideoLoaderAtomRef = Ref<VideoLoaderAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11SwFboProgRef = Ref<X11SwFboProg, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+using X11OglFboProgRef = Ref<X11OglFboProg, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+using SdlOglShaderProgRef = Ref<SdlOglShaderProg, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11SwShaderPipeRef = Ref<X11SwShaderPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+using X11OglShaderPipeRef = Ref<X11OglShaderPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+using SdlOglShaderPipeRef = Ref<SdlOglShaderPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11SwFboAtomPipeRef = Ref<X11SwFboAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+using X11OglFboAtomPipeRef = Ref<X11OglFboAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+using SdlOglFboAtomPipeRef = Ref<SdlOglFboAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using OglCustomerRef = Ref<OglCustomer, AtomParent>;
+#endif
+
+#if defined flagSDL2
+using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
+#endif
+
+#if defined flagSDL2
+using SdlEventAtomPipeRef = Ref<SdlEventAtomPipe, AtomParent>;
+#endif
+
+using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglImageLoaderRef = Ref<SdlOglImageLoader, AtomParent>;
+#endif
+
+using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
+
+#if defined flagSCREEN
+using X11VideoAtomPipeRef = Ref<X11VideoAtomPipe, AtomParent>;
+#endif
+
+#if defined flagOGL
+using X11OglVideoAtomPipeRef = Ref<X11OglVideoAtomPipe, AtomParent>;
+#endif
+
+#if defined flagOGL
+using X11OglFboAtomSARef = Ref<X11OglFboAtomSA, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11SwVideoAtomPipeRef = Ref<X11SwVideoAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11SwFboAtomSARef = Ref<X11SwFboAtomSA, AtomParent>;
+#endif
+
+#if defined flagSDL2 && defined flagOGL
+using SdlOglFboAtomSARef = Ref<SdlOglFboAtomSA, AtomParent>;
+#endif
+
+#if defined flagSDL2 && defined flagOGL
+using SdlOglFboPipeRef = Ref<SdlOglFboPipe, AtomParent>;
+#endif
+
+#if defined flagSDL2 && defined flagOGL
+using SdlOglFboAtomRef = Ref<SdlOglFboAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
+using SdlVideoAtomPipeRef = Ref<SdlVideoAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
+using SdlProgAtomPipeRef = Ref<SdlProgAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
+using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
+#endif
+
+#if defined flagSDL2
+using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglShaderAtomRef = Ref<SdlOglShaderAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglShaderAtomSARef = Ref<SdlOglShaderAtomSA, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglTextureSourceRef = Ref<SdlOglTextureSource, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglVolumeSourceRef = Ref<SdlOglVolumeSource, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglAudioSinkRef = Ref<SdlOglAudioSink, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglKeyboardSourceRef = Ref<SdlOglKeyboardSource, AtomParent>;
+#endif
+
+#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
+using SdlOglAudioSourceRef = Ref<SdlOglAudioSource, AtomParent>;
+#endif
+
 }
 
 }

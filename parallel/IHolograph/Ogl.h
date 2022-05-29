@@ -1,6 +1,7 @@
 #ifndef _IHolograph_Ogl_h_
 #define _IHolograph_Ogl_h_
 
+#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -11,19 +12,19 @@ struct OglHolo {
 	template <class T> using AppViewBase = VoidBase;
 	template <class T> using AppViewSourceBase = VoidBase;
 	
-	using HoloCam = int;
-	using HoloCamRendParams = int;
-	using HoloCamPose = int;
-	using HoloFrame = int;
-	using HoloSpace = int;
-	using HoloFramePred = int;
+	using HolographicCamera = int;
+	using HolographicCameraRenderingParameters = int;
+	using HolographicCameraPose = int;
+	using HolographicFrame = int;
+	using HolographicSpace = int;
+	using HolographicFramePrediction = int;
 	using GfxInteropDevice = int;
 	using SpatialSource = int;
-	using SpatialSourceHandedness = int;
+	using SpatialInteractionSourceHandedness = int;
 	using SpatialInteractionController = int;
 	using TimeSpan = int;
 	using SpatialCoordinateSystem = int;
-	using CoreWindow = int;
+	using GfxCoreWindow = int;
 	using KeyEventArgs = int;
 	using IFrameworkView = int;
 	using IFrameworkViewSource = int;
@@ -34,7 +35,7 @@ struct OglHolo {
 	using SuspendingEventArgs = int;
 	using VisibilityChangedEventArgs = int;
 	using PointerEventArgs = int;
-	using HoloStereoTransform = int;
+	using HolographicStereoTransform = int;
 	using Deferral = int;
 	using PerceptionTimestamp = int;
 	using SpatialStageFrameOfReference = int;
@@ -103,4 +104,5 @@ struct OglHolo {
 
 NAMESPACE_PARALLEL_END
 
+#endif
 #endif

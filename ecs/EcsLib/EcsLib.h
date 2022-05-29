@@ -28,6 +28,7 @@
 #include "EventSystem.h"
 #include "Prefab.h"
 #include "EonLoader.h"
+#include "WorldLogic.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB

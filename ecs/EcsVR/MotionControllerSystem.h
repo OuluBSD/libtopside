@@ -12,15 +12,19 @@ struct MotionControllerComponent : Ecs::Component<MotionControllerComponent>
 	
 	COPY_PANIC(MotionControllerComponent)
 	
-    bool IsSource(const SpatialSource& rhs) const;
+	void Initialize() override;
+	void Uninitialize() override;
+	
+    bool IsSource(const SpatialInteractionSource& rhs) const;
 
-    bool						attach_ctrl_model = false;
-    SpatialSourceHandedness		req_hand { SpatialSourceHandedness::Unspecified };
-    SpatialSource				source;
-    SpatialSourceLocation		location;
+    bool								attach_ctrl_model = false;
+    SpatialInteractionSourceHandedness	req_hand = Unspecified;
+    const SpatialSource*				source = 0;
+    SpatialInteractionSourceLocation*	location = 0;
     
 };
 
+using MotionControllerComponentRef = Ref<MotionControllerComponent>;
 
 
 // MotionControllerSystem
@@ -39,13 +43,18 @@ class MotionControllerSystem :
 	/*using IPredictionUpdateListener = IPredictionUpdateListenerT<Holo>;
 	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;
 	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
-	using HoloFramePred = typename Holo::HoloFramePred;
+	using HolographicFramePrediction = typename Holo::HolographicFramePrediction;
 	using SpatialSourceEventArgs = typename Holo::SpatialSourceEventArgs;
 	using SpatialSource = typename Holo::SpatialSource;*/
 	
 public:
 	RTTI_DECL3(MotionControllerSystem, System<MotionControllerSystem>, PredictionUpdateListener, SpatialInteractionListener)
 	ECS_SYS_CTOR(MotionControllerSystem)
+	
+	void Attach(MotionControllerComponent* comp);
+	void Detach(MotionControllerComponent* comp);
+	
+	const Vector<MotionControllerComponent*>& GetComponents() const {return comps;}
 	
 protected:
     // System
@@ -56,7 +65,7 @@ protected:
     void OnPredictionUpdated(
         PredictionUpdateReason reason,
         const SpatialCoordinateSystem& coord_system,
-        const HoloFramePred& prediction) override;
+        const HolographicFramePrediction& prediction) override;
 
     // ISpatialInteractionListener
     /*void OnSourceDetected(const SpatialSourceEventArgs& args) override;
@@ -64,7 +73,9 @@ protected:
     void OnSourceLost(const SpatialSourceEventArgs& args) override;*/
     
 private:
-    //void RefreshComponentsForSource(const SpatialSource& source);
+    void RefreshComponentsForSource(const SpatialInteractionSource& source);
+    
+    Vector<MotionControllerComponent*> comps;
     
 };
 

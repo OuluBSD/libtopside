@@ -6,7 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 /*HolographicScene::HolographicScene(
     Engine& core,
-    HoloSpace holospace) :
+    HolographicSpace holospace) :
     Ecs::System<HolographicScene>(core),
     holospace(std::move(holospace))
 {}*/
@@ -17,7 +17,7 @@ bool HolographicScene::Initialize()
 	
     // Create a fallback frame of reference 1.5 meters under the HMD when we start-up
     stationary_frame_of_reference =
-		GetActiveSpatialDynamicAnchor()
+		GetActiveSpatialLocator()
 			.GetRelative(vec3{0.0f, -1.5f, 0.0f});
 	
 	VirtualRoomAnchor::WhenActiveChanged << THISBACK(OnCurrentStageChanged);
@@ -27,10 +27,9 @@ bool HolographicScene::Initialize()
 
 void HolographicScene::Update(double dt)
 {
-	TODO
-    /*current_frame = holospace.CreateNextFrame();
+    current_frame = holospace.CreateNextFrame();
 
-    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicSpaceCreateNextFrame);*/
+    OnPredictionChanged(PredictionUpdateReason::HolographicSpaceCreateNextFrame);
 }
 
 void HolographicScene::Uninitialize()
@@ -45,10 +44,9 @@ void HolographicScene::Uninitialize()
 
 void HolographicScene::UpdateCurrentPrediction()
 {
-	TODO
-    /*current_frame.UpdateCurrentPrediction();
+	current_frame.UpdateCurrentPrediction();
 
-    OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicFrameUpdatePrediction);*/
+    OnPredictionChanged(PredictionUpdateReason::HolographicFrameUpdatePrediction);
 }
 
 void HolographicScene::OnCurrentStageChanged()
@@ -57,20 +55,15 @@ void HolographicScene::OnCurrentStageChanged()
     vr_room_anchor = GetActiveVirtualRoomAnchor();
 }
 
-#if 0
-
-void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason reason)
+void HolographicScene::OnPredictionChanged(PredictionUpdateReason reason)
 {
-    const HolographicFramePrediction prediction = current_frame.CurrentPrediction();
-    const SpatialCoordinateSystem coord_system = WorldCoordinateSystem();
+    const HolographicFramePrediction& prediction = current_frame.GetCurrentPrediction();
+    const SpatialCoordinateSystem& coord_system = GetWorldCoordinateSystem();
 
-    for (const auto& listener : prediction_update_listeners.PurgeAndGetListeners())
-    {
+    for (PredictionUpdateListenerRef& listener : prediction_update_listeners) {
         listener->OnPredictionUpdated(reason, coord_system, prediction);
     }
 }
-
-#endif
 
 void HolographicScene::AddPredictionUpdateListener(PredictionUpdateListenerRef listener)
 {
@@ -82,28 +75,27 @@ void HolographicScene::RemovePredictionUpdateListener(PredictionUpdateListenerRe
     prediction_update_listeners.Remove(listener);
 }
 
-#if 0
-
-typename Holo::SpatialCoordinateSystem
-HolographicScene::WorldCoordinateSystem() const
+SpatialCoordinateSystem& HolographicScene::GetWorldCoordinateSystem() const
 {
     Mutex::Lock lock(this->lock);
     if (vr_room_anchor)
     {
-        return vr_room_anchor.CoordinateSystem();
+        return vr_room_anchor->GetCoordinateSystem();
     }
     else
     {
-        return stationary_frame_of_reference.CoordinateSystem();
+        return stationary_frame_of_reference.GetCoordinateSystem();
     }
 }
+
+#if 0
 
 PerceptionTimestamp HolographicScene::CurrentTimestamp() const
 {
     return CurrentFrame().CurrentPrediction().Timestamp();
 }
 
-typename Holo::HoloFrame
+typename Holo::HolographicFrame
 HolographicScene::CurrentFrame() const
 {
     fail_fast_if(current_frame == nullptr);

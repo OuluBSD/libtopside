@@ -22,28 +22,25 @@ EntityRef ThrowingInteractionSystem::CreateToolSelector() const {
 }
 
 void ThrowingInteractionSystem::Update(double dt) {
-	TODO // override funcs
-	
 	Vector<RTuple<EntityRef, ToolComponentRef>> enabled_ents = GetEnabledEntities();
 	
 	for (RTuple<EntityRef, ToolComponentRef>& enabled_entity : enabled_ents) {
 		EntityRef& entity = enabled_entity.a;
 		ToolComponentRef& throwing = enabled_entity.b.a;
 		
-		TODO
-		/*if (throwing->ball_object) {
-			if (const SpatialInteractionSourceLocation location = entity->Get<MotionControllerComponent>()->location) {
-				if (const SpatialPointerInteractionSourcePose pointer_pose = location.SourcePointerPose()) {
+		if (throwing->ball_object) {
+			if (const SpatialInteractionSourceLocation* location = entity->Get<MotionControllerComponent>()->location) {
+				if (const SpatialPointerInteractionSourcePose* pointer_pose = location->GetSourcePointerPose()) {
 					auto transform = throwing->ball_object->Get<Transform>();
-					transform->position = pointer_pose.Position() + pointer_pose.ForwardDirection() * BallHoldingDistance;
-					transform->orientation = pointer_pose.Orientation();
+					transform->position = pointer_pose->GetPosition() + pointer_pose->GetForwardDirection() * ball_holding_distance;
+					transform->orientation = pointer_pose->GetOrientation();
 					
 					if (transform->size[0] < 1.0f) {
 						transform->size += vec3( 2.0 * dt );
 					}
 				}
 			}
-		}*/
+		}
 	}
 }
 #if 0
@@ -81,7 +78,7 @@ void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 						const vec3 grasp_angular_velocity = grasp_location.AngularVelocity();
 						
 						if (!grasp_angular_velocity.IsNull()) {
-							const vec3 ball_position = pointer_pose.Position() + (pointer_pose.ForwardDirection() * BallHoldingDistance);
+							const vec3 ball_position = pointer_pose.Position() + (pointer_pose.ForwardDirection() * ball_holding_distance);
 							const vec3 ball_velocity = SpatialInputUtilities::Physics::GetVelocityNearSourceLocation(grasp_location, ball_position);
 							
 							if (!ball_velocity.IsNull()) {

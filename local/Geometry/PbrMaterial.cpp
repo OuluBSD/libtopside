@@ -42,7 +42,7 @@ Material::Material(Resources const& pbr_res)
 
 
 
-/*Shared<Material> Material::Clone(const Resources& pbr_res) const
+/*Shared<Material> Material::Copy(const Resources& pbr_res) const
 {
     auto clone = MakeShared<Material>(pbr_res);
     clone->name = name;
@@ -79,6 +79,15 @@ void Material::SetTexture(ShaderSlots::PSMaterial slot, Texture& tex_view)
     //samplers[slot] = &sampler;
 }
 
+void Material::IncRef() {
+	refs++;
+}
+
+void Material::DecRef() {
+	refs--;
+	if (refs <= 0 && res)
+		res->RemoveMaterial(this);
+}
 
 /*void Material::Bind(GfxContext& context) const
 {

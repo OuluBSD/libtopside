@@ -18,6 +18,7 @@ struct Primitive
 	using Material = Material;*/
 	
 	Primitive() {}
+	~Primitive();
     /*Primitive() = delete;
     Primitive(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material);
     Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Material> material);*/
@@ -29,11 +30,12 @@ struct Primitive
     Material& GetMaterial() { ASSERT(material); return *material; }
     const Material& GetMaterial() const { ASSERT(material); return *material; }
     
-    void SetMaterial(Material* mat) {material = mat;}
+    void SetMaterial(Material& mat);
+	void ClearMaterial();
 	
 //protected:
     void Render(GfxContext& context) const;
-    Primitive Clone(const Resources& pbr_res) const;
+    void Copy(const Resources& pbr_res, Primitive& dst) const;
 	
     
 public:

@@ -3,9 +3,45 @@
 NAMESPACE_ECS_BEGIN
 
 
+void PbrRenderable::Initialize() {
+	auto sys = GetEngine().Get<PbrModelCache>();
+	if (sys)
+		sys->Attach(this);
+}
+
+void PbrRenderable::Uninitialize() {
+	auto sys = GetEngine().Get<PbrModelCache>();
+	if (sys)
+		sys->Detach(this);
+}
+
+
+
+
+
+bool PbrModelCache::Initialize() {
+	RenderingSystemRef rs = GetEngine().Get<RenderingSystem>();
+	if (!rs)
+		return false;
+	
+	this->pbr_res = &rs->pbr_res;
+	
+	return true;
+}
+
 Pbr::Model& PbrModelCache::AddModel(String name) {
 	ASSERT(!model_map.Find(name));
-	return model_map.Add(name);
+	Pbr::Model& m = model_map.Add(name);
+	m.CreateRootNode();
+	return m;
+}
+
+void PbrModelCache::Attach(PbrRenderable* p) {
+	VectorFindAdd(comps, p);
+}
+
+void PbrModelCache::Detach(PbrRenderable* p) {
+	VectorRemoveKey(comps, p);
 }
 
 #if 0
@@ -15,27 +51,31 @@ void PbrModelCache::RegisterModel(String name, Shared<Pbr::Model> model) {
 		throw Exc("Cannot register model with empty name");
 	}
 	
-	model_map.GetAdd(name) =  model;
+	model_map.GetAdd(name) = model;
 }
 
-PbrRenderableRef PbrModelCache::SetModel(String name, PbrRenderableRef pbr_rend_comp) {
-	pbr_rend_comp->model_name = name;
+#endif
+
+void PbrModelCache::SetModel(String name, PbrRenderable& dst) {
+	dst.model_name = name;
 	auto it = model_map.Find(name);
 	
 	if (it) {
+		Pbr::Model& src = *it;
+		
 		// Each instance gets its own copy of the model data (the heavyweight model data is immutable and reference counted).
-		pbr_rend_comp->model.Create();
-		it()->Clone(*pbr_res, *pbr_rend_comp->model);
-		LOG("Model " << pbr_rend_comp->model_name << " successfully attached to Entity [Deferred]");
+		dst.model.Create();
+		src.Copy(*pbr_res, *dst.model);
+		LOG("Model " << dst.model_name << " successfully attached to Entity [Deferred]");
 	}
-	
-	return pbr_rend_comp;
 }
 
-PbrRenderableRef PbrModelCache::SetModel(String name, ComponentMap& componentMap) {
-	PbrRenderableRef pbr_rend_comp = componentMap.Get<PbrRenderable>();
-	return SetModel(name, pbr_rend_comp);
+void PbrModelCache::SetModel(String name, ComponentMap& m) {
+	PbrRenderableRef pbr_rend_comp = m.Get<PbrRenderable>();
+	SetModel(name, *pbr_rend_comp);
 }
+
+#if 0
 
 bool PbrModelCache::ModelExists(String name) {
 	return model_map.Find(name);
@@ -44,27 +84,24 @@ bool PbrModelCache::ModelExists(String name) {
 #endif
 
 void PbrModelCache::Update(double dt) {
-	TODO
-	/*
-	for (auto& comp_set : GetPool()->GetComponents<PbrRenderable>()) {
-		auto pbr_renderable = comp_set.Get<PbrRenderableRef>();
+	for (PbrRenderable* c : comps) {
 		
 		// Find any PbrRenderable component which is waiting for a model to be loaded.
-		if (!pbr_renderable->model && pbr_renderable->model_name.GetCount() > 0) {
-			(void)SetModel(pbr_renderable->model_name, pbr_renderable);
+		if (!c->model && c->model_name.GetCount() > 0) {
+			SetModel(c->model_name, *c);
 		}
 		
 		// Apply any material updates as needed.
-		if (pbr_renderable->model) {
-			for (uint32_t i = 0; i < pbr_renderable->model->GetPrimitiveCount(); ++i) {
-				auto& material = pbr_renderable->model->GetPrimitive(i).GetMaterial();
+		if (c->model) {
+			for (uint32 i = 0; i < c->model->GetPrimitiveCount(); ++i) {
+				auto& material = c->model->GetPrimitive(i).GetMaterial();
 				vec4 cur_clr = material.parameters.Get().base_clr_factor;
 				
-				if (pbr_renderable->color && i == 0) {
-					cur_clr = vec4(*pbr_renderable->color);
+				if (c->color && i == 0) {
+					cur_clr = vec4(*c->color);
 				}
 				
-				cur_clr[3] = (pbr_renderable->alpha_multiplier) ? *pbr_renderable->alpha_multiplier : 1.0f;
+				cur_clr[3] = (c->alpha_multiplier) ? *c->alpha_multiplier : 1.0f;
 				const vec4& mat_base_clr = material.parameters.Get().base_clr_factor;
 				
 				if (	cur_clr[0] != mat_base_clr[0] ||
@@ -79,7 +116,6 @@ void PbrModelCache::Update(double dt) {
 			}
 		}
 	}
-	*/
 }
 
 void PbrModelCache::Uninitialize() {

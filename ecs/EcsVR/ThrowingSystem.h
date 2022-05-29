@@ -35,7 +35,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
 	
 	using Parent = Engine;
-	static constexpr float BallHoldingDistance = 0.075f;
+	static constexpr float ball_holding_distance = 0.075f;
 	static constexpr const char* POOL_NAME = "throwing";
 	
 	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}

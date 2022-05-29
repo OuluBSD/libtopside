@@ -3,20 +3,18 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-#if 0
 
 // Constructor for DeviceResources.
-template <class Holo>
-DeviceResourcesT::DeviceResources()
+DeviceResources::DeviceResources()
 {
-	gfx_feature_level = Holo::GetDefaultFeatureLevel();
+	//gfx_feature_level = Holo::GetDefaultFeatureLevel();
     CreateDeviceIndependentResources();
 }
 
-// Configures resources that don't depend on the Direct3D device.
-template <class Holo>
-void DeviceResourcesT::CreateDeviceIndependentResources()
+// Configures resources that don't depend on the graphics device.
+void DeviceResources::CreateDeviceIndependentResources()
 {
+	#if 0
     // Initialize Direct2D resources.
     D2D1_FACTORY_OPTIONS options{};
 
@@ -50,10 +48,10 @@ void DeviceResourcesT::CreateDeviceIndependentResources()
             CLSCTX_INPROC_SERVER,
             IID_PPV_ARGS(&vr_camlib)
         ));
+    #endif
 }
 
-template <class Holo>
-void DeviceResourcesT::SetHolographicSpace(HolographicSpace holospace)
+void DeviceResources::SetHolographicSpace(HolographicSpace holospace)
 {
     // Cache the holographic space. Used to re-initalize during device-lost scenarios.
     holospace = holospace;
@@ -61,9 +59,9 @@ void DeviceResourcesT::SetHolographicSpace(HolographicSpace holospace)
     InitializeUsingHolographicSpace();
 }
 
-template <class Holo>
-void DeviceResourcesT::InitializeUsingHolographicSpace()
+void DeviceResources::InitializeUsingHolographicSpace()
 {
+	#if 0
     // The holographic space might need to determine which adapter supports
     // holograms, in which case it will specify a non-zero PrimaryAdapterId.
     LUID id =
@@ -73,7 +71,7 @@ void DeviceResourcesT::InitializeUsingHolographicSpace()
     };
 
     // When a primary adapter ID is given to the app, the app should find
-    // the corresponding DXGI adapter and use it to create Direct3D devices
+    // the corresponding DXGI adapter and use it to create graphics devices
     // and device contexts. Otherwise, there is no restriction on the DXGI
     // adapter the app can use.
     if ((id.HighPart != 0) || (id.LowPart != 0))
@@ -109,13 +107,14 @@ void DeviceResourcesT::InitializeUsingHolographicSpace()
 
     CreateDeviceResources();
 
-    holospace.SetDirect3D11Device(gfx_interop_dev);
+    holospace.Setgraphics11Device(gfx_interop_dev);
+    #endif
 }
 
-// Configures the Direct3D device, and stores handles to it and the device context.
-template <class Holo>
-void DeviceResourcesT::CreateDeviceResources()
+// Configures the graphics device, and stores handles to it and the device context.
+void DeviceResources::CreateDeviceResources()
 {
+	#if 0
     // This flag adds support for surfaces with a different color channel ordering
     // than the API default. It is required for compatibility with Direct2D.
     uint32 creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
@@ -142,7 +141,7 @@ void DeviceResourcesT::CreateDeviceResources()
         D3D_FEATURE_LEVEL_10_0
     };
 
-    // Create the Direct3D 11 API device object and a corresponding context.
+    // Create the graphics 11 API device object and a corresponding context.
     ComPtr<ID3D11Device> device;
     ComPtr<ID3D11DeviceContext> context;
 
@@ -155,7 +154,7 @@ void DeviceResourcesT::CreateDeviceResources()
         feature_levels,             // List of feature levels this app can support.
         ARRAYSIZE(feature_levels),  // Size of the list above.
         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Windows Store apps.
-        &device,                    // Returns the Direct3D device created.
+        &device,                    // Returns the graphics device created.
         &gfx_feature_level,         // Returns feature level of device created.
         &context                    // Returns the device immediate context.
     );
@@ -180,20 +179,20 @@ void DeviceResourcesT::CreateDeviceResources()
             ));
     }
 
-    // Store pointers to the Direct3D device and immediate context.
+    // Store pointers to the graphics device and immediate context.
     Holo::CheckResult(device.As(&gfx_dev));
     Holo::CheckResult(context.As(&gfx_ctx_dev));
 
-    // Acquire the DXGI interface for the Direct3D device.
+    // Acquire the DXGI interface for the graphics device.
     ComPtr<IDXGIDevice3> gfxlib_dev;
     Holo::CheckResult(gfx_dev.As(&gfxlib_dev));
 
     // Wrap the native device using a WinRT interop object.
     NativeInspectableRef object;
-    TODO /*Holo::CheckResult(CreateDirect3D11DeviceFromDXGIDevice(
+    TODO /*Holo::CheckResult(Creategraphics11DeviceFromDXGIDevice(
         gfxlib_dev.Get(),
         winrt::put_abi(object)));*/
-    gfx_interop_dev = object.as<IDirect3DDevice>();
+    gfx_interop_dev = object.as<IgraphicsDevice>();
 
     // Cache the DXGI adapter.
     // This is for the case of no preferred DXGI adapter, or fallback to WARP.
@@ -207,73 +206,87 @@ void DeviceResourcesT::CreateDeviceResources()
     if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer) {
         supports_vprt = true;
     }
+    #endif
 }
 
 // Validates the back buffer for each HolographicCamera and recreates
 // resources for back buffers that have changed.
 // Locks the set of holographic camera resources until the function exits.
-template <class Holo>
-void DeviceResourcesT::EnsureCameraResources(
-    HolographicFrame frame,
-    HolographicFramePrediction prediction)
+void DeviceResources::EnsureCameraResources(
+    HolographicFrame& frame,
+    const HolographicFramePrediction& prediction)
 {
-    UseHolographicCameraResources<void>([this, frame, prediction](ArrayMap<uint32, CameraResources>& camera_resource_map)
+	HolographicFrame* frame_p = &frame;
+	const HolographicFramePrediction* prediction_p = &prediction;
+	
+    UseHolographicCameraResources(
+		[this, frame_p, prediction_p](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
-        for (HolographicCameraPose const& cam_pose : prediction.CameraPoses())
+        for (HolographicCameraPose const& cam_pose : prediction_p->GetCameraPoses())
         {
-            HolographicCameraRenderingParameters rend_params = frame.GetRenderingParameters(cam_pose);
-            CameraResources* cam_resources = camera_resource_map[cam_pose.HolographicCamera().Id()].get();
+            HolographicCameraRenderingParameters rend_params = frame_p->GetRenderingParameters(cam_pose);
+            
+            int i = camera_resource_map.Find(cam_pose.GetHolographicCamera().GetId());
+            CameraResources* cam_resources = i >= 0 ? &camera_resource_map[i] : 0;
 
             cam_resources->CreateResourcesForBackBuffer(this, rend_params);
         }
+        ret = true;
     });
 }
 
 // Prepares to allocate resources and adds resource views for a camera.
 // Locks the set of holographic camera resources until the function exits.
-template <class Holo>
-void DeviceResourcesT::AddHolographicCamera(HolographicCamera camera)
+void DeviceResources::AddHolographicCamera(HolographicCamera& camera)
 {
-    UseHolographicCameraResources<void>([this, camera](ArrayMap<uint32, CameraResources>& camera_resource_map)
+	HolographicCamera* camera_p = &camera;
+    UseHolographicCameraResources([this, camera_p](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
-        camera_resource_map[camera.Id()] = std::make_unique<CameraResources>(camera);
+        HolographicCamera& camera = *camera_p;
+        uint32 id = camera.GetId();
+        int i = camera_resource_map.Find(id);
+        ASSERT(i < 0);
+        if (i < 0) {
+		    CameraResources& res = camera_resource_map.Add(id);
+		    res.SetCamera(camera);
+        }
+        ret = true;
     });
 }
 
 // Deallocates resources for a camera and removes the camera from the set.
 // Locks the set of holographic camera resources until the function exits.
-template <class Holo>
-void DeviceResourcesT::RemoveHolographicCamera(HolographicCamera camera)
+void DeviceResources::RemoveHolographicCamera(HolographicCamera& camera)
 {
-    UseHolographicCameraResources<void>([this, camera](ArrayMap<uint32, CameraResources>& camera_resource_map)
+    UseHolographicCameraResources([this, camera](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
-        CameraResources* cam_resources = camera_resource_map[camera.Id()].get();
-
-        if (cam_resources != nullptr)
-        {
-            cam_resources->ReleaseResourcesForBackBuffer(this);
-            camera_resource_map.erase(camera.Id());
+        uint32 id = camera.GetId();
+        int i = camera_resource_map.Find(id);
+        ASSERT(i >= 0);
+        if (i >= 0) {
+            camera_resource_map[i].ReleaseResourcesForBackBuffer(this);
+            camera_resource_map.Remove(i);
         }
+        ret = true;
     });
 }
 
 // Recreate all device resources and set them back to the current state.
 // Locks the set of holographic camera resources until the function exits.
-template <class Holo>
-void DeviceResourcesT::HandleDeviceLost()
+void DeviceResources::HandleDeviceLost()
 {
     if (dev_notify != nullptr)
     {
         dev_notify->OnDeviceLost();
     }
 
-    UseHolographicCameraResources<void>([this](ArrayMap<uint32, CameraResources>& camera_resource_map)
+    UseHolographicCameraResources([this](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
-        for (auto& pair : camera_resource_map)
+        for (CameraResources& cam_resources : camera_resource_map.GetValues())
         {
-            CameraResources* cam_resources = pair.second.get();
-            cam_resources->ReleaseResourcesForBackBuffer(this);
+            cam_resources.ReleaseResourcesForBackBuffer(this);
         }
+        ret = true;
     });
 
     InitializeUsingHolographicSpace();
@@ -285,28 +298,30 @@ void DeviceResourcesT::HandleDeviceLost()
 }
 
 // Register our DeviceNotify to be informed on device lost and creation.
-template <class Holo>
-void DeviceResourcesT::RegisterDeviceNotify(GfxDeviceNotify* dev_notify)
+void DeviceResources::RegisterDeviceNotify(DeviceNotify* dev_notify)
 {
     this->dev_notify = dev_notify;
 }
 
 // Call this method when the app suspends. It provides a hint to the driver that the app
 // is entering an idle state and that temporary buffers can be reclaimed for use by other apps.
-template <class Holo>
-void DeviceResourcesT::Trim()
+void DeviceResources::Trim()
 {
+	TODO
+	#if 0
     gfx_ctx_dev->ClearState();
-
+	
     ComPtr<IDXGIDevice3> gfxlib_dev;
-    Holo::CheckResult(gfx_dev.As(&gfxlib_dev));
+    bool succ = gfx_dev.As(&gfxlib_dev);
+    ASSERT(succ);
+    
     gfxlib_dev->Trim();
+    #endif
 }
 
 // Present the contents of the swap chain to the screen.
 // Locks the set of holographic camera resources until the function exits.
-template <class Holo>
-void DeviceResourcesT::Present(HolographicFrame frame)
+void DeviceResources::Present(HolographicFrame& frame)
 {
     // By default, this API waits for the frame to finish before it returns.
     // Holographic apps should wait for the previous frame to finish before
@@ -315,11 +330,11 @@ void DeviceResourcesT::Present(HolographicFrame frame)
     HolographicFramePresentResult present_result = frame.PresentUsingCurrentPrediction();
 
     // The PresentUsingCurrentPrediction API will detect when the graphics device
-    // changes or becomes invalid. When this happens, it is considered a Direct3D
+    // changes or becomes invalid. When this happens, it is considered a graphics
     // device lost scenario.
     if (present_result == HolographicFramePresentResult::DeviceRemoved)
     {
-        // The Direct3D device, context, and resources should be recreated.
+        // The graphics device, context, and resources should be recreated.
         HandleDeviceLost();
     }
 }
@@ -332,12 +347,11 @@ void DeviceResourcesT::Present(HolographicFrame frame)
 
 
 
-using SharedDeviceResources = Shared<GfxDevResources>;
-using HolographicSpace = HoloSpace;
-
+/*using SharedDeviceResources = Shared<GfxDevResources>;
+using HolographicSpace = HolographicSpace;
+*/
 
 /*
-template <class Holo>
 void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String diff, String spec, String skybox, String lut) {
 	hs = MakeShared<GfxDevResources>();
 	
@@ -374,6 +388,5 @@ void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String
 }
 */
 
-#endif
 
 NAMESPACE_PARALLEL_END

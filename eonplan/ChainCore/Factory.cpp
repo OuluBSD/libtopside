@@ -208,7 +208,8 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		
 		Class& cls_h = ns_parallel.GetAddClass(h_name);
 		
-		String req_def;
+		Index<String> req_def;
+		String pkg_def;
 		int list_i = 0;
 		for(int i = 0; i < h.args.GetCount(); i++) {
 			String key = h.args.GetKey(i);
@@ -216,20 +217,21 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 				String def = key.Mid(7);
 				String pre = def + "_";
 				cls_h.RequireMetaDefinition(def);
+				req_def.FindAdd(def);
+				
 				list_i = atom_types.Find(pre);
 				if (list_i < 0) {
-					req_def = def;
 					InitPre(ns_parallel, pre, deflists, clslists);
 					list_i = atom_types.GetCount();
 					atom_types.Add(pre);
 				}
 			}
 			else if (key == "HINT_PKG") {
-				String value = h.args[i];
-				ASSERT(value.GetCount() > 2);
-				if (value.GetCount() > 2)
-					value = value.Mid(1, value.GetCount()-2);
-				cls_h.WeakHint(HINT_PKG, value);
+				pkg_def = h.args[i];
+				ASSERT(pkg_def.GetCount() > 2);
+				if (pkg_def.GetCount() > 2)
+					pkg_def = pkg_def.Mid(1, pkg_def.GetCount()-2);
+				cls_h.WeakHint(HINT_PKG, pkg_def);
 			}
 		}
 		
@@ -417,8 +419,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			//using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
 			using_expr.Add().SetId("AtomParent");
 			
-			if (!req_def.IsEmpty())
-				using_ref.RequireMetaDefinition(req_def);
+			for (String req : req_def)
+				using_ref.RequireMetaDefinition(req);
+			
+			if (pkg_def.GetCount())
+				using_ref.WeakHint(HINT_PKG, pkg_def);
 		}
 		
 		

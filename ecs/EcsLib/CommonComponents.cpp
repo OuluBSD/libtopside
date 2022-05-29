@@ -3,6 +3,18 @@
 NAMESPACE_ECS_BEGIN
 
 
+void Transform::Initialize() {
+	Ref<WorldLogicSystem> sys = GetEngine().TryGet<WorldLogicSystem>();
+	if (sys)
+		sys->Attach(this);
+}
+
+void Transform::Uninitialize() {
+	Ref<WorldLogicSystem> sys = GetEngine().TryGet<WorldLogicSystem>();
+	if (sys)
+		sys->Detach(this);
+}
+
 void Transform::SetFromMatrix(const mat4& matrix) {
 	vec3 skew;
 	vec4 persp;

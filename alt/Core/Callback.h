@@ -24,18 +24,21 @@ public:
 class CallBase : public CallBaseObject {
 public:
 	virtual void Execute() = 0;
+	virtual bool IsThis(void*) const {return false;}
 };
 
 template <class A0>
 class CallBase1 : public CallBaseObject {
 public:
 	virtual void Execute(const A0& a0) = 0;
+	virtual bool IsThis(void*) const {return false;}
 };
 
 template <class A0, class A1>
 class CallBase2 : public CallBaseObject {
 public:
 	virtual void Execute(const A0& a0, const A1& a1) = 0;
+	virtual bool IsThis(void*) const {return false;}
 };
 
 
@@ -87,6 +90,7 @@ class Caller : public CallBase {
 public:
 	Caller(void (T::* fn)(), T* obj) : fn(fn), obj(obj) {}
 	void Execute() override { (*obj.*fn)(); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0>
@@ -97,6 +101,7 @@ class Caller1 : public CallBase1<A0> {
 public:
 	Caller1(void (T::* fn)(A0), T* obj) : fn(fn), obj(obj) {}
 	void Execute(const A0& a0) override { (*obj.*fn)(a0); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0>
@@ -108,6 +113,7 @@ class Caller_1 : public CallBase {
 public:
 	Caller_1(void (T::* fn)(A0), T* obj, A0 a0) : fn(fn), obj(obj), a0(a0) {}
 	void Execute() override { (*obj.*fn)(a0); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0, class A1>
@@ -120,6 +126,7 @@ class Caller_2 : public CallBase {
 public:
 	Caller_2(void (T::* fn)(A0,A1), T* obj, A0 a0, A1 a1) : fn(fn), obj(obj), a0(a0), a1(a1) {}
 	void Execute() override { (*obj.*fn)(a0, a1); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0, class A1>
@@ -131,6 +138,7 @@ class Caller1_1 : public CallBase1<A0> {
 public:
 	Caller1_1(void (T::* fn)(A0, A1), T* obj, A1 a1) : fn(fn), obj(obj), a1(a1) {}
 	void Execute(const A0& a0) override { (*obj.*fn)(a0, a1); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0, class A1>
@@ -141,6 +149,7 @@ class Caller2 : public CallBase2<A0, A1> {
 public:
 	Caller2(void (T::* fn)(A0, A1), T* obj) : fn(fn), obj(obj) {}
 	void Execute(const A0& a0, const A1& a1) override { (*obj.*fn)(a0, a1); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 template <class T, class A0, class A1, class A2>
@@ -153,6 +162,7 @@ class Caller1_2 : public CallBase1<A2> {
 public:
 	Caller1_2(void (T::* fn)(A2,A0,A1), T* obj, A0 a0, A1 a1) : fn(fn), obj(obj), a0(a0), a1(a1) {}
 	void Execute(const A2& a2) override { (*obj.*fn)(a2, a0, a1); }
+	bool IsThis(void* p) const override {return obj == p;}
 };
 
 
@@ -195,11 +205,18 @@ public:
 		for (int i = 0; i < calls.GetCount(); i++)
 			calls[i]->Execute();
 	}
-
+	
+	void RemoveThis(void* t) {
+		for(int i = 0; i < calls.GetCount(); i++)
+			if (calls[i]->IsThis(t))
+				calls.Remove(i--);
+	}
+	
 	void operator()() const { Execute(); }
 	operator bool() const {return calls.GetCount();}
 	String ToString() const {return "Callback";}
 	int64 ToInt() const {return calls.GetCount();}
+	
 };
 
 template <class A0>
@@ -231,7 +248,13 @@ public:
 		for (int i = 0; i < calls.GetCount(); i++)
 			calls[i]->Execute(a0);
 	}
-
+	
+	void RemoveThis(void* t) {
+		for(int i = 0; i < calls.GetCount(); i++)
+			if (calls[i]->IsThis(t))
+				calls.Remove(i--);
+	}
+	
 	void operator()(const A0& a0) const { Execute(a0); }
 	operator bool() const {return calls.GetCount();}
 	String ToString() const {return "Callback1";}
@@ -267,7 +290,13 @@ public:
 		for (int i = 0; i < calls.GetCount(); i++)
 			calls[i]->Execute(a0, a1);
 	}
-
+	
+	void RemoveThis(void* t) {
+		for(int i = 0; i < calls.GetCount(); i++)
+			if (calls[i]->IsThis(t))
+				calls.Remove(i--);
+	}
+	
 	void operator()(const A0& a0, const A1& a1) const { Execute(a0, a1); }
 	operator bool() const {return calls.GetCount();}
 	String ToString() const {return "Callback2";}

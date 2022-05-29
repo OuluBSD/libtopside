@@ -19,8 +19,6 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
-	ATOM_TYPE(SDL_EVENT_ATOM) \
-	ATOM_TYPE(EVENT_STATE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 
@@ -37,8 +35,6 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
-	ATOM_CLASS(SdlEventAtom) \
-	ATOM_CLASS(EventState) \
 	ATOM_CLASS(TestEventSrcPipe) \
 	ATOM_CLASS(VolumeLoaderAtom) \
 
@@ -58,12 +54,7 @@ namespace Parallel {
 #define flagSCREEN_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(EVENT_STATE_PIPE) \
-	ATOM_TYPE(ECS_EVENTS_ATOM) \
-	ATOM_TYPE(ECS_CPU_VIDEO_PIPE) \
 	ATOM_TYPE(ECS_PROG_VIDEO) \
-	ATOM_TYPE(ECS_OGL_FBO_PIPE) \
-	ATOM_TYPE(ECS_CPU_VIDEO) \
-	ATOM_TYPE(ECS_OGL_FBO) \
 	ATOM_TYPE(X11_SW_FBO_PROG) \
 	ATOM_TYPE(X11_SW_SHADER_PIPE) \
 	ATOM_TYPE(X11_SW_FBO_ATOM_PIPE) \
@@ -71,21 +62,12 @@ namespace Parallel {
 	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(X11_SW_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(X11_SW_FBO_ATOM_S_A) \
-	ATOM_TYPE(SDL_OGL_FBO_PIPE_SIDE) \
-	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
-	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
-	ATOM_TYPE(CPU_KEYBOARD_SOURCE) \
 
 
 #define flagSCREEN_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(EventStatePipe) \
-	ATOM_CLASS(EcsEventsAtom) \
-	ATOM_CLASS(EcsCpuVideoPipe) \
 	ATOM_CLASS(EcsProgVideo) \
-	ATOM_CLASS(EcsOglFboPipe) \
-	ATOM_CLASS(EcsCpuVideo) \
-	ATOM_CLASS(EcsOglFbo) \
 	ATOM_CLASS(X11SwFboProg) \
 	ATOM_CLASS(X11SwShaderPipe) \
 	ATOM_CLASS(X11SwFboAtomPipe) \
@@ -93,10 +75,6 @@ namespace Parallel {
 	ATOM_CLASS(X11VideoAtomPipe) \
 	ATOM_CLASS(X11SwVideoAtomPipe) \
 	ATOM_CLASS(X11SwFboAtomSA) \
-	ATOM_CLASS(SdlOglFboPipeSide) \
-	ATOM_CLASS(SdlVideoProgAtom) \
-	ATOM_CLASS(SdlVideoAtomSA) \
-	ATOM_CLASS(CpuKeyboardSource) \
 
 
 #define flagOPENCV_ATOM_TYPE_LIST \
@@ -175,6 +153,14 @@ namespace Parallel {
 	ATOM_CLASS(SdlProgAtomPipe) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
+
+
+#define flagVR_ATOM_TYPE_LIST \
+	ATOM_TYPE(SPATIAL_INTERACTION_S_A) \
+
+
+#define flagVR_ATOM_CLASS_LIST \
+	ATOM_CLASS(SpatialInteractionSA) \
 
 
 }

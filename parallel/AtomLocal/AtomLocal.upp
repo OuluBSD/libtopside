@@ -1,6 +1,15 @@
 description "\377B113,42,150";
 
+uses
+	ParallelLib;
+
+uses(VR) IHolograph;
+
+uses(SCREEN) IGraphics;
+
 file
+	AtomLocal.h,
+	Init.icpp,
 	Generated.h,
 	Generated.cpp;
 

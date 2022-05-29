@@ -28,18 +28,17 @@
 //#include "PbrModelCache.h"
 #include "AppView.h"
 //#include "MotionControllerSystem.h"
+#include "Atom.h"
 
 
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-struct SpatialInteractionSource;
-struct SpatialInteractionSourceLocation;
 /*using SpatialInteractionSource				= SpatialSource;
 using SpatialInteractionSourceLocation		= SpatialSourceLocation;
 using SpatialInteractionSourceEventArgs		= SpatialSourceEventArgs;
-using SpatialInteractionSourceHandedness	= SpatialSourceHandedness;*/
+using SpatialInteractionSourceHandedness	= SpatialInteractionSourceHandedness;*/
 
 
 NAMESPACE_PARALLEL_END

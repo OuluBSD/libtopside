@@ -29,6 +29,8 @@ file
 	SkyboxRenderer.cpp,
 	TextRenderer.h,
 	TextRenderer.cpp,
+	Atom.h,
+	Atom.cpp,
 	Additional readonly separator,
 	Trash readonly separator,
 	StepTimer.h;

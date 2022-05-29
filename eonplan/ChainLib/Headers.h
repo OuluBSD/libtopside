@@ -112,7 +112,7 @@ HEADER_LINK(		EventStatePipe,		PIPE, PROCESS)
 HEADER_ARG(			EventStatePipe,		reqdef_flagSCREEN,			1)
 
 
-
+/*
 HEADER11(			EcsEventsAtom,		EcsEventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterReceipt)
 HEADER_ACTION(		EcsEventsAtom,		ecs.system.events)
 HEADER_ARG(			EcsEventsAtom,		reqdef_flagSCREEN,			1)
@@ -127,13 +127,13 @@ HEADER_ACTION(		EcsCpuVideoPipe,	center.video.ecs.pipe)
 //HEADER_ARG(			EcsCpuVideoPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		EcsCpuVideoPipe,	PIPE, PROCESS)
 HEADER_ARG(			EcsCpuVideoPipe,	reqdef_flagSCREEN,			1)
-
+*/
 HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	CenterProg)
 HEADER_ACTION(		EcsProgVideo,		center.video.prog.ecs)
 HEADER_ARG(			EcsProgVideo,		HINT_PKG,					"AtomEcs")
 HEADER_LINK(		EcsProgVideo,		PIPE, PROCESS)
 HEADER_ARG(			EcsProgVideo,		reqdef_flagSCREEN,			1)
-
+/*
 HEADER11(			EcsOglFboPipe,		EcsVideoBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		EcsOglFboPipe,		ogl.fbo.ecs.pipe)
 HEADER_ARG(			EcsOglFboPipe,		reqdef_flagSCREEN,			1)
@@ -147,7 +147,7 @@ HEADER55_U44(		EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			OglOrder,		OglFbo,
 HEADER_ACTION(		EcsOglFbo,			ogl.fbo.ecs)
 HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,			1)
 HEADER_LINK(		EcsOglFbo,			PIPE_OPTSIDE, PROCESS)
-
+*/
 
 
 
@@ -260,13 +260,13 @@ HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
 HEADER_ARG(			SdlEventAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_ARG(			SdlEventAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_LINK(		SdlEventAtomPipe,	POLLER_PIPE, PROCESS)
-
+/*
 HEADER12(			SdlEventAtom,		Sdl2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterEvent)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)
 
 HEADER21(			EventState,			EventStateBase,				driver_pipe,CenterEvent,	CenterEvent,	CenterEvent,	CenterReceipt)
 HEADER_ACTION(		EventState,			state.event)
-
+*/
 HEADER11(			TestEventSrcPipe,	TestEventSrcBase,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		TestEventSrcPipe,	event.src.test.pipe)
 HEADER_LINK(		TestEventSrcPipe,	PIPE, PROCESS)
@@ -340,11 +340,11 @@ HEADER_ARG(			SdlOglFboPipe,			reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlOglFboPipe,			reqdef_flagOGL,				1)
 HEADER_ARG(			SdlOglFboPipe,			HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlOglFboPipe,			POLLER_PIPE, PROCESS)
-
+/*
 HEADER21(			SdlOglFboPipeSide,		Sdl2OglVideoSinkDevice,		pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		SdlOglFboPipeSide,		sdl.fbo.sink.side)
 HEADER_ARG(			SdlOglFboPipeSide,		reqdef_flagSCREEN,			1)
-
+*/
 HEADER55_U44(		SdlOglFboAtom,			Sdl2OglVideoSinkDevice,		pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		SdlOglFboAtom,			sdl.fbo)
 HEADER_ARG(			SdlOglFboAtom,			reqdef_flagSDL2,			1)
@@ -367,7 +367,7 @@ HEADER_ARG(			SdlProgAtomPipe,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			SdlProgAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlProgAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlProgAtomPipe,	POLLER_PIPE, PROCESS)
-
+/*
 HEADER11(			SdlVideoProgAtom,	Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
 HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,			1)
@@ -375,7 +375,7 @@ HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,			1)
 HEADER11(			SdlVideoAtomSA,		Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomSA,		sdl.video.standalone)
 HEADER_ARG(			SdlVideoAtomSA,		reqdef_flagSCREEN,			1)
-
+*/
 HEADER55_U44(		SdlVideoAtom,		Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,			1)
@@ -457,9 +457,24 @@ HEADER_ARG(			SdlOglAudioSource,		HINT_PKG,					"AtomMinimal")
 
 
 
-
-HEADER12_U01(		CpuKeyboardSource,	CpuKeyboardBase,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
+/*
+HEADER12_U01(		CpuKeyboardSource,	CpuKeyboardBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		CpuKeyboardSource,	center.video.keyboard)
-HEADER_ARG(			CpuKeyboardSource,	reqdef_flagSCREEN,			1)
+HEADER_ARG(			CpuKeyboardSource,	reqdef_flagSCREEN,				1)
 HEADER_LINK(		CpuKeyboardSource,	PIPE_OPTSIDE, PROCESS)
+*/
 
+
+
+HEADER11(			SpatialInteractionSA,	SpatialInteractionAtom,			pipe,		CenterEvent,	CenterOrder,	CenterReceipt)
+HEADER_ACTION(		SpatialInteractionSA,	vr.spatial.interaction)
+HEADER_ARG(			SpatialInteractionSA,	reqdef_flagVR,					1)
+HEADER_LINK(		SpatialInteractionSA,	PIPE, PROCESS)
+
+
+/*
+HEADER12_U01(		SpatialInteractionPipe,	SpatialInteractionAtom			pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterReceipt)
+HEADER_ACTION(		SpatialInteractionPipe,	vr.spatial.interaction)
+HEADER_ARG(			SpatialInteractionPipe,	reqdef_flagVR,					1)
+HEADER_LINK(		SpatialInteractionPipe,	PIPE_OPTSIDE, PROCESS)
+*/

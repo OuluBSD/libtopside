@@ -25,5 +25,7 @@ file
 	Prefab.h,
 	EonLoader.h,
 	EonLoader.cpp,
+	WorldLogic.h,
+	WorldLogic.cpp,
 	Trash readonly separator;
 

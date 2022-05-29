@@ -4,11 +4,28 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor) {
-	TODO
+	ASSERT(easing_factor >= 0.f && easing_factor <= 1.f);
+	return pos * (1.0f - easing_factor) + (tgt_pos * easing_factor);
 }
 
 quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor) {
-	TODO
+	quat z = tgt_orient;
+	float cos_theta = dot(orient, tgt_orient);
+	
+	if (cos_theta < 0.0f) {
+		z = -tgt_orient;
+		cos_theta = -cos_theta;
+	}
+
+	if (cos_theta > 1.0f - std::numeric_limits<float>::epsilon()) {
+		return mix(orient, z, easing_factor);
+	}
+	else {
+		float angle = acos(cos_theta);
+		return (
+			orient * sin((1.0f - easing_factor) * angle) +
+			z * sin(easing_factor * angle)) / sin(angle);
+	}
 }
 
 

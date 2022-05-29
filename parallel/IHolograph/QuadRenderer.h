@@ -7,11 +7,10 @@ NAMESPACE_PARALLEL_BEGIN
 ////////////////////////////////////////////////////////////////////////////////
 // QuadRenderer
 // Responsible for rendering quads in a 3D scene provided a transform matrix and texture
-template <class Holo>
-class QuadRendererT {
+class QuadRenderer {
 	
 public:
-	using GfxDevResources = typename Holo::GfxDevResources;
+	/*using GfxDevResources = typename Holo::GfxDevResources;
 	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
 	using NativeInputLayoutRef = typename Holo::NativeInputLayoutRef;
 	using NativeBufferRef = typename Holo::NativeBufferRef;
@@ -19,9 +18,9 @@ public:
 	using NativeGeometryShaderRef = typename Holo::NativeGeometryShaderRef;
 	using NativePixelShaderRef = typename Holo::NativePixelShaderRef;
 	using NativeSamplerStateRef = typename Holo::NativeSamplerStateRef;
+	*/
 	
-	
-    QuadRendererT(Shared<GfxDevResources> dev_resources);
+    QuadRenderer(Shared<GfxDevResources> dev_resources);
 
     void SetViewProjection(
         const mat4& world_to_view_left,
@@ -33,14 +32,14 @@ public:
     void ReleaseDeviceDependentResources();
 
     void Bind();
-    void Render(const mat4& matrix, NativeShaderResourceViewRef texture);
+    void Render(const mat4& matrix/*, NativeShaderResourceViewRef texture*/);
     void Unbind();
 
 private:
     // Cached pointer to device resources.
     Shared<GfxDevResources>		dev_res;
 
-    // Direct3D resources for quad geometry.
+    // graphics resources for quad geometry.
     NativeInputLayoutRef		input_layout;
     NativeBufferRef				vertex_buffer;
     NativeBufferRef				index_buffer;
@@ -50,7 +49,7 @@ private:
 	NativeBufferRef				model_constant_buffer;
     NativeBufferRef				rendering_constant_buffer;
 
-    // Direct3D resources for the default texture.
+    // graphics resources for the default texture.
     NativeSamplerStateRef		sampler_state;
 
     // System resources for quad geometry.

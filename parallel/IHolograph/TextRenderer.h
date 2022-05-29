@@ -6,11 +6,10 @@ NAMESPACE_PARALLEL_BEGIN
 
 // TextRenderer
 // Responsible for rendering text onto a 2D texture provided a string
-template <class Holo>
-class TextRendererT
+class TextRenderer
 {
 public:
-	using GfxDevResources = typename Holo::GfxDevResources;
+	/*using GfxDevResources = typename Holo::GfxDevResources;
 	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;
 	using NativeSamplerStateRef = typename Holo::NativeSamplerStateRef;
 	using NativeTexture2DRef = typename Holo::NativeTexture2DRef;
@@ -18,15 +17,15 @@ public:
 	using NativeRenderTargetRef = typename Holo::NativeRenderTargetRef;
 	using NativeSolidColorBrushRef = typename Holo::NativeSolidColorBrushRef;
 	using NativeWriteTextFormatRef = typename Holo::NativeWriteTextFormatRef;
+	*/
 	
-	
-    TextRendererT(
+    TextRenderer(
         Shared<GfxDevResources> dev_resources,
         uint32 tex_width,
         uint32 tex_height,
         float font_size);
 
-    ~TextRendererT();
+    ~TextRenderer();
 
     void RenderTextOffscreen(const String& str);
 
@@ -40,7 +39,7 @@ private:
     // Cached pointer to device resources.
     Shared<GfxDevResources> dev_res;
 
-    // Direct3D resources for rendering text to an off-screen render target.
+    // graphics resources for rendering text to an off-screen render target.
     NativeTexture2DRef              texture;
     NativeShaderResourceViewRef		shader_resource_view;
     NativeSamplerStateRef			point_sampler;

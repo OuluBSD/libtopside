@@ -4,51 +4,51 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-template <class Holo>
-class DeviceResourcesT;
+class DeviceResources;
 
 
 // Manages DirectX device resources that are specific to a holographic camera, such as the
 // back buffer, ViewProjection constant buffer, and viewport.
-template <class Holo>
-class CameraResourcesT
+class CameraResources
 {
 public:
-	using HoloCam = typename Holo::HoloCam;
+	/*using HolographicCamera = typename Holo::HolographicCamera;
 	using GfxDevResources = typename Holo::GfxDevResources;
-	using HoloCamRendParams = typename Holo::HoloCamRendParams;
-	using HoloCamPose = typename Holo::HoloCamPose;
+	using HolographicCameraRenderingParameters = typename Holo::HolographicCameraRenderingParameters;
+	using HolographicCameraPose = typename Holo::HolographicCameraPose;
 	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
-	using HoloStereoTransform = typename Holo::HoloStereoTransform;
+	using HolographicStereoTransform = typename Holo::HolographicStereoTransform;
 	using NativeRenderTargetViewRef = typename Holo::NativeRenderTargetViewRef;
 	using NativeDepthStencilViewRef = typename Holo::NativeDepthStencilViewRef;
-	using NativeTexture2DRef = typename Holo::NativeTexture2DRef;
+	using NativeTexture2DRef = typename Holo::NativeTexture2DRef;*/
 	
 	
-    CameraResourcesT(const HoloCam& holocam);
-
+    CameraResources();
+	
+	void SetCamera( HolographicCamera& holocam);
+	
     void CreateResourcesForBackBuffer(
-        const GfxDevResources* dev_resources,
-        const HoloCamRendParams& cam_params
+        const DeviceResources* dev_resources,
+        const HolographicCameraRenderingParameters& cam_params
         );
     void ReleaseResourcesForBackBuffer(
-        const GfxDevResources* dev_resources
+        const DeviceResources* dev_resources
         );
 
     bool GetViewProjectionTransform(
-        Shared<GfxDevResources> dev_resources,
-        const HoloCamPose& cam_pose,
+        DeviceResources& dev_resources,
+        const HolographicCameraPose& cam_pose,
         const SpatialCoordinateSystem& coord_system,
-        HoloStereoTransform* view_transform,
-        HoloStereoTransform* proj_transform);
+        HolographicStereoTransform* view_transform,
+        HolographicStereoTransform* proj_transform);
 
-    void CommitDirect3D11DepthBuffer(
-        const HoloCamRendParams& rend_params) const;
+    void Commitgraphics11DepthBuffer(
+        const HolographicCameraRenderingParameters& rend_params) const;
 
-    // Direct3D device resources.
-    NativeRenderTargetViewRef	GetBackBufferRenderTargetView()     const { return gfx_rend_tgt_view.Get(); }
-    NativeDepthStencilViewRef	GetDepthStencilView()               const { return gfx_depth_stencil_view.Get(); }
-    NativeTexture2DRef			GetBackBufferTexture2D()            const { return gfx_back_buffer.Get(); }
+    // graphics device resources.
+    NativeRenderTargetViewRef	GetBackBufferRenderTargetView()     const { return gfx_rend_tgt_view; }
+    NativeDepthStencilViewRef	GetDepthStencilView()               const { return gfx_depth_stencil_view; }
+    NativeTexture2DRef			GetBackBufferTexture2D()            const { return gfx_back_buffer; }
     ViewportParams				GetViewport()                       const { return gfx_viewport; }
     LightSampleFD				GetBackBufferDXGIFormat()           const { return gfxlib_fmt; }
 
@@ -57,16 +57,16 @@ public:
     bool IsRenderingStereoscopic() const { return is_stereo; }
 
     // The holographic camera these resources are for.
-    const HoloCam& GetHolographicCamera() const { return holocam; }
+    const HolographicCamera& GetHolographicCamera() const { return *holocam; }
 
 private:
-    // Direct3D rendering objects. Required for 3D.
+    // graphics rendering objects. Required for 3D.
     NativeRenderTargetViewRef				gfx_rend_tgt_view;
     NativeDepthStencilViewRef				gfx_depth_stencil_view;
     NativeTexture2DRef						gfx_depth_stencil;
     NativeTexture2DRef						gfx_back_buffer;
 
-    // Direct3D rendering properties.
+    // graphics rendering properties.
     LightSampleFD							gfxlib_fmt;
     Size									gfx_rend_tgt_size;
     ViewportParams							gfx_viewport;
@@ -75,7 +75,7 @@ private:
     bool									is_stereo = false;
 
     // Pointer to the holographic camera these resources are for.
-    HoloCam									holocam = 0;
+    HolographicCamera*						holocam = 0;
     
 };
 

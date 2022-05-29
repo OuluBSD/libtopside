@@ -12,6 +12,20 @@ quat quat::GetConjugate() const {
 	return q;
 }
 
+quat quat::operator-() const {
+	quat q = *this;
+	for (int i = 0; i < 4; i++)
+		q.data.data[i] *= -1;
+	return q;
+}
+
+quat quat::operator+(const quat& q) const {
+	quat r = *this;
+	for (int i = 0; i < 4; i++)
+		r.data.data[i] += q.data.data[i];
+	return r;
+}
+
 quat quat::operator*(const quat& b) const {
 	// https://stackoverflow.com/questions/19956555/how-to-multiply-two-quaternions
 	const quat& a = *this;
@@ -23,7 +37,29 @@ quat quat::operator*(const quat& b) const {
 	);
 }
 
+quat quat::operator*(float f) const {
+	quat q = *this;
+	for (int i = 0; i < 4; i++)
+		q.data.data[i] *= f;
+	return q;
+}
 
+quat quat::operator/(float f) const {
+	quat q = *this;
+	for (int i = 0; i < 4; i++)
+		q.data.data[i] /= f;
+	return q;
+}
+
+float quat::GetDotProduct(const quat& q) const {
+	return data.GetDotProduct(q.data);
+}
+
+quat quat::Mix(const quat& q, float f) const {
+	quat r;
+	r.data = data.Mix(q.data, f);
+	return r;
+}
 
 
 

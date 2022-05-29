@@ -21,12 +21,6 @@ public:
 };
 
 
-typedef enum {
-	Unspecified,
-	Left,
-	Right
-} SpatialInteractionSourceHandedness;
-
 
 // ToolboxSystem
 // This system manages the ToolSystems and manages the two Entities that represent the left and right Motion Controllers
@@ -67,7 +61,7 @@ private:
 	};
 	
 	static String ControllerHandToString(ControllerHand hand);
-	static SpatialSourceHandedness ControllerHandToHandedness(ControllerHand hand);
+	static SpatialInteractionSourceHandedness ControllerHandToHandedness(ControllerHand hand);
 	
 	struct ControllerContext {
 		EntityRef ctrl;

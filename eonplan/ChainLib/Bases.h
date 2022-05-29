@@ -40,6 +40,8 @@ BASE(X11OglFboBase)
 BASE(X11SwShaderBase)
 BASE(X11OglShaderBase)
 BASE(SdlOglShaderBase)
+
+BASE(SpatialInteractionAtom)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

@@ -224,9 +224,6 @@ void PaintingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 #endif
 
 void PaintingInteractionSystem::Update(double dt) {
-	TODO // override funcs
-	
-	/*
 	for (auto& enabled_entity : GetEnabledEntities()) {
 		auto entity		= enabled_entity.Get<EntityRef>();
 		auto paint		= enabled_entity.Get<PaintComponentRef>();
@@ -244,16 +241,16 @@ void PaintingInteractionSystem::Update(double dt) {
 		paint->paint_brush->Get<PbrRenderable>()->SetEnabled(!show_controller);
 		
 		if (auto location = controller->location) {
-			const vec3 position = LocationUtil::position(location);
-			const quat orientation = LocationUtil::orientation(location);
+			const vec3 position = location->GetPosition();
+			const quat orientation = location->GetOrientation();
 			const vec4 paint_tip_color = paint->cur_state == PaintComponent::State::ColorSelection ? SelectColor(paint->touchpad_x, paint->touchpad_y) : paint->selected_color;
 			paint->paint_brush->Get<PbrRenderable>()->color = paint_tip_color;
 			
 			if (paint->cur_state == PaintComponent::State::Manipulating) {
 				// Update the paint strokes based on the change in location
 				if (paint->prev_manip_loc) {
-					const vec3 previous_position = LocationUtil::position(paint->prev_manip_loc);
-					const quat previous_orientation = LocationUtil::orientation(paint->prev_manip_loc);
+					const vec3 previous_position = paint->prev_manip_loc->GetPosition();
+					const quat previous_orientation = paint->prev_manip_loc->GetOrientation();
 					const quat orientation_delta = orientation * inverse(previous_orientation);
 					const mat4 manipulation_transform = translate(-previous_position) * rotate(orientation_delta) * translate(position);
 					
@@ -267,9 +264,9 @@ void PaintingInteractionSystem::Update(double dt) {
 				constexpr double ThumbstickMovementThresholdPercent = 0.2f; // Deadzone to prevent slight thumbstick movement
 				constexpr float MovementSpeedInMetersPerSecond = 2.5f;
 				
-				if (auto pointer_pose = location.SourcePointerPose()) {
-					const vec3 position = pointer_pose.Position();
-					const vec3 forward = pointer_pose.ForwardDirection();
+				if (const auto& pointer_pose = location->GetSourcePointerPose()) {
+					const vec3 position = pointer_pose->GetPosition();
+					const vec3 forward = pointer_pose->GetForwardDirection();
 					
 					if (abs(paint->thumbstick_y) > ThumbstickMovementThresholdPercent) {
 						const vec3 forward_movement = forward * paint->thumbstick_y * MovementSpeedInMetersPerSecond * dt;
@@ -283,7 +280,7 @@ void PaintingInteractionSystem::Update(double dt) {
 					paint->beam->Get<Transform>()->position =
 					        position +
 					        forward * (paint->beam->Get<Transform>()->size[2] * 0.5f);
-					paint->beam->Get<Transform>()->orientation = pointer_pose.Orientation();
+					paint->beam->Get<Transform>()->orientation = pointer_pose->GetOrientation();
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::ColorSelection) {
@@ -309,7 +306,6 @@ void PaintingInteractionSystem::Update(double dt) {
 			}
 		}
 	}
-	*/
 }
 
 vec4 PaintingInteractionSystem::SelectColor(double x, double y) {

@@ -51,7 +51,7 @@ struct VrFake {
 };
 #endif
 
-#if 0
+#if defined flagUWP
 struct VrHolo {
 	using NativeMotionController = void*;
 	using NativeMotionControllerSystem = void*;
@@ -66,7 +66,7 @@ struct VrHolo {
 };
 #endif
 
-#if 0
+#if defined flagOGL && defined flagOVR
 struct VrOvr {
 	using NativeMotionController = void*;
 	using NativeMotionControllerSystem = void*;
@@ -81,7 +81,7 @@ struct VrOvr {
 };
 #endif
 
-#if 0
+#if defined flagOGL && defined flagOHMD
 struct VrHmd {
 	using NativeMotionController = void*;
 	using NativeMotionControllerSystem = void*;

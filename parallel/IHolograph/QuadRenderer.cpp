@@ -1,6 +1,5 @@
 #include "IHolograph.h"
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -17,7 +16,7 @@ struct QuadRenderingParametersConstantBuffer
 
 
 // Assert that the constant buffer remains 16-byte aligned (best practice).
-static_assert((sizeof(QuadModelConstantBuffer) % (sizeof(float) * 4)) == 0, "Model constant buffer size must be 16-byte aligned (16 bytes is the length of four floats).");
+//static_assert((sizeof(QuadModelConstantBuffer) % (sizeof(float) * 4)) == 0, "Model constant buffer size must be 16-byte aligned (16 bytes is the length of four floats).");
 
 
 struct VertexPositionTex
@@ -27,22 +26,21 @@ struct VertexPositionTex
 };
 
 // Loads vertex and pixel shaders from files and instantiates the quad geometry.
-template <class Holo>
-QuadRendererT<Holo>::QuadRendererT(Shared<GfxDevResources> dev_resources) :
+QuadRenderer::QuadRenderer(Shared<GfxDevResources> dev_resources) :
     dev_res(std::move(dev_resources))
 {
     CreateDeviceDependentResources();
 }
 
-template <class Holo>
-void QuadRendererT<Holo>::Bind()
+void QuadRenderer::Bind()
 {
+	TODO
+    /*
     const auto context = dev_res->GetD3DDeviceContext();
 
     const uint32 strides[] = { sizeof(VertexPositionTex) };
     const uint32 offsets[] = { 0 };
-
-    context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), strides, offsets);
+	context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), strides, offsets);
     context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0);
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->IASetInputLayout(input_layout.Get());
@@ -60,12 +58,13 @@ void QuadRendererT<Holo>::Bind()
     }
 
     context->PSSetShader(pixel_shader_rgb.Get(), nullptr, 0);
-    context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
+    context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());*/
 }
 
-template <class Holo>
-void QuadRendererT<Holo>::Render(mat4 const& matrix, ID3D11ShaderResourceView* texture)
+void QuadRenderer::Render(const mat4& matri/*x, ID3D11ShaderResourceView* texture*/)
 {
+	TODO
+	/*
     const auto context = dev_res->GetD3DDeviceContext();
 
     QuadModelConstantBuffer cb;
@@ -76,30 +75,33 @@ void QuadRendererT<Holo>::Render(mat4 const& matrix, ID3D11ShaderResourceView* t
     context->PSSetShaderResources(0, 1, &texture);
 
     context->DrawIndexedInstanced(index_count, 2, 0, 0, 0);
+    */
 }
 
-template <class Holo>
-void QuadRendererT<Holo>::Unbind()
+void QuadRenderer::Unbind()
 {}
 
-template <class Holo>
-void QuadRendererT<Holo>::SetViewProjection(
+void QuadRenderer::SetViewProjection(
     const mat4& world_to_view_left,
     const mat4& view_to_proj_left,
     const mat4& world_to_view_right,
     const mat4& view_to_proj_right)
 {
+	TODO
+	/*
     mat4 view_projection[2];
 
     view_projection[0] = transpose(world_to_view_left * view_to_proj_left);
     view_projection[1] = transpose(world_to_view_right * view_to_proj_right);
 
     dev_res->GetD3DDeviceContext()->UpdateSubresource(rendering_constant_buffer.Get(), 0, nullptr, &view_projection, 0, 0);
+    */
 }
 
-template <class Holo>
-void QuadRendererT<Holo>::CreateDeviceDependentResources()
+void QuadRenderer::CreateDeviceDependentResources()
 {
+	TODO
+	/*
     const bool using_vprt = dev_res->GetDeviceSupportsVprt();
     const void* vertex_shader = (using_vprt) ? g_QuadVPRTVertexShader : g_QuadVertexShader;
     const size_t vertex_shader_size = (using_vprt) ? _countof(g_QuadVPRTVertexShader) : _countof(g_QuadVertexShader);
@@ -233,11 +235,13 @@ void QuadRendererT<Holo>::CreateDeviceDependentResources()
             )
         );
     }
+    */
 }
 
-template <class Holo>
-void QuadRendererT<Holo>::ReleaseDeviceDependentResources()
+void QuadRenderer::ReleaseDeviceDependentResources()
 {
+	TODO
+	/*
     vertex_shader.Reset();
     input_layout.Reset();
     pixel_shader_rgb.Reset();
@@ -250,9 +254,9 @@ void QuadRendererT<Holo>::ReleaseDeviceDependentResources()
     index_buffer.Reset();
 
     sampler_state.Reset();
+    */
 }
 
 
 NAMESPACE_PARALLEL_END
 
-#endif

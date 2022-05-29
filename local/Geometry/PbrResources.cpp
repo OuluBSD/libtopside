@@ -67,14 +67,14 @@ struct Resources::Impl
     uint32								scene_change_count_bookmark { 0 };
     
 };
-#endif
 
-Resources::Resources(GfxDevice& device)
+Resources::Resources(/*GfxDevice& device*/)
 {
 	//impl.Create();
     //impl->Initialize(device);
 }
 
+#endif
 
 /*void Resources::SetBrdfLut(ShaderResources& brdf_lut)
 {
@@ -138,6 +138,17 @@ SamplerState& Resources::AddSampler() {
 	SamplerState& s = samplers.Add();
 	//s.res = this;
 	return s;
+}
+
+void Resources::RemoveMaterial(Pbr::Material* mat) {
+	int i = 0;
+	for (Material& m : materials) {
+		if (&m == mat) {
+			materials.Remove(i);
+			break;
+		}
+		i++;
+	}
 }
 
 #if 0

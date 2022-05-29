@@ -6,10 +6,12 @@ NAMESPACE_ECS_BEGIN
 
 class HolographicScene;
 class TextRenderer;
-class QuadRenderer;
-class SkyboxRenderer;
+//class QuadRenderer;
+//class SkyboxRenderer;
+class PbrModelCache;
 
 using HolographicSceneRef = Ref<HolographicScene, RefParent1<Engine>>;
+using PbrModelCacheRef = Ref<PbrModelCache, RefParent1<Engine>>;
 
 
 // HolographicRenderer
@@ -21,12 +23,12 @@ class HolographicRenderer :
 {
 public:
 	/*using Resources = Pbr::ResourcesT<Holo>;
-	using HoloSpace = typename Holo::HoloSpace;
-	using HoloFramePred = typename Holo::HoloFramePred;
-	using HoloCamRendParams = typename Holo::HoloCamRendParams;
-	using HoloCamPose = typename Holo::HoloCamPose;
-	using HoloSpaceCameraAddedEventArgs = typename Holo::HoloSpaceCameraAddedEventArgs;
-	using HoloSpaceCameraRemovedEventArgs = typename Holo::HoloSpaceCameraRemovedEventArgs;
+	using HolographicSpace = typename Holo::HolographicSpace;
+	using HolographicFramePrediction = typename Holo::HolographicFramePrediction;
+	using HolographicCameraRenderingParameters = typename Holo::HolographicCameraRenderingParameters;
+	using HolographicCameraPose = typename Holo::HolographicCameraPose;
+	using HolographicSpaceCameraAddedEventArgs = typename Holo::HolographicSpaceCameraAddedEventArgs;
+	using HolographicSpaceCameraRemovedEventArgs = typename Holo::HolographicSpaceCameraRemovedEventArgs;
 	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
 	using GfxDevResources = typename Holo::GfxDevResources;
 	using GfxCamResources = typename Holo::GfxCamResources;
@@ -56,40 +58,41 @@ protected:
     void Stop() override;
     void Uninitialize() override;
 
-    void BindEventHandlers(HoloSpace& holospace);
-    //void ReleaseEventHandlers(const HoloSpace& holospace);
+    void BindEventHandlers(HolographicSpace& holospace);
+    //void ReleaseEventHandlers(const HolographicSpace& holospace);
 
 private:
     Ref<EntityStore>				entity_store;
+    PbrModelCacheRef				pbr_model_cache;
     HolographicSceneRef				holo_scene;
-    //Ref<PbrResources>				pbr_res;
-    /*
-    One<SkyboxRenderer>				skybox_rend;
-    ArrayMap<float, TextRenderer>	text_rend;
+    DeviceResources					dev_res;
+    Pbr::Resources*					pbr_res = 0;
     One<QuadRenderer>				quad_rend;
+    One<SkyboxRenderer>				skybox_rend;
+    /*
+    ArrayMap<float, TextRenderer>	text_rend;
     NativeEventToken				camera_added_event;
     NativeEventToken				camera_removed_event;
-    Shared<GfxDevResources>			dev_res;
 	
     TextRenderer* GetTextRendererForFontSize(float font_size);
-	
-    bool RenderAtCameraPose(
-        GfxCamResources *cam_resources,
-        const SpatialCoordinateSystem& coord_system,
-        HoloFramePred& prediction,
-        const HoloCamRendParams& rend_params,
-        const HoloCamPose& cam_pose);
 	*/
+    bool RenderAtCameraPose(
+        CameraResources *cam_resources,
+        const SpatialCoordinateSystem& coord_system,
+        const HolographicFramePrediction& prediction,
+        const HolographicCameraRenderingParameters& rend_params,
+        const HolographicCameraPose& cam_pose);
+	
 	
     // Asynchronously creates resources for new holographic cameras.
     void OnCameraAdded(
-        const HoloSpace& sender,
+        const HolographicSpace& sender,
         const CameraAddedEventArgs& args);
 	
     // Synchronously releases resources for holographic cameras that are no longer
     // attached to the system.
     void OnCameraRemoved(
-        const HoloSpace& sender,
+        const HolographicSpace& sender,
         const CameraRemovedEventArgs& args);
     
     

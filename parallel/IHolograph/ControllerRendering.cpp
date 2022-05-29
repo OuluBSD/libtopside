@@ -72,8 +72,7 @@ namespace ControllerRendering {
 }*/
 
 /*
-template <class Holo>
-Future<Shared<const Pbr::Model>> ControllerRenderingT<Holo>::TryLoadRenderModelAsync(
+Future<Shared<const Pbr::Model>> ControllerRendering::TryLoadRenderModelAsync(
     Shared<Pbr::Resources> pbr_res,
     SpatialInteractionSource source)
 {
@@ -114,8 +113,7 @@ Future<Shared<const Pbr::Model>> ControllerRenderingT<Holo>::TryLoadRenderModelA
 }
 */
 
-/*template <class Holo>
-ArticulateValues ControllerRenderingT<Holo>::GetArticulateValues(constSpatialSourceState& src_state)
+/*ArticulateValues ControllerRendering::GetArticulateValues(constSpatialSourceState& src_state)
 {
     ArticulateValues arti_vals;
 
@@ -138,8 +136,7 @@ ArticulateValues ControllerRenderingT<Holo>::GetArticulateValues(constSpatialSou
 }*/
 
 #if 0
-template <class Holo>
-void ControllerRenderingT<Holo>::ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
+void ControllerRendering::ArticulateControllerModel(ArticulateValues const& arti_vals, Pbr::Model& model)
 {
     // Every articulatable node in the model has three children, two which define the extents of the motion and one (VALUE) which holds the interpolated value.
     // In some cases, there nodes are nested to create combined transformations, like the X and Y movements of the thumbstick.
@@ -179,13 +176,12 @@ void ControllerRenderingT<Holo>::ArticulateControllerModel(ArticulateValues cons
 #endif
 
 /*
-template <class Holo>
 Future<Shared<const Pbr::Model>>
-	ControllerRenderingT<Holo>::ControllerModelCache::TryGetControllerModelAsync(
+	ControllerRendering::ControllerModelCache::TryGetControllerModelAsync(
 	    Shared<Pbr::Resources> pbr_res,
 	    SpatialInteractionSource source)
 {
-    const ControllerRenderingT<Holo>::ControllerModelKey model_key = ControllerRenderingT<Holo>::GetControllerModelKey(source);
+    const ControllerRendering::ControllerModelKey model_key = ControllerRendering::GetControllerModelKey(source);
 
     // Check the cache for the model. If one is found, return it.
     {
@@ -197,7 +193,7 @@ Future<Shared<const Pbr::Model>>
         }
     }
 
-    const Shared<const Pbr::Model> ctrl_model = co_await ControllerRenderingT<Holo>::TryLoadRenderModelAsync(pbr_res, source);
+    const Shared<const Pbr::Model> ctrl_model = co_await ControllerRendering::TryLoadRenderModelAsync(pbr_res, source);
     if (ctrl_model)
     {
         Mutex::Lock guard(lock);
@@ -208,8 +204,7 @@ Future<Shared<const Pbr::Model>>
 }
 */
 
-template <class Holo>
-void ControllerRenderingT<Holo>::ControllerModelCache::ReleaseDeviceDependentResources()
+void ControllerRendering::ControllerModelCache::ReleaseDeviceDependentResources()
 {
     Mutex::Lock guard(lock);
     ctrl_meshes.clear();

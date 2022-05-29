@@ -15,13 +15,16 @@ public:
 	COPY_PANIC(PbrRenderable)
 	COMP_DEF_VISIT
 	
+	void Initialize() override;
+	void Uninitialize() override;
+	
     void ResetModel(String name, Optional<mat4> offset = null_opt) {
         model_name = name;
         offset = offset;
     }
 
     String				model_name;
-    //One<Pbr::Model>		model;
+    One<Pbr::Model>		model;
     Optional<vec4>		color;
     Optional<mat4>		offset;
     Optional<double>	alpha_multiplier;
@@ -41,23 +44,32 @@ public:
     /*void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
 
     void RegisterModel(String name, Shared<Pbr::Model> model);
-    bool ModelExists(String name);
-    PbrRenderableRef SetModel(String name, PbrRenderableRef pbr_rend_comp);
-    PbrRenderableRef SetModel(String name, ComponentMap& componentMap);
-*/
+    bool ModelExists(String name);*/
+    
+    void SetModel(String name, PbrRenderable& pbr_rend_comp);
+    void SetModel(String name, ComponentMap& componentMap);
+
 	static constexpr const char* POOL_NAME = "model_cache";
 	
-	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
+	//PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
+	
+	void Attach(PbrRenderable* p);
+	void Detach(PbrRenderable* p);
+	
+	const Vector<PbrRenderable*>& GetComponents() const {return comps;}
 	
 protected:
+	bool Initialize() override;
     void Update(double) override;
     void Uninitialize() override;
 
 private:
-    /*Shared<Pbr::Resources> pbr_res;
-    */
+    Pbr::Resources* pbr_res = 0;
+    
     LinkedMap<String, Pbr::Model> model_map;
+    
+    Vector<PbrRenderable*> comps;
     
 };
 

@@ -5,6 +5,19 @@ NAMESPACE_ECS_BEGIN
 
 
 
+void MotionControllerComponent::Initialize() {
+	Engine& e = GetEngine();
+	Ref<MotionControllerSystem> sys = e.Get<MotionControllerSystem>();
+	sys->Attach(this);
+}
+
+void MotionControllerComponent::Uninitialize() {
+	Engine& e = GetEngine();
+	Ref<MotionControllerSystem> sys = e.Get<MotionControllerSystem>();
+	sys->Detach(this);
+}
+
+	
 String ControllerModelKeyToString(const std::tuple<uint16, uint16, uint16, SpatialInteractionSourceHandedness>& tuple)
 {
     String ss;
@@ -36,7 +49,7 @@ Future<void> LoadAndCacheModel(
 
         if (model)
         {
-            pbr_model_cache->RegisterModel(ctrl_model_name, model->Clone(*pbr_res));
+            pbr_model_cache->RegisterModel(ctrl_model_name, model->Copy(*pbr_res));
         }
         else
         {
@@ -48,6 +61,14 @@ Future<void> LoadAndCacheModel(
 #endif
 
 
+
+void MotionControllerSystem::Attach(MotionControllerComponent* comp) {
+	VectorFindAdd(comps, comp);
+}
+
+void MotionControllerSystem::Detach(MotionControllerComponent* comp) {
+	VectorRemoveKey(comps, comp);
+}
 
 
 void MotionControllerSystem::Start()
@@ -61,34 +82,31 @@ void MotionControllerSystem::Start()
 void MotionControllerSystem::OnPredictionUpdated(
     PredictionUpdateReason reason,
     const SpatialCoordinateSystem& coord_system,
-    const HoloFramePred& prediction)
+    const HolographicFramePrediction& prediction)
 {
-	TODO
-	#if 0
+	Engine& e = GetEngine();
+	
     // Update the positions of the controllers based on the current timestamp.
-    for (auto& src_state : machine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
+    for (auto& src_state : e.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.GetTimestamp()))
     {
-        for (auto& comp_set : machine.Get<EntityStore>()->GetComponents<Transform, MotionControllerComponent>())
-        {
-            auto[transform, controller] = comp_set;
+        for (MotionControllerComponent* controller : comps) {
+            TransformRef transform = controller->GetEntity()->Find<Transform>();
 
-            RefreshComponentsForSource(src_state.Source());
+            RefreshComponentsForSource(src_state.GetSource());
 
-            if (controller->IsSource(src_state.Source()))
+            if (controller->IsSource(src_state.GetSource()))
             {
-                const SpatialInteractionSourceLocation location = src_state.Properties().TryGetLocation(coord_system);
+                SpatialInteractionSourceLocation* location = src_state.GetProperties().TryGetLocation(coord_system);
 
                 controller->location = location;
 
-                if (location)
-                {
-                    transform->position = location_util::position(location);
-                    transform->orientation = location_util::orientation(location);
+                if (location && transform) {
+                    transform->position = location->GetPosition();
+                    transform->orientation = location->GetOrientation();
                 }
             }
         }
     }
-	#endif
 }
 
 void MotionControllerSystem::Stop()
@@ -98,23 +116,26 @@ void MotionControllerSystem::Stop()
     //machine.Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
 }
 
-#if 0
 void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteractionSource& source)
 {
-    for (auto& comp_set : machine.Get<EntityStore>()->GetComponentsWithEntity<MotionControllerComponent>())
-    {
-        auto[entity, controller] = comp_set;
+	Engine& e = GetEngine();
+	Ref<MotionControllerSystem> sys = e.Get<MotionControllerSystem>();
+	const Vector<MotionControllerComponent*>& comps = sys->GetComponents();
+	
+	for (MotionControllerComponent* controller : comps) {
+		EntityRef entity = controller->GetEntity();
+		
+        ASSERT_(controller->req_hand != SpatialInteractionSourceHandedness::Unspecified, "Unspecified is not supported yet");
 
-        fail_fast_if(controller->req_hand == SpatialInteractionSourceHandedness::Unspecified, "Unspecified is not supported yet");
-
-        if (controller->source == nullptr && source.Handedness() == controller->req_hand)
+        if (controller->source == nullptr && source.GetHandedness() == controller->req_hand)
         {
-            controller->source = source;
-            LOG("Attached source id %d to entity %lld with requested handedness %d", source.Id(), entity->Id(), static_cast<uint32>(controller->req_hand));
+            controller->source = &source;
+            LOG("Attached source id " << source.GetId() << " to entity " << entity->GetId() << " with requested handedness " << static_cast<uint32>(controller->req_hand));
         }
     }
 }
 
+#if 0
 void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args)
 {
     if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
@@ -167,12 +188,12 @@ void MotionControllerSystem::OnSourceLost(const SpatialInteractionSourceEventArg
         }
     }
 }
+#endif
 
 bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const
 {
-    return (this->source && rhs) ? this->source.Id() == rhs.Id() : false;
+    return (this->source /*&& rhs*/) ? this->source->GetId() == rhs.GetId() : false;
 }
 
-#endif
 
 NAMESPACE_ECS_END

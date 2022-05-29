@@ -50,7 +50,24 @@ namespace Pbr {
 
 
 
-/*Primitive::Primitive(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material)
+Primitive::~Primitive() {
+	ClearMaterial();
+}
+
+void Primitive::ClearMaterial() {
+	if (material) {
+		material->DecRef();
+		material = 0;
+	}
+}
+
+void Primitive::SetMaterial(Material& mat) {
+	ClearMaterial();
+	material = &mat;
+	mat.IncRef();
+}
+
+/*Primitive::Set(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material)
     : idx_count(idx_count)
     , vertex_buffer(vertex_buffer)
     , index_buffer(index_buffer)
@@ -60,7 +77,7 @@ namespace Pbr {
 }
 
 
-Primitive::Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Pbr::Material> material)
+Primitive::Set(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Pbr::Material> material)
     : Primitive(
         (uint32)prim_builder.indices.GetCount(),
         CreateIndexBuffer(pbr_res.GetDevice().Get(), prim_builder).Get(),
@@ -71,14 +88,13 @@ Primitive::Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim
 }*/
 
 
-#if 0
 
-Primitive Primitive::Clone(Resources const& pbr_res) const
+void Primitive::Copy(Resources const& pbr_res, Primitive& dst) const
 {
-    return Primitive(idx_count, index_buffer.Get(), vertex_buffer.Get(), material->Clone(pbr_res));
+	dst.indices <<= indices;
+	dst.vertices <<= vertices;
+	dst.material = material;
 }
-
-#endif
 
 void Primitive::Render(GfxContext& context) const
 {

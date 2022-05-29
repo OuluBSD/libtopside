@@ -4,9 +4,8 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-template <class Holo>
-struct SpatialInputUtilitiesT {
-	using SpatialSourceLocation = typename Holo::SpatialSourceLocation;
+struct SpatialInputUtilities {
+	//using SpatialSourceLocation = typename Holo::SpatialSourceLocation;
 	
 	
 	// Compute the linear velocity near a SpatialInteractionSourceLocation assuming the position is part of the
@@ -17,9 +16,9 @@ struct SpatialInputUtilitiesT {
 	    const SpatialSourceLocation& source_location,
 	    const vec3& position_near_source_location)
 	{
-	    const vec3 grasp_velocity = source_location.Velocity();
-	    const vec3 grasp_position = source_location.position();
-	    const vec3 angular_velocity = source_location.AngularVelocity();
+	    const vec3 grasp_velocity = source_location.GetVelocity();
+	    const vec3 grasp_position = source_location.GetPosition();
+	    const vec3 angular_velocity = source_location.GetAngularVelocity();
 		
 		TODO // value is optional
 	    /*if (!grasp_velocity || !grasp_position || !angular_velocity)

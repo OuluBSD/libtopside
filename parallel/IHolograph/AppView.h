@@ -5,46 +5,45 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // IFrameworkView class. Connects the app with the Windows shell and handles application lifecycle events.
-template <class Holo>
-class AppViewT : public Holo::template AppViewBase<AppViewT<Holo>>
+class AppView /*: public Holo::template AppViewBase<AppView>*/
 {
 public:
-	using HoloSpace = typename Holo::HoloSpace;
+	/*using HolographicSpace = typename Holo::HolographicSpace;
 	using CoreApplicationView = typename Holo::CoreApplicationView;
-	using CoreWindow = typename Holo::CoreWindow;
+	using GfxCoreWindow = typename Holo::GfxCoreWindow;
 	using NativeString = typename Holo::NativeString;
 	using LaunchActivatedEventArgs = typename Holo::LaunchActivatedEventArgs;
 	using IActivatedEventArgs = typename Holo::IActivatedEventArgs;
 	using SuspendingEventArgs = typename Holo::SuspendingEventArgs;
 	using IInspectable = typename Holo::IInspectable;
 	using VisibilityChangedEventArgs = typename Holo::VisibilityChangedEventArgs;
-	using CoreWindowEventArgs = typename Holo::CoreWindowEventArgs;
+	using GfxCoreWindowEventArgs = typename Holo::GfxCoreWindowEventArgs;
 	using PointerEventArgs = typename Holo::PointerEventArgs;
 	using KeyEventArgs = typename Holo::KeyEventArgs;
 	using NativeEventToken = typename Holo::NativeEventToken;
-	
+	*/
 	
     // IFrameworkView methods.
     void Initialize(const CoreApplicationView& app_view);
-    void SetWindow(const CoreWindow& window);
-    void Load(const NativeString& entry_point);
+    void SetWindow(const GfxCoreWindow& window);
+    void Load(const String& entry_point);
     void Run();
     void Uninitialize();
 
 protected:
     // Application lifecycle event handlers.
     void OnLaunched(const LaunchActivatedEventArgs& args);
-    void OnViewActivated(const CoreApplicationView& sender, const IActivatedEventArgs& args);
-    void OnSuspending(const IInspectable& sender, const SuspendingEventArgs& args);
-    void OnResuming(const IInspectable& sender, const IInspectable& args);
+    void OnViewActivated(const CoreApplicationView& sender, const ActivatedEventArgs& args);
+    void OnSuspending(const Inspectable& sender, const SuspendingEventArgs& args);
+    void OnResuming(const Inspectable& sender, const Inspectable& args);
 
     // Window event handlers.
-    void OnVisibilityChanged(const CoreWindow& sender, const VisibilityChangedEventArgs& args);
-    void OnWindowClosed(const CoreWindow& sender, const CoreWindowEventArgs& args);
+    void OnVisibilityChanged(const GfxCoreWindow& sender, const VisibilityChangedEventArgs& args);
+    void OnWindowClosed(const GfxCoreWindow& sender, const GfxCoreWindowEventArgs& args);
 
-    // CoreWindow input event handlers.
-    void OnKeyPressed(const CoreWindow& sender, const KeyEventArgs& args);
-    void OnPointerPressed(const CoreWindow& sender, const PointerEventArgs& args);
+    // GfxCoreWindow input event handlers.
+    void OnKeyPressed(const GfxCoreWindow& sender, const KeyEventArgs& args);
+    void OnPointerPressed(const GfxCoreWindow& sender, const PointerEventArgs& args);
 
 private:
     //One<DemoRoomMain>					main;
@@ -61,21 +60,19 @@ private:
     NativeEventToken					visibility_changed_event;
 
     // The holographic space the app will use for rendering.
-    HoloSpace							holospace = 0;
+    HolographicSpace*					holospace = 0;
     
 };
 
-template <class Holo>
-class AppViewSourceT : public Holo::template AppViewSourceBase<AppViewSourceT<Holo>> {
+class AppViewSource /*: public Holo::template AppViewSourceBase<AppViewSource>*/ {
 	
 public:
-	using IFrameworkView = typename Holo::IFrameworkView;
 	
     // IFrameworkViewSource method.
-    IFrameworkView CreateView();
+    FrameworkView CreateView();
 
 private:
-    AppViewT<Holo> holographic_view;
+    AppView holographic_view;
     
 };
 

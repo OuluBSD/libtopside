@@ -70,7 +70,6 @@ struct DataBuffer {
 	void Clear() {}
 };
 struct GfxContext {};
-struct GfxDevice {};
 struct SpatialSourceState {};
 struct InputLayout {};
 struct VertexShader {};

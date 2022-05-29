@@ -4,34 +4,61 @@
 
 NAMESPACE_ECS_BEGIN
 
+void PaintStrokeComponent::Initialize(){
+	Engine& e = GetEngine();
+	Ref<PaintStrokeSystem> sys = e.Get<PaintStrokeSystem>();
+	sys->Attach(this);
+}
 
+void PaintStrokeComponent::Uninitialize() {
+	Engine& e = GetEngine();
+	Ref<PaintStrokeSystem> sys = e.Get<PaintStrokeSystem>();
+	sys->Detach(this);
+}
+
+
+
+
+void PaintStrokeSystem::Attach(PaintStrokeComponent* comp) {
+	comps.Add(comp);
+}
+
+void PaintStrokeSystem::Detach(PaintStrokeComponent* comp) {
+	VectorRemoveKey(comps, comp);
+}
+
+bool PaintStrokeSystem::Initialize() {
+	RenderingSystemRef rs = GetEngine().Get<RenderingSystem>();
+	if (!rs)
+		return false;
+	
+	this->pbr_res = &rs->pbr_res;
+	
+	return true;
+}
 
 void PaintStrokeSystem::Update(double) {
-	TODO
-#if 0
-	
-	for (auto& comp_set : GetEngine().Get<EntityStore>()->GetComponents<PaintStrokeComponent, PbrRenderable>()) {
-		auto[paint_stroke, pbr] = comp_set;
+	for (PaintStrokeComponent* paint_stroke : comps) {
+		PbrRenderableRef pbr = paint_stroke->GetEntity()->Get<PbrRenderable>();
 		
 		if (paint_stroke->stroke_changed) {
-			Shared<Pbr::Material> stroke_material = Pbr::Material::CreateFlat(
-			        *pbr_res,
-			        *pbr->Color /* base color */,
-			        0.95f /* roughness */);
-			// Load the primitive into D3D buffers with associated materia.
-			Pbr::Primitive stroke_primitive(*pbr_res, paint_stroke->GetPrimitiveData(), std::move(stroke_material));
-			
-			// Add the primitive into the model.
-			if (auto& model = pbr->Model) {
-				model->Clear();
-				model->AddPrimitive(stroke_primitive);
+			if (pbr->model) {
+				// Add the primitive into the model.
+				pbr->model->Clear();
+				pbr->model.Create();
+				Pbr::Primitive& stroke_primitive = pbr->model->AddPrimitive();
+				Pbr::Material& stroke_material = pbr_res->AddMaterial();
+				
+				stroke_primitive.SetMaterial(stroke_material);
+				
+				stroke_material.SetFlat(*pbr->color /* base color */,
+								        0.95f /* roughness */);
+				
 			}
 			
 			paint_stroke->stroke_changed = false;
 		}
 	}
-	
-#endif
 }
 
 void PaintStrokeComponent::AddPoint(const mat4& transformation, float width) {

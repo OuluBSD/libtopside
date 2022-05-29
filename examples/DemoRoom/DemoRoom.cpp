@@ -67,7 +67,7 @@ void DemoRoomStartup() {
         Pbr::Model& sphere_model = pbr_model_cache->AddModel(KnownModelNames::UnitSphere);
         Pbr::Primitive& sphere_prim = sphere_model.AddPrimitive();
         Pbr::Material& mat = pbr_res.AddMaterial();
-        sphere_prim.SetMaterial(&mat);
+        sphere_prim.SetMaterial(mat);
         mat.SetFlat(Colors::White, 0.15f);
         Pbr::PrimitiveBuilder().CreateSphere(sphere_prim, 1.0f, 3);
     }
@@ -77,7 +77,7 @@ void DemoRoomStartup() {
         Pbr::Model& cube_model = pbr_model_cache->AddModel(KnownModelNames::UnitCube);
         Pbr::Primitive& cube_prim = cube_model.AddPrimitive();
         Pbr::Material& mat = pbr_res.AddMaterial();
-        cube_prim.SetMaterial(&mat);
+        cube_prim.SetMaterial(mat);
         mat.SetFlat(Colors::White, 0.15f);
         Pbr::PrimitiveBuilder().CreateCube(cube_prim, 1.0f);
     }

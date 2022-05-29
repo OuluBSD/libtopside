@@ -82,8 +82,6 @@ void ToolboxSystem::Stop() {
 }
 
 void ToolboxSystem::Update(double dt) {
-	TODO // override funcs
-	
 	static const int fps_sz = 32;
 	static float fps[fps_sz] = {};
 	static uint32 curr_fps = 0;
@@ -205,8 +203,8 @@ String ToolboxSystem::ControllerHandToString(ControllerHand hand) {
 	return hand == Left ? "Left" : "Right";
 }
 
-SpatialSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
-	return hand == Left ? SpatialSourceHandedness::Left : SpatialSourceHandedness::Right;
+SpatialInteractionSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
+	return hand == Left ? SpatialInteractionSourceHandedness::Left : SpatialInteractionSourceHandedness::Right;
 }
 
 void ToolboxSystem::SwitchToolType(EntityRef entity, const TypeId& new_type) {

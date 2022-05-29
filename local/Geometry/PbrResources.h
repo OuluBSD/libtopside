@@ -24,7 +24,7 @@ struct Resources : RTTIBase
 	*/
 	
 	Resources(){}
-    explicit Resources(GfxDevice& dev);
+    //explicit Resources(GfxDevice& dev);
 	
  /*	// Sets the Bidirectional Reflectance Distribution Function Lookup Table texture, required by the shader to compute surface reflectance from the IBL.
     void SetBrdfLut(ShaderResources& brdf_lut);
@@ -60,6 +60,8 @@ struct Resources : RTTIBase
 	Pbr::Material& AddMaterial();
 	Pbr::SamplerState& AddSampler();
 	Pbr::Texture& AddTexture();
+	
+	void RemoveMaterial(Pbr::Material* mat);
 	
 private:
     //struct Impl;

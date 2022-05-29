@@ -59,8 +59,10 @@ struct Model
 	using GfxContext& = typename Gfx::GfxContext&;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;*/
 	
-    Model(bool create_root_node = true);
-
+    Model(bool create_root_node = false);
+	
+	void CreateRootNode();
+	
     // Add a node to the model.
     Node& AddNode(const mat4& transform, NodeIndex parent_index, String name);
 
@@ -70,13 +72,13 @@ struct Model
     Primitive& AddPrimitive(Primitive* p);
 
     // Render the model.
-    void Render(const Resources& pbr_res, GfxContext& context) const;
+    void Render(const Resources& pbr_res/*, GfxContext& context*/) const;
 
     // Remove all primitives.
     void Clear();
 
     // Create a clone of this model.
-    Shared<Model> Clone(Resources const& pbr_res) const;
+    void Copy(const Resources& pbr_res, Model& dst) const;
 
     NodeIndex GetNodeCount() const { return (NodeIndex)nodes.GetCount(); }
     Node& GetNode(NodeIndex node_idx) { return nodes[node_idx]; }

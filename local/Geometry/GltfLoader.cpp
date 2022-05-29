@@ -230,7 +230,7 @@ bool FromGltfObject(
 		int a = prim_builder_map.GetKey(0);
         Pbr::Primitive* prim = prim_builder_map.Detach(0);
         Pbr::Material* material = material_map[a];
-        prim->SetMaterial(material);
+        prim->SetMaterial(*material);
         model.AddPrimitive(prim);
         //prim->Set(pbr_res, prim_builder, *material);
     }

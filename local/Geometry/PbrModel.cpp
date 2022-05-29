@@ -21,13 +21,15 @@ Node::Node() {
 Model::Model(bool create_root_node /*= true*/)
 {
     if (create_root_node)
-    {
-        AddNode(identity<mat4>(), root_parent_node_index, "root");
-    }
+		CreateRootNode();
 }
 
+void Model::CreateRootNode() {
+	ASSERT(nodes.IsEmpty());
+	AddNode(identity<mat4>(), root_parent_node_index, "root");
+}
 
-void Model::Render(Resources const& pbr_res, GfxContext& context) const
+void Model::Render(Resources const& pbr_res/*, GfxContext& context*/) const
 {
 	TODO
 	/*
@@ -71,22 +73,15 @@ void Model::Clear()
 }
 
 
-Shared<Model> Model::Clone(Resources const& pbr_res) const
+void Model::Copy(const Resources& pbr_res, Model& dst) const
 {
-	TODO
-	#if 0
-    auto clone = MakeShared<Model>(false /* create_root_node */);
-
     for (const Node& node : nodes) {
-        clone->AddNode(node.GetTransform(), node.parent_node_index, node.name);
+        dst.AddNode(node.GetTransform(), node.parent_node_index, node.name);
     }
 
     for (const Primitive& primitive : primitives) {
-        clone->AddPrimitive(primitive.Clone(pbr_res));
+        primitive.Copy(pbr_res, dst.AddPrimitive());
     }
-
-    return clone;
-    #endif
 }
 
 

@@ -6,8 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 
-template <class Holo>
-SkyboxRendererT<Holo>::SkyboxRenderer(
+SkyboxRenderer::SkyboxRenderer(
     Shared<GfxDevResources> dev_resources,
     NativeShaderResourceViewRef skybox_tex) :
     dev_res(std::move(dev_resources)),
@@ -16,14 +15,12 @@ SkyboxRendererT<Holo>::SkyboxRenderer(
     CreateDeviceDependentResources();
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::SetTexture(NativeShaderResourceViewRef skybox_tex)
+void SkyboxRenderer::SetTexture(NativeShaderResourceViewRef skybox_tex)
 {
     this->skybox_tex = skybox_tex;
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::SetViewProjection(
+void SkyboxRenderer::SetViewProjection(
     const mat4& camera_to_view_left,
     const mat4& view_to_proj_left,
     const mat4& camera_to_view_right,
@@ -40,8 +37,7 @@ void SkyboxRendererT<Holo>::SetViewProjection(
     dev_res->GetD3DDeviceContext()->UpdateSubresource(constant_buffer.Get(), 0, nullptr, &inv_view_projection, 0, 0);
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::CreateDeviceDependentResources()
+void SkyboxRenderer::CreateDeviceDependentResources()
 {
 	TODO
 	
@@ -124,8 +120,7 @@ void SkyboxRendererT<Holo>::CreateDeviceDependentResources()
     #endif
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::ReleaseDeviceDependentResources()
+void SkyboxRenderer::ReleaseDeviceDependentResources()
 {
     skybox_tex = nullptr;
     vertex_shader = nullptr;
@@ -138,8 +133,7 @@ void SkyboxRendererT<Holo>::ReleaseDeviceDependentResources()
     input_layout = nullptr;
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::Bind()
+void SkyboxRenderer::Bind()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
@@ -161,8 +155,7 @@ void SkyboxRendererT<Holo>::Bind()
     context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::Render()
+void SkyboxRenderer::Render()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
@@ -170,8 +163,7 @@ void SkyboxRendererT<Holo>::Render()
     context->DrawInstanced(6, 2, 0, 0);
 }
 
-template <class Holo>
-void SkyboxRendererT<Holo>::Unbind()
+void SkyboxRenderer::Unbind()
 {
     const auto context = dev_res->GetD3DDeviceContext();
 
