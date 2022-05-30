@@ -32,7 +32,9 @@ public:
 };
 
 
-class PbrModelCache : public System<PbrModelCache>
+class PbrModelCache :
+	public System<PbrModelCache>,
+	public HolographicScopeBinder
 {
 	
 public:
@@ -65,7 +67,7 @@ protected:
     void Uninitialize() override;
 
 private:
-    Pbr::Resources* pbr_res = 0;
+    //Pbr::Resources* pbr_res = 0;
     
     LinkedMap<String, Pbr::Model> model_map;
     

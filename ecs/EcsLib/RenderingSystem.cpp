@@ -107,16 +107,24 @@ void RenderingSystem::Update(double dt) {
 		SpaceStoreRef ents = mach.Get<SpaceStore>();
 		
 		#ifdef flagSCREEN
-		RefT_Atom<X11SwFboProg> fbo = ents->GetRoot()->FindDeep<X11SwFboProg>();
-		if (!state && fbo) {
-			state = &fbo->data.accel_state;
+		RefT_Atom<X11SwFboProg> x11_fbo = ents->GetRoot()->FindDeep<X11SwFboProg>();
+		if (!state && x11_fbo) {
+			state = &x11_fbo->data.accel_state;
 		}
 		#ifdef flagOGL
-		RefT_Atom<X11OglFboProg> ogl_fbo = ents->GetRoot()->FindDeep<X11OglFboProg>();
-		if (!state && ogl_fbo) {
-			state = &ogl_fbo->data.accel_state;
+		RefT_Atom<X11OglFboProg> x11_ogl_fbo = ents->GetRoot()->FindDeep<X11OglFboProg>();
+		if (!state && x11_ogl_fbo) {
+			state = &x11_ogl_fbo->data.accel_state;
 		}
 		#endif
+		#endif
+		#ifdef flagVR
+		/*#ifdef flagOGL
+		RefT_Atom<X11OglHoloFboProg> x11_holo_ogl_fbo = ents->GetRoot()->FindDeep<X11OglHoloFboProg>();
+		if (!state && x11_holo_ogl_fbo) {
+			state = &x11_holo_ogl_fbo->data.accel_state;
+		}
+		#endif*/
 		#endif
 		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
 		if (!state) TODO

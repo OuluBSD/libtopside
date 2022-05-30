@@ -77,13 +77,13 @@ public:
 };
 
 
-class HolographicRenderer :
-	public System<HolographicRenderer>
+class HolographicRenderingSystem :
+	public System<HolographicRenderingSystem>
 {
 	
 public:
-	SYS_RTTI(HolographicRenderer)
-	ECS_SYS_CTOR(HolographicRenderer);
+	SYS_RTTI(HolographicRenderingSystem)
+	ECS_SYS_CTOR(HolographicRenderingSystem);
 	SYS_DEF_VISIT
 	
 };

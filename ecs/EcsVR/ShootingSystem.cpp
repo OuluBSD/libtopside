@@ -24,6 +24,7 @@ EntityRef ShootingInteractionSystem::CreateToolSelector() const {
 void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) {
 	ASSERT(!entities.IsEmpty());
 	ToolSystem::Register(std::move(entities));
+	
 	// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
 	// In this scenario, we need to generate two transforms.
 	// First transform is used to align the 3D model with the physical MotionController: model_to_controller
@@ -33,6 +34,7 @@ void ShootingInteractionSystem::Register(const LinkedList<EntityRef>& entities) 
 	const mat4 model_to_controller_rotation = make_mat4_from_yaw_pitch_roll(ConvertToRadians(180), ConvertToRadians(70), 0.0f);
 	const mat4 model_to_controller_translation = make_mat4_translation(vec3(0, 0.05f, 0.0f));
 	const mat4 model_to_controller = model_to_controller_rotation * model_to_controller_translation;
+	
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
 	const mat4 barrel_to_ctrl = translate(vec3(0.0f, 0.0675f, -0.22f)) * make_mat4_rotation_x(ConvertToRadians(-70));
 	

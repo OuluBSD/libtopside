@@ -9,7 +9,7 @@
 #include "MotionController.h"
 #include "Pbr.h"
 #include "HolographicScene.h"
-#include "HolographicRenderer.h"
+#include "HolographicRenderingSystem.h"
 #include "Math.h"
 #include "StepTimer.h"
 #include "DeviceResources.h"

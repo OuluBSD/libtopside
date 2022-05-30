@@ -36,6 +36,7 @@ BASE(X11OglSinkDevice)
 BASE(X11SwSinkDevice)
 BASE(X11SwFboBase)
 BASE(X11OglFboBase)
+BASE(X11OglHoloFboBase)
 
 BASE(X11SwShaderBase)
 BASE(X11OglShaderBase)

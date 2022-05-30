@@ -28,11 +28,8 @@ void PaintStrokeSystem::Detach(PaintStrokeComponent* comp) {
 }
 
 bool PaintStrokeSystem::Initialize() {
-	RenderingSystemRef rs = GetEngine().Get<RenderingSystem>();
-	if (!rs)
+	if (!HolographicScopeBinder::Initialize())
 		return false;
-	
-	this->pbr_res = &rs->pbr_res;
 	
 	return true;
 }
@@ -47,7 +44,7 @@ void PaintStrokeSystem::Update(double) {
 				pbr->model->Clear();
 				pbr->model.Create();
 				Pbr::Primitive& stroke_primitive = pbr->model->AddPrimitive();
-				Pbr::Material& stroke_material = pbr_res->AddMaterial();
+				Pbr::Material& stroke_material = s->pbr_res.AddMaterial();
 				
 				stroke_primitive.SetMaterial(stroke_material);
 				

@@ -1,0 +1,41 @@
+#include "AtomVR.h"
+
+NAMESPACE_UPP
+
+
+INITBLOCK_(AtomVR) {
+	using namespace TS::Parallel;
+	using namespace TS::Serial;
+	using namespace TS;
+	
+	#ifdef flagFFMPEG
+		#ifdef flagVR
+		#endif
+	#endif
+	
+	#ifdef flagSDL2
+	#endif
+	
+	#ifdef flagOPENCV
+	#endif
+	
+	#if defined flagVR
+		
+		#ifdef flagOGL
+		#endif
+		
+		
+		#if defined flagPOSIX
+			#ifdef flagOGL
+				Factory::RegisterAtom<X11OglHoloFboProg>();
+			#endif
+		#endif
+		
+		#ifdef flagSDL2
+			#ifdef flagOGL
+			#endif
+		#endif
+	#endif
+}
+
+END_UPP_NAMESPACE

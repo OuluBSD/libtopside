@@ -27,4 +27,55 @@ bool SpatialInteractionAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, i
 }
 
 
+
+
+
+
+
+HolographicScope& GetGlobalHolographicScope(int idx) {
+	static const int count = 1;
+	static HolographicScope scopes[count];
+	if (idx >= 0 && idx < count)
+		return scopes[idx];
+	Panic("Invalid holographic scope index");
+	NEVER();
+}
+
+
+template <class Gfx>
+bool HolographicFboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
+	if (!FboAtomT<Gfx>::Initialize(ws))
+		return false;
+	
+	
+	
+	
+	return true;
+}
+
+template <class Gfx>
+bool HolographicFboAtomT<Gfx>::PostInitialize() {
+	if (!FboAtomT<Gfx>::PostInitialize())
+		return false;
+	
+	
+	return true;
+}
+
+template <class Gfx>
+void HolographicFboAtomT<Gfx>::Uninitialize() {
+	FboAtomT<Gfx>::Uninitialize();
+		
+	
+}
+
+/*
+
+TODO
+dev_res.DeviceNotify::OnDeviceLost()
+dev_res.DeviceNotify::OnDeviceRestored()
+*/
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(HolographicFboAtomT)
+
+
 NAMESPACE_PARALLEL_END

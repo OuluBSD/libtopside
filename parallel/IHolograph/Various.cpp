@@ -3,10 +3,10 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-Callback VirtualRoomAnchor::WhenActiveChanged;
+Callback SpatialStageFrameOfReference::WhenActiveChanged;
 
 
-VirtualRoomAnchor::VirtualRoomAnchor() {
+SpatialStageFrameOfReference::SpatialStageFrameOfReference() {
 	
 	#ifdef flagDX11
 	dx11 = SpatialStageFrameOfReference::Current();
@@ -18,19 +18,19 @@ VirtualRoomAnchor::VirtualRoomAnchor() {
 	
 }
 
-void VirtualRoomAnchor::Clear() {
+void SpatialStageFrameOfReference::Clear() {
 	
 }
 
-SpatialCoordinateSystem& VirtualRoomAnchor::GetCoordinateSystem() const {
+SpatialCoordinateSystem& SpatialStageFrameOfReference::GetCoordinateSystem() const {
 	return *sys;
 }
 
 
 
-MAKE_STATIC(VirtualRoomAnchor, __def_vr_anchor);
+MAKE_STATIC(SpatialStageFrameOfReference, __def_vr_anchor);
 
-VirtualRoomAnchor* GetActiveVirtualRoomAnchor() {
+SpatialStageFrameOfReference* GetActiveSpatialStageFrameOfReference() {
 	return &__def_vr_anchor;
 }
 
@@ -130,10 +130,9 @@ void HolographicFrame::UpdateCurrentPrediction() {
 
 
 
-HolographicFrame HolographicSpace::CreateNextFrame() {
-	HolographicFrame f;
+void HolographicSpace::CreateNextFrame() {
 	
-	return f;
+	
 }
 
 

@@ -30,7 +30,7 @@ void DemoRoomInit() {
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
 	
-	e.GetAdd<RenderingSystem>();
+	ASSERT(!e.TryGet<RenderingSystem>());
     e.GetAdd<EntityStore>();
     e.GetAdd<ComponentStore>();
     e.GetAdd<HolographicScene>();//->SetResources(holospace);
@@ -48,7 +48,7 @@ void DemoRoomInit() {
     e.GetAdd<ThrowingInteractionSystem>();
 	
     e.GetAdd<PaintStrokeSystem>();//->SetResources(pbr_res);
-    e.GetAdd<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
+    e.GetAdd<HolographicRenderingSystem>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
 	
 }
 
@@ -56,8 +56,8 @@ void DemoRoomStartup() {
 	using namespace Ecs;
 	
 	Ecs::Engine& e = GetActiveEngine();
-	RenderingSystemRef rs = e.Get<RenderingSystem>();
-	Pbr::Resources& pbr_res = rs->pbr_res;
+	HolographicRenderingSystemRef rs = e.Get<HolographicRenderingSystem>();
+	Pbr::Resources& pbr_res = rs->GetScope().pbr_res;
 	
     // Seed model cache
     auto pbr_model_cache = e.Get<PbrModelCache>();
@@ -153,7 +153,7 @@ NAMESPACE_TOPSIDE_END
 
 
 
-DEFAULT_ECS_SHELL_EON("DemoRoom", "tests/07c_ecs_ogl.eon")
+DEFAULT_ECS_SHELL_EON("DemoRoom", "demo_room.eon")
 ECS_INITIALIZE_STARTUP__(DemoRoom, DemoRoomInit, DemoRoomStartup)
 
 

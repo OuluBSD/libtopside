@@ -23,7 +23,9 @@ using SpatialInteractionListenerRef = Ref<SpatialInteractionListener, RefParent1
 
 // SpatialInteractionSystem
 // Manages events from SpatialInteractionManager with additional filtering
-class SpatialInteractionSystem final : public Ecs::System<SpatialInteractionSystem>
+class SpatialInteractionSystem final :
+	public Ecs::System<SpatialInteractionSystem>,
+	public HolographicScopeBinder
 {
 public:
 	ECS_SYS_CTOR(SpatialInteractionSystem)
@@ -44,14 +46,8 @@ public:
         spatial_interaction_listeners.Remove(listener);
     }
 
-    SpatialInteractionManager& GetInteractionManager()
-    {
-        //ASSERT(spatial_interaction_manager);
-        //return *spatial_interaction_manager;
-        return spatial_interaction_manager;
-    }
-	
-	const SpatialInteractionManager& GetInteractionManager() const {return spatial_interaction_manager;}
+    //SpatialInteractionManager& GetInteractionManager() {ASSERT(spatial_interaction_manager); return *spatial_interaction_manager;}
+	//const SpatialInteractionManager& GetInteractionManager() const {ASSERT(spatial_interaction_manager); return *spatial_interaction_manager;}
 	
 protected:
     bool Initialize() override;
@@ -60,9 +56,8 @@ protected:
 
 private:
     Array<SpatialInteractionListenerRef> spatial_interaction_listeners;
-    
     //SpatialInteractionManager* spatial_interaction_manager = 0;
-    SpatialInteractionManager spatial_interaction_manager;
+    
     
     void BindEventHandlers();
     

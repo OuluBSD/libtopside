@@ -24,7 +24,7 @@ using PredictionUpdateListenerRef = Ref<PredictionUpdateListener, RefParent1<Ecs
 // HolographicScene
 // Maintains a list of our current state of Windows::Perception objects, ensuring the rest of the systems
 // use the same coordinate system, timestamp, etc.
-class HolographicScene : public Ecs::System<HolographicScene>
+class HolographicScene : public Ecs::System<HolographicScene>, public HolographicScopeBinder
 {
 public:
 	/*using HolographicSpace = typename Holo::HolographicSpace;
@@ -40,11 +40,11 @@ public:
 	
     //HolographicScene(Ecs::Engine& core, HolographicSpace holospace);
 
-    const HolographicFrame& GetCurrentFrame() const {return current_frame;}
-    HolographicFrame& GetCurrentFrame() {return current_frame;}
+    /*const HolographicFrame& GetCurrentFrame() const {ASSERT(s); return s->current_frame;}
+    HolographicFrame& GetCurrentFrame() {ASSERT(s); return s->current_frame;}
     
-    const HolographicSpace& GetHolographicSpace() const {return holospace;}
-    HolographicSpace& GetHolographicSpace() {return holospace;}
+    const HolographicSpace& GetHolographicSpace() const {ASSERT(s); return s->holospace;}
+    HolographicSpace& GetHolographicSpace() {ASSERT(s); return s->holospace;}*/
 
     SpatialCoordinateSystem& GetWorldCoordinateSystem() const;
     /*PerceptionTimestamp CurrentTimestamp() const;*/
@@ -66,13 +66,13 @@ protected:
 private:
     mutable Mutex						lock;
     
-    VirtualRoomAnchor*					vr_room_anchor = 0;
-    SpatialLocator				stationary_frame_of_reference;
+    SpatialStageFrameOfReference*		vr_room_anchor = 0;
+    SpatialLocator						stationary_frame_of_reference;
     
     //NativeEventToken					spatial_stage_current_changed;
-
-    HolographicSpace					holospace;
-    HolographicFrame					current_frame;
+	
+    /*HolographicSpace*					holospace = 0;
+    HolographicFrame*					current_frame = 0;*/
 	
 	
     Array<PredictionUpdateListenerRef>	prediction_update_listeners;

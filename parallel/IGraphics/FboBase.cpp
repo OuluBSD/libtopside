@@ -203,6 +203,7 @@ bool FboAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 	}
 	else
 	#endif
+	 
 	if (src_type == VD(CENTER,FBO) ||
 		src_type == VD(OGL,FBO)) {
 		/*Format fmt = io.src[src_ch].val->GetFormat();

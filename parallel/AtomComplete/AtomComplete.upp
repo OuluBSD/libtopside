@@ -10,6 +10,8 @@ uses
 	ISynth,
 	AtomLocal;
 
+uses(VR) AtomVR;
+
 uses(GUI) AtomCtrl;
 
 file

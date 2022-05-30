@@ -13,21 +13,24 @@ NAMESPACE_ECS_BEGIN
 
 bool HolographicScene::Initialize()
 {
-	vr_room_anchor = GetActiveVirtualRoomAnchor();
+	if (!HolographicScopeBinder::Initialize())
+		return false;
+	
+	vr_room_anchor = GetActiveSpatialStageFrameOfReference();
 	
     // Create a fallback frame of reference 1.5 meters under the HMD when we start-up
     stationary_frame_of_reference =
 		GetActiveSpatialLocator()
 			.GetRelative(vec3{0.0f, -1.5f, 0.0f});
 	
-	VirtualRoomAnchor::WhenActiveChanged << THISBACK(OnCurrentStageChanged);
+	SpatialStageFrameOfReference::WhenActiveChanged << THISBACK(OnCurrentStageChanged);
 	
 	return true;
 }
 
 void HolographicScene::Update(double dt)
 {
-    current_frame = holospace.CreateNextFrame();
+    s->holospace.CreateNextFrame();
 
     OnPredictionChanged(PredictionUpdateReason::HolographicSpaceCreateNextFrame);
 }
@@ -35,7 +38,7 @@ void HolographicScene::Update(double dt)
 void HolographicScene::Uninitialize()
 {
 	TODO
-    /*VirtualRoomAnchor::WhenActiveChanged.RemoveThis(this); //SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
+    /*SpatialStageFrameOfReference::WhenActiveChanged.RemoveThis(this); //SpatialStageFrameOfReference::CurrentChanged(spatial_stage_current_changed);
 
     current_frame = nullptr;
     stationary_frame_of_reference = nullptr;
@@ -44,7 +47,7 @@ void HolographicScene::Uninitialize()
 
 void HolographicScene::UpdateCurrentPrediction()
 {
-	current_frame.UpdateCurrentPrediction();
+	s->current_frame.UpdateCurrentPrediction();
 
     OnPredictionChanged(PredictionUpdateReason::HolographicFrameUpdatePrediction);
 }
@@ -52,12 +55,12 @@ void HolographicScene::UpdateCurrentPrediction()
 void HolographicScene::OnCurrentStageChanged()
 {
     Mutex::Lock lock(this->lock);
-    vr_room_anchor = GetActiveVirtualRoomAnchor();
+    vr_room_anchor = GetActiveSpatialStageFrameOfReference();
 }
 
 void HolographicScene::OnPredictionChanged(PredictionUpdateReason reason)
 {
-    const HolographicFramePrediction& prediction = current_frame.GetCurrentPrediction();
+    const HolographicFramePrediction& prediction = s->current_frame.GetCurrentPrediction();
     const SpatialCoordinateSystem& coord_system = GetWorldCoordinateSystem();
 
     for (PredictionUpdateListenerRef& listener : prediction_update_listeners) {

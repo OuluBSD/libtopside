@@ -1,0 +1,12 @@
+description "\377B113,42,150";
+
+uses
+	AtomMinimal,
+	IHolograph;
+
+file
+	AtomVR.h,
+	Init.icpp,
+	Generated.h,
+	Generated.cpp;
+

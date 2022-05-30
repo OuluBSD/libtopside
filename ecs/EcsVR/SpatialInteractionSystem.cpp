@@ -7,6 +7,9 @@ NAMESPACE_ECS_BEGIN
 
 bool SpatialInteractionSystem::Initialize()
 {
+	if (!HolographicScopeBinder::Initialize())
+		return false;
+	
     return true;
 }
 
@@ -31,11 +34,11 @@ void SpatialInteractionSystem::BindEventHandlers()
 {
 	//ASSERT(spatial_interaction_manager);
 
-    spatial_interaction_manager.WhenSourceDetected.Add(THISBACK(HandleSourceDetected));
-    spatial_interaction_manager.WhenSourcePressed.Add(THISBACK(HandleSourcePressed));
-    spatial_interaction_manager.WhenSourceUpdated.Add(THISBACK(HandleSourceUpdated));
-    spatial_interaction_manager.WhenSourceReleased.Add(THISBACK(HandleSourceReleased));
-    spatial_interaction_manager.WhenSourceLost.Add(THISBACK(HandleSourceLost));
+    s->spatial_interaction_manager.WhenSourceDetected.Add(THISBACK(HandleSourceDetected));
+    s->spatial_interaction_manager.WhenSourcePressed.Add(THISBACK(HandleSourcePressed));
+    s->spatial_interaction_manager.WhenSourceUpdated.Add(THISBACK(HandleSourceUpdated));
+    s->spatial_interaction_manager.WhenSourceReleased.Add(THISBACK(HandleSourceReleased));
+    s->spatial_interaction_manager.WhenSourceLost.Add(THISBACK(HandleSourceLost));
     
 }
 
@@ -43,11 +46,11 @@ void SpatialInteractionSystem::ReleaseEventHandlers()
 {
     //ASSERT(spatial_interaction_manager);
 
-    spatial_interaction_manager.WhenSourceLost.RemoveThis(this);
-    spatial_interaction_manager.WhenSourceReleased.RemoveThis(this);
-    spatial_interaction_manager.WhenSourceUpdated.RemoveThis(this);
-    spatial_interaction_manager.WhenSourcePressed.RemoveThis(this);
-    spatial_interaction_manager.WhenSourceDetected.RemoveThis(this);
+    s->spatial_interaction_manager.WhenSourceLost.RemoveThis(this);
+    s->spatial_interaction_manager.WhenSourceReleased.RemoveThis(this);
+    s->spatial_interaction_manager.WhenSourceUpdated.RemoveThis(this);
+    s->spatial_interaction_manager.WhenSourcePressed.RemoveThis(this);
+    s->spatial_interaction_manager.WhenSourceDetected.RemoveThis(this);
 }
 
 void SpatialInteractionSystem::HandleSourceDetected(

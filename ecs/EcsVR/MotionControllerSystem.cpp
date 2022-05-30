@@ -43,7 +43,7 @@ Future<void> LoadAndCacheModel(
     auto pbr_model_cache = engine.Get<PbrModelCache>();
     if (!pbr_model_cache->ModelExists(ctrl_model_name.c_str()))
     {
-        const auto pbr_res = engine.Get<HolographicRenderer>()->GetPbrResources();
+        const auto pbr_res = engine.Get<HolographicRenderingSystem>()->GetPbrResources();
 
         TODO //const auto model = co_await ControllerRenderingT<Holo>::TryLoadRenderModelAsync(pbr_res, source);
 
@@ -71,6 +71,20 @@ void MotionControllerSystem::Detach(MotionControllerComponent* comp) {
 }
 
 
+bool MotionControllerSystem::Initialize()
+{
+	if (!HolographicScopeBinder::Initialize())
+		return false;
+	
+	return true;
+}
+
+
+void MotionControllerSystem::Uninitialize()
+{
+	HolographicScopeBinder::Uninitialize();
+}
+
 void MotionControllerSystem::Start()
 {
 	Engine& e = GetEngine();
@@ -87,7 +101,7 @@ void MotionControllerSystem::OnPredictionUpdated(
 	Engine& e = GetEngine();
 	
     // Update the positions of the controllers based on the current timestamp.
-    for (auto& src_state : e.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.GetTimestamp()))
+    for (auto& src_state : s->spatial_interaction_manager.GetDetectedSourcesAtTimestamp(prediction.GetTimestamp()))
     {
         for (MotionControllerComponent* controller : comps) {
             TransformRef transform = controller->GetEntity()->Find<Transform>();

@@ -6,6 +6,8 @@ uses
 
 file
 	EcsVR.h,
+	AtomBinder.h,
+	AtomBinder.cpp,
 	HolographicScene.h,
 	HolographicScene.cpp,
 	SpatialInteractionSystem.h,

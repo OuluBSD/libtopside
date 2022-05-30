@@ -20,11 +20,8 @@ void PbrRenderable::Uninitialize() {
 
 
 bool PbrModelCache::Initialize() {
-	RenderingSystemRef rs = GetEngine().Get<RenderingSystem>();
-	if (!rs)
+	if (!HolographicScopeBinder::Initialize())
 		return false;
-	
-	this->pbr_res = &rs->pbr_res;
 	
 	return true;
 }
@@ -65,7 +62,7 @@ void PbrModelCache::SetModel(String name, PbrRenderable& dst) {
 		
 		// Each instance gets its own copy of the model data (the heavyweight model data is immutable and reference counted).
 		dst.model.Create();
-		src.Copy(*pbr_res, *dst.model);
+		src.Copy(s->pbr_res, *dst.model);
 		LOG("Model " << dst.model_name << " successfully attached to Entity [Deferred]");
 	}
 }

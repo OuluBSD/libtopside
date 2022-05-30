@@ -14,12 +14,13 @@ using HolographicSceneRef = Ref<HolographicScene, RefParent1<Engine>>;
 using PbrModelCacheRef = Ref<PbrModelCache, RefParent1<Engine>>;
 
 
-// HolographicRenderer
+// HolographicRenderingSystem
 // A stereoscopic 3D rendering system, manages rendering everything in the scene
 // through DirectX 11 and Windows::Perception APIs
-class HolographicRenderer :
-	public System<HolographicRenderer>/*,
-	public Holo::GfxDeviceNotify*/
+class HolographicRenderingSystem :
+	public System<HolographicRenderingSystem>,
+	public HolographicScopeBinder,
+	public DeviceNotify
 {
 public:
 	/*using Resources = Pbr::ResourcesT<Holo>;
@@ -35,21 +36,21 @@ public:
 	using NativeEventToken = typename Holo::NativeEventToken;
 	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;*/
 	
-	ECS_SYS_CTOR(HolographicRenderer)
+	ECS_SYS_CTOR(HolographicRenderingSystem)
 	
-    /*HolographicRendererT(
+    /*HolographicRenderingSystemT(
         Ecs::Engine& core,
         Shared<GfxDevResources> dev_resources,
         Shared<Resources> pbr_res,
         NativeShaderResourceViewRef skybox_tex);
 
-    ~HolographicRendererT();
+    ~HolographicRenderingSystemT();
 
     Shared<Resources> GetPbrResources();
     Shared<GfxDevResources> GetDeviceResources();
-
+*/
     void OnDeviceLost() override;
-    void OnDeviceRestored() override;*/
+    void OnDeviceRestored() override;
 
 protected:
     bool Initialize() override;
@@ -62,17 +63,21 @@ protected:
     //void ReleaseEventHandlers(const HolographicSpace& holospace);
 
 private:
-    Ref<EntityStore>				entity_store;
-    PbrModelCacheRef				pbr_model_cache;
-    HolographicSceneRef				holo_scene;
-    DeviceResources					dev_res;
-    Pbr::Resources*					pbr_res = 0;
-    One<QuadRenderer>				quad_rend;
-    One<SkyboxRenderer>				skybox_rend;
+    Ref<EntityStore>			entity_store;
+    PbrModelCacheRef			pbr_model_cache;
+    HolographicSceneRef			holo_scene;
+    
+    One<QuadRenderer>			quad_rend;
+    One<SkyboxRenderer>			skybox_rend;
+	GfxDataState*				state = 0;
+    
+    /*DeviceResources*			dev_res = 0;
+    Pbr::Resources*				pbr_res = 0;*/
+    
     /*
     ArrayMap<float, TextRenderer>	text_rend;
-    NativeEventToken				camera_added_event;
-    NativeEventToken				camera_removed_event;
+    NativeEventToken			camera_added_event;
+    NativeEventToken			camera_removed_event;
 	
     TextRenderer* GetTextRendererForFontSize(float font_size);
 	*/
@@ -97,6 +102,8 @@ private:
     
     
 };
+
+using HolographicRenderingSystemRef = Ref<HolographicRenderingSystem>;
 
 
 NAMESPACE_ECS_END

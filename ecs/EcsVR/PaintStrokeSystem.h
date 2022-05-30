@@ -27,7 +27,9 @@ public:
 
 
 class PaintStrokeSystem :
-	public System<PaintStrokeSystem> {
+	public System<PaintStrokeSystem>,
+	public HolographicScopeBinder
+{
 public:
 	SYS_RTTI(PaintStrokeSystem)
 	ECS_SYS_CTOR(PaintStrokeSystem);
@@ -46,7 +48,8 @@ protected:
 	
 private:
 	Vector<PaintStrokeComponent*> comps;
-    Pbr::Resources* pbr_res = 0;
+	
+    //Pbr::Resources* pbr_res = 0;
 	
 };
 

@@ -87,7 +87,7 @@ private:
     NativeVrCamLibRef						vr_camlib;
 
     // The holographic space provides a preferred DXGI adapter ID.
-    HolographicSpace								holospace;
+    HolographicSpace						holospace;
 
     // Properties of the graphics device currently in use.
     FeatureLevel							gfx_feature_level;

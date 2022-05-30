@@ -38,7 +38,8 @@ using MotionControllerComponentRef = Ref<MotionControllerComponent>;
 class MotionControllerSystem :
     public System<MotionControllerSystem>,
     public PredictionUpdateListener,
-    public SpatialInteractionListener
+    public SpatialInteractionListener,
+	public HolographicScopeBinder
 {
 	/*using IPredictionUpdateListener = IPredictionUpdateListenerT<Holo>;
 	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;
@@ -58,6 +59,8 @@ public:
 	
 protected:
     // System
+    bool Initialize() override;
+    void Uninitialize() override;
     void Start() override;
     void Stop() override;
 

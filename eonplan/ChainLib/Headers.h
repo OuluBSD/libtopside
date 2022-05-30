@@ -180,6 +180,13 @@ HEADER_LINK(		SdlOglShaderProg,	PIPE, PROCESS)
 
 
 
+HEADER11(			X11OglHoloFboProg,	X11OglHoloFboBase,			pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		X11OglHoloFboProg,	x11.ogl.holo.fbo.program)
+HEADER_ARG(			X11OglHoloFboProg,	HINT_PKG,					"AtomVR")
+HEADER_LINK(		X11OglHoloFboProg,	PIPE, PROCESS)
+HEADER_ARG(			X11OglHoloFboProg,	reqdef_flagVR,				1)
+HEADER_ARG(			X11OglHoloFboProg,	reqdef_flagOGL,				1)
+
 
 
 

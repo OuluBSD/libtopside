@@ -5,12 +5,12 @@ NAMESPACE_ECS_BEGIN
 
 
 /*
-HolographicRenderer::HolographicRendererT(
+HolographicRenderingSystem::HolographicRenderingSystemT(
     Engine& core,
     Shared<GfxDevResources> dev_resources,
     Shared<Pbr::Resources> pbr_res,
     NativeShaderResourceViewRef skybox_tex) :
-    System<HolographicRenderer>(core),
+    System<HolographicRenderingSystem>(core),
     dev_res(std::move(dev_resources)),
     pbr_res(std::move(pbr_res))
 {
@@ -21,25 +21,26 @@ HolographicRenderer::HolographicRendererT(
 
 #if 0
 
-HolographicRenderer::~HolographicRenderer() = default;
+HolographicRenderingSystem::~HolographicRenderingSystem() = default;
 
 
 
-Shared<Pbr::Resources> HolographicRenderer::GetPbrResources()
+Shared<Pbr::Resources> HolographicRenderingSystem::GetPbrResources()
 {
     fail_fast_if(pbr_res == nullptr);
     return pbr_res;
 }
 
 
-Shared<typename Holo::GfxDevResources> HolographicRenderer::GetDeviceResources()
+Shared<typename Holo::GfxDevResources> HolographicRenderingSystem::GetDeviceResources()
 {
     fail_fast_if(dev_res == nullptr);
     return dev_res;
 }
 
+#endif
 
-void HolographicRenderer::OnDeviceLost()
+void HolographicRenderingSystem::OnDeviceLost()
 {
 	TODO
 	/*
@@ -54,7 +55,7 @@ void HolographicRenderer::OnDeviceLost()
 }
 
 
-void HolographicRenderer::OnDeviceRestored()
+void HolographicRenderingSystem::OnDeviceRestored()
 {
 	TODO
 	/*
@@ -68,48 +69,41 @@ void HolographicRenderer::OnDeviceRestored()
     */
 }
 
-#endif
-
-bool HolographicRenderer::Initialize()
+bool HolographicRenderingSystem::Initialize()
 {
-	LOG("HolographicRenderer::Initialize: TODO attach atom");
-    //dev_res->RegisterDeviceNotify(this);
-    //pbr_res->SetLight(vec4{ 0.0f, 0.707f, -0.707f }, Colors::White);
+	if (!HolographicScopeBinder::Initialize())
+		return false;
+	
+	s->dev_res.RegisterDeviceNotify(this);
+    s->pbr_res.SetLight(vec4{ 0.0f, 0.707f, -0.707f }, Colors::White);
     
     Engine& e = GetEngine();
     
     pbr_model_cache = e.Get<PbrModelCache>();
     
-	RenderingSystemRef rs = e.Get<RenderingSystem>();
-	if (!rs)
-		return false;
-	
-	this->pbr_res = &rs->pbr_res;
-	
 	return true;
 }
 
 
-void HolographicRenderer::Uninitialize()
+void HolographicRenderingSystem::Uninitialize()
 {
-	TODO
-	/*
-    dev_res->RegisterDeviceNotify(nullptr);
-    */
+	if (!s) return;
+	
+	s->dev_res.RegisterDeviceNotify(nullptr);
 }
 
 
-void HolographicRenderer::Start()
+void HolographicRenderingSystem::Start()
 {
 	Engine& e = GetEngine();
     entity_store = e.Get<EntityStore>();
     holo_scene = e.Get<HolographicScene>();
 
-    BindEventHandlers(holo_scene->GetHolographicSpace());
+    BindEventHandlers(s->holospace);
 }
 
 
-void HolographicRenderer::Stop()
+void HolographicRenderingSystem::Stop()
 {
 	TODO
 	/*
@@ -121,16 +115,35 @@ void HolographicRenderer::Stop()
 }
 
 
-void HolographicRenderer::Update(double dt)
+void HolographicRenderingSystem::Update(double dt)
 {
-    auto& holographic_frame = holo_scene->GetCurrentFrame();
+	//if (state.IsEmpty()) {
+	if (!state) {
+		Serial::Machine& mach = Serial::GetActiveMachine();
+		SpaceStoreRef ents = mach.Get<SpaceStore>();
+		
+		#ifdef flagVR
+		#ifdef flagOGL
+		RefT_Atom<X11OglHoloFboProg> x11_holo_ogl_fbo = ents->GetRoot()->FindDeep<X11OglHoloFboProg>();
+		if (!state && x11_holo_ogl_fbo) {
+			state = &x11_holo_ogl_fbo->data.accel_state;
+		}
+		#endif
+		#endif
+		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
+		if (!state) TODO
+	}
+	
+	
+	
+    auto& holographic_frame = s->current_frame;
 
-    dev_res.EnsureCameraResources(holographic_frame, holographic_frame.GetCurrentPrediction());
+    s->dev_res.EnsureCameraResources(holographic_frame, holographic_frame.GetCurrentPrediction());
 
-    const bool should_present = dev_res.UseHolographicCameraResources(
+    const bool should_present = s->dev_res.UseHolographicCameraResources(
         [this](ArrayMap<uint32, CameraResources>& camera_resource_map, bool& ret)
     {
-        auto& holographic_frame = holo_scene->GetCurrentFrame();
+        auto& holographic_frame = s->current_frame;
         
         // Up-to-date frame predictions enhance the effectiveness of image stablization and
         // allow more accurate positioning of holograms.
@@ -157,13 +170,13 @@ void HolographicRenderer::Update(double dt)
 
     if (should_present)
     {
-        dev_res.Present(holographic_frame);
+        s->dev_res.Present(holographic_frame);
     }
 }
 
 #if 0
 
-TextRenderer* HolographicRenderer::GetTextRendererForFontSize(float font_size)
+TextRenderer* HolographicRenderingSystem::GetTextRendererForFontSize(float font_size)
 {
 	TODO
     /*auto it = text_rend.find(font_size);
@@ -178,7 +191,7 @@ TextRenderer* HolographicRenderer::GetTextRendererForFontSize(float font_size)
 
 #endif
 
-bool HolographicRenderer::RenderAtCameraPose(
+bool HolographicRenderingSystem::RenderAtCameraPose(
     CameraResources *cam_resources,
     const SpatialCoordinateSystem& coord_system,
     const HolographicFramePrediction& prediction,
@@ -204,13 +217,13 @@ bool HolographicRenderer::RenderAtCameraPose(
     // every frame. This function will return false when positional tracking is lost.
     HolographicStereoTransform coord_system_to_view;
     HolographicStereoTransform view_to_projection;
-    bool cameraActive = cam_resources->GetViewProjectionTransform(dev_res, cam_pose, coord_system, &coord_system_to_view, &view_to_projection);
+    bool camera_active = cam_resources->GetViewProjectionTransform(s->dev_res, cam_pose, coord_system, &coord_system_to_view, &view_to_projection);
 
     // Only render world-locked content when positional tracking is active.
-    if (cameraActive) {
+    if (camera_active) {
         ////////////////////////////////////////////////////////////////////////////////
         // Pbr Rendering
-        pbr_res->SetViewProjection(
+        s->pbr_res.SetViewProjection(
             coord_system_to_view.left,
             coord_system_to_view.right,
             view_to_projection.left,
@@ -231,7 +244,7 @@ bool HolographicRenderer::RenderAtCameraPose(
                 }
 
                 pbr->model->GetNode(/*root_parent_node_index*/-1).SetTransform(transform_matrix);
-                pbr->model->Render(*pbr_res/*, dev_res.GetD3DDeviceContext()*/);
+                pbr->model->Render(s->pbr_res/*, dev_res.GetD3DDeviceContext()*/);
             }
         }
         
@@ -287,14 +300,14 @@ bool HolographicRenderer::RenderAtCameraPose(
     return true;
 }
 
-void HolographicRenderer::BindEventHandlers(HolographicSpace& holospace) {
+void HolographicRenderingSystem::BindEventHandlers(HolographicSpace& holospace) {
 	holospace.WhenCameraAdded.Add(THISBACK(OnCameraAdded));
     holospace.WhenCameraRemoved.Add(THISBACK(OnCameraRemoved));
 }
 
 #if 0
 
-void HolographicRenderer::ReleaseEventHandlers(
+void HolographicRenderingSystem::ReleaseEventHandlers(
     const HolographicSpace& holospace)
 {
     fail_fast_if(holospace == nullptr);
@@ -307,7 +320,7 @@ void HolographicRenderer::ReleaseEventHandlers(
 
 // Asynchronously creates resources for new holographic cameras.
 
-void HolographicRenderer::OnCameraAdded(
+void HolographicRenderingSystem::OnCameraAdded(
     const HolographicSpace& sender,
     CameraAddedEventArgs const& args)
 {
@@ -345,7 +358,7 @@ void HolographicRenderer::OnCameraAdded(
 // attached to the system.
 
 
-void HolographicRenderer::OnCameraRemoved(
+void HolographicRenderingSystem::OnCameraRemoved(
     const HolographicSpace& sender,
     CameraRemovedEventArgs const& args)
 {

@@ -106,13 +106,13 @@ struct SpatialCoordinateSystem {
 	
 };
 
-struct VirtualRoomAnchor : RTTIBase {
-	RTTI_DECL0(VirtualRoomAnchor)
+struct SpatialStageFrameOfReference : RTTIBase {
+	RTTI_DECL0(SpatialStageFrameOfReference)
 	
 	SpatialCoordinateSystem* sys = 0;
 	
 	
-	VirtualRoomAnchor();
+	SpatialStageFrameOfReference();
 	void Clear();
 	
 	SpatialCoordinateSystem& GetCoordinateSystem() const;
@@ -123,7 +123,7 @@ struct VirtualRoomAnchor : RTTIBase {
 };
 
 
-VirtualRoomAnchor* GetActiveVirtualRoomAnchor();
+SpatialStageFrameOfReference* GetActiveSpatialStageFrameOfReference();
 
 
 
@@ -183,15 +183,17 @@ struct SpatialSourceLocation : SpatialLocation {
 	
 };
 
-struct SpatialInteractionSource : SpatialSource {
-	SpatialInteractionSourceHandedness handedness = Unspecified;
+struct SpatialInteractionSourceLocation : SpatialSourceLocation {
 	
-	SpatialInteractionSourceHandedness GetHandedness() const {return handedness;}
 	
 };
 
-struct SpatialInteractionSourceLocation : SpatialSourceLocation {
+struct SpatialInteractionSource : SpatialSource {
+	SpatialInteractionSourceHandedness	handedness = Unspecified;
+	SpatialInteractionSourceLocation	location;
 	
+	
+	SpatialInteractionSourceHandedness GetHandedness() const {return handedness;}
 	
 };
 
@@ -338,11 +340,10 @@ struct HolographicFrame {
 };
 
 struct HolographicSpace {
-	// note: dx11 identical
+	HolographicFrame frame;
 	
 	
-	
-	HolographicFrame CreateNextFrame();
+	void CreateNextFrame();
 	
 	Callback2<const HolographicSpace&, const CameraAddedEventArgs&> WhenCameraAdded;
 	Callback2<const HolographicSpace&, const CameraRemovedEventArgs&> WhenCameraRemoved;

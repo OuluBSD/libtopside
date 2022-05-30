@@ -26,7 +26,8 @@ public:
 // This system manages the ToolSystems and manages the two Entities that represent the left and right Motion Controllers
 class ToolboxSystem :
 	public System<ToolboxSystem>,
-	public SpatialInteractionListener {
+	public SpatialInteractionListener
+{
 	LinkedList<EntityRef> entities;
 	
 public:

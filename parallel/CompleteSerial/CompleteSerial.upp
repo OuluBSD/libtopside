@@ -4,6 +4,7 @@ uses
 	AtomLocal,
 	AtomMinimal,
 	AtomEcs,
+	AtomVR,
 	ParallelMach;
 
 mainconfig
