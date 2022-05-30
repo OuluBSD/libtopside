@@ -116,6 +116,12 @@ void RenderingSystem::Update(double dt) {
 		if (!state && x11_ogl_fbo) {
 			state = &x11_ogl_fbo->data.accel_state;
 		}
+		#ifdef flagSDL2
+		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();
+		if (!state && sdl2_ogl_fbo) {
+			state = &sdl2_ogl_fbo->data.accel_state;
+		}
+		#endif
 		#endif
 		#endif
 		#ifdef flagVR

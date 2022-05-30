@@ -34,7 +34,7 @@ public:
 
 	void Resize(int width, int height);
 	
-	void Perspective(float fov, float aspect, float zNear, float zFar);
+	void Perspective(float fov_angle, float aspect, float zNear, float zFar);
 	void Orthographic(float width, float height, float zNear, float zFar);
 	
 	void SetProjection(const mat4& projection);

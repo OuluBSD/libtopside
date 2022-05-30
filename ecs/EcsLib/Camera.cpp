@@ -18,6 +18,27 @@ void Viewable::Uninitialize()  {
 	return ent->Find<Transform>();
 }*/
 
+
+
+
+
+
+bool Viewport::Arg(String key, Object value) {
+	if (key == "fov") {
+		fov = value.ToDouble();
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
 void ChaseCam::Initialize() {
 	trans		= GetEntity()->Get<Transform>();
 	viewable	= GetEntity()->Get<Viewable>();
@@ -45,36 +66,15 @@ void ChaseCam::Uninitialize() {
 void ChaseCam::Update(double dt) {
 	time += dt;
 	
-	if (trans && target) {
-	    // camera/view transformation
-	    vec3 pos = trans->position;
-	    vec3 tgt = target->position;
-	    
-	    if (pos == tgt) {
-	        RTLOG("ChaseCam::Update: warning: camera position is same as target position");
-	    }
-	    else {
-			//LOG(pos.ToString());
-			//LOG(tgt.ToString());
-		    look = LookAt(pos, tgt, vec3(0.0f, 1.0f, 0.0f));
-		    view = look * projection;
-		    
-			if (test_log) {
-				vec3 ori(0,0,0);
-				vec3 diff = ori - pos;
-				vec3 mod = (diff.Extend(0.0) * view).Splice();
-				double angle_x = asin(mod[0] / mod[2]) * 360.0 / (2.0*M_PI);
-				double len_xz = sqrt(mod[0] * mod[0] + mod[2] * mod[2]);
-				double angle_y = asin(mod[1] / len_xz) * 360.0 / (2.0*M_PI);
-				LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
-			}
-	    }
-	}
-	
+	UpdateView();
 }
 
 bool ChaseCam::Arg(String key, Object value) {
 	
+	if (key == "fov") {
+		fov = max(0.10f, min(180.f, (float)StrDbl(value)));
+		return true;
+	}
 	if (key == "target") {
 		String path = value;
 		
@@ -97,6 +97,13 @@ bool ChaseCam::Arg(String key, Object value) {
 	else if (key == "log") {
 		test_log = (String)value == "test";
 	}
+	/*else if (key == "mode") {
+		String m = value;
+		if (m == "static")			mode = STATIC;
+		else if (m == "circle.cw")	mode = CIRCLE_CW;
+		else if (m == "circle.ccw")	mode = CIRCLE_CCW;
+		else return false;
+	}*/
 	else return false;
 	
 	return true;
@@ -105,70 +112,88 @@ bool ChaseCam::Arg(String key, Object value) {
 void ChaseCam::SetViewportSize(Size sz) {
 	viewport_sz[0] = sz.cx;
 	viewport_sz[1] = sz.cy;
+	float ratio = viewport_sz[1] / viewport_sz[0];
+	port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	
-	double fov = 120;
-	if (vport) {
+	if (vport)
 		fov = vport->fov;
-	}
-	
-	projection = perspective(DEG2RAD(fov), viewport_sz[0] / viewport_sz[1], 0.1f, 100.0f);
+	projection = perspective(DEG2RAD(fov*0.5), 1.0f, 0.1f, 100.0f);
 }
 
-bool ChaseCam::Load(GfxDataState& s) {
+void ChaseCam::UpdateView() {
 	int width = 1280;
 	int height = 720;
 	
-    //simple_shader.SetMat4("projection", projection);
-    
-	//mat4 view = LookAt(t.position, c.target, vec3(0.0f, 1.0f, 0.0f));
-	
-	
-	{
-		double phase_time = 1.5;
-		float ratio = (float)height / (float)width;
-		float aspect = (float)width / (float)height;
-		float f = time / phase_time;
-		float f2 = 1 - fabs(2 * f - 1);
-		float angle = f * (2.0 * M_PI);
-		float x = cos(angle);
-		float y = sin(angle);
-		bool use_texture = false;
+	if (this->target) {
+		vec3 target = this->target->position;
+		vec3 eye {0.0f, 2.0f, -6.0f};
+		vec3 up {0, -1, 0};
 		
-		float eye_angle = (use_texture ? -1 : +1) * f /** 0.25*/ * M_2PI;
-		float eye_x = cos(eye_angle);
-		float eye_y = sin(eye_angle);
-		float x_mod = 0.2 * eye_x;
-		float y_mod = 0.2 * eye_y;
-		float fov = 110;
-		float fov_2 = fov * 0.5;
-		mat4 proj = perspective(fov_2, 1.0, 0.1, 100.0);
-		mat4 model = translate(vec3(0.0, 0.0, -4.0));
+		if (this->trans) {
+			
+		    // camera/view transformation
+		    eye = this->trans->position;
+		    
+		    if (eye == target) {
+		        RTLOG("ChaseCam::Update: warning: camera position is same as target position");
+		        target[0] += 0.01f;
+		    }
+		    else {
+				if (test_log) {
+					vec3 diff = target - eye;
+					vec3 mod = (diff.Extend(0.0) * view).Splice();
+					double angle_x = asin(mod[0] / mod[2]) * 360.0 / (2.0*M_PI);
+					double len_xz = sqrt(mod[0] * mod[0] + mod[2] * mod[2]);
+					double angle_y = asin(mod[1] / len_xz) * 360.0 / (2.0*M_PI);
+					LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
+				}
+		    }
+		    #if 0
+			if (mode == CIRCLE_CW || mode == CIRCLE_CCW) {
+				float f = time / phase_time;
+				float f2 = 1 - fabs(2 * f - 1);
+				float angle = f * (2.0 * M_PI);
+				float eye_angle =  f /** 0.25*/ * M_2PI;
+				float eye_x = cos(eye_angle);
+				float eye_y = sin(eye_angle);
+				float x_mod = 0.2 * eye_x;
+				float y_mod = 0.2 * eye_y;
+				
+				eye = eye + vec3{0.3f * eye_x, 0.3f * eye_y, 0.0f};
+				rot = rotate(identity<mat4>(), angle, up);
+			}
+			#endif
+		}
+	    
+		mat4 lookat = LookAt(eye, target, up);
 		
-		
-		vec3 eye {0.3f * eye_x, 2.0f + 0.3f * eye_y, 0.0};
-		//vec3 eye {0.f, 2.f, 0.f};
-		vec3 center {0, 0, -4};
-		vec3 up {0, 1, 0};
-		mat4 lookat = LookAt(eye, center, up);
-		mat4 port;
-		
-		/*if (phase == 0)
-			port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 1);
-		else*/
-			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
-		
-		mat4 rot = rotate(identity<mat4>(), angle, up);
-		
-		/*mat4 pl = lookat * proj;
-		mat4 mpl = model * pl;
-		mat4 rmpl = rot * mpl;*/
-		//mat4 rmpl = rot * model * lookat * proj * port;
-		mat4 rmpl = port * proj * lookat * model * rot;
-		
-		s.view = /*port **/ rmpl;
+		this->view = port * projection * lookat;
 	}
+	else if (this->trans) {
+		quat orientation = this->trans->orientation;
+		mat4 rotate = ToMat4(orientation);
+		
+		#if 0
+		mat4 tran = identity<mat4>();
+		tran.Translate(-this->trans->position);
+		#else
+		mat4 tran = translate(this->trans->position);
+		#endif
+		
+		#if 0
+		mat4 lookat = LookAt(vec3(0,0,0), vec3(1,0,0), vec3(0,1,0));
+		this->view = port * projection * lookat * rotate * tran;
+		#else
+		this->view = port * projection * rotate * tran;
+		#endif
+	}
+	/*mat4 model = translate(target);
+	this->view = port * projection * lookat * model * rot;*/
+}
+
+bool ChaseCam::Load(GfxDataState& s) {
+	s.view = view;
 	s.user_view = true;
-	//s.view = view;
 	
 	return true;
 }

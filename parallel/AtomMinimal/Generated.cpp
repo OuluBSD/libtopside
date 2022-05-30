@@ -423,22 +423,22 @@ AtomTypeCls X11OglFboProg::GetType() const
 
 #endif
 #if defined flagSCREEN && defined flagOGL && defined flagSDL2
-AtomTypeCls SdlOglShaderProg::GetAtomType()
+AtomTypeCls SdlOglFboProg::GetAtomType()
 {
-	return ATOM11(SDL_OGL_SHADER_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+	return ATOM11(SDL_OGL_FBO_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
 }
 
-LinkTypeCls SdlOglShaderProg::GetLinkType()
+LinkTypeCls SdlOglFboProg::GetLinkType()
 {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void SdlOglShaderProg::Visit(RuntimeVisitor& vis)
+void SdlOglFboProg::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<SdlOglFboBase>(this);
 }
 
-AtomTypeCls SdlOglShaderProg::GetType() const
+AtomTypeCls SdlOglFboProg::GetType() const
 {
 	return GetAtomType();
 }
@@ -567,7 +567,7 @@ LinkTypeCls SdlOglFboAtomPipe::GetLinkType()
 
 void SdlOglFboAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlOglFboAtomPipe::GetType() const
@@ -611,7 +611,7 @@ LinkTypeCls SdlContextAtom::GetLinkType()
 
 void SdlContextAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2ContextBase>(this);
+	vis.VisitThis<SdlContextBase>(this);
 }
 
 AtomTypeCls SdlContextAtom::GetType() const
@@ -633,7 +633,7 @@ LinkTypeCls SdlEventAtomPipe::GetLinkType()
 
 void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2EventsBase>(this);
+	vis.VisitThis<SdlEventsBase>(this);
 }
 
 AtomTypeCls SdlEventAtomPipe::GetType() const
@@ -675,7 +675,7 @@ LinkTypeCls SdlOglImageLoader::GetLinkType()
 
 void SdlOglImageLoader::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglImageBase>(this);
+	vis.VisitThis<SdlOglImageBase>(this);
 }
 
 AtomTypeCls SdlOglImageLoader::GetType() const
@@ -827,7 +827,7 @@ LinkTypeCls SdlOglFboAtomSA::GetLinkType()
 
 void SdlOglFboAtomSA::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlOglFboAtomSA::GetType() const
@@ -849,7 +849,7 @@ LinkTypeCls SdlOglFboPipe::GetLinkType()
 
 void SdlOglFboPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlOglFboPipe::GetType() const
@@ -871,7 +871,7 @@ LinkTypeCls SdlOglFboAtom::GetLinkType()
 
 void SdlOglFboAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlOglFboAtom::GetType() const
@@ -893,7 +893,7 @@ LinkTypeCls SdlVideoAtomPipe::GetLinkType()
 
 void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlVideoAtomPipe::GetType() const
@@ -915,7 +915,7 @@ LinkTypeCls SdlProgAtomPipe::GetLinkType()
 
 void SdlProgAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlProgAtomPipe::GetType() const
@@ -937,7 +937,7 @@ LinkTypeCls SdlVideoAtom::GetLinkType()
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlVideoAtom::GetType() const
@@ -959,7 +959,7 @@ LinkTypeCls SdlAudioAtom::GetLinkType()
 
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2AudioSinkDevice>(this);
+	vis.VisitThis<SdlAudioSinkDevice>(this);
 }
 
 AtomTypeCls SdlAudioAtom::GetType() const

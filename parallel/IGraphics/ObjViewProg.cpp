@@ -108,7 +108,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		};*/
 		float fov = 90;
 		float fov_2 = fov * 0.5;
-		mat4 proj = perspective(fov_2, 1.0, 0.1, 100.0);
+		mat4 proj = perspective(DEG2RAD(fov_2), 1.0, 0.1, 100.0);
 		mat4 model = translate(vec3(0.0, 0.0, -4.0));
 		
 		

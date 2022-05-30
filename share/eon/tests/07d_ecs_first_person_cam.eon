@@ -1,15 +1,25 @@
 machine sdl.app: {
 	
+	driver context: {
+		sdl.context: true;
+	};
+	
 	chain program: {
 		state event.register;
 		
+		loop center.events: {
+			center.customer: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
 		loop ogl.fbo: {
 			ogl.customer: true;
-			x11.ogl.fbo.program: true {
+			sdl.ogl.fbo.program: true {
 				drawmem:		"false";
 				program:		"obj_view";
 			};
-			x11.ogl.fbo.sink: true {
+			sdl.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
@@ -22,62 +32,33 @@ machine sdl.app: {
 
 };
 
-
-
-
-
 engine ecs.dummy: {
     system rendering;
     system entity.store;
     system component.store;
     system events;
-    system physics: {
-        //log: debug;
-    };
-    
+    system physics: {env: event.register;};
     
     pool world: {
         entity ground: {
             comp transform3;
-            comp model: {
-                builtin: plane;
-            };
-            comp physics: {
-                bind: physics;
-                test.fn: fixed;
-            };
+            comp model: {builtin: plane;};
+            comp physics: {bind: physics; test.fn: fixed;};
         };
         
-        entity ball: {
-            comp transform3;
+        entity box1: {
+            comp transform3: {y: 1;};
             comp body;
-            comp model: {
-                builtin: box;
-            
-            };
-            comp physics: {
-                bind: physics;
-                test.fn: do.circle;
-            };
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
         };
         
         entity player: {
-            comp transform3: {
-                x: 0;
-                y: 0;
-                z: 6;
-            };
+            comp transform3: {x: 0; y: 1; z: -6;};
             comp viewable;
-            comp viewport;
-            comp camera.chase: {
-                target: world.ball;
-                log: test;
-            };
-            comp physics: {
-                bind: physics;
-                test.fn: fixed;
-            };
+            comp viewport: {fov: 160;};
+            comp camera.chase;//: {target: world.box1;};
+            comp physics: {bind: physics; test.fn: player;};
         };
     };
-    
 };

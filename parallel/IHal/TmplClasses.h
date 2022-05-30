@@ -378,12 +378,12 @@ struct HalEventsBaseT : HalEventsBase {
 };
 
 #if defined flagSDL2
-using Sdl2AudioSinkDevice = HalAudioSinkDeviceT<HalSdl2>;
-using Sdl2CenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl2>;
-using Sdl2CenterFboSinkDevice = HalCenterFboSinkDeviceT<HalSdl2>;
-using Sdl2OglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl2>;
-using Sdl2ContextBase = HalContextBaseT<HalSdl2>;
-using Sdl2EventsBase = HalEventsBaseT<HalSdl2>;
+using SdlAudioSinkDevice = HalAudioSinkDeviceT<HalSdl>;
+using SdlCenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl>;
+using SdlCenterFboSinkDevice = HalCenterFboSinkDeviceT<HalSdl>;
+using SdlOglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl>;
+using SdlContextBase = HalContextBaseT<HalSdl>;
+using SdlEventsBase = HalEventsBaseT<HalSdl>;
 #endif
 
 

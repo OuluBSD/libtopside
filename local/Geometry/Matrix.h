@@ -207,7 +207,7 @@ struct quat {
 	void SetNull() {data.SetNull();}
 	bool IsNull() const {return data.IsNull();}
 	
-	quat& SetIdentity() {data.SetIdentity(); return *this;}
+	quat& SetIdentity() {data = vec4{0,0,0,1}; return *this;}
 	quat& Normalize() {data.Normalize(); return *this;}
 	
 	const float& operator[](int i) const {return data[i];}
@@ -460,8 +460,8 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return *this;
 	}
 	Matrix& SetRotation(const vec3& axis, float angle_rad) {*this = GetRotation(axis, angle_rad); return *this;}
-	Matrix& SetProjection(T fov_hal_angle, T aspect, T near, T far) {
-		T fov_rad = fov_hal_angle * M_PI / 360;
+	Matrix& SetProjection(T fov_half_rad, T aspect, T near, T far) {
+		T fov_rad = fov_half_rad * (T)2;
 		T tan_half_fov = FastTan(fov_rad);
 		T fov_y = (T)1 / tan_half_fov;
 		T fov_x = fov_y / aspect;

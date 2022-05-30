@@ -37,6 +37,8 @@ struct Viewport : public Component<Viewport> {
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}
 	
+	bool Arg(String key, Object value) override;
+	
 	void operator=(const Viewport& vp) {
 		target = vp.target;
 	}
@@ -59,13 +61,24 @@ class ChaseCam :
 	ViewableRef viewable;
 	ViewportRef vport;
 	
-	mat4 look;
 	mat4 view;
 	mat4 projection;
+	mat4 port;
 	vec2 viewport_sz;
 	
 	bool test_log = false;
 	double time = 0;
+	double phase_time = 1.5;
+	float fov = 110;
+	
+	/*typedef enum {
+		STATIC,
+		CIRCLE_CW,
+		CIRCLE_CCW,
+	} Mode;
+	
+	Mode mode = STATIC;*/
+	
 	
 public:
 	typedef ChaseCam CLASSNAME;
@@ -78,6 +91,7 @@ public:
 	bool Arg(String key, Object value) override;
 	bool Load(GfxDataState& state) override;
 	
+	void UpdateView();
 	void SetViewportSize(Size sz);
 	void SetTarget(TransformRef tgt) {target = tgt;}
 	

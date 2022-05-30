@@ -167,7 +167,7 @@ LinkTypeCls SdlOglFboPipeSide::GetLinkType()
 
 void SdlOglFboPipeSide::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
 AtomTypeCls SdlOglFboPipeSide::GetType() const

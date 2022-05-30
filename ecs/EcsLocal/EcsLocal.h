@@ -5,7 +5,6 @@
 #include <EcsLib/EcsLib.h>
 
 #include "CommonComponents.h"
-#include "Camera.h"
 #include "Viewport.h"
 #include "EasingSystem.h"
 #include "WindowSystem.h"

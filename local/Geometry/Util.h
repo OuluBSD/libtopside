@@ -20,7 +20,7 @@ template <class T> T mod(const T& a, float f) {return a.Modulus(f);}
 template <class T> T mix(const T& a, const T& b, float f) {return a.Mix(b, f);}
 
 
-mat4 perspective(float fov, float aspect, float near, float far);
+mat4 perspective(float half_fov_rad, float aspect, float near, float far);
 mat4 ortho(float left, float right, float bottom, float top, float near, float far);
 mat4 ToMat4(const quat& q);
 void ToMat3_(mat3& m, const quat& q);

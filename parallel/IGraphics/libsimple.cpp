@@ -7,7 +7,7 @@ namespace Shaders {
 
 /*
 #ifdef flagSDL2
-void FS_Sdl2CpuSimpleSingle::Process(GfxFragmentShaderArgs& a)
+void FS_SdlCpuSimpleSingle::Process(GfxFragmentShaderArgs& a)
 {
 	using Frag = FragmentShaderArgsT<Sdl>;
 	Frag* fa = CastPtr<Frag>(&a);

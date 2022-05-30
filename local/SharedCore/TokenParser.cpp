@@ -94,13 +94,13 @@ void NumberParser::Parse() {
 	bool neg_value = false;
 	int chr = input[cursor];
 	if (chr == '-') {
-		n.Cat(chr);
+		// NO!!! --> n.Cat(chr);
 		if (++cursor >= input.GetCount()) chr = 0;
 		else chr = input[cursor];
 		neg_value = true;
 	}
 	else if (chr == '+') {
-		n.Cat(chr);
+		// NO... --> n.Cat(chr);
 		if (++cursor >= input.GetCount()) chr = 0;
 		else chr = input[cursor];
 	}

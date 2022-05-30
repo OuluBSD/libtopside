@@ -27,8 +27,8 @@ void StaticAudioOutputSinkCallback(void* userdata, Uint8* stream, int len) {
 
 
 
-bool HalSdl2::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
 	
@@ -44,18 +44,18 @@ bool HalSdl2::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a
 	return true;
 }
 
-bool HalSdl2::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
+bool HalSdl::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
 	AtomBaseRef dep = a.GetDependency();
 	if (dep.IsEmpty()) {
-		LOG("HalSdl2::AudioSinkDevice_PostInitialize: expected dependency atom but got null");
+		LOG("HalSdl::AudioSinkDevice_PostInitialize: expected dependency atom but got null");
 		return false;
 	}
 	
 	if (!dep->IsRunning()) {
-		LOG("HalSdl2::AudioSinkDevice_PostInitialize: context is not running");
+		LOG("HalSdl::AudioSinkDevice_PostInitialize: context is not running");
 	}
 	
-	RTLOG("HalSdl2::AudioSinkDevice_PostInitialize");
+	RTLOG("HalSdl::AudioSinkDevice_PostInitialize");
 	
 	SDL_AudioSpec audio_fmt;
 	SDL_AudioSpec audio_desired;
@@ -73,13 +73,13 @@ bool HalSdl2::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBas
 	
 	dev = SDL_OpenAudioDevice(NULL, 0, &audio_desired, &audio_fmt, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 	if (dev == 0) {
-	    RTLOG("HalSdl2::AudioSinkDevice_PostInitialize: error: failed to open audio: " << SDL_GetError());
+	    RTLOG("HalSdl::AudioSinkDevice_PostInitialize: error: failed to open audio: " << SDL_GetError());
 	    return false;
 	}
 	
     if (audio_fmt.format != audio_desired.format) {
 		// we let this one thing change.
-        RTLOG("HalSdl2::AudioSinkDevice_PostInitialize: warning: couldn't get desired audio format.");
+        RTLOG("HalSdl::AudioSinkDevice_PostInitialize: warning: couldn't get desired audio format.");
     }
     
     SoundSample::Type st = SoundSample::FLT_LE;
@@ -106,23 +106,23 @@ bool HalSdl2::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBas
 	
     SDL_PauseAudioDevice(dev, 0); // start audio playing.
     
-    RTLOG("HalSdl2::AudioSinkDevice_PostInitialize: opened format: " << fmt.ToString());
+    RTLOG("HalSdl::AudioSinkDevice_PostInitialize: opened format: " << fmt.ToString());
     
     a.UpdateSinkFormat(ValCls::AUDIO, f);
     
 	return true;
 }
 
-bool HalSdl2::AudioSinkDevice_Start(NativeAudioSinkDevice& dev, AtomBase& a) {
+bool HalSdl::AudioSinkDevice_Start(NativeAudioSinkDevice& dev, AtomBase& a) {
 	
 	return true;
 }
 
-void HalSdl2::AudioSinkDevice_Stop(NativeAudioSinkDevice& dev, AtomBase& a) {
+void HalSdl::AudioSinkDevice_Stop(NativeAudioSinkDevice& dev, AtomBase& a) {
 	a.ClearDependency();
 }
 
-void HalSdl2::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
+void HalSdl::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
 	if (dev) {
 		SDL_PauseAudioDevice(dev, 1);
 		SDL_CloseAudioDevice(dev);
@@ -130,23 +130,23 @@ void HalSdl2::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::AudioSinkDevice_Send(NativeAudioSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::AudioSinkDevice_Send(NativeAudioSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
-bool HalSdl2::AudioSinkDevice_Recv(NativeAudioSinkDevice& dev, AtomBase&, int, const Packet&) {
+bool HalSdl::AudioSinkDevice_Recv(NativeAudioSinkDevice& dev, AtomBase&, int, const Packet&) {
 	return true;
 }
 
-void HalSdl2::AudioSinkDevice_Finalize(NativeAudioSinkDevice& dev, AtomBase&, RealtimeSourceConfig&) {
+void HalSdl::AudioSinkDevice_Finalize(NativeAudioSinkDevice& dev, AtomBase&, RealtimeSourceConfig&) {
 	
 }
 
-void HalSdl2::AudioSinkDevice_Update(NativeAudioSinkDevice& dev, AtomBase&, double dt) {
+void HalSdl::AudioSinkDevice_Update(NativeAudioSinkDevice& dev, AtomBase&, double dt) {
 	
 }
 
-bool HalSdl2::AudioSinkDevice_IsReady(NativeAudioSinkDevice& dev, AtomBase&, PacketIO& io) {
+bool HalSdl::AudioSinkDevice_IsReady(NativeAudioSinkDevice& dev, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -154,13 +154,13 @@ bool HalSdl2::AudioSinkDevice_IsReady(NativeAudioSinkDevice& dev, AtomBase&, Pac
 
 
 
-bool HalSdl2::ContextBase_Initialize(NativeContextBase& ctx, AtomBase& a, const Script::WorldState& ws) {
-	RTLOG("HalSdl2::ContextBase_Initialize");
+bool HalSdl::ContextBase_Initialize(NativeContextBase& ctx, AtomBase& a, const Script::WorldState& ws) {
+	RTLOG("HalSdl::ContextBase_Initialize");
 	return true;
 }
 
-bool HalSdl2::ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase& a) {
-	RTLOG("HalSdl2::ContextBase_PostInitialize");
+bool HalSdl::ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase& a) {
+	RTLOG("HalSdl::ContextBase_PostInitialize");
 	
 	// SDL
 	uint32 sdl_flags = 0;
@@ -188,51 +188,51 @@ bool HalSdl2::ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase& a) {
 	return true;
 }
 
-bool HalSdl2::ContextBase_Start(NativeContextBase& ctx, AtomBase& a) {
+bool HalSdl::ContextBase_Start(NativeContextBase& ctx, AtomBase& a) {
 	return true;
 }
 
-void HalSdl2::ContextBase_Stop(NativeContextBase& ctx, AtomBase& a) {
+void HalSdl::ContextBase_Stop(NativeContextBase& ctx, AtomBase& a) {
 	
 }
 
-void HalSdl2::ContextBase_Uninitialize(NativeContextBase& ctx, AtomBase& a) {
-	RTLOG("HalSdl2::ContextBase_Uninitialize");
+void HalSdl::ContextBase_Uninitialize(NativeContextBase& ctx, AtomBase& a) {
+	RTLOG("HalSdl::ContextBase_Uninitialize");
 	SDL_Quit();
 }
 
-bool HalSdl2::ContextBase_Send(NativeContextBase& ctx, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::ContextBase_Send(NativeContextBase& ctx, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
-bool HalSdl2::ContextBase_AttachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
+bool HalSdl::ContextBase_AttachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
 	if (other.GetDependency()) {
-		LOG("HalSdl2::ContextBase_AttachContext: atom already has dependency");
+		LOG("HalSdl::ContextBase_AttachContext: atom already has dependency");
 		return false;
 	}
 	other.SetDependency(a);
 	return true;
 }
 
-void HalSdl2::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
+void HalSdl::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
 	AtomBaseRef aref = a.AsRefT();
 	if (other.GetDependency() == aref)
 		other.SetDependency(AtomBaseRef());
 }
 
-bool HalSdl2::ContextBase_Recv(NativeContextBase& ctx, AtomBase&, int, const Packet&) {
+bool HalSdl::ContextBase_Recv(NativeContextBase& ctx, AtomBase&, int, const Packet&) {
 	return true;
 }
 
-void HalSdl2::ContextBase_Finalize(NativeContextBase& ctx, AtomBase&, RealtimeSourceConfig&) {
+void HalSdl::ContextBase_Finalize(NativeContextBase& ctx, AtomBase&, RealtimeSourceConfig&) {
 	
 }
 
-void HalSdl2::ContextBase_Update(NativeContextBase& ctx, AtomBase&, double dt) {
+void HalSdl::ContextBase_Update(NativeContextBase& ctx, AtomBase&, double dt) {
 	
 }
 
-bool HalSdl2::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io) {
+bool HalSdl::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -247,8 +247,8 @@ bool HalSdl2::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& i
 	RENDSRC_IMAGEDRAW,
 };*/
 
-bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+bool HalSdl::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
 
@@ -278,7 +278,7 @@ bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a
 	return true;
 }
 
-bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBase& a) {
+bool HalSdl::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBase& a) {
 	AppFlags& app_flags = GetAppFlags();
 	dev.win = 0;
 	dev.rend = 0;
@@ -324,16 +324,16 @@ bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBas
 	return true;
 }
 
-bool HalSdl2::CenterVideoSinkDevice_Start(NativeVideoSink& dev, AtomBase& a) {
+bool HalSdl::CenterVideoSinkDevice_Start(NativeVideoSink& dev, AtomBase& a) {
 
 	return true;
 }
 
-void HalSdl2::CenterVideoSinkDevice_Stop(NativeVideoSink& dev, AtomBase& a) {
+void HalSdl::CenterVideoSinkDevice_Stop(NativeVideoSink& dev, AtomBase& a) {
 	a.ClearDependency();
 }
 
-void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase& a) {
+void HalSdl::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase& a) {
 	if (dev.rend) {
 		SDL_DestroyRenderer(dev.rend);
 		dev.rend = 0;
@@ -344,11 +344,11 @@ void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::CenterVideoSinkDevice_Send(NativeVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::CenterVideoSinkDevice_Send(NativeVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
-bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
+bool HalSdl::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
 	Format fmt = p->GetFormat();
 	if (fmt.IsVideo()) {
 		const Vector<byte>& data = p->GetData();
@@ -377,7 +377,7 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 		
 		//dev.render_src = RENDSRC_IMAGEDRAW;
 		{
-			RTLOG("HalSdl2::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
+			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
 			
 			auto fb = dev.fb.GetActiveColorBuffer();
 			ASSERT(fb);
@@ -419,16 +419,16 @@ bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch
 	else return false;
 }
 
-void HalSdl2::CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg) {
+void HalSdl::CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg) {
 	SDL_RenderCopy(dev.rend, dev.fb.GetActiveColorBuffer(), NULL, NULL);
 	SDL_RenderPresent(dev.rend);
 }
 
-void HalSdl2::CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt) {
+void HalSdl::CenterVideoSinkDevice_Update(NativeVideoSink& dev, AtomBase&, double dt) {
 	// pass
 }
 
-bool HalSdl2::CenterVideoSinkDevice_IsReady(NativeVideoSink& dev, AtomBase&, PacketIO& io) {
+bool HalSdl::CenterVideoSinkDevice_IsReady(NativeVideoSink& dev, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -443,12 +443,12 @@ bool HalSdl2::CenterVideoSinkDevice_IsReady(NativeVideoSink& dev, AtomBase&, Pac
 
 
 
-bool HalSdl2::CenterFboSinkDevice_Initialize(NativeSw3dVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
+bool HalSdl::CenterFboSinkDevice_Initialize(NativeSw3dVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
 	
 	if (!dev.accel.Initialize(a, ws))
 		return false;
 	
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
 	
@@ -477,7 +477,7 @@ bool HalSdl2::CenterFboSinkDevice_Initialize(NativeSw3dVideoSink& dev, AtomBase&
 	return true;
 }
 
-bool HalSdl2::CenterFboSinkDevice_PostInitialize(NativeSw3dVideoSink& dev, AtomBase& a) {
+bool HalSdl::CenterFboSinkDevice_PostInitialize(NativeSw3dVideoSink& dev, AtomBase& a) {
 	AppFlags& app_flags = GetAppFlags();
 	dev.win = 0;
 	dev.rend = 0;
@@ -516,7 +516,7 @@ bool HalSdl2::CenterFboSinkDevice_PostInitialize(NativeSw3dVideoSink& dev, AtomB
 	dev.accel.SetNative(dev.display, dev.win, &dev.rend, dev.fb);
 	
 	if (!dev.accel.Open(screen_sz, fb_stride)) {
-		LOG("HalSdl2::CenterFboSinkDevice_PostInitialize: error: could not open opengl atom");
+		LOG("HalSdl::CenterFboSinkDevice_PostInitialize: error: could not open opengl atom");
 		return false;
 	}
 	
@@ -526,16 +526,16 @@ bool HalSdl2::CenterFboSinkDevice_PostInitialize(NativeSw3dVideoSink& dev, AtomB
 	return true;
 }
 
-bool HalSdl2::CenterFboSinkDevice_Start(NativeSw3dVideoSink& dev, AtomBase& a) {
+bool HalSdl::CenterFboSinkDevice_Start(NativeSw3dVideoSink& dev, AtomBase& a) {
 	
 	return true;
 }
 
-void HalSdl2::CenterFboSinkDevice_Stop(NativeSw3dVideoSink& dev, AtomBase& a) {
+void HalSdl::CenterFboSinkDevice_Stop(NativeSw3dVideoSink& dev, AtomBase& a) {
 	a.ClearDependency();
 }
 
-void HalSdl2::CenterFboSinkDevice_Uninitialize(NativeSw3dVideoSink& dev, AtomBase& a) {
+void HalSdl::CenterFboSinkDevice_Uninitialize(NativeSw3dVideoSink& dev, AtomBase& a) {
 	dev.accel.Uninitialize();
 	
 	if (dev.rend) {
@@ -548,15 +548,15 @@ void HalSdl2::CenterFboSinkDevice_Uninitialize(NativeSw3dVideoSink& dev, AtomBas
 	}
 }
 
-bool HalSdl2::CenterFboSinkDevice_Recv(NativeSw3dVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
+bool HalSdl::CenterFboSinkDevice_Recv(NativeSw3dVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
 	return dev.accel.Recv(ch_i, p);
 }
 
-void HalSdl2::CenterFboSinkDevice_Finalize(NativeSw3dVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg) {
+void HalSdl::CenterFboSinkDevice_Finalize(NativeSw3dVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg) {
 	dev.accel.Render(cfg);
 }
 
-bool HalSdl2::CenterFboSinkDevice_Send(NativeSw3dVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::CenterFboSinkDevice_Send(NativeSw3dVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	/*Format fmt = in.GetFormat();
 	if (fmt.IsVideo()) {
 		const Vector<byte>& pixmap = in.Data();
@@ -571,11 +571,11 @@ bool HalSdl2::CenterFboSinkDevice_Send(NativeSw3dVideoSink& dev, AtomBase& a, Re
 	return true;
 }
 
-void HalSdl2::CenterFboSinkDevice_Update(NativeSw3dVideoSink& dev, AtomBase&, double dt) {
+void HalSdl::CenterFboSinkDevice_Update(NativeSw3dVideoSink& dev, AtomBase&, double dt) {
 	
 }
 
-bool HalSdl2::CenterFboSinkDevice_IsReady(NativeSw3dVideoSink& dev, AtomBase&, PacketIO& io) {
+bool HalSdl::CenterFboSinkDevice_IsReady(NativeSw3dVideoSink& dev, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -590,12 +590,12 @@ bool HalSdl2::CenterFboSinkDevice_IsReady(NativeSw3dVideoSink& dev, AtomBase&, P
 
 
 #ifdef flagOGL
-bool HalSdl2::OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
+bool HalSdl::OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
 	
 	if (!dev.accel.Initialize(a, ws))
 		return false;
 	
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
 	
@@ -626,7 +626,7 @@ bool HalSdl2::OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase& a
 	return true;
 }
 
-bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBase& a) {
+bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBase& a) {
 	AppFlags& app_flags = GetAppFlags();
 	dev.win = 0;
 	dev.rend = 0;
@@ -646,7 +646,7 @@ bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBas
 	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
 	
 	if (SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &dev.win, &dev.rend) == -1) {
-		LOG("HalSdl2::OglVideoSinkDevice_PostInitialize: error: could not create window and renderer");
+		LOG("HalSdl::OglVideoSinkDevice_PostInitialize: error: could not create window and renderer");
         return false;
 	}
 	SDL_SetWindowTitle(dev.win, title);
@@ -657,7 +657,7 @@ bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBas
     SDL_GetRendererInfo(dev.rend, &dev.rend_info);
 	if ((dev.rend_info.flags & SDL_RENDERER_ACCELERATED) == 0 ||
         (dev.rend_info.flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
-        LOG("HalSdl2::OglVideoSinkDevice_PostInitialize: error: renderer does not have acceleration");
+        LOG("HalSdl::OglVideoSinkDevice_PostInitialize: error: renderer does not have acceleration");
         return false;
     }
 	
@@ -684,7 +684,7 @@ bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBas
 	
     int fb_stride = 3;
 	if (!dev.accel.Open(screen_sz, fb_stride)) {
-		LOG("HalSdl2::OglVideoSinkDevice_PostInitialize: error: could not open opengl atom");
+		LOG("HalSdl::OglVideoSinkDevice_PostInitialize: error: could not open opengl atom");
 		return false;
 	}
 	
@@ -697,16 +697,16 @@ bool HalSdl2::OglVideoSinkDevice_PostInitialize(NativeOglVideoSink& dev, AtomBas
 	return true;
 }
 
-bool HalSdl2::OglVideoSinkDevice_Start(NativeOglVideoSink& dev, AtomBase&) {
+bool HalSdl::OglVideoSinkDevice_Start(NativeOglVideoSink& dev, AtomBase&) {
 	
 	return true;
 }
 
-void HalSdl2::OglVideoSinkDevice_Stop(NativeOglVideoSink& dev, AtomBase& a) {
+void HalSdl::OglVideoSinkDevice_Stop(NativeOglVideoSink& dev, AtomBase& a) {
 	a.ClearDependency();
 }
 
-void HalSdl2::OglVideoSinkDevice_Uninitialize(NativeOglVideoSink& dev, AtomBase&) {
+void HalSdl::OglVideoSinkDevice_Uninitialize(NativeOglVideoSink& dev, AtomBase&) {
 	dev.accel.Uninitialize();
 	
 	if (dev.rend) {
@@ -719,7 +719,7 @@ void HalSdl2::OglVideoSinkDevice_Uninitialize(NativeOglVideoSink& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::OglVideoSinkDevice_Send(NativeOglVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::OglVideoSinkDevice_Send(NativeOglVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	/*Format fmt = in.GetFormat();
 	if (fmt.IsVideo()) {
 		const Vector<byte>& pixmap = in.Data();
@@ -735,19 +735,19 @@ bool HalSdl2::OglVideoSinkDevice_Send(NativeOglVideoSink& dev, AtomBase&, Realti
 	return true;
 }
 
-bool HalSdl2::OglVideoSinkDevice_Recv(NativeOglVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
+bool HalSdl::OglVideoSinkDevice_Recv(NativeOglVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
 	return dev.accel.Recv(ch_i, p);
 }
 
-void HalSdl2::OglVideoSinkDevice_Finalize(NativeOglVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+void HalSdl::OglVideoSinkDevice_Finalize(NativeOglVideoSink& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
 	
 }
 
-void HalSdl2::OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase& a, double dt) {
+void HalSdl::OglVideoSinkDevice_Update(NativeOglVideoSink& dev, AtomBase& a, double dt) {
 	dev.accel.Update(dt);
 }
 
-bool HalSdl2::OglVideoSinkDevice_IsReady(NativeOglVideoSink& dev, AtomBase&, PacketIO& io) {
+bool HalSdl::OglVideoSinkDevice_IsReady(NativeOglVideoSink& dev, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -761,11 +761,11 @@ bool HalSdl2::OglVideoSinkDevice_IsReady(NativeOglVideoSink& dev, AtomBase&, Pac
 
 
 
-bool HalSdl2::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
+bool HalSdl::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
 	memset(&dev, 0, sizeof(NativeEventsBase));
 	
 	
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
 	
@@ -780,45 +780,45 @@ bool HalSdl2::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Sc
 	return true;
 }
 
-bool HalSdl2::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
+bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 	AtomBaseRef dep = a.GetDependency();
 	if (dep.IsEmpty()) {
-		LOG("HalSdl2::EventsBase_PostInitialize: expected dependency atom but got null");
+		LOG("HalSdl::EventsBase_PostInitialize: expected dependency atom but got null");
 		return false;
 	}
 	
 	if (!dep->IsRunning()) {
-		LOG("HalSdl2::EventsBase_PostInitialize: context is not running");
+		LOG("HalSdl::EventsBase_PostInitialize: context is not running");
 	}
 	
-	RTLOG("HalSdl2::EventsBase_PostInitialize");
+	RTLOG("HalSdl::EventsBase_PostInitialize");
 	
 	a.AddAtomToUpdateList();
 	
 	return true;
 }
 
-bool HalSdl2::EventsBase_Start(NativeEventsBase& dev, AtomBase& a) {
+bool HalSdl::EventsBase_Start(NativeEventsBase& dev, AtomBase& a) {
 	// pass
 	return true;
 }
 
-void HalSdl2::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
+void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
 	// pass
 }
 
-void HalSdl2::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
+void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
 	a.RemoveAtomFromUpdateList();
 }
 
-bool HalSdl2::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HalSdl::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	ASSERT(dev.ev_sendable);
 	if (!dev.ev_sendable)
 		return false;
 	
 
 	Format fmt = out.GetFormat();
-	RTLOG("HalSdl2::EventsBase_Send: " << fmt.ToString());
+	RTLOG("HalSdl::EventsBase_Send: " << fmt.ToString());
 	
 	if (fmt.IsEvent()) {
 		out.seq = dev.seq++;
@@ -830,27 +830,27 @@ bool HalSdl2::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, RealtimeSource
 	return true;
 }
 
-bool HalSdl2::EventsBase_Recv(NativeEventsBase& dev, AtomBase& a, int sink_ch, const Packet& p) {
+bool HalSdl::EventsBase_Recv(NativeEventsBase& dev, AtomBase& a, int sink_ch, const Packet& p) {
 	return true;
 }
 
-void HalSdl2::EventsBase_Finalize(NativeEventsBase& dev, AtomBase&, RealtimeSourceConfig&) {
+void HalSdl::EventsBase_Finalize(NativeEventsBase& dev, AtomBase&, RealtimeSourceConfig&) {
 	
 }
 
-void HalSdl2::EventsBase_Update(NativeEventsBase& dev, AtomBase&, double dt) {
+void HalSdl::EventsBase_Update(NativeEventsBase& dev, AtomBase&, double dt) {
 	dev.time += dt;
 }
 
 #ifdef flagSCREEN
-void Events__PutKeyFlags(HalSdl2::NativeEventsBase& dev, dword& key) {
+void Events__PutKeyFlags(HalSdl::NativeEventsBase& dev, dword& key) {
 	if (dev.is_lalt   || dev.is_ralt)		key |= K_ALT;
 	if (dev.is_lshift || dev.is_rshift)		key |= K_SHIFT;
 	if (dev.is_lctrl  || dev.is_rctrl)		key |= K_CTRL;
 }
 #endif
 
-bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
+bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	UPP::CtrlEvent& e = dev.ev;
 	
 	SDL_Event event;
@@ -858,13 +858,13 @@ bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
 	Point mouse_pt;
 #ifdef flagSCREEN
 	auto s = a.GetSpace();
-	auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
-	auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
+	auto v_sink   = s->template FindNearestAtomCast<SdlCenterVideoSinkDevice>(2);
+	auto sw_sink  = s->template FindNearestAtomCast<SdlCenterFboSinkDevice>(2);
 	::SDL_Renderer* rend = 0;
 	if (v_sink)   rend = v_sink->dev.rend;
 	if (sw_sink)  rend = sw_sink->dev.rend;
 #ifdef flagOGL
-	auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
+	auto ogl_sink = s->template FindNearestAtomCast<SdlOglVideoSinkDevice>(2);
 	if (ogl_sink) rend = ogl_sink->dev.rend;
 #endif
 #endif
@@ -999,27 +999,36 @@ bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
 			if (event.button.state == SDL_PRESSED) {
 				if (event.button.clicks == 1) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFTDOWN;
+						mouse_code = VirtualCtrl::LEFTDOWN;
+						//mouse_code = MOUSE_LEFTDOWN;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLEDOWN;
+						mouse_code = VirtualCtrl::MIDDLEDOWN;
+						//mouse_code = MOUSE_MIDDLEDOWN;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHTDOWN;
+						mouse_code = VirtualCtrl::RIGHTDOWN;
+						//mouse_code = MOUSE_RIGHTDOWN;
 				}
 				else if (event.button.clicks == 2) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFTDOUBLE;
+						mouse_code = VirtualCtrl::LEFTDOUBLE;
+						//mouse_code = MOUSE_LEFTDOUBLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLEDOUBLE;
+						mouse_code = VirtualCtrl::MIDDLEDOUBLE;
+						//mouse_code = MOUSE_MIDDLEDOUBLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHTDOUBLE;
+						mouse_code = VirtualCtrl::RIGHTDOUBLE;
+						//mouse_code = MOUSE_RIGHTDOUBLE;
 				}
 				else {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFTTRIPLE;
+						mouse_code = VirtualCtrl::LEFTTRIPLE;
+						//mouse_code = MOUSE_LEFTTRIPLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLETRIPLE;
+						mouse_code = VirtualCtrl::MIDDLETRIPLE;
+						//mouse_code = MOUSE_MIDDLETRIPLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHTTRIPLE;
+						mouse_code = VirtualCtrl::RIGHTTRIPLE;
+						//mouse_code = MOUSE_RIGHTTRIPLE;
 				}
 				/*else if (event.button.button == SDL_BUTTON_WHEELUP)
 					mouse_zdelta = 120;
@@ -1028,11 +1037,14 @@ bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
 			}
 			else if (event.button.state == SDL_RELEASED) {
 				if (event.button.button == SDL_BUTTON_LEFT)
-					mouse_code = Ctrl::LEFTUP;
+					mouse_code = VirtualCtrl::LEFTUP;
+					//mouse_code = MOUSE_LEFTUP;
 				else if (event.button.button == SDL_BUTTON_MIDDLE)
-					mouse_code = Ctrl::MIDDLEUP;
+					mouse_code = VirtualCtrl::MIDDLEUP;
+					//mouse_code = MOUSE_MIDDLEUP;
 				else if (event.button.button == SDL_BUTTON_RIGHT)
-					mouse_code = Ctrl::RIGHTUP;
+					mouse_code = VirtualCtrl::RIGHTUP;
+					//mouse_code = MOUSE_RIGHTUP;
 			}
 			
 			if (mouse_code) {
@@ -1060,16 +1072,16 @@ bool Events__Poll(HalSdl2::NativeEventsBase& dev, AtomBase& a) {
 	return false;
 }
 
-bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& io) {
+bool HalSdl::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& io) {
 	bool b = io.full_src_mask == 0;
 	if (b) {
 		if (dev.seq == 0) {
 			auto s = a.GetSpace();
 			dev.ev.type = EVENT_WINDOW_RESIZE;
-			auto v_sink   = s->template FindNearestAtomCast<Sdl2CenterVideoSinkDevice>(2);
-			auto sw_sink  = s->template FindNearestAtomCast<Sdl2CenterFboSinkDevice>(2);
+			auto v_sink   = s->template FindNearestAtomCast<SdlCenterVideoSinkDevice>(2);
+			auto sw_sink  = s->template FindNearestAtomCast<SdlCenterFboSinkDevice>(2);
 			#ifdef flagOGL
-			auto ogl_sink = s->template FindNearestAtomCast<Sdl2OglVideoSinkDevice>(2);
+			auto ogl_sink = s->template FindNearestAtomCast<SdlOglVideoSinkDevice>(2);
 			#endif
 			
 			int x = 0, y = 0;
@@ -1088,7 +1100,7 @@ bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& i
 			}
 			#endif
 			else {
-				RTLOG("HalSdl2::EventsBase_IsReady: skipping windows resize, because no screen is in context");
+				RTLOG("HalSdl::EventsBase_IsReady: skipping windows resize, because no screen is in context");
 				dev.seq++;
 				b = false;
 			}
@@ -1102,7 +1114,7 @@ bool HalSdl2::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& i
 			b = false;
 		}
 	}
-	RTLOG("HalSdl2::EventsBase_IsReady: " << (b ? "true" : "false"));
+	RTLOG("HalSdl::EventsBase_IsReady: " << (b ? "true" : "false"));
 	return b;
 }
 

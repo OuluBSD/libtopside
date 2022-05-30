@@ -127,13 +127,13 @@ bool Camera::IsPerspective() {
 	return this->proj_mode == 0;
 }
 
-void Camera::Perspective(float fov, float aspect, float zNear, float zFar) {
-	this->fov = fov;
+void Camera::Perspective(float fov_angle, float aspect, float zNear, float zFar) {
+	this->fov = fov_angle;
 	this->aspect = aspect;
 	this->near = zNear;
 	this->far = zFar;
 
-	this->view = perspective(fov, aspect, zNear, zFar);
+	this->view = perspective(DEG2RAD(fov_angle*0.5), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
 

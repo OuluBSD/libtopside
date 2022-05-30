@@ -78,7 +78,7 @@ INITBLOCK_(AtomMinimal) {
 				Factory::RegisterAtom<SdlOglFboAtom>();
 				Factory::RegisterAtom<SdlOglFboAtomSA>();
 				Factory::RegisterAtom<SdlOglShaderPipe>();
-				Factory::RegisterAtom<SdlOglShaderProg>();
+				Factory::RegisterAtom<SdlOglFboProg>();
 				Factory::RegisterAtom<SdlOglShaderAtom>();
 				Factory::RegisterAtom<SdlOglShaderAtomSA>();
 				Factory::RegisterAtom<SdlOglTextureSource>();

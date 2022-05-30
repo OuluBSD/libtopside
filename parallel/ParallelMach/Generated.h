@@ -134,7 +134,7 @@ namespace Parallel {
 
 
 #define flagSDL2_ATOM_TYPE_LIST \
-	ATOM_TYPE(SDL_OGL_SHADER_PROG) \
+	ATOM_TYPE(SDL_OGL_FBO_PROG) \
 	ATOM_TYPE(SDL_OGL_SHADER_PIPE) \
 	ATOM_TYPE(SDL_OGL_FBO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
@@ -146,7 +146,7 @@ namespace Parallel {
 
 
 #define flagSDL2_ATOM_CLASS_LIST \
-	ATOM_CLASS(SdlOglShaderProg) \
+	ATOM_CLASS(SdlOglFboProg) \
 	ATOM_CLASS(SdlOglShaderPipe) \
 	ATOM_CLASS(SdlOglFboAtomPipe) \
 	ATOM_CLASS(SdlContextAtom) \

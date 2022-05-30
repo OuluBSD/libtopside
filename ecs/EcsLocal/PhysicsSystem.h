@@ -10,8 +10,14 @@ class PhysicsBody;
 
 class PhysicsSystem : public System<PhysicsSystem>
 {
+	EnvStateRef state;
+	String env_name;
 	Vector<PhysicsBody*> bodies;
+	Point prev_mouse;
+	double prev_pitch = 0;
+	double prev_yaw = 0;
 	double time = 0;
+	double last_dt = 0;
 	bool debug_log = false;
 	
 protected:
@@ -40,6 +46,7 @@ public:
 		TESTFN_NULL,
 		TESTFN_FIXED,
 		TESTFN_CIRCLE,
+		TESTFN_PLAYER,
 	};
 	
 	int test_fn = 0;

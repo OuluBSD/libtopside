@@ -123,10 +123,10 @@ public:
 };
 
 #if defined flagSCREEN
-class SdlOglFboPipeSide : public Sdl2OglVideoSinkDevice {
+class SdlOglFboPipeSide : public SdlOglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlOglFboPipeSide, Sdl2OglVideoSinkDevice)
+	RTTI_DECL1(SdlOglFboPipeSide, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink.side")

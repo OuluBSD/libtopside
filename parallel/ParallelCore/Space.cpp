@@ -302,6 +302,20 @@ EnvStateRef Space::FindNearestState(String name) {
 	return EnvStateRef();
 }
 
+EnvStateRef Space::FindStateDeep(String name) {
+	EnvStateRef e = FindState(name);
+	if (e)
+		return e;
+	
+	for (SpaceRef& p : spaces) {
+		EnvStateRef e = p->FindStateDeep(name);
+		if (e)
+			return e;
+	}
+	
+	return EnvStateRef();
+}
+
 String Space::GetDeepName() const {
 	String s = name;
 	Space* l = GetParent();

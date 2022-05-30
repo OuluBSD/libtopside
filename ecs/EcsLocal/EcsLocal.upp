@@ -7,8 +7,6 @@ file
 	EcsLocal.h,
 	Init.icpp,
 	EcsLocal.cpp,
-	Camera.h,
-	Camera.cpp,
 	Viewport.h,
 	Viewport.cpp,
 	CommonComponents.h,

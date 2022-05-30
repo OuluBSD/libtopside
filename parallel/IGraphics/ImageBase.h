@@ -48,7 +48,7 @@ public:
 
 //using ImageBaseAtomTRef			= Ref<ImageBaseAtomT,			AtomParent>;
 
-using Sdl2OglImageBase = ImageBaseAtomT<SdlOglGfx>;
+using SdlOglImageBase = ImageBaseAtomT<SdlOglGfx>;
 
 
 NAMESPACE_PARALLEL_END

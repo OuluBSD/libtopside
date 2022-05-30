@@ -92,12 +92,23 @@ bool ModelComponent::Arg(String key, Object value) {
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
-	obj = &state.CreateObject();
-	bool b = state.LoadModel(loader, *obj);
-	if (!b) {
-		LOG("ModelComponent::Load: error: model loading failed");
+	if (!obj) {
+		obj = &state.CreateObject();
+		if (!state.LoadModel(loader, *obj)) {
+			LOG("ModelComponent::Load: error: model loading failed");
+			return false;
+		}
 	}
-	return b;
+	
+	TransformRef trans = GetEntity()->Find<Transform>();
+	if (trans) {
+		mat4 pos = translate(trans->position);
+		mat4 rot = rotate(trans->orientation);
+		mat4 sz = scale(trans->size);
+		obj->model = pos * rot * sz;
+	}
+	
+	return true;
 }
 
 /*void ModelComponent::LoadModel(CpuDataState& state) {

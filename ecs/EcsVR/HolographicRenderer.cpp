@@ -132,6 +132,9 @@ void HolographicRenderingSystem::Update(double dt)
 		#endif
 		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
 		if (!state) TODO
+			
+			
+		TODO // s->bind state
 	}
 	
 	

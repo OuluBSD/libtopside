@@ -23,7 +23,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 #define HAL_VNDR_LIST \
-	HAL_VNDR(HalSdl2) \
+	HAL_VNDR(HalSdl) \
 
 
 
@@ -36,7 +36,7 @@ HAL_VNDR_LIST
 
 
 #if defined flagSDL2
-struct HalSdl2 {
+struct HalSdl {
 	using NativeAudioSinkDevice = SDL_AudioDeviceID;
 	using NativeContextBase = void*;
 	

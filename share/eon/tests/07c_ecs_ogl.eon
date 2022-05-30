@@ -48,7 +48,7 @@ engine ecs.dummy: {
             };
         };
         
-        entity ball: {
+        entity box1: {
             comp transform3;
             comp body;
             comp model: {
@@ -57,25 +57,45 @@ engine ecs.dummy: {
             };
             comp physics: {
                 bind: physics;
-                test.fn: do.circle;
+                //test.fn: do.circle;
+                test.fn: fixed;
+            };
+        };
+        
+        entity box2: {
+            comp transform3: {
+                x: 1;
+                z: 3;
+            };
+            comp body;
+            comp model: {
+                builtin: box;
+            
+            };
+            comp physics: {
+                bind: physics;
+                test.fn: fixed;
             };
         };
         
         entity player: {
             comp transform3: {
-                x: 0;
-                y: 0;
-                z: 6;
+                x: 0.1;
+                y: 2;
+                z: 0;
             };
             comp viewable;
-            comp viewport;
+            comp viewport: {
+                fov: 160;
+            };
             comp camera.chase: {
-                target: world.ball;
-                log: test;
+                target: world.box1;
+                //log: test;
             };
             comp physics: {
                 bind: physics;
-                test.fn: fixed;
+                //test.fn: fixed;
+                test.fn: do.circle;
             };
         };
     };

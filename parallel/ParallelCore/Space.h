@@ -117,6 +117,7 @@ public:
 	
 	template<typename T> RefT_Atom<T> FindNearestAtomCast(int nearest_loop_depth);
 	EnvStateRef FindNearestState(String name);
+	EnvStateRef FindStateDeep(String name);
 	
 	StateVec& GetStates() {return states;}
 	AtomMap& GetAtoms() {return atoms;}

@@ -335,11 +335,11 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagOGL && defined flagSDL2
-class SdlOglShaderProg : public SdlOglFboBase {
+class SdlOglFboProg : public SdlOglFboBase {
 
 public:
-	RTTI_DECL1(SdlOglShaderProg, SdlOglFboBase)
-	COPY_PANIC(SdlOglShaderProg)
+	RTTI_DECL1(SdlOglFboProg, SdlOglFboBase)
+	COPY_PANIC(SdlOglFboProg)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.program")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.program")
@@ -441,10 +441,10 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagOGL && defined flagSDL2
-class SdlOglFboAtomPipe : public Sdl2OglVideoSinkDevice {
+class SdlOglFboAtomPipe : public SdlOglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlOglFboAtomPipe, Sdl2OglVideoSinkDevice)
+	RTTI_DECL1(SdlOglFboAtomPipe, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.sink")
@@ -476,10 +476,10 @@ public:
 #endif
 
 #if defined flagSDL2
-class SdlContextAtom : public Sdl2ContextBase {
+class SdlContextAtom : public SdlContextBase {
 
 public:
-	RTTI_DECL1(SdlContextAtom, Sdl2ContextBase)
+	RTTI_DECL1(SdlContextAtom, SdlContextBase)
 	COPY_PANIC(SdlContextAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
@@ -493,10 +493,10 @@ public:
 #endif
 
 #if defined flagSDL2
-class SdlEventAtomPipe : public Sdl2EventsBase {
+class SdlEventAtomPipe : public SdlEventsBase {
 
 public:
-	RTTI_DECL1(SdlEventAtomPipe, Sdl2EventsBase)
+	RTTI_DECL1(SdlEventAtomPipe, SdlEventsBase)
 	COPY_PANIC(SdlEventAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
@@ -525,10 +525,10 @@ public:
 };
 
 #if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-class SdlOglImageLoader : public Sdl2OglImageBase {
+class SdlOglImageLoader : public SdlOglImageBase {
 
 public:
-	RTTI_DECL1(SdlOglImageLoader, Sdl2OglImageBase)
+	RTTI_DECL1(SdlOglImageLoader, SdlOglImageBase)
 	COPY_PANIC(SdlOglImageLoader)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
@@ -643,10 +643,10 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlOglFboAtomSA : public Sdl2OglVideoSinkDevice {
+class SdlOglFboAtomSA : public SdlOglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlOglFboAtomSA, Sdl2OglVideoSinkDevice)
+	RTTI_DECL1(SdlOglFboAtomSA, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
@@ -660,10 +660,10 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlOglFboPipe : public Sdl2OglVideoSinkDevice {
+class SdlOglFboPipe : public SdlOglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlOglFboPipe, Sdl2OglVideoSinkDevice)
+	RTTI_DECL1(SdlOglFboPipe, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink")
@@ -677,10 +677,10 @@ public:
 #endif
 
 #if defined flagSDL2 && defined flagOGL
-class SdlOglFboAtom : public Sdl2OglVideoSinkDevice {
+class SdlOglFboAtom : public SdlOglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlOglFboAtom, Sdl2OglVideoSinkDevice)
+	RTTI_DECL1(SdlOglFboAtom, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
@@ -694,10 +694,10 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagSDL2
-class SdlVideoAtomPipe : public Sdl2CenterVideoSinkDevice {
+class SdlVideoAtomPipe : public SdlCenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlVideoAtomPipe, Sdl2CenterVideoSinkDevice)
+	RTTI_DECL1(SdlVideoAtomPipe, SdlCenterVideoSinkDevice)
 	COPY_PANIC(SdlVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
@@ -712,10 +712,10 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagSDL2
-class SdlProgAtomPipe : public Sdl2CenterVideoSinkDevice {
+class SdlProgAtomPipe : public SdlCenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlProgAtomPipe, Sdl2CenterVideoSinkDevice)
+	RTTI_DECL1(SdlProgAtomPipe, SdlCenterVideoSinkDevice)
 	COPY_PANIC(SdlProgAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.prog.pipe")
@@ -730,10 +730,10 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagSDL2
-class SdlVideoAtom : public Sdl2CenterVideoSinkDevice {
+class SdlVideoAtom : public SdlCenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlVideoAtom, Sdl2CenterVideoSinkDevice)
+	RTTI_DECL1(SdlVideoAtom, SdlCenterVideoSinkDevice)
 	COPY_PANIC(SdlVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
@@ -747,10 +747,10 @@ public:
 #endif
 
 #if defined flagSDL2
-class SdlAudioAtom : public Sdl2AudioSinkDevice {
+class SdlAudioAtom : public SdlAudioSinkDevice {
 
 public:
-	RTTI_DECL1(SdlAudioAtom, Sdl2AudioSinkDevice)
+	RTTI_DECL1(SdlAudioAtom, SdlAudioSinkDevice)
 	COPY_PANIC(SdlAudioAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -943,7 +943,7 @@ using X11OglFboProgRef = Ref<X11OglFboProg, AtomParent>;
 #endif
 
 #if defined flagSCREEN && defined flagOGL && defined flagSDL2
-using SdlOglShaderProgRef = Ref<SdlOglShaderProg, AtomParent>;
+using SdlOglFboProgRef = Ref<SdlOglFboProg, AtomParent>;
 #endif
 
 #if defined flagSCREEN
