@@ -31,7 +31,7 @@ quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor) {
 
 
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
-    #if 1
+    #if 0
 	vec3 f = (center - eye);
 	vec3 u = up;
 	f.Normalize();
@@ -1249,6 +1249,41 @@ const vec4 NegIdentityR0         = vec4{ -1.0f, 0.0f, 0.0f, 0.0f };
 const vec4 NegIdentityR1         = vec4{ 0.0f, -1.0f, 0.0f, 0.0f };
 const vec4 NegIdentityR2         = vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
 const vec4 NegIdentityR3         = vec4{ 0.0f, 0.0f, 0.0f, -1.0f };
+
+
+
+// https://stackoverflow.com/questions/18558910/direction-vector-to-rotation-matrix
+quat make_rotation_direction(const vec3& dir, const vec3& up) {
+	vec3 xaxis = cross(up, dir);
+	xaxis.Normalize();
+	
+	vec3 yaxis = cross(dir, xaxis);
+	yaxis.Normalize();
+	
+	mat4 rot;
+	rot[0][0] = xaxis[0];
+	rot[0][1] = yaxis[0];
+	rot[0][2] = dir[0];
+	rot[0][3] = 0;
+	
+	rot[1][0] = xaxis[1];
+	rot[1][1] = yaxis[1];
+	rot[1][2] = dir[1];
+	rot[1][3] = 0;
+	
+	rot[2][0] = xaxis[2];
+	rot[2][1] = yaxis[2];
+	rot[2][2] = dir[2];
+	rot[2][3] = 0;
+	
+	rot[3][0] = 0;
+	rot[3][1] = 0;
+	rot[3][2] = 0;
+	rot[3][3] = 1;
+	
+	// note: not verified to be correct
+	return make_quat_from_rotation_matrix(rot);
+}
 
 
 NAMESPACE_TOPSIDE_END

@@ -139,7 +139,7 @@ void lookat(float eyeX, float eyeY, float eyeZ, float centreX, float centreY, fl
 }
 
 void perspective(float fovy, float aspect, float zNear, float zFar, float result[4][4]) {
-	float f = 1 / tanf(fovy * M_PI / 360);
+	float f = 1 / tanf(fovy/* * M_PI / 360*/);
 	
 	result[0][0] = f / aspect;
 	result[0][1] = 0;

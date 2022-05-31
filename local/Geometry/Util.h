@@ -220,6 +220,7 @@ quat make_quat_from_rotation_matrix(const mat4& matrix);
 inline mat4 rotate(const quat& q) {return make_mat4_from_quat(q);}
 inline mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {return make_mat4_from_quat(make_quat_from_yaw_pitch_roll(yaw, pitch, roll));}
 
+quat make_rotation_direction(const vec3& dir, const vec3& up);
 
 
 

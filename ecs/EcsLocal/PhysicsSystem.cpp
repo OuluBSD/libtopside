@@ -95,56 +95,81 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 			
 			Point diff = drag - prev_mouse;
 			
-			if (prev_mouse.x != 0 && prev_mouse.y != 0 && (diff.x || diff.y)) {
-				double sensitivity = 0.05 / (2*M_PI);
-				double pitch = diff.y * sensitivity;
-				double yaw = diff.x * sensitivity;
-				
-				pitch += prev_pitch;
-				yaw += prev_yaw;
-				
-				#if 1
-				quat q_pitch = make_quat_from_axis_angle(vec3(1, 0, 0), pitch);
-				quat q_yaw = make_quat_from_axis_angle(vec3(0, 1, 0), yaw);
-				quat orientation = q_pitch * q_yaw;
-				#else
-				quat orientation = make_quat_from_yaw_pitch_roll(yaw, pitch, 0);
-				#endif
-				
-				orientation.Normalize();
-				b.trans->orientation = orientation;
-				//DUMP(b.trans->orientation);
-				//DUMP(orientation);
-				
-				prev_pitch = pitch;
-				prev_yaw = yaw;
-			}
+			if (prev_mouse.x != 0 && prev_mouse.y != 0 && (diff.x || diff.y))
+				TestPlayerLookFn(b, diff);
 			
 			prev_mouse = drag;
 		}
+		else {
+			if (!b.trans->use_lookat)
+				TestPlayerLookFn(b, Point(0,0));
+			prev_mouse = Point(0,0);
+		}
+		
 		
 		bool fwd   = data['W'];
 		bool left  = data['A'];
 		bool down  = data['S'];
 		bool right = data['D'];
 		
+		float step = last_dt * 1.5;
+		
 		if (fwd) {
-			b.trans->position[2] += last_dt * 0.5;
+			TestPlayerMoveFn(b, vec3(0,0,1), step);
 		}
 		if (left) {
-			b.trans->position[0] -= last_dt * 0.5;
+			TestPlayerMoveFn(b, vec3(-1,0,0), step);
 		}
 		if (down) {
-			b.trans->position[2] -= last_dt * 0.5;
+			TestPlayerMoveFn(b, vec3(0,0,-1), step);
 		}
 		if (right) {
-			b.trans->position[0] += last_dt * 0.5;
+			TestPlayerMoveFn(b, vec3(+1,0,0), step);
 		}
 	}
 	else TODO
 	
 }
 
+void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
+	double rot_speed = 0.05 / (2*M_PI);
+	yaw += mouse_diff.x * rot_speed;
+	pitch += mouse_diff.y * rot_speed;
+	
+	b.trans->use_lookat = true;
+	b.trans->up = vec3(0,1,0);
+	b.trans->direction =  vec3(
+		sin(pitch) * sin(yaw),
+		cos(pitch),
+		-sin(pitch) * cos(yaw));
+	
+	#if 0
+	const vec3& v = b.trans->direction;
+	LOG("dx: " << mouse_diff.x << ", dy: " << mouse_diff.y <<
+		", rot: " << v[0] << ", " << v[1] << ", " << v[2] <<
+		", angle: " << yaw << ss", angle1: " << pitch);
+	#endif
+}
+
+void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
+	vec3& pos = b.trans->position;
+	vec3 dir = b.trans->direction;
+	
+	// remove y component
+	dir[1] = 0;
+	
+	float straight = rel_dir[2];
+	float sideways = rel_dir[0];
+	
+	if (straight) {
+		pos += dir * step * straight;
+	}
+	if (sideways) {
+		vec3 s = dir * step * sideways;
+		pos[0] -= s[2];
+		pos[2] += s[0];
+	}
+}
 
 
 

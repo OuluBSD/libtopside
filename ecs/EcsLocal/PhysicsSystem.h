@@ -14,17 +14,24 @@ class PhysicsSystem : public System<PhysicsSystem>
 	String env_name;
 	Vector<PhysicsBody*> bodies;
 	Point prev_mouse;
-	double prev_pitch = 0;
-	double prev_yaw = 0;
 	double time = 0;
 	double last_dt = 0;
 	bool debug_log = false;
+	
+	// player camera
+	double pitch = -M_PI/2;
+	double yaw = 0;
+	
+	
+	void TestPlayerLookFn(PhysicsBody& b, Point mouse_diff);
+	void TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step);
 	
 protected:
     void Update(double dt) override;
 	bool Arg(String key, Object value) override;
     
     void RunTestFn(PhysicsBody& b);
+    
 public:
     vec3	gravity;
     

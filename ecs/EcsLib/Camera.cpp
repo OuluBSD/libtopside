@@ -127,7 +127,7 @@ void ChaseCam::UpdateView() {
 	if (this->target) {
 		vec3 target = this->target->position;
 		vec3 eye {0.0f, 2.0f, -6.0f};
-		vec3 up {0, -1, 0};
+		vec3 up {0, 1, 0};
 		
 		if (this->trans) {
 			
@@ -160,7 +160,7 @@ void ChaseCam::UpdateView() {
 				float y_mod = 0.2 * eye_y;
 				
 				eye = eye + vec3{0.3f * eye_x, 0.3f * eye_y, 0.0f};
-				rot = rotate(identity<mat4>(), angle, up);
+				rot = rotate(identity<mat4>(), angle, -up);
 			}
 			#endif
 		}
@@ -170,22 +170,23 @@ void ChaseCam::UpdateView() {
 		this->view = port * projection * lookat;
 	}
 	else if (this->trans) {
-		quat orientation = this->trans->orientation;
-		mat4 rotate = ToMat4(orientation);
 		
-		#if 0
-		mat4 tran = identity<mat4>();
-		tran.Translate(-this->trans->position);
-		#else
-		mat4 tran = translate(this->trans->position);
-		#endif
-		
-		#if 0
-		mat4 lookat = LookAt(vec3(0,0,0), vec3(1,0,0), vec3(0,1,0));
-		this->view = port * projection * lookat * rotate * tran;
-		#else
-		this->view = port * projection * rotate * tran;
-		#endif
+		if (this->trans->use_lookat) {
+			vec3 position = this->trans->position;
+			vec3 direction = this->trans->direction;
+			vec3 target = position + direction;
+			vec3 up = this->trans->up;
+			if (direction == up)
+				direction += vec3(0.01, 0.01, 0.01);
+			mat4 lookat = LookAt(position, target, -up);
+			this->view = port * projection * lookat;
+		}
+		else {
+			quat orientation = this->trans->orientation;
+			mat4 rotate = ToMat4(orientation);
+			mat4 tran = translate(-this->trans->position);
+			this->view = port * projection * rotate * tran;
+		}
 	}
 	/*mat4 model = translate(target);
 	this->view = port * projection * lookat * model * rot;*/

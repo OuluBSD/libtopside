@@ -14,6 +14,9 @@ public:
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
 	quat orientation = identity<quat>();
+	vec3 direction, up = vec3(0,1,0); // "look at" alternative to quaternion
+	bool use_lookat = false; // use direction & up instead of orientation
+	
 	
 	void SetFromMatrix(const mat4& matrix);
 	void operator=(const Transform& t);
