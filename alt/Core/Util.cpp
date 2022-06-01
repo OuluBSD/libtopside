@@ -119,7 +119,7 @@ void Exit(int i) {::exit(i);}
 String sDataPath;
 String config_path;
 
-void SetCoreArg(String key, String value) {
+void SetCoreArg(const String& key, const String& value) {
 	if (key.IsEmpty())
 		return;
 	

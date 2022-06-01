@@ -47,6 +47,7 @@ struct GfxDataObject : RTTIBase {
     mat4 proj_override;
     mat4 scale;
     mat4 model;
+    vec4 color;
     int id = -1;
     
 	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
@@ -75,6 +76,7 @@ struct GfxDataState : ErrorReporter {
 	virtual GfxDataObject& GetObject(int i) = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
 	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o) = 0;
+	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o, String path) = 0;
 	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;
 	
 };

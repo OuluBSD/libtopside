@@ -460,18 +460,56 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return *this;
 	}
 	Matrix& SetRotation(const vec3& axis, float angle_rad) {*this = GetRotation(axis, angle_rad); return *this;}
-	Matrix& SetProjection(T fov_half_rad, T aspect, T near, T far) {
-		T fov_rad = fov_half_rad * (T)2;
-		T tan_half_fov = FastTan(fov_rad);
-		T fov_y = (T)1 / tan_half_fov;
-		T fov_x = fov_y / aspect;
-		Clear();
-		data[0][0] = fov_x;
-		data[1][1] = fov_y;
-		data[2][2] = (far + near) / (near - far); //far / (far - near);
-		data[2][3] = -1.0f; //1.0f;
-		data[3][2] = (2 * near * far) / (near - far);//-near * data[2][2];
+	Matrix& SetPerspectiveRH_ZO(T fov_rad, T aspect, T near, T far) {
+		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
+		data[0][0] = static_cast<T>(1) / (aspect * tan_half_fovy);
+		data[1][1] = static_cast<T>(1) / (tan_half_fovy);
+		data[2][2] = far / (near - far);
+		data[2][3] = - static_cast<T>(1);
+		data[3][2] = -(far * near) / (far - near);
 		return *this;
+	}
+	Matrix& SetPerspectiveRH_NO(T fov_rad, T aspect, T near, T far) {
+		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
+		data[0][0] = static_cast<T>(1) / (aspect * tan_half_fovy);
+		data[1][1] = static_cast<T>(1) / (tan_half_fovy);
+		data[2][2] = - (far + near) / (far - near);
+		data[2][3] = - static_cast<T>(1);
+		data[3][2] = - (static_cast<T>(2) * far * near) / (far - near);
+		return *this;
+	}
+	Matrix& SetPerspectiveLH_ZO(T fov_rad, T aspect, T near, T far) {
+		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
+		data[0][0] = static_cast<T>(1) / (aspect * tan_half_fovy);
+		data[1][1] = static_cast<T>(1) / (tan_half_fovy);
+		data[2][2] = far / (far - near);
+		data[2][3] = static_cast<T>(1);
+		data[3][2] = -(far * near) / (far - near);
+		return *this;
+	}
+	Matrix& SetPerspectiveLH_NO(T fov_rad, T aspect, T near, T far) {
+		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
+		data[0][0] = static_cast<T>(1) / (aspect * tan_half_fovy);
+		data[1][1] = static_cast<T>(1) / (tan_half_fovy);
+		data[2][2] = (far + near) / (far - near);
+		data[2][3] = static_cast<T>(1);
+		data[3][2] = - (static_cast<T>(2) * far * near) / (far - near);
+		return *this;
+	}
+	Matrix& SetPerspective(T fov_rad, T aspect, T near, T far) {
+		#if 1
+		return SetPerspectiveRH_ZO(fov_rad, aspect, near, far);
+		#elif 0
+		return SetPerspectiveRH_NO(fov_rad, aspect, near, far);
+		#elif 0
+		return SetPerspectiveLH_ZO(fov_rad, aspect, near, far);
+		#elif 0
+		return SetPerspectiveLH_NO(fov_rad, aspect, near, far);
+		#endif
 	}
 	Matrix& SetOrtographic(T left, T right, T bottom, T top, T near, T far) {
 		Clear();

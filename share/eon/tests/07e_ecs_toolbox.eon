@@ -1,0 +1,68 @@
+machine sdl.app: {
+	
+	driver context: {
+		sdl.context: true;
+	};
+	
+	chain program: {
+		state event.register;
+		
+		loop center.events: {
+			center.customer: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
+		loop ogl.fbo: {
+			ogl.customer: true;
+			sdl.ogl.fbo.program: true {
+				drawmem:		"false";
+				program:		"obj_view";
+			};
+			sdl.fbo.sink: true {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				fragment:		"shaders/tests/07d_fragment.glsl";
+				vertex:			"shaders/tests/07d_vertex.glsl";
+			};
+		};
+		
+	};
+
+};
+
+engine ecs.dummy: {
+    system rendering;
+    system entity.store;
+    system component.store;
+    system events;
+    system physics: {env: event.register;};
+    system paintstroke;
+    system toolbox;
+    system paint;
+    
+    
+    pool world: {
+        entity ground: {
+            comp transform3;
+            comp model: {builtin: plane;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
+        entity box1: {
+            comp transform3: {y: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
+        entity player: {
+            comp transform3: {x: 0; y: 1; z: -6;};
+            comp viewable;
+            comp viewport: {fov: 90;};
+            comp camera.chase;//: {target: world.box1;};
+            comp physics: {bind: physics; test.fn: player;};
+        };
+    };
+};

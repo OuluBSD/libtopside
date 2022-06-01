@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 
 /*#include <memory>
 #include <numeric>
@@ -27,3 +28,4 @@ extern char g_vsPbrNoVprtMain[1024];
 extern char g_gsPbrNoVprtMain[1024];
 #endif
 
+#endif

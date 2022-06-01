@@ -1,17 +1,41 @@
 #include "IGraphics.h"
 
 
-
 NAMESPACE_PARALLEL_BEGIN
+
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
-	
+	if (0) {
+		obj = "cube.obj";
+		tex = "cube.png";
+	}
+	else {
+		obj = "african_head" DIR_SEPS "african_head.obj";
+		tex = "african_head" DIR_SEPS "african_head_diffuse.tga";
+	}
 }
 
 template <class Gfx>
 void ObjViewProgT<Gfx>::Initialize() {
 	Serial::FboAtomT<Gfx>::Latest().AddBinder(this);
+}
+
+template <class Gfx>
+bool ObjViewProgT<Gfx>::Arg(const String& key, const String& value) {
+	
+	if (key == "use.pbr") {
+		use_pbr = value == "true";
+	}
+	else if (key == "model") {
+		obj = value;
+	}
+	else if (key == "tex") {
+		tex = value;
+	}
+	else return false;
+	
+	return true;
 }
 
 template <class Gfx>
@@ -26,15 +50,6 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 		DataState& state = sd->GetState();
 		
 		if (sd->GetState().GetObjectCount() == 0) {
-			String obj, tex;
-			if (0) {
-				obj = "cube.obj";
-				tex = "cube.png";
-			}
-			else {
-				obj = "african_head" DIR_SEPS "african_head.obj";
-				tex = "african_head" DIR_SEPS "african_head_diffuse.tga";
-			}
 			
 			String data_dir = ShareDirFile("models");
 			String obj_path = AppendFileName(data_dir, obj);
@@ -92,50 +107,28 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	float angle = f * (2.0 * M_PI);
 	
 	if (!state.user_view) {
-		float x = cos(angle);
-		float y = sin(angle);
+		float rad = 1.5;
+		float x = cos(angle) * rad;
+		float z = sin(angle) * rad;
+		float eye_x = cos(angle);
+		float eye_y = sin(angle);
+		mat4 proj = perspective(DEG2RAD(110), 1.0, 0.1, 100.0);
 		
-		float eye_angle = (use_texture ? -1 : +1) * f /** 0.25*/ * M_2PI;
-		float eye_x = cos(eye_angle);
-		float eye_y = sin(eye_angle);
-		float x_mod = 0.2 * eye_x;
-		float y_mod = 0.2 * eye_y;
-		/*mat4 proj {
-			vec4{1,		0,	    0,		0},
-			vec4{0,		1,	    0,		0},
-			vec4{0,		0,	    1,		0},
-			vec4{0,		0, -1./5.,		1}
-		};*/
-		float fov = 90;
-		float fov_2 = fov * 0.5;
-		mat4 proj = perspective(DEG2RAD(fov_2), 1.0, 0.1, 100.0);
-		mat4 model = translate(vec3(0.0, 0.0, -4.0));
-		
-		
-		vec3 eye {0.3f * eye_x, 2.0f + 0.3f * eye_y, 0.0};
-		//vec3 eye {0.f, 2.f, 0.f};
-		vec3 center {0, 0, -4};
+		vec3 eye {x, 0, z};
+		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
+		vec3 center {0, 0, 0};
 		vec3 up {0, 1, 0};
 		mat4 lookat = LookAt(eye, center, up);
-		mat4 port;
+		mat4 port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+		state.view = port * proj * lookat;
 		
-		/*if (phase == 0)
-			port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 1);
-		else*/
-			port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+		//mat4 rot = rotate(identity<mat4>(), angle, up);
+		//mat4 model = translate(vec3(0.0, 0.0, 0.0));
+		//state.view = port * proj * lookat * model * rot;
 		
-		mat4 rot = rotate(identity<mat4>(), angle, up);
-		
-		/*mat4 pl = lookat * proj;
-		mat4 mpl = model * pl;
-		mat4 rmpl = rot * mpl;*/
-		//mat4 rmpl = rot * model * lookat * proj * port;
-		mat4 rmpl = port * proj * lookat * model * rot;
-		
-		state.view = /*port **/ rmpl;
 	}
 	
-	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	state.light_dir = vec3 {sin(angle * 0.1f), 0.0, cos(angle * 0.1f)};
 	
 }
 

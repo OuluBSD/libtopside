@@ -155,15 +155,19 @@ Image LibPngBackend::LoadFileAny(String path) {
 	free(row_pointers);
 	
 	
-	RGBA* it = (RGBA*)(byte*)img->data.Begin();
-	RGBA* end = it + width * height;
-	while (it != end) {
-		byte b = it->r;
-		it->r = it->b;
-		it->b = b;
-		it++;
+	// Invert red and blue
+	static_assert(sizeof(RGBA) == 4);
+	byte* it = (byte*)img->data.Begin();
+	byte* end = (byte*)img->data.End();
+	if (img->data.GetCount() % bpp == 0) {
+		while (it != end) {
+			byte b = it[0];
+			it[0] = it[2];
+			it[2] = b;
+			it += bpp;
+		}
 	}
-	
+	else {ASSERT(0);}
 	
 	return img;
 }

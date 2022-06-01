@@ -202,7 +202,7 @@ void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {
 		vec4{0,		0, -1./5.,		1}
 	};
 	
-	projection = perspective(DEG2RAD(90.0f * 0.5), (float)width / (float)height, 0.1f, 100.0f);
+	projection = perspective(DEG2RAD(90.0f), (float)width / (float)height, 0.1f, 100.0f);
 	
 	vec3 eye {0.3f * eye_x, 0.3f * eye_y, 1};
 	vec3 center {0, 0.5, -1};
@@ -220,7 +220,7 @@ void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	
 	#else
 	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
-	projection = perspective(DEG2RAD(90.0f* 0.5), (float)width / (float)height, 0.1f, 1000.0f);
+	projection = perspective(DEG2RAD(90.0f), (float)width / (float)height, 0.1f, 1000.0f);
     mat4 lookat = LookAt(vec3(0.0f, 0.5f, -3.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
     state.view = projection * lookat;
 	#endif

@@ -190,6 +190,7 @@ void Engine::Add(TypeCls type_id, SystemBase* system) {
 		if (system->Initialize()) {
 			RTLOG("Engine::Add: added system to already running engine: " << system->GetDynamicName());
 			systems.Add(type_id, system);
+			system->Start();
 		}
 		else {
 			RTLOG("Engine::Add: error: could not initialize system in already running engine: " << system->GetDynamicName());

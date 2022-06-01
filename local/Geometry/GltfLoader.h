@@ -1,3 +1,4 @@
+#if 0
 // Functions to load glTF 2.0 content into a renderable Pbr::Model.
 
 #pragma once
@@ -53,3 +54,5 @@ inline bool FromGltfBinary(
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

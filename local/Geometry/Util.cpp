@@ -141,7 +141,7 @@ double GetDegrees(double radians) {return radians / M_2PI * 360.0;}
 
 mat4 perspective(float half_fov_rad, float aspect, float near, float far) {
 	mat4 m;
-	m.SetProjection(half_fov_rad, aspect, near, far);
+	m.SetPerspective(half_fov_rad, aspect, near, far);
 	return m;
 }
 

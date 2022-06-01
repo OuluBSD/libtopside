@@ -13,7 +13,7 @@
 #include "Factory.h"
 #include "AtomStore.h"
 #include "AtomSystem.h"
-#include "Serial.h"
+#include "WorldState.h"
 
 
 #endif

@@ -69,8 +69,6 @@ protected:
 	//One<GfxDataState> state;
 	GfxDataState*				state = 0;
 	
-public:
-	Pbr::Resources				pbr_res;
 	
 protected:
     bool Initialize() override;

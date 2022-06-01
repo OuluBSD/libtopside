@@ -1,3 +1,5 @@
+#if 0
+
 #include "Geometry.h"
 
 
@@ -8,4 +10,5 @@
 #include "Shaders/Compiled/PbrVertexShaderNoVprt.h"
 #include "Shaders/Compiled/PbrGeometryShaderNoVprt.h"
 
+#endif
 #endif

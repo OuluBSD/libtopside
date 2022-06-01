@@ -57,6 +57,12 @@ public:
 	void RefreshModel(CpuDataState& state);
 	void RefreshModel(OglDataState& state);*/
 	
+	void SetPrefabModel(String prefab); // ResetModel
+	
+public:
+	vec4 color = one<vec4>();
+	String prefab_name;
+	
 protected:
 	ModelLoader loader;
 	GfxDataObject* obj = 0;

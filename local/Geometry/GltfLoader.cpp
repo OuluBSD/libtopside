@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 #include <ports/tiny_gltf/tiny_gltf.h>
 
@@ -267,3 +268,5 @@ bool FromGltfBinary(
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

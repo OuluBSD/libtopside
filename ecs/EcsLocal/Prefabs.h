@@ -23,6 +23,32 @@ struct StaticSkybox : EntityPrefab<Transform, Renderable, ModelComponent>
     }
 };
 
+struct StaticSphere : EntityPrefab<Transform, ModelComponent>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        components.Get<ModelComponentRef>()->SetPrefabModel(KnownModelNames::UnitSphere);
+        components.Get<ModelComponentRef>()->color = vec4(0.5, 0.5, 0.5, 1.0);
+
+        return components;
+    }
+};
+
+struct StaticCube : EntityPrefab<Transform, ModelComponent>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        components.Get<ModelComponentRef>()->SetPrefabModel(KnownModelNames::UnitCube);
+        components.Get<ModelComponentRef>()->color = vec4(0.5, 0.5, 0.5, 1.0);
+		
+        return components;
+    }
+};
+
 
 
 NAMESPACE_ECS_END

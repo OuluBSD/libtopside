@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 
@@ -59,7 +60,8 @@ struct Model
 	using GfxContext& = typename Gfx::GfxContext&;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;*/
 	
-    Model(bool create_root_node = false);
+    Model(bool create_root_node = false);#if 0
+
 	
 	void CreateRootNode();
 	
@@ -122,3 +124,5 @@ private:
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

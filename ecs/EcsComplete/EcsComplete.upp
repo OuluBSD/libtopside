@@ -6,8 +6,9 @@ uses
 	EcsMinimal,
 	IPhysics,
 	IMidiHw,
-	IMidiFile,
-	IVR;
+	IMidiFile;
+
+uses(VR) IVR;
 
 uses(GUI) EcsCtrl;
 

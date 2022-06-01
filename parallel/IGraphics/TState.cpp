@@ -163,7 +163,18 @@ void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out) 
 
 template <class Gfx>
 bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o, String path) {
+	#ifdef flagASSIMP
 	return LoadModelAssimp(l, o, path);
+	#endif
+	return false;
+}
+
+template <class Gfx>
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l, GfxDataObject& o, String path) {
+	DataObject* o0 = CastPtr<DataObject>(&o);
+	if (o0)
+		return LoadModel(l, *o0, path);
+	return false;
 }
 
 #ifdef flagASSIMP

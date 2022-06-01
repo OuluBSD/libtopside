@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 
 
@@ -113,3 +114,5 @@ void Primitive::Render(GfxContext& context) const
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

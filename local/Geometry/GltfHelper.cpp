@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 #include <ports/mikktspace/mikktspace.h>
 #include <ports/tiny_gltf/tiny_gltf.h>
@@ -522,3 +523,5 @@ const byte* ReadImageAsRGBA(const tinygltf::Image& image, Vector<byte>* temp_buf
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

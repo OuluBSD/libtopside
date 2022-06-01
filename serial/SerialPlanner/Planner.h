@@ -129,6 +129,7 @@ public:
 	int GetAtomCount() const {return atoms.GetCount();}
 	int GetAddAtom(String id);
 	int GetAddAtom(const Id& id);
+	String GetAtomKey(int i) const {return atoms.GetKey(i);}
 	const Atom& GetAtom(int i) const {return atoms[i];}
 	bool IsSideSink() const {return side_sink_max_est <= side_src_max_est;}
 	Vector<State>& GetSideSinks() {return side_sinks;}

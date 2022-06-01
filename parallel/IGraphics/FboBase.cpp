@@ -47,6 +47,18 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	data.prog = bin_map[bin_i]();
 	binders.Add(&*data.prog);
 	
+	Index<String> keys;
+	ws.FindKeys(".program.arg.", keys);
+	for (String key : keys) {
+		String arg_key = key.Mid(13);
+		String value = ws.Get(key);
+		for (BinderIfaceVideo* b : binders) {
+			if (!b->Arg(arg_key, value)) {
+				LOG("FboAtomT<Gfx>::Initialize: error: program '" << bin << "' did not accept argument: " << arg_key << " = " << value);
+				return false;
+			}
+		}
+	}
 	
 	if (gfxpack) {
 		String frag = program + "_fragment";

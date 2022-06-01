@@ -23,8 +23,8 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragment:		"shaders/tests/03f_fragment.glsl";
-				vertex:			"shaders/tests/03f_vertex.glsl";
+				fragment:		"shaders/tests/07d_fragment.glsl";
+				vertex:			"shaders/tests/07d_vertex.glsl";
 			};
 		};
 		
@@ -56,7 +56,7 @@ engine ecs.dummy: {
         entity player: {
             comp transform3: {x: 0; y: 1; z: -6;};
             comp viewable;
-            comp viewport: {fov: 160;};
+            comp viewport: {fov: 90;};
             comp camera.chase;//: {target: world.box1;};
             comp physics: {bind: physics; test.fn: player;};
         };

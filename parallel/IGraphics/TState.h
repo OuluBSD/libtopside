@@ -76,8 +76,9 @@ struct DataStateT : GfxDataState {
 	void Free();
 	void Refresh(ModelMesh& m) override {TODO}
 	bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
-	bool LoadModel(ModelLoader& l, DataObject& o, String path);
+	bool LoadModel(ModelLoader& l, GfxDataObject& o, String path) override;
 	bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) override;
+	bool LoadModel(ModelLoader& l, DataObject& o, String path);
 	
 protected:
 	

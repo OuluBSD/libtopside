@@ -11,6 +11,9 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<EasingSystem>("easing");
 	Engine::Register<WorldLogicSystem>("world.logic");
 	Engine::Register<PhysicsSystem>("physics");
+	Engine::Register<PaintStrokeSystemBase>("paintstroke");
+	Engine::Register<ToolboxSystemBase>("toolbox");
+	Engine::Register<PaintingInteractionSystemBase>("paint");
 	
 	#if HAVE_WINDOWSYSTEM
 	Engine::Register<WindowSystem>("windows");

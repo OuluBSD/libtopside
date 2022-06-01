@@ -93,9 +93,21 @@ bool ModelComponent::Arg(String key, Object value) {
 
 bool ModelComponent::Load(GfxDataState& state) {
 	if (!obj) {
-		obj = &state.CreateObject();
-		if (!state.LoadModel(loader, *obj)) {
-			LOG("ModelComponent::Load: error: model loading failed");
+		if (!loader && !prefab_name.IsEmpty()) {
+			obj = &state.CreateObject();
+			String path = KnownModelNames::GetPath(prefab_name);
+			if (!state.LoadModel(loader, *obj, path))
+				return false;
+		}
+		else if (loader) {
+			obj = &state.CreateObject();
+			if (!state.LoadModel(loader, *obj)) {
+				LOG("ModelComponent::Load: error: model loading failed");
+				return false;
+			}
+		}
+		else {
+			LOG("ModelComponent::Load: error: nothing to load");
 			return false;
 		}
 	}
@@ -108,7 +120,13 @@ bool ModelComponent::Load(GfxDataState& state) {
 		obj->model = pos * rot * sz;
 	}
 	
+	obj->color = color;
+	
 	return true;
+}
+
+void ModelComponent::SetPrefabModel(String prefab) {
+	prefab_name = prefab;
 }
 
 /*void ModelComponent::LoadModel(CpuDataState& state) {

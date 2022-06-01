@@ -23,6 +23,7 @@ file
 	EventSystem.h,
 	EventSystem.cpp,
 	Prefab.h,
+	Prefab.cpp,
 	EonLoader.h,
 	EonLoader.cpp,
 	WorldLogic.h,

@@ -12,8 +12,10 @@ const char* names[TS::GVar::VAR_COUNT+1] = {
 	
 	"iScale",
 	"iModel",
+	"iModelColor",
 	"iNone",
 	"iDiffuse",
+	
 	"iSpecular",
 	
 	"iAmbient",

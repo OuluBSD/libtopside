@@ -73,6 +73,8 @@ public:
 	bool IsUndefined(const String& key) const;
 	bool IsUndefined(int idx) const;
 	bool IsEmpty() const {return values.IsEmpty();}
+	int GetValueCount() const;
+	void FindKeys(String key_left, Index<String>& keys) const;
 	String Get(const String& key) const;
 	String Get(int idx) const;
 	Size GetSize(const String& cx, const String& cy, Size def=Size(0,0)) const;

@@ -581,6 +581,9 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog, cons
 		//LOG("VAR_AUDIOTIME: " << ctx.time_total);
 		Gfx::Uniform1f(uindex, (float)ctx.time_total);
 	}
+	else if (var == VAR_MODELCOLOR) {
+		Gfx::Uniform4f(uindex, o.color[0], o.color[1], o.color[2], o.color[3]);
+	}
 	else if (var == VAR_VIEW) {
 		Gfx::UniformMatrix4fv(uindex, data.view);
 	}

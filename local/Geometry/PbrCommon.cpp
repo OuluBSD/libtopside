@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 
 
@@ -307,3 +308,5 @@ SamplerState& CreateSampler(NativeDeviceRef device, D3D11_TEXTURE_ADDRESS_MODE a
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

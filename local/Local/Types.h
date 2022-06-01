@@ -44,6 +44,7 @@ public:
 	virtual ~BinderIfaceVideo() {}
 	
 	virtual bool Render(Draw& d) = 0;
+	virtual bool Arg(const String& key, const String& value) = 0;
 	
 	virtual void Initialize() {}
 	virtual void Visit(RuntimeVisitor& vis) {}

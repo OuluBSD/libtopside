@@ -136,6 +136,10 @@ public:
     //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
     void Dump();
     void ReverseFaces();
+    
+    bool IsEmpty() const {return meshes.IsEmpty();}
+    operator bool() const {return !IsEmpty();}
+    
 };
 
 using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;

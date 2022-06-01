@@ -1,3 +1,4 @@
+#endif
 #include "EcsVR.h"
 
 NAMESPACE_ECS_BEGIN
@@ -122,3 +123,4 @@ void PbrModelCache::Uninitialize() {
 
 NAMESPACE_ECS_END
 
+#endif

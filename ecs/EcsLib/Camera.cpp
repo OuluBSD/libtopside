@@ -117,7 +117,7 @@ void ChaseCam::SetViewportSize(Size sz) {
 	
 	if (vport)
 		fov = vport->fov;
-	projection = perspective(DEG2RAD(fov*0.5), 1.0f, 0.1f, 100.0f);
+	projection = perspective(DEG2RAD(fov), 1.0f, 0.1f, 100.0f);
 }
 
 void ChaseCam::UpdateView() {
@@ -160,7 +160,7 @@ void ChaseCam::UpdateView() {
 				float y_mod = 0.2 * eye_y;
 				
 				eye = eye + vec3{0.3f * eye_x, 0.3f * eye_y, 0.0f};
-				rot = rotate(identity<mat4>(), angle, -up);
+				rot = rotate(identity<mat4>(), angle, up);
 			}
 			#endif
 		}
@@ -178,7 +178,7 @@ void ChaseCam::UpdateView() {
 			vec3 up = this->trans->up;
 			if (direction == up)
 				direction += vec3(0.01, 0.01, 0.01);
-			mat4 lookat = LookAt(position, target, -up);
+			mat4 lookat = LookAt(position, target, up);
 			this->view = port * projection * lookat;
 		}
 		else {

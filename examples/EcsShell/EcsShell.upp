@@ -2,6 +2,8 @@ uses
 	Shadertoy,
 	EcsMinimal;
 
+uses(!MINIMAL) EcsComplete;
+
 file
 	EcsShell.h,
 	EcsShell.cpp;

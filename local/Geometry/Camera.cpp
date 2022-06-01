@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 Camera::Camera() {
-	this->fov = 60.0f;
+	this->fov = 120.0f;
 	this->aspect = 1.3f;
 	this->near = 0.01f;
 	this->far = 1000.0f;
@@ -12,7 +12,7 @@ Camera::Camera() {
 	this->height = 1.0f;
 
 	this->world = mat4();
-	this->view.SetProjection(this->fov, this->aspect, this->near, this->far);
+	this->view.SetPerspective(DEG2RAD(this->fov), this->aspect, this->near, this->far);
 	this->proj_mode = 0;
 }
 
@@ -104,7 +104,7 @@ void Camera::Resize(int width, int height) {
 	this->aspect = (float)width / (float)height;
 
 	if (this->proj_mode == 0) {
-		this->view = perspective(this->fov, this->aspect, this->near, this->far);
+		this->view = perspective(DEG2RAD(this->fov), this->aspect, this->near, this->far);
 	}
 	else if (this->proj_mode == 1) {
 		this->width = (float)width;
@@ -133,7 +133,7 @@ void Camera::Perspective(float fov_angle, float aspect, float zNear, float zFar)
 	this->near = zNear;
 	this->far = zFar;
 
-	this->view = perspective(DEG2RAD(fov_angle*0.5), aspect, zNear, zFar);
+	this->view = perspective(DEG2RAD(fov_angle), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
 

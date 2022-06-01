@@ -11,6 +11,11 @@
 #include "PhysicsSystem.h"
 #include "Prefabs.h"
 #include "Gui.h"
+#include "Player.h"
+#include "PaintStrokeSystem.h"
+#include "ToolboxSystem.h"
+#include "ToolSystem.h"
+#include "PaintingSystem.h"
 
 
 NAMESPACE_ECS_BEGIN

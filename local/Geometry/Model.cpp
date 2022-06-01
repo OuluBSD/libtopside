@@ -98,6 +98,7 @@ ModelLoader::ModelLoader() {
 	
 }
 
+
 #if 0
 
 bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) {

@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 
 
@@ -188,3 +189,5 @@ void Model::UpdateTransforms(Resources const& pbr_res, GfxContext& context) cons
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

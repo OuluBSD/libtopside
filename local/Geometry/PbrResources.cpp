@@ -1,3 +1,4 @@
+#if 0
 #include "Geometry.h"
 
 
@@ -239,3 +240,5 @@ void Resources::Bind(GfxContext& context) const
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

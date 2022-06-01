@@ -53,7 +53,7 @@ int GetExitCode();
 void SetExitCode(int i);
 void Exit();
 void Exit(int i);
-void SetCoreArg(String key, String value);
+void SetCoreArg(const String& key, const String& value);
 String GetExeDirFile(String filename);
 String GetEnv(String id);
 void ReadCoreCmdlineArgs();

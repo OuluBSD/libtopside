@@ -1,3 +1,4 @@
+#if 0
 //
 // Shared data types and functions used throughout the Pbr rendering library.
 //
@@ -160,3 +161,4 @@ private:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
