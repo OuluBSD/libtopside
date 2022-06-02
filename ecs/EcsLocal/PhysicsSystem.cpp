@@ -87,8 +87,11 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 	else if (b.test_fn == PhysicsBody::TESTFN_FIXED) {
 		// pass
 	}
-	else if (b.test_fn == PhysicsBody::TESTFN_PLAYER) {
+	else if (b.test_fn == PhysicsBody::TESTFN_PLAYER_BODY) {
 		FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+		
+		if (!b.player)
+			b.player = b.GetEntity()->Find<PlayerBodyComponent>();
 		
 		if (state->GetBool(MOUSE_LEFTDOWN)) {
 			Point& drag = state->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
@@ -136,15 +139,19 @@ void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
 	yaw += mouse_diff.x * rot_speed;
 	pitch += mouse_diff.y * rot_speed;
 	
-	b.trans->use_lookat = true;
-	b.trans->up = vec3(0,1,0);
-	b.trans->direction =  vec3(
-		sin(pitch) * sin(yaw),
-		cos(pitch),
+	//b.trans->use_lookat = true;
+	auto head = b.player->GetHead();
+	if (!head)
+		return;
+	
+	head->up = vec3(0,1,0);
+	head->direction =  vec3(
+		 sin(pitch) * sin(yaw),
+		 cos(pitch),
 		-sin(pitch) * cos(yaw));
 	
 	#if 0
-	const vec3& v = b.trans->direction;
+	const vec3& v = b.player->direction;
 	LOG("dx: " << mouse_diff.x << ", dy: " << mouse_diff.y <<
 		", rot: " << v[0] << ", " << v[1] << ", " << v[2] <<
 		", angle: " << yaw << ss", angle1: " << pitch);
@@ -152,8 +159,12 @@ void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
 }
 
 void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
+	auto head = b.player->GetHead();
+	if (!head)
+		return;
+	
 	vec3& pos = b.trans->position;
-	vec3 dir = b.trans->direction;
+	vec3 dir = head->direction;
 	
 	// remove y component
 	dir[1] = 0;
@@ -197,12 +208,11 @@ bool PhysicsBody::Arg(String key, Object value) {
 	}
 	else if (key == "test.fn") {
 		String v = value;
-		if (v == "do.circle")
-			test_fn = TESTFN_CIRCLE;
-		else if (v == "fixed")
-			test_fn = TESTFN_FIXED;
-		else if (v == "player")
-			test_fn = TESTFN_PLAYER;
+		
+		if      (v == "do.circle")			test_fn = TESTFN_CIRCLE;
+		else if (v == "fixed")				test_fn = TESTFN_FIXED;
+		else if (v == "player.body")		test_fn = TESTFN_PLAYER_BODY;
+		
 		else {
 			LOG("PhysicsBody::Arg: error: invalid test function: " + v);
 			return false;

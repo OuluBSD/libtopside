@@ -82,6 +82,13 @@ mat4 Transpose(const mat4& matrix);
 float Determinant(const mat2& matrix);
 float Determinant(const mat3& matrix);
 
+vec3 yaw_pitch_to_direction(float yaw, float pitch);
+void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch);
+void camera_object(
+	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
+	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
+	vec3& obj_pos, quat& obj_orient);
+
 mat4 Rotation(float pitch, float yaw, float roll);
 mat3 Rotation3x3(float pitch, float yaw, float roll);
 mat2 Rotation2x2(float angle);

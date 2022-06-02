@@ -93,6 +93,7 @@ protected:
 	
 private:
 	vec4 SelectColor(double x, double y);
+	void ClearStrokes();
 	
 	SimpleFixedArray<vec4, 10> colors = {
 		Colors::Red,

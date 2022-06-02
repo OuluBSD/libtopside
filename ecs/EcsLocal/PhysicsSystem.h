@@ -53,15 +53,16 @@ public:
 		TESTFN_NULL,
 		TESTFN_FIXED,
 		TESTFN_CIRCLE,
-		TESTFN_PLAYER,
+		TESTFN_PLAYER_BODY,
 	};
 	
 	int test_fn = 0;
 	Ref<Transform> trans;
+	Ref<PlayerBodyComponent> player;
 	
 public:
 	RTTI_COMP0(PhysicsBody)
-	COMP_DEF_VISIT_(vis & trans)
+	COMP_DEF_VISIT_(vis & trans & player)
 	
 	void Initialize() override;
 	bool Arg(String key, Object value) override;

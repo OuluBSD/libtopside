@@ -21,8 +21,8 @@ struct GfxBinderIface : RTTIBase {
 };
 #endif
 
-struct GfxDataObject : RTTIBase {
-	RTTI_DECL0(GfxDataObject)
+struct GfxDataObject : GfxMeshBase {
+	RTTI_DECL1(GfxDataObject, GfxMeshBase)
 	
 	virtual ~GfxDataObject() {}
 	
@@ -75,9 +75,10 @@ struct GfxDataState : ErrorReporter {
 	virtual int GetObjectCount() const = 0;
 	virtual GfxDataObject& GetObject(int i) = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
-	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o) = 0;
-	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o, String path) = 0;
-	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;
+	virtual bool LoadModel(ModelLoader& l) = 0;
+	virtual bool LoadModel(ModelLoader& l, String path) = 0;
+	virtual bool LoadModelTextures(ModelLoader& l) = 0;
+	
 	
 };
 

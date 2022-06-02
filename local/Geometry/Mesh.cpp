@@ -145,6 +145,20 @@ void ModelMesh::ReverseFaces() {
 		m.ReverseFaces();
 }
 
+void ModelMesh::GetGfxMeshBases(Vector<GfxMeshBase*>& meshes) {
+	for (Mesh& m : this->meshes)
+		if (m.accel)
+			meshes.Add(m.accel);
+}
+
+
+
+
+
+
+
+
+
 void Mesh::ReverseFaces() {
 	int triangle_count = indices.GetCount() / 3;
 	uint32* idx = (uint32*)indices.Begin();

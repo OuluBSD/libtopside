@@ -54,9 +54,8 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 			String data_dir = ShareDirFile("models");
 			String obj_path = AppendFileName(data_dir, obj);
 			String tex_path = AppendFileName(data_dir, tex);
-			auto& o = state.AddObject();
 			
-			if (!state.LoadModel(loader, o, obj_path)) {
+			if (!state.LoadModel(loader, obj_path)) {
 				RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
 				return false;
 			}
@@ -66,7 +65,7 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 				return false;
 			}
 			
-			if (!state.LoadModelTextures(loader, o)) {
+			if (!state.LoadModelTextures(loader)) {
 				RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
 				return false;
 			}

@@ -40,17 +40,25 @@ EntityRef EntityStore::FindEntity(String path) {
 	
 	PoolRef pool = GetRoot();
 	for(int i = 0; i < parts.GetCount(); i++) {
-		bool is_ent = i == parts.GetCount()-1;
-		const String& p = parts[i];
-		
-		if (is_ent) {
-			return pool->FindEntityByName(p);
+		PoolRef new_pool;
+		for(int c = i+1; c <= parts.GetCount(); c++) {
+			bool is_ent = c == parts.GetCount();
+			String p = parts[i];
+			for(int j = i+1; j < c; j++)
+				p << "." << parts[j];
+			
+			if (is_ent) {
+				return pool->FindEntityByName(p);
+			}
+			else {
+				new_pool = pool->FindPool(p);
+				if (new_pool)
+					break;
+			}
 		}
-		else {
-			pool = pool->FindPool(p);
-			if (!pool)
-				break;
-		}
+		if (!new_pool)
+			break;
+		pool = new_pool;
 	}
 	return EntityRef();
 }

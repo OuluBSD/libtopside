@@ -17,7 +17,6 @@ struct ObjectT : NodeT<Fys> {
 	using Space = typename Fys::Space;
 	
 	ModelLoader loader;
-	GfxDataObject* fb_obj = 0;
 	bool model_err = false;
 	
 	NativeGeom geom;

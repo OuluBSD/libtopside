@@ -4,6 +4,9 @@
 NAMESPACE_ECS_BEGIN
 
 
+class PlayerBodyComponent;
+using PlayerBodyComponentRef = RefT_Entity<PlayerBodyComponent>;
+
 
 typedef enum {
 	Unspecified,
@@ -56,15 +59,18 @@ class PlayerHandComponent : public Component<PlayerHandComponent> {
 	
 public:
 	RTTI_COMP0(PlayerHandComponent)
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis & body)
 	
 	COPY_PANIC(PlayerHandComponent)
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
 	
     bool IsSource(const HandLocationSource& rhs) const;
-
+	
+	
+	PlayerBodyComponentRef				body;
     bool								attach_ctrl_model = false;
     PlayerHandedness					req_hand = Unspecified;
     const HandLocationSource*			source = 0;
@@ -75,27 +81,83 @@ public:
 using PlayerHandComponentRef = Ref<PlayerHandComponent>;
 
 
-class PlayerHandSystem :
-    public System<PlayerHandSystem>
+
+class PlayerHeadComponent : public Component<PlayerHeadComponent> {
+	
+public:
+	RTTI_COMP0(PlayerHeadComponent)
+	COMP_DEF_VISIT_(vis & body)
+	
+	COPY_PANIC(PlayerHeadComponent)
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
+	
+	
+	PlayerBodyComponentRef				body;
+	vec3		up = zero<vec3>();
+	vec3		direction = zero<vec3>();
+	
+};
+
+using PlayerHeadComponentRef = Ref<PlayerHeadComponent>;
+
+
+
+class PlayerBodyComponent : public Component<PlayerBodyComponent> {
+	
+protected:
+	friend class PlayerBodySystem;
+	PlayerHandComponentRef hands[2];
+	PlayerHeadComponentRef head;
+	float height = 1.8f;
+	
+public:
+	RTTI_COMP0(PlayerBodyComponent)
+	COMP_DEF_VISIT_(vis & hands[0] & hands[1] & head)
+	COPY_PANIC(PlayerBodyComponent)
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
+	
+	bool SetHand(PlayerHandedness hand, PlayerHandComponentRef comp);
+	bool SetHead(PlayerHeadComponentRef head);
+	
+	float GetHeight() const {return height;}
+	const PlayerHeadComponentRef& GetHead() const {return head;}
+	
+};
+
+
+
+
+class PlayerBodySystem :
+    public System<PlayerBodySystem>
 {
 	
 public:
-	RTTI_DECL1(PlayerHandSystem, System<PlayerHandSystem>)
-	ECS_SYS_CTOR(PlayerHandSystem)
+	RTTI_DECL1(PlayerBodySystem, System<PlayerBodySystem>)
+	ECS_SYS_CTOR(PlayerBodySystem)
+	SYS_DEF_VISIT_(vis && bodies)
 	
-	const Vector<PlayerHandComponent*>& GetComponents() const {return comps;}
+	const Array<PlayerBodyComponentRef>& GetComponents() const {return bodies;}
 	
+	void Attach(PlayerBodyComponentRef h);
+	void Detach(PlayerBodyComponentRef h);
 protected:
     // System
     bool Initialize() override;
     void Start() override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
-
+	
 private:
     void RefreshComponentsForSource(const HandLocationSource& source);
     
-    Vector<PlayerHandComponent*> comps;
+    Array<PlayerBodyComponentRef> bodies;
     
 };
 

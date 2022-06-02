@@ -30,5 +30,9 @@ file
 	ToolboxSystem.cpp,
 	PaintingSystem.h,
 	PaintingSystem.cpp,
+	ShootingSystem.h,
+	ShootingSystem.cpp,
+	ThrowingSystem.h,
+	ThrowingSystem.cpp,
 	_ readonly separator;
 

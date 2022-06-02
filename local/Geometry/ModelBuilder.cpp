@@ -212,15 +212,15 @@ void PrimitiveFactory::CreateSphere(Mesh& mesh,
         for(int col = 0; col <= cols; col++) {
             vec3 normal = euler_to_offset(vec3(
                     0,
-                    -(static_cast<float>(row) / rows * 180 - 90), // pitch
-                    static_cast<float>(col) / cols * 360));       // yaw
+                    -(static_cast<float>(row) / rows * M_PI - M_PI_2), // pitch
+                    static_cast<float>(col) / cols * M_2PI));       // yaw
             vec3 offset = normal * radius;
             mesh.SetVertCoord(  vert_index, offset);
             mesh.SetVertNormal( vert_index, safe_normalize(offset));
             mesh.SetVertTangent(vert_index, euler_to_offset(vec3(
                     0,
                     0,                                            // pitch
-                    static_cast<float>(col) / cols * 360 + 90))); // yaw
+                    static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
             vert_index++;
         }
     }
@@ -253,8 +253,8 @@ void PrimitiveFactory::CreateHemisphere(Mesh& mesh,
                     {
                         vec3 offset = euler_to_offset(vec3(
                                 0,
-                                (row == 1) ? 0 : -(static_cast<float>(row - 2) / (rows - 2) * 90), // pitch
-                                static_cast<float>(col) / cols * 360))                             // yaw
+                                (row == 1) ? 0 : -(static_cast<float>(row - 2) / (rows - 2) * M_PI_2), // pitch
+                                static_cast<float>(col) / cols * M_2PI))                             // yaw
                                 *radius;
                         mesh.SetVertCoord( vert_index, offset);
                         mesh.SetVertNormal(vert_index, (row == 1) ?
@@ -265,7 +265,7 @@ void PrimitiveFactory::CreateHemisphere(Mesh& mesh,
             mesh.SetVertTangent(vert_index, euler_to_offset(vec3(
                     0,
                     0,                                            // pitch
-                    static_cast<float>(col) / cols * 360 + 90))); // yaw
+                    static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
             vert_index++;
         }
     }
@@ -300,7 +300,7 @@ void PrimitiveFactory::CreateCylinder(Mesh& mesh,
                         vec3 offset = euler_to_offset(vec3(
                                 0,
                                 0,                                     // pitch
-                                static_cast<float>(col) / cols * 360)) // yaw
+                                static_cast<float>(col) / cols * M_2PI)) // yaw
                                 *radius;
                         mesh.SetVertCoord( vert_index, vec3(offset[0], 0, offset[2]));
                         mesh.SetVertNormal(vert_index, (row == 1) ?
@@ -313,7 +313,7 @@ void PrimitiveFactory::CreateCylinder(Mesh& mesh,
                         vec3 offset = euler_to_offset(vec3(
                                 0,
                                 0,                                     // pitch
-                                static_cast<float>(col) / cols * 360)) // yaw
+                                static_cast<float>(col) / cols * M_2PI)) // yaw
                                 *radius;
                         mesh.SetVertCoord( vert_index, vec3(offset[0], height, offset[2]));
                         mesh.SetVertNormal(vert_index, (row == 4) ?
@@ -328,7 +328,7 @@ void PrimitiveFactory::CreateCylinder(Mesh& mesh,
             mesh.SetVertTangent(vert_index, euler_to_offset(vec3(
                     0,
                     0,                                            // pitch
-                    static_cast<float>(col) / cols * 360 + 90))); // yaw
+                    static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
             vert_index++;
         }
     }
@@ -364,7 +364,7 @@ void PrimitiveFactory::CreateCone(Mesh& mesh,
                         vec3 offset = euler_to_offset(vec3(
                                 0,
                                 0,                                     // pitch
-                                static_cast<float>(col) / cols * 360)) // yaw
+                                static_cast<float>(col) / cols * M_2PI)) // yaw
                                 *radius;
                         mesh.SetVertCoord( vert_index, offset);
                         mesh.SetVertNormal(vert_index, (row == 1) ?
@@ -376,7 +376,7 @@ void PrimitiveFactory::CreateCone(Mesh& mesh,
                         vec3 offset = euler_to_offset(vec3(
                                 0,
                                 0,                                     // pitch
-                                static_cast<float>(col) / cols * 360)) // yaw
+                                static_cast<float>(col) / cols * M_2PI)) // yaw
                                 *radius;
                         mesh.SetVertCoord( vert_index, vec3(0, height, 0));
                         mesh.SetVertNormal(vert_index, safe_normalize(offset + vec3(0, rim_y_offset, 0)));
@@ -386,7 +386,7 @@ void PrimitiveFactory::CreateCone(Mesh& mesh,
             mesh.SetVertTangent(vert_index, euler_to_offset(vec3(
                     0,
                     0,                                            // pitch
-                    static_cast<float>(col) / cols * 360 + 90))); // yaw
+                    static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
             vert_index++;
         }
     }
@@ -414,17 +414,17 @@ void PrimitiveFactory::CreateTorus(Mesh& mesh,
             vec3 normal_major = euler_to_offset(vec3(
                     0,
                     0,                                      // pitch
-                    static_cast<float>(col) / cols * 360)); // yaw
+                    static_cast<float>(col) / cols * M_2PI)); // yaw
             vec3 normal_minor = euler_to_offset(vec3(
                     0,
-                    -(static_cast<float>(row) / rows * 360 - 180), // pitch
-                    static_cast<float>(col) / cols * 360));        // yaw
+                    -(static_cast<float>(row) / rows * M_2PI - M_PI), // pitch
+                    static_cast<float>(col) / cols * M_2PI));        // yaw
             mesh.SetVertCoord(  vert_index, normal_major * radius_major + normal_minor * radius_minor);
             mesh.SetVertNormal( vert_index, normal_minor);
             mesh.SetVertTangent(vert_index, euler_to_offset(vec3(
                     0,
                     0,                                            // pitch
-                    static_cast<float>(col) / cols * 360 + 90))); // yaw
+                    static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
             vert_index++;
         }
     }
@@ -746,13 +746,13 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -767,19 +767,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p1 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * upper_girdle_inner_rim_radius
                         + vec3(0, upper_girdle_inner_rim_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -795,19 +795,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p1 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_top_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * upper_girdle_inner_rim_radius
                         + vec3(0, upper_girdle_inner_rim_y, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -820,19 +820,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p4 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * table_radius
                         + vec3(0, height, 0);
         vec3 p5 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * upper_girdle_inner_rim_radius
                         + vec3(0, upper_girdle_inner_rim_y, 0);
         vec3 p6 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_top_y, 0);
         mesh.SetVertCoord( vert_index + 0, p4);
@@ -848,19 +848,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p1 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * upper_girdle_inner_rim_radius
                         + vec3(0, upper_girdle_inner_rim_y, 0);
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_top_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thin_part_top_y, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -873,19 +873,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p4 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * upper_girdle_inner_rim_radius
                         + vec3(0, upper_girdle_inner_rim_y, 0);
         vec3 p5 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thin_part_top_y, 0);
         vec3 p6 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_top_y, 0);
         mesh.SetVertCoord( vert_index + 0, p4);
@@ -906,19 +906,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p1 = euler_to_offset(vec3(
                 0,
                 0,                                     // pitch
-                static_cast<float>(i + 1) / 16 * 360)) // yaw
+                static_cast<float>(i + 1) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, right_top_y, 0);
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                 // pitch
-                static_cast<float>(i) / 16 * 360)) // yaw
+                static_cast<float>(i) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, left_top_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                 // pitch
-                static_cast<float>(i) / 16 * 360)) // yaw
+                static_cast<float>(i) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, left_bottom_y, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -931,19 +931,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p4 = euler_to_offset(vec3(
                 0,
                 0,                                 // pitch
-                static_cast<float>(i) / 16 * 360)) // yaw
+                static_cast<float>(i) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, left_bottom_y, 0);
         vec3 p5 = euler_to_offset(vec3(
                 0,
                 0,                                     // pitch
-                static_cast<float>(i + 1) / 16 * 360)) // yaw
+                static_cast<float>(i + 1) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, right_bottom_y, 0);
         vec3 p6 = euler_to_offset(vec3(
                 0,
                 0,                                     // pitch
-                static_cast<float>(i + 1) / 16 * 360)) // yaw
+                static_cast<float>(i + 1) / 16 * M_2PI)) // yaw
                         * radius
                         + vec3(0, right_top_y, 0);
         mesh.SetVertCoord( vert_index + 0, p4);
@@ -959,19 +959,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p1 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * lower_girdle_inner_rim_radius
                         + vec3(0, lower_girdle_inner_rim_y, 0);
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thin_part_bottom_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_bottom_y, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -984,19 +984,19 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p4 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * lower_girdle_inner_rim_radius
                         + vec3(0, lower_girdle_inner_rim_y, 0);
         vec3 p5 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_bottom_y, 0);
         vec3 p6 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thin_part_bottom_y, 0);
         mesh.SetVertCoord( vert_index + 0, p4);
@@ -1013,13 +1013,13 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p2 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * lower_girdle_inner_rim_radius
                         + vec3(0, lower_girdle_inner_rim_y, 0);
         vec3 p3 = euler_to_offset(vec3(
                 0,
                 0,                                // pitch
-                static_cast<float>(i) / 8 * 360)) // yaw
+                static_cast<float>(i) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_bottom_y, 0);
         mesh.SetVertCoord( vert_index + 0, p1);
@@ -1033,13 +1033,13 @@ void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
         vec3 p5 = euler_to_offset(vec3(
                 0,
                 0,                                    // pitch
-                static_cast<float>(i + 1) / 8 * 360)) // yaw
+                static_cast<float>(i + 1) / 8 * M_2PI)) // yaw
                         * radius
                         + vec3(0, girdle_thick_part_bottom_y, 0);
         vec3 p6 = euler_to_offset(vec3(
                 0,
                 0,                                      // pitch
-                static_cast<float>(i + 0.5) / 8 * 360)) // yaw
+                static_cast<float>(i + 0.5) / 8 * M_2PI)) // yaw
                         * lower_girdle_inner_rim_radius
                         + vec3(0, lower_girdle_inner_rim_y, 0);
         mesh.SetVertCoord( vert_index + 0, p4);

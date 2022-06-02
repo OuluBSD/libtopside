@@ -27,34 +27,19 @@ public:
 // ShootingInteractionSystem
 // This ToolSystem manages the Gun tool which allows you to shoot balls in the 3D scene
 
-class ShootingInteractionSystem :
-	public ToolSystem<ShootingInteractionSystem, ShootingComponent>
+class ShootingInteractionSystemHolo :
+	public ShootingInteractionSystemBase
 {
 	
 public:
-	ECS_SYS_CTOR(ShootingInteractionSystem);
-	using ToolSys = ToolSystem<ShootingInteractionSystem, ShootingComponent>;
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
-	
-	using Parent = Engine;
-	
-	static constexpr const char* POOL_NAME = "shooting";
-	
-	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
+	RTTI_DECL1(ShootingInteractionSystemHolo, ShootingInteractionSystemBase)
+	ShootingInteractionSystemHolo(Engine& e) : PaintingInteractionSystemBase(e) {}
 	
 protected:
-	// ToolSystemBase
-	String GetInstructions() const override;
-	String GetDisplayName() const override;
-	EntityRef CreateToolSelector() const override;
-	
-	void Register(const LinkedList<EntityRef>& entities) override;
-	void Activate(EntityRef entity) override;
-	void Deactivate(EntityRef entity) override;
 	
 	// ISpatialInteractionListener
-	//void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	//void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
+	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
 	
 };
 

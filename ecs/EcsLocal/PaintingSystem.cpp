@@ -40,7 +40,7 @@ void PaintingInteractionSystemBase::Register(const LinkedList<EntityRef>& entiti
 		auto paint_brush = es->GetRoot()->Create<PaintBrush>();
 		paint_brush->Get<ModelComponent>()->color = selected_color;
 		
-		//paint_brush->Get<MotionControllerComponent>()->req_hand = entity->Get<MotionControllerComponent>()->req_hand;
+		//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
 		
 		auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
 		touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
@@ -73,7 +73,7 @@ void PaintingInteractionSystemBase::Activate(EntityRef entity) {
 }
 
 void PaintingInteractionSystemBase::Deactivate(EntityRef entity) {
-	TODO // entity->Get<PbrRenderable>()->SetEnabled(true);
+	entity->Get<ModelComponent>()->SetEnabled(true);
 	PaintComponentRef paint = entity->Get<PaintComponent>();
 	
 	// Copy out the strokes from the component so they can persist in the world.
@@ -88,37 +88,35 @@ void PaintingInteractionSystemBase::Deactivate(EntityRef entity) {
 	ToolSys::Deactivate(entity);
 }
 
-#if 0
-void PaintingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
-	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
-		// Destroy all the paint strokes currently active
-		for (auto& enabled_entity : GetEnabledEntities()) {
-			auto entity = enabled_entity.Get<EntityRef>();
-			auto paint = enabled_entity.Get<PaintComponentRef>();
-			
-			for (auto& stroke : paint->strokes) {
-				stroke->Destroy();
-			}
-			
-			paint->strokes.Clear();
-			
-			if (paint->stroke_in_progress) {
-				paint->stroke_in_progress->Destroy();
-				paint->stroke_in_progress.Clear();
-			}
+void PaintingInteractionSystemBase::ClearStrokes() {
+	// Destroy all the paint strokes currently active
+	for (auto& enabled_entity : GetEnabledEntities()) {
+		auto entity = enabled_entity.Get<EntityRef>();
+		auto paint = enabled_entity.Get<PaintComponentRef>();
+		
+		for (auto& stroke : paint->strokes) {
+			stroke->Destroy();
 		}
 		
-		// Destroy all the persistent strokes
-		for (auto& stroke_group : persistent_strokes) {
-			for (auto& stroke : stroke_group) {
-				stroke->Destroy();
-			}
-		}
+		paint->strokes.Clear();
 		
-		persistent_strokes.Clear();
+		if (paint->stroke_in_progress) {
+			paint->stroke_in_progress->Destroy();
+			paint->stroke_in_progress.Clear();
+		}
 	}
+	
+	// Destroy all the persistent strokes
+	for (auto& stroke_group : persistent_strokes) {
+		for (auto& stroke : stroke_group) {
+			stroke->Destroy();
+		}
+	}
+	
+	persistent_strokes.Clear();
 }
 
+#if 0
 void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) {
 	const auto& source_state = args.State();
 	const auto& source = source_state.Source();
@@ -127,7 +125,7 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 		bool new_stroke_started = false;
 		auto entity = enabled_entity->Get<EntityRef>();
 		auto paint = enabled_entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
-		const auto& paint_brush_model = paint->paint_brush->Get<PbrRenderable>()->model;
+		const auto& paint_brush_model = paint->paint_brush->Get<ModelComponent>()->model;
 		
 		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
 			Optional<Pbr::NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
@@ -144,7 +142,7 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 			}
 		}
 		
-		const auto controller = entity->Get<MotionControllerComponent>();
+		const auto controller = entity->Get<PlayerHandComponent>();
 		
 		if (controller->IsSource(source)) {
 			const auto& controller_properties = source_state.ControllerProperties();
@@ -198,7 +196,7 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 				// Start new stroke
 				if (new_stroke_started) {
 					paint->stroke_in_progress = GetPool()->Create<PaintStroke>();
-					paint->stroke_in_progress->Get<PbrRenderable>()->color = paint->selected_color;
+					paint->stroke_in_progress->Get<ModelComponent>()->color = paint->selected_color;
 					paint->strokes.Add(paint->stroke_in_progress);
 				}
 				
@@ -219,9 +217,6 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 	}
 }
 
-void PaintingInteractionSystemBase::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
-	
-}
 #endif
 
 void PaintingInteractionSystemBase::Update(double dt) {

@@ -75,22 +75,21 @@ struct DataStateT : GfxDataState {
 	
 	void Free();
 	void Refresh(ModelMesh& m) override {TODO}
-	bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
-	bool LoadModel(ModelLoader& l, GfxDataObject& o, String path) override;
-	bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) override;
-	bool LoadModel(ModelLoader& l, DataObject& o, String path);
+	bool LoadModel(ModelLoader& l) override;
+	bool LoadModel(ModelLoader& l, String path) override;
+	bool LoadModelTextures(ModelLoader& l) override;
 	
 protected:
 	
-	void ProcessNode(GfxDataObject& o, ModelMesh& model);
-	void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out);
+	void ProcessNode(/*GfxDataObject& o,*/ ModelMesh& model);
+	void ProcessMesh(/*GfxDataObject& o, ModelMesh& mout,*/ Mesh& out);
 	
 	#ifdef flagASSIMP
-	bool LoadModelAssimp(ModelLoader& l, DataObject& o, String path);
-    void RefreshTexture(GfxDataObject& o, ModelMesh& model);
-    void RefreshTexture(GfxDataObject& o, ModelMesh& model, Mesh& out);
-    void ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
-    void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+	bool LoadModelAssimp(ModelLoader& l, String path);
+    void RefreshTexture(ModelMesh& model);
+    void RefreshTexture(Mesh& out);
+    void ProcessNode(ModelMesh& model, aiNode *node, const aiScene *scene);
+    void ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
 	#endif
 	

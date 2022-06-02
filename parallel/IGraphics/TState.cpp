@@ -137,7 +137,7 @@ typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, GfxDataObject& o) {
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l) {
 	ASSERT(l.model);
 	if (!l.model) return false;
 	
@@ -145,41 +145,44 @@ bool DataStateT<Gfx>::LoadModel(ModelLoader& l, GfxDataObject& o) {
     l.model->path = "";
     l.model->directory = "";
 	
-    ProcessNode(o, *l.model);
+    ProcessNode(*l.model);
     
     return true;
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model) {
+void DataStateT<Gfx>::ProcessNode(ModelMesh& model) {
 	for (Mesh& mesh : model.meshes)
-		ProcessMesh(o, model, mesh);
+		ProcessMesh(mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out) {
-	o.Refresh(out);
+void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, ModelMesh& mout,*/ Mesh& out) {
+	DataObject* obj = 0;
+	if (!out.accel) {
+		obj = &AddObject();
+		out.accel = obj;
+	}
+	else {
+		obj = CastPtr<DataObject>(out.accel);
+		ASSERT_(obj, "Mesh is used in multiple gfx accelerators, which is not supported yet");
+		if (!obj) return;
+	}
+	
+	obj->Refresh(out);
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o, String path) {
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l, String path) {
 	#ifdef flagASSIMP
-	return LoadModelAssimp(l, o, path);
+	return LoadModelAssimp(l,  path);
 	#endif
-	return false;
-}
-
-template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, GfxDataObject& o, String path) {
-	DataObject* o0 = CastPtr<DataObject>(&o);
-	if (o0)
-		return LoadModel(l, *o0, path);
 	return false;
 }
 
 #ifdef flagASSIMP
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, DataObject& o, String path) {
+bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
 	LOG("DataStateT::LoadModelAssimp: " << path);
     Assimp::Importer import_;
     const aiScene *scene = import_.ReadFile(path.Begin(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
@@ -194,13 +197,13 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, DataObject& o, String path
     l.model->path = path;
     l.model->directory = GetFileDirectory(path);
 	
-    ProcessNode(o, *l.model, scene->mRootNode, scene);
+    ProcessNode(*l.model, scene->mRootNode, scene);
     
     return true;
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, GfxDataObject& o) {
+bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 	ModelMesh& m = *l.model;
 	
 	int prev_count = textures.GetCount();
@@ -228,26 +231,26 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, GfxDataObject& o) {
 		Gfx::DeactivateTexture();
 	}
 	
-    RefreshTexture(o, *l.model);
+    RefreshTexture(*l.model);
 	
 	return true;
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessNode(ModelMesh& model, aiNode *node, const aiScene *scene) {
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        ProcessMesh(o, model, model.meshes.Add(), mesh, scene);
+        ProcessMesh(model, model.meshes.Add(), mesh, scene);
     }
     // then do the same for each of its children
     for(unsigned int i = 0; i < node->mNumChildren; i++) {
-        ProcessNode(o, model, node->mChildren[i], scene);
+        ProcessNode(model, node->mChildren[i], scene);
     }
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
 	out.vertices.SetCount(mesh->mNumVertices);
 	
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -292,19 +295,26 @@ void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, 
 		for(int i = 1; i < TEXTYPE_COUNT; i++)
 			LoadMaterialTextures(mout, out, material, i);
     }
-
-	o.Refresh(out);
+	
+	GfxDataObject* o;
+	if (!out.accel) {
+		o = &CreateObject();
+		out.accel = o;
+	}
+	else
+		o = CastPtr<GfxDataObject>(out.accel);
+	o->Refresh(out);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(GfxDataObject& o, ModelMesh& model) {
+void DataStateT<Gfx>::RefreshTexture(ModelMesh& model) {
 	for (Mesh& mesh : model.meshes)
-		RefreshTexture(o, model, mesh);
+		RefreshTexture(mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(GfxDataObject& o, ModelMesh& model, Mesh& out) {
-	o.RefreshTexture(out);
+void DataStateT<Gfx>::RefreshTexture(Mesh& out) {
+	TODO //o.RefreshTexture(out);
 }
 
 template <class Gfx>

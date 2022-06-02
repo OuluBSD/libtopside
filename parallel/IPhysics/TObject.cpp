@@ -55,6 +55,8 @@ void ObjectT<Fys>::Refresh() {
 			LoadModel(s);
 	}*/
 	
+	TODO
+	#if 0
 	ASSERT(fb_obj);
 	if (!fb_obj)
 		return;
@@ -81,15 +83,14 @@ void ObjectT<Fys>::Refresh() {
 		mat4 v = model_geom * rot * trans;
 		fb_obj->Set(v, identity<mat4>());
 	}
+	#endif
 }
 
 template <class Fys>
 bool ObjectT<Fys>::LoadModel(GfxDataState& s) {
-	ASSERT(!fb_obj);
-	fb_obj = &s.CreateObject();
-	if (!s.LoadModel(loader, *fb_obj))
+	if (!s.LoadModel(loader))
 		Panic("Couldn't load model: ModelComponent");
-	if (!s.LoadModelTextures(loader, *fb_obj))
+	if (!s.LoadModelTextures(loader))
 		Panic("Couldn't load model textures: ModelComponent");
 	return true;
 }

@@ -61,11 +61,12 @@ public:
 	
 public:
 	vec4 color = one<vec4>();
+	mat4 offset = identity<mat4>();
 	String prefab_name;
 	
 protected:
 	ModelLoader loader;
-	GfxDataObject* obj = 0;
+	bool loaded = false;
 	
 	//CpuDataObject* cpu_obj = 0;
 	//OglDataObject* ogl_obj = 0;

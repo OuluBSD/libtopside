@@ -49,6 +49,18 @@ struct StaticCube : EntityPrefab<Transform, ModelComponent>
     }
 };
 
+struct Gun : EntityPrefab<Transform, ModelComponent, PlayerHandComponent>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        components.Get<ModelComponentRef>()->SetPrefabModel(KnownModelNames::Gun);
+
+        return components;
+    }
+};
+
 
 
 NAMESPACE_ECS_END

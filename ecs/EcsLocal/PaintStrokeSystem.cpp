@@ -34,7 +34,7 @@ bool PaintStrokeSystemBase::Initialize() {
 void PaintStrokeSystemBase::Update(double) {
 	for (PaintStrokeComponent* paint_stroke : comps) {
 		if (paint_stroke->stroke_changed) {
-			//PbrRenderableRef pbr = paint_stroke->GetEntity()->Get<PbrRenderable>();
+			//ModelComponentRef pbr = paint_stroke->GetEntity()->Get<ModelComponent>();
 			ModelComponentRef m = paint_stroke->GetEntity()->Get<ModelComponent>();
 			Ref<ModelMesh> mr = m->GetModel();
 			

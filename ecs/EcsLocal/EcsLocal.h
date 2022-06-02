@@ -8,14 +8,16 @@
 #include "Viewport.h"
 #include "EasingSystem.h"
 #include "WindowSystem.h"
+#include "Player.h"
 #include "PhysicsSystem.h"
 #include "Prefabs.h"
 #include "Gui.h"
-#include "Player.h"
 #include "PaintStrokeSystem.h"
 #include "ToolboxSystem.h"
 #include "ToolSystem.h"
 #include "PaintingSystem.h"
+#include "ShootingSystem.h"
+#include "ThrowingSystem.h"
 
 
 NAMESPACE_ECS_BEGIN

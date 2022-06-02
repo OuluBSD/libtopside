@@ -132,5 +132,14 @@ void PaintingInteractionSystemHolo::Register(const LinkedList<EntityRef>& entiti
 	
 }
 
+void PaintingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
+		ClearStrokes();
+	}
+}
+
+void PaintingInteractionSystemBase::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
+	
+}
 
 NAMESPACE_ECS_END

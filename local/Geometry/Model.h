@@ -14,6 +14,9 @@ class OglShader;
 
 //struct FramebufferState;
 
+struct GfxMeshBase : RTTIBase {
+	RTTI_DECL0(GfxMeshBase)
+};
 
 class Mesh : public BoundingBox, Moveable<Mesh> {
 	
@@ -25,6 +28,7 @@ public:
 	int tex_id[TEXTYPE_COUNT];
 	bool is_colored_only = false;
 	bool is_lines = false;
+	GfxMeshBase* accel = 0;
 	
 	
 	Mesh() {Clear();}
@@ -136,6 +140,7 @@ public:
     //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
     void Dump();
     void ReverseFaces();
+    void GetGfxMeshBases(Vector<GfxMeshBase*>& meshes);
     
     bool IsEmpty() const {return meshes.IsEmpty();}
     operator bool() const {return !IsEmpty();}

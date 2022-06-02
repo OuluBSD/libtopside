@@ -50,7 +50,7 @@ void ModelComponent::Initialize() {
 }
 
 void ModelComponent::Uninitialize() {
-	obj = 0;
+	loaded = 0;
 	
 	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
 	rend->RemoveModel(AsRefT());
@@ -78,7 +78,7 @@ bool ModelComponent::Arg(String key, Object value) {
 		}
 		else if (name == "cylinder") {
 			vec3 pos(0,0,0);
-			mb.AddCylinder(pos, 2, 2);
+			mb.AddCylinder(pos, 0.2, 0.2);
 		}
 		else {
 			LOG("ModelComponent::Arg: error: invalid model name '" + name + "'");
@@ -92,16 +92,14 @@ bool ModelComponent::Arg(String key, Object value) {
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
-	if (!obj) {
+	if (!loaded) {
 		if (!loader && !prefab_name.IsEmpty()) {
-			obj = &state.CreateObject();
 			String path = KnownModelNames::GetPath(prefab_name);
-			if (!state.LoadModel(loader, *obj, path))
+			if (!state.LoadModel(loader, path))
 				return false;
 		}
 		else if (loader) {
-			obj = &state.CreateObject();
-			if (!state.LoadModel(loader, *obj)) {
+			if (!state.LoadModel(loader)) {
 				LOG("ModelComponent::Load: error: model loading failed");
 				return false;
 			}
@@ -110,17 +108,35 @@ bool ModelComponent::Load(GfxDataState& state) {
 			LOG("ModelComponent::Load: error: nothing to load");
 			return false;
 		}
+		loaded = true;
 	}
 	
+	mat4 model;
 	TransformRef trans = GetEntity()->Find<Transform>();
 	if (trans) {
 		mat4 pos = translate(trans->position);
 		mat4 rot = rotate(trans->orientation);
 		mat4 sz = scale(trans->size);
-		obj->model = pos * rot * sz;
+		model = pos * rot * sz;
 	}
+	else
+		model = identity<mat4>();
 	
-	obj->color = color;
+	Ref<ModelMesh> mesh = loader.GetModel();
+	if (!mesh)
+		return false;
+	
+	static thread_local Vector<GfxMeshBase*> meshes;
+	meshes.SetCount(0);
+	mesh->GetGfxMeshBases(meshes);
+	for (GfxMeshBase* m : meshes) {
+		GfxDataObject* obj = CastPtr<GfxDataObject>(m);
+		if (!obj)
+			continue;
+		
+		obj->model = model;
+		obj->color = color;
+	}
 	
 	return true;
 }

@@ -8,12 +8,18 @@ class PaintingInteractionSystemHolo :
 	public PaintingInteractionSystemBase
 {
 public:
-	ECS_SYS_CTOR(PaintingInteractionSystemHolo);
+	RTTI_DECL1(PaintingInteractionSystemHolo, PaintingInteractionSystemBase)
+	PaintingInteractionSystemHolo(Engine& e) : PaintingInteractionSystemBase(e) {}
 	
 	
 protected:
 	void Update(double dt) override;
 	void Register(const LinkedList<EntityRef>& entities) override;
+	
+	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
+	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
+	
 };
 
 

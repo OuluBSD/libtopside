@@ -533,6 +533,69 @@ quat make_quat_from_rotation_matrix(const mat4& m) {
     }
 }
 
+vec3 yaw_pitch_to_direction(float yaw, float pitch) {
+	#if 0
+	yaw += M_PI_2;
+	float len = cos(pitch);
+	return vec3(
+		len * cos(-yaw),
+		sin(pitch),
+		len * sin(yaw));
+	#else
+	float len = cos(pitch);
+	return vec3(
+		len * sin(yaw),
+		sin(-pitch),
+		len * cos(-yaw));
+	#endif
+}
+
+void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch) {
+	#if 0
+	dir.Normalize();
+	pitch = asin(dir[1]);
+	yaw = atan2(dir[2], dir[0]);
+	yaw -= M_PI_2;
+	yaw = yaw < -M_PI ? yaw + M_2PI : yaw;
+	#else
+	dir.Normalize();
+	pitch = asin(-dir[1]);
+	yaw = atan2(dir[0], dir[2]);
+	#endif
+}
+
+void camera_object(
+	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
+	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
+	vec3& obj_pos, quat& obj_orient) {
+	#if 1
+	ASSERT(eye_up == vec3(0,1,0)); // implemented so far
+	
+	float yaw, pitch;
+	direction_to_yaw_pitch(eye_dir, yaw, pitch);
+	//LOG("yaw:  " << yaw << ", pitch:  " << pitch);
+	
+	float obj_yaw = yaw + obj_yaw_diff;
+	float obj_pitch = pitch + obj_pitch_diff;
+	vec3 obj_dir = yaw_pitch_to_direction(obj_yaw, obj_pitch);
+	
+	vec3 eye_dir2 = yaw_pitch_to_direction(yaw, pitch);
+	direction_to_yaw_pitch(eye_dir2, yaw, pitch);
+	//LOG("yaw2: " << yaw << ", pitch2: " << pitch);
+	//DUMP(obj_dir);
+	
+	vec3 obj_rel_pos = obj_dir * obj_dist;
+	obj_pos = eye + obj_rel_pos;
+	
+	obj_orient = make_quat_from_yaw_pitch_roll(obj_yaw, obj_pitch, 0);
+	#else
+	
+	#error TODO
+	// https://forums.hololens.com/discussion/7844/render-3d-object-in-front-of-the-camera
+	
+	#endif
+}
+
 mat4 Rotation(float pitch, float yaw, float roll) {
 	return YRotation(yaw) * XRotation(pitch) * ZRotation(roll);
 }

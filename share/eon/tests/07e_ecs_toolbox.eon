@@ -40,20 +40,15 @@ engine ecs.dummy: {
     system physics: {env: event.register;};
     system paintstroke;
     system toolbox;
-    system paint;
+    system painting;
+    system shooting;
+    system throwing;
     
     
     pool world: {
         entity ground: {
             comp transform3;
             comp model: {builtin: plane;};
-            comp physics: {bind: physics; test.fn: fixed;};
-        };
-        
-        entity box1: {
-            comp transform3: {y: 1;};
-            comp body;
-            comp model: {builtin: box;};
             comp physics: {bind: physics; test.fn: fixed;};
         };
         
