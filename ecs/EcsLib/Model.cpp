@@ -60,7 +60,9 @@ void ModelComponent::Uninitialize() {
 bool ModelComponent::Arg(String key, Object value) {
 	
 	if (key == "builtin") {
-		String name = value;
+		Vector<String> parts = Split((String)value, ",");
+		if (parts.IsEmpty()) return false;
+		String name = parts[0];
 		ModelBuilder mb;
 		if (name == "plane") {
 			vec3 pos(-5,0,-5);
@@ -77,8 +79,10 @@ bool ModelComponent::Arg(String key, Object value) {
 			mb.AddSphere(pos, 2, 3, 3);
 		}
 		else if (name == "cylinder") {
+			float rad = 1 < parts.GetCount() ? StrDbl(parts[1]) : 1.0;
+			float len = 2 < parts.GetCount() ? StrDbl(parts[2]) : 0.2;
 			vec3 pos(0,0,0);
-			mb.AddCylinder(pos, 0.2, 0.2);
+			mb.AddCylinder(pos, rad, len);
 		}
 		else {
 			LOG("ModelComponent::Arg: error: invalid model name '" + name + "'");
@@ -86,9 +90,43 @@ bool ModelComponent::Arg(String key, Object value) {
 		}
 		loader = mb;
 	}
+	else if (key == "x") {offset[0] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "y") {offset[1] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "z") {offset[2] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "cx") {scale[0] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "cy") {scale[1] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "cz") {scale[2] = value.ToDouble(); RefreshExtModel();}
+	else if (key == "pitch") {pitch = DEG2RAD(value.ToDouble()); RefreshExtModel();}
+	else if (key == "yaw") {yaw = DEG2RAD(value.ToDouble()); RefreshExtModel();}
+	else if (key == "roll") {roll = DEG2RAD(value.ToDouble()); RefreshExtModel();}
 	else return false;
 	
 	return true;
+}
+
+void ModelComponent::RefreshExtModel() {
+	have_ext_model = true;
+	mat4 rotate = YawPitchRoll(pitch, yaw, roll);
+	mat4 tran = translate(offset);
+	mat4 scale = TS::scale(this->scale);
+	this->ext_model = rotate * tran * scale;
+}
+
+void ModelComponent::SetRotation(float pitch, float yaw, float roll) {
+	this->pitch = pitch;
+	this->yaw = yaw;
+	this->roll = roll;
+	RefreshExtModel();
+}
+
+void ModelComponent::SetTranslation(const vec3& v) {
+	this->offset = v;
+	RefreshExtModel();
+}
+
+void ModelComponent::SetScale(const vec3& v) {
+	this->scale = v;
+	RefreshExtModel();
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
@@ -116,12 +154,22 @@ bool ModelComponent::Load(GfxDataState& state) {
 	if (trans) {
 		mat4 pos = translate(trans->position);
 		mat4 rot = rotate(trans->orientation);
-		mat4 sz = scale(trans->size);
+		mat4 sz = TS::scale(trans->size);
+		/*if (have_ext_model) {
+			pos *= translate(offset);
+			rot *= YawPitchRoll(pitch, yaw, roll);
+			sz  *= TS::scale(this->scale);
+		}*/
 		model = pos * rot * sz;
 	}
+	else if (have_ext_model)
+		model = ext_model;
 	else
 		model = identity<mat4>();
 	
+	if (have_ext_model)
+		model *= ext_model;
+		
 	Ref<ModelMesh> mesh = loader.GetModel();
 	if (!mesh)
 		return false;

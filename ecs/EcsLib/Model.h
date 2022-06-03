@@ -61,16 +61,25 @@ public:
 	
 public:
 	vec4 color = one<vec4>();
-	mat4 offset = identity<mat4>();
 	String prefab_name;
+	
+	void SetRotation(float pitch, float yaw, float roll);
+	void SetTranslation(const vec3& v);
+	void SetScale(const vec3& v);
 	
 protected:
 	ModelLoader loader;
 	bool loaded = false;
 	
+	vec3 offset = zero<vec3>();
+	vec3 scale = one<vec3>();
+	float pitch = 0, yaw = 0, roll = 0;
+	mat4 ext_model;
+	bool have_ext_model = false;
 	//CpuDataObject* cpu_obj = 0;
 	//OglDataObject* ogl_obj = 0;
 	
+	void RefreshExtModel();
 	
 	
 };

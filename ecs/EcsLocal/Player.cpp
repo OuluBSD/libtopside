@@ -109,7 +109,7 @@ bool PlayerBodyComponent::SetHand(PlayerHandedness hand, PlayerHandComponentRef 
 		hands[0] = comp;
 	}
 	else if (hand == PlayerHandedness::Right) {
-		if (hands[0])
+		if (hands[1])
 			return false;
 		hands[1] = comp;
 	}
@@ -177,9 +177,10 @@ void PlayerBodySystem::Update(double dt) {
 			if (b->hands[i]) {
 				TransformRef hand_trans = b->hands[i]->GetEntity()->Find<Transform>();
 				if (hand_trans) {
+					float horz_deg = (i == 1 ? -1 : +1) * 30;
 					camera_object(
 						head_pos, head_direction, head_up,
-						DEG2RAD(30), DEG2RAD(30), 1.5f,
+						DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
 						hand_trans->position, hand_trans->orientation);
 				}
 			}

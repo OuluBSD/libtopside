@@ -613,7 +613,7 @@ void camera_object(
 	obj_pos = eye + obj_rel_pos;
 	
 	// orientation is based only eye direction for now
-	float eye_yaw, eye_pitch;w
+	float eye_yaw, eye_pitch;
 	direction_to_yaw_pitch(eye_dir, eye_yaw, eye_pitch);
 	obj_orient = make_quat_from_yaw_pitch_roll(eye_yaw, eye_pitch, 0);
 	
@@ -635,9 +635,9 @@ mat2 Rotation2x2(float angle) {
 }
 
 mat4 YawPitchRoll(float yaw, float pitch, float roll) {
-	yaw = DegRad(yaw);
+	/*yaw = DegRad(yaw);
 	pitch = DegRad(pitch);
-	roll = DegRad(roll);
+	roll = DegRad(roll);*/
 
 	mat4 out;
 	out.Clear();
@@ -659,7 +659,7 @@ mat4 YawPitchRoll(float yaw, float pitch, float roll) {
 }
 
 mat4 XRotation(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat4 {
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, cosf(angle), sinf(angle), 0.0f,
@@ -669,7 +669,7 @@ mat4 XRotation(float angle) {
 }
 
 mat3 XRotation3x3(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat3 {
 		1.0f, 0.0f, 0.0f,
 		0.0f, cosf(angle), sinf(angle),
@@ -678,7 +678,7 @@ mat3 XRotation3x3(float angle) {
 }
 
 mat4 YRotation(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat4{
 		cosf(angle), 0.0f, -sinf(angle), 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
@@ -688,7 +688,7 @@ mat4 YRotation(float angle) {
 }
 
 mat3 YRotation3x3(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat3{
 		cosf(angle), 0.0f, -sinf(angle),
 		0.0f, 1.0f, 0.0f,
@@ -697,7 +697,7 @@ mat3 YRotation3x3(float angle) {
 }
 
 mat4 ZRotation(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat4{
 		cosf(angle), sinf(angle), 0.0f, 0.0f,
 		-sinf(angle), cosf(angle), 0.0f, 0.0f,
@@ -707,7 +707,7 @@ mat4 ZRotation(float angle) {
 }
 
 mat3 ZRotation3x3(float angle) {
-	angle = DegRad(angle);
+	//angle = DegRad(angle);
 	return mat3{
 		cosf(angle), sinf(angle), 0.0f,
 		-sinf(angle), cosf(angle), 0.0f,

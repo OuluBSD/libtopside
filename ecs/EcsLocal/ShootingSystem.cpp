@@ -23,23 +23,22 @@ void ShootingInteractionSystemBase::Register(const LinkedList<EntityRef>& entiti
 	ASSERT(!entities.IsEmpty());
 	ToolSys::Register(entities);
 	
-	// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
-	// In this scenario, we need to generate two transforms.
-	// First transform is used to align the 3D model with the physical MotionController: model_to_controller
-	// Second transform is used to align the 3D model's barrel with the physical MotionController: barrel_to_ctrl
-	// When using the PlayerHandComponent, the MotionControllerSystem will update the Transform component of the same object to match the controller's location.
-	// The "model_to_controller" is to transform from the object's model space, to the location of the controller
-	const mat4 model_to_controller_rotation = make_mat4_from_yaw_pitch_roll(ConvertToRadians(180), ConvertToRadians(70), 0.0f);
-	const mat4 model_to_controller_translation = make_mat4_translation(vec3(0, 0.05f, 0.0f));
-	const mat4 model_to_controller = model_to_controller_rotation * model_to_controller_translation;
-	
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
 	const mat4 barrel_to_ctrl = translate(vec3(0.0f, 0.0675f, -0.22f)) * make_mat4_rotation_x(ConvertToRadians(-70));
 	
 	for (auto& entity : m_entities) {
 		auto gun = GetPool()->Create<Gun>();
 		gun->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
-		gun->Get<ModelComponent>()->offset = model_to_controller;
+		
+		// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
+		// In this scenario, we need to generate two transforms.
+		// First transform is used to align the 3D model with the physical MotionController: model_to_controller
+		// Second transform is used to align the 3D model's barrel with the physical MotionController: barrel_to_ctrl
+		// When using the PlayerHandComponent, the MotionControllerSystem will update the Transform component of the same object to match the controller's location.
+		Ref<ModelComponent> m = gun->Get<ModelComponent>();
+		m->SetRotation(ConvertToRadians(180), ConvertToRadians(70), 0.0f);
+		m->SetTranslation(vec3(0, 0.05f, 0.0f));
+		
 		entity->Get<ShootingComponent>()->barrel_to_ctrl = barrel_to_ctrl;
 		entity->Get<ShootingComponent>()->gun = gun;
 		entity->Get<ShootingComponent>()->SetEnabled(false);

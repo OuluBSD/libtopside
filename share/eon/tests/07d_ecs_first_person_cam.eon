@@ -71,9 +71,15 @@ engine ecs.dummy: {
         entity player.hand.left: {
             comp transform3;
             comp body;
-            comp model: {builtin: cylinder;};
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
             comp player.hand: {hand: left; body: world.player.body;};
+        };
         
+        entity player.hand.right: {
+            comp transform3;
+            comp body;
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp player.hand: {hand: right; body: world.player.body;};
         };
     };
 };
