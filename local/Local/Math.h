@@ -8,6 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 #endif
 
 #define DEG2RAD(x) (((x) / 360.0) * M_2PI)
+#define RAD2DEG(x) (((x) / M_2PI) * 360.0)
 
 
 extern const float EPSILONf;

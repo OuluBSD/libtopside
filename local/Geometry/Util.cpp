@@ -568,32 +568,55 @@ void camera_object(
 	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
 	vec3& obj_pos, quat& obj_orient) {
-	#if 1
-	ASSERT(eye_up == vec3(0,1,0)); // implemented so far
 	
-	float yaw, pitch;
-	direction_to_yaw_pitch(eye_dir, yaw, pitch);
-	//LOG("yaw:  " << yaw << ", pitch:  " << pitch);
+	// get z-vector from eye direction
+	vec3 zv = eye_dir;
+	zv.Normalize();
 	
-	float obj_yaw = yaw + obj_yaw_diff;
-	float obj_pitch = pitch + obj_pitch_diff;
-	vec3 obj_dir = yaw_pitch_to_direction(obj_yaw, obj_pitch);
+	// get x-vector with cross product of z-vector and up-vector
+	vec3 xv = cross(zv, eye_up);
+	xv.Normalize();
 	
-	vec3 eye_dir2 = yaw_pitch_to_direction(yaw, pitch);
-	direction_to_yaw_pitch(eye_dir2, yaw, pitch);
-	//LOG("yaw2: " << yaw << ", pitch2: " << pitch);
-	//DUMP(obj_dir);
+	// get y-vector with x-vector and z-vector
+	vec3 yv = cross(zv, xv);
+	yv.Normalize(); // unnecessary
 	
-	vec3 obj_rel_pos = obj_dir * obj_dist;
+	// calculate relative direction vector for object in local space
+	vec3 local_obj_dir = yaw_pitch_to_direction(obj_yaw_diff, obj_pitch_diff);
+	vec3 local_eye_dir = yaw_pitch_to_direction(0, 0);
+	local_obj_dir.Normalize();
+	local_eye_dir.Normalize();
+	float local_obj_dir_mag = local_obj_dir.GetMagnitude();
+	float local_eye_dir_mag = local_eye_dir.GetMagnitude();
+	ASSERT(local_obj_dir_mag == 1.0f);
+	ASSERT(local_eye_dir_mag == 1.0f);
+	
+	// get angle between relative direction vector and eye direction
+	float local_obj_eye_dot = dot(local_obj_dir, local_eye_dir);
+	float local_obj_eye_angle = acos(local_obj_eye_dot / (local_obj_dir_mag * local_eye_dir_mag));
+	float local_obj_eye_angle_deg = RAD2DEG(local_obj_eye_angle);
+	
+	// calculate plane's z-distance from angle
+	float local_plane_z = cos(local_obj_eye_angle) * obj_dist;
+	
+	// calculate xy point in plane using plane's distance and angles
+	float local_plane_x = local_obj_dir[0] * obj_dist;
+	float local_plane_y = local_obj_dir[1] * obj_dist;
+	
+	// calculate relative point in global space using local plane-xyz and global forward-unit-vector
+	vec3 obj_xv = xv * local_plane_x;
+	vec3 obj_yv = yv * local_plane_y;
+	vec3 obj_zv = zv * local_plane_z;
+	vec3 obj_rel_pos = obj_xv + obj_yv + obj_zv;
+	
+	// calculate global position
 	obj_pos = eye + obj_rel_pos;
 	
-	obj_orient = make_quat_from_yaw_pitch_roll(obj_yaw, obj_pitch, 0);
-	#else
+	// orientation is based only eye direction for now
+	float eye_yaw, eye_pitch;w
+	direction_to_yaw_pitch(eye_dir, eye_yaw, eye_pitch);
+	obj_orient = make_quat_from_yaw_pitch_roll(eye_yaw, eye_pitch, 0);
 	
-	#error TODO
-	// https://forums.hololens.com/discussion/7844/render-3d-object-in-front-of-the-camera
-	
-	#endif
 }
 
 mat4 Rotation(float pitch, float yaw, float roll) {
