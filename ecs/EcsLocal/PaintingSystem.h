@@ -60,7 +60,12 @@ public:
 	ECS_SYS_CTOR(PaintingInteractionSystemBase);
 	
 	using ToolSys = ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>;
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		vis.VisitThis<ToolSys>(this);
+		for (auto& v : persistent_strokes)
+			for (auto& r : v)
+				vis & r;
+	}
 	
 	
 	

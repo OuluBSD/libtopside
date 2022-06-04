@@ -11,7 +11,7 @@ public:
 	RTTI_DECL1(ToolSystemBase, SystemBase);
 	using SystemBase::SystemBase;
 	
-	void Visit(RuntimeVisitor& vis) override{TODO}
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	virtual String GetInstructions() const = 0;
 	virtual String GetDisplayName() const = 0;
@@ -62,8 +62,9 @@ class ToolSystemBaseT :
 {
 	
 public:
+	typedef ToolSystemBaseT<T, ToolComponent> CLASSNAME;
 	RTTI_DECL1(ToolSystemBaseT, ToolSystemBase)
-	void Visit(RuntimeVisitor& vis) override {TODO}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSystemBase>(this); vis && m_entities;}
 	TypeCls GetType() const override {return AsTypeCls<T>();}
 	
 	using ToolComponentRef = Ref<ToolComponent, RefParent1<Entity>>;

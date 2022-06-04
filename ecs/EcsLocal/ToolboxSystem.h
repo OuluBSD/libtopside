@@ -28,7 +28,7 @@ class ToolboxSystemBase :
 	LinkedList<EntityRef> entities;
 	
 public:
-	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_DEF_VISIT_(vis & instruction_text; vis | ctrls; vis && entities;)
 	RTTI_DECL1(ToolboxSystemBase, System<ToolboxSystemBase>)
 	ECS_SYS_CTOR(ToolboxSystemBase);
 	
@@ -58,10 +58,16 @@ private:
 	
 	static String ControllerHandToString(ControllerHand hand);
 	
-	struct ControllerContext {
+	struct ControllerContext : RTTIBase {
+		RTTI_DECL0(ControllerContext)
+		
 		EntityRef ctrl;
 		EntityRef dbg_txt;
 		ControllerHand hand;
+		
+		void Visit(RuntimeVisitor& vis) {(vis & ctrl) & dbg_txt;}
+		void Clear() {ctrl.Clear(); dbg_txt.Clear();}
+		operator bool() const {return !ctrl.IsEmpty() || !dbg_txt.IsEmpty();}
 	};
 	
 	void SwitchToolType(EntityRef entity, const TypeId& new_type);

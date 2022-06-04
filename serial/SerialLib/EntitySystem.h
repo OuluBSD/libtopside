@@ -28,7 +28,7 @@ protected:
 public:
 	SYS_RTTI(EntitySystem)
     SYS_CTOR(EntitySystem)
-	SYS_DEF_VISIT
+	void Visit(RuntimeVisitor& vis) override;
 	~EntitySystem() {ClearEngine();}
 	
 	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::ENTITY_SYSTEM;}

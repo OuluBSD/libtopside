@@ -10,7 +10,7 @@ class ShootingComponent :
 public:
 	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis & gun)
 	
 	
 	

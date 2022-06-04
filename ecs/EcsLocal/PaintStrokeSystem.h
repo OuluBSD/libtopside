@@ -32,7 +32,8 @@ class PaintStrokeSystemBase :
 public:
 	SYS_RTTI(PaintStrokeSystemBase)
 	ECS_SYS_CTOR(PaintStrokeSystemBase);
-	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_DEF_VISIT
+	
 	~PaintStrokeSystemBase() = default;
 	
 	//void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}

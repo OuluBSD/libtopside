@@ -17,10 +17,16 @@ bool HitTest(vec3 positionA, vec3 positionB, float diameter) {
 
 
 bool ToolboxSystemBase::Initialize() {
+	for(int i = 0; i < ctrls.GetCount(); i++)
+		ctrls[i].hand = (ControllerHand)i;
+	
 	return true;
 }
 
 void ToolboxSystemBase::Uninitialize() {
+	for (auto& c : ctrls)
+		c.Clear();
+	instruction_text.Clear();
 	entities.Clear();
 }
 

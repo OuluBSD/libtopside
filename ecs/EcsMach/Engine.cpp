@@ -35,6 +35,12 @@ void EntitySystem::ClearEngine() {
 	}
 }
 
+void EntitySystem::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<System<CLASSNAME>>(this);
+	if (engine)
+		vis % *engine;
+}
+
 NAMESPACE_SERIAL_END
 
 
