@@ -19,6 +19,7 @@ EntityRef ShootingInteractionSystemBase::CreateToolSelector() const {
 	return selector;
 }
 
+#if 0
 void ShootingInteractionSystemBase::Register(const LinkedList<EntityRef>& entities) {
 	ASSERT(!entities.IsEmpty());
 	ToolSys::Register(entities);
@@ -26,6 +27,8 @@ void ShootingInteractionSystemBase::Register(const LinkedList<EntityRef>& entiti
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
 	const mat4 barrel_to_ctrl = translate(vec3(0.0f, 0.0675f, -0.22f)) * make_mat4_rotation_x(ConvertToRadians(-70));
 	
+	TODO
+	#if 0
 	for (auto& entity : m_entities) {
 		auto gun = GetPool()->Create<Gun>();
 		gun->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
@@ -43,6 +46,7 @@ void ShootingInteractionSystemBase::Register(const LinkedList<EntityRef>& entiti
 		entity->Get<ShootingComponent>()->gun = gun;
 		entity->Get<ShootingComponent>()->SetEnabled(false);
 	}
+	#endif
 }
 
 void ShootingInteractionSystemBase::Activate(EntityRef entity) {
@@ -55,8 +59,7 @@ void ShootingInteractionSystemBase::Deactivate(EntityRef entity) {
 	ToolSystemBaseT::Deactivate(entity);
 }
 
-#if 0
-void ShootingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+void ShootingInteractionSystemBase::OnControllerPressed(const ControllerEventArgs& args) {
 	if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 		auto shooting = enabled_entity->Get<ToolComponentRef>().AsRef<ShootingComponent>();
 		
@@ -76,7 +79,7 @@ void ShootingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSour
 	}
 }
 
-void ShootingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) {
+void ShootingInteractionSystemBase::OnControllerUpdated(const ControllerEventArgs& args) {
 	Optional<RTuple<EntityRef, ToolComponentRef>> enabled_entity = TryGetEntityFromSource(args.State().Source());
 	if (enabled_entity) {
 		EntityRef& entity = enabled_entity->a;

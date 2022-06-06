@@ -23,6 +23,8 @@ public:
 		ColorSelection
 	};
 	
+	void Initialize() override;
+	void Uninitialize() override;
 	void SetEnabled(bool enable) override;
 	void Destroy() override;
 	
@@ -54,12 +56,14 @@ public:
 
 
 class PaintingInteractionSystemBase :
-	public ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>
+	public ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>,
+	public PlayerInteractionListener
 {
 public:
+	using ToolSys = ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>;
+	RTTI_DECL2(PaintingInteractionSystemBase, ToolSys, PlayerInteractionListener)
 	ECS_SYS_CTOR(PaintingInteractionSystemBase);
 	
-	using ToolSys = ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>;
 	void Visit(RuntimeVisitor& vis) override {
 		vis.VisitThis<ToolSys>(this);
 		for (auto& v : persistent_strokes)
@@ -76,25 +80,31 @@ public:
 	
 	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
+	void Attach(PaintComponentRef c);
+	void Detach(PaintComponentRef c);
+	
 protected:
 	// System
+	bool Initialize() override;
 	void Start() override;
 	void Update(double dt) override;
 	void Stop() override;
+	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
 	
 	// ToolSystemBase
 	String GetInstructions() const override;
 	String GetDisplayName() const override;
 	EntityRef CreateToolSelector() const override;
 	
-	void Register(const LinkedList<EntityRef>& entities) override;
+	/*void Register(const LinkedList<EntityRef>& entities) override;
 	void Activate(EntityRef entity) override;
-	void Deactivate(EntityRef entity) override;
+	void Deactivate(EntityRef entity) override;*/
 	
 	// ISpatialInteractionListener
-	/*void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;*/
+	void OnControllerPressed(const ControllerEventArgs& args) override;
+	void OnControllerUpdated(const ControllerEventArgs& args) override;
+	void OnControllerReleased(const ControllerEventArgs& args) override;
 	
 private:
 	vec4 SelectColor(double x, double y);
@@ -113,7 +123,11 @@ private:
 		Colors::Black
 	};
 	
+	ToolboxSystemBaseRef tb;
+	Array<PaintComponentRef> comps;
 	LinkedList<LinkedList<EntityRef>> persistent_strokes;
+	bool dbg_model = false;
+	
 };
 
 

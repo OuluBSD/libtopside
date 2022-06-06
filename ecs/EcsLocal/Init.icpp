@@ -16,7 +16,8 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<PaintingInteractionSystemBase>("painting");
 	Engine::Register<ShootingInteractionSystemBase>("shooting");
 	Engine::Register<ThrowingInteractionSystemBase>("throwing");
-	Engine::Register<PlayerBodySystem>("player");
+	Engine::Register<PlayerBodySystem>("player.body");
+	Engine::Register<PlayerInteractionSystem>("player.interaction");
 	
 	#if HAVE_WINDOWSYSTEM
 	Engine::Register<WindowSystem>("windows");
@@ -29,6 +30,8 @@ INITBLOCK_(EcsLocal) {
 	ComponentFactory::Register<TextRenderable>("text");
 	ComponentFactory::Register<Easing>("easing");
 	ComponentFactory::Register<PhysicsBody>("physics");
+	ComponentFactory::Register<ToolComponent>("tool");
+	ComponentFactory::Register<PaintComponent>("paint");
 	ComponentFactory::Register<PlayerHandComponent>("player.hand");
 	ComponentFactory::Register<PlayerHeadComponent>("player.head");
 	ComponentFactory::Register<PlayerBodyComponent>("player.body");

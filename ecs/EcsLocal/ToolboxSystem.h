@@ -6,6 +6,10 @@ NAMESPACE_ECS_BEGIN
 
 
 class ToolSystemBase;
+class PlayerHandComponent;
+
+using PlayerHandComponentRef = RefT_Entity<PlayerHandComponent>;
+
 
 class ToolComponent : public Component<ToolComponent> {
 	
@@ -14,21 +18,32 @@ public:
 	COPY_PANIC(ToolComponent)
 	COMP_DEF_VISIT
 	
+	void Initialize() override;
+	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
 	
 	String title;
 	String description;
 	TypeId tool_type { AsVoidTypeId() };
 	
+	ComponentBaseRef active_tool;
+	PlayerHandComponentRef active_hand;
+	
 };
+
+using ToolComponentRef = Ref<ToolComponent>;
+
 
 
 class ToolboxSystemBase :
 	public System<ToolboxSystemBase>
 {
-	LinkedList<EntityRef> entities;
+	//LinkedList<EntityRef> entities;
 	
 public:
-	SYS_DEF_VISIT_(vis & instruction_text; vis | ctrls; vis && entities;)
+	//SYS_DEF_VISIT_(vis & instruction_text; vis | ctrls; vis && entities;)
+	SYS_DEF_VISIT_(vis && tools && selectors && selector_objects)
+	
 	RTTI_DECL1(ToolboxSystemBase, System<ToolboxSystemBase>)
 	ECS_SYS_CTOR(ToolboxSystemBase);
 	
@@ -37,6 +52,11 @@ public:
 	
 	void AddToolSystem(ToolSystemBaseRef system);
 	void RemoveToolSystem(ToolSystemBaseRef system);
+	
+	void Attach(ToolComponentRef tool);
+	void Detach(ToolComponentRef tool);
+	
+	const Array<ToolComponentRef>& GetTools() const {return tools;}
 	
 protected:
 	// System
@@ -47,18 +67,19 @@ protected:
 	void Uninitialize() override;
 	
 private:
+	Array<ToolComponentRef> tools;
 	TypeMap<ToolSystemBaseRef> selectors;
 	TypeMap<EntityRef> selector_objects;
 	
 	bool show_toolbox{ false };
 	
-	enum ControllerHand {
+	/*enum ControllerHand {
 		Left, Right, Count
-	};
+	};*/
 	
-	static String ControllerHandToString(ControllerHand hand);
+	//static String ControllerHandToString(ControllerHand hand);
 	
-	struct ControllerContext : RTTIBase {
+	/*struct ControllerContext : RTTIBase {
 		RTTI_DECL0(ControllerContext)
 		
 		EntityRef ctrl;
@@ -68,16 +89,17 @@ private:
 		void Visit(RuntimeVisitor& vis) {(vis & ctrl) & dbg_txt;}
 		void Clear() {ctrl.Clear(); dbg_txt.Clear();}
 		operator bool() const {return !ctrl.IsEmpty() || !dbg_txt.IsEmpty();}
-	};
+	};*/
 	
 	void SwitchToolType(EntityRef entity, const TypeId& new_type);
 	
-	
+	/*
 	EntityRef instruction_text;
-	FixedArray<ControllerContext, ControllerHand::Count> ctrls;
-	
+	FixedArray<ControllerContext, ControllerHand::Count> ctrls;*/
 	
 };
+
+using ToolboxSystemBaseRef = Ref<ToolboxSystemBase>;
 
 
 NAMESPACE_ECS_END

@@ -12,7 +12,7 @@ bool ExtScriptEngineLoader::Load(ScriptEngineLoader& l) {
 		String id = loader.def.id.ToString();
 		RTLOG("ScriptEngineLoader::Load: " << id);
 		
-		Ref<Ecs::SystemBase> sys = eng.GetAdd(id);
+		Ref<Ecs::SystemBase> sys = eng.GetAdd(id, false); // skip startup
 		if (sys.IsEmpty()) {
 			l.SetError("could not find ecs system with id '" + id + "'");
 			return false;
@@ -49,6 +49,10 @@ bool ExtScriptEngineLoader::Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys)
 				return false;
 		}
 	}
+	
+	Ecs::Engine& eng = Ecs::GetActiveEngine();
+	TypeCls type = sys.GetTypeId();
+	eng.SystemStartup(type, &sys);
 	
 	return true;
 }

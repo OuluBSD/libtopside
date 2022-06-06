@@ -67,6 +67,8 @@ public:
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
 	
+	void MakeCylinder(const vec3& pos, float radius, float length);
+	
 protected:
 	ModelLoader loader;
 	bool loaded = false;

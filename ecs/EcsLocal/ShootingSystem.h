@@ -48,9 +48,9 @@ protected:
 	String GetDisplayName() const override;
 	EntityRef CreateToolSelector() const override;
 	
-	void Register(const LinkedList<EntityRef>& entities) override;
+	/*void Register(const LinkedList<EntityRef>& entities) override;
 	void Activate(EntityRef entity) override;
-	void Deactivate(EntityRef entity) override;
+	void Deactivate(EntityRef entity) override;*/
 	
 };
 

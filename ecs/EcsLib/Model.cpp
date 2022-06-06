@@ -104,6 +104,12 @@ bool ModelComponent::Arg(String key, Object value) {
 	return true;
 }
 
+void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {
+	ModelBuilder mb;
+	mb.AddCylinder(pos, radius, length);
+	loader = mb;
+}
+
 void ModelComponent::RefreshExtModel() {
 	have_ext_model = true;
 	mat4 rotate = YawPitchRoll(pitch, yaw, roll);
@@ -130,6 +136,7 @@ void ModelComponent::SetScale(const vec3& v) {
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
+	
 	if (!loaded) {
 		if (!loader && !prefab_name.IsEmpty()) {
 			String path = KnownModelNames::GetPath(prefab_name);
@@ -174,6 +181,8 @@ bool ModelComponent::Load(GfxDataState& state) {
 	if (!mesh)
 		return false;
 	
+	bool is_visible = IsEnabled();
+	
 	static thread_local Vector<GfxMeshBase*> meshes;
 	meshes.SetCount(0);
 	mesh->GetGfxMeshBases(meshes);
@@ -182,6 +191,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		if (!obj)
 			continue;
 		
+		obj->is_visible = is_visible;
 		obj->model = model;
 		obj->color = color;
 	}

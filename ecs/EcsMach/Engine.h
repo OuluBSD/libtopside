@@ -1,6 +1,11 @@
 #ifndef _EcsMech_Engine_h_
 #define _EcsMech_Engine_h_
 
+NAMESPACE_TOPSIDE_BEGIN
+namespace Serial {
+struct ExtScriptEngineLoader;
+}
+NAMESPACE_TOPSIDE_END
 
 NAMESPACE_ECS_BEGIN
 
@@ -23,6 +28,7 @@ public:
 	Engine& GetEngine() const;
 protected:
     friend Engine;
+    friend struct Serial::ExtScriptEngineLoader;
 
     virtual bool Initialize() {return true;}
     virtual void Start() {}
@@ -141,8 +147,8 @@ public:
 	void AddToUpdateList(ComponentBaseUpdater* c);
 	void RemoveFromUpdateList(ComponentBaseUpdater* c);
 	
-	Ref<SystemBase> Add(TypeCls type);
-	Ref<SystemBase> GetAdd(String id);
+	Ref<SystemBase> Add(TypeCls type, bool startup=true);
+	Ref<SystemBase> GetAdd(String id, bool startup=true);
     
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;
@@ -172,7 +178,7 @@ private:
     bool is_looping_systems = false;
     
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
-    void Add(TypeCls type_id, SystemBase* system);
+    void Add(TypeCls type_id, SystemBase* system, bool startup=true);
     void Remove(TypeCls typeId);
     
     Vector<ComponentBaseUpdater*> update_list;
@@ -198,6 +204,8 @@ public:
 		TypeNewFn().Add(type, &NewSystem<T>);
 	}
 	
+    void SystemStartup(TypeCls type_id, SystemBase* system);
+    
 };
 
 

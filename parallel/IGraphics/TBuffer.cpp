@@ -427,6 +427,8 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		// render VBA from state
 		Gfx::BeginRender();
 		for (DataObject& o : data.objects) {
+			if (!o.is_visible)
+				continue;
 			SetVars(data, rt.prog, o);
 			o.Paint(data);
 		}
@@ -435,6 +437,8 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	else if (user_data) {
 		Gfx::BeginRender();
 		for (DataObject& o : user_data->objects) {
+			if (!o.is_visible)
+				continue;
 			SetVars(*user_data, rt.prog, o);
 			o.Paint(*user_data);
 		}

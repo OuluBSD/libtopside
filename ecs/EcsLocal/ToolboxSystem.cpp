@@ -16,39 +16,87 @@ bool HitTest(vec3 positionA, vec3 positionB, float diameter) {
 }
 
 
+
+
+
+void ToolComponent::Initialize() {
+	ToolboxSystemBaseRef sys = GetEngine().TryGet<ToolboxSystemBase>();
+	if (sys)
+		sys->Attach(AsRefT());
+}
+
+void ToolComponent::Uninitialize() {
+	ToolboxSystemBaseRef sys = GetEngine().TryGet<ToolboxSystemBase>();
+	if (sys)
+		sys->Detach(AsRefT());
+}
+
+bool ToolComponent::Arg(String key, Object value) {
+	if (key == "hand") {
+		String path = value;
+		EntityStoreRef es = GetEngine().Get<EntityStore>();
+		EntityRef hand_ent = es->FindEntity(path);
+		if (!hand_ent) {
+			LOG("ToolComponent::Arg: error: could not find entity with path: " << path);
+			return false;
+		}
+		this->active_hand = hand_ent->Find<PlayerHandComponent>();
+		if (!this->active_hand) {
+			LOG("ToolComponent::Arg: error: entity does not have PlayerHandComponent: " << path);
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
+
+
+
+
 bool ToolboxSystemBase::Initialize() {
-	for(int i = 0; i < ctrls.GetCount(); i++)
-		ctrls[i].hand = (ControllerHand)i;
+	//for(int i = 0; i < ctrls.GetCount(); i++)
+	//	ctrls[i].hand = (ControllerHand)i;
 	
 	return true;
 }
 
 void ToolboxSystemBase::Uninitialize() {
-	for (auto& c : ctrls)
-		c.Clear();
-	instruction_text.Clear();
-	entities.Clear();
+	//for (auto& c : ctrls)
+	//	c.Clear();
+	//instruction_text.Clear();
+	//entities.Clear();
+}
+
+void ToolboxSystemBase::Attach(ToolComponentRef tool) {
+	ArrayFindAdd(tools, tool);
+}
+
+void ToolboxSystemBase::Detach(ToolComponentRef tool) {
+	ArrayRemoveKey(tools, tool);
 }
 
 void ToolboxSystemBase::AddToolSystem(ToolSystemBaseRef system) {
-	system->Register(entities);
+	//system->Register(entities);
 	selector_objects.GetAdd(system->GetType()) = system->CreateToolSelector();
 	selectors.GetAdd(system->GetType()) = system;
 	
-	for (auto& context : ctrls) {
+	/*for (auto& context : ctrls) {
 		SwitchToolType(context.ctrl, system->GetType());
-	}
+	}*/
 }
 
 void ToolboxSystemBase::RemoveToolSystem(ToolSystemBaseRef system) {
 	selectors.RemoveKey(system->GetType());
 	selector_objects.RemoveKey(system->GetType());
-	system->Unregister();
+	//system->Unregister();
 }
 
 void ToolboxSystemBase::Start() {
 	auto es = GetEngine().Get<EntityStore>();
 	
+	#if 0
 	for (size_t i = 0; i < ctrls.GetCount(); ++i) {
 		const ControllerHand hand = static_cast<ControllerHand>(i);
 		ctrls[i].hand = hand;
@@ -74,7 +122,7 @@ void ToolboxSystemBase::Start() {
 	ctrls[Right].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, -M_PI * 0.15f);
 	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
-	
+	#endif
 }
 
 void ToolboxSystemBase::Stop() {
@@ -82,15 +130,15 @@ void ToolboxSystemBase::Stop() {
 }
 
 void ToolboxSystemBase::Update(double dt) {
-	static const int fps_sz = 32;
+	/*static const int fps_sz = 32;
 	static float fps[fps_sz] = {};
 	static uint32 curr_fps = 0;
 	fps[curr_fps++] = dt;
 	curr_fps %= fps_sz;
 	const float avg_dt = std::accumulate(std::begin(fps), std::end(fps), 0.0f) / fps_sz;
 	instruction_text->Get<TextRenderable>()->text =
-	        IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;
-	        
+	        IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;*/
+	
 	if (!show_toolbox) {
 		{
 			int i = 0;
@@ -103,7 +151,7 @@ void ToolboxSystemBase::Update(double dt) {
 		}
 		
 		// Update the debug text for each Controller based on the currently selected tool
-		for (size_t i = 0; i < ctrls.GetCount(); ++i) {
+		/*for (size_t i = 0; i < ctrls.GetCount(); ++i) {
 			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + ": ";
 			
 			if (auto tool = ctrls[i].ctrl->Get<ToolComponent>()) {
@@ -111,14 +159,14 @@ void ToolboxSystemBase::Update(double dt) {
 			}
 			
 			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
-		}
+		}*/
 	}
 	else {
+#if 0
 		for (size_t i = 0; i < ctrls.GetCount(); ++i) {
 			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + " switch to: ";
 			const vec3 ctrl_position = ctrls[i].ctrl->Get<Transform>()->position;
 			TODO
-#if 0
 			
 			for (auto[transform, selector] : GetEngine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
 				if (HitTest(ctrl_position, transform->position, 0.15f)) {
@@ -132,18 +180,21 @@ void ToolboxSystemBase::Update(double dt) {
 				}
 			}
 			
-#endif
 			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
 		}
+#endif
 	}
 }
 
-String ToolboxSystemBase::ControllerHandToString(ControllerHand hand) {
+/*String ToolboxSystemBase::ControllerHandToString(ControllerHand hand) {
 	return hand == Left ? "Left" : "Right";
-}
+}*/
 
 void ToolboxSystemBase::SwitchToolType(EntityRef entity, const TypeId& new_type) {
 	ToolComponentRef tool = entity->Get<ToolComponent>();
+	
+	TODO
+	#if 0
 	{
 		// Disable old tool
 		auto it = selectors.Find(tool->tool_type);
@@ -164,6 +215,7 @@ void ToolboxSystemBase::SwitchToolType(EntityRef entity, const TypeId& new_type)
 			tool->title = c.GetDisplayName();
 		}
 	}
+	#endif
 }
 
 

@@ -20,6 +20,8 @@ EntityRef ThrowingInteractionSystemBase::CreateToolSelector() const {
 }
 
 void ThrowingInteractionSystemBase::Update(double dt) {
+	TODO
+	#if 0
 	Vector<RTuple<EntityRef, ToolComponentRef>> enabled_ents = GetEnabledEntities();
 	
 	for (RTuple<EntityRef, ToolComponentRef>& enabled_entity : enabled_ents) {
@@ -40,9 +42,10 @@ void ThrowingInteractionSystemBase::Update(double dt) {
 			}
 		}
 	}
+	#endif
 }
 #if 0
-void ThrowingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+void ThrowingInteractionSystemBase::OnControllerPressed(const ControllerEventArgs& args) {
 	if (args.PressKind() == SpatialInteractionPressKind::Select) {
 		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();
@@ -53,7 +56,7 @@ void ThrowingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSour
 	}
 }
 
-void ThrowingInteractionSystemBase::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
+void ThrowingInteractionSystemBase::OnControllerReleased(const ControllerEventArgs& args) {
 	if (args.PressKind() == SpatialInteractionPressKind::Select) {
 		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();

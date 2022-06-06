@@ -82,6 +82,28 @@ using PlayerHandComponentRef = Ref<PlayerHandComponent>;
 
 
 
+/*class PlayerHandToolComponent : public Component<PlayerHandToolComponent> {
+	
+public:
+	RTTI_COMP0(PlayerHandToolComponent)
+	COMP_DEF_VISIT_(vis & hand)
+	
+	COPY_PANIC(PlayerHandToolComponent)
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
+	
+	
+	
+	PlayerHandComponentRef				hand;
+	
+};
+
+using PlayerHandToolComponentRef = Ref<PlayerHandToolComponent>;*/
+
+
+
 class PlayerHeadComponent : public Component<PlayerHeadComponent> {
 	
 public:

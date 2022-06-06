@@ -4,12 +4,31 @@
 NAMESPACE_ECS_BEGIN
 
 
+bool PaintingInteractionSystemBase::Initialize() {
+	tb = GetEngine().Get<ToolboxSystemBase>();
+	if (!tb) {
+		LOG("PaintingInteractionSystemBase: error: ToolboxSystemBase required");
+		return false;
+	}
+	return true;
+}
+
 void PaintingInteractionSystemBase::Start() {
 	GetEngine().Get<ToolboxSystemBase>()->AddToolSystem(AsRef<ToolSystemBase>());
 }
 
 void PaintingInteractionSystemBase::Stop() {
 	GetEngine().Get<ToolboxSystemBase>()->RemoveToolSystem(AsRef<ToolSystemBase>());
+}
+
+void PaintingInteractionSystemBase::Uninitialize() {
+	tb.Clear();
+}
+
+bool PaintingInteractionSystemBase::Arg(String key, Object value) {
+	if (key == "debug.model")
+		dbg_model = (String)value == "true";
+	return true;
 }
 
 String PaintingInteractionSystemBase::GetInstructions() const {
@@ -31,36 +50,52 @@ EntityRef PaintingInteractionSystemBase::CreateToolSelector() const {
 	return selector;
 }
 
+void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
+	ArrayFindAdd(comps, c);
+	
+	EntityStoreRef es = GetEngine().Get<EntityStore>();
+	EntityRef entity = c->GetEntity();
+	const auto& selected_color = colors[0];
+	auto paint_brush =
+		!dbg_model
+			? es->GetRoot()->Create<PaintBrush>()
+			: es->GetRoot()->Create<DummyToolModel>();
+	paint_brush->Get<ModelComponent>()->color = selected_color;
+	
+	//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
+	
+	auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
+	touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
+	touchpad_indicator->Get<ModelComponent>()->color = Colors::Gray;
+	PaintComponentRef paint = entity->Get<PaintComponent>();
+	paint->selected_color = selected_color;
+	paint->paint_brush = paint_brush;
+	paint->touchpad_indicator = touchpad_indicator;
+	
+	for (auto color : colors) {
+		auto color_picker = es->GetRoot()->Create<StaticSphere>();
+		color_picker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
+		color_picker->Get<ModelComponent>()->color = color;
+		paint->clr_pick_objects.Add(color_picker);
+	}
+	
+	paint->beam = es->GetRoot()->Create<StaticCube>();
+	paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
+	paint->beam->Get<ModelComponent>()->color = Colors::Aquamarine;
+	paint->SetEnabled(false);
+
+}
+
+void PaintingInteractionSystemBase::Detach(PaintComponentRef c) {
+	ArrayRemoveKey(comps, c);
+}
+
+#if 0
 void PaintingInteractionSystemBase::Register(const LinkedList<EntityRef>& entities) {
 	ToolSys::Register(entities);
 	auto es = GetEngine().Get<EntityStore>();
 	
 	for (auto& entity : m_entities) {
-		const auto& selected_color = colors[0];
-		auto paint_brush = es->GetRoot()->Create<PaintBrush>();
-		paint_brush->Get<ModelComponent>()->color = selected_color;
-		
-		//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
-		
-		auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
-		touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
-		touchpad_indicator->Get<ModelComponent>()->color = Colors::Gray;
-		PaintComponentRef paint = entity->Get<PaintComponent>();
-		paint->selected_color = selected_color;
-		paint->paint_brush = paint_brush;
-		paint->touchpad_indicator = touchpad_indicator;
-		
-		for (auto color : colors) {
-			auto color_picker = es->GetRoot()->Create<StaticSphere>();
-			color_picker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
-			color_picker->Get<ModelComponent>()->color = color;
-			paint->clr_pick_objects.Add(color_picker);
-		}
-		
-		paint->beam = es->GetRoot()->Create<StaticCube>();
-		paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
-		paint->beam->Get<ModelComponent>()->color = Colors::Aquamarine;
-		paint->SetEnabled(false);
 	}
 	
 }
@@ -87,8 +122,11 @@ void PaintingInteractionSystemBase::Deactivate(EntityRef entity) {
 	
 	ToolSys::Deactivate(entity);
 }
+#endif
 
 void PaintingInteractionSystemBase::ClearStrokes() {
+	TODO
+	#if 0
 	// Destroy all the paint strokes currently active
 	for (auto& enabled_entity : GetEnabledEntities()) {
 		auto entity = enabled_entity.Get<EntityRef>();
@@ -114,10 +152,20 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 	}
 	
 	persistent_strokes.Clear();
+	#endif
 }
 
-#if 0
-void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) {
+void PaintingInteractionSystemBase::OnControllerPressed(const ControllerEventArgs& args) {
+	TODO
+}
+
+void PaintingInteractionSystemBase::OnControllerReleased(const ControllerEventArgs& args) {
+	TODO
+}
+
+void PaintingInteractionSystemBase::OnControllerUpdated(const ControllerEventArgs& args) {
+	TODO
+	#if 0
 	const auto& source_state = args.State();
 	const auto& source = source_state.Source();
 	
@@ -127,7 +175,7 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 		auto paint = enabled_entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
 		const auto& paint_brush_model = paint->paint_brush->Get<ModelComponent>()->model;
 		
-		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
+		/*if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
 			Optional<Pbr::NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
 			
 			if (touch_node) {
@@ -140,7 +188,7 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 				        brush_tip_world_transform *
 				        paint_brush_world_transform.GetInverse();
 			}
-		}
+		}*/
 		
 		const auto controller = entity->Get<PlayerHandComponent>();
 		
@@ -215,16 +263,38 @@ void PaintingInteractionSystemBase::OnSourceUpdated(const SpatialInteractionSour
 			}
 		}
 	}
+	#endif
 }
 
-#endif
 
 void PaintingInteractionSystemBase::Update(double dt) {
-	for (auto& enabled_entity : GetEnabledEntities()) {
-		auto entity		= enabled_entity.Get<EntityRef>();
-		auto paint		= enabled_entity.Get<PaintComponentRef>();
+	ASSERT(tb);
+	if (!tb) return;
+	
+	/*const Array<ToolComponentRef>& tools = tb->GetTools();
+	
+	for (const ToolComponentRef& t : tools) {
+		if (!t->active_tool)
+			continue;
 		
-		PlayerHandComponentRef controller = entity->Get<PlayerHandComponent>();
+		ToolComponentRef& tool = const_cast<ToolComponentRef&>(t);
+		EntityRef entity = tool->GetEntity();
+		PaintComponentRef paint = tool->active_tool.AsRef<PaintComponent>();
+		if (!paint)
+			continue;*/
+	
+	for (PaintComponentRef& paint : comps) {
+		EntityRef entity = paint->GetEntity();
+		
+		ToolComponentRef tool = paint->GetEntity()->Find<ToolComponent>();
+		if (!tool)
+			continue;
+		
+		PlayerHandComponentRef& controller = tool->active_hand;
+		if (!controller)
+			continue;
+		
+		ASSERT(paint->beam);
 		paint->beam->Get<ModelComponent>()->SetEnabled(paint->cur_state == PaintComponent::State::Manipulating);
 		
 		// Set properties required for rendering
@@ -233,6 +303,8 @@ void PaintingInteractionSystemBase::Update(double dt) {
 		for (auto& go : paint->clr_pick_objects) {
 			go->Get<ModelComponent>()->SetEnabled(paint->cur_state == PaintComponent::State::ColorSelection);
 		}
+		
+		TODO
 		
 		const bool show_controller = paint->cur_state == PaintComponent::State::Manipulating;
 		entity->Get<ModelComponent>()->SetEnabled(show_controller);
@@ -316,6 +388,37 @@ vec4 PaintingInteractionSystemBase::SelectColor(double x, double y) {
 	double angle = std::atan2(y, x);
 	int index = static_cast<int>(std::round((angle - min) / (max - min) * (colors.GetCount() - 1)));
 	return colors[index];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void PaintComponent::Initialize() {
+	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
+	if (tool && !tool->active_tool)
+		tool->active_tool = AsRefT();
+	
+	Ref<PaintingInteractionSystemBase> sys = GetEngine().TryGet<PaintingInteractionSystemBase>();
+	if (sys)
+		sys-> Attach(AsRefT());
+}
+
+void PaintComponent::Uninitialize() {
+	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
+	if (tool && (&*tool->active_tool == static_cast<ComponentBase*>(this)))
+		tool->active_tool.Clear();
+	
+	Ref<PaintingInteractionSystemBase> sys = GetEngine().TryGet<PaintingInteractionSystemBase>();
+	if (sys)
+		sys->Detach(AsRefT());
 }
 
 void PaintComponent::SetEnabled(bool enable) {

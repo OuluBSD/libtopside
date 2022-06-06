@@ -13,6 +13,8 @@ file
 	CommonComponents.cpp,
 	Player.h,
 	Player.cpp,
+	InteractionSystem.h,
+	InteractionSystem.cpp,
 	EasingSystem.h,
 	EasingSystem.cpp,
 	WindowSystem.h,

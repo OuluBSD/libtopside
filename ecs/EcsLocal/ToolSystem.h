@@ -18,10 +18,10 @@ public:
 	
 	virtual EntityRef CreateToolSelector() const = 0;
 	
-	virtual void Register(const LinkedList<EntityRef>& entities) = 0;
+	/*virtual void Register(const LinkedList<EntityRef>& entities) = 0;
 	virtual void Unregister() = 0;
 	virtual void Activate(EntityRef entity) = 0;
-	virtual void Deactivate(EntityRef entity) = 0;
+	virtual void Deactivate(EntityRef entity) = 0;*/
 };
 
 class ToolSelectorKey :
@@ -64,10 +64,10 @@ class ToolSystemBaseT :
 public:
 	typedef ToolSystemBaseT<T, ToolComponent> CLASSNAME;
 	RTTI_DECL1(ToolSystemBaseT, ToolSystemBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSystemBase>(this); vis && m_entities;}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSystemBase>(this); /*vis && m_entities;*/}
 	TypeCls GetType() const override {return AsTypeCls<T>();}
 	
-	using ToolComponentRef = Ref<ToolComponent, RefParent1<Entity>>;
+	
 	
 	
 protected:
@@ -83,7 +83,7 @@ protected:
 	}
 	
 	// ToolSystemBase
-	void Register(const LinkedList<EntityRef>& entities) override {
+	/*void Register(const LinkedList<EntityRef>& entities) override {
 		m_entities <<= entities;
 		
 		for (auto& entity : m_entities) {
@@ -98,18 +98,18 @@ protected:
 		}
 		
 		m_entities.Clear();
-	}
+	}*/
 	
-	void Activate(EntityRef entity) override {
+	/*void Activate(EntityRef entity) override {
 		entity->Get<ToolComponent>()->SetEnabled(true);
 	}
 	
 	void Deactivate(EntityRef entity) override {
 		entity->Get<ToolComponent>()->SetEnabled(false);
-	}
+	}*/
 	
 	// Internal helpers
-	Vector<RTuple<EntityRef, ToolComponentRef>> GetEnabledEntities() const {
+	/*Vector<RTuple<EntityRef, ToolComponentRef>> GetEnabledEntities() const {
 		Vector<RTuple<EntityRef, ToolComponentRef>> entities;
 		
 		for (auto& entity : m_entities) {
@@ -121,10 +121,10 @@ protected:
 		}
 		
 		return entities;
-	}
+	}*/
 	
 	
-	LinkedList<EntityRef> m_entities;
+	//LinkedList<EntityRef> m_entities;
 };
 
 NAMESPACE_ECS_END

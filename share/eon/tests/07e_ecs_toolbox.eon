@@ -38,11 +38,11 @@ engine ecs.dummy: {
     system component.store;
     system events;
     system physics: {env: event.register;};
+    system player.body;
+    system player.interaction;
     system paintstroke;
     system toolbox;
     system painting;
-    system shooting;
-    system throwing;
     
     
     pool world: {
@@ -52,12 +52,46 @@ engine ecs.dummy: {
             comp physics: {bind: physics; test.fn: fixed;};
         };
         
-        entity player: {
-            comp transform3: {x: 0; y: 1; z: -6;};
+        entity box: {
+            comp transform3: {y: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
+        entity player.body: {
+            comp transform3: {x: 0; y: 0; z: -6;};
+            comp physics: {bind: physics; test.fn: player.body;};
+            comp player.body: {height: 1.74;};
+        };
+        
+        entity player.head: {
+            comp transform3;
             comp viewable;
             comp viewport: {fov: 90;};
-            comp camera.chase;//: {target: world.box1;};
-            comp physics: {bind: physics; test.fn: player;};
+            comp camera.chase;
+            comp player.head: {body: world.player.body;};
+        };
+        
+        entity player.hand.left: {
+            comp transform3;
+            comp body;
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp player.hand: {hand: left; body: world.player.body;};
+        };
+        
+        entity player.hand.right: {
+            comp transform3;
+            comp body;
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp player.hand: {hand: right; body: world.player.body;};
+        };
+        
+        entity tool.painting: {
+            comp transform3;
+            comp tool: {hand: world.player.hand.right;};
+            comp paint;
+            comp model: {builtin: "cylinder,0.05,0.2"; yaw: -70;};
         };
     };
 };

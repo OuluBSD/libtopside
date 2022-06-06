@@ -43,6 +43,7 @@ struct GfxDataObject : GfxMeshBase {
 	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
 	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
 	
+	bool is_visible = true;
     mat4 view_override;
     mat4 proj_override;
     mat4 scale;

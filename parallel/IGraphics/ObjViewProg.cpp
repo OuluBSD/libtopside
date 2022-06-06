@@ -127,7 +127,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		
 	}
 	
-	state.light_dir = vec3 {sin(angle * 0.1f), 0.0, cos(angle * 0.1f)};
+	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	
 }
 

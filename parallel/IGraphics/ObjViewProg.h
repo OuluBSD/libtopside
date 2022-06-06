@@ -30,7 +30,7 @@ struct ObjViewProgT :
 	ModelLoader loader;
 	String obj, tex;
 	TimeStop ts;
-	double phase_time = 1.5;
+	double phase_time = 3.0;
 	int iter = 0;
 	int frame = 0;
 	int phase = 0;

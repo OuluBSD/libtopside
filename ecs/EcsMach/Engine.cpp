@@ -184,7 +184,27 @@ bool Engine::HasStarted() const {
 	return is_started;
 }
 
-void Engine::Add(TypeCls type_id, SystemBase* system) {
+void Engine::SystemStartup(TypeCls type_id, SystemBase* system) {
+	ASSERT(is_started);
+	if (system->Initialize()) {
+		RTLOG("Engine::SystemStartup: added system to already running engine: " << system->GetDynamicName());
+		
+		bool has_already = false;
+		for (auto r : systems)
+			if (&*r == system)
+				has_already = true;
+		if (!has_already)
+			systems.Add(type_id, system);
+		
+		system->Start();
+	}
+	else {
+		RTLOG("Engine::SystemStartup: error: could not initialize system in already running engine: " << system->GetDynamicName());
+		delete system;
+	}
+}
+
+void Engine::Add(TypeCls type_id, SystemBase* system, bool startup) {
 	//ASSERT_(!is_started, "adding systems after the machine has started" is error-prone);
 	ASSERT_(!is_looping_systems, "adding systems while systems are being iterated is error-prone");
 	
@@ -192,18 +212,10 @@ void Engine::Add(TypeCls type_id, SystemBase* system) {
 	ASSERT(!it);
 	
 	ASSERT(system->GetParent());
-	if (is_started) {
-		if (system->Initialize()) {
-			RTLOG("Engine::Add: added system to already running engine: " << system->GetDynamicName());
-			systems.Add(type_id, system);
-			system->Start();
-		}
-		else {
-			RTLOG("Engine::Add: error: could not initialize system in already running engine: " << system->GetDynamicName());
-			delete system;
-		}
-	}
-	else systems.Add(type_id, system);
+	if (startup && is_started)
+		SystemStartup(type_id, system);
+	else
+		systems.Add(type_id, system);
 }
 
 void Engine::Remove(TypeCls type_id) {
@@ -228,18 +240,18 @@ void Engine::RemoveFromUpdateList(ComponentBaseUpdater* c) {
 	VectorRemoveKey(update_list, c);
 }
 
-Ref<SystemBase> Engine::Add(TypeCls type)
+Ref<SystemBase> Engine::Add(TypeCls type, bool startup)
 {
     NewSystemFn fn = TypeNewFn().Get(type, 0);
     ASSERT(fn);
     if (!fn)
         return Ref<SystemBase>();
 	SystemBase* syst = fn(*this);
-    Add(type, syst);
+    Add(type, syst, startup);
     return syst->AsRefT<SystemBase>();
 }
 
-Ref<SystemBase> Engine::GetAdd(String id) {
+Ref<SystemBase> Engine::GetAdd(String id, bool startup) {
     int i = EonToType().Find(id);
     if (i < 0)
         return Ref<SystemBase>();
@@ -247,7 +259,7 @@ Ref<SystemBase> Engine::GetAdd(String id) {
     SystemCollection::Iterator it = FindSystem(type);
     if (it)
         return it->AsRef<SystemBase>();
-    return Add(type);
+    return Add(type, startup);
 }
 
 
