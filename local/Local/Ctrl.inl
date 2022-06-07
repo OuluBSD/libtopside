@@ -1,12 +1,12 @@
 
 enum EventStateKey {
 	KEYBOARD_PRESSED,
+	KEYBOARD_PRESSED_PREVIOUS,
 	KEYBOARD_STATE_ITER,
 	
 	SCREEN0_CLOSE,
 	SCREEN0_SIZE,
 	SCREEN0_OFFSET,
-	
 	
 	//#if defined flagSCREEN || defined flagGUI
 	

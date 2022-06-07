@@ -128,7 +128,7 @@ SpatialStageFrameOfReference* GetActiveSpatialStageFrameOfReference();
 
 
 
-struct SpatialSourceEventArgs {
+struct SpatialSourceEventArgs /*: public InteractionEvent*/ {
 	
 };
 
@@ -225,7 +225,7 @@ struct SpatialInteractionSourceState {
 	
 };
 
-struct SpatialInteractionManager {
+struct SpatialInteractionManager  /*: public InteractionManager*/ {
 	Array<SpatialInteractionSourceState> detected_source_states;
 	
 	const Array<SpatialInteractionSourceState>& GetDetectedSourcesAtTimestamp(const PerceptionTimestamp& ts);

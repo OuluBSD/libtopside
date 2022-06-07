@@ -16,8 +16,8 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<PaintingInteractionSystemBase>("painting");
 	Engine::Register<ShootingInteractionSystemBase>("shooting");
 	Engine::Register<ThrowingInteractionSystemBase>("throwing");
-	Engine::Register<PlayerBodySystem>("player.body");
-	Engine::Register<PlayerInteractionSystem>("player.interaction");
+	Engine::Register<PlayerBodySystem>("player");
+	Engine::Register<InteractionSystem>("interaction");
 	
 	#if HAVE_WINDOWSYSTEM
 	Engine::Register<WindowSystem>("windows");

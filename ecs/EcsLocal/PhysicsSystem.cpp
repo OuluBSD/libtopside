@@ -6,7 +6,6 @@ NAMESPACE_ECS_BEGIN
 
 
 PhysicsSystem::PhysicsSystem(Engine& e) : SP(e) {
-	prev_mouse = Point(0,0);
 	gravity = vec3{ 0, -9.8f, 0 };
 	
 }
@@ -16,17 +15,6 @@ void PhysicsSystem::Update(double dt)
 	time += dt;
 	last_dt = dt;
 	
-	if (!env_name.IsEmpty()) {
-		Serial::Machine& m = Serial::GetActiveMachine();
-		Ref<LoopStore> ls = m.Find<LoopStore>();
-		LoopRef l = ls->GetRoot();
-		state = l->GetSpace()->FindStateDeep(env_name);
-		if (!state) {
-			LOG("PhysicsSystem::Arg: error: environment state with name '" << env_name << "' not found");
-		}
-		env_name.Clear();
-	}
-
 	if (debug_log) {
 		//RTLOG("PhysicsSystem::Update: " << dt);
 		
@@ -39,7 +27,6 @@ void PhysicsSystem::Update(double dt)
 			continue;
 		}
 		
-		TODO
 	}
 	
 }
@@ -48,10 +35,6 @@ bool PhysicsSystem::Arg(String key, Object value) {
 	
 	if (key == "log") {
 		debug_log = (String)value == "debug";
-	}
-	
-	if (key == "env") {
-		env_name = value;
 	}
 	
 	return true;
@@ -87,7 +70,7 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 	else if (b.test_fn == PhysicsBody::TESTFN_FIXED) {
 		// pass
 	}
-	else if (b.test_fn == PhysicsBody::TESTFN_PLAYER_BODY) {
+	/*else if (b.test_fn == PhysicsBody::TESTFN_PLAYER_BODY) {
 		FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
 		
 		if (!b.player)
@@ -104,8 +87,11 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 			prev_mouse = drag;
 		}
 		else {
+		!!!!!!
 			if (!b.trans->use_lookat)
 				TestPlayerLookFn(b, Point(0,0));
+		!!!!
+		
 			prev_mouse = Point(0,0);
 		}
 		
@@ -128,13 +114,15 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 		}
 		if (right) {
 			TestPlayerMoveFn(b, vec3(+1,0,0), step);
-		}
-	}
+		}/
+	}*/
 	else TODO
 	
 }
 
 void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
+	TODO
+	/*
 	double rot_speed = 0.05 / (2*M_PI);
 	yaw += mouse_diff.x * rot_speed;
 	pitch += mouse_diff.y * rot_speed;
@@ -156,9 +144,12 @@ void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
 		", rot: " << v[0] << ", " << v[1] << ", " << v[2] <<
 		", angle: " << yaw << ss", angle1: " << pitch);
 	#endif
+	*/
 }
 
 void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
+	TODO
+	/*
 	auto head = b.player->GetHead();
 	if (!head)
 		return;
@@ -180,6 +171,7 @@ void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
 		pos[0] -= s[2];
 		pos[2] += s[0];
 	}
+	*/
 }
 
 
@@ -211,7 +203,6 @@ bool PhysicsBody::Arg(String key, Object value) {
 		
 		if      (v == "do.circle")			test_fn = TESTFN_CIRCLE;
 		else if (v == "fixed")				test_fn = TESTFN_FIXED;
-		else if (v == "player.body")		test_fn = TESTFN_PLAYER_BODY;
 		
 		else {
 			LOG("PhysicsBody::Arg: error: invalid test function: " + v);

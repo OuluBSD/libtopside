@@ -14,7 +14,8 @@ public:
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
 	quat orientation = identity<quat>();
-	vec3 direction, up = vec3(0,1,0); // "look at" alternative to quaternion
+	vec3 direction = vec3(0,0,1);
+	vec3 up = vec3(0,1,0); // "look at" alternative to quaternion
 	bool use_lookat = false; // use direction & up instead of orientation
 	
 	

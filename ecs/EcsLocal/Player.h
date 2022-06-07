@@ -118,8 +118,8 @@ public:
 	
 	
 	PlayerBodyComponentRef				body;
-	vec3		up = zero<vec3>();
-	vec3		direction = zero<vec3>();
+	//vec3		up = zero<vec3>();
+	//vec3		direction = vec3(0,0,1);
 	
 };
 
@@ -156,11 +156,12 @@ public:
 
 
 class PlayerBodySystem :
-    public System<PlayerBodySystem>
+    public System<PlayerBodySystem>,
+    public InteractionListener
 {
 	
 public:
-	RTTI_DECL1(PlayerBodySystem, System<PlayerBodySystem>)
+	RTTI_DECL2(PlayerBodySystem, System<PlayerBodySystem>, InteractionListener)
 	ECS_SYS_CTOR(PlayerBodySystem)
 	SYS_DEF_VISIT_(vis && bodies)
 	
@@ -176,9 +177,16 @@ protected:
     void Stop() override;
     void Uninitialize() override;
 	
+	void OnControllerDetected(const CtrlEvent& args) override;
+	void OnControllerLost(const CtrlEvent& args) override;
+	void OnControllerPressed(const CtrlEvent& args) override;
+	void OnControllerUpdated(const CtrlEvent& args) override;
+	void OnControllerReleased(const CtrlEvent& args) override;
+    
 private:
     void RefreshComponentsForSource(const HandLocationSource& source);
     
+    Ref<InteractionSystem> iasys;
     Array<PlayerBodyComponentRef> bodies;
     
 };

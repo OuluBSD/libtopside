@@ -338,8 +338,9 @@ bool EventStateBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
-	data.SetAll(false);
+	state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED).SetAll(false);
+	state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED_PREVIOUS).SetAll(false);
+	
 	
 	return true;
 }
@@ -352,6 +353,13 @@ bool EventStateBase::PostInitialize() {
 
 void EventStateBase::Uninitialize() {
 	RTLOG("EventStateBase::Uninitialize");
+	
+}
+
+void EventStateBase::Update(double dt) {
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	FboKbd::KeyVec& prev = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED_PREVIOUS);
+	prev = data;
 	
 }
 

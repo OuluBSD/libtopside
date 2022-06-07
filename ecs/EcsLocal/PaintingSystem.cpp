@@ -155,15 +155,15 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 	#endif
 }
 
-void PaintingInteractionSystemBase::OnControllerPressed(const ControllerEventArgs& args) {
+void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& args) {
 	TODO
 }
 
-void PaintingInteractionSystemBase::OnControllerReleased(const ControllerEventArgs& args) {
+void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& args) {
 	TODO
 }
 
-void PaintingInteractionSystemBase::OnControllerUpdated(const ControllerEventArgs& args) {
+void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& args) {
 	TODO
 	#if 0
 	const auto& source_state = args.State();
@@ -303,8 +303,6 @@ void PaintingInteractionSystemBase::Update(double dt) {
 		for (auto& go : paint->clr_pick_objects) {
 			go->Get<ModelComponent>()->SetEnabled(paint->cur_state == PaintComponent::State::ColorSelection);
 		}
-		
-		TODO
 		
 		const bool show_controller = paint->cur_state == PaintComponent::State::Manipulating;
 		entity->Get<ModelComponent>()->SetEnabled(show_controller);

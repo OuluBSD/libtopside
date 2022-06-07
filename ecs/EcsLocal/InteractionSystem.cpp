@@ -3,88 +3,253 @@
 NAMESPACE_ECS_BEGIN
 
 
-bool PlayerInteractionSystem::Initialize() {
-	//if (!HolographicScopeBinder::Initialize())
-	//	return false;
+bool InteractionSystem::Initialize() {
+	
+	if (1) {
+		fake_spatial_interaction_manager.Create();
+		spatial_interaction_manager = &*fake_spatial_interaction_manager;
+		BindEventHandlers();
+		
+		if (!fake_spatial_interaction_manager->Initialize(*this))
+			return false;
+	}
 	
     return true;
 }
 
 
-void PlayerInteractionSystem::Uninitialize() {
-    ReleaseEventHandlers();
-    //spatial_interaction_manager = nullptr;
+void InteractionSystem::Uninitialize() {
+	
+	if (spatial_interaction_manager) {
+	    ReleaseEventHandlers();
+	    spatial_interaction_manager = 0;
+	    
+	    fake_spatial_interaction_manager.Clear();
+	}
 }
 
-void PlayerInteractionSystem::Update(double dt) {
+bool InteractionSystem::Arg(String key, Object value) {
 	
-	TODO
-	/*if (!spatial_interaction_manager) {
-	    spatial_interaction_manager = PlayerInteractionManager::GetForCurrentView();
+	if (key == "log") {
+		debug_log = (String)value == "debug";
+	}
+	
+	if (key == "env") {
+		env_name = value;
+	}
+	
+	return true;
+}
+
+void InteractionSystem::Update(double dt) {
+	
+	if (fake_spatial_interaction_manager)
+		fake_spatial_interaction_manager->Update(dt);
+	
+	if (!spatial_interaction_manager) {
+		TODO
+	    /*spatial_interaction_manager = PlayerInteractionManager::GetForCurrentView();
 	    if (spatial_interaction_manager)
-			BindEventHandlers();
-	}*/
-	
+			BindEventHandlers();*/
+	}
 }
 
-void PlayerInteractionSystem::BindEventHandlers() {
-	//ASSERT(spatial_interaction_manager);
-
-	TODO
-    /*s->spatial_interaction_manager.WhenSourceDetected.Add(THISBACK(HandleSourceDetected));
-    s->spatial_interaction_manager.WhenSourcePressed.Add(THISBACK(HandleSourcePressed));
-    s->spatial_interaction_manager.WhenSourceUpdated.Add(THISBACK(HandleSourceUpdated));
-    s->spatial_interaction_manager.WhenSourceReleased.Add(THISBACK(HandleSourceReleased));
-    s->spatial_interaction_manager.WhenSourceLost.Add(THISBACK(HandleSourceLost));*/
+void InteractionSystem::BindEventHandlers() {
+	ASSERT(spatial_interaction_manager);
+	InteractionManager* s = spatial_interaction_manager;
+	
+    s->WhenSourceDetected.Add(THISBACK(HandleSourceDetected));
+    s->WhenSourcePressed.Add(THISBACK(HandleSourcePressed));
+    s->WhenSourceUpdated.Add(THISBACK(HandleSourceUpdated));
+    s->WhenSourceReleased.Add(THISBACK(HandleSourceReleased));
+    s->WhenSourceLost.Add(THISBACK(HandleSourceLost));
     
 }
 
-void PlayerInteractionSystem::ReleaseEventHandlers() {
-    //ASSERT(spatial_interaction_manager);
+void InteractionSystem::ReleaseEventHandlers() {
+    ASSERT(spatial_interaction_manager);
+	InteractionManager* s = spatial_interaction_manager;
 
-	TODO
-    /*s->spatial_interaction_manager.WhenSourceLost.RemoveThis(this);
-    s->spatial_interaction_manager.WhenSourceReleased.RemoveThis(this);
-    s->spatial_interaction_manager.WhenSourceUpdated.RemoveThis(this);
-    s->spatial_interaction_manager.WhenSourcePressed.RemoveThis(this);
-    s->spatial_interaction_manager.WhenSourceDetected.RemoveThis(this);*/
+    s->WhenSourceLost.RemoveThis(this);
+    s->WhenSourceReleased.RemoveThis(this);
+    s->WhenSourceUpdated.RemoveThis(this);
+    s->WhenSourcePressed.RemoveThis(this);
+    s->WhenSourceDetected.RemoveThis(this);
 }
 
-void PlayerInteractionSystem::HandleSourceDetected(const ControllerEventArgs& args) {
-    for (auto& listener : player_interaction_listeners) {
+void InteractionSystem::HandleSourceDetected(const InteractionManager&, const CtrlEvent& args) {
+    for (auto& listener : interaction_listeners) {
         listener->OnControllerDetected(args);
     }
 }
 
 
-void PlayerInteractionSystem::HandleSourceLost(const ControllerEventArgs& args) {
-    for (auto& listener : player_interaction_listeners) {
+void InteractionSystem::HandleSourceLost(const InteractionManager&, const CtrlEvent& args) {
+    for (auto& listener : interaction_listeners) {
         listener->OnControllerLost(args);
     }
 }
 
 
-void PlayerInteractionSystem::HandleSourcePressed(const ControllerEventArgs& args) {
-    for (auto& listener : player_interaction_listeners) {
+void InteractionSystem::HandleSourcePressed(const InteractionManager&, const CtrlEvent& args) {
+    for (auto& listener : interaction_listeners) {
         listener->OnControllerPressed(args);
     }
 }
 
 
-void PlayerInteractionSystem::HandleSourceUpdated(const ControllerEventArgs& args)
+void InteractionSystem::HandleSourceUpdated(const InteractionManager&, const CtrlEvent& args)
 {
-    for (auto& listener : player_interaction_listeners) {
+    for (auto& listener : interaction_listeners) {
         listener->OnControllerUpdated(args);
     }
 }
 
 
-void PlayerInteractionSystem::HandleSourceReleased(const ControllerEventArgs& args)
+void InteractionSystem::HandleSourceReleased(const InteractionManager&, const CtrlEvent& args)
 {
-    for (auto& listener : player_interaction_listeners) {
+    for (auto& listener : interaction_listeners) {
         listener->OnControllerReleased(args);
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+bool FakeSpatialInteractionManager::Initialize(InteractionSystem& sys) {
+	this->sys = &sys;
+	
+	return true;
+}
+
+void FakeSpatialInteractionManager::Update(double dt) {
+	time += dt;
+	last_dt = dt;
+	
+	String env_name = sys->env_name;
+	
+	if (!env_name.IsEmpty()) {
+		Serial::Machine& m = Serial::GetActiveMachine();
+		Ref<LoopStore> ls = m.Find<LoopStore>();
+		LoopRef l = ls->GetRoot();
+		state = l->GetSpace()->FindStateDeep(env_name);
+		if (!state) {
+			LOG("InteractionSystem::Update: error: environment state with name '" << env_name << "' not found");
+		}
+		env_name.Clear();
+		
+		DetectController();
+	}
+	
+	if (state)
+		UpdateState();
+
+}
+
+void FakeSpatialInteractionManager::DetectController() {
+	CtrlEvent ev;
+	ev.type = EVENT_HOLO_CONTROLLER_DETECTED;
+	
+	WhenSourceDetected(*this, ev);
+}
+
+void FakeSpatialInteractionManager::UpdateState() {
+	ASSERT(state);
+	
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	FboKbd::KeyVec& prev = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED_PREVIOUS);
+	
+	if (state->GetBool(MOUSE_LEFTDOWN)) {
+		Point& drag = state->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
+		
+		Point diff = drag - prev_mouse;
+		
+		if (prev_mouse.x != 0 && prev_mouse.y != 0 && (diff.x || diff.y))
+			Look(diff);
+		
+		prev_mouse = drag;
+	}
+	else {
+		prev_mouse = Point(0,0);
+	}
+	
+	
+	bool fwd   = data['W'];
+	bool left  = data['A'];
+	bool down  = data['S'];
+	bool right = data['D'];
+	
+	float step = last_dt * 1.5;
+	
+	if (fwd) {
+		Move(vec3(0,0,1), step);
+	}
+	if (left) {
+		Move(vec3(-1,0,0), step);
+	}
+	if (down) {
+		Move(vec3(0,0,-1), step);
+	}
+	if (right) {
+		Move(vec3(+1,0,0), step);
+	}
+}
+
+void FakeSpatialInteractionManager::Look(Point mouse_diff) {
+	CtrlEvent ev;
+	ev.type = EVENT_HOLO_LOOK;
+	ev.pt = mouse_diff; // extra
+	
+	double rot_speed = 0.05 / (2*M_PI);
+	yaw += mouse_diff.x * rot_speed;
+	pitch += mouse_diff.y * rot_speed;
+	
+	head_direction = vec3(
+		 sin(pitch) * sin(yaw),
+		 cos(pitch),
+		-sin(pitch) * cos(yaw));
+	
+	COPY3(ev.direction, head_direction);
+	
+	if (sys->debug_log) {
+		LOG("FakeSpatialInteractionManager::Look: dx: " << mouse_diff.x << ", dy: " << mouse_diff.y <<
+			", rot: " << head_direction[0] << ", " << head_direction[1] << ", " << head_direction[2] <<
+			", angle: " << yaw << ", angle1: " << pitch);
+	}
+	
+	WhenSourceUpdated(*this, ev);
+}
+
+void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
+	CtrlEvent ev;
+	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
+	vec3 dir = head_direction;
+	
+	// remove y component
+	dir[1] = 0;
+	
+	float straight = rel_dir[2];
+	float sideways = rel_dir[0];
+	
+	if (straight) {
+		vec3 pos_diff = dir * step * straight;
+		COPY3(ev.position, pos_diff);
+	}
+	if (sideways) {
+		vec3 s = dir * step * sideways;
+		vec3 pos_diff(-s[2], 0, +s[0]);
+		COPY3(ev.position, pos_diff);
+	}
+	
+	WhenSourceUpdated(*this, ev);
+}
 
 NAMESPACE_ECS_END

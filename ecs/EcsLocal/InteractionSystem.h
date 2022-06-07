@@ -4,41 +4,97 @@
 NAMESPACE_ECS_BEGIN
 
 
-struct ControllerEventArgs {
+//TODO common base with these and IHolograph classes
+// - SpatialSourceEventArgs
+// - SpatialInteractionManager
+// - SpatialSourceEventArgs
+
+/*struct InteractionEvent {
 	
+};*/
+
+class InteractionSystem;
+
+
+struct InteractionManager {
+	
+	
+	
+	using Cb = Callback2<const InteractionManager&, const CtrlEvent&>;
+	Cb WhenSourceDetected;
+	Cb WhenSourcePressed;
+	Cb WhenSourceUpdated;
+	Cb WhenSourceReleased;
+	Cb WhenSourceLost;
+	
+	
+	virtual void Update(double dt) {}
 };
 
-
-struct PlayerInteractionListener :
-	WeakRefScopeEnabler<PlayerInteractionListener, Engine>,
-	RTTIBase
-{
-	RTTI_DECL0(PlayerInteractionListener)
+struct FakeSpatialInteractionManager : InteractionManager {
+	EnvStateRef state;
+	InteractionSystem* sys = 0;
+	Point prev_mouse = Point(0,0);
+	double time = 0;
+	double last_dt = 0;
 	
-    virtual void OnControllerDetected(const ControllerEventArgs& args) {};
-    virtual void OnControllerLost(const ControllerEventArgs& args) {};
-    virtual void OnControllerPressed(const ControllerEventArgs& args) {};
-    virtual void OnControllerUpdated(const ControllerEventArgs& args) {};
-    virtual void OnControllerReleased(const ControllerEventArgs& args) {};
+	// player camera
+	double pitch = -M_PI/2;
+	double yaw = 0;
+	vec3 head_direction = vec3(0,0,1);
+	
+	
+	bool Initialize(InteractionSystem& sys);
+	void Update(double dt) override;
+	
+    void DetectController();
+    void UpdateState();
+	void Look(Point mouse_diff);
+	void Move(vec3 rel_dir, float step);
     
 };
 
-using PlayerInteractionListenerRef = Ref<PlayerInteractionListener, RefParent1<Ecs::Engine>>;
+/*struct ControllerEventArgs : InteractionEvent {
+	
+};*/
 
 
 
-class PlayerInteractionSystem :
-	public Ecs::System<PlayerInteractionSystem>
+
+
+
+
+
+struct InteractionListener :
+	WeakRefScopeEnabler<InteractionListener, Engine>,
+	RTTIBase
+{
+	RTTI_DECL0(InteractionListener)
+	
+    virtual void OnControllerDetected(const CtrlEvent& args) {};
+    virtual void OnControllerLost(const CtrlEvent& args) {};
+    virtual void OnControllerPressed(const CtrlEvent& args) {};
+    virtual void OnControllerUpdated(const CtrlEvent& args) {};
+    virtual void OnControllerReleased(const CtrlEvent& args) {};
+    
+};
+
+using InteractionListenerRef = Ref<InteractionListener, RefParent1<Ecs::Engine>>;
+
+
+
+class InteractionSystem :
+	public Ecs::System<InteractionSystem>
 {
 public:
-	ECS_SYS_CTOR(PlayerInteractionSystem)
+	ECS_SYS_CTOR(InteractionSystem)
 	
-    void AddListener(PlayerInteractionListenerRef listener) {
-        player_interaction_listeners.Add(listener);
+    void AddListener(InteractionListenerRef listener) {
+        ArrayFindAdd(interaction_listeners, listener);
     }
 
-    void RemoveListener(PlayerInteractionListenerRef listener) {
-        player_interaction_listeners.Remove(listener);
+    void RemoveListener(InteractionListenerRef listener) {
+        ArrayRemoveKey(interaction_listeners, listener);
     }
 
     
@@ -46,12 +102,21 @@ protected:
     bool Initialize() override;
     void Uninitialize() override;
     void Update(double dt) override;
+	bool Arg(String key, Object value) override;
 
+protected:
+	friend struct FakeSpatialInteractionManager;
+	String env_name;
+	bool debug_log = false;
+	
 private:
-    Array<PlayerInteractionListenerRef> player_interaction_listeners;
+    Array<InteractionListenerRef> interaction_listeners;
+    One<FakeSpatialInteractionManager> fake_spatial_interaction_manager;
+    InteractionManager* spatial_interaction_manager = 0;
     
     
     void BindEventHandlers();
+    void ReleaseEventHandlers();
     
     /*enum SourceEvent {
         Detected, Pressed, Updated, Released, Lost, Count
@@ -61,14 +126,13 @@ private:
     */
     
 	
-    void ReleaseEventHandlers();
 	
     // Events Handlers
-    void HandleSourceDetected(const ControllerEventArgs& args);
-    void HandleSourceLost(const ControllerEventArgs& args);
-    void HandleSourcePressed(const ControllerEventArgs& args);
-    void HandleSourceUpdated(const ControllerEventArgs& args);
-    void HandleSourceReleased(const ControllerEventArgs& args);
+    void HandleSourceDetected(const InteractionManager&, const CtrlEvent& args);
+    void HandleSourceLost(const InteractionManager&, const CtrlEvent& args);
+    void HandleSourcePressed(const InteractionManager&, const CtrlEvent& args);
+    void HandleSourceUpdated(const InteractionManager&, const CtrlEvent& args);
+    void HandleSourceReleased(const InteractionManager&, const CtrlEvent& args);
     
 };
 

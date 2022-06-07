@@ -138,6 +138,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
+	void Update(double dt) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool IsReady(PacketIO& io) override;
 	bool Recv(int sink_ch, const Packet& in) override;

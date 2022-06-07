@@ -34,5 +34,9 @@
 #endif
 
 
+#define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
+#define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
+#define COPY4(dst, from) for(int i = 0; i < 4; i++) dst[i] = from[i]
+	
 
 #endif

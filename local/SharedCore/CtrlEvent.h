@@ -15,6 +15,13 @@ enum {
 	EVENT_MOUSEWHEEL,
 	EVENT_MOUSE_EVENT,
 	
+	
+	EVENT_HOLO_CONTROLLER_DETECTED,
+	EVENT_HOLO_CONTROLLER_LOST,
+	EVENT_HOLO_LOOK,
+	EVENT_HOLO_MOVE_FAR_RELATIVE,
+	EVENT_HOLO_MOVE_NEAR,
+	
 	EVENT_TYPE_COUNT
 };
 
@@ -28,19 +35,33 @@ inline String GetEventTypeString(int event) {
 		//case EVENT_MOUSEDRAG:		return "Mouse Drag";
 		case EVENT_MOUSEWHEEL:		return "Mouse Wheel";
 		case EVENT_MOUSE_EVENT:		return "Mouse Event";
+		
+		case EVENT_HOLO_CONTROLLER_DETECTED:	return "Holographic controller detected";
+		case EVENT_HOLO_CONTROLLER_LOST:		return "Holographic controller lost";
+		case EVENT_HOLO_LOOK:					return "Holographic Look";
+		case EVENT_HOLO_MOVE_FAR_RELATIVE:		return "Holographic Move Far (relative)";
+		case EVENT_HOLO_MOVE_NEAR:				return "Holographic Move Near";
+		
 		case EVENT_INVALID:
 		case EVENT_TYPE_COUNT:
 		default:					return "<invalid>";
 	}
 }
 
+
 struct CtrlEvent : Moveable<CtrlEvent> {
 	int type = 0;
-	dword value = 0;
+	union {
+		dword value = 0;
+		float fvalue;
+	};
 	int n = 0;
 	Point pt;
 	Size sz;
 	
+	// 3D extension
+	float position[3] {0,0,0};
+	float direction[3] {0,0,0};
 	
 	RTTI_TYPEIDCLS
 	

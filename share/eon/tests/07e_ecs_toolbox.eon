@@ -37,9 +37,9 @@ engine ecs.dummy: {
     system entity.store;
     system component.store;
     system events;
-    system physics: {env: event.register;};
-    system player.body;
-    system player.interaction;
+    system interaction: {env: event.register;};
+    system physics;
+    system player;
     system paintstroke;
     system toolbox;
     system painting;

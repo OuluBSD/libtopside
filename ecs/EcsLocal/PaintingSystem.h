@@ -57,11 +57,11 @@ public:
 
 class PaintingInteractionSystemBase :
 	public ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>,
-	public PlayerInteractionListener
+	public InteractionListener
 {
 public:
 	using ToolSys = ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>;
-	RTTI_DECL2(PaintingInteractionSystemBase, ToolSys, PlayerInteractionListener)
+	RTTI_DECL2(PaintingInteractionSystemBase, ToolSys, InteractionListener)
 	ECS_SYS_CTOR(PaintingInteractionSystemBase);
 	
 	void Visit(RuntimeVisitor& vis) override {
@@ -102,9 +102,9 @@ protected:
 	void Deactivate(EntityRef entity) override;*/
 	
 	// ISpatialInteractionListener
-	void OnControllerPressed(const ControllerEventArgs& args) override;
-	void OnControllerUpdated(const ControllerEventArgs& args) override;
-	void OnControllerReleased(const ControllerEventArgs& args) override;
+	void OnControllerPressed(const CtrlEvent& args) override;
+	void OnControllerUpdated(const CtrlEvent& args) override;
+	void OnControllerReleased(const CtrlEvent& args) override;
 	
 private:
 	vec4 SelectColor(double x, double y);

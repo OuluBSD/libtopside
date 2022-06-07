@@ -10,17 +10,11 @@ class PhysicsBody;
 
 class PhysicsSystem : public System<PhysicsSystem>
 {
-	EnvStateRef state;
-	String env_name;
 	Vector<PhysicsBody*> bodies;
-	Point prev_mouse;
 	double time = 0;
 	double last_dt = 0;
 	bool debug_log = false;
 	
-	// player camera
-	double pitch = -M_PI/2;
-	double yaw = 0;
 	
 	
 	void TestPlayerLookFn(PhysicsBody& b, Point mouse_diff);
@@ -53,7 +47,6 @@ public:
 		TESTFN_NULL,
 		TESTFN_FIXED,
 		TESTFN_CIRCLE,
-		TESTFN_PLAYER_BODY,
 	};
 	
 	int test_fn = 0;

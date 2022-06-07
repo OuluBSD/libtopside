@@ -134,6 +134,13 @@ bool PlayerBodyComponent::SetHead(PlayerHeadComponentRef head) {
 
 
 bool PlayerBodySystem::Initialize() {
+	iasys = GetEngine().TryGet<InteractionSystem>();
+	if (!iasys) {
+		LOG("PlayerBodySystem::Initialize: error: InteractionSystem is required in engine");
+		return false;
+	}
+	
+	iasys->AddListener(AsRefT<InteractionListener>());
 	
 	return true;
 }
@@ -166,9 +173,9 @@ void PlayerBodySystem::Update(double dt) {
 			if (head_trans) {
 				head_trans->position = head_pos;
 				
-				head_trans->use_lookat = true;
+				/*head_trans->use_lookat = true;
 				head_trans->up = b->head->up;
-				head_trans->direction = b->head->direction;
+				head_trans->direction = b->head->direction;*/
 				
 				head_up = head_trans->up;
 				head_direction = head_trans->direction;
@@ -196,7 +203,7 @@ void PlayerBodySystem::Stop() {
 }
 
 void PlayerBodySystem::Uninitialize() {
-	
+	iasys->RemoveListener(AsRefT<InteractionListener>());
 }
 
 void PlayerBodySystem::RefreshComponentsForSource(const HandLocationSource& source) {
@@ -212,6 +219,28 @@ void PlayerBodySystem::Attach(PlayerBodyComponentRef h) {
 void PlayerBodySystem::Detach(PlayerBodyComponentRef h) {
 	ArrayRemoveKey(bodies, h);
 }
+
+void PlayerBodySystem::OnControllerDetected(const CtrlEvent& args) {
+	// pass
+}
+
+void PlayerBodySystem::OnControllerLost(const CtrlEvent& args) {
+	TODO
+}
+
+void PlayerBodySystem::OnControllerPressed(const CtrlEvent& args) {
+	TODO
+}
+
+void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& args) {
+	TODO
+}
+
+void PlayerBodySystem::OnControllerReleased(const CtrlEvent& args) {
+	TODO
+}
+
+
 
 
 NAMESPACE_ECS_END
