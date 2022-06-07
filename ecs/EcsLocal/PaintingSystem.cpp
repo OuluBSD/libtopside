@@ -5,6 +5,9 @@ NAMESPACE_ECS_BEGIN
 
 
 bool PaintingInteractionSystemBase::Initialize() {
+	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
+		return false;
+	
 	tb = GetEngine().Get<ToolboxSystemBase>();
 	if (!tb) {
 		LOG("PaintingInteractionSystemBase: error: ToolboxSystemBase required");
@@ -13,16 +16,17 @@ bool PaintingInteractionSystemBase::Initialize() {
 	return true;
 }
 
+void PaintingInteractionSystemBase::Uninitialize() {
+	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+	tb.Clear();
+}
+
 void PaintingInteractionSystemBase::Start() {
 	GetEngine().Get<ToolboxSystemBase>()->AddToolSystem(AsRef<ToolSystemBase>());
 }
 
 void PaintingInteractionSystemBase::Stop() {
 	GetEngine().Get<ToolboxSystemBase>()->RemoveToolSystem(AsRef<ToolSystemBase>());
-}
-
-void PaintingInteractionSystemBase::Uninitialize() {
-	tb.Clear();
 }
 
 bool PaintingInteractionSystemBase::Arg(String key, Object value) {
@@ -155,15 +159,15 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 	#endif
 }
 
-void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& args) {
+void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 	TODO
 }
 
-void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& args) {
+void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 	TODO
 }
 
-void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& args) {
+void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 	TODO
 	#if 0
 	const auto& source_state = args.State();

@@ -4,7 +4,7 @@
 NAMESPACE_UPP
 
 
-enum {
+typedef enum {
 	EVENT_INVALID,
 	EVENT_WINDOW_RESIZE,
 	EVENT_SHUTDOWN,
@@ -23,7 +23,7 @@ enum {
 	EVENT_HOLO_MOVE_NEAR,
 	
 	EVENT_TYPE_COUNT
-};
+} CtrlEventType;
 
 inline String GetEventTypeString(int event) {
 	switch (event) {
@@ -49,8 +49,13 @@ inline String GetEventTypeString(int event) {
 }
 
 
+#define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
+#define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
+#define COPY4(dst, from) for(int i = 0; i < 4; i++) dst[i] = from[i]
+	
+	
 struct CtrlEvent : Moveable<CtrlEvent> {
-	int type = 0;
+	CtrlEventType type = EVENT_INVALID;
 	union {
 		dword value = 0;
 		float fvalue;
@@ -73,19 +78,23 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		pt.y = e.pt.y;
 		sz.cx = e.sz.cx;
 		sz.cy = e.sz.cy;
+		COPY3(position, e.position);
+		COPY3(direction, e.direction);
 	}
 	
 	void Clear() {
-		type = 0;
+		type = EVENT_INVALID;
 		value = 0;
 		n = 0;
 		pt = Point(0,0);
 		sz = Size(0,0);
+		position[0] = position[1] = position[2] = 0;
+		direction[0] = direction[1] = direction[2] = 0;
 	}
 	
 	String ToString() const {
 		String s;
-		s << type << ", " << (int)value << ", " << n << ", (" << pt.x << "," << pt.y << "), [" << sz.cx << "," << sz.cy << "]";
+		s << GetEventTypeString(type) << ", " << (int)value << ", " << n << ", (" << pt.x << "," << pt.y << "), [" << sz.cx << "," << sz.cy << "]";
 		return s;
 	}
 };

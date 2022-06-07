@@ -28,12 +28,14 @@ public:
 // This ToolSystem manages the Gun tool which allows you to shoot balls in the 3D scene
 
 class ShootingInteractionSystemBase :
-	public ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>
+	public ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>,
+	public InteractionListener
 {
 	
 public:
-	ECS_SYS_CTOR(ShootingInteractionSystemBase);
 	using ToolSys = ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>;
+	ECS_SYS_CTOR(ShootingInteractionSystemBase);
+	RTTI_DECL2(ShootingInteractionSystemBase, ToolSys, InteractionListener)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
 	
 	using Parent = Engine;
@@ -44,6 +46,8 @@ public:
 	
 protected:
 	// ToolSystemBase
+	bool Initialize() override;
+	void Uninitialize() override;
 	String GetInstructions() const override;
 	String GetDisplayName() const override;
 	EntityRef CreateToolSelector() const override;

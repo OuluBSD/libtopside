@@ -3,6 +3,17 @@
 NAMESPACE_ECS_BEGIN
 
 
+bool ShootingInteractionSystemBase::Initialize() {
+	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
+		return false;
+	
+	return true;
+}
+
+void ShootingInteractionSystemBase::Uninitialize() {
+	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+}
+
 String ShootingInteractionSystemBase::GetInstructions() const {
 	return "Pull the trigger to fire the gun.\n\n"
 	       "You can feel controller vibrate for each bullet.\n\n";

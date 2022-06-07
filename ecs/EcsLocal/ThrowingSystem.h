@@ -26,11 +26,15 @@ public:
 
 // ThrowingInteractionSystem
 // This ToolSystem manages the Throwing tool which allows you to throw baseballs in 3D scene
-class ThrowingInteractionSystemBase : public ToolSystemBaseT<ThrowingInteractionSystemBase, ThrowingComponent> {
+class ThrowingInteractionSystemBase :
+	public ToolSystemBaseT<ThrowingInteractionSystemBase, ThrowingComponent>,
+	public InteractionListener
+{
 	
 public:
-	ECS_SYS_CTOR(ThrowingInteractionSystemBase);
 	using ToolSys = ToolSystemBaseT<ThrowingInteractionSystemBase, ThrowingComponent>;
+	ECS_SYS_CTOR(ThrowingInteractionSystemBase);
+	RTTI_DECL2(ThrowingInteractionSystemBase, ToolSys, InteractionListener)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
 	
 	using Parent = Engine;
@@ -42,6 +46,8 @@ public:
 	
 protected:
 	// System
+	bool Initialize() override;
+	void Uninitialize() override;
 	void Update(double dt) override;
 	
 	// IInteractionModeSystem

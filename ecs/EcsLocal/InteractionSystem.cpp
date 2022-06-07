@@ -3,6 +3,32 @@
 NAMESPACE_ECS_BEGIN
 
 
+bool InteractionListener::Initialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l) {
+	Ref<InteractionSystem> iasys = e.TryGet<InteractionSystem>();
+	if (!iasys) {
+		LOG("InteractionListener::Initialize: error: InteractionSystem is required in engine");
+		return false;
+	}
+	
+	iasys->AddListener(l);
+	
+	return true;
+}
+
+void InteractionListener::Uninitialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l) {
+	Ref<InteractionSystem> iasys = e.TryGet<InteractionSystem>();
+	if (!iasys) {
+		LOG("InteractionListener::Uninitialize: error: InteractionSystem is required in engine");
+		return;
+	}
+	
+	iasys->RemoveListener(l);
+}
+
+
+
+
+
 bool InteractionSystem::Initialize() {
 	
 	if (1) {
@@ -77,39 +103,39 @@ void InteractionSystem::ReleaseEventHandlers() {
     s->WhenSourceDetected.RemoveThis(this);
 }
 
-void InteractionSystem::HandleSourceDetected(const InteractionManager&, const CtrlEvent& args) {
+void InteractionSystem::HandleSourceDetected(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerDetected(args);
+        listener->OnControllerDetected(e);
     }
 }
 
 
-void InteractionSystem::HandleSourceLost(const InteractionManager&, const CtrlEvent& args) {
+void InteractionSystem::HandleSourceLost(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerLost(args);
+        listener->OnControllerLost(e);
     }
 }
 
 
-void InteractionSystem::HandleSourcePressed(const InteractionManager&, const CtrlEvent& args) {
+void InteractionSystem::HandleSourcePressed(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerPressed(args);
+        listener->OnControllerPressed(e);
     }
 }
 
 
-void InteractionSystem::HandleSourceUpdated(const InteractionManager&, const CtrlEvent& args)
+void InteractionSystem::HandleSourceUpdated(const InteractionManager&, const CtrlEvent& e)
 {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerUpdated(args);
+        listener->OnControllerUpdated(e);
     }
 }
 
 
-void InteractionSystem::HandleSourceReleased(const InteractionManager&, const CtrlEvent& args)
+void InteractionSystem::HandleSourceReleased(const InteractionManager&, const CtrlEvent& e)
 {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerReleased(args);
+        listener->OnControllerReleased(e);
     }
 }
 
@@ -147,6 +173,7 @@ void FakeSpatialInteractionManager::Update(double dt) {
 		env_name.Clear();
 		
 		DetectController();
+		Look(Point(0,0)); // camera might be messed up, so update it immediately
 	}
 	
 	if (state)

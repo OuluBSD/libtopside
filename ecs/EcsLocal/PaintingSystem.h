@@ -102,9 +102,9 @@ protected:
 	void Deactivate(EntityRef entity) override;*/
 	
 	// ISpatialInteractionListener
-	void OnControllerPressed(const CtrlEvent& args) override;
-	void OnControllerUpdated(const CtrlEvent& args) override;
-	void OnControllerReleased(const CtrlEvent& args) override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	void OnControllerUpdated(const CtrlEvent& e) override;
+	void OnControllerReleased(const CtrlEvent& e) override;
 	
 private:
 	vec4 SelectColor(double x, double y);

@@ -134,15 +134,15 @@ bool PlayerBodyComponent::SetHead(PlayerHeadComponentRef head) {
 
 
 bool PlayerBodySystem::Initialize() {
-	iasys = GetEngine().TryGet<InteractionSystem>();
-	if (!iasys) {
-		LOG("PlayerBodySystem::Initialize: error: InteractionSystem is required in engine");
+	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
 		return false;
-	}
-	
-	iasys->AddListener(AsRefT<InteractionListener>());
 	
 	return true;
+}
+
+void PlayerBodySystem::Uninitialize() {
+	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+	
 }
 
 void PlayerBodySystem::Start() {
@@ -202,10 +202,6 @@ void PlayerBodySystem::Stop() {
 	
 }
 
-void PlayerBodySystem::Uninitialize() {
-	iasys->RemoveListener(AsRefT<InteractionListener>());
-}
-
 void PlayerBodySystem::RefreshComponentsForSource(const HandLocationSource& source) {
 	
 	TODO
@@ -220,23 +216,45 @@ void PlayerBodySystem::Detach(PlayerBodyComponentRef h) {
 	ArrayRemoveKey(bodies, h);
 }
 
-void PlayerBodySystem::OnControllerDetected(const CtrlEvent& args) {
+void PlayerBodySystem::OnControllerDetected(const CtrlEvent& e) {
 	// pass
 }
 
-void PlayerBodySystem::OnControllerLost(const CtrlEvent& args) {
+void PlayerBodySystem::OnControllerLost(const CtrlEvent& e) {
 	TODO
 }
 
-void PlayerBodySystem::OnControllerPressed(const CtrlEvent& args) {
+void PlayerBodySystem::OnControllerPressed(const CtrlEvent& e) {
 	TODO
 }
 
-void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& args) {
-	TODO
+void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
+	if (e.type == EVENT_HOLO_LOOK) {
+		for (PlayerBodyComponentRef& b : bodies) {
+			if (b->head) {
+				TransformRef trans = b->head->GetEntity()->Find<Transform>();
+				if (trans) {
+					trans->use_lookat = true;
+					COPY3(trans->direction, e.direction);
+					trans->up = vec3(0,1,0);
+				}
+			}
+		}
+	}
+	else if (e.type == EVENT_HOLO_MOVE_FAR_RELATIVE) {
+		for (PlayerBodyComponentRef& b : bodies) {
+			TransformRef trans = b->GetEntity()->Find<Transform>();
+			if (trans) {
+				vec3 rel_pos;
+				COPY3(rel_pos, e.position);
+				trans->position += rel_pos;
+			}
+		}
+	}
+	else TODO
 }
 
-void PlayerBodySystem::OnControllerReleased(const CtrlEvent& args) {
+void PlayerBodySystem::OnControllerReleased(const CtrlEvent& e) {
 	TODO
 }
 

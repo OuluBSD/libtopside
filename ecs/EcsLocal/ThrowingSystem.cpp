@@ -3,6 +3,17 @@
 NAMESPACE_ECS_BEGIN
 
 
+bool ThrowingInteractionSystemBase::Initialize() {
+	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
+		return false;
+	
+	return true;
+}
+
+void ThrowingInteractionSystemBase::Uninitialize() {
+	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+}
+
 String ThrowingInteractionSystemBase::GetInstructions() const {
 	return "Press and hold trigger to spawn a baseball.\n\n"
 	       "Release trigger to throw the baseball.";

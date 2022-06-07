@@ -6,7 +6,7 @@ NAMESPACE_UPP
 
 void RandomizeEvent(CtrlEvent& ev) {
 	ev.Clear();
-	ev.type = 1+Random(EVENT_TYPE_COUNT-1); // skip first,
+	ev.type = (CtrlEventType)(1+Random(EVENT_TYPE_COUNT-1)); // skip first,
 	
 	switch (ev.type) {
 		case EVENT_WINDOW_RESIZE:

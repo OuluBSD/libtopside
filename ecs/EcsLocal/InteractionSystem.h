@@ -71,12 +71,14 @@ struct InteractionListener :
 {
 	RTTI_DECL0(InteractionListener)
 	
-    virtual void OnControllerDetected(const CtrlEvent& args) {};
-    virtual void OnControllerLost(const CtrlEvent& args) {};
-    virtual void OnControllerPressed(const CtrlEvent& args) {};
-    virtual void OnControllerUpdated(const CtrlEvent& args) {};
-    virtual void OnControllerReleased(const CtrlEvent& args) {};
+    virtual void OnControllerDetected(const CtrlEvent& e) {};
+    virtual void OnControllerLost(const CtrlEvent& e) {};
+    virtual void OnControllerPressed(const CtrlEvent& e) {};
+    virtual void OnControllerUpdated(const CtrlEvent& e) {};
+    virtual void OnControllerReleased(const CtrlEvent& e) {};
     
+    static bool Initialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l);
+    static void Uninitialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l);
 };
 
 using InteractionListenerRef = Ref<InteractionListener, RefParent1<Ecs::Engine>>;
@@ -128,11 +130,11 @@ private:
 	
 	
     // Events Handlers
-    void HandleSourceDetected(const InteractionManager&, const CtrlEvent& args);
-    void HandleSourceLost(const InteractionManager&, const CtrlEvent& args);
-    void HandleSourcePressed(const InteractionManager&, const CtrlEvent& args);
-    void HandleSourceUpdated(const InteractionManager&, const CtrlEvent& args);
-    void HandleSourceReleased(const InteractionManager&, const CtrlEvent& args);
+    void HandleSourceDetected(const InteractionManager&, const CtrlEvent& e);
+    void HandleSourceLost(const InteractionManager&, const CtrlEvent& e);
+    void HandleSourcePressed(const InteractionManager&, const CtrlEvent& e);
+    void HandleSourceUpdated(const InteractionManager&, const CtrlEvent& e);
+    void HandleSourceReleased(const InteractionManager&, const CtrlEvent& e);
     
 };
 

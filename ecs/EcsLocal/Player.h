@@ -177,11 +177,11 @@ protected:
     void Stop() override;
     void Uninitialize() override;
 	
-	void OnControllerDetected(const CtrlEvent& args) override;
-	void OnControllerLost(const CtrlEvent& args) override;
-	void OnControllerPressed(const CtrlEvent& args) override;
-	void OnControllerUpdated(const CtrlEvent& args) override;
-	void OnControllerReleased(const CtrlEvent& args) override;
+	void OnControllerDetected(const CtrlEvent& e) override;
+	void OnControllerLost(const CtrlEvent& e) override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	void OnControllerUpdated(const CtrlEvent& e) override;
+	void OnControllerReleased(const CtrlEvent& e) override;
     
 private:
     void RefreshComponentsForSource(const HandLocationSource& source);
