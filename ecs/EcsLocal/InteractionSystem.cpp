@@ -149,6 +149,11 @@ void InteractionSystem::HandleSourceReleased(const InteractionManager&, const Ct
 
 
 
+FakeSpatialInteractionManager::FakeSpatialInteractionManager() {
+	ctrl_state.source = &ctrl;
+	
+	
+}
 
 bool FakeSpatialInteractionManager::Initialize(InteractionSystem& sys) {
 	this->sys = &sys;
@@ -183,6 +188,7 @@ void FakeSpatialInteractionManager::Update(double dt) {
 
 void FakeSpatialInteractionManager::DetectController() {
 	CtrlEvent ev;
+	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_CONTROLLER_DETECTED;
 	
 	WhenSourceDetected(*this, ev);
@@ -228,10 +234,76 @@ void FakeSpatialInteractionManager::UpdateState() {
 	if (right) {
 		Move(vec3(+1,0,0), step);
 	}
+	
+	static const int assign[ControllerProperties::BUTTON_COUNT] = {
+		'F',
+		'T',
+		'H',
+		'G',
+		
+		'K',
+		'J',
+		'L',
+		'I',
+		
+		'U',
+		'7',
+		'O',
+		'9',
+		
+		'1',
+		'2',
+		'3',
+	};
+	
+	for(int i = 0; i < ControllerProperties::BUTTON_COUNT; i++) {
+		int key = assign[i];
+		bool pushed = data[key] && !prev[key];
+		bool released = !data[key] && prev[key];
+		
+		if (pushed)
+			Pressed((ControllerProperties::Button)i);
+		
+		if (released)
+			Released((ControllerProperties::Button)i);
+		
+	}
+	
 }
+
+void FakeSpatialInteractionManager::Pressed(ControllerProperties::Button b) {
+	ctrl_state.props.pressed[(int)b] = true;
+	
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_PRESSED;
+	ev.n = (int)b;
+	
+	WhenSourcePressed(*this, ev);
+}
+
+void FakeSpatialInteractionManager::Released(ControllerProperties::Button b) {
+	ctrl_state.props.pressed[(int)b] = false;
+	
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_RELEASED;
+	ev.n = (int)b;
+	
+	WhenSourceReleased(*this, ev);
+}
+
+
+
+
+
+
+
+
 
 void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	CtrlEvent ev;
+	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = mouse_diff; // extra
 	
@@ -257,6 +329,7 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 
 void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
+	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
 	vec3 dir = head_direction;
 	

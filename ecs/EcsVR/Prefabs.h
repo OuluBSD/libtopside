@@ -53,18 +53,6 @@ struct Bullet : EntityPrefab<Transform, PbrRenderable, RigidBody>
     }
 };
 
-struct PaintStroke : EntityPrefab<Transform, PbrRenderable, PaintStrokeComponent>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-
-        TODO //components.Get<PbrRenderableRef>()->model.Create();
-
-        return components;
-    }
-};
-
 struct StaticModel : EntityPrefab<Transform, ModelComponent>
 {
     static Components Make(Entity& e)

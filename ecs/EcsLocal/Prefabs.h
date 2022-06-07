@@ -40,6 +40,18 @@ struct DummyToolModel : EntityPrefab<Transform, ModelComponent, ToolComponent>
     }
 };
 
+struct PaintStroke : EntityPrefab<Transform, ModelComponent, PaintStrokeComponent>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        //components.Get<ModelComponentRef>()->model.Create();
+
+        return components;
+    }
+};
+
 
 NAMESPACE_ECS_END
 

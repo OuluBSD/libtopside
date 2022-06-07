@@ -21,6 +21,8 @@ typedef enum {
 	EVENT_HOLO_LOOK,
 	EVENT_HOLO_MOVE_FAR_RELATIVE,
 	EVENT_HOLO_MOVE_NEAR,
+	EVENT_HOLO_PRESSED,
+	EVENT_HOLO_RELEASED,
 	
 	EVENT_TYPE_COUNT
 } CtrlEventType;
@@ -41,6 +43,8 @@ inline String GetEventTypeString(int event) {
 		case EVENT_HOLO_LOOK:					return "Holographic Look";
 		case EVENT_HOLO_MOVE_FAR_RELATIVE:		return "Holographic Move Far (relative)";
 		case EVENT_HOLO_MOVE_NEAR:				return "Holographic Move Near";
+		case EVENT_HOLO_PRESSED:				return "Holographi controller button pressed";
+		case EVENT_HOLO_RELEASED:				return "Holographi controller button released";
 		
 		case EVENT_INVALID:
 		case EVENT_TYPE_COUNT:
@@ -48,6 +52,68 @@ inline String GetEventTypeString(int event) {
 	}
 }
 
+
+struct ControllerSource : RTTIBase {
+	RTTI_DECL0(ControllerSource);
+	virtual ~ControllerSource() {}
+};
+
+struct ControllerProperties {
+	typedef enum {
+		LEFT,
+		UP,
+		RIGHT,
+		DOWN,
+		
+		A0, // cross
+		A1, // rectangle
+		A2, // circle
+		A3, // triangle
+		
+		L1, // lower shoulder
+		L2, // higher shoulder
+		R1, // lower shoulder
+		R2, // higher shoulder
+		
+		SELECT,
+		START,
+		HOME,
+		
+		BUTTON_COUNT,
+		
+		CROSS		= A0,
+		RECTANGLE	= A1,
+		CIRCLE		= A2,
+		TRIANGLE	= A3,
+	} Button;
+	
+	bool pressed[BUTTON_COUNT] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0};
+	float touchpad[2][2] = {{0,0},{0,0}};
+	float thumbstick[2][2] = {{0,0},{0,0}};
+	float touchpad_travel[2] = {0,0};
+	float touchpad_pressure[2] = {0,0};
+	float shoulder_high[2] = {0,0};
+	float shoulder_low[2] = {0,0};
+	
+	float GetTouchpadX(int i=0) const {return touchpad[i][0];}
+	float GetTouchpadY(int i=0) const {return touchpad[i][1];}
+	float GetThumbstickX(int i=0) const {return thumbstick[i][0];}
+	float GetThumbstickY(int i=0) const {return thumbstick[i][1];}
+	bool IsGrasped(int i=0) const {return shoulder_low[i] != 0.0f;}
+	bool IsTouchpadTouched(int i=0) const {return touchpad_pressure[i] != 0.0f;}
+	bool IsTouchpadPressed(int i=0) const {return touchpad_travel[i] != 0.0f;}
+	bool IsSelectPressed() const {return pressed[SELECT];}
+	
+};
+
+struct ControllerState {
+	ControllerSource* source = 0;
+	ControllerProperties props;
+	
+	const ControllerSource& GetSource() const {ASSERT(source); return *source;}
+	const ControllerProperties& GetControllerProperties() const {return props;}
+	
+};
 
 #define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
 #define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
@@ -68,7 +134,13 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	float position[3] {0,0,0};
 	float direction[3] {0,0,0};
 	
+	// Device extension
+	ControllerState* state = 0;
+	
+	
 	RTTI_TYPEIDCLS
+	
+	const ControllerState& GetState() const {ASSERT(state); return *state;}
 	
 	void operator=(const CtrlEvent& e) {
 		type = e.type;

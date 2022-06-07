@@ -10,7 +10,7 @@ void PlayerHandComponent::Uninitialize() {
 	
 }
 
-bool PlayerHandComponent::IsSource(const HandLocationSource& rhs) const {
+bool PlayerHandComponent::IsSource(const ControllerSource& rhs) const {
 	TODO
 }
 
@@ -221,11 +221,15 @@ void PlayerBodySystem::OnControllerDetected(const CtrlEvent& e) {
 }
 
 void PlayerBodySystem::OnControllerLost(const CtrlEvent& e) {
-	TODO
+	// pass
 }
 
 void PlayerBodySystem::OnControllerPressed(const CtrlEvent& e) {
-	TODO
+	// pass
+}
+
+void PlayerBodySystem::OnControllerReleased(const CtrlEvent& e) {
+	// pass
 }
 
 void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
@@ -252,10 +256,6 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 		}
 	}
 	else TODO
-}
-
-void PlayerBodySystem::OnControllerReleased(const CtrlEvent& e) {
-	TODO
 }
 
 

@@ -34,7 +34,8 @@ struct HandActionSourcePose {
 };
 
 // "SpatialSource"
-struct HandLocationSource {
+struct HandLocationSource : ControllerSource {
+	RTTI_DECL1(HandLocationSource, ControllerSource)
 	
 };
 
@@ -67,7 +68,7 @@ public:
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
 	
-    bool IsSource(const HandLocationSource& rhs) const;
+    bool IsSource(const ControllerSource& rhs) const;
 	
 	
 	PlayerBodyComponentRef				body;

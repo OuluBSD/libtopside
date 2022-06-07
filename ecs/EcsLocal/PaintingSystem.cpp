@@ -160,26 +160,26 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 }
 
 void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	TODO
+	// pass
 }
 
 void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
-	TODO
+	// pass
 }
 
 void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
-	TODO
-	#if 0
-	const auto& source_state = args.State();
-	const auto& source = source_state.Source();
+	const ControllerState& source_state = e.GetState();
+	const ControllerSource& source = source_state.GetSource();
 	
-	if (auto enabled_entity = TryGetEntityFromSource(source)) {
-		bool new_stroke_started = false;
-		auto entity = enabled_entity->Get<EntityRef>();
-		auto paint = enabled_entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
-		const auto& paint_brush_model = paint->paint_brush->Get<ModelComponent>()->model;
+	//if (EntityRef entity = TryGetEntityFromSource(source)) {
+	for (PaintComponentRef& paint : comps) {
+		EntityRef entity = paint->GetEntity();
 		
-		/*if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
+		bool new_stroke_started = false;
+		//auto paint = entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
+		/*const auto& paint_brush_model = paint->paint_brush->Get<ModelComponent>()->model;
+		
+		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
 			Optional<Pbr::NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
 			
 			if (touch_node) {
@@ -187,28 +187,35 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				// we use offset as it does not rely on the current transform of the model
 				// we initialize it once as the value will not change
 				const auto brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
-				const auto paint_brush_world_transform = paint_brush_model->GetNode(Pbr::RootNodeIndex).GetTransform();
+				const auto paint_brush_world_transform
+					= paint_brush_model->GetNode(Pbr::RootNodeIndex).GetTransform();
 				paint->brush_tip_offset_from_holding_pose =
 				        brush_tip_world_transform *
 				        paint_brush_world_transform.GetInverse();
 			}
 		}*/
 		
-		const auto controller = entity->Get<PlayerHandComponent>();
+		Ref<ToolComponent> tool = entity->Find<ToolComponent>();
+		ASSERT(tool);
 		
-		if (controller->IsSource(source)) {
-			const auto& controller_properties = source_state.ControllerProperties();
-			paint->touchpad_x = static_cast<float>(controller_properties.TouchpadX());
-			paint->touchpad_y = static_cast<float>(controller_properties.TouchpadY());
-			paint->thumbstick_x = static_cast<float>(controller_properties.ThumbstickX());
-			paint->thumbstick_y = static_cast<float>(controller_properties.ThumbstickY());
+		Ref<PlayerHandComponent> controller = tool->active_hand;
+		if (!controller)
+			continue;
+		
+		//if (controller && controller->IsSource(source))
+		{
+			const ControllerProperties& controller_properties = source_state.GetControllerProperties();
+			paint->touchpad_x   = controller_properties.GetTouchpadX();
+			paint->touchpad_y   = controller_properties.GetTouchpadY();
+			paint->thumbstick_x = controller_properties.GetThumbstickX();
+			paint->thumbstick_y = controller_properties.GetThumbstickY();
 			
 			if (paint->cur_state == PaintComponent::State::Idle) {
-				if (source_state.IsSelectPressed()) {
+				if (controller_properties.IsSelectPressed()) {
 					paint->cur_state = PaintComponent::State::Painting;
 					new_stroke_started = true;
 				}
-				else if (source_state.IsGrasped()) {
+				else if (controller_properties.IsGrasped()) {
 					paint->cur_state = PaintComponent::State::Manipulating;
 				}
 				else if (controller_properties.IsTouchpadTouched()) {
@@ -216,12 +223,12 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::Painting) {
-				if (source_state.IsSelectPressed() == false) {
+				if (controller_properties.IsSelectPressed() == false) {
 					paint->cur_state = PaintComponent::State::Idle;
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::Manipulating) {
-				if (source_state.IsGrasped() == false) {
+				if (controller_properties.IsGrasped() == false) {
 					paint->cur_state = PaintComponent::State::Idle;
 					paint->prev_manip_loc = nullptr;
 				}
@@ -231,7 +238,8 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 					if (controller_properties.IsTouchpadPressed()) {
 						paint->wait_touchpad_release = true;
 						paint->selected_color = SelectColor(paint->touchpad_x, paint->touchpad_y);
-						SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(source_state.Source(), 100_ms);
+						
+						//SendContinuousBuzzForDuration(source_state.GetSource(), 100_ms);
 					}
 				}
 				
@@ -252,22 +260,24 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 					paint->strokes.Add(paint->stroke_in_progress);
 				}
 				
-				auto properties = source_state.Properties();
+				const ControllerProperties& properties = source_state.GetControllerProperties();
 				
 				// We generate stroke points in source updated using the arguments provided by the event
 				// This will result in a smoother paint stroke
-				if (auto location = properties.TryGetLocation(GetEngine().Get<HolographicScene>()->WorldCoordinateSystem())) {
+				TODO
+				/*
+				if (auto location = properties.TryGetLocation(
+						GetEngine().Get<HolographicScene>()->WorldCoordinateSystem())) {
 					if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress) {
 						mat4 paint_to_world =
 						        *paint->brush_tip_offset_from_holding_pose *
 						        LocationUtil::Matrix(location);
 						paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(MatrixUtils::RemoveScale(paint_to_world), paint_tip_thickness);
 					}
-				}
+				}*/
 			}
 		}
 	}
-	#endif
 }
 
 

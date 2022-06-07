@@ -61,7 +61,7 @@ engine ecs.dummy: {
         
         entity player.body: {
             comp transform3: {x: 0; y: 0; z: -6;};
-            comp physics: {bind: physics; test.fn: player.body;};
+            comp physics: {bind: physics;};
             comp player.body: {height: 1.74;};
         };
         

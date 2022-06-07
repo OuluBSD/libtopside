@@ -33,6 +33,8 @@ struct InteractionManager {
 
 struct FakeSpatialInteractionManager : InteractionManager {
 	EnvStateRef state;
+	ControllerSource ctrl;
+	ControllerState ctrl_state;
 	InteractionSystem* sys = 0;
 	Point prev_mouse = Point(0,0);
 	double time = 0;
@@ -44,6 +46,9 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	vec3 head_direction = vec3(0,0,1);
 	
 	
+	
+	FakeSpatialInteractionManager();
+	
 	bool Initialize(InteractionSystem& sys);
 	void Update(double dt) override;
 	
@@ -51,6 +56,8 @@ struct FakeSpatialInteractionManager : InteractionManager {
     void UpdateState();
 	void Look(Point mouse_diff);
 	void Move(vec3 rel_dir, float step);
+    void Pressed(ControllerProperties::Button b);
+    void Released(ControllerProperties::Button b);
     
 };
 
