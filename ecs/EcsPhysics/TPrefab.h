@@ -25,9 +25,11 @@ struct StaticGroundPlane : public Component<StaticGroundPlane<Fys>>, public Fys:
 		this->is_override_phys_geom = true;
 		this->override_geom = identity<mat4>();
 		
+		TODO
 		ModelBuilder mb;
 		mb	.AddPlane(vec3(-50, 0, -50), vec2(100, 100))
-			.SetMaterial(DefaultMaterial());
+			/*.SetMaterial(DefaultMaterial())*/
+			;
 		this->loader = mb.AsModel();
 	}
 	

@@ -43,7 +43,7 @@ void Texture::SetSolidColorTexture(const vec4& color) {
 }
 
 // Based on code from DirectXTK
-void PrimitiveBuilder::CreateSphere(Primitive& prim, float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx)
+void MeshBuilder::CreateSphere(Mesh& prim, float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx)
 {
     if (tessellation < 3) {
         throw std::out_of_range("tesselation parameter out of range");
@@ -122,7 +122,7 @@ void PrimitiveBuilder::CreateSphere(Primitive& prim, float diameter, uint32 tess
 }
 
 // Based on code from DirectXTK
-void PrimitiveBuilder::CreateCube(Primitive& prim, float side_length, Pbr::NodeIndex transform_idx)
+void MeshBuilder::CreateCube(Mesh& prim, float side_length, Pbr::NodeIndex transform_idx)
 {
     auto& vertices = prim.vertices;
     auto& indices = prim.indices;

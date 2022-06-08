@@ -55,7 +55,7 @@ private:
 struct Model
 {
 	/*using Resources = Resources;
-	using Primitive = Primitive;
+	using Mesh = Mesh;
 	using ShaderResources& = typename Gfx::ShaderResources&;
 	using GfxContext& = typename Gfx::GfxContext&;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;*/
@@ -69,9 +69,9 @@ struct Model
     Node& AddNode(const mat4& transform, NodeIndex parent_index, String name);
 
     // Add a primitive to the model.
-    //void AddPrimitive(const Primitive& primitive);
-    Primitive& AddPrimitive();
-    Primitive& AddPrimitive(Primitive* p);
+    //void AddMesh(const Mesh& primitive);
+    Mesh& AddMesh();
+    Mesh& AddMesh(Mesh* p);
 
     // Render the model.
     void Render(const Resources& pbr_res/*, GfxContext& context*/) const;
@@ -92,9 +92,9 @@ struct Model
     // Compute the world transform for a given node.
     mat4 GetNodeWorldTransform(NodeIndex node_idx) const;
 
-    uint32 GetPrimitiveCount() const { return (uint32)primitives.GetCount(); }
-    Primitive& GetPrimitive(uint32 index) { return primitives[index]; }
-    const Primitive& GetPrimitive(uint32 index) const { return primitives[index]; }
+    uint32 GetMeshCount() const { return (uint32)primitives.GetCount(); }
+    Mesh& GetMesh(uint32 index) { return primitives[index]; }
+    const Mesh& GetMesh(uint32 index) const { return primitives[index]; }
 
     String								name;
 
@@ -103,9 +103,9 @@ private:
     void UpdateTransforms(Resources const& pbr_res, GfxContext& context) const;
 
 private:
-    // A model is made up of one or more Primitives. Each Primitive has a unique material.
+    // A model is made up of one or more Meshs. Each Mesh has a unique material.
     // Ideally primitives with the same material should be merged to reduce draw calls.
-    Array<Primitive>					primitives;
+    Array<Mesh>					primitives;
 	
     // A model contains one or more nodes. Each vertex of a primitive references a node to have the
     // node's transform applied.

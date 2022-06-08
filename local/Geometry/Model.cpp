@@ -5,9 +5,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 bool ModelMesh::AddTextureFile(int mesh_i, TexType type, String path) {
-	if (mesh_i < 0 || mesh_i >= meshes.GetCount())
+	if (mesh_i < 0 || mesh_i >= primitives.GetCount())
 		return false;
-	return AddTextureFile(meshes[mesh_i], type, path);
+	return AddTextureFile(primitives[mesh_i], type, path);
 }
 
 bool ModelMesh::AddTextureFile(Mesh& mesh, TexType type, String path){
@@ -39,7 +39,7 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 #if 0
 
 void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o) {
-	for (Mesh& m : meshes) {
+	for (Mesh& m : primitives) {
 		Refresh(s, o, m);
 	}
 }

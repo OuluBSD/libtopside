@@ -6,10 +6,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-// Maps a glTF material to a PrimitiveBuilder. This optimization combines all primitives which use
+// Maps a glTF material to a MeshBuilder. This optimization combines all primitives which use
 // the same material into a single primitive for reduced draw calls. Each primitive's vertex specifies
 // which node it corresponds to any appropriate node transformation be happen in the shader.
-using PrimitiveMap = ArrayMap<int, Pbr::Primitive>;
+using MeshMap = ArrayMap<int, Pbr::Mesh>;
 
 
 // Create a DirectX texture view from a tinygltf Image.
@@ -56,7 +56,7 @@ SamplerState& CreateSampler(NativeDeviceRef device, const tinygltf::Model& gltf_
 #endif
 
 // Load a glTF node from the tinygltf object model. This will process the node's mesh (if specified) and then recursively load the child nodes too.
-void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_model, int nodeId, PrimitiveMap& prim_builder_map, Pbr::Model& model)
+void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_model, int nodeId, MeshMap& prim_builder_map, Pbr::Model& model)
 {
     const tinygltf::Node& gltf_node = gltf_model.nodes.at(nodeId);
 
@@ -68,14 +68,14 @@ void LoadNode(Pbr::NodeIndex parent_node_index, const tinygltf::Model& gltf_mode
     {
         // A glTF mesh is composed of primitives.
         const tinygltf::Mesh& gltf_mesh = gltf_model.meshes.at(gltf_node.mesh);
-        for (const tinygltf::Primitive& gltf_primitive : gltf_mesh.primitives)
+        for (const tinygltf::Mesh& gltf_primitive : gltf_mesh.primitives)
         {
             // Read the primitive data from the glTF buffers.
-            const GltfHelper::Primitive primitive = GltfHelper::ReadPrimitive(gltf_model, gltf_primitive);
+            const GltfHelper::Mesh primitive = GltfHelper::ReadMesh(gltf_model, gltf_primitive);
 
-            // Insert or append the primitive into the PBR primitive builder. Primitives which use the same
+            // Insert or append the primitive into the PBR primitive builder. Meshs which use the same
             // material are appended to reduce the number of draw calls.
-            Pbr::Primitive& prim_builder = prim_builder_map.GetAdd(gltf_primitive.material);
+            Pbr::Mesh& prim_builder = prim_builder_map.GetAdd(gltf_primitive.material);
 
             // Use the starting offset for vertices and indices since multiple glTF primitives can
             // be put into the same primitive builder.
@@ -129,11 +129,11 @@ bool FromGltfObject(
 	using ShaderResources& = typename Gfx::ShaderResources;
 	using SamplerState& = typename Gfx::SamplerState;
 	using Material = Pbr::Material;
-	using Primitive = Pbr::Primitive;*/
+	using Mesh = Pbr::Mesh;*/
 	
 	
-    // Read and transform mesh/node data. Primitives with the same material are merged to reduce draw calls.
-    PrimitiveMap prim_builder_map;
+    // Read and transform mesh/node data. Meshs with the same material are merged to reduce draw calls.
+    MeshMap prim_builder_map;
     {
         const int def_scene_id = (gltf_model.defaultScene == -1) ? 0 : gltf_model.defaultScene;
         const tinygltf::Scene& def_scene = gltf_model.scenes.at(def_scene_id);
@@ -161,7 +161,7 @@ bool FromGltfObject(
         // load materials which are used by the active scene.
         for(int i = 0; i < prim_builder_map.GetCount(); i++) {
 			const int material_idx = prim_builder_map.GetKey(i);
-			Pbr::Primitive& prim = prim_builder_map[i];
+			Pbr::Mesh& prim = prim_builder_map[i];
 			
             Pbr::Material*& pbr_material = material_map.GetAdd(material_idx, (Pbr::Material*)0);
             if (pbr_material)
@@ -229,10 +229,10 @@ bool FromGltfObject(
     // Convert the primitive builders into primitives with their respective material and add it into the Pbr Model.
     while (prim_builder_map.GetCount()) {
 		int a = prim_builder_map.GetKey(0);
-        Pbr::Primitive* prim = prim_builder_map.Detach(0);
+        Pbr::Mesh* prim = prim_builder_map.Detach(0);
         Pbr::Material* material = material_map[a];
         prim->SetMaterial(*material);
-        model.AddPrimitive(prim);
+        model.AddMesh(prim);
         //prim->Set(pbr_res, prim_builder, *material);
     }
     

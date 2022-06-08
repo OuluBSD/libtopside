@@ -21,8 +21,8 @@ struct GfxBinderIface : RTTIBase {
 };
 #endif
 
-struct GfxDataObject : GfxMeshBase {
-	RTTI_DECL1(GfxDataObject, GfxMeshBase)
+struct GfxDataObject : GfxMesh {
+	RTTI_DECL1(GfxDataObject, GfxMesh)
 	
 	virtual ~GfxDataObject() {}
 	

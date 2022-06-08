@@ -20,7 +20,7 @@ enum euler_index_t {
 
 
 
-class PrimitiveFactory
+class MeshFactory
 {
 public:
     static void GetBoxCorners(vec3        (&points)[8],

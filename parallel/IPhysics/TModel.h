@@ -49,9 +49,11 @@ struct Sphere : public ScalarObject<Fys> {
 		// Set 3D geometry for the object as sphere
 		Fys::SetGeomModelSphere(this->geom, radius);
 		
+		TODO
 		ModelBuilder mb;
 		mb	.AddSphere(vec3(0., 0., 0.), radius)
-			.SetMaterial(DefaultMaterial());
+			/*.SetMaterial(DefaultMaterial())*/
+			;
 		this->loader = mb;
 		
 		this->AttachContent();

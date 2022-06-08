@@ -9,7 +9,7 @@
 namespace tinygltf {
 class Node;
 class Model;
-struct Primitive;
+struct Mesh;
 struct Material;
 struct Image;
 struct Sampler;
@@ -32,7 +32,7 @@ struct Vertex : Moveable<Vertex>
 };
 
 // A primitive is a collection of vertices and indices.
-struct Primitive
+struct Mesh
 {
     Vector<Vertex> vertices;
     Vector<uint32> indices;
@@ -65,8 +65,8 @@ struct Material
 // Reads the "transform" or "TRS" data for a Node as an XMMATRIX.
 mat4 ReadNodeLocalTransform(const tinygltf::Node& gltf_node);
 
-// Parses the primitive attributes and indices from the glTF accessors/bufferviews/buffers into a common simplified data structure, the Primitive.
-Primitive ReadPrimitive(const tinygltf::Model& gltf_model, const tinygltf::Primitive& gltf_primitive);
+// Parses the primitive attributes and indices from the glTF accessors/bufferviews/buffers into a common simplified data structure, the Mesh.
+Mesh ReadMesh(const tinygltf::Model& gltf_model, const tinygltf::Mesh& gltf_primitive);
 
 // Parses the material values into a simplified data structure, the Material.
 Material ReadMaterial(const tinygltf::Model& gltf_model, const tinygltf::Material& gltf_material);

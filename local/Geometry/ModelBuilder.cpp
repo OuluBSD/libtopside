@@ -9,8 +9,8 @@ bool mb_is_colored_only = false;
 Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
-	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::CreateGrid(m, 1, 1, size[0], size[1]);
+	Mesh& m = model.primitives.Add();
+	MeshFactory::CreateGrid(m, 1, 1, size[0], size[1]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -25,11 +25,11 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
-	Mesh& m = model.meshes.Add();
+	Mesh& m = model.primitives.Add();
 	
 	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
 	
-	PrimitiveFactory::CreateBox(m, dim[0], dim[1], dim[2]);
+	MeshFactory::CreateBox(m, dim[0], dim[1], dim[2]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += off;
@@ -44,8 +44,8 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int stacks) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
-	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::CreateSphere(m, slices, stacks, radius);
+	Mesh& m = model.primitives.Add();
+	MeshFactory::CreateSphere(m, slices, stacks, radius);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -60,8 +60,8 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int sta
 Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int slices) {
 	this->model.Create();
 	ModelMesh& model = *this->model;
-	Mesh& m = model.meshes.Add();
-	PrimitiveFactory::CreateCylinder(m, slices, radius, length);
+	Mesh& m = model.primitives.Add();
+	MeshFactory::CreateCylinder(m, slices, radius, length);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -92,7 +92,7 @@ vec3 euler_to_offset(vec3  euler,
 class Mesh;
 
 
-void PrimitiveFactory::GetBoxCorners(vec3        (&points)[8],
+void MeshFactory::GetBoxCorners(vec3        (&points)[8],
                                        const vec3* origin,
                                        const vec3* dim)
 {
@@ -129,7 +129,7 @@ void PrimitiveFactory::GetBoxCorners(vec3        (&points)[8],
     }
 }
 
-void PrimitiveFactory::CreateGrid(Mesh& mesh,
+void MeshFactory::CreateGrid(Mesh& mesh,
                                           int          cols,
                                           int          rows,
                                           float        width,
@@ -194,7 +194,7 @@ void PrimitiveFactory::CreateGrid(Mesh& mesh,
     ASSERT(tri_index  == num_tri);
 }
 
-void PrimitiveFactory::CreateSphere(Mesh& mesh,
+void MeshFactory::CreateSphere(Mesh& mesh,
                                             int          slices,
                                             int          stacks,
                                             float        radius)
@@ -228,7 +228,7 @@ void PrimitiveFactory::CreateSphere(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateHemisphere(Mesh& mesh,
+void MeshFactory::CreateHemisphere(Mesh& mesh,
                                                 int          slices,
                                                 int          stacks,
                                                 float        radius)
@@ -273,7 +273,7 @@ void PrimitiveFactory::CreateHemisphere(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateCylinder(Mesh& mesh,
+void MeshFactory::CreateCylinder(Mesh& mesh,
                                               int          slices,
                                               float        radius,
                                               float        height)
@@ -336,7 +336,7 @@ void PrimitiveFactory::CreateCylinder(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateCone(Mesh& mesh,
+void MeshFactory::CreateCone(Mesh& mesh,
                                           int          slices,
                                           float        radius,
                                           float        height)
@@ -394,7 +394,7 @@ void PrimitiveFactory::CreateCone(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateTorus(Mesh& mesh,
+void MeshFactory::CreateTorus(Mesh& mesh,
                                            int          slices,
                                            int          stacks,
                                            float        radius_major,
@@ -432,7 +432,7 @@ void PrimitiveFactory::CreateTorus(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateBox(Mesh& mesh,
+void MeshFactory::CreateBox(Mesh& mesh,
                                          float        width,
                                          float        height,
                                          float        length)
@@ -643,7 +643,7 @@ void PrimitiveFactory::CreateBox(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-void PrimitiveFactory::CreateTetrahedron(Mesh& mesh,
+void MeshFactory::CreateTetrahedron(Mesh& mesh,
                                                  float        width,
                                                  float        height,
                                                  float        length)
@@ -679,7 +679,7 @@ void PrimitiveFactory::CreateTetrahedron(Mesh& mesh,
     mesh.UpdateBoundingBox();
 }
 
-/*void PrimitiveFactory::CreateGeosphere(Mesh& mesh,
+/*void MeshFactory::CreateGeosphere(Mesh& mesh,
                                                float        radius,
                                                int          tessellation_iters)
 {
@@ -695,7 +695,7 @@ void PrimitiveFactory::CreateTetrahedron(Mesh& mesh,
     }
 }*/
 
-void PrimitiveFactory::CreateDiamondBrilliantCut(Mesh& mesh,
+void MeshFactory::CreateDiamondBrilliantCut(Mesh& mesh,
                                                            float        radius,
                                                            float        table_radius,
                                                            float        height,

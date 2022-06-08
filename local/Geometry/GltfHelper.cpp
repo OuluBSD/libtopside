@@ -11,16 +11,16 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // The glTF 2 specification recommends using the MikkTSpace algorithm to generate
-// tangents when none are available. This function takes a GltfHelper Primitive which has
+// tangents when none are available. This function takes a GltfHelper Mesh which has
 // no tangents and uses the MikkTSpace algorithm to generate the tangents. This can
 // be computationally expensive.
-void ComputeTriangleTangents(GltfHelper::Primitive& primitive) {
+void ComputeTriangleTangents(GltfHelper::Mesh& primitive) {
 	
-	// Set up the callbacks so that MikkTSpace can read the Primitive data.
+	// Set up the callbacks so that MikkTSpace can read the Mesh data.
 	SMikkTSpaceInterface mikk_iface {};
 	
 	mikk_iface.m_getNumFaces = [](const SMikkTSpaceContext* ctx) {
-		auto primitive = static_cast<const GltfHelper::Primitive*>(ctx->m_pUserData);
+		auto primitive = static_cast<const GltfHelper::Mesh*>(ctx->m_pUserData);
 		ASSERT((primitive->indices.GetCount() % TRIANGLE_VERTEX_COUNT) == 0); // Only triangles are supported.
 		return (int)(primitive->indices.GetCount() / TRIANGLE_VERTEX_COUNT);
 	};
@@ -28,22 +28,22 @@ void ComputeTriangleTangents(GltfHelper::Primitive& primitive) {
 		return TRIANGLE_VERTEX_COUNT;
 	};
 	mikk_iface.m_getPosition = [](const SMikkTSpaceContext* ctx, float pos_out[], const int i_face, const int i_vert) {
-		auto primitive = static_cast<const GltfHelper::Primitive*>(ctx->m_pUserData);
+		auto primitive = static_cast<const GltfHelper::Mesh*>(ctx->m_pUserData);
 		const auto vtx_idx = primitive->indices[(i_face * TRIANGLE_VERTEX_COUNT) + i_vert];
 		memcpy(pos_out, &primitive->vertices[vtx_idx].position, sizeof(float) * 3);
 	};
 	mikk_iface.m_getNormal = [](const SMikkTSpaceContext* ctx, float norm_out[], const int i_face, const int i_vert) {
-		auto primitive = static_cast<const GltfHelper::Primitive*>(ctx->m_pUserData);
+		auto primitive = static_cast<const GltfHelper::Mesh*>(ctx->m_pUserData);
 		const auto vtx_idx = primitive->indices[(i_face * TRIANGLE_VERTEX_COUNT) + i_vert];
 		memcpy(norm_out, &primitive->vertices[vtx_idx].normal, sizeof(float) * 3);
 	};
 	mikk_iface.m_getTexCoord = [](const SMikkTSpaceContext* ctx, float texc_out[], const int i_face, const int i_vert) {
-		auto primitive = static_cast<const GltfHelper::Primitive*>(ctx->m_pUserData);
+		auto primitive = static_cast<const GltfHelper::Mesh*>(ctx->m_pUserData);
 		const auto vtx_idx = primitive->indices[(i_face * TRIANGLE_VERTEX_COUNT) + i_vert];
 		memcpy(texc_out, &primitive->vertices[vtx_idx].tex_coord, sizeof(float) * 2);
 	};
 	mikk_iface.m_setTSpaceBasic = [](const SMikkTSpaceContext* ctx, const float tangent_out[], const float f_sign, const int i_face, const int i_vert) {
-		auto primitive = static_cast<GltfHelper::Primitive*>(ctx->m_pUserData);
+		auto primitive = static_cast<GltfHelper::Mesh*>(ctx->m_pUserData);
 		const auto vtx_idx = primitive->indices[(i_face * TRIANGLE_VERTEX_COUNT) + i_vert];
 		primitive->vertices[vtx_idx].tangent[0] = tangent_out[0];
 		primitive->vertices[vtx_idx].tangent[1] = tangent_out[1];
@@ -60,8 +60,8 @@ void ComputeTriangleTangents(GltfHelper::Primitive& primitive) {
 	}
 }
 
-// Generates normals for the trianges in the GltfHelper Primitive object.
-void ComputeTriangleNormals(GltfHelper::Primitive& primitive) {
+// Generates normals for the trianges in the GltfHelper Mesh object.
+void ComputeTriangleNormals(GltfHelper::Mesh& primitive) {
 	ASSERT((primitive.indices.GetCount() % TRIANGLE_VERTEX_COUNT) == 0); // Only triangles are supported.
 	
 	// Loop through each triangle
@@ -153,8 +153,8 @@ void ValidateAccessor(const tinygltf::Accessor& accessor, const tinygltf::Buffer
 	}
 }
 
-// Reads the tangent data (VEC4) from a glTF primitive into a GltfHelper Primitive.
-void ReadTangentToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Primitive& primitive) {
+// Reads the tangent data (VEC4) from a glTF primitive into a GltfHelper Mesh.
+void ReadTangentToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Mesh& primitive) {
 	if (accessor.type != TINYGLTF_TYPE_VEC4) {
 		throw Exc("Accessor for primitive attribute has incorrect type (VEC4 expected).");
 	}
@@ -179,10 +179,10 @@ void ReadTangentToVertexField(const tinygltf::Accessor& accessor, const tinygltf
 	}
 }
 
-// Reads the TexCoord data (VEC2) from a glTF primitive into a GltfHelper Primitive.
+// Reads the TexCoord data (VEC2) from a glTF primitive into a GltfHelper Mesh.
 // This function uses a template type to express the VEC2 component type (byte, ushort, or float).
 template <typename TComponentType, vec2 GltfHelper::Vertex::*field>
-void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Primitive& primitive) {
+void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Mesh& primitive) {
 	// If stride is not specified, it is tightly packed.
 	constexpr size_t packed_size = sizeof(TComponentType) * 2;
 	const size_t stride = buf_view.byteStride == 0 ? packed_size : buf_view.byteStride;
@@ -200,9 +200,9 @@ void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinyglt
 	}
 }
 
-// Reads the TexCoord data (VEC2) from a glTF primitive into a GltfHelper Primitive.
+// Reads the TexCoord data (VEC2) from a glTF primitive into a GltfHelper Mesh.
 template <vec2 GltfHelper::Vertex::*field>
-void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Primitive& primitive) {
+void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Mesh& primitive) {
 	if (accessor.type != TINYGLTF_TYPE_VEC2) {
 		throw Exc("Accessor for primitive TexCoord must have VEC2 type.");
 	}
@@ -227,9 +227,9 @@ void ReadTexCoordToVertexField(const tinygltf::Accessor& accessor, const tinyglt
 	}
 }
 
-// Reads VEC3 attribute data (like POSITION and NORMAL) from a glTF primitive into a GltfHelper Primitive. The specific Vertex field is specified as a template parameter.
+// Reads VEC3 attribute data (like POSITION and NORMAL) from a glTF primitive into a GltfHelper Mesh. The specific Vertex field is specified as a template parameter.
 template <vec3 GltfHelper::Vertex::*field>
-void ReadVec3ToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Primitive& primitive) {
+void ReadVec3ToVertexField(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Mesh& primitive) {
 	if (accessor.type != TINYGLTF_TYPE_VEC3) {
 		throw Exc("Accessor for primitive attribute has incorrect type (VEC3 expected).");
 	}
@@ -255,7 +255,7 @@ void ReadVec3ToVertexField(const tinygltf::Accessor& accessor, const tinygltf::B
 }
 
 // Load a primitive's (vertex) attributes. Vertex attributes can be positions, normals, tangents, texture coordinates, colors, and more.
-void LoadAttributeAccessor(const tinygltf::Model& gltf_model, const std::string& attr_name, int accessor_id, GltfHelper::Primitive& primitive) {
+void LoadAttributeAccessor(const tinygltf::Model& gltf_model, const std::string& attr_name, int accessor_id, GltfHelper::Mesh& primitive) {
 	const auto& accessor = gltf_model.accessors.at(accessor_id);
 	
 	if (accessor.bufferView == -1) {
@@ -288,10 +288,10 @@ void LoadAttributeAccessor(const tinygltf::Model& gltf_model, const std::string&
 	}
 }
 
-// Reads index data from a glTF primitive into a GltfHelper Primitive. glTF indices may be 8bit, 16bit or 32bit integers.
+// Reads index data from a glTF primitive into a GltfHelper Mesh. glTF indices may be 8bit, 16bit or 32bit integers.
 // This will coalesce indices from the source type(s) into a 32bit integer.
 template <typename TSrcIndex>
-void ReadIndices(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Primitive& primitive) {
+void ReadIndices(const tinygltf::Accessor& accessor, const tinygltf::BufferView& buf_view, const tinygltf::Buffer& buffer, GltfHelper::Mesh& primitive) {
 	if (buf_view.target != TINYGLTF_TARGET_ELEMENT_ARRAY_BUFFER && buf_view.target != 0) { // Allow 0 (not specified) even though spec doesn't seem to allow this (BoomBox GLB fails)
 		throw Exc("Accessor for indices uses bufferview with invalid 'target' type.");
 	}
@@ -313,8 +313,8 @@ void ReadIndices(const tinygltf::Accessor& accessor, const tinygltf::BufferView&
 	}
 }
 
-// Reads index data from a glTF primitive into a GltfHelper Primitive.
-void LoadIndexAccessor(const tinygltf::Model& gltf_model, const tinygltf::Accessor& accessor, GltfHelper::Primitive& primitive) {
+// Reads index data from a glTF primitive into a GltfHelper Mesh.
+void LoadIndexAccessor(const tinygltf::Model& gltf_model, const tinygltf::Accessor& accessor, GltfHelper::Mesh& primitive) {
 	if (accessor.type != TINYGLTF_TYPE_SCALAR) {
 		throw Exc("Accessor for indices specifies invalid 'type'.");
 	}
@@ -362,12 +362,12 @@ mat4 ReadNodeLocalTransform(const tinygltf::Node& gltf_node) {
 	}
 }
 
-Primitive ReadPrimitive(const tinygltf::Model& gltf_model, const tinygltf::Primitive& gltf_primitive) {
+Mesh ReadMesh(const tinygltf::Model& gltf_model, const tinygltf::Mesh& gltf_primitive) {
 	if (gltf_primitive.mode != TINYGLTF_MODE_TRIANGLES) {
 		throw Exc("Unsupported primitive mode. Only TINYGLTF_MODE_TRIANGLES is supported.");
 	}
 	
-	Primitive primitive;
+	Mesh primitive;
 	
 	// glTF vertex data is stored in an attribute dictionary. Loop through each attribute and insert it into the GltfHelper primitive.
 	for (const auto& attribute : gltf_primitive.attributes) {
@@ -375,7 +375,7 @@ Primitive ReadPrimitive(const tinygltf::Model& gltf_model, const tinygltf::Primi
 	}
 	
 	if (gltf_primitive.indices != -1) {
-		// If indices are specified for the glTF primitive, read them into the GltfHelper Primitive.
+		// If indices are specified for the glTF primitive, read them into the GltfHelper Mesh.
 		LoadIndexAccessor(gltf_model, gltf_model.accessors.at(gltf_primitive.indices), primitive);
 	}
 	else {

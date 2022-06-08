@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #if 0
 
-DataBuffer CreateVertexBuffer(NativeDeviceRef device, const Pbr::PrimitiveBuilder& prim_builder)
+DataBuffer CreateVertexBuffer(NativeDeviceRef device, const Pbr::MeshBuilder& prim_builder)
 {
     TODO
     
@@ -26,7 +26,7 @@ DataBuffer CreateVertexBuffer(NativeDeviceRef device, const Pbr::PrimitiveBuilde
     return vertex_buffer;*/
 }
 
-DataBuffer CreateIndexBuffer(NativeDeviceRef device, const Pbr::PrimitiveBuilder& prim_builder)
+DataBuffer CreateIndexBuffer(NativeDeviceRef device, const Pbr::MeshBuilder& prim_builder)
 {
     TODO
     
@@ -51,24 +51,24 @@ namespace Pbr {
 
 
 
-Primitive::~Primitive() {
+Mesh::~Mesh() {
 	ClearMaterial();
 }
 
-void Primitive::ClearMaterial() {
+void Mesh::ClearMaterial() {
 	if (material) {
 		material->DecRef();
 		material = 0;
 	}
 }
 
-void Primitive::SetMaterial(Material& mat) {
+void Mesh::SetMaterial(Material& mat) {
 	ClearMaterial();
 	material = &mat;
 	mat.IncRef();
 }
 
-/*Primitive::Set(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material)
+/*Mesh::Set(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material)
     : idx_count(idx_count)
     , vertex_buffer(vertex_buffer)
     , index_buffer(index_buffer)
@@ -78,8 +78,8 @@ void Primitive::SetMaterial(Material& mat) {
 }
 
 
-Primitive::Set(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Pbr::Material> material)
-    : Primitive(
+Mesh::Set(Resources const& pbr_res, const Pbr::MeshBuilder& prim_builder, Shared<Pbr::Material> material)
+    : Mesh(
         (uint32)prim_builder.indices.GetCount(),
         CreateIndexBuffer(pbr_res.GetDevice().Get(), prim_builder).Get(),
         CreateVertexBuffer(pbr_res.GetDevice().Get(), prim_builder).Get(),
@@ -90,14 +90,14 @@ Primitive::Set(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_build
 
 
 
-void Primitive::Copy(Resources const& pbr_res, Primitive& dst) const
+void Mesh::Copy(Resources const& pbr_res, Mesh& dst) const
 {
 	dst.indices <<= indices;
 	dst.vertices <<= vertices;
 	dst.material = material;
 }
 
-void Primitive::Render(GfxContext& context) const
+void Mesh::Render(GfxContext& context) const
 {
     TODO
     
@@ -105,7 +105,7 @@ void Primitive::Render(GfxContext& context) const
     const int offset = 0;
     context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
     context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-    context->IASetPrimitiveopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    context->IASetMeshopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->DrawIndexedInstanced(idx_count, 2, 0, 0, 0);*/
 }
 

@@ -10,7 +10,7 @@ namespace Pbr {
 struct Resources;
 
 // A Material contains the metallic roughness parameters and textures.
-// Primitives specify which Material to use when being rendered.
+// Meshs specify which Material to use when being rendered.
 
 struct Material
 {

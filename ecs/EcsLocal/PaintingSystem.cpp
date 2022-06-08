@@ -177,23 +177,23 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		
 		bool new_stroke_started = false;
 		//auto paint = entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
-		/*const auto& paint_brush_model = paint->paint_brush->Get<ModelComponent>()->model;
+		Ref<ModelMesh> paint_brush_model = paint->paint_brush->Get<ModelComponent>()->GetModel();
 		
 		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
-			Optional<Pbr::NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
+			Optional<NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
 			
 			if (touch_node) {
 				// Calcluate paint tip offset from holding pose
 				// we use offset as it does not rely on the current transform of the model
 				// we initialize it once as the value will not change
-				const auto brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
+				const mat4 brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
 				const auto paint_brush_world_transform
-					= paint_brush_model->GetNode(Pbr::RootNodeIndex).GetTransform();
+					= paint_brush_model->GetNode(0).GetTransform();
 				paint->brush_tip_offset_from_holding_pose =
 				        brush_tip_world_transform *
 				        paint_brush_world_transform.GetInverse();
 			}
-		}*/
+		}
 		
 		Ref<ToolComponent> tool = entity->Find<ToolComponent>();
 		ASSERT(tool);

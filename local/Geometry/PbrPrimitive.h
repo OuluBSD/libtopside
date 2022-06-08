@@ -9,23 +9,23 @@ namespace Pbr {
 
 // A primitive holds a vertex buffer, index buffer, and a pointer to a PBR material.
 
-struct Primitive
+struct Mesh
 {
-    /*using Collection = Vector<Primitive>;
+    /*using Collection = Vector<Mesh>;
 	using NativeBufferRef = typename Gfx::NativeBufferRef;
 	using GfxContext& = typename Gfx::GfxContext&;
 	using Resources = Resources;
 	using Model = Model;
 	using Material = Material;*/
 	
-	Primitive() {}
-	~Primitive();
-    /*Primitive() = delete;
-    Primitive(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material);
-    Primitive(Resources const& pbr_res, const Pbr::PrimitiveBuilder& prim_builder, Shared<Material> material);*/
+	Mesh() {}
+	~Mesh();
+    /*Mesh() = delete;
+    Mesh(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer, Shared<Material> material);
+    Mesh(Resources const& pbr_res, const Pbr::MeshBuilder& prim_builder, Shared<Material> material);*/
     
     //void Set(int idx_count, DataBuffer& index_buffer, DataBuffer& vertex_buffer);
-    //void Set(const Resources& pbr_res, const Pbr::PrimitiveBuilder& prim_builder);
+    //void Set(const Resources& pbr_res, const Pbr::MeshBuilder& prim_builder);
 	
     // Get the material for the primitive.
     Material& GetMaterial() { ASSERT(material); return *material; }
@@ -36,7 +36,7 @@ struct Primitive
 	
 //protected:
     void Render(GfxContext& context) const;
-    void Copy(const Resources& pbr_res, Primitive& dst) const;
+    void Copy(const Resources& pbr_res, Mesh& dst) const;
 	
     
 public:

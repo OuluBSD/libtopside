@@ -183,10 +183,10 @@ bool ModelComponent::Load(GfxDataState& state) {
 	
 	bool is_visible = IsEnabled();
 	
-	static thread_local Vector<GfxMeshBase*> meshes;
+	static thread_local Vector<GfxMesh*> meshes;
 	meshes.SetCount(0);
-	mesh->GetGfxMeshBases(meshes);
-	for (GfxMeshBase* m : meshes) {
+	mesh->GetGfxMeshes(meshes);
+	for (GfxMesh* m : meshes) {
 		GfxDataObject* obj = CastPtr<GfxDataObject>(m);
 		if (!obj)
 			continue;

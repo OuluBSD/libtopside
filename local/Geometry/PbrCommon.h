@@ -78,7 +78,7 @@ struct GeometryShader {};
 struct PixelShader {};
 
 
-struct Primitive;
+struct Mesh;
 struct Resources;
 struct Model;
 
@@ -99,10 +99,10 @@ struct Vertex : Moveable<Vertex>
     //static const D3D11_INPUT_ELEMENT_DESC vtx_desc[5];
 };
 
-struct PrimitiveBuilder
+struct MeshBuilder
 {
-    static void CreateSphere(Primitive& prim, float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
-    static void CreateCube(Primitive& prim, float side_length, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
+    static void CreateSphere(Mesh& prim, float diameter, uint32 tessellation, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
+    static void CreateCube(Mesh& prim, float side_length, Pbr::NodeIndex transform_idx = Pbr::root_node_idx);
 };
 
 /*namespace Texture

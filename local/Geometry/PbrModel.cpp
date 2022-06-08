@@ -39,7 +39,7 @@ void Model::Render(Resources const& pbr_res/*, GfxContext& context*/) const
     ShaderResources vs_shader_resources[] = { model_transforms_resource_view.Get() };
     context->VSSetShaderResources(Pbr::ShaderSlots::Transforms, _countof(vs_shader_resources), vs_shader_resources);
 
-    for (const Pbr::Primitive& primitive : primitives)
+    for (const Pbr::Mesh& primitive : primitives)
     {
         if (primitive.GetMaterial()->hidden) continue;
 
@@ -80,8 +80,8 @@ void Model::Copy(const Resources& pbr_res, Model& dst) const
         dst.AddNode(node.GetTransform(), node.parent_node_index, node.name);
     }
 
-    for (const Primitive& primitive : primitives) {
-        primitive.Copy(pbr_res, dst.AddPrimitive());
+    for (const Mesh& primitive : primitives) {
+        primitive.Copy(pbr_res, dst.AddMesh());
     }
 }
 
@@ -116,21 +116,21 @@ mat4 Model::GetNodeWorldTransform(NodeIndex node_idx) const
 }
 
 
-/*void Model::AddPrimitive(const Pbr::Primitive& primitive)
+/*void Model::AddMesh(const Pbr::Mesh& primitive)
 {
     primitives.Add(std::move(primitive));
 }*/
-Pbr::Primitive& Model::AddPrimitive()
+Pbr::Mesh& Model::AddMesh()
 {
-    Pbr::Primitive& prim = primitives.Add();
+    Pbr::Mesh& prim = primitives.Add();
     //prim.res = &pbr_res;
     //prim.GetMaterial().res = &pbr_res;
     return prim;
 }
 
-Primitive& Model::AddPrimitive(Primitive* p)
+Mesh& Model::AddMesh(Mesh* p)
 {
-    Pbr::Primitive& prim = primitives.Add(p);
+    Pbr::Mesh& prim = primitives.Add(p);
     //prim.res = &pbr_res;
     //prim.GetMaterial().res = &pbr_res;
     return prim;
