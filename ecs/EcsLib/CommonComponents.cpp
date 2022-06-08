@@ -23,9 +23,12 @@ void Transform::SetFromMatrix(const mat4& matrix) {
 }
 
 void Transform::operator=(const Transform& t) {
-	position		= t.position;
-	size			= t.size;
-	orientation		= t.orientation;
+    position = t.position;
+    size = t.size;
+    orientation = t.orientation;
+    direction = t.direction;
+    up = t.up;
+    use_lookat = t.use_lookat;
 }
 
 mat4 Transform::GetMatrix() const {
@@ -67,6 +70,9 @@ void Transform2D::operator=(const Transform2D& t) {
     position = t.position;
     size = t.size;
 }
+
+
+
 
 
 

@@ -35,6 +35,7 @@
 #include "Quadtree.h"
 #include "Octree.h"
 #include "GeomTypes.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "ModelBuilder.h"

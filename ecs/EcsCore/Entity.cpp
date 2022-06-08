@@ -116,13 +116,13 @@ void Entity::Destroy() {
 	}
 }
 
-void Entity::SetEnabled(bool enable) {
+/*void Entity::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	
 	for (auto& component : comps.GetValues()) {
 		component->SetEnabled(enable);
 	}
-}
+}*/
 
 Engine& Entity::GetEngine() {
 	return GetPool().GetEngine();

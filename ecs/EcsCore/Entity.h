@@ -131,7 +131,7 @@ public:
 	EntityId			Id() const {return m_id;}
 	
 	void				Destroy() override;
-	void				SetEnabled(bool) override;
+	//void				SetEnabled(bool) override;
 	
 	Engine&				GetEngine();
 	const Engine&		GetEngine() const;

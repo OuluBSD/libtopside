@@ -730,7 +730,8 @@ template <class Gfx> void OglGfxT<Gfx>::BindVertexBuffer(NativeVertexBuffer& vbo
 }
 
 template <class Gfx> void OglGfxT<Gfx>::VertexBufferData(const Vector<Vertex>& vtx) {
-	glBufferData(GL_ARRAY_BUFFER, vtx.GetCount() * sizeof(Vertex), &vtx[0], GL_STATIC_DRAW);
+	if (vtx.GetCount())
+		glBufferData(GL_ARRAY_BUFFER, vtx.GetCount() * sizeof(Vertex), &vtx[0], GL_STATIC_DRAW);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::BindElementBuffer(NativeElementBuffer& ebo) {
@@ -738,9 +739,10 @@ template <class Gfx> void OglGfxT<Gfx>::BindElementBuffer(NativeElementBuffer& e
 }
 
 template <class Gfx> void OglGfxT<Gfx>::ElementBufferData(const Vector<uint32>& indices) {
-	glBufferData(	GL_ELEMENT_ARRAY_BUFFER,
-					indices.GetCount() * sizeof(unsigned int),
-					&indices[0], GL_STATIC_DRAW);
+	if (indices.GetCount())
+		glBufferData(	GL_ELEMENT_ARRAY_BUFFER,
+						indices.GetCount() * sizeof(unsigned int),
+						&indices[0], GL_STATIC_DRAW);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::SetupVertexStructure() {

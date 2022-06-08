@@ -29,7 +29,7 @@ void DataObjectT<Gfx>::Free() {
 
 template <class Gfx>
 void DataObjectT<Gfx>::Refresh(Mesh& m) {
-	ASSERT(!vao && !vbo && !ebo);
+	//Free();
 	
 	mat4 ident = identity<mat4>();
 	scale = ident;
@@ -38,9 +38,11 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	view_override = ident;
 	
 	// Create objects
-	Gfx::GenVertexArray(vao);
-	Gfx::GenVertexBuffer(vbo);
-	Gfx::GenElementBuffer(ebo);
+	if (!vbo) {
+		Gfx::GenVertexArray(vao);
+		Gfx::GenVertexBuffer(vbo);
+		Gfx::GenElementBuffer(ebo);
+	}
 
 	// Set vertex array object data
 	Gfx::BindVertexArray(vao);
@@ -68,7 +70,6 @@ void DataObjectT<Gfx>::RefreshTexture(Mesh& m) {
 	
 template <class Gfx>
 void DataObjectT<Gfx>::Paint(DataState& state) {
-	ASSERT(element_count > 0)
 	if (!element_count)
 		return;
 	
@@ -151,13 +152,13 @@ bool DataStateT<Gfx>::LoadModel(ModelLoader& l) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(ModelMesh& model) {
+void DataStateT<Gfx>::ProcessNode(Model& model) {
 	for (Mesh& mesh : model.meshes)
 		ProcessMesh(mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, ModelMesh& mout,*/ Mesh& out) {
+void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, Model& mout,*/ Mesh& out) {
 	DataObject* obj = 0;
 	if (!out.accel) {
 		obj = &AddObject();
@@ -170,6 +171,11 @@ void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, ModelMesh& mout,*/ Mesh& o
 	}
 	
 	obj->Refresh(out);
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::Refresh(Model& m) {
+	ProcessNode(m);
 }
 
 template <class Gfx>
@@ -192,7 +198,7 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
         return false;
     }
 	
-	l.model = new ModelMesh();
+	l.model = new Model();
 	l.model->SetParent(&l);
     l.model->path = path;
     l.model->directory = GetFileDirectory(path);
@@ -204,7 +210,7 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
 
 template <class Gfx>
 bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
-	ModelMesh& m = *l.model;
+	Model& m = *l.model;
 	
 	int prev_count = textures.GetCount();
 	int count = m.textures.GetCount();
@@ -237,7 +243,7 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(ModelMesh& model, aiNode *node, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessNode(Model& model, aiNode *node, const aiScene *scene) {
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
@@ -250,7 +256,7 @@ void DataStateT<Gfx>::ProcessNode(ModelMesh& model, aiNode *node, const aiScene 
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
 	out.vertices.SetCount(mesh->mNumVertices);
 	
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -307,7 +313,7 @@ void DataStateT<Gfx>::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, cons
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(ModelMesh& model) {
+void DataStateT<Gfx>::RefreshTexture(Model& model) {
 	for (Mesh& mesh : model.meshes)
 		RefreshTexture(mesh);
 }
@@ -318,7 +324,7 @@ void DataStateT<Gfx>::RefreshTexture(Mesh& out) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type) {
+void DataStateT<Gfx>::LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, int type) {
 	for(unsigned int i = 0; i < mat->GetTextureCount((aiTextureType) type); i++) {
         if (out.tex_id[type] >= 0) {
             LOG("warning: ModelLoader: multiple textures per mesh: " << mout.path);

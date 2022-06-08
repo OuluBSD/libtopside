@@ -76,7 +76,7 @@ void ModelProg::DrawImage(const DrawCommand& cmd) {
 	float x1 = x0 - scale_x;
 	float y1 = y0 - scale_y;
 	
-	ModelMesh model;
+	Model model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(4);
 	mesh.vertices.Add().Set(x0, y0, 0, 1, 1);
@@ -108,7 +108,7 @@ void ModelProg::DrawRect(const DrawCommand& cmd) {
 	float x1 = x0 - scale_x;
 	float y1 = y0 - scale_y;
 	
-	ModelMesh model;
+	Model model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(4);
 	mesh.vertices.Add().Set(x0, y0, 0, 0, 1);
@@ -136,7 +136,7 @@ void ModelProg::DrawTriangles(const DrawCommand& cmd) {
 	
 	const Trif* tri = cmd.triangles.GetData();
 	int count = cmd.triangles.GetCount();
-	ModelMesh model;
+	Model model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(count * 3);
 	mesh.indices.Reserve(count * 3);
@@ -176,7 +176,7 @@ void ModelProg::DrawPolyline(const DrawCommand& cmd) {
 	int width = sz.cx;
 	int height = sz.cy;
 	
-	ModelMesh model;
+	Model model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(2);
 	const Point *a = &cmd.pts[0];

@@ -148,8 +148,22 @@ void InteractionSystem::HandleSourceReleased(const InteractionManager&, const Ct
 
 
 
+/*bool FakeControllerSource::GetLocation(float* matrix4x4) const {
+	
+}*/
+
+
+
+
+
+
+
+
+
+
 
 FakeSpatialInteractionManager::FakeSpatialInteractionManager() {
+	ctrl.mgr = this;
 	ctrl_state.source = &ctrl;
 	
 	

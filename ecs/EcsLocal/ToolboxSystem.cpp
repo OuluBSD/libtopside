@@ -139,6 +139,27 @@ void ToolboxSystemBase::Update(double dt) {
 	instruction_text->Get<TextRenderable>()->text =
 	        IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;*/
 	
+	for (ToolComponentRef& tool : tools) {
+		if (tool->active_hand) {
+			TransformRef trans = tool->GetEntity()->Find<Transform>();
+			TransformRef hand_trans = tool->active_hand->GetEntity()->Find<Transform>();
+			if (trans && hand_trans) {
+				// Very simple offset
+				*trans = *hand_trans;
+				//trans->position[1] += 0.1;
+				
+				mat4 orig_pos = translate(trans->position);
+				mat4 rel_pos = translate(vec3(0,0.1,0));
+				mat4 orient = ToMat4(trans->orientation);
+				mat4 new_pos = orig_pos * (orient * rel_pos);
+				vec3 pos = new_pos.GetTranslation();
+				trans->position = pos;
+				
+				//trans->position += hand_trans->direction * 0.2;
+			}
+		}
+	}
+	
 	if (!show_toolbox) {
 		{
 			int i = 0;

@@ -8,7 +8,7 @@ NAMESPACE_ECS_BEGIN
 /*void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
 	shape.Create(type, ax_vec);
 	
-	model = new ModelMesh();
+	model = new Model();
 	model->MakeModel(shape);
 }*/
 
@@ -155,6 +155,15 @@ bool ModelComponent::Load(GfxDataState& state) {
 		}
 		loaded = true;
 	}
+	else if (model_changed) {
+		Ref<Model> m = loader.GetModel();
+		if (m) {
+			//state.ProcessNode(*m);
+			state.Refresh(*m);
+		}
+	}
+	
+	model_changed = false;
 	
 	mat4 model;
 	TransformRef trans = GetEntity()->Find<Transform>();
@@ -177,7 +186,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 	if (have_ext_model)
 		model *= ext_model;
 		
-	Ref<ModelMesh> mesh = loader.GetModel();
+	Ref<Model> mesh = loader.GetModel();
 	if (!mesh)
 		return false;
 	

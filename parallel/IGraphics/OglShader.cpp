@@ -211,13 +211,13 @@ bool OglShader::Load(String vertex_path, String fragment_path, String geometry_p
 	#endif
 }
 
-void OglShader::Refresh(ModelMesh& model) {
+void OglShader::Refresh(Model& model) {
 	ASSERT(is_loaded);
 	for (Mesh& mesh : model.meshes)
         Refresh(model, mesh);
 }
 
-void OglShader::Refresh(ModelMesh& model, Mesh& mesh) {
+void OglShader::Refresh(Model& model, Mesh& mesh) {
 	
 	// TODO glsl shaders etc.
 	
@@ -225,7 +225,7 @@ void OglShader::Refresh(ModelMesh& model, Mesh& mesh) {
 	
 }
 
-void OglShader::BasicMeshRefresh(ModelMesh& model, Mesh& mesh) {
+void OglShader::BasicMeshRefresh(Model& model, Mesh& mesh) {
 	TODO
 	#if 0
 	if (!mesh.vao)

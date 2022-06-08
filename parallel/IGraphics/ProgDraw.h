@@ -109,7 +109,7 @@ class ModelProg {
 public:
 	FramebufferState* state = 0;
 	Vector<mat4> offset;
-	ModelMesh model;
+	Model model;
 	Size sz;
 	
 public:

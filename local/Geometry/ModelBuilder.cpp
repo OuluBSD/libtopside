@@ -8,8 +8,8 @@ bool mb_is_colored_only = false;
 
 Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
-	ModelMesh& model = *this->model;
-	Mesh& m = model.primitives.Add();
+	Model& model = *this->model;
+	Mesh& m = model.meshes.Add();
 	MeshFactory::CreateGrid(m, 1, 1, size[0], size[1]);
 	
 	for(Vertex& v : m.vertices) {
@@ -24,8 +24,8 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 
 Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	this->model.Create();
-	ModelMesh& model = *this->model;
-	Mesh& m = model.primitives.Add();
+	Model& model = *this->model;
+	Mesh& m = model.meshes.Add();
 	
 	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
 	
@@ -43,8 +43,8 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 
 Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int stacks) {
 	this->model.Create();
-	ModelMesh& model = *this->model;
-	Mesh& m = model.primitives.Add();
+	Model& model = *this->model;
+	Mesh& m = model.meshes.Add();
 	MeshFactory::CreateSphere(m, slices, stacks, radius);
 	
 	for(Vertex& v : m.vertices) {
@@ -59,10 +59,18 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int sta
 
 Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int slices) {
 	this->model.Create();
-	ModelMesh& model = *this->model;
-	Mesh& m = model.primitives.Add();
-	MeshFactory::CreateCylinder(m, slices, radius, length);
+	Model& model = *this->model;
 	
+	ModelNode& node = model.AddNode("PaintTip");
+	
+	Mesh& m = model.meshes.Add();
+	MeshFactory::CreateCylinder(m, slices, radius, length, &node);
+	
+	// update node with given position argument
+	mat4 trans = translate(pos);
+	node.local_transform *= trans;
+	
+	// update vertices with with given position argument
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
 	}
@@ -74,7 +82,7 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int
 }
 
 
-	
+
 vec3 euler_to_offset(vec3  euler,
                      vec3* up_direction = NULL)
 {
@@ -276,7 +284,8 @@ void MeshFactory::CreateHemisphere(Mesh& mesh,
 void MeshFactory::CreateCylinder(Mesh& mesh,
                                               int          slices,
                                               float        radius,
-                                              float        height)
+                                              float        height,
+                                              ModelNode*	tip)
 {
     int       cols = slices;
     int       rows = 5;
@@ -285,7 +294,13 @@ void MeshFactory::CreateCylinder(Mesh& mesh,
     // ==============================
     // init mesh vertex/normal coords
     // ==============================
-
+	
+	if (tip) {
+		vec3 top_center(0, height, 0); // see case 5, "top"
+		tip->local_transform = translate(top_center);
+		tip->modify_count++;
+	}
+	
     int vert_index = 0;
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
@@ -329,6 +344,10 @@ void MeshFactory::CreateCylinder(Mesh& mesh,
                     0,
                     0,                                            // pitch
                     static_cast<float>(col) / cols * M_2PI + M_PI_2))); // yaw
+            
+            if (tip)
+                mesh.SetNodeIndex(vert_index, tip->index);
+            
             vert_index++;
         }
     }

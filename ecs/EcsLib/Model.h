@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
-typedef RTuple<Ref<ModelMesh>, TransformRef, RenderableRef> RendModel;
+typedef RTuple<Ref<Model>, TransformRef, RenderableRef> RendModel;
 typedef Vector<RendModel> VectorRendModel;
 
 
@@ -22,7 +22,7 @@ typedef Vector<RendModel> VectorRendModel;
 	
 protected:
 	Shape2DWrapper shape;
-	One<ModelMesh> model;
+	One<Model> model;
 	
 	
 	
@@ -48,10 +48,11 @@ public:
     //void Refresh(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
     void Dispatch() {TODO}
-	Ref<ModelMesh> GetModel() {return loader.GetModel();}
+	Ref<Model> GetModel() {return loader.GetModel();}
+    ModelLoader& GetLoader() {return loader;}
     
 	void GetModels(VectorRendModel& models);
-	void Attach(ModelMesh* m) {loader.model = m;}
+	void Attach(Model* m) {loader.model = m;}
 	/*void LoadModel(CpuDataState& state);
 	void LoadModel(OglDataState& state);
 	void RefreshModel(CpuDataState& state);
@@ -66,6 +67,7 @@ public:
 	void SetRotation(float pitch, float yaw, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
+	void SetModelChanged() {model_changed = true;}
 	
 	void MakeCylinder(const vec3& pos, float radius, float length);
 	
@@ -78,6 +80,7 @@ protected:
 	float pitch = 0, yaw = 0, roll = 0;
 	mat4 ext_model;
 	bool have_ext_model = false;
+	bool model_changed = false;
 	//CpuDataObject* cpu_obj = 0;
 	//OglDataObject* ogl_obj = 0;
 	

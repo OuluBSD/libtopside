@@ -128,6 +128,7 @@ private:
 	LinkedList<LinkedList<EntityRef>> persistent_strokes;
 	bool dbg_model = false;
 	
+	
 };
 
 

@@ -14,6 +14,7 @@ NAMESPACE_ECS_BEGIN
 };*/
 
 class InteractionSystem;
+struct FakeSpatialInteractionManager;
 
 
 struct InteractionManager {
@@ -31,9 +32,16 @@ struct InteractionManager {
 	virtual void Update(double dt) {}
 };
 
+struct FakeControllerSource : ControllerSource {
+	FakeSpatialInteractionManager* mgr = 0;
+	
+	//bool GetLocation(float* matrix4x4) const override;
+	
+};
+
 struct FakeSpatialInteractionManager : InteractionManager {
 	EnvStateRef state;
-	ControllerSource ctrl;
+	FakeControllerSource ctrl;
 	ControllerState ctrl_state;
 	InteractionSystem* sys = 0;
 	Point prev_mouse = Point(0,0);

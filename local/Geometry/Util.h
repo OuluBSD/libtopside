@@ -234,60 +234,15 @@ quat make_rotation_direction(const vec3& dir, const vec3& up);
 namespace MatrixUtils {
 
 
-inline vec3 right(const mat4& transform)
-{
-    return { +transform[0][0], +transform[0][1], +transform[0][2] };
-}
-
-inline vec3 left(const mat4& transform)
-{
-    return { -transform[0][0], -transform[0][1], -transform[0][2] };
-}
-
-inline vec3 up(const mat4& transform)
-{
-    return { +transform[1][0], +transform[1][1], +transform[1][2] };
-}
-
-inline vec3 down(const mat4& transform)
-{
-    return { -transform[1][0], -transform[1][1], -transform[1][2] };
-}
-
-inline vec3 backward(const mat4& transform)
-{
-    return { +transform[2][0], +transform[2][1], +transform[2][2] };
-}
-
-inline vec3 forward(const mat4& transform)
-{
-    return { -transform[2][0], -transform[2][1], -transform[2][2] };
-}
-
-inline vec3 position(const mat4& transform)
-{
-    return { +transform[3][0], +transform[3][1], +transform[3][2] };
-}
-
-inline quat orientation(const mat4& transform)
-{
-    vec3 baller_position, size, skew;
-	quat orientation;
-	vec4 persp;
-	Decompose(transform, size, orientation, baller_position, skew, persp);
-	return orientation;
-}
-
-
-
-inline mat4 RemoveScale(const mat4& transform)
-{
-    quat rotation;
-    vec3 scale, translation, skew;
-    vec4 pers;
-    Decompose(transform, scale, rotation, translation, skew, pers);
-    return translate(translation) * ToMat4(rotation);
-}
+vec3 right(const mat4& transform);
+vec3 left(const mat4& transform);
+vec3 up(const mat4& transform);
+vec3 down(const mat4& transform);
+vec3 backward(const mat4& transform);
+vec3 forward(const mat4& transform);
+vec3 position(const mat4& transform);
+quat orientation(const mat4& transform);
+mat4 RemoveScale(const mat4& transform);
 
 
 }

@@ -56,6 +56,9 @@ inline String GetEventTypeString(int event) {
 struct ControllerSource : RTTIBase {
 	RTTI_DECL0(ControllerSource);
 	virtual ~ControllerSource() {}
+	
+	//virtual bool GetLocation(float* matrix4x4) const {return false;}
+	
 };
 
 struct ControllerProperties {

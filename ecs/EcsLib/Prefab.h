@@ -28,7 +28,7 @@ struct StaticSkybox : EntityPrefab<Transform, Renderable, ModelComponent>
         ModelBuilder b;
         b.AddBox(vec3(0,0,0), vec3(huge_distance, huge_distance, huge_distance), true);
         
-        ModelMesh* m = b.Detach();
+        Model* m = b.Detach();
         m->ReverseFaces();
         components.Get<Ref<ModelComponent>>()->Attach(m);
         

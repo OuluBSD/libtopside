@@ -60,11 +60,16 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
 	EntityStoreRef es = GetEngine().Get<EntityStore>();
 	EntityRef entity = c->GetEntity();
 	const auto& selected_color = colors[0];
+	
+	#if 0
 	auto paint_brush =
 		!dbg_model
 			? es->GetRoot()->Create<PaintBrush>()
 			: es->GetRoot()->Create<DummyToolModel>();
 	paint_brush->Get<ModelComponent>()->color = selected_color;
+	#else
+	EntityRef paint_brush = c->GetEntity();
+	#endif
 	
 	//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
 	
@@ -87,7 +92,7 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
 	paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
 	paint->beam->Get<ModelComponent>()->color = Colors::Aquamarine;
 	paint->SetEnabled(false);
-
+	
 }
 
 void PaintingInteractionSystemBase::Detach(PaintComponentRef c) {
@@ -160,16 +165,18 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 }
 
 void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	// pass
+	OnControllerUpdated(e);
 }
 
 void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
-	// pass
+	OnControllerUpdated(e);
 }
 
 void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 	const ControllerState& source_state = e.GetState();
 	const ControllerSource& source = source_state.GetSource();
+	
+	const bool dbg_log = 0;
 	
 	//if (EntityRef entity = TryGetEntityFromSource(source)) {
 	for (PaintComponentRef& paint : comps) {
@@ -177,7 +184,7 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		
 		bool new_stroke_started = false;
 		//auto paint = entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
-		Ref<ModelMesh> paint_brush_model = paint->paint_brush->Get<ModelComponent>()->GetModel();
+		Ref<Model> paint_brush_model = paint->paint_brush->Get<ModelComponent>()->GetModel();
 		
 		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
 			Optional<NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
@@ -186,12 +193,20 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				// Calcluate paint tip offset from holding pose
 				// we use offset as it does not rely on the current transform of the model
 				// we initialize it once as the value will not change
-				const mat4 brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
-				const auto paint_brush_world_transform
-					= paint_brush_model->GetNode(0).GetTransform();
+				mat4 brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
+				mat4 paint_brush_world_transform = paint_brush_model->GetNode(ModelNode::RootIdx).GetTransform();
+				
 				paint->brush_tip_offset_from_holding_pose =
 				        brush_tip_world_transform *
 				        paint_brush_world_transform.GetInverse();
+				
+				if (dbg_log) {
+					vec3 pos = paint->brush_tip_offset_from_holding_pose->GetTranslation();
+					LOG("PaintingInteractionSystemBase::OnControllerUpdated: initial pos " << pos.ToString());
+				}
+			}
+			else {
+				TODO
 			}
 		}
 		
@@ -256,16 +271,29 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				// Start new stroke
 				if (new_stroke_started) {
 					paint->stroke_in_progress = GetPool()->Create<PaintStroke>();
-					paint->stroke_in_progress->Get<ModelComponent>()->color = paint->selected_color;
+					ModelComponentRef m = paint->stroke_in_progress->Get<ModelComponent>();
+					m->color = paint->selected_color;
 					paint->strokes.Add(paint->stroke_in_progress);
 				}
 				
-				const ControllerProperties& properties = source_state.GetControllerProperties();
+				TransformRef trans = entity->Find<Transform>();
+				if (trans) {
+					if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress) {
+						mat4 location = trans->GetMatrix();
+						mat4 paint_to_world =
+						        *paint->brush_tip_offset_from_holding_pose *
+						        location;
+						if (dbg_log) {
+							vec3 pos = paint_to_world.GetTranslation();
+							LOG("PaintingInteractionSystemBase::OnControllerUpdated: pos " << pos.ToString());
+						}
+						paint->stroke_in_progress
+							->Get<PaintStrokeComponent>()
+								->AddPoint(MatrixUtils::RemoveScale(paint_to_world), paint_tip_thickness);
+					}
+				}
+				/*const ControllerProperties& properties = source_state.GetControllerProperties();
 				
-				// We generate stroke points in source updated using the arguments provided by the event
-				// This will result in a smoother paint stroke
-				TODO
-				/*
 				if (auto location = properties.TryGetLocation(
 						GetEngine().Get<HolographicScene>()->WorldCoordinateSystem())) {
 					if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress) {

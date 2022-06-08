@@ -52,11 +52,11 @@ bool CpuShader::Load(String vertex_path, String fragment_path, String geometry_p
 	TODO
 }
 
-void CpuShader::Refresh(ModelMesh& model) {
+void CpuShader::Refresh(Model& model) {
 	TODO
 }
 
-void CpuShader::Refresh(ModelMesh& model, Mesh& mesh) {
+void CpuShader::Refresh(Model& model, Mesh& mesh) {
 	TODO
 }
 

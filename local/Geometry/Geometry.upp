@@ -32,6 +32,8 @@ file
 	GeomTypes.h,
 	GeomTypes.cpp,
 	BBox.cpp,
+	Material.h,
+	Material.cpp,
 	Mesh.h,
 	Mesh.cpp,
 	Model.h,

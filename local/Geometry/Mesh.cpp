@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 void Mesh::Clear() {
 	vertices.Clear();
 	indices.Clear();
-	material.Clear();
+	material = -1;
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		tex_id[i] = -1;
 	is_colored_only = false;
@@ -140,54 +140,6 @@ void Mesh::TransformVertices(TS::mat4 transform)
     UpdateBoundingBox();
 }*/
 
-void ModelMesh::ReverseFaces() {
-	for (Mesh& m : primitives)
-		m.ReverseFaces();
-}
-
-void ModelMesh::GetGfxMeshs(Vector<GfxMesh*>& primitives) {
-	for (Mesh& m : this->primitives)
-		if (m.accel)
-			primitives.Add(m.accel);
-}
-
-Optional<NodeIndex> ModelMesh::FindFirstNode(String name) {
-	TODO
-	// Children are guaranteed to come after their parents, so start looking after the parent index if one is provided.
-    /*
-    const NodeIndex start_index = parent_node_index ? parent_node_index.value() + 1 : Pbr::root_node_idx;
-    for (const Pbr::Node& node : nodes)
-    {
-        if ((!parent_node_index || node.parent_node_index == parent_node_index.value()) &&
-            node.name == name) {
-            return node.index;
-        }
-    }
-
-    return {};
-    */
-}
-
-mat4 ModelMesh::GetNodeWorldTransform(NodeIndex node_idx) const {
-	TODO
-	/*
-    const Pbr::Node& node = GetNode(node_idx);
-
-    // Compute the transform recursively.
-    const mat4 parent_transform =
-		node.index == Pbr::root_node_idx ?
-			identity<mat4>() :
-			GetNodeWorldTransform(node.parent_node_index);
-	
-    return MultiplyMatrix(node.GetTransform(), parent_transform);
-    */
-}
-
-const Vertex& ModelMesh::GetNode(NodeIndex node_idx) const {
-	TODO
-	
-}
-
 
 
 
@@ -221,17 +173,6 @@ void Mesh::Dump(int indent) {
 	LOG(in << "Indices: " << indices.GetCount());
 	for(int i = 0; i < indices.GetCount(); i++) {
 		LOG(in << "\t" << i << ": " << (int)indices[i]);
-	}
-}
-
-void ModelMesh::Dump() {
-	for(int i = 0; i < primitives.GetCount(); i++) {
-		LOG("Mesh " << i << ":");
-		primitives[i].Dump(1);
-	}
-	LOG("Textures:");
-	for(int i = 0; i < textures.GetCount(); i++) {
-		LOG("\t" << i << ": " << (int)textures[i].sz.cx << "x" << (int)textures[i].sz.cy);
 	}
 }
 

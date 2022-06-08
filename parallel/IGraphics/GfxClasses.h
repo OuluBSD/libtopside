@@ -75,7 +75,7 @@ struct GfxDataState : ErrorReporter {
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual int GetObjectCount() const = 0;
 	virtual GfxDataObject& GetObject(int i) = 0;
-	virtual void Refresh(ModelMesh& m) = 0;
+	virtual void Refresh(Model& m) = 0;
 	virtual bool LoadModel(ModelLoader& l) = 0;
 	virtual bool LoadModel(ModelLoader& l, String path) = 0;
 	virtual bool LoadModelTextures(ModelLoader& l) = 0;
@@ -189,8 +189,8 @@ public:
 	/*
 	virtual bool Load(String vertex_path, String fragment_path, String geometry_path = "") = 0;
 	virtual bool IsLoaded() const = 0;
-	virtual void Refresh(ModelMesh& model) = 0;
-    virtual void Refresh(ModelMesh& model, Mesh& mesh) = 0;
+	virtual void Refresh(Model& model) = 0;
+    virtual void Refresh(Model& model, Mesh& mesh) = 0;
 	virtual void Use() = 0;
 	
 	virtual void SetBool(const String &name, bool value) const = 0;

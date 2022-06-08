@@ -46,7 +46,7 @@ struct PaintStroke : EntityPrefab<Transform, ModelComponent, PaintStrokeComponen
     {
         auto components = EntityPrefab::Make(e);
 
-        //components.Get<ModelComponentRef>()->model.Create();
+        components.Get<ModelComponentRef>()->GetLoader().Create();
 
         return components;
     }

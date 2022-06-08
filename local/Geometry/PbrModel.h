@@ -105,7 +105,7 @@ private:
 private:
     // A model is made up of one or more Meshs. Each Mesh has a unique material.
     // Ideally primitives with the same material should be merged to reduce draw calls.
-    Array<Mesh>					primitives;
+    Array<Mesh>							primitives;
 	
     // A model contains one or more nodes. Each vertex of a primitive references a node to have the
     // node's transform applied.

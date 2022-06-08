@@ -1124,8 +1124,46 @@ vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
 }
 
 mat4 MultiplyMatrix(const mat4& m0, const mat4& m1) {
-	TODO
-	// check right order from XMMatrixMultiply! no guesses!
+	mat4 r;
+    
+    float x = m0.data[0].data[0];
+    float y = m0.data[0].data[1];
+    float z = m0.data[0].data[2];
+    float w = m0.data[0].data[3];
+    
+    r.data[0].data[0] = (m1.data[0].data[0] * x) + (m1.data[1].data[0] * y) + (m1.data[2].data[0] * z) + (m1.data[3].data[0] * w);
+    r.data[0].data[1] = (m1.data[0].data[1] * x) + (m1.data[1].data[1] * y) + (m1.data[2].data[1] * z) + (m1.data[3].data[1] * w);
+    r.data[0].data[2] = (m1.data[0].data[2] * x) + (m1.data[1].data[2] * y) + (m1.data[2].data[2] * z) + (m1.data[3].data[2] * w);
+    r.data[0].data[3] = (m1.data[0].data[3] * x) + (m1.data[1].data[3] * y) + (m1.data[2].data[3] * z) + (m1.data[3].data[3] * w);
+    
+    x = m0.data[1].data[0];
+    y = m0.data[1].data[1];
+    z = m0.data[1].data[2];
+    w = m0.data[1].data[3];
+    r.data[1].data[0] = (m1.data[0].data[0] * x) + (m1.data[1].data[0] * y) + (m1.data[2].data[0] * z) + (m1.data[3].data[0] * w);
+    r.data[1].data[1] = (m1.data[0].data[1] * x) + (m1.data[1].data[1] * y) + (m1.data[2].data[1] * z) + (m1.data[3].data[1] * w);
+    r.data[1].data[2] = (m1.data[0].data[2] * x) + (m1.data[1].data[2] * y) + (m1.data[2].data[2] * z) + (m1.data[3].data[2] * w);
+    r.data[1].data[3] = (m1.data[0].data[3] * x) + (m1.data[1].data[3] * y) + (m1.data[2].data[3] * z) + (m1.data[3].data[3] * w);
+    
+    x = m0.data[2].data[0];
+    y = m0.data[2].data[1];
+    z = m0.data[2].data[2];
+    w = m0.data[2].data[3];
+    r.data[2].data[0] = (m1.data[0].data[0] * x) + (m1.data[1].data[0] * y) + (m1.data[2].data[0] * z) + (m1.data[3].data[0] * w);
+    r.data[2].data[1] = (m1.data[0].data[1] * x) + (m1.data[1].data[1] * y) + (m1.data[2].data[1] * z) + (m1.data[3].data[1] * w);
+    r.data[2].data[2] = (m1.data[0].data[2] * x) + (m1.data[1].data[2] * y) + (m1.data[2].data[2] * z) + (m1.data[3].data[2] * w);
+    r.data[2].data[3] = (m1.data[0].data[3] * x) + (m1.data[1].data[3] * y) + (m1.data[2].data[3] * z) + (m1.data[3].data[3] * w);
+    
+    x = m0.data[3].data[0];
+    y = m0.data[3].data[1];
+    z = m0.data[3].data[2];
+    w = m0.data[3].data[3];
+    r.data[3].data[0] = (m1.data[0].data[0] * x) + (m1.data[1].data[0] * y) + (m1.data[2].data[0] * z) + (m1.data[3].data[0] * w);
+    r.data[3].data[1] = (m1.data[0].data[1] * x) + (m1.data[1].data[1] * y) + (m1.data[2].data[1] * z) + (m1.data[3].data[1] * w);
+    r.data[3].data[2] = (m1.data[0].data[2] * x) + (m1.data[1].data[2] * y) + (m1.data[2].data[2] * z) + (m1.data[3].data[2] * w);
+    r.data[3].data[3] = (m1.data[0].data[3] * x) + (m1.data[1].data[3] * y) + (m1.data[2].data[3] * z) + (m1.data[3].data[3] * w);
+    
+    return r;
 }
 
 mat4 MatrixInverse(const mat4* l, const mat4& r) {
@@ -1371,5 +1409,64 @@ quat make_rotation_direction(const vec3& dir, const vec3& up) {
 	return make_quat_from_rotation_matrix(rot);
 }
 
+
+namespace MatrixUtils {
+vec3 right(const mat4& transform)
+{
+    return { +transform[0][0], +transform[0][1], +transform[0][2] };
+}
+
+vec3 left(const mat4& transform)
+{
+    return { -transform[0][0], -transform[0][1], -transform[0][2] };
+}
+
+vec3 up(const mat4& transform)
+{
+    return { +transform[1][0], +transform[1][1], +transform[1][2] };
+}
+
+vec3 down(const mat4& transform)
+{
+    return { -transform[1][0], -transform[1][1], -transform[1][2] };
+}
+
+vec3 backward(const mat4& transform)
+{
+    return { +transform[2][0], +transform[2][1], +transform[2][2] };
+}
+
+vec3 forward(const mat4& transform)
+{
+    return { -transform[2][0], -transform[2][1], -transform[2][2] };
+}
+
+vec3 position(const mat4& transform)
+{
+    return { +transform[3][0], +transform[3][1], +transform[3][2] };
+}
+
+
+quat orientation(const mat4& transform)
+{
+    vec3 baller_position, size, skew;
+	quat orientation;
+	vec4 persp;
+	Decompose(transform, size, orientation, baller_position, skew, persp);
+	return orientation;
+}
+
+
+
+mat4 RemoveScale(const mat4& transform)
+{
+    quat rotation;
+    vec3 scale, translation, skew;
+    vec4 pers;
+    Decompose(transform, scale, rotation, translation, skew, pers);
+    rotation.Normalize();
+    return translate(translation) * ToMat4(rotation);
+}
+}
 
 NAMESPACE_TOPSIDE_END

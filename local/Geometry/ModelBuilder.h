@@ -44,7 +44,8 @@ public:
     static void CreateCylinder(Mesh& mesh,
                                        int          slices = DEFAULT_SLICES,
                                        float        radius = 1,
-                                       float        height = 1);
+                                       float        height = 1,
+                                       ModelNode*	tip = 0);
     static void CreateCone(Mesh& mesh,
                                    int          slices = DEFAULT_SLICES,
                                    float        radius = 1,
@@ -82,7 +83,7 @@ public:
 
 
 class ModelBuilder {
-	One<ModelMesh> model;
+	One<Model> model;
 	
 public:
 	
@@ -92,10 +93,10 @@ public:
 	Mesh& AddCylinder(const vec3& pos, float radius, float length, int slices=16);
 	
 	
-	operator const ModelMesh&() const {return *model;}
-	const ModelMesh& AsModel() const {return *model;}
+	operator const Model&() const {return *model;}
+	const Model& AsModel() const {return *model;}
 	
-	ModelMesh* Detach() {if (model) return model.Detach(); else return 0;}
+	Model* Detach() {if (model) return model.Detach(); else return 0;}
 	
 };
 

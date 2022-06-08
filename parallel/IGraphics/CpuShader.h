@@ -56,7 +56,7 @@ class CpuShader :
 {
 	bool is_loaded = false;
 	
-    void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
+    void BasicMeshRefresh(Model& model, Mesh& mesh);
     
 public:
 	RTTI_DECL1(CpuShader, Shader)
@@ -70,8 +70,8 @@ public:
 	/*
 	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
 	bool IsLoaded() const override {return is_loaded;}
-	void Refresh(ModelMesh& model) override;
-    void Refresh(ModelMesh& model, Mesh& mesh) override;
+	void Refresh(Model& model) override;
+    void Refresh(Model& model, Mesh& mesh) override;
 	void Use() override;
 	
 	void SetBool(const String &name, bool value) const override;

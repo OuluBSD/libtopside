@@ -139,20 +139,6 @@ struct DepthBuffer : Moveable<DepthBuffer> {
 
 
 
-struct Material {
-    vec3 ambient = {0,0,0};
-    vec3 diffuse = {0,0,0};
-    vec3 specular = {0,0,0};
-    float shininess = 0;
-    
-    void Clear() {ambient.Clear(); diffuse.Clear(); specular.Clear(); shininess = 0;}
-    void SetDefault();
-    
-};
-
-Material DefaultMaterial();
-
-
 class BoundingBox {
 public:
     enum Align {

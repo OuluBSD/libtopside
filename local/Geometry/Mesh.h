@@ -4,6 +4,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class Model;
+
+
 struct GfxMesh : RTTIBase {
 	RTTI_DECL0(GfxMesh)
 };
@@ -11,6 +14,7 @@ struct GfxMesh : RTTIBase {
 class Mesh : public BoundingBox, Moveable<Mesh> {
 	
 public:
+	Model* owner = 0;
     Vector<Vertex> vertices;
     Vector<uint32> indices;
     //Vector<vec2> tex_coords;
@@ -53,7 +57,7 @@ public:
     void RefreshOgl(OglDataObject& o);
 #endif*/
     
-    void SetMaterial(int i) {material = i;}
+    void SetMaterial(Material& m) {ASSERT(m.owner == owner && m.index >= 0); material = m.index;}
     void SetCount(int vertex_count, int triangle_count) {
         vertices.SetCount(vertex_count);
         indices.SetCount(3 * triangle_count);
@@ -71,6 +75,7 @@ public:
         indices[3 * i + 1] = v[1];
         indices[3 * i + 2] = v[2];
     }
+    void SetNodeIndex(int i, NodeIndex idx) {vertices[i].mdl_transform_idx = idx;}
     
     int GetTriangleCount() const {return indices.GetCount() / 3;}
     vec3 GetVertCoord(int i) const {return vertices[i].position.Splice();}

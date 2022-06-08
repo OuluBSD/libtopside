@@ -81,7 +81,7 @@ struct ShaderT :
     
 	void SetState(DataStateBase& d) {state = &d;}
     bool CheckCompileErrors(GLuint shader, String type);
-	void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
+	void BasicMeshRefresh(Model& model, Mesh& mesh);
     
 	GfxDataObject* CreateObject() override {return state ? &state->CreateObject() : 0;}
 
@@ -93,8 +93,8 @@ struct ShaderT :
 	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
 	void SetLoaded(bool b=true) {is_loaded = true;}
 	bool IsLoaded() const override {return is_loaded;}
-	void Refresh(ModelMesh& model) override;
-    void Refresh(ModelMesh& model, Mesh& mesh) override;
+	void Refresh(Model& model) override;
+    void Refresh(Model& model, Mesh& mesh) override;
 	void Use() override;
 	
 	

@@ -76,14 +76,14 @@ engine ecs.dummy: {
         entity player.hand.left: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: +90;};
             comp player.hand: {hand: left; body: world.player.body;};
         };
         
         entity player.hand.right: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: +90;};
             comp player.hand: {hand: right; body: world.player.body;};
         };
         
@@ -91,7 +91,7 @@ engine ecs.dummy: {
             comp transform3;
             comp tool: {hand: world.player.hand.right;};
             comp paint;
-            comp model: {builtin: "cylinder,0.05,0.2"; yaw: -70;};
+            comp model: {builtin: "cylinder,0.01,0.1"; yaw: +180;};
         };
     };
 };

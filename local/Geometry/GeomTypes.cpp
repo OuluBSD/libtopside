@@ -27,6 +27,7 @@ void Vertex::Set(float x, float y, float z) {
 void Vertex::Set(vec3 pos, vec3 norm, vec3 tan, vec2 tex) {
     position = pos.Embed();
     normal = norm;
+    tangent = tan.Embed();
     tex_coord = tex;
 }
 
@@ -246,19 +247,6 @@ void DepthBuffer::Reset() {
 }
 
 
-
-void Material::SetDefault() {
-	ambient = vec3(1.0, 1.0, 0.0);
-	diffuse = vec3(1.0, 0.0, 1.0);
-	specular = vec3(0.0, 1.0, 1.0);
-	shininess = 0.5;
-}
-
-Material DefaultMaterial() {
-	Material m;
-	m.SetDefault();
-	return m;
-}
 
 
 
