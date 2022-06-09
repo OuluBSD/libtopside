@@ -4,6 +4,8 @@ NAMESPACE_ECS_BEGIN
 
 
 bool ThrowingInteractionSystemBase::Initialize() {
+	ball_holding_distance = 0.5f;
+	
 	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
 		return false;
 	
@@ -12,6 +14,14 @@ bool ThrowingInteractionSystemBase::Initialize() {
 
 void ThrowingInteractionSystemBase::Uninitialize() {
 	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+}
+
+void ThrowingInteractionSystemBase::Attach(ThrowingComponentRef c) {
+	ArrayFindAdd(comps, c);
+}
+
+void ThrowingInteractionSystemBase::Detach(ThrowingComponentRef c) {
+	ArrayRemoveKey(comps, c);
 }
 
 String ThrowingInteractionSystemBase::GetInstructions() const {
@@ -31,81 +41,153 @@ EntityRef ThrowingInteractionSystemBase::CreateToolSelector() const {
 }
 
 void ThrowingInteractionSystemBase::Update(double dt) {
-	TODO
-	#if 0
-	Vector<RTuple<EntityRef, ToolComponentRef>> enabled_ents = GetEnabledEntities();
-	
-	for (RTuple<EntityRef, ToolComponentRef>& enabled_entity : enabled_ents) {
-		EntityRef& entity = enabled_entity.a;
-		ToolComponentRef& throwing = enabled_entity.b.a;
+	for (ThrowingComponentRef& throwing : comps) {
+		EntityRef entity = throwing->GetEntity();
+		TransformRef trans = entity->Find<Transform>();
+		if (!trans)
+			continue;
 		
 		if (throwing->ball_object) {
-			if (const HandActionSourceLocation* location = entity->Get<PlayerHandComponent>()->location) {
-				if (const HandActionSourcePose* pointer_pose = location->GetHandPose()) {
-					auto transform = throwing->ball_object->Get<Transform>();
-					transform->position = pointer_pose->GetPosition() + pointer_pose->GetForwardDirection() * ball_holding_distance;
-					transform->orientation = pointer_pose->GetOrientation();
-					
-					if (transform->size[0] < 1.0f) {
-						transform->size += vec3( 2.0 * dt );
-					}
+			if (!throwing->IsEnabled()) {
+				throwing->ball_object->Destroy();
+			}
+			else {
+				vec3 fwd_dir = trans->GetForwardDirection();
+				TransformRef ball_transform = throwing->ball_object->Get<Transform>();
+				ball_transform->position = trans->position + fwd_dir * ball_holding_distance;
+				ball_transform->orientation = trans->orientation;
+				
+				if (ball_transform->size[0] < 1.0f) {
+					ball_transform->size += vec3( 2.0 * dt );
 				}
 			}
-		}
-	}
-	#endif
-}
-#if 0
-void ThrowingInteractionSystemBase::OnControllerPressed(const ControllerEventArgs& args) {
-	if (args.PressKind() == SpatialInteractionPressKind::Select) {
-		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
-			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();
-			throwing->ball_object = GetPool()->Create<Baseball>();
-			throwing->ball_object->Get<Transform>()->size = vec3{ throwing->scale };
-			throwing->ball_object->Get<RigidBody>()->SetEnabled(false);
 		}
 	}
 }
 
-void ThrowingInteractionSystemBase::OnControllerReleased(const ControllerEventArgs& args) {
-	if (args.PressKind() == SpatialInteractionPressKind::Select) {
-		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
-			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();
-			ASSERT(throwing);
+void ThrowingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
+	// pass
+}
+
+void ThrowingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
+	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::SELECT) {
+		for (ThrowingComponentRef& throwing : comps) {
+			if (!throwing->IsEnabled()) continue;
+			
+			throwing->ball_object = GetPool()->Create<Baseball>();
+			throwing->ball_object->Get<Transform>()->size = vec3{ throwing->scale };
+			throwing->ball_object->Get<RigidBody>()->SetEnabled(false);
+			throwing->ball_object->Get<PhysicsBody>()->BindDefault();
+		}
+	}
+}
+
+void ThrowingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
+	if (e.type == EVENT_HOLO_RELEASED && e.value == ControllerProperties::SELECT) {
+		const ControllerState& source_state = e.GetState();
+		const ControllerProperties& source_props = source_state.props;
+		const ControllerSource& source = source_state.GetSource();
+		
+		for (ThrowingComponentRef& throwing : comps) {
+			if (!throwing->IsEnabled()) continue;
+			
+			EntityRef entity = throwing->GetEntity();
+			TransformRef trans = entity->Find<Transform>();
 			
 			if (throwing->ball_object) {
 				// We no longer need to keep a reference to the thrown ball.
-				auto ball = throwing->ball_object;
+				EntityRef ball = throwing->ball_object;
 				throwing->ball_object.Clear();
-				// If the controller has no motion, release the ball with no initial velocity.
-				ball->Get<RigidBody>()->SetEnabled(true);
-				ball->Get<RigidBody>()->velocity = {};
-				ball->Get<RigidBody>()->angular_velocity = {};
-				// If controller has motion, use velocity and angular velocity at ball's holding distances.
-				const SpatialCoordinateSystem coordinate_system = GetEngine().Get<HolographicScene>()->WorldCoordinateSystem();
 				
-				if (const HandActionSourceLocation grasp_location = args.State().Properties().TryGetLocation(coordinate_system)) {
-					if (const HandActionSourcePose pointer_pose = grasp_location.SourcePointerPose()) {
-						const vec3 grasp_angular_velocity = grasp_location.AngularVelocity();
+				// If the controller has no motion, release the ball with no initial velocity.
+				RigidBodyRef rb = ball->Get<RigidBody>();
+				rb->SetEnabled(true);
+				rb->velocity = {};
+				rb->angular_velocity = {};
+				
+				TransformRef ball_trans = ball->Get<Transform>();
+				
+				vec3 position = trans->position;
+				vec3 fwd_dir = trans->GetForwardDirection();
+				
+				
+				vec3 velocity;
+				vec3 grasp_angular_velocity;
+				source.GetVelocity(velocity.data);
+				source.GetAngularVelocity(grasp_angular_velocity.data);
+				
+				#if 1
+				LOG("ThrowingInteractionSystemBase::OnControllerReleased: " <<
+					"velocity: " << velocity.ToString() << ", "
+					"grasp_angular_velocity: " << grasp_angular_velocity.ToString() << ")");
+				#endif
+				
+				if (!grasp_angular_velocity.IsNull()) {
+					const vec3 ball_position = position + (fwd_dir * ball_holding_distance);
+					const vec3 ball_velocity = GetVelocityNearSourceLocation(position, velocity, grasp_angular_velocity, ball_position);
+					
+					if (!ball_velocity.IsNull()) {
+						ball_trans->position = ball_position;
+						ball_trans->orientation = trans->orientation;
+						rb->velocity = ball_velocity;
+						rb->angular_velocity = grasp_angular_velocity;
 						
-						if (!grasp_angular_velocity.IsNull()) {
-							const vec3 ball_position = pointer_pose.Position() + (pointer_pose.ForwardDirection() * ball_holding_distance);
-							const vec3 ball_velocity = SpatialInputUtilities::Physics::GetVelocityNearSourceLocation(grasp_location, ball_position);
-							
-							if (!ball_velocity.IsNull()) {
-								ball->Get<Transform>()->position = ball_position;
-								ball->Get<Transform>()->orientation = pointer_pose.Orientation();
-								ball->Get<RigidBody>()->velocity = ball_velocity;
-								ball->Get<RigidBody>()->angular_velocity = grasp_angular_velocity;
-							}
-						}
 					}
 				}
 			}
 		}
 	}
 }
-#endif
+
+void ThrowingInteractionSystemBase::Register() {
+	// pass
+}
+
+void ThrowingInteractionSystemBase::Unregister() {
+	// pass
+}
+
+void ThrowingInteractionSystemBase::Activate(EntityRef entity) {
+	// pass
+}
+
+void ThrowingInteractionSystemBase::Deactivate(EntityRef entity) {
+	// pass
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ThrowingComponent::Initialize() {
+	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
+	if (tool)
+		tool->AddTool(AsRefT<ComponentBase>());
+	
+	Ref<ThrowingInteractionSystemBase> sys = GetEngine().TryGet<ThrowingInteractionSystemBase>();
+	if (sys)
+		sys-> Attach(AsRefT());
+}
+
+void ThrowingComponent::Uninitialize() {
+	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
+	if (tool)
+		tool->RemoveTool(AsRefT<ComponentBase>());
+	
+	Ref<ThrowingInteractionSystemBase> sys = GetEngine().TryGet<ThrowingInteractionSystemBase>();
+	if (sys)
+		sys->Detach(AsRefT());
+}
+
 void ThrowingComponent::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	
@@ -121,6 +203,7 @@ void ThrowingComponent::Destroy() {
 		ball_object->Destroy();
 	}
 }
+
 
 
 NAMESPACE_ECS_END

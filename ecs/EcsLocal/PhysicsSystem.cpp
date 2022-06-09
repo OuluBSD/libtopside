@@ -27,6 +27,34 @@ void PhysicsSystem::Update(double dt)
 			continue;
 		}
 		
+		
+		EntityRef ent = b->GetEntity();
+		Ref<RigidBody> rigid_body = ent->Find<RigidBody>();
+		Ref<Transform> transform = ent->Find<Transform>();
+		
+		if (rigid_body && transform && rigid_body->IsEnabled()) {
+			rigid_body->velocity += rigid_body->acceleration * dt;
+			transform->position += rigid_body->velocity * dt;
+			
+			vec3 adjusted_angular = TS::transform(rigid_body->angular_velocity, inverse(ToMat4(transform->orientation)));
+			
+			float angle = adjusted_angular.GetLength();
+			if (angle > 0.0f) {
+				vec3 axis = adjusted_angular / angle;
+				transform->orientation *= make_quat_from_axis_angle(axis, angle * dt);
+			}
+			
+			rigid_body->velocity *= rigid_body->damping_factor;
+			rigid_body->angular_velocity *= rigid_body->damping_factor;
+		}
+		
+		if (transform) {
+			vec3 a = transform->position.GetAbsolute();
+			if (a[0] >= area_length ||
+				a[1] >= area_length ||
+				a[2] >= area_length)
+				ent->Destroy();
+		}
 	}
 	
 }
@@ -35,6 +63,12 @@ bool PhysicsSystem::Arg(String key, Object value) {
 	
 	if (key == "log") {
 		debug_log = (String)value == "debug";
+	}
+	if (key == "rm.outsiders") {
+		remove_outside_area = (String)value == "true";
+	}
+	if (key == "rm.area.size") {
+		area_length = StrDbl(value);
 	}
 	
 	return true;
@@ -180,6 +214,9 @@ void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
 
 
 void PhysicsBody::Initialize() {
+	test_fn = 0;
+	is_bound = 0;
+	
 	Entity& e = GetParent();
 	trans = e.Find<Transform>();
 	if (!trans) {
@@ -187,23 +224,23 @@ void PhysicsBody::Initialize() {
 	}
 }
 
+void PhysicsBody::Uninitialize() {
+	if (is_bound)
+		UnbindDefault();
+	
+}
+
 bool PhysicsBody::Arg(String key, Object value) {
 	
 	if (key == "bind") {
-		Ref<PhysicsSystem> fys = GetEngine().Get<PhysicsSystem>();
-		if (!fys) {
-			LOG("PhysicsBody::Arg: error: no PhysicsSystem in engine");
-			return false;
-		}
-		
-		fys->Attach(*this);
+		if ((String)value == "true")
+			return BindDefault();
 	}
 	else if (key == "test.fn") {
 		String v = value;
 		
 		if      (v == "do.circle")			test_fn = TESTFN_CIRCLE;
 		else if (v == "fixed")				test_fn = TESTFN_FIXED;
-		
 		else {
 			LOG("PhysicsBody::Arg: error: invalid test function: " + v);
 			return false;
@@ -213,5 +250,36 @@ bool PhysicsBody::Arg(String key, Object value) {
 	return true;
 }
 
+bool PhysicsBody::BindDefault() {
+	if (is_bound) {
+		LOG("PhysicsBody::BindDefault: already bound");
+		return false;
+	}
+	
+	Ref<PhysicsSystem> fys = GetEngine().TryGet<PhysicsSystem>();
+	if (!fys) {
+		LOG("PhysicsBody::BindDefault: error: no PhysicsSystem in engine");
+		return false;
+	}
+	
+	fys->Attach(*this);
+	is_bound = true;
+	
+	return true;
+}
+
+void PhysicsBody::UnbindDefault() {
+	ASSERT(is_bound);
+	
+	Ref<PhysicsSystem> fys = GetEngine().TryGet<PhysicsSystem>();
+	if (!fys) {
+		LOG("PhysicsBody::UnbindDefault: error: no PhysicsSystem in engine");
+		return;
+	}
+	
+	fys->Detach(*this);
+	
+	is_bound = false;
+}
 
 NAMESPACE_ECS_END

@@ -12,12 +12,15 @@ public:
 	COMP_DEF_VISIT
 	
 	
-	vec3 velocity = zero<vec3>();
-	vec3 acceleration = zero<vec3>();
-	vec3 angular_velocity = zero<vec3>();
-	vec3 angular_acceleration = zero<vec3>();
+	vec3 velocity;
+	vec3 acceleration;
+	vec3 angular_velocity;
+	vec3 angular_acceleration;
 	
-	float damping_factor = 0.999f;
+	float damping_factor;
+	
+	
+	void Initialize() override;
 	
     void operator=(const RigidBody& r) {
         velocity = r.velocity;

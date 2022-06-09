@@ -43,6 +43,16 @@ void ModelComponent::GetModels(VectorRendModel& models) {
 #endif
 
 void ModelComponent::Initialize() {
+	color = one<vec4>();
+	prefab_name.Clear();
+	offset = zero<vec3>();
+	scale = one<vec3>();
+	pitch = 0;
+	yaw = 0;
+	roll = 0;
+	ext_model = identity<mat4>();
+	have_ext_model = false;
+	model_changed = false;
 	
 	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
 	rend->AddModel(AsRefT());
@@ -102,6 +112,12 @@ bool ModelComponent::Arg(String key, Object value) {
 	else return false;
 	
 	return true;
+}
+
+void ModelComponent::MakeBall(const vec3& pos, float radius) {
+	ModelBuilder mb;
+	mb.AddSphere(pos, radius);
+	loader = mb;
 }
 
 void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {

@@ -23,36 +23,6 @@ struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
     }
 };
 
-
-
-struct Baseball : EntityPrefab<Transform, PbrRenderable, RigidBody>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-
-        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
-        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::Baseball);
-
-        return components;
-    }
-};
-
-struct Bullet : EntityPrefab<Transform, PbrRenderable, RigidBody>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-
-        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
-        components.Get<PbrRenderableRef>()->ResetModel(KnownModelNames::UnitSphere);
-        components.Get<PbrRenderableRef>()->color = vec4(0, 0, 1, 1);
-        components.Get<TransformRef>()->size = vec3(0.025f);
-
-        return components;
-    }
-};
-
 struct StaticModel : EntityPrefab<Transform, ModelComponent>
 {
     static Components Make(Entity& e)

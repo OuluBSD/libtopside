@@ -10,18 +10,22 @@ class ShootingComponent :
 public:
 	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
-	COMP_DEF_VISIT_(vis & gun)
+	COMP_DEF_VISIT //_(vis & gun)
 	
 	
 	
-	void SetEnabled(bool enable) override;
-	void Destroy() override;
+	void Initialize() override;
+	void Uninitialize() override;
+	//void SetEnabled(bool enable) override;
+	//void Destroy() override;
 	
-	EntityRef gun;
+	//EntityRef gun;
 	
-	float bullet_speed = 20.0f;
+	float bullet_speed = 10.0f;
 	mat4 barrel_to_ctrl;
 };
+
+using ShootingComponentRef = Ref<ShootingComponent>;
 
 
 // ShootingInteractionSystem
@@ -31,6 +35,7 @@ class ShootingInteractionSystemBase :
 	public ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>,
 	public InteractionListener
 {
+	Array<ShootingComponentRef> comps;
 	
 public:
 	using ToolSys = ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>;
@@ -42,6 +47,8 @@ public:
 	
 	static constexpr const char* POOL_NAME = "shooting";
 	
+	void Attach(ShootingComponentRef c);
+	void Detach(ShootingComponentRef c);
 	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
 protected:
@@ -51,10 +58,14 @@ protected:
 	String GetInstructions() const override;
 	String GetDisplayName() const override;
 	EntityRef CreateToolSelector() const override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	void OnControllerUpdated(const CtrlEvent& e) override;
+	void OnControllerReleased(const CtrlEvent& e) override;
 	
-	/*void Register(const LinkedList<EntityRef>& entities) override;
+	void Register() override;
+	void Unregister() override;
 	void Activate(EntityRef entity) override;
-	void Deactivate(EntityRef entity) override;*/
+	void Deactivate(EntityRef entity) override;
 	
 };
 

@@ -36,6 +36,8 @@ struct FakeControllerSource : ControllerSource {
 	FakeSpatialInteractionManager* mgr = 0;
 	
 	//bool GetLocation(float* matrix4x4) const override;
+	void GetVelocity(float* v3) const override;
+	void GetAngularVelocity(float* v3) const override;
 	
 };
 
@@ -47,12 +49,16 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	Point prev_mouse = Point(0,0);
 	double time = 0;
 	double last_dt = 0;
+	FboKbd::KeyVec prev;
 	
 	// player camera
 	double pitch = -M_PI/2;
 	double yaw = 0;
 	vec3 head_direction = vec3(0,0,1);
+	vec3 hand_velocity = vec3(0,0,0);
+	vec3 hand_angular_velocity = vec3(0,0,0);
 	
+	OnlineAverage av[3];
 	
 	
 	FakeSpatialInteractionManager();
@@ -91,6 +97,8 @@ struct InteractionListener :
     virtual void OnControllerPressed(const CtrlEvent& e) {};
     virtual void OnControllerUpdated(const CtrlEvent& e) {};
     virtual void OnControllerReleased(const CtrlEvent& e) {};
+    
+    virtual bool IsEnabled() const;
     
     static bool Initialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l);
     static void Uninitialize(Engine& e, Ref<InteractionListener, RefParent1<Engine>> l);

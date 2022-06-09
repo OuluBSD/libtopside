@@ -52,6 +52,36 @@ struct PaintStroke : EntityPrefab<Transform, ModelComponent, PaintStrokeComponen
     }
 };
 
+struct Bullet : EntityPrefab<Transform, ModelComponent, RigidBody, PhysicsBody>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
+        //components.Get<ModelComponentRef>()->SetPrefabModel(KnownModelNames::UnitSphere);
+        components.Get<ModelComponentRef>()->MakeBall(vec3(0,0,0), 0.2);
+        components.Get<ModelComponentRef>()->color = vec4(0, 0, 1, 1);
+        components.Get<TransformRef>()->size = vec3(0.025f);
+
+        return components;
+    }
+};
+
+struct Baseball : EntityPrefab<Transform, ModelComponent, RigidBody, PhysicsBody>
+{
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
+
+        components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
+        components.Get<ModelComponentRef>()->SetPrefabModel(KnownModelNames::Baseball);
+
+        return components;
+    }
+};
+
+
 
 NAMESPACE_ECS_END
 

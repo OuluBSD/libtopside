@@ -61,14 +61,17 @@ public:
 	void SetPrefabModel(String prefab); // ResetModel
 	
 public:
-	vec4 color = one<vec4>();
+	vec4 color;
 	String prefab_name;
+	
+	
 	
 	void SetRotation(float pitch, float yaw, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
 	void SetModelChanged() {model_changed = true;}
 	
+	void MakeBall(const vec3& pos, float radius);
 	void MakeCylinder(const vec3& pos, float radius, float length);
 	
 protected:

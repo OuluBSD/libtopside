@@ -32,11 +32,13 @@ INITBLOCK_(EcsLocal) {
 	ComponentFactory::Register<PhysicsBody>("physics");
 	ComponentFactory::Register<ToolComponent>("tool");
 	ComponentFactory::Register<PaintComponent>("paint");
+	ComponentFactory::Register<ShootingComponent>("shoot");
+	ComponentFactory::Register<ThrowingComponent>("throw");
 	ComponentFactory::Register<PlayerHandComponent>("player.hand");
 	ComponentFactory::Register<PlayerHeadComponent>("player.head");
 	ComponentFactory::Register<PlayerBodyComponent>("player.body");
 #ifdef flagGUI
-	ComponentFactory::Register<DefaultGuiAppComponent>("");
+	ComponentFactory::Register<DefaultGuiAppComponent>(a"");
 #endif
 	
 	

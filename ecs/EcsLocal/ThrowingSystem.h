@@ -10,10 +10,11 @@ class ThrowingComponent :
 public:
 	RTTI_COMP0(ThrowingComponent)
 	COPY_PANIC(ThrowingComponent)
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis & ball_object)
 	
 	
-	
+	void Initialize() override;
+	void Uninitialize() override;
 	void SetEnabled(bool enable) override;
 	void Destroy() override;
 	
@@ -23,6 +24,8 @@ public:
 	float scale = 0.25f;
 };
 
+using ThrowingComponentRef = Ref<ThrowingComponent>;
+
 
 // ThrowingInteractionSystem
 // This ToolSystem manages the Throwing tool which allows you to throw baseballs in 3D scene
@@ -30,6 +33,7 @@ class ThrowingInteractionSystemBase :
 	public ToolSystemBaseT<ThrowingInteractionSystemBase, ThrowingComponent>,
 	public InteractionListener
 {
+	Array<ThrowingComponentRef> comps;
 	
 public:
 	using ToolSys = ToolSystemBaseT<ThrowingInteractionSystemBase, ThrowingComponent>;
@@ -38,9 +42,11 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
 	
 	using Parent = Engine;
-	static constexpr float ball_holding_distance = 0.075f;
+	float ball_holding_distance;
 	static constexpr const char* POOL_NAME = "throwing";
 	
+	void Attach(ThrowingComponentRef c);
+	void Detach(ThrowingComponentRef c);
 	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
 	
@@ -49,11 +55,18 @@ protected:
 	bool Initialize() override;
 	void Uninitialize() override;
 	void Update(double dt) override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	void OnControllerUpdated(const CtrlEvent& e) override;
+	void OnControllerReleased(const CtrlEvent& e) override;
 	
 	// IInteractionModeSystem
 	String GetInstructions() const override;
 	String GetDisplayName() const override;
 	EntityRef CreateToolSelector() const override;
+	void Register() override;
+	void Unregister() override;
+	void Activate(EntityRef entity) override;
+	void Deactivate(EntityRef entity) override;
 	
 };
 

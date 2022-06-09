@@ -58,6 +58,8 @@ struct ControllerSource : RTTIBase {
 	virtual ~ControllerSource() {}
 	
 	//virtual bool GetLocation(float* matrix4x4) const {return false;}
+	virtual void GetVelocity(float* v3) const = 0;
+	virtual void GetAngularVelocity(float* v3) const = 0;
 	
 };
 

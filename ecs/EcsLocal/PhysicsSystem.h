@@ -16,6 +16,9 @@ class PhysicsSystem : public System<PhysicsSystem>
 	bool debug_log = false;
 	
 	
+	float area_length = 100.0f;
+	bool remove_outside_area = false;
+	
 	
 	void TestPlayerLookFn(PhysicsBody& b, Point mouse_diff);
 	void TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step);
@@ -49,23 +52,29 @@ public:
 		TESTFN_CIRCLE,
 	};
 	
-	int test_fn = 0;
+	int test_fn;
 	Ref<Transform> trans;
 	Ref<PlayerBodyComponent> player;
+	bool is_bound = false;
 	
 public:
 	RTTI_COMP0(PhysicsBody)
 	COMP_DEF_VISIT_(vis & trans & player)
 	
 	void Initialize() override;
+	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
 	
     void operator=(const PhysicsBody& r) {
         
     }
     
+	bool BindDefault();
+	void UnbindDefault();
 	
 };
+
+using PhysicsBodyRef = Ref<PhysicsBody>;
 
 
 

@@ -257,6 +257,13 @@ bool IsPositiveDefinite(const mat3& m);
 
 vec2 Intersect(const vec2& a, const vec2& b, const vec2& c, const vec2& d);
 
+
+vec3 GetVelocityNearSourceLocation(
+	    const vec3& grasp_position,
+	    const vec3& grasp_velocity,
+	    const vec3& angular_velocity,
+	    const vec3& position_near_source_location);
+
 NAMESPACE_TOPSIDE_END
 
 

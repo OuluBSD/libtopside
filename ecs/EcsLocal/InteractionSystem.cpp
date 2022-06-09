@@ -25,6 +25,14 @@ void InteractionListener::Uninitialize(Engine& e, Ref<InteractionListener, RefPa
 	iasys->RemoveListener(l);
 }
 
+bool InteractionListener::IsEnabled() const {
+	ComponentBase* cb = CastPtr<ComponentBase>(this);
+	if(cb)
+		return cb->GetEntity()->IsEnabled();
+	
+	return true;
+}
+
 
 
 
@@ -105,21 +113,24 @@ void InteractionSystem::ReleaseEventHandlers() {
 
 void InteractionSystem::HandleSourceDetected(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerDetected(e);
+        if (listener->IsEnabled())
+			listener->OnControllerDetected(e);
     }
 }
 
 
 void InteractionSystem::HandleSourceLost(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerLost(e);
+        if (listener->IsEnabled())
+			listener->OnControllerLost(e);
     }
 }
 
 
 void InteractionSystem::HandleSourcePressed(const InteractionManager&, const CtrlEvent& e) {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerPressed(e);
+        if (listener->IsEnabled())
+			listener->OnControllerPressed(e);
     }
 }
 
@@ -127,7 +138,8 @@ void InteractionSystem::HandleSourcePressed(const InteractionManager&, const Ctr
 void InteractionSystem::HandleSourceUpdated(const InteractionManager&, const CtrlEvent& e)
 {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerUpdated(e);
+        if (listener->IsEnabled())
+			listener->OnControllerUpdated(e);
     }
 }
 
@@ -135,7 +147,8 @@ void InteractionSystem::HandleSourceUpdated(const InteractionManager&, const Ctr
 void InteractionSystem::HandleSourceReleased(const InteractionManager&, const CtrlEvent& e)
 {
     for (auto& listener : interaction_listeners) {
-        listener->OnControllerReleased(e);
+        if (listener->IsEnabled())
+			listener->OnControllerReleased(e);
     }
 }
 
@@ -152,6 +165,14 @@ void InteractionSystem::HandleSourceReleased(const InteractionManager&, const Ct
 	
 }*/
 
+void FakeControllerSource::GetVelocity(float* v3) const {
+	COPY3(v3, mgr->hand_velocity);
+}
+
+void FakeControllerSource::GetAngularVelocity(float* v3) const {
+	COPY3(v3, mgr->hand_angular_velocity);
+}
+
 
 
 
@@ -166,11 +187,17 @@ FakeSpatialInteractionManager::FakeSpatialInteractionManager() {
 	ctrl.mgr = this;
 	ctrl_state.source = &ctrl;
 	
+	for(int i = 0; i < 3; i++) av[i].Resize(30);
 	
 }
 
 bool FakeSpatialInteractionManager::Initialize(InteractionSystem& sys) {
 	this->sys = &sys;
+	
+	hand_velocity = vec3(0, 0.1, 0.1);
+	hand_angular_velocity = vec3(0.1, 0.1, 0);
+	
+	prev.SetAll(false);
 	
 	return true;
 }
@@ -212,7 +239,6 @@ void FakeSpatialInteractionManager::UpdateState() {
 	ASSERT(state);
 	
 	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
-	FboKbd::KeyVec& prev = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED_PREVIOUS);
 	
 	if (state->GetBool(MOUSE_LEFTDOWN)) {
 		Point& drag = state->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
@@ -283,6 +309,8 @@ void FakeSpatialInteractionManager::UpdateState() {
 		
 	}
 	
+	prev = data;
+	
 }
 
 void FakeSpatialInteractionManager::Pressed(ControllerProperties::Button b) {
@@ -291,7 +319,7 @@ void FakeSpatialInteractionManager::Pressed(ControllerProperties::Button b) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_PRESSED;
-	ev.n = (int)b;
+	ev.value = (int)b;
 	
 	WhenSourcePressed(*this, ev);
 }
@@ -302,7 +330,7 @@ void FakeSpatialInteractionManager::Released(ControllerProperties::Button b) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_RELEASED;
-	ev.n = (int)b;
+	ev.value = (int)b;
 	
 	WhenSourceReleased(*this, ev);
 }
@@ -321,16 +349,32 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = mouse_diff; // extra
 	
+	double prev_yaw = yaw;
+	double prev_pitch = pitch;
+	
 	double rot_speed = 0.05 / (2*M_PI);
-	yaw += mouse_diff.x * rot_speed;
-	pitch += mouse_diff.y * rot_speed;
+	double yaw_change = mouse_diff.x * rot_speed;
+	double pitch_change = mouse_diff.y * rot_speed;
+	yaw += yaw_change;
+	pitch += pitch_change;
+	
+	vec3 prev_head_direction;
+	for(int i = 0; i < 3; i++) prev_head_direction[i] = av[i].GetMean();
 	
 	head_direction = vec3(
 		 sin(pitch) * sin(yaw),
 		 cos(pitch),
 		-sin(pitch) * cos(yaw));
 	
+	for(int i = 0; i < 3; i++) av[i].Add(head_direction[i]);
+	
 	COPY3(ev.direction, head_direction);
+	
+	
+	vec3 head_direction_diff = head_direction - prev_head_direction;
+	float multiplier = 5;
+	hand_velocity = head_direction_diff * multiplier;
+	hand_angular_velocity = vec3(yaw, pitch, 0);
 	
 	if (sys->debug_log) {
 		LOG("FakeSpatialInteractionManager::Look: dx: " << mouse_diff.x << ", dy: " << mouse_diff.y <<

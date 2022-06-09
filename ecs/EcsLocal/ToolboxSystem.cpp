@@ -49,6 +49,65 @@ bool ToolComponent::Arg(String key, Object value) {
 	return true;
 }
 
+void ToolComponent::SwitchOff() {
+	if (active_tool) {
+		active_tool->SetEnabled(false);
+		active_tool.Clear();
+	}
+}
+
+void ToolComponent::SwitchNext() {
+	if (tools.IsEmpty())
+		return;
+	
+	if (tools.GetCount() == 1 && tools[0] == active_tool)
+		return;
+	
+	int idx = -1;
+	if (active_tool.IsEmpty())
+		idx = 0;
+	else {
+		int i = 0;
+		for (ComponentBaseRef& cb : tools) {
+			if (cb == active_tool) {
+				idx = i;
+				break;
+			}
+			i++;
+		}
+		SwitchOff();
+	}
+	
+	idx = (idx + 1) % tools.GetCount();
+	
+	active_tool = tools[idx];
+	active_tool->SetEnabled(true);
+}
+
+void ToolComponent::AddTool(ComponentBaseRef cb) {
+	ArrayFindAdd(tools, cb);
+	
+	if (!active_tool) {
+		active_tool = cb;
+		active_tool->SetEnabled(true);
+	}
+	else
+		cb->SetEnabled(false);
+}
+
+void ToolComponent::RemoveTool(ComponentBaseRef cb) {
+	if (active_tool == cb) {
+		if (tools.GetCount() > 1)
+			SwitchNext();
+		else
+			SwitchOff();
+	}
+	
+	ArrayRemoveKey(tools, cb);
+	
+}
+
+
 
 
 
@@ -56,6 +115,9 @@ bool ToolComponent::Arg(String key, Object value) {
 
 
 bool ToolboxSystemBase::Initialize() {
+	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
+		return false;
+	
 	//for(int i = 0; i < ctrls.GetCount(); i++)
 	//	ctrls[i].hand = (ControllerHand)i;
 	
@@ -63,10 +125,18 @@ bool ToolboxSystemBase::Initialize() {
 }
 
 void ToolboxSystemBase::Uninitialize() {
+	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
+	
 	//for (auto& c : ctrls)
 	//	c.Clear();
 	//instruction_text.Clear();
 	//entities.Clear();
+}
+
+bool ToolboxSystemBase::Arg(String key, Object value) {
+	if (key == "test.tool.changer")
+		test_tool_changer = (String)value == "true";
+	return true;
 }
 
 void ToolboxSystemBase::Attach(ToolComponentRef tool) {
@@ -82,6 +152,10 @@ void ToolboxSystemBase::AddToolSystem(ToolSystemBaseRef system) {
 	selector_objects.GetAdd(system->GetType()) = system->CreateToolSelector();
 	selectors.GetAdd(system->GetType()) = system;
 	
+	/*if (active_tool_idx < 0) {
+		active_tool_idx = selector_objects.GetCount() - 1;
+		
+	}*/
 	/*for (auto& context : ctrls) {
 		SwitchToolType(context.ctrl, system->GetType());
 	}*/
@@ -127,6 +201,15 @@ void ToolboxSystemBase::Start() {
 
 void ToolboxSystemBase::Stop() {
 	
+}
+
+void ToolboxSystemBase::OnControllerPressed(const CtrlEvent& e) {
+	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::START) {
+		if (test_tool_changer) {
+			for (ToolComponentRef& tool : tools)
+				tool->SwitchNext();
+		}
+	}
 }
 
 void ToolboxSystemBase::Update(double dt) {

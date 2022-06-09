@@ -8,8 +8,16 @@ Entity::Entity() {
 }
 
 Entity::~Entity() {
-	Destroy();
+	UnrefDeep();
+	UninitializeComponents();
+	ClearComponents();
+	//Destroy();
 	DBG_DESTRUCT
+}
+
+void Entity::UnrefDeep() {
+	RefClearVisitor vis;
+	vis.Visit(*this);
 }
 
 EntityId Entity::GetNextId() {
@@ -114,6 +122,10 @@ void Entity::Destroy() {
 	for (auto& component : comps.GetValues()) {
 		component->Destroy();
 	}
+	
+	if (auto es = GetEngine().TryGet<EntityStore>())
+		es->AddToDestroyList(this);
+	
 }
 
 /*void Entity::SetEnabled(bool enable) {

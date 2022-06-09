@@ -54,11 +54,11 @@ EntityRef PaintingInteractionSystemBase::CreateToolSelector() const {
 	return selector;
 }
 
-void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
-	ArrayFindAdd(comps, c);
+void PaintingInteractionSystemBase::Attach(PaintComponentRef paint) {
+	ArrayFindAdd(comps, paint);
 	
 	EntityStoreRef es = GetEngine().Get<EntityStore>();
-	EntityRef entity = c->GetEntity();
+	EntityRef entity = paint->GetEntity();
 	const auto& selected_color = colors[0];
 	
 	#if 0
@@ -68,7 +68,7 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
 			: es->GetRoot()->Create<DummyToolModel>();
 	paint_brush->Get<ModelComponent>()->color = selected_color;
 	#else
-	EntityRef paint_brush = c->GetEntity();
+	EntityRef paint_brush = paint->GetEntity();
 	#endif
 	
 	//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
@@ -76,7 +76,7 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
 	auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
 	touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
 	touchpad_indicator->Get<ModelComponent>()->color = Colors::Gray;
-	PaintComponentRef paint = entity->Get<PaintComponent>();
+	//PaintComponentRef paint = entity->Get<PaintComponent>();
 	paint->selected_color = selected_color;
 	paint->paint_brush = paint_brush;
 	paint->touchpad_indicator = touchpad_indicator;
@@ -91,7 +91,7 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef c) {
 	paint->beam = es->GetRoot()->Create<StaticCube>();
 	paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
 	paint->beam->Get<ModelComponent>()->color = Colors::Aquamarine;
-	paint->SetEnabled(false);
+	//paint->SetEnabled(false);
 	
 }
 
@@ -99,18 +99,15 @@ void PaintingInteractionSystemBase::Detach(PaintComponentRef c) {
 	ArrayRemoveKey(comps, c);
 }
 
-#if 0
-void PaintingInteractionSystemBase::Register(const LinkedList<EntityRef>& entities) {
-	ToolSys::Register(entities);
-	auto es = GetEngine().Get<EntityStore>();
+void PaintingInteractionSystemBase::Register() {
 	
-	for (auto& entity : m_entities) {
-	}
+}
+
+void PaintingInteractionSystemBase::Unregister() {
 	
 }
 
 void PaintingInteractionSystemBase::Activate(EntityRef entity) {
-	ToolSys::Activate(entity);
 	
 	// Stop rendering the controller
 	entity->Get<ModelComponent>()->SetEnabled(false);
@@ -129,9 +126,7 @@ void PaintingInteractionSystemBase::Deactivate(EntityRef entity) {
 		MemSwap(persistent_strokes.Add(), paint->strokes);
 	}
 	
-	ToolSys::Deactivate(entity);
 }
-#endif
 
 void PaintingInteractionSystemBase::ClearStrokes() {
 	TODO
@@ -180,6 +175,8 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 	
 	//if (EntityRef entity = TryGetEntityFromSource(source)) {
 	for (PaintComponentRef& paint : comps) {
+		if (!paint->IsEnabled()) continue;
+		
 		EntityRef entity = paint->GetEntity();
 		
 		bool new_stroke_started = false;
@@ -326,6 +323,8 @@ void PaintingInteractionSystemBase::Update(double dt) {
 			continue;*/
 	
 	for (PaintComponentRef& paint : comps) {
+		if (!paint->IsEnabled()) continue;
+		
 		EntityRef entity = paint->GetEntity();
 		
 		ToolComponentRef tool = paint->GetEntity()->Find<ToolComponent>();
@@ -443,8 +442,8 @@ vec4 PaintingInteractionSystemBase::SelectColor(double x, double y) {
 
 void PaintComponent::Initialize() {
 	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
-	if (tool && !tool->active_tool)
-		tool->active_tool = AsRefT();
+	if (tool)
+		tool->AddTool(AsRefT<ComponentBase>());
 	
 	Ref<PaintingInteractionSystemBase> sys = GetEngine().TryGet<PaintingInteractionSystemBase>();
 	if (sys)
@@ -453,8 +452,8 @@ void PaintComponent::Initialize() {
 
 void PaintComponent::Uninitialize() {
 	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
-	if (tool && (&*tool->active_tool == static_cast<ComponentBase*>(this)))
-		tool->active_tool.Clear();
+	if (tool)
+		tool->RemoveTool(AsRefT<ComponentBase>());
 	
 	Ref<PaintingInteractionSystemBase> sys = GetEngine().TryGet<PaintingInteractionSystemBase>();
 	if (sys)

@@ -1431,12 +1431,12 @@ vec3 down(const mat4& transform)
     return { -transform[1][0], -transform[1][1], -transform[1][2] };
 }
 
-vec3 backward(const mat4& transform)
+vec3 forward(const mat4& transform)
 {
     return { +transform[2][0], +transform[2][1], +transform[2][2] };
 }
 
-vec3 forward(const mat4& transform)
+vec3 backward(const mat4& transform)
 {
     return { -transform[2][0], -transform[2][1], -transform[2][2] };
 }
@@ -1467,6 +1467,26 @@ mat4 RemoveScale(const mat4& transform)
     rotation.Normalize();
     return translate(translation) * ToMat4(rotation);
 }
+}
+
+
+
+
+
+
+vec3 GetVelocityNearSourceLocation(
+	    const vec3& grasp_position,
+	    const vec3& grasp_velocity,
+	    const vec3& angular_velocity,
+	    const vec3& position_near_source_location)
+{
+    // Compute the tangential velocity at position_near_source_location due to angular velocity.
+    vec3 position_near_source_location_offset = position_near_source_location - grasp_position;
+    vec3 angular_tangential_velocity = cross(angular_velocity, position_near_source_location_offset);
+
+    // Combine the tangential velocity with the velocity to get the combined velocity.
+    vec3 ret = grasp_velocity + angular_tangential_velocity;
+    return ret;
 }
 
 NAMESPACE_TOPSIDE_END

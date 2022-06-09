@@ -20,8 +20,16 @@ void EntityStore::Uninitialize() {
 }
 
 void EntityStore::Update(double dt) {
-	GetRoot()->PruneFromContainer();
+	// Slow: GetRoot()->PruneFromContainer();
 	
+	if (this->destroy_list.GetCount()) {
+		Vector<Entity*> destroy_list;
+		Swap(this->destroy_list, destroy_list);
+		for (Entity* e : destroy_list) {
+			if (e)
+				e->GetPool().RemoveEntity(e);
+		}
+	}
 	
 	/*if (refresh_poolcomps[WRITE]) {
 		lock.Enter();
@@ -33,6 +41,10 @@ void EntityStore::Update(double dt) {
 			comp->Update(dt);
 	}*/
 	
+}
+
+void EntityStore::AddToDestroyList(Entity* e) {
+	VectorFindAdd(destroy_list, e);
 }
 
 EntityRef EntityStore::FindEntity(String path) {

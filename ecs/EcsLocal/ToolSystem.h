@@ -18,10 +18,10 @@ public:
 	
 	virtual EntityRef CreateToolSelector() const = 0;
 	
-	/*virtual void Register(const LinkedList<EntityRef>& entities) = 0;
+	virtual void Register() = 0;
 	virtual void Unregister() = 0;
 	virtual void Activate(EntityRef entity) = 0;
-	virtual void Deactivate(EntityRef entity) = 0;*/
+	virtual void Deactivate(EntityRef entity) = 0;
 };
 
 class ToolSelectorKey :
@@ -82,31 +82,6 @@ protected:
 		m.Get<ToolboxSystemBase>()->RemoveToolSystem(AsRef<ToolSystemBase>());
 	}
 	
-	// ToolSystemBase
-	/*void Register(const LinkedList<EntityRef>& entities) override {
-		m_entities <<= entities;
-		
-		for (auto& entity : m_entities) {
-			ASSERT(entity);
-			entity->Add<ToolComponent>()->SetEnabled(false);
-		}
-	}
-	
-	void Unregister() override {
-		for (auto& entity : m_entities) {
-			entity->Remove<ToolComponent>();
-		}
-		
-		m_entities.Clear();
-	}*/
-	
-	/*void Activate(EntityRef entity) override {
-		entity->Get<ToolComponent>()->SetEnabled(true);
-	}
-	
-	void Deactivate(EntityRef entity) override {
-		entity->Get<ToolComponent>()->SetEnabled(false);
-	}*/
 	
 	// Internal helpers
 	/*Vector<RTuple<EntityRef, ToolComponentRef>> GetEnabledEntities() const {

@@ -22,11 +22,17 @@ public:
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
 	
+	void SwitchNext();
+	void SwitchOff();
+	void AddTool(ComponentBaseRef cb);
+	void RemoveTool(ComponentBaseRef cb);
+	
 	String title;
 	String description;
 	TypeId tool_type { AsVoidTypeId() };
 	
 	ComponentBaseRef active_tool;
+	Array<ComponentBaseRef> tools;
 	PlayerHandComponentRef active_hand;
 	
 };
@@ -36,7 +42,8 @@ using ToolComponentRef = Ref<ToolComponent>;
 
 
 class ToolboxSystemBase :
-	public System<ToolboxSystemBase>
+	public System<ToolboxSystemBase>,
+	public InteractionListener
 {
 	//LinkedList<EntityRef> entities;
 	
@@ -44,7 +51,7 @@ public:
 	//SYS_DEF_VISIT_(vis & instruction_text; vis | ctrls; vis && entities;)
 	SYS_DEF_VISIT_(vis && tools && selectors && selector_objects)
 	
-	RTTI_DECL1(ToolboxSystemBase, System<ToolboxSystemBase>)
+	RTTI_DECL2(ToolboxSystemBase, System<ToolboxSystemBase>, InteractionListener)
 	ECS_SYS_CTOR(ToolboxSystemBase);
 	
 	using Parent = Engine;
@@ -65,13 +72,16 @@ protected:
 	void Stop() override;
 	bool Initialize() override;
 	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
 	
 private:
 	Array<ToolComponentRef> tools;
 	TypeMap<ToolSystemBaseRef> selectors;
 	TypeMap<EntityRef> selector_objects;
 	
+	bool test_tool_changer{ false };
 	bool show_toolbox{ false };
+	int active_tool_idx = -1;
 	
 	/*enum ControllerHand {
 		Left, Right, Count
@@ -92,6 +102,7 @@ private:
 	};*/
 	
 	void SwitchToolType(EntityRef entity, const TypeId& new_type);
+	void OnControllerPressed(const CtrlEvent& e) override;
 	
 	/*
 	EntityRef instruction_text;

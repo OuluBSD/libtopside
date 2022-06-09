@@ -209,6 +209,19 @@ PoolRef Pool::GetAddPool(String name) {
 	return AddPool(name);
 }
 
+void Pool::RemoveEntity(Entity* e) {
+	int i = 0;
+	auto it = objects.begin();
+	auto end = objects.end();
+	while (it != end) {
+		if (e == &**it) {
+			objects.Remove(it);
+			break;
+		}
+		++i;
+		++it;
+	}
+}
 
 
 

@@ -49,6 +49,7 @@ public:
 	String GetTreeString(int indent=0);
 	void SetName(String s) {name = s;}
 	void OnChange();
+	void UnrefDeep();
 	ComponentBaseRef GetTypeCls(TypeCls comp_type);
 	ComponentBaseRef GetAddTypeCls(TypeCls cls);
 	ComponentBaseRef FindTypeCls(TypeCls comp_type);

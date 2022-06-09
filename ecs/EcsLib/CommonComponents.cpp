@@ -4,6 +4,13 @@ NAMESPACE_ECS_BEGIN
 
 
 void Transform::Initialize() {
+	position = zero<vec3>();
+	size = one<vec3>();
+	orientation = identity<quat>();
+	direction = vec3(0,0,1); // "look at" alternative to quaternion
+	up = vec3(0,1,0); // "look at" alternative to quaternion
+	use_lookat = false; // use direction & up instead of orientation
+	
 	Ref<WorldLogicSystem> sys = GetEngine().TryGet<WorldLogicSystem>();
 	if (sys)
 		sys->Attach(this);
@@ -33,6 +40,17 @@ void Transform::operator=(const Transform& t) {
 
 mat4 Transform::GetMatrix() const {
 	return translate(position) * ToMat4(orientation) * scale(size);
+}
+
+vec3 Transform::GetForwardDirection() const {
+	if (!use_lookat) {
+		vec4 fwd(0,0,1,1);
+		vec4 dir = ToMat4(orientation) * fwd;
+		return dir.Splice();
+	}
+	else {
+		return direction;
+	}
 }
 
 bool Transform::Arg(String key, Object value) {

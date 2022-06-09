@@ -132,6 +132,8 @@ public:
 		return comps.Find<T>();
 	}*/
 	
+	void RemoveEntity(Entity* e);
+	
 	template <class T>
 	EntityRef FindEntity(T* component) {
 		if (!component)

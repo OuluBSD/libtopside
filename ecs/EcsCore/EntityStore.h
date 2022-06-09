@@ -6,6 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 
 class EntityStore : public System<EntityStore> {
+    Vector<Entity*>					destroy_list;
 	PoolVec							root;
 	
 	//LinkedList<ConnectorBase*>		refresh_poolcomps[2];
@@ -26,6 +27,7 @@ public:
 	PoolVec& GetRootVec()	{return root;}
 	
 	EntityRef FindEntity(String path);
+	void AddToDestroyList(Entity* e);
 	
 	//int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
 	

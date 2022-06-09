@@ -378,13 +378,13 @@ public:
 		Item* it = 0;
 		mutable R ref;
 		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.template AsRefT<T>();}
-		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
 		Iterator(Iterator&& it) {MemSwap(*this, it);}
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
+		void ClearRef() const {ref.Clear();}
 		Item* GetItem() const {return it;}
 		T*   operator->() {ChkRef(); return ref.Get();}
 		R&   operator*() const {ChkRef(); return ref;}
@@ -473,6 +473,7 @@ public:
 			}
 		}
 		--count;
+		iter.ClearRef(); // clear ref to avoid errors
 		GetRecyclerPool().Return(item);
 		return in_place;
 	}
@@ -606,13 +607,13 @@ public:
 		Item* it = 0;
 		mutable R ref;
 		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = it->value->AsRefT();}
-		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
 		Iterator(Iterator&& i) {it = i.it; i.it = 0; ref = i.ref; i.ref.Clear();}
 		Iterator(const Iterator& i) : it(i.it) {}
-		void  Clear() {ref.Clear(); it = 0;}
+		void Clear() {ref.Clear(); it = 0;}
+		void ClearRef() const {ref.Clear();}
 		Item* GetItem() const {return it;}
 		T*   operator->() {ChkRef(); return ref.Get();}
 		R&   operator*() const {ChkRef(); return ref;}
@@ -679,6 +680,8 @@ public:
 		}
 		--count;
 		item->value.Clear();
+		
+		iter.ClearRef(); // clear ref to avoid errors
 		GetRecyclerPool().Return(item);
 		return item;
 	}

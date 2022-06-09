@@ -162,6 +162,7 @@ public:
 	
 	Serial::EntitySystem& GetEntitySystem() {ASSERT(sys); return *sys;}
 	
+	
 protected:
 	friend class Serial::EntitySystem;
 	
@@ -182,6 +183,7 @@ private:
     void Remove(TypeCls typeId);
     
     Vector<ComponentBaseUpdater*> update_list;
+    
     
 private:
 	typedef SystemBase* (*NewSystemFn)(Ecs::Engine&);
