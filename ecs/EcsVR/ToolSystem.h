@@ -1,6 +1,8 @@
 #ifndef _EcsVR_ToolSystem_h_
 #define _EcsVR_ToolSystem_h_
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -10,7 +12,7 @@ NAMESPACE_ECS_BEGIN
 // that actually have the associated ToolComponent attached and enabled
 template<typename T, typename ToolComponent>
 class ToolSystemHoloT :
-	public ToolSystemBaseT<T>,
+	public ToolSystemBaseT<T, ToolComponent>,
 	public SpatialInteractionListener
 {
 	
@@ -73,4 +75,5 @@ protected:
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

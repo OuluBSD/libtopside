@@ -36,6 +36,7 @@ public:
 	using IPredictionUpdateListener = IPredictionUpdateListenerT<Holo>;
 	using PredictionUpdateReason = typename IPredictionUpdateListenerT<Holo>::PredictionUpdateReason;*/
 	
+	RTTI_DECL2(HolographicScene, Ecs::System<HolographicScene>, HolographicScopeBinder);
 	ECS_SYS_CTOR(HolographicScene)
 	
     //HolographicScene(Ecs::Engine& core, HolographicSpace holospace);

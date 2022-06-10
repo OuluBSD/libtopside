@@ -56,12 +56,11 @@ public:
 
 
 class PaintingInteractionSystemBase :
-	public ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>,
-	public InteractionListener
+	public ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>
 {
 public:
 	using ToolSys = ToolSystemBaseT<PaintingInteractionSystemBase, PaintComponent>;
-	RTTI_DECL2(PaintingInteractionSystemBase, ToolSys, InteractionListener)
+	RTTI_DECL1(PaintingInteractionSystemBase, ToolSys)
 	ECS_SYS_CTOR(PaintingInteractionSystemBase);
 	
 	void Visit(RuntimeVisitor& vis) override {

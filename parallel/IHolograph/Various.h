@@ -207,6 +207,10 @@ struct PerceptionTimestamp {
 	
 };
 
+struct SpatialSourceState {
+	
+};
+
 struct SpatialInteractionSourceProperties {
 	
 	

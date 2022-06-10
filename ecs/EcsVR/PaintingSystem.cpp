@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 void PaintingInteractionSystemHolo::Update(double dt) {
 	// probably not PaintingInteractionSystemBase::Update(dt);
 	TODO
-	
+	#if 0
 	for (auto& enabled_entity : GetEnabledEntities()) {
 		auto entity		= enabled_entity.Get<EntityRef>();
 		auto paint		= enabled_entity.Get<PaintComponentRef>();
@@ -91,11 +91,14 @@ void PaintingInteractionSystemHolo::Update(double dt) {
 			}
 		}
 	}
+	#endif
 }
 
-void PaintingInteractionSystemHolo::Register(const LinkedList<EntityRef>& entities) {
-	PaintingInteractionSystemBase::Register(entities);
+void PaintingInteractionSystemHolo::Register() {
+	PaintingInteractionSystemBase::Register();
 	
+	TODO
+	#if 0
 	TODO // add MotionControllerComponent to new entities (see PaintBrush)
 	// note: duplicate PaintingInteractionSystemBase::Register
 	
@@ -129,17 +132,25 @@ void PaintingInteractionSystemHolo::Register(const LinkedList<EntityRef>& entiti
 	}
 	
 	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
-	
+	#endif
 }
 
-void PaintingInteractionSystemBase::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+void PaintingInteractionSystemHolo::OnControllerPressed(const CtrlEvent& e) {
+	TODO
+	#if 0
 	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
 		ClearStrokes();
 	}
+	#endif
 }
 
-void PaintingInteractionSystemBase::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
+/*void PaintingInteractionSystemHolo::OnControllerReleased(const CtrlEvent& e) {
 	
 }
+
+void PaintingInteractionSystemHolo::OnControllerUpdated(const CtrlEvent& e) {
+	
+}*/
+
 
 NAMESPACE_ECS_END

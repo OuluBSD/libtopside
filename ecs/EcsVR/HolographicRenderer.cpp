@@ -74,12 +74,15 @@ bool HolographicRenderingSystem::Initialize()
 	if (!HolographicScopeBinder::Initialize())
 		return false;
 	
+	TODO
+	#if 0
 	s->dev_res.RegisterDeviceNotify(this);
     s->pbr_res.SetLight(vec4{ 0.0f, 0.707f, -0.707f }, Colors::White);
     
     Engine& e = GetEngine();
     
     pbr_model_cache = e.Get<PbrModelCache>();
+    #endif
     
 	return true;
 }
@@ -201,6 +204,8 @@ bool HolographicRenderingSystem::RenderAtCameraPose(
     const HolographicCameraRenderingParameters& rend_params,
     const HolographicCameraPose& cam_pose)
 {
+	TODO
+	#if 0
 	/*
     // Get the device context.
     const auto context = dev_res->GetD3DDeviceContext();
@@ -301,6 +306,7 @@ bool HolographicRenderingSystem::RenderAtCameraPose(
     }
 
     return true;
+    #endif
 }
 
 void HolographicRenderingSystem::BindEventHandlers(HolographicSpace& holospace) {

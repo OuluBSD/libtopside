@@ -44,9 +44,11 @@ HolographicScope& GetGlobalHolographicScope(int idx) {
 
 template <class Gfx>
 bool HolographicFboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
+	TODO
+	#if 0
 	if (!FboAtomT<Gfx>::Initialize(ws))
 		return false;
-	
+	#endif
 	
 	
 	
@@ -55,17 +57,21 @@ bool HolographicFboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 
 template <class Gfx>
 bool HolographicFboAtomT<Gfx>::PostInitialize() {
+	TODO
+	#if 0
 	if (!FboAtomT<Gfx>::PostInitialize())
 		return false;
-	
+	#endif
 	
 	return true;
 }
 
 template <class Gfx>
 void HolographicFboAtomT<Gfx>::Uninitialize() {
+	TODO
+	#if 0
 	FboAtomT<Gfx>::Uninitialize();
-		
+	#endif
 	
 }
 

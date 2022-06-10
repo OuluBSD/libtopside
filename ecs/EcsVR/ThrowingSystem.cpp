@@ -27,8 +27,10 @@ NAMESPACE_ECS_BEGIN
 		}
 	}
 }*/
-#if 0
-void ThrowingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+
+void ThrowingInteractionSystemHolo::OnControllerPressed(const CtrlEvent& e) {
+	TODO
+	#if 0
 	if (args.PressKind() == SpatialInteractionPressKind::Select) {
 		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();
@@ -38,9 +40,12 @@ void ThrowingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 			throwing->ball_object = std::move(ball);
 		}
 	}
+	#endif
 }
 
-void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceEventArgs& args) {
+void ThrowingInteractionSystemHolo::OnControllerReleased(const CtrlEvent& e) {
+	TODO
+	#if 0
 	if (args.PressKind() == SpatialInteractionPressKind::Select) {
 		if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 			auto throwing = enabled_entity->Get<ToolComponentRef>()->AsRef<ThrowingComponent>();
@@ -77,8 +82,8 @@ void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 			}
 		}
 	}
+	#endif
 }
-#endif
 
 
 NAMESPACE_ECS_END

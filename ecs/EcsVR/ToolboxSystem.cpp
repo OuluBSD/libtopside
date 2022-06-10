@@ -15,9 +15,11 @@ NAMESPACE_ECS_BEGIN
 
 
 
-void ToolboxSystem::Start() {
+void ToolboxSystemHolo::Start() {
 	ToolboxSystemBase::Start();
 	
+	TODO
+	#if 0
 	for (size_t i = 0; i < ctrls.GetCount(); ++i) {
 		const ControllerHand hand = static_cast<ControllerHand>(i);
 		TODO // add MotionControllerComponent to ctrl
@@ -27,14 +29,17 @@ void ToolboxSystem::Start() {
 	}
 	
 	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
+	#endif
 }
 
-void ToolboxSystem::Stop() {
+void ToolboxSystemHolo::Stop() {
 	ToolboxSystemBase::Stop();
 	TODO //GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
 }
 
-void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+void ToolboxSystemHolo::OnControllerPressed(const CtrlEvent& e) {
+	ToolboxSystemBase::OnControllerPressed(e);
+	
 	TODO
 #if 0
 	if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
@@ -96,11 +101,13 @@ void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& arg
 #endif
 }
 
-SpatialInteractionSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
+/*SpatialInteractionSourceHandedness ToolboxSystemHolo::ControllerHandToHandedness(ControllerHand hand) {
 	return hand == Left ? SpatialInteractionSourceHandedness::Left : SpatialInteractionSourceHandedness::Right;
-}
+}*/
 
-EntityRef ToolboxSystemBase::FindController(const SpatialInteractionSource& source) {
+EntityRef ToolboxSystemHolo::FindController(const SpatialInteractionSource& source) {
+	TODO
+	#if 0
 	for (auto& context : ctrls) {
 		TODO /*if (context.ctrl->Get<MotionControllerComponent>()->IsSource(source)) {
 			return context.ctrl;
@@ -108,6 +115,7 @@ EntityRef ToolboxSystemBase::FindController(const SpatialInteractionSource& sour
 	}
 	
 	return EntityRef();
+	#endif
 }
 
 

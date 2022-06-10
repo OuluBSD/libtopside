@@ -18,7 +18,7 @@ struct MotionControllerComponent : Ecs::Component<MotionControllerComponent>
     bool IsSource(const SpatialInteractionSource& rhs) const;
 
     bool								attach_ctrl_model = false;
-    SpatialInteractionSourceHandedness	req_hand = Unspecified;
+    PlayerHandedness					req_hand = Unspecified;
     const SpatialSource*				source = 0;
     SpatialInteractionSourceLocation*	location = 0;
     
@@ -71,9 +71,9 @@ protected:
         const HolographicFramePrediction& prediction) override;
 
     // ISpatialInteractionListener
-    /*void OnSourceDetected(const SpatialSourceEventArgs& args) override;
-    void OnSourceUpdated(const SpatialSourceEventArgs& args) override;
-    void OnSourceLost(const SpatialSourceEventArgs& args) override;*/
+    /*void OnControllerDetected(const SpatialSourceEventArgs& args) override;
+    void OnControllerUpdated(const SpatialSourceEventArgs& args) override;
+    void OnControllerLost(const SpatialSourceEventArgs& args) override;*/
     
 private:
     void RefreshComponentsForSource(const SpatialInteractionSource& source);

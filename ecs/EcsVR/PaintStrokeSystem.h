@@ -9,10 +9,10 @@ class PaintStrokeSystemHolo :
 	public HolographicScopeBinder
 {
 public:
-	RTTI_DECL2(PaintStrokeSystem, PaintStrokeSystemBase, HolographicScopeBinder)
-	ECS_SYS_CTOR(PaintStrokeSystem);
-	SYS_DEF_VISIT
-	~PaintStrokeSystem() = default;
+	RTTI_DECL2(PaintStrokeSystemHolo, PaintStrokeSystemBase, HolographicScopeBinder)
+	ECS_SYS_CTOR_DERIVED(PaintStrokeSystemHolo, PaintStrokeSystemBase);
+	SYS_DEF_VISIT_DERIVED(PaintStrokeSystemBase)
+	~PaintStrokeSystemHolo() = default;
 	
 protected:
 	bool Initialize() override;

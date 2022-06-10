@@ -46,12 +46,12 @@ struct ControllerRendering {
 	    SpatialSource source);*/
 	
 	// Get the articulation values given a spatial interaction source state.
-	ArticulateValues GetArticulateValues(const Pbr::SpatialSourceState& src_state);
+	ArticulateValues GetArticulateValues(const SpatialSourceState& src_state);
 	
 	// Articulate a controller model given the articulation values.
 	void ArticulateControllerModel(
 	    const ArticulateValues& arti_vals,
-	    Pbr::Model& ctrl_model);
+	    Model& ctrl_model);
 	
 	// Controller model cache keeps a single unique copy of the controller models.
 	struct ControllerModelCache
@@ -66,7 +66,7 @@ struct ControllerRendering {
 	
 	private:
 	    Mutex lock;
-	    ArrayMap<ControllerModelKey, Shared<const Pbr::Model>> ctrl_meshes;
+	    ArrayMap<ControllerModelKey, Shared<const Model>> ctrl_meshes;
 	    
 	    
 	};

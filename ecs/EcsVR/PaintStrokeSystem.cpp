@@ -2,7 +2,7 @@
 
 NAMESPACE_ECS_BEGIN
 
-bool PaintStrokeSystem::Initialize() {
+bool PaintStrokeSystemHolo::Initialize() {
 	if (!PaintStrokeSystemBase::Initialize())
 		return false;
 	

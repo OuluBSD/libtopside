@@ -4,7 +4,9 @@
 NAMESPACE_ECS_BEGIN
 
 
-struct HolographicScopeBinder {
+struct HolographicScopeBinder : RTTIBase {
+	RTTI_DECL0(HolographicScopeBinder)
+	
     HolographicScope* s = 0;
 	
 	

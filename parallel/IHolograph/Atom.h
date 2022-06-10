@@ -27,7 +27,7 @@ struct HolographicScope {
     DeviceResources					dev_res;
 	SpatialInteractionSource		controller[2];
 	
-	Pbr::Resources					pbr_res;
+	//Pbr::Resources					pbr_res;
 	
 };
 

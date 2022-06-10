@@ -9,11 +9,11 @@ struct SpatialInteractionListener : WeakRefScopeEnabler<SpatialInteractionListen
 {
 	RTTI_DECL0(SpatialInteractionListener)
 	
-    virtual void OnSourceDetected(const SpatialSourceEventArgs& args) {};
-    virtual void OnSourceLost(const SpatialSourceEventArgs& args) {};
-    virtual void OnSourcePressed(const SpatialSourceEventArgs& args) {};
-    virtual void OnSourceUpdated(const SpatialSourceEventArgs& args) {};
-    virtual void OnSourceReleased(const SpatialSourceEventArgs& args) {};
+    virtual void OnControllerDetected(const SpatialSourceEventArgs& args) {};
+    virtual void OnControllerLost(const SpatialSourceEventArgs& args) {};
+    virtual void OnControllerPressed(const SpatialSourceEventArgs& args) {};
+    virtual void OnControllerUpdated(const SpatialSourceEventArgs& args) {};
+    virtual void OnControllerReleased(const SpatialSourceEventArgs& args) {};
     
 };
 
@@ -28,6 +28,7 @@ class SpatialInteractionSystem final :
 	public HolographicScopeBinder
 {
 public:
+	RTTI_DECL2(SpatialInteractionSystem, SystemT, HolographicScopeBinder);
 	ECS_SYS_CTOR(SpatialInteractionSystem)
 	
 	/*using ISpatialInteractionListener = ISpatialInteractionListenerT<Holo>;

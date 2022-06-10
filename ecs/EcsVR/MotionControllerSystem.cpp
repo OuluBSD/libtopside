@@ -150,7 +150,7 @@ void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteraction
 }
 
 #if 0
-void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args)
+void MotionControllerSystem::OnControllerUpdated(const CtrlEvent& e)
 {
     if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
     {
@@ -174,7 +174,7 @@ void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEvent
     }
 }
 
-void MotionControllerSystem::OnSourceDetected(const SpatialInteractionSourceEventArgs& args)
+void MotionControllerSystem::OnControllerDetected(const CtrlEvent& e)
 {
     if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
     {
@@ -186,7 +186,7 @@ void MotionControllerSystem::OnSourceDetected(const SpatialInteractionSourceEven
     }
 }
 
-void MotionControllerSystem::OnSourceLost(const SpatialInteractionSourceEventArgs& args)
+void MotionControllerSystem::OnControllerLost(const CtrlEvent& e)
 {
     if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
     {

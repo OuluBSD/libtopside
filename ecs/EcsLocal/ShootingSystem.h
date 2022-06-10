@@ -32,15 +32,14 @@ using ShootingComponentRef = Ref<ShootingComponent>;
 // This ToolSystem manages the Gun tool which allows you to shoot balls in the 3D scene
 
 class ShootingInteractionSystemBase :
-	public ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>,
-	public InteractionListener
+	public ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>
 {
 	Array<ShootingComponentRef> comps;
 	
 public:
 	using ToolSys = ToolSystemBaseT<ShootingInteractionSystemBase, ShootingComponent>;
 	ECS_SYS_CTOR(ShootingInteractionSystemBase);
-	RTTI_DECL2(ShootingInteractionSystemBase, ToolSys, InteractionListener)
+	RTTI_DECL1(ShootingInteractionSystemBase, ToolSys)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSys>(this);}
 	
 	using Parent = Engine;

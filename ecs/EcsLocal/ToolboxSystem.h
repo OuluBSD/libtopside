@@ -101,6 +101,7 @@ private:
 		operator bool() const {return !ctrl.IsEmpty() || !dbg_txt.IsEmpty();}
 	};*/
 	
+protected:
 	void SwitchToolType(EntityRef entity, const TypeId& new_type);
 	void OnControllerPressed(const CtrlEvent& e) override;
 	

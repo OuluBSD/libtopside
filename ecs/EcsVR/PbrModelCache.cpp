@@ -1,4 +1,4 @@
-#endif
+#if 0
 #include "EcsVR.h"
 
 NAMESPACE_ECS_BEGIN

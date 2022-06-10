@@ -23,18 +23,11 @@ class HolographicRenderingSystem :
 	public DeviceNotify
 {
 public:
-	/*using Resources = Pbr::ResourcesT<Holo>;
-	using HolographicSpace = typename Holo::HolographicSpace;
-	using HolographicFramePrediction = typename Holo::HolographicFramePrediction;
-	using HolographicCameraRenderingParameters = typename Holo::HolographicCameraRenderingParameters;
-	using HolographicCameraPose = typename Holo::HolographicCameraPose;
-	using HolographicSpaceCameraAddedEventArgs = typename Holo::HolographicSpaceCameraAddedEventArgs;
-	using HolographicSpaceCameraRemovedEventArgs = typename Holo::HolographicSpaceCameraRemovedEventArgs;
-	using SpatialCoordinateSystem = typename Holo::SpatialCoordinateSystem;
-	using GfxDevResources = typename Holo::GfxDevResources;
-	using GfxCamResources = typename Holo::GfxCamResources;
-	using NativeEventToken = typename Holo::NativeEventToken;
-	using NativeShaderResourceViewRef = typename Holo::NativeShaderResourceViewRef;*/
+	
+	RTTI_DECL3(HolographicRenderingSystem,
+		System<HolographicRenderingSystem>,
+		HolographicScopeBinder,
+		DeviceNotify);
 	
 	ECS_SYS_CTOR(HolographicRenderingSystem)
 	

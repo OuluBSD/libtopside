@@ -9,26 +9,25 @@ NAMESPACE_ECS_BEGIN
 // This system manages the ToolSystems and manages the two Entities that represent the left and
 // right Motion Controllers
 class ToolboxSystemHolo :
-	public ToolboxSystemBase,
-	public SpatialInteractionListener
+	public ToolboxSystemBase
 {
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
-	RTTI_DECL2(ToolboxSystem, ToolboxSystemBase, SpatialInteractionListener)
-	ToolboxSystem(Engine& e) : ToolboxSystemBase(e) {}
+	RTTI_DECL1(ToolboxSystemHolo, ToolboxSystemBase)
+	ToolboxSystemHolo(Engine& e) : ToolboxSystemBase(e) {}
 	
 protected:
 	// System
 	void Start() override;
 	void Stop() override;
 	
-	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
+	// InteractionListener
+	void OnControllerPressed(const CtrlEvent& e) override;
 	
 private:
 	
-	static SpatialInteractionSourceHandedness ControllerHandToHandedness(ControllerHand hand);
+	//static PlayerHandedness ControllerHandToHandedness(ControllerHand hand);
 	
 	EntityRef FindController(const SpatialInteractionSource& source);
 	

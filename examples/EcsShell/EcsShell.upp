@@ -15,7 +15,7 @@ mainconfig
 	"" = "SCREEN SDL2",
 	"" = "SCREEN SDL2 OGL",
 	"" = "SCREEN SDL2 OGL FFMPEG",
-	"" = "SCREEN SDL2 OGL FFMPEG OPENCV",
+	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR OPENHMD",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
 	"" = "DEBUG_RT SCREEN",

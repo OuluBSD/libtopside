@@ -6,7 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 
 #if 0
-void ShootingInteractionSystemHolo::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+void ShootingInteractionSystemHolo::OnControllerPressed(const CtrlEvent& e) {
 	if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
 		auto shooting = enabled_entity->Get<ToolComponentRef>().AsRef<ShootingComponent>();
 		TODO
@@ -26,7 +26,7 @@ void ShootingInteractionSystemHolo::OnSourcePressed(const SpatialInteractionSour
 	}
 }
 
-void ShootingInteractionSystemHolo::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) {
+void ShootingInteractionSystemHolo::OnControllerUpdated(const CtrlEvent& e) {
 	Optional<RTuple<EntityRef, ToolComponentRef>> enabled_entity = TryGetEntityFromSource(args.State().Source());
 	if (enabled_entity) {
 		TODO

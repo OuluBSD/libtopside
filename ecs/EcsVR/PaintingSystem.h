@@ -14,11 +14,11 @@ public:
 	
 protected:
 	void Update(double dt) override;
-	void Register(const LinkedList<EntityRef>& entities) override;
+	void Register() override;
 	
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	//void OnControllerUpdated(const CtrlEvent& e) override;
+	//void OnControllerReleased(const CtrlEvent& e) override;
 	
 };
 

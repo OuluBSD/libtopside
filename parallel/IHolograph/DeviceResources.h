@@ -5,8 +5,10 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
-struct DeviceNotify
+struct DeviceNotify : RTTIBase
 {
+	RTTI_DECL0(DeviceNotify)
+	
     virtual void OnDeviceLost()     = 0;
     virtual void OnDeviceRestored() = 0;
 };

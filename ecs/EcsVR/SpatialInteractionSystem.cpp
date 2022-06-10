@@ -59,7 +59,7 @@ void SpatialInteractionSystem::HandleSourceDetected(
 {
     for (auto& listener : spatial_interaction_listeners)
     {
-        listener->OnSourceDetected(args);
+        listener->OnControllerDetected(args);
     }
 }
 
@@ -70,7 +70,7 @@ void SpatialInteractionSystem::HandleSourceLost(
 {
     for (auto& listener : spatial_interaction_listeners)
     {
-        listener->OnSourceLost(args);
+        listener->OnControllerLost(args);
     }
 }
 
@@ -81,7 +81,7 @@ void SpatialInteractionSystem::HandleSourcePressed(
 {
     for (auto& listener : spatial_interaction_listeners)
     {
-        listener->OnSourcePressed(args);
+        listener->OnControllerPressed(args);
     }
 }
 
@@ -92,7 +92,7 @@ void SpatialInteractionSystem::HandleSourceUpdated(
 {
     for (auto& listener : spatial_interaction_listeners)
     {
-        listener->OnSourceUpdated(args);
+        listener->OnControllerUpdated(args);
     }
 }
 
@@ -103,7 +103,7 @@ void SpatialInteractionSystem::HandleSourceReleased(
 {
     for (auto& listener : spatial_interaction_listeners)
     {
-        listener->OnSourceReleased(args);
+        listener->OnControllerReleased(args);
     }
 }
 

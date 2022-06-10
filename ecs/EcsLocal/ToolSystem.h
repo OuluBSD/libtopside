@@ -58,12 +58,13 @@ struct ToolSelectorPrefab :
 
 template<typename T, typename ToolComponent>
 class ToolSystemBaseT :
-	public ToolSystemBase
+	public ToolSystemBase,
+	public InteractionListener
 {
 	
 public:
 	typedef ToolSystemBaseT<T, ToolComponent> CLASSNAME;
-	RTTI_DECL1(ToolSystemBaseT, ToolSystemBase)
+	RTTI_DECL2(ToolSystemBaseT, ToolSystemBase, InteractionListener)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ToolSystemBase>(this); /*vis && m_entities;*/}
 	TypeCls GetType() const override {return AsTypeCls<T>();}
 	

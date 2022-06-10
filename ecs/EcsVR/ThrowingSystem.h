@@ -20,8 +20,8 @@ protected:
 	void Update(double dt) override;
 	
 	// ISpatialInteractionListener
-	void OnSourcePressed(const SpatialInteractionSourceEventArgs& args) override;
-	void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
+	void OnControllerPressed(const CtrlEvent& e) override;
+	void OnControllerReleased(const CtrlEvent& e) override;
 	
 };
 
