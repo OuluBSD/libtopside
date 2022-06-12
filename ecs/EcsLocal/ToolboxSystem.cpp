@@ -204,6 +204,67 @@ void ToolboxSystemBase::Stop() {
 }
 
 void ToolboxSystemBase::OnControllerPressed(const CtrlEvent& e) {
+	TODO
+#if 0
+	if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
+		return;
+		
+	auto ctrl = FindController(args.State().Source());
+	
+	if (!ctrl)
+		return;
+		
+	// Bring the toolbox in front of user
+	if (args.PressKind() == SpatialInteractionPressKind::Menu) {
+		show_toolbox = !show_toolbox;
+		
+		if (show_toolbox) {
+			auto holo_scene = GetEngine().Get<HolographicScene>();
+			
+			if (SpatialPointerPose pointer_pose = SpatialPointerPose::TryGetAtTimestamp(holo_scene->WorldCoordinateSystem(), holo_scene->CurrentTimestamp())) {
+				const vec3 head_position = pointer_pose.Head().Position();
+				const vec3 forward = pointer_pose.Head().ForwardDirection();
+				const vec3 head_up = pointer_pose.Head().UpDirection();
+				const vec3 head_direction = normalize(vec3{ forward[0], 0.0f, forward[2] });
+				vec3 head_right = cross(head_direction, head_up);
+				head_right[1] = 0;
+				head_right = normalize(head_right);
+				const vec3 toolkit_center = head_direction * 0.5f;
+				{
+					int i = 0;
+					
+					for (auto& selector : this->selector_objects) {
+						const float offset = (i - floorf(this->selector_objects.GetCount() / 2.f)) / this->selector_objects.GetCount();
+						const vec3 target_position = toolkit_center + head_position + head_right * offset + vec3{ 0, -0.3f, 0 };
+						selector->Get<Easing>()->target_position = target_position;
+						++i;
+					}
+				}
+			}
+		}
+	}
+	else if (args.PressKind() == SpatialInteractionPressKind::Grasp && this->show_toolbox) {
+		if (const SpatialInteractionSourceLocation& location = ctrl->Get<MotionControllerComponent>()->location) {
+			if (!location.pos.IsNull()) {
+				const vec3 position = location.pos;
+				TODO
+#if 0
+				
+				for (auto[transform, selector] : GetEngine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
+					if (HitTest(position, transform->position, 0.15f)) {
+						SwitchToolType(*ctrl, selector->type);
+						this->show_toolbox = false;
+						break;
+					}
+				}
+				
+#endif
+			}
+		}
+	}
+#endif
+
+
 	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::START) {
 		if (test_tool_changer) {
 			for (ToolComponentRef& tool : tools)

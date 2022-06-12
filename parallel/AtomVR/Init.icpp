@@ -27,7 +27,7 @@ INITBLOCK_(AtomVR) {
 		
 		#if defined flagPOSIX
 			#ifdef flagOGL
-				Factory::RegisterAtom<X11OglHoloFboProg>();
+				Factory::RegisterAtom<OpenHMDPipe>();
 			#endif
 		#endif
 		

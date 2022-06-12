@@ -1,5 +1,7 @@
 #include "EcsVR.h"
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 
 bool HolographicScopeBinder::Initialize() {
@@ -18,3 +20,4 @@ void HolographicScopeBinder::Uninitialize() {
 	
 
 NAMESPACE_ECS_END
+#endif

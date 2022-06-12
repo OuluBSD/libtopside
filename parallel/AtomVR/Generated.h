@@ -7,12 +7,12 @@ namespace TS {
 
 namespace Parallel {
 
-#if defined flagVR && defined flagOGL
-class X11OglHoloFboProg : public X11OglHoloFboBase {
+#if defined flagOPENHMD
+class OpenHMDPipe : public OpenHMDSinkDevice {
 
 public:
-	RTTI_DECL1(X11OglHoloFboProg, X11OglHoloFboBase)
-	COPY_PANIC(X11OglHoloFboProg)
+	RTTI_DECL1(OpenHMDPipe, OpenHMDSinkDevice)
+	COPY_PANIC(OpenHMDPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.holo.fbo.program")
 	ATOM_MAKE_ACTION_END
@@ -24,8 +24,8 @@ public:
 };
 #endif
 
-#if defined flagVR && defined flagOGL
-using X11OglHoloFboProgRef = Ref<X11OglHoloFboProg, AtomParent>;
+#if defined flagOPENHMD
+using OpenHMDPipeRef = Ref<OpenHMDPipe, AtomParent>;
 #endif
 
 }

@@ -239,6 +239,10 @@ struct Rect_ : Moveable<Rect_<T>> {
 	bool	IsNull() const {return ::UPP::IsNull(left) || ::UPP::IsNull(top) || ::UPP::IsNull(right) || ::UPP::IsNull(bottom);}
 	void	SetNull() const {::UPP::SetNull(left); ::UPP::SetNull(top); ::UPP::SetNull(right); ::UPP::SetNull(bottom);}
 	
+	
+	hash_t	GetHashValue() const {CombineHash c; c.Put(UPP::GetHashValue(left));  c.Put(UPP::GetHashValue(top));  c.Put(UPP::GetHashValue(right));  c.Put(UPP::GetHashValue(bottom)); return c;}
+	String	ToString() const {String s; s << "[" << left << ", " << top << ", " << right << ", " << bottom << "](" << Width() << ", " << Height() << ")"; return s;}
+	
 };
 
 template <class T>

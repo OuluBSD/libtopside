@@ -180,12 +180,11 @@ HEADER_LINK(		SdlOglFboProg,		PIPE, PROCESS)
 
 
 
-HEADER11(			X11OglHoloFboProg,	X11OglHoloFboBase,			pipe,		OglFbo,			OglOrder,		OglFbo)
-HEADER_ACTION(		X11OglHoloFboProg,	x11.ogl.holo.fbo.program)
-HEADER_ARG(			X11OglHoloFboProg,	HINT_PKG,					"AtomVR")
-HEADER_LINK(		X11OglHoloFboProg,	PIPE, PROCESS)
-HEADER_ARG(			X11OglHoloFboProg,	reqdef_flagVR,				1)
-HEADER_ARG(			X11OglHoloFboProg,	reqdef_flagOGL,				1)
+HEADER11(			OpenHMDPipe,		OpenHMDSinkDevice,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER_ACTION(		OpenHMDPipe,		x11.ogl.holo.fbo.program)
+HEADER_ARG(			OpenHMDPipe,		HINT_PKG,					"AtomVR")
+HEADER_LINK(		OpenHMDPipe,		PIPE, PROCESS)
+HEADER_ARG(			OpenHMDPipe,		reqdef_flagOPENHMD,				1)
 
 
 
@@ -256,19 +255,19 @@ HEADER_ARG(			OglCustomer,		reqdef_flagSCREEN,			1)
 HEADER_LINK(		OglCustomer,		CUSTOMER, CUSTOMER)
 HEADER_ARG(			OglCustomer,		HINT_PKG,					"AtomMinimal")
 
-HEADER11(			SdlContextAtom,		Sdl2ContextBase,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
+HEADER11(			SdlContextAtom,		SdlContextBase,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
 HEADER_LINK(		SdlContextAtom,		DRIVER, DRIVER)
 HEADER_ARG(			SdlContextAtom,		HINT_PKG,					"AtomMinimal")
 HEADER_ARG(			SdlContextAtom,		reqdef_flagSDL2,			1)
 
-HEADER11(			SdlEventAtomPipe,	Sdl2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER11(			SdlEventAtomPipe,	SdlEventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
 HEADER_ARG(			SdlEventAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_ARG(			SdlEventAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_LINK(		SdlEventAtomPipe,	POLLER_PIPE, PROCESS)
 /*
-HEADER12(			SdlEventAtom,		Sdl2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterEvent)
+HEADER12(			SdlEventAtom,		SdlEventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterEvent)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)
 
 HEADER21(			EventState,			EventStateBase,				driver_pipe,CenterEvent,	CenterEvent,	CenterEvent,	CenterReceipt)
@@ -359,7 +358,7 @@ HEADER_ARG(			SdlOglFboAtom,			reqdef_flagOGL,				1)
 HEADER_ARG(			SdlOglFboAtom,			HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlOglFboAtom,			POLLER_PIPE, PROCESS)
 
-HEADER11(			SdlVideoAtomPipe,	Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER11(			SdlVideoAtomPipe,	SdlCenterVideoSinkDevice,	pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomPipe,	sdl.video.pipe)
 HEADER_ACTION(		SdlVideoAtomPipe,	any.video.pipe)
 HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSCREEN,			1)
@@ -367,7 +366,7 @@ HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlVideoAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
-HEADER11(			SdlProgAtomPipe,	Sdl2CenterVideoSinkDevice,	pipe,		CenterProg,		CenterProg,	CenterReceipt)
+HEADER11(			SdlProgAtomPipe,	SdlCenterVideoSinkDevice,	pipe,		CenterProg,		CenterProg,	CenterReceipt)
 HEADER_ACTION(		SdlProgAtomPipe,	sdl.prog.pipe)
 HEADER_ACTION(		SdlProgAtomPipe,	any.prog.pipe)
 HEADER_ARG(			SdlProgAtomPipe,	reqdef_flagSCREEN,			1)
@@ -375,15 +374,15 @@ HEADER_ARG(			SdlProgAtomPipe,	reqdef_flagSDL2,			1)
 HEADER_ARG(			SdlProgAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		SdlProgAtomPipe,	POLLER_PIPE, PROCESS)
 /*
-HEADER11(			SdlVideoProgAtom,	Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterProg,		CenterReceipt)
+HEADER11(			SdlVideoProgAtom,	SdlCenterVideoSinkDevice,	pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
 HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,			1)
 
-HEADER11(			SdlVideoAtomSA,		Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
+HEADER11(			SdlVideoAtomSA,		SdlCenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomSA,		sdl.video.standalone)
 HEADER_ARG(			SdlVideoAtomSA,		reqdef_flagSCREEN,			1)
 */
-HEADER55_U44(		SdlVideoAtom,		Sdl2CenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
+HEADER55_U44(		SdlVideoAtom,		SdlCenterVideoSinkDevice,	pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,			1)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSDL2,			1)
@@ -393,7 +392,7 @@ HEADER_LINK(		SdlVideoAtom,		POLLER_PIPE, PROCESS)
 
 
 
-HEADER11 (			SdlAudioAtom,		Sdl2AudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER11 (			SdlAudioAtom,		SdlAudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
 HEADER_ARG(			SdlAudioAtom,		reqdef_flagSDL2,			1)

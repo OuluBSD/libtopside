@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -82,3 +83,4 @@ private:
 
 
 NAMESPACE_ECS_END
+#endif

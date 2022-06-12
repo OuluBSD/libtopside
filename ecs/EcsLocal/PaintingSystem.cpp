@@ -100,7 +100,42 @@ void PaintingInteractionSystemBase::Detach(PaintComponentRef c) {
 }
 
 void PaintingInteractionSystemBase::Register() {
+	TODO
+	#if 0
+	// add MotionControllerComponent to new entities (see PaintBrush)
+	// note: duplicate PaintingInteractionSystemBase::Register
 	
+	ToolSys::Register(entities);
+	auto es = GetEngine().Get<EntityStore>();
+	
+	for (auto& entity : m_entities) {
+		const auto& selected_color = colors[0];
+		auto paint_brush = es->GetRoot()->Create<PaintBrush>();
+		paint_brush->Get<PbrRenderable>()->color = selected_color;
+		paint_brush->Get<MotionControllerComponent>()->req_hand = entity->Get<MotionControllerComponent>()->req_hand;
+		auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
+		touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
+		touchpad_indicator->Get<PbrRenderable>()->color = Colors::Gray;
+		PaintComponentRef paint = entity->Get<PaintComponent>();
+		paint->selected_color = selected_color;
+		paint->paint_brush = paint_brush;
+		paint->touchpad_indicator = touchpad_indicator;
+		
+		for (auto color : colors) {
+			auto color_picker = es->GetRoot()->Create<StaticSphere>();
+			color_picker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
+			color_picker->Get<PbrRenderable>()->color = color;
+			paint->clr_pick_objects.Add(color_picker);
+		}
+		
+		paint->beam = es->GetRoot()->Create<StaticCube>();
+		paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
+		paint->beam->Get<PbrRenderable>()->color = Colors::Aquamarine;
+		paint->SetEnabled(false);
+	}
+	
+	GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT<SpatialInteractionListener>());
+	#endif
 }
 
 void PaintingInteractionSystemBase::Unregister() {
@@ -160,7 +195,14 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 }
 
 void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	OnControllerUpdated(e);
+	TODO
+	#if 0
+	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
+		ClearStrokes();
+	}
+	else
+		OnControllerUpdated(e);
+	#endif
 }
 
 void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {

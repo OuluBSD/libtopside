@@ -1,37 +1,18 @@
-description "\377B0,86,131";
+description "\377B85,42,150";
 
 uses
-	IGraphics,
-	ports/mikktspace;
+	ParallelLib,
+	IGraphics;
 
 file
-	Copying,
 	IHolograph.h,
-	IHolograph.cpp,
-	Dx11.h,
-	Dx11.cpp,
-	Ogl.h,
-	Types.h,
-	Various.h,
-	Various.cpp,
-	AppView.h,
-	AppView.cpp,
-	CameraResources.h,
-	CameraResources.cpp,
-	ControllerRendering.h,
-	ControllerRendering.cpp,
-	DeviceResources.h,
-	DeviceResources.cpp,
-	Physics.h,
-	QuadRenderer.h,
-	QuadRenderer.cpp,
-	SkyboxRenderer.h,
-	SkyboxRenderer.cpp,
-	TextRenderer.h,
-	TextRenderer.cpp,
-	Atom.h,
-	Atom.cpp,
-	Additional readonly separator,
-	Trash readonly separator,
-	StepTimer.h;
+	Enums.h,
+	Vendors.h,
+	OpenHMD.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = "";
 

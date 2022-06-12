@@ -25,6 +25,10 @@ INITBLOCK {
 	flagSDL2_ATOM_CLASS_LIST
 	#endif
 	
+	#ifdef flagOPENHMD_ATOM_CLASS_LIST
+	flagOPENHMD_ATOM_CLASS_LIST
+	#endif
+	
 	#ifdef flagPOSIX_ATOM_CLASS_LIST
 	flagPOSIX_ATOM_CLASS_LIST
 	#endif

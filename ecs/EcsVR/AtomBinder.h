@@ -1,6 +1,8 @@
 #ifndef _EcsVR_AtomBinder_h_
 #define _EcsVR_AtomBinder_h_
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -22,4 +24,5 @@ struct HolographicScopeBinder : RTTIBase {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

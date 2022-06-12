@@ -1,5 +1,6 @@
 #include "EcsVR.h"
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -211,3 +212,5 @@ bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) co
 
 
 NAMESPACE_ECS_END
+
+#endif

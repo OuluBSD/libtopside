@@ -320,7 +320,13 @@ void DataStateT<Gfx>::RefreshTexture(Model& model) {
 
 template <class Gfx>
 void DataStateT<Gfx>::RefreshTexture(Mesh& out) {
-	TODO //o.RefreshTexture(out);
+	ASSERT(out.accel);
+	if (!out.accel) return;
+	DataObjectT<Gfx>* o = CastPtr<DataObjectT<Gfx>>(out.accel);
+	ASSERT(o);
+	if (!o) return;
+	
+	o->RefreshTexture(out);
 }
 
 template <class Gfx>

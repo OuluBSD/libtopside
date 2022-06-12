@@ -36,6 +36,8 @@
 	#define Font XFont
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
+	#include <X11/extensions/xf86vmode.h>
+	#include <X11/extensions/Xrandr.h>
 	#ifdef flagOGL
 		#include <GL/glx.h>
 	#endif
@@ -67,9 +69,7 @@ typedef unsigned int	Gxbf;
 
 
 
-#if defined flagSWRENDER
-	#error todo
-#elif defined(flagSCREEN)
+#if defined(flagSCREEN)
 	#include "OpenGL.h"
 #endif
 

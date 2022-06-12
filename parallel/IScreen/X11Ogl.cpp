@@ -1,5 +1,6 @@
 #include "IScreen.h"
 
+
 /*#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <GL/glx.h>*/
@@ -41,9 +42,39 @@ bool X11Ogl_IsExtensionSupported(const char *extList, const char *extension) {
 	return false;
 }
 
+/*
+void SetFullScreen(Display* dpy, uint i) {
+	XEvent ev;
+	Atom atom;
+	
+	ev.type = ClientMessage;
+	ev.xclient.window = win;
+	ev.xclient.message_type = XInternAtom(dpy, "_NET_WM_STATE", False);
+	ev.xclient.format = 32;
+	ev.xclient.data.l[0] = i;
+	atom = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
+	ev.xclient.data.l[1] = atom;
+	ev.xclient.data.l[2] = atom;
+	XSendEvent(dpy, root, False, ClientMessage, &ev);
+}
+
+*/
+
+typedef struct {
+	unsigned long   flags;
+	unsigned long   functions;
+	unsigned long   decorations;
+	long            input_mode;
+	unsigned long   status;
+} Hints;
 
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	bool is_borderless = ws.IsTrue(".borderless");
+	bool is_fullscreen = ws.IsTrue(".fullscreen");
+	bool print_modes = ws.IsTrue(".print_modes");
+	bool find_vr = ws.IsTrue(".find.vr.screen");
+	int screen_idx = ws.GetInt(".screen", -1);
 	
 	if (!dev.ogl.Initialize(a, ws))
 		return false;
@@ -51,7 +82,6 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	::Display*& display = dev.display;	// pointer to X Display structure.
 	::Window& win = dev.win;			// pointer to the newly created window.
 	::XVisualInfo*& visual = dev.visual;
-	int screen_num;						// number of screen to place the window on.
 	unsigned int display_width,
 	             display_height;		// height and width of the X display.
 	unsigned int width, height;			// height and width for the new window.
@@ -68,6 +98,17 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: cannot connect to X server '" << display_name << "'");
 		return false;
 	}
+	int screen_num = DefaultScreen(display);
+	
+	
+	// Borderless & fullscreen X11 window (https://www.tonyobryan.com/index.php?article=9)
+	// Used for secondary display fullscreen
+	Hints     hints;
+    ::Atom    hints_property;
+    hints.flags = 2;        // Specify that we're changing the window decorations.
+	hints.decorations = 0;  // 0 (false) means that window decorations should go bye-bye.
+	hints_property = XInternAtom(display,"_MOTIF_WM_HINTS", True);
+	
 	
 	GLint majorGLX, minorGLX = 0;
 	glXQueryVersion(display, &majorGLX, &minorGLX);
@@ -130,7 +171,6 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	
 	
 	// get the geometry of the default screen for our display.
-	screen_num		= DefaultScreen(display);
 	display_width	= DisplayWidth(display, screen_num);
 	display_height	= DisplayHeight(display, screen_num);
 	int dplanes		= DisplayPlanes(display, screen_num);
@@ -190,7 +230,6 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 			LOG("ScrX11Ogl::SinkDevice_Initialize: warning: glXCreateContextAttribsARB() not found.");
 		}
 		
-		
 		// Create OpenGL context
 		/*dev.gl_ctx = glXCreateContext(display, visual, NULL, GL_TRUE);
 		glXMakeCurrent(display, win, context);*/
@@ -245,6 +284,81 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		// make the window actually appear on the screen.
 		XMapWindow(display, win);
 		
+		// Configure borderless & fullscreen related properties
+		if ((find_vr || screen_idx >= 0) && is_fullscreen) {
+			Index<Rect> screens;
+			XRRScreenResources *xrrr = XRRGetScreenResources(display, win);
+		    XRRCrtcInfo *xrrci;
+		    int i;
+		    int ncrtc = xrrr->ncrtc;
+		    for (i = 0; i < ncrtc; ++i) {
+		        xrrci = XRRGetCrtcInfo(display, xrrr, xrrr->crtcs[i]);
+		        if (xrrci->width > 0 && xrrci->height > 0) {
+		            if (find_vr && xrrci->width == 1440*2 && xrrci->height == 1440)
+		                screen_idx = screens.GetCount();
+					screens.FindAdd(RectC(xrrci->x, xrrci->y, xrrci->width, xrrci->height));
+		        }
+		        //LOG("\tscreen " << i << ": " << xrrci->width << "x" << xrrci->height << "," << xrrci->x << "," << xrrci->y);
+		        XRRFreeCrtcInfo(xrrci);
+		    }
+		    XRRFreeScreenResources(xrrr);
+		    
+		    DUMPC(screens);
+		    if (screen_idx < 0 || screen_idx >= screens.GetCount()) {
+		        LOG("ScrX11Ogl::SinkDevice_Initialize: error: screen index out of range");
+				return false;
+		    }
+		    Rect r = screens[screen_idx];
+			LOG("ScrX11Ogl::SinkDevice_Initialize: info: moving x11 window to " << AsString(r));
+			
+			int mode_count = 0;
+			XF86VidModeModeInfo** modes = 0;
+			XF86VidModeGetAllModeLines(display, screen_num, &mode_count, &modes);
+			if (!mode_count) {
+				LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not get video modes");
+				return false;
+			}
+			if (print_modes) {
+				for(int i = 0; i < mode_count; i++) {
+					XF86VidModeModeInfo* mode = modes[i];
+					LOG("XF86 mode " << i << ":\n"
+						"\tdotclock: " << (int)mode->dotclock << "\n"
+						"\thdisplay: " << (int)mode->hdisplay << "\n"
+						"\thsyncstart: " << (int)mode->hsyncstart << "\n"
+						"\thsyncend: " << (int)mode->hsyncend << "\n"
+						"\thtotal: " << (int)mode->htotal << "\n"
+						"\thskew: " << (int)mode->hskew << "\n"
+						"\tvdisplay: " << (int)mode->vdisplay << "\n"
+						"\tvsyncstart: " << (int)mode->vsyncstart << "\n"
+						"\tvsyncend: " << (int)mode->vsyncend << "\n"
+						"\tvtotal: " << (int)mode->vtotal << "\n"
+						"\tflags: " << (int)mode->flags << "\n"
+						"\tprivsize: " << (int)mode->privsize << "\n");
+				}
+			}
+			XF86VidModeModeInfo* video_mode = modes[0];
+			XChangeProperty(display, win, hints_property, hints_property, 32, PropModeReplace, (unsigned char *)&hints, 5);
+			XF86VidModeSwitchToMode(display, screen_num, video_mode);
+			if (is_fullscreen) {
+				int x = r.left;
+				int y = r.top;
+				width = r.GetWidth();
+				height = r.GetHeight();
+				XF86VidModeSetViewPort(display, screen_num, 0, 0);
+				XMoveResizeWindow(display, win, x, y, width, height);
+				XMapRaised(display, win);
+			}
+			//XGrabPointer(display, win, True, 0, GrabModeAsync, GrabModeAsync, win, 0L, CurrentTime);
+			//XGrabKeyboard(display, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+		}
+		else if (is_fullscreen) {
+			::Atom wm_state = XInternAtom (display, "_NET_WM_STATE", true );
+			::Atom wm_fullscreen = XInternAtom (display, "_NET_WM_STATE_FULLSCREEN", true );
+			
+			XChangeProperty(display, win, wm_state, ((::Atom) 4), 32,
+			    PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+		}
+		
 		// flush all pending requests to the X server.
 		XFlush(display);
 	}
@@ -255,7 +369,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	
 	dev.ogl.SetNative(dev.display, dev.win, 0, 0);
 	
-	if (!dev.ogl.Open(Size(width, height), 4)) {
+	if (!dev.ogl.Open(Size(width, height), 4, true)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}

@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -100,3 +101,4 @@ using HolographicRenderingSystemRef = Ref<HolographicRenderingSystem>;
 
 
 NAMESPACE_ECS_END
+#endif

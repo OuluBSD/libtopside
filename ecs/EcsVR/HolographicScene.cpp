@@ -1,5 +1,6 @@
 #include "EcsVR.h"
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -108,3 +109,4 @@ HolographicScene::CurrentFrame() const
 #endif
 
 NAMESPACE_ECS_END
+#endif

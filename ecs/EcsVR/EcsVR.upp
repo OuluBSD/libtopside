@@ -2,33 +2,22 @@ description "\377B51,138,51";
 
 uses
 	EcsLib,
-	IHolograph;
+	AtomVR;
 
 file
 	EcsVR.h,
-	AtomBinder.h,
-	AtomBinder.cpp,
-	HolographicScene.h,
-	HolographicScene.cpp,
-	SpatialInteractionSystem.h,
-	SpatialInteractionSystem.cpp,
-	HolographicRenderer.h,
-	HolographicRenderer.cpp,
+	Trash readonly separator,
 	MotionControllerSystem.h,
 	MotionControllerSystem.cpp,
 	PbrModelCache.h,
 	PbrModelCache.cpp,
-	PaintStrokeSystem.h,
-	PaintStrokeSystem.cpp,
-	Prefabs.h,
-	ToolSystem.h,
-	ToolboxSystem.h,
-	ToolboxSystem.cpp,
-	PaintingSystem.h,
-	PaintingSystem.cpp,
-	ShootingSystem.h,
-	ShootingSystem.cpp,
-	ThrowingSystem.h,
-	ThrowingSystem.cpp,
+	HolographicRenderer.h,
+	HolographicRenderer.cpp,
+	HolographicScene.h,
+	HolographicScene.cpp,
+	AtomBinder.h,
+	AtomBinder.cpp,
+	SpatialInteractionSystem.h,
+	SpatialInteractionSystem.cpp,
 	_ readonly separator;
 

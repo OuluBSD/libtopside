@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -15,9 +16,9 @@ struct SpatialInteractionListener : WeakRefScopeEnabler<SpatialInteractionListen
     virtual void OnControllerUpdated(const SpatialSourceEventArgs& args) {};
     virtual void OnControllerReleased(const SpatialSourceEventArgs& args) {};
     
-};
 
 using SpatialInteractionListenerRef = Ref<SpatialInteractionListener, RefParent1<Ecs::Engine>>;
+};
 
 
 
@@ -25,10 +26,10 @@ using SpatialInteractionListenerRef = Ref<SpatialInteractionListener, RefParent1
 // Manages events from SpatialInteractionManager with additional filtering
 class SpatialInteractionSystem final :
 	public Ecs::System<SpatialInteractionSystem>,
-	public HolographicScopeBinder
+	public InteractionListener
 {
 public:
-	RTTI_DECL2(SpatialInteractionSystem, SystemT, HolographicScopeBinder);
+	RTTI_DECL2(SpatialInteractionSystem, SystemT, InteractionListener);
 	ECS_SYS_CTOR(SpatialInteractionSystem)
 	
 	/*using ISpatialInteractionListener = ISpatialInteractionListenerT<Holo>;
@@ -97,3 +98,5 @@ private:
 
 
 NAMESPACE_ECS_END
+
+#endif

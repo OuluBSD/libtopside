@@ -95,7 +95,6 @@ namespace Parallel {
 
 #define flagOGL_ATOM_TYPE_LIST \
 	ATOM_TYPE(X11_OGL_FBO_PROG) \
-	ATOM_TYPE(X11_OGL_HOLO_FBO_PROG) \
 	ATOM_TYPE(X11_OGL_SHADER_PIPE) \
 	ATOM_TYPE(X11_OGL_FBO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_OGL_IMAGE_LOADER) \
@@ -115,7 +114,6 @@ namespace Parallel {
 
 #define flagOGL_ATOM_CLASS_LIST \
 	ATOM_CLASS(X11OglFboProg) \
-	ATOM_CLASS(X11OglHoloFboProg) \
 	ATOM_CLASS(X11OglShaderPipe) \
 	ATOM_CLASS(X11OglFboAtomPipe) \
 	ATOM_CLASS(SdlOglImageLoader) \
@@ -155,6 +153,14 @@ namespace Parallel {
 	ATOM_CLASS(SdlProgAtomPipe) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
+
+
+#define flagOPENHMD_ATOM_TYPE_LIST \
+	ATOM_TYPE(OPEN_H_M_D_PIPE) \
+
+
+#define flagOPENHMD_ATOM_CLASS_LIST \
+	ATOM_CLASS(OpenHMDPipe) \
 
 
 #define flagVR_ATOM_TYPE_LIST \

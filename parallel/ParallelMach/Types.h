@@ -350,6 +350,10 @@ typedef enum : byte {
 	flagSDL2_ATOM_TYPE_LIST
 	#endif
 	
+	#ifdef flagOPENHMD
+	flagOPENHMD_ATOM_TYPE_LIST
+	#endif
+	
 	#ifdef flagVR
 	flagVR_ATOM_TYPE_LIST
 	#endif

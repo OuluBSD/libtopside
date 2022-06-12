@@ -4,23 +4,23 @@ namespace TS {
 
 namespace Parallel {
 
-#if defined flagVR && defined flagOGL
-AtomTypeCls X11OglHoloFboProg::GetAtomType()
+#if defined flagOPENHMD
+AtomTypeCls OpenHMDPipe::GetAtomType()
 {
-	return ATOM11(X11_OGL_HOLO_FBO_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+	return ATOM11(OPEN_H_M_D_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
 }
 
-LinkTypeCls X11OglHoloFboProg::GetLinkType()
+LinkTypeCls OpenHMDPipe::GetLinkType()
 {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11OglHoloFboProg::Visit(RuntimeVisitor& vis)
+void OpenHMDPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<X11OglHoloFboBase>(this);
+	vis.VisitThis<OpenHMDSinkDevice>(this);
 }
 
-AtomTypeCls X11OglHoloFboProg::GetType() const
+AtomTypeCls OpenHMDPipe::GetType() const
 {
 	return GetAtomType();
 }

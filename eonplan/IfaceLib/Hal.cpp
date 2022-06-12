@@ -81,7 +81,7 @@ PKG(Hal, Hal, H) {
 		}
 	}
 	
-	VENDOR(Sdl2) {
+	VENDOR(Sdl) {
 		VENDOR_ENABLED_FLAG(SDL2)
 		
 		LIBRARY("", SDL2)

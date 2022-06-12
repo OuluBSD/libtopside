@@ -156,7 +156,7 @@ void GfxAccelAtom<Gfx>::Uninitialize() {
 }
 
 template <class Gfx>
-bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
+bool GfxAccelAtom<Gfx>::Open(Size sz, int channels, bool skip_fullscreen) {
 	AppFlags& app_flags = GetAppFlags();
 	is_sw = false;
 	is_opengl = false;
@@ -181,7 +181,7 @@ bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
 	Gfx::SetDebugOutput(true);
 	#endif
 	
-	if (full_screen)
+	if (full_screen && !skip_fullscreen)
 		Gfx::SetWindowFullscreen(win);
 	
 	if (AcceptsOrder()) {
@@ -191,11 +191,14 @@ bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
 		}
 	}
 	
+	is_open = true;
 	return true;
 }
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Close() {
+	is_open = false;
+	
 	fb_packet.Clear();
 	raw_packet.Clear();
 	
@@ -216,7 +219,7 @@ void GfxAccelAtom<Gfx>::Close() {
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::IsOpen() const {
-	TODO
+	return is_open;
 }
 
 template <class Gfx>

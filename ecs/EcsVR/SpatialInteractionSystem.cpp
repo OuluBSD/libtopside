@@ -1,5 +1,6 @@
 #include "EcsVR.h"
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -109,3 +110,5 @@ void SpatialInteractionSystem::HandleSourceReleased(
 
 
 NAMESPACE_ECS_END
+
+#endif

@@ -76,6 +76,7 @@ protected:
 	Renderer				rend;
 	StateDraw				draw;
 	SystemDraw				sysdraw;
+	bool is_open = false;
 	bool is_opengl = false;
 	bool is_sw = false;
 	bool is_dx11 = false;
@@ -107,7 +108,7 @@ public:
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 	void Uninitialize();
 	
-	bool Open(Size sz, int channels);
+	bool Open(Size sz, int channels, bool skip_fullscreen=false);
 	bool AcceptsOrder() const {return bf.AcceptsOrder();}
 	void Close();
 	bool IsOpen() const;

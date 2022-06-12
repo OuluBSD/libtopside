@@ -4,7 +4,7 @@ uses
 	ParallelLib,
 	IGraphics;
 
-library(POSIX) X11;
+library(POSIX) "X11 Xxf86vm Xrandr";
 
 library(POSIX & OGL) GLX;
 

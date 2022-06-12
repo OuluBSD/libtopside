@@ -1,0 +1,19 @@
+machine sdl.app: {
+	
+	chain program: {
+		state event.register;
+		
+		loop ogl.fbo: {
+			ogl.customer: true;
+			x11.ogl.fbo.standalone: true {
+				close_machine:	true;
+				fullscreen:		true;
+				find.vr.screen:	true;
+				env:			event.register;
+				fragment:		"shaders/toys/stereo/mario_cross_eye_3d/stage0.glsl";
+			};
+		};
+		
+	};
+
+};
