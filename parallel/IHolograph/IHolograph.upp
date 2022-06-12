@@ -4,6 +4,8 @@ uses
 	ParallelLib,
 	IGraphics;
 
+library(LINUX & OPENHMD) "openhmd hidapi-libusb";
+
 file
 	IHolograph.h,
 	Enums.h,

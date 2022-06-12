@@ -9,6 +9,7 @@ PKG(Holograph, Holo, H) {
 	COLOR(85, 42, 150)
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(IGraphics)
+	LIBRARY("LINUX & OPENHMD", openhmd hidapi-libusb)
 	/*LIBRARY("POSIX", X11)
 	LIBRARY("POSIX & OGL", GLX)
 	LIBRARY("POSIX & OGL", GL GLU GLEW glut)*/
@@ -31,13 +32,21 @@ PKG(Holograph, Holo, H) {
 	VENDOR(OpenHMD) {
 		VENDOR_ENABLED_FLAG2(OPENHMD, LINUX)
 		VENDOR_ENABLED_FLAG2(OPENHMD, FREEBSD)
-		//VENDOR_INCLUDE("", X11/Xlib.h)
-		//VENDOR_INCLUDE("", X11/Xutil.h)
-		//VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_INCLUDE("", openhmd.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
 		VENDOR_CLASS(SinkDevice, void*)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("data",		"void*")
+			.Add("ctx",			"ohmd_context*")
+			.Add("settings",	"ohmd_device_settings*")
+			.Add("fragment",	"const char*")
+			.Add("vertex",		"const char*")
+			.Add("hmd",			"ohmd_device*")
+			.Add("screen_sz",	"Size")
+			.Add("l_proj",		"mat4")
+			.Add("l_view",		"mat4")
+			.Add("r_proj",		"mat4")
+			.Add("r_view",		"mat4")
 			;
 		
 	}

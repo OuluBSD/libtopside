@@ -299,6 +299,8 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	void SetNull() {for(int i = 0; i < R; i++) data[i].SetNull();}
 	bool IsNull() const {for(int i = 0; i < R; i++) if (!data[i].IsNull()) return false; return true;}
 	
+	void Set(T* v) {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = *v++;}
+	
 	void operator=(const Matrix& m) {memcpy(this, &m, sizeof(Matrix));}
 	vec& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	const vec& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}

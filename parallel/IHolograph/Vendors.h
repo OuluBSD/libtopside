@@ -4,6 +4,10 @@
 #ifndef _IHolograph_Vendors_h_
 #define _IHolograph_Vendors_h_
 
+#if (defined flagOPENHMD && defined flagLINUX) || (defined flagOPENHMD && defined flagFREEBSD)
+	#include <openhmd.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define HOLO_CLS_LIST(x) \
@@ -28,7 +32,16 @@ HOLO_VNDR_LIST
 struct HoloOpenHMD {
 	
 	struct NativeSinkDevice {
-		void* data;
+		ohmd_context* ctx;
+		ohmd_device_settings* settings;
+		const char* fragment;
+		const char* vertex;
+		ohmd_device* hmd;
+		Size screen_sz;
+		mat4 l_proj;
+		mat4 l_view;
+		mat4 r_proj;
+		mat4 r_view;
 	};
 	
 	struct Thread {
