@@ -1,3 +1,15 @@
+#ifdef flagPOSIX
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <time.h>
+#endif
+
 #include "Core.h"
 
 NAMESPACE_UPP_BEGIN
@@ -239,51 +251,149 @@ bool TcpSocket::Connect(String addr, int port) {
 #ifdef flagPOSIX
 
 TcpSocket::TcpSocket() {
-	TODO
+	timeout = 100;
 }
 
 bool TcpSocket::IsOpen() {
-	TODO
+	return listenfd >= 0 || connfd >= 0;
 }
 
 bool TcpSocket::Listen(int port, int max_conn) {
-	TODO
+	if (IsOpen())
+		Close();
+	
+	char sendBuff[1025];
+	time_t ticks;
+	
+	listenfd = socket(AF_INET, SOCK_STREAM, 0);
+	memset(&addr, '0', sizeof(addr));
+	memset(sendBuff, '0', sizeof(sendBuff));
+	
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_port = htons(port);
+	
+	bind(listenfd, (struct sockaddr*)&addr, sizeof(addr));
+	
+	if (timeout)
+		Timeout(timeout);
+	
+	int n = listen(listenfd, 10);
+	return n >= 0;
 }
 
 bool TcpSocket::Accept(TcpSocket& sock) {
-	TODO
+	if (IsOpen())
+		Close();
+	
+	memset(&addr, 0, sizeof(addr));
+	socklen_t len = sizeof(addr);
+	
+	connfd = accept(sock.listenfd, (struct sockaddr*)&addr, &len);
+	
+	if (timeout)
+		Timeout(timeout);
+	
+	return IsOpen();
 }
 
 void TcpSocket::Close() {
-	TODO
+	if (connfd >= 0) {
+		close(connfd);
+		connfd = -1;
+	}
+	if (listenfd >= 0) {
+		close(listenfd);
+		listenfd = -1;
+	}
 }
 
 String TcpSocket::GetLine(int max_len) {
-	TODO
+	String s;
+	while (s.GetCount() < max_len) {
+		char c = 0;
+		int n = read(connfd, &c, 1);
+		if (n <= 0 || c == 0 || c == '\n')
+			break;
+		
+		s.Cat(c);
+	}
+	return s;
 }
 
 String TcpSocket::GetPeerAddr() {
-	TODO
+	const char* c = inet_ntoa(addr.sin_addr);
+	String s(c);
+	return s;
 }
 
 int TcpSocket::Put(const void* data, int size) {
-	TODO
+	if (connfd < 0)
+		return 0;
+	
+	int sent = write(connfd, data, size);
+	return sent > 0 ? sent : 0;
 }
 
 int TcpSocket::Get(void* data, int size) {
-	TODO
+	if (connfd < 0)
+		return 0;
+	
+	int n = read(connfd, data, size);
+	return n > 0 ? n : 0;
 }
 
 String TcpSocket::Get(int size) {
-	TODO
+	char recvBuff[1024];
+	String s;
+	while (s.GetCount() < size) {
+		int remaining = min(1024, size - s.GetCount());
+		
+		int n = read(connfd, recvBuff, remaining);
+		if (n <= 0)
+			break;
+		
+		s.Cat(recvBuff, n);
+	}
+	return s;
 }
 
-bool TcpSocket::Connect(String addr, int port) {
-	TODO
+bool TcpSocket::Connect(String addr_str, int port) {
+	if (IsOpen())
+		Close();
+	
+	int n = 0;
+	if ((connfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		last_error = "could not create socket";
+		return false;
+	}
+	
+	memset(&addr, '0', sizeof(addr));
+	
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	
+	const char* c = addr_str.Begin();
+	if (inet_pton(AF_INET, c, &addr.sin_addr) <= 0) {
+		last_error = "inet_pton error occured";
+		return false;
+	}
+
+	n = connect(connfd, (struct sockaddr *)&addr, sizeof(addr));
+	
+	return n >= 0;
 }
 
 void TcpSocket::Timeout(int ms) {
-	TODO
+	timeout = ms;
+	if (connfd >= 0) {
+		setsockopt(connfd, IPPROTO_TCP, SO_RCVTIMEO, &timeout, sizeof(timeout));
+		setsockopt(connfd, IPPROTO_TCP, SO_SNDTIMEO, &timeout, sizeof(timeout));
+	}
+	if (listenfd >= 0) {
+		setsockopt(listenfd, IPPROTO_TCP, SO_RCVTIMEO, &timeout, sizeof(timeout));
+		setsockopt(listenfd, IPPROTO_TCP, SO_SNDTIMEO, &timeout, sizeof(timeout));
+	}
 }
 
 #endif

@@ -15,7 +15,11 @@ class TcpSocket {
 	};
 	static Uninitializer uninit;
 	#else
-	
+	struct sockaddr_in addr;
+	int listenfd = -1;
+	int connfd = -1;
+	int timeout = 0;
+	String last_error;
 	#endif
 	
 	bool is_open = false;
