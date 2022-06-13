@@ -1,5 +1,5 @@
 #include "ParallelLib.h"
-
+#include <Geometry/Geometry.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -428,6 +428,33 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	else if (e.type == EVENT_SHUTDOWN) {
 		bool& close_window = GetState().Set<bool>(SCREEN0_CLOSE);
 		close_window = true;
+	}
+	else if (e.type == EVENT_HOLO_STATE) {
+		ASSERT(e.spatial);
+		CtrlEvent3D& e3 = *e.spatial;
+		for(int c = 0; c < CtrlEvent3D::CTRL_COUNT; c++) {
+			CtrlEvent3D::Ctrl& ctrl = e3.ctrl[c];
+			if (!ctrl.is_enabled)
+				continue;
+			
+			quat rot;
+			vec3 pos;
+			COPY4(rot.data, ctrl.rot);
+			COPY3(pos.data, ctrl.pos);
+			LOG("EventStateBase::Event: ctrl #" << c << ": rotation " << rot.ToString() << ", position " << pos.ToString());
+			
+			for(int i = 0; i < CtrlEvent3D::VALUE_COUNT; i++) {
+				CtrlEvent3D::Value t = (CtrlEvent3D::Value)i;
+				
+				if (ctrl.is_value[t]) {
+					float f = ctrl.value[t];
+					if (i == CtrlEvent3D::GENERIC) {
+						// what even is this?
+					}
+					else TODO
+				}
+			}
+		}
 	}
 	else TODO
 }

@@ -8,6 +8,10 @@
 	#include <openhmd.h>
 #endif
 
+#if (defined flagLINUX) || (defined flagFREEBSD)
+	#include <ports/hcidump/hcidump.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define HOLO_CLS_LIST(x) \
@@ -17,6 +21,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define HOLO_VNDR_LIST \
 	HOLO_VNDR(HoloOpenHMD) \
+	HOLO_VNDR(HoloDevUsb) \
+	HOLO_VNDR(HoloDevBluetooth) \
 
 
 
@@ -37,11 +43,53 @@ struct HoloOpenHMD {
 		const char* fragment;
 		const char* vertex;
 		ohmd_device* hmd;
+		ohmd_device* ctrl[2];
 		Size screen_sz;
-		mat4 l_proj;
-		mat4 l_view;
-		mat4 r_proj;
-		mat4 r_view;
+		CtrlEvent ev;
+		CtrlEvent3D ev3d;
+		bool ev_sendable;
+		int seq;
+		TimeStop ts;
+		int control_count[2];
+		int controls_fn[2][64];
+		int controls_types[2][64];
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+struct HoloDevUsb {
+	
+	struct NativeSinkDevice {
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+struct HoloDevBluetooth {
+	
+	struct NativeSinkDevice {
+		SimpleBluetoothConnection bt[2];
+		Vector<byte> data[2];
+		TcpSocket sock;
+		int mode;
+		int ctrl_idx[2];
 	};
 	
 	struct Thread {

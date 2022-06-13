@@ -332,6 +332,10 @@ int TcpSocket::Put(const void* data, int size) {
 		return 0;
 	
 	int sent = write(connfd, data, size);
+	
+	if (sent < 0)
+		Close();
+	
 	return sent > 0 ? sent : 0;
 }
 
@@ -339,8 +343,12 @@ int TcpSocket::Get(void* data, int size) {
 	if (connfd < 0)
 		return 0;
 	
-	int n = read(connfd, data, size);
-	return n > 0 ? n : 0;
+	int got = read(connfd, data, size);
+	
+	if (got < 0)
+		Close();
+	
+	return got > 0 ? got : 0;
 }
 
 String TcpSocket::Get(int size) {

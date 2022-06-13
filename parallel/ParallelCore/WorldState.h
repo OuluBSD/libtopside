@@ -67,8 +67,8 @@ public:
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddAtom() const {return type == ADD_COMP;}
-	bool IsTrue(const String& key) const;
-	bool IsFalse(const String& key) const;
+	bool IsTrue(const String& key, bool def=false) const;
+	bool IsFalse(const String& key, bool def=true) const;
 	bool IsFalse(int idx) const;
 	bool IsUndefined(const String& key) const;
 	bool IsUndefined(int idx) const;

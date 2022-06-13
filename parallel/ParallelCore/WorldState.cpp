@@ -219,22 +219,22 @@ bool WorldState::Set(const String& key, String value) {
 	return Set(idx, value);
 }
 
-bool WorldState::IsTrue(const String& key) const {
+bool WorldState::IsTrue(const String& key, bool def) const {
 	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())
 		return values[idx] == "true";
-	return false;
+	return def;
 }
 
-bool WorldState::IsFalse(const String& key) const {
+bool WorldState::IsFalse(const String& key, bool def) const {
 	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount()) {
 		const auto& s = values[idx];
 		return s.IsEmpty() || s == "false";
 	}
-	return true;
+	return def;
 }
 
 bool WorldState::IsFalse(int idx) const {

@@ -239,7 +239,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 				TransformRef trans = b->head->GetEntity()->Find<Transform>();
 				if (trans) {
 					trans->use_lookat = true;
-					COPY3(trans->direction, e.direction);
+					COPY3(trans->direction, e.spatial->direction);
 					trans->up = vec3(0,1,0);
 				}
 			}
@@ -250,7 +250,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 			TransformRef trans = b->GetEntity()->Find<Transform>();
 			if (trans) {
 				vec3 rel_pos;
-				COPY3(rel_pos, e.position);
+				COPY3(rel_pos, e.spatial->position);
 				trans->position += rel_pos;
 			}
 		}

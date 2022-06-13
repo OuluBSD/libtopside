@@ -4,6 +4,8 @@ uses
 	ParallelLib,
 	IGraphics;
 
+uses(LINUX) ports/hcidump;
+
 library(LINUX & OPENHMD) "openhmd hidapi-libusb";
 
 file
@@ -11,6 +13,8 @@ file
 	Enums.h,
 	Vendors.h,
 	OpenHMD.cpp,
+	DevUsb.cpp,
+	DevBluetooth.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;

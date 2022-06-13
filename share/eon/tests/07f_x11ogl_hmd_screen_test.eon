@@ -1,4 +1,4 @@
-machine sdl.app: {
+machine app: {
 	
 	chain program: {
 		state event.register;

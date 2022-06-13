@@ -348,6 +348,7 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = mouse_diff; // extra
+	ev.spatial = &ev3d;
 	
 	double prev_yaw = yaw;
 	double prev_pitch = pitch;
@@ -368,7 +369,7 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	
 	for(int i = 0; i < 3; i++) av[i].Add(head_direction[i]);
 	
-	COPY3(ev.direction, head_direction);
+	COPY3(ev3d.direction, head_direction);
 	
 	
 	vec3 head_direction_diff = head_direction - prev_head_direction;
@@ -389,6 +390,7 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
+	ev.spatial = &ev3d;
 	vec3 dir = head_direction;
 	
 	// remove y component
@@ -399,12 +401,12 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	
 	if (straight) {
 		vec3 pos_diff = dir * step * straight;
-		COPY3(ev.position, pos_diff);
+		COPY3(ev3d.position, pos_diff);
 	}
 	if (sideways) {
 		vec3 s = dir * step * sideways;
 		vec3 pos_diff(-s[2], 0, +s[0]);
-		COPY3(ev.position, pos_diff);
+		COPY3(ev3d.position, pos_diff);
 	}
 	
 	WhenSourceUpdated(*this, ev);

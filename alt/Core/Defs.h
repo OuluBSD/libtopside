@@ -43,6 +43,7 @@
 #if defined flagPOSIX
 	#include <unistd.h>
 	#include <sys/time.h>
+	#include <netinet/in.h>
 #endif
 
 #if defined flagMSC

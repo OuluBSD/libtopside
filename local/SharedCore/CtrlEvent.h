@@ -16,6 +16,7 @@ typedef enum {
 	EVENT_MOUSE_EVENT,
 	
 	
+	EVENT_HOLO_STATE,
 	EVENT_HOLO_CONTROLLER_DETECTED,
 	EVENT_HOLO_CONTROLLER_LOST,
 	EVENT_HOLO_LOOK,
@@ -38,6 +39,7 @@ inline String GetEventTypeString(int event) {
 		case EVENT_MOUSEWHEEL:		return "Mouse Wheel";
 		case EVENT_MOUSE_EVENT:		return "Mouse Event";
 		
+		case EVENT_HOLO_STATE:					return "Holographic full state";
 		case EVENT_HOLO_CONTROLLER_DETECTED:	return "Holographic controller detected";
 		case EVENT_HOLO_CONTROLLER_LOST:		return "Holographic controller lost";
 		case EVENT_HOLO_LOOK:					return "Holographic Look";
@@ -120,9 +122,54 @@ struct ControllerState {
 	
 };
 
+struct CtrlEvent3D {
+	
+	typedef enum {
+		INVALID = -1,
+		
+		GENERIC,
+		TRIGGER,
+		TRIGGER_CLICK,
+		SQUEEZE,
+		MENU,
+		HOME,
+		ANALOG_X,
+		ANALOG_Y,
+		ANALOG_PRESS,
+		BUTTON_A,
+		BUTTON_B,
+		BUTTON_X,
+		BUTTON_Y,
+		VOLUME_PLUS,
+		VOLUME_MINUS,
+		MIC_MUTE,
+		
+		VALUE_COUNT
+	} Value;
+
+	float position[3] {0,0,0};
+	float direction[3] {0,0,0};
+	
+	// VR hmd & controllers
+	float l_proj[16], l_view[16];
+	float r_proj[16], r_view[16];
+	
+	static const int CTRL_COUNT = 2;
+	struct Ctrl {
+		bool is_enabled = false;
+		bool is_value[VALUE_COUNT];
+		float value[VALUE_COUNT];
+		float rot[4];
+		float pos[3];
+	};
+	Ctrl ctrl[CTRL_COUNT];
+	
+};
+
 #define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
 #define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
 #define COPY4(dst, from) for(int i = 0; i < 4; i++) dst[i] = from[i]
+#define COPY4x4(dst, from) for(int i = 0; i < 4; i++) for(int j = 0; j < 4; j++) dst[i][j] = from[i][j]
 	
 	
 struct CtrlEvent : Moveable<CtrlEvent> {
@@ -135,11 +182,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	Point pt;
 	Size sz;
 	
-	// 3D extension
-	float position[3] {0,0,0};
-	float direction[3] {0,0,0};
-	
 	// Device extension
+	CtrlEvent3D* spatial = 0;
 	ControllerState* state = 0;
 	
 	
@@ -155,8 +199,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		pt.y = e.pt.y;
 		sz.cx = e.sz.cx;
 		sz.cy = e.sz.cy;
-		COPY3(position, e.position);
-		COPY3(direction, e.direction);
+		spatial = e.spatial;
+		state = e.state;
 	}
 	
 	void Clear() {
@@ -165,8 +209,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		n = 0;
 		pt = Point(0,0);
 		sz = Size(0,0);
-		position[0] = position[1] = position[2] = 0;
-		direction[0] = direction[1] = direction[2] = 0;
+		spatial = 0;
+		state = 0;
 	}
 	
 	String ToString() const {

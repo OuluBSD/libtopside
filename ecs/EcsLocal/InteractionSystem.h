@@ -50,6 +50,7 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	double time = 0;
 	double last_dt = 0;
 	FboKbd::KeyVec prev;
+	CtrlEvent3D ev3d;
 	
 	// player camera
 	double pitch = -M_PI/2;

@@ -9,12 +9,14 @@ PKG(Holograph, Holo, H) {
 	COLOR(85, 42, 150)
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(IGraphics)
+	DEPENDENCY_("LINUX", ports/hcidump)
 	LIBRARY("LINUX & OPENHMD", openhmd hidapi-libusb)
 	/*LIBRARY("POSIX", X11)
 	LIBRARY("POSIX & OGL", GLX)
 	LIBRARY("POSIX & OGL", GL GLU GLEW glut)*/
 	HAVE_RECV_FINALIZE
-	HAVE_NEGOTIATE_FORMAT
+	//HAVE_NEGOTIATE_FORMAT
+	HAVE_IS_READY
 	
 	PKG_IFACE {
 		//NATIVE_CLASS(SinkDevice)
@@ -37,17 +39,51 @@ PKG(Holograph, Holo, H) {
 		VENDOR_CLASS(SinkDevice, void*)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("ctx",			"ohmd_context*")
-			.Add("settings",	"ohmd_device_settings*")
-			.Add("fragment",	"const char*")
-			.Add("vertex",		"const char*")
-			.Add("hmd",			"ohmd_device*")
-			.Add("screen_sz",	"Size")
-			.Add("l_proj",		"mat4")
-			.Add("l_view",		"mat4")
-			.Add("r_proj",		"mat4")
-			.Add("r_view",		"mat4")
-			;
+			.Add("ctx",					"ohmd_context*")
+			.Add("settings",			"ohmd_device_settings*")
+			.Add("fragment",			"const char*")
+			.Add("vertex",				"const char*")
+			.Add("hmd",					"ohmd_device*")
+			.Add("ctrl[2]",				"ohmd_device*")
+			.Add("screen_sz",			"Size")
+			.Add("ev",					"CtrlEvent")
+			.Add("ev3d",				"CtrlEvent3D")
+			.Add("ev_sendable",			"bool")
+			.Add("seq",					"int")
+			.Add("ts",					"TimeStop")
+			.Add("control_count[2]",		"int")
+			.Add("controls_fn[2][64]",		"int")
+			.Add("controls_types[2][64]",	"int")
+		;
+		
+	}
+	
+	VENDOR(DevUsb) {
+		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG(FREEBSD)
+		//VENDOR_INCLUDE("", openhmd.h)
+		//VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_CLASS(SinkDevice, void*)
+		
+		v->AddStruct("NativeSinkDevice")
+		;
+		
+	}
+	
+	VENDOR(DevBluetooth) {
+		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG(FREEBSD)
+		VENDOR_INCLUDE("", ports/hcidump/hcidump.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_CLASS(SinkDevice, void*)
+		
+		v->AddStruct("NativeSinkDevice")
+			.Add("bt[2]",		"SimpleBluetoothConnection")
+			.Add("data[2]",		"Vector<byte>")
+			.Add("sock",		"TcpSocket")
+			.Add("mode",		"int")
+			.Add("ctrl_idx[2]",	"int")
+		;
 		
 	}
 	

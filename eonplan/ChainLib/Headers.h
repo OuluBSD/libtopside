@@ -181,10 +181,20 @@ HEADER_LINK(		SdlOglFboProg,		PIPE, PROCESS)
 
 
 HEADER11(			OpenHMDPipe,		OpenHMDSinkDevice,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
-HEADER_ACTION(		OpenHMDPipe,		x11.ogl.holo.fbo.program)
+HEADER_ACTION(		OpenHMDPipe,		x11.ogl.holo.events)
 HEADER_ARG(			OpenHMDPipe,		HINT_PKG,					"AtomVR")
 HEADER_LINK(		OpenHMDPipe,		PIPE, PROCESS)
-HEADER_ARG(			OpenHMDPipe,		reqdef_flagOPENHMD,				1)
+HEADER_ARG(			OpenHMDPipe,		reqdef_flagOPENHMD,			1)
+
+HEADER11(			UsbHoloPipe,		DevUsbSinkDevice,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER_ACTION(		UsbHoloPipe,		usb.holo.events)
+HEADER_ARG(			UsbHoloPipe,		HINT_PKG,					"AtomVR")
+HEADER_LINK(		UsbHoloPipe,		PIPE, PROCESS)
+
+HEADER11(			BluetoothHoloPipe,	DevBluetoothSinkDevice,		pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER_ACTION(		BluetoothHoloPipe,	bluetooth.holo.events)
+HEADER_ARG(			BluetoothHoloPipe,	HINT_PKG,					"AtomVR")
+HEADER_LINK(		BluetoothHoloPipe,	PIPE, PROCESS)
 
 
 

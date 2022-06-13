@@ -28,6 +28,8 @@ INITBLOCK_(AtomVR) {
 		#if defined flagPOSIX
 			#ifdef flagOGL
 				Factory::RegisterAtom<OpenHMDPipe>();
+				Factory::RegisterAtom<UsbHoloPipe>();
+				Factory::RegisterAtom<BluetoothHoloPipe>();
 			#endif
 		#endif
 		

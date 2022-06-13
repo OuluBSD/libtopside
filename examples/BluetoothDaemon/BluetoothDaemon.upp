@@ -1,0 +1,10 @@
+uses
+	Local,
+	ports/hcidump;
+
+file
+	BluetoothDaemon.cpp;
+
+mainconfig
+	"" = "";
+

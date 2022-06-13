@@ -57,8 +57,8 @@ struct HolographSinkDeviceT : HoloSinkDevice {
 		return Holo::SinkDevice_Finalize(dev, *this, cfg);
 	}
 
-	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {
-		return Holo::SinkDevice_NegotiateSinkFormat(dev, *this, link, sink_ch, new_fmt);
+	bool IsReady(PacketIO& io) override {
+		return Holo::SinkDevice_IsReady(dev, *this, io);
 	}
 
 	
@@ -66,6 +66,14 @@ struct HolographSinkDeviceT : HoloSinkDevice {
 
 #if (defined flagOPENHMD && defined flagLINUX) || (defined flagOPENHMD && defined flagFREEBSD)
 using OpenHMDSinkDevice = HolographSinkDeviceT<HoloOpenHMD>;
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+using DevUsbSinkDevice = HolographSinkDeviceT<HoloDevUsb>;
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+using DevBluetoothSinkDevice = HolographSinkDeviceT<HoloDevBluetooth>;
 #endif
 
 

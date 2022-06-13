@@ -59,7 +59,7 @@ public:
 	void SkipChar();
 	void DoSpaces();
 	void Spaces();
-	void DoComments();
+	bool DoComments();
 	
 	int PeekChar() const;
 	bool Char(char chr);

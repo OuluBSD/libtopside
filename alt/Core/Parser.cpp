@@ -171,17 +171,22 @@ void CParser::SkipChar() {
 }
 
 void CParser::DoSpaces() {
-	if (pass_whitespace)
-		SkipSpaces();
-	if (pass_comments)
-		DoComments();
+	while (1) {
+		if (pass_whitespace)
+			SkipSpaces();
+		if (pass_comments) {
+			if (DoComments())
+				continue;
+		}
+		break;
+	}
 }
 
 void CParser::Spaces() {
 	DoSpaces();
 }
 
-void CParser::DoComments() {
+bool CParser::DoComments() {
 	if (Char2('/', '/')) {
 		while (pos.cursor < input.GetCount()) {
 			if (IsChar('\n') || IsChar2('\r','\n'))
@@ -189,8 +194,11 @@ void CParser::DoComments() {
 			pos.cursor++;
 			pos.col++;
 		}
-		SkipSpaces();
+		if (pass_whitespace)
+			SkipSpaces();
+		return true;
 	}
+	return false;
 }
 
 void CParser::PassId(String id) {

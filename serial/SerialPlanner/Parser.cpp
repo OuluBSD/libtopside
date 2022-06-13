@@ -346,6 +346,8 @@ bool Parser::ParseGlobalScope(Script::GlobalScope& list) {
 	}
 	else {
 		while (!IsEof()) {
+			DoSpaces();
+			
 			if (IsId("machine")) {
 				MachineDefinition& mach = list.machs.Add();
 				ParseMachine(mach);

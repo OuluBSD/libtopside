@@ -37,6 +37,8 @@ BASE(X11SwSinkDevice)
 BASE(X11SwFboBase)
 BASE(X11OglFboBase)
 BASE(OpenHMDSinkDevice)
+BASE(DevUsbSinkDevice)
+BASE(DevBluetoothSinkDevice)
 
 BASE(X11SwShaderBase)
 BASE(X11OglShaderBase)
