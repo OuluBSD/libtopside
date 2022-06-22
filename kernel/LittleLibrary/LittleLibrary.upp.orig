@@ -1,0 +1,7 @@
+description "Programming library for Little OS\377";
+
+file
+	LittleLibrary.h,
+	Callback.cpp,
+	Callback.h;
+

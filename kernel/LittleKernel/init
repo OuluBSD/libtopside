@@ -1,0 +1,4 @@
+#ifndef _LittleKernel_icpp_init_stub
+#define _LittleKernel_icpp_init_stub
+#include "LittleLibrary/init"
+#endif

@@ -1,0 +1,14 @@
+description "Programming library for Little OS\377";
+
+noblitz;
+
+file
+	LittleLibrary.h,
+	icxxabi.h,
+	icxxabi.cpp,
+	Memory.h,
+	Memory.cpp,
+	Callback.h,
+	Callback.cpp,
+	FixedArray.h;
+

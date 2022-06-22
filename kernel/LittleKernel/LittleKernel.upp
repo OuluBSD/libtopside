@@ -1,0 +1,49 @@
+description "My Little Kernel\377";
+
+noblitz;
+
+uses
+	LittleLibrary;
+
+file
+	Readme.md,
+	"Shell scripts" readonly separator,
+	update_image.sh,
+	run_qemu.sh,
+	run_bochs.sh,
+	bochsrc.txt,
+	link.ld,
+	GCC_K32.bm,
+	CLANG_K32.bm,
+	Code readonly separator,
+	boot.asm,
+	main.cpp,
+	Kernel.h,
+	Defs.h,
+	Common.h,
+	Common.cpp,
+	DescriptorTable.h,
+	DescriptorTable.cpp,
+	DescriptorTable.asm,
+	Monitor.h,
+	Monitor.cpp,
+	Timer.h,
+	Timer.cpp,
+	Interrupts.h,
+	Interrupts.cpp,
+	Interrupts.asm,
+	Heap.h,
+	Heap.cpp,
+	OrderedArray.h,
+	OrderedArray.cpp,
+	Memory.h,
+	Memory.cpp,
+	Paging.cpp;
+
+mainconfig
+	"" = "";
+
+custom() "asm",
+	"nasm -g -f elf32 -o $(OUTDIR)/$(TITLE)Asm.o $(PATH)\n",
+	"$(OUTDIR)/$(TITLE)Asm.o";
+
