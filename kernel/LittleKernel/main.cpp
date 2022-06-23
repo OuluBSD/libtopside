@@ -18,7 +18,16 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	MON.Clear();
 	
 	
-	InitLinkerVariables();
+	// Find the location of our initial ramdisk.
+	uint32 initrd_location = 0;
+	uint32 initrd_end = 0;
+	if (mboot_ptr->mods_count > 0) {
+		initrd_location = *((uint32*)mboot_ptr->mods_addr);
+		initrd_end = *(uint32*)(mboot_ptr->mods_addr+4);
+	}
+	
+	
+	InitLinkerVariables(initrd_end);
 	
 	
 	MON.Write("Enabling interrupts\n");
@@ -27,8 +36,20 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	MON.Write("Enabling paging\n");
 	InitialisePaging();
 	
+	MON.Write("Initialising tasking\n");
+	InitialiseTasking();
 	
-	#if 1
+	MON.Write("Initialising initrd\n");
+	fs_root = InitialiseInitrd(initrd_location);
+	
+	MON.Write("Initialising syscalls\n");
+	InitialiseSyscalls();
+
+	SwitchToUserMode();
+	
+	syscall_MonitorWrite("Hello, user world!\n");
+	
+	#if 0
 	uint32 a = KMemoryAllocate(4);
     uint32 b = KMemoryAllocate(8);
     uint32 c = KMemoryAllocate(8);

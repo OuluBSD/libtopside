@@ -25,9 +25,14 @@ void   outb(uint16 port, uint8 value);
 uint8  inb(uint16 port);
 uint16 inw(uint16 port);
 
-void memcpy(uint8 *dest, const uint8 *src, uint32 len);
+void memcpy(void *dest, const void *src, uint32 len);
 void memset(void *dest, uint8 val, uint32 len);
 //void memset(uint32 *dest, uint32 val, uint32 len);
+int strcmp(const char *str1, const char *str2);
+char *strcpy(char *dest, const char *src);
+char *strcat(char *dest, const char *src);
+int strlen(char *src);
+
 
 }
 

@@ -12,7 +12,7 @@ template <class T> class OrderedArray {
 	bool LessThan(T& a, T& b) {return (uint32)&a < (uint32)&b;}
 public:
 	OrderedArray& Create(uint32 max_size) {
-		// kmalloc is not working when initializing heap
+		// KMemoryAllocate is not working when initializing heap
 		array = (T**)KMemoryAllocateProxy(max_size * sizeof(T*));
 	    memset(array, 0, max_size * sizeof(T*));
 	    size = 0;

@@ -136,7 +136,9 @@ void AllocFrame(Page *page, int is_kernel, int is_writeable) {
 			// PANIC is just a macro that prints a message to the screen then hits an infinite loop.
 			PANIC("No free frames!");
 		}
+		
 		SetFrame(idx*0x1000); // this frame is now ours!
+		
 		page->present = 1; // Mark it as present.
 		page->rw = (is_writeable) ? 1 : 0; // Should the page be writeable?
 		page->user = (is_kernel) ? 0 : 1; // Should the page be user-mode?
@@ -183,7 +185,7 @@ void InitialisePaging() {
 	
 	
 	// Map some pages in the kernel heap area.
-	// Here we call get_page but not alloc_frame. This causes page_table_t's
+	// Here we call get_page but not AllocFrame. This causes page_table_t's
 	// to be created where necessary. We can't allocate frames yet because they
 	// they need to be identity mapped first below, and yet we can't increase
 	// placement_address between identity mapping and enabling the heap!
@@ -199,13 +201,13 @@ void InitialisePaging() {
 	// transparently, as if paging wasn't enabled.
 	// NOTE that we use a while loop here deliberately.
 	// inside the loop body we actually change placement_address
-	// by calling kmalloc(). A while loop causes this to be
+	// by calling KMemoryAllocate(). A while loop causes this to be
 	// computed on-the-fly rather than once at the start.
 	MON.Write("..Allocating kernel program pages").NewLine();
 	i = 0;
 	while (i < global->placement_address) {
 		// Kernel code is readable but not writeable from userspace.
-		AllocFrame(GetPage(i, 1, global->kernel_directory, false), 0, 0);
+		AllocFrame(GetPage(i, 1, global->kernel_directory), 0, 0);
 		i += 0x1000;
 	}
 	
@@ -213,7 +215,7 @@ void InitialisePaging() {
 	// Now allocate those pages we mapped earlier.
 	MON.Write("..Allocating kernel heap pages").NewLine();
 	for (i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += 0x1000)
-		AllocFrame(GetPage(i, 1, global->kernel_directory, true), 0, 0);
+		AllocFrame(GetPage(i, 1, global->kernel_directory), 0, 0);
 		
 		
 	
@@ -249,6 +251,12 @@ Page *GetPage(uint32 address, bool make, PageDirectory *dir, bool zero) {
 	address /= 0x1000;
 	// Find the page table containing this address.
 	uint32 table_idx = address / 1024;
+	ASSERT(table_idx < 1024);
+	
+	//KDUMPH(dir);
+	//KDUMPH(address);
+	//KDUMPI(table_idx);
+	
 	if (dir->tables[table_idx]) {
 		// If this table is already assigned
 		////MON.Write("  table already assigned: ").WriteDec(address).Write(" ").WriteDec(table_idx).NewLine();
@@ -307,3 +315,42 @@ void PageFault(Registers regs) {
 	while (1)
 		;
 }
+
+
+
+extern "C" {
+	void copy_page_physical(uint32 src, uint32 dst);
+}
+
+static PageTable *CloneTable(PageTable *src, uint32 *physAddr)
+{
+    // Make a new page table, which is page aligned.
+    PageTable* table = (PageTable*)EndlessKMemoryAllocateAlignedPhysical(sizeof(PageTable), physAddr);
+    
+    // Ensure that the new table is blank.
+    memset(table, 0, sizeof(PageDirectory));
+
+    // For every entry in the table...
+    int i;
+    for (i = 0; i < 1024; i++)
+    {
+        // If the source entry has a frame associated with it...
+        if (!src->pages[i].frame)
+            continue;
+        
+        // Get a new frame.
+        AllocFrame(&table->pages[i], 0, 0);
+        
+        // Clone the flags from source to destination.
+        if (src->pages[i].present) table->pages[i].present = 1;
+        if (src->pages[i].rw)      table->pages[i].rw = 1;
+        if (src->pages[i].user)    table->pages[i].user = 1;
+        if (src->pages[i].accessed)table->pages[i].accessed = 1;
+        if (src->pages[i].dirty)   table->pages[i].dirty = 1;
+        
+        // Physically copy the data across. This function is in process.s.
+        copy_page_physical(src->pages[i].frame*0x1000, table->pages[i].frame*0x1000);
+    }
+    return table;
+}
+

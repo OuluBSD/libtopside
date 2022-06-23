@@ -33,10 +33,11 @@ void ResetInterruptHandlers() {
 void isr_handler(Registers regs) {
 	MON.Write("recieved interrupt: ");
 	MON.WriteDec(regs.int_no);
+	MON.Write(" (").WriteDec(regs.err_code).Write(")");
 	MON.Put('\n');
 	
-	if (regs.int_no == 6)
-		PANIC("id 6 is stuck");
+	//if (regs.int_no == 6)
+	//	PANIC("id 6 is stuck");
 		
 	if (global->interrupt_handlers[regs.int_no].IsNull() == false) {
 		//isr_t handler = interrupt_handlers[regs.int_no];

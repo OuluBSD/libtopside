@@ -127,6 +127,12 @@ void DescriptorTable::InterruptFlush() {
 }
 
 
+void DescriptorTable::SetKernelStack(uint32 stack) {
+    tss_entry.esp0 = stack;
+}
+
+
+
 
 
 

@@ -38,7 +38,20 @@ file
 	OrderedArray.cpp,
 	Memory.h,
 	Memory.cpp,
-	Paging.cpp;
+	Paging.h,
+	Paging.cpp,
+	FileSystem.h,
+	FileSystem.cpp,
+	Multiboot.h,
+	Initrd.h,
+	Initrd.cpp,
+	Syscall.h,
+	Syscall.cpp,
+	Task.h,
+	Task.cpp,
+	Process.asm,
+	Global.h,
+	_ readonly separator;
 
 mainconfig
 	"" = "";

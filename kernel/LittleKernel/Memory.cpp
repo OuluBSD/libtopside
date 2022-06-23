@@ -13,8 +13,11 @@ extern uint32 bss;
 extern uint32 data;
 SVar* global = (SVar*)&end;
 
-void InitLinkerVariables() {
-	global->placement_address = (uint32)global + sizeof(SVar);
+void InitLinkerVariables(uint32 end) {
+	if (end)
+		global->placement_address = end + sizeof(SVar);
+	else
+		global->placement_address = (uint32)global + sizeof(SVar);
 	KDUMPH(&code);
 	KDUMPH(&data);
 	KDUMPH(&bss);

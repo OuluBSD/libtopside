@@ -27,11 +27,11 @@ Heap& Heap::Create(uint32 start, uint32 end_addr, uint32 max, uint8 supervisor, 
         start += 0x1000;
     }
     // Write the start, end and max addresses into the heap structure.
-    start_address = start;
-    end_address = end_addr;
-    max_address = max;
-    supervisor = supervisor;
-    readonly = readonly;
+    this->start_address = start;
+    this->end_address = end_addr;
+    this->max_address = max;
+    this->supervisor = supervisor;
+    this->readonly = readonly;
 	
     // We start off with one large hole in the index.
     Header *hole = (Header*) start;
@@ -220,7 +220,7 @@ void Heap::Expand(uint32 new_size) {
 
     uint32 i = old_size;
     while (i < new_size) {
-        AllocFrame( GetPage(start_address+i, 1, global->kernel_directory, false),
+        AllocFrame( GetPage(start_address+i, 1, global->kernel_directory),
                      (supervisor)?1:0, (readonly)?0:1);
         i += 0x1000 /* page size */;
     }
@@ -246,7 +246,7 @@ uint32 Heap::Contract(uint32 new_size) {
     uint32 i = old_size - 0x1000;
     while (new_size < i)
     {
-        FreeFrame(GetPage(start_address+i, 0, global->kernel_directory, false));
+        FreeFrame(GetPage(start_address+i, 0, global->kernel_directory));
         i -= 0x1000;
     }
 
@@ -361,7 +361,7 @@ uint32 KMemoryAllocateBase(uint32 sz, int align, uint32 *phys)
         void *addr = global->kheap.Allocate(sz, (uint8)align);
         if (phys != 0)
         {
-            Page *page = GetPage((uint32)addr, 0, global->kernel_directory, false);
+            Page *page = GetPage((uint32)addr, 0, global->kernel_directory);
             *phys = page->frame*0x1000 + (uint32)addr&0xFFF;
         }
         return (uint32)addr;
