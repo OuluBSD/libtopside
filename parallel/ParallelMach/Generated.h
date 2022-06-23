@@ -19,7 +19,6 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
-	ATOM_TYPE(USB_HOLO_PIPE) \
 	ATOM_TYPE(BLUETOOTH_HOLO_PIPE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
@@ -37,7 +36,6 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
-	ATOM_CLASS(UsbHoloPipe) \
 	ATOM_CLASS(BluetoothHoloPipe) \
 	ATOM_CLASS(TestEventSrcPipe) \
 	ATOM_CLASS(VolumeLoaderAtom) \
@@ -165,6 +163,14 @@ namespace Parallel {
 
 #define flagOPENHMD_ATOM_CLASS_LIST \
 	ATOM_CLASS(OpenHMDPipe) \
+
+
+#define flagLOCALHMD_ATOM_TYPE_LIST \
+	ATOM_TYPE(LOCAL_H_M_D_PIPE) \
+
+
+#define flagLOCALHMD_ATOM_CLASS_LIST \
+	ATOM_CLASS(LocalHMDPipe) \
 
 
 #define flagVR_ATOM_TYPE_LIST \

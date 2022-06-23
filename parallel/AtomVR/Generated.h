@@ -14,7 +14,7 @@ public:
 	RTTI_DECL1(OpenHMDPipe, OpenHMDSinkDevice)
 	COPY_PANIC(OpenHMDPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.holo.events")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.ohmd.events")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -24,13 +24,14 @@ public:
 };
 #endif
 
-class UsbHoloPipe : public DevUsbSinkDevice {
+#if defined flagLOCALHMD
+class LocalHMDPipe : public LocalHMDSinkDevice {
 
 public:
-	RTTI_DECL1(UsbHoloPipe, DevUsbSinkDevice)
-	COPY_PANIC(UsbHoloPipe)
+	RTTI_DECL1(LocalHMDPipe, LocalHMDSinkDevice)
+	COPY_PANIC(LocalHMDPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("usb.holo.events")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.holo.events")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -38,6 +39,7 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 class BluetoothHoloPipe : public DevBluetoothSinkDevice {
 
@@ -58,7 +60,9 @@ public:
 using OpenHMDPipeRef = Ref<OpenHMDPipe, AtomParent>;
 #endif
 
-using UsbHoloPipeRef = Ref<UsbHoloPipe, AtomParent>;
+#if defined flagLOCALHMD
+using LocalHMDPipeRef = Ref<LocalHMDPipe, AtomParent>;
+#endif
 
 using BluetoothHoloPipeRef = Ref<BluetoothHoloPipe, AtomParent>;
 

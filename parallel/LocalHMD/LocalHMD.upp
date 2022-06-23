@@ -1,0 +1,43 @@
+description "\377B0,0,128";
+
+noblitz;
+
+uses
+	Geometry;
+
+file
+	README.md,
+	Copying,
+	LocalHMD.h,
+	Public.h,
+	Internal.h,
+	Internal.cpp,
+	Hid.h,
+	Platform.h,
+	PlatformPosix.cpp,
+	PlatformWin32.cpp,
+	Shaders.h,
+	Shaders.cpp,
+	Utils.h,
+	Log.h,
+	Fusion.h,
+	Fusion.cpp,
+	ConfigKey.h,
+	Dummy.cpp,
+	Wmr.h,
+	Wmr.cpp,
+	WmrPacket.cpp,
+	Psvr.h,
+	Psvr.cpp,
+	PsvrPacket.cpp,
+	Android.h,
+	Android.cpp,
+	Math.h,
+	Math.cpp,
+	Miniz.h,
+	Miniz.c,
+	NxJson.h,
+	NxJson.c,
+	Trash readonly separator,
+	_ readonly separator;
+

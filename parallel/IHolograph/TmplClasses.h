@@ -68,6 +68,10 @@ struct HolographSinkDeviceT : HoloSinkDevice {
 using OpenHMDSinkDevice = HolographSinkDeviceT<HoloOpenHMD>;
 #endif
 
+#if defined flagLOCALHMD
+using LocalHMDSinkDevice = HolographSinkDeviceT<HoloLocalHMD>;
+#endif
+
 #if (defined flagLINUX) || (defined flagFREEBSD)
 using DevUsbSinkDevice = HolographSinkDeviceT<HoloDevUsb>;
 #endif

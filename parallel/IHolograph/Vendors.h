@@ -8,6 +8,10 @@
 	#include <openhmd.h>
 #endif
 
+#if defined flagLOCALHMD
+	#include <LocalHMD/LocalHMD.h>
+#endif
+
 #if (defined flagLINUX) || (defined flagFREEBSD)
 	#include <ports/hcidump/hcidump.h>
 #endif
@@ -21,6 +25,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define HOLO_VNDR_LIST \
 	HOLO_VNDR(HoloOpenHMD) \
+	HOLO_VNDR(HoloLocalHMD) \
 	HOLO_VNDR(HoloDevUsb) \
 	HOLO_VNDR(HoloDevBluetooth) \
 
@@ -44,6 +49,37 @@ struct HoloOpenHMD {
 		const char* vertex;
 		ohmd_device* hmd;
 		ohmd_device* ctrl[2];
+		Size screen_sz;
+		CtrlEvent ev;
+		CtrlEvent3D ev3d;
+		bool ev_sendable;
+		int seq;
+		TimeStop ts;
+		int control_count[2];
+		int controls_fn[2][64];
+		int controls_types[2][64];
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if defined flagLOCALHMD
+struct HoloLocalHMD {
+	
+	struct NativeSinkDevice {
+		TS::HMD::Context* ctx;
+		TS::HMD::DeviceSettings* settings;
+		const char* fragment;
+		const char* vertex;
+		TS::HMD::Device* hmd;
+		TS::HMD::Device* ctrl[2];
 		Size screen_sz;
 		CtrlEvent ev;
 		CtrlEvent3D ev3d;

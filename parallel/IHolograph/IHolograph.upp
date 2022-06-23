@@ -6,6 +6,8 @@ uses
 
 uses(LINUX) ports/hcidump;
 
+uses(LOCALHMD) LocalHMD;
+
 library(LINUX & OPENHMD) "openhmd hidapi-libusb";
 
 file
@@ -13,6 +15,7 @@ file
 	Enums.h,
 	Vendors.h,
 	OpenHMD.cpp,
+	LocalHMD.cpp,
 	DevUsb.cpp,
 	DevBluetooth.cpp,
 	IfaceFuncs.inl highlight cpp,

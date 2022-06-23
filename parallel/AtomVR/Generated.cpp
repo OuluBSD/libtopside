@@ -26,26 +26,28 @@ AtomTypeCls OpenHMDPipe::GetType() const
 }
 
 #endif
-AtomTypeCls UsbHoloPipe::GetAtomType()
+#if defined flagLOCALHMD
+AtomTypeCls LocalHMDPipe::GetAtomType()
 {
-	return ATOM11(USB_HOLO_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+	return ATOM11(LOCAL_H_M_D_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
 }
 
-LinkTypeCls UsbHoloPipe::GetLinkType()
+LinkTypeCls LocalHMDPipe::GetLinkType()
 {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void UsbHoloPipe::Visit(RuntimeVisitor& vis)
+void LocalHMDPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<DevUsbSinkDevice>(this);
+	vis.VisitThis<LocalHMDSinkDevice>(this);
 }
 
-AtomTypeCls UsbHoloPipe::GetType() const
+AtomTypeCls LocalHMDPipe::GetType() const
 {
 	return GetAtomType();
 }
 
+#endif
 AtomTypeCls BluetoothHoloPipe::GetAtomType()
 {
 	return ATOM11(BLUETOOTH_HOLO_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);

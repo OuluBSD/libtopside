@@ -354,6 +354,10 @@ typedef enum : byte {
 	flagOPENHMD_ATOM_TYPE_LIST
 	#endif
 	
+	#ifdef flagLOCALHMD
+	flagLOCALHMD_ATOM_TYPE_LIST
+	#endif
+	
 	#ifdef flagVR
 	flagVR_ATOM_TYPE_LIST
 	#endif
