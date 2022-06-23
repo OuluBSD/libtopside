@@ -88,7 +88,7 @@ static void HandleTrackerSensorMsg(WmrPrivateData* priv, unsigned char* buffer, 
 	}
 }
 
-static void UpdateDevice(Device* device)
+static void Wmr_UpdateDevice(Device* device)
 {
 	WmrPrivateData* priv = (WmrPrivateData*)device;
 
@@ -139,7 +139,7 @@ static int GetFloat(Device* device, FloatValue type, float* out)
 	return 0;
 }
 
-int CloseDevice(Device* device)
+int Wmr_CloseDevice(Device* device)
 {
 	WmrPrivateData* priv = (WmrPrivateData*)device;
 
@@ -425,8 +425,8 @@ static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
 	CalculateDefaultProjectionMatrices(&priv->base.properties);
 
 	// set up device callbacks
-	priv->base.Update = UpdateDevice;
-	priv->base.Close = CloseDevice;
+	priv->base.Update = Wmr_UpdateDevice;
+	priv->base.Close = Wmr_CloseDevice;
 	priv->base.GetFloat = GetFloat;
 
 	InitFusion(&priv->sensor_fusion);

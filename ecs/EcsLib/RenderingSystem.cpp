@@ -116,6 +116,11 @@ void RenderingSystem::Update(double dt) {
 		if (!state && x11_ogl_fbo) {
 			state = &x11_ogl_fbo->data.accel_state;
 		}
+		RefT_Atom<X11OglSinkDevice> x11_ogl_sink = ents->GetRoot()->FindDeep<X11OglSinkDevice>();
+		if (!state && x11_ogl_sink) {
+			TODO
+			//state = &x11_ogl_sink->dev.ogl.GetBuffer().data;
+		}
 		#ifdef flagSDL2
 		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();
 		if (!state && sdl2_ogl_fbo) {

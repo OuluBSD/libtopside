@@ -84,7 +84,8 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
-	bf.GetBuffer().fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	auto& buf = bf.GetBuffer();
+	TODO //buf.fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
 }
@@ -224,7 +225,8 @@ bool GfxAccelAtom<Gfx>::IsOpen() const {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Update(double dt) {
-	if (bf.env) {
+	TODO
+	/*if (bf.env) {
 		Size& video_size = bf.env->template Set<Size>(SCREEN0_SIZE);
 		const bool& close_window = bf.env->template Set<bool>(SCREEN0_CLOSE);
 		Buffer& buf = GetBuffer();
@@ -241,7 +243,7 @@ void GfxAccelAtom<Gfx>::Update(double dt) {
 			else
 				buf.SetFramebufferSize(video_size);
 		}
-	}
+	}*/
 }
 
 template <class Gfx>
@@ -336,21 +338,23 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				GfxDataState* gsd = (GfxDataState*)d.ptr;
 				DataState* sd = CastPtr<DataState>(gsd);
 				ASSERT(sd);
-				if (sd)
-					bf.GetBuffer().SetDataStateOverride(sd);
+				TODO
+				//if (sd)
+				//	bf.GetBuffer().SetDataStateOverride(sd);
 			}
 			else if (d.IsText("gfxvector")) {
 				fb_packet = p;
 			}
 			else if (d.IsText("gfxbuf")) {
 				//Size3 sz = vfmt.GetSize();
-				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+				TODO
+				/*int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 				if (pv.IsData<InternalPacketData>()) {
 					succ = bf.GetBuffer().LoadInputLink(ch_i - base, d);
 				}
 				else {
 					RTLOG("GfxAccelAtom::Recv: cannot handle packet: " << pv.ToString());
-				}
+				}*/
 			}
 			else {
 				DUMP(d.GetText());

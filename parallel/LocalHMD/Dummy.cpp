@@ -9,8 +9,9 @@ typedef struct {
 	int id;
 } DummyPrivateData;
 
-static void UpdateDevice(Device* device)
+static void Dummy_UpdateDevice(Device* device)
 {
+	
 }
 
 static int GetFloat(Device* device, FloatValue type, float* out)
@@ -61,7 +62,7 @@ static int GetFloat(Device* device, FloatValue type, float* out)
 	return HMD_S_OK;
 }
 
-int CloseDevice(Device* device)
+int Dummy_CloseDevice(Device* device)
 {
 	LOGD("closing dummy device");
 	free(device);
@@ -100,8 +101,8 @@ static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
 	CalculateDefaultProjectionMatrices(&priv->base.properties);
 
 	// set up device callbacks
-	priv->base.Update = UpdateDevice;
-	priv->base.Close = CloseDevice;
+	priv->base.Update = Dummy_UpdateDevice;
+	priv->base.Close = Dummy_CloseDevice;
 	priv->base.GetFloat = GetFloat;
 	
 	return (Device*)priv;

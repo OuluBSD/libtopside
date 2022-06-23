@@ -79,7 +79,7 @@ static int AndroidSensorCallback(int fd, int events, void* data)
     return 1;
 }
 
-static void UpdateDevice(Device* device)
+static void Android_UpdateDevice(Device* device)
 {
     AndroidPrivateData* priv = (AndroidPrivateData*)device;
 
@@ -110,7 +110,7 @@ static void UpdateDevice(Device* device)
     ALooper_pollAll(0, NULL, NULL, NULL);
 }
 
-static int GetFloat(Device* device, FloatValue type, float* out)
+static int Android_GetFloat(Device* device, FloatValue type, float* out)
 {
 	AndroidPrivateData* priv = (AndroidPrivateData*)device;
 
@@ -145,7 +145,7 @@ static int GetFloat(Device* device, FloatValue type, float* out)
 	return 0;
 }
 
-static int SetData(Device* device, DataValue type, void* in)
+static int Android_SetData(Device* device, DataValue type, void* in)
 {
 	AndroidPrivateData* priv = (AndroidPrivateData*)device;
 
@@ -164,7 +164,7 @@ static int SetData(Device* device, DataValue type, void* in)
 		return 0;
 }
 
-static void CloseDevice(Device* device)
+static void Android_CloseDevice(Device* device)
 {
 	LOGD("closing Android device");
 	free(device);
@@ -195,10 +195,10 @@ static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
 	CalculateDefaultProjectionMatrices(&priv->base.properties);
 
 	// set up device callbacks
-	priv->base.update = UpdateDevice;
-	priv->base.close = CloseDevice;
-	priv->base.GetFloat = GetFloat;
-	priv->base.SetData = SetData;
+	priv->base.update = Android_UpdateDevice;
+	priv->base.close = Android_CloseDevice;
+	priv->base.GetFloat = Android_GetFloat;
+	priv->base.SetData = Android_SetData;
 
     //init Android sensors
     priv->sensor_mgr = ASensorManager_getInstance();

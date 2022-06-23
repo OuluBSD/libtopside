@@ -6,6 +6,9 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Gfx>
 bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	
+	if (ws.IsTrue(".is.stereo"))
+		buf.SetStereoImage();
+	
 	sample_rate = ws.GetInt(".samplerate", 44100);
 	frame_samples = ws.GetInt(".frame_samples", 1024);
 	is_audio = ws.Get(".type") == "audio";
@@ -18,6 +21,8 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	frag_shdr = ws.Get(".fragshader");
 	vtx_shdr = ws.Get(".vtxshader");
 	library_paths = ws.Get(".library");
+	stereo_frag_path = ws.Get(".stereo.fragment");
+	stereo_vtx_path = ws.Get(".stereo.vertex");
 	
 	if (frag_path.IsEmpty()) frag_path = ws.Get(".filepath");
 	
@@ -49,7 +54,7 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	
 	String loopback = ws.Get(".loopback");
 	if (loopback.GetCount()) {
-		if (!buf.SetLoopback(loopback)) {
+		if (!buf.stages[0].SetLoopback(loopback)) {
 			LOG("GfxBufferFieldT<Gfx>::Initialize: error: assigning loopback failed");
 			return false;
 		}
@@ -57,7 +62,8 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	
 	
 	// SDL2ScreenBase duplicate
-	for(int i = 0; i < 4; i++) {
+	TODO
+	/*for(int i = 0; i < 4; i++) {
 		String key = ".buf" + IntStr(i);
 		String value = ws.Get(key);
 		if (value.IsEmpty())
@@ -68,7 +74,7 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 			buf.SetInputCubemap(i);
 		else
 			TODO
-	}
+	}*/
 	
 	
 	String env_name = ws.Get(".env");
@@ -84,7 +90,7 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 	buf.AddLink(ws.Get(".link"));
 	
 	
-	SetShaderFile(frag_path, vtx_path, library_paths);
+	//SetShaderFile(frag_path, vtx_path, library_paths);
 	SetFragmentShader(frag_shdr);
 	SetVertexShader(vtx_shdr);
 	
@@ -121,10 +127,15 @@ bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 			screen_sz = Size(1280,720);
 	}
 	
-	auto& fb = buf.fb;
-	fb.is_win_fbo = is_win_fbo;
-	fb.size = screen_sz;
-	fb.fps = 60;
+	TODO
+	
+	#if 0
+	{
+		auto& fb = buf.GetFramebuffer();
+		fb.is_win_fbo = is_win_fbo;
+		fb.size = screen_sz;
+		fb.fps = 60;
+	}
 	
 	
 	
@@ -136,17 +147,24 @@ bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	else if (!buf.LoadShader(GVar::VERTEX_SHADER, vtx_shdr, vtx_path, library_paths))
 		return false;
 	
+	if (stereo_vtx_path.GetCount() &&
+		stereo_frag_path.GetCount() &&
+		!buf.LoadStereoShader(stereo_vtx_path, stereo_frag_path))
+		return false;
+	
 	/*if (!buf.Initialize()) {
 		LOG("GfxBufferFieldT<Gfx>::ImageInitialize: error: " << buf.GetError());
 		return false;
 	}*/
+	
+	#endif
 	
 	return true;
 }
 
 template <class Gfx>
 bool GfxBufferFieldT<Gfx>::PostInitialize() {
-	auto& fb = buf.fb;
+	auto& fb = buf.GetFramebuffer();
 	fb.is_audio = is_audio;
 	
 	buf.ctx.sample_rate = sample_rate;

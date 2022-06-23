@@ -111,7 +111,7 @@ static void Teardown(PsvrPrivateData* priv)
 	}
 }
 
-static void UpdateDevice(Device* device)
+static void Psvr_UpdateDevice(Device* device)
 {
 	PsvrPrivateData* priv = (PsvrPrivateData*)device;
 
@@ -168,7 +168,7 @@ static int GetFloat(Device* device, FloatValue type, float* out)
 	return 0;
 }
 
-int CloseDevice(Device* device)
+int Psvr_CloseDevice(Device* device)
 {
 	PsvrPrivateData* priv = (PsvrPrivateData*)device;
 
@@ -287,8 +287,8 @@ static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
 	CalculateDefaultProjectionMatrices(&priv->base.properties);
 
 	// set up device callbacks
-	priv->base.Update = UpdateDevice;
-	priv->base.Close = CloseDevice;
+	priv->base.Update = Psvr_UpdateDevice;
+	priv->base.Close = Psvr_CloseDevice;
 	priv->base.GetFloat = GetFloat;
 
 	InitFusion(&priv->sensor_fusion);

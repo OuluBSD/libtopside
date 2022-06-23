@@ -95,7 +95,6 @@ protected:
 	
 	
 	void SetWindowRect(Rect r);
-	Buffer& GetBuffer() {return bf.GetBuffer();}
 	
 public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
@@ -127,6 +126,8 @@ public:
 	
 	Size GetSize() {return Gfx::GetWindowSize(win);}
 	bool IsCaptured() const {return mouse_captured;}
+	
+	Buffer& GetBuffer() {return bf.GetBuffer();}
 	
 };
 

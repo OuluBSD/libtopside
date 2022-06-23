@@ -5,6 +5,8 @@ noblitz;
 uses
 	Geometry;
 
+library(POSIX) "hidapi-libusb hidapi-hidraw";
+
 file
 	README.md,
 	Copying,

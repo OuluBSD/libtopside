@@ -74,9 +74,16 @@ AtomBaseRef Space::FindTypeCls(AtomTypeCls atom_type) {
 
 AtomBaseRef Space::FindAtom(TypeCls atom_type) {
 	for (AtomBaseRef& comp : atoms) {
+		#if 1
+		// This version checks inherited types too
+		void* base = comp->GetBasePtr(atom_type);
+		if (base)
+			return comp;
+		#else
 		TypeCls type = comp->GetTypeId();
 		if (type == atom_type)
 			return comp;
+		#endif
 	}
 	return AtomBaseRef();
 }

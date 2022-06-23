@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
-	if (0) {
+	if (1) {
 		obj = "cube.obj";
 		tex = "cube.png";
 	}

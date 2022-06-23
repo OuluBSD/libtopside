@@ -20,6 +20,8 @@ protected:
 	String vtx_shdr;
 	String frag_path;
 	String vtx_path;
+	String stereo_frag_path;
+	String stereo_vtx_path;
 	String library_paths;
 	bool is_user_shader = false;
 	bool is_audio = false;
@@ -29,7 +31,7 @@ protected:
 	NativeFrameBufferRef fb = 0;
 	NativeColorBufferRef clr = 0;
 	
-	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
+	//void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
 	void SetFragmentShader(String s) {frag_shdr = s;}
 	void SetVertexShader(String s) {vtx_shdr = s;}
 	

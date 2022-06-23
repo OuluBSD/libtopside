@@ -57,6 +57,7 @@ file
 	TUtil.cpp,
 	TBuffer.h,
 	TBuffer.cpp,
+	TBufferStage.cpp,
 	TBufferField.h,
 	TBufferField.cpp,
 	ProgDraw.h,

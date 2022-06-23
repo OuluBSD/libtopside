@@ -141,17 +141,16 @@ struct RuntimeStateT : GfxRuntimeState {
 	using InputState  = InputStateT<Gfx>;
 	
 	
-	NativeProgram	prog;
-	NativePipeline	pipeline;
-	//NativeShaderRef	shader;
-	bool		is_searched_vars = 0;
-	int			var_idx[GVar::VAR_COUNT];
-	bool		is_time_used = 0;
+	NativeProgram		prog;
+	NativePipeline		pipeline;
+	bool				is_searched_vars = 0;
+	int					var_idx[GVar::VAR_COUNT];
+	bool				is_time_used = 0;
 	
-	ShaderState	shaders[GVar::SHADERTYPE_COUNT];
-	InputState	inputs[GVar::INPUT_COUNT];
+	ShaderState			shaders[GVar::SHADERTYPE_COUNT];
+	InputState			inputs[GVar::INPUT_COUNT];
 	
-	Vector<String> user_vars;
+	Vector<String>		user_vars;
 	
 	
 	
