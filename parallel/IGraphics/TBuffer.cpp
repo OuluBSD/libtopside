@@ -50,6 +50,7 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	else if (type == "stereo") {
 		mode = MULTI_STEREO;
 		stages.SetCount(3);
+		stages[2].quad_count = 2;
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;

@@ -10,7 +10,8 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 	lib_conf.str = ws.Get(".library");
 	lib_conf.is_path = true;
 	
-	quad_count = ws.GetInt(".s" + IntStr(id) + ".quad.count", 1);
+	if (!quad_count)
+		quad_count = ws.GetInt(".s" + IntStr(id) + ".quad.count", 1);
 	
 	// Program string is a simplified way to set shader configuration
 	String program_str = ws.Get(".program");
@@ -259,8 +260,6 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	    Gfx::DrawBuffers(GVar::COLOR0_EXT);
 	}
 	
-	SetVars(rt.prog, cfg);
-
 	RendVer(OnProcess);
 	
 	Gfx::Clear(GVar::COLOR_BUFFER);
@@ -284,8 +283,12 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		}
 		//}
 		
+		
 		// render VBA from state
 		Gfx::BeginRender();
+		
+		SetVars(rt.prog, cfg);
+		
 		for (DataObject& o : data.objects) {
 			if (!o.is_visible)
 				continue;
@@ -296,6 +299,9 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	}
 	else if (user_data) {
 		Gfx::BeginRender();
+		
+		SetVars(rt.prog, cfg);
+		
 		for (DataObject& o : user_data->objects) {
 			if (!o.is_visible)
 				continue;
@@ -901,7 +907,8 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 			if (tex) {
 				//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
 				Gfx::ActiveTexture(tex_ch);
-				Gfx::BindTextureRO(GetTexType(ch), tex);
+				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 				Gfx::Uniform1i(uindex, tex_ch);
 				Gfx::DeactivateTexture();
 			}

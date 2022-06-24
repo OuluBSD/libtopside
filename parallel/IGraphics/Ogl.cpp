@@ -411,6 +411,12 @@ uniform ${SAMPLER1} iChannel1;
 uniform ${SAMPLER2} iChannel2;
 uniform ${SAMPLER3} iChannel3;
 
+uniform sampler2D iStageColor0;
+uniform sampler2D iStageColor1;
+uniform sampler2D iStageColor2;
+uniform sampler2D iStageColor3;
+uniform sampler2D iStageColor4;
+
 uniform float     iAudioSeconds;
 uniform mat4      iView;
 uniform mat4      iProjection;

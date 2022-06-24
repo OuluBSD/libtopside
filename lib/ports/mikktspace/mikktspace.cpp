@@ -82,7 +82,7 @@ static SVec3		vscale(const float fS, const SVec3 v)
 
 	return vRes;
 }
-
+ 
 static float			LengthSquared( const SVec3 v )
 {
 	return v.x*v.x + v.y*v.y + v.z*v.z;
