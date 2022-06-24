@@ -5,6 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void PassVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
+	#if 0
 	auto& pos = a.v.position;
 	auto& tex = a.v.tex_coord;
 	pos[0] = (pos[0] + 1) * 0.5;
@@ -12,6 +13,7 @@ void PassVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	tex = pos.template Splice<0,2>();
 	pos[0] *= a.generic->iResolution[0];
 	pos[1] *= a.generic->iResolution[1];
+	#endif
 }
 
 template <class Gfx>
@@ -111,13 +113,56 @@ void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	
 	vec2 uv = fragCoord / iResolution.Splice();
 	vec4 clr = texture(iChannel0, uv);
-	clr[0] = 1.0;
+	//clr[0] = 1.0;
     fragColor = clr;
+}
+
+template <class Gfx>
+StereoShaderT<Gfx>::StereoShaderT() {
+	this->UseUniform(GVar::VAR_BUFFERSTAGE0_COLOR);
+	this->UseUniform(GVar::VAR_BUFFERSTAGE1_COLOR);
+	this->UseUniform(GVar::VAR_MODEL);
+	
+}
+
+template <class Gfx>
+void StereoShaderT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
+	vec4 pos = a.v.position.Splice().Embed();
+	vec4 screen = a.va->model * pos;
+	screen.Project();
+	a.v.position = screen;
+}
+
+template <class Gfx>
+void StereoShaderT<Gfx>::Process(FragmentShaderArgsT<Gfx>& a) {
+	NativeColorBufferConstRef iChannel0 = Gfx::GetLocalTexture(a.generic->iStageColor0);
+	NativeColorBufferConstRef iChannel1 = Gfx::GetLocalTexture(a.generic->iStageColor1);
+	ASSERT(iChannel0);
+	ASSERT(iChannel1);
+	
+	vec4 clr;
+	
+	if (0 && (int)a.frag_coord[0] % 2) {
+		const auto& iResolution = a.generic->iResolution;
+		const auto& fragCoord = a.frag_coord;
+		auto& fragColor = a.frag_color_out;
+		
+		vec2 uv = fragCoord / iResolution.Splice();
+		clr[0] = uv[0];
+		clr[1] = uv[1];
+		clr[2] = uv[0];
+	}
+	else {
+		clr = texture(iChannel0, a.tex_coord);
+	}
+	clr[3] = 0;
+    a.frag_color_out = clr;
 }
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(PassVertexT)
 X11SW_EXCPLICIT_INITIALIZE_CLASS(PassFragmentT)
 X11SW_EXCPLICIT_INITIALIZE_CLASS(ColorTestFragmentT)
 X11SW_EXCPLICIT_INITIALIZE_CLASS(ProxyInput0FragmentT)
+X11SW_EXCPLICIT_INITIALIZE_CLASS(StereoShaderT)
 
 NAMESPACE_PARALLEL_END

@@ -35,8 +35,8 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	if (loopback.GetCount() && !buf.SetLoopback(loopback))
 		return false;
 	
-	String fragment_path = ws.Get(".fragment");
-	String vertex_path = ws.Get(".vertex");
+	String fragment_path = ws.Get(".shader.frag.path");
+	String vertex_path = ws.Get(".shader.vtx.path");
 	String library_path = ws.Get(".library");
 	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
 	

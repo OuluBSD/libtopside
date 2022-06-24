@@ -50,6 +50,11 @@ struct GenericShaderArgs {
 	int iChannel1;
 	int iChannel2;
 	int iChannel3;
+	int iStageColor0;
+	int iStageColor1;
+	int iStageColor2;
+	int iStageColor3;
+	int iStageColor4;
 	float iTime;
 	
 };
@@ -57,8 +62,8 @@ struct GenericShaderArgs {
 struct GenericVertexShaderArgs {
     mat4 view;
     /*mat4 proj;
-    mat4 scale;
-    mat4 model;*/
+    mat4 scale;*/
+    mat4 model;
     
 };
 

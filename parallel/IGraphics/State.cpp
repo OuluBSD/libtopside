@@ -30,6 +30,12 @@ const char* names[TS::GVar::VAR_COUNT+1] = {
 	"iReflection",
 	"iUnknown",
 	
+	"iStageColor0",
+	"iStageColor1",
+	"iStageColor2",
+	"iStageColor3",
+	"iStageColor4",
+	
 	"iResolution",
 	"iTime",
 	"iTimeDelta",

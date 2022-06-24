@@ -87,6 +87,26 @@ GLint GetGfxType(GVar::Sample sample) {
 	return -1;
 }
 
+int GetOglChCode(int channels, bool is_float) {
+	if (!is_float) {
+		switch (channels) {
+			case 1: return GL_RED;
+			case 2: return GL_RG;
+			case 3: return GL_RGB;
+			case 4: return GL_RGBA;
+		}
+	}
+	else {
+		switch (channels) {
+			case 1: return GL_R32F;
+			case 2: return GL_RG32F;
+			case 3: return GL_RGB32F;
+			case 4: return GL_RGBA32F;
+		}
+	}
+	return 0;
+}
+
 
 
 
@@ -923,7 +943,7 @@ template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffe
 
 template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst) {
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadPixels(x, y, w, h, GetOglChCode(channels), GetGfxType(sample), dst);
+	glReadPixels(x, y, w, h, GetOglChCode(channels, true), GetGfxType(sample), dst);
 }
 
 

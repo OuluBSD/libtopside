@@ -795,7 +795,7 @@ AtomTypeCls X11SwVideoAtomPipe::GetType() const
 #if defined flagSCREEN
 AtomTypeCls X11SwFboAtomSA::GetAtomType()
 {
-	return ATOM11(X11_SW_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+	return ATOM11(X11_SW_FBO_ATOM_S_A, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, RECEIPT);
 }
 
 LinkTypeCls X11SwFboAtomSA::GetLinkType()

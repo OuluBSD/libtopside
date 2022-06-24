@@ -83,28 +83,7 @@ file
 	Renderer.h,
 	Renderer.cpp,
 	Compiler.h,
-	Compiler.cpp,
-	Library readonly separator,
-	Library.h,
-	libsimple.cpp,
-	"CPU only" readonly separator,
-	Cpu.h,
-	CpuRenderer.h,
-	CpuRenderer.cpp,
-	CpuFramebuffer.cpp,
-	CpuDraw.cpp,
-	CpuShader.h,
-	CpuShader.cpp,
-	CpuSDL.h,
-	CpuSDL.cpp,
-	"OpenGL Accelerated" readonly separator,
-	Ogl.h,
-	OglState.cpp,
-	OglRenderer.cpp,
-	OglFramebuffer.cpp,
-	OglShader.cpp,
-	OglCompiler.cpp,
-	OglBuffer.cpp;
+	Compiler.cpp;
 
 mainconfig
 	"" = "SCREEN";

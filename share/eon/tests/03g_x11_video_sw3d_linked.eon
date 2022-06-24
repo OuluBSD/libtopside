@@ -6,15 +6,15 @@ machine glx.app: {
 		loop video: {
 			center.customer: true;
 			x11.sw.fbo.pipe: true {
-				vtxshader:			"pass";
-				fragshader:		"color_test";
+				shader.vtx.name:			"pass";
+				shader.frag.name:		"color_test";
 			};
 			x11.sw.fbo.sink: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				vtxshader:			"pass";
-				fragshader:		"proxy_input0";
+				close_machine:		true;
+				sizeable:			true;
+				env:				event.register;
+				shader.vtx.name:	"pass";
+				shader.frag.name:	"proxy_input0";
 			};
 		};
 	};

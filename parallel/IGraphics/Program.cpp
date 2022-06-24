@@ -63,14 +63,19 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 		case GVar::VAR_VIEW:				return sizeof(GenericVertexShaderArgs::view);
 		case GVar::VAR_LIGHTDIR:			return sizeof(GenericFragmentShaderArgs::light_dir);
 		/*case Shaders::IPROJ:				return sizeof(GenericVertexShaderArgs::proj);
-		case Shaders::ISCALE:				return sizeof(GenericVertexShaderArgs::scale);
-		case Shaders::IMODEL:				return sizeof(GenericVertexShaderArgs::model);*/
+		case Shaders::ISCALE:				return sizeof(GenericVertexShaderArgs::scale);*/
+		case GVar::VAR_MODEL:				return sizeof(GenericVertexShaderArgs::model);
 		case GVar::VAR_COMPAT_RESOLUTION:	return sizeof(GenericShaderArgs::iResolution);
 		case GVar::VAR_COMPAT_TIME:			return sizeof(GenericShaderArgs::iTime);
 		case GVar::VAR_COMPAT_CHANNEL0:
 		case GVar::VAR_COMPAT_CHANNEL1:
 		case GVar::VAR_COMPAT_CHANNEL2:
 		case GVar::VAR_COMPAT_CHANNEL3:
+		case GVar::VAR_BUFFERSTAGE0_COLOR:
+		case GVar::VAR_BUFFERSTAGE1_COLOR:
+		case GVar::VAR_BUFFERSTAGE2_COLOR:
+		case GVar::VAR_BUFFERSTAGE3_COLOR:
+		case GVar::VAR_BUFFERSTAGE4_COLOR:
 											return sizeof(void*);
 		case GVar::VAR_COMPAT_CHANNELRESOLUTION:	return sizeof(GenericShaderArgs::iChannelResolution0);
 		default: break;
@@ -89,12 +94,15 @@ int SoftProgramT<Gfx>::GetVarType(int i) const {
 template <class Gfx>
 String SoftProgramT<Gfx>::GetVar(int i) const {
 	int idx = uniforms.GetKey(i);
-	if (idx < 0) return "";
-	if (idx < GVar::VAR_COUNT) return Shaders::GetUniformName(idx);
-	
+	if (idx < 0)
+		return "";
+	if (idx < GVar::VAR_COUNT)
+		return GVar::names[idx];
+		
 	TODO
 	
 }
+
 
 template <class Gfx>
 void SoftProgramT<Gfx>::Attach(SoftShader& s) {
@@ -106,10 +114,15 @@ void SoftProgramT<Gfx>::Attach(SoftShader& s) {
 template <class Gfx>
 void SoftProgramT<Gfx>::SetVar(int i, int j) {
 	int idx = uniforms.GetKey(i);
-	if (idx >= GVar::VAR_COMPAT_CHANNEL0) {args.iChannel0 = j; return;}
-	if (idx >= GVar::VAR_COMPAT_CHANNEL1) {args.iChannel1 = j; return;}
-	if (idx >= GVar::VAR_COMPAT_CHANNEL2) {args.iChannel2 = j; return;}
-	if (idx >= GVar::VAR_COMPAT_CHANNEL3) {args.iChannel3 = j; return;}
+	if (idx == GVar::VAR_COMPAT_CHANNEL0) {args.iChannel0 = j; return;}
+	if (idx == GVar::VAR_COMPAT_CHANNEL1) {args.iChannel1 = j; return;}
+	if (idx == GVar::VAR_COMPAT_CHANNEL2) {args.iChannel2 = j; return;}
+	if (idx == GVar::VAR_COMPAT_CHANNEL3) {args.iChannel3 = j; return;}
+	if (idx == GVar::VAR_BUFFERSTAGE0_COLOR) {args.iStageColor0 = j; return;}
+	if (idx == GVar::VAR_BUFFERSTAGE1_COLOR) {args.iStageColor1 = j; return;}
+	if (idx == GVar::VAR_BUFFERSTAGE2_COLOR) {args.iStageColor2 = j; return;}
+	if (idx == GVar::VAR_BUFFERSTAGE3_COLOR) {args.iStageColor3 = j; return;}
+	if (idx == GVar::VAR_BUFFERSTAGE4_COLOR) {args.iStageColor4 = j; return;}
 	TODO
 }
 
@@ -153,8 +166,8 @@ void SoftProgramT<Gfx>::SetVar(int i, const mat4& mat) {
 	switch (idx) {
 		case GVar::VAR_VIEW:		vargs.view = mat; return;
 		/*case Shaders::IPROJ:		vargs.proj = mat; return;
-		case Shaders::ISCALE:		vargs.scale = mat; return;
-		case Shaders::IMODEL:		vargs.model = mat; return;*/
+		case Shaders::ISCALE:		vargs.scale = mat; return;*/
+		case GVar::VAR_MODEL:		vargs.model = mat; return;
 		default: break;
 	}
 	ASSERT(0);

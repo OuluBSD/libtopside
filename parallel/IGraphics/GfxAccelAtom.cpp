@@ -85,7 +85,8 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 	rend.output.SetWindowFbo();
 	
 	auto& buf = bf.GetBuffer();
-	TODO //buf.fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	auto& buf_fb = buf.GetFramebuffer();
+	buf_fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
 }
@@ -185,12 +186,12 @@ bool GfxAccelAtom<Gfx>::Open(Size sz, int channels, bool skip_fullscreen) {
 	if (full_screen && !skip_fullscreen)
 		Gfx::SetWindowFullscreen(win);
 	
-	if (AcceptsOrder()) {
-		if (!this->bf.ImageInitialize(true, screen_sz)) {
-			LOG("GfxAccelAtom<Gfx>::Open: error: could not initialize image");
-			return false;
-		}
+	//if (AcceptsOrder()) {
+	if (!this->bf.ImageInitialize(true, screen_sz)) {
+		LOG("GfxAccelAtom<Gfx>::Open: error: could not initialize image");
+		return false;
 	}
+	//}
 	
 	is_open = true;
 	return true;

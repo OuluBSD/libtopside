@@ -62,8 +62,12 @@ void SoftFramebufferT<Gfx>::SetColor(TexType tgt, NativeColorBufferRef b) {
 template <class Gfx>
 void SoftFramebufferT<Gfx>::SetSize(GVar::RenderTarget tgt, Size sz) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
-		if ((dword)tgt & (1 << i) && color[i])
-			color[i]->Set(sz, 3);
+		if ((dword)tgt & (1 << i) && color[i]) {
+			if (color[i]->GetChannels() > 0)
+				color[i]->Resize(sz);
+			else
+				color[i]->Set(sz, 3);
+		}
 	}
 }
 

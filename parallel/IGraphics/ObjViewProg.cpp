@@ -135,8 +135,10 @@ template <class Gfx>
 void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	vec4 pos = a.v.position.Splice().Embed();
 	vec4 screen = a.va->view * pos;
-	screen.Project();
-	a.v.position = screen;
+	if (screen[3] != 0) {
+		screen.Project();
+		a.v.position = screen;
+	}
 }
 
 template <class Gfx>

@@ -21,7 +21,7 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragshader:		"simple_single";
+				shader.frag.name:		"simple_single";
 			};
 		};
 

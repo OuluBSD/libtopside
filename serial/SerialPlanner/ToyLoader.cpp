@@ -525,7 +525,7 @@ bool ToyLoader::MakeScript() {
 		
 		if (is_audio) {
 			s << "				type: \"audio\";\n";
-			s << "				retarded_local_time: \"true\";\n";
+			s << "				retarded.local.time: \"true\";\n";
 		}
 		
 		if (is_screen) {
@@ -534,7 +534,7 @@ bool ToyLoader::MakeScript() {
 		}
 		
 		s << "				env:			event.register;\n";
-		s << "				filepath:		\"" << EscapeString(stage.script_path) << "\";\n";
+		s << "				shader.frag.path:	\"" << EscapeString(stage.script_path) << "\";\n";
 		
 		if (stage.loopback_stage >= 0)
 			s << "				loopback:			\"" << stage.loopback_stage << "\";\n";

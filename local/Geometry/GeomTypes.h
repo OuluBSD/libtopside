@@ -204,9 +204,16 @@ Texture channel ranges:
 */
 static const int TEXTYPE_OFFSET = 0;
 static const int COMPAT_COUNT = 4;
+static const int BUFFERSTAGE_COUNT = 5;
 static const int COMPAT_OFFSET = TEXTYPE_COUNT;
-static const int CHANNEL_COUNT = TEXTYPE_COUNT + COMPAT_COUNT;
+static const int BUFFERSTAGE_OFFSET = TEXTYPE_COUNT + COMPAT_COUNT;
+static const int CHANNEL_COUNT = TEXTYPE_COUNT + COMPAT_COUNT + BUFFERSTAGE_COUNT;
 static const int CHANNEL_NONE = 0;
+
+/*static const int CHANNEL_ICHANNEL0 = TEXTYPE_COUNT + 0;
+static const int CHANNEL_ICHANNEL1 = TEXTYPE_COUNT + 1;
+static const int CHANNEL_ICHANNEL2 = TEXTYPE_COUNT + 2;
+static const int CHANNEL_ICHANNEL3 = TEXTYPE_COUNT + 3;*/
 
 
 

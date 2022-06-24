@@ -23,8 +23,8 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragment:		"shaders/tests/07d_fragment.glsl";
-				vertex:			"shaders/tests/07d_vertex.glsl";
+				shader.frag.path:		"shaders/tests/07d_shader.frag.path.glsl";
+				shader.vtx.path:			"shaders/tests/07d_vertex.glsl";
 			};
 		};
 		

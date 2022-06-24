@@ -20,7 +20,7 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true [id: "texture";;;;] {filepath: "shaders/toys/simple/simple_webcam/stage0.glsl";};
+			sdl.fbo: true [id: "texture";;;;] {shader.frag.path: "shaders/toys/simple/simple_webcam/stage0.glsl";};
 		};
 	};
 };

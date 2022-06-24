@@ -9,13 +9,13 @@ machine sdl.app: {
 		loop ogl.fbo.audio.buffer: {
 			id: "audio_gen";
 			ogl.customer: true;
-			sdl.ogl.fbo.side: true [][id: "audio_conv";;;;] {type: "audio"; retarded_local_time: true; filepath: "shaders/toys/fm/synth_fm/stage1.glsl";};
+			sdl.ogl.fbo.side: true [][id: "audio_conv";;;;] {type: "audio"; retarded.local.time: true; shader.frag.path: "shaders/toys/fm/synth_fm/stage1.glsl";};
 		};
 				
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo.standalone: true {filepath: "shaders/toys/fm/synth_fm/stage0.glsl";};
+			sdl.fbo.standalone: true {shader.frag.path: "shaders/toys/fm/synth_fm/stage0.glsl";};
 		};
 		
 		loop ogl.fbo.audio.conv: {

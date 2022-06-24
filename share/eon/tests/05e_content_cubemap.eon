@@ -21,7 +21,7 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true [id: "texture";;;;] {buf0: "cubemap"; filepath: "shaders/toys/cubemap/copper_mirror_ball/stage0.glsl";};
+			sdl.fbo: true [id: "texture";;;;] {buf0: "cubemap"; shader.frag.path: "shaders/toys/cubemap/copper_mirror_ball/stage0.glsl";};
 		};
 	};
 

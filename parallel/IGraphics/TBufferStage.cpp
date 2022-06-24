@@ -5,6 +5,128 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
+bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState& ws) {
+	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
+	lib_conf.str = ws.Get(".library");
+	lib_conf.is_path = true;
+	
+	quad_count = ws.GetInt(".s" + IntStr(id) + ".quad.count", 1);
+	
+	// Program string is a simplified way to set shader configuration
+	String program_str = ws.Get(".program");
+	if (program_str.GetCount()) {
+		ShaderConf& vtx_conf = shdr_confs[GVar::VERTEX_SHADER];
+		vtx_conf.is_path = false;
+		vtx_conf.str = program_str + "_vertex";
+		
+		ShaderConf& frag_conf = shdr_confs[GVar::FRAGMENT_SHADER];
+		frag_conf.is_path = false;
+		frag_conf.str = program_str + "_fragment";
+	}
+	// Normally try to read exact arguments for shaders
+	else {
+		for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
+			String type, extension;
+			switch (i) {
+				case GL::VERTEX_SHADER:				type = "vtx";  extension = "_vertex"; break;
+				case GL::GEOMETRY_SHADER:			type = "geom"; extension = "_geometry"; break;
+				case GL::TESS_CONTROL_SHADER:		type = "ctrl"; extension = "_tesscontrol"; break;
+				case GL::TESS_EVALUATION_SHADER:	type = "eval"; extension = "_tesseval"; break;
+				case GL::FRAGMENT_SHADER:			type = "frag"; extension = "_fragment"; break;
+				default: break;
+			}
+
+			ShaderConf& conf = shdr_confs[i];
+			int tries = id == 0 ? 2 : 1;
+			
+			for(int j = 0; j < tries; j++) {
+				String prefix = "." + (j == 0 ? ("s" + IntStr(id) + ".") : String()) + "shader." + type + ".";
+				
+				String path = ws.Get(prefix + "path");
+				String name = ws.Get(prefix + "name");
+				//LOG(prefix + "path");
+				
+				if (name.GetCount())
+					name += extension;
+				
+				if (path.IsEmpty() && name.IsEmpty() && i == GL::FRAGMENT_SHADER && j == tries-1) {
+					LOG("BufferStageT<Gfx>::Initialize: error: no fragment shader given (for stage " << id << ")");
+					return false;
+				}
+				
+				if (path.GetCount()) {
+					conf.is_path = true;
+					conf.str = RealizeShareFile(path);
+					break;
+				}
+				else if (name.GetCount()) {
+					conf.is_path = false;
+					conf.str = name;
+					break;
+				}
+			}
+			
+		}
+	}
+	
+	int tries = id == 0 ? 2 : 1;
+	for(int j = 0; j < tries; j++) {
+		String prefix = "." + (j == 0 ? ("s" + IntStr(id) + ".") : String());
+		for(int i = 0; i < 4; i++) {
+			String key = prefix + "buf" + IntStr(i);
+			//LOG(key);
+			String value = ws.Get(key);
+			if (value.IsEmpty())
+				;
+			else if (value == "volume")
+				SetInputVolume(i);
+			else if (value == "cubemap")
+				SetInputCubemap(i);
+			else
+				TODO
+		}
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool BufferStageT<Gfx>::PostInitialize() {
+	if (!fb.is_win_fbo) {
+		if (fb.is_audio) {
+			int sample_rate = buf->snd_sample_rate;
+			int frame_samples = buf->snd_frame_samples;
+			fb.size = Size(frame_samples,1);
+			fb.channels = 2;
+			fb.fps = (double)sample_rate / frame_samples;
+			fb.sample = GVar::SAMPLE_U16;
+		}
+		else {
+			fb.size = Size(1280,720);
+			fb.channels = 4;
+			fb.fps = 60;
+			fb.sample = GVar::SAMPLE_FLOAT;
+		}
+	}
+	return true;
+}
+
+template <class Gfx>
+bool BufferStageT<Gfx>::ImageInitialize() {
+	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
+	
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
+		ShaderConf& conf = shdr_confs[i];
+		
+		if (conf.str.GetCount() &&
+			!LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, lib_conf.str))
+			return false;
+	}
+	
+	return true;
+}
+
+template <class Gfx>
 bool BufferStageT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path) {
 	DLOG("BufferStageT::LoadShaderFile: " << shader_path);
 	
@@ -50,35 +172,36 @@ bool BufferStageT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shad
 }
 
 template <class Gfx>
-bool BufferStageT<Gfx>::LoadShader(GVar::ShaderType shader_type, String shader_id, String shader_path, String library_paths) {
-	if (shader_id.GetCount()) {
-		if (!LoadBuiltinShader(shader_type, shader_id)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + shader_id + "'");
-			return false;
-		}
+bool BufferStageT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bool is_path, String library_paths) {
+	if (str.IsEmpty()) {
+		LOG("BufferStageT<Gfx>::LoadShader: error: no shader given");
+		return false;
 	}
-	else if (shader_path.GetCount()) {
-		if (!LoadShaderFile(shader_type, shader_path, library_paths)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + shader_path + "'");
+	
+	if (!is_path) {
+		if (!LoadBuiltinShader(shader_type, str)) {
+			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + str + "'");
 			return false;
 		}
 	}
 	else {
-		LOG("BufferStageT<Gfx>::LoadShader: error: no shader given");
-		return false;
+		if (!LoadShaderFile(shader_type, str, library_paths)) {
+			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + str + "'");
+			return false;
+		}
 	}
 	
 	return true;
 }
 
 /*template <class Gfx>
-bool BufferStageT<Gfx>::LoadStereoShader(String vtx_path, String frag_path) {
-	if (!LoadShaderFile(stereo_rt, GVar::FRAGMENT_SHADER, frag_path, "")) {
-		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + frag_path + "'");
+bool BufferStageT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_path) {
+	if (!LoadShaderFile(stereo_rt, GVar::FRAGMENT_SHADER, shdr_frag_path, "")) {
+		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_frag_path + "'");
 		return false;
 	}
-	if (!LoadShaderFile(stereo_rt, GVar::VERTEX_SHADER, vtx_path, "")) {
-		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + vtx_path + "'");
+	if (!LoadShaderFile(stereo_rt, GVar::VERTEX_SHADER, shdr_vtx_path, "")) {
+		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_vtx_path + "'");
 		return false;
 	}
 	return true;
@@ -86,8 +209,6 @@ bool BufferStageT<Gfx>::LoadStereoShader(String vtx_path, String frag_path) {
 
 template <class Gfx>
 bool BufferStageT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
-	TODO
-	/*
 	int i = SoftShaderLibrary::GetMap(shader_type).Find(id);
 	if (i < 0) {
 		SetError("could not find shader");
@@ -96,7 +217,7 @@ bool BufferStageT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String i
 	
 	soft[shader_type] = SoftShaderLibrary::GetMap(shader_type)[i]();
 	
-	return true;*/
+	return true;
 }
 
 template <class Gfx>
@@ -108,10 +229,10 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 	Vertex& tr = m.vertices[1];
 	Vertex& br = m.vertices[2];
 	Vertex& bl = m.vertices[3];
-	tl.SetPosTex(vec3(-1, +1, 0), vec2(-1,+1));
+	tl.SetPosTex(vec3(-1, +1, 0), vec2(0,+1));
 	tr.SetPosTex(vec3(+1, +1, 0), vec2(+1,+1));
-	br.SetPosTex(vec3(+1, -1, 0), vec2(+1,-1));
-	bl.SetPosTex(vec3(-1, -1, 0), vec2(-1,-1));
+	br.SetPosTex(vec3(+1, -1, 0), vec2(+1,0));
+	bl.SetPosTex(vec3(-1, -1, 0), vec2(0,0));
 	m.indices << 0 << 2 << 1; // top-right triangle CCW
 	m.indices << 0 << 3 << 2; // bottom-left triangle CCW
 	
@@ -125,83 +246,67 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	if (rt.prog == 0)
 		return;
 	
-	
-	
 	Gfx::BindProgramPipeline(rt.pipeline);
 	Gfx::UseProgram(rt.prog);
 	if (!rt.is_searched_vars)
 		FindVariables();
+
+	int bi = NewWriteBuffer();
 	
-	int fb_count = is_stereo ? 2 : 1;
-	for(int fbi = 0; fbi < fb_count; fbi++) {
-		Framebuffer& rfb = is_stereo ? stereo_fb[fbi] : fb;
-		int bi = NewWriteBuffer(rfb);
-		
-		if (!rfb.is_win_fbo) {
-			ASSERT(rfb.frame_buf[bi]);
-		    Gfx::BindFramebuffer(rfb.frame_buf[bi]);
-		    Gfx::DrawBuffers(GVar::COLOR0_EXT);
-		}
-		
-		SetVars(rt.prog, cfg);
+	if (!fb.is_win_fbo) {
+		ASSERT(fb.frame_buf[bi]);
+	    Gfx::BindFramebuffer(fb.frame_buf[bi]);
+	    Gfx::DrawBuffers(GVar::COLOR0_EXT);
+	}
 	
-		RendVer(OnProcess);
+	SetVars(rt.prog, cfg);
+
+	RendVer(OnProcess);
+	
+	Gfx::Clear(GVar::COLOR_BUFFER);
+	
+	if (!use_user_data) {
+		/*if (binders.GetCount()) {
+			Buffer* buf = CastPtr<Buffer>(this);
+			ASSERT(buf);
+			Shader shader;
+			shader.SetState(data);
+			for (BinderIface* iface : binders)
+				iface->Render(data);
+		}*/
 		
-		Gfx::Clear(GVar::COLOR_BUFFER);
-		
-		if (!use_user_data) {
-			/*if (binders.GetCount()) {
-				Buffer* buf = CastPtr<Buffer>(this);
-				ASSERT(buf);
-				Shader shader;
-				shader.SetState(data);
-				for (BinderIface* iface : binders)
-					iface->Render(data);
-			}*/
-			
-			//if (binders.IsEmpty()) {
-			if (0)
-				Gfx::RenderScreenRect();
-			else if (!user_data && data.objects.IsEmpty())
+		//if (binders.IsEmpty()) {
+		if (0)
+			Gfx::RenderScreenRect();
+		else if (!user_data && data.objects.IsEmpty()) {
+			for(int i = 0; i < quad_count; i++)
 				MakeFrameQuad();
-			//}
-			
-			// render VBA from state
-			Gfx::BeginRender();
-			for (DataObject& o : data.objects) {
-				if (!o.is_visible)
-					continue;
-				SetVars(data, rt.prog, o);
-				o.Paint(data);
-			}
-			Gfx::EndRender();
 		}
-		else if (user_data) {
-			Gfx::BeginRender();
-			for (DataObject& o : user_data->objects) {
-				if (!o.is_visible)
-					continue;
-				SetVars(*user_data, rt.prog, o);
-				o.Paint(*user_data);
-			}
-			Gfx::EndRender();
+		//}
+		
+		// render VBA from state
+		Gfx::BeginRender();
+		for (DataObject& o : data.objects) {
+			if (!o.is_visible)
+				continue;
+			SetVars(data, rt.prog, o);
+			o.Paint(data);
 		}
+		Gfx::EndRender();
+	}
+	else if (user_data) {
+		Gfx::BeginRender();
+		for (DataObject& o : user_data->objects) {
+			if (!o.is_visible)
+				continue;
+			SetVars(*user_data, rt.prog, o);
+			o.Paint(*user_data);
+		}
+		Gfx::EndRender();
 	}
 	
 	Gfx::UnbindProgramPipeline();
 	
-	
-	
-	if (is_stereo) {
-		Gfx::BindProgramPipeline(rt.pipeline);
-		Gfx::UseProgram(rt.prog);
-		if (!rt.is_searched_vars)
-			FindVariables();
-		
-		TODO
-		
-		Gfx::UnbindProgramPipeline();
-	}
 	
 	EnableGfxAccelDebugMessages(1);
 	
@@ -219,7 +324,6 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	}
 	
 	EnableGfxAccelDebugMessages(0);
-	
 	
 }
 
@@ -400,8 +504,6 @@ void BufferStageT<Gfx>::RefreshPipeline() {
 	//if (!CheckInputTextures())
 	//	return;
 	
-	TODO //Reset();
-	
 	DLOG("BufferT::RefreshPipeline end");
 }
 
@@ -438,9 +540,7 @@ void BufferStageT<Gfx>::CreatePipeline() {
 
 template <class Gfx>
 void BufferStageT<Gfx>::UpdateTexBuffers() {
-	TODO
-	
-	/*if (!fb.is_win_fbo) {
+	if (!fb.is_win_fbo) {
 		ASSERT(fb.channels > 0);
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
 		
@@ -448,34 +548,13 @@ void BufferStageT<Gfx>::UpdateTexBuffers() {
 		
 		ClearTex();
 		
-		CreateTex(fb, true, true);
+		CreateTex(true, true);
 		
 	}
-	
-	if (is_stereo) {
-		for(int i = 0; i < 2; i++) {
-			auto& sfb = stereo_fb[i];
-			if (sfb.size.IsEmpty())
-				sfb.size = Size(fb.size.cx / 2, fb.size.cy);
-			if (!sfb.channels) {
-				sfb.channels = 3;
-				sfb.sample = GVar::SAMPLE_FLOAT ;
-			}
-			CreateTex(sfb, true, true);
-		}
-	}*/
 }
 
 template <class Gfx>
 void BufferStageT<Gfx>::ClearTex() {
-	ClearTex(fb);
-	if (is_stereo)
-		for(int i = 0; i < 2; i++)
-			ClearTex(stereo_fb[i]);
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::ClearTex(Framebuffer& fb) {
 	for(int bi = 0; bi < 2; bi++) {
 		auto& color_buf = fb.color_buf[bi];
 		auto& depth_buf = fb.depth_buf[bi];
@@ -497,7 +576,7 @@ void BufferStageT<Gfx>::ClearTex(Framebuffer& fb) {
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::CreateTex(Framebuffer& fb, bool create_depth, bool create_fbo) {
+void BufferStageT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 	EnableGfxAccelDebugMessages(1);
 	
 	int buf_count = 1;
@@ -531,7 +610,6 @@ void BufferStageT<Gfx>::CreateTex(Framebuffer& fb, bool create_depth, bool creat
 		Gfx::GenTexture(color_buf);
 		Gfx::BindTextureRW(type, color_buf);
 		Gfx::ReserveTexture(type, fb);
-		TexFlags(type, fb.filter, fb.wrap);
 		Gfx::UnbindTexture(type);
 		Gfx::DeactivateTexture();
 		
@@ -547,6 +625,8 @@ void BufferStageT<Gfx>::CreateTex(Framebuffer& fb, bool create_depth, bool creat
 		if (create_fbo) {
 			Gfx::CreateFramebuffer(frame_buf);
 			Gfx::BindFramebuffer(frame_buf);
+			
+			TexFlags(type, fb.filter, fb.wrap);
 			
 			// combine FBO to color buffer
 			Gfx::FramebufferTexture2D(TEXTYPE_NONE, color_buf); // TEXTYPE_NONE == color attachment 0
@@ -602,7 +682,7 @@ void BufferStageT<Gfx>::FindVariables() {
 }
 
 template <class Gfx>
-int BufferStageT<Gfx>::NewWriteBuffer(Framebuffer& fb) {
+int BufferStageT<Gfx>::NewWriteBuffer() {
 	if (fb.is_doublebuf)
 		fb.buf_i = (fb.buf_i + 1) % 2;
 	return fb.buf_i;
@@ -807,6 +887,24 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 			Gfx::BindTextureRO(GetTexType(ch), tex);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
+		}
+	}
+	
+	else if (var >= VAR_BUFFERSTAGE0_COLOR && var <= VAR_BUFFERSTAGE4_COLOR) {
+		int ch = var - VAR_BUFFERSTAGE0_COLOR;
+		int tex_ch = BUFFERSTAGE_OFFSET + ch;
+		
+		if (ch < buf->stages.GetCount()) {
+			auto& stage = buf->stages[ch];
+			NativeColorBufferConstRef tex = stage.fb.color_buf[stage.fb.buf_i];
+			// may fail in early program: ASSERT(tex);
+			if (tex) {
+				//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
+				Gfx::ActiveTexture(tex_ch);
+				Gfx::BindTextureRO(GetTexType(ch), tex);
+				Gfx::Uniform1i(uindex, tex_ch);
+				Gfx::DeactivateTexture();
+			}
 		}
 	}
 	
@@ -1068,10 +1166,6 @@ int BufferStageT<Gfx>::BuiltinShader() {return 0;}
 template <class Gfx>
 template <int>
 int BufferStageT<Gfx>::BuiltinShaderT() {
-	TODO
-	
-	#if 0
-	
 	bool succ = false;
 	if (!rt.pipeline)
 		rt.pipeline.Create();
@@ -1106,8 +1200,8 @@ int BufferStageT<Gfx>::BuiltinShaderT() {
 		else
 			SetError("RuntimeState got no soft fragment shader");
 	}
+	
 	return succ ? 1 : -1;
-	#endif
 }
 
 #ifdef flagSDL2

@@ -125,13 +125,14 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	XSync(display, False);
 	
 	dev.accel_buf.Set(width, height, bpp, width * bpp, 0);
+	dev.accel_buf.LockChannels();
 	dev.accel_buf.Zero(Color(125,0,125));
 	dev.accel_fbo.SetColor(TEXTYPE_NONE, &dev.accel_buf);
 	dev.accel_fbo.SetDepth(&dev.accel_zbuf);
 	
 	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fbo);
 	
-	if (!dev.accel.Open(Size(width, height), 4)) {
+	if (!dev.accel.Open(Size(width, height), bpp)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}
@@ -190,7 +191,7 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		// NOTE: VERY SLOW!
 		//dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf, true);
 		//ASSERT(dev.accel_buf_tmp.GetSize() == len);
-		
+		ASSERT(dev.accel_buf.channels == bpp);
 		ASSERT(dev.fb);
 		ASSERT(!dev.fb->data);
 	    //dev.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();

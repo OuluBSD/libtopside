@@ -11,7 +11,7 @@ machine sdl.app: {
 			id: "buffer";
 			ogl.customer: true;
 			sdl.ogl.fbo.side: true [][id: "screen";;;;] {
-				fragment: "shaders/toys/simple/simple_double/stage1.glsl"
+				shader.frag.path: "shaders/toys/simple/simple_double/stage1.glsl"
 			;};
 		};
 		
@@ -19,7 +19,7 @@ machine sdl.app: {
 			id: "screen";
 			ogl.customer: true;
 			sdl.fbo: true [id: "buffer";;;;][] {
-				fragment: "shaders/toys/simple/simple_double/stage0.glsl";
+				shader.frag.path: "shaders/toys/simple/simple_double/stage0.glsl";
 			};
 		};
 		

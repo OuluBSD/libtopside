@@ -332,13 +332,13 @@ HEADER_LINK(		X11OglFboAtomSA,		POLLER_PIPE, PROCESS)
 
 
 
-HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterFbo,		CenterFbo,	CenterReceipt)
+HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterFbo,		CenterFbo,		CenterReceipt)
 HEADER_ACTION(		X11SwVideoAtomPipe,	x11.sw.video.pipe)
 HEADER_ARG(			X11SwVideoAtomPipe,	reqdef_flagSCREEN,			1)
 HEADER_ARG(			X11SwVideoAtomPipe,	HINT_PKG,					"AtomMinimal")
 HEADER_LINK(		X11SwVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
-HEADER11(			X11SwFboAtomSA,		X11SwSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER11(			X11SwFboAtomSA,		X11SwSinkDevice,			pipe,		CenterFbo,		CenterOrder,	CenterReceipt)
 HEADER_ACTION(		X11SwFboAtomSA,		x11.sw.fbo.standalone)
 HEADER_ARG(			X11SwFboAtomSA,		reqdef_flagSCREEN,			1)
 HEADER_ARG(			X11SwFboAtomSA,		HINT_PKG,					"AtomMinimal")

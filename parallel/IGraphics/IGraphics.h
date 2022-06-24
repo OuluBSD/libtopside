@@ -92,7 +92,6 @@ typedef unsigned int	Gxbf;
 #include "Pipeline.h"
 #include "Renderer.h"
 #include "Compiler.h"
-#include "Library.h"
 
 #include "Types.h"
 #include "State.h"
@@ -107,18 +106,6 @@ typedef unsigned int	Gxbf;
 #include "TBuffer.h"
 #include "TBufferField.h"
 
-#include "Cpu.h"
-/*#include "CpuShader.h"
-#include "CpuRenderer.h"
-#include "CpuSDL.h"*/
-
-#if defined(flagSCREEN)
-#include "Ogl.h"
-/*#include "OglShader.h"
-#include "OglRenderer.h"
-#include "OglCompiler.h"
-#include "OglBuffer.h"*/
-#endif
 
 #include "ProgDraw.h"
 #include "GfxAccelAtom.h"

@@ -62,6 +62,7 @@ struct ByteImage {
 	int pitch = 0;
 	int channels = 0;
 	int size = 0;
+	bool lock_channels = false;
 	
 public:
 	typedef ByteImage CLASSNAME;
@@ -76,6 +77,7 @@ public:
 	void Set(const Image& img);
 	void Set(int w, int h, int stride, int src_pitch, const byte* data);
 	void Set(Size sz, int channels);
+	void Resize(Size sz);
 	void Clear();
 	void Zero();
 	void Zero(RGBA clr);
@@ -83,6 +85,7 @@ public:
 	void Randomize();
 	void SwapRedBlue();
 	void SetSwapRedBlue(const ByteImage& i, bool add_alpha_ch=false);
+	void LockChannels(bool b=true) {lock_channels = b;}
 	
 	int GetPitch() const;
 	int GetWidth() const;

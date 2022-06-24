@@ -46,12 +46,15 @@ protected:
 	friend class Serial::ScriptLoopLoader;
 	friend class Serial::ScriptDriverLoader;
 	friend class Serial::Loop;
+	friend class Parallel::Space;
 	
 	int						id = -1;
 	bool					is_running = false;
+	bool					is_initialized = false;
 	
 	void					SetId(int i) {id = i;}
 	void					SetRunning(bool b=true) {is_running = b;}
+	void					SetInitialized(bool b=true) {is_initialized = b;}
 	
 protected:
 	friend class Serial::LinkBase;
@@ -101,6 +104,7 @@ public:
 	
 	HiValue&				UserData() {return user_data;}
 	bool					IsRunning() const {return is_running;}
+	bool					IsInitialized() const {return is_initialized;}
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
 	void					SetDependency(AtomBaseRef a) {atom_dependency = a;}

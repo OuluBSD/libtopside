@@ -8,8 +8,8 @@ machine sdl.app: {
 	
 		loop ogl.fbo: {
 			ogl.customer: true;
-			sdl.ogl.fbo.pipe: true {fragment: "shaders/toys/simple/simple_double/stage1.glsl";};
-			sdl.fbo.sink: true {fragment: "shaders/toys/simple/simple_double/stage0.glsl";};
+			sdl.ogl.fbo.pipe: true {shader.frag.path: "shaders/toys/simple/simple_double/stage1.glsl";};
+			sdl.fbo.sink: true {shader.frag.path: "shaders/toys/simple/simple_double/stage0.glsl";};
 		};
 	};
 };

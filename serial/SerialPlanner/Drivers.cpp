@@ -133,7 +133,7 @@ bool ScriptDriverLoader::Load() {
 			return false;
 		}
 		
-		ab->SetRunning();
+		ab->SetInitialized();
 	}
 	
 	return true;
@@ -155,6 +155,8 @@ bool ScriptDriverLoader::Start() {
 		auto& a = added_atoms[i];
 		if (!a.a->Start())
 			return false;
+		a.a->SetRunning();
+		
 		if (!a.l->Start())
 			return false;
 	}

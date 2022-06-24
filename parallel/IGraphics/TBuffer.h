@@ -23,30 +23,39 @@ struct BufferStageT : GfxBuffer {
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
+	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	
+	struct ShaderConf {
+		String str;
+		bool is_path;
+	};
+	
+	ShaderConf					shdr_confs[GVar::SHADERTYPE_COUNT + 1];
 	
 	Buffer*						buf = 0;
 	RuntimeState				rt;
 	Framebuffer					fb;
-	Framebuffer					stereo_fb[2];
 	
 	DataState					data;
 	DataState*					user_data = 0;
+	int							quad_count = 0;
 	bool						use_user_data = false;
-	bool						is_stereo = false;
 	bool						initialized = false;
 	
 	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
 	
 	
+	bool Initialize(int id, AtomBase& a, const Script::WorldState& ws);
+	bool PostInitialize();
+	bool ImageInitialize();
 	void Process(const RealtimeSourceConfig& cfg);
 	void MakeFrameQuad();
 	void UseRenderedFramebuffer();
 	void RefreshPipeline();
 	void UpdateTexBuffers();
 	void CreatePipeline();
-	bool LoadShader(GVar::ShaderType shader_type, String shader_id, String shader_path, String library_path);
+	bool LoadShader(GVar::ShaderType shader_type, String str, bool is_path, String library_path);
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
@@ -54,12 +63,11 @@ struct BufferStageT : GfxBuffer {
 	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	void FindVariables();
-	int NewWriteBuffer(Framebuffer& fb);
+	int NewWriteBuffer();
 	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	void ClearPipeline();
 	void ClearTex();
-	void ClearTex(Framebuffer& fb);
-	void CreateTex(Framebuffer& fb, bool create_depth, bool create_fbo);
+	void CreateTex(bool create_depth, bool create_fbo);
 	bool CompilePrograms();
 	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	bool LoadInputLink(int in_id, const PacketValue& v);
@@ -112,6 +120,20 @@ struct BufferT : GfxBuffer {
 	RTTI_DECL1(BufferT, GfxBuffer)
 	
 	
+	enum {
+		MODE_UNDEFINED,
+		SINGLE_IMAGEBUF,
+		SINGLE_TEXTURE,
+		SINGLE_CUBEMAP,
+		SINGLE_VOLUME,
+		SINGLE_SOUND,
+		MULTI_STEREO,
+		MULTI_CUSTOM,
+		
+		MODE_COUNT
+	};
+	
+	int							mode = 0;
 	Vector<String>				link_ids;
 	//Vector<BinderIface*>		binders;
 	
@@ -125,8 +147,10 @@ struct BufferT : GfxBuffer {
 	Array<BufferStage>			stages;
 	ContextState				ctx;
 	bool						is_local_time = false;
-	bool						is_stereo = false;
+	bool						is_initialized = false;
 	
+	int snd_sample_rate = 44100;
+	int snd_frame_samples = 1024;
 	
 	
 	static Callback2<String, Base*> WhenLinkInit;
@@ -137,19 +161,21 @@ struct BufferT : GfxBuffer {
 	BufferT() {}
 	
 	void Visit(RuntimeVisitor& vis) override {vis & env;}
-	void SetEnvState(EnvStateRef env) {this->env = env;}
+	//void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
 	//void SetBuiltinShader(int i) {test_shader = i;}
 	
 	
 public:
-	//bool LoadStereoShader(String vtx_path, String frag_path);
 	
 	//void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
 	//void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
 	
 	void Update(double dt);
-	bool Initialize();
+	bool Initialize(AtomBase& a, const Script::WorldState& ws);
+	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
+	bool PostInitialize();
+	bool InitializeRenderer();
 	void SetFramebufferSize(Size sz);
 	void Process(ShaderPipeline& pipe);
 	void Process(const RealtimeSourceConfig& cfg);
@@ -157,11 +183,12 @@ public:
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
 	void SetLocalTime(bool b=true) {is_local_time = b;}
-	void SetStereoImage(bool b=true) {is_stereo = b;}
 	Framebuffer& GetFramebuffer() {return stages.Top().fb;}
 	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
 	BufferStage& Single() {ASSERT(stages.GetCount() == 1); return stages.Top();}
 	void Reset();
+	bool IsAudio() const {return mode == SINGLE_SOUND;}
+	bool AcceptsOrders() const {return is_initialized;}
 	
 };
 

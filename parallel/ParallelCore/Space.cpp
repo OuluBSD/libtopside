@@ -214,7 +214,10 @@ void Space::StopDeep() {
 
 void Space::Stop() {
 	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		it->Stop();
+		if (it->IsRunning()) {
+			it->Stop();
+			it->SetRunning(false);
+		}
 	}
 }
 

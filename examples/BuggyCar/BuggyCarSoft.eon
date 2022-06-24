@@ -33,11 +33,11 @@ machine sdl.app: {
 		loop center.video: {
 			center.customer: true;
 			sdl.video: true [loop: center.ecs; loop: center.keyboard;;;] {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				fragshader:		"${FRAGMENT}";
-				vtxshader:		"${VERTEX}";
+				close_machine:		true;
+				sizeable:			true;
+				env:				event.register;
+				shader.frag.name:	"${FRAGMENT}";
+				shader.vtx.name:	"${VERTEX}";
 			};
 		};
 		

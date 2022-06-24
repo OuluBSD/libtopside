@@ -21,7 +21,10 @@ Machine& AtomBase::GetMachine() {
 }
 
 void AtomBase::UninitializeDeep() {
-	Uninitialize();
+	if (IsInitialized()) {
+		Uninitialize();
+		SetInitialized(false);
+	}
 	ClearSinkSource();
 	UninitializeAtom();
 }

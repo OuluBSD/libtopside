@@ -182,8 +182,8 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 					for(int i = 0; i < 2; i++) tex_coord[i] += a.tex_coord[i] * bc_screen[0];
 					for(int i = 0; i < 2; i++) tex_coord[i] += b.tex_coord[i] * bc_screen[1];
 					for(int i = 0; i < 2; i++) tex_coord[i] += c.tex_coord[i] * bc_screen[2];
-					ASSERT(tex_coord[0] >= 0.0f && tex_coord[0] <= 1.0f);
-					ASSERT(tex_coord[1] >= 0.0f && tex_coord[1] <= 1.0f);
+					ASSERT(tex_coord[0] >= -1.0f && tex_coord[0] <= 1.0f);
+					ASSERT(tex_coord[1] >= -1.0f && tex_coord[1] <= 1.0f);
 					
 					fs.Process(frag_args);
 					

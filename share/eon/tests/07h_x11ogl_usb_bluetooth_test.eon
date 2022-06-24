@@ -31,7 +31,7 @@ machine app: {
 				fullscreen:		true;
 				find.vr.screen:	true;
 				env:			event.register;
-				fragment:		"shaders/toys/stereo/mario_cross_eye_3d/stage0.glsl";
+				shader.frag.path:		"shaders/toys/stereo/mario_cross_eye_3d/stage0.glsl";
 			};
 		};
 		

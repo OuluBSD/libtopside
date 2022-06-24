@@ -38,14 +38,14 @@ bool SDL2ScreenBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (loopback.GetCount() && !buf.SetLoopback(loopback))
 		return false;
 	
-	String fragment_path = ws.Get(".fragment");
-	String vertex_path = ws.Get(".vertex");
+	String fragment_path = ws.Get(".shader.frag.path");
+	String vertex_path = ws.Get(".shader.vtx.path");
 	String library_path = ws.Get(".library");
 	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
 	
 	obj->SetShaderFile(fragment_path, vertex_path, library_path);
-	obj->SetFragmentShader(ws.Get(".fragshader"));
-	obj->SetVertexShader(ws.Get(".vtxshader"));
+	obj->SetFragmentShader(ws.Get(".shader.frag.name"));
+	obj->SetVertexShader(ws.Get(".shader.vtx.name"));
 	obj->SetBuffer(buf);
 	obj->Sizeable(ws.Get(".sizeable") == "true");
 	obj->Maximize(ws.Get(".maximize") == "true");

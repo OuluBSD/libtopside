@@ -154,9 +154,18 @@ void ByteImage::Set(int w, int h, int stride, int src_pitch, const byte* src_dat
 	}
 }
 
+void ByteImage::Resize(Size sz) {
+	ASSERT(channels > 0);
+	if (channels)
+		Set(sz, channels);
+}
+
 void ByteImage::Set(Size sz, int channels) {
 	if (this->sz == sz && this->channels == channels)
 		return;
+	if (lock_channels && this->channels != 0 && this->channels != channels) {
+		Panic("ByteImage: trying to change channel number, but the number is locked");
+	}
 	Clear();
 	this->sz = sz;
 	this->channels = channels;

@@ -36,8 +36,8 @@
 				sizeable:		true;
 				env:			event.register;
 				link:			ecs;
-				fragment:		"${FRAGMENT}";
-				vertex:			"${VERTEX}";
+				shader.frag.path:		"${FRAGMENT}";
+				shader.vtx.path:			"${VERTEX}";
 			};
 		};
 		
@@ -60,8 +60,8 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragment:		"shaders/tests/03f_fragment.glsl";
-				vertex:			"shaders/tests/03f_vertex.glsl";
+				shader.frag.path:		"shaders/tests/03f_shader.frag.path.glsl";
+				shader.vtx.path:			"shaders/tests/03f_vertex.glsl";
 			};
 		};
 		

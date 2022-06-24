@@ -10,13 +10,13 @@ machine sdl.app: {
 		loop ogl.fbo: {
 			ogl.customer: true;
 			sdl.ogl.fbo.pipe: true {
-				fragment:		"shaders/toys/simple/simple_double/stage1.glsl";
+				shader.frag.path:		"shaders/toys/simple/simple_double/stage1.glsl";
 			};
 			sdl.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragment:		"shaders/toys/simple/simple_double/stage0.glsl";
+				shader.frag.path:		"shaders/toys/simple/simple_double/stage0.glsl";
 			};
 		};
 	};

@@ -20,8 +20,8 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragment:		"${FRAGMENT}";
-				vertex:			"${VERTEX}";
+				shader.frag.path:		"${FRAGMENT}";
+				shader.vtx.path:			"${VERTEX}";
 			};
 		};
 		

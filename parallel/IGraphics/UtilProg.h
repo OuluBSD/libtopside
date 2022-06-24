@@ -38,6 +38,17 @@ public:
 	
 };
 
+template <class Gfx>
+class StereoShaderT : public SoftShaderBaseT<Gfx> {
+	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
+	
+public:
+	StereoShaderT();
+	void Process(VertexShaderArgsT<Gfx>& args) override;
+	void Process(FragmentShaderArgsT<Gfx>& args) override;
+	
+};
+
 
 NAMESPACE_PARALLEL_END
 

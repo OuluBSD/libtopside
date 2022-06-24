@@ -748,7 +748,7 @@ bool ScriptLoopLoader::Load() {
 				return false;
 			}
 			
-			ab->SetRunning();
+			ab->SetInitialized();
 		}
 		else {
 			Panic("Invalid world state type");
@@ -898,6 +898,8 @@ bool ScriptLoopLoader::Start() {
 		AddedAtom& a = added_atoms[i];
 		if (!a.r->Start())
 			return false;
+		a.r->SetRunning();
+		
 		if (!a.l->Start())
 			return false;
 	}
