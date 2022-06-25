@@ -66,6 +66,7 @@ void DataObjectT<Gfx>::RefreshTexture(Mesh& m) {
 	// copy texture ids
 	static_assert(sizeof(tex_id) == sizeof(m.tex_id), "tex_id mismatch");
 	memcpy(tex_id, m.tex_id, sizeof(tex_id));
+	memcpy(tex_filter, m.tex_filter, sizeof(tex_filter));
 }
 	
 template <class Gfx>
@@ -125,6 +126,12 @@ void DataStateT<Gfx>::Free() {
 	for (NativeColorBufferRef& t : textures)
 		Gfx::DeleteTexture(t);
 	textures.Clear();
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::Clear() {
+	Free();
+	objects.Clear();
 }
 
 template <class Gfx>
@@ -230,7 +237,7 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 		
 		Gfx::ActiveTexture(CHANNEL_NONE);
 		Gfx::BindTextureRW(GVar::TEXTYPE_2D, buf);
-		Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+		//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 		Gfx::TexImage2D(tex);
 		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		Gfx::GenerateMipmap(GVar::TEXTYPE_2D);

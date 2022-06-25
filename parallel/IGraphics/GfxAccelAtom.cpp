@@ -339,9 +339,8 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				GfxDataState* gsd = (GfxDataState*)d.ptr;
 				DataState* sd = CastPtr<DataState>(gsd);
 				ASSERT(sd);
-				TODO
-				//if (sd)
-				//	bf.GetBuffer().SetDataStateOverride(sd);
+				if (sd)
+					bf.GetBuffer().SetDataStateOverride(sd);
 			}
 			else if (d.IsText("gfxvector")) {
 				fb_packet = p;

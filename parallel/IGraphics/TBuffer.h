@@ -27,7 +27,8 @@ struct BufferStageT : GfxBuffer {
 	
 	struct ShaderConf {
 		String str;
-		bool is_path;
+		bool is_path = false;
+		bool is_content = false;
 	};
 	
 	ShaderConf					shdr_confs[GVar::SHADERTYPE_COUNT + 1];
@@ -44,6 +45,13 @@ struct BufferStageT : GfxBuffer {
 	
 	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
+	// VR
+	vec2						viewport_scale;
+	vec2						left_lens_center;
+	vec2						right_lens_center;
+	float						warp_scale;
+	vec4						hmd_warp_param;
+	vec3						aberr;
 	
 	
 	bool Initialize(int id, AtomBase& a, const Script::WorldState& ws);
@@ -55,7 +63,7 @@ struct BufferStageT : GfxBuffer {
 	void RefreshPipeline();
 	void UpdateTexBuffers();
 	void CreatePipeline();
-	bool LoadShader(GVar::ShaderType shader_type, String str, bool is_path, String library_path);
+	bool LoadShader(GVar::ShaderType shader_type, String str, bool is_path, bool is_content, String library_path);
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
@@ -80,6 +88,8 @@ struct BufferStageT : GfxBuffer {
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	bool IsInitialized() const {return initialized;}
 	
+	void SetStereo(int stereo_id);
+	void SetStereoLens();
 	void SetDataStateOverride(DataState* s) {user_data = s; use_user_data = s != 0;}
 	bool SetLoopback(String loopback_str);
 	void SetVars(DataState&, NativeProgram& gl_prog, const DataObject& o);
@@ -92,6 +102,7 @@ struct BufferStageT : GfxBuffer {
 	
 private:
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
+	bool LoadShaderContent(GVar::ShaderType shader_type, String content);
 	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
 	
 };
@@ -189,6 +200,7 @@ public:
 	void Reset();
 	bool IsAudio() const {return mode == SINGLE_SOUND;}
 	bool AcceptsOrders() const {return is_initialized;}
+	void SetDataStateOverride(DataState* s);
 	
 };
 

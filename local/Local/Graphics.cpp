@@ -4,6 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+int default_width = 1280;
+int default_height = 720;
+
+
+
+
 RenderingVerifier::RenderingVerifier() {
 	
 }

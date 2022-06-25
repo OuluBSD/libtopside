@@ -55,6 +55,12 @@ const char* names[TS::GVar::VAR_COUNT+1] = {
 	"iChannelResolution[0]",
 	
 	"iBlockOffset",
+	"iLensCenter",
+	"iViewportScale",
+	"iWarpScale",
+	"iHmdWarpParam",
+	
+	"iAberr",
 	
 	0
 };
@@ -72,6 +78,8 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	true,
 	
 	true,
+	
+	true,
 	true,
 	true,
 	true,
@@ -81,13 +89,7 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	true,
 	true,
 	true,
-	false,
-	
-	false,
-	false,
-	false,
-	false,
-	false,
+	true,
 	
 	false,
 	false,
@@ -102,6 +104,24 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	false,
 	
 	false,
+	false,
+	false,
+	false,
+	false,
+	
+	false,
+	false,
+	false,
+	false,
+	false,
+	
+	false,
+	true,
+	true,
+	true,
+	true,
+	
+	true,
 	
 	0
 };

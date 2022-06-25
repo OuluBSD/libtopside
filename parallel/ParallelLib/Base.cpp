@@ -84,7 +84,7 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	if (main_vd.val == ValCls::AUDIO)
 		internal_fmt.SetAudio(DevCls::CENTER, SoundSample::U8_LE, 2, 44100, 777);
 	else if (main_vd.val == ValCls::VIDEO)
-		internal_fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+		internal_fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, TS::default_width, TS::default_height, 60, 1);
 	else
 		TODO;
 	

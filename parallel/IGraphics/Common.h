@@ -70,6 +70,22 @@ struct GenericVertexShaderArgs {
 struct GenericFragmentShaderArgs {
 	vec3 light_dir;
 	
+	int iNone;
+	int iDiffuse;
+	int iSpecular;
+	int iAmbient;
+	int iEmissive;
+	int iHeight;
+	int iNormals;
+	int iShininess;
+	int iOpacity;
+	int iDisplacement;
+	int iLightmap;
+	int iReflection;
+	int iUnknown;
+	
+	const ByteImage* color_buf[TEXTYPE_COUNT];
+	
 };
 
 
@@ -117,7 +133,7 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	
 	GenericShaderArgs* generic = 0;
 	GenericFragmentShaderArgs* fa = 0;
-	NativeColorBufferConstRef tex_img[TEXTYPE_COUNT];
+	//NativeColorBufferConstRef tex_img[TEXTYPE_COUNT];
 	
 	vec3 normal;
 	vec2 tex_coord;
@@ -127,8 +143,8 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	
 	
 	FragmentShaderArgsT() {
-		for(int i = 0; i < TEXTYPE_COUNT; i++)
-			tex_img[i] = 0;
+		//for(int i = 0; i < TEXTYPE_COUNT; i++)
+		//	tex_img[i] = 0;
 	}
 	
 	vec3 GetResolution() const {return generic->iResolution;}

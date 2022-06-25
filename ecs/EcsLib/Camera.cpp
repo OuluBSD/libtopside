@@ -121,8 +121,8 @@ void ChaseCam::SetViewportSize(Size sz) {
 }
 
 void ChaseCam::UpdateView() {
-	int width = 1280;
-	int height = 720;
+	int width = TS::default_width;
+	int height = TS::default_height;
 	
 	if (this->target) {
 		vec3 target = this->target->position;

@@ -1,8 +1,8 @@
-machine x11.app: {
-	
+machine glx.app: {
+		
 	chain program: {
 		state event.register;
-		
+
 		loop video: {
 			center.customer: true;
 			x11.sw.fbo.program: true {
@@ -13,7 +13,13 @@ machine x11.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				program:		"obj_view";
+				type:			stereo;
+				fullscreen:				false;
+				find.vr.screen:			false;
+				shader.vtx.name:		"obj_view";
+				shader.frag.name:		"obj_view";
+				s2.shader.vtx.name:		"stereo";
+				s2.shader.frag.name:	"stereo";
 			};
 		};
 		

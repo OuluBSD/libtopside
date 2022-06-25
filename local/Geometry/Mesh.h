@@ -21,6 +21,7 @@ public:
     VectorMap<String, NodeIndex> named_vertices;
 	int material = -1;
 	int tex_id[TEXTYPE_COUNT];
+	int tex_filter[TEXTYPE_COUNT];
 	bool is_colored_only = false;
 	bool is_lines = false;
 	GfxMesh* accel = 0;
@@ -42,8 +43,8 @@ public:
         named_vertices <<= src.named_vertices;
         //tex_coords <<= src.tex_coords;
         material = src.material;
-        for(int i = 0; i < TEXTYPE_COUNT; i++)
-            tex_id[i] = src.tex_id[i];
+        for(int i = 0; i < TEXTYPE_COUNT; i++) tex_id[i] = src.tex_id[i];
+        for(int i = 0; i < TEXTYPE_COUNT; i++) tex_filter[i] = src.tex_filter[i];
         is_colored_only = src.is_colored_only;
         is_lines = src.is_lines;
         //Refresh();

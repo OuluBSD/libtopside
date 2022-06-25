@@ -105,6 +105,9 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 		XSetFillStyle(display, gc, FillSolid);
 	}
 	
+	TS::default_width = width;
+	TS::default_height = height;
+	
 	::XImage*& fb = dev.fb;
 	fb = XCreateImage(
 		dev.display,

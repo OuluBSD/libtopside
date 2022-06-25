@@ -71,6 +71,7 @@ static void DeleteFramebuffer(NativeFrameBufferRef& b);
 static void SetContextDefaultFramebuffer(NativeFrameBufferRef fb);
 static void BeginRender();
 static void EndRender();
+static void BeginRenderObject();
 //static NativeColorBufferConstRef GetFrameBufferColor(NativeFrameBufferConstRef fb, TexType t);
 static void Uniform1i(int idx, int i);
 static void Uniform2i(int idx, int i0, int i1);

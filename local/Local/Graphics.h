@@ -59,6 +59,9 @@ public:
 
 
 
+extern int default_width;
+extern int default_height;
+
 
 NAMESPACE_TOPSIDE_END
 

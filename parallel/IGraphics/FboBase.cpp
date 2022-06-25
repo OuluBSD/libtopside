@@ -107,7 +107,7 @@ bool FboAtomT<Gfx>::PostInitialize() {
 
 template <class Gfx>
 void FboAtomT<Gfx>::Uninitialize() {
-	
+	data.Uninitialize();
 }
 
 template <class Gfx>

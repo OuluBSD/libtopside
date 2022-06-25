@@ -28,7 +28,7 @@ void PassFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	used_clr[3] = 0;
 	
 	
-	auto& diffuse = args.tex_img[TEXTYPE_DIFFUSE];
+	auto& diffuse = args.fa->color_buf[TEXTYPE_DIFFUSE];
 	
 	TODO
 	#if 0
@@ -88,7 +88,7 @@ ProxyInput0FragmentT<Gfx>::ProxyInput0FragmentT() {
 
 vec4 texture(const ByteImage* ch, const vec2& uv) {
 	int x = uv[0] * (ch->GetWidth()-1);
-	int y = uv[1] * (ch->GetHeight()-1);
+	int y = (1.0f - uv[1]) * (ch->GetHeight()-1);
 	
 	if (x >= 0 && y >= 0 &&
 		x < ch->GetWidth() && y < ch->GetHeight()) {
@@ -106,6 +106,7 @@ template <class Gfx>
 void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	NativeColorBufferConstRef iChannel0 = Gfx::GetLocalTexture(args.generic->iChannel0);
 	ASSERT(iChannel0);
+	TODO // GetLocalTexture is incorrect
 	
 	const auto& iResolution = args.generic->iResolution;
 	const auto& fragCoord = args.frag_coord;
@@ -119,8 +120,7 @@ void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 
 template <class Gfx>
 StereoShaderT<Gfx>::StereoShaderT() {
-	this->UseUniform(GVar::VAR_BUFFERSTAGE0_COLOR);
-	this->UseUniform(GVar::VAR_BUFFERSTAGE1_COLOR);
+	this->UseUniform(GVar::VAR_DIFFUSE);
 	this->UseUniform(GVar::VAR_MODEL);
 	
 }
@@ -135,11 +135,14 @@ void StereoShaderT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 
 template <class Gfx>
 void StereoShaderT<Gfx>::Process(FragmentShaderArgsT<Gfx>& a) {
-	NativeColorBufferConstRef iChannel0 = Gfx::GetLocalTexture(a.generic->iStageColor0);
-	NativeColorBufferConstRef iChannel1 = Gfx::GetLocalTexture(a.generic->iStageColor1);
-	ASSERT(iChannel0);
-	ASSERT(iChannel1);
+	NativeColorBufferConstRef diffuse = a.fa->color_buf[TEXTYPE_DIFFUSE];
+	ASSERT(diffuse);
 	
+	static NativeColorBufferConstRef prev;
+	if (diffuse != prev) {
+		LOG(HexStr((size_t)prev) << " --> " << HexStr((size_t)diffuse));
+		prev = diffuse;
+	}
 	vec4 clr;
 	
 	if (0 && (int)a.frag_coord[0] % 2) {
@@ -153,9 +156,10 @@ void StereoShaderT<Gfx>::Process(FragmentShaderArgsT<Gfx>& a) {
 		clr[2] = uv[0];
 	}
 	else {
-		clr = texture(iChannel0, a.tex_coord);
+		clr = texture(diffuse, a.tex_coord);
 	}
-	clr[3] = 0;
+	clr[3] = 1;
+	
     a.frag_color_out = clr;
 }
 

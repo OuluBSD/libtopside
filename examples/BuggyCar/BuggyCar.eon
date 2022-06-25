@@ -60,7 +60,7 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				shader.frag.path:		"shaders/tests/03f_shader.frag.path.glsl";
+				shader.frag.path:		"shaders/tests/03f_fragment.glsl";
 				shader.vtx.path:			"shaders/tests/03f_vertex.glsl";
 			};
 		};

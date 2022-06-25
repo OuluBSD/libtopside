@@ -31,7 +31,12 @@ void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
 		}
 	}
 	else if (type == GVar::DEPTH_BUFFER) {
-		TODO
+		// TODO don't pass, but pass for now
+		//if (depth)
+		//	depth->Zero();
+	}
+	else if (type == GVar::STENCIL_BUFFER) {
+		// TODO don't pass, but pass for now
 	}
 	else {
 		TODO

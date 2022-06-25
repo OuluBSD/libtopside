@@ -5,8 +5,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 SoftRendT<Gfx>::SoftRendT() {
-	viewport_size = Size(1280,720);
-	SET_ZERO(input_texture);
+	viewport_size = Size(TS::default_width, TS::default_height);
+	//SET_ZERO(input_texture);
 }
 
 template <class Gfx>
@@ -95,8 +95,8 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 	
 	FragmentShaderArgs frag_args;
 	
-	for(int i = 0; i < TEXTYPE_COUNT; i++)
-		frag_args.tex_img[i] = input_texture[i];
+	//for(int i = 0; i < TEXTYPE_COUNT; i++)
+	//	frag_args.tex_img[i] = input_texture[i];
 	
 	vec2& coord = frag_args.frag_coord;
 	vec4& out = frag_args.frag_color_out;
@@ -145,6 +145,7 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 					}
 				}
 				else {
+					int src_id = zinfo->src_id;
 					const RenderSource& rs = tmp_sources[zinfo->src_id];
 					const Vertex* vertices = rs.GetVertices().vertices.Begin();
 					const uint32* indices = rs.ebo->indices.Begin();
@@ -154,7 +155,7 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 					SoftProgram& prog = *rs.prog;
 					GenericShaderArgs& g = prog.GetArgs();
 					frag_args.generic = &g;
-					frag_args.fa = &prog.GetFragmentArgs();
+					frag_args.fa = &prog.GetFragmentArgs(src_id);
 					if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
 						g.iResolution = vec3(w, h, 0);
 					
@@ -230,7 +231,7 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	VertexShaderArgsT<Gfx> vtx_args;
 	GenericShaderArgs& g = prog.GetArgs();
 	vtx_args.generic = &g;
-	vtx_args.va = &prog.GetVertexArgs();
+	vtx_args.va = &prog.GetVertexArgs(src_id);
 	
 	int vtx_count = vbo.vertices.GetCount();
 	processed_vertices.vertices.SetCount(vtx_count);

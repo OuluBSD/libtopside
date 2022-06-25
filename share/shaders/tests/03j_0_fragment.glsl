@@ -14,4 +14,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         1.0, //fragCoord.y / res.y + shift.y,
         fragCoord.x / res.x + shift.x,
         1.0 - fragCoord.y / res.y + shift.z, 1);
+    
+    vec2 uv = (fragCoord / iResolution.xy) * 2 - 1;
+    if (abs(uv.x+uv.y) < 0.01) {
+        fragColor = vec4(1,0,0,1);
+    }
+    if (abs(uv.x-uv.y) < 0.01) {
+        fragColor = vec4(0,0,1,1);
+    }
 }

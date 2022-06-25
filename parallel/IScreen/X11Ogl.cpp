@@ -363,6 +363,8 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		XFlush(display);
 	}
 	
+	TS::default_width = width;
+	TS::default_height = height;
 	
 	XSync(display, False);
 	

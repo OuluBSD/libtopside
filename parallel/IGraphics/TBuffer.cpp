@@ -50,7 +50,9 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	else if (type == "stereo") {
 		mode = MULTI_STEREO;
 		stages.SetCount(3);
-		stages[2].quad_count = 2;
+		stages[0].SetStereo(0);
+		stages[1].SetStereo(1);
+		stages[2].SetStereoLens();
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;
@@ -137,7 +139,7 @@ bool BufferT<Gfx>::PostInitialize() {
 	}
 	
 	if (!InitializeRenderer()){
-		LOG("GfxBufferFieldT<Gfx>::PostInitialize: error: " << GetError());
+		LOG("BufferT<Gfx>::PostInitialize: error: " << GetError());
 		return false;
 	}
 	
@@ -154,7 +156,7 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 				screen_sz = *video_size;
 		}
 		if (screen_sz.cx == 0 && screen_sz.cy == 0)
-			screen_sz = Size(1280,720);
+			screen_sz = Size(TS::default_width,TS::default_height);
 	}
 	
 	{
@@ -222,6 +224,20 @@ bool BufferT<Gfx>::InitializeRenderer() {
 template <class Gfx>
 void BufferT<Gfx>::Reset() {
 	ctx.time_total = 0;
+}
+
+template <class Gfx>
+void BufferT<Gfx>::SetDataStateOverride(DataState* s) {
+	if (mode == MULTI_STEREO) {
+		ASSERT(stages.GetCount() == 3);
+		stages[0].SetDataStateOverride(s);
+		stages[1].SetDataStateOverride(s);
+	}
+	else {
+		ASSERT(stages.GetCount() == 1);
+		auto& stage = stages[0];
+		stage.SetDataStateOverride(s);
+	}
 }
 
 template <class Gfx>
@@ -331,12 +347,26 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			mat4 scale_mat = scale(vec3(0.5, 1.0, 1.0));
 			for(int i = 0; i < 2; i++) {
 				DataObject& o = top_stage.data.objects[i];
+				//mat4 trans_mat = translate(vec3(i == 0 ? -1 : +1, i == 0 ? 0 : -0.2, 0));
 				mat4 trans_mat = translate(vec3(i == 0 ? -1 : +1, 0, 0));
-				o.model = scale_mat * trans_mat;
+				mat4 model = scale_mat * trans_mat;
+				o.model = model;
+			}
+			
+			top_stage.data.textures.SetCount(2);
+			for(int i = 0; i < 2; i++) {
+				BufferStage& stage = stages[i];
+				DataObject& o = top_stage.data.objects[i];
+				o.tex_id[TEXTYPE_DIFFUSE] = i;
+				o.tex_filter[TEXTYPE_DIFFUSE] = 1;
+				top_stage.data.textures[i] = stage.fb.color_buf[stage.fb.buf_i];
 			}
 			
 			for (BufferStage& s : stages)
 				s.Process(cfg);
+			
+			top_stage.data.textures.SetCount(0); // top_stage doesn't own textures
+			
 		}
 		else TODO
 	}

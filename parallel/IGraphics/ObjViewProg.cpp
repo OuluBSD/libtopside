@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
-	if (1) {
+	if (0) {
 		obj = "cube.obj";
 		tex = "cube.png";
 	}
@@ -19,6 +19,12 @@ ObjViewProgT<Gfx>::ObjViewProgT() {
 template <class Gfx>
 void ObjViewProgT<Gfx>::Initialize() {
 	Serial::FboAtomT<Gfx>::Latest().AddBinder(this);
+}
+
+template <class Gfx>
+void ObjViewProgT<Gfx>::Uninitialize() {
+	Serial::FboAtomT<Gfx>::Latest().RemoveBinder(this);
+	loader.Clear();
 }
 
 template <class Gfx>
@@ -74,8 +80,8 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 	
 	Size sz = fb.GetPageSize();
 	//height = width = std::min(sz.cx, sz.cy);
-	width = 1280;
-	height = 720;
+	width = TS::default_width;
+	height = TS::default_height;
 	
 	//fb.DrawRect(sz, Black());
 	
@@ -100,6 +106,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	DataState& state = fb.GetState();
 	
 	float ratio = (float)height / (float)width;
+	float eye_ratio = (float)height / (float)(width * 0.5);
 	float aspect = (float)width / (float)height;
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
@@ -119,7 +126,24 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		vec3 up {0, 1, 0};
 		mat4 lookat = LookAt(eye, center, up);
 		mat4 port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
-		state.view = port * proj * lookat;
+		mat4 base = port * proj;
+		
+		state.view = base * lookat;
+		
+		if (1) {
+			float eye_dist = 0.08;
+			state.is_stereo = true;
+			mat4 eye_port = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
+			mat4 base = eye_port * proj;
+			vec3 l_eye(-eye_dist, 0, +1);
+			vec3 r_eye(+eye_dist, 0, +1);
+			vec3 l_center { -eye_dist, 0, 0};
+			vec3 r_center { +eye_dist, 0, 0};
+			mat4 l_lookat = LookAt(l_eye, l_center, up);
+			mat4 r_lookat = LookAt(r_eye, r_center, up);
+			state.view_stereo[0] = base * l_lookat;
+			state.view_stereo[1] = base * r_lookat;
+		}
 		
 		//mat4 rot = rotate(identity<mat4>(), angle, up);
 		//mat4 model = translate(vec3(0.0, 0.0, 0.0));
@@ -132,6 +156,11 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 }
 
 template <class Gfx>
+ObjViewVertexT<Gfx>::ObjViewVertexT() {
+	this->UseUniform(GVar::VAR_VIEW);
+}
+
+template <class Gfx>
 void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	vec4 pos = a.v.position.Splice().Embed();
 	vec4 screen = a.va->view * pos;
@@ -139,6 +168,11 @@ void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 		screen.Project();
 		a.v.position = screen;
 	}
+}
+
+template <class Gfx>
+ObjViewFragmentT<Gfx>::ObjViewFragmentT() {
+	this->UseUniform(GVar::VAR_DIFFUSE);
 }
 
 template <class Gfx>
@@ -163,7 +197,7 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	
 	intensity = intensity * 0.5 + 0.5;
 	
-	auto& diffuse = args.tex_img[TEXTYPE_DIFFUSE];
+	auto& diffuse = args.fa->color_buf[TEXTYPE_DIFFUSE];
 	if (diffuse) {
 		const ByteImage& tex = *diffuse;
 		float tex_x = args.tex_coord[0];

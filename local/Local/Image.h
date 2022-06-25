@@ -27,6 +27,7 @@ public:
 	~FloatImage() {Clear();}
 	FloatImage(Image& img) {*this = img;}
 	
+	void operator=(const FloatImage& i);
 	void operator=(const Image& img) {Set(img);}
 	void operator=(const Nuller&) {Clear();}
 	
@@ -70,6 +71,7 @@ public:
 	~ByteImage() {Clear();}
 	ByteImage(Image& img) {*this = img;}
 	
+	void operator=(const ByteImage& i);
 	void operator=(const Image& img) {Set(img);}
 	void operator=(const Nuller&) {Clear();}
 	

@@ -336,16 +336,22 @@ void SwGfxT<Gfx>::BindFramebufferRO(NativeFrameBufferConstRef fb) {
 
 template <class Gfx>
 void SwGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
-	auto& t = Local().T();
+	auto& l = Local();
+	auto& t = l.T();
 	t.r = tex;
 	t.rw = 0;
+	if (l.prog)
+		l.prog->BindTexture(l.active_texture, tex);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
-	auto& t = Local().T();
+	auto& l = Local();
+	auto& t = l.T();
 	t.r = 0;
 	t.rw = tex;
+	if (l.prog)
+		l.prog->BindTexture(l.active_texture, tex);
 }
 
 template <class Gfx>
@@ -477,8 +483,8 @@ void SwGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	ASSERT_(l.pipe, "pipe is not bound yet");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	for(int i = 0; i < TEXTYPE_COUNT; i++)
-		l.rend.BindTexture(i, l.texture[i].GetReadTexture());
+	//for(int i = 0; i < TEXTYPE_COUNT; i++)
+	//	l.rend.BindTexture(i, l.texture[i].GetReadTexture());
 	
 	l.rend.Render(*l.vao);
 }
@@ -540,6 +546,13 @@ void SwGfxT<Gfx>::DeactivateVertexStructure() {
 }
 
 template <class Gfx>
+void SwGfxT<Gfx>::BeginRenderObject() {
+	auto& l = Local();
+	ASSERT(l.prog);
+	l.prog->BeginObject();
+}
+
+template <class Gfx>
 void SwGfxT<Gfx>::BeginRender() {
 	auto& l = Local();
 	ASSERT_(l.fb, "framebuffer is not bound yet");
@@ -559,6 +572,7 @@ void SwGfxT<Gfx>::BeginRender() {
 		}
 	}
 	*/
+	l.prog->Begin();
 	l.rend.SetTarget(*l.pipe, *l.fb);
 	//l.rend.SetPipeline(*l.pipe);
 	l.rend.Begin();

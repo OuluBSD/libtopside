@@ -34,6 +34,7 @@ bool Model::AddTextureFile(Mesh& mesh, TexType type, String path){
 bool Model::SetTexture(Mesh& mesh, TexType type, Image img) {
 	if (IsPositive(img.GetSize())) {
         mesh.tex_id[type] = textures.GetCount();
+        mesh.tex_filter[type] = 1; // LINEAR
         textures.Add().Set(img);
         return true;
     }

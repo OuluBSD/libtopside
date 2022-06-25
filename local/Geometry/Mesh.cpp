@@ -9,8 +9,8 @@ void Mesh::Clear() {
 	vertices.Clear();
 	indices.Clear();
 	material = -1;
-	for(int i = 0; i < TEXTYPE_COUNT; i++)
-		tex_id[i] = -1;
+	for(int i = 0; i < TEXTYPE_COUNT; i++) tex_id[i] = -1;
+	for(int i = 0; i < TEXTYPE_COUNT; i++) tex_filter[i] = -1;
 	is_colored_only = false;
 	is_lines = false;
 	

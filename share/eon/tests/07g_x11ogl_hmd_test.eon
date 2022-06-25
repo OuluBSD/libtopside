@@ -23,9 +23,9 @@ machine sdl.app: {
 				find.vr.screen:	false;
 				env:			event.register;
 				type:						stereo;
-				shader.frag.path:			"shaders/tests/07d_shader.frag.path.glsl";
+				shader.frag.path:			"shaders/tests/07d_fragment.glsl";
 				shader.vtx.path:			"shaders/tests/07d_vertex.glsl";
-				stereo.shader.frag.path:	"shaders/tests/07g_shader.frag.path.glsl";
+				stereo.shader.frag.path:	"shaders/tests/07g_fragment.glsl";
 				stereo.shader.vtx.path:		"shaders/tests/07g_vertex.glsl";
 			};
 		};

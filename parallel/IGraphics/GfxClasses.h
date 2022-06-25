@@ -52,6 +52,7 @@ struct GfxDataObject : GfxMesh {
     int id = -1;
     
 	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
+	int tex_filter[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
 	
 	void Set(const mat4& model, const mat4& scale) {this->model = model; this->scale = scale;}
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
@@ -67,7 +68,9 @@ struct GfxDataState : ErrorReporter {
 	
 	// renderer
     mat4		view;
+    mat4		view_stereo[2];
     vec3		light_dir;
+    bool		is_stereo = false;
     bool		user_view = false;
     bool		dbg_render = false;
 	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
@@ -117,6 +120,7 @@ struct GfxFramebuffer : ErrorReporter {
 	bool	is_read_fb_output = 0;
 	bool	is_audio = 0;
 	bool	is_cubemap = 0;
+	bool	is_affine = 0;
 	Filter	filter;
 	Wrap	wrap;
 	
@@ -127,6 +131,9 @@ struct GfxFramebuffer : ErrorReporter {
 	Sample	sample = GVar::SAMPLE_FLOAT;
 	Point	offset;
 	bool	is_doublebuf = 0;
+	bool	is_stereo_lenses = 0;
+	bool	is_stereo_left = 0;
+	bool	is_stereo_right = 0;
 	int		pitch = 0;
 	int8	buf_i = 0;
 	double	fps = 0;

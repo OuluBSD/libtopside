@@ -34,6 +34,7 @@ struct ShaderDataPackT : RTTIBase {
 	One<BinderIfaceVideo>		prog;
 	DataState					accel_state;
 	
+	void Uninitialize() {frag_prog.Clear(); vtx_prog.Clear(); prog.Clear(); accel_state.Clear();}
 	void Visit(RuntimeVisitor& vis) {if (prog) vis % *prog;}
 };
 
@@ -97,7 +98,7 @@ protected:
 	void SetWindowRect(Rect r);
 	
 public:
-	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
+	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,TS::default_width,TS::default_height);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
 	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBufferRef fb);

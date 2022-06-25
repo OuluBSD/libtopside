@@ -149,7 +149,7 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 
 
 VideoGenBase::VideoGenBase() {
-	fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+	fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, TS::default_width, TS::default_height, 60, 1);
 	
 }
 

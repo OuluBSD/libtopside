@@ -43,7 +43,6 @@ file
 	UtilProg.cpp,
 	ObjViewProg.h,
 	ObjViewProg.cpp,
-	VirtualGui readonly separator,
 	Templates readonly separator,
 	TState.h,
 	TState.cpp,

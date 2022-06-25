@@ -438,8 +438,21 @@ uniform float     iChannelTime[4];       // channel playback time (in seconds)
 uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
 uniform float     iBlockOffset;          // total consumed samples (mostly for audio, for video it's same as iFrame)
 
+
+// VR
+uniform sampler2D iWarpTexture;			 // Per eye texture to warp for lens distortion
+uniform vec2      iLensCenter;			 // Position of lens center in m (usually eye_w/2, eye_h/2)
+uniform vec2      iViewportScale;		 // Scale from texture co-ords to m (usually eye_w, eye_h)
+uniform float     iWarpScale;			 // Distortion overall scale in m (usually ~eye_w/2)
+uniform vec4      iHmdWarpParam;		 // Distoriton coefficients (PanoTools model) [a,b,c,d]
+uniform vec3      iAberr;				 // chromatic distortion post scaling
+
 in vec3 vNormal;
-in vec2 vTexCoord;
+#if ${IS_AFFINE}
+noperspective in vec2 vTexCoord;
+#else
+smooth in vec2 vTexCoord;
+#endif
 
 out vec4 out_Color;
 
@@ -503,7 +516,11 @@ uniform mat4      iModel;
 uniform vec3      iLightDir;
 
 out vec3 vNormal;
-out vec2 vTexCoord;
+#if ${IS_AFFINE}
+noperspective out vec2 vTexCoord;
+#else
+smooth out vec2 vTexCoord;
+#endif
 
 ${USER_LIBRARY}
 ${USER_CODE}
@@ -930,6 +947,7 @@ template <class Gfx> void OglGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, in
 	glProgramUniform3f(prog, idx, f0, f1, f2);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::BeginRenderObject() {}
 template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
 template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 

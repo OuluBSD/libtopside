@@ -46,6 +46,7 @@ bool CompilerT<Gfx>::Compile(
 	code.Replace("${IS_FRAGMENT_SHADER}", IntStr(is_fragment));
 	code.Replace("${IS_VERTEX_SHADER}", IntStr(is_vertex));
 	code.Replace("${IS_AUDIO}", IntStr(fb.is_audio));
+	code.Replace("${IS_AFFINE}", IntStr(fb.is_affine));
 	code.Replace("${USER_CODE}", user_code);
 	code.Replace("${USER_LIBRARY}", library);
 	code.Replace("${SAMPLER0}", sampler0);

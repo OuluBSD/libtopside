@@ -9,6 +9,7 @@ template <class Gfx>
 class ObjViewVertexT : public SoftShaderBaseT<Gfx> {
 	
 public:
+	ObjViewVertexT();
 	void Process(VertexShaderArgsT<Gfx>& args) override;
 	
 };
@@ -17,6 +18,7 @@ template <class Gfx>
 class ObjViewFragmentT : public SoftShaderBaseT<Gfx> {
 	
 public:
+	ObjViewFragmentT();
 	void Process(FragmentShaderArgsT<Gfx>& args) override;
 	
 };
@@ -42,6 +44,7 @@ struct ObjViewProgT :
 	void operator=(const ObjViewProgT& t) {Panic("Can't copy ObjViewProgT");}
 	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	void Initialize() override;
+	void Uninitialize() override;
 	bool Render(Draw& draw) override;
 	bool Arg(const String& key, const String& value) override;
 	

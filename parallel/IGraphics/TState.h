@@ -74,6 +74,7 @@ struct DataStateT : GfxDataState {
 	GfxDataObject& GetObject(int i) override {return objects[i];}
 	
 	void Free();
+	void Clear();
 	void Refresh(Model& m) override;
 	bool LoadModel(ModelLoader& l) override;
 	bool LoadModel(ModelLoader& l, String path) override;

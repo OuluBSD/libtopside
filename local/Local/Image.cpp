@@ -20,6 +20,10 @@ Image RealizeImage(Image& img, String path) {
 
 
 
+void FloatImage::operator=(const FloatImage& i) {
+	TODO
+}
+
 void FloatImage::Clear() {
 	if (data) {
 		free(data);
@@ -99,6 +103,13 @@ void FloatImage::Set(Size sz, int channels) {
 
 
 
+
+void ByteImage::operator=(const ByteImage& i) {
+	if (i.data)
+		Set(i.sz.cx, i.sz.cy, i.channels, i.pitch, i.data);
+	else
+		Clear();
+}
 
 void ByteImage::FlipVert() {
 	int half = sz.cy / 2;

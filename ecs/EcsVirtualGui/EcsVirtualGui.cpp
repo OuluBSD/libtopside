@@ -97,7 +97,7 @@ bool VirtualGui::Open() {
 	}
 	
 	title = "VirtualGui";
-	screen_sz = Size(1280,720);
+	screen_sz = Size(TS::default_width, TS::default_height);
 	
 	/*if (0)
 		;

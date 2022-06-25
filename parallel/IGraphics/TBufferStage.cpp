@@ -3,6 +3,40 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+extern const char* stereo_vtx_shader;
+extern const char* stereo_frag_shader;
+
+template <class Gfx>
+void BufferStageT<Gfx>::SetStereo(int stereo_id) {
+	if (stereo_id == 0)
+		fb.is_stereo_left = true;
+	else if (stereo_id == 1)
+		fb.is_stereo_right = true;
+}
+
+template <class Gfx>
+void BufferStageT<Gfx>::SetStereoLens() {
+	fb.is_affine = true;
+	fb.is_stereo_lenses = true;
+	quad_count = 2;
+	
+	ShaderConf& vtx_conf = shdr_confs[GVar::VERTEX_SHADER];
+	ShaderConf& frag_conf = shdr_confs[GVar::FRAGMENT_SHADER];
+	if (Gfx::Type == GVar::OGL) {
+		vtx_conf.is_content = true;
+		vtx_conf.str = stereo_vtx_shader;
+		frag_conf.is_content = true;
+		frag_conf.str = stereo_frag_shader;
+	}
+	else if (Gfx::Type == GVar::SW) {
+		vtx_conf.str = "stereo_vertex";
+		frag_conf.str = "stereo_fragment";
+	}
+	else {
+		TODO
+	}
+	
+}
 
 template <class Gfx>
 bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState& ws) {
@@ -15,7 +49,7 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 	
 	// Program string is a simplified way to set shader configuration
 	String program_str = ws.Get(".program");
-	if (program_str.GetCount()) {
+	if (buf->stages.GetCount() == 1 && program_str.GetCount()) {
 		ShaderConf& vtx_conf = shdr_confs[GVar::VERTEX_SHADER];
 		vtx_conf.is_path = false;
 		vtx_conf.str = program_str + "_vertex";
@@ -38,7 +72,10 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 			}
 
 			ShaderConf& conf = shdr_confs[i];
-			int tries = id == 0 ? 2 : 1;
+			if (!conf.str.IsEmpty())
+				continue;
+			
+			int tries = (id == 0 || fb.is_stereo_left || fb.is_stereo_right) ? 2 : 1;
 			
 			for(int j = 0; j < tries; j++) {
 				String prefix = "." + (j == 0 ? ("s" + IntStr(id) + ".") : String()) + "shader." + type + ".";
@@ -103,7 +140,7 @@ bool BufferStageT<Gfx>::PostInitialize() {
 			fb.sample = GVar::SAMPLE_U16;
 		}
 		else {
-			fb.size = Size(1280,720);
+			fb.size = Size(TS::default_width,TS::default_height);
 			fb.channels = 4;
 			fb.fps = 60;
 			fb.sample = GVar::SAMPLE_FLOAT;
@@ -116,13 +153,39 @@ template <class Gfx>
 bool BufferStageT<Gfx>::ImageInitialize() {
 	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
 	
+	if (fb.is_stereo_lenses) {
+		float horz_sep = 0.063f;
+		float vpos = 0.025953f;
+		//float warp_adj = 1.0f;
+		viewport_scale = vec2(fb.size.cx, fb.size.cy);
+		left_lens_center  = vec2(viewport_scale[0] * (1 - horz_sep)/2.0f, viewport_scale[1] * (0.5 + vpos));
+		right_lens_center = vec2(viewport_scale[0] * (1 + horz_sep)/2.0f, viewport_scale[1] * (0.5 + vpos));
+		//float ws = (left_lens_center[0] > right_lens_center[0]) ? left_lens_center[0] : right_lens_center[0];
+		warp_scale = fb.size.cx / 2; // ws * warp_adj
+		hmd_warp_param = vec4(0,0,0,1);
+		aberr = vec3(1,1,1);
+	}
+	
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		ShaderConf& conf = shdr_confs[i];
 		
 		if (conf.str.GetCount() &&
-			!LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, lib_conf.str))
+			!LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
 			return false;
 	}
+	
+	return true;
+}
+
+template <class Gfx>
+bool BufferStageT<Gfx>::LoadShaderContent(GVar::ShaderType shader_type, String content) {
+	DLOG("BufferStageT::LoadShaderContent");
+	
+	ASSERT(shader_type > GVar::SHADERTYPE_NULL && shader_type < GVar::SHADERTYPE_COUNT);
+	ShaderState& shader = rt.shaders[shader_type];
+	
+	shader.code = content;
+	shader.library = "";
 	
 	return true;
 }
@@ -173,21 +236,27 @@ bool BufferStageT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shad
 }
 
 template <class Gfx>
-bool BufferStageT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bool is_path, String library_paths) {
+bool BufferStageT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bool is_path, bool is_content, String library_paths) {
 	if (str.IsEmpty()) {
 		LOG("BufferStageT<Gfx>::LoadShader: error: no shader given");
 		return false;
 	}
 	
-	if (!is_path) {
-		if (!LoadBuiltinShader(shader_type, str)) {
+	if (is_path) {
+		if (!LoadShaderFile(shader_type, str, library_paths)) {
 			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + str + "'");
 			return false;
 		}
 	}
+	else if (is_content) {
+		if (!LoadShaderContent(shader_type, str)) {
+			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from content string");
+			return false;
+		}
+	}
 	else {
-		if (!LoadShaderFile(shader_type, str, library_paths)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + str + "'");
+		if (!LoadBuiltinShader(shader_type, str)) {
+			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from name '" + str + "'");
 			return false;
 		}
 	}
@@ -230,10 +299,11 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 	Vertex& tr = m.vertices[1];
 	Vertex& br = m.vertices[2];
 	Vertex& bl = m.vertices[3];
-	tl.SetPosTex(vec3(-1, +1, 0), vec2(0,+1));
-	tr.SetPosTex(vec3(+1, +1, 0), vec2(+1,+1));
-	br.SetPosTex(vec3(+1, -1, 0), vec2(+1,0));
-	bl.SetPosTex(vec3(-1, -1, 0), vec2(0,0));
+	float z = 1;
+	tl.SetPosTex(vec3(-1, +1, z), vec2(0,+1));
+	tr.SetPosTex(vec3(+1, +1, z), vec2(+1,+1));
+	br.SetPosTex(vec3(+1, -1, z), vec2(+1,0));
+	bl.SetPosTex(vec3(-1, -1, z), vec2(0,0));
 	m.indices << 0 << 2 << 1; // top-right triangle CCW
 	m.indices << 0 << 3 << 2; // bottom-left triangle CCW
 	
@@ -263,6 +333,8 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	RendVer(OnProcess);
 	
 	Gfx::Clear(GVar::COLOR_BUFFER);
+	Gfx::Clear(GVar::DEPTH_BUFFER);
+	//Gfx::Clear(GVar::STENCIL_BUFFER);
 	
 	if (!use_user_data) {
 		/*if (binders.GetCount()) {
@@ -292,6 +364,9 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		for (DataObject& o : data.objects) {
 			if (!o.is_visible)
 				continue;
+			
+			Gfx::BeginRenderObject();
+			
 			SetVars(data, rt.prog, o);
 			o.Paint(data);
 		}
@@ -305,6 +380,8 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		for (DataObject& o : user_data->objects) {
 			if (!o.is_visible)
 				continue;
+			
+			Gfx::BeginRenderObject();
 			SetVars(*user_data, rt.prog, o);
 			o.Paint(*user_data);
 		}
@@ -718,7 +795,16 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 		Gfx::Uniform4f(uindex, o.color[0], o.color[1], o.color[2], o.color[3]);
 	}
 	else if (var == VAR_VIEW) {
-		Gfx::UniformMatrix4fv(uindex, data.view);
+		if (fb.is_stereo_left) {
+			ASSERT(data.is_stereo);
+			Gfx::UniformMatrix4fv(uindex, data.view_stereo[0]);
+		}
+		else if (fb.is_stereo_right) {
+			ASSERT(data.is_stereo);
+			Gfx::UniformMatrix4fv(uindex, data.view_stereo[1]);
+		}
+		else
+			Gfx::UniformMatrix4fv(uindex, data.view);
 	}
 	else if (var == VAR_LIGHTDIR) {
 		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
@@ -738,10 +824,15 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
 		int tex_ch = var - VAR_NONE;
 		int tex_i = o.tex_id[tex_ch];
+		int tex_f = o.tex_filter[tex_ch];
 		if (tex_i >= 0) {
 			auto& tex = data.textures[tex_i];
 			Gfx::ActiveTexture(tex_ch);
 			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+			if (tex_f == 0)
+				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
+			else if (tex_f == 1)
+				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
@@ -751,6 +842,24 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 	}
 	else if (var == VAR_COMPAT_CHANNELRESOLUTION) {
 		TODO
+	}
+	else if (var == VAR_LENS_CENTER) {
+		if (o.model.data[3][0] < 0)
+			Gfx::Uniform2f(uindex, left_lens_center[0], left_lens_center[1]);
+		else
+			Gfx::Uniform2f(uindex, right_lens_center[0], right_lens_center[1]);
+	}
+	else if (var == VAR_VIEWPORT_SCALE) {
+		Gfx::Uniform2f(uindex, viewport_scale[0], viewport_scale[1]);
+	}
+	else if (var == VAR_WARP_SCALE) {
+		Gfx::Uniform1f(uindex, warp_scale);
+	}
+	else if (var == VAR_HMD_WARP_PARAM) {
+		Gfx::Uniform4f(uindex, hmd_warp_param[0], hmd_warp_param[1], hmd_warp_param[2], hmd_warp_param[3]);
+	}
+	else if (var == VAR_ABERR) {
+		Gfx::Uniform3f(uindex, aberr[0], aberr[1], aberr[2]);
 	}
 	else {
 		TODO
@@ -1184,6 +1293,7 @@ int BufferStageT<Gfx>::BuiltinShaderT() {
 			auto& s = rt.shaders[i];
 			ASSERT(!s.shader);
 			if (!Gfx::CreateShader((GVar::ShaderType)i, s.shader)) {
+				LOG("BufferStageT<Gfx>::BuiltinShaderT: error: could not create shader");
 				SetError("could not create shader (at BufferT<Gfx>::BuiltinShaderT)");
 				return -1;
 			}
@@ -1228,6 +1338,63 @@ int BufferStageT<X11SwGfx>::BuiltinShader() {
 
 
 
+
+
+const char* stereo_vtx_shader = R"SH4D3R(
+void mainVertex(out vec4 pos_out)
+{
+	vec3 pos = iPos.xyz;
+	pos_out = normalize(iModel * vec4(pos, 1.0));
+}
+
+)SH4D3R";
+
+
+
+
+
+
+
+const char* stereo_frag_shader = R"SH4D3R(
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // output_loc is the fragment location on screen from [0,1]x[0,1]
+    vec2 output_loc = vec2(vTexCoord.s, vTexCoord.t);
+    
+    // Compute fragment location in lens-centered coordinates at world scale
+    vec2 r = output_loc * iViewportScale - iLensCenter;
+    
+    // scale for distortion model
+    // distortion model has r=1 being the largest circle inscribed (e.g. eye_w/2)
+    r /= iWarpScale;
+    
+    // |r|**2
+    float r_mag = length(r);
+    
+    // offset for which fragment is sourced
+    vec2 r_displaced = r * (iHmdWarpParam[3] + iHmdWarpParam.z * r_mag +
+    iHmdWarpParam.y * r_mag * r_mag +
+    iHmdWarpParam.x * r_mag * r_mag * r_mag);
+    
+    // back to world scale
+    r_displaced *= iWarpScale;
+    
+    // back to viewport co-ord
+    vec2 tc_r = (iLensCenter + iAberr.r * r_displaced) / iViewportScale;
+    vec2 tc_g = (iLensCenter + iAberr.g * r_displaced) / iViewportScale;
+    vec2 tc_b = (iLensCenter + iAberr.b * r_displaced) / iViewportScale;
+
+    float red   = texture(iDiffuse, tc_r).r;
+    float green = texture(iDiffuse, tc_g).g;
+    float blue  = texture(iDiffuse, tc_b).b;
+    
+    // Black edges off the texture
+    fragColor = ((tc_g.x < 0.0) || (tc_g.x > 1.0) || (tc_g.y < 0.0) || (tc_g.y > 1.0)) ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(red, green, blue, 1.0);
+    
+    // Simple output
+    //fragColor = vec4(texture(iDiffuse, vTexCoord).rgb, 1);
+}
+)SH4D3R";
 
 
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(BufferStageT)

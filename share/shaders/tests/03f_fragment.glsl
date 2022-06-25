@@ -1,4 +1,3 @@
-in vec3 normal;
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
@@ -11,6 +10,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		fragColor = vec4(intensity, intensity, intensity, 0);
 	}
 	else {
-		fragColor = texture(iDiffuse, vTexCoord) * intensity;
+		fragColor = vec4(texture(iDiffuse, vTexCoord).rgb * intensity, 1);
+		//fragColor = vec4(texture(iDiffuse, vTexCoord).rgb, 1);
 	}
 }

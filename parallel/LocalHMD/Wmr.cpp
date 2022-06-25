@@ -288,8 +288,8 @@ void process_nxjson_obj(const nx_json* node, const nx_json* (*list)[32], char* m
 	if (!node)
 		return;
 
-	if (node->key)
-		if (strcmp(match,node->key) == 0) 
+	if (node->key) {
+		if (strcmp(match,node->key) == 0)
 		{
 			//LOGE("Found key %s\n", node->key);
 			for (int i = 0; i < 32; i++)
@@ -300,7 +300,8 @@ void process_nxjson_obj(const nx_json* node, const nx_json* (*list)[32], char* m
 				}
 			}
 		}
-
+	}
+	
 	process_nxjson_obj(node->next, list, match);
 	process_nxjson_obj(node->child, list, match);
 }
@@ -344,7 +345,7 @@ static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
 		char *json_data = (char*)config + hdr->json_start + sizeof(uint16);
 		const nx_json* json = nx_json_parse(json_data, 0);
 
-		if (json->type != NX_JSON_NULL) 
+		if (json->type != NX_JSON_NULL)
 		{
 			//list to save found nodes with matching name
 			const nx_json* returnlist[32] = {0};

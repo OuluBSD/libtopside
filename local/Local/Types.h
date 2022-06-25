@@ -47,6 +47,7 @@ public:
 	virtual bool Arg(const String& key, const String& value) = 0;
 	
 	virtual void Initialize() {}
+	virtual void Uninitialize() {}
 	virtual void Visit(RuntimeVisitor& vis) {}
 	
 };
