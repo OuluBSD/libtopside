@@ -4,12 +4,12 @@ NAMESPACE_ECS_BEGIN
 
 
 void Transform::Initialize() {
-	position = zero<vec3>();
+	data.position = zero<vec3>();
 	size = one<vec3>();
-	orientation = identity<quat>();
-	direction = vec3(0,0,1); // "look at" alternative to quaternion
-	up = vec3(0,1,0); // "look at" alternative to quaternion
-	use_lookat = false; // use direction & up instead of orientation
+	data.mode = TransformMatrix::MODE_LOOKAT; // use direction & up instead of orientation
+	data.orientation = identity<quat>();
+	data.direction = vec3(0,0,1); // "look at" alternative to quaternion
+	data.up = vec3(0,1,0); // "look at" alternative to quaternion
 	
 	Ref<WorldLogicSystem> sys = GetEngine().TryGet<WorldLogicSystem>();
 	if (sys)
@@ -25,41 +25,30 @@ void Transform::Uninitialize() {
 void Transform::SetFromMatrix(const mat4& matrix) {
 	vec3 skew;
 	vec4 persp;
-	bool succ = Decompose(matrix, size, orientation, position, skew, persp);
+	bool succ = Decompose(matrix, size, data.orientation, data.position, skew, persp);
 	ASSERT(succ);
 }
 
 void Transform::operator=(const Transform& t) {
-    position = t.position;
+	data = t.data;
     size = t.size;
-    orientation = t.orientation;
-    direction = t.direction;
-    up = t.up;
-    use_lookat = t.use_lookat;
 }
 
 mat4 Transform::GetMatrix() const {
-	return translate(position) * ToMat4(orientation) * scale(size);
+	return translate(data.position) * ToMat4(data.orientation) * scale(size);
 }
 
 vec3 Transform::GetForwardDirection() const {
-	if (!use_lookat) {
-		vec4 fwd(0,0,1,1);
-		vec4 dir = ToMat4(orientation) * fwd;
-		return dir.Splice();
-	}
-	else {
-		return direction;
-	}
+	return data.GetForwardDirection();
 }
 
 bool Transform::Arg(String key, Object value) {
 	if (key == "x")
-		position[0] = value.ToDouble();
+		data.position[0] = value.ToDouble();
 	else if (key == "y")
-		position[1] = value.ToDouble();
+		data.position[1] = value.ToDouble();
 	else if (key == "z")
-		position[2] = value.ToDouble();
+		data.position[2] = value.ToDouble();
 	else if (key == "cx")
 		size[0] = value.ToDouble();
 	else if (key == "cy")
@@ -74,7 +63,7 @@ bool Transform::Arg(String key, Object value) {
 
 String Transform::ToString() const {
 	String s;
-	s << "pos" << position.ToString() << ", size" << size.ToString() << ", orient" << orientation.ToString();
+	s << "pos" << data.position.ToString() << ", size" << size.ToString() << ", orient" << data.orientation.ToString();
 	return s;
 }
 

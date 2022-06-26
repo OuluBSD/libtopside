@@ -35,7 +35,7 @@ void WorldLogicSystem::UpdateByList(double dt) {
 }
 
 void WorldLogicSystem::UpdateTransform(Transform& t, double dt) {
-    if (t.position[1] < -1000.0f) {
+    if (t.data.position[1] < -1000.0f) {
         t.GetEntity()->Destroy();
     }
 }

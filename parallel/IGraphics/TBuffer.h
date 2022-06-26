@@ -90,7 +90,7 @@ struct BufferStageT : GfxBuffer {
 	
 	void SetStereo(int stereo_id);
 	void SetStereoLens();
-	void SetDataStateOverride(DataState* s) {user_data = s; use_user_data = s != 0;}
+	void SetDataStateOverride(DataState* s);
 	bool SetLoopback(String loopback_str);
 	void SetVars(DataState&, NativeProgram& gl_prog, const DataObject& o);
 	void SetVar(DataState&, int var, NativeProgram& gl_prog, const DataObject& o);
@@ -155,6 +155,7 @@ struct BufferT : GfxBuffer {
 	int							loopback = -1;
 	//int						test_shader = -1;
 	
+	DataState					stereo_data; // same data for both eyes
 	Array<BufferStage>			stages;
 	ContextState				ctx;
 	bool						is_local_time = false;
@@ -187,20 +188,23 @@ public:
 	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
 	bool PostInitialize();
 	bool InitializeRenderer();
-	void SetFramebufferSize(Size sz);
 	void Process(ShaderPipeline& pipe);
 	void Process(const RealtimeSourceConfig& cfg);
 	bool SetupLoopback();
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
-	void SetLocalTime(bool b=true) {is_local_time = b;}
-	Framebuffer& GetFramebuffer() {return stages.Top().fb;}
-	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
 	BufferStage& Single() {ASSERT(stages.GetCount() == 1); return stages.Top();}
 	void Reset();
 	bool IsAudio() const {return mode == SINGLE_SOUND;}
 	bool AcceptsOrders() const {return is_initialized;}
+	
+	void SetFramebufferSize(Size sz);
+	void SetLocalTime(bool b=true) {is_local_time = b;}
 	void SetDataStateOverride(DataState* s);
+	
+	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
+	Framebuffer& GetFramebuffer() {return stages.Top().fb;}
+	DataState& GetState();
 	
 };
 

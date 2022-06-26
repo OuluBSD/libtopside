@@ -46,7 +46,18 @@ struct Viewport : public Component<Viewport> {
 };
 
 
-struct CameraBase {
+struct CameraBase :
+	WeakRefScopeEnabler<CameraBase, Entity>,
+	RTTIBase
+{
+	RTTI_DECL0(CameraBase)
+	
+	bool use_stereo = false;
+	mat4 view_stereo[2];
+	mat4 proj_stereo[2];
+	mat4 mvp_stereo[2];
+	
+	
 	
 	virtual bool Load(GfxDataState& state) = 0;
 	
@@ -64,6 +75,7 @@ class ChaseCam :
 	mat4 view;
 	mat4 projection;
 	mat4 port;
+	mat4 port_stereo;
 	vec2 viewport_sz;
 	
 	bool test_log = false;
@@ -82,7 +94,7 @@ class ChaseCam :
 	
 public:
 	typedef ChaseCam CLASSNAME;
-	RTTI_COMP0(ChaseCam)
+	RTTI_COMP1(ChaseCam, CameraBase)
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & viewable & vport;}
 	void Initialize() override;
@@ -108,8 +120,10 @@ struct CameraPrefab : EntityPrefab<Transform, Viewport, Viewable>
         auto components = EntityPrefab::Make(e);
 		
 		TransformRef t = components.Get<TransformRef>();
-		t->position[2] = 10.0;
-		t->position[1] = 3.0;
+		t->data.mode = TransformMatrix::MODE_POSITION;
+		t->data.position[2] = 10.0;
+		t->data.position[1] = 3.0;
+		t->data.position[0] = 0.0;
 		
         return components;
     }

@@ -10,14 +10,16 @@ public:
 	RTTI_COMP0(Transform)
 	COMP_DEF_VISIT
 	
-	
-	vec3 position;
+	TransformMatrix data;
 	vec3 size;
+	/*
+	vec3 position;
 	quat orientation;
 	vec3 direction; // "look at" alternative to quaternion
 	vec3 up; // "look at" alternative to quaternion
 	bool use_lookat; // use direction & up instead of orientation
-	
+	//bool use_stereo = false;v
+	*/
 	
 	void SetFromMatrix(const mat4& matrix);
 	void operator=(const Transform& t);

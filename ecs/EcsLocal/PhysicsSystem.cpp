@@ -34,14 +34,14 @@ void PhysicsSystem::Update(double dt)
 		
 		if (rigid_body && transform && rigid_body->IsEnabled()) {
 			rigid_body->velocity += rigid_body->acceleration * dt;
-			transform->position += rigid_body->velocity * dt;
+			transform->data.position += rigid_body->velocity * dt;
 			
-			vec3 adjusted_angular = TS::transform(rigid_body->angular_velocity, inverse(ToMat4(transform->orientation)));
+			vec3 adjusted_angular = TS::transform(rigid_body->angular_velocity, inverse(ToMat4(transform->data.orientation)));
 			
 			float angle = adjusted_angular.GetLength();
 			if (angle > 0.0f) {
 				vec3 axis = adjusted_angular / angle;
-				transform->orientation *= make_quat_from_axis_angle(axis, angle * dt);
+				transform->data.orientation *= make_quat_from_axis_angle(axis, angle * dt);
 			}
 			
 			rigid_body->velocity *= rigid_body->damping_factor;
@@ -49,7 +49,7 @@ void PhysicsSystem::Update(double dt)
 		}
 		
 		if (transform) {
-			vec3 a = transform->position.GetAbsolute();
+			vec3 a = transform->data.position.GetAbsolute();
 			if (a[0] >= area_length ||
 				a[1] >= area_length ||
 				a[2] >= area_length)
@@ -94,7 +94,7 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 			double x = sin(phase) * radius;
 			double z = cos(phase) * radius;
 			
-			t.position = vec3(x, 2, z);
+			t.data.position = vec3(x, 2, z);
 			if (debug_log) {
 				LOG("PhysicsSystem::RunTestFn: " << time << ": " << HexStr(&b) << ": " << x << ":" << z);
 			}

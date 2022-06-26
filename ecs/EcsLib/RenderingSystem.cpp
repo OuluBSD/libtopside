@@ -100,6 +100,7 @@ void RenderingSystem::Start() {
 }
 
 void RenderingSystem::Update(double dt) {
+	time += dt;
 	
 	//if (state.IsEmpty()) {
 	if (!state) {
@@ -118,8 +119,7 @@ void RenderingSystem::Update(double dt) {
 		}
 		RefT_Atom<X11OglSinkDevice> x11_ogl_sink = ents->GetRoot()->FindDeep<X11OglSinkDevice>();
 		if (!state && x11_ogl_sink) {
-			TODO
-			//state = &x11_ogl_sink->dev.ogl.GetBuffer().data;
+			state = &x11_ogl_sink->dev.ogl.GetBuffer().GetState();
 		}
 		#ifdef flagSDL2
 		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();
@@ -140,6 +140,14 @@ void RenderingSystem::Update(double dt) {
 		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
 		if (!state) TODO
 	}
+	
+	#if 1
+	double phase_time = 3.0;
+	float f = time / phase_time;
+	float f2 = 1 - fabs(2 * f - 1);
+	float angle = f * (2.0 * M_PI);
+	state->light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	#endif
 	
 	for (ModelComponentRef& m : models) {
 		

@@ -65,7 +65,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	T& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
 	const T& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
 	
-	Vec& operator=(const Vec& v) {memcpy(this, &v, sizeof(Vec)); return *this;}
+	Vec& operator=(const Vec& v) {for(int i = 0; i < I; i++) data[i] = v.data[i]; return *this;}
 	Vec& operator*=(T v) {for(int i = 0; i < I; i++) data[i] *= v; return *this;}
 	Vec& operator/=(T v) {for(int i = 0; i < I; i++) data[i] /= v; return *this;}
 	template<int J> Vec& operator+=(const Vec<T,J>& v) {for(int i = 0; i < std::min(I,J); i++) data[i] += v.data[i]; return *this;}
@@ -226,6 +226,9 @@ struct quat {
 	quat Mix(const quat& q, float f) const;
 	
 	String ToString() const {return data.ToString();}
+	
+	hash_t GetHashValue() const {return data.GetHashValue();}
+	
 };
 
 template <class Unit, class M> inline void DeterminantNonSingle(Unit& det, const M& m) {
@@ -301,7 +304,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	
 	void Set(T* v) {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = *v++;}
 	
-	void operator=(const Matrix& m) {memcpy(this, &m, sizeof(Matrix));}
+	void operator=(const Matrix& m) {for(int i = 0; i < R; i++) data[i] = m.data[i];}
 	vec& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	const vec& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	
@@ -662,6 +665,12 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	operator const vec3& () {static_assert(R == 1 && C == 3, "Expecting Matrix<1,3>"); return data[0];}
 	operator const vec4& () {static_assert(R == 1 && C == 4, "Expecting Matrix<1,4>"); return data[0];}
 	
+	hash_t GetHashValue() const {
+		CombineHash c;
+		for(int i = 0; i < R; i++) c.Put(data[i].GetHashValue());
+		return c;
+	}
+	
 };
 
 
@@ -909,8 +918,88 @@ struct Square : Moveable<Square> {
 };
 
 
+
+
+// Classes for RTTI requirements
+struct Quaternion : RTTIBase {
+	RTTI_DECL0(Quaternion);
+	
+	quat data;
+	
+	String ToString() const {return data.ToString();}
+	int ToInt() const {return 0;}
+	double ToDouble() const {return 0;}
+	hash_t GetHashValue() const {return data.GetHashValue();}
+	
+};
+
+struct Vector3 : RTTIBase {
+	RTTI_DECL0(Vector3);
+	
+	vec3 data;
+	
+	String ToString() const {return data.ToString();}
+	int ToInt() const {return 0;}
+	double ToDouble() const {return 0;}
+	hash_t GetHashValue() const {return data.GetHashValue();}
+	
+};
+
+struct Matrix4 : RTTIBase {
+	RTTI_DECL0(Matrix4);
+	
+	mat4 data;
+	
+	String ToString() const {return data.ToString();}
+	int ToInt() const {return 0;}
+	double ToDouble() const {return 0;}
+	hash_t GetHashValue() const {return data.GetHashValue();}
+	
+};
+
+
 NAMESPACE_TOPSIDE_END
 
+NAMESPACE_UPP
+using namespace TS;
+
+struct TransformMatrix : RTTIBase {
+	RTTI_DECL0(TransformMatrix);
+	
+	typedef enum {
+		MODE_POSITION,
+		MODE_LOOKAT,
+		MODE_AXES, // yaw, pitch, roll
+		MODE_QUATERNION,
+		//MODE_VIEW,
+	} Mode;
+	
+	Mode mode = MODE_POSITION;
+	bool is_stereo = false;
+	
+	vec3 position;
+	vec3 direction;
+	vec3 up = vec3(0,1,0);
+	vec3 axes;
+	quat orientation;
+	//mat4 proj[2], view[2];
+	float eye_dist = 0;
+	
+	
+	TransformMatrix() {}
+	TransformMatrix(const TransformMatrix& m) {*this = m;}
+	void operator=(const TransformMatrix& m);
+	
+	vec3 GetForwardDirection() const;
+	
+	String ToString() const {return "TransformMatrix";}
+	int ToInt() const {return 0;}
+	double ToDouble() const {return 0;}
+	hash_t GetHashValue() const {return 0;}
+	
+};
+
+END_UPP_NAMESPACE
 
 #include "Matrix.inl"
 

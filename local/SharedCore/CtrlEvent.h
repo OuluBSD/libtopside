@@ -151,8 +151,11 @@ struct CtrlEvent3D {
 	float direction[3] {0,0,0};
 	
 	// VR hmd & controllers
-	float l_proj[16], l_view[16];
-	float r_proj[16], r_view[16];
+	bool use_lookat = false;
+	bool use_view = false;
+	float orient[4];
+	float l_proj[4][4], l_view[4][4];
+	float r_proj[4][4], r_view[4][4];
 	
 	static const int CTRL_COUNT = 2;
 	struct Ctrl {
@@ -171,7 +174,9 @@ struct CtrlEvent3D {
 #define COPY4(dst, from) for(int i = 0; i < 4; i++) dst[i] = from[i]
 #define COPY4x4(dst, from) for(int i = 0; i < 4; i++) for(int j = 0; j < 4; j++) dst[i][j] = from[i][j]
 	
-	
+
+struct TransformMatrix;
+
 struct CtrlEvent : Moveable<CtrlEvent> {
 	CtrlEventType type = EVENT_INVALID;
 	union {
@@ -183,7 +188,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	Size sz;
 	
 	// Device extension
-	CtrlEvent3D* spatial = 0;
+	TransformMatrix* trans = 0;
+	//CtrlEvent3D* spatial = 0;
 	ControllerState* state = 0;
 	
 	
@@ -199,7 +205,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		pt.y = e.pt.y;
 		sz.cx = e.sz.cx;
 		sz.cy = e.sz.cy;
-		spatial = e.spatial;
+		trans = e.trans;
+		//spatial = e.spatial;
 		state = e.state;
 	}
 	
@@ -209,7 +216,8 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		n = 0;
 		pt = Point(0,0);
 		sz = Size(0,0);
-		spatial = 0;
+		trans = 0;
+		//spatial = 0;
 		state = 0;
 	}
 	

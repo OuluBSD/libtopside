@@ -39,6 +39,13 @@ void BufferStageT<Gfx>::SetStereoLens() {
 }
 
 template <class Gfx>
+void BufferStageT<Gfx>::SetDataStateOverride(DataState* s) {
+	//ASSERT(!user_data || !s);
+	user_data = s;
+	use_user_data = (s != 0);
+}
+
+template <class Gfx>
 bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState& ws) {
 	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
 	lib_conf.str = ws.Get(".library");
@@ -796,10 +803,18 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 	}
 	else if (var == VAR_VIEW) {
 		if (fb.is_stereo_left) {
+			/*mat4 m = data.view_stereo[0] * translate(vec3(0,1.76,-6));
+			vec3 pos = MatrixUtils::position(m);
+			Gfx::UniformMatrix4fv(uindex, m);*/
+			
 			ASSERT(data.is_stereo);
 			Gfx::UniformMatrix4fv(uindex, data.view_stereo[0]);
 		}
 		else if (fb.is_stereo_right) {
+			/*mat4 m = data.view_stereo[1] * translate(vec3(0,1.76,-6));
+			vec3 pos = MatrixUtils::position(m);
+			Gfx::UniformMatrix4fv(uindex, m);*/
+			
 			ASSERT(data.is_stereo);
 			Gfx::UniformMatrix4fv(uindex, data.view_stereo[1]);
 		}
@@ -1120,7 +1135,7 @@ bool BufferStageT<Gfx>::CompilePrograms() {
 		//breaks simple quad rendering: use_user_data = true;
 		return r > 0;
 	}
-	use_user_data = false;
+	//use_user_data = false;
 	
 	Compiler comps[GVar::SHADERTYPE_COUNT];
 	Linker linker;

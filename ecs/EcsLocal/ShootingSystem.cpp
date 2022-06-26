@@ -124,8 +124,8 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 			TransformRef bullet_trans = bullet->Get<Transform>();
 			RigidBodyRef bullet_rbody = bullet->Get<RigidBody>();
 			PhysicsBodyRef bullet_pbody = bullet->Get<PhysicsBody>();
-			bullet_trans->position = position;
-			bullet_trans->orientation = orientation;
+			bullet_trans->data.position = position;
+			bullet_trans->data.orientation = orientation;
 			bullet_rbody->velocity = bullet_velocity;
 			bullet_pbody->BindDefault();
 				

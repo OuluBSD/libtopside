@@ -85,9 +85,9 @@ float Determinant(const mat3& matrix);
 vec3 yaw_pitch_to_direction(float yaw, float pitch);
 void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch);
 void camera_object(
-	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
+	const vec3& axes, const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
-	vec3& obj_pos, quat& obj_orient);
+	TransformMatrix& tm);
 
 mat4 Rotation(float pitch, float yaw, float roll);
 mat3 Rotation3x3(float pitch, float yaw, float roll);
@@ -99,6 +99,7 @@ mat4 YRotation(float angle);
 mat3 YRotation3x3(float angle);
 mat4 ZRotation(float angle);
 mat3 ZRotation3x3(float angle);
+float GetXRotation(const mat4& m);
 
 void StoreMatrix(mat4* dst, const mat4& src);
 void StoreVec2(vec2* dst, const vec4& src);
@@ -229,6 +230,7 @@ inline mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {r
 
 quat make_rotation_direction(const vec3& dir, const vec3& up);
 
+void decompose_quat(const quat& q, float& yaw, float& pitch, float& roll);
 
 
 namespace MatrixUtils {

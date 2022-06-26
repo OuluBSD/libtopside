@@ -9,6 +9,10 @@ enum EventStateKey {
 	SCREEN0_OFFSET,
 	
 	//#if defined flagSCREEN || defined flagGUI
+	/*HMD_VIEW_STEREO,
+	HMD_ORIENTATION,
+	HMD_POSITION,*/
+	HMD_CAMERA,
 	
 	MOUSE_EVENT_BASE = 0x1000,
 	

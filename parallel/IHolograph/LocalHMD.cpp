@@ -47,8 +47,9 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	
 	
 	dev.seq = 0;
-	dev.ev.spatial = &dev.ev3d;
-	
+	dev.ev.trans = &dev.trans;
+	dev.has_initial_yaw = 0;
+	dev.initial_yaw = 0;
 	
 	// Get & check openhmd version
 	int major, minor, patch;
@@ -95,6 +96,10 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 			ctrl_count[j]++;
 		}
 		
+	}
+	if (hmd_idx < 0) {
+		LOG("HoloLocalHMD::SinkDevice_Initialize: error: could not find any hmd device");
+		return false;
 	}
 	
 	// Dump device info
@@ -282,6 +287,8 @@ void HoloLocalHMD::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, Realt
 }
 
 bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, PacketIO& io) {
+	memset(&dev.trans, 0, sizeof(dev.trans));
+	
 	const float wait_time = 1.0 / 30;
 	if (dev.ts.Seconds() < wait_time)
 		return false;
@@ -289,27 +296,92 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	
 	HMD::UpdateContext(dev.ctx);
 	
-	quat q;
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_ROTATION_QUAT, q.data.data);
-	LOG(q.ToString());
+	
+	quat orient;
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_ROTATION_QUAT, orient.data.data);
+	
+	// Super stupid HOTFIX
+	// At least for HP WMR, yaw and roll is clearly in wrong positions
+	// Maybe because libtopside is +z instead of usual -z...
+	// I tried to solve this, but ended up using this solution
+	// NOTE: this might lead to gimbal lock problems
+	float yaw, pitch, roll;
+	//LOG("HoloLocalHMD: " << yaw << ", " << pitch << ", " << roll);
+	/*#if 0
+	mat4 morient = ToMat4(orient);
+	morient *= scale(vec3(-1,+1,-1));
+	orient = MatrixUtils::orientation(morient);
+	decompose_quat(orient, yaw, pitch, roll);
+	#elif 1*/
+	
+	//orient.data.data[1] *= -1;
+	
+	//DUMP(orient);
+	decompose_quat(orient, yaw, pitch, roll);
+	float f = yaw;
+	yaw = -roll;
+	if (!dev.has_initial_yaw) {
+		dev.has_initial_yaw = true;
+		dev.initial_yaw = yaw + M_PI;
+	}
+	yaw = fmodf(yaw + 2 * M_PI - dev.initial_yaw, M_PI * 2) - M_PI;
+	roll = f;
+	orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
+	//DUMP(orient);
+	
+	//LOG("HoloLocalHMD: " << yaw << ", " << pitch << ", " << roll);
+	/*#elif 1
+	decompose_quat(orient, yaw, pitch, roll);
+	float f = yaw;
+	yaw = -roll;
+	roll = f;
+	yaw += M_PI;
+	float yaw_from_front = yaw - M_PI;
+	float pitch_as_roll = yaw_from_front * roll;
+	float roll_as_pitch = yaw_from_front * pitch;
+	pitch -= pitch_as_roll - roll_as_pitch;
+	roll += pitch_as_roll - roll_as_pitch;
+	orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
+	#endif*/
+	
+	/*mat4 morient = ToMat4(orient);
+	morient *= scale(vec3(1,1,-1));
+	float angle = GetXRotation(morient);
+	float diff = -angle * 2;
+	morient *= YRotation(diff);
+	orient = MatrixUtils::orientation(morient);*/
+	//COPY4(dev.cam.orient, orient.data);
+	
+	dev.trans.mode = UPP::TransformMatrix::MODE_AXES;
+	dev.trans.is_stereo = true;
+	dev.trans.position = vec3(0,0,0);
+	dev.trans.direction = yaw_pitch_to_direction(yaw, pitch);
+	dev.trans.up = vec3(0,1,0);
+	dev.trans.axes = vec3(yaw, pitch, roll);
+	dev.trans.orientation = orient;
+	
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_EYE_IPD, &dev.trans.eye_dist);
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_POSITION_VECTOR, dev.trans.position.data);
+	
 	
 	#if 0
-	vec3 p;
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_POSITION_VECTOR, p.data);
-	LOG(p.ToString());
-	
 	// set hmd rotation, for left eye.
-	float l_proj[16];
-	float l_view[16];
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_LEFT_EYE_GL_PROJECTION_MATRIX, dev.ev3d.l_proj);
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_LEFT_EYE_GL_MODELVIEW_MATRIX, dev.ev3d.l_view);
+	float proj[4][4];
+	float view[4][4];
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_LEFT_EYE_GL_PROJECTION_MATRIX, &proj[0][0]);
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_LEFT_EYE_GL_MODELVIEW_MATRIX, &view[0][0]);
+	COPY4x4(dev.trans.proj[0], proj);
+	COPY4x4(dev.trans.view[0], view);
 	
 	// set hmd rotation, for right eye.
-	float r_proj[16];
-	float r_view[16];
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_RIGHT_EYE_GL_PROJECTION_MATRIX, dev.ev3d.r_proj);
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_RIGHT_EYE_GL_MODELVIEW_MATRIX, dev.ev3d.r_view);
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_RIGHT_EYE_GL_PROJECTION_MATRIX, &proj[0][0]);
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_RIGHT_EYE_GL_MODELVIEW_MATRIX, &view[0][0]);
+	COPY4x4(dev.trans.proj[1], proj);
+	COPY4x4(dev.trans.view[1], view);
 	#endif
+	//dev.ev3d.use_lookat = false;
+	//dev.ev3d.use_view = false;
+	
 	
 	bool verbose = true;
 	if (verbose) {
@@ -319,8 +391,7 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		DUMP(m);*/
 	}
 	
-	memset(dev.ev3d.ctrl, 0, sizeof(dev.ev3d.ctrl));
-	
+	#if 0
 	for(int i = 0; i < 2; i++) {
 		auto d = dev.ctrl[i];
 		CtrlEvent3D::Ctrl& ctrl = dev.ev3d.ctrl[i];
@@ -372,10 +443,11 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 						s << ", ";
 					s << i << "=" << control_state[i];
 				}
-				LOG("HoloLocalHMD::SinkDevice_IsReady: " << s);
+				//LOG("HoloLocalHMD::SinkDevice_IsReady: " << s);
 			}
 		}
 	}
+	#endif
 	
 	dev.ev_sendable = true;
 	dev.ev.type = EVENT_HOLO_STATE;

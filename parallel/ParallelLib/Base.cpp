@@ -430,8 +430,28 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		close_window = true;
 	}
 	else if (e.type == EVENT_HOLO_STATE) {
-		ASSERT(e.spatial);
-		CtrlEvent3D& e3 = *e.spatial;
+		ASSERT(e.trans);
+		if (!e.trans)
+			return;
+		
+		TransformMatrix& trans = *e.trans;
+		
+		EnvState& s = GetState();
+		
+		s.Set<TransformMatrix>(HMD_CAMERA) = trans;
+		/*#if 0
+		TransformMatrix& st = s.Set<StereoMatrix>(HMD_VIEW_STEREO);
+		COPY4x4(st.view[0], e3.l_view);
+		COPY4x4(st.view[1], e3.r_view);
+		COPY4x4(st.proj[0], e3.l_proj);
+		COPY4x4(st.proj[1], e3.r_proj);
+		#else
+		Quaternion& orient = s.Set<Quaternion>(HMD_ORIENTATION);
+		COPY4(orient.data, e3.orient);
+		#endif*/
+		//LOG("EventStateBase::Event: hmd orient: " << orient.ToString());
+		
+		#if 0
 		for(int c = 0; c < CtrlEvent3D::CTRL_COUNT; c++) {
 			CtrlEvent3D::Ctrl& ctrl = e3.ctrl[c];
 			if (!ctrl.is_enabled)
@@ -441,7 +461,7 @@ void EventStateBase::Event(const CtrlEvent& e) {
 			vec3 pos;
 			COPY4(rot.data, ctrl.rot);
 			COPY3(pos.data, ctrl.pos);
-			LOG("EventStateBase::Event: ctrl #" << c << ": rotation " << rot.ToString() << ", position " << pos.ToString());
+			//LOG("EventStateBase::Event: ctrl #" << c << ": rotation " << rot.ToString() << ", position " << pos.ToString());
 			
 			for(int i = 0; i < CtrlEvent3D::VALUE_COUNT; i++) {
 				CtrlEvent3D::Value t = (CtrlEvent3D::Value)i;
@@ -455,6 +475,7 @@ void EventStateBase::Event(const CtrlEvent& e) {
 				}
 			}
 		}
+		#endif
 	}
 	else TODO
 }

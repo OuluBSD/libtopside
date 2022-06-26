@@ -292,12 +292,12 @@ void ToolboxSystemBase::Update(double dt) {
 				*trans = *hand_trans;
 				//trans->position[1] += 0.1;
 				
-				mat4 orig_pos = translate(trans->position);
+				mat4 orig_pos = translate(trans->data.position);
 				mat4 rel_pos = translate(vec3(0,0.1,0));
-				mat4 orient = ToMat4(trans->orientation);
+				mat4 orient = ToMat4(trans->data.orientation);
 				mat4 new_pos = orig_pos * (orient * rel_pos);
 				vec3 pos = new_pos.GetTranslation();
-				trans->position = pos;
+				trans->data.position = pos;
 				
 				//trans->position += hand_trans->direction * 0.2;
 			}

@@ -1,7 +1,8 @@
 description "\377B51,138,51";
 
 uses
-	EcsLib;
+	EcsLib,
+	Geometry;
 
 file
 	EcsLocal.h,

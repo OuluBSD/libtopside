@@ -260,6 +260,8 @@ void HoloOpenHMD::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) {
+	memset(dev.ev3d.ctrl, 0, sizeof(dev.ev3d.ctrl));
+	
 	const float wait_time = 1.0 / 30;
 	if (dev.ts.Seconds() < wait_time)
 		return false;
@@ -271,10 +273,11 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 	ohmd_device_getf(dev.hmd, OHMD_ROTATION_QUAT, q.data.data);
 	LOG(q.ToString());
 	
-	#if 0
 	vec3 p;
 	ohmd_device_getf(dev.hmd, OHMD_POSITION_VECTOR, p.data);
 	LOG(p.ToString());
+	
+	TODO
 	
 	// set hmd rotation, for left eye.
 	float l_proj[16];
@@ -287,7 +290,7 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 	float r_view[16];
 	ohmd_device_getf(dev.hmd, OHMD_RIGHT_EYE_GL_PROJECTION_MATRIX, dev.ev3d.r_proj);
 	ohmd_device_getf(dev.hmd, OHMD_RIGHT_EYE_GL_MODELVIEW_MATRIX, dev.ev3d.r_view);
-	#endif
+	
 	
 	bool verbose = true;
 	if (verbose) {
@@ -297,7 +300,6 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 		DUMP(m);*/
 	}
 	
-	memset(dev.ev3d.ctrl, 0, sizeof(dev.ev3d.ctrl));
 	
 	for(int i = 0; i < 2; i++) {
 		auto d = dev.ctrl[i];

@@ -159,10 +159,11 @@ void PlayerBodySystem::Update(double dt) {
 		float eyes_from_height = 0.15; // guesstimate, that height of eyes is 15cm from your total height
 		float hand_from_height = 0.4; // guesstimate
 		
-		vec3 body_feet_pos = trans->position;
+		vec3 body_feet_pos = trans->data.position;
 		vec3 head_direction(0,0,1);
 		vec3 head_pos(0,0,0);
 		vec3 head_up(0,1,0);
+		vec3 axes(0,0,0);
 		
 		if (b->head) {
 			vec3 head_rel_pos(0, b->height - eyes_from_height, 0);
@@ -171,14 +172,12 @@ void PlayerBodySystem::Update(double dt) {
 			
 			TransformRef head_trans = b->head->GetEntity()->Find<Transform>();
 			if (head_trans) {
-				head_trans->position = head_pos;
-				
-				/*head_trans->use_lookat = true;
-				head_trans->up = b->head->up;
-				head_trans->direction = b->head->direction;*/
-				
-				head_up = head_trans->up;
-				head_direction = head_trans->direction;
+				TransformMatrix& t = head_trans->data;
+				t.position = head_pos;
+				axes = t.axes;
+				head_up = t.up;
+				head_direction = head_trans->GetForwardDirection();
+				ASSERT(t.up.GetLength() > 0);
 			}
 		}
 		
@@ -188,9 +187,9 @@ void PlayerBodySystem::Update(double dt) {
 				if (hand_trans) {
 					float horz_deg = (i == 1 ? -1 : +1) * 30;
 					camera_object(
-						head_pos, head_direction, head_up,
+						axes, head_pos, head_direction, head_up,
 						DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
-						hand_trans->position, hand_trans->orientation);
+						hand_trans->data);
 				}
 			}
 		}
@@ -235,13 +234,41 @@ void PlayerBodySystem::OnControllerReleased(const CtrlEvent& e) {
 void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 	if (e.type == EVENT_HOLO_LOOK) {
 		for (PlayerBodyComponentRef& b : bodies) {
-			if (b->head) {
+			if (b->head && e.trans) {
+				TransformRef trans = b->head->GetEntity()->Find<Transform>();
+				if (trans)
+					trans->data = *e.trans;
+				/*auto cam = b->head->GetEntity()->Find<CameraBase>();
+				if (e.cam->mode == TransformMatrix::MODE_LOOKAT) {
+					
+				}
+				else if (e.cam->mode == TransformMatrix::MODE_AXES) {
+					trans->
+				}
+				else if (e.cam->mode == TransformMatrix::MODE_QUATERNION) {
+					
+				}
+				else if (e.cam->mode == TransformMatrix::MODE_VIEW && e.cam->is_stereo) {
+					if (cam) {
+						cam->cam = e.cam;
+					}
+				}
+				else TODO*/
+					
+				#if 0
 				TransformRef trans = b->head->GetEntity()->Find<Transform>();
 				if (trans) {
-					trans->use_lookat = true;
-					COPY3(trans->direction, e.spatial->direction);
-					trans->up = vec3(0,1,0);
+					if (!e.spatial->use_lookat) {
+						trans->use_lookat = false;
+						COPY4(trans->orientation, e.spatial->orient);
+					}
+					else {
+						trans->use_lookat = true;
+						COPY3(trans->direction, e.spatial->direction);
+						trans->up = vec3(0,1,0);
+					}
 				}
+				#endif
 			}
 		}
 	}
@@ -249,9 +276,12 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 		for (PlayerBodyComponentRef& b : bodies) {
 			TransformRef trans = b->GetEntity()->Find<Transform>();
 			if (trans) {
+				TODO
+				#if 0
 				vec3 rel_pos;
 				COPY3(rel_pos, e.spatial->position);
 				trans->position += rel_pos;
+				#endif
 			}
 		}
 	}

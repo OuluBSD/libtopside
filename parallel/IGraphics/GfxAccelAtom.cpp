@@ -226,10 +226,13 @@ bool GfxAccelAtom<Gfx>::IsOpen() const {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Update(double dt) {
-	TODO
-	/*if (bf.env) {
-		Size& video_size = bf.env->template Set<Size>(SCREEN0_SIZE);
-		const bool& close_window = bf.env->template Set<bool>(SCREEN0_CLOSE);
+	auto& buf = bf.GetBuffer();
+	auto& env = buf.env;
+	auto& fb = buf.GetFramebuffer();
+	
+	if (env) {
+		Size& video_size = env->template Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = env->template Set<bool>(SCREEN0_CLOSE);
 		Buffer& buf = GetBuffer();
 		
 		if (close_window) {
@@ -238,13 +241,13 @@ void GfxAccelAtom<Gfx>::Update(double dt) {
 			else
 				ab->Destroy();
 		}
-		else if (video_size != buf.fb.size) {
+		else if (video_size != fb.size) {
 			if (video_size.IsEmpty())
-				video_size = buf.fb.size;
+				video_size = fb.size;
 			else
 				buf.SetFramebufferSize(video_size);
 		}
-	}*/
+	}
 }
 
 template <class Gfx>

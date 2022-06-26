@@ -18,15 +18,13 @@ machine sdl.app: {
 		loop ogl.fbo: {
 			ogl.customer: true;
 			x11.ogl.fbo.standalone: true {
-				close_machine:	true;
-				fullscreen:		false;
-				find.vr.screen:	false;
-				env:			event.register;
-				type:						stereo;
-				shader.frag.path:			"shaders/tests/07d_fragment.glsl";
-				shader.vtx.path:			"shaders/tests/07d_vertex.glsl";
-				stereo.shader.frag.path:	"shaders/tests/07g_fragment.glsl";
-				stereo.shader.vtx.path:		"shaders/tests/07g_vertex.glsl";
+				close_machine:      true;
+				fullscreen:         true;
+				find.vr.screen:	    true;
+				env:                event.register;
+				type:				stereo;
+				shader.frag.path:	"shaders/tests/07d_fragment.glsl";
+				shader.vtx.path:	"shaders/tests/07d_vertex.glsl";
 			};
 		};
 		
@@ -39,7 +37,10 @@ engine ecs.dummy: {
     system entity.store;
     system component.store;
     system events;
-    system interaction: {env: event.register;};
+    system interaction: {
+        env: event.register;
+        hmd: state;
+    };
     system physics;
     system player;
     
@@ -66,7 +67,7 @@ engine ecs.dummy: {
         entity player.head: {
             comp transform3;
             comp viewable;
-            comp viewport: {fov: 90;};
+            comp viewport: {fov: 110;};
             comp camera.chase;
             comp player.head: {body: world.player.body;};
         };

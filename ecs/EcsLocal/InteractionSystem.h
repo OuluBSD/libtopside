@@ -50,11 +50,12 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	double time = 0;
 	double last_dt = 0;
 	FboKbd::KeyVec prev;
-	CtrlEvent3D ev3d;
+	//CtrlEvent3D ev3d;
+	TransformMatrix trans;
 	
 	// player camera
-	double pitch = -M_PI/2;
-	double yaw = 0;
+	float pitch = -M_PI/2;
+	float yaw = 0;
 	vec3 head_direction = vec3(0,0,1);
 	vec3 hand_velocity = vec3(0,0,0);
 	vec3 hand_angular_velocity = vec3(0,0,0);
@@ -69,7 +70,12 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	
     void DetectController();
     void UpdateState();
+    void UpdateStateHmd();
+    void UpdateStateKeyboard();
 	void Look(Point mouse_diff);
+	/*void Look(quat orient);
+	void Look(const StereoMatrix& st);*/
+	void Look(const TransformMatrix& cm);
 	void Move(vec3 rel_dir, float step);
     void Pressed(ControllerProperties::Button b);
     void Released(ControllerProperties::Button b);
@@ -134,6 +140,7 @@ protected:
 	friend struct FakeSpatialInteractionManager;
 	String env_name;
 	bool debug_log = false;
+	bool use_state_hmd = false;
 	
 private:
     Array<InteractionListenerRef> interaction_listeners;

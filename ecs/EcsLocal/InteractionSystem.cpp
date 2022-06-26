@@ -72,6 +72,11 @@ bool InteractionSystem::Arg(String key, Object value) {
 		env_name = value;
 	}
 	
+	if (key == "hmd") {
+		if ((String)value == "state")
+			use_state_hmd = true;
+	}
+	
 	return true;
 }
 
@@ -238,6 +243,28 @@ void FakeSpatialInteractionManager::DetectController() {
 void FakeSpatialInteractionManager::UpdateState() {
 	ASSERT(state);
 	
+	if (sys->use_state_hmd) {
+		UpdateStateHmd();
+	}
+	else {
+		UpdateStateKeyboard();
+	}
+}
+
+void FakeSpatialInteractionManager::UpdateStateHmd() {
+	#if 1
+	TransformMatrix& cm = state->Set<TransformMatrix>(HMD_CAMERA);
+	Look(cm);
+	#elif 0
+	StereoMatrix& st = state->Set<StereoMatrix>(HMD_VIEW_STEREO);
+	Look(st);
+	#else
+	Quaternion& orient = state->Set<Quaternion>(HMD_ORIENTATION);
+	Look(orient.data);
+	#endif
+}
+
+void FakeSpatialInteractionManager::UpdateStateKeyboard() {
 	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
 	
 	if (state->GetBool(MOUSE_LEFTDOWN)) {
@@ -343,12 +370,69 @@ void FakeSpatialInteractionManager::Released(ControllerProperties::Button b) {
 
 
 
+void FakeSpatialInteractionManager::Look(const TransformMatrix& tm) {
+	this->trans = tm;
+	
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_LOOK;
+	ev.pt = Point(0,0);
+	ev.trans = &trans;
+	
+	if (sys->debug_log) {
+		mat4 m = ToMat4(trans.orientation);
+		vec4 dir = vec4(0,0,1,1) * m;
+		direction_to_yaw_pitch(dir.Splice(), yaw, pitch);
+		
+		LOG("FakeSpatialInteractionManager::Look: orientation: " << trans.orientation.ToString() <<
+			", angle: " << yaw << ", angle1: " << pitch);
+	}
+	
+	WhenSourceUpdated(*this, ev);
+}
+
+/*void FakeSpatialInteractionManager::Look(quat orient) {
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_LOOK;
+	ev.pt = Point(0,0);
+	ev.spatial = &ev3d;
+	
+	ev3d.use_lookat = false;
+	COPY4(ev3d.orient, orient.data);
+	
+	mat4 m = ToMat4(orient);
+	vec4 dir = vec4(0,0,1,1) * m;
+	direction_to_yaw_pitch(dir.Splice(), yaw, pitch);
+	
+	if (sys->debug_log) {
+		LOG("FakeSpatialInteractionManager::Look: orientation: " << orient.ToString() <<
+			", angle: " << yaw << ", angle1: " << pitch);
+	}
+	
+	WhenSourceUpdated(*this, ev);
+}
+
+void FakeSpatialInteractionManager::Look(const StereoMatrix& st) {
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_LOOK;
+	ev.pt = Point(0,0);
+	ev.spatial = &ev3d;
+	
+	ev3d.use_view = true;
+	COPY4x4(ev3d.l_proj, st.proj[0]);
+	COPY4x4(ev3d.r_proj, st.proj[1]);
+	COPY4x4(ev3d.l_view, st.view[0]);
+	COPY4x4(ev3d.r_view, st.view[1]);
+}*/
+
 void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = mouse_diff; // extra
-	ev.spatial = &ev3d;
+	ev.trans = &trans;
 	
 	double prev_yaw = yaw;
 	double prev_pitch = pitch;
@@ -369,8 +453,10 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	
 	for(int i = 0; i < 3; i++) av[i].Add(head_direction[i]);
 	
-	COPY3(ev3d.direction, head_direction);
-	
+	trans.mode = TransformMatrix::MODE_LOOKAT;
+	trans.direction = head_direction;
+	trans.position = vec3(0,0,0);
+	trans.up = vec3(0,1,0);
 	
 	vec3 head_direction_diff = head_direction - prev_head_direction;
 	float multiplier = 5;
@@ -390,6 +476,8 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
+	TODO
+	#if 0
 	ev.spatial = &ev3d;
 	vec3 dir = head_direction;
 	
@@ -410,6 +498,7 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	}
 	
 	WhenSourceUpdated(*this, ev);
+	#endif
 }
 
 NAMESPACE_ECS_END

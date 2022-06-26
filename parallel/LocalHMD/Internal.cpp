@@ -450,6 +450,7 @@ int SetDeviceFloat(Device* device, FloatValue type, const float* in)
 
 int GetDeviceInt(Device* device, IntValue type, int* out)
 {
+	ASSERT(device);
 	switch(type){
 		case HMD_SCREEN_HORIZONTAL_RESOLUTION:
 			*out = device->properties.hres;

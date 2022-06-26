@@ -68,7 +68,7 @@ protected:
 	
 	//One<GfxDataState> state;
 	GfxDataState*				state = 0;
-	
+	double						time = 0;
 	
 protected:
     bool Initialize() override;

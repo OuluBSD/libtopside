@@ -49,7 +49,7 @@ String PaintingInteractionSystemBase::GetDisplayName() const {
 EntityRef PaintingInteractionSystemBase::CreateToolSelector() const {
 	auto selector = GetEngine().Get<EntityStore>()->GetRoot()->Create<ToolSelectorPrefab>();
 	selector->Get<ModelComponent>()->SetPrefabModel("PaintBrush");
-	selector->Get<Transform>()->orientation = make_quat_from_axis_angle({ 1, 0, 0 }, M_PI / 1.5f);
+	selector->Get<Transform>()->data.orientation = make_quat_from_axis_angle({ 1, 0, 0 }, M_PI / 1.5f);
 	selector->Get<ToolSelectorKey>()->type = GetType();
 	return selector;
 }
@@ -424,14 +424,14 @@ void PaintingInteractionSystemBase::Update(double dt) {
 						
 						// Move all paintings along beam path
 						for (auto& stroke : paint->strokes) {
-							stroke->Get<Transform>()->position += forward_movement;
+							stroke->Get<Transform>()->data.position += forward_movement;
 						}
 					}
 					
-					paint->beam->Get<Transform>()->position =
+					paint->beam->Get<Transform>()->data.position =
 					        position +
 					        forward * (paint->beam->Get<Transform>()->size[2] * 0.5f);
-					paint->beam->Get<Transform>()->orientation = pointer_pose->GetOrientation();
+					paint->beam->Get<Transform>()->data.orientation = pointer_pose->GetOrientation();
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::ColorSelection) {
@@ -440,7 +440,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 				const mat4 paint_brush_to_world = paint->paint_brush->Get<Transform>()->GetMatrix();
 				const vec3 touchpad_indicator_on_paint_brush = { paint->touchpad_x * colorpicker_diameter, colorpicker_height, paint->touchpad_y* colorpicker_diameter * -1 };
 				const vec3 touchpad_indicator_in_world = transform(touchpad_indicator_on_paint_brush, paint_brush_to_world);
-				paint->touchpad_indicator->Get<Transform>()->position = touchpad_indicator_in_world;
+				paint->touchpad_indicator->Get<Transform>()->data.position = touchpad_indicator_in_world;
 				// Color picker plane defined as slightly above the touchpad with the same orientation as the touchpad
 				const int num_colors = static_cast<int>(paint->clr_pick_objects.GetCount());
 				auto iter = paint->clr_pick_objects.begin();
@@ -452,7 +452,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 					const float final_angle = angle - angle_delta;
 					const vec3 color_indicator_on_paint_brush = { std::cos(final_angle)* colorpicker_diameter, colorpicker_height, std::sin(final_angle)* colorpicker_diameter };
 					const vec3 color_indicator_in_world = transform(color_indicator_on_paint_brush, paint_brush_to_world);
-					iter()->Get<Transform>()->position = color_indicator_in_world;
+					iter()->Get<Transform>()->data.position = color_indicator_in_world;
 				}
 			}
 		}

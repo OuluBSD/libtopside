@@ -2,6 +2,43 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+
+
+void CalculateCameraView(mat4& view, mat4* stereo_view, float eye_dist, const vec3& eye, const vec3& target, const vec3& up, const mat4& port, const mat4& eye_port, const mat4& proj) {
+	vec3 look_vec = target - eye;
+	vec3 side_vec = cross(look_vec, up);
+	side_vec.Normalize();
+	float eye_dist_2 = eye_dist / 2;
+	vec3 eye_off = side_vec * eye_dist_2;
+	
+	mat4 lookat = LookAt(eye, target, up);
+	view = port * proj * lookat;
+	
+	if (stereo_view) {
+		vec3 l_eye = eye - eye_off;
+		vec3 r_eye = eye + eye_off;
+		vec3 l_target = target - eye_off;
+		vec3 r_target = target + eye_off;
+		mat4 base = eye_port * proj;
+		//vec3 l_eye(-eye_dist, 0, +1);
+		//vec3 r_eye(+eye_dist, 0, +1);
+		//vec3 l_center { -eye_dist, 0, 0};
+		//vec3 r_center { +eye_dist, 0, 0};
+		mat4 l_lookat = LookAt(l_eye, l_target, up);
+		mat4 r_lookat = LookAt(r_eye, r_target, up);
+		stereo_view[0] = base * l_lookat;
+		stereo_view[1] = base * r_lookat;
+	}
+}
+
+
+
+
+
+
+
+
 void Viewable::Initialize() {
 	
 }
@@ -113,7 +150,9 @@ void ChaseCam::SetViewportSize(Size sz) {
 	viewport_sz[0] = sz.cx;
 	viewport_sz[1] = sz.cy;
 	float ratio = viewport_sz[1] / viewport_sz[0];
+	float eye_ratio = viewport_sz[1] / (viewport_sz[0] * 0.5);
 	port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+	port_stereo = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 	
 	if (vport)
 		fov = vport->fov;
@@ -124,15 +163,17 @@ void ChaseCam::UpdateView() {
 	int width = TS::default_width;
 	int height = TS::default_height;
 	
+	const float eye_dist = 0.064;
+	
 	if (this->target) {
-		vec3 target = this->target->position;
+		vec3 target = this->target->data.position;
 		vec3 eye {0.0f, 2.0f, -6.0f};
 		vec3 up {0, 1, 0};
 		
 		if (this->trans) {
 			
 		    // camera/view transformation
-		    eye = this->trans->position;
+		    eye = this->trans->data.position;
 		    
 		    if (eye == target) {
 		        RTLOG("ChaseCam::Update: warning: camera position is same as target position");
@@ -163,30 +204,74 @@ void ChaseCam::UpdateView() {
 				rot = rotate(identity<mat4>(), angle, up);
 			}
 			#endif
+			
 		}
-	    
-		mat4 lookat = LookAt(eye, target, up);
+		//mat4 lookat = LookAt(eye, target, up);
+		//this->view = port * projection * lookat;
 		
-		this->view = port * projection * lookat;
+		CalculateCameraView(this->view, this->mvp_stereo, eye_dist, eye, target, up, port, port_stereo, projection);
+	    
 	}
 	else if (this->trans) {
-		
-		if (this->trans->use_lookat) {
-			vec3 position = this->trans->position;
-			vec3 direction = this->trans->direction;
-			vec3 target = position + direction;
-			vec3 up = this->trans->up;
-			if (direction == up)
-				direction += vec3(0.01, 0.01, 0.01);
-			mat4 lookat = LookAt(position, target, up);
-			this->view = port * projection * lookat;
+		TransformMatrix& tm = this->trans->data;
+		if (tm.is_stereo) {
+			if (tm.mode == TransformMatrix::MODE_POSITION) {
+				TODO
+			}
+			else if (tm.mode == TransformMatrix::MODE_LOOKAT) {
+				vec3 position = tm.position;
+				vec3 direction = tm.direction;
+				vec3 target = position + direction;
+				vec3 up = tm.up;
+				if (direction == up)
+					direction += vec3(0.01, 0.01, 0.01);
+				CalculateCameraView(this->view, this->mvp_stereo, eye_dist, position, target, up, port, port_stereo, projection);
+			}
+			else if (tm.mode == TransformMatrix::MODE_AXES) {
+				//DUMP(tm.axes);
+				//mat4 rotate = make_mat4_from_yaw_pitch_roll(tm.axes[0], tm.axes[1], tm.axes[2]);
+				
+				// TODO solve and clean this horrible separate-yaw mess!
+				mat4 rotate = make_mat4_from_yaw_pitch_roll(M_PI, tm.axes[1], tm.axes[2]);
+				mat4 yaw = YRotation(tm.axes[0]);
+				mat4 tran = translate(-tm.position);
+				this->view = port * projection * rotate * tran;
+				
+				float mul = -0.5;
+				mat4 l_trans = translate(vec3(-eye_dist * mul, 0, 0));
+				mat4 r_trans = translate(vec3(+eye_dist * mul, 0, 0));
+				//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
+				//this->mvp_stereo[0] = stereo_base;
+				//this->mvp_stereo[1] = stereo_base;
+				this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * yaw * tran;
+				this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * yaw * tran;
+			}
+			else if (tm.mode == TransformMatrix::MODE_QUATERNION) {
+				quat orientation = tm.orientation;
+				mat4 rotate = ToMat4(orientation);
+				mat4 tran = translate(-tm.position);
+				this->view = port * projection * rotate * tran;
+				
+				float mul = -0.5;
+				mat4 l_trans = translate(vec3(-eye_dist * mul, 0, 0));
+				mat4 r_trans = translate(vec3(+eye_dist * mul, 0, 0));
+				this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * tran;
+				this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * tran;
+			}
+			else TODO
 		}
-		else {
-			quat orientation = this->trans->orientation;
-			mat4 rotate = ToMat4(orientation);
-			mat4 tran = translate(-this->trans->position);
-			this->view = port * projection * rotate * tran;
+		#if 0
+		if (this->use_stereo) {
+			mat4 tran = translate(-this->trans->data.position);
+			#if 0
+			this->mvp_stereo[0] = this->proj_stereo[0] * this->view_stereo[0] * tran;
+			this->mvp_stereo[1] = this->proj_stereo[1] * this->view_stereo[1] * tran;
+			#else
+			this->mvp_stereo[0] = this->view_stereo[0] * this->proj_stereo[0] * tran;
+			this->mvp_stereo[1] = this->view_stereo[1] * this->proj_stereo[1] * tran;
+			#endif
 		}
+		#endif
 	}
 	/*mat4 model = translate(target);
 	this->view = port * projection * lookat * model * rot;*/
@@ -195,6 +280,13 @@ void ChaseCam::UpdateView() {
 bool ChaseCam::Load(GfxDataState& s) {
 	s.view = view;
 	s.user_view = true;
+	
+	if (s.is_stereo) {
+	//if (use_stereo) {
+		s.is_stereo = true;
+		s.view_stereo[0] = mvp_stereo[0];
+		s.view_stereo[1] = mvp_stereo[1];
+	}
 	
 	return true;
 }

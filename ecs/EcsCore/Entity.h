@@ -71,6 +71,19 @@ public:
 	RefT_Pool<T> FindNearestPoolWith();
 	
 	template<typename T>
+	RefT_Entity<T> FindCast() {
+		RefT_Entity<T> o;
+		for(Ref<ComponentBase>& comp : comps.GetValues()) {
+			T* p = CastPtr<T>(&*comp);
+			if (p) {
+				o = RefT_Entity<T>(p->GetParent(), p);
+				break;
+			}
+		}
+		return o;
+	}
+	
+	template<typename T>
 	RefT_Entity<T> FindInterface() {
 		RefT_Entity<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())

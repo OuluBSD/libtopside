@@ -53,6 +53,8 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages[0].SetStereo(0);
 		stages[1].SetStereo(1);
 		stages[2].SetStereoLens();
+		stereo_data.is_stereo = true;
+		SetDataStateOverride(&stereo_data);
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;
@@ -227,8 +229,22 @@ void BufferT<Gfx>::Reset() {
 }
 
 template <class Gfx>
+DataStateT<Gfx>& BufferT<Gfx>::GetState() {
+	if (mode == MULTI_STEREO) {
+		return stereo_data;
+	}
+	else if (stages.GetCount() == 1) {
+		return stages[0].GetState();
+	}
+	else {
+		TODO
+	}
+}
+
+template <class Gfx>
 void BufferT<Gfx>::SetDataStateOverride(DataState* s) {
 	if (mode == MULTI_STEREO) {
+		ASSERT(!s || s->is_stereo);
 		ASSERT(stages.GetCount() == 3);
 		stages[0].SetDataStateOverride(s);
 		stages[1].SetDataStateOverride(s);

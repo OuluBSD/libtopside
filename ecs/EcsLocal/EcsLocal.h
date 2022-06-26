@@ -3,6 +3,7 @@
 
 
 #include <EcsLib/EcsLib.h>
+#include <Geometry/Geometry.h>
 
 #include "CommonComponents.h"
 #include "Viewport.h"

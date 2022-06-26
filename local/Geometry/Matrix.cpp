@@ -67,4 +67,44 @@ quat quat::Mix(const quat& q, float f) const {
 
 
 
+void TransformMatrix::operator=(const TransformMatrix& m) {
+	mode = m.mode;
+	is_stereo = m.is_stereo;
+	position = m.position;
+	direction = m.direction;
+	up = m.up;
+	axes = m.axes;
+	orientation = m.orientation;
+	eye_dist = m.eye_dist;
+	/*proj[0] = m.proj[0];
+	proj[1] = m.proj[1];
+	view[0] = m.view[0];
+	view[1] = m.view[1];*/
+}
+
+vec3 TransformMatrix::GetForwardDirection() const {
+	if (mode == MODE_POSITION)
+		return vec3(0,0,1);
+	
+	if (mode == MODE_LOOKAT) {
+		return direction;
+	}
+	if (mode == MODE_AXES) {
+		mat4 yaw = YRotation(axes[0]);
+		mat4 rotate = make_mat4_from_yaw_pitch_roll(M_PI, axes[1], axes[2]);
+		vec4 fwd(0,0,1,1);
+		vec4 dir = rotate * yaw * fwd;
+		return dir.Splice();
+	}
+	if (mode == MODE_QUATERNION) {
+		mat4 m = ToMat4(orientation);
+		vec4 fwd(0,0,1,1);
+		vec4 dir = m * fwd;
+		return dir.Splice();
+	}
+	TODO
+	return vec3(0,0,1);
+}
+
+
 NAMESPACE_TOPSIDE_END

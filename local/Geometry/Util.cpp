@@ -565,9 +565,9 @@ void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch) {
 }
 
 void camera_object(
-	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
+	const vec3& axes, const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
-	vec3& obj_pos, quat& obj_orient) {
+	TransformMatrix& tm) {
 	
 	// get z-vector from eye direction
 	vec3 zv = eye_dir;
@@ -609,13 +609,19 @@ void camera_object(
 	vec3 obj_zv = zv * local_plane_z;
 	vec3 obj_rel_pos = obj_xv + obj_yv + obj_zv;
 	
+	tm.mode = TransformMatrix::MODE_AXES;
+	
 	// calculate global position
-	obj_pos = eye + obj_rel_pos;
+	tm.position = eye + obj_rel_pos;
 	
 	// orientation is based only eye direction for now
+	#if 0
 	float eye_yaw, eye_pitch;
 	direction_to_yaw_pitch(eye_dir, eye_yaw, eye_pitch);
-	obj_orient = make_quat_from_yaw_pitch_roll(eye_yaw, eye_pitch, 0);
+	tm.orientation = make_quat_from_yaw_pitch_roll(eye_yaw, eye_pitch, 0);
+	#else
+	tm.axes = axes;
+	#endif
 	
 }
 
@@ -656,6 +662,16 @@ mat4 YawPitchRoll(float yaw, float pitch, float roll) {
 	r2[2] = (cosf(pitch) * cosf(yaw));
 	r3[3] = 1;
 	return out;
+}
+
+/*float GetXRotation(const mat4& m) {
+	float angle = atan2(m.data[1][1], m.data[1][2]);
+	return angle;
+}
+*/
+float GetXRotation(const mat4& m) {
+	float angle = atan2(m.data[2][0], m.data[0][0]);
+	return angle;
 }
 
 mat4 XRotation(float angle) {
@@ -1409,6 +1425,15 @@ quat make_rotation_direction(const vec3& dir, const vec3& up) {
 	return make_quat_from_rotation_matrix(rot);
 }
 
+void decompose_quat(const quat& q, float& yaw, float& pitch, float& roll) {
+	float x = q[0];
+	float y = q[1];
+	float z = q[2];
+	float w = q[3];
+	roll  = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z);
+	pitch = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
+	yaw   = asin(2*x*y + 2*z*w);
+}
 
 namespace MatrixUtils {
 vec3 right(const mat4& transform)

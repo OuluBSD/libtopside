@@ -54,8 +54,8 @@ void ThrowingInteractionSystemBase::Update(double dt) {
 			else {
 				vec3 fwd_dir = trans->GetForwardDirection();
 				TransformRef ball_transform = throwing->ball_object->Get<Transform>();
-				ball_transform->position = trans->position + fwd_dir * ball_holding_distance;
-				ball_transform->orientation = trans->orientation;
+				ball_transform->data.position = trans->data.position + fwd_dir * ball_holding_distance;
+				ball_transform->data.orientation = trans->data.orientation;
 				
 				if (ball_transform->size[0] < 1.0f) {
 					ball_transform->size += vec3( 2.0 * dt );
@@ -107,7 +107,7 @@ void ThrowingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 				
 				TransformRef ball_trans = ball->Get<Transform>();
 				
-				vec3 position = trans->position;
+				vec3 position = trans->data.position;
 				vec3 fwd_dir = trans->GetForwardDirection();
 				
 				
@@ -127,8 +127,8 @@ void ThrowingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 					const vec3 ball_velocity = GetVelocityNearSourceLocation(position, velocity, grasp_angular_velocity, ball_position);
 					
 					if (!ball_velocity.IsNull()) {
-						ball_trans->position = ball_position;
-						ball_trans->orientation = trans->orientation;
+						ball_trans->data.position = ball_position;
+						ball_trans->data.orientation = trans->data.orientation;
 						rb->velocity = ball_velocity;
 						rb->angular_velocity = grasp_angular_velocity;
 						

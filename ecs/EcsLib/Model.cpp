@@ -184,8 +184,8 @@ bool ModelComponent::Load(GfxDataState& state) {
 	mat4 model;
 	TransformRef trans = GetEntity()->Find<Transform>();
 	if (trans) {
-		mat4 pos = translate(trans->position);
-		mat4 rot = rotate(trans->orientation);
+		mat4 pos = translate(trans->data.position);
+		mat4 rot = rotate(trans->data.orientation);
 		mat4 sz = TS::scale(trans->size);
 		/*if (have_ext_model) {
 			pos *= translate(offset);
