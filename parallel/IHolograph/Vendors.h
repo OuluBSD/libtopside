@@ -51,7 +51,7 @@ struct HoloOpenHMD {
 		ohmd_device* ctrl[2];
 		Size screen_sz;
 		CtrlEvent ev;
-		CtrlEvent3D ev3d;
+		ControllerMatrix ev3d;
 		bool ev_sendable;
 		int seq;
 		TimeStop ts;
@@ -82,10 +82,10 @@ struct HoloLocalHMD {
 		TS::HMD::Device* ctrl[2];
 		Size screen_sz;
 		CtrlEvent ev;
-		CtrlEvent3D ev3d;
+		ControllerMatrix ev3d;
 		TransformMatrix trans;
-		bool has_initial_yaw;
-		float initial_yaw;
+		bool has_initial_orient;
+		quat initial_orient;
 		bool ev_sendable;
 		int seq;
 		TimeStop ts;

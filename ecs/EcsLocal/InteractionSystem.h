@@ -15,6 +15,7 @@ NAMESPACE_ECS_BEGIN
 
 class InteractionSystem;
 struct FakeSpatialInteractionManager;
+struct VrSpatialInteractionManager;
 
 
 struct InteractionManager {
@@ -50,7 +51,7 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	double time = 0;
 	double last_dt = 0;
 	FboKbd::KeyVec prev;
-	//CtrlEvent3D ev3d;
+	//ControllerMatrix ev3d;
 	TransformMatrix trans;
 	
 	// player camera
@@ -70,21 +71,71 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	
     void DetectController();
     void UpdateState();
-    void UpdateStateHmd();
     void UpdateStateKeyboard();
 	void Look(Point mouse_diff);
-	/*void Look(quat orient);
-	void Look(const StereoMatrix& st);*/
-	void Look(const TransformMatrix& cm);
 	void Move(vec3 rel_dir, float step);
     void Pressed(ControllerProperties::Button b);
     void Released(ControllerProperties::Button b);
     
 };
 
-/*struct ControllerEventArgs : InteractionEvent {
+
+
+
+
+
+
+
+
+
+struct VrControllerSource : ControllerSource {
+	VrSpatialInteractionManager* mgr = 0;
 	
-};*/
+	//bool GetLocation(float* matrix4x4) const override;
+	void GetVelocity(float* v3) const override;
+	void GetAngularVelocity(float* v3) const override;
+	
+};
+
+struct VrSpatialInteractionManager : InteractionManager {
+	EnvStateRef state;
+	VrControllerSource ctrl;
+	ControllerState ctrl_state;
+	InteractionSystem* sys = 0;
+	Point prev_mouse = Point(0,0);
+	double time = 0;
+	double last_dt = 0;
+	FboKbd::KeyVec prev;
+	TransformMatrix trans;
+	ControllerMatrix cm;
+	
+	// player camera
+	float pitch = -M_PI/2;
+	float yaw = 0;
+	vec3 head_direction = vec3(0,0,1);
+	vec3 hand_velocity = vec3(0,0,0);
+	vec3 hand_angular_velocity = vec3(0,0,0);
+	
+	OnlineAverage av[3];
+	
+	
+	VrSpatialInteractionManager();
+	
+	bool Initialize(InteractionSystem& sys);
+	void Update(double dt) override;
+	
+    void DetectController();
+    void UpdateState();
+    void UpdateStateHmd();
+	void Look(const TransformMatrix& tm);
+	void Control(const ControllerMatrix& cm);
+	void Move(vec3 rel_dir, float step);
+    void Pressed(ControllerMatrix::Value b, float f);
+    void Released(ControllerMatrix::Value b, float f);
+    void Updated(ControllerMatrix::Value b, float f);
+    
+};
+
 
 
 
@@ -138,6 +189,7 @@ protected:
 
 protected:
 	friend struct FakeSpatialInteractionManager;
+	friend struct VrSpatialInteractionManager;
 	String env_name;
 	bool debug_log = false;
 	bool use_state_hmd = false;
@@ -145,6 +197,7 @@ protected:
 private:
     Array<InteractionListenerRef> interaction_listeners;
     One<FakeSpatialInteractionManager> fake_spatial_interaction_manager;
+    One<VrSpatialInteractionManager> vr_spatial_interaction_manager;
     InteractionManager* spatial_interaction_manager = 0;
     
     

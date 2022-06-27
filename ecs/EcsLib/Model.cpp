@@ -128,7 +128,7 @@ void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {
 
 void ModelComponent::RefreshExtModel() {
 	have_ext_model = true;
-	mat4 rotate = YawPitchRoll(pitch, yaw, roll);
+	mat4 rotate = make_mat4_from_yaw_pitch_roll(pitch, yaw, roll);
 	mat4 tran = translate(offset);
 	mat4 scale = TS::scale(this->scale);
 	this->ext_model = rotate * tran * scale;

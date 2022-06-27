@@ -430,15 +430,16 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		close_window = true;
 	}
 	else if (e.type == EVENT_HOLO_STATE) {
-		ASSERT(e.trans);
-		if (!e.trans)
-			return;
-		
-		TransformMatrix& trans = *e.trans;
-		
+		ASSERT(e.trans || e.ctrl);
 		EnvState& s = GetState();
+		if (e.trans) {
+			s.Set<TransformMatrix>(HMD_CAMERA) = *e.trans;
+		}
 		
-		s.Set<TransformMatrix>(HMD_CAMERA) = trans;
+		if (e.ctrl) {
+			s.Set<ControllerMatrix>(HMD_CONTROLLER) = *e.ctrl;
+		}
+		
 		/*#if 0
 		TransformMatrix& st = s.Set<StereoMatrix>(HMD_VIEW_STEREO);
 		COPY4x4(st.view[0], e3.l_view);
@@ -452,8 +453,8 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		//LOG("EventStateBase::Event: hmd orient: " << orient.ToString());
 		
 		#if 0
-		for(int c = 0; c < CtrlEvent3D::CTRL_COUNT; c++) {
-			CtrlEvent3D::Ctrl& ctrl = e3.ctrl[c];
+		for(int c = 0; c < ControllerMatrix::CTRL_COUNT; c++) {
+			ControllerMatrix::Ctrl& ctrl = e3.ctrl[c];
 			if (!ctrl.is_enabled)
 				continue;
 			
@@ -463,12 +464,12 @@ void EventStateBase::Event(const CtrlEvent& e) {
 			COPY3(pos.data, ctrl.pos);
 			//LOG("EventStateBase::Event: ctrl #" << c << ": rotation " << rot.ToString() << ", position " << pos.ToString());
 			
-			for(int i = 0; i < CtrlEvent3D::VALUE_COUNT; i++) {
-				CtrlEvent3D::Value t = (CtrlEvent3D::Value)i;
+			for(int i = 0; i < ControllerMatrix::VALUE_COUNT; i++) {
+				ControllerMatrix::Value t = (ControllerMatrix::Value)i;
 				
 				if (ctrl.is_value[t]) {
 					float f = ctrl.value[t];
-					if (i == CtrlEvent3D::GENERIC) {
+					if (i == ControllerMatrix::GENERIC) {
 						// what even is this?
 					}
 					else TODO

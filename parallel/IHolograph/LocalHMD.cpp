@@ -49,8 +49,8 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	dev.seq = 0;
 	dev.ev.trans = &dev.trans;
 	dev.ev.ctrl = &dev.ev3d;
-	dev.has_initial_yaw = 0;
-	dev.initial_yaw = 0;
+	dev.has_initial_orient = 0;
+	dev.initial_orient.SetNull();
 	
 	// Get & check openhmd version
 	int major, minor, patch;
@@ -84,6 +84,10 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 		HMD::GetListInt(dev.ctx, i, HMD::HMD_DEVICE_CLASS, &device_class);
 		HMD::GetListInt(dev.ctx, i, HMD::HMD_DEVICE_FLAGS, &device_flags);
 		String path = HMD::GetListString(dev.ctx, i, HMD::HMD_PATH);
+		
+		// Skip null devices
+		if (device_flags & HMD::HMD_DEVICE_FLAGS_NULL_DEVICE)
+			continue;
 		
 		if (device_class == HMD::HMD_DEVICE_CLASS_HMD && path != "(none)") {
 			if (hmd_count == user_hmd_idx || hmd_idx < 0)
@@ -195,9 +199,12 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	
 	// Get controller info
 	for(int i = 0; i < 2; i++) {
+		if (!dev.ctrl[i])
+			continue;
+		
 		HMD::GetDeviceInt(dev.ctrl[i], HMD::HMD_CONTROL_COUNT, &dev.control_count[i]);
-		HMD::GetDeviceInt(dev.hmd, HMD::HMD_CONTROLS_HINTS, dev.controls_fn[i]);
-		HMD::GetDeviceInt(dev.hmd, HMD::HMD_CONTROLS_TYPES, dev.controls_types[i]);
+		HMD::GetDeviceInt(dev.ctrl[i], HMD::HMD_CONTROLS_HINTS, dev.controls_fn[i]);
+		HMD::GetDeviceInt(dev.ctrl[i], HMD::HMD_CONTROLS_TYPES, dev.controls_types[i]);
 		
 		
 		const char* controls_fn_str[] = {
@@ -298,68 +305,26 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	HMD::UpdateContext(dev.ctx);
 	
 	
-	quat orient;
-	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_ROTATION_QUAT, orient.data.data);
-	
-	// Super stupid HOTFIX
-	// At least for HP WMR, yaw and roll is clearly in wrong positions
-	// Maybe because libtopside is +z instead of usual -z...
-	// I tried to solve this, but ended up using this solution
-	// NOTE: this might lead to gimbal lock problems
-	float yaw, pitch, roll;
-	//LOG("HoloLocalHMD: " << yaw << ", " << pitch << ", " << roll);
-	/*#if 0
-	mat4 morient = ToMat4(orient);
-	morient *= scale(vec3(-1,+1,-1));
-	orient = MatrixUtils::orientation(morient);
-	decompose_quat(orient, yaw, pitch, roll);
-	#elif 1*/
-	
-	//orient.data.data[1] *= -1;
-	
-	//DUMP(orient);
-	decompose_quat(orient, yaw, pitch, roll);
-	float f = yaw;
-	yaw = -roll;
-	if (!dev.has_initial_yaw) {
-		dev.has_initial_yaw = true;
-		dev.initial_yaw = yaw + M_PI;
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_ROTATION_QUAT, dev.trans.orientation.data.data);
+	//StupidHotfix(dev.trans.orientation, dev.has_initial_yaw, dev.initial_yaw);
+	if (!dev.has_initial_orient) {
+		dev.has_initial_orient = true;
+		
+		vec3 axes;
+		float& yaw = axes[0];
+		float& pitch = axes[1];
+		float& roll = axes[2];
+		decompose_quat(dev.trans.orientation, yaw, pitch, roll);
+		pitch = 0;
+		roll = 0;
+		dev.initial_orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
 	}
-	yaw = fmodf(yaw + 2 * M_PI - dev.initial_yaw, M_PI * 2) - M_PI;
-	roll = f;
-	orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
-	//DUMP(orient);
-	
-	//LOG("HoloLocalHMD: " << yaw << ", " << pitch << ", " << roll);
-	/*#elif 1
-	decompose_quat(orient, yaw, pitch, roll);
-	float f = yaw;
-	yaw = -roll;
-	roll = f;
-	yaw += M_PI;
-	float yaw_from_front = yaw - M_PI;
-	float pitch_as_roll = yaw_from_front * roll;
-	float roll_as_pitch = yaw_from_front * pitch;
-	pitch -= pitch_as_roll - roll_as_pitch;
-	roll += pitch_as_roll - roll_as_pitch;
-	orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
-	#endif*/
-	
-	/*mat4 morient = ToMat4(orient);
-	morient *= scale(vec3(1,1,-1));
-	float angle = GetXRotation(morient);
-	float diff = -angle * 2;
-	morient *= YRotation(diff);
-	orient = MatrixUtils::orientation(morient);*/
-	//COPY4(dev.cam.orient, orient.data);
+	dev.trans.orientation -= dev.initial_orient;
 	
 	dev.trans.mode = UPP::TransformMatrix::MODE_AXES;
 	dev.trans.is_stereo = true;
 	dev.trans.position = vec3(0,0,0);
-	dev.trans.direction = yaw_pitch_to_direction(yaw, pitch);
-	dev.trans.up = vec3(0,1,0);
-	dev.trans.axes = vec3(yaw, pitch, roll);
-	dev.trans.orientation = orient;
+	dev.trans.FillFromOrientation();
 	
 	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_EYE_IPD, &dev.trans.eye_dist);
 	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_POSITION_VECTOR, dev.trans.position.data);
@@ -394,21 +359,20 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	
 	for(int i = 0; i < 2; i++) {
 		TS::HMD::Device* d = dev.ctrl[i];
-		CtrlEvent3D::Ctrl& ctrl = dev.ev3d.ctrl[i];
+		ControllerMatrix::Ctrl& ctrl = dev.ev3d.ctrl[i];
 		int c = dev.control_count[i];
 		
 		ctrl.is_enabled = dev.ctrl[i] != 0;
 		
 		if (d) {
-			HMD::GetDeviceFloat(d, HMD::HMD_ROTATION_QUAT, ctrl.rot);
-			HMD::GetDeviceFloat(d, HMD::HMD_POSITION_VECTOR, ctrl.pos);
+			ctrl.trans.mode = TransformMatrix::MODE_QUATERNION;
+			HMD::GetDeviceFloat(d, HMD::HMD_ROTATION_QUAT, ctrl.trans.orientation.data.data);
+			HMD::GetDeviceFloat(d, HMD::HMD_POSITION_VECTOR, ctrl.trans.position.data);
+			ctrl.trans.orientation -= dev.initial_orient;
+			ctrl.trans.FillFromOrientation();
 			
-			#if 1
-			quat rot;
-			vec3 pos;
-			COPY4(rot, ctrl.rot);
-			COPY3(pos, ctrl.pos);
-			LOG("Ctrl " << i << ": pos " << pos.ToString() << ", rot " << rot.ToString());
+			#if 0
+			LOG("Ctrl " << i << ": pos " << ctrl.trans.position.ToString() << ", " << ctrl.trans.GetAxesString());
 			#endif
 		}
 		
@@ -416,11 +380,17 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 			float control_state[256];
 			HMD::GetDeviceFloat(d, HMD::HMD_CONTROLS_STATE, control_state);
 			
+			
+			int count[ControllerMatrix::VALUE_COUNT];
+			memset(count, 0, sizeof(count));
+			
+			String s;
+			
 			for(int j = 0; j < c; j++) {
-				CtrlEvent3D::Value type = CtrlEvent3D::INVALID;
+				ControllerMatrix::Value type = ControllerMatrix::INVALID;
 				switch (dev.controls_fn[i][j]) {
 					#undef CTRL
-					#define CTRL(x) case HMD::HMD_##x: type = CtrlEvent3D::Value::x; break;
+					#define CTRL(x) case HMD::HMD_##x: type = ControllerMatrix::Value::x; break;
 					CTRL(GENERIC)
 					CTRL(TRIGGER)
 					CTRL(TRIGGER_CLICK)
@@ -440,20 +410,32 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 					#undef CTRL
 					default: break;
 				}
-				if (type != CtrlEvent3D::INVALID) {
+				if (type != ControllerMatrix::INVALID) {
+					count[type]++;
+					if (type == ControllerMatrix::ANALOG_PRESS ||
+						type == ControllerMatrix::ANALOG_X ||
+						type == ControllerMatrix::ANALOG_Y
+					) {
+						ASSERT(count[type] <= 4);
+						type = (ControllerMatrix::Value)((int)type + count[type] - 1);
+					}
+					else {
+						ASSERT(count[type] == 1);
+					}
+					
 					ctrl.is_value[type] = true;
-					ctrl.value[type] = control_state[i];
+					ctrl.value[type] = control_state[j];
+					
+					if (0 && verbose) {
+						if (s.GetCount())
+							s << ", ";
+						s << type << "=" << control_state[j];
+					}
 				}
 			}
 			
-			if (verbose) {
-				String s;
-				for(int i = 0; i < c; i++) {
-					if (i)
-						s << ", ";
-					s << i << "=" << control_state[i];
-				}
-				//LOG("HoloLocalHMD::SinkDevice_IsReady: " << s);
+			if (0 && verbose) {
+				LOG("HoloLocalHMD::SinkDevice_IsReady: " << s);
 			}
 		}
 	}

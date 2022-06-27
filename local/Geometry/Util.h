@@ -85,14 +85,14 @@ float Determinant(const mat3& matrix);
 vec3 yaw_pitch_to_direction(float yaw, float pitch);
 void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch);
 void camera_object(
-	const vec3& axes, const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
+	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
-	TransformMatrix& tm);
+	vec3& position);
 
 mat4 Rotation(float pitch, float yaw, float roll);
 mat3 Rotation3x3(float pitch, float yaw, float roll);
 mat2 Rotation2x2(float angle);
-mat4 YawPitchRoll(float yaw, float pitch, float roll);
+//mat4 YawPitchRoll(float yaw, float pitch, float roll);
 mat4 XRotation(float angle);
 mat3 XRotation3x3(float angle);
 mat4 YRotation(float angle);
@@ -225,8 +225,8 @@ mat4 make_mat4_rotation_y(float angle);
 mat4 make_mat4_rotation_z(float angle);
 mat4 make_mat4_translation(const vec3& position);
 quat make_quat_from_rotation_matrix(const mat4& matrix);
-inline mat4 rotate(const quat& q) {return make_mat4_from_quat(q);}
-inline mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {return make_mat4_from_quat(make_quat_from_yaw_pitch_roll(yaw, pitch, roll));}
+mat4 rotate(const quat& q);
+mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll);
 
 quat make_rotation_direction(const vec3& dir, const vec3& up);
 

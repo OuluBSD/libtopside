@@ -106,5 +106,19 @@ vec3 TransformMatrix::GetForwardDirection() const {
 	return vec3(0,0,1);
 }
 
+void TransformMatrix::FillFromOrientation() {
+	decompose_quat(orientation, axes[0], axes[1], axes[2]);
+	direction = yaw_pitch_to_direction(axes[0], axes[1]);
+	up = vec3(0,1,0);
+}
+
+String TransformMatrix::GetAxesString() const {
+	String s;
+	s << "yaw: " << axes[0] << ", "
+		 "pitch: " << axes[1] << ", "
+		 "roll: " << axes[2];
+	return s;
+}
+
 
 NAMESPACE_TOPSIDE_END

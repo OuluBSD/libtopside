@@ -17,13 +17,16 @@ typedef enum {
 	
 	
 	EVENT_HOLO_STATE,
+	EVENT_HOLO_LOOK,
+	
 	EVENT_HOLO_CONTROLLER_DETECTED,
 	EVENT_HOLO_CONTROLLER_LOST,
-	EVENT_HOLO_LOOK,
 	EVENT_HOLO_MOVE_FAR_RELATIVE,
 	EVENT_HOLO_MOVE_NEAR,
+	EVENT_HOLO_MOVE_CONTROLLER,
 	EVENT_HOLO_PRESSED,
 	EVENT_HOLO_RELEASED,
+	EVENT_HOLO_UPDATED,
 	
 	EVENT_TYPE_COUNT
 } CtrlEventType;
@@ -122,43 +125,6 @@ struct ControllerState {
 	
 };
 
-struct CtrlEvent3D {
-	
-	typedef enum {
-		INVALID = -1,
-		
-		GENERIC,
-		TRIGGER,
-		TRIGGER_CLICK,
-		SQUEEZE,
-		MENU,
-		HOME,
-		ANALOG_X,
-		ANALOG_Y,
-		ANALOG_PRESS,
-		BUTTON_A,
-		BUTTON_B,
-		BUTTON_X,
-		BUTTON_Y,
-		VOLUME_PLUS,
-		VOLUME_MINUS,
-		MIC_MUTE,
-		
-		VALUE_COUNT
-	} Value;
-
-	static const int CTRL_COUNT = 2;
-	struct Ctrl {
-		bool is_enabled = false;
-		bool is_value[VALUE_COUNT];
-		float value[VALUE_COUNT];
-		float rot[4];
-		float pos[3];
-	};
-	Ctrl ctrl[CTRL_COUNT];
-	
-};
-
 #define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
 #define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
 #define COPY4(dst, from) for(int i = 0; i < 4; i++) dst[i] = from[i]
@@ -166,6 +132,7 @@ struct CtrlEvent3D {
 	
 
 struct TransformMatrix;
+struct ControllerMatrix;
 
 struct CtrlEvent : Moveable<CtrlEvent> {
 	CtrlEventType type = EVENT_INVALID;
@@ -179,7 +146,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	
 	// Device extension
 	TransformMatrix* trans = 0;
-	CtrlEvent3D* ctrl = 0;
+	ControllerMatrix* ctrl = 0;
 	ControllerState* state = 0;
 	
 	

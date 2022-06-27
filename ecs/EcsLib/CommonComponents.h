@@ -12,6 +12,7 @@ public:
 	
 	TransformMatrix data;
 	vec3 size;
+	vec3 anchor_position;
 	/*
 	vec3 position;
 	quat orientation;

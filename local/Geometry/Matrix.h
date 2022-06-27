@@ -220,6 +220,8 @@ struct quat {
 	quat operator*(const quat& q) const;
 	quat operator*(float f) const;
 	quat operator/(float f) const;
+	void operator+=(const quat& q) {for(int i = 0; i < 4; i++) data.data[i] += q.data.data[i];}
+	void operator-=(const quat& q) {for(int i = 0; i < 4; i++) data.data[i] -= q.data.data[i];}
 	void operator*=(const quat& q) {quat n = *this * q; data = n.data;}
 	
 	float GetDotProduct(const quat& q) const;
@@ -990,13 +992,88 @@ struct TransformMatrix : RTTIBase {
 	TransformMatrix(const TransformMatrix& m) {*this = m;}
 	void operator=(const TransformMatrix& m);
 	
+	void FillFromOrientation();
+	
 	vec3 GetForwardDirection() const;
+	String GetAxesString() const;
 	
 	String ToString() const {return "TransformMatrix";}
 	int ToInt() const {return 0;}
 	double ToDouble() const {return 0;}
 	hash_t GetHashValue() const {return 0;}
 	
+};
+
+struct ControllerMatrix : RTTIBase {
+	RTTI_DECL0(ControllerMatrix);
+	
+	typedef enum {
+		INVALID = -1,
+		
+		GENERIC,
+		TRIGGER,
+		TRIGGER_CLICK,
+		SQUEEZE,
+		MENU,
+		HOME,
+		ANALOG_X,
+		ANALOG_X0 = ANALOG_X,
+		ANALOG_X1,
+		ANALOG_X2,
+		ANALOG_X3,
+		ANALOG_Y,
+		ANALOG_Y0 = ANALOG_Y,
+		ANALOG_Y1,
+		ANALOG_Y2,
+		ANALOG_Y3,
+		ANALOG_PRESS,
+		ANALOG_PRESS0 = ANALOG_PRESS,
+		ANALOG_PRESS1,
+		ANALOG_PRESS2,
+		ANALOG_PRESS3,
+		BUTTON_A,
+		BUTTON_B,
+		BUTTON_X,
+		BUTTON_Y,
+		VOLUME_PLUS,
+		VOLUME_MINUS,
+		MIC_MUTE,
+		
+		VALUE_COUNT
+	} Value;
+
+	static const int CTRL_COUNT = 2;
+	struct Ctrl {
+		bool is_enabled = false;
+		bool is_value[VALUE_COUNT];
+		float value[VALUE_COUNT];
+		TransformMatrix trans;
+		
+		void operator=(const Ctrl& c) {
+			is_enabled = c.is_enabled;
+			for(int i = 0; i < VALUE_COUNT; i++) {
+				is_value[i] = c.is_value[i];
+				value[i] = c.value[i];
+			}
+			trans = c.trans;
+		}
+	};
+	Ctrl ctrl[CTRL_COUNT];
+	
+	
+	
+	ControllerMatrix() {}
+	ControllerMatrix(const ControllerMatrix& m) {*this = m;}
+	
+	String ToString() const {return "ControllerMatrix";}
+	int ToInt() const {return 0;}
+	double ToDouble() const {return 0;}
+	hash_t GetHashValue() const {return 0;}
+	
+	void operator=(const ControllerMatrix& m) {
+		for(int i = 0; i < CTRL_COUNT; i++)
+			ctrl[i] = m.ctrl[i];
+	}
 };
 
 END_UPP_NAMESPACE

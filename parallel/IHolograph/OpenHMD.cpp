@@ -303,7 +303,7 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 	
 	for(int i = 0; i < 2; i++) {
 		auto d = dev.ctrl[i];
-		CtrlEvent3D::Ctrl& ctrl = dev.ev3d.ctrl[i];
+		ControllerMatrix::Ctrl& ctrl = dev.ev3d.ctrl[i];
 		int c = dev.control_count[i];
 		
 		ctrl.is_enabled = dev.ctrl[i] != 0;
@@ -316,10 +316,10 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 			ohmd_device_getf(d, OHMD_CONTROLS_STATE, control_state);
 			
 			for(int j = 0; j < c; j++) {
-				CtrlEvent3D::Value type = CtrlEvent3D::INVALID;
+				ControllerMatrix::Value type = ControllerMatrix::INVALID;
 				switch (dev.controls_fn[i][j]) {
 					#undef CTRL
-					#define CTRL(x) case OHMD_##x: type = CtrlEvent3D::Value::x; break;
+					#define CTRL(x) case OHMD_##x: type = ControllerMatrix::Value::x; break;
 					CTRL(GENERIC)
 					CTRL(TRIGGER)
 					CTRL(TRIGGER_CLICK)
@@ -339,7 +339,7 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 					#undef CTRL
 					default: break;
 				}
-				if (type != CtrlEvent3D::INVALID) {
+				if (type != ControllerMatrix::INVALID) {
 					ctrl.is_value[type] = true;
 					ctrl.value[type] = control_state[i];
 				}

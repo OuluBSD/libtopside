@@ -185,11 +185,22 @@ void PlayerBodySystem::Update(double dt) {
 			if (b->hands[i]) {
 				TransformRef hand_trans = b->hands[i]->GetEntity()->Find<Transform>();
 				if (hand_trans) {
-					float horz_deg = (i == 1 ? -1 : +1) * 30;
-					camera_object(
-						axes, head_pos, head_direction, head_up,
-						DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
-						hand_trans->data);
+					if (b->hands[i]->is_fake) {
+						hand_trans->data.mode = TransformMatrix::MODE_AXES;
+						hand_trans->data.axes = axes;
+						float horz_deg = (i == 1 ? -1 : +1) * 30;
+						camera_object(
+							head_pos, head_direction, head_up,
+							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
+							hand_trans->data.position);
+					}
+					else {
+						float horz_deg = (i == 1 ? -1 : +1) * 30;
+						camera_object(
+							head_pos, head_direction, head_up,
+							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
+							hand_trans->anchor_position);
+					}
 				}
 			}
 		}
@@ -284,6 +295,31 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 				#endif
 			}
 		}
+	}
+	else if (e.type == EVENT_HOLO_MOVE_CONTROLLER) {
+		PlayerBodyComponentRef vr_body;
+		if (!bodies.IsEmpty()) vr_body = bodies[0];
+		
+		if (vr_body && e.ctrl) {
+			const ControllerMatrix& cm = *e.ctrl;
+			
+			for(int i = 0; i < 2; i++) {
+				if (vr_body->hands[i] && cm.ctrl[i].is_enabled) {
+					PlayerHandComponent& hand = *vr_body->hands[i];
+					const ControllerMatrix::Ctrl& ctrl = cm.ctrl[i];
+					
+					TransformRef trans = hand.GetEntity()->Find<Transform>();
+					if (trans) {
+						trans->data = ctrl.trans;
+						trans->data.position += trans->anchor_position;
+						//DUMP(trans->data.position); LOG(trans->data.GetAxesString());
+					}
+				}
+			}
+		}
+	}
+	else if (e.type == EVENT_HOLO_UPDATED) {
+		
 	}
 	else TODO
 }
