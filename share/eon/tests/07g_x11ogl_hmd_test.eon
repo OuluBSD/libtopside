@@ -6,9 +6,9 @@ machine sdl.app: {
 		loop center.events: {
 			center.customer: true;
 			x11.ogl.holo.events: true {
-				device.hmd.idx: 0;
-				device.left.idx: 0;
-				device.right.idx: 0;
+				device.hmd.idx: -1;
+				device.left.idx: -1;
+				device.right.idx: -1;
 			};
 			state.event.pipe: true {
 				target: event.register;

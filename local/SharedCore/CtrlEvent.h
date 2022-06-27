@@ -147,16 +147,6 @@ struct CtrlEvent3D {
 		VALUE_COUNT
 	} Value;
 
-	float position[3] {0,0,0};
-	float direction[3] {0,0,0};
-	
-	// VR hmd & controllers
-	bool use_lookat = false;
-	bool use_view = false;
-	float orient[4];
-	float l_proj[4][4], l_view[4][4];
-	float r_proj[4][4], r_view[4][4];
-	
 	static const int CTRL_COUNT = 2;
 	struct Ctrl {
 		bool is_enabled = false;
@@ -189,7 +179,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	
 	// Device extension
 	TransformMatrix* trans = 0;
-	//CtrlEvent3D* spatial = 0;
+	CtrlEvent3D* ctrl = 0;
 	ControllerState* state = 0;
 	
 	
@@ -206,7 +196,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		sz.cx = e.sz.cx;
 		sz.cy = e.sz.cy;
 		trans = e.trans;
-		//spatial = e.spatial;
+		ctrl = e.ctrl;
 		state = e.state;
 	}
 	
@@ -217,7 +207,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 		pt = Point(0,0);
 		sz = Size(0,0);
 		trans = 0;
-		//spatial = 0;
+		ctrl = 0;
 		state = 0;
 	}
 	

@@ -8,8 +8,6 @@ NAMESPACE_HMD_BEGIN
 
 #define TICK_LEN (1.0f / 10000000.0f) // 1000 Hz ticks
 
-#define MICROSOFT_VID        0x045e
-#define HOLOLENS_SENSORS_PID 0x0659
 
 
 typedef struct {
@@ -131,7 +129,7 @@ static int GetFloat(Device* device, FloatValue type, float* out)
 		break;
 
 	default:
-		lhmd_set_error(priv->base.ctx, "invalid type given to GetFloat (%ud)", type);
+		lhmd_set_error(priv->base.ctx, "invalid type given to hmd GetFloat (%ud)", type);
 		return -1;
 		break;
 	}
@@ -161,12 +159,27 @@ static hid_device* OpenDevice_idx(int manufacturer, int product, int iface, int 
 	int iface_cur = 0;
 	hid_device* ret = NULL;
 
+	Index<String> visited_paths;
+	int i = 0;
 	while (cur_dev) {
+		// Check visited paths because of weird problem, in which hidapi gives tens of
+		// duplicate entries and invalid strings
+		#if 1
+		String path(cur_dev->path);
+		if (visited_paths.Find(path) >= 0) {
+			cur_dev = cur_dev->next;
+			continue;
+		}
+		visited_paths.Add(path);
+		#endif
+		
 		LOGI("%04x:%04x %s\n", manufacturer, product, cur_dev->path);
 
 		if(idx == device_index && iface == iface_cur){
 			ret = hid_open_path(cur_dev->path);
 			LOGI("opening\n");
+			if (ret)
+				break;
 		}
 
 		cur_dev = cur_dev->next;
@@ -311,7 +324,7 @@ void resetList(const nx_json* (*list)[32])
 	memset(list, 0, sizeof(*list));
 }
 
-static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
+static Device* OpenHmdDevice(Driver* driver, DeviceDescription* desc)
 {
 	WmrPrivateData* priv = (WmrPrivateData*)lhmd_alloc(driver->ctx, sizeof(WmrPrivateData));
 	unsigned char *config;
@@ -441,30 +454,120 @@ cleanup:
 	return NULL;
 }
 
+static Device* OpenDevice(Driver* driver, DeviceDescription* desc)
+{
+	if (desc->device_flags & (HMD_DEVICE_FLAGS_LEFT_CONTROLLER |
+				  HMD_DEVICE_FLAGS_RIGHT_CONTROLLER))
+		return OpenMotionControllerDevice(driver, desc);
+	else
+		return OpenHmdDevice(driver, desc);
+}
+
+
 static void GetDeviceList(Driver* driver, DeviceList* list)
 {
-	struct hid_device_info* devs = hid_enumerate(MICROSOFT_VID, HOLOLENS_SENSORS_PID);
+	//struct hid_device_info* devs = hid_enumerate(MICROSOFT_VID, 0);
+	struct hid_device_info* devs = hid_enumerate(0, 0);
 	struct hid_device_info* cur_dev = devs;
-
-	int idx = 0;
+	
+	/*
+	#If you can't see bluetooth controllers, add these udev settings
+	
+	sudo echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0659", MODE="0666"' >  /etc/udev/rules.d/50-wmr-controller.rules
+	sudo echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="03F0", ATTRS{idProduct}=="0367", MODE="0666"' >>  /etc/udev/rules.d/50-wmr-controller.rules
+	sudo echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0BDA", ATTRS{idProduct}=="485A", MODE="0666"' >>  /etc/udev/rules.d/50-wmr-controller.rules
+	sudo echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", KERNELS=="0005:045E:065B.*", MODE="0666"' >> /etc/udev/rules.d/50-wmr-controller.rules
+	sudo echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", KERNELS=="0005:045E:065D.*", MODE="0666"' >> /etc/udev/rules.d/50-wmr-controller.rules
+	sudo udevadm control --reload-rules
+	# disconnect and reconnect the controller.
+	# ...maybe even reboot
+	
+	# if still doesn't work, edit "/etc/bluetooth/input.conf" and uncomment
+	UserspaceHID=true
+	
+	# TODO improve documentation
+	*/
+	
+	int id = 0, hmd_idx = 0, controller_idx = 0;
+	int i = 0;
+	Index<String> visited_paths;
 	while (cur_dev) {
-		DeviceDescription* desc = &list->devices[list->num_devices++];
+		// Check visited paths because of weird problem, in which hidapi gives tens of
+		// duplicate entries and invalid strings
+		#if 1
+		String path(cur_dev->path);
+		if (visited_paths.Find(path) >= 0) {
+			cur_dev = cur_dev->next;
+			continue;
+		}
+		visited_paths.Add(path);
+		#endif
+		
+		#ifdef flagDEBUG
+		WString ps(cur_dev->product_string);
+		String pss = ps.ToString();
+		LOG(i << ": " << HexStr(cur_dev) << ": " << HexStr(cur_dev->vendor_id) << ":" << HexStr(cur_dev->product_id) << ": " << path << ", " << pss);
+		#endif
+		
+		if (cur_dev->vendor_id != MICROSOFT_VID) {
+			cur_dev = cur_dev->next;
+			continue;
+		}
+		
+		if (cur_dev->product_id == HOLOLENS_SENSORS_PID) {
+			DeviceDescription* desc = &list->devices[list->num_devices++];
 
-		strcpy(desc->driver, "OpenHMD Windows Mixed Reality Driver");
-		strcpy(desc->vendor, "Microsoft");
-		strcpy(desc->product, "HoloLens Sensors");
+			#ifdef flagDEBUG
+			LOG("\tFound OpenHMD Windows Mixed Reality Driver");
+			#endif
+			
+			strcpy(desc->driver, "OpenHMD Windows Mixed Reality Driver");
+			strcpy(desc->vendor, "Microsoft");
+			strcpy(desc->product, "HoloLens Sensors");
 
-		desc->revision = 0;
+			desc->revision = 0;
 
-		snprintf(desc->path, HMD_STR_SIZE, "%d", idx);
+			snprintf(desc->path, HMD_STR_SIZE, "%d", hmd_idx);
 
-		desc->driver_ptr = driver;
+			desc->driver_ptr = driver;
+			desc->id = id++;
 
-		desc->device_class = HMD_DEVICE_CLASS_HMD;
-		desc->device_flags = HMD_DEVICE_FLAGS_ROTATIONAL_TRACKING;
+			desc->device_class = HMD_DEVICE_CLASS_HMD;
+			desc->device_flags = HMD_DEVICE_FLAGS_ROTATIONAL_TRACKING;
+
+			hmd_idx++;
+		}
+		else if (cur_dev->product_id == MOTION_CONTROLLER_PID || cur_dev->product_id == MOTION_CONTROLLER_PID_SAMSUNG) {
+			DeviceDescription* desc = &list->devices[list->num_devices++];
+			
+			#ifdef flagDEBUG
+			LOG("\tFound controller " << String(desc->product));
+			#endif
+			
+			strcpy(desc->driver, "OpenHMD Windows Mixed Reality Driver");
+			strcpy(desc->vendor, "Microsoft");
+			// "Motion controller - Left" or "Motion controller - Right"
+			snprintf(desc->product, HMD_STR_SIZE, "%S", cur_dev->product_string);
+
+			desc->revision = 0;
+
+			snprintf(desc->path, HMD_STR_SIZE, "%d", controller_idx);
+
+			desc->driver_ptr = driver;
+			desc->id = id++;
+
+			desc->device_class = HMD_DEVICE_CLASS_CONTROLLER;
+			desc->device_flags = HMD_DEVICE_FLAGS_ROTATIONAL_TRACKING;
+			if (strcmp(desc->product, "Motion controller - Left") == 0)
+				desc->device_flags |= HMD_DEVICE_FLAGS_LEFT_CONTROLLER;
+			else
+				desc->device_flags |= HMD_DEVICE_FLAGS_RIGHT_CONTROLLER;
+
+			controller_idx++;
+		}
 
 		cur_dev = cur_dev->next;
-		idx++;
+		i++;
 	}
 
 	hid_free_enumeration(devs);

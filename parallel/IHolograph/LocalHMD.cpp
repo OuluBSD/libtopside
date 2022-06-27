@@ -48,6 +48,7 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	
 	dev.seq = 0;
 	dev.ev.trans = &dev.trans;
+	dev.ev.ctrl = &dev.ev3d;
 	dev.has_initial_yaw = 0;
 	dev.initial_yaw = 0;
 	
@@ -91,7 +92,7 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 		}
 		else if (device_class == HMD::HMD_DEVICE_CLASS_CONTROLLER) {
 			int j = (device_flags & HMD::HMD_DEVICE_FLAGS_LEFT_CONTROLLER ? 0 : 1);
-			if (ctrl_count[j] >= user_ctrl_idx[j] || ctrl_idx[j] < 0)
+			if (ctrl_count[j] == user_ctrl_idx[j] || ctrl_idx[j] < 0)
 				ctrl_idx[j] = i;
 			ctrl_count[j]++;
 		}
@@ -391,18 +392,27 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		DUMP(m);*/
 	}
 	
-	#if 0
 	for(int i = 0; i < 2; i++) {
-		auto d = dev.ctrl[i];
+		TS::HMD::Device* d = dev.ctrl[i];
 		CtrlEvent3D::Ctrl& ctrl = dev.ev3d.ctrl[i];
 		int c = dev.control_count[i];
 		
 		ctrl.is_enabled = dev.ctrl[i] != 0;
 		
-		if (c) {
+		if (d) {
 			HMD::GetDeviceFloat(d, HMD::HMD_ROTATION_QUAT, ctrl.rot);
 			HMD::GetDeviceFloat(d, HMD::HMD_POSITION_VECTOR, ctrl.pos);
 			
+			#if 1
+			quat rot;
+			vec3 pos;
+			COPY4(rot, ctrl.rot);
+			COPY3(pos, ctrl.pos);
+			LOG("Ctrl " << i << ": pos " << pos.ToString() << ", rot " << rot.ToString());
+			#endif
+		}
+		
+		if (d && c) {
 			float control_state[256];
 			HMD::GetDeviceFloat(d, HMD::HMD_CONTROLS_STATE, control_state);
 			
@@ -447,7 +457,6 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 			}
 		}
 	}
-	#endif
 	
 	dev.ev_sendable = true;
 	dev.ev.type = EVENT_HOLO_STATE;

@@ -82,7 +82,7 @@ struct HoloLocalHMD {
 		TS::HMD::Device* ctrl[2];
 		Size screen_sz;
 		CtrlEvent ev;
-		//CtrlEvent3D ev3d;
+		CtrlEvent3D ev3d;
 		TransformMatrix trans;
 		bool has_initial_yaw;
 		float initial_yaw;

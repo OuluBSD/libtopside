@@ -5,7 +5,9 @@ noblitz;
 uses
 	Geometry;
 
-library(POSIX) "hidapi-libusb hidapi-hidraw";
+library(POSIX USBONLY) hidapi-libusb;
+
+library(POSIX) hidapi-hidraw;
 
 file
 	README.md,
@@ -29,6 +31,7 @@ file
 	Wmr.h,
 	Wmr.cpp,
 	WmrPacket.cpp,
+	WmrController.cpp,
 	Psvr.h,
 	Psvr.cpp,
 	PsvrPacket.cpp,

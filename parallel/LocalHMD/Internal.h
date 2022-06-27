@@ -34,7 +34,7 @@ typedef struct {
 	char path[HMD_STR_SIZE];
 	int revision;
 	int id;
-	int device_flags; // DeviceFlags
+	uint32 device_flags; // DeviceFlags
 	DeviceClass device_class;
 	Driver* driver_ptr;
 } DeviceDescription;

@@ -192,7 +192,20 @@ static hid_device* OpenDevice_idx(int manufacturer, int product, int iface, int 
 	int idx = 0;
 	hid_device* ret = NULL;
 
+	Index<String> visited_paths;
+	int i = 0;
 	while (cur_dev) {
+		// Check visited paths because of weird problem, in which hidapi gives tens of
+		// duplicate entries and invalid strings
+		#if 1
+		String path(cur_dev->path);
+		if (visited_paths.Find(path) >= 0) {
+			cur_dev = cur_dev->next;
+			continue;
+		}
+		visited_paths.Add(path);
+		#endif
+		
 		LOGI("%04x:%04x %s", manufacturer, product, cur_dev->path);
 
 		if (cur_dev->interface_number == iface) {
@@ -310,7 +323,21 @@ static void GetDeviceList(Driver* driver, DeviceList* list)
 	struct hid_device_info* cur_dev = devs;
 
 	int idx = 0;
+
+	Index<String> visited_paths;
+	int i = 0;
 	while (cur_dev) {
+		// Check visited paths because of weird problem, in which hidapi gives tens of
+		// duplicate entries and invalid strings
+		#if 1
+		String path(cur_dev->path);
+		if (visited_paths.Find(path) >= 0) {
+			cur_dev = cur_dev->next;
+			continue;
+		}
+		visited_paths.Add(path);
+		#endif
+		
 		DeviceDescription* desc;
 
 		// Warn if hidapi does not provide interface numbers

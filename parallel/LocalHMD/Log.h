@@ -12,7 +12,7 @@ void* AllocateFn(Context* ctx, const char* e_msg, size_t size);
 #define LOGLEVEL 2
 #endif
 
-#define HMDLOG(_level, _levelstr, ...) do{ if(_level >= LOGLEVEL){ printf("[%s] ", (_levelstr)); printf(__VA_ARGS__); puts(""); } } while(0)
+#define HMDLOG(_level, _levelstr, ...) do{ if(_level >= LOGLEVEL){String s; char buf[1024]; buf[0] = 0; snprintf(buf, 1024, "[%s] ", (_levelstr)); s << String((const char*)buf); buf[0] = 0; snprintf(buf, 1024, __VA_ARGS__); s << String((const char*)buf); LOG(s.Left(s.GetCount()-1)); } } while(0)
 
 #if LOGLEVEL == 0
 #define LOGD(...) HMDLOG(0, "DD", __VA_ARGS__)
