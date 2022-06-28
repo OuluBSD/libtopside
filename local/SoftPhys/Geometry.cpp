@@ -15,7 +15,7 @@ vec3 Geometry::GetPosition() const {
 }
 
 quat Geometry::GetQuaternion() const {
-	return make_quat_from_axis_angle(axis, angle);
+	return AxisAngleQuat(axis, angle);
 }
 
 void Geometry::OnBodyMove() {

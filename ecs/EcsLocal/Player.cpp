@@ -334,7 +334,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 						mat4 rot = rotate(trans->anchor_orientation);
 						vec3 new_position = (rot * trans->data.position.Embed()).Splice();
 						trans->data.position = trans->anchor_position + new_position;
-						trans->data.orientation = make_quat_from_yaw_pitch_roll(0,0,0);
+						trans->data.orientation = AxesQuat(0,0,0);
 						trans->data.mode = TransformMatrix::MODE_QUATERNION;
 						trans->data.FillFromOrientation();
 						trans->verbose = true;

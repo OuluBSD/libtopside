@@ -339,7 +339,6 @@ template <>
 StringT<char> StringT<char>::DblStr(double d) {
 	char output[50];
 	snprintf(output, 50, "%g", d);
-	printf("%s", output);
 	return StringT(output);
 }
 

@@ -171,6 +171,57 @@ Camera CreateOrthographic(float width, float height, float nearPlane, float farP
 	return result;
 }
 
+
+
+
+Frustum Camera::GetFrustum() {
+	Frustum result;
+
+	mat4 vp;
+	vp = GetProjectionMatrix() * GetViewMatrix();
+	float vp41 = vp[3][0];
+	float vp42 = vp[3][1];
+	float vp43 = vp[3][3];
+	float vp44 = vp[3][3];
+	
+	vec3 col1 = vp.GetColumn(0).Splice();
+	vec3 col2 = vp.GetColumn(1).Splice();
+	vec3 col3 = vp.GetColumn(2).Splice();
+	vec3 col4 = vp.GetColumn(3).Splice();
+					
+	// Find plane magnitudes
+	result.left.normal	= col4 + col1;
+	result.right.normal = col4 - col1;
+	result.bottom.normal= col4 + col2;
+	result.top.normal	= col4 - col2;
+	result._near.normal	= /*col4 +*/ col3;
+	result._far.normal	= col4 - col3;
+
+	// Find plane distances
+	result.left.distance	= vp44 + vp41;
+	result.right.distance	= vp44 - vp41;
+	result.bottom.distance	= vp44 + vp42;
+	result.top.distance		= vp44 - vp42;
+	result._near.distance	= /*vp44 +*/ vp43;
+	result._far.distance	= vp44 - vp43;
+
+	// Normalize all 6 planes
+	for (int i = 0; i < 6; ++i) {
+		float mag = 1.0f / result[i].normal.GetMagnitude();
+		result[i].normal.Normalize();
+		result[i].distance *= mag;
+	}
+
+	return result;
+}
+
+
+
+
+
+
+#if 0
+
 OrbitCamera::OrbitCamera() {
 	target = vec3(0, 0, 0);
 	zoom_distance = 10.0f;
@@ -239,47 +290,6 @@ float OrbitCamera::ClampAngle(float angle, float min, float max) {
 	return angle;
 }
 
-Frustum Camera::GetFrustum() {
-	Frustum result;
-
-	mat4 vp;
-	vp = GetProjectionMatrix() * GetViewMatrix();
-	float vp41 = vp[3][0];
-	float vp42 = vp[3][1];
-	float vp43 = vp[3][3];
-	float vp44 = vp[3][3];
-	
-	vec3 col1 = vp.GetColumn(0).Splice();
-	vec3 col2 = vp.GetColumn(1).Splice();
-	vec3 col3 = vp.GetColumn(2).Splice();
-	vec3 col4 = vp.GetColumn(3).Splice();
-					
-	// Find plane magnitudes
-	result.left.normal	= col4 + col1;
-	result.right.normal = col4 - col1;
-	result.bottom.normal= col4 + col2;
-	result.top.normal	= col4 - col2;
-	result._near.normal	= /*col4 +*/ col3;
-	result._far.normal	= col4 - col3;
-
-	// Find plane distances
-	result.left.distance	= vp44 + vp41;
-	result.right.distance	= vp44 - vp41;
-	result.bottom.distance	= vp44 + vp42;
-	result.top.distance		= vp44 - vp42;
-	result._near.distance	= /*vp44 +*/ vp43;
-	result._far.distance	= vp44 - vp43;
-
-	// Normalize all 6 planes
-	for (int i = 0; i < 6; ++i) {
-		float mag = 1.0f / result[i].normal.GetMagnitude();
-		result[i].normal.Normalize();
-		result[i].distance *= mag;
-	}
-
-	return result;
-}
-
 void OrbitCamera::PrintDebug() {
 	LOG("Target: (" << target[0] << ", " << target[1] << ", " << target[2] << ")");
 	LOG("Zoom distance: " << zoom_distance);
@@ -297,6 +307,8 @@ void OrbitCamera::SetZoom(float zoom) {
 void OrbitCamera::SetRotation(const vec2& rotation) {
 	this->cur_rot = rotation;
 }
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

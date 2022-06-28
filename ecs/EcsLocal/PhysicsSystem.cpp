@@ -41,7 +41,7 @@ void PhysicsSystem::Update(double dt)
 			float angle = adjusted_angular.GetLength();
 			if (angle > 0.0f) {
 				vec3 axis = adjusted_angular / angle;
-				transform->data.orientation *= make_quat_from_axis_angle(axis, angle * dt);
+				transform->data.orientation *= AxisAngleQuat(axis, angle * dt);
 			}
 			
 			rigid_body->velocity *= rigid_body->damping_factor;

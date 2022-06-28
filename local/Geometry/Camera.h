@@ -48,6 +48,8 @@ public:
 Camera CreatePerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
 Camera CreateOrthographic(float width, float height, float nearPlane, float farPlane);
 
+#if 0
+
 class OrbitCamera : public Camera {
 protected:
 	vec3 target;
@@ -76,6 +78,8 @@ public:
 	void SetRotation(const vec2& rotation);
 	void PrintDebug();
 };
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

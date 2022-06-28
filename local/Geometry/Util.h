@@ -22,7 +22,7 @@ template <class T> T mix(const T& a, const T& b, float f) {return a.Mix(b, f);}
 
 mat4 perspective(float half_fov_rad, float aspect, float near, float far);
 mat4 ortho(float left, float right, float bottom, float top, float near, float far);
-mat4 ToMat4(const quat& q);
+//mat4 ToMat4(const quat& q);
 void ToMat3_(mat3& m, const quat& q);
 
 template <class T> T cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
@@ -89,17 +89,17 @@ void camera_object(
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
 	vec3& position);
 
-mat4 Rotation(float pitch, float yaw, float roll);
+/*mat4 Rotation(float pitch, float yaw, float roll);
 mat3 Rotation3x3(float pitch, float yaw, float roll);
-mat2 Rotation2x2(float angle);
+mat2 Rotation2x2(float angle);*/
 //mat4 YawPitchRoll(float yaw, float pitch, float roll);
-mat4 XRotation(float angle);
+/*mat4 XRotation(float angle);
 mat3 XRotation3x3(float angle);
 mat4 YRotation(float angle);
 mat3 YRotation3x3(float angle);
 mat4 ZRotation(float angle);
 mat3 ZRotation3x3(float angle);
-float GetXRotation(const mat4& m);
+float GetXRotation(const mat4& m);*/
 
 void StoreMatrix(mat4* dst, const mat4& src);
 void StoreVec2(vec2* dst, const vec4& src);
@@ -129,7 +129,7 @@ mat4 MatrixTransformation(
     const vec3& translation
 );
 mat4 MatrixTranslationFromVector(const vec3& v);
-mat4 MatrixRotationQuaternion(quat q);
+mat4 QuatMat(quat q);
 mat4 MatrixScalingFromVector(const vec3& scale);
 mat4 MatrixMultiply(const mat4& m1, const mat4& m2);
 
@@ -217,15 +217,15 @@ T safe_normalize(T v) {
 mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
 mat4 rotate(mat4 const& m, float angle, vec3 const& v);
-quat make_quat_from_axis_angle(const vec3& v, float angle);
-mat4 make_mat4_from_quat(const quat& q);
-quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll);
+quat AxisAngleQuat(const vec3& v, float angle);
+//mat4 make_mat4_from_quat(const quat& q);
+quat AxesQuat(float yaw, float pitch, float roll);
 mat4 make_mat4_rotation_x(float angle);
 mat4 make_mat4_rotation_y(float angle);
 mat4 make_mat4_rotation_z(float angle);
 mat4 make_mat4_translation(const vec3& position);
 quat make_quat_from_rotation_matrix(const mat4& matrix);
-mat4 rotate(const quat& q);
+//mat4 rotate(const quat& q);
 mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll);
 
 quat make_rotation_direction(const vec3& dir, const vec3& up);

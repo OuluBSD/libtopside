@@ -110,7 +110,7 @@ vec3 TransformMatrix::GetForwardDirection() const {
 		return dir.Splice();
 	}
 	if (mode == MODE_QUATERNION) {
-		mat4 m = ToMat4(orientation);
+		mat4 m = QuatMat(orientation);
 		vec4 fwd(0,0,1,1);
 		vec4 dir = m * fwd;
 		return dir.Splice();

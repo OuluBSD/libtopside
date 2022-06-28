@@ -49,7 +49,7 @@ String PaintingInteractionSystemBase::GetDisplayName() const {
 EntityRef PaintingInteractionSystemBase::CreateToolSelector() const {
 	auto selector = GetEngine().Get<EntityStore>()->GetRoot()->Create<ToolSelectorPrefab>();
 	selector->Get<ModelComponent>()->SetPrefabModel("PaintBrush");
-	selector->Get<Transform>()->data.orientation = make_quat_from_axis_angle({ 1, 0, 0 }, M_PI / 1.5f);
+	selector->Get<Transform>()->data.orientation = AxisAngleQuat({ 1, 0, 0 }, M_PI / 1.5f);
 	selector->Get<ToolSelectorKey>()->type = GetType();
 	return selector;
 }

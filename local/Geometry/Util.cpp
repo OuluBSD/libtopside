@@ -151,42 +151,6 @@ mat4 ortho(float left, float right, float bottom, float top, float near, float f
 	return m;
 }
 
-mat4 ToMat4(const quat& q) {
-	mat4 result;
-	result.SetIdentity();
-	
-	double qxx = q[0] * q[0];
-	double qyy = q[1] * q[1];
-	double qzz = q[2] * q[2];
-	double qxz = q[0] * q[2];
-	double qxy = q[0] * q[1];
-	double qyz = q[1] * q[2];
-	double qwx = q[3] * q[0];
-	double qwy = q[3] * q[1];
-	double qwz = q[3] * q[2];
-
-	result[0][0] = 1.0 - 2.0 * (qyy +  qzz);
-	result[0][1] = 2.0       * (qxy + qwz);
-	result[0][2] = 2.0       * (qxz - qwy);
-
-	result[1][0] = 2.0       * (qxy - qwz);
-	result[1][1] = 1.0 - 2.0 * (qxx +  qzz);
-	result[1][2] = 2.0       * (qyz + qwx);
-
-	result[2][0] = 2.0       * (qxz + qwy);
-	result[2][1] = 2.0       * (qyz - qwx);
-	result[2][2] = 1.0 - 2.0 * (qxx +  qyy);
-	
-	for(int i = 0; i < 3; i++) {
-		result[3][i] = 0;
-		result[i][3] = 0;
-	}
-	result[3][3] = 1;
-	
-	return result;
-}
-
-
 
 bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& translation, vec3& skew, vec4& perspective) {
 	mat4 local_mat(model_mat);
@@ -379,7 +343,7 @@ mat4 rotate(mat4 const& m, float angle, vec3 const& v) {
 	return res;
 }
 
-quat make_quat_from_axis_angle(const vec3& v, float angle) {
+quat AxisAngleQuat(const vec3& v, float angle) {
 	double s = sinf(angle * 0.5);
 	quat r;
 	r[0] = v[0] * s;
@@ -390,6 +354,7 @@ quat make_quat_from_axis_angle(const vec3& v, float angle) {
 }
 
 vec3 transform(const vec3& v, const quat& q) {
+	#if IS_NEGATIVE_Z
 	// https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
 	
 	// Extract the vector part of the quaternion
@@ -403,27 +368,13 @@ vec3 transform(const vec3& v, const quat& q) {
           + v * ((s*s - dot(u, u)))
           + cross(u, v) * (2.0f * s);
     return vprime;
+    #else
+    mat4 m = QuatMat(q);
+    return (v.Embed() * m).Splice();
+    #endif
 }
 
-mat4 make_mat4_from_quat(const quat& q) {
-	mat4 m1{
-		{q[3], q[2], -q[1], q[0]},
-		{-q[2], q[3], q[0], q[1]},
-		{q[1], -q[0], q[3], q[2]},
-		{-q[0], -q[1], -q[2], q[3]}
-	};
-	
-	mat4 m2{
-		{q[3], q[2], -q[1], -q[0]},
-		{-q[2], q[3], q[0], -q[1]},
-		{q[1], -q[0], q[3], -q[2]},
-		{q[0], q[1], q[2], q[3]}
-	};
-	
-	return m2 * m1;
-}
-
-quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll)
+quat AxesQuat(float yaw, float pitch, float roll)
 {
 	//return MatrixUtils::orientation(YawPitchRoll(yaw, pitch, roll));
     float sr, cr, sp, cp, sy, cy;
@@ -436,7 +387,7 @@ quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll)
     sp = sinf(half_pitch);
     cp = cosf(half_pitch);
 
-    float half_yaw = -yaw * 0.5f;
+    float half_yaw = yaw * 0.5f;
     sy = sinf(half_yaw);
     cy = cosf(half_yaw);
 
@@ -534,33 +485,20 @@ quat make_quat_from_rotation_matrix(const mat4& m) {
     }
 }
 
-mat4 rotate(const quat& q) {
-	return make_mat4_from_quat(q);
-}
-
 mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {
-	return make_mat4_from_quat(make_quat_from_yaw_pitch_roll(yaw, pitch, roll));
+	return QuatMat(AxesQuat(yaw, pitch, roll));
 }
 
 vec3 yaw_pitch_to_direction(float yaw, float pitch) {
-	#if 0
-	yaw += M_PI_2;
 	float len = cos(pitch);
 	return vec3(
-		len * cos(-yaw),
+		len * sin(-yaw),
 		sin(pitch),
-		len * sin(yaw));
-	#else
-	float len = cos(pitch);
-	return vec3(
-		len * sin(yaw),
-		sin(-pitch),
-		len * cos(-yaw));
-	#endif
+		len * cos(yaw));
 }
 
 void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch) {
-	#if 0
+	#if 1
 	dir.Normalize();
 	pitch = asin(dir[1]);
 	yaw = atan2(dir[2], dir[0]);
@@ -622,7 +560,7 @@ void camera_object(
 	position = eye + obj_rel_pos;
 	
 }
-
+/*
 mat4 Rotation(float pitch, float yaw, float roll) {
 	return YRotation(yaw) * XRotation(pitch) * ZRotation(roll);
 }
@@ -636,13 +574,13 @@ mat2 Rotation2x2(float angle) {
 		cosf(angle), sinf(angle),
 		-sinf(angle), cosf(angle)
 		};
-}
+}*/
 
 /*
 // INCORRECT
 Compare
 quat orient1 = MatrixUtils::orientation(YawPitchRoll(yaw, pitch, roll));
-quat orient2 = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
+quat orient2 = AxesQuat(yaw, pitch, roll);
 DUMP(orient1);
 DUMP(orient2);
 
@@ -671,7 +609,7 @@ mat4 YawPitchRoll(float yaw, float pitch, float roll) {
 	return angle;
 }
 */
-float GetXRotation(const mat4& m) {
+/*float GetXRotation(const mat4& m) {
 	float angle = atan2(m.data[2][0], m.data[0][0]);
 	return angle;
 }
@@ -731,7 +669,7 @@ mat3 ZRotation3x3(float angle) {
 		-sinf(angle), cosf(angle), 0.0f,
 		0.0f, 0.0f, 1.0f
 	};
-}
+}*/
 
 mat4 FastInverse(const mat4& mat) {
 
@@ -1250,11 +1188,11 @@ mat4 MatrixTransformation(
     vec3 neg_scaling_origin			= -scaling_origin;
 
     mat4 m_scaling_origin_i			= MatrixTranslationFromVector(neg_scaling_origin);
-    mat4 m_scaling_orientation		= MatrixRotationQuaternion(scaling_orientation_quaternion);
+    mat4 m_scaling_orientation		= QuatMat(scaling_orientation_quaternion);
     mat4 m_scaling_orientation_t	= MatrixTranspose(m_scaling_orientation);
     mat4 m_scaling					= MatrixScalingFromVector(scaling);
     vec4 v_rotation_origin			= rotation_origin.Extend();
-    mat4 m_rotation					= MatrixRotationQuaternion(rotation_quaternion);
+    mat4 m_rotation					= QuatMat(rotation_quaternion);
     vec4 v_translation				= translation.Extend();
 
     mat4 m;
@@ -1275,7 +1213,7 @@ mat4 MatrixTranslationFromVector(const vec3& v) {
 	return m;
 }
 
-mat4 MatrixRotationQuaternion(quat q) {
+mat4 QuatMat(quat q) {
     float qx = q[0];
     float qxx = qx * qx;
 
@@ -1283,10 +1221,11 @@ mat4 MatrixRotationQuaternion(quat q) {
     float qyy = qy * qy;
 
     float qz = q[2];
-    float qzz = qz * qz;
+    float qzz = (qz * qz);
 
     float qw = q[3];
-
+	
+	#if IS_NEGATIVE_Z
     mat4 m;
     m[0][0] = 1.f - 2.f * qyy - 2.f * qzz;
     m[0][1] = 2.f * qx * qy + 2.f * qz * qw;
@@ -1307,6 +1246,33 @@ mat4 MatrixRotationQuaternion(quat q) {
     m[3][1] = 0.f;
     m[3][2] = 0.f;
     m[3][3] = 1.0f;
+    
+    #else
+    
+    qz = -qz;
+    
+    mat4 m;
+    m[0][0] = 1.f - 2.f * qyy - 2.f * qzz;
+    m[0][1] = -(2.f * qx * qy + 2.f * qz * qw);
+    m[0][2] = -(2.f * qx * qz - 2.f * qy * qw);
+    m[0][3] = 0.f;
+
+    m[1][0] = -(2.f * qx * qy - 2.f * qz * qw);
+    m[1][1] = 1.f - 2.f * qxx - 2.f * qzz;
+    m[1][2] = -(2.f * qy * qz + 2.f * qx * qw);
+    m[1][3] = 0.f;
+
+    m[2][0] = -(2.f * qx * qz + 2.f * qy * qw);
+    m[2][1] = -(2.f * qy * qz - 2.f * qx * qw);
+    m[2][2] = 1.f - 2.f * qxx - 2.f * qyy;
+    m[2][3] = 0.f;
+
+    m[3][0] = 0.f;
+    m[3][1] = 0.f;
+    m[3][2] = 0.f;
+    m[3][3] = 1.0f;
+    
+    #endif
     
     return m;
 }
@@ -1433,7 +1399,7 @@ void decompose_quat(const quat& q, float& yaw, float& pitch, float& roll) {
 	float z = q[2];
 	float w = q[3];
 	yaw   = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z);
-	pitch = -atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
+	pitch = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
 	roll  = asin(2*x*y + 2*z*w);
 }
 
@@ -1492,7 +1458,7 @@ mat4 RemoveScale(const mat4& transform)
     vec4 pers;
     Decompose(transform, scale, rotation, translation, skew, pers);
     rotation.Normalize();
-    return translate(translation) * ToMat4(rotation);
+    return translate(translation) * QuatMat(rotation);
 }
 }
 
@@ -1515,5 +1481,68 @@ vec3 GetVelocityNearSourceLocation(
     vec3 ret = grasp_velocity + angular_tangential_velocity;
     return ret;
 }
+
+
+
+#if 0
+
+mat4 ToMat4(const quat& q) {
+	mat4 result;
+	result.SetIdentity();
+	
+	double qxx = q[0] * q[0];
+	double qyy = q[1] * q[1];
+	double qzz = q[2] * q[2];
+	double qxz = q[0] * q[2];
+	double qxy = q[0] * q[1];
+	double qyz = q[1] * q[2];
+	double qwx = q[3] * q[0];
+	double qwy = q[3] * q[1];
+	double qwz = q[3] * q[2];
+
+	result[0][0] = 1.0 - 2.0 * (qyy +  qzz);
+	result[0][1] = 2.0       * (qxy + qwz);
+	result[0][2] = 2.0       * (qxz - qwy);
+
+	result[1][0] = 2.0       * (qxy - qwz);
+	result[1][1] = 1.0 - 2.0 * (qxx +  qzz);
+	result[1][2] = 2.0       * (qyz + qwx);
+
+	result[2][0] = 2.0       * (qxz + qwy);
+	result[2][1] = 2.0       * (qyz - qwx);
+	result[2][2] = 1.0 - 2.0 * (qxx +  qyy);
+	
+	for(int i = 0; i < 3; i++) {
+		result[3][i] = 0;
+		result[i][3] = 0;
+	}
+	result[3][3] = 1;
+	
+	return result;
+}
+
+mat4 make_mat4_from_quat(const quat& q) {
+	mat4 m1{
+		{q[3], q[2], -q[1], q[0]},
+		{-q[2], q[3], q[0], q[1]},
+		{q[1], -q[0], q[3], q[2]},
+		{-q[0], -q[1], -q[2], q[3]}
+	};
+	
+	mat4 m2{
+		{q[3], q[2], -q[1], -q[0]},
+		{-q[2], q[3], q[0], -q[1]},
+		{q[1], -q[0], q[3], -q[2]},
+		{q[0], q[1], q[2], q[3]}
+	};
+	
+	return m2 * m1;
+}
+
+mat4 rotate(const quat& q) {
+	return make_mat4_from_quat(q);
+}
+
+#endif
 
 NAMESPACE_TOPSIDE_END

@@ -187,13 +187,13 @@ void ToolboxSystemBase::Start() {
 	
 	ctrls[Left].dbg_txt = es->GetRoot()->Create<TextDisplay>();
 	ctrls[Left].dbg_txt->Get<Transform>()->position = { -2.5, 1.25f, -4.f };
-	ctrls[Left].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, M_PI * 0.15f);
+	ctrls[Left].dbg_txt->Get<Transform>()->orientation = AxisAngleQuat({ 0, 1, 0 }, M_PI * 0.15f);
 	ctrls[Left].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Left].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
 	
 	ctrls[Right].dbg_txt = es->GetRoot()->Create<TextDisplay>();
 	ctrls[Right].dbg_txt->Get<Transform>()->position = { 2.5, 1.25f, -4.f };
-	ctrls[Right].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, -M_PI * 0.15f);
+	ctrls[Right].dbg_txt->Get<Transform>()->orientation = AxisAngleQuat({ 0, 1, 0 }, -M_PI * 0.15f);
 	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
 	#endif

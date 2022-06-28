@@ -21,7 +21,7 @@ void InterpolateNode(const Pbr::Node& min, const Pbr::Node& max, float t, Pbr::N
     {
         const mat4 interpolated_matrix =
             XMMatrixScalingFromVector(XMVectorLerp(min_scale, max_scale, t)) *
-            XMMatrixRotationQuaternion(XMQuaternionSlerp(min_rot, max_rot, t)) *
+            XMQuatMat(XMQuaternionSlerp(min_rot, max_rot, t)) *
             XMMatrixTranslationFromVector(XMVectorLerp(min_trans, max_trans, t));
         result.SetTransform(interpolated_matrix);
     }

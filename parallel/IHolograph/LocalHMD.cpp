@@ -317,7 +317,7 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		decompose_quat(dev.trans.orientation, yaw, pitch, roll);
 		pitch = 0;
 		roll = 0;
-		dev.initial_orient = make_quat_from_yaw_pitch_roll(yaw, pitch, roll);
+		dev.initial_orient = AxesQuat(yaw, pitch, roll);
 	}
 	#if 0
 	// this should work, but doesn't
@@ -331,7 +331,7 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	vec3 axes;
 	decompose_quat(dev.trans.orientation, axes[0], axes[1], axes[2]);
 	//axes[0] *= -1;
-	dev.trans.orientation = make_quat_from_yaw_pitch_roll(axes[0] - initial_axes[0], axes[1], axes[2]);
+	dev.trans.orientation = AxesQuat(axes[0] - initial_axes[0], axes[1], axes[2]);
 	#endif
 	
 	dev.trans.mode = UPP::TransformMatrix::MODE_AXES;
