@@ -296,7 +296,7 @@ unsigned char *read_config(WmrPrivateData *priv)
 }
 
 
-void process_nxjson_obj(const nx_json* node, const nx_json* (*list)[32], char* match)
+void process_nxjson_obj(const nx_json* node, const nx_json* (*list)[32], const char* match)
 {
 	if (!node)
 		return;

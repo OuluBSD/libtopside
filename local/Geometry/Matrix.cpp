@@ -101,10 +101,12 @@ vec3 TransformMatrix::GetForwardDirection() const {
 		return direction;
 	}
 	if (mode == MODE_AXES) {
-		mat4 yaw = YRotation(axes[0]);
-		mat4 rotate = make_mat4_from_yaw_pitch_roll(M_PI, axes[1], axes[2]);
+		//mat4 yaw = YRotation(axes[0]);
+		//mat4 rotate = make_mat4_from_yaw_pitch_roll(M_PI, axes[1], axes[2]);
+		mat4 rotate = make_mat4_from_yaw_pitch_roll(axes[0], axes[1], axes[2]);
 		vec4 fwd(0,0,1,1);
-		vec4 dir = rotate * yaw * fwd;
+		//vec4 dir = rotate * yaw * fwd;
+		vec4 dir = rotate * fwd;
 		return dir.Splice();
 	}
 	if (mode == MODE_QUATERNION) {
@@ -130,6 +132,30 @@ String TransformMatrix::GetAxesString() const {
 		 "roll: " << axes[2];
 	return s;
 }
+
+
+
+
+
+
+
+
+
+
+String CalibrationData::ToString() const {
+	String s;
+	s << " axes(" << axes[0] << ", " << axes[1] << ", " << axes[2] << "), "
+		 " position(" << position[0] << ", " << position[1] << ", " << position[2] << "), "
+		 " fov(" << fov << "), scale(" << scale << "), eye_dist(" << eye_dist << ")";
+	return s;
+}
+
+void CalibrationData::Dump() {
+	DUMP(*this);
+}
+
+
+
 
 
 NAMESPACE_TOPSIDE_END

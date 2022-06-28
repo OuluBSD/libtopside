@@ -164,6 +164,7 @@ void PlayerBodySystem::Update(double dt) {
 		vec3 head_pos(0,0,0);
 		vec3 head_up(0,1,0);
 		vec3 axes(0,0,0);
+		TransformMatrix tm;
 		
 		if (b->head) {
 			vec3 head_rel_pos(0, b->height - eyes_from_height, 0);
@@ -174,6 +175,8 @@ void PlayerBodySystem::Update(double dt) {
 			if (head_trans) {
 				TransformMatrix& t = head_trans->data;
 				t.position = head_pos;
+				tm = t;
+				
 				axes = t.axes;
 				head_up = t.up;
 				head_direction = head_trans->GetForwardDirection();
@@ -195,11 +198,17 @@ void PlayerBodySystem::Update(double dt) {
 							hand_trans->data.position);
 					}
 					else {
-						float horz_deg = (i == 1 ? -1 : +1) * 30;
+						//hand_trans->data = tm;
+						hand_trans->anchor_position = tm.position;
+						hand_trans->anchor_orientation = tm.orientation;
+						//hand_trans->data.position = vec3(0,0,0);
+						
+						/*float horz_deg = (i == 1 ? -1 : +1) * 30;
 						camera_object(
 							head_pos, head_direction, head_up,
-							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
-							hand_trans->anchor_position);
+							//DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
+							DEG2RAD(0), DEG2RAD(-30), 0.3f,
+							hand_trans->anchor_position);*/
 					}
 				}
 			}
@@ -311,15 +320,31 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 					TransformRef trans = hand.GetEntity()->Find<Transform>();
 					if (trans) {
 						trans->data = ctrl.trans;
-						trans->data.position += trans->anchor_position;
-						//DUMP(trans->data.position); LOG(trans->data.GetAxesString());
+						
+						#if 0
+						mat4 rot = rotate(trans->anchor_orientation);
+						vec3 new_position = (trans->data.position.Embed() * rot).Splice();
+						trans->data.position = trans->anchor_position + new_position;
+						//trans->data.position += trans->anchor_position;
+						
+						//DUMP(trans->data.position);
+						//LOG(trans->data.GetAxesString());
+						#else
+						//trans->data.position = trans->anchor_position;
+						mat4 rot = rotate(trans->anchor_orientation);
+						vec3 new_position = (rot * trans->data.position.Embed()).Splice();
+						trans->data.position = trans->anchor_position + new_position;
+						trans->data.orientation = make_quat_from_yaw_pitch_roll(0,0,0);
+						trans->data.mode = TransformMatrix::MODE_QUATERNION;
+						trans->data.FillFromOrientation();
+						trans->verbose = true;
+						//DUMP(trans->data.position);
+						#endif
+						
 					}
 				}
 			}
 		}
-	}
-	else if (e.type == EVENT_HOLO_CALIB) {
-		TODO
 	}
 	else if (e.type == EVENT_HOLO_UPDATED) {
 		

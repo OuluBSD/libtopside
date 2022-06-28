@@ -193,14 +193,19 @@ bool ModelComponent::Load(GfxDataState& state) {
 			sz  *= TS::scale(this->scale);
 		}*/
 		model = pos * rot * sz;
+		
+		if (trans->verbose) {
+			DUMP(trans->data.position);
+		}
+		
+		if (have_ext_model)
+			model *= ext_model;
+		
 	}
 	else if (have_ext_model)
 		model = ext_model;
 	else
 		model = identity<mat4>();
-	
-	if (have_ext_model)
-		model *= ext_model;
 		
 	Ref<Model> mesh = loader.GetModel();
 	if (!mesh)

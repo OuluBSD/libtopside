@@ -1,5 +1,9 @@
 machine glx.app: {
 	
+	driver context: {
+		x11.context: true;
+	};
+	
 	chain program: {
 		
 		loop ogl.fbo: {

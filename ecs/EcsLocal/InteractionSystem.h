@@ -99,6 +99,7 @@ struct VrControllerSource : ControllerSource {
 
 struct VrSpatialInteractionManager : InteractionManager {
 	EnvStateRef state;
+	RenderingSystemRef rend;
 	VrControllerSource ctrl;
 	ControllerState ctrl_state;
 	InteractionSystem* sys = 0;

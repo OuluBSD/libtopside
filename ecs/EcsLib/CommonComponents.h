@@ -13,6 +13,8 @@ public:
 	TransformMatrix data;
 	vec3 size;
 	vec3 anchor_position;
+	quat anchor_orientation;
+	bool verbose = false;
 	/*
 	vec3 position;
 	quat orientation;

@@ -436,7 +436,7 @@ quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll)
     sp = sinf(half_pitch);
     cp = cosf(half_pitch);
 
-    float half_yaw = yaw * 0.5f;
+    float half_yaw = -yaw * 0.5f;
     sy = sinf(half_yaw);
     cy = cosf(half_yaw);
 
@@ -1433,7 +1433,7 @@ void decompose_quat(const quat& q, float& yaw, float& pitch, float& roll) {
 	float z = q[2];
 	float w = q[3];
 	yaw   = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z);
-	pitch = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
+	pitch = -atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
 	roll  = asin(2*x*y + 2*z*w);
 }
 

@@ -1077,6 +1077,22 @@ struct ControllerMatrix : RTTIBase {
 	}
 };
 
+
+struct CalibrationData {
+	bool is_enabled = false;
+	vec3 axes = vec3(0,0,0);
+	vec3 position = vec3(0,0,0);
+	float fov = 0;
+	float scale = 0;
+	float eye_dist = 0;
+	
+	
+	String ToString() const;
+	void Dump();
+	
+};
+
+
 END_UPP_NAMESPACE
 
 #include "Matrix.inl"

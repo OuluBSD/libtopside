@@ -57,9 +57,10 @@ struct CameraBase :
 	mat4 proj_stereo[2];
 	mat4 mvp_stereo[2];
 	
-	
+	CalibrationData calib;
 	
 	virtual bool Load(GfxDataState& state) = 0;
+	virtual void UpdateCalibration() = 0;
 	
 };
 
@@ -102,7 +103,9 @@ public:
 	void Update(double dt) override;
 	bool Arg(String key, Object value) override;
 	bool Load(GfxDataState& state) override;
+	void UpdateCalibration() override;
 	
+	void UpdateProjection();
 	void UpdateView();
 	void SetViewportSize(Size sz);
 	void SetTarget(TransformRef tgt) {target = tgt;}

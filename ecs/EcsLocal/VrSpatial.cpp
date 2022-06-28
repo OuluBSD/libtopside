@@ -85,6 +85,8 @@ void VrSpatialInteractionManager::UpdateState() {
 	}
 	
 	if (sys->is_calibration) {
+		if (!rend)
+			rend = sys->GetEngine().TryGet<RenderingSystem>();
 		UpdateCalibrationStateKeyboard();
 	}
 	
@@ -114,7 +116,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	
 	
 	WhenSourcePressed(*this, ev);
-	float step = last_dt * 1.5;
+	float step = last_dt * 1.0;
 	
 	if (calib_mode == CALIB_FOV_SCALE_EYEDIST) {
 		
@@ -216,7 +218,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	}
 	
 	if (ev.n >= 0) {
-		WhenSourceUpdated(*this, ev);
+		rend->CalibrationEvent(ev);
 	}
 	
 }

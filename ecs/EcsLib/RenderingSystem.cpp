@@ -156,10 +156,14 @@ void RenderingSystem::Update(double dt) {
 	}
 	
 	for (CameraBase* cb : cams) {
+		if (calib.is_enabled) {
+			cb->calib = calib;
+			cb->UpdateCalibration();
+		}
 		
 		cb->Load(*state);
-		
 	}
+	
 }
 
 void RenderingSystem::Stop() {
@@ -189,6 +193,30 @@ void RenderingSystem::Render(GfxDataState& data) {
 	}*/
 	
 }
+
+void RenderingSystem::CalibrationEvent(CtrlEvent& ev) {
+	
+	if (ev.type == EVENT_HOLO_CALIB) {
+		calib.is_enabled = true;
+		
+		switch (ev.n) {
+			case HOLO_CALIB_FOV:		calib.fov += ev.fvalue; break;
+			case HOLO_CALIB_SCALE:		calib.scale += ev.fvalue; break;
+			case HOLO_CALIB_EYE_DIST:	calib.eye_dist += ev.fvalue; break;
+			case HOLO_CALIB_X:			calib.position[0] += ev.fvalue; break;
+			case HOLO_CALIB_Y:			calib.position[1] += ev.fvalue; break;
+			case HOLO_CALIB_Z:			calib.position[2] += ev.fvalue; break;
+			case HOLO_CALIB_YAW:		calib.axes[0] += ev.fvalue; break;
+			case HOLO_CALIB_PITCH:		calib.axes[1] += ev.fvalue; break;
+			case HOLO_CALIB_ROLL:		calib.axes[2] += ev.fvalue; break;
+			default: Panic("invalid holographic calibration subtype");
+		}
+		
+		calib.Dump();
+	}
+	
+}
+
 
 
 NAMESPACE_ECS_END

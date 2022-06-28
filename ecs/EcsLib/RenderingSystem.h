@@ -70,6 +70,9 @@ protected:
 	GfxDataState*				state = 0;
 	double						time = 0;
 	
+	// calibration
+	CalibrationData				calib;
+	
 protected:
     bool Initialize() override;
     void Start() override;
@@ -96,6 +99,7 @@ public:
 	void RemoveModel(ModelComponentRef m);
 	void RemoveCamera(CameraBase& c);
 	
+	void CalibrationEvent(CtrlEvent& ev);
 	
 	
 	#ifdef flagSDL2

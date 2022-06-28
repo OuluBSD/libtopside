@@ -146,9 +146,19 @@ bool ChaseCam::Arg(String key, Object value) {
 	return true;
 }
 
+void ChaseCam::UpdateCalibration() {
+	UpdateProjection();
+	UpdateView();
+}
+	
+
 void ChaseCam::SetViewportSize(Size sz) {
 	viewport_sz[0] = sz.cx;
 	viewport_sz[1] = sz.cy;
+	UpdateProjection();
+}
+
+void ChaseCam::UpdateProjection() {
 	float ratio = viewport_sz[1] / viewport_sz[0];
 	float eye_ratio = viewport_sz[1] / (viewport_sz[0] * 0.5);
 	port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
@@ -156,14 +166,17 @@ void ChaseCam::SetViewportSize(Size sz) {
 	
 	if (vport)
 		fov = vport->fov;
-	projection = perspective(DEG2RAD(fov), 1.0f, 0.1f, 100.0f);
+	
+	float used_fov = calib.is_enabled ? DEG2RAD(fov) + calib.fov : DEG2RAD(fov);
+	
+	projection = perspective(used_fov, 1.0f, 0.1f, 100.0f);
 }
 
 void ChaseCam::UpdateView() {
 	int width = TS::default_width;
 	int height = TS::default_height;
 	
-	const float eye_dist = 0.064;
+	float eye_dist = 0.064;
 	
 	if (this->target) {
 		vec3 target = this->target->data.position;
@@ -236,6 +249,11 @@ void ChaseCam::UpdateView() {
 				mat4 yaw = YRotation(tm.axes[0]);
 				mat4 tran = translate(-tm.position);
 				this->view = port * projection * rotate * tran;
+				DUMP(tm.position);
+				
+				if (calib.is_enabled) {
+					eye_dist += calib.eye_dist;
+				}
 				
 				float mul = -0.5;
 				mat4 l_trans = translate(vec3(-eye_dist * mul, 0, 0));
@@ -243,8 +261,16 @@ void ChaseCam::UpdateView() {
 				//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
 				//this->mvp_stereo[0] = stereo_base;
 				//this->mvp_stereo[1] = stereo_base;
-				this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * yaw * tran;
-				this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * yaw * tran;
+				
+				if (calib.is_enabled) {
+					mat4 scale_mat = scale(vec3(1.0 + calib.scale));
+					this->mvp_stereo[0] = port_stereo * scale_mat * l_trans * projection * rotate * yaw * tran;
+					this->mvp_stereo[1] = port_stereo * scale_mat * r_trans * projection * rotate * yaw * tran;
+				}
+				else {
+					this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * yaw * tran;
+					this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * yaw * tran;
+				}
 			}
 			else if (tm.mode == TransformMatrix::MODE_QUATERNION) {
 				quat orientation = tm.orientation;
@@ -273,6 +299,13 @@ void ChaseCam::UpdateView() {
 		}
 		#endif
 	}
+	
+	/*if (calib.is_enabled) {
+		mat4 scale_mat = scale(vec3(1.0 + calib.scale));
+		this->mvp_stereo[0] = this->mvp_stereo[0] * scale_mat;
+		this->mvp_stereo[1] = this->mvp_stereo[1] * scale_mat;
+	}*/
+	
 	/*mat4 model = translate(target);
 	this->view = port * projection * lookat * model * rot;*/
 }

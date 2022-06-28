@@ -69,6 +69,13 @@ engine ecs.dummy: {
             comp physics: {bind: physics; test.fn: fixed;};
         };
         
+        entity box2: {
+            comp transform3: {x: -3; y: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
         entity player.body: {
             comp transform3: {x: 0; y: 0; z: -6;};
             comp physics: {bind: physics;};

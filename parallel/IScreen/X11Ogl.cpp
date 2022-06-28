@@ -71,7 +71,6 @@ typedef struct {
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
-	ASSERT(ctx_);
 	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
 	auto& ctx = ctx_->ctx;
 	dev.ctx = &ctx;

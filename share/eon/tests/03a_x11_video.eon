@@ -1,5 +1,9 @@
 machine x11.app: {
 	
+	driver context: {
+		x11.context: true;
+	};
+	
 	chain program: {
 		
 		loop video: {

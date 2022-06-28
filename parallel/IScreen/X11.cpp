@@ -8,7 +8,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
-	ASSERT(ctx_);
 	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
 	auto& ctx = ctx_->ctx;
 	dev.ctx = &ctx;
@@ -400,6 +399,8 @@ bool X11Events__Poll(ScrX11::NativeEventsBase& dev, AtomBase& a) {
 			
 			key = ConvertX11Keycode(dev, xkey);
 			X11Events__PutKeyFlags(dev, key);
+			
+			key = key | K_KEYUP;
 			
 			e.type = EVENT_KEYUP;
 			e.value = key;
