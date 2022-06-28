@@ -1,0 +1,100 @@
+machine sdl.app: {
+	
+	driver context: {
+		x11.context: true;
+	};
+	
+	chain program: {
+		state event.register;
+		
+		loop center.events.kb: {
+			center.customer: true;
+			x11.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
+		loop center.events.hmd: {
+			center.customer: true;
+			x11.ogl.holo.events: true {
+				device.hmd.idx: -1;
+				device.left.idx: -1;
+				device.right.idx: -1;
+			};
+			state.event.pipe: true {
+				target: event.register;
+			};
+		};
+		
+		loop ogl.fbo: {
+			ogl.customer: true;
+			x11.ogl.fbo.standalone: true {
+				close_machine:      true;
+				fullscreen:         true;
+				find.vr.screen:	    true;
+				env:                event.register;
+				type:				stereo;
+				shader.frag.path:	"shaders/tests/07d_fragment.glsl";
+				shader.vtx.path:	"shaders/tests/07d_vertex.glsl";
+			};
+		};
+		
+	};
+
+};
+
+engine ecs.dummy: {
+    system rendering;
+    system entity.store;
+    system component.store;
+    system events;
+    system interaction: {
+        env: event.register;
+        hmd: state;
+        calibration: true;
+    };
+    system physics;
+    system player;
+    
+    pool world: {
+        entity ground: {
+            comp transform3;
+            comp model: {builtin: plane;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
+        entity box: {
+            comp transform3: {y: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
+        entity player.body: {
+            comp transform3: {x: 0; y: 0; z: -6;};
+            comp physics: {bind: physics;};
+            comp player.body: {height: 1.74;};
+        };
+        
+        entity player.head: {
+            comp transform3;
+            comp viewable;
+            comp viewport: {fov: 110;};
+            comp camera.chase;
+            comp player.head: {body: world.player.body;};
+        };
+        
+        entity player.hand.left: {
+            comp transform3;
+            comp body;
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp player.hand: {hand: left; body: world.player.body;};
+        };
+        
+        entity player.hand.right: {
+            comp transform3;
+            comp body;
+            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp player.hand: {hand: right; body: world.player.body;};
+        };
+    };
+};

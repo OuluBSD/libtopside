@@ -67,6 +67,17 @@ quat quat::Mix(const quat& q, float f) const {
 
 
 
+void TransformMatrix::Clear() {
+	mode = MODE_POSITION;
+	is_stereo = false;
+	position = vec3(0,0,0);
+	direction = vec3(0,0,0);
+	up = vec3(0,1,0);
+	axes = vec3(0,0,0);
+	orientation = quat(0,0,0,0);
+	float eye_dist = 0;
+}
+
 void TransformMatrix::operator=(const TransformMatrix& m) {
 	mode = m.mode;
 	is_stereo = m.is_stereo;

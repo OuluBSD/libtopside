@@ -130,10 +130,10 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 		}
 		
 		
-		bool fwd   = data['W'];
-		bool left  = data['A'];
-		bool down  = data['S'];
-		bool right = data['D'];
+		bool fwd   = data['w'];
+		bool left  = data['a'];
+		bool down  = data['s'];
+		bool right = data['d'];
 		
 		float step = last_dt * 1.5;
 		

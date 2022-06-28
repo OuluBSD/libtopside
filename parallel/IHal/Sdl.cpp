@@ -875,7 +875,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	while (SDL_PollEvent(&event)) {
 		e.Clear();
 		
-	switch (event.type) {
+		switch (event.type) {
 			
 #ifdef flagSCREEN
 			

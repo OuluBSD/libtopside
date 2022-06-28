@@ -21,7 +21,6 @@ struct VrSpatialInteractionManager;
 struct InteractionManager {
 	
 	
-	
 	using Cb = Callback2<const InteractionManager&, const CtrlEvent&>;
 	Cb WhenSourceDetected;
 	Cb WhenSourcePressed;
@@ -31,6 +30,7 @@ struct InteractionManager {
 	
 	
 	virtual void Update(double dt) {}
+	
 };
 
 struct FakeControllerSource : ControllerSource {
@@ -118,6 +118,13 @@ struct VrSpatialInteractionManager : InteractionManager {
 	
 	OnlineAverage av[3];
 	
+	// Calibration
+	enum {
+		CALIB_FOV_SCALE_EYEDIST,
+		CALIB_CTRL_LEFT,
+		CALIB_CTRL_RIGHT,
+	};
+	int calib_mode = 0;
 	
 	VrSpatialInteractionManager();
 	
@@ -127,6 +134,7 @@ struct VrSpatialInteractionManager : InteractionManager {
     void DetectController();
     void UpdateState();
     void UpdateStateHmd();
+    void UpdateCalibrationStateKeyboard();
 	void Look(const TransformMatrix& tm);
 	void Control(const ControllerMatrix& cm);
 	void Move(vec3 rel_dir, float step);
@@ -193,6 +201,7 @@ protected:
 	String env_name;
 	bool debug_log = false;
 	bool use_state_hmd = false;
+	bool is_calibration = false;
 	
 private:
     Array<InteractionListenerRef> interaction_listeners;

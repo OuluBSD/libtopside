@@ -70,6 +70,12 @@ typedef struct {
 
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
+	ASSERT(ctx_);
+	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
+	auto& ctx = ctx_->ctx;
+	dev.ctx = &ctx;
+	
 	bool is_borderless = ws.IsTrue(".borderless");
 	bool is_fullscreen = ws.IsTrue(".fullscreen");
 	bool print_modes = ws.IsTrue(".print_modes");
@@ -79,9 +85,9 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	if (!dev.ogl.Initialize(a, ws))
 		return false;
 	
-	::Display*& display = dev.display;	// pointer to X Display structure.
-	::Window& win = dev.win;			// pointer to the newly created window.
-	::XVisualInfo*& visual = dev.visual;
+	::Display*& display = ctx.display;	// pointer to X Display structure.
+	::Window& win = ctx.win;			// pointer to the newly created window.
+	::XVisualInfo*& visual = ctx.visual_info;
 	unsigned int display_width,
 	             display_height;		// height and width of the X display.
 	unsigned int width, height;			// height and width for the new window.
@@ -202,7 +208,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		int win_border_width = 2;
 		
 		// Set window attributes
-		XSetWindowAttributes& attr = dev.attr;
+		XSetWindowAttributes& attr = ctx.attr;
 		attr.border_pixel = BlackPixel(display, screen_num);
 		attr.background_pixel = WhitePixel(display, screen_num);
 		attr.override_redirect = True;
@@ -219,8 +225,12 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 			&attr);
 		
 		// Redirect Close
-		dev.atomWmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
-		XSetWMProtocols(display, win, &dev.atomWmDeleteWindow, 1);
+		ctx.atomWmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
+		XSetWMProtocols(display, win, &ctx.atomWmDeleteWindow, 1);
+		
+		// Enable input
+		XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+		//ctx.xkb = XkbGetMap(display, XkbAllClientInfoMask, XkbUseCoreKbd);
 		
 		// Create GLX OpenGL context
 		typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
@@ -369,7 +379,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	XSync(display, False);
 	
 	
-	dev.ogl.SetNative(dev.display, dev.win, 0, 0);
+	dev.ogl.SetNative(ctx.display, ctx.win, 0, 0);
 	
 	if (!dev.ogl.Open(Size(width, height), 4, true)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
@@ -392,18 +402,22 @@ void ScrX11Ogl::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11Ogl::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	auto& ctx = *dev.ctx;
+	
 	dev.ogl.Uninitialize();
 	
-	glXDestroyContext(dev.display, dev.gl_ctx);
-	XFree(dev.visual);
-	XFreeColormap(dev.display, dev.attr.colormap);
-	XDestroyWindow(dev.display, dev.win);
+	//XkbFreeKeyboard(ctx.xkb, XkbAllComponentsMask, True);
+
+	glXDestroyContext(ctx.display, dev.gl_ctx);
+	XFree(ctx.visual_info);
+	XFreeColormap(ctx.display, ctx.attr.colormap);
+	XDestroyWindow(ctx.display, ctx.win);
 
 	// flush all pending requests to the X server.
-	XFlush(dev.display);
+	XFlush(ctx.display);
 	
 	// close the connection to the X server.
-	XCloseDisplay(dev.display);
+	XCloseDisplay(ctx.display);
 }
 
 bool ScrX11Ogl::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, const Packet& p) {
@@ -469,6 +483,10 @@ bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSour
 
 bool ScrX11Ogl::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	return false;
+}
+
+bool ScrX11Ogl::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) {
+	return true;
 }
 
 

@@ -3,6 +3,17 @@
 
 NAMESPACE_UPP
 
+enum {
+	HOLO_CALIB_FOV,
+	HOLO_CALIB_SCALE,
+	HOLO_CALIB_EYE_DIST,
+	HOLO_CALIB_X,
+	HOLO_CALIB_Y,
+	HOLO_CALIB_Z,
+	HOLO_CALIB_YAW,
+	HOLO_CALIB_PITCH,
+	HOLO_CALIB_ROLL,
+};
 
 typedef enum {
 	EVENT_INVALID,
@@ -18,6 +29,7 @@ typedef enum {
 	
 	EVENT_HOLO_STATE,
 	EVENT_HOLO_LOOK,
+	EVENT_HOLO_CALIB,
 	
 	EVENT_HOLO_CONTROLLER_DETECTED,
 	EVENT_HOLO_CONTROLLER_LOST,
@@ -43,9 +55,11 @@ inline String GetEventTypeString(int event) {
 		case EVENT_MOUSE_EVENT:		return "Mouse Event";
 		
 		case EVENT_HOLO_STATE:					return "Holographic full state";
+		case EVENT_HOLO_LOOK:					return "Holographic Look";
+		case EVENT_HOLO_CALIB:					return "Holographic Calibration";
+		
 		case EVENT_HOLO_CONTROLLER_DETECTED:	return "Holographic controller detected";
 		case EVENT_HOLO_CONTROLLER_LOST:		return "Holographic controller lost";
-		case EVENT_HOLO_LOOK:					return "Holographic Look";
 		case EVENT_HOLO_MOVE_FAR_RELATIVE:		return "Holographic Move Far (relative)";
 		case EVENT_HOLO_MOVE_NEAR:				return "Holographic Move Near";
 		case EVENT_HOLO_PRESSED:				return "Holographi controller button pressed";
@@ -200,6 +214,10 @@ public:
 
 
 inline double ResetSeconds(TimeStop& ts) {double s = ts.Seconds(); ts.Reset(); return s;}
+
+
+
+#include "Keycodes.inl"
 
 
 END_UPP_NAMESPACE

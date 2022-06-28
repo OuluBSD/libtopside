@@ -14,6 +14,22 @@ struct ScrSinkDevice : public Atom {
 
 };
 
+struct ScrEventsBase : public Atom {
+	RTTI_DECL1(ScrEventsBase, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~ScrEventsBase() {}
+
+};
+
+struct ScrContext : public Atom {
+	RTTI_DECL1(ScrContext, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~ScrContext() {}
+
+};
+
 NAMESPACE_PARALLEL_END
 
 

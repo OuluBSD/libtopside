@@ -84,6 +84,10 @@ void VrSpatialInteractionManager::UpdateState() {
 		UpdateStateHmd();
 	}
 	
+	if (sys->is_calibration) {
+		UpdateCalibrationStateKeyboard();
+	}
+	
 }
 
 void VrSpatialInteractionManager::UpdateStateHmd() {
@@ -92,6 +96,128 @@ void VrSpatialInteractionManager::UpdateStateHmd() {
 	
 	ControllerMatrix& ctrl = state->Set<ControllerMatrix>(HMD_CONTROLLER);
 	Control(ctrl);
+	
+}
+
+void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	
+	if      (data['1']) calib_mode = CALIB_FOV_SCALE_EYEDIST;
+	else if (data['2']) calib_mode = CALIB_CTRL_LEFT;
+	else if (data['3']) calib_mode = CALIB_CTRL_RIGHT;
+	
+	
+	CtrlEvent ev;
+	ev.state = &ctrl_state;
+	ev.type = EVENT_HOLO_CALIB;
+	ev.n = -1;
+	
+	
+	WhenSourcePressed(*this, ev);
+	float step = last_dt * 1.5;
+	
+	if (calib_mode == CALIB_FOV_SCALE_EYEDIST) {
+		
+		if (data['q']) {
+			// decrease fov
+			ev.n = HOLO_CALIB_FOV;
+			ev.fvalue = -step;
+		}
+		else if (data['w']) {
+			// increase fov
+			ev.n = HOLO_CALIB_FOV;
+			ev.fvalue = +step;
+		}
+		else if (data['a']) {
+			// decrease scale
+			ev.n = HOLO_CALIB_SCALE;
+			ev.fvalue = -step;
+		}
+		else if (data['s']) {
+			// increase scale
+			ev.n = HOLO_CALIB_SCALE;
+			ev.fvalue = +step;
+		}
+		else if (data['z']) {
+			// decrease eye distance
+			ev.n = HOLO_CALIB_EYE_DIST;
+			ev.fvalue = -step;
+		}
+		else if (data['x']) {
+			// increase eye distance
+			ev.n = HOLO_CALIB_EYE_DIST;
+			ev.fvalue = +step;
+		}
+		
+	}
+	else if (calib_mode == CALIB_CTRL_LEFT || calib_mode == CALIB_CTRL_RIGHT) {
+		
+		if (data['s']) {
+			// bwd
+			ev.n = HOLO_CALIB_Z;
+			ev.fvalue = -step;
+		}
+		else if (data['w']) {
+			// fwd
+			ev.n = HOLO_CALIB_Z;
+			ev.fvalue = +step;
+		}
+		else if (data['a']) {
+			// left
+			ev.n = HOLO_CALIB_X;
+			ev.fvalue = -step;
+		}
+		else if (data['d']) {
+			// right
+			ev.n = HOLO_CALIB_X;
+			ev.fvalue = +step;
+		}
+		else if (data['q']) {
+			// down
+			ev.n = HOLO_CALIB_Y;
+			ev.fvalue = -step;
+		}
+		else if (data['e']) {
+			// up
+			ev.n = HOLO_CALIB_Y;
+			ev.fvalue = +step;
+		}
+		else if (data['h']) {
+			// yaw right
+			ev.n = HOLO_CALIB_YAW;
+			ev.fvalue = -step;
+		}
+		else if (data['f']) {
+			// yaw left
+			ev.n = HOLO_CALIB_YAW;
+			ev.fvalue = +step;
+		}
+		else if (data['t']) {
+			// pitch down
+			ev.n = HOLO_CALIB_PITCH;
+			ev.fvalue = -step;
+		}
+		else if (data['g']) {
+			// pitch up
+			ev.n = HOLO_CALIB_PITCH;
+			ev.fvalue = +step;
+		}
+		else if (data['y']) {
+			// roll right
+			ev.n = HOLO_CALIB_ROLL;
+			ev.fvalue = -step;
+		}
+		else if (data['r']) {
+			// roll left
+			ev.n = HOLO_CALIB_ROLL;
+			ev.fvalue = +step;
+		}
+		
+	}
+	
+	if (ev.n >= 0) {
+		WhenSourceUpdated(*this, ev);
+	}
 	
 }
 

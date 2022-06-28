@@ -9,6 +9,7 @@ file
 	Object.cpp,
 	CtrlEvent.h,
 	CtrlEvent.cpp,
+	Keycodes.inl highlight cpp,
 	Container.h,
 	Container.cpp,
 	TokenParser.h,

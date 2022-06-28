@@ -458,6 +458,40 @@ public:
 #endif
 
 #if defined flagSCREEN
+class X11ContextAtom : public X11Context {
+
+public:
+	RTTI_DECL1(X11ContextAtom, X11Context)
+	COPY_PANIC(X11ContextAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.context")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class X11EventAtomPipe : public X11EventsBase {
+
+public:
+	RTTI_DECL1(X11EventAtomPipe, X11EventsBase)
+	COPY_PANIC(X11EventAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.event.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class OglCustomer : public CustomerBase {
 
 public:
@@ -968,6 +1002,14 @@ using X11OglFboAtomPipeRef = Ref<X11OglFboAtomPipe, AtomParent>;
 
 #if defined flagSCREEN && defined flagOGL && defined flagSDL2
 using SdlOglFboAtomPipeRef = Ref<SdlOglFboAtomPipe, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11ContextAtomRef = Ref<X11ContextAtom, AtomParent>;
+#endif
+
+#if defined flagSCREEN
+using X11EventAtomPipeRef = Ref<X11EventAtomPipe, AtomParent>;
 #endif
 
 #if defined flagSCREEN

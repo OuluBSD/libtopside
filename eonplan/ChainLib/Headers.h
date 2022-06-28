@@ -165,6 +165,10 @@ HEADER_LINK(		X11OglFboProg,		PIPE, PROCESS)
 HEADER_ARG(			X11OglFboProg,		reqdef_flagSCREEN,			1)
 HEADER_ARG(			X11OglFboProg,		reqdef_flagOGL,				1)
 
+
+
+
+
 HEADER11(			SdlOglFboProg,		SdlOglFboBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		SdlOglFboProg,		any.ogl.fbo.program)
 HEADER_ACTION(		SdlOglFboProg,		sdl.ogl.fbo.program)
@@ -260,6 +264,19 @@ HEADER_LINK(		SdlOglFboAtomPipe,	POLLER_PIPE, PROCESS)
 
 
 
+
+
+HEADER11(			X11ContextAtom,		X11Context,				driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
+HEADER_ACTION(		X11ContextAtom,		x11.context)
+HEADER_LINK(		X11ContextAtom,		DRIVER, DRIVER)
+HEADER_ARG(			X11ContextAtom,		HINT_PKG,					"AtomMinimal")
+HEADER_ARG(			X11ContextAtom,		reqdef_flagSCREEN,			1)
+
+HEADER11(			X11EventAtomPipe,	X11EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER_ACTION(		X11EventAtomPipe,	x11.event.pipe)
+HEADER_ARG(			X11EventAtomPipe,	HINT_PKG,					"AtomMinimal")
+HEADER_ARG(			X11EventAtomPipe,	reqdef_flagSCREEN,			1)
+HEADER_LINK(		X11EventAtomPipe,	POLLER_PIPE, PROCESS)
 
 
 

@@ -992,6 +992,7 @@ struct TransformMatrix : RTTIBase {
 	TransformMatrix(const TransformMatrix& m) {*this = m;}
 	void operator=(const TransformMatrix& m);
 	
+	void Clear();
 	void FillFromOrientation();
 	
 	vec3 GetForwardDirection() const;

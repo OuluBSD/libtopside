@@ -7,20 +7,25 @@
 NAMESPACE_PARALLEL_BEGIN
 
 bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
+	ASSERT(ctx_);
+	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
+	auto& ctx = ctx_->ctx;
+	dev.ctx = &ctx;
 	
 	if (!dev.accel.Initialize(a, ws))
 		return false;
 	
-	::Display*& display = dev.display;	// pointer to X Display structure.
+	::Display*& display = ctx.display;	// pointer to X Display structure.
 	int screen_num;						// number of screen to place the window on.
-	::Window& win = dev.win;			// pointer to the newly created window.
+	::Window& win = ctx.win;			// pointer to the newly created window.
 	unsigned int display_width,
 	             display_height;		// height and width of the X display.
 	unsigned int width, height;			// height and width for the new window.
 	char *display_name = getenv("DISPLAY"); // address of the X display.
-	::GC& gc = dev.gc;					// GC (graphics context) used for drawing
+	::GC& gc = ctx.gc;					// GC (graphics context) used for drawing
 										// in our window.
-	::Visual*& visual = dev.visual;
+	::Visual*& visual = ctx.visual;
 	
 	int x = 0;
 	int y = 0;
@@ -63,6 +68,10 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 		                          x, y, width, height, win_border_width,
 		                          BlackPixel(display, screen_num),
 		                          WhitePixel(display, screen_num));
+		
+		// Enable input
+		XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+		//ctx.xkb = XkbGetMap(display, XkbAllClientInfoMask, XkbUseCoreKbd);
 		
 		// make the window actually appear on the screen.
 		XMapWindow(display, win);
@@ -108,9 +117,9 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	TS::default_width = width;
 	TS::default_height = height;
 	
-	::XImage*& fb = dev.fb;
+	::XImage*& fb = ctx.fb;
 	fb = XCreateImage(
-		dev.display,
+		ctx.display,
 		visual,
 		dplanes,
 		ZPixmap,
@@ -133,7 +142,7 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	dev.accel_fbo.SetColor(TEXTYPE_NONE, &dev.accel_buf);
 	dev.accel_fbo.SetDepth(&dev.accel_zbuf);
 	
-	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fbo);
+	dev.accel.SetNative(ctx.display, ctx.win, 0, &dev.accel_fbo);
 	
 	if (!dev.accel.Open(Size(width, height), bpp)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
@@ -152,24 +161,29 @@ bool ScrX11Sw::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11Sw::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
+	auto& ctx = *dev.ctx;
 	
-	XDestroyWindow(dev.display, dev.win);
+	XDestroyWindow(ctx.display, ctx.win);
 	
 }
 
 void ScrX11Sw::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	auto& ctx = *dev.ctx;
+	
 	dev.accel.Uninitialize();
 	
+	//XkbFreeKeyboard(ctx.xkb, XkbAllComponentsMask, True);
+
 	// Causes crash:
 		//XFree(dev.visual);
 		//XFreeColormap(dev.display, dev.attr.colormap);
 		
 	// flush all pending requests to the X server.
-	XFlush(dev.display);
+	XFlush(ctx.display);
 	
 	// close the connection to the X server.
-	XCloseDisplay(dev.display);
-	dev.display = 0;
+	XCloseDisplay(ctx.display);
+	ctx.display = 0;
 	
 }
 
@@ -178,15 +192,17 @@ bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, 
 }
 
 void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+	auto& ctx = *dev.ctx;
+	
 	dev.accel.Render(cfg);
 	
 	{
 		XWindowAttributes attr;
-		XGetWindowAttributes(dev.display, dev.win, &attr);
+		XGetWindowAttributes(ctx.display, ctx.win, &attr);
 		
 		int width = attr.width;
 		int height = attr.height;
-		int bpp = dev.fb->bits_per_pixel / 8;
+		int bpp = ctx.fb->bits_per_pixel / 8;
 		int len = width * height * bpp;
 		
 		// TODO: find how to create rgb XImage or support BGRA in full soft render implementation
@@ -195,24 +211,24 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		//dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf, true);
 		//ASSERT(dev.accel_buf_tmp.GetSize() == len);
 		ASSERT(dev.accel_buf.channels == bpp);
-		ASSERT(dev.fb);
-		ASSERT(!dev.fb->data);
+		ASSERT(ctx.fb);
+		ASSERT(!ctx.fb->data);
 	    //dev.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();
-	    dev.fb->data = (char*)(const unsigned char*)dev.accel_buf.Begin();
-	    dev.fb->bytes_per_line = width * bpp;
+	    ctx.fb->data = (char*)(const unsigned char*)dev.accel_buf.Begin();
+	    ctx.fb->bytes_per_line = width * bpp;
 	    
-	    ASSERT(width == dev.fb->width);
-	    ASSERT(height == dev.fb->height);
-	    if (width != dev.fb->width || height != dev.fb->height) {
+	    ASSERT(width == ctx.fb->width);
+	    ASSERT(height == ctx.fb->height);
+	    if (width != ctx.fb->width || height != ctx.fb->height) {
 	        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
-	        dev.fb->data = 0;
+	        ctx.fb->data = 0;
 	        return;
 	    }
 	    
-	    int rc = XPutImage(	dev.display,
-							dev.win,
-							dev.gc,
-							dev.fb,
+	    int rc = XPutImage(	ctx.display,
+							ctx.win,
+							ctx.gc,
+							ctx.fb,
 							0,0,
 							0,0,
 							width,
@@ -220,14 +236,14 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 	    
 	    if (rc == BadMatch) {
 	        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
-	        dev.fb->data = 0;
+	        ctx.fb->data = 0;
 	        return;
 	    }
 	    
-		XFlush(dev.display);
+		XFlush(ctx.display);
 		//XSync(dev.display, False);
 		
-		dev.fb->data = 0;
+		ctx.fb->data = 0;
 	}
 }
 
@@ -244,6 +260,10 @@ bool ScrX11Sw::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase& a
 		return true;
 	}
 	return false;
+}
+
+bool ScrX11Sw::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) {
+	return true;
 }
 
 

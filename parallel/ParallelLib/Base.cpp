@@ -572,7 +572,7 @@ bool EventStateBase::Key(dword key, int count) {
 		is_lctrl = true;
 	}
 	
-	key = ToUpper(key);
+	key = ToLower(key);
 	
 	if (key >= 0 && key < FboKbd::key_tex_w) {
 		if (key > 0)

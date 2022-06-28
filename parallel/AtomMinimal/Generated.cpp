@@ -577,6 +577,50 @@ AtomTypeCls SdlOglFboAtomPipe::GetType() const
 
 #endif
 #if defined flagSCREEN
+AtomTypeCls X11ContextAtom::GetAtomType()
+{
+	return ATOM11(X11_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
+}
+
+LinkTypeCls X11ContextAtom::GetLinkType()
+{
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void X11ContextAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11Context>(this);
+}
+
+AtomTypeCls X11ContextAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls X11EventAtomPipe::GetAtomType()
+{
+	return ATOM11(X11_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+}
+
+LinkTypeCls X11EventAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11EventAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11EventsBase>(this);
+}
+
+AtomTypeCls X11EventAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
 	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);

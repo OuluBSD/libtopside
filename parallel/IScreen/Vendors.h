@@ -8,6 +8,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define SCR_CLS_LIST(x) \
 	SCR_CLS(SinkDevice, x) \
+	SCR_CLS(EventsBase, x) \
+	SCR_CLS(Context, x) \
 
 
 
@@ -29,12 +31,37 @@ SCR_VNDR_LIST
 #if (defined flagLINUX) || (defined flagFREEBSD)
 struct ScrX11 {
 	
-	struct NativeSinkDevice {
+	struct NativeContext {
 		::Window win;
 		::Display* display;
 		::XImage* fb;
 		::Visual* visual;
 		::GC gc;
+		::XVisualInfo* visual_info;
+		::Atom  atomWmDeleteWindow;
+		::XSetWindowAttributes attr;
+		::XkbDescPtr xkb;
+	};
+	
+	struct NativeSinkDevice {
+		NativeContext* ctx;
+	};
+	
+	struct NativeEventsBase {
+		NativeContext* ctx;
+		int time;
+		dword seq;
+		UPP::CtrlEvent ev;
+		Size sz;
+		bool ev_sendable;
+		bool is_lalt;
+		bool is_ralt;
+		bool is_lshift;
+		bool is_rshift;
+		bool is_lctrl;
+		bool is_rctrl;
+		Point prev_mouse_pt;
+		::XEvent xev;
 	};
 	
 	struct Thread {
@@ -51,18 +78,18 @@ struct ScrX11 {
 struct ScrX11Sw {
 	
 	struct NativeSinkDevice {
-		::Window win;
-		::Display* display;
-		::XImage* fb;
-		::Visual* visual;
-		::GC gc;
+		ScrX11::NativeContext* ctx;
 		GfxAccelAtom<X11SwGfx> accel;
 		ByteImage accel_buf;
 		ByteImage accel_buf_tmp;
 		DepthImage accel_zbuf;
 		SoftFramebufferT<X11SwGfx> accel_fbo;
-		::Atom atomWmDeleteWindow;
-		::XSetWindowAttributes attr;
+	};
+	
+	struct NativeContext {
+	};
+	
+	struct NativeEventsBase {
 	};
 	
 	struct Thread {
@@ -79,13 +106,15 @@ struct ScrX11Sw {
 struct ScrX11Ogl {
 	
 	struct NativeSinkDevice {
-		::Window win;
-		::Display* display;
-		::XVisualInfo* visual;
+		ScrX11::NativeContext* ctx;
 		::GLXContext gl_ctx;
 		GfxAccelAtom<X11OglGfx> ogl;
-		::Atom  atomWmDeleteWindow;
-		::XSetWindowAttributes attr;
+	};
+	
+	struct NativeContext {
+	};
+	
+	struct NativeEventsBase {
 	};
 	
 	struct Thread {

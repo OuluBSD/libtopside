@@ -295,7 +295,7 @@ void HoloLocalHMD::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, Realt
 }
 
 bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, PacketIO& io) {
-	memset(&dev.trans, 0, sizeof(dev.trans));
+	dev.trans.Clear();
 	
 	const float wait_time = 1.0 / 30;
 	if (dev.ts.Seconds() < wait_time)

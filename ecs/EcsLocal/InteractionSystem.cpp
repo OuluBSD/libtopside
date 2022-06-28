@@ -86,6 +86,10 @@ bool InteractionSystem::Arg(String key, Object value) {
 			use_state_hmd = true;
 	}
 	
+	if (key == "calibration") {
+		is_calibration = (String)value == "true";
+	}
+	
 	return true;
 }
 

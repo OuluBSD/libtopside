@@ -15,6 +15,7 @@ PKG(Screen, Scr, S) {
 	LIBRARY("POSIX & OGL", GL GLU GLEW glut)
 	HAVE_RECV_FINALIZE
 	HAVE_NEGOTIATE_FORMAT
+	HAVE_IS_READY
 	
 	PKG_IFACE {
 		//NATIVE_CLASS(SinkDevice)
@@ -27,6 +28,14 @@ PKG(Screen, Scr, S) {
 			NATIVE_INHERIT(SinkDevice, dev)
 			
 		}
+		CLASS(EventsBase) {
+			NATIVE_INHERIT(EventsBase, ev)
+			
+		}
+		CLASS(Context) {
+			NATIVE_INHERIT(Context, ctx)
+			
+		}
 	}
 	
 	VENDOR(X11) {
@@ -37,12 +46,36 @@ PKG(Screen, Scr, S) {
 		//VENDOR_HEADER_REQUIRES_INCLUDES
 		VENDOR_CLASS(SinkDevice, void*)
 		
+		v->AddStruct("NativeContext")
+			.Add("win",					"::Window")
+			.Add("display",				"::Display*")
+			.Add("fb",					"::XImage*")
+			.Add("visual",				"::Visual*")
+			.Add("gc",					"::GC")
+			.Add("visual_info",			"::XVisualInfo*")
+			.Add("atomWmDeleteWindow",	"::Atom ")
+			.Add("attr",				"::XSetWindowAttributes")
+			;
+		
 		v->AddStruct("NativeSinkDevice")
-			.Add("win",			"::Window")
-			.Add("display",		"::Display*")
-			.Add("fb",			"::XImage*")
-			.Add("visual",		"::Visual*")
-			.Add("gc",			"::GC")
+			.Add("ctx",					"NativeContext*")
+			;
+		
+		v->AddStruct("NativeEventsBase")
+			.Add("ctx",				"NativeContext*")
+			.Add("time",			"int")
+			.Add("seq",				"dword")
+			.Add("ev",				"UPP::CtrlEvent")
+			.Add("sz",				"Size")
+			.Add("ev_sendable",		"bool")
+			.Add("is_lalt",			"bool")
+			.Add("is_ralt",			"bool")
+			.Add("is_lshift",		"bool")
+			.Add("is_rshift",		"bool")
+			.Add("is_lctrl",		"bool")
+			.Add("is_rctrl",		"bool")
+			.Add("prev_mouse_pt",	"Point")
+			.Add("xev",				"::XEvent")
 			;
 		
 	}
@@ -56,19 +89,16 @@ PKG(Screen, Scr, S) {
 		VENDOR_CLASS(SinkDevice, void*)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("win",					"::Window")
-			.Add("display",				"::Display*")
-			.Add("fb",					"::XImage*")
-			.Add("visual",				"::Visual*")
-			.Add("gc",					"::GC")
+			.Add("ctx",					"ScrX11::NativeContext*")
 			.Add("accel",				"GfxAccelAtom<X11SwGfx>")
 			.Add("accel_buf",			"ByteImage")
 			.Add("accel_buf_tmp",		"ByteImage")
 			.Add("accel_zbuf",			"DepthImage")
 			.Add("accel_fbo",			"SoftFramebufferT<X11SwGfx>")
-			.Add("atomWmDeleteWindow",	"::Atom")
-			.Add("attr",				"::XSetWindowAttributes")
 			;
+		
+		v->AddStruct("NativeContext");
+		v->AddStruct("NativeEventsBase");
 		
 	}
 	
@@ -81,14 +111,13 @@ PKG(Screen, Scr, S) {
 		VENDOR_CLASS(SinkDevice, void*)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("win",					"::Window")
-			.Add("display",				"::Display*")
-			.Add("visual",				"::XVisualInfo*")
+			.Add("ctx",					"ScrX11::NativeContext*")
 			.Add("gl_ctx",				"::GLXContext")
 			.Add("ogl",					"GfxAccelAtom<X11OglGfx>")
-			.Add("atomWmDeleteWindow",	"::Atom ")
-			.Add("attr",				"::XSetWindowAttributes")
 			;
+		
+		v->AddStruct("NativeContext");
+		v->AddStruct("NativeEventsBase");
 		
 	}
 	

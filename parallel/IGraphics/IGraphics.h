@@ -38,6 +38,7 @@
 	#include <X11/Xutil.h>
 	#include <X11/extensions/xf86vmode.h>
 	#include <X11/extensions/Xrandr.h>
+	#include <X11/XKBlib.h>
 	#ifdef flagOGL
 		#include <GL/glx.h>
 	#endif
