@@ -1,5 +1,9 @@
 machine app: {
 	
+	driver context: {
+		x11.context: true;
+	};
+	
 	chain program: {
 		state event.register;
 		

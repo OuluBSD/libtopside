@@ -102,6 +102,9 @@ void RenderingSystem::Start() {
 void RenderingSystem::Update(double dt) {
 	time += dt;
 	
+	if (is_dummy)
+		return;
+	
 	//if (state.IsEmpty()) {
 	if (!state) {
 		Serial::Machine& mach = Serial::GetActiveMachine();
@@ -177,6 +180,14 @@ void RenderingSystem::Uninitialize() {
 		buf->RemoveBinder(this);
 		buf = 0;
 	}*/
+}
+
+bool RenderingSystem::Arg(String key, Object value) {
+	
+	if (key == "dummy")
+		is_dummy = (String)value == "true";
+	
+	return true;
 }
 
 void RenderingSystem::Render(GfxDataState& data) {

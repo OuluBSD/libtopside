@@ -42,10 +42,7 @@ struct PassthroughSoftShaderBaseT : SoftShaderBaseT<Gfx> {
 
 struct GenericShaderArgs {
 	vec3 iResolution;
-	vec3 iChannelResolution0;
-	vec3 iChannelResolution1;
-	vec3 iChannelResolution2;
-	vec3 iChannelResolution3;
+	vec3 iChannelResolution[4];
 	int iChannel0;
 	int iChannel1;
 	int iChannel2;
@@ -57,6 +54,7 @@ struct GenericShaderArgs {
 	int iStageColor4;
 	float iTime;
 	
+	const ByteImage* color_buf[CHANNEL_COUNT];
 };
 
 struct GenericVertexShaderArgs {
@@ -149,7 +147,13 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	
 	vec3 GetResolution() const {return generic->iResolution;}
 	float GetTime() const {return generic->iTime;}
-	
+	NativeColorBufferConstRef GetTexture(int i) {
+		ASSERT(i >= 0 && i < CHANNEL_COUNT);
+		if (i < 0) return 0;
+		if (i < TEXTYPE_COUNT && fa->color_buf[i]) return fa->color_buf[i];
+		if (i < CHANNEL_COUNT) return generic->color_buf[i];
+		return 0;
+	}
 };
 
 NAMESPACE_PARALLEL_END

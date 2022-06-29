@@ -241,6 +241,11 @@ struct GfxBuffer : ErrorReporter {
 	
 };
 
+struct GfxBufferStage : ErrorReporter {
+	RTTI_DECL1(GfxBufferStage, ErrorReporter)
+	
+};
+
 struct GfxRuntimeState : ErrorReporter {
 	RTTI_DECL1(GfxRuntimeState, ErrorReporter)
 	

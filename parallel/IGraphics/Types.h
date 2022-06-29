@@ -29,6 +29,7 @@ class VideoFormat;
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
 	GFX_CLS(Buffer, g) \
+	GFX_CLS(BufferStage, g) \
 
 
 #define GFX_RENDSYS_LIST \

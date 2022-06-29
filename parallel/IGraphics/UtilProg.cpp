@@ -104,9 +104,8 @@ vec4 texture(const ByteImage* ch, const vec2& uv) {
 
 template <class Gfx>
 void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
-	NativeColorBufferConstRef iChannel0 = Gfx::GetLocalTexture(args.generic->iChannel0);
+	NativeColorBufferConstRef iChannel0 = args.GetTexture(args.generic->iChannel0);
 	ASSERT(iChannel0);
-	TODO // GetLocalTexture is incorrect
 	
 	const auto& iResolution = args.generic->iResolution;
 	const auto& fragCoord = args.frag_coord;

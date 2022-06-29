@@ -27,6 +27,7 @@ protected:
 		void Zero() {memset(this, 0, sizeof(Object));}
 	};
 	Array<Object> objs;
+	int obj_i = -1;
 	
 public:
 	typedef SoftProgramT CLASSNAME;
@@ -34,6 +35,7 @@ public:
 	
 	void Begin();
 	void BeginObject();
+	void EndObject();
 	void Clear();
 	bool Create();
 	bool LinkProgram();
@@ -53,6 +55,7 @@ public:
 	void SetVar(int idx, float f0, float f1);
 	void SetVar(int idx, float f0, float f1, float f2);
 	void SetVar(int idx, float f0, float f1, float f2, float f3);
+	void SetVarArray(int idx, int arr_size, int count, float* f);
 	void SetVar(int idx, const mat4& mat);
 	void BindTexture(int tex, const ByteImage* buf);
 	

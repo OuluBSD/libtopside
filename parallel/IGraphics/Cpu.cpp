@@ -183,17 +183,23 @@ void SwGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform1fv(int idx, int count, float* f) {
-	TODO
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVarArray(idx, 1, count, f);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform3fv(int idx, int count, float* f) {
-	TODO
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVarArray(idx, 3, count, f);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform4fv(int idx, int count, float* f) {
-	TODO
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVarArray(idx, 4, count, f);
 }
 
 template <class Gfx>
@@ -550,6 +556,13 @@ void SwGfxT<Gfx>::BeginRenderObject() {
 	auto& l = Local();
 	ASSERT(l.prog);
 	l.prog->BeginObject();
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::EndRenderObject() {
+	auto& l = Local();
+	ASSERT(l.prog);
+	l.prog->EndObject();
 }
 
 template <class Gfx>

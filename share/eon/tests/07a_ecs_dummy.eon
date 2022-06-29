@@ -2,7 +2,7 @@ machine ecs.app: {};
 
 
 engine ecs.dummy: {
-    system rendering;
+    system rendering: {dummy: true;};
     system entity.store;
     system component.store;
     system events;

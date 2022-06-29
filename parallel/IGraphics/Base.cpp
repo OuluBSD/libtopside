@@ -98,8 +98,6 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 	RTLOG("ShaderBaseT::Recv: " << sink_ch << ": " << in->ToString());
 	bool succ = true;
 	
-	TODO
-	/*
 	Format in_fmt = in->GetFormat();
 	if (in_fmt.vd == VD(OGL,FBO)) {
 		//Size3 sz = in_fmt.fbo.GetSize();
@@ -113,7 +111,7 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
 		}
 	}
-	*/
+	
 	return succ;
 }
 
@@ -292,12 +290,11 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		TODO
 	
 	
-	TODO
-	#if 0
 	auto& buf = this->bf.GetBuffer();
-	if (!buf.IsInitialized()) {
+	auto& stage = buf.InitSingle();
+	if (!stage.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& fb = buf.GetFramebuffer();
+		auto& fb = stage.fb;
 		fb.is_win_fbo = false;
 		fb.size = sz;
 		fb.depth = sz.cz;
@@ -309,7 +306,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		
 		if (loading_cubemap) {
 			ASSERT(cubemap.GetCount() == 6);
-			if (!buf.Single().InitializeCubemap(
+			if (!stage.InitializeCubemap(
 					fb.size,
 					fb.channels,
 					GVar::SAMPLE_U8,
@@ -323,7 +320,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 				return false;
 		}
 		else if (sz.cz == 0) {
-			if (!buf.Single().InitializeTexture(
+			if (!stage.InitializeTexture(
 				fb.size,
 				fb.channels,
 				GVar::SAMPLE_U8,
@@ -332,7 +329,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 				return false;
 		}
 		else {
-			if (!buf.Single().InitializeVolume(
+			if (!stage.InitializeVolume(
 				Size3(fb.size.cx, fb.size.cy, fb.depth),
 				fb.channels,
 				GVar::SAMPLE_U8,
@@ -343,21 +340,20 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 	else {
 		if (sz.cz == 0) {
 			const Vector<byte>& data = in.GetData();
-			buf.ReadTexture(
+			stage.ReadTexture(
 				(Size)sz,
 				channels,
 				GVar::SAMPLE_U8,
 				data.Begin(), data.GetCount());
 		}
 		else {
-			buf.ReadTexture(
+			stage.ReadTexture(
 				sz,
 				channels,
 				GVar::SAMPLE_U8,
 				in.GetData());
 		}
 	}
-	#endif
 	
 	return true;
 }
@@ -366,7 +362,7 @@ template <class Gfx>
 bool TextureBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	if (src_ch >= 1) {
 		// non-primary channel (src_ch>0) is allowed to not send packets
-		if (!this->bf.GetBuffer().Single().IsInitialized())
+		if (!this->bf.GetBuffer().IsSingleInitialized())
 			return false;
 		
 		Format fmt = out.GetFormat();
@@ -461,7 +457,7 @@ bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int 
 		//out.AddRouteData(src.from_sink_ch);
 	}
 	else if (fmt.IsAudio()) {
-		if (!src_buf)
+		if (!src_buf || !src_buf->IsSingleInitialized())
 			return false;
 		
 		//out.AddRouteData(src.from_sink_ch);
@@ -576,6 +572,7 @@ template <class Gfx>
 bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	RTLOG("KeyboardBaseT<Gfx>::Send");
 	auto& buf = this->bf.GetBuffer();
+	auto& stage = buf.InitSingle();
 	
 	Format fmt = out.GetFormat();
 	if (fmt.IsFbo()) {
@@ -585,19 +582,16 @@ bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 		
 		//LOG("KeyboardBaseT<Gfx>::Send: " << HexStr(data.GetHashValue()));
 		
-		TODO
-		
-		#if 0
-		if (!buf.IsInitialized()) {
+		if (!stage.IsInitialized()) {
 			ASSERT(sz.cx > 0 && sz.cy > 0);
-			auto& fb = buf.GetFramebuffer();
+			auto& fb = stage.fb;
 			fb.is_win_fbo = false;
 			fb.size = sz;
 			fb.channels = channels;
 			fb.sample = GVar::SAMPLE_FLOAT;
 			fb.fps = 0;
 			
-			if (!buf.Single().InitializeTexture(
+			if (!stage.InitializeTexture(
 				Size(sz.cx, sz.cy),
 				channels,
 				GVar::SAMPLE_U8,
@@ -606,7 +600,7 @@ bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 				return false;
 		}
 		else {
-			buf.Single().ReadTexture(
+			stage.ReadTexture(
 				sz,
 				channels,
 				GVar::SAMPLE_U8,
@@ -619,7 +613,6 @@ bool KeyboardBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 		this->GetBuffer().StoreOutputLink(d);
 		RTLOG("KeyboardBaseT<Gfx>::Send: 0, " << src_ch << ": " << out.ToString());
 		
-		#endif
 	}
 	
 	return true;
@@ -682,6 +675,7 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 	Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
 		auto& buf = this->bf.GetBuffer();
+		auto& stage = buf.InitSingle();
 		AudioFormat& afmt = fmt;
 		
 		Format sink_fmt = this->GetSink()->GetValue(sink_ch).GetFormat();
@@ -696,12 +690,9 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		GVar::Sample sample = GetGVarType(afmt.type);
 		int sample_size = GVar::GetSampleSize(sample);
 		
-		TODO
-		
-		#if 0
-		if (!buf.IsInitialized()) {
+		if (!stage.IsInitialized()) {
 			ASSERT(sz.cx > 0 && sz.cy > 0);
-			auto& fb = buf.GetFramebuffer();
+			auto& fb = stage.fb;
 			fb.is_win_fbo = false;
 			fb.is_audio = true;
 			fb.size = sz;
@@ -713,7 +704,7 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 			//if (fb.channels == 2)
 			//	fb.channels = 4;
 			
-			if (!buf.Single().InitializeTexture(
+			if (!stage.InitializeTexture(
 				Size(sz.cx, sz.cy),
 				channels,
 				sample,
@@ -722,14 +713,13 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 				return false;
 		}
 		else {
-			buf.ReadTexture(
+			stage.ReadTexture(
 				sz,
 				channels,
 				sample,
 				&*data.Begin(),
 				data.GetCount());
 		}
-		#endif
 	}
 	
 	return true;

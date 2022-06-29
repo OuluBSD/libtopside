@@ -132,6 +132,14 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 		}
 	}
 	
+	String loopback = ws.Get(".loopback");
+	if (loopback.GetCount() && id == 0) {
+		if (!SetLoopback(loopback)) {
+			LOG("GfxBufferStageT<Gfx>::Initialize: error: assigning loopback failed");
+			return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -324,6 +332,8 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	if (rt.prog == 0)
 		return;
 	
+	auto& ctx = buf->ctx;
+	
 	Gfx::BindProgramPipeline(rt.pipeline);
 	Gfx::UseProgram(rt.prog);
 	if (!rt.is_searched_vars)
@@ -366,32 +376,45 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		// render VBA from state
 		Gfx::BeginRender();
 		
-		SetVars(rt.prog, cfg);
-		
-		for (DataObject& o : data.objects) {
-			if (!o.is_visible)
-				continue;
+		//if (ctx.frames > 0)
+		{
+			SetVars(rt.prog, cfg);
 			
-			Gfx::BeginRenderObject();
-			
-			SetVars(data, rt.prog, o);
-			o.Paint(data);
+			for (DataObject& o : data.objects) {
+				if (!o.is_visible)
+					continue;
+				
+				Gfx::BeginRenderObject();
+				
+				SetVars(data, rt.prog, o);
+				o.Paint(data);
+				
+				Gfx::EndRenderObject();
+			}
 		}
+		
 		Gfx::EndRender();
 	}
 	else if (user_data) {
 		Gfx::BeginRender();
 		
-		SetVars(rt.prog, cfg);
-		
-		for (DataObject& o : user_data->objects) {
-			if (!o.is_visible)
-				continue;
+		//if (ctx.frames > 0)
+		{
+			SetVars(rt.prog, cfg);
 			
-			Gfx::BeginRenderObject();
-			SetVars(*user_data, rt.prog, o);
-			o.Paint(*user_data);
+			for (DataObject& o : user_data->objects) {
+				if (!o.is_visible)
+					continue;
+				
+				Gfx::BeginRenderObject();
+				
+				SetVars(*user_data, rt.prog, o);
+				o.Paint(*user_data);
+				
+				Gfx::EndRenderObject();
+			}
 		}
+		
 		Gfx::EndRender();
 	}
 	
@@ -440,9 +463,25 @@ void BufferStageT<Gfx>::UseRenderedFramebuffer() {
 }
 
 template <class Gfx>
+bool BufferStageT<Gfx>::SetupLoopback() {
+	if (loopback < 0)
+		return true;
+	
+	if (loopback >= GVar::INPUT_COUNT) {
+		LOG("SetupLoopback: error: too large loopback id #" << loopback);
+		return false;
+	}
+	
+	InputState& in = rt.inputs[loopback];
+	in.stage = this;
+	in.id = rt.id;
+	in.type = GVar::BUFFER_INPUT;
+	
+	return true;
+}
+
+template <class Gfx>
 bool BufferStageT<Gfx>::SetLoopback(String loopback_str) {
-	TODO
-	#if 0
 	if (loopback_str.IsEmpty()) {
 		loopback = -1;
 		return false;
@@ -462,7 +501,6 @@ bool BufferStageT<Gfx>::SetLoopback(String loopback_str) {
 	fb.is_doublebuf = loopback >= 0;
 	
 	return true;
-	#endif
 }
 
 template <class Gfx>
@@ -634,7 +672,7 @@ void BufferStageT<Gfx>::UpdateTexBuffers() {
 		ASSERT(fb.channels > 0);
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
 		
-		this->BaseUpdateTexBuffers(fb);
+		buf->BaseUpdateTexBuffers(fb);
 		
 		ClearTex();
 		
@@ -944,13 +982,6 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 	}
 	else if (var == VAR_COMPAT_RESOLUTION) {
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
-		//Gfx::UseProgram(gl_prog);
-		/*float f[3];
-		f[0] = (float)fb.size.cx;
-		f[1] = (float)fb.size.cy;
-		f[2] = 1.0f;
-		Gfx::Uniform1fv(uindex, 3, f);*/
-		//Gfx::ProgramUniform3f(gl_prog, uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 		Gfx::Uniform3f(uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
 	}
 	
@@ -962,12 +993,9 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 	else if (var == VAR_COMPAT_TIMEDELTA) {
 		ASSERT(ctx.frame_time != 0.0);
 		Gfx::Uniform1f(uindex, (float)ctx.frame_time);
-		//float f = (float)ctx.frame_time;
-		//Gfx::Uniform1fv(uindex, 1, &f);
 	}
 	
 	else if (var == VAR_COMPAT_FRAME) {
-		ASSERT(ctx.frames >= 0);
 		Gfx::Uniform1i(uindex, ctx.frames);
 	}
 	
@@ -1015,6 +1043,7 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 			//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
 			Gfx::ActiveTexture(tex_ch);
 			Gfx::BindTextureRO(GetTexType(ch), tex);
+			Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
@@ -1048,7 +1077,7 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 		float values[INPUT_COUNT];
 		for(int j = 0; j < INPUT_COUNT; j++) {
 			InputState& in = rt.inputs[j];
-			values[j] = in.buf ? in.buf->ctx.time_total : 0;
+			values[j] = in.stage ? in.stage->buf->ctx.time_total : 0;
 		}
 		//Gfx::Uniform1fv(uindex, 4, values);
 		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
@@ -1058,10 +1087,10 @@ void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSo
 		float values[3*4] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
 		for(int j = 0; j < INPUT_COUNT; j++) {
 			InputState& in = rt.inputs[j];
-			const Buffer* in_buf = in.buf;
-			if (in_buf){
+			const BufferStageT* in_stage = in.stage;
+			if (in_stage){
 				int off = j * 3;
-				auto& in_fb = in_buf->GetFramebuffer();
+				auto& in_fb = in_stage->fb;
 				values[off + 0] = (float)in_fb.size.cx;
 				values[off + 1] = (float)in_fb.size.cy;
 				values[off + 2] = (float)in_fb.depth;
@@ -1086,20 +1115,15 @@ TNG NativeColorBufferConstRef BufferStageT<Gfx>::GetInputTex(int input_i) const 
 		return 0;
 	
 	const InputState& in = rt.inputs[input_i];
-	if (in.buf == 0) {
-		RTLOG("GetInputTex: warning: no input fbo buffer");
+	if (in.stage == 0) {
+		RTLOG("GetInputTex: warning: no input fbo stage");
 		return 0;
 	}
 	
-	TODO
-	/*const Buffer* in_comp = in.buf;
-	if (!in_comp)
-		return 0;
-	
-	NativeColorBufferConstRef tex = in_comp->GetOutputTexture(in_comp == this->buf);
+	NativeColorBufferConstRef tex = in.stage->GetOutputTexture(in.stage == this);
 	ASSERT(tex);
 	
-	return tex;*/
+	return tex;
 }
 
 template <class Gfx>
@@ -1247,18 +1271,18 @@ template <class Gfx>
 bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
 		//LOG("LoadInputLink: " << name << " #" << in_id);
-		GfxBuffer* gbuf = (GfxBuffer*)v.ptr;
-		Buffer* buf = CastPtr<Buffer>(gbuf);
-		if (!buf) {
+		GfxBufferStage* gstage = (GfxBufferStage*)v.ptr;
+		BufferStageT* stage = CastPtr<BufferStageT<Gfx>>(gstage);
+		if (!stage) {
 			ASSERT_(0, "Buffer's Gfx type differs");
 			return false;
 		}
 		ASSERT(v.ptr);
 		InputState& in = rt.inputs[in_id];
 		in.id = in_id;
-		in.buf = buf;
+		in.stage = stage;
 		
-		//auto& fb = buf->fb;
+		auto& fb = stage->fb;
 		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
 		
 		if (fb.is_cubemap)

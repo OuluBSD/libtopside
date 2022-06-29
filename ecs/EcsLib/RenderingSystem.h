@@ -69,6 +69,7 @@ protected:
 	//One<GfxDataState> state;
 	GfxDataState*				state = 0;
 	double						time = 0;
+	bool						is_dummy = false;
 	
 	// calibration
 	CalibrationData				calib;
@@ -79,6 +80,7 @@ protected:
     void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
+    bool Arg(String key, Object value) override;
     
     void Render(GfxDataState& data);
     

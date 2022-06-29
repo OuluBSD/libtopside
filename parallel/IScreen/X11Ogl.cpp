@@ -71,7 +71,7 @@ typedef struct {
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
-	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
+	if (!ctx_) { LOG("error: could not find X11 context"); return false;}
 	auto& ctx = ctx_->ctx;
 	dev.ctx = &ctx;
 	
@@ -81,8 +81,10 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	bool find_vr = ws.IsTrue(".find.vr.screen");
 	int screen_idx = ws.GetInt(".screen", -1);
 	
-	if (!dev.ogl.Initialize(a, ws))
+	if (!dev.ogl.Initialize(a, ws)) {
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: accelerator initialization failed");
 		return false;
+	}
 	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
 	::Window& win = ctx.win;			// pointer to the newly created window.

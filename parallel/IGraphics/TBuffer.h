@@ -8,7 +8,7 @@ template <class Gfx>
 struct BufferT;
 
 template <class Gfx>
-struct BufferStageT : GfxBuffer {
+struct BufferStageT : GfxBufferStage {
 	using Framebuffer = FramebufferT<Gfx>;
 	using RuntimeState = RuntimeStateT<Gfx>;
 	using DataState = DataStateT<Gfx>;
@@ -39,6 +39,7 @@ struct BufferStageT : GfxBuffer {
 	
 	DataState					data;
 	DataState*					user_data = 0;
+	int							loopback = -1;
 	int							quad_count = 0;
 	bool						use_user_data = false;
 	bool						initialized = false;
@@ -81,6 +82,7 @@ struct BufferStageT : GfxBuffer {
 	bool LoadInputLink(int in_id, const PacketValue& v);
 	int BuiltinShader();
 	template <int> int BuiltinShaderT();
+	bool SetupLoopback();
 	
 	DataState& GetState() {return user_data ? *user_data : data;}
 	NativeColorBufferConstRef GetInputTex(int input_i) const;
@@ -152,7 +154,6 @@ struct BufferT : GfxBuffer {
 	// set by user
 	Vector<byte>				fb_out;
 	EnvStateRef					env;
-	int							loopback = -1;
 	//int						test_shader = -1;
 	
 	DataState					stereo_data; // same data for both eyes
@@ -190,18 +191,21 @@ public:
 	bool InitializeRenderer();
 	void Process(ShaderPipeline& pipe);
 	void Process(const RealtimeSourceConfig& cfg);
-	bool SetupLoopback();
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
 	BufferStage& Single() {ASSERT(stages.GetCount() == 1); return stages.Top();}
+	BufferStage& InitSingle();
+	bool IsSingleInitialized() const {return stages.GetCount() == 1 && stages[0].IsInitialized();}
 	void Reset();
 	bool IsAudio() const {return mode == SINGLE_SOUND;}
 	bool AcceptsOrders() const {return is_initialized;}
+	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	
 	void SetFramebufferSize(Size sz);
 	void SetLocalTime(bool b=true) {is_local_time = b;}
 	void SetDataStateOverride(DataState* s);
 	
+	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
 	Framebuffer& GetFramebuffer() {return stages.Top().fb;}
 	DataState& GetState();

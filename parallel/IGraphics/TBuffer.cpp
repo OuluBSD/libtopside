@@ -29,6 +29,17 @@ void BufferT<Gfx>::Update(double dt) {
 	}
 }
 
+template <class Gfx>
+BufferStageT<Gfx>& BufferT<Gfx>::InitSingle() {
+	ASSERT(stages.GetCount() <= 1);
+	if (stages.GetCount())
+		return stages.Top();
+	
+	stages.SetCount(1);
+	BufferStage& s = stages[0];
+	s.buf = this;
+	return s;
+}
 
 template <class Gfx>
 bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -74,16 +85,6 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	}
 	
 	SetLocalTime(ws.GetBool(".retarded.local.time", false));
-	
-	
-	ASSERT(stages.GetCount());
-	String loopback = ws.Get(".loopback");
-	if (loopback.GetCount()) {
-		if (!stages[0].SetLoopback(loopback)) {
-			LOG("GfxBufferFieldT<Gfx>::Initialize: error: assigning loopback failed");
-			return false;
-		}
-	}
 	
 	
 	String env_name = ws.Get(".env");
@@ -196,12 +197,12 @@ bool BufferT<Gfx>::InitializeRenderer() {
 	ctx.time = GetSysTime();
 	ctx.block_offset = 0;
 	
-	if (!SetupLoopback())
-		return false;
-	
 	EnableGfxAccelDebugMessages(true);
 	
 	for (BufferStage& s : stages) {
+		if (!s.SetupLoopback())
+			return false;
+		
 		if (!s.CompilePrograms())
 			return false;
 		
@@ -226,6 +227,26 @@ bool BufferT<Gfx>::InitializeRenderer() {
 template <class Gfx>
 void BufferT<Gfx>::Reset() {
 	ctx.time_total = 0;
+}
+
+
+template <class Gfx>
+bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
+	if (mode == MULTI_STEREO) {
+		return
+			stages[0].LoadInputLink(in_id, v) &&
+			stages[1].LoadInputLink(in_id, v);
+	}
+	else {
+		return
+			stages[0].LoadInputLink(in_id, v);
+	}
+}
+
+template <class Gfx>
+typename BufferT<Gfx>::NativeColorBufferConstRef
+BufferT<Gfx>::GetOutputTexture(bool reading_self) const {
+	return stages.Top().GetOutputTexture(reading_self);
 }
 
 template <class Gfx>
@@ -291,7 +312,6 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	else
 		ctx.time_total = cfg.time_total;
 	//RTLOG("Process: " << time_total);
-	ctx.frames++;
 	
 	
 	if (stages.GetCount() == 1) {
@@ -387,6 +407,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		else TODO
 	}
 	
+	ctx.frames++;
 }
 
 
@@ -400,27 +421,6 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 
 
 
-
-template <class Gfx>
-bool BufferT<Gfx>::SetupLoopback() {
-	if (loopback < 0)
-		return true;
-	
-	if (loopback >= GVar::INPUT_COUNT) {
-		LOG("SetupLoopback: error: too large loopback id #" << loopback);
-		return false;
-	}
-	
-	for (BufferStage& s : stages) {
-		InputState& in = s.rt.inputs[loopback];
-		in.buf = this;
-		in.id = s.rt.id;
-		in.type = GVar::BUFFER_INPUT;
-		ASSERT(in.buf);
-	}
-	
-	return true;
-}
 
 template <class Gfx>
 void BufferT<Gfx>::OnError(const char* fn, String s) {
@@ -434,8 +434,10 @@ template <class Gfx>
 void BufferT<Gfx>::StoreOutputLink(InternalPacketData& v) {
 	static_assert(sizeof(v.u32) == sizeof(uint32), "Unexpected GLuint size");
 	
-	v.SetText("gfxbuf");
-	v.ptr = static_cast<GfxBuffer*>(this);
+	if (stages.GetCount()) {
+		v.SetText("gfxbuf");
+		v.ptr = static_cast<GfxBufferStage*>(&stages.Top());
+	}
 }
 
 

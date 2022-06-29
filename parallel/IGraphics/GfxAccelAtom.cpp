@@ -350,14 +350,13 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 			}
 			else if (d.IsText("gfxbuf")) {
 				//Size3 sz = vfmt.GetSize();
-				TODO
-				/*int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 				if (pv.IsData<InternalPacketData>()) {
 					succ = bf.GetBuffer().LoadInputLink(ch_i - base, d);
 				}
 				else {
 					RTLOG("GfxAccelAtom::Recv: cannot handle packet: " << pv.ToString());
-				}*/
+				}
 			}
 			else {
 				DUMP(d.GetText());

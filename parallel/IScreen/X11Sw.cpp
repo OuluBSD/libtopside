@@ -8,12 +8,14 @@ NAMESPACE_PARALLEL_BEGIN
 
 bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
-	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
+	if (!ctx_) {LOG("error: could not find X11 context"); return false;}
 	auto& ctx = ctx_->ctx;
 	dev.ctx = &ctx;
 	
-	if (!dev.accel.Initialize(a, ws))
+	if (!dev.accel.Initialize(a, ws)) {
+		LOG("ScrX11::SinkDevice_Initialize: error: accelerator initialization failed");
 		return false;
+	}
 	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
 	int screen_num;						// number of screen to place the window on.

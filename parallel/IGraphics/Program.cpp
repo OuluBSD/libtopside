@@ -30,7 +30,13 @@ void SoftProgramT<Gfx>::Begin() {
 
 template <class Gfx>
 void SoftProgramT<Gfx>::BeginObject() {
-	objs.Add().Zero();;
+	obj_i = objs.GetCount();
+	objs.Add().Zero();
+}
+
+template <class Gfx>
+void SoftProgramT<Gfx>::EndObject() {
+	obj_i = -1;
 }
 
 template <class Gfx>
@@ -100,7 +106,7 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 		case GVar::VAR_BUFFERSTAGE3_COLOR:
 		case GVar::VAR_BUFFERSTAGE4_COLOR:
 											return sizeof(void*);
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION:	return sizeof(GenericShaderArgs::iChannelResolution0);
+		case GVar::VAR_COMPAT_CHANNELRESOLUTION:	return sizeof(GenericShaderArgs::iChannelResolution[0]);
 		default: break;
 	}
 	
@@ -148,7 +154,9 @@ void SoftProgramT<Gfx>::SetVar(int i, int j) {
 	if (idx == GVar::VAR_BUFFERSTAGE3_COLOR) {args.iStageColor3 = j; return;}
 	if (idx == GVar::VAR_BUFFERSTAGE4_COLOR) {args.iStageColor4 = j; return;}
 	
-	auto& fargs = objs.Top().fargs;
+	ASSERT(obj_i >= 0);
+	if (obj_i < 0) return;
+	auto& fargs = objs[obj_i].fargs;
 	
 	if (idx == GVar::VAR_NONE) {fargs.iNone = j; return;}
 	if (idx == GVar::VAR_DIFFUSE) {fargs.iDiffuse = j; return;}
@@ -187,10 +195,12 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		case GVar::VAR_COMPAT_RESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
-		case GVar::VAR_COMPAT_CHANNELRESOLUTION: args.iChannelResolution0 = vec3(f0,f1,f2); return;
+		//case GVar::VAR_COMPAT_CHANNELRESOLUTION: args.iChannelResolution0 = vec3(f0,f1,f2); return;
 		default: break;
 	}
-	auto& fargs = objs.Top().fargs;
+	ASSERT(obj_i >= 0);
+	if (obj_i < 0) return;
+	auto& fargs = objs[obj_i].fargs;
 	switch (idx) {
 		case GVar::VAR_LIGHTDIR: fargs.light_dir = vec3(f0,f1,f2); return;
 		default: break;
@@ -206,7 +216,9 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2, float f3) {
 
 template <class Gfx>
 void SoftProgramT<Gfx>::SetVar(int i, const mat4& mat) {
-	auto& vargs = objs.Top().vargs;
+	ASSERT(obj_i >= 0);
+	if (obj_i < 0) return;
+	auto& vargs = objs[obj_i].vargs;
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		case GVar::VAR_VIEW:		vargs.view = mat; return;
@@ -219,10 +231,38 @@ void SoftProgramT<Gfx>::SetVar(int i, const mat4& mat) {
 }
 
 template <class Gfx>
+void SoftProgramT<Gfx>::SetVarArray(int i, int arr_size, int count, float* f) {
+	/*ASSERT(obj_i >= 0);
+	if (obj_i < 0) return;
+	auto& vargs = objs[obj_i].vargs;*/
+	int idx = uniforms.GetKey(i);
+	
+	if (arr_size == 3) {
+		if (idx == GL::VAR_COMPAT_CHANNELRESOLUTION) {
+			ASSERT(count == 4);
+			for(int i = 0; i < 4; i++) {
+				args.iChannelResolution[i] = vec3(f[0], f[1], f[2]);
+				f += 3;
+			}
+		}
+		else TODO
+	}
+	else TODO
+}
+
+template <class Gfx>
 void SoftProgramT<Gfx>::BindTexture(int tex, const ByteImage* buf) {
-	auto& fargs = objs.Top().fargs;
-	ASSERT(tex >= 0 && tex < TEXTYPE_COUNT);
-	fargs.color_buf[tex] = buf;
+	ASSERT(tex >= 0 && tex < CHANNEL_COUNT);
+	if (tex < 0)
+		return;
+	
+	if (tex < TEXTYPE_COUNT && obj_i >= 0) {
+		auto& fargs = objs[obj_i].fargs;
+		fargs.color_buf[tex] = buf;
+	}
+	else if (tex < CHANNEL_COUNT) {
+		args.color_buf[tex] = buf;
+	}
 }
 
 

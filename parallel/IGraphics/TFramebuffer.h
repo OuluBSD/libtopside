@@ -108,17 +108,17 @@ template <class Gfx>
 struct InputStateT : GfxInputState {
 	RTTI_DECL1(InputStateT, GfxInputState)
 	using Base = InputStateT<Gfx>;
-	using Buffer = typename Gfx::Buffer;
+	using BufferStage = BufferStageT<Gfx>;
 	
-	const Buffer* buf = 0;
+	const BufferStage* stage = 0;
 	//One<StandaloneFramebufferT<Gfx>> fb_for_rawdata;
 	
 	void Clear() {
 		this->GfxInputState::Clear();
-		buf = 0;
+		stage = 0;
 	}
 	
-	const Buffer& GetBuffer() const {ASSERT(buf); return *buf;}
+	//const Buffer& GetBuffer() const {ASSERT(buf); return *buf;}
 };
 
 

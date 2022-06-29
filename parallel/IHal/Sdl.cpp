@@ -709,10 +709,15 @@ void HalSdl::OglVideoSinkDevice_Stop(NativeOglVideoSink& dev, AtomBase& a) {
 void HalSdl::OglVideoSinkDevice_Uninitialize(NativeOglVideoSink& dev, AtomBase&) {
 	dev.accel.Uninitialize();
 	
+	#if 0
+	// This SHOULD be done, but buggy SDL crashes sometimes (see test 06f_toyshader_keyboard)
+	// and skipping this doesn't seem to create problems.
 	if (dev.rend) {
 		SDL_DestroyRenderer(dev.rend);
 		dev.rend = 0;
 	}
+	#endif
+	
 	if (dev.win) {
 		SDL_DestroyWindow(dev.win);
 		dev.win = 0;

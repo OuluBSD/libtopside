@@ -948,6 +948,7 @@ template <class Gfx> void OglGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, in
 }
 
 template <class Gfx> void OglGfxT<Gfx>::BeginRenderObject() {}
+template <class Gfx> void OglGfxT<Gfx>::EndRenderObject() {}
 template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
 template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 
@@ -967,7 +968,7 @@ template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffe
 
 template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, int channels, byte* dst) {
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadPixels(x, y, w, h, GetOglChCode(channels, true), GetGfxType(sample), dst);
+	glReadPixels(x, y, w, h, GetOglChCode(channels, sample == GVar::SAMPLE_FLOAT), GetGfxType(sample), dst);
 }
 
 
