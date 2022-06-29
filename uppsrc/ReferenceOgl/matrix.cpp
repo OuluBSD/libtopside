@@ -60,7 +60,7 @@ void multmatrix(float a[4][4], float b[4][4], float result[4][4]) {
 	#endif
 }
 
-void translate(float x, float y, float z, float result[4][4]) {
+void Translate(float x, float y, float z, float result[4][4]) {
 	result[0][0] = 1;
 	result[0][1] = 0;
 	result[0][2] = 0;
@@ -133,7 +133,7 @@ void lookat(float eyeX, float eyeY, float eyeZ, float centreX, float centreY, fl
 	temp[2][3] = 0;
 	temp[3][3] = 1;
 	
-	translate(-eyeX, -eyeY, -eyeZ, temp2);
+	Translate(-eyeX, -eyeY, -eyeZ, temp2);
 	multmatrix(temp, temp2, result);
 	
 }

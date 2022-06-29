@@ -75,7 +75,7 @@ void ComputeTriangleNormals(GltfHelper::Mesh& primitive) {
 		const vec3 pos0 = v0.position;
 		const vec3 d0 = v2.position - pos0;
 		const vec3 d1 = v1.position - pos0;
-		const vec3 normal = cross(d0, d1);
+		const vec3 normal = Cross(d0, d1);
 		
 		// Add the normal to the three vertices of the triangle. Normals are added
 		// so that reused vertices will get the average normal (done later).
@@ -354,10 +354,10 @@ mat4 ReadNodeLocalTransform(const tinygltf::Node& gltf_node) {
 		// No matrix is present, so construct a matrix from the TRS values (each one is optional).
 		return MatrixTransformation(
 			zero<vec3>(), // scaling origin
-			identity<quat>(),
+			Identity<quat>(),
 			gltf_node.scale.size() == 3 ? DoubleToVector3(gltf_node.scale) : one<vec3>(), // Scale
 			zero<vec3>(), // Rotating origin
-			gltf_node.rotation.size() == 4 ? DoubleToQuat(gltf_node.rotation) : identity<quat>(), // Rotation
+			gltf_node.rotation.size() == 4 ? DoubleToQuat(gltf_node.rotation) : Identity<quat>(), // Rotation
 			gltf_node.scale.size() == 3 ? DoubleToVector3(gltf_node.translation) : zero<vec3>()); // Translation
 	}
 }

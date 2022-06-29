@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ModelNode::ModelNode() {
-	local_transform = identity<mat4>();
+	local_transform = Identity<mat4>();
 	modify_count = 0;
 }
 
@@ -101,7 +101,7 @@ mat4 Model::GetNodeWorldTransform(NodeIndex node_idx) const {
     // Compute the transform recursively.
     const mat4 parent_transform =
 		node.index == ModelNode::RootIdx ?
-			identity<mat4>() :
+			Identity<mat4>() :
 			GetNodeWorldTransform(node.parent_node_index);
 	
     return MultiplyMatrix(node.GetTransform(), parent_transform);

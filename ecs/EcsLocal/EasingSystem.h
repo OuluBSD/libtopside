@@ -14,7 +14,7 @@ public:
 	
 	
     vec3 target_position = { 0,0,0 };
-    quat target_orientation = identity<quat>();
+    quat target_orientation = Identity<quat>();
     float position_easing_factor = 0;
     float orientation_easing_factor = 0;
     

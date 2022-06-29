@@ -50,7 +50,7 @@ void ModelComponent::Initialize() {
 	pitch = 0;
 	yaw = 0;
 	roll = 0;
-	ext_model = identity<mat4>();
+	ext_model = Identity<mat4>();
 	have_ext_model = false;
 	model_changed = false;
 	
@@ -128,9 +128,9 @@ void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {
 
 void ModelComponent::RefreshExtModel() {
 	have_ext_model = true;
-	mat4 rotate = make_mat4_from_yaw_pitch_roll(pitch, yaw, roll);
-	mat4 tran = translate(offset);
-	mat4 scale = TS::scale(this->scale);
+	mat4 rotate = AxesMat(pitch, yaw, roll);
+	mat4 tran = Translate(offset);
+	mat4 scale = TS::Scale(this->scale);
 	this->ext_model = rotate * tran * scale;
 }
 
@@ -184,11 +184,11 @@ bool ModelComponent::Load(GfxDataState& state) {
 	mat4 model;
 	TransformRef trans = GetEntity()->Find<Transform>();
 	if (trans) {
-		mat4 pos = translate(trans->data.position);
-		mat4 rot = rotate(trans->data.orientation);
-		mat4 sz = TS::scale(trans->size);
+		mat4 pos = Translate(trans->data.position);
+		mat4 rot = QuatMat(trans->data.orientation);
+		mat4 sz = TS::Scale(trans->size);
 		/*if (have_ext_model) {
-			pos *= translate(offset);
+			pos *= Translate(offset);
 			rot *= YawPitchRoll(pitch, yaw, roll);
 			sz  *= TS::scale(this->scale);
 		}*/
@@ -205,7 +205,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 	else if (have_ext_model)
 		model = ext_model;
 	else
-		model = identity<mat4>();
+		model = Identity<mat4>();
 		
 	Ref<Model> mesh = loader.GetModel();
 	if (!mesh)

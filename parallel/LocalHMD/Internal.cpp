@@ -290,7 +290,7 @@ static int GetDeviceFloat_unp(Device* device, FloatValue type, float* out)
 			oquat_mult_me(&rot, &device->rotation_correction);
 			mat4 central_view, eye_shift, result;
 			omat4_init_look_at(&central_view, &rot, &device->position);
-			omat4_init_translate(&eye_shift, +(device->properties.ipd / 2.0f), 0.0f, 0.0f);
+			omat4_init_Translate(&eye_shift, +(device->properties.ipd / 2.0f), 0.0f, 0.0f);
 			omat4_mult(&eye_shift, &central_view, &result);
 			omat4_transpose(&result, (mat4*)out);
 			return HMD_S_OK;
@@ -300,7 +300,7 @@ static int GetDeviceFloat_unp(Device* device, FloatValue type, float* out)
 			oquat_mult_me(&rot, &device->rotation_correction);
 			mat4 central_view, eye_shift, result;
 			omat4_init_look_at(&central_view, &rot, &device->position);
-			omat4_init_translate(&eye_shift, -(device->properties.ipd / 2.0f), 0.0f, 0.0f);
+			omat4_init_Translate(&eye_shift, -(device->properties.ipd / 2.0f), 0.0f, 0.0f);
 			omat4_mult(&eye_shift, &central_view, &result);
 			omat4_transpose(&result, (mat4*)out);
 			return HMD_S_OK;
@@ -572,10 +572,10 @@ void CalculateDefaultProjectionMatrices(DeviceProperties* props)
 	// These matrices only change of the hardware changes, so static.
 	mat4 translate;
 
-	omat4_init_translate(&translate, proj_offset, 0, 0);
+	omat4_init_Translate(&translate, proj_offset, 0, 0);
 	omat4_mult(&translate, &proj_base, &props->proj_left);
 
-	omat4_init_translate(&translate, -proj_offset, 0, 0);
+	omat4_init_Translate(&translate, -proj_offset, 0, 0);
 	omat4_mult(&translate, &proj_base, &props->proj_right);
 }
 

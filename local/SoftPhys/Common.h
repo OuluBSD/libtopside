@@ -60,8 +60,8 @@ struct PosRot : Moveable<PosRot> {
     mat3 rot;
 };
 
-#define RfromQ(R,Q)	ToMat3_((R),(q))
-#define QtoR(q,R)	ToMat3_((R),(q))
+#define RfromQ(R,Q)	((R) = QuatMat(Q).Splice())
+#define QtoR(Q,R)	((R) = QuatMat(Q).Splice())
 
 
 }

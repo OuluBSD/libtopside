@@ -368,7 +368,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	}
 	Matrix GetInverseTransposed() const {
 		Matrix ret = GetAdjugated();
-		T d = dot(ret[0], data[0]);
+		T d = Dot(ret[0], data[0]);
 		ret /= d;
 		return ret;
 	}
@@ -388,7 +388,8 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return s;
 	}
 	
-	void Clear() {for(int i = 0; i < R; i++) data[i] = 0;}
+	void Clear() {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
+	void Zero()  {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
 	
 	Matrix& Transpose() {
 		for(int c = 0; c < C; c++)
@@ -673,6 +674,26 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return c;
 	}
 	
+	template <int begin=0, int end0=R-1, int end1=C-1> Matrix<T, end0 - begin, end1-begin> Splice() const {
+		static_assert(begin < end0 && begin < end1, "Splicing area must be positive");
+		static_assert(end0 - begin <= C && end1 - begin <= R, "Splicing area must be less or equal to source area");
+		Matrix<T, end0 - begin, end1-begin> ret;
+		for(int i = begin, k = 0; i < end0; i++, k++)
+			for(int j = begin, l = 0; j < end1; j++, l++)
+				ret.data[k].data[l] = data[i].data[j];
+		return ret;
+	}
+	template <int R0=R+1,int C0=C+1> Matrix<T,R0,C0> Embed() const {
+		Matrix<T,R0,C0> ret;
+		ret.Zero();
+		for (int r = 0; r < R && r < R0; r++)
+			for (int c = 0; c < C && c < C0; c++)
+				ret.data[r].data[c] = data[r].data[c];
+		int r = R, c = C;
+		while (r < R0 && c < C0)
+			ret.data[r++].data[c++] = 1;
+		return ret;
+	}
 };
 
 

@@ -102,7 +102,7 @@ void DemoRoomStartup() {
 
         const mat4 model_transform = transform.has_value()
             ? transform.value()
-            : identity<mat4>();
+            : Identity<mat4>();
 
         Pbr::Model& pbr_model = pbr_model_cache->AddModel(name);
         Gltf::FromGltfBinary(

@@ -273,9 +273,9 @@ void VrSpatialInteractionManager::Look(const TransformMatrix& tm) {
 	ev.trans = &trans;
 	
 	if (sys->debug_log) {
-		mat4 m = ToMat4(trans.orientation);
+		mat4 m = QuatMat(trans.orientation);
 		vec4 dir = vec4(0,0,1,1) * m;
-		direction_to_yaw_pitch(dir.Splice(), yaw, pitch);
+		DirAxes(dir.Splice(), yaw, pitch);
 		
 		LOG("VrSpatialInteractionManager::Look: orientation: " << trans.orientation.ToString() <<
 			", angle: " << yaw << ", angle1: " << pitch);
@@ -294,9 +294,9 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 		ev.ctrl = &this->cm;
 		
 		if (sys->debug_log) {
-			mat4 m = ToMat4(trans.orientation);
+			mat4 m = QuatMat(trans.orientation);
 			vec4 dir = vec4(0,0,1,1) * m;
-			direction_to_yaw_pitch(dir.Splice(), yaw, pitch);
+			DirAxes(dir.Splice(), yaw, pitch);
 			
 			LOG("VrSpatialInteractionManager::Look: orientation: " << trans.orientation.ToString() <<
 				", angle: " << yaw << ", angle1: " << pitch);
@@ -354,9 +354,9 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 	ev3d.use_lookat = false;
 	COPY4(ev3d.orient, orient.data);
 	
-	mat4 m = ToMat4(orient);
+	mat4 m = QuatMat(orient);
 	vec4 dir = vec4(0,0,1,1) * m;
-	direction_to_yaw_pitch(dir.Splice(), yaw, pitch);
+	DirAxes(dir.Splice(), yaw, pitch);
 	
 	if (sys->debug_log) {
 		LOG("VrSpatialInteractionManager::Look: orientation: " << orient.ToString() <<

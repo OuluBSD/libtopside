@@ -24,7 +24,7 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 		geom = dCreatePlane(GetSpace()->GetSpaceId(), 0, 1, 0, 0);
 		
 		is_override_phys_geom = true;
-		override_geom = identity<mat4>();
+		override_geom = Identity<mat4>();
 		
 		ModelBuilder mb;
 		mb	.AddPlane(vec3(-50, 0, -50), vec2(100, 100))

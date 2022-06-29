@@ -26,24 +26,24 @@ bool Camera::IsOrthoNormal() {
 	vec3 forward = world[2].Splice();
 	
 	// Axis is not normal
-	if (!CMP(dot(right, right), 1.0f)) {
+	if (!CMP(Dot(right, right), 1.0f)) {
 		return false;
 	}
-	if (!CMP(dot(up, up), 1.0f)) {
+	if (!CMP(Dot(up, up), 1.0f)) {
 		return false;
 	}
-	if (!CMP(dot(forward, forward), 1.0f)) {
+	if (!CMP(Dot(forward, forward), 1.0f)) {
 		return false;
 	}
 	
 	// Not perpendicular
-	if (!CMP(dot(forward, up), 0.0f)) {
+	if (!CMP(Dot(forward, up), 0.0f)) {
 		return false;
 	}
-	if (!CMP(dot(forward, right), 0.0f)) {
+	if (!CMP(Dot(forward, right), 0.0f)) {
 		return false;
 	}
-	if (!CMP(dot(right, up), 0.0f)) {
+	if (!CMP(Dot(right, up), 0.0f)) {
 		return false;
 	}
 
@@ -56,8 +56,8 @@ void Camera::OrthoNormalize() {
 	vec3 forward = world[2].Splice();
 
 	vec3 f = forward.GetNormalized();
-	vec3 r = cross(up, f).GetNormalized();
-	vec3 u = cross(f, r);
+	vec3 r = Cross(up, f).GetNormalized();
+	vec3 u = Cross(f, r);
 
 	this->world = mat4 {
 		r[0], r[1], r[2], 0.0f,
@@ -72,7 +72,7 @@ mat4 Camera::GetViewMatrix() {
 		OrthoNormalize();
 	}
 	
-	mat4 inverse = transpose(world);
+	mat4 inverse = Transpose(world);
 	inverse[3][0] = 0.0f;
 	inverse[0][3] = 0.0f;
 	inverse[3][1] = 0.0f;
@@ -85,9 +85,9 @@ mat4 Camera::GetViewMatrix() {
 	vec3 forward = world[2].Splice();
 	vec3 position = world[3].Splice();
 	
-	inverse[3][0] = -dot(right, position);
-	inverse[3][1] = -dot(up, position);
-	inverse[3][2] = -dot(forward, position);
+	inverse[3][0] = -Dot(right, position);
+	inverse[3][1] = -Dot(up, position);
+	inverse[3][2] = -Dot(forward, position);
 	
 	return inverse;
 }
@@ -104,7 +104,7 @@ void Camera::Resize(int width, int height) {
 	this->aspect = (float)width / (float)height;
 
 	if (this->proj_mode == 0) {
-		this->view = perspective(DEG2RAD(this->fov), this->aspect, this->near, this->far);
+		this->view = Perspective(DEG2RAD(this->fov), this->aspect, this->near, this->far);
 	}
 	else if (this->proj_mode == 1) {
 		this->width = (float)width;
@@ -113,7 +113,7 @@ void Camera::Resize(int width, int height) {
 		float halfW = this->width * 0.5f;
 		float halfH = this->height * 0.5f;
 
-		this->view = ortho(-halfW, halfW, halfH, -halfH, this->near, this->far);
+		this->view = Ortho(-halfW, halfW, halfH, -halfH, this->near, this->far);
 	}
 	// this->proj_mode == 2
 		// User defined
@@ -127,17 +127,17 @@ bool Camera::IsPerspective() {
 	return this->proj_mode == 0;
 }
 
-void Camera::Perspective(float fov_angle, float aspect, float zNear, float zFar) {
+void Camera::SetPerspective(float fov_angle, float aspect, float zNear, float zFar) {
 	this->fov = fov_angle;
 	this->aspect = aspect;
 	this->near = zNear;
 	this->far = zFar;
 
-	this->view = perspective(DEG2RAD(fov_angle), aspect, zNear, zFar);
+	this->view = Perspective(DEG2RAD(fov_angle), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
 
-void Camera::Orthographic(float width, float height, float zNear, float zFar) {
+void Camera::SetOrthographic(float width, float height, float zNear, float zFar) {
 	this->width = width;
 	this->height = height;
 	this->near = zNear;
@@ -146,7 +146,7 @@ void Camera::Orthographic(float width, float height, float zNear, float zFar) {
 	float halfW = width * 0.5f;
 	float halfH = height * 0.5f;
 
-	this->view = ortho(-halfW, halfW, halfH, -halfH, zNear, zFar);
+	this->view = Ortho(-halfW, halfW, halfH, -halfH, zNear, zFar);
 	this->proj_mode = 1;
 }
 
@@ -161,13 +161,13 @@ void Camera::SetWorld(const mat4& view) {
 
 Camera CreatePerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
 	Camera result;
-	result.Perspective(fieldOfView, aspectRatio, nearPlane, farPlane);
+	result.SetPerspective(fieldOfView, aspectRatio, nearPlane, farPlane);
 	return result;
 }
 
 Camera CreateOrthographic(float width, float height, float nearPlane, float farPlane) {
 	Camera result;
-	result.Orthographic(width, height, nearPlane, farPlane);
+	result.SetOrthographic(width, height, nearPlane, farPlane);
 	return result;
 }
 
@@ -271,7 +271,7 @@ void OrbitCamera::Update(float dt) {
 	mat3 orient = Rotation3x3(rotation[0], rotation[1], rotation[2]);
 	vec3 dir = MultiplyVector( vec3(0.0, 0.0, -this->zoom_distance), orient);
 	vec3 position = dir + target;
-	this->world = FastInverse(LookAt(position, target, vec3(0, 1, 0)));
+	this->world = (LookAt(position, target, vec3(0, 1, 0))).GetInverse();
 }
 
 float OrbitCamera::ClampAngle(float angle, float min, float max) {

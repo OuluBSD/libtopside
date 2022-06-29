@@ -52,7 +52,7 @@ void Particle::SolveConstraints(const Vector<OBB_>& constraints) {
 #ifndef EULER_INTEGRATION
 			vec3 velocity = position - old_position;
 #endif
-			vec3 direction = normalize(velocity);
+			vec3 direction = Normalize(velocity);
 			Ray ray(old_position, direction);
 			RaycastResult result;
 

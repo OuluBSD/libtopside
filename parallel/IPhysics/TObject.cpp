@@ -66,22 +66,22 @@ void ObjectT<Fys>::Refresh() {
 	int width = 1280, height = 720;
 	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
     mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
-    mat4 model = identity<mat4>();
+    mat4 model = Identity<mat4>();
 	fb_obj->SetMat4("projection", projection);
 	fb_obj->SetMat4("model", model);
 	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
 		mat4 v = model_geom * override_geom;
-		fb_obj->Set(v, identity<mat4>());
+		fb_obj->Set(v, Identity<mat4>());
 	}
 	else {
 		vec3 v3 = Fys::GetGeomPosition(geom);
-		mat4 trans = translate(identity<mat4>(), v3);
+		mat4 trans = Translate(Identity<mat4>(), v3);
 		quat q = Fys::GetGeomQuaternion(geom);
-		mat4 rot = ToMat4(q);
+		mat4 rot = QuatMat(q);
 		mat4 v = model_geom * rot * trans;
-		fb_obj->Set(v, identity<mat4>());
+		fb_obj->Set(v, Identity<mat4>());
 	}
 	#endif
 }

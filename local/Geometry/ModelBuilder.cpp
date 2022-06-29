@@ -67,7 +67,7 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int
 	MeshFactory::CreateCylinder(m, slices, radius, length, &node);
 	
 	// update node with given position argument
-	mat4 trans = translate(pos);
+	mat4 trans = Translate(pos);
 	node.local_transform *= trans;
 	
 	// update vertices with with given position argument
@@ -297,7 +297,7 @@ void MeshFactory::CreateCylinder(Mesh& mesh,
 	
 	if (tip) {
 		vec3 top_center(0, height, 0); // see case 5, "top"
-		tip->local_transform = translate(top_center);
+		tip->local_transform = Translate(top_center);
 		tip->modify_count++;
 	}
 	

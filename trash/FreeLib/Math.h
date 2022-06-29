@@ -13,11 +13,11 @@ inline vec3 position(const SpatialInteractionSourceLocation& location) {
 }
 
 inline quat orientation(const SpatialInteractionSourceLocation& location) {
-	return !location.orient.IsNull() ? location.orient : identity<quat>();
+	return !location.orient.IsNull() ? location.orient : Identity<quat>();
 }
 
 inline mat4 Matrix(const SpatialInteractionSourceLocation& location) {
-	return make_mat4_from_quat(orientation(location)) * translate(position(location));
+	return QuatMat(orientation(location)) * Translate(position(location));
 }
 
 }

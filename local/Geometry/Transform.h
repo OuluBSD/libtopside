@@ -34,13 +34,13 @@ inline vec3 position(const mat4& transform) {
 	return { + transform[3][0], + transform[3][1], + transform[3][2] };
 }
 
-inline quat orientation(const mat4& transform) {
+/*inline quat orientation(const mat4& transform) {
 	vec3 baller_position, size, skew;
 	quat orientation;
 	vec4 persp;
 	decompose(transform, size, orientation, baller_position, skew, persp);
 	return orientation;
-}
+}*/
 
 
 
@@ -49,14 +49,14 @@ inline mat4 remove_scale(const mat4& transform) {
 	vec3 scale, translation, skew;
 	vec4 pers;
 	decompose(transform, scale, rotation, translation, skew, pers);
-	return toMat4(rotation) * translate(translation);
+	return toMat4(rotation) * Translate(translation);
 }
 
 
 
 
 inline quat AxisAngleQuat(vec3 v, float angle) {
-	return rotate(identity<quat>(), angle, v);
+	return Rotate(Identity<quat>(), angle, v);
 }
 
 inline vec3 transform(vec3 const& position, mat4 const& matrix) {
@@ -90,12 +90,12 @@ inline quat make_quaternion_from_yaw_pitch_roll(float yaw, float pitch, float ro
 				cy * cp * cr + sy * sp * sr);
 }
 
-inline mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {
+inline mat4 AxesMat(float yaw, float pitch, float roll) {
 	quat q = make_quaternion_from_yaw_pitch_roll(yaw, pitch, roll);
 	return toMat4(q);
 }
 
-inline mat4 make_mat4_rotation_x(float radians) {
+inline mat4 XRotation(float radians) {
 	float c = cosf(radians);
 	float s = sinf(radians);
 	

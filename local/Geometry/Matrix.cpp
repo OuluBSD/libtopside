@@ -102,8 +102,8 @@ vec3 TransformMatrix::GetForwardDirection() const {
 	}
 	if (mode == MODE_AXES) {
 		//mat4 yaw = YRotation(axes[0]);
-		//mat4 rotate = make_mat4_from_yaw_pitch_roll(M_PI, axes[1], axes[2]);
-		mat4 rotate = make_mat4_from_yaw_pitch_roll(axes[0], axes[1], axes[2]);
+		//mat4 rotate = AxesMat(M_PI, axes[1], axes[2]);
+		mat4 rotate = AxesMat(axes[0], axes[1], axes[2]);
 		vec4 fwd(0,0,1,1);
 		//vec4 dir = rotate * yaw * fwd;
 		vec4 dir = rotate * fwd;
@@ -120,8 +120,8 @@ vec3 TransformMatrix::GetForwardDirection() const {
 }
 
 void TransformMatrix::FillFromOrientation() {
-	decompose_quat(orientation, axes[0], axes[1], axes[2]);
-	direction = yaw_pitch_to_direction(axes[0], axes[1]);
+	QuatAxes(orientation, axes[0], axes[1], axes[2]);
+	direction = AxesDir(axes[0], axes[1]);
 	up = vec3(0,1,0);
 }
 

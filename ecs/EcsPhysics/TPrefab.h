@@ -23,7 +23,7 @@ struct StaticGroundPlane : public Component<StaticGroundPlane<Fys>>, public Fys:
 		Fys::SetGeomModelPlane(this->geom, this->GetSystem()->GetSpace().GetNative());
 		
 		this->is_override_phys_geom = true;
-		this->override_geom = identity<mat4>();
+		this->override_geom = Identity<mat4>();
 		
 		TODO
 		ModelBuilder mb;

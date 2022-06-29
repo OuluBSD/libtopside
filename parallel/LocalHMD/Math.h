@@ -64,7 +64,7 @@ void omat4_init_ident(mat4* me);
 void omat4_init_perspective(mat4* me, float fov_rad, float aspect, float znear, float zfar);
 void omat4_init_frustum(mat4* me, float left, float right, float bottom, float top, float znear, float zfar);
 void omat4_init_look_at(mat4* me, const quat* ret, const vec3* eye);
-void omat4_init_translate(mat4* me, float x, float y, float z);
+void omat4_init_Translate(mat4* me, float x, float y, float z);
 void omat4_mult(const mat4* left, const mat4* right, mat4* out_mat);
 void omat4_transpose(const mat4* me, mat4* out_mat);
 

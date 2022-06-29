@@ -118,7 +118,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		float z = sin(angle) * rad;
 		float eye_x = cos(angle);
 		float eye_y = sin(angle);
-		mat4 proj = perspective(DEG2RAD(110), 1.0, 0.1, 100.0);
+		mat4 proj = Perspective(DEG2RAD(110), 1.0, 0.1, 100.0);
 		
 		vec3 eye {x, 0, z};
 		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
@@ -145,8 +145,8 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 			state.view_stereo[1] = base * r_lookat;
 		}
 		
-		//mat4 rot = rotate(identity<mat4>(), angle, up);
-		//mat4 model = translate(vec3(0.0, 0.0, 0.0));
+		//mat4 rot = rotate(Identity<mat4>(), angle, up);
+		//mat4 model = Translate(vec3(0.0, 0.0, 0.0));
 		//state.view = port * proj * lookat * model * rot;
 		
 	}
@@ -188,7 +188,7 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	ASSERT(args.fa);
 	vec3& n = args.normal;
 	vec3& light_dir = args.fa->light_dir;
-	float m = dot(n, light_dir);
+	float m = Dot(n, light_dir);
 	
 	vec4& used_clr = args.frag_color_out;
 	used_clr[3] = 0;

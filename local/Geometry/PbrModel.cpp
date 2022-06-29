@@ -27,7 +27,7 @@ Model::Model(bool create_root_node /*= true*/)
 
 void Model::CreateRootNode() {
 	ASSERT(nodes.IsEmpty());
-	AddNode(identity<mat4>(), root_parent_node_index, "root");
+	AddNode(Identity<mat4>(), root_parent_node_index, "root");
 }
 
 void Model::Render(Resources const& pbr_res/*, GfxContext& context*/) const
@@ -109,7 +109,7 @@ mat4 Model::GetNodeWorldTransform(NodeIndex node_idx) const
     // Compute the transform recursively.
     const mat4 parent_transform =
 		node.index == Pbr::root_node_idx ?
-			identity<mat4>() :
+			Identity<mat4>() :
 			GetNodeWorldTransform(node.parent_node_index);
 	
     return MultiplyMatrix(node.GetTransform(), parent_transform);
@@ -175,7 +175,7 @@ void Model::UpdateTransforms(Resources const& pbr_res, GfxContext& context) cons
         for (const auto& node : nodes)
         {
             ASSERT(node.parent_node_index == root_parent_node_index || node.parent_node_index < node.Index);
-            const mat4 parent_transform = (node.parent_node_index == root_parent_node_index) ? identity<mat4>() : XMLoadFloat4x4(&model_transforms[node.parent_node_index]);
+            const mat4 parent_transform = (node.parent_node_index == root_parent_node_index) ? Identity<mat4>() : XMLoadFloat4x4(&model_transforms[node.parent_node_index]);
             StoreMatrix(&model_transforms[node.Index], MultiplyMatrix(parent_transform, MatrixTranspose(node.GetTransform())));
         }
 

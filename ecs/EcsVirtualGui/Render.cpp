@@ -99,7 +99,7 @@ void VirtualGui::RenderWindows() {
     mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
 	simple_shader.SetMat4("view", view);
     
-    mat4 ident = identity<mat4>();
+    mat4 ident = Identity<mat4>();
     simple_shader.SetMat4("model", ident);
 	
 	PoolRef root = ents->GetRoot();

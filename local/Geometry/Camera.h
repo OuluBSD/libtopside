@@ -34,8 +34,8 @@ public:
 
 	void Resize(int width, int height);
 	
-	void Perspective(float fov_angle, float aspect, float zNear, float zFar);
-	void Orthographic(float width, float height, float zNear, float zFar);
+	void SetPerspective(float fov_angle, float aspect, float zNear, float zFar);
+	void SetOrthographic(float width, float height, float zNear, float zFar);
 	
 	void SetProjection(const mat4& projection);
 	void SetWorld(const mat4& view);

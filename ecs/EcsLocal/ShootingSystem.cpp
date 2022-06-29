@@ -19,8 +19,8 @@ void ShootingInteractionSystemBase::Attach(ShootingComponentRef c) {
 	
 	
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
-	const mat4 barrel_to_ctrl = translate(vec3(0.0f, 0.0675f, 0.0f)) * make_mat4_rotation_x(ConvertToRadians(-10));
-	//mat4 barrel_to_ctrl = identity<mat4>();
+	const mat4 barrel_to_ctrl = Translate(vec3(0.0f, 0.0675f, 0.0f)) * XRotation(ConvertToRadians(-10));
+	//mat4 barrel_to_ctrl = Identity<mat4>();
 	
 	Ref<Entity> entity = c->GetEntity();
 	
@@ -102,11 +102,11 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 				trans_mat * shooting->barrel_to_ctrl
 				;
 				
-			vec3 position = MatrixUtils::position(barrel_to_world);
+			vec3 position = Position(barrel_to_world);
 			//const vec3 position = trans->position;
-			quat orientation = make_quat_from_rotation_matrix(barrel_to_world);
+			quat orientation = MatQuat(barrel_to_world);
 			//const quat orientation = trans->orientation;
-			vec3 forward = MatrixUtils::forward(barrel_to_world);
+			vec3 forward = Forward(barrel_to_world);
 			forward.Normalize();
 			vec3 bullet_velocity = forward * shooting->bullet_speed;
 			//const vec3 bullet_velocity = forward * 0.1;

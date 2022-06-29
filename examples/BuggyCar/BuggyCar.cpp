@@ -31,7 +31,7 @@ void BuggyWheel::OnAttach() {
 		.SetMaterial(DefaultMaterial());
 	loader = mb;
 	
-	model_geom = rotate(identity<mat4>(), M_PI_2, vec3(0,0,1));
+	model_geom = rotate(Identity<mat4>(), M_PI_2, vec3(0,0,1));
 	
 	AttachContent();
 }

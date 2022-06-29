@@ -203,7 +203,7 @@ void ModelProg::DrawOffset(const DrawCommand& cmd) {
 	mat4& prev = offset[offset.GetCount()-2];
 	float x = cmd.i[0];
 	float y = cmd.i[1];
-	next = translate(prev, vec3(x, y, 0));
+	next = Translate(prev, vec3(x, y, 0));
 	TODO //shader.SetMat4("offset", next);
 }
 

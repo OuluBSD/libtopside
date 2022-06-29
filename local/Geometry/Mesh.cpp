@@ -81,7 +81,7 @@ void Mesh::UpdateNormalsAndTangents() {
             TS::vec3 p2 = GetVertCoord(tri_indices[2]);
             TS::vec3 e1 = safe_normalize(p1 - p0);
             TS::vec3 e2 = safe_normalize(p2 - p0);
-            TS::vec3 n  = safe_normalize(TS::cross(e1, e2));
+            TS::vec3 n  = safe_normalize(TS::Cross(e1, e2));
             for(int j = 0; j < 3; j++) {
                 int vert_index = tri_indices[j];
                 SetVertNormal( vert_index, GetVertNormal(vert_index) + n);
@@ -101,7 +101,7 @@ void Mesh::UpdateNormalsAndTangents() {
         TS::vec3 p2 = GetVertCoord(tri_indices[2]);
         TS::vec3 e1 = safe_normalize(p1 - p0);
         TS::vec3 e2 = safe_normalize(p2 - p0);
-        TS::vec3 n  = safe_normalize(TS::cross(e1, e2));
+        TS::vec3 n  = safe_normalize(TS::Cross(e1, e2));
         for(int j = 0; j < 3; j++) {
             int vert_index = tri_indices[j];
             SetVertNormal( vert_index, n);
@@ -124,7 +124,7 @@ void Mesh::SetAxis(TS::vec3 axis)
 	q[2] = v[2];
 	q.w = v.w;
     TS::vec3 local_axis = TS::vec3(TS::inverse(q));
-    TransformVertices(TS::translate(TS::mat4(1), -local_axis));
+    TransformVertices(TS::Translate(TS::mat4(1), -local_axis));
     m_origin = in_parent_system(axis);
     mark_dirty_transform();
 }

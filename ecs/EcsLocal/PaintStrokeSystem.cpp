@@ -131,10 +131,10 @@ void PaintStrokeSystemBase::Update(double) {
 void PaintStrokeComponent::AddPoint(const mat4& transformation, float width) {
 	const float half_width = width / 2.0f;
 	Square square;
-	square.tl = transform(vec3{ -half_width, 0.0f, +half_width }, transformation);
-	square.tr = transform(vec3{ +half_width, 0.0f, +half_width }, transformation);
-	square.br = transform(vec3{ +half_width, 0.0f, -half_width }, transformation);
-	square.bl = transform(vec3{ -half_width, 0.0f, -half_width }, transformation);
+	square.tl = VectorTransform(vec3{ -half_width, 0.0f, +half_width }, transformation);
+	square.tr = VectorTransform(vec3{ +half_width, 0.0f, +half_width }, transformation);
+	square.br = VectorTransform(vec3{ +half_width, 0.0f, -half_width }, transformation);
+	square.bl = VectorTransform(vec3{ -half_width, 0.0f, -half_width }, transformation);
 	squares.Add(square);
 	stroke_changed = true;
 }

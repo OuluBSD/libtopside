@@ -7,7 +7,7 @@ void Transform::Initialize() {
 	data.position = zero<vec3>();
 	size = one<vec3>();
 	data.mode = TransformMatrix::MODE_LOOKAT; // use direction & up instead of orientation
-	data.orientation = identity<quat>();
+	data.orientation = Identity<quat>();
 	data.direction = vec3(0,0,1); // "look at" alternative to quaternion
 	data.up = vec3(0,1,0); // "look at" alternative to quaternion
 	
@@ -35,7 +35,7 @@ void Transform::operator=(const Transform& t) {
 }
 
 mat4 Transform::GetMatrix() const {
-	return translate(data.position) * ToMat4(data.orientation) * scale(size);
+	return Translate(data.position) * QuatMat(data.orientation) * Scale(size);
 }
 
 vec3 Transform::GetForwardDirection() const {

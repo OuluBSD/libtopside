@@ -328,7 +328,7 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 						}
 						paint->stroke_in_progress
 							->Get<PaintStrokeComponent>()
-								->AddPoint(MatrixUtils::RemoveScale(paint_to_world), paint_tip_thickness);
+								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
 					}
 				}
 				/*const ControllerProperties& properties = source_state.GetControllerProperties();
@@ -339,7 +339,7 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 						mat4 paint_to_world =
 						        *paint->brush_tip_offset_from_holding_pose *
 						        LocationUtil::Matrix(location);
-						paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(MatrixUtils::RemoveScale(paint_to_world), paint_tip_thickness);
+						paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
 					}
 				}*/
 			}
@@ -402,8 +402,8 @@ void PaintingInteractionSystemBase::Update(double dt) {
 				if (paint->prev_manip_loc) {
 					const vec3 previous_position = paint->prev_manip_loc->GetPosition();
 					const quat previous_orientation = paint->prev_manip_loc->GetOrientation();
-					const quat orientation_delta = orientation * inverse(previous_orientation);
-					const mat4 manipulation_transform = translate(-previous_position) * rotate(orientation_delta) * translate(position);
+					const quat orientation_delta = orientation * Inverse(previous_orientation);
+					const mat4 manipulation_transform = Translate(-previous_position) * QuatMat(orientation_delta) * Translate(position);
 					
 					for (auto stroke : paint->strokes) {
 						stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulation_transform);
@@ -439,7 +439,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 				constexpr float colorpicker_height = 0.015f;
 				const mat4 paint_brush_to_world = paint->paint_brush->Get<Transform>()->GetMatrix();
 				const vec3 touchpad_indicator_on_paint_brush = { paint->touchpad_x * colorpicker_diameter, colorpicker_height, paint->touchpad_y* colorpicker_diameter * -1 };
-				const vec3 touchpad_indicator_in_world = transform(touchpad_indicator_on_paint_brush, paint_brush_to_world);
+				const vec3 touchpad_indicator_in_world = VectorTransform(touchpad_indicator_on_paint_brush, paint_brush_to_world);
 				paint->touchpad_indicator->Get<Transform>()->data.position = touchpad_indicator_in_world;
 				// Color picker plane defined as slightly above the touchpad with the same orientation as the touchpad
 				const int num_colors = static_cast<int>(paint->clr_pick_objects.GetCount());
@@ -451,7 +451,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 					const float angle_delta = (next_angle - angle) / 2; // Want color icon to appear in the middle of the segment, not the start.
 					const float final_angle = angle - angle_delta;
 					const vec3 color_indicator_on_paint_brush = { std::cos(final_angle)* colorpicker_diameter, colorpicker_height, std::sin(final_angle)* colorpicker_diameter };
-					const vec3 color_indicator_in_world = transform(color_indicator_on_paint_brush, paint_brush_to_world);
+					const vec3 color_indicator_in_world = VectorTransform(color_indicator_on_paint_brush, paint_brush_to_world);
 					iter()->Get<Transform>()->data.position = color_indicator_in_world;
 				}
 			}

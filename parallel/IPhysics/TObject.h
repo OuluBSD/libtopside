@@ -26,7 +26,7 @@ struct ObjectT : NodeT<Fys> {
 	
 	bool is_override_phys_geom = false;
 	mat4 override_geom;
-	mat4 model_geom = identity<mat4>();
+	mat4 model_geom = Identity<mat4>();
 	
 public:
 	RTTI_DECL1(ObjectT, Node)
@@ -60,7 +60,7 @@ public:
 	
 	ObjectT& Reset(double x, double y, double z) {
 		Fys::SetBodyPosition(body, x, y, z);
-		Fys::SetBodyQuaternion(body, identity<quat>());
+		Fys::SetBodyQuaternion(body, Identity<quat>());
 		Fys::SetBodyLinearVelocity(body, vec3(0,0,0));
 		Fys::SetBodyAngularVelocity(body, vec3(0,0,0));
 		return *this;

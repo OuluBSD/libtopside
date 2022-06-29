@@ -314,7 +314,7 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		float& yaw = axes[0];
 		float& pitch = axes[1];
 		float& roll = axes[2];
-		decompose_quat(dev.trans.orientation, yaw, pitch, roll);
+		QuatAxes(dev.trans.orientation, yaw, pitch, roll);
 		pitch = 0;
 		roll = 0;
 		dev.initial_orient = AxesQuat(yaw, pitch, roll);
@@ -322,14 +322,14 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	#if 0
 	// this should work, but doesn't
 	dev.trans.orientation =
-		make_quat_from_rotation_matrix(
-			make_mat4_from_quat(dev.trans.orientation)
-			* make_mat4_from_quat(dev.initial_orient).GetInverse());
+		MatQuat(
+			QuatMat(dev.trans.orientation)
+			* QuatMat(dev.initial_orient).GetInverse());
 	#else
 	vec3 initial_axes;
-	decompose_quat(dev.initial_orient, initial_axes[0], initial_axes[1], initial_axes[2]);
+	QuatAxes(dev.initial_orient, initial_axes[0], initial_axes[1], initial_axes[2]);
 	vec3 axes;
-	decompose_quat(dev.trans.orientation, axes[0], axes[1], axes[2]);
+	QuatAxes(dev.trans.orientation, axes[0], axes[1], axes[2]);
 	//axes[0] *= -1;
 	dev.trans.orientation = AxesQuat(axes[0] - initial_axes[0], axes[1], axes[2]);
 	#endif

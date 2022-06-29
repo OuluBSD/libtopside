@@ -31,7 +31,7 @@ template <class Gfx>
 void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	//Free();
 	
-	mat4 ident = identity<mat4>();
+	mat4 ident = Identity<mat4>();
 	scale = ident;
 	model = ident;
 	proj_override = ident;

@@ -1,0 +1,9 @@
+uses
+	Geometry;
+
+file
+	main.cpp;
+
+mainconfig
+	"" = "";
+

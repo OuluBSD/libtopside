@@ -192,7 +192,7 @@ void PlayerBodySystem::Update(double dt) {
 						hand_trans->data.mode = TransformMatrix::MODE_AXES;
 						hand_trans->data.axes = axes;
 						float horz_deg = (i == 1 ? -1 : +1) * 30;
-						camera_object(
+						CameraObject(
 							head_pos, head_direction, head_up,
 							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
 							hand_trans->data.position);
@@ -204,7 +204,7 @@ void PlayerBodySystem::Update(double dt) {
 						//hand_trans->data.position = vec3(0,0,0);
 						
 						/*float horz_deg = (i == 1 ? -1 : +1) * 30;
-						camera_object(
+						CameraObject(
 							head_pos, head_direction, head_up,
 							//DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
 							DEG2RAD(0), DEG2RAD(-30), 0.3f,
@@ -322,7 +322,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 						trans->data = ctrl.trans;
 						
 						#if 0
-						mat4 rot = rotate(trans->anchor_orientation);
+						mat4 rot = QuatMat(trans->anchor_orientation);
 						vec3 new_position = (trans->data.position.Embed() * rot).Splice();
 						trans->data.position = trans->anchor_position + new_position;
 						//trans->data.position += trans->anchor_position;
@@ -331,7 +331,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 						//LOG(trans->data.GetAxesString());
 						#else
 						//trans->data.position = trans->anchor_position;
-						mat4 rot = rotate(trans->anchor_orientation);
+						mat4 rot = QuatMat(trans->anchor_orientation);
 						vec3 new_position = (rot * trans->data.position.Embed()).Splice();
 						trans->data.position = trans->anchor_position + new_position;
 						trans->data.orientation = AxesQuat(0,0,0);

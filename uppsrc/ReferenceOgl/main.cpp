@@ -263,7 +263,7 @@ void Draw(int rotation, struct glinfo * glpointers) {
 	
 	#define DEG2RAD(x) (x / 180.0 * M_PI)
 	perspective(DEG2RAD(45.0), SCREEN_W / (float) SCREEN_H, 0.1, 100, p);
-	translate(0.0, 0.0, -4.0, m);
+	Translate(0.0, 0.0, -4.0, m);
 	lookat(0, 2, 0, 0, 0, -4, 0, 1, 0, v);
 	rotate(rotation, 0.0, 1.0, 0.0, r);
 	

@@ -28,7 +28,7 @@ inline bool FromGltfObject(
     Pbr::Resources& pbr_res,
     const tinygltf::Model& gltf_model)
 {
-    return FromGltfObject(model, pbr_res, gltf_model, identity<mat4>());
+    return FromGltfObject(model, pbr_res, gltf_model, Identity<mat4>());
 }
 
 // Creates a Pbr Model from glTF 2.0 GLB file content with the specified root transform.
@@ -46,7 +46,7 @@ inline bool FromGltfBinary(
     const char* buffer,
     uint32 buffer_bytes)
 {
-    return FromGltfBinary(model, pbr_res, buffer, buffer_bytes, identity<mat4>());
+    return FromGltfBinary(model, pbr_res, buffer, buffer_bytes, Identity<mat4>());
 }
 
 }

@@ -35,11 +35,11 @@ void RigidbodyVolume::SynchCollisionVolumes() {
 	box.position = position;
 
 #ifndef LINEAR_ONLY
-	box.orientation = Rotation3x3(
+	box.orientation = AxesMat(
 		RadDeg(orientation[0]),
 		RadDeg(orientation[1]),
 		RadDeg(orientation[2])
-	);
+	).Splice();
 #endif
 }
 
@@ -190,7 +190,7 @@ void ApplyImpulse(RigidbodyVolume& A, RigidbodyVolume& B, const CollisionManifol
 #endif
 	// Relative collision normal
 	vec3 relativeNorm = M.normal;
-	normalize(relativeNorm);
+	Normalize(relativeNorm);
 
 	// Moving away from each other? Do nothing!
 	if (Dot(relativeVel, relativeNorm) > 0.0f) {

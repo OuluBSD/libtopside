@@ -400,8 +400,8 @@ bool CoreWindow::Redraw(bool only_pending) {
     double x_ratio = (double)win_sz.cx / sz.cx;
 	double y_ratio = (double)win_sz.cy / sz.cy;
 	mat4 scale =
-		translate(
-			TS::scale(identity<mat4>(), vec3(1.0 / x_ratio, 1.0 / y_ratio, 1.0)),
+		Translate(
+			TS::scale(Identity<mat4>(), vec3(1.0 / x_ratio, 1.0 / y_ratio, 1.0)),
 			vec3(
 				(r.left + (win_sz.cx - r.right)) * 0.5,
 				(-r.top - (win_sz.cy - r.bottom)) * 0.5,
@@ -421,7 +421,7 @@ bool CoreWindow::Redraw(bool only_pending) {
 	stop.prev = &cmd_end;
 	
 	offset.SetCount(0);
-	offset.Add(translate(identity<mat4>(), vec3(-r.left, -r.top, 0)));
+	offset.Add(Translate(Identity<mat4>(), vec3(-r.left, -r.top, 0)));
 	
 	
 	/*DrawCommand* cmd = &start;

@@ -89,7 +89,7 @@ void Geometry2::Render(Draw& draw) {
 		// With inverse matrix, you can restore the original state
 		// Multiplying a matrix by it's inverse should yield a identity matrix.
 		mat3 B2 = B * B.GetInverse();
-		ASSERT(B2.IsClose(identity<mat3>()));
+		ASSERT(B2.IsClose(Identity<mat3>()));
 		mat3 A2 = (B.GetInverse() * (B * A));
 		ASSERT(A2.IsClose(A));
 		
@@ -127,7 +127,7 @@ void Geometry2::Render(Draw& draw) {
 			// The "Project()" call divides the matrix with the global scale (G) value.
 			// Matrix must be transposed for multiplying or the vector must be converted
 			// to mat41.
-			mat4 m = identity<mat4>();
+			mat4 m = Identity<mat4>();
 			m[3][0] = 2 * z;
 			m[3][1] = 0;
 			m.Transpose();
@@ -137,7 +137,7 @@ void Geometry2::Render(Draw& draw) {
 		}
 		if (phase >= 1) {
 			// Scale the vector and m to [2,2]
-			mat4 m = identity<mat4>();
+			mat4 m = Identity<mat4>();
 			m[3][0] = 2;
 			m[3][1] = 0 + 2 * z;
 			m[0][0] = 1 + z;

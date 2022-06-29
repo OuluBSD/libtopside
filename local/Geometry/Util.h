@@ -7,41 +7,41 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class T> T zero() {T o; memset(&o, 0, sizeof(T));return o;}
 template <class T> T one() {T o; o.SetConst(1.0); return o;}
-template <class T> T identity() {T o; o.SetIdentity(); return o;}
+template <class T> T Identity() {T o; o.SetIdentity(); return o;}
 
 template <class T>
-T normalize(const T& a) {
+T Normalize(const T& a) {
 	T o(a);
 	o.Normalize();
 	return o;
 }
 
-template <class T> T mod(const T& a, float f) {return a.Modulus(f);}
-template <class T> T mix(const T& a, const T& b, float f) {return a.Mix(b, f);}
+template <class T> T Mod(const T& a, float f) {return a.Modulus(f);}
+template <class T> T Mix(const T& a, const T& b, float f) {return a.Mix(b, f);}
 
 
-mat4 perspective(float half_fov_rad, float aspect, float near, float far);
-mat4 ortho(float left, float right, float bottom, float top, float near, float far);
-//mat4 ToMat4(const quat& q);
-void ToMat3_(mat3& m, const quat& q);
+vec3 Lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
+quat Slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
 
-template <class T> T cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
-template <class T> T inverse(const T& o) {return o.GetInverse();}
-template <class T> T transpose(const T& o) {return o.GetTransposed();}
-template<class T, class K> T scale(const T& a, const K& b) {return a.Scale(b);}
-template<class T, class K> T translate(const T& a, const K& b) {return a.Translate(b);}
-template<class T> float dot(const T& a, const T& b) {return a.GetDotProduct(b);}
-vec3 combine(const vec3& a, const vec3& b, float ascl, float bscl);
+mat4 Perspective(float half_fov_rad, float aspect, float near, float far);
+mat4 Ortho(float left, float right, float bottom, float top, float near, float far);
 
-inline mat4 scale(const vec3& b) {mat4 a; a.SetIdentity(); return a.Scale(b);}
-inline mat4 translate(const vec3& b) {mat4 a; a.SetIdentity(); return a.Translate(b);}
-inline vec3 transform(const vec3& v, const mat4& m) {return (v.Extend(1.0) * m).Splice();}
-vec3 transform(const vec3& v, const quat& m);
+template <class T> T Cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
+template <class T> T Inverse(const T& o) {return o.GetInverse();}
+template <class T> T Transpose(const T& o) {return o.GetTransposed();}
+template<class T, class K> T Scale(const T& a, const K& b) {return a.Scale(b);}
+template<class T, class K> T Translate(const T& a, const K& b) {return a.Translate(b);}
+template<class T> float Dot(const T& a, const T& b) {return a.GetDotProduct(b);}
+vec3 Combine(const vec3& a, const vec3& b, float ascl, float bscl);
 
-vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
-quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
+void ChangeZConvention(mat4& m);
 
-mat4 FastInverse(const mat4& mat);
+inline vec3 VectorTransform(const vec3& v, const mat4& m) {return (v.Extend(1.0) * m).Splice();}
+vec3 VectorTransform(const vec3& v, const quat& m);
+
+vec3 Lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
+quat Slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
+
 vec2 Project(const vec2& length, const vec2& direction);
 vec3 Project(const vec3& length, const vec3& direction);
 vec2 Normalized(const vec2& v);
@@ -60,15 +60,15 @@ float Determinant(const mat4& mat);
 mat2 Adjugate(const mat2& mat);
 mat3 Adjugate(const mat3& mat);
 mat4 Adjugate(const mat4& mat);
-mat2 Inverse(const mat2& mat);
-mat3 Inverse(const mat3& mat);
-mat4 Inverse(const mat4& m);
+mat2 FastInverse(const mat2& mat);
+mat3 FastInverse(const mat3& mat);
+mat4 FastInverse(const mat4& m);
 bool Multiply(vec2& out, const vec2& v, const mat2& m);
 bool Multiply(vec3& out, const vec3& v, const mat3& m);
 bool Multiply(vec4& out, const vec4& v, const mat4& m);
 float Dot(const vec2& a, const vec2& b);
 float Dot(const vec3& a, const vec3& b);
-vec3 Cross(const vec3& l, const vec3& r);
+//vec3 Cross(const vec3& l, const vec3& r);
 float Magnitude(const vec2& v);
 float Magnitude(const vec3& v);
 float MagnitudeSq(const vec2& v);
@@ -82,9 +82,11 @@ mat4 Transpose(const mat4& matrix);
 float Determinant(const mat2& matrix);
 float Determinant(const mat3& matrix);
 
-vec3 yaw_pitch_to_direction(float yaw, float pitch);
-void direction_to_yaw_pitch(vec3 dir, float& yaw, float& pitch);
-void camera_object(
+mat2 Rotation2x2(float angle);
+
+vec3 AxesDir(float yaw, float pitch);
+void DirAxes(vec3 dir, float& yaw, float& pitch);
+void CameraObject(
 	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
 	vec3& position);
@@ -113,7 +115,6 @@ vec3 MultiplyPoint(const vec3& vec, const mat4& mat);
 vec3 MultiplyVector(const vec3& v, const mat3& m);
 vec3 MultiplyVector(const vec3& v, const mat4& m);
 mat4 MultiplyMatrix(const mat4& m0, const mat4& m1);
-mat4 MatrixInverse(const mat4* l, const mat4& r);
 vec4 VectorSet(float x, float y, float z, float d);
 vec4 VectorCross(const vec4& a, const vec4& b);
 mat4 DoubleToMatrix4(const std::vector<double>& v);
@@ -171,7 +172,7 @@ template<class T, class K>
 Vec<T,3> GetBarycentric(const Vec<T,3>* pts, const Vec<K,2>& P) {
 	typedef Vec<T,3> vec3;
 	typedef Vec<float,3> fvec3;
-	fvec3 u = cross(
+	fvec3 u = Cross(
 		fvec3(	pts[2][0] - pts[0][0],
 				pts[1][0] - pts[0][0],
 				pts[0][0] - P[0]),
@@ -216,38 +217,43 @@ T safe_normalize(T v) {
 
 mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
-mat4 rotate(mat4 const& m, float angle, vec3 const& v);
+mat4 Rotate(mat4 const& m, float angle, vec3 const& v);
 quat AxisAngleQuat(const vec3& v, float angle);
-//mat4 make_mat4_from_quat(const quat& q);
+//mat4 QuatMat(const quat& q);
 quat AxesQuat(float yaw, float pitch, float roll);
-mat4 make_mat4_rotation_x(float angle);
-mat4 make_mat4_rotation_y(float angle);
-mat4 make_mat4_rotation_z(float angle);
-mat4 make_mat4_translation(const vec3& position);
-quat make_quat_from_rotation_matrix(const mat4& matrix);
-//mat4 rotate(const quat& q);
-mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll);
+mat4 XRotation(float angle);
+mat4 YRotation(float angle);
+mat4 ZRotation(float angle);
+mat4 Translate(const vec3& position);
+mat4 Scale(const vec3& scale);
+//mat4 Rotate(const quat& q);
+mat4 AxesMat(float yaw, float pitch, float roll);
 
-quat make_rotation_direction(const vec3& dir, const vec3& up);
+//quat make_rotation_direction(const vec3& dir, const vec3& up);
 
-void decompose_quat(const quat& q, float& yaw, float& pitch, float& roll);
+void QuatAxes(const quat& q, float& yaw, float& pitch, float& roll);
+void QuatAxes(const quat& q, vec3& axes);
+void MatAxes(const mat4& m, vec3& axes);
+
+quat MatQuat(const mat4& transform);
+
+mat4 SkewMat(const vec3& v, float ident_value=1.0f);
+mat4 SkewMat(const vec4& v, float ident_value=1.0f);
 
 
-namespace MatrixUtils {
+
+vec3 Right(const mat4& transform);
+vec3 Left(const mat4& transform);
+vec3 Up(const mat4& transform);
+vec3 Down(const mat4& transform);
+vec3 Backward(const mat4& transform);
+vec3 Forward(const mat4& transform);
+vec3 Position(const mat4& transform);
 
 
-vec3 right(const mat4& transform);
-vec3 left(const mat4& transform);
-vec3 up(const mat4& transform);
-vec3 down(const mat4& transform);
-vec3 backward(const mat4& transform);
-vec3 forward(const mat4& transform);
-vec3 position(const mat4& transform);
-quat orientation(const mat4& transform);
+
+
 mat4 RemoveScale(const mat4& transform);
-
-
-}
 
 inline float ConvertToRadians(float angle) {return (float)(angle / 180.0 * M_PI);}
 

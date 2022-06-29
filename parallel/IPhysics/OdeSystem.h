@@ -66,7 +66,7 @@ public:
 	
 	bool is_override_phys_geom = false;
 	mat4 override_geom;
-	mat4 model_geom = identity<mat4>();
+	mat4 model_geom = Identity<mat4>();
 	
 public:
 	RTTI_DECL1(OdeObject, OdeNode)

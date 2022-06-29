@@ -360,11 +360,11 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				for(int i = 0; i < 2; i++)
 					top_stage.MakeFrameQuad();
 			ASSERT(top_stage.data.objects.GetCount() == 2);
-			mat4 scale_mat = scale(vec3(0.5, 1.0, 1.0));
+			mat4 scale_mat = Scale(vec3(0.5, 1.0, 1.0));
 			for(int i = 0; i < 2; i++) {
 				DataObject& o = top_stage.data.objects[i];
-				//mat4 trans_mat = translate(vec3(i == 0 ? -1 : +1, i == 0 ? 0 : -0.2, 0));
-				mat4 trans_mat = translate(vec3(i == 0 ? -1 : +1, 0, 0));
+				//mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, i == 0 ? 0 : -0.2, 0));
+				mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, 0, 0));
 				mat4 model = scale_mat * trans_mat;
 				o.model = model;
 			}

@@ -178,7 +178,7 @@ void LocalFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
 	ASSERT(args.fa);
 	vec3& n = args.normal;
 	vec3& light_dir = args.fa->light_dir;
-	float m = dot(n, light_dir);
+	float m = Dot(n, light_dir);
 	
 	vec4& used_clr = args.frag_color_out;
 	used_clr[3] = 0;

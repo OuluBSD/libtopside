@@ -98,20 +98,20 @@ void OdeObject::Refresh() {
 	int width = 1280, height = 720;
 	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
     mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
-    mat4 model = identity<mat4>();
+    mat4 model = Identity<mat4>();
 	fb_obj->SetMat4("projection", projection);
 	fb_obj->SetMat4("model", model);
 	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
 		mat4 v = override_geom * model_geom;
-		fb_obj->Set(v, identity<mat4>());
+		fb_obj->Set(v, Identity<mat4>());
 	}
 	else {
 		dVector3 pos;
 		dGeomCopyPosition (geom, pos);
 		vec3 v3 = MakeVec3(pos);
-		mat4 trans = translate(identity<mat4>(), v3);
+		mat4 trans = Translate(Identity<mat4>(), v3);
 		
 		dQuaternion result;
 		dGeomGetQuaternion (geom, result);
@@ -124,10 +124,10 @@ void OdeObject::Refresh() {
 		q[1] = result[1];
 		q[2] = result[2];
 		q[3] = result[3];*/
-		mat4 rot = ToMat4(q);
+		mat4 rot = QuatMat(q);
 		
 		mat4 v = trans * rot * model_geom;
-		fb_obj->Set(v, identity<mat4>());
+		fb_obj->Set(v, Identity<mat4>());
 	}
 }
 

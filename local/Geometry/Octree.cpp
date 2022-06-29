@@ -67,7 +67,7 @@ void Octree::Initialize(int min_scale_level, int max_scale_level) {
 	root.level = this->max_scale_level;
 	
 	max_len = 0.5f * FastPow<double>(2.0, this->max_scale_level);
-	transform = identity<mat4>();
+	transform = Identity<mat4>();
 	has_transform = false;
 	
 	levels.SetCount(scale_count);

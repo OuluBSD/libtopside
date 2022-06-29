@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 bool IsClose(double a, double b) {
 	if (IsFin(a) && IsFin(b)) {
 		double diff = fabs(a - b);
-		return diff < 0.0001;
+		return diff < 0.001;
 	}
 	else {
 		return *(uint64*)&a == *(uint64*)&b;

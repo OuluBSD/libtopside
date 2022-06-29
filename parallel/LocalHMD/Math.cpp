@@ -315,7 +315,7 @@ void omat4_init_look_at(mat4* me, const quat* rot, const vec3* eye)
 	me->data[3][3] = 1;
 }
 
-void omat4_init_translate(mat4* me, float x, float y, float z)
+void omat4_init_Translate(mat4* me, float x, float y, float z)
 {
 	omat4_init_ident(me);
 	me->data[0][3] = x;

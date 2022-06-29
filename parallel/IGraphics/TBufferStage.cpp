@@ -803,16 +803,16 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 	}
 	else if (var == VAR_VIEW) {
 		if (fb.is_stereo_left) {
-			/*mat4 m = data.view_stereo[0] * translate(vec3(0,1.76,-6));
-			vec3 pos = MatrixUtils::position(m);
+			/*mat4 m = data.view_stereo[0] * Translate(vec3(0,1.76,-6));
+			vec3 pos = Position(m);
 			Gfx::UniformMatrix4fv(uindex, m);*/
 			
 			ASSERT(data.is_stereo);
 			Gfx::UniformMatrix4fv(uindex, data.view_stereo[0]);
 		}
 		else if (fb.is_stereo_right) {
-			/*mat4 m = data.view_stereo[1] * translate(vec3(0,1.76,-6));
-			vec3 pos = MatrixUtils::position(m);
+			/*mat4 m = data.view_stereo[1] * Translate(vec3(0,1.76,-6));
+			vec3 pos = Position(m);
 			Gfx::UniformMatrix4fv(uindex, m);*/
 			
 			ASSERT(data.is_stereo);

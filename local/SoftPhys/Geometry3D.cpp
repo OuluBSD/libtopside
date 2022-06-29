@@ -139,7 +139,7 @@ bool PointInOBB(const Point& point, const OBB& obb) {
 
 Point ClosestPoint(const Sphere& sphere, const Point& point) {
 	vec3 sphereToPoint = point - sphere.position;
-	normalize(sphereToPoint);
+	Normalize(sphereToPoint);
 	sphereToPoint = sphereToPoint * sphere.radius;
 	return sphereToPoint + sphere.position;
 }
@@ -217,7 +217,7 @@ bool PointOnRay(const Point& point, const Ray& ray) {
 	}
 
 	vec3 norm = point - ray.origin;
-	normalize(norm);
+	Normalize(norm);
 	float diff = Dot(norm, ray.direction); // Direction is normalized
 	// If BOTH vectors point in the same direction, diff should be 1
 	return CMP(diff, 1.0f);
@@ -1679,7 +1679,7 @@ void Model::SetContent(Mesh* mesh) {
 
 mat4 GetWorldMatrix(const Model& model) {
 	mat4 translation = Translation(model.position);
-	mat4 rotation = Rotation(model.rotation[0], model.rotation[1], model.rotation[2]);
+	mat4 rotation = AxesMat(model.rotation[0], model.rotation[1], model.rotation[2]);
 	mat4 localMat = translation * rotation /* * Scale */;
 	
 	mat4 parentMat;

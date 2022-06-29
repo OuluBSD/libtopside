@@ -289,7 +289,7 @@ bool HolographicRenderingSystem::RenderAtCameraPose(
 
         ////////////////////////////////////////////////////////////////////////////////
         // Skybox Rendering
-        mat4 camera_to_coord_sys = identity<mat4>();
+        mat4 camera_to_coord_sys = Identity<mat4>();
         if (auto location = GetActiveSpatialLocator().TryLocateAtTimestamp(prediction.GetTimestamp(), coord_system))
         {
             camera_to_coord_sys = make_mat4_translation(location.GetPosition());
