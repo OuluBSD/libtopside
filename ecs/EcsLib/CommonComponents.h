@@ -24,7 +24,7 @@ public:
 	//bool use_stereo = false;v
 	*/
 	
-	void SetFromMatrix(const mat4& matrix);
+	//void SetFromMatrix(const mat4& matrix);
 	void operator=(const Transform& t);
 	mat4 GetMatrix() const;
 	vec3 GetForwardDirection() const;

@@ -166,7 +166,8 @@ struct ViewportParams {
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up);
 mat4 GetViewport(const ViewportParams& vp);
 mat4 GetViewport(float x, float y, float w, float h, float depth);
-bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
+//bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
+//mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective);
 
 template<class T, class K>
 Vec<T,3> GetBarycentric(const Vec<T,3>* pts, const Vec<K,2>& P) {
@@ -233,9 +234,9 @@ mat4 AxesMat(float yaw, float pitch, float roll);
 
 void QuatAxes(const quat& q, float& yaw, float& pitch, float& roll);
 void QuatAxes(const quat& q, vec3& axes);
-void MatAxes(const mat4& m, vec3& axes);
+//void MatAxes(const mat4& m, vec3& axes);
 
-quat MatQuat(const mat4& transform);
+//quat MatQuat(const mat4& transform);
 
 mat4 SkewMat(const vec3& v, float ident_value=1.0f);
 mat4 SkewMat(const vec4& v, float ident_value=1.0f);
@@ -253,7 +254,7 @@ vec3 Position(const mat4& transform);
 
 
 
-mat4 RemoveScale(const mat4& transform);
+//mat4 RemoveScale(const mat4& transform);
 
 inline float ConvertToRadians(float angle) {return (float)(angle / 180.0 * M_PI);}
 

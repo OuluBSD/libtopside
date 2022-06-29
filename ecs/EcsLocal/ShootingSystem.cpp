@@ -104,7 +104,7 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 				
 			vec3 position = Position(barrel_to_world);
 			//const vec3 position = trans->position;
-			quat orientation = MatQuat(barrel_to_world);
+			quat orientation; TODO // = MatQuat(barrel_to_world);
 			//const quat orientation = trans->orientation;
 			vec3 forward = Forward(barrel_to_world);
 			forward.Normalize();

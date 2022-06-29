@@ -319,20 +319,12 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		roll = 0;
 		dev.initial_orient = AxesQuat(yaw, pitch, roll);
 	}
-	#if 0
-	// this should work, but doesn't
-	dev.trans.orientation =
-		MatQuat(
-			QuatMat(dev.trans.orientation)
-			* QuatMat(dev.initial_orient).GetInverse());
-	#else
 	vec3 initial_axes;
 	QuatAxes(dev.initial_orient, initial_axes[0], initial_axes[1], initial_axes[2]);
 	vec3 axes;
 	QuatAxes(dev.trans.orientation, axes[0], axes[1], axes[2]);
 	//axes[0] *= -1;
 	dev.trans.orientation = AxesQuat(axes[0] - initial_axes[0], axes[1], axes[2]);
-	#endif
 	
 	dev.trans.mode = UPP::TransformMatrix::MODE_AXES;
 	dev.trans.is_stereo = true;

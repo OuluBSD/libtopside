@@ -31,7 +31,6 @@
 #include "Util.h"
 #include "GeomCommon.h"
 #include "Geom2D.h"
-//#include "Transform.h"
 #include "Quadtree.h"
 #include "Octree.h"
 #include "GeomTypes.h"

@@ -326,9 +326,11 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 							vec3 pos = paint_to_world.GetTranslation();
 							LOG("PaintingInteractionSystemBase::OnControllerUpdated: pos " << pos.ToString());
 						}
+						TODO
+						/*
 						paint->stroke_in_progress
 							->Get<PaintStrokeComponent>()
-								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
+								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);*/
 					}
 				}
 				/*const ControllerProperties& properties = source_state.GetControllerProperties();
@@ -406,7 +408,8 @@ void PaintingInteractionSystemBase::Update(double dt) {
 					const mat4 manipulation_transform = Translate(-previous_position) * QuatMat(orientation_delta) * Translate(position);
 					
 					for (auto stroke : paint->strokes) {
-						stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulation_transform);
+						TODO
+						//stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulation_transform);
 					}
 				}
 				

@@ -24,7 +24,6 @@ file
 	GeomCommon.h,
 	Geom2D.h,
 	Geom2D.cpp,
-	Transform.h,
 	Quadtree.h,
 	Quadtree.cpp,
 	Octree.h,

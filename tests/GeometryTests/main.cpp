@@ -123,7 +123,9 @@ CONSOLE_APP_MAIN {
 	}
 	
 	// Decompose
-	if (1) {
+	#if 0
+	{
+		// Decompose is probably too broken still, even though this passes
 		vec3 scale0(1,2,3), scale1;
 		quat orient0 = AxesQuat(M_PI/4,M_PI/4,M_PI/4), orient1;
 		vec3 trans0(2,3,4), trans1;
@@ -145,6 +147,7 @@ CONSOLE_APP_MAIN {
 			ASSERT(IsClose(trans0, trans1));
 		}
 	}
+	#endif
 	
 	
 	// AxisAngleQuat
@@ -163,7 +166,7 @@ CONSOLE_APP_MAIN {
 	
 	// transform
 	if (1) {
-		vec3 l0 = Transform(vec3(0,0,1), AxisAngleQuat(vec3(0,1,0), M_PI / 2));
+		vec3 l0 = VectorTransform(vec3(0,0,1), AxisAngleQuat(vec3(0,1,0), M_PI / 2));
 		vec3 l1(-1,0,0);
 		ASSERT(IsClose(l0, l1));
 	}
@@ -302,7 +305,9 @@ CONSOLE_APP_MAIN {
 	}
 		
 	// mat4 -> quat
+	#if 0
 	{
+		// Passes, but probably very wrong with other angles
 		quat q0 = AxisAngleQuat(vec3(0,1,0), +M_PI / 2);
 		mat4 rot0 = QuatMat(q0);
 		quat q1 = MatQuat(rot0);
@@ -310,6 +315,7 @@ CONSOLE_APP_MAIN {
 		DUMP(q1);
 		ASSERT(IsClose(q0, q1));
 	}
+	#endif
 	
 	// GetEulerAngleYXZ
 	// NOTE the inverse axis order
@@ -319,8 +325,6 @@ CONSOLE_APP_MAIN {
 		vec3 yxz(roll, pitch, yaw);
 		mat4 m0 = AxesMat(yaw, pitch, roll);
 		mat4 m1 = GetEulerAngleYXZ(yxz);
-		vec3 axes1;
-		MatAxes(m1, axes1);
 		ASSERT(IsClose(m0, m1));
 		vec3 yx(0, pitch, yaw);
 		mat4 m2 = AxesMat(yaw, pitch, 0);
@@ -370,6 +374,32 @@ CONSOLE_APP_MAIN {
 		DUMP(im0 * vec4(640,480,0,1));
 		DUMP(im0 * vec4(0,480,0,1));
 	}
+	
+	#if 0
+	{
+		vec3 scale0(1,2,3), scale1;
+		quat orient0 = AxesQuat(M_PI/4,M_PI/4,M_PI/4), orient1;
+		vec3 trans0(2,3,4), trans1;
+		vec3 skew1;
+		vec4 persp;
+		{
+			//mat4 m0 = Translate(trans0) * Scale(scale0) * QuatMat(orient0) * Perspective(DEG2RAD(45), 1.33, 0.1, 1.0);
+			mat4 m0{
+			{1,3,5,9},
+			{1,3,1,7},
+			{4,3,9,7},
+			{5,2,0,9}};
+			Decompose(m0, scale1, orient1, trans1, skew1, persp);
+			mat4 m1 = Recompose(scale1, orient1, trans1, skew1, persp);
+			DUMP(m0);
+			DUMP(m1);
+			Decompose(m1, scale1, orient1, trans1, skew1, persp);
+			mat4 m2 = Recompose(scale1, orient1, trans1, skew1, persp);
+			DUMP(m2);
+			ASSERT(IsClose(m1, m2));
+		}
+	}
+	#endif
 	
 	LOG("Tests passed!");
 }

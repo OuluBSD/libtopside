@@ -111,7 +111,8 @@ mat4 Ortho(float left, float right, float bottom, float top, float near, float f
 	return m;
 }
 
-
+// too broken code with +z
+#if 0
 bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& translation, vec3& skew, vec4& perspective) {
 	mat4 local_mat(model_mat);
 	
@@ -229,6 +230,46 @@ bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& tra
 	
 	return true;
 }
+
+// Incorrect
+mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective) {
+	mat4 m = QuatMat(orientation);
+    
+    m[0][3] = perspective[0];
+    m[1][3] = perspective[1];
+    m[2][3] = perspective[2];
+    m[3][3] = perspective[3];
+    
+	m[3][0] = translation[0];
+	m[3][1] = translation[1];
+	m[3][2] = translation[2];
+	
+    
+    mat4 tmp;
+    tmp.SetIdentity();
+    if (skew[0]) {
+        tmp[2][1] = -skew[2];
+		m = m * tmp;
+		tmp[2][1] = 0;
+    }
+    
+    if (skew[1]) {
+        tmp[2][0] = -skew[1];
+		m = m * tmp;
+        tmp[2][0] = 0;
+    }
+    
+    if (skew[2]) {
+        tmp[1][0] = -skew[0];
+		m = m * tmp;
+        tmp[1][0] = 0;
+    }
+    
+    m = m * Scale(scale);
+
+	return m;
+}
+#endif
 
 vec3 Combine(const vec3& a, const vec3& b, float ascl, float bscl) {
 	return (a * ascl) + (b * bscl);
@@ -1209,9 +1250,9 @@ void QuatAxes(const quat& q, vec3& axes) {
 	QuatAxes(q, axes[0], axes[1], axes[2]);
 }
 
-void MatAxes(const mat4& m, vec3& axes) {
+/*void MatAxes(const mat4& m, vec3& axes) {
 	QuatAxes(MatQuat(m), axes);
-}
+}*/
 
 
 vec3 Right(const mat4& transform)
@@ -1260,8 +1301,8 @@ vec3 Position(const mat4& transform)
 
 
 
-
-mat4 RemoveScale(const mat4& transform)
+// Incorrect
+/*mat4 RemoveScale(const mat4& transform)
 {
     quat rotation;
     vec3 scale, translation, skew;
@@ -1279,7 +1320,7 @@ quat MatQuat(const mat4& transform)
 	vec4 persp;
 	Decompose(transform, size, orientation, baller_position, skew, persp);
 	return orientation;
-}
+}*/
 
 mat4 SkewMat(const vec3& v, float ident_value) {
 	/*S =
