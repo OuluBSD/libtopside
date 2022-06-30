@@ -72,7 +72,7 @@ public:
 	
 	
 	PlayerBodyComponentRef				body;
-	bool								is_fake = false;
+	bool								is_simulated = false;
     bool								attach_ctrl_model = false;
     PlayerHandedness					req_hand = Unspecified;
     const HandLocationSource*			source = 0;

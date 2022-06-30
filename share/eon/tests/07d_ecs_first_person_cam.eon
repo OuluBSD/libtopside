@@ -24,7 +24,7 @@ machine sdl.app: {
 				sizeable:		true;
 				env:			event.register;
 				shader.frag.path:		"shaders/tests/07d_fragment.glsl";
-				shader.vtx.path:			"shaders/tests/07d_vertex.glsl";
+				shader.vtx.path:		"shaders/tests/07d_vertex.glsl";
 			};
 		};
 		
@@ -45,31 +45,35 @@ engine ecs.dummy: {
         entity ground: {
             comp transform3;
             comp model: {builtin: plane;};
-            comp physics: {bind: physics; test.fn: fixed;};
+            comp physics: {bind: true; test.fn: fixed;};
         };
         
         entity box: {
             comp transform3: {y: 1;};
             comp body;
             comp model: {builtin: box;};
-            comp physics: {bind: physics; test.fn: fixed;};
+            comp physics: {bind: true; test.fn: fixed;};
         };
         
         entity box2: {
             comp transform3: {x: -3; y: 1;};
             comp body;
             comp model: {builtin: box;};
-            comp physics: {bind: physics; test.fn: fixed;};
+            comp physics: {bind: true; test.fn: fixed;};
         };
         
         entity player.body: {
             comp transform3: {x: 0; y: 0; z: -6;};
-            comp physics: {bind: physics;};
+            comp physics: {bind: true;}; // TODO
             comp player.body: {height: 1.74;};
         };
         
         entity player.head: {
-            comp transform3;
+            comp transform3: {
+                x: 0;
+                y: 1.6;
+                z: -6;
+            };
             comp viewable;
             comp viewport: {fov: 90;};
             comp camera.chase;
@@ -80,14 +84,14 @@ engine ecs.dummy: {
             comp transform3;
             comp body;
             comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
-            comp player.hand: {hand: left; body: world.player.body;};
+            comp player.hand: {hand: left; body: world.player.body; simulated: true;};
         };
         
         entity player.hand.right: {
             comp transform3;
             comp body;
             comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
-            comp player.hand: {hand: right; body: world.player.body;};
+            comp player.hand: {hand: right; body: world.player.body; simulated: true;};
         };
     };
 };

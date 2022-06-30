@@ -10,7 +10,7 @@ machine glx.app: {
 		loop video: {
 			center.customer: true;
 			x11.sw.fbo.pipe: true {
-				shader.vtx.name:			"pass";
+				shader.vtx.name:		"pass";
 				shader.frag.name:		"color_test";
 			};
 			x11.sw.fbo.sink: true {

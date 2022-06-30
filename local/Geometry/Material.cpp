@@ -37,7 +37,7 @@ void Material::SetFlat(const vec4& base_color_factor, float roughness_factor /* 
     SetTexture(Material::BaseColor,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
     SetTexture(Material::MetallicRoughness,	CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
     SetTexture(Material::Occlusion,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 })); // No occlusion.
-    SetTexture(Material::Normal,				CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 })); // Flat normal.
+    SetTexture(Material::Normal,			CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 })); // Flat normal.
     SetTexture(Material::Emissive,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
 	
 }

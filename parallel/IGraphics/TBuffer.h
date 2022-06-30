@@ -38,6 +38,7 @@ struct BufferStageT : GfxBufferStage {
 	Framebuffer					fb;
 	
 	DataState					data;
+	DataState*					stereo_data = 0;
 	DataState*					user_data = 0;
 	int							loopback = -1;
 	int							quad_count = 0;
@@ -84,7 +85,8 @@ struct BufferStageT : GfxBufferStage {
 	template <int> int BuiltinShaderT();
 	bool SetupLoopback();
 	
-	DataState& GetState() {return user_data ? *user_data : data;}
+	DataState& LocalState() {return stereo_data ? *stereo_data : data;}
+	DataState& GetState() {return user_data ? *user_data : (stereo_data ? *stereo_data : data);}
 	NativeColorBufferConstRef GetInputTex(int input_i) const;
 	GVar::TextureType GetTexType(int input_i) const;
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
@@ -93,6 +95,7 @@ struct BufferStageT : GfxBufferStage {
 	void SetStereo(int stereo_id);
 	void SetStereoLens();
 	void SetDataStateOverride(DataState* s);
+	void SetStereoDataState(DataState* s);
 	bool SetLoopback(String loopback_str);
 	void SetVars(DataState&, NativeProgram& gl_prog, const DataObject& o);
 	void SetVar(DataState&, int var, NativeProgram& gl_prog, const DataObject& o);
@@ -189,7 +192,6 @@ public:
 	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
 	bool PostInitialize();
 	bool InitializeRenderer();
-	void Process(ShaderPipeline& pipe);
 	void Process(const RealtimeSourceConfig& cfg);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
@@ -203,6 +205,7 @@ public:
 	
 	void SetFramebufferSize(Size sz);
 	void SetLocalTime(bool b=true) {is_local_time = b;}
+	void SetStereoDataState(DataState* s);
 	void SetDataStateOverride(DataState* s);
 	
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;

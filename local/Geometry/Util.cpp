@@ -36,7 +36,7 @@ mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
     #if IS_NEGATIVE_Z
 	vec3 z = Normalize(eye - center);
 	#else
-	vec3 z = Normalize(-eye + center);
+	vec3 z = Normalize(-eye - center);
 	#endif
 	
     vec3 x = Normalize(Cross(up, z));
@@ -50,10 +50,6 @@ mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
     minv[3][1] = -Dot(y, eye);
     minv[3][2] = -Dot(z, eye);
     minv[3][3] = 1.0f;
-    
-    #if !IS_NEGATIVE_Z
-    ChangeZConvention(minv);
-    #endif
     
     return minv;
 }

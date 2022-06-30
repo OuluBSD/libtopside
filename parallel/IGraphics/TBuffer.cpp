@@ -65,7 +65,7 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages[1].SetStereo(1);
 		stages[2].SetStereoLens();
 		stereo_data.is_stereo = true;
-		SetDataStateOverride(&stereo_data);
+		SetStereoDataState(&stereo_data);
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;
@@ -263,6 +263,17 @@ DataStateT<Gfx>& BufferT<Gfx>::GetState() {
 }
 
 template <class Gfx>
+void BufferT<Gfx>::SetStereoDataState(DataState* s) {
+	ASSERT(mode == MULTI_STEREO);
+	if (mode == MULTI_STEREO) {
+		ASSERT(!s || s->is_stereo);
+		ASSERT(stages.GetCount() == 3);
+		stages[0].SetStereoDataState(s);
+		stages[1].SetStereoDataState(s);
+	}
+}
+
+template <class Gfx>
 void BufferT<Gfx>::SetDataStateOverride(DataState* s) {
 	if (mode == MULTI_STEREO) {
 		ASSERT(!s || s->is_stereo);
@@ -294,12 +305,6 @@ void BufferT<Gfx>::SetFramebufferSize(Size sz) {
 		UpdateTexBuffers();*/
 }
 
-template <class Gfx>
-void BufferT<Gfx>::Process(ShaderPipeline& pipe) {
-	
-	TODO
-	
-}
 
 template <class Gfx>
 void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {

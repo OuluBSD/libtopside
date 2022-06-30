@@ -39,6 +39,11 @@ void BufferStageT<Gfx>::SetStereoLens() {
 }
 
 template <class Gfx>
+void BufferStageT<Gfx>::SetStereoDataState(DataState* s) {
+	stereo_data = s;
+}
+
+template <class Gfx>
 void BufferStageT<Gfx>::SetDataStateOverride(DataState* s) {
 	//ASSERT(!user_data || !s);
 	user_data = s;
@@ -322,7 +327,7 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 	m.indices << 0 << 2 << 1; // top-right triangle CCW
 	m.indices << 0 << 3 << 2; // bottom-left triangle CCW
 	
-	DataObject& o = data.AddObject();
+	DataObject& o = LocalState().AddObject();
 	o.Refresh(m);
 }
 
@@ -354,19 +359,21 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	//Gfx::Clear(GVar::STENCIL_BUFFER);
 	
 	if (!use_user_data) {
+		DataState& used_data = stereo_data ? *stereo_data : data;
+		
 		/*if (binders.GetCount()) {
 			Buffer* buf = CastPtr<Buffer>(this);
 			ASSERT(buf);
 			Shader shader;
-			shader.SetState(data);
+			shader.SetState(used_data);
 			for (BinderIface* iface : binders)
-				iface->Render(data);
+				iface->Render(used_data);
 		}*/
 		
 		//if (binders.IsEmpty()) {
 		if (0)
 			Gfx::RenderScreenRect();
-		else if (!user_data && data.objects.IsEmpty()) {
+		else if (used_data.objects.IsEmpty()) {
 			for(int i = 0; i < quad_count; i++)
 				MakeFrameQuad();
 		}
@@ -380,14 +387,14 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		{
 			SetVars(rt.prog, cfg);
 			
-			for (DataObject& o : data.objects) {
+			for (DataObject& o : used_data.objects) {
 				if (!o.is_visible)
 					continue;
 				
 				Gfx::BeginRenderObject();
 				
-				SetVars(data, rt.prog, o);
-				o.Paint(data);
+				SetVars(used_data, rt.prog, o);
+				o.Paint(used_data);
 				
 				Gfx::EndRenderObject();
 			}

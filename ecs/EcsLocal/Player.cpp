@@ -39,6 +39,9 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 			return false;
 		}
 	}
+	else if (key == "simulated")
+		is_simulated = (String)value == "true";
+	
 	return true;
 }
 
@@ -188,7 +191,7 @@ void PlayerBodySystem::Update(double dt) {
 			if (b->hands[i]) {
 				TransformRef hand_trans = b->hands[i]->GetEntity()->Find<Transform>();
 				if (hand_trans) {
-					if (b->hands[i]->is_fake) {
+					if (b->hands[i]->is_simulated) {
 						hand_trans->data.mode = TransformMatrix::MODE_AXES;
 						hand_trans->data.axes = axes;
 						float horz_deg = (i == 1 ? -1 : +1) * 30;
@@ -296,12 +299,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 		for (PlayerBodyComponentRef& b : bodies) {
 			TransformRef trans = b->GetEntity()->Find<Transform>();
 			if (trans) {
-				TODO
-				#if 0
-				vec3 rel_pos;
-				COPY3(rel_pos, e.spatial->position);
-				trans->position += rel_pos;
-				#endif
+				trans->data = *e.trans;
 			}
 		}
 	}

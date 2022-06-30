@@ -6,16 +6,16 @@ NAMESPACE_ECS_BEGIN
 
 
 void CalculateCameraView(mat4& view, mat4* stereo_view, float eye_dist, const vec3& eye, const vec3& target, const vec3& up, const mat4& port, const mat4& eye_port, const mat4& proj) {
-	vec3 look_vec = target - eye;
-	vec3 side_vec = Cross(look_vec, up);
-	side_vec.Normalize();
-	float eye_dist_2 = eye_dist / 2;
-	vec3 eye_off = side_vec * eye_dist_2;
-	
 	mat4 lookat = LookAt(eye, target, up);
 	view = port * proj * lookat;
 	
 	if (stereo_view) {
+		vec3 look_vec = target - eye;
+		vec3 side_vec = Cross(look_vec, up);
+		side_vec.Normalize();
+		float eye_dist_2 = eye_dist / 2;
+		vec3 eye_off = side_vec * eye_dist_2;
+		
 		vec3 l_eye = eye - eye_off;
 		vec3 r_eye = eye + eye_off;
 		vec3 l_target = target - eye_off;
@@ -227,77 +227,64 @@ void ChaseCam::UpdateView() {
 	}
 	else if (this->trans) {
 		TransformMatrix& tm = this->trans->data;
-		if (tm.is_stereo) {
-			if (tm.mode == TransformMatrix::MODE_POSITION) {
-				TODO
-			}
-			else if (tm.mode == TransformMatrix::MODE_LOOKAT) {
-				vec3 position = tm.position;
-				vec3 direction = tm.direction;
-				vec3 target = position + direction;
-				vec3 up = tm.up;
-				if (direction == up)
-					direction += vec3(0.01, 0.01, 0.01);
-				CalculateCameraView(this->view, this->mvp_stereo, eye_dist, position, target, up, port, port_stereo, projection);
-			}
-			else if (tm.mode == TransformMatrix::MODE_AXES) {
-				//DUMP(tm.axes);
-				//mat4 rotate = AxesMat(tm.axes[0], tm.axes[1], tm.axes[2]);
-				
-				// TODO solve and clean this horrible separate-yaw mess!
-				mat4 rotate = AxesMat(M_PI, tm.axes[1], tm.axes[2]);
-				mat4 yaw = YRotation(tm.axes[0]);
-				mat4 tran = Translate(-tm.position);
-				this->view = port * projection * rotate * tran;
-				DUMP(tm.position);
-				
-				if (calib.is_enabled) {
-					eye_dist += calib.eye_dist;
-				}
-				
-				float mul = -0.5;
-				mat4 l_trans = Translate(vec3(-eye_dist * mul, 0, 0));
-				mat4 r_trans = Translate(vec3(+eye_dist * mul, 0, 0));
-				//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
-				//this->mvp_stereo[0] = stereo_base;
-				//this->mvp_stereo[1] = stereo_base;
-				
-				if (calib.is_enabled) {
-					mat4 scale_mat = Scale(vec3(1.0 + calib.scale));
-					this->mvp_stereo[0] = port_stereo * scale_mat * l_trans * projection * rotate * yaw * tran;
-					this->mvp_stereo[1] = port_stereo * scale_mat * r_trans * projection * rotate * yaw * tran;
-				}
-				else {
-					this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * yaw * tran;
-					this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * yaw * tran;
-				}
-			}
-			else if (tm.mode == TransformMatrix::MODE_QUATERNION) {
-				quat orientation = tm.orientation;
-				mat4 rotate = QuatMat(orientation);
-				mat4 tran = Translate(-tm.position);
-				this->view = port * projection * rotate * tran;
-				
-				float mul = -0.5;
-				mat4 l_trans = Translate(vec3(-eye_dist * mul, 0, 0));
-				mat4 r_trans = Translate(vec3(+eye_dist * mul, 0, 0));
-				this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * tran;
-				this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * tran;
-			}
-			else TODO
+		
+		if (tm.mode == TransformMatrix::MODE_POSITION) {
+			TODO
 		}
-		#if 0
-		if (this->use_stereo) {
-			mat4 tran = Translate(-this->trans->data.position);
-			#if 0
-			this->mvp_stereo[0] = this->proj_stereo[0] * this->view_stereo[0] * tran;
-			this->mvp_stereo[1] = this->proj_stereo[1] * this->view_stereo[1] * tran;
-			#else
-			this->mvp_stereo[0] = this->view_stereo[0] * this->proj_stereo[0] * tran;
-			this->mvp_stereo[1] = this->view_stereo[1] * this->proj_stereo[1] * tran;
-			#endif
+		else if (tm.mode == TransformMatrix::MODE_LOOKAT) {
+			vec3 position = tm.position;
+			vec3 direction = tm.direction;
+			vec3 target = position + direction;
+			vec3 up = tm.up;
+			if (direction == up)
+				direction += vec3(0.01, 0.01, 0.01);
+			CalculateCameraView(this->view, this->mvp_stereo, eye_dist, position, target, up, port, port_stereo, projection);
 		}
-		#endif
+		else if (tm.mode == TransformMatrix::MODE_AXES) {
+			//DUMP(tm.axes);
+			//mat4 rotate = AxesMat(tm.axes[0], tm.axes[1], tm.axes[2]);
+			
+			// TODO solve and clean this horrible separate-yaw mess!
+			mat4 rotate = AxesMat(M_PI, tm.axes[1], tm.axes[2]);
+			mat4 yaw = YRotation(tm.axes[0]);
+			mat4 tran = Translate(-tm.position);
+			this->view = port * projection * rotate * tran;
+			DUMP(tm.position);
+			
+			if (calib.is_enabled) {
+				eye_dist += calib.eye_dist;
+			}
+			
+			float mul = -0.5;
+			mat4 l_trans = Translate(vec3(-eye_dist * mul, 0, 0));
+			mat4 r_trans = Translate(vec3(+eye_dist * mul, 0, 0));
+			//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
+			//this->mvp_stereo[0] = stereo_base;
+			//this->mvp_stereo[1] = stereo_base;
+			
+			if (calib.is_enabled) {
+				mat4 scale_mat = Scale(vec3(1.0 + calib.scale));
+				this->mvp_stereo[0] = port_stereo * scale_mat * l_trans * projection * rotate * yaw * tran;
+				this->mvp_stereo[1] = port_stereo * scale_mat * r_trans * projection * rotate * yaw * tran;
+			}
+			else {
+				this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * yaw * tran;
+				this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * yaw * tran;
+			}
+		}
+		else if (tm.mode == TransformMatrix::MODE_QUATERNION) {
+			quat orientation = tm.orientation;
+			mat4 rotate = QuatMat(orientation);
+			mat4 tran = Translate(-tm.position);
+			this->view = port * projection * rotate * tran;
+			
+			float mul = -0.5;
+			mat4 l_trans = Translate(vec3(-eye_dist * mul, 0, 0));
+			mat4 r_trans = Translate(vec3(+eye_dist * mul, 0, 0));
+			this->mvp_stereo[0] = port_stereo * l_trans * projection * rotate * tran;
+			this->mvp_stereo[1] = port_stereo * r_trans * projection * rotate * tran;
+		}
+		else TODO
 	}
 	
 	/*if (calib.is_enabled) {

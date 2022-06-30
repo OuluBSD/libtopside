@@ -18,8 +18,8 @@ machine glx.app: {
 				sizeable:			true;
 				env:				event.register;
 				type:				stereo;
-				fullscreen:			true;
-				find.vr.screen:		true;
+				fullscreen:			false;
+				find.vr.screen:		false;
 				shader.vtx.path:		"shaders/tests/03f_vertex.glsl";
 				shader.frag.path:		"shaders/tests/03f_fragment.glsl";
 			};

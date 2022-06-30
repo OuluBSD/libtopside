@@ -40,34 +40,42 @@ engine ecs.dummy: {
     
     pool world: {
         entity ground: {
-            comp transform3;
+            comp transform3: {
+                x: 0;
+                y: 0;
+                z: 0;
+            };
             comp model: {
                 builtin: plane;
             };
             comp physics: {
-                bind: physics;
+                bind: false;
                 test.fn: fixed;
             };
         };
         
         entity ball: {
-            comp transform3;
+            comp transform3: {
+                x: -1;
+                y: 1;
+                z: 0;
+            };
             comp body;
             comp model: {
                 builtin: box;
             
             };
             comp physics: {
-                bind: physics;
-                test.fn: do.circle;
+                bind: false;
+                test.fn: fixed;
             };
         };
         
         entity player: {
             comp transform3: {
                 x: 0;
-                y: 0;
-                z: 6;
+                y: 1.6;
+                z: -6;
             };
             comp viewable;
             comp viewport;
@@ -76,8 +84,8 @@ engine ecs.dummy: {
                 log: test;
             };
             comp physics: {
-                bind: physics;
-                test.fn: fixed;
+                bind: true;
+                test.fn: do.circle;
             };
         };
     };

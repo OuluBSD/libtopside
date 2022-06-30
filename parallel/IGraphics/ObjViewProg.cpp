@@ -109,7 +109,6 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	float eye_ratio = (float)height / (float)(width * 0.5);
 	float aspect = (float)width / (float)height;
 	float f = ts.Seconds() / phase_time;
-	float f2 = 1 - fabs(2 * f - 1);
 	float angle = f * (2.0 * M_PI);
 	
 	if (!state.user_view) {

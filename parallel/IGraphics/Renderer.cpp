@@ -132,6 +132,8 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 		//const Vertex* vertices = GetVertices().vertices.Begin();
 		//const uint32* indices = GetIndices().indices.Begin();
 		ASSERT(stride >= 1 && stride <= 4);
+		
+		// NOTE: non-accelerated y is top-left (not bottom-left). Don't blame me... not my decision.
 		for (int y = 0; y < h; y++) {
 			byte* it = data + (h - 1 - y) * pitch;
 			coord[1] = y;
@@ -242,11 +244,11 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	const Vertex* iter_in_end = iter_in + vtx_count;
 	Vertex*       iter_out    = (Vertex*)processed_vertices.vertices.Begin();
 	
-	#if 1
 	int width = vtx_args.generic->iResolution[0];
 	int height = vtx_args.generic->iResolution[1];
 	while (iter_in != iter_in_end) {
 		vtx_args.v = *iter_in++;
+		
 		vs.Process(vtx_args);
 		
 		auto& pos = vtx_args.v.position;
@@ -255,19 +257,6 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 		
 		*iter_out++ = vtx_args.v;
 	}
-	#else
-	int dbg_i = 0;
-	while (iter_in != iter_in_end) {
-		Vertex dbg_in = *iter_in;
-		vtx_args.v = *iter_in++;
-		vs.Process(vtx_args);
-		Vertex dbg_out = vtx_args.v;
-		*iter_out++ = vtx_args.v;
-		
-		if (dbg_i < 10) LOG(dbg_i << ": " << dbg_in.position.ToString() << " --> " << dbg_out.position.ToString());
-		dbg_i++;
-	}
-	#endif
 	
 	rs.use_processed_vertices = true;
 }

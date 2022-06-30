@@ -237,9 +237,7 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
-	TODO
-	#if 0
-	ev.spatial = &ev3d;
+	ev.trans = &trans;
 	vec3 dir = head_direction;
 	
 	// remove y component
@@ -249,17 +247,14 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	float sideways = rel_dir[0];
 	
 	if (straight) {
-		vec3 pos_diff = dir * step * straight;
-		COPY3(ev3d.position, pos_diff);
+		trans.position = dir * step * straight;
 	}
 	if (sideways) {
 		vec3 s = dir * step * sideways;
-		vec3 pos_diff(-s[2], 0, +s[0]);
-		COPY3(ev3d.position, pos_diff);
+		trans.position = vec3(-s[2], 0, +s[0]);
 	}
 	
 	WhenSourceUpdated(*this, ev);
-	#endif
 }
 
 

@@ -18,13 +18,14 @@ machine sdl.app: {
 				sizeable:		true;
 				env:			event.register;
 				shader.frag.path:		"shaders/tests/07d_fragment.glsl";
-				shader.vtx.path:			"shaders/tests/07d_vertex.glsl";
+				shader.vtx.path:		"shaders/tests/07d_vertex.glsl";
 			};
 		};
 		
 	};
 
 };
+
 
 
 
@@ -42,34 +43,25 @@ engine ecs.dummy: {
     
     pool world: {
         entity ground: {
-            comp transform3;
+            comp transform3: {
+                x: 0;
+                y: 0;
+                z: 0;
+            };
             comp model: {
                 builtin: plane;
             };
             comp physics: {
-                bind: physics;
+                bind: false;
                 test.fn: fixed;
             };
         };
         
-        entity box1: {
-            comp transform3;
-            comp body;
-            comp model: {
-                builtin: box;
-            
-            };
-            comp physics: {
-                bind: physics;
-                //test.fn: do.circle;
-                test.fn: fixed;
-            };
-        };
-        
-        entity box2: {
+        entity ball: {
             comp transform3: {
-                x: 1;
-                z: 3;
+                x: -1;
+                y: 1;
+                z: 0;
             };
             comp body;
             comp model: {
@@ -77,28 +69,25 @@ engine ecs.dummy: {
             
             };
             comp physics: {
-                bind: physics;
+                bind: false;
                 test.fn: fixed;
             };
         };
         
         entity player: {
             comp transform3: {
-                x: 0.1;
-                y: 2;
-                z: 0;
+                x: 0;
+                y: 1.6;
+                z: -6;
             };
             comp viewable;
-            comp viewport: {
-                fov: 160;
-            };
+            comp viewport;
             comp camera.chase: {
-                target: world.box1;
-                //log: test;
+                target: world.ball;
+                log: test;
             };
             comp physics: {
-                bind: physics;
-                //test.fn: fixed;
+                bind: true;
                 test.fn: do.circle;
             };
         };

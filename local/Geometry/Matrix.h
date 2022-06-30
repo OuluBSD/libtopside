@@ -478,6 +478,16 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		data[3][2] = -(far * near) / (far - near);
 		return *this;
 	}
+	Matrix& SetPerspectiveRH_PZO(T fov_rad, T aspect, T near, T far) {
+		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
+		data[0][0] = -static_cast<T>(1) / (aspect * tan_half_fovy);
+		data[1][1] = static_cast<T>(1) / (tan_half_fovy);
+		data[2][2] = (far + near) / (far - near);
+		data[2][3] = static_cast<T>(1);
+		data[3][2] = - (static_cast<T>(2) * far * near) / (far - near);
+		return *this;
+	}
 	Matrix& SetPerspectiveRH_NO(T fov_rad, T aspect, T near, T far) {
 		ASSERT(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
 		T const tan_half_fovy = tan(fov_rad / static_cast<T>(2));
@@ -509,8 +519,10 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return *this;
 	}
 	Matrix& SetPerspective(T fov_rad, T aspect, T near, T far) {
-		#if 1
+		#if IS_NEGATIVE_Z
 		return SetPerspectiveRH_ZO(fov_rad, aspect, near, far);
+		#elif !IS_NEGATIVE_Z
+		return SetPerspectiveRH_PZO(fov_rad, aspect, near, far);
 		#elif 0
 		return SetPerspectiveRH_NO(fov_rad, aspect, near, far);
 		#elif 0
