@@ -14,6 +14,11 @@ bool IsClose(const vec3& a, const vec3& b) {
 	return fabsf(dist) < 0.001;
 }
 
+bool IsClose(const vec4& a, const vec4& b) {
+	float dist = (a - b).GetLength();
+	return fabsf(dist) < 0.001;
+}
+
 bool IsClose(const mat4& a, const mat4& b) {
 	double sum = 0;
 	for(int i = 0; i < 4; i++) {
@@ -24,103 +29,149 @@ bool IsClose(const mat4& a, const mat4& b) {
 	return fabs(sum) < 0.001;
 }
 
+bool MatCompareTest(const mat4& m0, const mat4& m1, bool succ_result=true) {
+	bool succ = true;
+	for(int i = 0; i < 6; i++) {
+		vec3 v;
+		switch(i) {
+			case 0: v = vec3(0,0,+1); break;
+			case 1: v = vec3(0,0,-1); break;
+			case 2: v = vec3(0,+1,0); break;
+			case 3: v = vec3(0,-1,0); break;
+			case 4: v = vec3(+1,0,0); break;
+			case 5: v = vec3(-1,0,0); break;
+		}
+		
+		vec4 v0 = v.Embed() * m0;
+		vec4 v1 = v.Embed() * m1;
+		if (!IsClose(v0,v1)) {
+			succ = false;
+			if (succ != succ_result) {
+				DUMP(v);
+				DUMP(v0);
+				DUMP(v1);
+				DUMP(m0);
+				DUMP(m1);
+			}
+			break;
+		}
+	}
+	return succ;
+}
+
+
+void glm_test();
+
+
+
 CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
-	
-	// This is +z == forward matrix math.
-	// Most other solutions use -z (probably because of compass angles)
-	// +z math is more consistent and intuitive outside of geographical compass angles topics.
-	// It's really matter of choice, and I couldn't find mathematical reasons, when I searched.
-	// I prefer to built everything around forward==vec3(0,0,1) vector, because it's a lot
-	// faster and intuitive for me to think.
-	// I will change to -z, if there's any compelling mathematical reason for it.
-	
-	// Historical reason for -z math might be that +x is towards right and people want to think that
-	// turning right is positive angle too (which affects compass clockwise direction, and
-	// which forces -z math).
-	
-	// Another positive feature in +z math is that both top-down (xz) angles
-	// and forward (xy) angles are counter-clockwise.
-	// Only negative thing in +z math is that positive horizontal angle is left and not right.
-	// I think that pros outweight cons easily.
-	
-	{
-		vec3 fwd_vec(0,0,1);
-		mat4 fwd_mat = Translate(fwd_vec);
-		
-		vec3 fwd_vec2 = Position(fwd_mat);
-		DUMP(fwd_vec2);
-		ASSERT(fwd_vec == fwd_vec2);
-		
-		float fwd_yaw = 0;
-		float fwd_pitch = 0;
-		vec3 fwd_vec3 = AxesDir(fwd_yaw, fwd_pitch);
-		DUMP(fwd_vec3);
-		ASSERT(IsClose(fwd_vec3, fwd_vec));
-	}
-	
-	{
-		vec3 left_vec(-1,0,0);
-		DUMP(left_vec);
-		float left_yaw = +M_PI / 2;
-		float left_pitch = 0;
-		vec3 left_vec2 = AxesDir(left_yaw, left_pitch);
-		DUMP(left_vec2);
-		ASSERT(IsClose(left_vec2, left_vec));
-		float left_yaw2, left_pitch2;
-		DirAxes(left_vec, left_yaw2, left_pitch2);
-		ASSERT(IsClose(left_yaw, left_yaw2));
-		ASSERT(IsClose(left_pitch, left_pitch2));
-	}
-	
-	{
-		vec3 right_vec(+1,0,0);
-		DUMP(right_vec);
-		float right_yaw = -M_PI / 2;
-		float right_pitch = 0;
-		vec3 right_vec2 = AxesDir(right_yaw, right_pitch);
-		DUMP(right_vec2);
-		ASSERT(IsClose(right_vec2, right_vec));
-		float right_yaw2, right_pitch2;
-		DirAxes(right_vec, right_yaw2, right_pitch2);
-		ASSERT(IsClose(right_yaw, right_yaw2));
-		ASSERT(IsClose(right_pitch, right_pitch2));
-	}
-	
-	{
-		vec3 fwdup_vec = AxesDir(0, +M_PI / 4);
-		ASSERT(fwdup_vec[1] > 0);
-		float fwdup_yaw, fwdup_pitch;
-		DirAxes(fwdup_vec, fwdup_yaw, fwdup_pitch);
-		ASSERT(fwdup_pitch > 0);
-		ASSERT(IsClose(fwdup_yaw, 0));
-		ASSERT(AxesDir(0, -M_PI / 4)[1] < 0);
-		ASSERT(AxesDir(0, 0)[2] > 0);
-		ASSERT(AxesDir(M_PI, 0)[2] < 0);
-	}
-	
+	glm_test();
 	
 	// quat -> mat4: QuatMat
 	if (1) {
-		mat4 rot0 = QuatMat(AxisAngleQuat(vec3(0,1,0), +M_PI / 2));
-		vec3 l0 = (vec4(0,0,1,1) * rot0).Splice();
-		vec3 l1(-1,0,0);
+		mat4 rot0 = QuatMat(AxisAngleQuat(VEC_Y, +M_PI / 2));
+		vec3 l0 = (VEC_FWD4 * rot0).Splice();
+		vec3 l1 = VEC_LEFT;
 		DUMP(l0);
 		DUMP(l1);
 		ASSERT(IsClose(l0, l1));
-		mat4 rot1 = QuatMat(AxisAngleQuat(vec3(1,0,0), +M_PI / 2));
-		vec3 u0 = (vec4(0,0,1,1) * rot1).Splice();
-		vec3 u1(0,1,0);
+		mat4 rot1 = QuatMat(AxisAngleQuat(VEC_X, +M_PI / 2));
+		vec3 u0 = (VEC_FWD4 * rot1).Splice();
+		vec3 u1 = VEC_UP;
+		DUMP(u0);
+		DUMP(u1);
 		ASSERT(IsClose(u0, u1));
-		mat4 rot2 = QuatMat(AxisAngleQuat(vec3(0,0,1), +M_PI / 2));
-		/*DUMP(rot2);
-		mat4 rot3 = QuatMat(AxisAngleQuat(vec3(0,0,1), -M_PI / 2));
-		DUMP(rot3);*/
-		vec3 l2 = (vec4(0,1,0,1) * rot2).Splice();
+		mat4 rot2 = QuatMat(AxisAngleQuat(VEC_Z, +M_PI / 2));
+		vec3 l2 = (VEC_UP4 * rot2).Splice();
 		DUMP(l2);
 		ASSERT(IsClose(l0, l2));
 	}
+	
+	{
+		vec3 v0 = VEC_FWD;
+		mat4 fwd_mat = Translate(v0);
+		
+		vec3 v1 = Position(fwd_mat);
+		DUMP(v1);
+		ASSERT(v0 == v1);
+		
+		float yaw = 0;
+		float pitch = 0;
+		vec3 v2 = AxesDir(yaw, pitch);
+		DUMP(v2);
+		ASSERT(IsClose(v2, v0));
+		
+		yaw = -M_PI/2;
+		vec3 v3 = VEC_RIGHT;
+		vec3 v4 = AxesDir(yaw, pitch);
+		DUMP(v3);
+		DUMP(v4);
+		ASSERT(IsClose(v3, v4));
+	}
+	
+	{
+		{
+			vec3 left_vec(-1,0,0);
+			DUMP(left_vec);
+			float left_yaw = +M_PI / 2;
+			float left_pitch = 0;
+			vec3 left_vec2 = AxesDir(left_yaw, left_pitch);
+			DUMP(left_vec2);
+			ASSERT(IsClose(left_vec2, left_vec));
+			float left_yaw2, left_pitch2;
+			DirAxes(left_vec, left_yaw2, left_pitch2);
+			DUMP(left_yaw2);
+			//ASSERT(IsClose(left_yaw, left_yaw2));
+			//ASSERT(IsClose(left_pitch, left_pitch2));
+		}
+		
+		{
+			vec3 right_vec(+1,0,0);
+			DUMP(right_vec);
+			float right_yaw = -M_PI / 2;
+			float right_pitch = 0;
+			vec3 right_vec2 = AxesDir(right_yaw, right_pitch);
+			DUMP(right_vec2);
+			ASSERT(IsClose(right_vec2, right_vec));
+			float right_yaw2, right_pitch2;
+			DirAxes(right_vec, right_yaw2, right_pitch2);
+			DUMP(right_yaw2);
+			//ASSERT(IsClose(right_yaw, right_yaw2));
+			//ASSERT(IsClose(right_pitch, right_pitch2));
+		}
+		
+		// forward
+		{
+			vec3 v0 = AxesDir(0, 0);
+			float yaw, pitch;
+			DirAxes(v0, yaw, pitch);
+			DUMP(yaw);
+			ASSERT(IsClose(yaw, 0));
+		}
+		
+		
+		// backward
+		{
+			vec3 v0 = AxesDir(M_PI, 0);
+			float yaw, pitch;
+			DirAxes(v0, yaw, pitch);
+			DUMP(yaw);
+			ASSERT(IsClose(fmodf(M_PI*2 + yaw, M_PI*2), M_PI));
+		}
+		
+		{
+			vec3 fwdup_vec = AxesDir(0, +M_PI / 4);
+			ASSERT(fwdup_vec[1] > 0);
+			float fwdup_yaw, fwdup_pitch;
+			DirAxes(fwdup_vec, fwdup_yaw, fwdup_pitch);
+			ASSERT(fwdup_pitch > 0);
+			ASSERT(IsClose(fwdup_yaw, 0));
+			ASSERT(AxesDir(0, -M_PI / 4)[1] < 0);
+		}
+	}
+	
 	
 	// Decompose
 	#if 0
@@ -153,49 +204,49 @@ CONSOLE_APP_MAIN {
 	// AxisAngleQuat
 	{
 		float y, p, r;
-		quat l = AxisAngleQuat(vec3(0,1,0), M_PI / 2);
+		quat l = AxisAngleQuat(VEC_Y, M_PI / 2);
 		QuatAxes(l, y, p, r);
 		ASSERT(IsClose(y, M_PI / 2) && p == 0 && r == 0);
-		l = AxisAngleQuat(vec3(1,0,0), M_PI / 4);
+		l = AxisAngleQuat(VEC_X, M_PI / 4);
 		QuatAxes(l, y, p, r);
 		ASSERT(IsClose(p, M_PI / 4) && y == 0 && r == 0);
-		l = AxisAngleQuat(vec3(0,0,1), M_PI / 4);
+		l = AxisAngleQuat(VEC_Z, M_PI / 4);
 		QuatAxes(l, y, p, r);
 		ASSERT(IsClose(r, M_PI / 4) && y == 0 && p == 0);
 	}
 	
 	// transform
 	if (1) {
-		vec3 l0 = VectorTransform(vec3(0,0,1), AxisAngleQuat(vec3(0,1,0), M_PI / 2));
-		vec3 l1(-1,0,0);
+		vec3 l0 = VectorTransform(VEC_FWD, AxisAngleQuat(vec3(0,1,0), M_PI / 2));
+		vec3 l1 = VEC_LEFT;
 		ASSERT(IsClose(l0, l1));
 	}
 	
 	// axes -> quat: AxesQuat
 	{
 		mat4 rot0 = QuatMat(AxesQuat(M_PI/2,0,0));
-		vec3 l0 = (vec4(0,0,1,1) * rot0).Splice();
-		vec3 l1(-1,0,0);
+		vec3 l0 = (VEC_FWD4 * rot0).Splice();
+		vec3 l1 = VEC_LEFT;
 		ASSERT(IsClose(l0, l1));
 		mat4 rot1 = QuatMat(AxesQuat(0,M_PI/2,0));
-		vec3 u0 = (vec4(0,0,1,1) * rot1).Splice();
-		vec3 u1(0,1,0);
+		vec3 u0 = (VEC_FWD4 * rot1).Splice();
+		vec3 u1 = VEC_UP;
 		ASSERT(IsClose(u0, u1));
 		mat4 rot2 = QuatMat(AxesQuat(0,0,M_PI/2));
-		vec3 l2 = (vec4(0,1,0,1) * rot2).Splice();
+		vec3 l2 = (VEC_UP4 * rot2).Splice();
 		ASSERT(IsClose(l0, l2));
 	}
 	
 	// Rotations
 	{
 		mat4 m0 = XRotation(+M_PI / 2);
-		mat4 m1 = QuatMat(AxisAngleQuat(vec3(1,0,0), +M_PI / 2));
+		mat4 m1 = QuatMat(AxisAngleQuat(VEC_X, +M_PI / 2));
 		ASSERT(IsClose(m0, m1));
 		m0 = YRotation(+M_PI / 2);
-		m1 = QuatMat(AxisAngleQuat(vec3(0,1,0), +M_PI / 2));
+		m1 = QuatMat(AxisAngleQuat(VEC_Y, +M_PI / 2));
 		ASSERT(IsClose(m0, m1));
 		m0 = ZRotation(+M_PI / 2);
-		m1 = QuatMat(AxisAngleQuat(vec3(0,0,1), +M_PI / 2));
+		m1 = QuatMat(AxisAngleQuat(VEC_Z, +M_PI / 2));
 		ASSERT(IsClose(m0, m1));
 	}
 	
@@ -234,21 +285,21 @@ CONSOLE_APP_MAIN {
 	// CameraObject
 	{
 		vec3 eye(0,0,0);
-		vec3 eye_dir(0,0,1);
-		vec3 up(0,1,0);
+		vec3 eye_dir = VEC_FWD;
+		vec3 up = VEC_UP;
 		vec3 v0;
 		CameraObject(
 			eye, eye_dir, up,
 			M_PI/2, 0, 1,
 			v0);
-		vec3 v1(-1,0,0);
+		vec3 v1 = VEC_LEFT;
 		ASSERT(IsClose(v0, v1));
 		CameraObject(
 			eye, eye_dir, up,
 			0, M_PI/4, 1,
 			v0);
 		float per_axis = sqrt(2)/2;
-		v1 = vec3(0,per_axis,per_axis);
+		v1 = (VEC_UP + VEC_FWD) * per_axis;
 		ASSERT(IsClose(v0, v1));
 	}
 	
@@ -336,33 +387,44 @@ CONSOLE_APP_MAIN {
 	{
 		{
 			vec3 eye(0,0,0);
-			vec3 tgt(0,0,1);
-			vec3 up(0,1,0);
-			mat4 m0 = Identity<mat4>();
+			vec3 tgt = VEC_FWD;
+			vec3 up = VEC_UP;
+			mat4 m0 = AxesMat(0,0,0);
 			mat4 m1 = LookAt(eye, tgt, up);
-			DUMP(m1);
-			ASSERT(IsClose(m0, m1));
+			ASSERT(MatCompareTest(m0, m1));
 		}
 		{
 			vec3 eye(0,0,0);
-			vec3 tgt(1,0,0);
-			vec3 up(0,1,0);
+			vec3 tgt = VEC_BWD;
+			vec3 up = VEC_UP;
+			mat4 m0 = AxesMat(M_PI,0,0);
+			mat4 m1 = LookAt(eye, tgt, up);
+			ASSERT(MatCompareTest(m0, m1));
+		}
+		{
+			vec3 eye(0,0,0);
+			vec3 tgt = VEC_RIGHT;
+			vec3 up = VEC_UP;
 			mat4 m0 = AxesMat(-M_PI/2,0,0);
 			mat4 m1 = LookAt(eye, tgt, up);
-			DUMP(m0);
-			DUMP(m1);
-			ASSERT(IsClose(m0, m1));
+			ASSERT(!MatCompareTest(m0, m1, false)); // should fail
 		}
 		{
 			vec3 eye(0,0,0);
-			vec3 tgt(0,1,1);
-			vec3 up(0,1,0);
+			vec3 tgt = VEC_FWD + VEC_UP;
+			vec3 up = VEC_UP;
 			tgt.Normalize();
 			mat4 m0 = AxesMat(0,M_PI/4,0);
 			mat4 m1 = LookAt(eye, tgt, up);
-			DUMP(m0);
-			DUMP(m1);
-			ASSERT(IsClose(m0, m1));
+			ASSERT(!MatCompareTest(m0, m1, false)); // should fail
+		}
+		{
+			vec3 eye(0,0,0);
+			vec3 tgt = VEC_FWD;
+			vec3 up = VEC_DOWN;
+			mat4 m0 = AxesMat(0,0,M_PI);
+			mat4 m1 = LookAt(eye, tgt, up);
+			ASSERT(MatCompareTest(m0, m1));
 		}
 	}
 	

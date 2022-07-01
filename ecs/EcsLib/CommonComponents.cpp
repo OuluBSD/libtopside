@@ -8,8 +8,8 @@ void Transform::Initialize() {
 	size = one<vec3>();
 	data.mode = TransformMatrix::MODE_LOOKAT; // use direction & up instead of orientation
 	data.orientation = Identity<quat>();
-	data.direction = vec3(0,0,1); // "look at" alternative to quaternion
-	data.up = vec3(0,1,0); // "look at" alternative to quaternion
+	data.direction = VEC_FWD; // "look at" alternative to quaternion
+	data.up = VEC_UP; // "look at" alternative to quaternion
 	
 	Ref<WorldLogicSystem> sys = GetEngine().TryGet<WorldLogicSystem>();
 	if (sys)

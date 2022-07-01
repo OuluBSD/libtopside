@@ -91,7 +91,8 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 	
 	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::SELECT) {
 		for (ShootingComponentRef& shooting : comps) {
-			if (!shooting->IsEnabled()) continue;
+			if (!shooting->IsEnabled())
+				continue;
 			EntityRef entity = shooting->GetEntity();
 			TransformRef trans = entity->Find<Transform>();
 			if (!trans)
@@ -104,7 +105,7 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 				
 			vec3 position = Position(barrel_to_world);
 			//const vec3 position = trans->position;
-			quat orientation; TODO // = MatQuat(barrel_to_world);
+			quat orientation = MatQuat(barrel_to_world);
 			//const quat orientation = trans->orientation;
 			vec3 forward = Forward(barrel_to_world);
 			forward.Normalize();

@@ -1,8 +1,11 @@
+noblitz;
+
 uses
 	Geometry;
 
 file
-	main.cpp;
+	main.cpp,
+	glm.cpp;
 
 mainconfig
 	"" = "";

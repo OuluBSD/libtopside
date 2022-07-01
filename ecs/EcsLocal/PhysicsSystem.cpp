@@ -138,7 +138,7 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 		float step = last_dt * 1.5;
 		
 		if (fwd) {
-			TestPlayerMoveFn(b, vec3(0,0,1), step);
+			TestPlayerMoveFn(b, VEC_FWD, step);
 		}
 		if (left) {
 			TestPlayerMoveFn(b, vec3(-1,0,0), step);
@@ -166,7 +166,7 @@ void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
 	if (!head)
 		return;
 	
-	head->up = vec3(0,1,0);
+	head->up = VEC_UP;
 	head->direction =  vec3(
 		 sin(pitch) * sin(yaw),
 		 cos(pitch),

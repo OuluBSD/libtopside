@@ -66,7 +66,7 @@ public:
 	
 	
 	
-	void SetRotation(float pitch, float yaw, float roll);
+	void SetRotation(float yaw, float pitch, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
 	void SetModelChanged() {model_changed = true;}

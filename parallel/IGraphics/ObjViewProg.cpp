@@ -114,7 +114,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	if (!state.user_view) {
 		float rad = 1.5;
 		float x = cos(angle) * rad;
-		float z = sin(angle) * rad;
+		float z = sin(angle) * rad * SCALAR_FWD_Z;
 		float eye_x = cos(angle);
 		float eye_y = sin(angle);
 		mat4 proj = Perspective(DEG2RAD(110), 1.0, 0.1, 100.0);
@@ -122,7 +122,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		vec3 eye {x, 0, z};
 		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
 		vec3 center {0, 0, 0};
-		vec3 up {0, 1, 0};
+		vec3 up = VEC_UP;
 		mat4 lookat = LookAt(eye, center, up);
 		mat4 port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 		mat4 base = port * proj;

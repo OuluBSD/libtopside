@@ -56,41 +56,44 @@ engine ecs.dummy: {
         };
         
         entity box2: {
-            comp transform3: {x: -3; y: 1;};
+            comp transform3: {x: 3; y: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: true; test.fn: fixed;};
+        };
+        
+        entity box3: {
+            comp transform3: {x: 5; y: 2; z: 2;};
             comp body;
             comp model: {builtin: box;};
             comp physics: {bind: true; test.fn: fixed;};
         };
         
         entity player.body: {
-            comp transform3: {x: 0; y: 0; z: -6;};
+            comp transform3: {x: 0; y: 0; z: 6;};
             comp physics: {bind: true;}; // TODO
             comp player.body: {height: 1.74;};
         };
         
         entity player.head: {
-            comp transform3: {
-                x: 0;
-                y: 1.6;
-                z: -6;
-            };
+            comp transform3;
             comp viewable;
             comp viewport: {fov: 90;};
             comp camera.chase;
-            comp player.head: {body: world.player.body;};
+            comp player.head: {body: world.player.body;}; 
         };
         
         entity player.hand.left: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
             comp player.hand: {hand: left; body: world.player.body; simulated: true;};
         };
         
         entity player.hand.right: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
             comp player.hand: {hand: right; body: world.player.body; simulated: true;};
         };
     };

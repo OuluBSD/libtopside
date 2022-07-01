@@ -163,9 +163,9 @@ void PlayerBodySystem::Update(double dt) {
 		float hand_from_height = 0.4; // guesstimate
 		
 		vec3 body_feet_pos = trans->data.position;
-		vec3 head_direction(0,0,1);
+		vec3 head_direction = VEC_FWD;
 		vec3 head_pos(0,0,0);
-		vec3 head_up(0,1,0);
+		vec3 head_up = VEC_UP;
 		vec3 axes(0,0,0);
 		TransformMatrix tm;
 		
@@ -192,13 +192,16 @@ void PlayerBodySystem::Update(double dt) {
 				TransformRef hand_trans = b->hands[i]->GetEntity()->Find<Transform>();
 				if (hand_trans) {
 					if (b->hands[i]->is_simulated) {
-						hand_trans->data.mode = TransformMatrix::MODE_AXES;
-						hand_trans->data.axes = axes;
+						//hand_trans->data.mode = TransformMatrix::MODE_AXES;
+						//hand_trans->data.axes = axes;
+						hand_trans->data = tm;
 						float horz_deg = (i == 1 ? -1 : +1) * 30;
 						CameraObject(
 							head_pos, head_direction, head_up,
 							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
 							hand_trans->data.position);
+							
+						//hand_trans->data.position[2] = -hand_trans->data.position[2];
 					}
 					else {
 						//hand_trans->data = tm;
@@ -259,8 +262,11 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 		for (PlayerBodyComponentRef& b : bodies) {
 			if (b->head && e.trans) {
 				TransformRef trans = b->head->GetEntity()->Find<Transform>();
-				if (trans)
+				if (trans) {
+					vec3 pos = trans->data.position;
 					trans->data = *e.trans;
+					trans->data.position = pos;
+				}
 				/*auto cam = b->head->GetEntity()->Find<CameraBase>();
 				if (e.cam->mode == TransformMatrix::MODE_LOOKAT) {
 					
@@ -288,7 +294,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 					else {
 						trans->use_lookat = true;
 						COPY3(trans->direction, e.spatial->direction);
-						trans->up = vec3(0,1,0);
+						trans->up = VEC_UP;
 					}
 				}
 				#endif
@@ -299,7 +305,7 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 		for (PlayerBodyComponentRef& b : bodies) {
 			TransformRef trans = b->GetEntity()->Find<Transform>();
 			if (trans) {
-				trans->data = *e.trans;
+				trans->data.position += e.trans->position;
 			}
 		}
 	}

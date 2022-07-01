@@ -26,6 +26,8 @@
 #undef far
 #undef near
 
+#define IS_NEGATIVE_Z 1
+
 #include "Common.h"
 #include "Matrix.h"
 #include "Util.h"

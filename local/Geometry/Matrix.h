@@ -5,6 +5,31 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define STRICT_MTX_CHECK(x) ASSERT(x)
 
+#if IS_NEGATIVE_Z
+	#define VEC_FWD vec3(0,0,-1)
+	#define VEC_FWD4 vec4(0,0,-1,1)
+	#define VEC_BWD vec3(0,0,1)
+	#define VEC_BWD4 vec4(0,0,1,1)
+	#define SCALAR_FWD_Z -1
+#else
+	#define VEC_FWD vec3(0,0,1)
+	#define VEC_FWD4 vec4(0,0,1,1)
+	#define VEC_BWD vec3(0,0,-1)
+	#define VEC_BWD4 vec4(0,0,-1,1)
+	#define SCALAR_FWD_Z 1
+#endif
+#define VEC_LEFT vec3(-1,0,0)
+#define VEC_LEFT4 vec4(-1,0,0,1)
+#define VEC_RIGHT vec3(1,0,0)
+#define VEC_RIGHT4 vec4(1,0,0,1)
+#define VEC_UP vec3(0,1,0)
+#define VEC_UP4 vec4(0,1,0,1)
+#define VEC_DOWN vec3(0,-1,0)
+#define VEC_DOWN4 vec4(0,-1,0,1)
+#define VEC_X vec3(1,0,0)
+#define VEC_Y vec3(0,1,0)
+#define VEC_Z vec3(0,0,1)
+
 template <class T, int I> struct PartVec {};
 template <class T, int R, int C> struct Matrix;
 
@@ -521,11 +546,11 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	Matrix& SetPerspective(T fov_rad, T aspect, T near, T far) {
 		#if IS_NEGATIVE_Z
 		return SetPerspectiveRH_ZO(fov_rad, aspect, near, far);
-		#elif !IS_NEGATIVE_Z
+		#elif 0
 		return SetPerspectiveRH_PZO(fov_rad, aspect, near, far);
 		#elif 0
 		return SetPerspectiveRH_NO(fov_rad, aspect, near, far);
-		#elif 0
+		#elif !IS_NEGATIVE_Z
 		return SetPerspectiveLH_ZO(fov_rad, aspect, near, far);
 		#elif 0
 		return SetPerspectiveLH_NO(fov_rad, aspect, near, far);
@@ -1014,7 +1039,7 @@ struct TransformMatrix : RTTIBase {
 	
 	vec3 position;
 	vec3 direction;
-	vec3 up = vec3(0,1,0);
+	vec3 up = VEC_UP;
 	vec3 axes;
 	quat orientation;
 	//mat4 proj[2], view[2];
@@ -1027,6 +1052,7 @@ struct TransformMatrix : RTTIBase {
 	
 	void Clear();
 	void FillFromOrientation();
+	void FillFromLookAt();
 	
 	vec3 GetForwardDirection() const;
 	String GetAxesString() const;

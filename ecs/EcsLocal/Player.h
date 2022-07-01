@@ -121,7 +121,7 @@ public:
 	
 	PlayerBodyComponentRef				body;
 	//vec3		up = zero<vec3>();
-	//vec3		direction = vec3(0,0,1);
+	//vec3		direction = VEC_FWD;
 	
 };
 

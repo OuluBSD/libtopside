@@ -296,6 +296,8 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 			for (int i = 0; i < 3; i++)
 				z += pts[i][2] * bc_screen[i];
 			
+			//z *= SCALAR_FWD_Z;
+			
 			int pos = (int)P[0] + (int)P[1] * w;
 			ASSERT(pos >= 0 && pos < pos_limit);
 			float& zmem = zbuffer[pos];

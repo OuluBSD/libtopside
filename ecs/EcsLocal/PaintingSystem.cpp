@@ -195,7 +195,6 @@ void PaintingInteractionSystemBase::ClearStrokes() {
 }
 
 void PaintingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	TODO
 	#if 0
 	if (args.PressKind() == SpatialInteractionPressKind::Thumbstick) {
 		ClearStrokes();
@@ -326,11 +325,10 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 							vec3 pos = paint_to_world.GetTranslation();
 							LOG("PaintingInteractionSystemBase::OnControllerUpdated: pos " << pos.ToString());
 						}
-						TODO
-						/*
+						
 						paint->stroke_in_progress
 							->Get<PaintStrokeComponent>()
-								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);*/
+								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
 					}
 				}
 				/*const ControllerProperties& properties = source_state.GetControllerProperties();

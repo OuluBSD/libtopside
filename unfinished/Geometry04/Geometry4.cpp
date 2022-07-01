@@ -15,9 +15,9 @@ Geometry4::Geometry4() {
 	mat4 vport = GetViewport(0, 0, w, h, 255); // default
 	
 	// Use LookAt function to "move the camera"
-	vec3 eye {0, 0, -1};
+	vec3 eye = VEC_BWD;
 	vec3 center {0, 0, 0};
-	vec3 up {0, 1, 0};
+	vec3 up = VEC_UP;
 	mat4 lookat = LookAt(eye, center, up);
 	
 	// The leftmost matrix is processed first for the line

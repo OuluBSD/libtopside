@@ -137,11 +137,11 @@ void StereoShaderT<Gfx>::Process(FragmentShaderArgsT<Gfx>& a) {
 	NativeColorBufferConstRef diffuse = a.fa->color_buf[TEXTYPE_DIFFUSE];
 	ASSERT(diffuse);
 	
-	static NativeColorBufferConstRef prev;
+	/*static NativeColorBufferConstRef prev;
 	if (diffuse != prev) {
 		LOG(HexStr((size_t)prev) << " --> " << HexStr((size_t)diffuse));
 		prev = diffuse;
-	}
+	}*/
 	vec4 clr;
 	
 	if (0 && (int)a.frag_coord[0] % 2) {

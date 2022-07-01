@@ -55,9 +55,9 @@ struct FakeSpatialInteractionManager : InteractionManager {
 	TransformMatrix trans;
 	
 	// player camera
-	float pitch = -M_PI/2;
+	float pitch = 0;
 	float yaw = 0;
-	vec3 head_direction = vec3(0,0,1);
+	vec3 head_direction = VEC_FWD;
 	vec3 hand_velocity = vec3(0,0,0);
 	vec3 hand_angular_velocity = vec3(0,0,0);
 	
@@ -111,9 +111,9 @@ struct VrSpatialInteractionManager : InteractionManager {
 	ControllerMatrix cm;
 	
 	// player camera
-	float pitch = -M_PI/2;
+	float pitch = 0;
 	float yaw = 0;
-	vec3 head_direction = vec3(0,0,1);
+	vec3 head_direction = VEC_FWD;
 	vec3 hand_velocity = vec3(0,0,0);
 	vec3 hand_angular_velocity = vec3(0,0,0);
 	

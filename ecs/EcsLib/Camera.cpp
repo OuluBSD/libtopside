@@ -7,7 +7,32 @@ NAMESPACE_ECS_BEGIN
 
 void CalculateCameraView(mat4& view, mat4* stereo_view, float eye_dist, const vec3& eye, const vec3& target, const vec3& up, const mat4& port, const mat4& eye_port, const mat4& proj) {
 	mat4 lookat = LookAt(eye, target, up);
+	
+	/*vec3 dir = target - eye;
+	vec3 axes;
+	DirAxes(dir, axes);
+	mat4 lookat = AxesMat(axes);*/
+	
+	
+	#if 1
 	view = port * proj * lookat;
+	#else
+	mat4 p = proj;
+	//p[2][2] = -p[2][2];
+	//p.SetPerspectiveLH_NO(DEG2RAD(45), 1.333, 0.1, 1.0);
+	//p.SetPerspectiveRH_NO(DEG2RAD(45), 1.333, 0.1, 1.0);
+	p.SetPerspectiveRH_ZO(DEG2RAD(45), 1.333, 0.1, 1.0);
+	
+	//p[3][2] *= -1;
+	//p[2][3] *= -1;
+	
+	//p[0][0] *= -1;
+	//p.SetPerspectiveRH_PZO(DEG2RAD(45), 1.333, 0.1, 1.0);
+	//p.SetPerspectiveRH_ZO(DEG2RAD(45), 1.333, 0.1, 1.0);
+	//mat4 p2 = p * Scale(vec3(-1,1,-1));
+	//mat4 p2 = p * GetViewport(1,-1,-2,2,2);
+	view = port * p * lookat;
+	#endif
 	
 	if (stereo_view) {
 		vec3 look_vec = target - eye;
@@ -180,7 +205,7 @@ void ChaseCam::UpdateView() {
 	
 	if (this->target) {
 		vec3 target = this->target->data.position;
-		vec3 eye {0.0f, 2.0f, -6.0f};
+		vec3 eye {0.0f, 2.0f, 6.0f * SCALAR_FWD_Z};
 		vec3 up {0, 1, 0};
 		
 		if (this->trans) {
@@ -228,12 +253,11 @@ void ChaseCam::UpdateView() {
 	else if (this->trans) {
 		TransformMatrix& tm = this->trans->data;
 		
-		if (tm.mode == TransformMatrix::MODE_POSITION) {
-			TODO
-		}
-		else if (tm.mode == TransformMatrix::MODE_LOOKAT) {
+		if (tm.mode == TransformMatrix::MODE_LOOKAT || tm.mode == TransformMatrix::MODE_POSITION) {
 			vec3 position = tm.position;
 			vec3 direction = tm.direction;
+			if (tm.mode == TransformMatrix::MODE_POSITION)
+				direction = VEC_FWD;
 			vec3 target = position + direction;
 			vec3 up = tm.up;
 			if (direction == up)
@@ -245,11 +269,16 @@ void ChaseCam::UpdateView() {
 			//mat4 rotate = AxesMat(tm.axes[0], tm.axes[1], tm.axes[2]);
 			
 			// TODO solve and clean this horrible separate-yaw mess!
-			mat4 rotate = AxesMat(M_PI, tm.axes[1], tm.axes[2]);
-			mat4 yaw = YRotation(tm.axes[0]);
+			mat4 rotate = AxesMat(0, -tm.axes[1], -tm.axes[2]);
+			mat4 yaw = QuatMat(AxisAngleQuat(VEC_Y, -tm.axes[0]));
 			mat4 tran = Translate(-tm.position);
 			this->view = port * projection * rotate * tran;
-			DUMP(tm.position);
+			
+			/*mat4 tran = Translate(-tm.position);
+			mat4 rotate = QuatMat(-tm.orientation);
+			this->view = port * projection * rotate * tran;*/
+			
+			//DUMP(tm.position);
 			
 			if (calib.is_enabled) {
 				eye_dist += calib.eye_dist;

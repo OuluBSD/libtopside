@@ -62,7 +62,7 @@ engine ecs.dummy: {
         };
         
         entity player.body: {
-            comp transform3: {x: 0; y: 0; z: -6;};
+            comp transform3: {x: 0; y: 0; z: 6;};
             comp physics: {bind: physics;};
             comp player.body: {height: 1.74;};
         };
@@ -92,7 +92,7 @@ engine ecs.dummy: {
         entity tool: {
             comp transform3;
             comp tool: {hand: world.player.hand.right;};
-            comp model: {builtin: "cylinder,0.01,0.1"; yaw: +180;};
+            comp model: {builtin: "cylinder,0.01,0.1"; yaw: +0;};
             comp paint;
             comp shoot;
             comp throw;

@@ -128,13 +128,13 @@ void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {
 
 void ModelComponent::RefreshExtModel() {
 	have_ext_model = true;
-	mat4 rotate = AxesMat(pitch, yaw, roll);
+	mat4 rotate = AxesMat(yaw, pitch, roll);
 	mat4 tran = Translate(offset);
 	mat4 scale = TS::Scale(this->scale);
 	this->ext_model = rotate * tran * scale;
 }
 
-void ModelComponent::SetRotation(float pitch, float yaw, float roll) {
+void ModelComponent::SetRotation(float yaw, float pitch, float roll) {
 	this->pitch = pitch;
 	this->yaw = yaw;
 	this->roll = roll;

@@ -88,7 +88,7 @@ struct BuggyChassis : public DefObject {
 			.SetMaterial(DefaultMaterial());
 		loader = mb;
 		
-		//model_geom = rotate<float>(Identity<mat4>(), M_PI_2, vec3(0,0,1));
+		//model_geom = rotate<float>(Identity<mat4>(), M_PI_2, VEC_FWD);
 		
 		AttachContent();
 	}

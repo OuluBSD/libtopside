@@ -204,7 +204,7 @@ void ToolboxSystemBase::Stop() {
 }
 
 void ToolboxSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	TODO
+	
 #if 0
 	if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
 		return;

@@ -1,6 +1,10 @@
 #include "Geometry.h"
 
 
+#define _VEC_LEFT    vec3(1.0f, 0.0f, 0.0f)
+#define _VEC_UP      vec3(0.0f, 1.0f, 0.0f)
+#define _VEC_FORWARD vec3(0.0f, 0.0f, 1.0f)
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -88,11 +92,11 @@ vec3 euler_to_offset(vec3  euler,
 {
     if (up_direction) {
         mat4 euler_transform = GetEulerAngleYXZ(euler);
-        *up_direction = (euler_transform * MakeVec4(VEC_UP, 1)).Splice();
-        return (euler_transform * MakeVec4(VEC_FORWARD, 1)).Splice();
+        *up_direction = (euler_transform * MakeVec4(_VEC_UP, 1)).Splice();
+        return (euler_transform * MakeVec4(_VEC_FORWARD, 1)).Splice();
     }
     mat4 euler_transform_sans_roll = GetEulerAngleYX(euler);
-    return (euler_transform_sans_roll * MakeVec4(VEC_FORWARD, 1)).Splice();
+    return (euler_transform_sans_roll * MakeVec4(_VEC_FORWARD, 1)).Splice();
 }
 
 

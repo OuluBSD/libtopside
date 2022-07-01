@@ -7,9 +7,6 @@ NAMESPACE_TOPSIDE_BEGIN
 #define DEFAULT_SLICES 16
 #define DEFAULT_STACKS 16
 
-#define VEC_LEFT    vec3(1.0f, 0.0f, 0.0f)
-#define VEC_UP      vec3(0.0f, 1.0f, 0.0f)
-#define VEC_FORWARD vec3(0.0f, 0.0f, 1.0f)
 
 enum euler_index_t {
     EULER_INDEX_UNDEF = -1,

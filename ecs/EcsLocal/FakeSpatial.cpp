@@ -103,22 +103,22 @@ void FakeSpatialInteractionManager::UpdateStateKeyboard() {
 	
 	bool fwd   = data['w'];
 	bool left  = data['a'];
-	bool down  = data['s'];
+	bool bwd  = data['s'];
 	bool right = data['d'];
 	
 	float step = last_dt * 1.5;
 	
 	if (fwd) {
-		Move(vec3(0,0,1), step);
+		Move(VEC_FWD, step);
 	}
 	if (left) {
-		Move(vec3(-1,0,0), step);
+		Move(VEC_LEFT, step);
 	}
-	if (down) {
-		Move(vec3(0,0,-1), step);
+	if (bwd) {
+		Move(VEC_BWD, step);
 	}
 	if (right) {
-		Move(vec3(+1,0,0), step);
+		Move(VEC_RIGHT, step);
 	}
 	
 	static const int assign[ControllerProperties::BUTTON_COUNT] = {
@@ -199,7 +199,7 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	double prev_pitch = pitch;
 	
 	double rot_speed = 0.05 / (2*M_PI);
-	double yaw_change = mouse_diff.x * rot_speed;
+	double yaw_change = -mouse_diff.x * rot_speed;
 	double pitch_change = mouse_diff.y * rot_speed;
 	yaw += yaw_change;
 	pitch += pitch_change;
@@ -207,17 +207,15 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	vec3 prev_head_direction;
 	for(int i = 0; i < 3; i++) prev_head_direction[i] = av[i].GetMean();
 	
-	head_direction = vec3(
-		 sin(pitch) * sin(yaw),
-		 cos(pitch),
-		-sin(pitch) * cos(yaw));
+	head_direction = AxesDir(yaw, pitch);
 	
 	for(int i = 0; i < 3; i++) av[i].Add(head_direction[i]);
 	
 	trans.mode = TransformMatrix::MODE_LOOKAT;
 	trans.direction = head_direction;
 	trans.position = vec3(0,0,0);
-	trans.up = vec3(0,1,0);
+	trans.up = VEC_UP;
+	trans.FillFromLookAt();
 	
 	vec3 head_direction_diff = head_direction - prev_head_direction;
 	float multiplier = 5;
@@ -243,7 +241,7 @@ void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	// remove y component
 	dir[1] = 0;
 	
-	float straight = rel_dir[2];
+	float straight = rel_dir[2] * VEC_FWD[2];
 	float sideways = rel_dir[0];
 	
 	if (straight) {

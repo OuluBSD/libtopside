@@ -72,7 +72,7 @@ void TransformMatrix::Clear() {
 	is_stereo = false;
 	position = vec3(0,0,0);
 	direction = vec3(0,0,0);
-	up = vec3(0,1,0);
+	up = VEC_UP;
 	axes = vec3(0,0,0);
 	orientation = quat(0,0,0,0);
 	float eye_dist = 0;
@@ -95,7 +95,7 @@ void TransformMatrix::operator=(const TransformMatrix& m) {
 
 vec3 TransformMatrix::GetForwardDirection() const {
 	if (mode == MODE_POSITION)
-		return vec3(0,0,1);
+		return VEC_FWD;
 	
 	if (mode == MODE_LOOKAT) {
 		return direction;
@@ -116,13 +116,19 @@ vec3 TransformMatrix::GetForwardDirection() const {
 		return dir.Splice();
 	}
 	TODO
-	return vec3(0,0,1);
+	return VEC_FWD;
 }
 
 void TransformMatrix::FillFromOrientation() {
 	QuatAxes(orientation, axes[0], axes[1], axes[2]);
 	direction = AxesDir(axes[0], axes[1]);
-	up = vec3(0,1,0);
+	up = VEC_UP;
+}
+
+void TransformMatrix::FillFromLookAt() {
+	DirAxes(direction, axes[0], axes[1]);
+	axes[2] = 0;
+	orientation = AxesQuat(axes);
 }
 
 String TransformMatrix::GetAxesString() const {

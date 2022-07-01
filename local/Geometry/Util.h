@@ -86,6 +86,7 @@ mat2 Rotation2x2(float angle);
 
 vec3 AxesDir(float yaw, float pitch);
 void DirAxes(vec3 dir, float& yaw, float& pitch);
+void DirAxes(vec3 dir, vec3& axes);
 void CameraObject(
 	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
@@ -166,8 +167,8 @@ struct ViewportParams {
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up);
 mat4 GetViewport(const ViewportParams& vp);
 mat4 GetViewport(float x, float y, float w, float h, float depth);
-//bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
-//mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective);
+bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
+mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective);
 
 template<class T, class K>
 Vec<T,3> GetBarycentric(const Vec<T,3>* pts, const Vec<K,2>& P) {
@@ -222,6 +223,7 @@ mat4 Rotate(mat4 const& m, float angle, vec3 const& v);
 quat AxisAngleQuat(const vec3& v, float angle);
 //mat4 QuatMat(const quat& q);
 quat AxesQuat(float yaw, float pitch, float roll);
+quat AxesQuat(const vec3& axes);
 mat4 XRotation(float angle);
 mat4 YRotation(float angle);
 mat4 ZRotation(float angle);
@@ -229,6 +231,7 @@ mat4 Translate(const vec3& position);
 mat4 Scale(const vec3& scale);
 //mat4 Rotate(const quat& q);
 mat4 AxesMat(float yaw, float pitch, float roll);
+mat4 AxesMat(const vec3& axes);
 
 //quat make_rotation_direction(const vec3& dir, const vec3& up);
 
@@ -236,7 +239,7 @@ void QuatAxes(const quat& q, float& yaw, float& pitch, float& roll);
 void QuatAxes(const quat& q, vec3& axes);
 //void MatAxes(const mat4& m, vec3& axes);
 
-//quat MatQuat(const mat4& transform);
+quat MatQuat(const mat4& transform);
 
 mat4 SkewMat(const vec3& v, float ident_value=1.0f);
 mat4 SkewMat(const vec4& v, float ident_value=1.0f);
@@ -254,7 +257,7 @@ vec3 Position(const mat4& transform);
 
 
 
-//mat4 RemoveScale(const mat4& transform);
+mat4 RemoveScale(const mat4& transform);
 
 inline float ConvertToRadians(float angle) {return (float)(angle / 180.0 * M_PI);}
 
@@ -272,6 +275,12 @@ vec3 GetVelocityNearSourceLocation(
 	    const vec3& grasp_velocity,
 	    const vec3& angular_velocity,
 	    const vec3& position_near_source_location);
+
+
+quat TurnLeft(float angle);
+quat TurnRight(float angle);
+quat TurnUp(float angle);
+quat TurnDown(float angle);
 
 NAMESPACE_TOPSIDE_END
 

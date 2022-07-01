@@ -30,28 +30,37 @@ quat Slerp(const quat& orient, const quat& tgt_orient, float easing_factor) {
 
 
 
-mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
-    mat4 minv = zero<mat4>();
+mat4 LookAt(const vec3& eye_, const vec3& center_, const vec3& up_) {
+    mat4 m = zero<mat4>();
+    
+    vec3 eye = eye_;
+    vec3 center = center_;
+    vec3 up = up_;
     
     #if IS_NEGATIVE_Z
-	vec3 z = Normalize(eye - center);
-	#else
-	vec3 z = Normalize(-eye - center);
-	#endif
-	
+    vec3 z = Normalize(eye - center);
     vec3 x = Normalize(Cross(up, z));
     vec3 y = Cross(z,x);
-    for (int i=0; i<3; i++) {
-        minv[i][0] = x[i];
-        minv[i][1] = y[i];
-        minv[i][2] = z[i];
-    }
-    minv[3][0] = -Dot(x, eye);
-    minv[3][1] = -Dot(y, eye);
-    minv[3][2] = -Dot(z, eye);
-    minv[3][3] = 1.0f;
+    #else
+    vec3 z = -Normalize(eye - center);
+    vec3 x = -Normalize(Cross(up, -z));
+    vec3 y = Cross(-z,-x);
+    #endif
     
-    return minv;
+    
+    for (int i=0; i<3; i++) {
+        m[i][0] = x[i];
+        m[i][1] = y[i];
+        m[i][2] = z[i];
+    }
+    
+    m[3][0] = -Dot(x, eye_);
+    m[3][1] = -Dot(y, eye_);
+    m[3][2] = -Dot(z, eye_);
+    
+    m[3][3] = 1.0f;
+    
+    return m;
 }
 
 mat4 GetViewport(const ViewportParams& vp) {
@@ -107,8 +116,7 @@ mat4 Ortho(float left, float right, float bottom, float top, float near, float f
 	return m;
 }
 
-// too broken code with +z
-#if 0
+
 bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& translation, vec3& skew, vec4& perspective) {
 	mat4 local_mat(model_mat);
 	
@@ -265,7 +273,6 @@ mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translati
 
 	return m;
 }
-#endif
 
 vec3 Combine(const vec3& a, const vec3& b, float ascl, float bscl) {
 	return (a * ascl) + (b * bscl);
@@ -394,7 +401,6 @@ vec3 VectorTransform(const vec3& v, const quat& q) {
     return (v.Embed() * m).Splice();
     #endif
 }
-
 quat AxesQuat(float yaw, float pitch, float roll)
 {
 	//return MatrixUtils::orientation(YawPitchRoll(yaw, pitch, roll));
@@ -418,6 +424,11 @@ quat AxesQuat(float yaw, float pitch, float roll)
 		cy * cp * sr - sy * sp * cr,
 		cy * cp * cr + sy * sp * sr
 	);
+}
+
+
+quat AxesQuat(const vec3& axes) {
+	return AxesQuat(axes.data[0], axes.data[1], axes.data[2]);
 }
 
 mat4 XRotation(float angle) {
@@ -505,20 +516,42 @@ mat4 AxesMat(float yaw, float pitch, float roll) {
 	return QuatMat(AxesQuat(yaw, pitch, roll));
 }
 
+mat4 AxesMat(const vec3& axes) {
+	return QuatMat(AxesQuat(axes));
+}
+
 vec3 AxesDir(float yaw, float pitch) {
+	#if IS_NEGATIVE_Z
 	float len = cos(pitch);
 	return vec3(
-		len * sin(-yaw),
+		len * -sin(yaw),
+		sin(pitch),
+		len * -cos(yaw));
+	#else
+	float len = cos(pitch);
+	return vec3(
+		len * -sin(yaw),
 		sin(pitch),
 		len * cos(yaw));
+	#endif
 }
 
 void DirAxes(vec3 dir, float& yaw, float& pitch) {
 	dir.Normalize();
-	pitch = asin(dir[1]);
-	yaw = atan2(dir[2], dir[0]);
+	pitch = asin(dir.data[1]);
+	#if IS_NEGATIVE_Z
+	yaw = -atan2(dir.data[2], dir.data[0]);
 	yaw -= M_PI_2;
+	#else
+	yaw = atan2(dir.data[2], dir.data[0]);
+	yaw -= M_PI_2;
+	#endif
 	yaw = yaw < -M_PI ? yaw + M_2PI : yaw;
+}
+
+void DirAxes(vec3 dir, vec3& axes) {
+	DirAxes(dir, axes.data[0], axes.data[1]);
+	axes[2] = 0;
 }
 
 void CameraObject(
@@ -531,11 +564,19 @@ void CameraObject(
 	zv.Normalize();
 	
 	// get x-vector with cross product of z-vector and up-vector
+	#if IS_NEGATIVE_Z
+	vec3 xv = Cross(zv, eye_up);
+	#else
 	vec3 xv = -Cross(zv, eye_up);
+	#endif
 	xv.Normalize();
 	
 	// get y-vector with x-vector and z-vector
+	#if IS_NEGATIVE_Z
+	vec3 yv = -Cross(zv, xv);
+	#else
 	vec3 yv = Cross(zv, xv);
+	#endif
 	yv.Normalize(); // unnecessary
 	
 	// calculate relative direction vector for object in local space
@@ -1074,6 +1115,9 @@ mat4 MatrixTranslationFromVector(const vec3& v) {
 
 void ChangeZConvention(mat4& m) {
 	
+    //m[0][0] = -m[0][0];
+    //3m[2][2] = -m[2][2];
+    
     m[0][1] = -m[0][1];
     m[0][2] = -m[0][2];
     
@@ -1297,8 +1341,7 @@ vec3 Position(const mat4& transform)
 
 
 
-// Incorrect
-/*mat4 RemoveScale(const mat4& transform)
+mat4 RemoveScale(const mat4& transform)
 {
     quat rotation;
     vec3 scale, translation, skew;
@@ -1316,7 +1359,7 @@ quat MatQuat(const mat4& transform)
 	vec4 persp;
 	Decompose(transform, size, orientation, baller_position, skew, persp);
 	return orientation;
-}*/
+}
 
 mat4 SkewMat(const vec3& v, float ident_value) {
 	/*S =
@@ -1390,6 +1433,38 @@ mat2 Rotation2x2(float angle) {
 		cosf(angle), sinf(angle),
 		-sinf(angle), cosf(angle)
 		};
+}
+
+quat TurnLeft(float angle) {
+	#if IS_NEGATIVE_Z
+	return AxisAngleQuat(vec3(0,1,0), -angle);
+	#else
+	return AxisAngleQuat(vec3(0,1,0), +angle);
+	#endif
+}
+
+quat TurnRight(float angle) {
+	#if IS_NEGATIVE_Z
+	return AxisAngleQuat(vec3(0,1,0), +angle);
+	#else
+	return AxisAngleQuat(vec3(0,1,0), -angle);
+	#endif
+}
+
+quat TurnUp(float angle) {
+	#if IS_NEGATIVE_Z
+	return AxisAngleQuat(vec3(1,0,0), +angle);
+	#else
+	return AxisAngleQuat(vec3(1,0,0), -angle);
+	#endif
+}
+
+quat TurnDown(float angle) {
+	#if IS_NEGATIVE_Z
+	return AxisAngleQuat(vec3(1,0,0), -angle);
+	#else
+	return AxisAngleQuat(vec3(1,0,0), +angle);
+	#endif
 }
 
 
