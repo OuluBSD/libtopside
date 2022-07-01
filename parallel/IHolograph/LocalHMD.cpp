@@ -319,12 +319,13 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 		roll = 0;
 		dev.initial_orient = AxesQuat(yaw, pitch, roll);
 	}
-	vec3 initial_axes;
+	/*vec3 initial_axes;
 	QuatAxes(dev.initial_orient, initial_axes[0], initial_axes[1], initial_axes[2]);
 	vec3 axes;
 	QuatAxes(dev.trans.orientation, axes[0], axes[1], axes[2]);
 	//axes[0] *= -1;
-	dev.trans.orientation = AxesQuat(axes[0] - initial_axes[0], axes[1], axes[2]);
+	dev.trans.orientation = AxesQuat(axes[0] - initial_axes[0], axes[1], axes[2]);*/
+	dev.trans.orientation = MatQuat(QuatMat(dev.trans.orientation) * QuatMat(dev.initial_orient));
 	
 	dev.trans.mode = UPP::TransformMatrix::MODE_AXES;
 	dev.trans.is_stereo = true;
@@ -377,9 +378,13 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 			ctrl.trans.mode = TransformMatrix::MODE_QUATERNION;
 			HMD::GetDeviceFloat(d, HMD::HMD_ROTATION_QUAT, ctrl.trans.orientation.data.data);
 			HMD::GetDeviceFloat(d, HMD::HMD_POSITION_VECTOR, ctrl.trans.position.data);
-			ctrl.trans.orientation -= dev.initial_orient;
+			//ctrl.trans.orientation -= dev.initial_orient;
+			ctrl.trans.orientation = MatQuat(QuatMat(dev.initial_orient) * QuatMat(ctrl.trans.orientation));
 			ctrl.trans.FillFromOrientation();
-			
+			if (ctrl.trans.position == vec3(0.5,0,0) ||
+				ctrl.trans.position == vec3(-0.5,0,0)) {
+				ctrl.trans.position += VEC_FWD * 0.2;
+			}
 			#if 0
 			LOG("Ctrl " << i << ": pos " << ctrl.trans.position.ToString() << ", " << ctrl.trans.GetAxesString());
 			#endif

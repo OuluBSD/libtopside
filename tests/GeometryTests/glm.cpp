@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <assert.h>
 #include <iostream>
 using namespace glm;
@@ -112,6 +113,26 @@ void glm_test() {
 		vec3 l2 = rotateZ(VEC_UP, (float)(+M_PI / 2.0));
 		DUMP(l2);
 		ASSERT(IsClose(l0, l2));
+	}
+	
+	{
+		quat q;
+		q[0] = -0.173780918;
+		q[1] = -0.00384500739;
+		q[2] = -0.0217834469;
+		q[3] = 0.984535873;
+		
+		mat4 m = toMat4(q);
+		DUMP(m);
+		
+		/*
+		data = {0.999021411, -0.0415567942, 0.0151421903, 0}
+      data = {0.0442295484, 0.938651383, -0.342019588, 0}
+      data = {-9.31322575e-10, 0.342354625, 0.939570844, 0}
+      data = {0, 0, 0, 1}*/
+      
+		
+		int i = 0;
 	}
 	
 }

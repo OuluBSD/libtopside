@@ -325,25 +325,23 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 					if (trans) {
 						trans->data = ctrl.trans;
 						
-						#if 0
-						mat4 rot = QuatMat(trans->anchor_orientation);
-						vec3 new_position = (trans->data.position.Embed() * rot).Splice();
-						trans->data.position = trans->anchor_position + new_position;
-						//trans->data.position += trans->anchor_position;
-						
-						//DUMP(trans->data.position);
-						//LOG(trans->data.GetAxesString());
-						#else
 						//trans->data.position = trans->anchor_position;
-						mat4 rot = QuatMat(trans->anchor_orientation);
-						vec3 new_position = (rot * trans->data.position.Embed()).Splice();
-						trans->data.position = trans->anchor_position + new_position;
-						trans->data.orientation = AxesQuat(0,0,0);
-						trans->data.mode = TransformMatrix::MODE_QUATERNION;
+						mat4 arot = QuatMat(trans->anchor_orientation);
+						mat4 trot = QuatMat(trans->data.orientation);
+						mat4 crot = trot * arot;
+						trans->data.orientation = MatQuat(crot);
 						trans->data.FillFromOrientation();
-						trans->verbose = true;
+						
+						mat4 irot = arot.GetInverse();
+						vec3 new_position = (arot * trans->data.position.Embed()).Splice();
+						trans->data.position = trans->anchor_position + new_position;
+						//LOG(trans->data.GetAxesString() << ", " << new_position.ToString() << ", " << trans->data.position.ToString());
+						
+						//trans->data.orientation = AxesQuat(0,0,0);
+						trans->data.mode = TransformMatrix::MODE_QUATERNION;
+						//trans->data.FillFromOrientation();
+						//trans->verbose = true;
 						//DUMP(trans->data.position);
-						#endif
 						
 					}
 				}

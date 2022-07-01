@@ -62,6 +62,13 @@ engine ecs.dummy: {
             comp physics: {bind: physics; test.fn: fixed;};
         };
         
+        entity box2: {
+            comp transform3: {y: 1; x: 1; z: 1;};
+            comp body;
+            comp model: {builtin: box;};
+            comp physics: {bind: physics; test.fn: fixed;};
+        };
+        
         entity player.body: {
             comp transform3: {x: 0; y: 0; z: 6;};
             comp physics: {bind: physics;};
@@ -71,7 +78,7 @@ engine ecs.dummy: {
         entity player.head: {
             comp transform3;
             comp viewable;
-            comp viewport: {fov: 110;};
+            comp viewport: {fov: 140;};
             comp camera.chase;
             comp player.head: {body: world.player.body;};
         };
@@ -79,14 +86,14 @@ engine ecs.dummy: {
         entity player.hand.left: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
             comp player.hand: {hand: left; body: world.player.body;};
         };
         
         entity player.hand.right: {
             comp transform3;
             comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; yaw: -90;};
+            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
             comp player.hand: {hand: right; body: world.player.body;};
         };
     };

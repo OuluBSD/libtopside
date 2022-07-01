@@ -268,15 +268,18 @@ void ChaseCam::UpdateView() {
 			//DUMP(tm.axes);
 			//mat4 rotate = AxesMat(tm.axes[0], tm.axes[1], tm.axes[2]);
 			
+			#if 0
 			// TODO solve and clean this horrible separate-yaw mess!
 			mat4 rotate = AxesMat(0, -tm.axes[1], -tm.axes[2]);
 			mat4 yaw = QuatMat(AxisAngleQuat(VEC_Y, -tm.axes[0]));
 			mat4 tran = Translate(-tm.position);
+			this->view = port * projection * rotate * yaw * tran;
+			#else
+			mat4 tran = Translate(-tm.position);
+			mat4 rotate = QuatMat(tm.orientation).GetInverse();
+			mat4 yaw = Identity<mat4>();
 			this->view = port * projection * rotate * tran;
-			
-			/*mat4 tran = Translate(-tm.position);
-			mat4 rotate = QuatMat(-tm.orientation);
-			this->view = port * projection * rotate * tran;*/
+			#endif
 			
 			//DUMP(tm.position);
 			
