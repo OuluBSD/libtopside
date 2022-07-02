@@ -8,5 +8,7 @@ file
 	glm.cpp;
 
 mainconfig
-	"" = "";
+	"RHS" = "",
+	"" = "RHS_PZ",
+	"" = "LHS";
 

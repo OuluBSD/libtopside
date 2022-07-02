@@ -71,19 +71,19 @@ CONSOLE_APP_MAIN {
 	
 	// quat -> mat4: QuatMat
 	if (1) {
-		mat4 rot0 = QuatMat(AxisAngleQuat(VEC_Y, +M_PI / 2));
+		mat4 rot0 = QuatMat(AxisAngleQuat(VEC_Y, +A_PI / 2));
 		vec3 l0 = (VEC_FWD4 * rot0).Splice();
 		vec3 l1 = VEC_LEFT;
 		DUMP(l0);
 		DUMP(l1);
 		ASSERT(IsClose(l0, l1));
-		mat4 rot1 = QuatMat(AxisAngleQuat(VEC_X, +M_PI / 2));
+		mat4 rot1 = QuatMat(AxisAngleQuat(VEC_X, +A_PI / 2));
 		vec3 u0 = (VEC_FWD4 * rot1).Splice();
 		vec3 u1 = VEC_UP;
 		DUMP(u0);
 		DUMP(u1);
 		ASSERT(IsClose(u0, u1));
-		mat4 rot2 = QuatMat(AxisAngleQuat(VEC_Z, +M_PI / 2));
+		mat4 rot2 = QuatMat(AxisAngleQuat(VEC_Z, +A_PI / 2));
 		vec3 l2 = (VEC_UP4 * rot2).Splice();
 		DUMP(l2);
 		ASSERT(IsClose(l0, l2));
@@ -103,7 +103,7 @@ CONSOLE_APP_MAIN {
 		DUMP(v2);
 		ASSERT(IsClose(v2, v0));
 		
-		yaw = -M_PI/2;
+		yaw = -A_PI/2;
 		vec3 v3 = VEC_RIGHT;
 		vec3 v4 = AxesDir(yaw, pitch);
 		DUMP(v3);
@@ -115,7 +115,7 @@ CONSOLE_APP_MAIN {
 		{
 			vec3 left_vec(-1,0,0);
 			DUMP(left_vec);
-			float left_yaw = +M_PI / 2;
+			float left_yaw = +A_PI / 2;
 			float left_pitch = 0;
 			vec3 left_vec2 = AxesDir(left_yaw, left_pitch);
 			DUMP(left_vec2);
@@ -130,7 +130,7 @@ CONSOLE_APP_MAIN {
 		{
 			vec3 right_vec(+1,0,0);
 			DUMP(right_vec);
-			float right_yaw = -M_PI / 2;
+			float right_yaw = -A_PI / 2;
 			float right_pitch = 0;
 			vec3 right_vec2 = AxesDir(right_yaw, right_pitch);
 			DUMP(right_vec2);
@@ -154,11 +154,11 @@ CONSOLE_APP_MAIN {
 		
 		// backward
 		{
-			vec3 v0 = AxesDir(M_PI, 0);
+			vec3 v0 = AxesDir(A_PI, 0);
 			float yaw, pitch;
 			DirAxes(v0, yaw, pitch);
 			DUMP(yaw);
-			ASSERT(IsClose(fmodf(M_PI*2 + yaw, M_PI*2), M_PI));
+			ASSERT(IsClose(fmodf(A_PI*2 + yaw, A_PI*2), A_PI));
 		}
 		
 		{
@@ -174,11 +174,11 @@ CONSOLE_APP_MAIN {
 	
 	
 	// Decompose
-	#if 0
+	#if 2
 	{
 		// Decompose is probably too broken still, even though this passes
 		vec3 scale0(1,2,3), scale1;
-		quat orient0 = AxesQuat(M_PI/4,M_PI/4,M_PI/4), orient1;
+		quat orient0 = AxesQuat(A_PI/4,A_PI/4,A_PI/4), orient1;
 		vec3 trans0(2,3,4), trans1;
 		vec3 skew1;
 		vec4 persp;
@@ -190,6 +190,8 @@ CONSOLE_APP_MAIN {
 		{
 			mat4 m = QuatMat(orient0);
 			Decompose(m, scale1, orient1, trans1, skew1, persp);
+			DUMP(orient0);
+			DUMP(orient1);
 			ASSERT(IsClose(orient0, orient1));
 		}
 		{
@@ -204,49 +206,51 @@ CONSOLE_APP_MAIN {
 	// AxisAngleQuat
 	{
 		float y, p, r;
-		quat l = AxisAngleQuat(VEC_Y, M_PI / 2);
+		quat l = AxisAngleQuat(VEC_Y, A_PI / 2);
 		QuatAxes(l, y, p, r);
-		ASSERT(IsClose(y, M_PI / 2) && p == 0 && r == 0);
-		l = AxisAngleQuat(VEC_X, M_PI / 4);
+		ASSERT(IsClose(y, A_PI / 2) && p == 0 && r == 0);
+		l = AxisAngleQuat(VEC_X, A_PI / 4);
 		QuatAxes(l, y, p, r);
-		ASSERT(IsClose(p, M_PI / 4) && y == 0 && r == 0);
-		l = AxisAngleQuat(VEC_Z, M_PI / 4);
+		ASSERT(IsClose(p, A_PI / 4) && y == 0 && r == 0);
+		l = AxisAngleQuat(VEC_Z, A_PI / 4);
 		QuatAxes(l, y, p, r);
-		ASSERT(IsClose(r, M_PI / 4) && y == 0 && p == 0);
+		ASSERT(IsClose(r, A_PI / 4) && y == 0 && p == 0);
 	}
 	
 	// transform
 	if (1) {
-		vec3 l0 = VectorTransform(VEC_FWD, AxisAngleQuat(vec3(0,1,0), M_PI / 2));
+		vec3 l0 = VectorTransform(VEC_FWD, AxisAngleQuat(vec3(0,1,0), A_PI / 2));
 		vec3 l1 = VEC_LEFT;
 		ASSERT(IsClose(l0, l1));
 	}
 	
 	// axes -> quat: AxesQuat
 	{
-		mat4 rot0 = QuatMat(AxesQuat(M_PI/2,0,0));
+		mat4 rot0 = QuatMat(AxesQuat(A_PI/2,0,0));
 		vec3 l0 = (VEC_FWD4 * rot0).Splice();
 		vec3 l1 = VEC_LEFT;
 		ASSERT(IsClose(l0, l1));
-		mat4 rot1 = QuatMat(AxesQuat(0,M_PI/2,0));
+		mat4 rot1 = QuatMat(AxesQuat(0,A_PI/2,0));
 		vec3 u0 = (VEC_FWD4 * rot1).Splice();
 		vec3 u1 = VEC_UP;
 		ASSERT(IsClose(u0, u1));
-		mat4 rot2 = QuatMat(AxesQuat(0,0,M_PI/2));
+		mat4 rot2 = QuatMat(AxesQuat(0,0,A_PI/2));
 		vec3 l2 = (VEC_UP4 * rot2).Splice();
+		DUMP(l0);
+		DUMP(l2);
 		ASSERT(IsClose(l0, l2));
 	}
 	
 	// Rotations
 	{
-		mat4 m0 = XRotation(+M_PI / 2);
-		mat4 m1 = QuatMat(AxisAngleQuat(VEC_X, +M_PI / 2));
+		mat4 m0 = XRotation(+A_PI / 2);
+		mat4 m1 = QuatMat(AxisAngleQuat(VEC_X, +A_PI / 2));
 		ASSERT(IsClose(m0, m1));
-		m0 = YRotation(+M_PI / 2);
-		m1 = QuatMat(AxisAngleQuat(VEC_Y, +M_PI / 2));
+		m0 = YRotation(+A_PI / 2);
+		m1 = QuatMat(AxisAngleQuat(VEC_Y, +A_PI / 2));
 		ASSERT(IsClose(m0, m1));
-		m0 = ZRotation(+M_PI / 2);
-		m1 = QuatMat(AxisAngleQuat(VEC_Z, +M_PI / 2));
+		m0 = ZRotation(+A_PI / 2);
+		m1 = QuatMat(AxisAngleQuat(VEC_Z, +A_PI / 2));
 		ASSERT(IsClose(m0, m1));
 	}
 	
@@ -270,16 +274,16 @@ CONSOLE_APP_MAIN {
 	
 	// quat -> ypr
 	{
-		quat q0 = AxesQuat(M_PI/2,0,0); // already checked
+		quat q0 = AxesQuat(A_PI/2,0,0); // already checked
 		float yaw, pitch, roll;
 		QuatAxes(q0, yaw, pitch, roll);
-		ASSERT(IsClose(yaw, M_PI/2) && pitch == 0 && roll == 0);
-		q0 = AxesQuat(0,M_PI/2,0); // already checked
+		ASSERT(IsClose(yaw, A_PI/2) && pitch == 0 && roll == 0);
+		q0 = AxesQuat(0,A_PI/2,0); // already checked
 		QuatAxes(q0, yaw, pitch, roll);
-		ASSERT(IsClose(pitch, M_PI/2));
-		q0 = AxesQuat(0,0,M_PI/2); // already checked
+		ASSERT(IsClose(pitch, A_PI/2));
+		q0 = AxesQuat(0,0,A_PI/2); // already checked
 		QuatAxes(q0, yaw, pitch, roll);
-		ASSERT(IsClose(roll, M_PI/2));
+		ASSERT(IsClose(roll, A_PI/2));
 	}
 	
 	// CameraObject
@@ -290,7 +294,7 @@ CONSOLE_APP_MAIN {
 		vec3 v0;
 		CameraObject(
 			eye, eye_dir, up,
-			M_PI/2, 0, 1,
+			A_PI/2, 0, 1,
 			v0);
 		vec3 v1 = VEC_LEFT;
 		ASSERT(IsClose(v0, v1));
@@ -300,6 +304,8 @@ CONSOLE_APP_MAIN {
 			v0);
 		float per_axis = sqrt(2)/2;
 		v1 = (VEC_UP + VEC_FWD) * per_axis;
+		DUMP(v0);
+		DUMP(v1);
 		ASSERT(IsClose(v0, v1));
 	}
 	
@@ -359,7 +365,7 @@ CONSOLE_APP_MAIN {
 	#if 0
 	{
 		// Passes, but probably very wrong with other angles
-		quat q0 = AxisAngleQuat(vec3(0,1,0), +M_PI / 2);
+		quat q0 = AxisAngleQuat(vec3(0,1,0), +A_PI / 2);
 		mat4 rot0 = QuatMat(q0);
 		quat q1 = MatQuat(rot0);
 		DUMP(q0);
@@ -371,7 +377,7 @@ CONSOLE_APP_MAIN {
 	// GetEulerAngleYXZ
 	// NOTE the inverse axis order
 	{
-		float yaw = M_PI/2, pitch = M_PI/4, roll = M_PI/2;
+		float yaw = A_PI/2, pitch = A_PI/4, roll = A_PI/2;
 		vec3 axes0(yaw, pitch, roll);
 		vec3 yxz(roll, pitch, yaw);
 		mat4 m0 = AxesMat(yaw, pitch, roll);
@@ -397,7 +403,7 @@ CONSOLE_APP_MAIN {
 			vec3 eye(0,0,0);
 			vec3 tgt = VEC_BWD;
 			vec3 up = VEC_UP;
-			mat4 m0 = AxesMat(M_PI,0,0);
+			mat4 m0 = AxesMat(A_PI,0,0);
 			mat4 m1 = LookAt(eye, tgt, up);
 			ASSERT(MatCompareTest(m0, m1));
 		}
@@ -405,7 +411,7 @@ CONSOLE_APP_MAIN {
 			vec3 eye(0,0,0);
 			vec3 tgt = VEC_RIGHT;
 			vec3 up = VEC_UP;
-			mat4 m0 = AxesMat(-M_PI/2,0,0);
+			mat4 m0 = AxesMat(-A_PI/2,0,0);
 			mat4 m1 = LookAt(eye, tgt, up);
 			ASSERT(!MatCompareTest(m0, m1, false)); // should fail
 		}
@@ -414,7 +420,7 @@ CONSOLE_APP_MAIN {
 			vec3 tgt = VEC_FWD + VEC_UP;
 			vec3 up = VEC_UP;
 			tgt.Normalize();
-			mat4 m0 = AxesMat(0,M_PI/4,0);
+			mat4 m0 = AxesMat(0,A_PI/4,0);
 			mat4 m1 = LookAt(eye, tgt, up);
 			ASSERT(!MatCompareTest(m0, m1, false)); // should fail
 		}
@@ -422,7 +428,7 @@ CONSOLE_APP_MAIN {
 			vec3 eye(0,0,0);
 			vec3 tgt = VEC_FWD;
 			vec3 up = VEC_DOWN;
-			mat4 m0 = AxesMat(0,0,M_PI);
+			mat4 m0 = AxesMat(0,0,A_PI);
 			mat4 m1 = LookAt(eye, tgt, up);
 			ASSERT(MatCompareTest(m0, m1));
 		}
@@ -440,7 +446,7 @@ CONSOLE_APP_MAIN {
 	#if 0
 	{
 		vec3 scale0(1,2,3), scale1;
-		quat orient0 = AxesQuat(M_PI/4,M_PI/4,M_PI/4), orient1;
+		quat orient0 = AxesQuat(A_PI/4,A_PI/4,A_PI/4), orient1;
 		vec3 trans0(2,3,4), trans1;
 		vec3 skew1;
 		vec4 persp;

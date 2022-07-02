@@ -282,6 +282,8 @@ quat TurnRight(float angle);
 quat TurnUp(float angle);
 quat TurnDown(float angle);
 
+quat SwapHandedness(const quat& input);
+
 NAMESPACE_TOPSIDE_END
 
 

@@ -85,7 +85,7 @@ engine ecs.dummy: {
         entity player.head: {
             comp transform3;
             comp viewable;
-            comp viewport;
+            comp viewport: {fov: 110;};
             comp camera.chase;
             comp player.head: {body: world.player.body;};
         };

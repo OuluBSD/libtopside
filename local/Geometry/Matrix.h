@@ -30,6 +30,12 @@ NAMESPACE_TOPSIDE_BEGIN
 #define VEC_Y vec3(0,1,0)
 #define VEC_Z vec3(0,0,1)
 
+#if IS_CW_ANGLE
+	#define A_PI (-M_PI)
+#else
+	#define A_PI M_PI
+#endif
+
 template <class T, int I> struct PartVec {};
 template <class T, int R, int C> struct Matrix;
 

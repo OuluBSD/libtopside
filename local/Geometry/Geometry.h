@@ -26,7 +26,31 @@
 #undef far
 #undef near
 
-#define IS_NEGATIVE_Z 1
+#ifdef flagLHS
+// Left-handed coordinate system
+	#define LHS		0
+#elif defined flagRHS_PZ
+// Right-handed coordinate system with positive z forward
+// CCW angles (RHS) but +z forward.
+// Very experiemental: dirty matrix, clean api, unnatural, mathematician's nightmare
+	#define RHS_PZ	0
+#else
+// Right-handed coordinate system
+	#define RHS		1
+#endif
+
+#if RHS || RHS_PZ
+	#define IS_CW_ANGLE 0
+#else
+	#define IS_CW_ANGLE 1
+#endif
+
+#if RHS
+	#define IS_NEGATIVE_Z 1
+#else
+	#define IS_NEGATIVE_Z 0
+#endif
+
 
 #include "Common.h"
 #include "Matrix.h"

@@ -119,11 +119,11 @@ mat4 Ortho(float left, float right, float bottom, float top, float near, float f
 
 bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& translation, vec3& skew, vec4& perspective) {
 	mat4 local_mat(model_mat);
-	
-	#if !IS_NEGATIVE_Z
+
+	#if !IS_NEGATIVE_Z && !IS_CW_ANGLE
 	ChangeZConvention(local_mat);
 	#endif
-		
+
 	if(IsEpsilonEqual(local_mat[3][3], 0.0f, EPSILONf))
 		return false;
 
@@ -228,12 +228,13 @@ bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& tra
 		orientation[3] = root * (row[j][k] - row[k][j]);
 	}
 
-	#if !IS_NEGATIVE_Z
+	#if !IS_NEGATIVE_Z && !IS_CW_ANGLE
 	orientation[2] = -orientation[2];
 	#endif
 	
 	return true;
 }
+
 
 // Incorrect
 mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective) {
@@ -378,6 +379,9 @@ quat AxisAngleQuat(const vec3& v, float angle) {
 	r[1] = v[1] * s;
 	r[2] = v[2] * s;
 	r[3] = cosf(angle * 0.5);
+	#if IS_CW_ANGLE
+	r[2] = -r[2];
+	#endif
 	return r;
 }
 
@@ -405,7 +409,11 @@ quat AxesQuat(float yaw, float pitch, float roll)
 {
 	//return MatrixUtils::orientation(YawPitchRoll(yaw, pitch, roll));
     float sr, cr, sp, cp, sy, cy;
-
+	
+	#if IS_CW_ANGLE
+	roll = -roll;
+	#endif
+	
     float half_roll = roll * 0.5f;
     sr = sinf(half_roll);
     cr = cosf(half_roll);
@@ -435,7 +443,7 @@ mat4 XRotation(float angle) {
 	float c = cosf(angle);
 	float s = sinf(angle);
 	
-	#if IS_NEGATIVE_Z
+	#if IS_NEGATIVE_Z || IS_CW_ANGLE
 	return mat4{
 		{1,  0, 0, 0},
 		{0,  c, s, 0},
@@ -455,7 +463,7 @@ mat4 XRotation(float angle) {
 mat4 YRotation(float angle) {
 	float c = cosf(angle);
 	float s = sinf(angle);
-	#if IS_NEGATIVE_Z
+	#if IS_NEGATIVE_Z || IS_CW_ANGLE
 	return mat4{
 		{c, 0, -s, 0},
 		{0, 1,  0, 0},
@@ -482,12 +490,17 @@ mat4 ZRotation(float angle) {
 		{0, 0, 1, 0},
 		{0, 0, 0, 1}
 	};
-	#else
-	c = -c;
-	s = -s;
+	#elif IS_CW_ANGLE
 	return mat4{
 		{c, -s, 0, 0},
 		{s, c, 0, 0},
+		{0, 0, 1, 0},
+		{0, 0, 0, 1}
+	};
+	#else
+	return mat4{
+		{-c, s, 0, 0},
+		{-s, -c, 0, 0},
 		{0, 0, 1, 0},
 		{0, 0, 0, 1}
 	};
@@ -527,6 +540,12 @@ vec3 AxesDir(float yaw, float pitch) {
 		len * -sin(yaw),
 		sin(pitch),
 		len * -cos(yaw));
+	#elif IS_CW_ANGLE
+	float len = cos(pitch);
+	return vec3(
+		len * -sin(-yaw),
+		sin(pitch),
+		len * cos(-yaw));
 	#else
 	float len = cos(pitch);
 	return vec3(
@@ -1141,7 +1160,7 @@ mat4 QuatMat(quat q) {
 
     float qw = q[3];
 	
-	#if IS_NEGATIVE_Z
+	#if IS_NEGATIVE_Z || IS_CW_ANGLE
     mat4 m;
     m[0][0] = 1.f - 2.f * qyy - 2.f * qzz;
     m[0][1] = 2.f * qx * qy + 2.f * qz * qw;
@@ -1284,6 +1303,9 @@ void QuatAxes(const quat& q, float& yaw, float& pitch, float& roll) {
 	yaw   = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z);
 	pitch = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z);
 	roll  = asin(2*x*y + 2*z*w);
+	#if IS_CW_ANGLE
+	roll = -roll;
+	#endif
 }
 
 void QuatAxes(const quat& q, vec3& axes) {
@@ -1465,6 +1487,15 @@ quat TurnDown(float angle) {
 	#else
 	return AxisAngleQuat(vec3(1,0,0), +angle);
 	#endif
+}
+
+quat SwapHandedness(const quat& input) {
+    return quat(
+         input.data[1],   // -(  right = -left  )
+        -input.data[2],   // -(     up =  up     )
+        -input.data[0],   // -(forward =  forward)
+         input.data[3]
+    );
 }
 
 
