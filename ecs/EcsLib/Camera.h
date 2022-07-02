@@ -30,7 +30,7 @@ struct Viewport : public Component<Viewport> {
 	
 	
 	vec3 target = zero<vec3>();
-	double fov = 90;
+	double fov = M_PI/2;
 	double angle = 0;
 	
 	
@@ -83,6 +83,7 @@ class ChaseCam :
 	double time = 0;
 	double phase_time = 1.5;
 	float fov = 110;
+	float used_fov = 0;
 	
 	/*typedef enum {
 		STATIC,
@@ -92,6 +93,8 @@ class ChaseCam :
 	
 	Mode mode = STATIC;*/
 	
+	
+	float GetUsedFov();
 	
 public:
 	typedef ChaseCam CLASSNAME;
@@ -105,6 +108,7 @@ public:
 	bool Load(GfxDataState& state) override;
 	void UpdateCalibration() override;
 	
+	void CheckUpdateProjection();
 	void UpdateProjection();
 	void UpdateView();
 	void SetViewportSize(Size sz);

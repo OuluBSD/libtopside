@@ -338,7 +338,13 @@ bool HoloLocalHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase& a, Packet
 	
 	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_EYE_IPD, &dev.trans.eye_dist);
 	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_POSITION_VECTOR, dev.trans.position.data);
+	HMD::GetDeviceFloat(dev.hmd, HMD::HMD_LEFT_EYE_FOV, &dev.trans.fov);
 	
+	// Local calibration values (currently fixed placeholder) (use test 07h to calibrate these)
+	if (1) {
+		dev.trans.fov += 0.261799-0.665658;
+		dev.trans.eye_dist += -0.0452138;
+	}
 	
 	#if 0
 	// set hmd rotation, for left eye.

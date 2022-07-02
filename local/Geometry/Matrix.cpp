@@ -87,6 +87,7 @@ void TransformMatrix::operator=(const TransformMatrix& m) {
 	axes = m.axes;
 	orientation = m.orientation;
 	eye_dist = m.eye_dist;
+	fov = m.fov;
 	/*proj[0] = m.proj[0];
 	proj[1] = m.proj[1];
 	view[0] = m.view[0];

@@ -1044,6 +1044,7 @@ struct TransformMatrix : RTTIBase {
 	quat orientation;
 	//mat4 proj[2], view[2];
 	float eye_dist = 0;
+	float fov = 0;
 	
 	
 	TransformMatrix() {}

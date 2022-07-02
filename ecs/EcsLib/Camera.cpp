@@ -87,7 +87,7 @@ void Viewable::Uninitialize()  {
 
 bool Viewport::Arg(String key, Object value) {
 	if (key == "fov") {
-		fov = value.ToDouble();
+		fov = DEG2RAD(value.ToDouble());
 		return true;
 	}
 	return false;
@@ -183,17 +183,30 @@ void ChaseCam::SetViewportSize(Size sz) {
 	UpdateProjection();
 }
 
+float ChaseCam::GetUsedFov() {
+	if (this->trans && this->trans->data.fov > 0)
+		fov = this->trans->data.fov;
+	else if (vport)
+		fov = vport->fov;
+	
+	float f = fov + (calib.is_enabled ? calib.fov : 0);
+	
+	return f;
+}
+
+void ChaseCam::CheckUpdateProjection() {
+	if (GetUsedFov() != used_fov) {
+		UpdateProjection();
+	}
+}
+
 void ChaseCam::UpdateProjection() {
 	float ratio = viewport_sz[1] / viewport_sz[0];
 	float eye_ratio = viewport_sz[1] / (viewport_sz[0] * 0.5);
 	port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	port_stereo = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 	
-	if (vport)
-		fov = vport->fov;
-	
-	float used_fov = calib.is_enabled ? DEG2RAD(fov) + calib.fov : DEG2RAD(fov);
-	
+	used_fov = GetUsedFov();
 	projection = Perspective(used_fov, 1.0f, 0.1f, 100.0f);
 }
 
@@ -202,6 +215,8 @@ void ChaseCam::UpdateView() {
 	int height = TS::default_height;
 	
 	float eye_dist = 0.064;
+	
+	CheckUpdateProjection();
 	
 	if (this->target) {
 		vec3 target = this->target->data.position;
@@ -278,10 +293,17 @@ void ChaseCam::UpdateView() {
 			mat4 tran = Translate(-tm.position);
 			mat4 rotate = QuatMat(tm.orientation).GetInverse();
 			mat4 yaw = Identity<mat4>();
+			
+			if (calib.is_enabled)
+				yaw = QuatMat(AxesQuat(calib.axes)).GetInverse();
+			
 			this->view = port * projection * rotate * tran;
 			#endif
 			
 			//DUMP(tm.position);
+			
+			if (this->trans->data.eye_dist)
+				eye_dist = this->trans->data.eye_dist;
 			
 			if (calib.is_enabled) {
 				eye_dist += calib.eye_dist;

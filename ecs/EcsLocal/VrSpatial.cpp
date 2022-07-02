@@ -116,7 +116,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	
 	
 	WhenSourcePressed(*this, ev);
-	float step = last_dt * 1.0;
+	float step = last_dt * 0.3;
 	
 	if (calib_mode == CALIB_FOV_SCALE_EYEDIST) {
 		
@@ -130,7 +130,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 			ev.n = HOLO_CALIB_FOV;
 			ev.fvalue = +step;
 		}
-		else if (data['a']) {
+		/*else if (data['a']) {
 			// decrease scale
 			ev.n = HOLO_CALIB_SCALE;
 			ev.fvalue = -step;
@@ -139,7 +139,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 			// increase scale
 			ev.n = HOLO_CALIB_SCALE;
 			ev.fvalue = +step;
-		}
+		}*/
 		else if (data['z']) {
 			// decrease eye distance
 			ev.n = HOLO_CALIB_EYE_DIST;
@@ -150,7 +150,6 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 			ev.n = HOLO_CALIB_EYE_DIST;
 			ev.fvalue = +step;
 		}
-		
 	}
 	else if (calib_mode == CALIB_CTRL_LEFT || calib_mode == CALIB_CTRL_RIGHT) {
 		
@@ -204,17 +203,38 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 			ev.n = HOLO_CALIB_PITCH;
 			ev.fvalue = +step;
 		}
-		else if (data['y']) {
-			// roll right
-			ev.n = HOLO_CALIB_ROLL;
-			ev.fvalue = -step;
-		}
-		else if (data['r']) {
-			// roll left
-			ev.n = HOLO_CALIB_ROLL;
-			ev.fvalue = +step;
-		}
 		
+	}
+	
+	if (data['h']) {
+		// yaw right
+		ev.n = HOLO_CALIB_YAW;
+		ev.fvalue = -step;
+	}
+	else if (data['f']) {
+		// yaw left
+		ev.n = HOLO_CALIB_YAW;
+		ev.fvalue = +step;
+	}
+	else if (data['t']) {
+		// pitch down
+		ev.n = HOLO_CALIB_PITCH;
+		ev.fvalue = -step;
+	}
+	else if (data['g']) {
+		// pitch up
+		ev.n = HOLO_CALIB_PITCH;
+		ev.fvalue = +step;
+	}
+	else if (data['y']) {
+		// roll right
+		ev.n = HOLO_CALIB_ROLL;
+		ev.fvalue = -step;
+	}
+	else if (data['r']) {
+		// roll left
+		ev.n = HOLO_CALIB_ROLL;
+		ev.fvalue = +step;
 	}
 	
 	if (ev.n >= 0) {
