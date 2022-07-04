@@ -302,7 +302,7 @@ Vector<Pointf> HoughTransform(DMatrix<T>& img, double rho_res, double theta_res,
 	for (int n = 0; n < numangle; n++) {
 		tabSin[n] = FastSin(ang) * irho;
 		tabCos[n] = FastCos(ang) * irho;
-		ang += theta_res
+		ang += theta_res;
 	}
 	       
 	// stage 1. fill accumulator
@@ -337,13 +337,17 @@ Vector<Pointf> HoughTransform(DMatrix<T>& img, double rho_res, double theta_res,
 	}
 	
 	// stage 3. sort the detected lines by accumulator value
-	_sort_buf.sort([](l1, l2) {
-		return accum[l1] > accum[l2] || (accum[l1] == accum[l2] && l1 < l2);
-	}
-				  );
+	struct Sorter {
+		Vector<int>& accum;
+		Sorter(Vector<int>& accum) : accum(accum) {}
+		bool operator()(int l1, int l2) const {
+			return accum[l1] > accum[l2] || (accum[l1] == accum[l2] && l1 < l2);
+		}
+	};
+	Sort(_sort_buf, Sorter(accum));
 	              
 	// stage 4. store the first min(total,linesMax) lines to the output buffer
-	int linesMax = min(numangle * numrho, _sort_buf.length);
+	int linesMax = min(numangle * numrho, _sort_buf.GetCount());
 	double scale = 1.0 / (numrho + 2);
 	Vector<Pointf> lines;
 	for (int i = 0; i < linesMax; i++) {

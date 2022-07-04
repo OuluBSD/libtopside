@@ -693,7 +693,7 @@ public:
 	
 private:
 	T value;
-	mutable AtomicInt change_count;
+	mutable Atomic change_count;
 };
 
 

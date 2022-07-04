@@ -72,7 +72,12 @@ public:
 	
 	
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
+	#ifdef UPP_VERSION
+	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override {TODO};
+	void DrawImage(int x, int y, Image img, byte alpha=255);
+	#else
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
+	#endif
 	void DrawRect(Rect r, RGBA clr);
 	void DrawRect(int x, int y, int w, int h, RGBA clr);
 	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);
@@ -91,6 +96,16 @@ public:
 	
 };
 
+
+
+template <class T>
+T GetOffsets(const T& a, const T& b, double width) {
+	double dx = b.x - a.x;
+	double dy = b.y - a.y;
+	double len = sqrt(dx * dx + dy * dy);
+	double scale = width / (2 * len);
+	return T(-scale * dy, scale * dx);
+}
 
 
 NAMESPACE_TOPSIDE_END

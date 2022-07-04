@@ -90,7 +90,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	
 	hash_t GetHashValue() const {
 		CombineHash c;
-		for(int i = 0; i < I; i++) c.Put(UPP::GetHashValue(data[i]));
+		for(int i = 0; i < I; i++) c.Put(UPP::GetHashValue((double)data[i]));
 		return c;
 	}
 	T& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
@@ -1028,7 +1028,7 @@ NAMESPACE_TOPSIDE_END
 
 NAMESPACE_UPP
 using namespace TS;
-
+#undef TransformMatrix
 struct TransformMatrix : RTTIBase {
 	RTTI_DECL0(TransformMatrix);
 	
@@ -1158,6 +1158,30 @@ struct CalibrationData {
 	
 };
 
+
+struct OnlineAverageVector {
+	OnlineAverage av[3];
+	
+	
+	OnlineAverageVector() {}
+	
+	void SetSize(int i) {
+		for(int j = 0; j < 3; j++)
+			av[j].Resize(i);
+	}
+	
+	void Add(const vec3& v) {
+		for(int i = 0; i < 3; i++)
+			av[i].Add(v[i]);
+	}
+	
+	vec3 GetMean() const {
+		vec3 v;
+		for(int i = 0; i < 3; i++)
+			v.data[i] = (float)av[i].GetMean();
+		return v;
+	}
+};
 
 END_UPP_NAMESPACE
 

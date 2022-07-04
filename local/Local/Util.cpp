@@ -498,6 +498,26 @@ float ConvertDipsToPixels(float dips, float dpi) {
     return floorf(dips * dpi / dips_per_inch + 0.5f); // Round to nearest integer.
 }
 
+Vector<String> local_file_dirs;
+
+void AddLocalFileDirectory(String dir) {
+	local_file_dirs.Add(dir);
+}
+
+String FindLocalFile(String filename) {
+	String exe_dir_file = GetExeDirFile(filename);
+	if (FileExists(exe_dir_file))
+		return exe_dir_file;
+	
+	for(int i = 0; i < local_file_dirs.GetCount(); i++) {
+		String dir_file = AppendFileName(local_file_dirs[i], filename);
+		if (FileExists(dir_file) || DirectoryExists(dir_file))
+			return dir_file;
+	}
+	
+	return ConfigFile(filename);
+}
+
 
 
 NAMESPACE_TOPSIDE_END

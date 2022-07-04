@@ -15,5 +15,7 @@ file
 	TokenParser.h,
 	TokenParser.cpp,
 	String.h,
-	String.cpp;
+	String.cpp,
+	Draw.h,
+	Draw.cpp;
 

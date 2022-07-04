@@ -63,7 +63,7 @@ private:
     mat4			local_transform;
     
     
-    AtomicInt		modify_count;
+    Atomic			modify_count;
 };
 
 

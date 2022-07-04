@@ -1,3 +1,4 @@
+#include <Draw/Draw.h>
 #include "Draw.h"
 
 
@@ -46,7 +47,7 @@ String DrawCommand::ToString() const {
 		case DRAW_LINE:			s << "line([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "])"; break;
 		case DRAW_IMAGE:		s << "image([" << i[0] << "," << i[1] << "], " << img.ToString() << ")"; break;
 		case DRAW_RECT:			s << "rect(pt[" << i[0] << "," << i[1] << "], sz[" << i[2]-i[0] << "," << i[3]-i[1] << "])"; break;
-		case DRAW_TRIANGLES:	s << "triangles(" << clr.ToString() << ")"; break;
+		case DRAW_TRIANGLES:	s << "triangles(" << (int)clr.r << ", " << (int)clr.g << ", " << (int)clr.b << ", " << (int)clr.a << ")"; break;
 		case DRAW_POLYLINE:		s << "polyline(width=" << i[0] << ", pts-count=" << pts.GetCount() << ")"; break;
 		case DRAW_OFFSET:		s << "offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
 		case DRAW_END:			s << "end()"; break;

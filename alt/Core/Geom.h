@@ -293,15 +293,6 @@ typedef Tri_<double> Trif;
 
 
 
-template <class T>
-T GetOffsets(const T& a, const T& b, double width) {
-	double dx = b.x - a.x;
-	double dy = b.y - a.y;
-	double len = sqrt(dx * dx + dy * dy);
-	double scale = width / (2 * len);
-	return T(-scale * dy, scale * dx);
-}
-
 
 
 Pointf Intersect(const Pointf& a, const Pointf& b, const Pointf& c, const Pointf& d);

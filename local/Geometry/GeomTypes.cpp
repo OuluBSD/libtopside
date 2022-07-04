@@ -207,7 +207,7 @@ float* DepthImage::End() {
 
 float* DepthImage::Detach() {
 	float* f = data.Begin();
-	data = 0;
+	data.Clear();
 	sz = Size(0, 0);
 	pitch = 0;
 	channels = 0;

@@ -31,6 +31,7 @@ public:
 	
 	void		Clear() {if (ref) ref->Dec(); ref = NULL;}
 	bool		IsEmpty() const {return ref == NULL;}
+	bool		IsNullInstance() const {return ref == NULL;}
 	SysFont*	GetSysFont() {if (!ref) return NULL; return &ref->font;}
 	void		Face(int i);
 	void		Height(int i);

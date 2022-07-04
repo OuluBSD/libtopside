@@ -164,20 +164,21 @@ void PlayerBodySystem::Update(double dt) {
 		
 		vec3 body_feet_pos = trans->data.position;
 		vec3 head_direction = VEC_FWD;
-		vec3 head_pos(0,0,0);
 		vec3 head_up = VEC_UP;
 		vec3 axes(0,0,0);
 		TransformMatrix tm;
 		
 		if (b->head) {
 			vec3 head_rel_pos(0, b->height - eyes_from_height, 0);
-			head_pos = body_feet_pos + head_rel_pos;
+			vec3 head_pos = body_feet_pos + head_rel_pos;
 			ASSERT(head_pos[1] > 0.0f);
 			
 			TransformRef head_trans = b->head->GetEntity()->Find<Transform>();
 			if (head_trans) {
 				TransformMatrix& t = head_trans->data;
-				t.position = head_pos;
+				head_trans->anchor_position = head_pos;
+				t.position = head_trans->anchor_position + head_trans->relative_position;
+				head_pos = t.position,
 				tm = t;
 				
 				axes = t.axes;
@@ -197,7 +198,7 @@ void PlayerBodySystem::Update(double dt) {
 						hand_trans->data = tm;
 						float horz_deg = (i == 1 ? -1 : +1) * 30;
 						CameraObject(
-							head_pos, head_direction, head_up,
+							tm.position, head_direction, head_up,
 							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
 							hand_trans->data.position);
 							
@@ -263,9 +264,9 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 			if (b->head && e.trans) {
 				TransformRef trans = b->head->GetEntity()->Find<Transform>();
 				if (trans) {
-					vec3 pos = trans->data.position;
 					trans->data = *e.trans;
-					trans->data.position = pos;
+					trans->relative_position = e.trans->position;
+					trans->data.position = trans->anchor_position + trans->relative_position;
 				}
 				/*auto cam = b->head->GetEntity()->Find<CameraBase>();
 				if (e.cam->mode == TransformMatrix::MODE_LOOKAT) {

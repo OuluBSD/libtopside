@@ -225,8 +225,12 @@ bool HtmlParser::Parse(String html) {
 					int charset_id = CharsetByName(charset);
 					if (charset_id && charset_id != CHARSET_UTF8) {
 						WString out;
+						#if 1
+						out += ToUnicode(html.Begin(), html.GetCount(), charset_id);
+						#else
 						out.Cat(' ', html.GetCount());
 						ToUnicode((wchar*)out.Begin(), html.Begin(), html.GetCount(), charset_id);
+						#endif
 						html = out.ToString();
 					}
 					#endif

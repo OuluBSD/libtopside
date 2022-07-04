@@ -12,6 +12,7 @@ public:
 	
 	TransformMatrix data;
 	vec3 size;
+	vec3 relative_position;
 	vec3 anchor_position;
 	quat anchor_orientation;
 	bool verbose = false;

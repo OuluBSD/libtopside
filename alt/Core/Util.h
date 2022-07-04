@@ -62,8 +62,6 @@ String GetDataDirectory();
 String GetDataFile(String filename);
 bool FileExists(String path);
 bool DirectoryExists(String path);
-String FindLocalFile(String filename);
-void AddLocalFileDirectory(String dir);
 bool IsVerbose();
 void SetVerbose(bool b=true);
 

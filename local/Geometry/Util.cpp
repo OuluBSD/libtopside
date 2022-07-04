@@ -987,7 +987,12 @@ vec4 VectorScale(const vec4& v, float f) {
 
 RGBA CreateRGBA(const vec4& color) {
     vec4 colorf = color * 255.f;
-    return RGBA { (byte)colorf[0], (byte)colorf[1], (byte)colorf[2], (byte)colorf[3] };
+    RGBA r;
+    r.r = (byte)colorf[0];
+    r.g = (byte)colorf[1];
+    r.b = (byte)colorf[2];
+    r.a = (byte)colorf[3];
+    return r;
 }
 
 vec3 MultiplyPoint(const vec3& vec, const mat4& mat) {
@@ -1496,6 +1501,29 @@ quat SwapHandedness(const quat& input) {
         -input.data[0],   // -(forward =  forward)
          input.data[3]
     );
+}
+
+String Plot(const vec3& a, const vec3& b) {
+	float dot = Dot(a, b) / b.GetLength();
+	dot = max(-1.0f, min(+1.0f, dot));
+	int chars = 20;
+
+	String s;
+	if (dot < 0) {
+		int spaces = (1.0 + dot) * chars;
+		int fills = chars - spaces;
+		s.Cat(' ', spaces);
+		s.Cat('#', fills);
+		s.Cat(' ', chars);
+	}
+	else {
+		int fills = dot * chars;
+		int spaces = (1.0 - dot) * chars;
+		s.Cat(' ', chars);
+		s.Cat('#', fills);
+		s.Cat(' ', spaces);
+	}
+	return s;
 }
 
 

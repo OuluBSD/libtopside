@@ -14,6 +14,8 @@
 #include "SDraw.h"
 #include "Chameleon.h"
 
+#include <SharedCore/Draw.h>
+
 #ifdef GUIPLATFORM_INCLUDE
 	#include GUIPLATFORM_INCLUDE
 #endif

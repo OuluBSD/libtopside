@@ -28,8 +28,8 @@ void Transpose(DMatrix<T>& At, const DMatrix<T>& A) {
 	int nrows = A.rows;
 	int ncols = A.cols;
 	int Ai = 0, Ati = 0, pAt = 0;
-	const auto& ad = A.data
-	auto& = At.data;
+	const auto& ad = A.data;
+	auto& atd = At.data;
 	
 	for (int i = 0; i < nrows; Ati += 1, Ai += ncols, i++) {
 		pAt = Ati;
@@ -126,8 +126,8 @@ void MultiplyAAt(DMatrix<T>& C, const DMatrix<T>& A) {
 			for (int k = 0; k < ncols; k++) {
 				sum += ad[pA++] * ad[pB++];
 			}
-			cd[pC] = sum
-					 cd[pCt] = sum;
+			cd[pC] = sum;
+			cd[pCt] = sum;
 		}
 	}
 }

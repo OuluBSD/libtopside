@@ -1,7 +1,11 @@
 #include "LocalCtrl.h"
 
 NAMESPACE_UPP
+#ifdef UPP_VERSION
+FileSel& GFileSel();
+#else
 FileSel& GFileSel() {static FileSel s; return s;}
+#endif
 END_UPP_NAMESPACE
 
 

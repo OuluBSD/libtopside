@@ -62,10 +62,12 @@ quat quat::Mix(const quat& q, float f) const {
 }
 
 
+NAMESPACE_TOPSIDE_END
 
 
 
 
+NAMESPACE_UPP
 
 void TransformMatrix::Clear() {
 	mode = MODE_POSITION;
@@ -75,7 +77,7 @@ void TransformMatrix::Clear() {
 	up = VEC_UP;
 	axes = vec3(0,0,0);
 	orientation = quat(0,0,0,0);
-	float eye_dist = 0;
+	eye_dist = 0;
 }
 
 void TransformMatrix::operator=(const TransformMatrix& m) {
@@ -163,6 +165,4 @@ void CalibrationData::Dump() {
 
 
 
-
-
-NAMESPACE_TOPSIDE_END
+END_UPP_NAMESPACE

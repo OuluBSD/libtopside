@@ -12,6 +12,7 @@
 #include "Defs.h"
 #include <SharedCore/TokenParser.h>
 #include <SharedCore/String.h>
+#include <SharedCore/Draw.h>
 #include "Types.h"
 #include "Chrono.h"
 #include "Recycler.h"

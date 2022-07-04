@@ -232,26 +232,6 @@ bool DirectoryExists(String path) {
 	#endif
 }
 
-Vector<String> local_file_dirs;
-
-String FindLocalFile(String filename) {
-	String exe_dir_file = GetExeDirFile(filename);
-	if (FileExists(exe_dir_file))
-		return exe_dir_file;
-	
-	for(int i = 0; i < local_file_dirs.GetCount(); i++) {
-		String dir_file = AppendFileName(local_file_dirs[i], filename);
-		if (FileExists(dir_file) || DirectoryExists(dir_file))
-			return dir_file;
-	}
-	
-	return ConfigFile(filename);
-}
-
-void AddLocalFileDirectory(String dir) {
-	local_file_dirs.Add(dir);
-}
-
 bool __is_verbose;
 bool IsVerbose() {return __is_verbose;}
 void SetVerbose(bool b) {__is_verbose = b;}

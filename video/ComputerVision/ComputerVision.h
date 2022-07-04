@@ -7,6 +7,7 @@
 
 #include "Cascade.h"
 #include "Struct.h"
+#include "Math.h"
 #include "ImageProcessing.h"
 #include "ORB.h"
 #include "BrightnessBinaryFeature.h"
@@ -14,7 +15,6 @@
 #include "HAAR.h"
 #include "Matrix.h"
 #include "LinearAlgebra.h"
-#include "Math.h"
 #include "MotionEstimator.h"
 #include "OpticalFlowLK.h"
 #include "Transform.h"

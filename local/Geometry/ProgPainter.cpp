@@ -124,9 +124,12 @@ void ProgPainter::DrawRect(int x, int y, int w, int h, RGBA clr) {
 }
 
 void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
-	if (txt.GetCount() == 0 || fnt.IsEmpty())
+	if (txt.GetCount() == 0 || fnt.IsNullInstance())
 		return;
 	
+	#ifdef UPP_VERSION
+	TODO
+	#else
 	SysColor c;
 	c.r = (byte)(clr.r * 255.0);
 	c.g = (byte)(clr.g * 255.0);
@@ -149,6 +152,7 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 	cmd.img = Image(surf);
 	//cmd.img.MakeSysAccel();
 	cmd.clr.a = clr.a;
+	#endif
 }
 
 void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c) {

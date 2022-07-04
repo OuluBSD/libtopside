@@ -2,7 +2,8 @@ description "\377B85,42,150";
 
 uses
 	ParallelLib,
-	IGraphics;
+	IGraphics,
+	LocalVR;
 
 uses(LINUX) ports/hcidump;
 

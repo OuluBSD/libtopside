@@ -184,6 +184,22 @@ void JacobiImpl(Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, int vstep, 
 
 template <class T>
 void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, double vstep, int m, int n, int n1) {
+	struct PoolNode {
+		Vector<double> f64;
+	};
+	struct Cache {
+		ArrayMap<int, PoolNode> nodes;
+		PoolNode& GetBuffer(int sz) {
+			int i = nodes.Find(sz);
+			if (i >= 0)
+				return nodes[i];
+			PoolNode& n = nodes.Add(i);
+			n.f64.SetSize(sz);
+			return n;
+		}
+		static Cache& Local() {static Cache c; return c;}
+	};
+	
 	Cache& cache = Cache::Local();
 	double eps = EPSILON * 2.0;
 	double minval = FLT_MIN;
@@ -191,7 +207,7 @@ void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, do
 	int seed = 0x1234;
 	double val = 0.0, val0 = 0.0, asum = 0.0;
 	
-	_pool_node_t* W_buff = cache.get_buffer(n << 3);
+	PoolNode* W_buff = cache.get_buffer(n << 3);
 	auto& W = W_buff->f64;
 	
 	for (int i = 0; i < n; i++) {
@@ -497,7 +513,7 @@ void SVDDecompose(const DMatrix<T>& A, DMatrix<T>* W, DMatrix<T>* U, DMatrix<T>*
 	bool at = false;
 	if (m < n) {
 		at = true;
-		Swap(m, n);
+		UPP::Swap(m, n);
 	}
 	
 	DMatrix<T> a_mt(m, m, dt);
@@ -581,14 +597,14 @@ void SVDSolve(const DMatrix<T>& A, DMatrix<T>& X, const DMatrix<T>& B) {
 	int nrows = A.rows, ncols = A.cols;
 	int dt = 1;
 	
-	DMatrix u_mt(nrows, nrows, dt, u_buff.data);
-	DMatrix w_mt(1, ncols, dt, w_buff.data);
-	DMatrix v_mt(ncols, ncols, dt, v_buff.data);
+	DMatrix<T> u_mt(nrows, nrows, dt);
+	DMatrix<T> w_mt(1, ncols, dt);
+	DMatrix<T> v_mt(ncols, ncols, dt);
 	
 	auto& bd = B.data;
-	ud = u_mt.data;
-	wd = w_mt.data;
-	vd = v_mt.data;
+	auto& ud = u_mt.data;
+	auto& wd = w_mt.data;
+	auto& vd = v_mt.data;
 	
 	SVDDecompose(A, w_mt, u_mt, v_mt, 0);
 	
@@ -615,11 +631,11 @@ template <class T>
 void SVDInvert(const DMatrix<T>& Ai, const DMatrix<T>& A) {
 	int nrows = A.rows;
 	int ncols = A.cols;
-	var dt = A.type | C1_t;
+	int dt = A.channels ? A.channels : 1;
 	
-	DMatrix u_mt(nrows, nrows, dt);
-	DMatrix w_mt(1, ncols, dt);
-	DMatrix v_mt(ncols, ncols, dt);
+	DMatrix<T> u_mt(nrows, nrows, dt);
+	DMatrix<T> w_mt(1, ncols, dt);
+	DMatrix<T> v_mt(ncols, ncols, dt);
 	
 	auto& id = Ai.data;
 	auto& ud = u_mt.data;
@@ -630,7 +646,7 @@ void SVDInvert(const DMatrix<T>& Ai, const DMatrix<T>& A) {
 	
 	double tol = EPSILON * wd[0] * ncols;
 	
-	for (int i = 0; i < ncols; i++, pv += ncols) {
+	for (int i = 0, pv = 0, pa = 0; i < ncols; i++, pv += ncols) {
 		for (int j = 0, pu = 0; j < nrows; j++, pa++) {
 			double sum = 0.0;
 			for (int k = 0; k < ncols; k++, pu++) {

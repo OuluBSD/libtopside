@@ -1,6 +1,8 @@
 #ifndef _LocalHMD_LocalHMD_h_
 #define _LocalHMD_LocalHMD_h_
 
+// openhmd commit: dfac0203376552c5274976c42f0757b31310c483
+
 #include <string.h>
 #include <wchar.h>
 #include <hidapi.h>

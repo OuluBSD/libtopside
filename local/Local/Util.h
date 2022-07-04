@@ -630,6 +630,8 @@ struct InternalPacketData : RTTIBase {
 // Converts a length in device-independent pixels (DIPs) to a length in physical pixels.
 float ConvertDipsToPixels(float dips, float dpi);
 
+void AddLocalFileDirectory(String dir);
+String FindLocalFile(String filename);
 
 
 NAMESPACE_TOPSIDE_END
