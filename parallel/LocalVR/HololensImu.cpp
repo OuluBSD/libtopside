@@ -25,7 +25,7 @@ NAMESPACE_HMD_BEGIN
 struct _OuvrtHoloLensIMU {
 	OuvrtDevice dev;
 
-	uint64_t last_timestamp;
+	uint64 last_timestamp;
 	struct imu_state imu;
 };
 

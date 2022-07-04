@@ -1,10 +1,10 @@
-#include "WebcamCV.h"
+#include "StereoCV.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-WebcamCV::WebcamCV() {
-	Title("WebcamCV");
+StereoCV::StereoCV() {
+	Title("StereoCV");
 	Sizeable().MaximizeBox();
 	
 	Add(hsplit.SizePos());
@@ -27,117 +27,110 @@ WebcamCV::WebcamCV() {
 	//vidmgr.Refresh();
 	//PostCallback(THISBACK4(OpenVideoCapture, 0, 0, 0, 0));
 	
-	type = DEMO_GRAYSCALE;
+	type = DEMO_POINTCLOUD;
 	
 	tc.Set(-20, THISBACK(Data));
 }
 
-WebcamCV::~WebcamCV() {
+StereoCV::~StereoCV() {
+	flag.Stop();
 	
 }
 
-void WebcamCV::MainBar(Bar& bar) {
+bool StereoCV::ConnectDebugVideo() {
+	if (!client.ConnectTcp("127.0.0.1", 7776))
+		return false;
+	
+	flag.Start(1);
+	Thread::Start(THISBACK(FrameDownloader));
+	return true;
+}
+
+void StereoCV::FrameDownloader() {
+	enum {
+		LATEST_BRIGHT_FRAME = 10,
+		LATEST_DARK_FRAME,
+	};
+	
+	while (client.IsOpen() && flag.IsRunning()) {
+		if (!client.CallSocket(LATEST_DARK_FRAME, THISBACK(GetFrame)))
+			break;
+	}
+	
+	flag.DecreaseRunning();
+}
+
+void StereoCV::GetFrame(TcpSocket& sock) {
+	Size sz;
+	int size = 0;
+	sock.Get(&sz.cx, sizeof(sz.cx));
+	sock.Get(&sz.cy, sizeof(sz.cy));
+	sock.Get(&size, sizeof(size));
+	tmp_data.SetCount(size);
+	sock.Get(tmp_data.Begin(), size);
+	
+	bool has_duplicate = size >= (sz.cx * sz.cy * 2);
+	
+	ImageBuffer ib(sz);
+	RGBA* it = ib.Begin();
+	RGBA* end = ib.End();
+	const byte* src = tmp_data.Begin();
+	
+	for(int y = 0; y < sz.cy; y++) {
+		for(int x = 0; x < sz.cx; x++) {
+			byte b = *src++;
+			it->r = b;
+			it->g = b;
+			it->b = b;
+			it->a = 255;
+			it++;
+		}
+		
+		// Skip duplicate extra frame for now (high fps is achieved with double frame)
+		if (has_duplicate)
+			src += sz.cx;
+	}
+	Image img = ib;
+	
+	
+	lock.Enter();
+	latest_bright = img;
+	lock.Leave();
+}
+
+void StereoCV::MainBar(Bar& bar) {
 	bar.Sub("Input", [=](Bar& bar) {
 		
 	});
 }
 
-void WebcamCV::OpenDemo(int i) {
+void StereoCV::OpenDemo(int i) {
 	type = i;
 }
 
-String WebcamCV::GetDemoName(int i) {
+String StereoCV::GetDemoName(int i) {
 	switch (i) {
-		case DEMO_GRAYSCALE: return "Grayscale";
-		case DEMO_BOXBLUR: return "BoxBlur";
-		case DEMO_GAUSSIANBLUR: return "GaussianBlur";
-		case DEMO_PYRDOWN: return "PyramidDownsample";
-		case DEMO_SCHARR: return "Scharr";
-		case DEMO_SOBEL: return "Sobel";
-		case DEMO_SOBELEDGE: return "SobelEdge";
-		case DEMO_EQHIST: return "EqualizeHistogram";
-		case DEMO_CANNY: return "CannyEdge";
-		case DEMO_WARPAFF: return "WarpAffine";
-		case DEMO_WARPPERS: return "WarpPerspective";
-		case DEMO_VIDSTAB: return "VideoStabilizer";
-		case DEMO_FASTCOR: return "FastCorners";
-		case DEMO_YAPE06: return "Yape06";
-		case DEMO_YAPE: return "Yape";
-		case DEMO_ORB: return "Orb";
-		case DEMO_OPTFLOWLK: return "OpticalFlowLK";
-		case DEMO_BBF: return "Bbf";
-		case DEMO_HAAR: return "Haar";
+		case DEMO_POINTCLOUD: return "Pointcloud";
 	}
 	return "Invalid id";
 }
 
-void WebcamCV::LoadImageSeries(String dir) {
-	new_imgs.Clear();
-	
-	LOG("WebcamCV::LoadImageSeries: loading images from directory: " << dir);
-	
-	for(int i = 0;; i++) {
-		String name = Format("Image %02d.bmp", i);
-		String path = AppendFileName(dir, name);
-		if (!FileExists(path))
-			break;
-		
-		Image img = StreamRaster::LoadFileAny(path);
-		if (img.IsEmpty()) {
-			LOG("WebcamCV::LoadImageSeries: error: could not open file: " << path);
-			break;
-		}
-		
-		new_imgs << img;
-		
-		#ifdef flagDEBUG
-		if (i == 5)
-			break;
-		#endif
-	}
-	
-	LOG("WebcamCV::LoadImageSeries: loaded " << new_imgs.GetCount() << " images");
-	
-}
-
-void WebcamCV::SelectDemo() {
+void StereoCV::SelectDemo() {
 	if (list.IsCursor())
 		OpenDemo(list.GetCursor());
 	frame_i = 0;
 }
 
-void WebcamCV::Data() {
-	
-	if (new_imgs.GetCount())
-		Swap(new_imgs, imgs);
-	
+void StereoCV::Data() {
 	
 	switch (type) {
-		case DEMO_GRAYSCALE:	Tick(grayscale); break;
-		case DEMO_BOXBLUR:		Tick(boxblur); break;
-		case DEMO_GAUSSIANBLUR:	Tick(gaussblur); break;
-		case DEMO_PYRDOWN:		Tick(pyrdown); break;
-		case DEMO_SCHARR:		Tick(scharr); break;
-		case DEMO_SOBEL:		Tick(sobel); break;
-		case DEMO_SOBELEDGE:	Tick(sobeledge); break;
-		case DEMO_EQHIST:		Tick(eqhist); break;
-		case DEMO_CANNY:		Tick(canny); break;
-		case DEMO_WARPAFF:		Tick(warpaff); break;
-		case DEMO_WARPPERS:		Tick(warppers); break;
-		case DEMO_VIDSTAB:		Tick(vidstab); break;
-		case DEMO_FASTCOR:		Tick(fastcor); break;
-		case DEMO_YAPE06:		Tick(Yape06); break;
-		case DEMO_YAPE:			Tick(Yape); break;
-		case DEMO_ORB:			Tick(orb); break;
-		case DEMO_OPTFLOWLK:	Tick(optflowlk); break;
-		case DEMO_BBF:			Tick(bbf); break;
-		case DEMO_HAAR:			Tick(haar); break;
+		case DEMO_POINTCLOUD:	Tick(pointcloud); break;
 	};
 	
 	rend.Refresh();
 }
 
-void WebcamCV::Renderer::Paint(Draw& d) {
+void StereoCV::Renderer::Paint(Draw& d) {
 	Size sz = GetSize();
 	ImageDraw id(sz);
 	id.DrawRect(sz, Color(227, 227, 227));
@@ -195,33 +188,30 @@ void WebcamCV::Renderer::Paint(Draw& d) {
 }
 
 /*
-bool WebcamCV::HaveEnoughVideoData() {
+bool StereoCV::HaveEnoughVideoData() {
 	return true;
 }
 
-const VideoInputFrame& WebcamCV::GetVideo() {
+const VideoInputFrame& StereoCV::GetVideo() {
 	static VideoInputFrame f;
 	return f;
 }
 
-VideoOutputFrame& WebcamCV::GetOutputFrame() {
+VideoOutputFrame& StereoCV::GetOutputFrame() {
 	static VideoOutputFrame f;
 	return f;
 }*/
 
 
-Image WebcamCV::NewFrame() {
-	if (imgs.IsEmpty())
-		return Image();
+Image StereoCV::NewFrame() {
+	lock.Enter();
+	rend.input = latest_bright;
+	lock.Leave();
 	
-	if (img_i >= imgs.GetCount())
-		img_i = 0;
-	
-	rend.input = imgs[img_i++];
 	return rend.input;
 }
 
-void WebcamCV::Tick(ImageProcBase& proc) {
+void StereoCV::Tick(ImageProcBase& proc) {
 	proc.SetInput(NewFrame());
 	if (frame_i++ == 0)
 		proc.InitDefault();
@@ -359,11 +349,10 @@ GUI_APP_MAIN {
 	
 	SetCoutLog();
 	
-	WebcamCV wc;
+	StereoCV wc;
 	
-	const auto& cmds = CommandLine();
-	if (!cmds.IsEmpty()) {
-		wc.LoadImageSeries(cmds[0]);
-		wc.Run();
-	}
+	if (!wc.ConnectDebugVideo())
+		return;
+	
+	wc.Run();
 }

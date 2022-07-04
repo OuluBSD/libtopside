@@ -304,8 +304,8 @@ static void ouvrt_camera_v4l2_thread(OuvrtDevice *dev)
 		ret = OUVRT_CAMERA_GET_CLASS(dev)->process_frame(camera, raw);
 		if (ret == 0) {
 			debug_stream_frame_push(camera->debug, raw,
-						camera->sizeimage, width * height,
-						ob, &rot, &trans, timestamps);
+						camera->sizeimage, width * height, width, height,
+						ob, &rot, &trans, timestamps, 0);
 		}
 
 		ret = ioctl(dev->fd, VIDIOC_QBUF, &buf);

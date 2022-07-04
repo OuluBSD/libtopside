@@ -43,14 +43,14 @@ int DebugParseArg(const char *arg);
 unsigned int debug_imu_fifo_in(struct imu_state *samples, unsigned int n);
 unsigned int debug_imu_fifo_out(struct imu_state *samples, unsigned int n);
 
-#ifdef HAVE_DEBUG_STREAM
+#ifdef flagDEBUG_SERVER
 void debug_stream_init(int *argc, char **argv[]);
 struct debug_stream *debug_stream_new(const struct DebugStreamDescription *desc);
 struct debug_stream *debug_stream_unref(struct debug_stream *stream);
 void debug_stream_frame_push(struct debug_stream *stream,
-			     void *frame, size_t size, size_t attach_offset,
+			     void *frame, size_t size, size_t w, size_t h, size_t attach_offset,
 			     struct blobservation *ob, quat *rot,
-			     vec3 *trans, double timestamps[3]);
+			     vec3 *trans, double timestamps[3], int exposure);
 void debug_stream_deinit(void);
 #else
 static inline void debug_stream_init(int *argc, char **argv[])
@@ -69,9 +69,9 @@ static inline struct debug_stream *debug_stream_unref(struct debug_stream *s)
 
 static inline void debug_stream_frame_push(struct debug_stream *stream,
 					   void *frame, size_t size,
-					   size_t attach_offset,
+					   size_t w, size_t h, size_t attach_offset,
 					   struct blobservation *ob, quat *rot,
-					   vec3 *trans, double timestamps[3])
+					   vec3 *trans, double timestamps[3], int exposure)
 {
 }
 

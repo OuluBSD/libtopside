@@ -1,13 +1,15 @@
+#include "LocalVR.h"
+
+#undef CPU_SSE
+#undef CPU_SSE2
 #include <opencv2/calib3d/calib3d.hpp>
 #if CV_MAJOR_VERSION >= 4
 #include <opencv2/calib3d/calib3d_c.h>
 #endif
 
-#include "LocalVR.h"
 
 
 NAMESPACE_HMD_BEGIN
-
 
 
 
@@ -20,7 +22,7 @@ extern "C" void estimate_initial_pose(struct blob *blobs, int num_blobs,
 {
 	int i, j;
 	int num_leds = 0;
-	uint64 taken = 0;
+	UPP::uint64 taken = 0;
 	int flags = CV_ITERATIVE;
 	cv::Mat inliers;
 	int iterationsCount = 50;

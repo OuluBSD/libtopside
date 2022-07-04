@@ -92,13 +92,13 @@ static void hololens_camera2_handle_frame(OuvrtHoloLensCamera2 *self,
 	if (exposure == 300) {
 		/* Bright frame, headset tracking */
 		debug_stream_frame_push(self->debug1, self->frame,
-					2 * 640 * 481 + 26,
-					0, NULL, NULL, NULL, NULL);
+					2 * 640 * 481 + 26, 640, 481,
+					0, NULL, NULL, NULL, NULL, exposure);
 	} else if (exposure == 0) {
 		/* Dark frame, controller tracking */
 		debug_stream_frame_push(self->debug2, self->frame,
-					2 * 640 * 481 + 26,
-					0, NULL, NULL, NULL, NULL);
+					2 * 640 * 481 + 26, 640, 481,
+					0, NULL, NULL, NULL, NULL, exposure);
 	} else {
 		g_print("%s: Unexpected exposure: %u\n", self->dev.name,
 			exposure);

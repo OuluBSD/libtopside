@@ -1,0 +1,11 @@
+uses
+	ComputerVision;
+
+file
+	StereoCV.h,
+	StereoCV.cpp,
+	Pointcloud.cpp;
+
+mainconfig
+	"" = "GUI";
+

@@ -12,6 +12,8 @@ library
 file
 	Copying,
 	LocalVR.h,
+	Daemon.h,
+	Daemon.cpp,
 	BlobWatch.h,
 	BlobWatch.cpp,
 	Buttons.h,
@@ -20,8 +22,6 @@ file
 	Camera.cpp,
 	CameraV4l2.h,
 	CameraV4l2.cpp,
-	Daemon.h,
-	Daemon.cpp,
 	Debug.h,
 	Debug.cpp,
 	Device.h,
@@ -57,4 +57,8 @@ file
 	UsbDevice.h,
 	UsbDevice.cpp,
 	UsbIds.h;
+
+mainconfig
+	"" = "",
+	"" = "DEBUG_SERVER";
 

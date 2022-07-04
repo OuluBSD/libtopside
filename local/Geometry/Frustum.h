@@ -29,6 +29,7 @@ struct Frustum {
 		}
 		Panic("invalid [] pos");
 		NEVER();
+		TODO
 	}
 	
 	const Plane& operator[](int i) const {
@@ -42,6 +43,7 @@ struct Frustum {
 		}
 		Panic("invalid [] pos");
 		NEVER();
+		TODO
 	}
 };
 

@@ -8,6 +8,25 @@ SerialServiceBase::SerialServiceBase() {
 	
 }
 
+bool SerialServiceBase::AddTcpSocket(uint32 magic, Callback1<TcpSocket&> cb) {
+	int i = handlers.Find(magic);
+	if (i >= 0) {
+		TcpSocketHandler* h = CastPtr<TcpSocketHandler>(&handlers[i]);
+		if (!h)
+			return false;
+		h->cb << cb;
+		return true;
+	}
+	TcpSocketHandler* h = new TcpSocketHandler();
+	h->cb = cb;
+	h->magic = magic;
+	h->in_sz = 0;
+	h->out_sz = 0;
+	h->serialized = false;
+	h->socket_handler = true;
+	handlers.Add(magic, h);
+	return true;
+}
 
 
 
@@ -50,6 +69,7 @@ void SerialServiceServer::ListenerHandler() {
 		One<TcpSocket> sock;
 		sock.Create();
 		if (sock->Accept(tcp)) {
+			LOG("SerialServiceServer::ListenerHandler: info: accepted " << sock->GetPeerAddr());
 			flag.IncreaseRunning();
 			Thread::Start(THISBACK1(ClientHandler, sock.Detach()));
 		}
@@ -108,13 +128,23 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 		
 		int i = handlers.Find(magic);
 		if (i < 0) {
+			LOG("SerialServiceServer::ClientHandler: error: could not find magic " << magic);
 			magic = 0;
 			SEND(magic);
 			continue;
 		}
+		SEND(magic);
+		
+		//LOG("SerialServiceServer::ClientHandler: info: magic " << magic << ", i " << i);
+		
 		HandlerBase& hb = handlers[i];
 		
-		if (hb.serialized) {
+		if (hb.socket_handler) {
+			//LOG("SerialServiceServer::ClientHandler: info: socket handler enter");
+			hb.Call(sock);
+			//LOG("SerialServiceServer::ClientHandler: info: socket handler leave");
+		}
+		else if (hb.serialized) {
 			GET(in_sz);
 			if (in_sz > 10000000) {
 				LOG("SerialServiceServer::ClientHandler: error: too large input packet: " << in_sz);
@@ -134,8 +164,8 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 				break;
 			}
 			
-			MemStream ms(in.Begin(), in.GetCount());
-			ms.SetLoading();
+			MemReadStream ms(in.Begin(), in.GetCount());
+			//ms.SetLoading();
 			ss.SetSize(0);
 			ss.SetStoring();
 			
@@ -232,9 +262,14 @@ bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, voi
 		return false;
 	
 	auto& sock = tcp;
-	uint32 sent = 0, got = 0;
+	uint32 sent = 0, got = 0, got_magic = 0;
 	
 	SEND(magic);
+	GET(got_magic);
+	if (!got_magic) {
+		LOG("SerialServiceClient::CallMem: error: magic not found on server");
+		return false;
+	}
 	SEND(out_sz);
 	SEND(in_sz);
 	
@@ -259,9 +294,14 @@ bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, Vec
 	
 	auto& sock = tcp;
 	int in_sz = 0;
-	uint32 sent = 0, got = 0;
+	uint32 sent = 0, got = 0, got_magic = 0;
 	
 	SEND(magic);
+	GET(got_magic);
+	if (!got_magic) {
+		LOG("SerialServiceClient::CallMem: error: magic not found on server");
+		return false;
+	}
 	SEND(out_sz);
 	SEND(in_sz); // == 0
 	
@@ -278,6 +318,26 @@ bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, Vec
 		LOG("SerialServiceClient::CallMem: error: expected to get " << in_sz << ", but got " << got);
 		return false;
 	}
+	
+	return true;
+}
+
+bool SerialServiceClient::CallSocket(uint32 magic, Callback1<TcpSocket&> cb) {
+	if (!tcp.IsOpen())
+		return false;
+	
+	auto& sock = tcp;
+	int in_sz = 0;
+	uint32 sent = 0, got = 0, got_magic = 0;
+	
+	SEND(magic);
+	GET(got_magic);
+	if (!got_magic) {
+		LOG("SerialServiceClient::CallMem: error: magic not found on server");
+		return false;
+	}
+	
+	cb(tcp);
 	
 	return true;
 }

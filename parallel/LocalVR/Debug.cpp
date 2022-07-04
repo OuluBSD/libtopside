@@ -46,5 +46,112 @@ unsigned int debug_imu_fifo_out(struct imu_state *samples, unsigned int n)
 }
 
 
+
+
+#ifdef flagDEBUG_SERVER
+struct DebugService {
+	typedef DebugService CLASSNAME;
+	SerialServiceServer server;
+	
+	enum {
+		LATEST_BRIGHT_FRAME = 10,
+		LATEST_DARK_FRAME,
+	};
+	
+	void Init() {
+		if (!server.ListenTcp(7776)) {
+			LOG("Could not listen port 7776");
+			return;
+		}
+		
+		server.AddTcpSocket(LATEST_BRIGHT_FRAME, THISBACK(LatestBrightFrame));
+		server.AddTcpSocket(LATEST_DARK_FRAME, THISBACK(LatestDarkFrame));
+		
+		server.StartThread();
+	}
+	
+	void Send(TcpSocket& out, const Vector<byte>& frame, Size sz) {
+		//LOG("Send: " << HexStr(frame) << ", " << size << ", " << sz.ToString());
+		out.Put(&sz.cx, sizeof(sz.cx));
+		out.Put(&sz.cy, sizeof(sz.cy));
+		int size = frame.GetCount();
+		out.Put(&size, sizeof(size));
+		out.Put(frame.Begin(), size);
+	}
+	void LatestBrightFrame(TcpSocket& out) {
+		Stream& s = streams[0];
+		if (s.frame.IsEmpty())
+			return;
+		Send(out, s.frame, s.sz);
+	}
+	void LatestDarkFrame(TcpSocket& out) {
+		Stream& s = streams[1];
+		if (s.frame.IsEmpty())
+			return;
+		Send(out, s.frame, s.sz);
+	}
+	
+	struct Stream {
+		bool in_use = false;
+		Vector<byte> frame;
+		Size sz;
+	};
+	
+	static const int STREAM_COUNT = 10;
+	Stream streams[STREAM_COUNT];
+	
+};
+
+DebugService* dbg_srv;
+
+
+void debug_stream_init(int *argc, char **argv[]) {
+	SetCoutLog();
+	
+	dbg_srv = new DebugService();
+	dbg_srv->Init();
+}
+
+struct debug_stream *debug_stream_new(const struct DebugStreamDescription *desc) {
+	for(int i = 0; i < DebugService::STREAM_COUNT; i++) {
+		if (!dbg_srv->streams[i].in_use) {
+			dbg_srv->streams[i].in_use = true;
+			
+			LOG(i << ": " << desc->width << "x" << desc->height << ", fmt=" << desc->format << ", framerate=" << desc->framerate.numerator << "/" << desc->framerate.denominator);
+			return (debug_stream*)&dbg_srv->streams[i];
+		}
+	}
+	return NULL;
+}
+
+struct debug_stream *debug_stream_unref(struct debug_stream *stream) {
+	return NULL;
+}
+
+void debug_stream_frame_push(struct debug_stream *stream,
+			     void *frame, size_t size, size_t w, size_t h, size_t attach_offset,
+			     struct blobservation *ob, quat *rot,
+			     vec3 *trans, double timestamps[3], int exposure) {
+	if (!stream)
+		return;
+	
+	DebugService::Stream& s = *(DebugService::Stream*)stream;
+	
+	//LOG("debug_stream_frame_push: size=" << IntStr64(size) << ", " << HexStr(frame) << ", exposure=" << exposure);
+	
+	s.sz = Size(w,h);
+	s.frame.SetCount(size);
+	memcpy(s.frame.Begin(), frame, size);
+}
+
+void debug_stream_deinit() {
+	if (dbg_srv) {
+		delete dbg_srv;
+		dbg_srv = 0;
+	}
+}
+
+#endif
+
 NAMESPACE_HMD_END
 

@@ -27,7 +27,7 @@ public:
 	TcpSocket();
 	~TcpSocket() {Close();}
 	
-	bool Listen(int port, int max_conn);
+	bool Listen(int port, int max_conn=5);
 	bool Accept(TcpSocket& sock);
 	bool IsOpen();
 	void Close();

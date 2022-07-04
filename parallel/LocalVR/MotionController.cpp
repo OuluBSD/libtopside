@@ -5,25 +5,11 @@ NAMESPACE_HMD_BEGIN
 
 
 
-/*#include <asm/byteorder.h>
-#include <errno.h>
-#include <poll.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <unistd.h>
-
-#include "motion-controller.h"
-#include "buttons.h"
-#include "device.h"
-#include "hidraw.h"
-#include "imu.h"
-#include "telemetry.h"*/
-
 struct _OuvrtMotionController {
 	OuvrtDevice dev;
 
 	bool missing;
-	uint64_t last_timestamp;
+	uint64 last_timestamp;
 	uint8 buttons;
 	uint8 battery;
 	uint8 touchpad[2];

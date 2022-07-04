@@ -661,12 +661,32 @@ static const struct option ouvrtd_options[] = {
 	{ NULL }
 };
 
+
+NAMESPACE_HMD_END
+
+
+#ifdef flagMAIN
+
 /*
  * Main function. Initialize GStreamer for debugging purposes and udev for
  * device detection.
  */
-int main(int argc, char *argv[])
+
+CONSOLE_APP_MAIN
 {
+	using namespace TS;
+	using namespace TS::HMD;
+	
+	const auto& cmd = CommandLine();
+	int argc = 0;
+	char** argv = 0;
+	Vector<char*> arg_ptrs;
+	arg_ptrs.SetCount(cmd.GetCount());
+	for(int i = 0; i < arg_ptrs.GetCount(); i++) {
+		arg_ptrs[i] = const_cast<char*>((const char*)cmd[i].Begin());
+	}
+	
+	
 	struct udev *udev;
 	guint owner_id;
 	int longind;
@@ -693,8 +713,10 @@ int main(int argc, char *argv[])
 	signal(SIGINT, ouvrtd_signal_handler);
 
 	udev = udev_new();
-	if (!udev)
-		return -1;
+	if (!udev) {
+		SetExitCode(1);
+		return;
+	}
 
 	loop = g_main_loop_new(NULL, TRUE);
 	//owner_id = ouvrt_dbus_own_name();
@@ -709,9 +731,6 @@ int main(int argc, char *argv[])
 	//pipewire_deinit();
 	debug_stream_deinit();
 
-	return 0;
 }
 
-
-NAMESPACE_HMD_END
-
+#endif

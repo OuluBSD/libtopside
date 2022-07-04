@@ -14,14 +14,16 @@ protected:
 		uint32 magic = 0;
 		int in_sz;
 		int out_sz;
-		bool serialized;
+		bool serialized = false;
+		bool socket_handler = false;
 		
 		virtual void Call(const Vector<byte>& in, Vector<byte>& out) {Panic("not implemented");}
 		virtual void Call(Stream& in, Stream& out) {Panic("not implemented");}
+		virtual void Call(TcpSocket& out) {Panic("not implemented");}
 	};
 	
 	template <class In, class Out> struct FixedHandlerT : HandlerBase {
-		RTTI_DECL1(HandlerT, HandlerBase);
+		RTTI_DECL1(FixedHandlerT, HandlerBase);
 		
 		Callback2<const In&, Out&> cb;
 		
@@ -34,7 +36,7 @@ protected:
 	};
 	
 	template <class In, class Out> struct SerializerHandlerT : HandlerBase {
-		RTTI_DECL1(HandlerT, HandlerBase);
+		RTTI_DECL1(SerializerHandlerT, HandlerBase);
 		
 		Callback2<const In&, Out&> cb;
 		One<In> tmp_in;
@@ -52,12 +54,32 @@ protected:
 		}
 	};
 	
+	struct StreamHandler : HandlerBase {
+		RTTI_DECL1(StreamHandler, HandlerBase);
+		
+		Callback2<Stream&, Stream&> cb;
+		
+		void Call(Stream& in, Stream& out) override {
+			cb(in, out);
+		}
+	};
+	
+	struct TcpSocketHandler : HandlerBase {
+		RTTI_DECL1(TcpSocketHandler, HandlerBase);
+		
+		Callback1<TcpSocket&> cb;
+		
+		void Call(TcpSocket& out) override {
+			cb(out);
+		}
+	};
+	
 	
 	ArrayMap<uint32, HandlerBase> handlers;
 	
 	
-	template <class Handler, class In, class Out>
-	bool AddReceiverT(uint32 magic, Callback2<const In&, Out&> cb, bool serialized) {
+	template <class Handler, class In, class Out, class Cb=Callback2<const In&, Out&>>
+	bool AddReceiverT(uint32 magic, Cb cb, bool serialized) {
 		int i = handlers.Find(magic);
 		if (i >= 0) {
 			Handler* h = CastPtr<Handler>(&handlers[i]);
@@ -91,6 +113,12 @@ public:
 	bool AddSerializer(uint32 magic, Callback2<const In&, Out&> cb) {
 		return AddReceiverT<SerializerHandlerT<In,Out>,In,Out>(magic, cb, true);
 	}
+	
+	bool AddStream(uint32 magic, Callback2<Stream&, Stream&> cb) {
+		return AddReceiverT<StreamHandler,dword,dword,Callback2<Stream&,Stream&>>(magic, cb, true);
+	}
+	
+	bool AddTcpSocket(uint32 magic, Callback1<TcpSocket&> cb);
 	
 };
 
@@ -130,6 +158,7 @@ public:
 	void CloseTcp();
 	bool CallMem(uint32 magic, const void* out, int out_sz, void* in, int in_sz);
 	bool CallMem(uint32 magic, const void* out, int out_sz, Vector<byte>& in);
+	bool CallSocket(uint32 magic, Callback1<TcpSocket&> cb);
 	
 	template <class In, class Out>
 	bool Call(uint32 magic, const In& in, Out& out) {
@@ -146,11 +175,13 @@ public:
 		out_data.SetCount(0);
 		if (!CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), out_data))
 			return false;
-		MemStream ms(out_data.Begin(), out_data.GetCount());
-		ms.SetLoading();
+		MemReadStream ms(out_data.Begin(), out_data.GetCount());
+		//ms.SetLoading();
 		ms % out;
 		return true;
 	}
+	
+	bool IsOpen() const {return tcp.IsOpen();}
 	
 };
 
