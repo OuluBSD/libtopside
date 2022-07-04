@@ -1,0 +1,60 @@
+description "\377B28,127,255";
+
+uses
+	LocalHMD;
+
+library
+	"glib-2.0 gobject-2.0",
+	"opencv_core opencv_calib3d",
+	usb-1.0,
+	udev;
+
+file
+	Copying,
+	LocalVR.h,
+	BlobWatch.h,
+	BlobWatch.cpp,
+	Buttons.h,
+	Buttons.cpp,
+	Camera.h,
+	Camera.cpp,
+	CameraV4l2.h,
+	CameraV4l2.cpp,
+	Daemon.h,
+	Daemon.cpp,
+	Debug.h,
+	Debug.cpp,
+	Device.h,
+	Device.cpp,
+	Flicker.h,
+	Flicker.cpp,
+	HidRaw.h,
+	HololensCamera.h,
+	HololensCamera.cpp,
+	HololensCamera2.h,
+	HololensCamera2.cpp,
+	HololensHidReports.h,
+	HololensImu.cpp,
+	HololensImu.h,
+	Imu.h,
+	Imu.cpp,
+	Leds.h,
+	Leds.cpp,
+	Lighthouse.h,
+	Lighthouse.cpp,
+	Maths.h,
+	Maths.cpp,
+	MotionController.h,
+	MotionController.cpp,
+	OpenCV.h,
+	OpenCV.cpp,
+	Telemetry.h,
+	Telemetry.cpp,
+	Tracker.h,
+	Tracker.cpp,
+	TrackingModel.h,
+	TrackingModel.cpp,
+	UsbDevice.h,
+	UsbDevice.cpp,
+	UsbIds.h;
+
