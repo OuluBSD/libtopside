@@ -80,5 +80,7 @@ file
 	Ctrl.inl highlight cpp,
 	Graphics.h,
 	Graphics.cpp,
-	GEnums.h;
+	GEnums.h,
+	Network.h,
+	Network.cpp;
 

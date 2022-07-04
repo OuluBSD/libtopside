@@ -1,0 +1,9 @@
+uses
+	Local;
+
+file
+	SerialServiceClient.cpp;
+
+mainconfig
+	"" = "";
+
