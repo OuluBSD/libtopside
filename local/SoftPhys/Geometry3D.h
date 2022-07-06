@@ -97,7 +97,6 @@ void ResetCollisionManifold(CollisionManifold* result);
 void ResetRaycastResult(RaycastResult* outResult);
 
 Point Intersection(Plane p1, Plane p2, Plane p3);
-void GetCorners(const Frustum& f, vec3* outCorners);
 
 typedef vec3 Point3D;
 typedef Line Line3D;
@@ -268,14 +267,6 @@ bool ModelAABB(const Model& model, const AABB& aabb);
 bool ModelOBB(const Model& model, const OBB& obb);
 bool ModelPlane(const Model& model, const Plane& plane);
 bool ModelTriangle(const Model& model, const Triangle& triangle);
-
-float Classify(const AABB& aabb, const Plane& plane);
-float Classify(const OBB& obb, const Plane& plane);
-
-bool Intersects(const Frustum& f, const Point& p);
-bool Intersects(const Frustum& f, const Sphere& s);
-bool Intersects(const Frustum& f, const AABB& aabb);
-bool Intersects(const Frustum& f, const OBB& obb);
 
 vec3 Unproject(const vec3& viewportPoint, const vec2& viewportOrigin, const vec2& viewportSize, const mat4& view, const mat4& projection);
 Ray GetPickRay(const vec2& viewportPoint, const vec2& viewportOrigin, const vec2& viewportSize, const mat4& view, const mat4& projection);

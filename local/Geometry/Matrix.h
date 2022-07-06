@@ -199,13 +199,15 @@ struct Vec : Moveable<Vec<T, I> > {
 	static Vec GetMax(const Vec& a, const Vec& b) {Vec r; for(int i = 0; i < I; i++) r.data[i] = std::max(a.data[i], b.data[i]); return r;}
 	
 	String ToString() const {
-		String s = "[";
+		StringStream s;
+		s.Reserve(256);
+		s << "[";
 		for(int i = 0; i < I; i++) {
 			if (i) s << ", ";
 			s << ::UPP::AsString(data[i]);
 		}
 		s << "]";
-		return s;
+		return s.GetResult();
 	}
 	
 	

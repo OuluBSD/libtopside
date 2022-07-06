@@ -8,16 +8,6 @@ class QuadtreeNode;
 
 #define QUAD_BRANCHES 4
 
-class QuadtreeNodePool {
-	Vector<QuadtreeNode*> recycle;
-	SpinLock lock;
-	
-public:
-	QuadtreeNodePool();
-	QuadtreeNode* New();
-	void Delete(QuadtreeNode* n);
-	
-};
 
 class QuadtreeNode {
 	
@@ -26,13 +16,14 @@ protected:
 	
 	typedef byte BitVec;
 	
-	QuadtreeNode* down = NULL;
+	QuadtreeNode* parent = NULL;
 	QuadtreeNode* branch[QUAD_BRANCHES] = {0,0,0,0};
 	BitVec flags = 0;
 	int8 level = 0;
 	
 	
-	static QuadtreeNodePool& Pool() {return Single<QuadtreeNodePool>();}
+	typedef RecyclerPool<QuadtreeNode> Rec;
+	static inline Rec& GetRecyclerPool() {MAKE_STATIC(Rec, r); return r;}
 	
 public:
 	

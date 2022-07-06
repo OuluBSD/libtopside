@@ -4,6 +4,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+float Classify(const AABB& aabb, const Plane& plane);
+float Classify(const OBB& obb, const Plane& plane);
+vec3 Intersection(Plane p1, Plane p2, Plane p3);
+
+
 struct Frustum {
 	Plane top;
 	Plane bottom;
@@ -45,6 +50,13 @@ struct Frustum {
 		NEVER();
 		TODO
 	}
+	
+	void GetCorners(vec3* outCorners) const;
+	bool Intersects(const vec3& p) const;
+	bool Intersects(const Sphere& s) const;
+	bool Intersects(const AABB& aabb) const;
+	bool Intersects(const OBB& obb) const;
+	
 };
 
 

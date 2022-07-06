@@ -64,19 +64,19 @@ template <class T=double> T FastPow(T a, T b);
 template <class T=double> T FastSqrt(T a);
 template<> inline double FastLn(double a) {return log_fast(a);}
 template<> inline double FastExp(double a) {return exp_fast(a);}
-template<> inline double FastPow(double a, double b) {return pow_fast_precise(a, b);}
+template<> inline double FastPow(double a, double b) {return better_pow_fast_precise(a, b);}
 template<> inline double FastSqrt(double a) {return pow_fast_precise(a, 0.5);}
 template<> inline float FastLn(float a) {return logf_fast(a);}
 template<> inline float FastExp(float a) {return expf_fast(a);}
-template<> inline float FastPow(float a, float b) {return powf_fast_precise(a, b);}
+template<> inline float FastPow(float a, float b) {return better_powf_fast_precise(a, b);}
 template<> inline float FastSqrt(float a) {return powf_fast_precise(a, 0.5f);}
 
 inline double PowOf10(double d) {return FastPow(10.0, d);}
 inline double PowTo2(double d) {return d * d;}
 
 template <class T> inline T PowFastT(T v, T e);
-template <> inline double PowFastT(double v, double e) {return pow_fast_precise(v, e);}
-template <> inline float PowFastT(float v, float e) {return powf_fast_precise(v, e);}
+template <> inline double PowFastT(double v, double e) {return better_pow_fast_precise(v, e);}
+template <> inline float PowFastT(float v, float e) {return better_powf_fast_precise(v, e);}
 
 
 template <class T> struct FastTrig {

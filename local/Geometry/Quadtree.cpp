@@ -4,32 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-QuadtreeNodePool::QuadtreeNodePool() {
-	recycle.Reserve(10000);
-}
-
-QuadtreeNode* QuadtreeNodePool::New() {
-	if (recycle.IsEmpty())
-		return new QuadtreeNode();
-	
-	lock.Enter();
-	QuadtreeNode* n = recycle.Pop();
-	lock.Leave();
-	
-	return n;
-}
-
-void QuadtreeNodePool::Delete(QuadtreeNode* n) {
-	lock.Enter();
-	recycle.Add(n);
-	lock.Leave();
-}
-
-
-
-
-
-
 
 
 
@@ -38,7 +12,7 @@ void QuadtreeNode::Clear() {
 		if (branch[i]) {
 			QuadtreeNode* n = branch[i];
 			branch[i] = 0;
-			Pool().Delete(n);
+			GetRecyclerPool().Return(n);
 		}
 	}
 	flags = 0;
@@ -100,8 +74,8 @@ QuadtreeNode* Quadtree::GetAddNode(vec3 pos, int level) {
 		seek >>= 3ULL;
 		QuadtreeNode*& bn = n->branch[branch_i];
 		if (!bn) {
-			bn = QuadtreeNode::Pool().New();
-			bn->down = n;
+			bn = QuadtreeNode::GetRecyclerPool().New();
+			bn->parent = n;
 			bn->level = n->level - 1;
 		}
 		n = bn;

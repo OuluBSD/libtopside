@@ -240,6 +240,8 @@ struct AABB {
 
 	inline AABB() : size(1, 1, 1) {}
 	inline AABB(const vec3& p, const vec3& s) : position(p), size(s) {}
+	
+	String ToString() const {return position.ToString() + ", " + size.ToString();}
 };
 
 struct OBB : Moveable<OBB> {

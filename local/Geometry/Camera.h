@@ -13,7 +13,7 @@ protected:
 	float far;
 	float width;
 	float height;
-
+	
 	mat4 world;
 	mat4 view;
 	int proj_mode;
@@ -31,16 +31,18 @@ public:
 
 	bool IsOrthoNormal();
 	void OrthoNormalize();
-
-	void Resize(int width, int height);
+	void UpdateMatrices();
+	
+	void SetResolution(int width, int height);
 	
 	void SetPerspective(float fov_angle, float aspect, float zNear, float zFar);
 	void SetOrthographic(float width, float height, float zNear, float zFar);
 	
 	void SetProjection(const mat4& projection);
 	void SetWorld(const mat4& view);
-
-	Frustum GetFrustum();
+	void SetWorld(const vec3& position, const quat& orient);
+	
+	Frustum GetFrustum(float distance=1.0f);
 	
 	
 };
@@ -80,6 +82,22 @@ public:
 };
 
 #endif
+
+
+class VirtualStereoCamera : public Camera {
+	vec4 lens_poly;
+	
+public:
+	typedef VirtualStereoCamera CLASSNAME;
+	VirtualStereoCamera();
+	
+	
+	void SetPixelAngle(float a, float b, float c, float d);
+	
+	void Render(const Octree& o, VectorImage& img);
+	
+	
+};
 
 
 NAMESPACE_TOPSIDE_END

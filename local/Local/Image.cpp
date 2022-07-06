@@ -454,4 +454,14 @@ Image MirrorVertical(const Image& img) {
 }
 
 
+
+
+
+
+VectorImage::VectorImage() {
+	
+}
+
+
+
 NAMESPACE_TOPSIDE_END

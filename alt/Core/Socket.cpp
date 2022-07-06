@@ -254,7 +254,7 @@ TcpSocket::TcpSocket() {
 	timeout = 100;
 }
 
-bool TcpSocket::IsOpen() {
+bool TcpSocket::IsOpen() const {
 	return listenfd >= 0 || connfd >= 0;
 }
 

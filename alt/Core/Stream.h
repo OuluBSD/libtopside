@@ -325,6 +325,7 @@ public:
 	
 	StringStream& Cat(char c) {Put(c); return *this;}
 	
+	void Reserve(int i) {s.Reserve(i);}
 	void Seek(int64 i) override { cursor = i; }
 	String GetResult() const { String s; s.SetData(this->s.Begin(), this->s.GetCount()); return s;}
 	

@@ -10,12 +10,9 @@ The original tutorial is a very good package for first time kernel programmer. E
 you are a guy who used DOS and Amiga computers back in the early 90s, when "everyone" used floppies.
 It has some problems though, which we should be aware.
 
-We would like to defend using floppies, because kernel programmers are quite the same breed as
-8-bit / 16-bit homebrew computer makers. If you are doing everything by yourself, then
-usb-drives and cd-drives are harder than floppy drives. We are talking about "owning your transistor connection design" here.
-
-In conclusion, the bochs emulator offer nice debugging interface to TheIDE via gdb connection and we should be able to fix all issues by ourselves. This works, and if it doesn't, then it can be fixed. There's no need to be overly pragmatic about past issues or about issues in the tutorial. If we fork the tutorial, then we will certainly address those issues at some level.
-
+High-level parts of the kernel should be compilable to a normal linux/windows executable.
+Built-in virtual machine abstraction should be same as hardware abstraction.
+Tasks should use user-space threading, when virtual-machine abstraction is used.
 
 ## Compiling
 We are using a regular gcc for now, because we are excluding all native libraries and it has

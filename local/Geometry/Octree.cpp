@@ -4,47 +4,89 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-OctreeNodePool::OctreeNodePool() {
-	recycle.Reserve(10000);
-}
-
-OctreeNode* OctreeNodePool::New() {
-	if (recycle.IsEmpty())
-		return new OctreeNode();
+OctreeObject::OctreeObject() {
 	
-	lock.Enter();
-	OctreeNode* n = recycle.Pop();
-	lock.Leave();
+}
+
+void OctreeObject::SetPosition(const vec3& pos) {
+	if (owner->Contains(pos)) {
+		vec3 p = owner->GetPosition();
+		rel_pos = pos - p;
+	}
+	else {
+		TODO
+	}
+}
+
+vec3 OctreeObject::GetPosition() const {
+	vec3 p = owner->GetPosition() + rel_pos;
+	return p;
+}
+
 	
-	return n;
-}
-
-void OctreeNodePool::Delete(OctreeNode* n) {
-	lock.Enter();
-	recycle.Add(n);
-	lock.Leave();
-}
-
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
 void OctreeNode::Clear() {
 	for(int i = 0; i < 8; i++) {
 		if (branch[i]) {
 			OctreeNode* n = branch[i];
 			branch[i] = 0;
-			Pool().Delete(n);
+			GetRecyclerPool().Return(n);
 		}
 	}
 	flags = 0;
 	level = 0;
 }
 
+bool OctreeNode::Contains(const vec3& v) const {
+	vec3 size = GetSize();
+	vec3 p = GetPosition();
+	
+	bool b = true;
+	for(int i = 0; i < 3; i++)
+		b = b && (p[i] <= v[i] && v[i] <= p[i] + size[i]);
+	
+	return b;
+}
+
+vec3 OctreeNode::GetSize() const {
+	float step = FastPow<float>(2.f, (float)level);
+	return vec3(step, step, step);
+}
+
+float OctreeNode::GetStep() const {
+	float step = FastPow<float>(2.f, (float)level);
+	return step;
+}
+
+vec3 OctreeNode::GetPosition() const {
+	return position;
+}
+
+AABB OctreeNode::GetAABB() const {
+	vec3 first_corner = GetPosition();
+	vec3 full_size = GetSize();
+	AABB aabb;
+	aabb.size = full_size * 0.5;
+	aabb.position = first_corner + aabb.size;
+	return aabb;
+}
+
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 Octree::Octree() {
@@ -66,9 +108,9 @@ void Octree::Initialize(int min_scale_level, int max_scale_level) {
 	root.Clear();
 	root.level = this->max_scale_level;
 	
-	max_len = 0.5f * FastPow<double>(2.0, this->max_scale_level);
-	transform = Identity<mat4>();
-	has_transform = false;
+	max_len = FastPow<double>(2.0, this->max_scale_level);
+	max_off = max_len / 2;
+	root.position = vec3(-max_off, -max_off, -max_off);
 	
 	levels.SetCount(scale_count);
 	for(int i = 0; i < scale_count; i++) {
@@ -100,58 +142,139 @@ OctreeNode* Octree::GetAddNode(vec3 pos, int level) {
 		seek >>= 3ULL;
 		OctreeNode*& bn = n->branch[branch_i];
 		if (!bn) {
-			bn = OctreeNode::Pool().New();
-			bn->down = n;
+			bn = OctreeNode::GetRecyclerPool().New();
+			bn->parent = n;
 			bn->level = n->level - 1;
+			
+			vec3 npos = n->GetPosition();
+			float s = bn->GetStep();
+			switch (branch_i) {
+				case OctreeNode::BR_LBI: bn->position = npos + vec3(0, 0, 0); break;
+				case OctreeNode::BR_RBI: bn->position = npos + vec3(s, 0, 0); break;
+				case OctreeNode::BR_LTI: bn->position = npos + vec3(0, s, 0); break;
+				case OctreeNode::BR_RTI: bn->position = npos + vec3(s, s, 0); break;
+				case OctreeNode::BR_LBO: bn->position = npos + vec3(0, 0, s); break;
+				case OctreeNode::BR_RBO: bn->position = npos + vec3(s, 0, s); break;
+				case OctreeNode::BR_LTO: bn->position = npos + vec3(0, s, s); break;
+				case OctreeNode::BR_RTO: bn->position = npos + vec3(s, s, s); break;
+				default: break;
+			}
+			
 		}
+		ASSERT(bn->Contains(pos));
 		n = bn;
 	}
 	return n;
 }
 
 bool Octree::Contains(vec3 pos) {
-	if (!has_transform) {
-		return	fabsf(pos[0]) < max_len &&
-				fabsf(pos[1]) < max_len &&
-				fabsf(pos[2]) < max_len;
-	}
-	else {
-		TODO
-	}
+	return	-max_off <= pos[0] && pos[0] < max_off &&
+			-max_off <= pos[1] && pos[1] < max_off &&
+			-max_off <= pos[2] && pos[2] < max_off;
 }
 
 uint64 Octree::GetSeekBits(vec3 pos, int level) const {
 	if (level >= max_scale_level)
 		return 0;
 	
-	if (!has_transform) {
-		vec3 neg_pt {max_len * -1, max_len * -1, max_len * -1};
-		ASSERT(levels.GetCount());
-		
-		int level_i = level - min_scale_level;
-		int level_i_max = max_scale_level - min_scale_level;
-		int rev_level_i = level_i_max - level_i;
-		const Level& level = levels[level_i];
-		ivec3 ipos;
-		for(int i = 0; i < 3; i++)
-			ipos[i] = (int)((pos[i] + max_len) / level.step);
-		
-		for(int i = 0; i < 3; i++) {ASSERT(ipos[i] >= 0 && ipos[i] < level.steps);}
-		
-		uint64 seek = 0, j = 0;
-		for(int shift = rev_level_i - 1; shift >= 0; shift--) {
-			uint32 mask = 1UL << shift;
-			for(uint64 i = 0; i < 3; i++)
-				if (ipos[i] & mask)
-					seek |= 1ULL << (j + i);
-			j += 3;
-		}
-		return seek;
+	//vec3 neg_pt {-max_off, -max_off, -max_off};
+	ASSERT(levels.GetCount());
+	
+	int level_i = level - min_scale_level;
+	int level_i_max = max_scale_level - min_scale_level;
+	int rev_level_i = level_i_max - level_i;
+	const Level& l = levels[level_i];
+	ivec3 ipos;
+	for(int i = 0; i < 3; i++)
+		ipos[i] = (int)(((double)pos[i] + (double)max_off) / (double)l.step);
+	
+	for(int i = 0; i < 3; i++) {ASSERT(ipos[i] >= 0 && ipos[i] < l.steps);}
+	
+	uint64 seek = 0, j = 0;
+	for(int shift = rev_level_i - 1; shift >= 0; shift--) {
+		uint32 mask = 1UL << shift;
+		for(uint64 i = 0; i < 3; i++)
+			if (ipos[i] & mask)
+				seek |= 1ULL << (j + i);
+		j += 3;
 	}
-	else {
-		TODO
+	return seek;
+}
+
+OctreeFrustumIterator Octree::GetFrustumIterator(const Frustum& f) const {
+	OctreeFrustumIterator it;
+	it.otree = this;
+	it.frustum = &f;
+	it.level = 0;
+	it.pos[0] = -1;
+	it.addr[0] = &root;
+	it.Next();
+	return it;
+}
+
+
+
+
+
+void OctreeFrustumIterator::Next() {
+	if (!level && pos[0] == 9)
+		return;
+	
+	while (1) {
+		ASSERT(level >= 0);
+		
+		{
+			const OctreeNode* a = addr[level];
+			int& p = pos[level];
+			p++;
+			
+			if (p == 0)
+				; // pass
+			else if (p == 9) {
+				if (!level)
+					break;
+				level--;
+				continue;
+			}
+			else {
+				ASSERT(p >= 1 && p <= 8);
+				addr[level+1] = a->At(p-1);
+				if (!addr[level+1])
+					continue;
+				
+				pos[level+1] = -1;
+				level++;
+				continue;
+			}
+		}
+		
+		{
+			ASSERT(pos[level] == 0);
+			const OctreeNode* a = addr[level];
+			AABB aabb = a->GetAABB();
+			if (frustum->Intersects(aabb)) {
+				//DUMP(aabb);
+				break;
+			}
+			else
+				pos[level] = 8;
+		}
 	}
 }
+
+OctreeFrustumIterator::operator bool() const {
+	return !(!level && pos[0] == 9);
+}
+
+const OctreeNode& OctreeFrustumIterator::operator*() const {
+	return *addr[level];
+}
+
+void OctreeFrustumIterator::operator++(int) {
+	Next();
+}
+
+
 
 
 

@@ -113,6 +113,18 @@ Image	MirrorVertical(const Image& img);
 
 
 
+
+class VectorImage {
+	
+	
+public:
+	typedef VectorImage CLASSNAME;
+	VectorImage();
+	
+	
+	
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif
