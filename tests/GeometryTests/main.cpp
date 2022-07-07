@@ -2,33 +2,6 @@
 using namespace TS;
 
 
-bool IsClose(const quat& a, const quat& b) {
-	float sum = 0;
-	for(int i = 0; i < 4; i++)
-		sum += fabsf(a[i] - b[i]);
-	return sum < 0.001;
-}
-
-bool IsClose(const vec3& a, const vec3& b) {
-	float dist = (a - b).GetLength();
-	return fabsf(dist) < 0.001;
-}
-
-bool IsClose(const vec4& a, const vec4& b) {
-	float dist = (a - b).GetLength();
-	return fabsf(dist) < 0.001;
-}
-
-bool IsClose(const mat4& a, const mat4& b) {
-	double sum = 0;
-	for(int i = 0; i < 4; i++) {
-		for(int j = 0; j < 4; j++) {
-			sum += fabsf(a[i][j] - b[i][j]);
-		}
-	}
-	return fabs(sum) < 0.001;
-}
-
 bool MatCompareTest(const mat4& m0, const mat4& m1, bool succ_result=true) {
 	bool succ = true;
 	for(int i = 0; i < 6; i++) {

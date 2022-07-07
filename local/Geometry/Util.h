@@ -207,6 +207,7 @@ vec4 MakeVec4(const vec3& v, float v4);
 double GetRadians(double degrees);
 double GetDegrees(double radians);
 
+float VectorAngle(const vec3& a, const vec3& b);
 
 
 template<class T>
@@ -284,6 +285,19 @@ quat TurnDown(float angle);
 
 quat SwapHandedness(const quat& input);
 String Plot(const vec3& a, const vec3& b);
+
+
+
+
+bool IsClose(const quat& a, const quat& b);
+bool IsClose(const vec3& a, const vec3& b, float dist_limit=0.001);
+bool IsClose(const vec4& a, const vec4& b);
+bool IsClose(const mat4& a, const mat4& b);
+
+
+vec3 CalculateThirdPoint(const vec3& a, const vec3& b, float a_angle, float b_angle);
+bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c);
+
 
 NAMESPACE_TOPSIDE_END
 

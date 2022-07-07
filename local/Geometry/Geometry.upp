@@ -48,6 +48,8 @@ file
 	Compare.cpp,
 	Camera.h,
 	Camera.cpp,
+	Uncamera.h,
+	Uncamera.cpp,
 	Pbr readonly separator,
 	Copying.Pbr,
 	Pbr.h,

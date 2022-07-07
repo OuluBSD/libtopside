@@ -68,6 +68,7 @@
 #include "Frustum.h"
 #include "Compare.h"
 #include "Camera.h"
+#include "Uncamera.h"
 
 #include "Pbr.h"
 #include "PbrCommon.h"

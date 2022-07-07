@@ -113,15 +113,29 @@ Image	MirrorVertical(const Image& img);
 
 
 
+struct Descriptor : Moveable<Descriptor> {
+	uint16 x, y;
+	byte angle;
+	union {
+		byte b[32];
+		uint32 u[8];
+	};
+};
 
-class VectorImage {
-	
+class DescriptorImage {
+	Vector<Descriptor> descriptors;
+	Size resolution = Size(0,0);
 	
 public:
-	typedef VectorImage CLASSNAME;
-	VectorImage();
+	typedef DescriptorImage CLASSNAME;
+	DescriptorImage();
 	
+	void AddDescriptor(int x, int y, float angle, void* descriptor);
 	
+	void SetResolution(Size sz) {resolution = sz;}
+	
+	Size GetResolution() const {return resolution;}
+	const Vector<Descriptor>& GetDescriptors() const {return descriptors;}
 	
 };
 

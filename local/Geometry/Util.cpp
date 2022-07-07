@@ -1526,5 +1526,107 @@ String Plot(const vec3& a, const vec3& b) {
 	return s;
 }
 
+float VectorAngle(const vec3& a, const vec3& b) {
+	float dot = a.Dot(b);
+	float len = a.GetLength() * b.GetLength();
+	float ratio = dot / len;
+	float angle = acos(ratio);
+	return angle;
+}
+
+
+
+
+
+bool IsClose(const quat& a, const quat& b) {
+	float sum = 0;
+	for(int i = 0; i < 4; i++)
+		sum += fabsf(a[i] - b[i]);
+	return sum < 0.001;
+}
+
+bool IsClose(const vec3& a, const vec3& b, float dist_limit) {
+	float dist = (a - b).GetLength();
+	return fabsf(dist) < dist_limit;
+}
+
+bool IsClose(const vec4& a, const vec4& b) {
+	float dist = (a - b).GetLength();
+	return fabsf(dist) < 0.001;
+}
+
+bool IsClose(const mat4& a, const mat4& b) {
+	double sum = 0;
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < 4; j++) {
+			sum += fabsf(a[i][j] - b[i][j]);
+		}
+	}
+	return fabs(sum) < 0.001;
+}
+
+
+
+
+
+
+
+
+vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
+	ASSERT(alp1 > 0 && alp1 < M_PI);
+	ASSERT(alp2 > 0 && alp2 < M_PI);
+	// initial data
+	float x1 = a[0];
+	float y1 = a[1];
+	float x2 = b[0];
+	float y2 = b[1];
+	float u = x2 - x1;
+	float v = y2 - y1;
+	float a3 = sqrt(u * u + v * v);
+	float alp3 = M_PI - alp1 - alp2;
+	ASSERT(alp3 > 0 && alp3 < M_PI);
+	float a2 = a3 * sin(alp2) / sin(alp3);
+	float RHS1 = x1 * u + y1 * v + a2 * a3 * cos(alp1);
+	float RHS2 = y2 * u - x2 * v - a2 * a3 * sin(alp1);
+	float x3 = (1 / (a3 * a3)) * (u * RHS1 - v * RHS2);
+	float y3 = (1 / (a3 * a3)) * (v * RHS1 + u * RHS2);
+	return vec2(x3, y3);
+}
+
+bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c) {
+	ASSERT(IsClose(dir_a.GetLength(), 1));
+	ASSERT(IsClose(dir_b.GetLength(), 1));
+	float yaw_a, pitch_a;
+	float yaw_b, pitch_b;
+	DirAxes(dir_a, yaw_a, pitch_a);
+	DirAxes(dir_b, yaw_b, pitch_b);
+	float pitch = (pitch_a + pitch_b) * 0.5;
+	
+	mat4 x_rot = XRotation(-pitch);
+	vec3 flat_a = (x_rot * dir_a.Embed()).Splice();
+	vec3 flat_b = (x_rot * dir_b.Embed()).Splice();
+	
+	float y = (dir_a.data[1] + dir_b.data[1]) * 0.5;
+	
+	vec2 dir_a2(flat_a[0], -flat_a[2]);
+	vec2 dir_b2(flat_b[0], -flat_b[2]);
+	vec2 l_eye(-eye_dist*0.5,0);
+	vec2 r_eye(+eye_dist*0.5,0);
+	float alp1 = M_PI/2 + Dot(dir_a2, vec2(0,1));
+	float alp2 = M_PI/2 - Dot(dir_b2, vec2(0,1));
+	if (alp1 + alp2 >= M_PI)
+		return false;
+	float deg1 = alp1 / M_PI * 180;
+	float deg2 = alp2 / M_PI * 180;
+	vec2 tgt = CalculateThirdPoint(l_eye, r_eye, alp1, alp2);
+	//DUMP(tgt);
+	
+	x_rot = XRotation(+pitch);
+	vec3 flat_c(tgt[0], -tgt[1]);
+	dir_c = (x_rot * flat_c.Embed()).Splice();
+	
+	return true;
+}
+
 
 NAMESPACE_TOPSIDE_END

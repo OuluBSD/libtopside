@@ -109,6 +109,13 @@ void Camera::SetResolution(int width, int height) {
 	UpdateMatrices();
 }
 
+void Camera::SetResolution(Size sz) {
+	width = sz.cx;
+	height = sz.cy;
+	
+	UpdateMatrices();
+}
+
 void Camera::UpdateMatrices() {
 	this->aspect = (float)width / (float)height;
 
@@ -341,19 +348,15 @@ VirtualStereoCamera::VirtualStereoCamera() {
 	
 }
 
-void VirtualStereoCamera::SetPixelAngle(float a, float b, float c, float d) {
-	lens_poly[0] = a;
-	lens_poly[1] = b;
-	lens_poly[2] = c;
-	lens_poly[3] = d;
-}
-
-void VirtualStereoCamera::Render(const Octree& o, VectorImage& img) {
+void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, DescriptorImage& r_img) {
 	Frustum f = GetFrustum(0.0);
 	
 	auto iter = o.GetFrustumIterator(f);
 	
-	mat4 inv_world = world.GetInverse();
+	mat4 l_world = world * Translate(vec3(-eye_dist * 0.5, 0, 0));
+	mat4 r_world = world * Translate(vec3(+eye_dist * 0.5, 0, 0));
+	
+	LensPoly::SetSize(Size(width, height));
 	
 	while (iter) {
 		const OctreeNode& n = *iter;
@@ -362,20 +365,156 @@ void VirtualStereoCamera::Render(const Octree& o, VectorImage& img) {
 			const OctreeObject& obj = *one_obj;
 			vec3 obj_pos = obj.GetPosition();
 			
+			// Random additional descriptor values
+			float angle = Randomf() * 2*M_PI;
+			byte desc[32];
+			for(int i = 0; i < 32; i++)
+				desc[i] = Random(256);
+			
 			// to camera local space
-			vec3 local = (obj_pos.Embed() * world).Splice();
+			vec3 l_local = (obj_pos.Embed() * l_world).Splice();
+			vec2 l_px = Project(l_local);
+			l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
 			
-			TODO
+			vec3 r_local = (obj_pos.Embed() * r_world).Splice();
+			vec2 r_px = Project(r_local);
+			r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
 			
-			LOG(obj_pos.ToString() << ", " << local.ToString());
+			/*DUMP(local);
+			DUMP(roll_ortho);
+			DUMP(roll);
+			DUMP(deg);
+			DUMP(roll_angle);
+			DUMP(roll_deg);*/
 			
+			//LOG(px.ToString() << ", " << obj_pos.ToString() << ", " << local.ToString());
 		}
 		
 		iter++;
 	}
-	
-	LOG("");
+	//LOG("");
 }
+
+
+
+
+
+
+
+
+
+
+
+void LensPoly::SetAnglePixel(float a, float b, float c, float d) {
+	angle_to_pixel_poly[0] = a;
+	angle_to_pixel_poly[1] = b;
+	angle_to_pixel_poly[2] = c;
+	angle_to_pixel_poly[3] = d;
+}
+
+vec2 LensPoly::Project(const vec3& local) {
+	ASSERT(img_sz.cx && img_sz.cy);
+	
+	// Angle from center of "the lens"
+	vec3 fwd = VEC_FWD;
+	vec3 right = VEC_RIGHT;
+	float angle = VectorAngle(fwd, local);
+	float deg = angle / M_PI * 180;
+	ASSERT(deg < 90);
+	
+	// Angle from local right vector
+	vec3 roll_ortho = Cross(local, fwd);
+	vec3 roll = Cross(fwd, roll_ortho);
+	float roll_angle = VectorAngle(right, roll);
+	if (roll.data[1] < 0)
+		roll_angle = -roll_angle;
+	float roll_deg = roll_angle / M_PI * 180;
+	
+	float pix_dist =
+		angle_to_pixel_poly.data[0] * angle +
+		angle_to_pixel_poly.data[1] * angle * angle +
+		angle_to_pixel_poly.data[2] * angle * angle * angle +
+		angle_to_pixel_poly.data[3] * angle * angle * angle * angle;
+	
+	vec2 px;
+	px.data[0] = pix_dist * cos(roll_angle) + img_sz.cx / 2;
+	px.data[1] = pix_dist * sin(roll_angle) + img_sz.cy / 2;
+	
+	vec3 a = Unproject(px);
+	vec3 b = local.GetNormalized();
+	if (!IsClose(a, b, 1)) {
+		DUMP(Unproject(px));
+	}
+	ASSERT(IsClose(a, b, 1));
+	//ASSERT(IsClose(Unproject(px), local.GetNormalized(), 1));
+	
+	return px;
+}
+
+vec3 LensPoly::Unproject(const vec2& pixel) {
+	ASSERT(img_sz.cx && img_sz.cy);
+	
+	vec2 ct_rel = pixel - vec2(img_sz.cx / 2, img_sz.cy / 2);
+	float len = ct_rel.GetLength();
+	int leni = (int)len;
+	
+	ASSERT(leni >= 0 && leni < pixel_to_angle.GetCount());
+	if (leni >= pixel_to_angle.GetCount()) return vec3(0,0,0);
+	
+	float angle = pixel_to_angle[leni];
+	float deg = angle / M_PI * 180;
+	vec3 v0(sin(angle), 0, -cos(angle));
+	
+	float roll_angle = atan2f(ct_rel[1], ct_rel[0]);
+	float roll_deg = roll_angle / M_PI * 180;
+	mat4 rot = ZRotation(roll_angle);
+	
+	vec3 dir = (rot * v0.Embed()).Splice();
+	dir.Normalize();
+	//if (fabs(roll_angle) > M_PI/2)
+	//	dir[1] = -dir[1];
+	
+	return dir;
+}
+
+void LensPoly::SetSize(Size sz) {
+	if (img_sz != sz) {
+		img_sz = sz;
+		MakePixelToAngle();
+	}
+}
+
+void LensPoly::MakePixelToAngle() {
+	
+	pixel_to_angle.SetCount(0);
+	int max_len = (int)sqrt(img_sz.cx * img_sz.cx + img_sz.cy * img_sz.cy) + 1;
+	
+	pixel_to_angle.SetCount(max_len, 0);
+	
+	for (float angle = 0; angle <= M_PI; angle += 0.0001f) {
+		float pix_dist =
+			angle_to_pixel_poly.data[0] * angle +
+			angle_to_pixel_poly.data[1] * angle * angle +
+			angle_to_pixel_poly.data[2] * angle * angle * angle +
+			angle_to_pixel_poly.data[3] * angle * angle * angle * angle;
+		
+		int i = (int)pix_dist;
+		ASSERT(i >= 0);
+		if (i < 0)
+			continue;
+		if (i >= max_len)
+			break;
+		
+		float& pa = pixel_to_angle[i];
+		if (pa == 0)
+			pa = angle;
+	}
+	
+	//DUMPC(pixel_to_angle);
+	
+}
+
+
 
 
 

@@ -79,32 +79,46 @@ int CalcLens() {
 
 	vector<double> result(4);
 	
-	polynomialfit(x.size(), 4, pix.data(), angle.data(), result.data());
-	
-	double a = result[0];
-	double b = result[1];
-	double c = result[2];
-	double d = result[3];
-	
-	auto abc = [a, b, c, d](int xx) {
-        return a + b * xx + c * xx*xx + d * xx*xx*xx;
-    };
-    
-	std::cout << "y = " << a << " + " << b << "x + " << c << "x^2 + " << d << "x^3" << std::endl;
-    std::cout << " Input  Approximation" << std::endl;
-    std::cout << " x    y      y1    angle" << std::endl;
- 
-    auto xit = pix.cbegin();
-    auto xend = pix.cend();
-    auto yit = angle.cbegin();
-    auto yend = angle.cend();
-    while (xit != xend && yit != yend) {
-        double r = abc(*xit);
-        double angle = r / M_PI * 180;
-        printf("%2.1f %3.2f  %5.3f %3.1f\n", *xit, *yit, r, angle);
-        xit = std::next(xit);
-        yit = std::next(yit);
-    }
+	for(int i = 0; i < 2; i++) {
+		if (i == 0)
+			polynomialfit(x.size(), 4, pix.data(), angle.data(), result.data());
+		else
+			polynomialfit(x.size(), 4, angle.data(), pix.data(), result.data());
+		
+		double a = result[0];
+		double b = result[1];
+		double c = result[2];
+		double d = result[3];
+		
+		auto abc = [a, b, c, d](double xx) {
+	        return a + b * xx + c * xx*xx + d * xx*xx*xx;
+	    };
+	    
+		std::cout << "y = " << a << " + " << b << "x + " << c << "x^2 + " << d << "x^3" << std::endl;
+	    std::cout << " Input  Approximation" << std::endl;
+	    std::cout << " x    y      y1    angle" << std::endl;
+	 
+	    auto xit = pix.cbegin();
+	    auto xend = pix.cend();
+	    auto yit = angle.cbegin();
+	    auto yend = angle.cend();
+	    while (xit != xend && yit != yend) {
+	        double r;
+	        if (i == 0) {
+	            r = abc(*xit);
+				double angle = r / M_PI * 180;
+				printf("%2.1f %3.2f  %5.3f %3.1f\n", *xit, *yit, r, angle);
+	        }
+	        else {
+	            double angle = *yit / M_PI * 180;
+	            r = abc(*yit);
+				printf("%2.1f %3.2f  %5.3f %3.1f\n", *yit, *xit, r, angle);
+	        }
+	        xit = std::next(xit);
+	        yit = std::next(yit);
+	    }
+		
+	}
     
     
 	return 0;

@@ -458,8 +458,23 @@ Image MirrorVertical(const Image& img) {
 
 
 
-VectorImage::VectorImage() {
+DescriptorImage::DescriptorImage() {
 	
+}
+
+void DescriptorImage::AddDescriptor(int x, int y, float angle, void* descriptor) {
+	ASSERT(resolution.cx > 0 && resolution.cy > 0);
+	if (x >= 0 && x < resolution.cx &&
+		y >= 0 && y < resolution.cy) {
+		angle = fmodf(angle, 2*M_PI);
+		Descriptor& d = descriptors.Add();
+		d.x = x;
+		d.y = y;
+		d.angle = angle / (2*M_PI) * 0x100;
+		uint32* u = (uint32*)descriptor;
+		for(int i = 0; i < 8; i++)
+			d.u[i] = u[i];
+	}
 }
 
 

@@ -34,6 +34,7 @@ public:
 	void UpdateMatrices();
 	
 	void SetResolution(int width, int height);
+	void SetResolution(Size sz);
 	
 	void SetPerspective(float fov_angle, float aspect, float zNear, float zFar);
 	void SetOrthographic(float width, float height, float zNear, float zFar);
@@ -84,17 +85,32 @@ public:
 #endif
 
 
-class VirtualStereoCamera : public Camera {
-	vec4 lens_poly;
+struct LensPoly {
+	vec4 angle_to_pixel_poly;
+	Vector<float> pixel_to_angle;
+	Size img_sz = Size(0,0);
+	
+	void MakePixelToAngle();
+	void SetSize(Size sz);
+	vec2 Project(const vec3& local);
+	vec3 Unproject(const vec2& pixel);
+	void SetAnglePixel(float a, float b, float c, float d);
+	
+	
+};
+
+class VirtualStereoCamera : public Camera, public LensPoly {
+	float eye_dist = 0.068f;
 	
 public:
 	typedef VirtualStereoCamera CLASSNAME;
 	VirtualStereoCamera();
 	
 	
-	void SetPixelAngle(float a, float b, float c, float d);
+	void SetEyeDistance(float f) {eye_dist = f;}
 	
-	void Render(const Octree& o, VectorImage& img);
+	void Render(const Octree& o, DescriptorImage& l_img, DescriptorImage& r_img);
+	
 	
 	
 };
