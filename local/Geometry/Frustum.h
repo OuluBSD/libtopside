@@ -56,6 +56,7 @@ struct Frustum {
 	bool Intersects(const Sphere& s) const;
 	bool Intersects(const AABB& aabb) const;
 	bool Intersects(const OBB& obb) const;
+	bool Contains(const AABB& aabb) const;
 	
 };
 

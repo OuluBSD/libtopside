@@ -12,6 +12,77 @@ CONSOLE_APP_MAIN {
 	
 	CalcLens();
 	
+	{
+		float eye_dist = 0.068;
+		vec3 pt(0,0,-1);
+		vec3 eye(eye_dist/2,0,0);
+		vec3 out;
+		
+		bool b = CalculateStereoTarget(
+			(pt + eye).GetNormalized(),
+			(pt - eye).GetNormalized(),
+			eye_dist,
+			out);
+		DUMP(out);
+		ASSERT(b && IsClose(out, pt));
+	}
+	
+	{
+		float eye_dist = 0.068;
+		vec3 pt(0,0,-1);
+		vec3 eye(eye_dist/2,0,0);
+		vec3 out;
+		
+		LensPoly lp;
+		lp.SetAnglePixel(13.13f, 750.16f, 15.1442f, -35.6897f);
+		lp.SetSize(Size(2048, 2048));
+		vec3 l_local0 = (pt + eye).GetNormalized();
+		vec3 r_local0 = (pt - eye).GetNormalized();
+		vec3 l_local1 = lp.Unproject(lp.Project(l_local0));
+		vec3 r_local1 = lp.Unproject(lp.Project(r_local0));
+		ASSERT(IsClose(l_local0, l_local1));
+		ASSERT(IsClose(r_local0, r_local1));
+		
+		bool b = CalculateStereoTarget(
+			l_local1,
+			r_local1,
+			eye_dist,
+			out);
+		DUMP(out);
+		ASSERT(b && IsClose(out, pt));
+	}
+	
+	{
+		float eye_dist = 0.068;
+		vec3 pt(0,0,-1);
+		vec3 eye(eye_dist/2,0,0);
+		vec3 out;
+		
+		mat4 orient = AxesMat(M_PI/4,0,0);
+		mat4 l_world = Translate( eye) * orient;
+		mat4 r_world = Translate(-eye) * orient;							//!!!!
+		
+		LensPoly lp;
+		lp.SetAnglePixel(13.13f, 750.16f, 15.1442f, -35.6897f);
+		lp.SetSize(Size(2048, 2048));
+		vec3 l_local0 = (pt.Embed() * l_world).Splice().GetNormalized();
+		vec3 r_local0 = (pt.Embed() * r_world).Splice().GetNormalized();
+		vec3 l_local1 = lp.Unproject(lp.Project(l_local0));
+		vec3 r_local1 = lp.Unproject(lp.Project(r_local0));
+		ASSERT(IsClose(l_local0, l_local1));
+		ASSERT(IsClose(r_local0, r_local1));
+		
+		bool b = CalculateStereoTarget(
+			l_local1,
+			r_local1,
+			eye_dist,
+			out);
+			
+		out = (out.Embed() * orient.GetInverse()).Splice();					//!!!!
+		
+		DUMP(out);
+		ASSERT(b && IsClose(out, pt));
+	}
 	
 	{
 		Octree o0, o1;
@@ -19,13 +90,13 @@ CONSOLE_APP_MAIN {
 		o1.Initialize(-3,3); // 1 << 3 = 8x8x8 meters
 		
 		int points = 500;
-		float radius = 3;
+		float radius = 1;
 		bool random_points = 1;
 		
 		#if 1
 		{
+			//vec3 pos = AxesDir(-M_PI/4, 0) * radius;
 			vec3 pos = AxesDir(0, 0) * radius;
-			//vec3 pos = AxesDir(0, M_PI*0.1) * radius;
 			OctreeNode* n = o0.GetAddNode(pos, 0);
 			Pointcloud::Point& p = n->Add<Pointcloud::Point>();
 			p.SetPosition(pos);
@@ -77,8 +148,15 @@ CONSOLE_APP_MAIN {
 		uncam.SetAnglePixel(13.13f, 750.16f, 15.1442f, -35.6897f);
 		uncam.SetEyeDistance(eye_dist);
 		
+		/*uncam.dbg = true;
+		uncam.dbg_l_local = vec3(+eye_dist/2,0,-1);
+		uncam.dbg_r_local = vec3(+eye_dist/2,0,-1);*/
+		
 		float yaw = 0;
 		for(int i = 0; i < 100; i++) {
+			float yaw_deg = yaw / M_PI * 180;
+			LOG(i << ": " << yaw_deg);
+			
 			orient = AxesQuat(yaw,0,0);
 			
 			cam.SetWorld(pos, orient);
@@ -90,6 +168,7 @@ CONSOLE_APP_MAIN {
 		}
 		
 	}
+	
 	
 	
 }

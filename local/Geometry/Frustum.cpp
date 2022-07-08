@@ -156,6 +156,10 @@ bool Frustum::Intersects(const AABB& aabb) const {
 	return true;
 }
 
+bool Frustum::Contains(const AABB& aabb) const {
+	return Intersects(aabb); // misleading name
+}
+
 
 
 NAMESPACE_TOPSIDE_END

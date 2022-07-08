@@ -100,7 +100,21 @@ struct Triangle : Moveable<Triangle<T,I> > {
 	typedef T Unit;
 	typedef Vec<T,I> vec;
 	
-	vec a, b, c;
+	union {
+		struct {
+			vec a;
+			vec b;
+			vec c;
+		};
+		struct {
+			vec p1;
+			vec p2;
+			vec p3;
+		};
+
+		vec points[3];
+		float values[vec::size * 3];
+	};
 	
 
 	Triangle() {}

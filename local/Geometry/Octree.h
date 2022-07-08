@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class OctreeNode;
+class Octree;
 
 
 struct OctreeObject : RTTIBase {
@@ -14,6 +15,7 @@ struct OctreeObject : RTTIBase {
 	
 	RTTI_DECL0(OctreeObject);
 	OctreeObject();
+	virtual ~OctreeObject() {}
 	
 	void SetPosition(const vec3& pos);
 	
@@ -21,13 +23,27 @@ struct OctreeObject : RTTIBase {
 	
 };
 
+struct OctreeDescriptorPoint : OctreeObject {
+	RTTI_DECL1(OctreeDescriptorPoint, OctreeObject);
+	
+	PositionOrientationAverage av;
+	union {
+		byte b[DESCRIPTOR_BYTES];
+		uint32 u[DESCRIPTOR_UINTS];
+		uint64 u64[DESCRIPTOR_UINT64];
+	};
+	
+};
+
 class OctreeNode {
 	
 protected:
 	friend class Octree;
+	friend class OctreeObject;
 	
 	typedef byte BitVec;
 	
+	Octree* otree = NULL;
 	OctreeNode* parent = NULL;
 	OctreeNode* branch[8] = {0,0,0,0, 0,0,0,0};
 	BitVec flags = 0;
@@ -70,6 +86,9 @@ public:
 	AABB GetAABB() const;
 	OctreeNode* At(int i) {ASSERT(i >= 0 && i < 8); return branch[i];}
 	const OctreeNode* At(int i) const {ASSERT(i >= 0 && i < 8); return branch[i];}
+	Octree& GetOctree() const;
+	void Attach(OctreeObject* o);
+	void Detach(OctreeObject* o);
 	
 	OctreeNode& SetDebugDraw(bool b=true) {Set(FLAG_DEBUGDRAW, b); return *this;}
 	void Set(BitVec mask, bool value) {if (value) SetMaskTrue(mask); else SetMaskFalse(mask);}
@@ -89,22 +108,73 @@ public:
 struct Frustum;
 class Octree;
 
-struct OctreeFrustumIterator {
+struct OctreeIterator {
 	static const int MAX_LEVELS = 128;
+	int pos[MAX_LEVELS] = {9};
+	OctreeNode* addr[MAX_LEVELS];
+	Octree* otree;
+	int level = 0;
 	
-	const Frustum* frustum;
-	int pos[MAX_LEVELS];
-	const OctreeNode* addr[MAX_LEVELS];
-	const Octree* otree;
-	int level;
-	
-	
-	void Next();
+	bool Next();
 	operator bool() const;
-	const OctreeNode& operator*() const;
-	void operator++(int);
+	OctreeNode& operator*();
+	bool operator==(const OctreeIterator& it) const {
+		if (it.level != level || it.otree != otree)
+			return false;
+		for(int i = 0; i <= level; i++)
+			if (pos[i] != it.pos[i])
+				return false;
+		return true;
+	}
+};
+
+template <class T>
+struct OctreeObjectIterator : OctreeIterator {
+	T o;
+	
+	bool Next() {
+		while (OctreeIterator::Next()) {
+			ASSERT(pos[level] == 0);
+			const OctreeNode* a = addr[level];
+			AABB aabb = a->GetAABB();
+			
+			if (o.Intersects(aabb)) {
+				//LOG("OctreeObjectIterator: match: " << aabb.ToString());
+				return true;
+			}
+			else
+				pos[level] = 8;
+		}
+		
+		return false;
+	}
+
+	void operator++() {Next();}
+	void operator++(int) {Next();}
+	bool operator==(const OctreeObjectIterator& it) const {
+		return OctreeIterator::operator==(it) && o == it.o;
+	}
 	
 };
+
+template <class T>
+struct OctreeObjectCollection {
+	using Iterator = OctreeObjectIterator<T>;
+	
+	Iterator iter;
+	
+	
+	Iterator begin() const {return iter;}
+	Iterator end() const {return Iterator();}
+	Iterator begin() {return iter;}
+	Iterator end() {return Iterator();}
+	
+};
+
+typedef OctreeObjectIterator<Sphere> OctreeSphereIterator;
+typedef OctreeObjectCollection<Sphere> OctreeSphereCollection;
+typedef OctreeObjectIterator<Frustum> OctreeFrustumIterator;
+
 
 class Octree {
 	OctreeNode root;
@@ -130,7 +200,28 @@ public:
 	OctreeNode& GetRoot() {return root;}
 	const OctreeNode& GetRoot() const {return root;}
 	uint64 GetSeekBits(vec3 pos, int level) const;
-	OctreeFrustumIterator GetFrustumIterator(const Frustum& f) const;
+	OctreeFrustumIterator GetFrustumIterator(const Frustum& f);
+	OctreeSphereIterator GetSphereIterator(const vec3& center, float radius);
+	OctreeSphereCollection GetSphereCollection(const vec3& center, float radius);
+	
+	template <class T> OctreeObjectIterator<T> GetIterator(const T& o) {
+		OctreeObjectIterator<T> it;
+		it.otree = this;
+		it.o = o;
+		it.level = 0;
+		it.pos[0] = -1;
+		it.addr[0] = &root;
+		it.Next();
+		return it;
+	}
+	
+	template <class T> OctreeObjectCollection<T> GetCollection(const T& o) {
+		OctreeObjectCollection<T> c;
+		c.iter = GetIterator(o);
+		return c;
+	}
+	
+	
 	
 	int LimitLevel(int scale_level) const;
 	bool Contains(vec3 pos);

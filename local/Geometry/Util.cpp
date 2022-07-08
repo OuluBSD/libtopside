@@ -1534,6 +1534,14 @@ float VectorAngle(const vec3& a, const vec3& b) {
 	return angle;
 }
 
+float VectorAngle(const vec2& a, const vec2& b) {
+	float dot = a.Dot(b);
+	float len = a.GetLength() * b.GetLength();
+	float ratio = dot / len;
+	float angle = acos(ratio);
+	return angle;
+}
+
 
 
 
@@ -1593,37 +1601,96 @@ vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
 	return vec2(x3, y3);
 }
 
+vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
+	float d = eye_dist;
+	float deg0 = a0 / M_PI * 180;
+	float deg1 = a1 / M_PI * 180;
+	
+	
+	if (a0 < M_PI/2 && a1 < M_PI/2) {
+		// Isosceles
+		
+		// x0
+		// x1 = d - x0
+		// tan(a0) = y / x0
+		// tan(a1) = y / x1
+		// y = tan(a0) * x0
+		// y = tan(a1) * x1
+		// y = tan(a1) * (d - x0)
+		// tan(a0) * x0 = tan(a1) * (d - x0)
+		// x0 = d*tan(a1)/(tan(a0)+tan(a1))
+		float ta1 = tan(a1);
+		float x0 = d*ta1/(tan(a0)+ta1);
+		float y = tan(a0) * x0;
+		float x = -d*0.5 + x0;
+		return vec2(x,y);
+	}
+	else if (a0 > M_PI/2 && a1 < M_PI/2) {
+		// x0
+		// x1 = d + x0
+		// tan(M_PI-a0) = y / x0
+		// x0 * tan(M_PI-a0) = y
+		// tan(a1) = y / x1
+		// tan(a1) = y / (d + x0)
+		// (d + x0) * tan(a1) = y
+		// x0 * tan(M_PI-a0) = (d + x0) * tan(a1)
+		// x0 = d*tan(a1)/(tan(M_PI-a0)-tan(a1))
+		float ta0 = tan(M_PI-a0);
+		float ta1 = tan(a1);
+		float x0 = d*ta1/(ta0-ta1);
+		float y = x0 * ta0;
+		float x = -d*0.5 - x0;
+		return vec2(x,y);
+	}
+	else if (a0 < M_PI/2 && a1 > M_PI/2) {
+		float ta0 = tan(a0);
+		float ta1 = tan(M_PI-a1);
+		float x0 = d*ta0/(ta1-ta0);
+		float y = x0 * ta0;
+		float x = +d*0.5 + x0;
+		return vec2(x,y);
+	}
+	else return CalculateThirdPoint(vec2(-eye_dist/2,0), vec2(+eye_dist/2,0), a0, a1);
+	
+}
+
 bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c) {
 	ASSERT(IsClose(dir_a.GetLength(), 1));
 	ASSERT(IsClose(dir_b.GetLength(), 1));
+	
+	// Rotate triangle to y=0 level
 	float yaw_a, pitch_a;
 	float yaw_b, pitch_b;
 	DirAxes(dir_a, yaw_a, pitch_a);
 	DirAxes(dir_b, yaw_b, pitch_b);
 	float pitch = (pitch_a + pitch_b) * 0.5;
-	
 	mat4 x_rot = XRotation(-pitch);
 	vec3 flat_a = (x_rot * dir_a.Embed()).Splice();
 	vec3 flat_b = (x_rot * dir_b.Embed()).Splice();
 	
-	float y = (dir_a.data[1] + dir_b.data[1]) * 0.5;
-	
-	vec2 dir_a2(flat_a[0], -flat_a[2]);
-	vec2 dir_b2(flat_b[0], -flat_b[2]);
+	// Calculate third point of the leveled triangle
+	vec2 dir_a2(flat_a[0], flat_a[2]);
+	vec2 dir_b2(flat_b[0], flat_b[2]);
 	vec2 l_eye(-eye_dist*0.5,0);
 	vec2 r_eye(+eye_dist*0.5,0);
-	float alp1 = M_PI/2 + Dot(dir_a2, vec2(0,1));
-	float alp2 = M_PI/2 - Dot(dir_b2, vec2(0,1));
-	if (alp1 + alp2 >= M_PI)
-		return false;
+	//DUMP(dir_a); DUMP(dir_b);
+	//DUMP(dir_a2); DUMP(dir_b2);
+	float alp1 = VectorAngle(dir_a2, vec2(+1,0));
+	float alp2 = VectorAngle(dir_b2, vec2(-1,0));
 	float deg1 = alp1 / M_PI * 180;
 	float deg2 = alp2 / M_PI * 180;
-	vec2 tgt = CalculateThirdPoint(l_eye, r_eye, alp1, alp2);
+	if (alp1 + alp2 >= M_PI)
+		return false;
+	vec2 tgt = CalculateStereoThirdPoint(eye_dist, alp1, alp2);
 	//DUMP(tgt);
 	
+	#if !IS_NEGATIVE_Z
+		#error todo
+	#endif
 	x_rot = XRotation(+pitch);
-	vec3 flat_c(tgt[0], -tgt[1]);
+	vec3 flat_c(tgt[0], 0, -tgt[1]);
 	dir_c = (x_rot * flat_c.Embed()).Splice();
+	//DUMP(dir_c);
 	
 	return true;
 }

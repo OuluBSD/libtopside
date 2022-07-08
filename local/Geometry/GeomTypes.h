@@ -216,6 +216,10 @@ static const int CHANNEL_ICHANNEL2 = TEXTYPE_COUNT + 2;
 static const int CHANNEL_ICHANNEL3 = TEXTYPE_COUNT + 3;*/
 
 
+struct AABB;
+struct OBB;
+struct Frustum;
+
 
 struct Ray {
 	vec3 origin;
@@ -232,6 +236,11 @@ struct Sphere {
 
 	inline Sphere() : radius(1.0f) {}
 	inline Sphere(const vec3& p, float r) : position(p), radius(r) {}
+	bool Contains(const vec3& p) const;
+	bool Contains(const AABB& p) const;
+	bool Intersects(const AABB& o) const;
+	bool Intersects(const OBB& o) const;
+	
 };
 
 struct AABB {
@@ -240,6 +249,10 @@ struct AABB {
 
 	inline AABB() : size(1, 1, 1) {}
 	inline AABB(const vec3& p, const vec3& s) : position(p), size(s) {}
+	
+	bool Contains(const vec3& p) const;
+	bool Contains(const Frustum& p) const;
+	bool Intersects(const Sphere& o) const;
 	
 	String ToString() const {return position.ToString() + ", " + size.ToString();}
 };
@@ -252,6 +265,9 @@ struct OBB : Moveable<OBB> {
 	inline OBB() : size(1, 1, 1) {}
 	inline OBB(const vec3& p, const vec3& s) : position(p), size(s) { }
 	inline OBB(const vec3& p, const vec3& s, const mat3& o) : position(p), size(s), orientation(o) {}
+	
+	bool Contains(const vec3& p) const;
+	bool Intersects(const Sphere& o) const;
 	
 };
 

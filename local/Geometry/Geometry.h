@@ -58,6 +58,7 @@
 #include "GeomCommon.h"
 #include "Geom2D.h"
 #include "GeomTypes.h"
+#include "Geom3D.h"
 #include "Quadtree.h"
 #include "Octree.h"
 #include "Material.h"

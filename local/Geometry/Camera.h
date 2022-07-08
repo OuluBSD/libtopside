@@ -43,7 +43,7 @@ public:
 	void SetWorld(const mat4& view);
 	void SetWorld(const vec3& position, const quat& orient);
 	
-	Frustum GetFrustum(float distance=1.0f);
+	Frustum GetFrustum();
 	
 	
 };
@@ -89,6 +89,8 @@ struct LensPoly {
 	vec4 angle_to_pixel_poly;
 	Vector<float> pixel_to_angle;
 	Size img_sz = Size(0,0);
+	
+	static const int PIX_MUL = 100;
 	
 	void MakePixelToAngle();
 	void SetSize(Size sz);

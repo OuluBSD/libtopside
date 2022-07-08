@@ -237,6 +237,7 @@ struct quat {
 	
 	void operator=(const quat& q) {data = q.data;}
 	
+	void Clear() {data.Clear();}
 	void SetNull() {data.SetNull();}
 	bool IsNull() const {return data.IsNull();}
 	
@@ -978,6 +979,66 @@ void DownsamplePyramid(const DMatrix<T>& src, DMatrix<T>& dst, int sx=0, int sy=
 
 
 
+template <class T>
+struct VectorAverage {
+	T mean;
+	uint32 count = 0;
+	
+	VectorAverage() {mean.Clear();}
+	void Resize(int64 i) {count = i;}
+	void Add(const T& a) {
+		if (count == 0) {
+			mean = a;
+		}
+		else {
+			T delta = a - mean;
+			mean += delta / count;
+		}
+		count++;
+	}
+	
+	T GetMean() const {
+		return mean;
+	}
+	
+	
+};
+
+typedef VectorAverage<quat> quatav;
+typedef VectorAverage<vec4> vec4av;
+typedef VectorAverage<vec3> vec3av;
+typedef VectorAverage<vec2> vec2av;
+
+
+template <class Vec=vec3, class Quat=quat, class Count=uint32>
+struct PositionOrientationAverageT {
+	Vec position;
+	Quat orientation;
+	Count count = 0;
+	
+	PositionOrientationAverageT() {position.Clear(); orientation.Clear();}
+	void Resize(int64 i) {count = i;}
+	void Add(const Vec& pos, const Quat& q) {
+		if (count == 0) {
+			position = pos;
+			orientation = q;
+		}
+		else {
+			vec3 delta_pos = pos - position;
+			position += delta_pos / count;
+			vec4 delta_q = q.data - orientation.data;
+			orientation.data += delta_q / count;
+		}
+		count++;
+	}
+	
+	Vec GetMeanPosition() const {return position;}
+	Quat GetMeanOrientation() const {return orientation;}
+	
+	
+};
+
+using PositionOrientationAverage = PositionOrientationAverageT<>;
 
 
 struct Square : Moveable<Square> {
@@ -1024,6 +1085,7 @@ struct Matrix4 : RTTIBase {
 	hash_t GetHashValue() const {return data.GetHashValue();}
 	
 };
+
 
 
 NAMESPACE_TOPSIDE_END

@@ -113,14 +113,21 @@ Image	MirrorVertical(const Image& img);
 
 
 
+#define DESCRIPTOR_BYTES 32
+#define DESCRIPTOR_UINTS 8
+#define DESCRIPTOR_UINT64 4
+
 struct Descriptor : Moveable<Descriptor> {
-	uint16 x, y;
+	float x, y;
 	byte angle;
 	union {
-		byte b[32];
-		uint32 u[8];
+		byte b[DESCRIPTOR_BYTES];
+		uint32 u[DESCRIPTOR_UINTS];
+		uint64 u64[DESCRIPTOR_UINT64];
 	};
 };
+
+int GetDescriptor8HammingDistance(const uint32* a, const uint32* b);
 
 class DescriptorImage {
 	Vector<Descriptor> descriptors;
@@ -130,9 +137,11 @@ public:
 	typedef DescriptorImage CLASSNAME;
 	DescriptorImage();
 	
-	void AddDescriptor(int x, int y, float angle, void* descriptor);
+	void AddDescriptor(float x, float y, float angle, void* descriptor);
 	
 	void SetResolution(Size sz) {resolution = sz;}
+	void Clear() {descriptors.Clear(); resolution.Clear();}
+	void ClearDescriptors() {descriptors.SetCount(0);}
 	
 	Size GetResolution() const {return resolution;}
 	const Vector<Descriptor>& GetDescriptors() const {return descriptors;}

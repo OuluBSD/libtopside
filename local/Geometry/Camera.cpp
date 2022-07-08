@@ -192,7 +192,7 @@ Camera CreateOrthographic(float width, float height, float nearPlane, float farP
 
 
 
-Frustum Camera::GetFrustum(float distance) {
+Frustum Camera::GetFrustum() {
 	Frustum result;
 
 	mat4 vp;
@@ -349,17 +349,21 @@ VirtualStereoCamera::VirtualStereoCamera() {
 }
 
 void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, DescriptorImage& r_img) {
-	Frustum f = GetFrustum(0.0);
+	l_img.ClearDescriptors();
+	r_img.ClearDescriptors();
 	
-	auto iter = o.GetFrustumIterator(f);
+	Frustum f = GetFrustum();
 	
-	mat4 l_world = world * Translate(vec3(-eye_dist * 0.5, 0, 0));
-	mat4 r_world = world * Translate(vec3(+eye_dist * 0.5, 0, 0));
+	auto iter = const_cast<Octree&>(o).GetIterator(f);
+	
+	mat4 world = GetViewMatrix();
 	
 	LensPoly::SetSize(Size(width, height));
 	
+	uint32 id = 0;
 	while (iter) {
 		const OctreeNode& n = *iter;
+		//LOG(n.GetAABB().ToString());
 		
 		for (const auto& one_obj : n.objs) {
 			const OctreeObject& obj = *one_obj;
@@ -367,27 +371,33 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			
 			// Random additional descriptor values
 			float angle = Randomf() * 2*M_PI;
-			byte desc[32];
-			for(int i = 0; i < 32; i++)
-				desc[i] = Random(256);
+			union {
+				byte desc[32];
+				uint32 u32[8];
+			};
+			for(int i = 0; i < 8; i++)
+				u32[i] = id;
 			
 			// to camera local space
-			vec3 l_local = (obj_pos.Embed() * l_world).Splice();
-			vec2 l_px = Project(l_local);
-			l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
+			vec3 l_local = (obj_pos.Embed() * world).Splice();
+			l_local.data[0] += eye_dist * 0.5;
+			if (l_local[2] * SCALAR_FWD_Z > 0) {
+				vec2 l_px = Project(l_local);
+				//DUMP(l_local); DUMP(Unproject(l_px)); DUMP(l_px);
+				l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
+			}
 			
-			vec3 r_local = (obj_pos.Embed() * r_world).Splice();
-			vec2 r_px = Project(r_local);
-			r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
+			vec3 r_local = (obj_pos.Embed() * world).Splice();
+			r_local.data[0] -= eye_dist * 0.5;
+			if (r_local[2] * SCALAR_FWD_Z > 0) {
+				vec2 r_px = Project(r_local);
+				//DUMP(r_local); DUMP(Unproject(r_px)); DUMP(r_px);
+				r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
+			}
 			
-			/*DUMP(local);
-			DUMP(roll_ortho);
-			DUMP(roll);
-			DUMP(deg);
-			DUMP(roll_angle);
-			DUMP(roll_deg);*/
-			
-			//LOG(px.ToString() << ", " << obj_pos.ToString() << ", " << local.ToString());
+			//LOG(l_px.ToString() << ", " << l_local.ToString());
+			//LOG(r_px.ToString() << ", " << r_local.ToString());
+			id++;
 		}
 		
 		iter++;
@@ -439,14 +449,21 @@ vec2 LensPoly::Project(const vec3& local) {
 	vec2 px;
 	px.data[0] = pix_dist * cos(roll_angle) + img_sz.cx / 2;
 	px.data[1] = pix_dist * sin(roll_angle) + img_sz.cy / 2;
+	if (0) {
+		px.data[0] = floor(px.data[0] + 0.5);
+		px.data[1] = floor(px.data[1] + 0.5);
+	}
 	
+	#if 0
 	vec3 a = Unproject(px);
 	vec3 b = local.GetNormalized();
 	if (!IsClose(a, b, 1)) {
 		DUMP(Unproject(px));
 	}
 	ASSERT(IsClose(a, b, 1));
-	//ASSERT(IsClose(Unproject(px), local.GetNormalized(), 1));
+	#else
+	ASSERT(IsClose(Unproject(px), local.GetNormalized(), 0.01));
+	#endif
 	
 	return px;
 }
@@ -456,12 +473,15 @@ vec3 LensPoly::Unproject(const vec2& pixel) {
 	
 	vec2 ct_rel = pixel - vec2(img_sz.cx / 2, img_sz.cy / 2);
 	float len = ct_rel.GetLength();
-	int leni = (int)len;
+	int leni0 = (int)(len * PIX_MUL);
+	int leni1 = leni0 + 1 < pixel_to_angle.GetCount() ? leni0 + 1 : leni0;
+	float f1 = fmodf(len, 1.0f);
+	float f0 = 1.0f - f1;
 	
-	ASSERT(leni >= 0 && leni < pixel_to_angle.GetCount());
-	if (leni >= pixel_to_angle.GetCount()) return vec3(0,0,0);
+	ASSERT(leni0 >= 0 && leni0 < pixel_to_angle.GetCount());
+	if (leni0 >= pixel_to_angle.GetCount()) return vec3(0,0,0);
 	
-	float angle = pixel_to_angle[leni];
+	float angle = pixel_to_angle[leni0] * f0 + pixel_to_angle[leni1] * f1;
 	float deg = angle / M_PI * 180;
 	vec3 v0(sin(angle), 0, -cos(angle));
 	
@@ -471,8 +491,6 @@ vec3 LensPoly::Unproject(const vec2& pixel) {
 	
 	vec3 dir = (rot * v0.Embed()).Splice();
 	dir.Normalize();
-	//if (fabs(roll_angle) > M_PI/2)
-	//	dir[1] = -dir[1];
 	
 	return dir;
 }
@@ -488,17 +506,19 @@ void LensPoly::MakePixelToAngle() {
 	
 	pixel_to_angle.SetCount(0);
 	int max_len = (int)sqrt(img_sz.cx * img_sz.cx + img_sz.cy * img_sz.cy) + 1;
+	max_len *= PIX_MUL;
 	
 	pixel_to_angle.SetCount(max_len, 0);
 	
-	for (float angle = 0; angle <= M_PI; angle += 0.0001f) {
+	float step = 0.0001 / (double)PIX_MUL;
+	for (float angle = 0; angle <= M_PI; angle += step) {
 		float pix_dist =
 			angle_to_pixel_poly.data[0] * angle +
 			angle_to_pixel_poly.data[1] * angle * angle +
 			angle_to_pixel_poly.data[2] * angle * angle * angle +
 			angle_to_pixel_poly.data[3] * angle * angle * angle * angle;
 		
-		int i = (int)pix_dist;
+		int i = (int)(pix_dist * PIX_MUL);
 		ASSERT(i >= 0);
 		if (i < 0)
 			continue;

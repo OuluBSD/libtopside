@@ -462,7 +462,7 @@ DescriptorImage::DescriptorImage() {
 	
 }
 
-void DescriptorImage::AddDescriptor(int x, int y, float angle, void* descriptor) {
+void DescriptorImage::AddDescriptor(float x, float y, float angle, void* descriptor) {
 	ASSERT(resolution.cx > 0 && resolution.cy > 0);
 	if (x >= 0 && x < resolution.cx &&
 		y >= 0 && y < resolution.cy) {
@@ -477,6 +477,16 @@ void DescriptorImage::AddDescriptor(int x, int y, float angle, void* descriptor)
 	}
 }
 
+
+
+
+
+int GetDescriptor8HammingDistance(const uint32* a, const uint32* b) {
+	int dist = 0;
+	for(int i = 0; i < 8; i++)
+		dist += PopCount32(a[i] ^ b[i]);
+	return dist;
+}
 
 
 NAMESPACE_TOPSIDE_END

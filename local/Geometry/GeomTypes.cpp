@@ -253,4 +253,65 @@ void DepthBuffer::Reset() {
 
 
 
+bool Sphere::Contains(const AABB& p) const {
+	for(int i = 0; i < 8; i++) {
+		bool x_inv = i & 1;
+		bool y_inv = i & 2;
+		bool z_inv = i & 4;
+		vec3 corner = p.position + vec3(
+			x_inv ? +p.size[0] : -p.size[0],
+			y_inv ? +p.size[1] : -p.size[1],
+			z_inv ? +p.size[2] : -p.size[2]);
+		if (!Contains(corner))
+			return false;
+	}
+	return true;
+}
+
+bool Sphere::Contains(const vec3& p) const {
+	return ContainsPoint(*this, p);
+}
+
+bool Sphere::Intersects(const AABB& o) const {
+	return SphereAABB(*this, o);
+}
+
+bool Sphere::Intersects(const OBB& o) const {
+	return SphereOBB(*this, o);
+}
+
+
+
+
+bool AABB::Contains(const vec3& p) const {
+	return ContainsPoint(*this, p);
+}
+
+bool AABB::Intersects(const Sphere& o) const {
+	return SphereAABB(o, *this);
+}
+
+bool AABB::Contains(const Frustum& p) const {
+	vec3 corners[8];
+	p.GetCorners(corners);
+	for(int i = 0; i < 8; i++)
+		if (!Contains(corners[i]))
+			return false;
+	return true;
+}
+
+
+
+
+bool OBB::Contains(const vec3& p) const {
+	return ContainsPoint(*this, p);
+}
+
+bool OBB::Intersects(const Sphere& o) const {
+	return SphereOBB(o, *this);
+}
+
+
+
+
 NAMESPACE_TOPSIDE_END

@@ -3,6 +3,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+Uncamera::Uncamera() {
+	orientation = AxesQuat(0,0,0);
+}
+
+
+
+
+
 VirtualStereoUncamera::VirtualStereoUncamera() {
 	
 }
@@ -62,24 +70,81 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 				vec3 r_dir = Unproject(vec2(best_match->x, best_match->y));
 				vec3 tgt;
 				if (CalculateStereoTarget(l_dir, r_dir, eye_dist, tgt)) {
+					// Find previous frame matches
+					#if 0
+					TrackedPoint* best_tp_match = 0;
+					int best_tp_dist = INT_MAX;
+					for (TrackedPoint& p : tracked_points) {
+						int dist = GetDescriptor8HammingDistance(p.descriptor, l->u);
+						if (dist < distance_limit && dist < best_tp_dist) {
+							best_tp_dist = dist;
+							best_tp_match = &p;
+						}
+					}
 					
-					float deg = VectorAngle(l_dir, r_dir) / M_PI * 180;
-					//LOG(deg << ": " << tgt.ToString() << ", " << l_dir.ToString() << ", " << r_dir.ToString() << ", " << best_dist);
-					LOG(deg << ": " << tgt.ToString());
-					
-					TODO
+					if (best_tp_match) {
+						// use previous frame match
+						TODO
+					}
+					else
+					#endif
+					{
+						float deg = VectorAngle(l_dir, r_dir) / M_PI * 180;
+						//LOG(deg << ": " << tgt.ToString() << ", " << l_dir.ToString() << ", " << r_dir.ToString() << ", " << best_dist);
+						//LOG(deg << ": " << tgt.ToString());
+						
+						float sphere_radius = 3; //error_factor * tgt.GetLength() * 10;
+						OctreeDescriptorPoint* best_dp_match = 0;
+						int best_dp_dist = INT_MAX;
+						for (OctreeNode& n : o.GetCollection(Sphere(tgt, sphere_radius))) {
+							for (auto& one_obj : n.objs) {
+								OctreeObject& obj = *one_obj;
+								OctreeDescriptorPoint* dp = CastPtr<OctreeDescriptorPoint>(&obj);
+								if (dp) {
+									int dist = GetDescriptor8HammingDistance(dp->u, l->u);
+									if (dist < distance_limit && dist < best_dp_dist) {
+										best_dp_dist = dist;
+										best_dp_match = dp;
+									}
+								}
+							}
+							//LOG(n.GetAABB().ToString());
+						}
+						
+						OctreeDescriptorPoint* p;
+						if (best_dp_match) {
+							// use old octree match
+							p = best_dp_match;
+							LOG("use old dp");
+						}
+						else {
+							// completele new match: create octree node and tracked point
+							OctreeNode* n = o.GetAddNode(tgt, -3);
+							ASSERT(n);
+							if (n) {
+								LOG("new dp");
+								p = &n->Add<OctreeDescriptorPoint>();
+							}
+						}
+						
+						if (p) {
+							OctreeDescriptorPoint& dp = *p;
+							
+							LOG("add tgt " << tgt.ToString());
+							dp.av.Add(tgt, this->orientation);
+							vec3 pos = dp.av.GetMeanPosition();
+							LOG(dp.GetPosition().ToString() << " --> " << pos.ToString());
+							dp.SetPosition(pos);
+							
+							TrackedPoint& tp = tracked_points.Add();
+							tp.dp = &dp;
+							memcpy(tp.descriptor, l->u, DESCRIPTOR_BYTES);
+						}
+					}
 				}
 			}
 		}
 	}
-	
-	
-	// Find previous frame matches
-	
-	
-	
-	TODO
-	
 	
 }
 

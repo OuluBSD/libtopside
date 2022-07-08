@@ -207,6 +207,7 @@ vec4 MakeVec4(const vec3& v, float v4);
 double GetRadians(double degrees);
 double GetDegrees(double radians);
 
+float VectorAngle(const vec2& a, const vec2& b);
 float VectorAngle(const vec3& a, const vec3& b);
 
 
@@ -295,7 +296,8 @@ bool IsClose(const vec4& a, const vec4& b);
 bool IsClose(const mat4& a, const mat4& b);
 
 
-vec3 CalculateThirdPoint(const vec3& a, const vec3& b, float a_angle, float b_angle);
+vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2);
+vec2 CalculateStereoThirdPoint(float eye_dist, float a1, float a2);
 bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c);
 
 

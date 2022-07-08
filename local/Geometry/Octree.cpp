@@ -14,7 +14,14 @@ void OctreeObject::SetPosition(const vec3& pos) {
 		rel_pos = pos - p;
 	}
 	else {
-		TODO
+		Octree& otree = owner->GetOctree();
+		OctreeNode* new_owner = otree.GetAddNode(pos, owner->level);
+		ASSERT(new_owner);
+		if (new_owner) {
+			owner->Detach(this);
+			new_owner->Attach(this);
+			owner = new_owner;
+		}
 	}
 }
 
@@ -79,6 +86,25 @@ AABB OctreeNode::GetAABB() const {
 	return aabb;
 }
 
+Octree& OctreeNode::GetOctree() const {
+	return *otree;
+}
+
+void OctreeNode::Attach(OctreeObject* o) {
+	objs.Add() = o;
+}
+
+void OctreeNode::Detach(OctreeObject* o) {
+	for (auto it = objs.Begin(); it; ++it) {
+		if (&**it == o) {
+			it->Detach();
+			objs.Remove(it);
+			break;
+		}
+	}
+}
+
+
 	
 	
 	
@@ -90,7 +116,7 @@ AABB OctreeNode::GetAABB() const {
 
 
 Octree::Octree() {
-	
+	root.otree = this;
 }
 
 int Octree::LimitLevel(int level) const {
@@ -143,6 +169,7 @@ OctreeNode* Octree::GetAddNode(vec3 pos, int level) {
 		OctreeNode*& bn = n->branch[branch_i];
 		if (!bn) {
 			bn = OctreeNode::GetRecyclerPool().New();
+			bn->otree = this;
 			bn->parent = n;
 			bn->level = n->level - 1;
 			
@@ -201,30 +228,31 @@ uint64 Octree::GetSeekBits(vec3 pos, int level) const {
 	return seek;
 }
 
-OctreeFrustumIterator Octree::GetFrustumIterator(const Frustum& f) const {
-	OctreeFrustumIterator it;
-	it.otree = this;
-	it.frustum = &f;
-	it.level = 0;
-	it.pos[0] = -1;
-	it.addr[0] = &root;
-	it.Next();
-	return it;
+OctreeFrustumIterator Octree::GetFrustumIterator(const Frustum& f) {
+	return GetIterator<Frustum>(f);
+}
+
+OctreeSphereIterator Octree::GetSphereIterator(const vec3& center, float radius) {
+	return GetIterator<Sphere>(Sphere(center, radius));
+}
+
+OctreeSphereCollection Octree::GetSphereCollection(const vec3& center, float radius) {
+	return OctreeSphereCollection {GetSphereIterator(center, radius)};
 }
 
 
 
 
 
-void OctreeFrustumIterator::Next() {
+bool OctreeIterator::Next() {
 	if (!level && pos[0] == 9)
-		return;
+		return false;
 	
 	while (1) {
 		ASSERT(level >= 0);
 		
 		{
-			const OctreeNode* a = addr[level];
+			OctreeNode* a = addr[level];
 			int& p = pos[level];
 			p++;
 			
@@ -239,40 +267,41 @@ void OctreeFrustumIterator::Next() {
 			else {
 				ASSERT(p >= 1 && p <= 8);
 				addr[level+1] = a->At(p-1);
-				if (!addr[level+1])
-					continue;
-				
-				pos[level+1] = -1;
-				level++;
+				if (addr[level+1]) {
+					pos[level+1] = -1;
+					level++;
+				}
 				continue;
 			}
 		}
 		
-		{
-			ASSERT(pos[level] == 0);
-			const OctreeNode* a = addr[level];
-			AABB aabb = a->GetAABB();
-			if (frustum->Intersects(aabb)) {
-				//DUMP(aabb);
-				break;
-			}
-			else
-				pos[level] = 8;
-		}
+		return true;
 	}
+	
+	return false;
 }
 
-OctreeFrustumIterator::operator bool() const {
+OctreeIterator::operator bool() const {
 	return !(!level && pos[0] == 9);
 }
 
-const OctreeNode& OctreeFrustumIterator::operator*() const {
+OctreeNode& OctreeIterator::operator*() {
 	return *addr[level];
 }
 
-void OctreeFrustumIterator::operator++(int) {
-	Next();
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -34,7 +34,12 @@ struct ManagedStatic {
 	typedef ManagedStatic CLASSNAME;
 	ManagedStatic(const char* f, int l);
 	template <class Arg> ManagedStatic(const char* f, int l, const Arg& value);
-	~ManagedStatic() {ASSERT(destructed); Destruct();}
+	~ManagedStatic() {
+		#ifndef UPP_VERSION
+		ASSERT(destructed);
+		#endif
+		Destruct();
+	}
 	void Destruct() {if (!destructed) {Clear(); destructed = true;}}
 	void Clear() {o.Clear();}
 };
