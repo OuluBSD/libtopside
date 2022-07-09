@@ -16,7 +16,7 @@ void OctreeObject::SetPosition(const vec3& pos) {
 	else {
 		Octree& otree = owner->GetOctree();
 		OctreeNode* new_owner = otree.GetAddNode(pos, owner->level);
-		ASSERT(new_owner);
+		//ASSERT(new_owner);
 		if (new_owner) {
 			owner->Detach(this);
 			new_owner->Attach(this);

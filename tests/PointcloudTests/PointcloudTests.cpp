@@ -95,11 +95,17 @@ CONSOLE_APP_MAIN {
 		
 		#if 1
 		{
-			//vec3 pos = AxesDir(-M_PI/4, 0) * radius;
-			vec3 pos = AxesDir(0, 0) * radius;
-			OctreeNode* n = o0.GetAddNode(pos, 0);
-			Pointcloud::Point& p = n->Add<Pointcloud::Point>();
-			p.SetPosition(pos);
+			{
+				vec3 pos = AxesDir(0, 0) * radius;
+				OctreeNode* n = o0.GetAddNode(pos, 0);
+				Pointcloud::Point& p = n->Add<Pointcloud::Point>();
+				p.SetPosition(pos);
+			}{
+				vec3 pos = AxesDir(M_PI/8, 0) * radius;
+				OctreeNode* n = o0.GetAddNode(pos, 0);
+				Pointcloud::Point& p = n->Add<Pointcloud::Point>();
+				p.SetPosition(pos);
+			}
 		}
 		#else
 		
@@ -107,7 +113,8 @@ CONSOLE_APP_MAIN {
 			float yaw, pitch;
 			if (random_points) {
 				yaw = Randomf() * M_PI * 2;
-				pitch = (Randomf() * 2 - 1) * (M_PI / 2);
+				float f = (Randomf() * 2 - 1);
+				pitch = f * (M_PI / 2);
 			}
 			else {
 				float f = ((float)i / (float)points);
@@ -120,7 +127,7 @@ CONSOLE_APP_MAIN {
 			Pointcloud::Point& p = n->Add<Pointcloud::Point>();
 			p.SetPosition(pos);
 			
-			//LOG(pos.ToString() + ": " + HexStr(n));
+			LOG(pos.ToString() + ": " + HexStr(n));
 		}
 		#endif
 		
@@ -147,6 +154,7 @@ CONSOLE_APP_MAIN {
 		VirtualStereoUncamera uncam;
 		uncam.SetAnglePixel(13.13f, 750.16f, 15.1442f, -35.6897f);
 		uncam.SetEyeDistance(eye_dist);
+		uncam.SetDistanceLimit(0);
 		
 		/*uncam.dbg = true;
 		uncam.dbg_l_local = vec3(+eye_dist/2,0,-1);
@@ -168,7 +176,5 @@ CONSOLE_APP_MAIN {
 		}
 		
 	}
-	
-	
 	
 }

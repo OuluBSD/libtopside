@@ -55,22 +55,19 @@ class RNG : Moveable<RNG> {
 	}
 	
 public:
-	RNG() {Seed();}
-	float  Randomf() {return (sNext(state) >> 11) * (1.f / (UINT64_C(1) << 53));}
-	double Randomd() {return (sNext(state) >> 11) * (1.  / (UINT64_C(1) << 53));}
-	uint32 Random(uint32 max) {return Get32() % max;}
-	uint64 Random64(uint64 max) {return Get64() % max;}
-	uint32 Get32() {return (uint32)sNext(state);}
-	uint64 Get64() {return (sNext(state) & 0xFFFFFFFF) | (sNext(state) << 32ULL);}
-	void GetN(uint64* t, int n) {for(int i = 0; i < n; i++) t[i] = Get64();}
-	void GetN(uint32* t, int n) {for(int i = 0; i < n; i++) t[i] = Get32();}
-	operator uint32 () {return Get32();}
-	operator uint64 () {return Get64();}
-	void Seed() {sSeed(state);}
-	void Seed(uint32 seed) {
-		for(int i = 0; i < 4; i++)
-			state[i] = 12345678 + seed + i; // xoshiro does not work well if all is zero
-	}
+	RNG();
+	float  Randomf();
+	double Randomd();
+	uint32 Random(uint32 max);
+	uint64 Random64(uint64 max);
+	uint32 Get32();
+	uint64 Get64();
+	void GetN(uint64* t, int n);
+	void GetN(uint32* t, int n);
+	operator uint32 ();
+	operator uint64 ();
+	void Seed();
+	void Seed(uint32 seed);
 	
 	void WriteMemory(void* mem, int bytes);
 	

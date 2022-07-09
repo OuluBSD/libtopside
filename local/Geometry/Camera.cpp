@@ -357,10 +357,13 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 	auto iter = const_cast<Octree&>(o).GetIterator(f);
 	
 	mat4 world = GetViewMatrix();
+	vec3 eye(eye_dist/2,0,0);
+	mat4 l_world = Translate( eye) * world;
+	mat4 r_world = Translate(-eye) * world;
 	
 	LensPoly::SetSize(Size(width, height));
 	
-	uint32 id = 0;
+	
 	while (iter) {
 		const OctreeNode& n = *iter;
 		//LOG(n.GetAABB().ToString());
@@ -374,21 +377,21 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			union {
 				byte desc[32];
 				uint32 u32[8];
+				uint32 u64[4];
+				const OctreeObject* ptr[4];
 			};
-			for(int i = 0; i < 8; i++)
-				u32[i] = id;
+			for(int i = 0; i < 4; i++)
+				ptr[i] = &obj;
 			
 			// to camera local space
-			vec3 l_local = (obj_pos.Embed() * world).Splice();
-			l_local.data[0] += eye_dist * 0.5;
+			vec3 l_local = (obj_pos.Embed() * l_world).Splice();
 			if (l_local[2] * SCALAR_FWD_Z > 0) {
 				vec2 l_px = Project(l_local);
 				//DUMP(l_local); DUMP(Unproject(l_px)); DUMP(l_px);
 				l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
 			}
 			
-			vec3 r_local = (obj_pos.Embed() * world).Splice();
-			r_local.data[0] -= eye_dist * 0.5;
+			vec3 r_local = (obj_pos.Embed() * r_world).Splice();
 			if (r_local[2] * SCALAR_FWD_Z > 0) {
 				vec2 r_px = Project(r_local);
 				//DUMP(r_local); DUMP(Unproject(r_px)); DUMP(r_px);
@@ -397,7 +400,6 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			
 			//LOG(l_px.ToString() << ", " << l_local.ToString());
 			//LOG(r_px.ToString() << ", " << r_local.ToString());
-			id++;
 		}
 		
 		iter++;

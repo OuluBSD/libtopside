@@ -1643,14 +1643,27 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 		return vec2(x,y);
 	}
 	else if (a0 < M_PI/2 && a1 > M_PI/2) {
+		// x0 = d + x1
+		// x1
+		// tan(a0) = y / x0
+		// tan(a0) = y / (d + x1)
+		// (d + x1) * tan(a0) = y
+		// tan(M_PI-a1) = y / x1
+		// x1 * tan(M_PI-a1) = y
+		// (d + x1) * tan(a0) = x1 * tan(M_PI-a1)
+		// x1 = -d*tan(a0)/(tan(a0)-tan(M_PI-a1));
 		float ta0 = tan(a0);
 		float ta1 = tan(M_PI-a1);
-		float x0 = d*ta0/(ta1-ta0);
-		float y = x0 * ta0;
-		float x = +d*0.5 + x0;
+		float x1 = -d*ta0/(ta0-ta1);
+		float y = x1 * ta1;
+		float x = +d*0.5 + x1;
 		return vec2(x,y);
 	}
-	else return CalculateThirdPoint(vec2(-eye_dist/2,0), vec2(+eye_dist/2,0), a0, a1);
+	else {
+		vec2 v = CalculateThirdPoint(vec2(-eye_dist/2,0), vec2(+eye_dist/2,0), a0, a1);
+		TODO // inv z?
+		return v;
+	}
 	
 }
 
@@ -1682,6 +1695,9 @@ bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist,
 	if (alp1 + alp2 >= M_PI)
 		return false;
 	vec2 tgt = CalculateStereoThirdPoint(eye_dist, alp1, alp2);
+	
+	//vec2 tgt = CalculateThirdPoint(l_eye, r_eye, alp1, alp2);
+	//tgt.data[2] *= -1;
 	//DUMP(tgt);
 	
 	#if !IS_NEGATIVE_Z
@@ -1694,6 +1710,98 @@ bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist,
 	
 	return true;
 }
+
+void TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_eye1, vec3& v_tgt, mat4& mat, mat4& inv_mat) {
+	auto& v_ct = v_tgt;
+	
+	float dist = (v1 - v0).GetLength();
+	v_ct = (v0 + v1) * 0.5;
+	vec3 v_rot_z = -v_ct.GetNormalized();
+	vec3 v_rot_x = (v1 - v_ct).GetNormalized();
+	vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
+	
+	// Fast way to make rotation matrix with position translate
+	mat.data[0] = -v_rot_x.Extend();
+	mat.data[1] = -v_rot_y.Extend();
+	mat.data[2] = -v_rot_z.Extend();
+	mat.data[3] = v_ct.Embed();
+	
+	#if 0
+	vec4 test = mat * vec4(0,0,0,1);
+	vec4 test2 = mat * vec4(0,0,-1,1);
+	DUMP(v_ct);
+	DUMP(test); // == v_ct
+	DUMP(v_rot_z);
+	DUMP(test2 - test); // == v_rot_z*/
+	#endif
+	
+	mat = mat * Scale(vec3(dist));
+	
+	// Translate vious 2 points to be "eyes"
+	inv_mat = mat.GetInverse();
+	v_eye0 = (inv_mat * v0.Embed()).Splice();
+	v_eye1 = (inv_mat * v1.Embed()).Splice();
+	//v_tgt = v_ct; // origo translates to v_ct, so skip useless matrix multiplication
+}
+
+mat4 CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1) {
+	if (prev0 == local || prev1 == local ||
+		cur0 == local || cur1 == local)
+		return Identity<mat4>();
+	
+	prev0 = prev0 - local;
+	prev1 = prev1 - local;
+	cur0 = cur0 - local;
+	cur1 = cur1 - local;
+	
+	
+	vec3 prev_ct, prev_eye0, prev_eye1, prev_tgt;
+	mat4 prev_mat, prev_inv_mat;
+	TriangleToStereoEyes(prev0, prev1, prev_eye0, prev_eye1, prev_tgt, prev_mat, prev_inv_mat);
+	//DUMP(prev_eye0); DUMP(prev_eye1); DUMP(prev_tgt);
+	
+	vec3 cur_ct, cur_eye0, cur_eye1, cur_tgt;
+	mat4 cur_mat, cur_inv_mat;
+	TriangleToStereoEyes(cur0, cur1, cur_eye0, cur_eye1, cur_tgt, cur_mat, cur_inv_mat);
+	//DUMP(cur_eye0); DUMP(cur_eye1); DUMP(cur_tgt);
+	
+	
+	//return prev_mat * cur_inv_mat;
+	return prev_inv_mat * cur_mat;
+	
+	/*vec3 tgt_diff = cur_tgt - prev_tgt;
+	
+	#if 0
+	vec3 prev_diff1 = (prev_mat * tgt_diff.Embed()).Splice();
+	// note: prev_ct == prev_mat * vec3(0,0,0);
+	const vec3& prev_diff0 = prev_ct;
+	vec3 prev_diff = prev_diff1 - prev_diff0;
+	DUMP(prev_diff);
+	return prev_diff;
+	#else
+	vec3 cur_diff1 = (cur_mat * tgt_diff.Embed()).Splice();
+	// note: cur_ct == cur_mat * vec3(0,0,0);
+	const vec3& cur_diff0 = cur_ct;
+	vec3 cur_diff = cur_diff1 - cur_diff0;
+	DUMP(cur_diff);
+	return cur_diff;
+	#endif*/
+}
+
+/*quat CalculateOrientationChange(vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1) {
+	
+	vec3 prev_ct = (prev0 + prev1) * 0.5;
+	vec3 cur_ct = (cur0 + cur1) * 0.5;
+	
+	vec3 prev_dir = prev_ct.GetNormalized();
+	vec3 cur_dir = cur_ct.GetNormalized();
+	DUMP(prev_dir);
+	DUMP(cur_dir);
+	
+	TODO
+	
+}*/
+
 
 
 NAMESPACE_TOPSIDE_END

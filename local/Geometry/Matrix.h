@@ -1032,6 +1032,7 @@ struct PositionOrientationAverageT {
 		count++;
 	}
 	
+	Count GetCount() const {return count;}
 	Vec GetMeanPosition() const {return position;}
 	Quat GetMeanOrientation() const {return orientation;}
 	

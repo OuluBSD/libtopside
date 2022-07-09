@@ -299,7 +299,7 @@ bool IsClose(const mat4& a, const mat4& b);
 vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2);
 vec2 CalculateStereoThirdPoint(float eye_dist, float a1, float a2);
 bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c);
-
+mat4 CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1);
 
 NAMESPACE_TOPSIDE_END
 
