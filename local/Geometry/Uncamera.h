@@ -22,27 +22,28 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	struct TrackedPoint {
 		static const int MAX_TRIANGLES = 5;
 		uint32 descriptor[DESCRIPTOR_UINTS];
-		OctreeDescriptorPoint* dp;
-		const Descriptor* l;
-		const Descriptor* r;
+		OctreeDescriptorPoint* dp = 0;
+		const Descriptor* l = 0;
+		const Descriptor* r = 0;
 		vec3 global_pos;
 		
-		TrackedTriangle* triangles[MAX_TRIANGLES];
+		TrackedTriangle* triangles[MAX_TRIANGLES] = {0,0,0,0,0};
 		byte triangle_count = 0;
 		
 		bool has_stereo_target = false;
+		bool has_prev_stereo_target = false;
 		vec3 stereo_tgt;
 		vec3 prev_stereo_tgt;
 		
-		void ResetTemp() {l = 0; r = 0; has_stereo_target = false;}
+		void ResetTemp() {l = 0; r = 0;}
 		bool IsMaxTriangles() const {return triangle_count >= MAX_TRIANGLES;}
 		void Attach(TrackedTriangle& tt);
 		void Detach(TrackedTriangle& tt);
 	};
 	
 	struct TrackedTriangle {
-		TrackedPoint* a;
-		TrackedPoint* b;
+		TrackedPoint* a = 0;
+		TrackedPoint* b = 0;
 		
 		void Track(TrackedPoint& a, TrackedPoint& b);
 		void Untrack();
@@ -52,6 +53,7 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	float eye_dist = 0.068f;
 	float error_factor = 0.25; // error_factor is multiplier for the distance, what is searched
 	int tracked_triangle_limit = 1000; // maximum triangle count before pruning efforts
+	int iter = 0;
 	
 	mat4 view = Identity<mat4>();
 	mat4 view_inv = Identity<mat4>();

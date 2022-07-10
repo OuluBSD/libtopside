@@ -289,6 +289,10 @@ OctreeNode& OctreeIterator::operator*() {
 	return *addr[level];
 }
 
+OctreeNode* OctreeIterator::operator->() {
+	return addr[level];
+}
+
 
 
 

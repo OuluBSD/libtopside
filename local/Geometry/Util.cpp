@@ -555,6 +555,14 @@ vec3 AxesDir(float yaw, float pitch) {
 	#endif
 }
 
+vec3 AxesDirRoll(float pitch, float roll) {
+	mat4 pitch_m = XRotation(pitch);
+	mat4 roll_m = ZRotation(roll);
+	mat4 m = roll_m * pitch_m;
+	vec3 dir = (m * VEC_FWD4).Splice();
+	return dir;
+}
+
 void DirAxes(vec3 dir, float& yaw, float& pitch) {
 	dir.Normalize();
 	pitch = asin(dir.data[1]);
@@ -571,6 +579,27 @@ void DirAxes(vec3 dir, float& yaw, float& pitch) {
 void DirAxes(vec3 dir, vec3& axes) {
 	DirAxes(dir, axes.data[0], axes.data[1]);
 	axes[2] = 0;
+}
+
+vec3 GetDirAxes(const vec3& dir) {
+	vec3 axes;
+	DirAxes(dir, axes.data[0], axes.data[1]);
+	return axes;
+}
+
+
+axes2 GetDirAxesRoll(vec3 dir) {
+	if (dir.data[0] == 0 && dir.data[1] == 0)
+		return axes2(0,0);
+	dir.Normalize();
+	float roll = -atan2(dir.data[0], dir.data[1]);
+	vec3 fwd_dir = (dir.Embed() * ZRotation(-roll)).Splice();
+	float pitch = asin(fwd_dir.data[1]);
+	return axes2(pitch, roll);
+}
+
+vec3 GetAxesDir(const axes2& ax) {
+	return AxesDir(ax.data[0], ax.data[1]);
 }
 
 void CameraObject(
@@ -1317,6 +1346,12 @@ void QuatAxes(const quat& q, vec3& axes) {
 	QuatAxes(q, axes[0], axes[1], axes[2]);
 }
 
+vec3 GetQuatAxes(const quat& q) {
+	vec3 v;
+	QuatAxes(q,v);
+	return v;
+}
+
 /*void MatAxes(const mat4& m, vec3& axes) {
 	QuatAxes(MatQuat(m), axes);
 }*/
@@ -1553,9 +1588,28 @@ bool IsClose(const quat& a, const quat& b) {
 	return sum < 0.001;
 }
 
+bool IsClose(const axes2& a, const axes2& b, float dist_limit) {
+	double sum = 0;
+	for(int i = 0; i < 2; i++) {
+		sum += fabsf(a[i] - b[i]);
+	}
+	return fabs(sum) < dist_limit;
+}
+
+bool IsClose(const axes3s& a, const axes3s& b, float dist_limit) {
+	double sum = 0;
+	for(int i = 0; i < 4; i++) {
+		sum += fabsf(a[i] - b[i]);
+	}
+	return fabs(sum) < dist_limit;
+}
+
 bool IsClose(const vec3& a, const vec3& b, float dist_limit) {
-	float dist = (a - b).GetLength();
-	return fabsf(dist) < dist_limit;
+	double sum = 0;
+	for(int i = 0; i < 3; i++) {
+		sum += fabsf(a[i] - b[i]);
+	}
+	return fabs(sum) < dist_limit;
 }
 
 bool IsClose(const vec4& a, const vec4& b) {
@@ -1579,6 +1633,27 @@ bool IsClose(const mat4& a, const mat4& b) {
 
 
 
+
+axes2s LookAtStereoAngles(float eye_dist, const vec3& pt) {
+	vec3 l(-eye_dist*0.5,0,0);
+	vec3 r(+eye_dist*0.5,0,0);
+	vec3 pt_l = pt - l;
+	vec3 pt_r = pt - r;
+	vec3 axes_l = GetDirAxes(pt_l);
+	vec3 axes_r = GetDirAxes(pt_r);
+	axes2s a;
+	a.data[0] = axes_l.data[0];
+	a.data[1] = axes_r.data[0];
+	a.data[2] = axes_l.data[1];
+	return a;
+}
+
+void AxesStereoMono(const axes2s& axes, axes2& l, axes2& r) {
+	l.data[0] = axes.data[0];
+	l.data[1] = axes.data[2];
+	r.data[0] = axes.data[1];
+	r.data[1] = axes.data[2];
+}
 
 vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
 	ASSERT(alp1 > 0 && alp1 < M_PI);
@@ -1667,11 +1742,13 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 	
 }
 
-bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c) {
-	ASSERT(IsClose(dir_a.GetLength(), 1));
-	ASSERT(IsClose(dir_b.GetLength(), 1));
+bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_c) {
+	// Flat directions
+	vec3 flat_a = AxesDir(stereo_axes[0], 0);
+	vec3 flat_b = AxesDir(stereo_axes[1], 0);
 	
 	// Rotate triangle to y=0 level
+	#if 0
 	float yaw_a, pitch_a;
 	float yaw_b, pitch_b;
 	DirAxes(dir_a, yaw_a, pitch_a);
@@ -1680,6 +1757,7 @@ bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist,
 	mat4 x_rot = XRotation(-pitch);
 	vec3 flat_a = (x_rot * dir_a.Embed()).Splice();
 	vec3 flat_b = (x_rot * dir_b.Embed()).Splice();
+	#endif
 	
 	// Calculate third point of the leveled triangle
 	vec2 dir_a2(flat_a[0], flat_a[2]);
@@ -1701,30 +1779,62 @@ bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist,
 	//DUMP(tgt);
 	
 	#if !IS_NEGATIVE_Z
-		#error todo
+	TODO
 	#endif
-	x_rot = XRotation(+pitch);
+	
 	vec3 flat_c(tgt[0], 0, -tgt[1]);
-	dir_c = (x_rot * flat_c.Embed()).Splice();
+	if (stereo_axes[2] != 0) {
+		mat4 x_rot = XRotation(stereo_axes[2]);
+		dir_c = (x_rot * flat_c.Embed()).Splice();
+	}
+	else {
+		dir_c = flat_c;
+	}
+	
+	
 	//DUMP(dir_c);
 	
 	return true;
 }
 
-void TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_eye1, vec3& v_tgt, mat4& mat, mat4& inv_mat) {
-	auto& v_ct = v_tgt;
-	
+bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_eye1, vec3& v_tgt, mat4& mat, mat4& inv_mat, bool have_common_scale, float& common_scale) {
 	float dist = (v1 - v0).GetLength();
-	v_ct = (v0 + v1) * 0.5;
+	vec3 v_ct = (v0 + v1) * 0.5;
+	
+	bool upwards = Cross(v1 - v0, -v0)[1] > 0;
+	float x_mult = upwards ? +1.0f : -1.0f;
+	
+	#if 0
+	vec3 v_rot_z = v_ct.GetNormalized() * VEC_POS_ROT;
+	vec3 v_rot_x = -(v1 - v_ct).GetNormalized() * VEC_POS_ROT * x_mult;
+	vec3 v_rot_y = -Cross(v_rot_x, v_rot_z).GetNormalized() * VEC_POS_ROT;
+	#else
 	vec3 v_rot_z = -v_ct.GetNormalized();
-	vec3 v_rot_x = (v1 - v_ct).GetNormalized();
+	vec3 v_rot_x = (v1 - v_ct).GetNormalized() * x_mult;
 	vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
+	#endif
+	
+	/*DUMP(v0);
+	DUMP(v1);
+	DUMP(v_rot_x);
+	DUMP(v_rot_y);
+	DUMP(v_rot_z);*/
 	
 	// Fast way to make rotation matrix with position translate
+	#if 0
 	mat.data[0] = -v_rot_x.Extend();
 	mat.data[1] = -v_rot_y.Extend();
 	mat.data[2] = -v_rot_z.Extend();
 	mat.data[3] = v_ct.Embed();
+	#else
+	for(int i = 0; i < 3; i++) {
+		mat.data[0].data[i] = -v_rot_x.data[i];
+		mat.data[1].data[i] = -v_rot_y.data[i];
+		mat.data[2].data[i] = -v_rot_z.data[i];
+		mat.data[3].data[i] = v_ct[i];
+	}
+	mat[3][3] = 1;
+	#endif
 	
 	#if 0
 	vec4 test = mat * vec4(0,0,0,1);
@@ -1735,40 +1845,88 @@ void TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_
 	DUMP(test2 - test); // == v_rot_z*/
 	#endif
 	
-	mat = mat * Scale(vec3(dist));
+	if (!have_common_scale) {
+		common_scale = 1.0 / dist;
+	}
+	float scale_mul = dist * common_scale;
+	mat = mat * Scale(vec3(scale_mul));
+	
+	#if 0
+	mat4 omat = QuatMat(MatQuat(mat));
+	DUMP(omat * vec4(1,0,0,1));
+	DUMP(omat * vec4(0,1,0,1));
+	DUMP(omat * vec4(0,0,-1,1));
+	vec3 axes = GetQuatAxes(MatQuat(mat)) / M_PI * 180;
+	DUMP(axes);
+	ASSERT(IsClose(axes[1], 0));
+	#endif
 	
 	// Translate vious 2 points to be "eyes"
 	inv_mat = mat.GetInverse();
 	v_eye0 = (inv_mat * v0.Embed()).Splice();
 	v_eye1 = (inv_mat * v1.Embed()).Splice();
-	//v_tgt = v_ct; // origo translates to v_ct, so skip useless matrix multiplication
+	v_tgt = (inv_mat * vec4(0,0,0,1)).Splice();
+	
+	#if 0
+	DUMP(v_eye0);
+	DUMP(v_eye1);
+	DUMP(v_tgt);
+	#endif
+	
+	return true;
 }
 
-mat4 CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1) {
+bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1, mat4& out) {
 	if (prev0 == local || prev1 == local ||
 		cur0 == local || cur1 == local)
-		return Identity<mat4>();
+		return false;
 	
 	prev0 = prev0 - local;
 	prev1 = prev1 - local;
 	cur0 = cur0 - local;
 	cur1 = cur1 - local;
 	
+	#if 0
+	{
+		vec3 prev_ct = (prev0 + prev1) * 0.5;
+		vec3 cur_ct = (cur0 + cur1) * 0.5;
+		float prev_len = prev_ct.GetLength();
+		float cur_len = cur_ct.GetLength();
+		ASSERT(IsClose(prev_len, cur_len));
+	}
+	#endif
 	
 	vec3 prev_ct, prev_eye0, prev_eye1, prev_tgt;
 	mat4 prev_mat, prev_inv_mat;
-	TriangleToStereoEyes(prev0, prev1, prev_eye0, prev_eye1, prev_tgt, prev_mat, prev_inv_mat);
+	float common_scale = 1;
+	if (!TriangleToStereoEyes(prev0, prev1, prev_eye0, prev_eye1, prev_tgt, prev_mat, prev_inv_mat, false, common_scale))
+		return false;
 	//DUMP(prev_eye0); DUMP(prev_eye1); DUMP(prev_tgt);
 	
 	vec3 cur_ct, cur_eye0, cur_eye1, cur_tgt;
 	mat4 cur_mat, cur_inv_mat;
-	TriangleToStereoEyes(cur0, cur1, cur_eye0, cur_eye1, cur_tgt, cur_mat, cur_inv_mat);
+	if (!TriangleToStereoEyes(cur0, cur1, cur_eye0, cur_eye1, cur_tgt, cur_mat, cur_inv_mat, true, common_scale))
+		return false;
 	//DUMP(cur_eye0); DUMP(cur_eye1); DUMP(cur_tgt);
 	
+	ASSERT(IsClose(prev_eye0, cur_eye0));
+	ASSERT(IsClose(prev_eye1, cur_eye1));
 	
-	//return prev_mat * cur_inv_mat;
-	return prev_inv_mat * cur_mat;
+	//DUMP(GetQuatAxes(MatQuat(prev_mat)) / M_PI * 180);
+	//DUMP(GetQuatAxes(MatQuat(cur_mat)) / M_PI * 180);
 	
+	//out =  prev_mat * cur_inv_mat;
+	out = prev_inv_mat * cur_mat;
+	
+	// H4x
+	if (0) {
+		bool upwards = Cross(prev1 - prev0, -prev0)[1] > 0;
+		float x_mult = upwards ? +1.0f : -1.0f;
+		float dist = (prev0 - prev1).GetLength() * 0.5 * x_mult;
+		out = out * Translate(vec3(dist,0,0)).GetInverse();
+	}
+	
+	return true;
 	/*vec3 tgt_diff = cur_tgt - prev_tgt;
 	
 	#if 0

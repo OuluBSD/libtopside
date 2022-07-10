@@ -383,8 +383,10 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			for(int i = 0; i < 4; i++)
 				ptr[i] = &obj;
 			
+			TODO
+			
 			// to camera local space
-			vec3 l_local = (obj_pos.Embed() * l_world).Splice();
+			/*vec3 l_local = (obj_pos.Embed() * l_world).Splice();
 			if (l_local[2] * SCALAR_FWD_Z > 0) {
 				vec2 l_px = Project(l_local);
 				//DUMP(l_local); DUMP(Unproject(l_px)); DUMP(l_px);
@@ -396,7 +398,7 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 				vec2 r_px = Project(r_local);
 				//DUMP(r_local); DUMP(Unproject(r_px)); DUMP(r_px);
 				r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
-			}
+			}*/
 			
 			//LOG(l_px.ToString() << ", " << l_local.ToString());
 			//LOG(r_px.ToString() << ", " << r_local.ToString());
@@ -424,10 +426,11 @@ void LensPoly::SetAnglePixel(float a, float b, float c, float d) {
 	angle_to_pixel_poly[3] = d;
 }
 
-vec2 LensPoly::Project(const vec3& local) {
+vec2 LensPoly::Project(const axes2& ax) {
 	ASSERT(img_sz.cx && img_sz.cy);
 	
 	// Angle from center of "the lens"
+	#if 0
 	vec3 fwd = VEC_FWD;
 	vec3 right = VEC_RIGHT;
 	float angle = VectorAngle(fwd, local);
@@ -441,6 +444,11 @@ vec2 LensPoly::Project(const vec3& local) {
 	if (roll.data[1] < 0)
 		roll_angle = -roll_angle;
 	float roll_deg = roll_angle / M_PI * 180;
+	#endif
+	
+	axes2 roll_axes = GetDirAxesRoll(GetAxesDir(ax));
+	float angle = roll_axes.data[0];
+	float roll_angle = roll_axes.data[1];
 	
 	float pix_dist =
 		angle_to_pixel_poly.data[0] * angle +
@@ -449,28 +457,29 @@ vec2 LensPoly::Project(const vec3& local) {
 		angle_to_pixel_poly.data[3] * angle * angle * angle * angle;
 	
 	vec2 px;
-	px.data[0] = pix_dist * cos(roll_angle) + img_sz.cx / 2;
-	px.data[1] = pix_dist * sin(roll_angle) + img_sz.cy / 2;
+	px.data[0] = pix_dist * -sin(roll_angle);
+	px.data[1] = pix_dist * cos(roll_angle);
+	px.data[0] += img_sz.cx / 2;
+	px.data[1] += img_sz.cy / 2;
 	if (0) {
 		px.data[0] = floor(px.data[0] + 0.5);
 		px.data[1] = floor(px.data[1] + 0.5);
 	}
 	
 	#if 0
-	vec3 a = Unproject(px);
-	vec3 b = local.GetNormalized();
-	if (!IsClose(a, b, 1)) {
+	axes2 a = Unproject(px);
+	if (!IsClose(a, ax, 1)) {
 		DUMP(Unproject(px));
 	}
-	ASSERT(IsClose(a, b, 1));
+	ASSERT(IsClose(a, ax, 1));
 	#else
-	ASSERT(IsClose(Unproject(px), local.GetNormalized(), 0.01));
+	ASSERT(IsClose(Unproject(px), ax, 0.01));
 	#endif
 	
 	return px;
 }
 
-vec3 LensPoly::Unproject(const vec2& pixel) {
+axes2 LensPoly::Unproject(const vec2& pixel) {
 	ASSERT(img_sz.cx && img_sz.cy);
 	
 	vec2 ct_rel = pixel - vec2(img_sz.cx / 2, img_sz.cy / 2);
@@ -481,20 +490,22 @@ vec3 LensPoly::Unproject(const vec2& pixel) {
 	float f0 = 1.0f - f1;
 	
 	ASSERT(leni0 >= 0 && leni0 < pixel_to_angle.GetCount());
-	if (leni0 >= pixel_to_angle.GetCount()) return vec3(0,0,0);
+	if (leni0 >= pixel_to_angle.GetCount()) return axes2(0,0);
 	
 	float angle = pixel_to_angle[leni0] * f0 + pixel_to_angle[leni1] * f1;
 	float deg = angle / M_PI * 180;
-	vec3 v0(sin(angle), 0, -cos(angle));
+	//vec3 v0(sin(angle), 0, -cos(angle));
 	
-	float roll_angle = atan2f(ct_rel[1], ct_rel[0]);
+	float roll_angle = -atan2f(ct_rel[0], ct_rel[1]);
 	float roll_deg = roll_angle / M_PI * 180;
-	mat4 rot = ZRotation(roll_angle);
+	//mat4 rot = ZRotation(roll_angle);
 	
-	vec3 dir = (rot * v0.Embed()).Splice();
-	dir.Normalize();
+	//vec3 dir = (rot * v0.Embed()).Splice();
+	//dir.Normalize();
+	vec3 dir = AxesDirRoll(angle, roll_angle);
+	axes2 axes = GetDirAxes(dir).Splice();
 	
-	return dir;
+	return axes;
 }
 
 void LensPoly::SetSize(Size sz) {

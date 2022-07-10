@@ -123,14 +123,24 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 	
 	
 	// Update stereo targets
+	int tp_i = -1;
+	int seen_tracked_points = 0;
 	for (TrackedPoint& tp : tracked_points) {
-		if (!tp.l || !tp.r)
+		tp_i++;
+		if (!tp.l || !tp.r) {
+			tp.has_stereo_target = false;
 			continue;
-		vec3 l_dir = Unproject(vec2(tp.l->x, tp.l->y));
-		vec3 r_dir = Unproject(vec2(tp.r->x, tp.r->y));
+		}
+		axes2 l_axes = Unproject(vec2(tp.l->x, tp.l->y));
+		axes2 r_axes = Unproject(vec2(tp.r->x, tp.r->y));
 		tp.prev_stereo_tgt = tp.stereo_tgt;
-		tp.has_stereo_target = CalculateStereoTarget(l_dir, r_dir, eye_dist, tp.stereo_tgt);
+		tp.has_prev_stereo_target = tp.has_stereo_target;
+		TODO
+		//tp.has_stereo_target = CalculateStereoTarget(l_dir, r_dir, eye_dist, tp.stereo_tgt);
+		//LOG(tp_i << ": " << tp.stereo_tgt.ToString() << ", " << tp.prev_stereo_tgt.ToString());
+		seen_tracked_points++;
 	}
+	//LOG("\tseen tracked points: " << seen_tracked_points);
 	
 	
 	// Prune old tracked triangles
@@ -141,12 +151,13 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 	
 	// Find new tracked triangles
 	for (TrackedPoint& tp0 : tracked_points) {
-		if (!tp0.has_stereo_target || tp0.IsMaxTriangles())
+		if (!tp0.has_stereo_target || !tp0.has_prev_stereo_target || tp0.IsMaxTriangles())
 			continue;
 		for (TrackedPoint& tp1 : tracked_points) {
 			if (&tp0 == &tp1)
 				break;
-			if (!tp1.has_stereo_target || tp1.IsMaxTriangles() || IsAlreadyInSameTriangle(tp0, tp1))
+			if (!tp1.has_stereo_target || !tp1.has_prev_stereo_target ||
+				tp1.IsMaxTriangles() || IsAlreadyInSameTriangle(tp0, tp1))
 				continue;
 			
 			TrackedTriangle& tt = tracked_triangles.Add();
@@ -160,17 +171,28 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 	
 	// Update tracked triangles
 	PositionOrientationAverage camera_average;
+	int tri_i = -1;
 	for (TrackedTriangle& tt : tracked_triangles) {
-		if (!tt.a->has_stereo_target || !tt.b->has_stereo_target)
+		tri_i++;
+		
+		if (!tt.a->has_stereo_target || !tt.b->has_stereo_target ||
+			!tt.a->has_prev_stereo_target || !tt.b->has_prev_stereo_target)
 			continue;
 		
+		/*if (iter == 7 && tri_i == 3) {
+			LOG("");
+		}*/
+		
 		// Position difference of the camera
-		mat4 view_diff = CalculateTriangleChange(
+		mat4 view_diff;
+		if (!CalculateTriangleChange(
 			vec3(0,0,0), // current local position
 			tt.a->prev_stereo_tgt,
 			tt.b->prev_stereo_tgt,
 			tt.a->stereo_tgt,
-			tt.b->stereo_tgt);
+			tt.b->stereo_tgt,
+			view_diff))
+			continue;
 		
 		// Orientation difference
 		/*quat orient_diff = CalculateOrientationChange(
@@ -184,13 +206,21 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 	    vec3 scale, translation, skew;
 	    vec4 pers;
 	    bool r = Decompose(view_diff, scale, rotation, translation, skew, pers);
-	    rotation.Normalize();
+	    //rotation.Normalize();
 	    
 		//DUMP(translation);
 		vec3 axes;
 		QuatAxes(rotation, axes);
 		vec3 deg = axes / M_PI * 180;
 		//DUMP(deg);
+		//LOG("\t>>" << tri_i << ": " << deg[0]);
+		
+		#if 0
+		DUMP(translation);
+	    ASSERT(fabsf(translation[0]-0) < 0.1);
+	    ASSERT(fabsf(translation[1]-0) < 0.1);
+	    ASSERT(fabsf(translation[2]-0) < 0.1);
+	    #endif
 		
 		
 		// Add global values to average counter
@@ -207,14 +237,24 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 		/*DUMP(position);
 		DUMP(deg);
 		LOG("");*/
+		LOG("\t" << iter << ": + " << deg[0]);
 		
-		LOG(position.ToString() << ", " << deg.ToString());
+		//LOG(position.ToString() << ", " << deg.ToString());
 		
 		mat4 view_change = Translate(position) * QuatMat(orientation);
 		prev_view = view;
 		prev_view_inv = view_inv;
 		view = view * view_change;
 		view_inv = view.GetInverse();
+		
+		if (1) {
+			quat full_orient = MatQuat(view);
+			vec3 full_axes;
+			QuatAxes(full_orient, full_axes);
+			full_axes = full_axes / M_PI * 180;
+			vec3 pos_comp = view.GetTranslation();
+			LOG("\t" << iter << ": " << full_axes[0] << ": " << pos_comp[0] << ", " << pos_comp[2]);
+		}
 	}
 	else if (!tracked_triangles.IsEmpty()) {
 		TODO
@@ -250,10 +290,12 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 			
 			if (best_match) {
 				const Descriptor* r = best_match;
-				vec3 l_dir = Unproject(vec2(l->x, l->y));
-				vec3 r_dir = Unproject(vec2(r->x, r->y));
+				axes2 l_dir = Unproject(vec2(l->x, l->y));
+				axes2 r_dir = Unproject(vec2(r->x, r->y));
 				vec3 tgt;
-				if (CalculateStereoTarget(l_dir, r_dir, eye_dist, tgt)) {
+				TODO
+				
+				/*if (CalculateStereoTarget(l_dir, r_dir, eye_dist, tgt)) {
 					float deg = VectorAngle(l_dir, r_dir) / M_PI * 180;
 					//LOG(deg << ": " << tgt.ToString() << ", " << l_dir.ToString() << ", " << r_dir.ToString() << ", " << best_dist);
 					//LOG(deg << ": " << tgt.ToString());
@@ -263,7 +305,7 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 					hm.r = r;
 					hm.tgt = tgt;
 					hm.global_tgt = (view_inv * tgt.Embed()).Splice();
-				}
+				}*/
 			}
 		}
 	}
@@ -304,6 +346,7 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 				//LOG("new dp");
 				p = &n->Add<OctreeDescriptorPoint>();
 			}
+			else TODO
 		}
 		
 		if (p) {
@@ -317,6 +360,8 @@ void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const Descrip
 		}
 	}
 	
+	
+	iter++;
 }
 
 void VirtualStereoUncamera::UpdateOctreePosition(const vec3& global_tgt, TrackedPoint& tp) {
@@ -325,7 +370,7 @@ void VirtualStereoUncamera::UpdateOctreePosition(const vec3& global_tgt, Tracked
 	dp.av.Add(global_tgt, this->orientation);
 	vec3 pos = dp.av.GetMeanPosition();
 	//LOG("add tgt " << global_tgt.ToString());
-	LOG(dp.GetPosition().ToString() << " --> " << pos.ToString());
+	//LOG("\t" << dp.GetPosition().ToString() << " --> " << pos.ToString());
 	dp.SetPosition(pos);
 }
 

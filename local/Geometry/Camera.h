@@ -94,8 +94,8 @@ struct LensPoly {
 	
 	void MakePixelToAngle();
 	void SetSize(Size sz);
-	vec2 Project(const vec3& local);
-	vec3 Unproject(const vec2& pixel);
+	vec2 Project(const axes2& local);
+	axes2 Unproject(const vec2& pixel);
 	void SetAnglePixel(float a, float b, float c, float d);
 	
 	

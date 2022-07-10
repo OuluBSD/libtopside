@@ -85,8 +85,12 @@ float Determinant(const mat3& matrix);
 mat2 Rotation2x2(float angle);
 
 vec3 AxesDir(float yaw, float pitch);
+vec3 AxesDirRoll(float pitch, float roll);
 void DirAxes(vec3 dir, float& yaw, float& pitch);
 void DirAxes(vec3 dir, vec3& axes);
+vec3 GetDirAxes(const vec3& dir);
+axes2 GetDirAxesRoll(vec3 dir);
+vec3 GetAxesDir(const axes2& ax);
 void CameraObject(
 	const vec3& eye, const vec3& eye_dir, const vec3& eye_up,
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
@@ -239,6 +243,7 @@ mat4 AxesMat(const vec3& axes);
 
 void QuatAxes(const quat& q, float& yaw, float& pitch, float& roll);
 void QuatAxes(const quat& q, vec3& axes);
+vec3 GetQuatAxes(const quat& q);
 //void MatAxes(const mat4& m, vec3& axes);
 
 quat MatQuat(const mat4& transform);
@@ -294,12 +299,15 @@ bool IsClose(const quat& a, const quat& b);
 bool IsClose(const vec3& a, const vec3& b, float dist_limit=0.001);
 bool IsClose(const vec4& a, const vec4& b);
 bool IsClose(const mat4& a, const mat4& b);
+bool IsClose(const axes2& a, const axes2& b, float dist_limit=0.001);
+bool IsClose(const axes3s& a, const axes3s& b, float dist_limit=0.001);
 
-
+axes2s LookAtStereoAngles(float eye_dist, const vec3& pt);
+void AxesStereoMono(const axes2s& axes, axes2& l, axes2& r);
 vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2);
 vec2 CalculateStereoThirdPoint(float eye_dist, float a1, float a2);
-bool CalculateStereoTarget(const vec3& dir_a, const vec3& dir_b, float eye_dist, vec3& dir_c);
-mat4 CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1);
+bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_c);
+bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1, mat4& out);
 
 NAMESPACE_TOPSIDE_END
 

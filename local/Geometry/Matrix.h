@@ -11,12 +11,16 @@ NAMESPACE_TOPSIDE_BEGIN
 	#define VEC_BWD vec3(0,0,1)
 	#define VEC_BWD4 vec4(0,0,1,1)
 	#define SCALAR_FWD_Z -1
+	#define VEC_POS_ROT vec3(1,1,-1)
+	#define VEC_POS_ROT4 vec3(1,1,-1,1)
 #else
 	#define VEC_FWD vec3(0,0,1)
 	#define VEC_FWD4 vec4(0,0,1,1)
 	#define VEC_BWD vec3(0,0,-1)
 	#define VEC_BWD4 vec4(0,0,-1,1)
 	#define SCALAR_FWD_Z 1
+	#define VEC_POS_ROT vec3(1,1,1)
+	#define VEC_POS_ROT4 vec3(1,1,1,1)
 #endif
 #define VEC_LEFT vec3(-1,0,0)
 #define VEC_LEFT4 vec4(-1,0,0,1)
@@ -222,6 +226,10 @@ typedef Vec<float, 1> vec1;
 typedef Vec<float, 2> vec2;
 typedef Vec<float, 3> vec3;
 typedef Vec<float, 4> vec4;
+typedef Vec<float, 2> axes2;
+typedef Vec<float, 3> axes3;
+typedef Vec<float, 3> axes2s; // stereo angle [left yaw, right yaw, pitch]
+typedef Vec<float, 4> axes3s; // stereo angle [left yaw, right yaw, pitch, roll]
 
 typedef Vec<int, 2> ivec2;
 typedef Vec<int, 3> ivec3;

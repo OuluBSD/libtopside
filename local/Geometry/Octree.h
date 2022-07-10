@@ -118,6 +118,7 @@ struct OctreeIterator {
 	bool Next();
 	operator bool() const;
 	OctreeNode& operator*();
+	OctreeNode* operator->();
 	bool operator==(const OctreeIterator& it) const {
 		if (it.level != level || it.otree != otree)
 			return false;
