@@ -30,10 +30,10 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 		TrackedTriangle* triangles[MAX_TRIANGLES] = {0,0,0,0,0};
 		byte triangle_count = 0;
 		
-		bool has_stereo_target = false;
-		bool has_prev_stereo_target = false;
-		vec3 stereo_tgt;
-		vec3 prev_stereo_tgt;
+		bool has_local_tgt = false;
+		bool has_prev_local_tgt = false;
+		vec3 local_tgt;
+		vec3 prev_local_tgt;
 		
 		void ResetTemp() {l = 0; r = 0;}
 		bool IsMaxTriangles() const {return triangle_count >= MAX_TRIANGLES;}
@@ -44,8 +44,9 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	struct TrackedTriangle {
 		TrackedPoint* a = 0;
 		TrackedPoint* b = 0;
+		TrackedPoint* c = 0;
 		
-		void Track(TrackedPoint& a, TrackedPoint& b);
+		void Track(TrackedPoint& a, TrackedPoint& b, TrackedPoint& c);
 		void Untrack();
 	};
 	
@@ -69,7 +70,8 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	struct HorizontalMatch : Moveable<HorizontalMatch> {
 		const Descriptor* l;
 		const Descriptor* r;
-		vec3 tgt;
+		axes2s eyes;
+		vec3 local_tgt;
 		vec3 global_tgt;
 	};
 	Vector<Vector<const Descriptor*>> l_desc, r_desc;

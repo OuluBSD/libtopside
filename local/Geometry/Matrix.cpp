@@ -26,6 +26,13 @@ quat quat::operator+(const quat& q) const {
 	return r;
 }
 
+quat quat::operator-(const quat& q) const {
+	quat r = *this;
+	for (int i = 0; i < 4; i++)
+		r.data.data[i] -= q.data.data[i];
+	return r;
+}
+
 quat quat::operator*(const quat& b) const {
 	// https://stackoverflow.com/questions/19956555/how-to-multiply-two-quaternions
 	const quat& a = *this;

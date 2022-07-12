@@ -303,11 +303,19 @@ bool IsClose(const axes2& a, const axes2& b, float dist_limit=0.001);
 bool IsClose(const axes3s& a, const axes3s& b, float dist_limit=0.001);
 
 axes2s LookAtStereoAngles(float eye_dist, const vec3& pt);
+axes2s LookAtStereoAngles(float eye_dist, const vec3& pt, axes2& l, axes2& r);
 void AxesStereoMono(const axes2s& axes, axes2& l, axes2& r);
+axes2s AxesMonoStereo(const axes2& l, const axes2& r);
 vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2);
 vec2 CalculateStereoThirdPoint(float eye_dist, float a1, float a2);
 bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_c);
+bool CalculateTriangleChange(const vec3& a0, const vec3& a1, const vec3& a2, const vec3& b0, const vec3& b1, const vec3& b2, mat4& out);
 bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1, mat4& out);
+
+
+vec3 VecMul(const mat4& m, const vec3& v);
+void GetPrincipalAxes(const vec3& a, const vec3& b, vec3& x, vec3& y, vec3& z);
+mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b);
 
 NAMESPACE_TOPSIDE_END
 

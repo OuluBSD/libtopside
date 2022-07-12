@@ -236,7 +236,6 @@ bool Decompose(const mat4& model_mat, vec3& scale_, quat& orientation, vec3& tra
 }
 
 
-// Incorrect
 mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective) {
 	mat4 m = QuatMat(orientation);
     
@@ -253,19 +252,19 @@ mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translati
     mat4 tmp;
     tmp.SetIdentity();
     if (skew[0]) {
-        tmp[2][1] = -skew[2];
+        tmp[2][1] = skew[0];
 		m = m * tmp;
 		tmp[2][1] = 0;
     }
     
     if (skew[1]) {
-        tmp[2][0] = -skew[1];
+        tmp[2][0] = skew[1];
 		m = m * tmp;
         tmp[2][0] = 0;
     }
     
     if (skew[2]) {
-        tmp[1][0] = -skew[0];
+        tmp[1][0] = skew[2];
 		m = m * tmp;
         tmp[1][0] = 0;
     }
@@ -1648,11 +1647,26 @@ axes2s LookAtStereoAngles(float eye_dist, const vec3& pt) {
 	return a;
 }
 
+axes2s LookAtStereoAngles(float eye_dist, const vec3& pt, axes2& l, axes2& r) {
+	axes2s a = LookAtStereoAngles(eye_dist, pt);
+	AxesStereoMono(a, l, r);
+	return a;
+}
+
 void AxesStereoMono(const axes2s& axes, axes2& l, axes2& r) {
 	l.data[0] = axes.data[0];
 	l.data[1] = axes.data[2];
 	r.data[0] = axes.data[1];
 	r.data[1] = axes.data[2];
+}
+
+axes2s AxesMonoStereo(const axes2& l, const axes2& r) {
+	float pitch = (l.data[1] + r.data[1]) * 0.5;
+	return axes2s(
+		l.data[0],
+		r.data[0],
+		pitch
+	);
 }
 
 vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
@@ -1797,6 +1811,48 @@ bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_
 	return true;
 }
 
+bool CalculateTriangleChange(const vec3& a0, const vec3& a1, const vec3& a2, const vec3& b0, const vec3& b1, const vec3& b2, mat4& out) {
+	
+	if (a0 == a1 || a0 == a2 ||
+		a1 == a2 ||
+		b0 == b1 || b0 == b2 ||
+		b1 == b2)
+		return false;
+	
+	vec3 a10 = a1 - a0;
+	vec3 a20 = a2 - a0;
+	vec3 b10 = b1 - b0;
+	vec3 b20 = b2 - b0;
+	
+	float a_scale = (a10.GetLength() + a20.GetLength()) * 0.5;
+	float b_scale = (b10.GetLength() + b20.GetLength()) * 0.5;
+	float scale_factor = b_scale / a_scale;
+	
+	vec3 scale(scale_factor);
+	
+	mat4 a_rot_inv = GetPrincipalAxesMat(a10, a20);
+	mat4 b_rot_inv = GetPrincipalAxesMat(b10, b20);
+	mat4 a_rot = a_rot_inv.GetInverse();
+	mat4 b_rot = b_rot_inv.GetInverse();
+	mat4 rot = a_rot_inv * b_rot;
+	mat4 rot_inv = rot.GetInverse();
+	quat orient = MatQuat(rot);
+	
+	vec3 pos_diff = b0 - a0;
+	vec3 pos_diff_orient = VecMul(rot_inv, pos_diff);
+	
+	vec3 skew(0);
+	vec4 proj(0,0,0,1);
+	mat4 m = Recompose(scale, orient, pos_diff_orient, skew, proj);
+	
+	// NOTE: brute force fix, no theory behind... makes tests pass
+	vec3 c0 = VecMul(m, a0);
+	vec3 b_diff = VecMul(rot_inv, b0 - c0);
+	out = m * Translate(b_diff);
+	
+	return true;
+}
+
 bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_eye1, vec3& v_tgt, mat4& mat, mat4& inv_mat, bool have_common_scale, float& common_scale) {
 	float dist = (v1 - v0).GetLength();
 	vec3 v_ct = (v0 + v1) * 0.5;
@@ -1804,46 +1860,9 @@ bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_
 	bool upwards = Cross(v1 - v0, -v0)[1] > 0;
 	float x_mult = upwards ? +1.0f : -1.0f;
 	
-	#if 0
-	vec3 v_rot_z = v_ct.GetNormalized() * VEC_POS_ROT;
-	vec3 v_rot_x = -(v1 - v_ct).GetNormalized() * VEC_POS_ROT * x_mult;
-	vec3 v_rot_y = -Cross(v_rot_x, v_rot_z).GetNormalized() * VEC_POS_ROT;
-	#else
 	vec3 v_rot_z = -v_ct.GetNormalized();
 	vec3 v_rot_x = (v1 - v_ct).GetNormalized() * x_mult;
 	vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
-	#endif
-	
-	/*DUMP(v0);
-	DUMP(v1);
-	DUMP(v_rot_x);
-	DUMP(v_rot_y);
-	DUMP(v_rot_z);*/
-	
-	// Fast way to make rotation matrix with position translate
-	#if 0
-	mat.data[0] = -v_rot_x.Extend();
-	mat.data[1] = -v_rot_y.Extend();
-	mat.data[2] = -v_rot_z.Extend();
-	mat.data[3] = v_ct.Embed();
-	#else
-	for(int i = 0; i < 3; i++) {
-		mat.data[0].data[i] = -v_rot_x.data[i];
-		mat.data[1].data[i] = -v_rot_y.data[i];
-		mat.data[2].data[i] = -v_rot_z.data[i];
-		mat.data[3].data[i] = v_ct[i];
-	}
-	mat[3][3] = 1;
-	#endif
-	
-	#if 0
-	vec4 test = mat * vec4(0,0,0,1);
-	vec4 test2 = mat * vec4(0,0,-1,1);
-	DUMP(v_ct);
-	DUMP(test); // == v_ct
-	DUMP(v_rot_z);
-	DUMP(test2 - test); // == v_rot_z*/
-	#endif
 	
 	if (!have_common_scale) {
 		common_scale = 1.0 / dist;
@@ -1851,31 +1870,16 @@ bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_
 	float scale_mul = dist * common_scale;
 	mat = mat * Scale(vec3(scale_mul));
 	
-	#if 0
-	mat4 omat = QuatMat(MatQuat(mat));
-	DUMP(omat * vec4(1,0,0,1));
-	DUMP(omat * vec4(0,1,0,1));
-	DUMP(omat * vec4(0,0,-1,1));
-	vec3 axes = GetQuatAxes(MatQuat(mat)) / M_PI * 180;
-	DUMP(axes);
-	ASSERT(IsClose(axes[1], 0));
-	#endif
-	
-	// Translate vious 2 points to be "eyes"
+	// Translate previous 2 points to be "eyes"
 	inv_mat = mat.GetInverse();
 	v_eye0 = (inv_mat * v0.Embed()).Splice();
 	v_eye1 = (inv_mat * v1.Embed()).Splice();
 	v_tgt = (inv_mat * vec4(0,0,0,1)).Splice();
 	
-	#if 0
-	DUMP(v_eye0);
-	DUMP(v_eye1);
-	DUMP(v_tgt);
-	#endif
-	
 	return true;
 }
 
+// This is dumb function. You probably shouldn't use it.
 bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1, mat4& out) {
 	if (prev0 == local || prev1 == local ||
 		cur0 == local || cur1 == local)
@@ -1886,80 +1890,47 @@ bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3
 	cur0 = cur0 - local;
 	cur1 = cur1 - local;
 	
-	#if 0
-	{
-		vec3 prev_ct = (prev0 + prev1) * 0.5;
-		vec3 cur_ct = (cur0 + cur1) * 0.5;
-		float prev_len = prev_ct.GetLength();
-		float cur_len = cur_ct.GetLength();
-		ASSERT(IsClose(prev_len, cur_len));
-	}
-	#endif
-	
 	vec3 prev_ct, prev_eye0, prev_eye1, prev_tgt;
 	mat4 prev_mat, prev_inv_mat;
 	float common_scale = 1;
 	if (!TriangleToStereoEyes(prev0, prev1, prev_eye0, prev_eye1, prev_tgt, prev_mat, prev_inv_mat, false, common_scale))
 		return false;
-	//DUMP(prev_eye0); DUMP(prev_eye1); DUMP(prev_tgt);
 	
 	vec3 cur_ct, cur_eye0, cur_eye1, cur_tgt;
 	mat4 cur_mat, cur_inv_mat;
 	if (!TriangleToStereoEyes(cur0, cur1, cur_eye0, cur_eye1, cur_tgt, cur_mat, cur_inv_mat, true, common_scale))
 		return false;
-	//DUMP(cur_eye0); DUMP(cur_eye1); DUMP(cur_tgt);
 	
 	ASSERT(IsClose(prev_eye0, cur_eye0));
 	ASSERT(IsClose(prev_eye1, cur_eye1));
 	
-	//DUMP(GetQuatAxes(MatQuat(prev_mat)) / M_PI * 180);
-	//DUMP(GetQuatAxes(MatQuat(cur_mat)) / M_PI * 180);
-	
-	//out =  prev_mat * cur_inv_mat;
 	out = prev_inv_mat * cur_mat;
 	
-	// H4x
-	if (0) {
-		bool upwards = Cross(prev1 - prev0, -prev0)[1] > 0;
-		float x_mult = upwards ? +1.0f : -1.0f;
-		float dist = (prev0 - prev1).GetLength() * 0.5 * x_mult;
-		out = out * Translate(vec3(dist,0,0)).GetInverse();
-	}
-	
 	return true;
-	/*vec3 tgt_diff = cur_tgt - prev_tgt;
-	
-	#if 0
-	vec3 prev_diff1 = (prev_mat * tgt_diff.Embed()).Splice();
-	// note: prev_ct == prev_mat * vec3(0,0,0);
-	const vec3& prev_diff0 = prev_ct;
-	vec3 prev_diff = prev_diff1 - prev_diff0;
-	DUMP(prev_diff);
-	return prev_diff;
-	#else
-	vec3 cur_diff1 = (cur_mat * tgt_diff.Embed()).Splice();
-	// note: cur_ct == cur_mat * vec3(0,0,0);
-	const vec3& cur_diff0 = cur_ct;
-	vec3 cur_diff = cur_diff1 - cur_diff0;
-	DUMP(cur_diff);
-	return cur_diff;
-	#endif*/
 }
 
-/*quat CalculateOrientationChange(vec3 prev0, vec3 prev1, vec3 cur0, vec3 cur1) {
-	
-	vec3 prev_ct = (prev0 + prev1) * 0.5;
-	vec3 cur_ct = (cur0 + cur1) * 0.5;
-	
-	vec3 prev_dir = prev_ct.GetNormalized();
-	vec3 cur_dir = cur_ct.GetNormalized();
-	DUMP(prev_dir);
-	DUMP(cur_dir);
-	
-	TODO
-	
-}*/
+vec3 VecMul(const mat4& m, const vec3& v) {
+	return (m * v.Embed()).Splice();
+}
 
+void GetPrincipalAxes(const vec3& a, const vec3& b, vec3& x, vec3& y, vec3& z) {
+	z = a.GetNormalized();
+	y = -Cross(a, b);
+	x = Cross(z, y);
+	y.Normalize();
+	x.Normalize();
+}
+
+mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b) {
+	vec3 x, y, z;
+	GetPrincipalAxes(a, b, x, y, z);
+	return mat4 {
+		x.data[0], x.data[1], x.data[2] * SCALAR_FWD_Z, 0,
+		y.data[0], y.data[1], y.data[2] * SCALAR_FWD_Z, 0,
+		z.data[0], z.data[1], z.data[2] * SCALAR_FWD_Z, 0,
+		0,0,0,1
+	};
+}
 
 
 NAMESPACE_TOPSIDE_END

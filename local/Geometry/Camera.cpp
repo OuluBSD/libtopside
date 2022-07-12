@@ -357,9 +357,6 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 	auto iter = const_cast<Octree&>(o).GetIterator(f);
 	
 	mat4 world = GetViewMatrix();
-	vec3 eye(eye_dist/2,0,0);
-	mat4 l_world = Translate( eye) * world;
-	mat4 r_world = Translate(-eye) * world;
 	
 	LensPoly::SetSize(Size(width, height));
 	
@@ -371,6 +368,10 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 		for (const auto& one_obj : n.objs) {
 			const OctreeObject& obj = *one_obj;
 			vec3 obj_pos = obj.GetPosition();
+			vec3 local_obj_pos = (obj_pos.Embed() * world).Splice();
+			
+			if (local_obj_pos[2] * SCALAR_FWD_Z <= 0)
+				continue;
 			
 			// Random additional descriptor values
 			float angle = Randomf() * 2*M_PI;
@@ -383,25 +384,15 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			for(int i = 0; i < 4; i++)
 				ptr[i] = &obj;
 			
-			TODO
+			axes2 l, r;
+			LookAtStereoAngles(eye_dist, local_obj_pos, l, r);
+			vec2 l_px = Project(l);
+			vec2 r_px = Project(r);
 			
-			// to camera local space
-			/*vec3 l_local = (obj_pos.Embed() * l_world).Splice();
-			if (l_local[2] * SCALAR_FWD_Z > 0) {
-				vec2 l_px = Project(l_local);
-				//DUMP(l_local); DUMP(Unproject(l_px)); DUMP(l_px);
-				l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
-			}
+			l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
+			r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
 			
-			vec3 r_local = (obj_pos.Embed() * r_world).Splice();
-			if (r_local[2] * SCALAR_FWD_Z > 0) {
-				vec2 r_px = Project(r_local);
-				//DUMP(r_local); DUMP(Unproject(r_px)); DUMP(r_px);
-				r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
-			}*/
-			
-			//LOG(l_px.ToString() << ", " << l_local.ToString());
-			//LOG(r_px.ToString() << ", " << r_local.ToString());
+			//LOG(l_px.ToString() << ", " << l.ToString()); LOG(r_px.ToString() << ", " << r.ToString());
 		}
 		
 		iter++;

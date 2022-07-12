@@ -41,7 +41,7 @@ NAMESPACE_TOPSIDE_BEGIN
 #endif
 
 template <class T, int I> struct PartVec {};
-template <class T, int R, int C> struct Matrix;
+template <class T, int R, int C, class Precise=double> struct Matrix;
 
 template <class T> struct PartVec<T, 2> {
 	static inline T GetCrossProduct(const T& a, const T& b);
@@ -259,6 +259,7 @@ struct quat {
 	
 	quat operator-() const;
 	quat operator+(const quat& q) const;
+	quat operator-(const quat& q) const;
 	quat operator*(const quat& q) const;
 	quat operator*(float f) const;
 	quat operator/(float f) const;
@@ -315,8 +316,8 @@ template <class T> struct PartMatrix<T, 4, 4> {
 
 
 
-template <class T, int R, int C>
-struct Matrix : Moveable<Matrix<T,R,C> > {
+template <class T, int R, int C, class Precise>
+struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 	Vec<T, C> data[R];
 	
 	typedef T Unit;
@@ -325,6 +326,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	typedef Matrix<T, R, C> mat;
 	typedef Matrix<T, R-1, C-1> MinorMatrix;
 	typedef Vec<T, C-1> MinorVec;
+	typedef Matrix<Precise, R, C, Precise> PreciseMatrix;
 	
 	static const int rows = R;
 	static const int cols = C;
@@ -399,7 +401,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	}
 	T GetCofactor(int row, int col) const {
 		return GetMinor(row, col).GetDeterminant() *
-			((row + col) % 2 ? -1. : +1.);
+			((row + col) % 2 ? (T)-1 : (T)1);
 	}
 	Matrix GetAdjugated() const {
 		Matrix ret;
@@ -414,7 +416,13 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		ret /= d;
 		return ret;
 	}
-	Matrix GetInverse() const {return GetInverseTransposed().GetTransposed();}
+	Matrix GetInverse() const {
+		PreciseMatrix pm;
+		CopyTo(pm);
+		Matrix result;
+		pm.GetInverseTransposed().GetTransposed().CopyTo(result);
+		return result;
+	}
 	Matrix GetAdjoint() const {Matrix dst; PartMatrix<Matrix,R,C>::Adjoint(dst, *this); return dst;}
 	T GetDeterminant() const {T ret; PartMatrix<Matrix,R,C>::Determinant(ret, *this); return ret;}
 	String ToString() const {
@@ -432,6 +440,10 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	
 	void Clear() {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
 	void Zero()  {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
+	
+	template <class M> void CopyTo(M& o) const {
+		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) o.data[i].data[j] = data[i].data[j];
+	}
 	
 	Matrix& Transpose() {
 		for(int c = 0; c < C; c++)
