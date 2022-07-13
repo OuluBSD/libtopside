@@ -12,6 +12,11 @@
 #include <cxxabi.h>
 #endif
 
+#ifdef flagGLIB2
+#include <glib.h>
+#include <glib-object.h>
+#endif
+
 #include <Core/Core.h>
 #include <Draw/Draw.h>
 

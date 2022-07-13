@@ -69,7 +69,10 @@
 #include "Frustum.h"
 #include "Compare.h"
 #include "Camera.h"
+#include "Pointcloud.h"
+#include "MeshTracker.h"
 #include "Uncamera.h"
+#include "Vr.h"
 
 #include "Pbr.h"
 #include "PbrCommon.h"

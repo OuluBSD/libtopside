@@ -49,58 +49,6 @@ unsigned int debug_imu_fifo_out(struct imu_state *samples, unsigned int n)
 
 
 #ifdef flagDEBUG_SERVER
-struct DebugService {
-	typedef DebugService CLASSNAME;
-	SerialServiceServer server;
-	
-	enum {
-		LATEST_BRIGHT_FRAME = 10,
-		LATEST_DARK_FRAME,
-	};
-	
-	void Init() {
-		if (!server.ListenTcp(7776)) {
-			LOG("Could not listen port 7776");
-			return;
-		}
-		
-		server.AddTcpSocket(LATEST_BRIGHT_FRAME, THISBACK(LatestBrightFrame));
-		server.AddTcpSocket(LATEST_DARK_FRAME, THISBACK(LatestDarkFrame));
-		
-		server.StartThread();
-	}
-	
-	void Send(TcpSocket& out, const Vector<byte>& frame, Size sz) {
-		//LOG("Send: " << HexStr(frame) << ", " << size << ", " << sz.ToString());
-		out.Put(&sz.cx, sizeof(sz.cx));
-		out.Put(&sz.cy, sizeof(sz.cy));
-		int size = frame.GetCount();
-		out.Put(&size, sizeof(size));
-		out.Put(frame.Begin(), size);
-	}
-	void LatestBrightFrame(TcpSocket& out) {
-		Stream& s = streams[0];
-		if (s.frame.IsEmpty())
-			return;
-		Send(out, s.frame, s.sz);
-	}
-	void LatestDarkFrame(TcpSocket& out) {
-		Stream& s = streams[1];
-		if (s.frame.IsEmpty())
-			return;
-		Send(out, s.frame, s.sz);
-	}
-	
-	struct Stream {
-		bool in_use = false;
-		Vector<byte> frame;
-		Size sz;
-	};
-	
-	static const int STREAM_COUNT = 10;
-	Stream streams[STREAM_COUNT];
-	
-};
 
 DebugService* dbg_srv;
 
@@ -109,7 +57,6 @@ void debug_stream_init(int *argc, char **argv[]) {
 	SetCoutLog();
 	
 	dbg_srv = new DebugService();
-	dbg_srv->Init();
 }
 
 struct debug_stream *debug_stream_new(const struct DebugStreamDescription *desc) {
@@ -152,6 +99,63 @@ void debug_stream_deinit() {
 }
 
 #endif
+
+
+
+
+
+
+
+
+LocalVRDebugService::LocalVRDebugService() {
+	
+}
+
+bool LocalVRDebugService::Init(String name) {
+	DaemonService* ds = FindService("TcpServer");
+	SerialServiceServer* server = dynamic_cast<SerialServiceServer*>(ds);
+	if (!server) {
+		LOG("LocalVRDebugService::Init: error: tcp server is required");
+		return false;
+	}
+	
+	server->AddTcpSocket(LATEST_BRIGHT_FRAME, THISBACK(LatestBrightFrame));
+	server->AddTcpSocket(LATEST_DARK_FRAME, THISBACK(LatestDarkFrame));
+	
+	return true;
+}
+
+void LocalVRDebugService::Update() {
+	
+}
+
+void LocalVRDebugService::Deinit() {
+	
+}
+
+void LocalVRDebugService::LatestBrightFrame(TcpSocket& out) {
+	DebugService::Stream& s = dbg_srv->streams[0];
+	if (s.frame.IsEmpty())
+		return;
+	Send(out, s.frame, s.sz);
+}
+
+void LocalVRDebugService::LatestDarkFrame(TcpSocket& out) {
+	DebugService::Stream& s = dbg_srv->streams[1];
+	if (s.frame.IsEmpty())
+		return;
+	Send(out, s.frame, s.sz);
+}
+
+void LocalVRDebugService::Send(TcpSocket& out, const Vector<byte>& frame, Size sz) {
+	//LOG("Send: " << HexStr(frame) << ", " << size << ", " << sz.ToString());
+	out.Put(&sz.cx, sizeof(sz.cx));
+	out.Put(&sz.cy, sizeof(sz.cy));
+	int size = frame.GetCount();
+	out.Put(&size, sizeof(size));
+	out.Put(frame.Begin(), size);
+}
+
 
 NAMESPACE_HMD_END
 

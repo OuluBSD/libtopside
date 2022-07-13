@@ -5,7 +5,7 @@
 NAMESPACE_HMD_BEGIN
 
 
-#if HAVE_OPENCV
+#ifdef flagOPENCV
 void estimate_initial_pose(struct blob *blobs, int num_blobs,
 			   vec3 *leds, int num_leds,
 			   mat3 *camera_matrix, double dist_coeffs[5],

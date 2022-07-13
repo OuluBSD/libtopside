@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SerialServiceBase {
+class SerialServiceBase : public DaemonService {
 	
 protected:
 	struct HandlerBase : RTTIBase {
@@ -142,6 +142,12 @@ public:
 	void CloseTcp();
 	void StopThread();
 	
+	
+	// DaemonService
+	bool Init(String name) override;
+	void Update() override;
+	void Deinit() override;
+	
 };
 
 
@@ -182,6 +188,12 @@ public:
 	}
 	
 	bool IsOpen() const {return tcp.IsOpen();}
+	
+	
+	// DaemonService
+	bool Init(String name) override;
+	void Update() override;
+	void Deinit() override;
 	
 };
 

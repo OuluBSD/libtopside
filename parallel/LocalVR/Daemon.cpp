@@ -510,7 +510,7 @@ static int ouvrtd_device_remove(struct udev_device *dev)
 /*
  * Enumerate currently present USB devices to find known hardware.
  */
-static int ouvrtd_enumerate(struct udev *udev)
+static int ouvrtd_enumerate(udev *udev)
 {
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry;
@@ -662,7 +662,50 @@ static const struct option ouvrtd_options[] = {
 };
 
 
+
+
+bool LocalVRService::Init(String name) {
+	debug_stream_init(0, 0);
+	//pipewire_init(0, 0);
+	telemetry_init(0, 0);
+
+	udev = udev_new();
+	if (!udev) {
+		return false;
+	}
+	
+	ouvrtd_startup(udev);
+	
+	return true;
+}
+
+void LocalVRService::Update() {
+	
+}
+
+void LocalVRService::Stop() {
+	LOG("LocalVRService::Stop");
+	g_list_foreach(device_list, device_stop,
+		       NULL); /* user_data */
+}
+
+void LocalVRService::Deinit() {
+	udev_unref(udev);
+	
+	telemetry_deinit();
+	//pipewire_deinit();
+	debug_stream_deinit();
+}
+
+
 NAMESPACE_HMD_END
+
+
+INITBLOCK_(LocalVR) {
+	::TS::DaemonBase::Register<TS::HMD::LocalVRService>("LocalVR");
+	::TS::DaemonBase::Register<TS::HMD::LocalVRDebugService>("LocalVRDebug");
+}
+
 
 
 #ifdef flagMAIN

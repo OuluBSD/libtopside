@@ -14,7 +14,7 @@ CONSOLE_APP_MAIN {
 	
 	dword tests = 0xFFFFFFFF;
 	
-	//tests = 1 << 4;
+	tests = 1 << 6;
 	
 	
 	if (tests & (1 << 0)) {
@@ -353,4 +353,23 @@ CONSOLE_APP_MAIN {
 		}
 		
 	}
+	
+	// WMR motion controller test
+	if (tests & (1 << 6)) {
+		WmrMotionControllerModel wmr_ctrl;
+		WmrMotionControllerTracker wmr_tracker;
+		Octree o0, o1;
+		o0.Initialize(-3,3); // 1 << 3 = 8x8x8 meters
+		
+		
+		TODO
+	}
+	
+	// Fake HMD + controllers setup
+	if (tests & (1 << 7)) {
+		VrSystemTestGenerator gen;
+		
+		TODO
+	}
+	
 }

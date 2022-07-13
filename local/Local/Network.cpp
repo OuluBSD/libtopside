@@ -1,5 +1,13 @@
 #include "Local.h"
 
+INITBLOCK_(Local_Network) {
+	using namespace TS;
+	
+	DaemonBase::Register<SerialServiceServer>("TcpServer");
+	DaemonBase::Register<SerialServiceClient>("TcpClient");
+	
+}
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -40,8 +48,11 @@ SerialServiceServer::~SerialServiceServer() {
 }
 
 bool SerialServiceServer::ListenTcp(uint16 port) {
+	
 	if (tcp.IsOpen())
 		CloseTcp();
+	
+	tcp.Timeout(500);
 	
 	if (!tcp.Listen(port))
 		return false;
@@ -91,7 +102,7 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 	Vector<byte> in, out;
 	StringStream ss;
 	
-	sock.Timeout(500);
+	sock.Timeout(3000);
 	int wait_count = 0;
 	
 	while (sock.IsOpen() && flag.IsRunning()) {
@@ -222,6 +233,28 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 	LOG("SerialServiceServer::ClientHandler: stopped handling client " << sock.GetPeerAddr());
 }
 
+bool SerialServiceServer::Init(String name) {
+	
+	if (!ListenTcp(7776)) {
+		LOG("SerialServiceServer::Init: Could not listen port 7776");
+		return false;
+	}
+	
+	StartThread();
+	
+	return true;
+}
+
+void SerialServiceServer::Update() {
+	
+}
+
+void SerialServiceServer::Deinit() {
+	tcp.Close();
+	StopThread();
+}
+
+
 
 
 
@@ -340,6 +373,24 @@ bool SerialServiceClient::CallSocket(uint32 magic, Callback1<TcpSocket&> cb) {
 	cb(tcp);
 	
 	return true;
+}
+
+bool SerialServiceClient::Init(String name) {
+	
+	TODO
+	
+}
+
+void SerialServiceClient::Update() {
+	
+	TODO
+	
+}
+
+void SerialServiceClient::Deinit() {
+	
+	TODO
+	
 }
 
 	

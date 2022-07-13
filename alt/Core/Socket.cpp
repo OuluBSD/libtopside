@@ -289,20 +289,22 @@ bool TcpSocket::Accept(TcpSocket& sock) {
 	memset(&addr, 0, sizeof(addr));
 	socklen_t len = sizeof(addr);
 	
-	connfd = accept(sock.listenfd, (struct sockaddr*)&addr, &len);
-	
 	if (timeout)
 		Timeout(timeout);
+	
+	connfd = accept(sock.listenfd, (struct sockaddr*)&addr, &len);
 	
 	return IsOpen();
 }
 
 void TcpSocket::Close() {
 	if (connfd >= 0) {
+		shutdown(connfd, SHUT_RDWR);
 		close(connfd);
 		connfd = -1;
 	}
 	if (listenfd >= 0) {
+		shutdown(listenfd, SHUT_RDWR);
 		close(listenfd);
 		listenfd = -1;
 	}

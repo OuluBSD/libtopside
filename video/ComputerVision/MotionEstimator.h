@@ -79,7 +79,7 @@ class Affine2D : public TransformationKernel {
 public:
 	Affine2D();
 	bool Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) override;
-	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err);
+	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err) override;
 	bool CheckSubset(const Vector<Keypoint>& from, const Vector<Keypoint>& to, int count);
 	
 };
@@ -96,7 +96,7 @@ public:
 	
 	Homography2D();
 	bool Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) override;
-	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err);
+	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err) override;
 	bool CheckSubset(const Vector<Keypoint>& from, Vector<Keypoint>& to, int count);
 	
 };

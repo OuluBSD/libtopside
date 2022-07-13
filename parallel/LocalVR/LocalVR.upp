@@ -1,13 +1,17 @@
 description "\377B28,127,255";
 
+flags
+	DEBUG_SERVER;
+
 uses
 	LocalHMD;
 
 library
 	"glib-2.0 gobject-2.0",
-	"opencv_core opencv_calib3d",
 	usb-1.0,
 	udev;
+
+library(OPENCV) "opencv_core opencv_calib3d";
 
 file
 	Copying,

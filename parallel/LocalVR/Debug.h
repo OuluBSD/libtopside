@@ -81,6 +81,41 @@ static inline void debug_stream_deinit(void)
 #endif
 
 
+
+struct DebugService {
+	typedef DebugService CLASSNAME;
+	
+	struct Stream {
+		bool in_use = false;
+		Vector<byte> frame;
+		Size sz;
+	};
+	
+	static const int STREAM_COUNT = 10;
+	Stream streams[STREAM_COUNT];
+	
+};
+
+struct LocalVRDebugService : DaemonService {
+	typedef LocalVRDebugService CLASSNAME;
+	
+	enum {
+		LATEST_BRIGHT_FRAME = 10100,
+		LATEST_DARK_FRAME,
+	};
+	
+	LocalVRDebugService();
+	bool Init(String name) override;
+	void Update() override;
+	void Deinit() override;
+	void LatestBrightFrame(TcpSocket& out);
+	void LatestDarkFrame(TcpSocket& out);
+	void Send(TcpSocket& out, const Vector<byte>& frame, Size sz);
+	
+};
+
+
+
 NAMESPACE_HMD_END
 
 

@@ -6,7 +6,6 @@ uses
 	SharedCore;
 
 file
-	Copying,
 	Local.h,
 	Before.h,
 	Compat.h,
@@ -81,6 +80,8 @@ file
 	Graphics.h,
 	Graphics.cpp,
 	GEnums.h,
+	Daemon.h,
+	Daemon.cpp,
 	Network.h,
 	Network.cpp;
 

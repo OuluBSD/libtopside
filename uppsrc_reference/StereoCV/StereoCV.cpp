@@ -48,7 +48,7 @@ bool StereoCV::ConnectDebugVideo() {
 
 void StereoCV::FrameDownloader() {
 	enum {
-		LATEST_BRIGHT_FRAME = 10,
+		LATEST_BRIGHT_FRAME = 10100,
 		LATEST_DARK_FRAME,
 	};
 	

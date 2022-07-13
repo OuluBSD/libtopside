@@ -5,10 +5,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 void SimpleCascadeClassifier::Jsonize(JsonIO& json) {
 	json
-		("features", features),
-		("threshold", threshold),
-		("left_val", left_val),
-		("right_val", right_val),
+		("features", features)
+		("threshold", threshold)
+		("left_val", left_val)
+		("right_val", right_val)
 		("tilted", tilted) // Haar::DetectSingleScale
 	;
 	if (json.IsLoading()) {

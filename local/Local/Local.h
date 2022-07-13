@@ -55,6 +55,7 @@
 #include "Ctrl.h"
 #include "Graphics.h"
 #include "GEnums.h"
+#include "Daemon.h"
 #include "Network.h"
 
 

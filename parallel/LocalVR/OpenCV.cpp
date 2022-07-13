@@ -1,5 +1,7 @@
 #include "LocalVR.h"
 
+#ifdef flagOPENCV
+
 #undef CPU_SSE
 #undef CPU_SSE2
 #include <opencv2/calib3d/calib3d.hpp>
@@ -85,3 +87,5 @@ extern "C" void estimate_initial_pose(struct blob *blobs, int num_blobs,
 
 NAMESPACE_HMD_END
 
+#endif
+ 

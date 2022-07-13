@@ -1,0 +1,10 @@
+uses
+	LocalVR;
+
+file
+	VRServer.h,
+	VRServer.cpp;
+
+mainconfig
+	"" = "GLIB2";
+
