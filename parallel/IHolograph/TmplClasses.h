@@ -73,6 +73,10 @@ using LocalHMDSinkDevice = HolographSinkDeviceT<HoloLocalHMD>;
 #endif
 
 #if (defined flagLINUX) || (defined flagFREEBSD)
+using RemoteVRServerSinkDevice = HolographSinkDeviceT<HoloRemoteVRServer>;
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
 using DevUsbSinkDevice = HolographSinkDeviceT<HoloDevUsb>;
 #endif
 

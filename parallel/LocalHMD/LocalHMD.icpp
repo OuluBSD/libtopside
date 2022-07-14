@@ -1,0 +1,5 @@
+#include "LocalHMD.h"
+
+INITBLOCK_(LocalHMD) {
+	::TS::DaemonBase::Register<TS::HMD::LocalHMDService>("LocalHMD");
+}

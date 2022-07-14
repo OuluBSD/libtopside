@@ -698,12 +698,110 @@ void LocalVRService::Deinit() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+WmrFusionService::WmrFusionService() {
+	
+}
+
+bool WmrFusionService::Init(String name) {
+	DaemonService* ds = FindService("TcpServer");
+	server = dynamic_cast<SerialServiceServer*>(ds);
+	if (!server) {
+		LOG("LocalVRDebugService::Init: error: tcp server is required");
+		return false;
+	}
+	sys.Attach(*server);
+	
+	
+	DaemonService* lvrd = FindService("LocalVRDebug");
+	lvrd_svc = dynamic_cast<LocalVRDebugService*>(lvrd);
+	if (!lvrd_svc) {
+		LOG("LocalVRDebugService::Init: error: LocalVRDebugService required");
+		return false;
+	}
+	
+	
+	DaemonService* lhmd = FindService("LocalHMD");
+	lhmd_svc = dynamic_cast<LocalHMDService*>(lhmd);
+	if (!lhmd_svc) {
+		LOG("LocalVRDebugService::Init: error: LocalHMDService is required");
+		return false;
+	}
+	
+	
+	lvrd_svc->SetBrightCallback(THISBACK(OnBrightFrame));
+	lvrd_svc->SetDarkCallback(THISBACK(OnDarkFrame));
+	
+	lhmd_svc->SetSensorCallback(THISBACK(OnSensorData));
+	
+	flag.Start(1);
+	UPP::Thread::Start(THISBACK(FusionProcess));
+	
+	return true;
+}
+
+void WmrFusionService::Update() {
+	
+}
+
+void WmrFusionService::Stop() {
+	flag.Stop();
+}
+
+void WmrFusionService::Deinit() {
+	
+}
+
+void WmrFusionService::FusionProcess() {
+	
+	while (flag.IsRunning()) {
+		
+		sys.Process();
+		
+		Sleep(10);
+	}
+	
+	flag.DecreaseRunning();
+}
+
+void WmrFusionService::OnBrightFrame(DebugService::Stream& s) {
+	sys.PutBrightFrame(s.frame_lock, s.sz, s.frame);
+}
+
+void WmrFusionService::OnDarkFrame(DebugService::Stream& s) {
+	sys.PutDarkFrame(s.frame_lock, s.sz, s.frame);
+}
+
+void WmrFusionService::OnSensorData(CtrlEvent& e) {
+	sys.PutSensorData(e);
+}
+
+
+
 NAMESPACE_HMD_END
 
 
 INITBLOCK_(LocalVR) {
 	::TS::DaemonBase::Register<TS::HMD::LocalVRService>("LocalVR");
+	::TS::DaemonBase::Register<TS::HMD::WmrFusionService>("WmrFusion");
+	
+	#ifdef flagDEBUG_SERVER
 	::TS::DaemonBase::Register<TS::HMD::LocalVRDebugService>("LocalVRDebug");
+	#endif
 }
 
 

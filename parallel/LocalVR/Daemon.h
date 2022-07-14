@@ -25,6 +25,28 @@ struct LocalVRService : DaemonService {
 };
 
 
+struct WmrFusionService : DaemonService {
+	WmrFusionSystem sys;
+	RunningFlag flag;
+	SerialServiceServer* server = 0;
+	LocalVRDebugService* lvrd_svc = 0;
+	LocalHMDService* lhmd_svc = 0;
+	
+	typedef WmrFusionService CLASSNAME;
+	WmrFusionService();
+	bool Init(String name) override;
+	void Update() override;
+	void Stop() override;
+	void Deinit() override;
+	
+	void FusionProcess();
+	void OnBrightFrame(DebugService::Stream& s);
+	void OnDarkFrame(DebugService::Stream& s);
+	void OnSensorData(CtrlEvent& e);
+};
+
+
+
 NAMESPACE_HMD_END
 
 

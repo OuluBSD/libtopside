@@ -66,24 +66,20 @@ PKG(Holograph, Holo, H) {
 		VENDOR_INCLUDE("", LocalHMD/LocalHMD.h)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("ctx",						"TS::HMD::Context*")
-			.Add("settings",				"TS::HMD::DeviceSettings*")
-			.Add("fragment",				"const char*")
-			.Add("vertex",					"const char*")
-			.Add("hmd",						"TS::HMD::Device*")
-			.Add("ctrl[2]",					"TS::HMD::Device*")
-			.Add("screen_sz",				"Size")
-			.Add("ev",						"CtrlEvent")
-			.Add("ev3d",					"ControllerMatrix")
-			.Add("trans",					"TransformMatrix")
-			.Add("has_initial_orient",		"bool")
-			.Add("initial_orient",			"quat")
-			.Add("ev_sendable",				"bool")
-			.Add("seq",						"int")
+			.Add("sys",						"TS::HMD::System")
 			.Add("ts",						"TimeStop")
-			.Add("control_count[2]",		"int")
-			.Add("controls_fn[2][64]",		"int")
-			.Add("controls_types[2][64]",	"int")
+		;
+		
+	}
+	
+	VENDOR(RemoteVRServer) {
+		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG(FREEBSD)
+		VENDOR_CLASS(SinkDevice, void*)
+		
+		v->AddStruct("NativeSinkDevice")
+			.Add("svc",						"SerialServiceClient")
+			.Add("recv",					"WmrFusionSystemReceiver")
 		;
 		
 	}

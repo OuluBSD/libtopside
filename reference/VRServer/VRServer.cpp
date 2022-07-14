@@ -7,10 +7,11 @@ CONSOLE_APP_MAIN {
 	
 	Glib2Daemon daemon;
 	
-	//daemon.Add("LocalHMD");
 	daemon.Add("TcpServer");
 	daemon.Add("LocalVR");
 	daemon.Add("LocalVRDebug");
+	daemon.Add("LocalHMD");
+	daemon.Add("WmrFusion");
 	
 	daemon.DefaultProcedure();
 	

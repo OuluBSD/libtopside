@@ -48,6 +48,26 @@ AtomTypeCls LocalHMDPipe::GetType() const
 }
 
 #endif
+AtomTypeCls RemoteVRServerPipe::GetAtomType()
+{
+	return ATOM11(REMOTE_V_R_SERVER_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+}
+
+LinkTypeCls RemoteVRServerPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void RemoteVRServerPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<RemoteVRServerSinkDevice>(this);
+}
+
+AtomTypeCls RemoteVRServerPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls BluetoothHoloPipe::GetAtomType()
 {
 	return ATOM11(BLUETOOTH_HOLO_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);

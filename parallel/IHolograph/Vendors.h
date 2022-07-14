@@ -26,6 +26,7 @@ NAMESPACE_PARALLEL_BEGIN
 #define HOLO_VNDR_LIST \
 	HOLO_VNDR(HoloOpenHMD) \
 	HOLO_VNDR(HoloLocalHMD) \
+	HOLO_VNDR(HoloRemoteVRServer) \
 	HOLO_VNDR(HoloDevUsb) \
 	HOLO_VNDR(HoloDevBluetooth) \
 
@@ -74,24 +75,26 @@ struct HoloOpenHMD {
 struct HoloLocalHMD {
 	
 	struct NativeSinkDevice {
-		TS::HMD::Context* ctx;
-		TS::HMD::DeviceSettings* settings;
-		const char* fragment;
-		const char* vertex;
-		TS::HMD::Device* hmd;
-		TS::HMD::Device* ctrl[2];
-		Size screen_sz;
-		CtrlEvent ev;
-		ControllerMatrix ev3d;
-		TransformMatrix trans;
-		bool has_initial_orient;
-		quat initial_orient;
-		bool ev_sendable;
-		int seq;
+		TS::HMD::System sys;
 		TimeStop ts;
-		int control_count[2];
-		int controls_fn[2][64];
-		int controls_types[2][64];
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+struct HoloRemoteVRServer {
+	
+	struct NativeSinkDevice {
+		SerialServiceClient svc;
+		WmrFusionSystemReceiver recv;
 	};
 	
 	struct Thread {

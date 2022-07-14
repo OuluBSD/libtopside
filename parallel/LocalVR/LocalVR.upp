@@ -1,8 +1,5 @@
 description "\377B28,127,255";
 
-flags
-	DEBUG_SERVER;
-
 uses
 	LocalHMD;
 
@@ -61,8 +58,4 @@ file
 	UsbDevice.h,
 	UsbDevice.cpp,
 	UsbIds.h;
-
-mainconfig
-	"" = "",
-	"" = "DEBUG_SERVER";
 

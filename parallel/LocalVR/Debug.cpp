@@ -86,9 +86,17 @@ void debug_stream_frame_push(struct debug_stream *stream,
 	
 	//LOG("debug_stream_frame_push: size=" << IntStr64(size) << ", " << HexStr(frame) << ", exposure=" << exposure);
 	
+	if (s.frame_lock)
+		return;
+	
 	s.sz = Size(w,h);
 	s.frame.SetCount(size);
 	memcpy(s.frame.Begin(), frame, size);
+	
+	if (!exposure)
+		dbg_srv->WhenDarkFrame(s);
+	else
+		dbg_srv->WhenBrightFrame(s);
 }
 
 void debug_stream_deinit() {
@@ -98,7 +106,6 @@ void debug_stream_deinit() {
 	}
 }
 
-#endif
 
 
 
@@ -119,8 +126,8 @@ bool LocalVRDebugService::Init(String name) {
 		return false;
 	}
 	
-	server->AddTcpSocket(LATEST_BRIGHT_FRAME, THISBACK(LatestBrightFrame));
-	server->AddTcpSocket(LATEST_DARK_FRAME, THISBACK(LatestDarkFrame));
+	server->AddTcpSocket(NET_LATEST_BRIGHT_FRAME, THISBACK(LatestBrightFrame));
+	server->AddTcpSocket(NET_LATEST_DARK_FRAME, THISBACK(LatestDarkFrame));
 	
 	return true;
 }
@@ -147,6 +154,14 @@ void LocalVRDebugService::LatestDarkFrame(TcpSocket& out) {
 	Send(out, s.frame, s.sz);
 }
 
+void LocalVRDebugService::SetBrightCallback(Callback1<DebugService::Stream&> cb) {
+	dbg_srv->WhenBrightFrame << cb;
+}
+
+void LocalVRDebugService::SetDarkCallback(Callback1<DebugService::Stream&> cb) {
+	dbg_srv->WhenDarkFrame << cb;
+}
+
 void LocalVRDebugService::Send(TcpSocket& out, const Vector<byte>& frame, Size sz) {
 	//LOG("Send: " << HexStr(frame) << ", " << size << ", " << sz.ToString());
 	out.Put(&sz.cx, sizeof(sz.cx));
@@ -155,6 +170,9 @@ void LocalVRDebugService::Send(TcpSocket& out, const Vector<byte>& frame, Size s
 	out.Put(&size, sizeof(size));
 	out.Put(frame.Begin(), size);
 }
+
+
+#endif
 
 
 NAMESPACE_HMD_END

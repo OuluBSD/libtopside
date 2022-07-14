@@ -1291,13 +1291,13 @@ vec3 Unproject(const vec3& viewport_pt, const vec2& viewportOrigin, const vec2& 
 	// Step 3, NDC to Eye Space
 	mat4 invProjection = Inverse(projection);
 	vec4 eyeSpace { 0.0f, 0.0f, 0.0f, 0.0f };
-	// eyeSpace = Multiplyvec3(ndcSpace, invProjection);
+	// eyeSpace = MultiplyVector(ndcSpace, invProjection);
 	Multiply(eyeSpace, ndcSpace, invProjection);
 
 	// Step 4, Eye Space to World Space
 	mat4 invView = Inverse(view);
 	vec4 worldSpace { 0.0f, 0.0f, 0.0f, 0.0f };
-	// worldSpace = Multiplyvec3(eyeSpace, invView);
+	// worldSpace = MultiplyVector(eyeSpace, invView);
 	Multiply(worldSpace, eyeSpace, invView);
 
 	// Step 5, Undo perspective divide!

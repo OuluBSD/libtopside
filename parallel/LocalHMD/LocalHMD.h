@@ -65,6 +65,8 @@
 #include "ConfigKey.h"
 #include "Miniz.h"
 #include "NxJson.h"
+#include "System.h"
+#include "Daemon.h"
 
 
 #endif

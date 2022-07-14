@@ -76,6 +76,8 @@ void SerialServiceServer::StartThread() {
 void SerialServiceServer::ListenerHandler() {
 	flag.Start(1);
 	
+	tcp.Timeout(500);
+	
 	while (tcp.IsOpen() && flag.IsRunning()) {
 		One<TcpSocket> sock;
 		sock.Create();
@@ -250,6 +252,7 @@ void SerialServiceServer::Update() {
 }
 
 void SerialServiceServer::Deinit() {
+	tcp.Shutdown();
 	tcp.Close();
 	StopThread();
 }

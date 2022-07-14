@@ -82,6 +82,7 @@ static inline void debug_stream_deinit(void)
 
 
 
+#ifdef flagDEBUG_SERVER
 struct DebugService {
 	typedef DebugService CLASSNAME;
 	
@@ -89,20 +90,19 @@ struct DebugService {
 		bool in_use = false;
 		Vector<byte> frame;
 		Size sz;
+		bool frame_lock = false;
 	};
 	
 	static const int STREAM_COUNT = 10;
 	Stream streams[STREAM_COUNT];
 	
+	
+	Callback1<Stream&> WhenBrightFrame, WhenDarkFrame;
+	
 };
 
 struct LocalVRDebugService : DaemonService {
 	typedef LocalVRDebugService CLASSNAME;
-	
-	enum {
-		LATEST_BRIGHT_FRAME = 10100,
-		LATEST_DARK_FRAME,
-	};
 	
 	LocalVRDebugService();
 	bool Init(String name) override;
@@ -111,8 +111,11 @@ struct LocalVRDebugService : DaemonService {
 	void LatestBrightFrame(TcpSocket& out);
 	void LatestDarkFrame(TcpSocket& out);
 	void Send(TcpSocket& out, const Vector<byte>& frame, Size sz);
+	void SetBrightCallback(Callback1<DebugService::Stream&> cb);
+	void SetDarkCallback(Callback1<DebugService::Stream&> cb);
 	
 };
+#endif
 
 
 

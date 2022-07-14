@@ -297,14 +297,21 @@ bool TcpSocket::Accept(TcpSocket& sock) {
 	return IsOpen();
 }
 
-void TcpSocket::Close() {
+void TcpSocket::Shutdown() {
 	if (connfd >= 0) {
 		shutdown(connfd, SHUT_RDWR);
+	}
+	if (listenfd >= 0) {
+		shutdown(listenfd, SHUT_RDWR);
+	}
+}
+
+void TcpSocket::Close() {
+	if (connfd >= 0) {
 		close(connfd);
 		connfd = -1;
 	}
 	if (listenfd >= 0) {
-		shutdown(listenfd, SHUT_RDWR);
 		close(listenfd);
 		listenfd = -1;
 	}

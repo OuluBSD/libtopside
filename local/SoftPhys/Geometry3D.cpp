@@ -12,7 +12,7 @@ void AccelerateMesh(Mesh& mesh) {
 	vec3 min = mesh.vertices[0];
 	vec3 max = mesh.vertices[0];
 
-	for (int i = 1; i < mesh.numTriangles * 3; ++i) {
+	for (int i = 1; i < mesh.triangle_count * 3; ++i) {
 		min[0] = fminf(mesh.vertices[i][0], min[0]);
 		min[1] = fminf(mesh.vertices[i][1], min[1]);
 		min[2] = fminf(mesh.vertices[i][2], min[2]);
@@ -25,9 +25,9 @@ void AccelerateMesh(Mesh& mesh) {
 	mesh.accelerator = new BVHNode();
 	mesh.accelerator->bounds = FromMinMax(min, max);
 	mesh.accelerator->children = 0;
-	mesh.accelerator->numTriangles = mesh.numTriangles;
-	mesh.accelerator->triangles = new int[mesh.numTriangles];
-	for (int i = 0; i < mesh.numTriangles; ++i) {
+	mesh.accelerator->triangle_count = mesh.triangle_count;
+	mesh.accelerator->triangles = new int[mesh.triangle_count];
+	for (int i = 0; i < mesh.triangle_count; ++i) {
 		mesh.accelerator->triangles[i] = i;
 	}
 
@@ -41,7 +41,7 @@ void SplitBVHNode(BVHNode* node, const Mesh& model, int depth) {
 
 	if (node->children == 0) {
 		// Only split if this node contains triangles
-		if (node->numTriangles > 0) {
+		if (node->triangle_count > 0) {
 			node->children = new BVHNode[8];
 
 			vec3 c = node->bounds.position;
@@ -60,22 +60,22 @@ void SplitBVHNode(BVHNode* node, const Mesh& model, int depth) {
 	}
 
 	// If this node was just split
-	if (node->children != 0 && node->numTriangles > 0) {
+	if (node->children != 0 && node->triangle_count > 0) {
 		for (int i = 0; i < 8; ++i) { // For each child
 			// Count how many triangles each child will contain
-			node->children[i].numTriangles = 0;
-			for (int j = 0; j < node->numTriangles; ++j) {
+			node->children[i].triangle_count = 0;
+			for (int j = 0; j < node->triangle_count; ++j) {
 				const tri3& t = model.triangles[node->triangles[j]];
 				if (TriangleAABB(t, node->children[i].bounds)) {
-					node->children[i].numTriangles += 1;
+					node->children[i].triangle_count += 1;
 				}
 			}
-			if (node->children[i].numTriangles == 0) {
+			if (node->children[i].triangle_count == 0) {
 				continue;
 			}
-			node->children[i].triangles = new int[node->children[i].numTriangles];
+			node->children[i].triangles = new int[node->children[i].triangle_count];
 			int index = 0; // Add the triangles in the new child arrau
-			for (int j = 0; j < node->numTriangles; ++j) {
+			for (int j = 0; j < node->triangle_count; ++j) {
 				const tri3& t = model.triangles[node->triangles[j]];
 				if (TriangleAABB(t, node->children[i].bounds)) {
 					node->children[i].triangles[index++] = node->triangles[j];
@@ -83,7 +83,7 @@ void SplitBVHNode(BVHNode* node, const Mesh& model, int depth) {
 			}
 		}
 
-		node->numTriangles = 0;
+		node->triangle_count = 0;
 		delete[] node->triangles;
 		node->triangles = 0;
 
@@ -103,16 +103,16 @@ void FreeBVHNode(BVHNode* node) {
 		node->children = 0;
 	}
 
-	if (node->numTriangles != 0 || node->triangles != 0) {
+	if (node->triangle_count != 0 || node->triangles != 0) {
 		delete[] node->triangles;
 		node->triangles = 0;
-		node->numTriangles = 0;
+		node->triangle_count = 0;
 	}
 }
 
 bool MeshAABB(const Mesh& mesh, const AABB& aabb) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (TriangleAABB(mesh.triangles[i], aabb)) {
 				return true;
 			}
@@ -126,9 +126,9 @@ bool MeshAABB(const Mesh& mesh, const AABB& aabb) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (TriangleAABB(mesh.triangles[iterator->triangles[i]], aabb)) {
 						return true;
@@ -151,7 +151,7 @@ bool MeshAABB(const Mesh& mesh, const AABB& aabb) {
 
 bool Linetest(const Mesh& mesh, const line3& line) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (Linetest(mesh.triangles[i], line)) {
 				return true;
 			}
@@ -165,9 +165,9 @@ bool Linetest(const Mesh& mesh, const line3& line) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (Linetest(mesh.triangles[iterator->triangles[i]], line)) {
 						return true;
@@ -190,7 +190,7 @@ bool Linetest(const Mesh& mesh, const line3& line) {
 
 bool MeshSphere(const Mesh& mesh, const Sphere& sphere) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (TriangleSphere(mesh.triangles[i], sphere)) {
 				return true;
 			}
@@ -204,9 +204,9 @@ bool MeshSphere(const Mesh& mesh, const Sphere& sphere) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (TriangleSphere(mesh.triangles[iterator->triangles[i]], sphere)) {
 						return true;
@@ -229,7 +229,7 @@ bool MeshSphere(const Mesh& mesh, const Sphere& sphere) {
 
 bool MeshOBB(const Mesh& mesh, const OBB& obb) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (TriangleOBB(mesh.triangles[i], obb)) {
 				return true;
 			}
@@ -243,9 +243,9 @@ bool MeshOBB(const Mesh& mesh, const OBB& obb) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (TriangleOBB(mesh.triangles[iterator->triangles[i]], obb)) {
 						return true;
@@ -268,7 +268,7 @@ bool MeshOBB(const Mesh& mesh, const OBB& obb) {
 
 bool MeshPlane(const Mesh& mesh, const Plane& plane) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (TrianglePlane(mesh.triangles[i], plane)) {
 				return true;
 			}
@@ -282,9 +282,9 @@ bool MeshPlane(const Mesh& mesh, const Plane& plane) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (TrianglePlane(mesh.triangles[iterator->triangles[i]], plane)) {
 						return true;
@@ -307,7 +307,7 @@ bool MeshPlane(const Mesh& mesh, const Plane& plane) {
 
 bool MeshTriangle(const Mesh& mesh, const tri3& triangle) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			if (TriangleTriangle(mesh.triangles[i], triangle)) {
 				return true;
 			}
@@ -321,9 +321,9 @@ bool MeshTriangle(const Mesh& mesh, const tri3& triangle) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					if (TriangleTriangle(mesh.triangles[iterator->triangles[i]], triangle)) {
 						return true;
@@ -354,7 +354,7 @@ float Raycast(const Model& mesh, const Ray& ray) {
 
 float MeshRay(const Mesh& mesh, const Ray& ray) {
 	if (mesh.accelerator == 0) {
-		for (int i = 0; i < mesh.numTriangles; ++i) {
+		for (int i = 0; i < mesh.triangle_count; ++i) {
 			RaycastResult raycast;
 			Raycast(mesh.triangles[i], ray, &raycast);
 			float result = raycast.t;
@@ -371,9 +371,9 @@ float MeshRay(const Mesh& mesh, const Ray& ray) {
 		while (!toProcess.IsEmpty()) {
 			BVHNode* iterator = toProcess.PopFirst();
 
-			if (iterator->numTriangles >= 0) {
+			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
-				for (int i = 0; i < iterator->numTriangles; ++i) {
+				for (int i = 0; i < iterator->triangle_count; ++i) {
 					// Triangle indices in BVHNode index the mesh
 					RaycastResult raycast;
 					Raycast(mesh.triangles[iterator->triangles[i]], ray, &raycast);
@@ -405,7 +405,7 @@ void Model::SetContent(Mesh* mesh) {
 		vec3 min = mesh->vertices[0];
 		vec3 max = mesh->vertices[0];
 
-		for (int i = 1; i < mesh->numTriangles * 3; ++i) {
+		for (int i = 1; i < mesh->triangle_count * 3; ++i) {
 			min[0] = fminf(mesh->vertices[i][0], min[0]);
 			min[1] = fminf(mesh->vertices[i][1], min[1]);
 			min[2] = fminf(mesh->vertices[i][2], min[2]);
@@ -437,7 +437,7 @@ OBB GetOBB(const Model& model) {
 	OBB obb;
 
 	obb.size = aabb.size;
-	obb.position = Multiplyvec3(aabb.position, world);
+	obb.position = MultiplyVector(aabb.position, world);
 	obb.orientation = Cut(world, 3, 3);
 
 	return obb;
@@ -447,7 +447,7 @@ float ModelRay(const Model& model, const Ray& ray) {
 	mat4 world = GetWorldMatrix(model);
 	mat4 inv = Inverse(world);
 	Ray local;
-	local.origin = Multiplyvec3(ray.origin, inv);
+	local.origin = MultiplyVector(ray.origin, inv);
 	local.direction = MultiplyVector(ray.direction, inv);
 	local.NormalizeDirection();
 	if (model.GetMesh() != 0) {
@@ -459,9 +459,9 @@ float ModelRay(const Model& model, const Ray& ray) {
 bool Linetest(const Model& model, const line3& line) {
 	mat4 world = GetWorldMatrix(model);
 	mat4 inv = Inverse(world);
-	Line local;
-	local.start = Multiplyvec3(line.start, inv);
-	local.end = Multiplyvec3(line.end, inv);
+	line3 local;
+	local.start = MultiplyVector(line.start, inv);
+	local.end = MultiplyVector(line.end, inv);
 	if (model.GetMesh() != 0) {
 		return Linetest(*(model.GetMesh()), local);
 	}
@@ -472,7 +472,7 @@ bool ModelSphere(const Model& model, const Sphere& sphere) {
 	mat4 world = GetWorldMatrix(model);
 	mat4 inv = Inverse(world);
 	Sphere local;
-	local.position = Multiplyvec3(sphere.position, inv);
+	local.position = MultiplyVector(sphere.position, inv);
 	if (model.GetMesh() != 0) {
 		return MeshSphere(*(model.GetMesh()), local);
 	}
@@ -484,7 +484,7 @@ bool ModelAABB(const Model& model, const AABB& aabb) {
 	mat4 inv = Inverse(world);
 	OBB local;
 	local.size = aabb.size;
-	local.position = Multiplyvec3(aabb.position, inv);
+	local.position = MultiplyVector(aabb.position, inv);
 	local.orientation = Cut(inv, 3, 3);
 	if (model.GetMesh() != 0) {
 		return MeshOBB(*(model.GetMesh()), local);
@@ -497,7 +497,7 @@ bool ModelOBB(const Model& model, const OBB& obb) {
 	mat4 inv = Inverse(world);
 	OBB local;
 	local.size = obb.size;
-	local.position = Multiplyvec3(obb.position, inv);
+	local.position = MultiplyVector(obb.position, inv);
 	local.orientation = Cut(inv, 3, 3) * obb.orientation;
 	if (model.GetMesh() != 0) {
 		return MeshOBB(*(model.GetMesh()), local);
@@ -521,9 +521,9 @@ bool ModelTriangle(const Model& model, const tri3& triangle) {
 	mat4 world = GetWorldMatrix(model);
 	mat4 inv = Inverse(world);
 	tri3 local;
-	local.a = Multiplyvec3(triangle.a, inv);
-	local.b = Multiplyvec3(triangle.b, inv);
-	local.c = Multiplyvec3(triangle.c, inv);
+	local.a = MultiplyVector(triangle.a, inv);
+	local.b = MultiplyVector(triangle.b, inv);
+	local.c = MultiplyVector(triangle.c, inv);
 	if (model.GetMesh() != 0) {
 		return MeshTriangle(*(model.GetMesh()), local);
 	}
@@ -531,4 +531,4 @@ bool ModelTriangle(const Model& model, const tri3& triangle) {
 }
 
 
-NAMESPACE_TSOFTPHYS_END
+NAMESPACE_SOFTPHYS_END

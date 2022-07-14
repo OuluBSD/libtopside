@@ -291,7 +291,7 @@ Vector<Model*> Scene::Cull(const Frustum& f) {
 	if (octree == 0) {
 		for (int i = 0, size = objects.GetCount(); i < size; ++i) {
 			OBB bounds = GetOBB(*(objects[i]));
-			if (Intersects(f, bounds)) {
+			if (f.Intersects(bounds)) {
 				result.Add(objects[i]);
 			}
 		}
@@ -307,7 +307,7 @@ Vector<Model*> Scene::Cull(const Frustum& f) {
 			if (active->children != 0) {
 				for (int i = 0; i < 8; ++i) {
 					AABB bounds = active->children[i].bounds;
-					if (Intersects(f, bounds)) {
+					if (f.Intersects(bounds)) {
 						nodes.Add(&active->children[i]);
 					}
 				}
@@ -316,7 +316,7 @@ Vector<Model*> Scene::Cull(const Frustum& f) {
 				for (int i = 0, size = active->models.GetCount(); i < size; ++i) {
 					if (!active->models[i]->flag) {
 						OBB bounds = GetOBB(*(active->models[i]));
-						if (Intersects(f, bounds)) {
+						if (f.Intersects(bounds)) {
 							active->models[i]->flag = true;
 							result.Add(active->models[i]);
 						}

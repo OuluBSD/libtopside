@@ -46,7 +46,7 @@ void Particle::ApplyForces() {
 void Particle::SolveConstraints(const Vector<OBB_>& constraints) {
 	int size = constraints.GetCount();
 	for (int i = 0; i < size; ++i) {
-		Line traveled(old_position, position);
+		line3 traveled(old_position, position);
 		if (Linetest(constraints[i], traveled)) {
 			//if (PointInOBB(position, constraints[i])) {
 #ifndef EULER_INTEGRATION

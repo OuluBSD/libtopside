@@ -40,7 +40,6 @@ struct ScrX11 {
 		::XVisualInfo* visual_info;
 		::Atom  atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
-		::XkbDescPtr xkb;
 	};
 	
 	struct NativeSinkDevice {

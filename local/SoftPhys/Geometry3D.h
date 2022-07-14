@@ -42,22 +42,22 @@ NAMESPACE_SOFTPHYS_BEGIN
 struct BVHNode : Moveable<BVHNode> {
 	AABB bounds;
 	BVHNode* children;
-	int numTriangles;
+	int triangle_count;
 	int* triangles;
 
-	BVHNode() : children(0), numTriangles(0), triangles(0) {}
+	BVHNode() : children(0), triangle_count(0), triangles(0) {}
 };
 
 struct Mesh : Moveable<Mesh> {
-	int numTriangles;
+	int triangle_count;
 	union {
-		Triangle* triangles;
+		tri3* triangles;
 		vec3* vertices;
 		float* values;
 	};
 	BVHNode* accelerator;
 
-	Mesh() : numTriangles(0), values(0), accelerator(0) {}
+	Mesh() : triangle_count(0), values(0), accelerator(0) {}
 };
 
 class Model {

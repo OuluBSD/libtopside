@@ -26,6 +26,7 @@
 
 #include <LocalHMD/LocalHMD.h>
 
+#define flagDEBUG_SERVER 1
 
 #include "Buttons.h"
 #include "BlobWatch.h"

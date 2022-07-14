@@ -20,6 +20,7 @@ INITBLOCK_(AtomVR) {
 	#endif
 	
 	#if defined flagVR
+		Factory::RegisterAtom<RemoteVRServerPipe>();
 		
 		#ifdef flagOGL
 		#endif

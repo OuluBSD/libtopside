@@ -30,6 +30,7 @@ public:
 	bool Listen(int port, int max_conn=5);
 	bool Accept(TcpSocket& sock);
 	bool IsOpen() const;
+	void Shutdown();
 	void Close();
 	String GetLine(int max_len = UINT16_MAX);
 	String GetPeerAddr();

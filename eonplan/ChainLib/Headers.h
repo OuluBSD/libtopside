@@ -195,6 +195,11 @@ HEADER_ACTION(		LocalHMDPipe,		x11.ogl.holo.events)
 HEADER_ARG(			LocalHMDPipe,		HINT_PKG,					"AtomVR")
 HEADER_LINK(		LocalHMDPipe,		PIPE, PROCESS)
 HEADER_ARG(			LocalHMDPipe,		reqdef_flagLOCALHMD,		1)
+
+HEADER11(			RemoteVRServerPipe,	RemoteVRServerSinkDevice,	pipe,		CenterEvent,	CenterOrder,	CenterEvent)
+HEADER_ACTION(		RemoteVRServerPipe,	tcp.ogl.holo.events)
+HEADER_ARG(			RemoteVRServerPipe,	HINT_PKG,					"AtomVR")
+HEADER_LINK(		RemoteVRServerPipe,	PIPE, PROCESS)
 /*
 HEADER11(			UsbHoloPipe,		DevUsbSinkDevice,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		UsbHoloPipe,		usb.holo.events)

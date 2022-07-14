@@ -41,6 +41,21 @@ public:
 };
 #endif
 
+class RemoteVRServerPipe : public RemoteVRServerSinkDevice {
+
+public:
+	RTTI_DECL1(RemoteVRServerPipe, RemoteVRServerSinkDevice)
+	COPY_PANIC(RemoteVRServerPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("tcp.ogl.holo.events")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class BluetoothHoloPipe : public DevBluetoothSinkDevice {
 
 public:
@@ -63,6 +78,8 @@ using OpenHMDPipeRef = Ref<OpenHMDPipe, AtomParent>;
 #if defined flagLOCALHMD
 using LocalHMDPipeRef = Ref<LocalHMDPipe, AtomParent>;
 #endif
+
+using RemoteVRServerPipeRef = Ref<RemoteVRServerPipe, AtomParent>;
 
 using BluetoothHoloPipeRef = Ref<BluetoothHoloPipe, AtomParent>;
 

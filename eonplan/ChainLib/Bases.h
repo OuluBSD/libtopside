@@ -42,6 +42,7 @@ BASE(X11EventsBase)
 
 BASE(OpenHMDSinkDevice)
 BASE(LocalHMDSinkDevice)
+BASE(RemoteVRServerSinkDevice)
 //BASE(DevUsbSinkDevice)
 BASE(DevBluetoothSinkDevice)
 

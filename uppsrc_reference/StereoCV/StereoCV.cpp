@@ -47,13 +47,9 @@ bool StereoCV::ConnectDebugVideo() {
 }
 
 void StereoCV::FrameDownloader() {
-	enum {
-		LATEST_BRIGHT_FRAME = 10100,
-		LATEST_DARK_FRAME,
-	};
 	
 	while (client.IsOpen() && flag.IsRunning()) {
-		if (!client.CallSocket(LATEST_DARK_FRAME, THISBACK(GetFrame)))
+		if (!client.CallSocket(NET_LATEST_BRIGHT_FRAME, THISBACK(GetFrame)))
 			break;
 	}
 	
@@ -69,15 +65,17 @@ void StereoCV::GetFrame(TcpSocket& sock) {
 	tmp_data.SetCount(size);
 	sock.Get(tmp_data.Begin(), size);
 	
-	bool has_duplicate = size >= (sz.cx * sz.cy * 2);
+	bool has_stereo = size >= (sz.cx * sz.cy * 2);
 	
-	ImageBuffer ib(sz);
+	ImageBuffer ib(Size(sz.cx * (has_stereo ? 2 : 1), sz.cy));
 	RGBA* it = ib.Begin();
 	RGBA* end = ib.End();
 	const byte* src = tmp_data.Begin();
 	
+	int cx2 = sz.cx * 2;
+	
 	for(int y = 0; y < sz.cy; y++) {
-		for(int x = 0; x < sz.cx; x++) {
+		for(int x = 0; x < cx2; x++) {
 			byte b = *src++;
 			it->r = b;
 			it->g = b;
@@ -85,10 +83,6 @@ void StereoCV::GetFrame(TcpSocket& sock) {
 			it->a = 255;
 			it++;
 		}
-		
-		// Skip duplicate extra frame for now (high fps is achieved with double frame)
-		if (has_duplicate)
-			src += sz.cx;
 	}
 	Image img = ib;
 	
@@ -135,18 +129,23 @@ void StereoCV::Renderer::Paint(Draw& d) {
 	ImageDraw id(sz);
 	id.DrawRect(sz, Color(227, 227, 227));
 	
+	bool draw_out = false;
+	
 	if (!input.IsEmpty()) {
 		Size in_sz = input.GetSize();
 		double scale = (double)sz.cx * 0.5 / in_sz.cx;
 		Size rend_sz = in_sz * scale;
 		
 		Image in = CachedRescale(input, rend_sz, FILTER_NEAREST);
-		Image out = CachedRescale(output, rend_sz, FILTER_NEAREST);
 		
 		int y = (sz.cy - in_sz.cy) / 2;
 		int out_x = sz.cx / 2;
 		id.DrawImage(0, y, in);
-		id.DrawImage(out_x, y, out);
+		
+		if (draw_out) {
+			Image out = CachedRescale(output, rend_sz, FILTER_NEAREST);
+			id.DrawImage(out_x, y, out);
+		}
 		
 		if (lines) {
 			for (ColorLine& l : *lines) {

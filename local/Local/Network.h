@@ -4,6 +4,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+enum {
+	NET_LATEST_BRIGHT_FRAME = 10100,
+	NET_LATEST_DARK_FRAME,
+	
+	NET_SEND_FUSION_DATA = 10200
+	
+};
+
 class SerialServiceBase : public DaemonService {
 	
 protected:
