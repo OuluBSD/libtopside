@@ -8,7 +8,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool mb_is_colored_only = false;
+bool mb_disable_textures = false;
 
 Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
@@ -20,27 +20,27 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
-	m.is_colored_only = mb_is_colored_only;
+	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	m.disable_textures = mb_disable_textures;
 	//m.Refresh();
 	return m;
 }
 
-Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
+Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered, bool skybox) {
 	this->model.Create();
 	Model& model = *this->model;
 	Mesh& m = model.meshes.Add();
 	
 	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
 	
-	MeshFactory::CreateBox(m, dim[0], dim[1], dim[2]);
+	MeshFactory::CreateBox(m, dim[0], dim[1], dim[2], skybox);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += off;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
-	m.is_colored_only = mb_is_colored_only;
+	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	m.disable_textures = mb_disable_textures;
 	//m.Refresh();
 	return m;
 }
@@ -55,8 +55,8 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int sta
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
-	m.is_colored_only = mb_is_colored_only;
+	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	m.disable_textures = mb_disable_textures;
 	//m.Refresh();
 	return m;
 }
@@ -79,8 +79,8 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
-	m.is_colored_only = mb_is_colored_only;
+	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	m.disable_textures = mb_disable_textures;
 	//m.Refresh();
 	return m;
 }
@@ -456,9 +456,10 @@ void MeshFactory::CreateTorus(Mesh& mesh,
 }
 
 void MeshFactory::CreateBox(Mesh& mesh,
-                                         float        width,
-                                         float        height,
-                                         float        length)
+                            float        width,
+                            float        height,
+                            float        length,
+                            bool skybox)
 {
     mesh.SetCount(24, 12);
 
@@ -662,7 +663,19 @@ void MeshFactory::CreateBox(Mesh& mesh,
     // bottom
     mesh.SetTriangleIndices(10, ivec3(20, 21, 22));
     mesh.SetTriangleIndices(11, ivec3(22, 23, 20));
-
+	
+	if (skybox) {
+		for(int i = 0; i < 12; i++) {
+			int a = i * 3 + 1;
+			int b = i * 3 + 2;
+			int tmp = mesh.indices[a];
+			mesh.indices[a] = mesh.indices[b];
+			mesh.indices[b] = tmp;
+		}
+		for (Vertex& vtx : mesh.vertices)
+			vtx.normal = vtx.normal * vec3(-1);
+	}
+	
     mesh.UpdateBoundingBox();
 }
 

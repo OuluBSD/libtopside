@@ -1,0 +1,14 @@
+newmtl head
+  Ns 10.0000
+  Ni 1.5000
+  d 1.0000
+  Tr 0.0000
+  Tf 1.0000 1.0000 1.0000 
+  illum 2
+  Ka 0.0000 0.0000 0.0000
+  Kd 0.5880 0.5880 0.5880
+  Ks 0.0000 0.0000 0.0000
+  Ke 0.0000 0.0000 0.0000
+  map_Ks african_head_spec.tga
+  map_Kd african_head_diffuse.tga
+  map_Ns african_head_nm_tangent.tga

@@ -156,11 +156,15 @@ bool ModelComponent::Load(GfxDataState& state) {
 	if (!loaded) {
 		if (!loader && !prefab_name.IsEmpty()) {
 			String path = KnownModelNames::GetPath(prefab_name);
-			if (!state.LoadModel(loader, path))
+			auto& mdl = state.AddModel();
+			gfx_id = mdl.id;
+			if (!mdl.LoadModel(loader, path))
 				return false;
 		}
 		else if (loader) {
-			if (!state.LoadModel(loader)) {
+			auto& mdl = state.AddModel();
+			gfx_id = mdl.id;
+			if (!mdl.LoadModel(loader)) {
 				LOG("ModelComponent::Load: error: model loading failed");
 				return false;
 			}
@@ -174,8 +178,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 	else if (model_changed) {
 		Ref<Model> m = loader.GetModel();
 		if (m) {
-			//state.ProcessNode(*m);
-			state.Refresh(*m);
+			state.GetModel(gfx_id).Refresh(*m);
 		}
 	}
 	

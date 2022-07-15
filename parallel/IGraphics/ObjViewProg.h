@@ -30,7 +30,7 @@ struct ObjViewProgT :
 	RTTI_DECL1(ObjViewProgT, BinderIfaceVideo)
 	
 	ModelLoader loader;
-	String obj, tex;
+	String obj;
 	TimeStop ts;
 	double phase_time = 3.0;
 	int iter = 0;
@@ -39,6 +39,9 @@ struct ObjViewProgT :
 	int phases = 2;
 	int width, height;
 	bool use_pbr = false;
+	
+	bool have_skybox = false;
+	String skybox_path[TEXTYPE_COUNT];
 	
 	ObjViewProgT();
 	void operator=(const ObjViewProgT& t) {Panic("Can't copy ObjViewProgT");}

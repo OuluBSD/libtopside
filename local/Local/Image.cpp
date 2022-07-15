@@ -311,8 +311,12 @@ int ByteImage::GetChannels() const {
 	return channels;
 }
 
-int ByteImage::GetSize() const {
+int ByteImage::GetLength() const {
 	return size;
+}
+
+Size ByteImage::GetSize() const {
+	return sz;
 }
 
 byte* ByteImage::GetIter(int x, int y) {

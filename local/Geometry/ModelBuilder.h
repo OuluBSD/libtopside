@@ -55,7 +55,8 @@ public:
     static void CreateBox(Mesh& mesh,
                                   float        width  = 1,
                                   float        height = 1,
-                                  float        length = 1);
+                                  float        length = 1,
+                                  bool         skybox = false);
     static void CreateTetrahedron(Mesh& mesh,
                                           float        width  = 1,
                                           float        height = 1,
@@ -85,12 +86,14 @@ class ModelBuilder {
 public:
 	
 	Mesh& AddPlane(const vec3& pos, const vec2& size);
-	Mesh& AddBox(const vec3& pos, const vec3& dim, bool centered=false);
+	Mesh& AddBox(const vec3& pos, const vec3& dim, bool centered=false, bool skybox=false);
 	Mesh& AddSphere(const vec3& pos, float radius, int slices=16, int stacks=16);
 	Mesh& AddCylinder(const vec3& pos, float radius, float length, int slices=16);
+	void SetTexture(Mesh& mesh, TexType type, Image img);
 	
-	
+	operator Model&() {return *model;}
 	operator const Model&() const {return *model;}
+	Model& AsModel() {return *model;}
 	const Model& AsModel() const {return *model;}
 	
 	Model* Detach() {if (model) return model.Detach(); else return 0;}

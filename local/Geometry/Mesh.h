@@ -20,10 +20,8 @@ public:
     //Vector<vec2> tex_coords;
     VectorMap<String, NodeIndex> named_vertices;
 	int material = -1;
-	int tex_id[TEXTYPE_COUNT];
-	int tex_filter[TEXTYPE_COUNT];
-	bool is_colored_only = false;
-	bool is_lines = false;
+	bool disable_textures = false;
+	bool wireframe_only = false;
 	GfxMesh* accel = 0;
 	
 	
@@ -43,10 +41,8 @@ public:
         named_vertices <<= src.named_vertices;
         //tex_coords <<= src.tex_coords;
         material = src.material;
-        for(int i = 0; i < TEXTYPE_COUNT; i++) tex_id[i] = src.tex_id[i];
-        for(int i = 0; i < TEXTYPE_COUNT; i++) tex_filter[i] = src.tex_filter[i];
-        is_colored_only = src.is_colored_only;
-        is_lines = src.is_lines;
+        disable_textures = src.disable_textures;
+        wireframe_only = src.wireframe_only;
         //Refresh();
     }
     
@@ -58,7 +54,7 @@ public:
     void RefreshOgl(OglDataObject& o);
 #endif*/
     
-    void SetMaterial(Material& m) {ASSERT(m.owner == owner && m.index >= 0); material = m.index;}
+    void SetMaterial(Material& m) {ASSERT(m.owner == owner && m.id >= 0); material = m.id;}
     void SetCount(int vertex_count, int triangle_count) {
         vertices.SetCount(vertex_count);
         indices.SetCount(3 * triangle_count);

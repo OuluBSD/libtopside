@@ -87,7 +87,7 @@ void ObjectT<Fys>::Refresh() {
 }
 
 template <class Fys>
-bool ObjectT<Fys>::LoadModel(GfxDataState& s) {
+bool ObjectT<Fys>::LoadModel(GfxModelState& s) {
 	if (!s.LoadModel(loader))
 		Panic("Couldn't load model: ModelComponent");
 	if (!s.LoadModelTextures(loader))

@@ -5,7 +5,7 @@
 #define flagASSIMP
 
 #ifdef flagASSIMP
-	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32)
+	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32) || flagLINUX
 		#include <ports/assimp/Importer.hpp>
 		#include <ports/assimp/scene.h>
 		#include <ports/assimp/postprocess.h>

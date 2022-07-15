@@ -46,7 +46,7 @@ public:
 	vec3 GetBodyPosition() {return Fys::GetBodyPosition(body);}
 	//void LoadModel(CpuDataState& state);
 	//void LoadModel(OglDataState& state);
-	bool LoadModel(GfxDataState& s) override;
+	bool LoadModel(GfxModelState& s) override;
 	//bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
 	String ToString() const override {return Fys::Id() + "Object";}
 	

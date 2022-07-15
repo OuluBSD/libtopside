@@ -381,32 +381,36 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			auto& left = stages[0];
 			auto& right = stages[1];
 			auto& top_stage = stages.Top();
-			if (top_stage.data.objects.IsEmpty())
+			if (top_stage.data.models.IsEmpty())
 				for(int i = 0; i < 2; i++)
 					top_stage.MakeFrameQuad();
-			ASSERT(top_stage.data.objects.GetCount() == 2);
+			ASSERT(top_stage.data.models.GetCount() == 1);
+			ModelState& m = top_stage.data.models[0];
+			ASSERT(m.objects.GetCount() == 2);
+			
 			mat4 scale_mat = Scale(vec3(0.5, 1.0, 1.0));
 			for(int i = 0; i < 2; i++) {
-				DataObject& o = top_stage.data.objects[i];
+				DataObject& o = m.objects[i];
 				//mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, i == 0 ? 0 : -0.2, 0));
 				mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, 0, 0));
 				mat4 model = scale_mat * trans_mat;
 				o.model = model;
 			}
 			
-			top_stage.data.textures.SetCount(2);
+			auto& material = m.GetAddMaterial(0);
 			for(int i = 0; i < 2; i++) {
 				BufferStage& stage = stages[i];
-				DataObject& o = top_stage.data.objects[i];
-				o.tex_id[TEXTYPE_DIFFUSE] = i;
-				o.tex_filter[TEXTYPE_DIFFUSE] = 1;
-				top_stage.data.textures[i] = stage.fb.color_buf[stage.fb.buf_i];
+				DataObject& o = m.objects[i];
+				o.material = material.id;
+				material.tex_id[TEXTYPE_DIFFUSE] = i;
+				material.tex_filter[TEXTYPE_DIFFUSE] = 1;
+				m.textures.GetAdd(i) = stage.fb.color_buf[stage.fb.buf_i];
 			}
 			
 			for (BufferStage& s : stages)
 				s.Process(cfg);
 			
-			top_stage.data.textures.SetCount(0); // top_stage doesn't own textures
+			m.textures.Clear(); // top_stage doesn't own textures
 			
 		}
 		else TODO

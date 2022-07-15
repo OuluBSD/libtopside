@@ -209,13 +209,16 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		// TODO: find how to create rgb XImage or support BGRA in full soft render implementation
 		// HACK: for now, just swap red and blue
 		// NOTE: VERY SLOW!
-		//dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf, true);
-		//ASSERT(dev.accel_buf_tmp.GetSize() == len);
 		ASSERT(dev.accel_buf.channels == bpp);
 		ASSERT(ctx.fb);
 		ASSERT(!ctx.fb->data);
-	    //dev.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();
+		#if 0
+	    dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf, true);
+		ASSERT(dev.accel_buf_tmp.GetLength() == len);
+		ctx.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();
+		#else
 	    ctx.fb->data = (char*)(const unsigned char*)dev.accel_buf.Begin();
+	    #endif
 	    ctx.fb->bytes_per_line = width * bpp;
 	    
 	    ASSERT(width == ctx.fb->width);

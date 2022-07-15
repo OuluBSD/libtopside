@@ -15,12 +15,21 @@ void MaterialParameters::Clear() {
 	emissive_factor = vec3{ 1, 1, 1 };
 	normal_scale = 1;
 	occlusion_strength = 1;
+	
+}
+
+Material::Material() {
+	Clear();
 }
 
 void Material::Clear() {
 	params.Set([&](MaterialParameters& data) {
 		data.Clear();
 	});
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		tex_id[i] = -1;
+		tex_filter[i] = -1;
+	}
 }
 
 
@@ -34,17 +43,17 @@ void Material::SetFlat(const vec4& base_color_factor, float roughness_factor /* 
     });
 	
 	
-    SetTexture(Material::BaseColor,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
-    SetTexture(Material::MetallicRoughness,	CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
-    SetTexture(Material::Occlusion,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 })); // No occlusion.
-    SetTexture(Material::Normal,			CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 })); // Flat normal.
-    SetTexture(Material::Emissive,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }));
+    SetTexture(TEXTYPE_DIFFUSE,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }), "gen_diffuse");
+    SetTexture(TEXTYPE_SHININESS,		CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }), "gen_shininess");
+    SetTexture(TEXTYPE_AMBIENT,			CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }), "gen_ambient"); // No occlusion.
+    SetTexture(TEXTYPE_NORMALS,			CreateSolidColorTexture(vec4{ 0.5f, 0.5f, 1, 1 }), "gen_normals"); // Flat normal.
+    SetTexture(TEXTYPE_EMISSIVE,		CreateSolidColorTexture(vec4{ 1, 1, 1, 1 }), "gen_emissive");
 	
 }
 
-void Material::SetTexture(TexType slot, const Image& img) {
-	ASSERT(slot >= BaseColor && slot < TypeCount);
-	textures[slot] = img;
+void Material::SetTexture(TexType slot, const Image& img, String path) {
+	ASSERT(slot >= TEXTYPE_NONE && slot < TEXTYPE_COUNT);
+	tex_id[slot] = owner->AddTexture(img, path);
 }
 
 Image Material::CreateSolidColorTexture(vec4 clr) {

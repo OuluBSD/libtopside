@@ -66,6 +66,7 @@ public:
 	
 	
 	
+	
 	void SetRotation(float yaw, float pitch, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
@@ -77,6 +78,7 @@ public:
 protected:
 	ModelLoader loader;
 	bool loaded = false;
+	int gfx_id = -1;
 	
 	vec3 offset = zero<vec3>();
 	vec3 scale = one<vec3>();

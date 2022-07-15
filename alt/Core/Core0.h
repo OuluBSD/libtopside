@@ -33,7 +33,7 @@
 
 #include <SharedCore/Policies.h>
 
-#include "Config.h"
+#include "config.h"
 #include "Defs.h"
 #include <SharedCore/RTTIDummy.h>
 #include "Macros.h"

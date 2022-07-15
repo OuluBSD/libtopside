@@ -44,6 +44,24 @@ Image Sdl2FileBackend::LoadFileAny(String path) {
 	img->ch = surf->format->BytesPerPixel;
 	img->pitch = surf->pitch;
 	
+	
+	// Swap red and blue
+	if (surf->format->BytesPerPixel >= 3 && surf->format->Bmask == 0xFF && surf->format->Rmask == 0xFF0000) {
+		int stride = surf->format->BytesPerPixel;
+		byte* row = img->data.Begin();
+		for (int y = 0; y < img->h; y++) {
+			byte* b = row;
+			for (int x = 0; x < img->w; x++) {
+				byte t = b[0];
+				b[0] = b[2];
+				b[2] = t;
+				b += stride;
+			}
+			row += img->pitch;
+		}
+	}
+	
+	
 	SDL_FreeSurface(surf);
 	
 	return Image(img);

@@ -51,12 +51,37 @@ struct GfxDataObject : GfxMesh {
     vec4 color;
     int id = -1;
     
-	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
-	int tex_filter[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
 	
 	void Set(const mat4& model, const mat4& scale) {this->model = model; this->scale = scale;}
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
 	bool IsOpenGL() const {return GetGfxType() == GVar::OGL;}
+	
+};
+
+struct GfxMaterial : RTTIBase {
+	RTTI_DECL0(GfxMaterial)
+	
+	int		id = -1;
+	
+	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
+	int tex_filter[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
+	
+};
+
+struct GfxModelState : ErrorReporter {
+	RTTI_DECL1(GfxModelState, ErrorReporter)
+	
+	// meta
+	int		id = -1;
+	
+	virtual GfxDataObject& CreateObject() = 0;
+	virtual int GetObjectCount() const = 0;
+	virtual GfxDataObject& GetObject(int i) = 0;
+	virtual void Refresh(Model& m) = 0;
+	virtual bool LoadModel(ModelLoader& l) = 0;
+	virtual bool LoadModel(ModelLoader& l, String path) = 0;
+	virtual bool LoadModelTextures(ModelLoader& l) = 0;
+	
 	
 };
 
@@ -73,16 +98,9 @@ struct GfxDataState : ErrorReporter {
     bool				is_stereo = false;
     bool				user_view = false;
     bool				dbg_render = false;
-	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
-	virtual GfxDataObject& CreateObject() = 0;
-	virtual int GetObjectCount() const = 0;
-	virtual GfxDataObject& GetObject(int i) = 0;
-	virtual void Refresh(Model& m) = 0;
-	virtual bool LoadModel(ModelLoader& l) = 0;
-	virtual bool LoadModel(ModelLoader& l, String path) = 0;
-	virtual bool LoadModelTextures(ModelLoader& l) = 0;
-	
+	virtual GfxModelState& AddModel() = 0;
+	virtual GfxModelState& GetModel(int i) = 0;
 	
 };
 

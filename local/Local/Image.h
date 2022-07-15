@@ -93,7 +93,8 @@ public:
 	int GetWidth() const;
 	int GetHeight() const;
 	int GetChannels() const;
-	int GetSize() const;
+	int GetLength() const;
+	Size GetSize() const;
 	byte* GetIter(int x, int y);
 	const byte* GetIter(int x, int y) const;
 	

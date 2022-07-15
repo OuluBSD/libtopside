@@ -32,7 +32,7 @@ file
 	Core.h options(BUILDER_OPTION) PCH,
 	Core.cpp,
 	Core0.h,
-	Config.h,
+	config.h,
 	Defs.h,
 	Macros.h,
 	Fn.h,

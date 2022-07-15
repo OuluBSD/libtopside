@@ -6,13 +6,11 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
-	if (0) {
+	if (1) {
 		obj = "cube.obj";
-		tex = "cube.png";
 	}
 	else {
 		obj = "african_head" DIR_SEPS "african_head.obj";
-		tex = "african_head" DIR_SEPS "african_head_diffuse.tga";
 	}
 }
 
@@ -36,8 +34,13 @@ bool ObjViewProgT<Gfx>::Arg(const String& key, const String& value) {
 	else if (key == "model") {
 		obj = value;
 	}
-	else if (key == "tex") {
-		tex = value;
+	else if (key == "skybox.diffuse") {
+		have_skybox = true;
+		skybox_path[TEXTYPE_DIFFUSE] = value;
+	}
+	else if (key == "skybox.emissive" || key == "skybox.irradiance") {
+		have_skybox = true;
+		skybox_path[TEXTYPE_EMISSIVE] = value;
 	}
 	else return false;
 	
@@ -47,6 +50,7 @@ bool ObjViewProgT<Gfx>::Arg(const String& key, const String& value) {
 template <class Gfx>
 bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 	using DataState = DataStateT<Gfx>;
+	using ModelState = ModelStateT<Gfx>;
 	using StateDraw = StateDrawT<Gfx>;
 	
 	StateDraw* sd = CastPtr<StateDraw>(&fb);
@@ -55,23 +59,56 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 	if (frame == 0) {
 		DataState& state = sd->GetState();
 		
-		if (sd->GetState().GetObjectCount() == 0) {
+		if (state.GetModelCount() == 0) {
+			
+			if (have_skybox) {
+				ModelState& skybox = state.AddModelT();
+				float skybox_sz = 1e8;
+				Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
+				Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
+				ModelBuilder mb;
+				Mesh& box_mesh = mb.AddBox(vec3(0), vec3(skybox_sz), true, true);
+				Model& box = mb;
+				for(int i = 0; i < TEXTYPE_COUNT; i++) {
+					String& path = skybox_path[i];
+					if (path.GetCount()) {
+						Image img;
+						for(int j = 0; j < ext_list.GetCount(); j++) {
+							for(int k = 0; k < dir_list.GetCount(); k++) {
+								String s = RealizeShareFile(AppendFileName(dir_list[k], path + ext_list[j]));
+								img = StreamRaster::LoadFileAny(s);
+								if (!img.IsEmpty()) break;
+							}
+							if (!img.IsEmpty()) break;
+						}
+						if (img.IsEmpty()) {
+							LOG("ObjViewProg::Render: error: got empty image from '" << path << "'");
+							return false;
+						}
+						box.SetTexture(box_mesh, (TexType)i, img, path);
+					}
+				}
+				loader = mb;
+				if (!skybox.LoadModel(loader)) {
+					RTLOG("ObjViewProg::Render: error: could not load skybox");
+					return false;
+				}
+				if (!skybox.LoadModelTextures(loader)) {
+					RTLOG("ObjViewProg::Render: error: could not load skybox textures");
+					return false;
+				}
+			}
+			
+			ModelState& mdl = state.AddModelT();
 			
 			String data_dir = ShareDirFile("models");
 			String obj_path = AppendFileName(data_dir, obj);
-			String tex_path = AppendFileName(data_dir, tex);
 			
-			if (!state.LoadModel(loader, obj_path)) {
+			if (!mdl.LoadModel(loader, obj_path)) {
 				RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
 				return false;
 			}
-			
-			if (!loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path)) {
-				RTLOG("ObjViewProg::Render: error: could not load texture '" << tex_path << "'");
-				return false;
-			}
-			
-			if (!state.LoadModelTextures(loader)) {
+			if (!mdl.LoadModelTextures(loader)) {
 				RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
 				return false;
 			}
@@ -166,12 +203,14 @@ void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	if (screen[3] != 0) {
 		screen.Project();
 		a.v.position = screen;
+		//LOG(a.v.position.ToString());
 	}
 }
 
 template <class Gfx>
 ObjViewFragmentT<Gfx>::ObjViewFragmentT() {
 	this->UseUniform(GVar::VAR_DIFFUSE);
+	this->UseUniform(GVar::VAR_EMISSIVE);
 }
 
 template <class Gfx>

@@ -1,7 +1,7 @@
-# Blender MTL File: 'None'
+# Blender MTL File: 'Gun'
 # Material Count: 1
 
-newmtl 9.001
+newmtl 9
 Ns 359.999993
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -10,3 +10,5 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd    GunDiffuse.jpg
+map_Ks    GunSpecular.jpg

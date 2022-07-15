@@ -858,7 +858,7 @@ template <class Gfx> void OglGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 		GL_RGBA,
 		tex.GetWidth(), tex.GetHeight(),
 		0,
-		tex.channels == 4 ? GL_BGRA : GL_BGR,
+		tex.channels == 4 ? GL_RGBA : GL_RGB,
 		GL_UNSIGNED_BYTE, tex.data);
 }
 

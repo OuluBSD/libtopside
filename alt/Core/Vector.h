@@ -759,6 +759,8 @@ public:
 	void RemoveKey(const K& key) {int i = Find(key); if (i >= 0) Remove(i);}
 	void Remove(const Vector<int>& list) {hashes.Remove(list); values.Remove(list);}
 	
+	Index& operator<<(const K& k) {FindAdd(k); return *this;}
+	
 	void operator <<=(const Index& a) {
 		hashes <<= a.hashes;
 		values <<= a.values;

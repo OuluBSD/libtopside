@@ -26,22 +26,16 @@ struct MaterialParameters {
 };
 
 struct Material {
-	typedef enum {
-	    BaseColor = 0,
-	    MetallicRoughness,
-	    Normal,
-	    Occlusion,
-	    Emissive,
-	    
-	    TypeCount
-	} TexType;
-	
 	Model* owner = 0;
-	int index = -1;
+	int id = -1;
 	
 	TrackChanges<MaterialParameters> params;
 	
-    FixedArray<Image, TypeCount> textures;
+    int tex_id[TEXTYPE_COUNT];
+	int tex_filter[TEXTYPE_COUNT];
+	
+	
+	Material();
 	
     // Create a flat (no texture) material.
     void SetFlat(
@@ -49,7 +43,7 @@ struct Material {
         float				roughness_factor = 1.0f,
         float				metallic_factor = 0.0f,
         const vec4&			emissive_factor = vec4{0,0,0,1});
-    void SetTexture(TexType slot, const Image& img);
+    void SetTexture(TexType slot, const Image& img, String path);
     void SetDefault();
 
     void Clear();
@@ -57,6 +51,14 @@ struct Material {
     
     static Image CreateSolidColorTexture(vec4 clr);
     
+	void operator=(const Material& src) {
+		id = src.id;
+		params = src.params;
+        for(int i = 0; i < TEXTYPE_COUNT; i++) {
+			tex_id[i] = src.tex_id[i];
+			tex_filter[i] = src.tex_filter[i];
+        }
+	}
 };
 
 Material DefaultMaterial();

@@ -1,0 +1,30 @@
+machine sdl.app: {
+	
+	driver context: {
+		x11.context: true;
+	};
+	
+	chain program: {
+		state event.register;
+		
+		loop video: {
+			center.customer: true;
+			x11.sw.fbo.program: true {
+				drawmem:				"false";
+				program:				"obj_view";
+				program.arg.use.pbr:	true;
+				program.arg.model:		"ms/Gun.obj";
+				program.arg.skybox.diffuse:		"bg5";
+				program.arg.skybox.irradiance:	"bg1";
+			};
+			x11.sw.video.pipe: true {
+				close_machine:			true;
+				sizeable:				true;
+				env:					event.register;
+				program:				"obj_view";
+			};
+		};
+		
+	};
+
+};

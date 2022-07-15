@@ -12,6 +12,7 @@ struct BufferStageT : GfxBufferStage {
 	using Framebuffer = FramebufferT<Gfx>;
 	using RuntimeState = RuntimeStateT<Gfx>;
 	using DataState = DataStateT<Gfx>;
+	using ModelState = ModelStateT<Gfx>;
 	using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
 	using Sample = GVar::Sample;
@@ -97,8 +98,8 @@ struct BufferStageT : GfxBufferStage {
 	void SetDataStateOverride(DataState* s);
 	void SetStereoDataState(DataState* s);
 	bool SetLoopback(String loopback_str);
-	void SetVars(DataState&, NativeProgram& gl_prog, const DataObject& o);
-	void SetVar(DataState&, int var, NativeProgram& gl_prog, const DataObject& o);
+	void SetVars(DataState&, ModelState&, NativeProgram& gl_prog, const DataObject& o);
+	void SetVar(DataState&, ModelState&, int var, NativeProgram& gl_prog, const DataObject& o);
 	void SetVars(NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
 	void SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
 	void SetInputVolume(int in_id);
@@ -117,6 +118,7 @@ struct BufferT : GfxBuffer {
 	using Base = BufferT<Gfx>;
 	using Buffer = BufferT<Gfx>;
 	using DataState = DataStateT<Gfx>;
+	using ModelState = ModelStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
 	using RuntimeState = RuntimeStateT<Gfx>;
 	using ShaderState = ShaderStateT<Gfx>;

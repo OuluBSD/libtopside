@@ -4,6 +4,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx> struct DataStateT;
+template <class Gfx> struct ModelStateT;
 
 
 template <class Gfx>
@@ -16,9 +17,9 @@ struct DataObjectT : GfxDataObject {
 	using NatVertexArray = typename Gfx::NativeVertexArray;
 	using NatVertexBuffer = typename Gfx::NativeVertexBuffer;
 	using NatElementBuffer = typename Gfx::NativeElementBuffer;
-	using DataStateBase = DataStateT<Gfx>;
+	using ModelState = ModelStateT<Gfx>;
 	
-	DataStateBase* state = 0;
+	ModelState* state = 0;
 	//VectorMap<int,NatTex> tex;
 	uint32 element_count = 0;
 	NatVertexArray vao;
@@ -26,15 +27,16 @@ struct DataObjectT : GfxDataObject {
 	NatElementBuffer ebo;
 	
     int id = -1;
+    int material = -1;
 	
 	
 	DataObjectT();
 	~DataObjectT();
-	void SetState(DataStateBase* state) {this->state = state;}
+	void SetState(ModelState* state) {this->state = state;}
 	void Refresh(Mesh& m) override;
 	void RefreshTexture(Mesh& m) override;
     void Free();
-    void Paint(DataState& state);
+    void Paint(ModelState& state);
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
     
     GVar::GfxType GetGfxType() const override {return Gfx::Type;}
@@ -46,35 +48,45 @@ template <class Gfx> struct InputStateT;
 template <class Gfx> struct FramebufferT;
 
 template <class Gfx>
-struct DataStateT : GfxDataState {
-	RTTI_DECL1(DataStateT, GfxDataState)
-	using Base = DataStateT<Gfx>;
+struct MaterialT : GfxMaterial {
+	RTTI_DECL1(MaterialT, GfxMaterial)
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	
+	int id = -1;
+	int tex_id[TEXTYPE_COUNT];
+	int tex_filter[TEXTYPE_COUNT];
+	
+	MaterialT();
+	
+};
+
+template <class Gfx>
+struct ModelStateT : GfxModelState {
+	RTTI_DECL1(ModelStateT, GfxModelState)
+	using Base = ModelStateT<Gfx>;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
-	using NativeProgram  = typename Gfx::NativeProgram;
-	using NativePipeline = typename Gfx::NativePipeline;
-	using NativeShaderRef   = typename Gfx::NativeShaderRef;
-	//using ShaderState = typename Gfx::ShaderState;
-	using ShaderState = ShaderStateT<Gfx>;
-	//using InputState  = typename Gfx::InputState;
-	using InputState  = InputStateT<Gfx>;
 	using DataObject  = typename Gfx::DataObject;
-	using Framebuffer = FramebufferT<Gfx>;
-	
+	using Material = MaterialT<Gfx>;
 	
 	Array<DataObject> objects;
-	Array<NativeColorBufferRef> textures;
+	ArrayMap<int, Material> materials;
+	ArrayMap<int, NativeColorBufferRef> textures;
 	
-	DataStateT();
-	~DataStateT();
+	
+	ModelStateT();
+	~ModelStateT();
+	
+	void Free();
+	void Clear();
+	
 	DataObject& AddObject();
 	GfxDataObject& CreateObject() override {return AddObject();}
 	int GetObjectCount() const override {return objects.GetCount();}
 	GfxDataObject& GetObject(int i) override {return objects[i];}
+	Material& GetAddMaterial(int material_id);
 	
-	void Free();
-	void Clear();
 	void Refresh(Model& m) override;
 	bool LoadModel(ModelLoader& l) override;
 	bool LoadModel(ModelLoader& l, String path) override;
@@ -82,17 +94,47 @@ struct DataStateT : GfxDataState {
 	
 protected:
 	
-	void ProcessNode(/*GfxDataObject& o,*/ Model& model);
-	void ProcessMesh(/*GfxDataObject& o, Model& mout,*/ Mesh& out);
+	void ProcessNode(Model& model);
+	void ProcessMaterials(Model& model);
+	void ProcessMesh( Mesh& out);
 	
 	#ifdef flagASSIMP
 	bool LoadModelAssimp(ModelLoader& l, String path);
     void RefreshTexture(Model& model);
     void RefreshTexture(Mesh& out);
+    void ProcessMaterials(Model& model, const aiScene *scene);
     void ProcessNode(Model& model, aiNode *node, const aiScene *scene);
     void ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
-    void LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, int type);
+    void ProcessMaterial(Model& mout, TS::Material& m, const aiMaterial *mat);
 	#endif
+	
+	
+};
+
+template <class Gfx>
+struct DataStateT : GfxDataState {
+	RTTI_DECL1(DataStateT, GfxDataState)
+	using Base = DataStateT<Gfx>;
+	using NativeProgram  = typename Gfx::NativeProgram;
+	using NativePipeline = typename Gfx::NativePipeline;
+	using NativeShaderRef   = typename Gfx::NativeShaderRef;
+	using ShaderState = ShaderStateT<Gfx>;
+	using InputState  = InputStateT<Gfx>;
+	using Framebuffer = FramebufferT<Gfx>;
+	using ModelState = ModelStateT<Gfx>;
+	
+	
+	ArrayMap<int, ModelState> models;
+	
+	DataStateT();
+	~DataStateT();
+	
+	ModelState& AddModelT();
+	GfxModelState& AddModel() override {return AddModelT();}
+	GfxModelState& GetModel(int i) override;
+	
+	int GetModelCount() const {return models.GetCount();}
+	void Clear();
 	
 };
 

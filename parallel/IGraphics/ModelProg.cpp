@@ -56,8 +56,8 @@ void ModelProg::DrawLine(const DrawCommand& cmd) {
 	mesh.vertices.Add().Set(x1, y1, 0, 1, 0);
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.is_lines = true;
+	mesh.disable_textures = true;
+	mesh.wireframe_only = true;
 	mesh.indices.Reserve(2);
 	mesh.indices.Add(0);
 	mesh.indices.Add(1);
@@ -85,7 +85,7 @@ void ModelProg::DrawImage(const DrawCommand& cmd) {
 	mesh.vertices.Add().Set(x1, y0, 0, 0, 1);
 	model.textures.Add().Set(cmd.img);
 	//if (GetTextureImageCount()) mesh.textures.Add().img = GetTextureImage(0);
-	mesh.is_colored_only = false;
+	mesh.disable_textures = false;
 	mesh.indices.Reserve(6);
 	mesh.indices.Add(0);
 	mesh.indices.Add(1);
@@ -119,7 +119,7 @@ void ModelProg::DrawRect(const DrawCommand& cmd) {
 	//if (GetTextureImageCount()) model.textures.Add().img = GetTextureImage(0);
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
+	mesh.disable_textures = true;
 	mesh.indices.Reserve(6);
 	mesh.indices.Add(0);
 	mesh.indices.Add(1);
@@ -168,7 +168,7 @@ void ModelProg::DrawTriangles(const DrawCommand& cmd) {
 	}
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
+	mesh.disable_textures = true;
 	mesh.Refresh(state->CreateObject());
 }
 
@@ -193,8 +193,8 @@ void ModelProg::DrawPolyline(const DrawCommand& cmd) {
 	}
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.is_lines = true;
+	mesh.disable_textures = true;
+	mesh.wireframe_only = true;
 	mesh.Refresh(state->CreateObject());
 }
 

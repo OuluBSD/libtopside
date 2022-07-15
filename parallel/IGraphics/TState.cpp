@@ -4,6 +4,18 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
+MaterialT<Gfx>::MaterialT() {
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		tex_id[i] = -1;
+		tex_filter[i] = -1;
+	}
+}
+
+
+
+
+
+template <class Gfx>
 DataObjectT<Gfx>::DataObjectT() {
 	vao = Null;
 	vbo = Null;
@@ -63,31 +75,31 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 
 template <class Gfx>
 void DataObjectT<Gfx>::RefreshTexture(Mesh& m) {
-	// copy texture ids
-	static_assert(sizeof(tex_id) == sizeof(m.tex_id), "tex_id mismatch");
-	memcpy(tex_id, m.tex_id, sizeof(tex_id));
-	memcpy(tex_filter, m.tex_filter, sizeof(tex_filter));
+	material = m.material;
 }
 	
 template <class Gfx>
-void DataObjectT<Gfx>::Paint(DataState& state) {
+void DataObjectT<Gfx>::Paint(ModelState& state) {
 	if (!element_count)
 		return;
 	
-	for(int i = 0; i < TEXTYPE_COUNT; i++) {
-		int id = tex_id[i];
-		int ch = TEXTYPE_OFFSET + i;
-		Gfx::ActiveTexture(ch);
-		if (id >= 0) {
-			auto& tex = state.textures[id];
-			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+	if (material >= 0) {
+		MaterialT<Gfx>& mat = state.materials.Get(material);
+		
+		for(int i = 0; i < TEXTYPE_COUNT; i++) {
+			int id = mat.tex_id[i];
+			int ch = TEXTYPE_OFFSET + i;
+			Gfx::ActiveTexture(ch);
+			if (id >= 0) {
+				auto& tex = state.textures.Get(id);
+				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+			}
+			else {
+				Gfx::UnbindTexture(GVar::TEXTYPE_2D);
+			}
+			Gfx::DeactivateTexture();
 		}
-		else {
-			Gfx::UnbindTexture(GVar::TEXTYPE_2D);
-		}
-		Gfx::DeactivateTexture();
 	}
-	
 	
 	// bind vbos for vertex array and index array
 	Gfx::BindVertexArray(vao);
@@ -111,31 +123,35 @@ void DataObjectT<Gfx>::Paint(DataState& state) {
 
 
 
+
+
+
+
 template <class Gfx>
-DataStateT<Gfx>::DataStateT() {
+ModelStateT<Gfx>::ModelStateT() {
 	
 }
 
 template <class Gfx>
-DataStateT<Gfx>::~DataStateT() {
+ModelStateT<Gfx>::~ModelStateT() {
 	Free();
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::Free() {
-	for (NativeColorBufferRef& t : textures)
+void ModelStateT<Gfx>::Free() {
+	for (NativeColorBufferRef& t : textures.GetValues())
 		Gfx::DeleteTexture(t);
 	textures.Clear();
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::Clear() {
+void ModelStateT<Gfx>::Clear() {
 	Free();
 	objects.Clear();
 }
 
 template <class Gfx>
-typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
+typename Gfx::DataObject& ModelStateT<Gfx>::AddObject() {
 	DataObject* p = new DataObject();
 	p->SetState(this);
 	objects.Add(p);
@@ -145,7 +161,12 @@ typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l) {
+MaterialT<Gfx>& ModelStateT<Gfx>::GetAddMaterial(int material_id) {
+	return materials.GetAdd(material_id);
+}
+
+template <class Gfx>
+bool ModelStateT<Gfx>::LoadModel(ModelLoader& l) {
 	ASSERT(l.model);
 	if (!l.model) return false;
 	
@@ -154,18 +175,19 @@ bool DataStateT<Gfx>::LoadModel(ModelLoader& l) {
     l.model->directory = "";
 	
     ProcessNode(*l.model);
+    ProcessMaterials(*l.model);
     
     return true;
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(Model& model) {
+void ModelStateT<Gfx>::ProcessNode(Model& model) {
 	for (Mesh& mesh : model.meshes)
 		ProcessMesh(mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, Model& mout,*/ Mesh& out) {
+void ModelStateT<Gfx>::ProcessMesh(Mesh& out) {
 	DataObject* obj = 0;
 	if (!out.accel) {
 		obj = &AddObject();
@@ -181,12 +203,12 @@ void DataStateT<Gfx>::ProcessMesh(/*GfxDataObject& o, Model& mout,*/ Mesh& out) 
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::Refresh(Model& m) {
+void ModelStateT<Gfx>::Refresh(Model& m) {
 	ProcessNode(m);
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, String path) {
+bool ModelStateT<Gfx>::LoadModel(ModelLoader& l, String path) {
 	#ifdef flagASSIMP
 	return LoadModelAssimp(l,  path);
 	#endif
@@ -195,8 +217,8 @@ bool DataStateT<Gfx>::LoadModel(ModelLoader& l, String path) {
 
 #ifdef flagASSIMP
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
-	LOG("DataStateT::LoadModelAssimp: " << path);
+bool ModelStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
+	LOG("ModelStateT::LoadModelAssimp: " << path);
     Assimp::Importer import_;
     const aiScene *scene = import_.ReadFile(path.Begin(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 	
@@ -210,23 +232,22 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
     l.model->path = path;
     l.model->directory = GetFileDirectory(path);
 	
+    ProcessMaterials(*l.model, scene);
     ProcessNode(*l.model, scene->mRootNode, scene);
     
     return true;
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
+bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 	Model& m = *l.model;
 	
-	int prev_count = textures.GetCount();
-	int count = m.textures.GetCount();
-	textures.SetCount(count);
-	for(int i = prev_count; i < count; i++) textures[i] = Null;
+	textures.Clear();
 	
 	for(int i = 0; i < m.textures.GetCount(); i++) {
-		NativeColorBufferRef& buf = textures[i];
-		ByteImage& tex = m.textures[i];
+		int id = m.textures.GetKey(i);
+		NativeColorBufferRef& buf = textures.GetAdd(id);
+		ByteImage& tex = m.textures[i].img;
 		
 		if (buf || tex.IsEmpty())
 			continue;
@@ -250,7 +271,81 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(Model& model, aiNode *node, const aiScene *scene) {
+void ModelStateT<Gfx>::ProcessMaterials(Model& model, const aiScene *scene) {
+	model.materials.Clear();
+	for(int i = 0; i < scene->mNumMaterials; i++) {
+		const aiMaterial* m = scene->mMaterials[i];
+		ASSERT(m);
+		TS::Material& mat = model.materials.Add(i);
+		mat.id = i;
+		ProcessMaterial(model, mat, m);
+	}
+	ProcessMaterials(model);
+}
+
+template <class Gfx>
+void ModelStateT<Gfx>::ProcessMaterial(Model& model, TS::Material& m, const aiMaterial *mat) {
+	for (int type = 0; type <= aiTextureType_UNKNOWN; type++) {
+		int c = mat->GetTextureCount((aiTextureType) type);
+		if (c > 1) {
+			TODO
+		}
+		
+		for(unsigned int i = 0; i < c; i++) {
+			TexType textype = TEXTYPE_COUNT;
+			switch (type) {
+				#define TYPE(x) case aiTextureType_##x: textype = TEXTYPE_##x; break;
+				TYPE(NONE)
+				TYPE(DIFFUSE)
+				TYPE(SPECULAR)
+				TYPE(AMBIENT)
+				TYPE(EMISSIVE)
+				TYPE(HEIGHT)
+				TYPE(NORMALS)
+				TYPE(SHININESS)
+				TYPE(OPACITY)
+				TYPE(DISPLACEMENT)
+				TYPE(LIGHTMAP)
+				TYPE(REFLECTION)
+				TYPE(UNKNOWN)
+				#undef TYPE
+			}
+			if (textype == TEXTYPE_COUNT) continue;
+			
+	        if (m.tex_id[type] >= 0) {
+	            LOG("warning: ModelLoader: multiple textures per mesh: " << model.path);
+	            break;
+	        }
+	        aiString str;
+	        str.Clear();
+	        int r = mat->GetTexture((aiTextureType) type, i, &str);
+	        
+	        String path = AppendFileName(model.directory, str.C_Str());
+	        Image img = StreamRaster::LoadFileAny(path);
+	        m.tex_id[textype] = model.GetAddTexture(img, path);
+	        m.tex_filter[textype] = 1;
+	    }
+	}
+}
+
+template <class Gfx>
+void ModelStateT<Gfx>::ProcessMaterials(Model& model) {
+	
+	for(int i = 0; i < model.materials.GetCount(); i++) {
+		TS::Material& mat = model.materials[i];
+		ASSERT(mat.id >= 0);
+		MaterialT<Gfx>& gfx_mat = materials.GetAdd(mat.id);
+		gfx_mat.id = mat.id;
+		for(int j = 0; j < TEXTYPE_COUNT; j++) {
+			gfx_mat.tex_id[j] = mat.tex_id[j];
+			gfx_mat.tex_filter[j] = mat.tex_filter[j];
+			ASSERT(gfx_mat.tex_id[j] < 0 || gfx_mat.tex_filter[j] >= 0);
+		}
+	}
+}
+
+template <class Gfx>
+void ModelStateT<Gfx>::ProcessNode(Model& model, aiNode *node, const aiScene *scene) {
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
@@ -263,7 +358,7 @@ void DataStateT<Gfx>::ProcessNode(Model& model, aiNode *node, const aiScene *sce
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+void ModelStateT<Gfx>::ProcessMesh(Model& model, Mesh& out, aiMesh *mesh, const aiScene *scene) {
 	out.vertices.SetCount(mesh->mNumVertices);
 	
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -302,12 +397,7 @@ void DataStateT<Gfx>::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const ai
 	}
 	
     // process material
-    if(mesh->mMaterialIndex >= 0) {
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		
-		for(int i = 1; i < TEXTYPE_COUNT; i++)
-			LoadMaterialTextures(mout, out, material, i);
-    }
+    out.material = mesh->mMaterialIndex;
 	
 	GfxDataObject* o;
 	if (!out.accel) {
@@ -320,13 +410,13 @@ void DataStateT<Gfx>::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const ai
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(Model& model) {
+void ModelStateT<Gfx>::RefreshTexture(Model& model) {
 	for (Mesh& mesh : model.meshes)
 		RefreshTexture(mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(Mesh& out) {
+void ModelStateT<Gfx>::RefreshTexture(Mesh& out) {
 	ASSERT(out.accel);
 	if (!out.accel) return;
 	DataObjectT<Gfx>* o = CastPtr<DataObjectT<Gfx>>(out.accel);
@@ -336,26 +426,53 @@ void DataStateT<Gfx>::RefreshTexture(Mesh& out) {
 	o->RefreshTexture(out);
 }
 
+
+
+
+
+
+
+
+
+
+
 template <class Gfx>
-void DataStateT<Gfx>::LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, int type) {
-	for(unsigned int i = 0; i < mat->GetTextureCount((aiTextureType) type); i++) {
-        if (out.tex_id[type] >= 0) {
-            LOG("warning: ModelLoader: multiple textures per mesh: " << mout.path);
-            break;
-        }
-        aiString str;
-        mat->GetTexture((aiTextureType) type, i, &str);
-        
-        String path = AppendFileName(mout.directory, str.C_Str());
-        mout.AddTextureFile(out, (TexType) type, path);
-    }
+DataStateT<Gfx>::DataStateT() {
+	
 }
+
+template <class Gfx>
+DataStateT<Gfx>::~DataStateT() {
+	Clear();
+}
+
+template <class Gfx>
+ModelStateT<Gfx>& DataStateT<Gfx>::AddModelT() {
+	int id = models.IsEmpty() ? 0 : models.Top().id + 1;
+	ModelState& ms = models.Add(id);
+	ms.id = id;
+	return ms;
+}
+
+template <class Gfx>
+GfxModelState& DataStateT<Gfx>::GetModel(int i) {
+	return models.Get(i);
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::Clear() {
+	models.Clear();
+}
+
+
+
 #endif
 
 
 //GFX_EXCPLICIT_INITIALIZE_CLASS(VertexShaderArgsT)
 //GFX_EXCPLICIT_INITIALIZE_CLASS(FragmentShaderArgsT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(DataObjectT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(ModelStateT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(DataStateT)
 
 NAMESPACE_PARALLEL_END

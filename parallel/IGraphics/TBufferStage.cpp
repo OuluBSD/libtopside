@@ -327,7 +327,8 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 	m.indices << 0 << 2 << 1; // top-right triangle CCW
 	m.indices << 0 << 3 << 2; // bottom-left triangle CCW
 	
-	DataObject& o = LocalState().AddObject();
+	ModelState& mdl = LocalState().models.IsEmpty() ? LocalState().AddModelT() : LocalState().models.Top();
+	DataObject& o = mdl.AddObject();
 	o.Refresh(m);
 }
 
@@ -373,7 +374,7 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		//if (binders.IsEmpty()) {
 		if (0)
 			Gfx::RenderScreenRect();
-		else if (used_data.objects.IsEmpty()) {
+		else if (used_data.models.IsEmpty()) {
 			for(int i = 0; i < quad_count; i++)
 				MakeFrameQuad();
 		}
@@ -387,16 +388,18 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		{
 			SetVars(rt.prog, cfg);
 			
-			for (DataObject& o : used_data.objects) {
-				if (!o.is_visible)
-					continue;
-				
-				Gfx::BeginRenderObject();
-				
-				SetVars(used_data, rt.prog, o);
-				o.Paint(used_data);
-				
-				Gfx::EndRenderObject();
+			for (ModelState& m : used_data.models.GetValues()) {
+				for (DataObject& o : m.objects) {
+					if (!o.is_visible)
+						continue;
+					
+					Gfx::BeginRenderObject();
+					
+					SetVars(used_data, m, rt.prog, o);
+					o.Paint(m);
+					
+					Gfx::EndRenderObject();
+				}
 			}
 		}
 		
@@ -409,16 +412,18 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		{
 			SetVars(rt.prog, cfg);
 			
-			for (DataObject& o : user_data->objects) {
-				if (!o.is_visible)
-					continue;
-				
-				Gfx::BeginRenderObject();
-				
-				SetVars(*user_data, rt.prog, o);
-				o.Paint(*user_data);
-				
-				Gfx::EndRenderObject();
+			for (ModelState& m : user_data->models.GetValues()) {
+				for (DataObject& o : m.objects) {
+					if (!o.is_visible)
+						continue;
+					
+					Gfx::BeginRenderObject();
+					
+					SetVars(*user_data, m, rt.prog, o);
+					o.Paint(m);
+					
+					Gfx::EndRenderObject();
+				}
 			}
 		}
 		
@@ -824,14 +829,14 @@ int BufferStageT<Gfx>::NewWriteBuffer() {
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetVars(DataState& d, NativeProgram& gl_prog, const DataObject& o) {
+void BufferStageT<Gfx>::SetVars(DataState& d, ModelState& m, NativeProgram& gl_prog, const DataObject& o) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
 		if (GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
-			SetVar(d, i, gl_prog, o);
+			SetVar(d, m, i, gl_prog, o);
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog, const DataObject& o) {
+void BufferStageT<Gfx>::SetVar(DataState& data, ModelState& mdl, int var, NativeProgram& gl_prog, const DataObject& o) {
 	using namespace GVar;
 	
 	auto& env = buf->env;
@@ -883,10 +888,13 @@ void BufferStageT<Gfx>::SetVar(DataState& data, int var, NativeProgram& gl_prog,
 	}
 	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
 		int tex_ch = var - VAR_NONE;
-		int tex_i = o.tex_id[tex_ch];
-		int tex_f = o.tex_filter[tex_ch];
+		if (o.material < 0)
+			return;
+		auto& mat = mdl.materials.Get(o.material);
+		int tex_i = mat.tex_id[tex_ch];
+		int tex_f = mat.tex_filter[tex_ch];
 		if (tex_i >= 0) {
-			auto& tex = data.textures[tex_i];
+			auto& tex = mdl.textures[tex_i];
 			Gfx::ActiveTexture(tex_ch);
 			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
 			if (tex_f == 0)

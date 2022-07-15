@@ -295,12 +295,17 @@ aiReturn aiGetMaterialString(const aiMaterial* pMat,
     if( aiPTI_String == prop->mType) {
         ai_assert(prop->mDataLength>=5);
 
+		#if 1
         // The string is stored as 32 but length prefix followed by zero-terminated UTF8 data
         pOut->length = static_cast<unsigned int>(*reinterpret_cast<uint32_t*>(prop->mData));
 
         ai_assert( pOut->length+1+4==prop->mDataLength );
         ai_assert( !prop->mData[ prop->mDataLength - 1 ] );
         memcpy(pOut->data,prop->mData+4,pOut->length+1);
+        #else
+        pOut->length = prop->mDataLength;
+        memcpy(pOut->data,prop->mData,pOut->length+1);
+        #endif
     }
     else {
         // TODO - implement lexical cast as well

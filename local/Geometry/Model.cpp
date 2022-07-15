@@ -26,16 +26,22 @@ bool Model::AddTextureFile(int mesh_i, TexType type, String path) {
 bool Model::AddTextureFile(Mesh& mesh, TexType type, String path){
 	if (FileExists(path)) {
         Image src = StreamRaster::LoadFileAny(path);
-        return SetTexture(mesh, type, src);
+        return SetTexture(mesh, type, src, path);
     }
 	return false;
 }
 
-bool Model::SetTexture(Mesh& mesh, TexType type, Image img) {
+bool Model::SetTexture(Mesh& mesh, TexType type, Image img, String path) {
 	if (IsPositive(img.GetSize())) {
-        mesh.tex_id[type] = textures.GetCount();
-        mesh.tex_filter[type] = 1; // LINEAR
-        textures.Add().Set(img);
+		if (mesh.material < 0) {
+			Material& mat = AddMaterial();
+			mesh.material = mat.id;
+		}
+		Material& mat = materials.Get(mesh.material);
+		ASSERT(mat.id >= 0);
+		int tex_id = GetAddTexture(img, path);
+        mat.tex_id[type] = tex_id;
+        mat.tex_filter[type] = 1; // LINEAR
         return true;
     }
     return false;
@@ -68,9 +74,10 @@ Mesh& Model::AddMesh() {
 }
 
 Material& Model::AddMaterial() {
-	Material& m = materials.Add();
+	int id = materials.IsEmpty() ? 0 : materials.Top().id + 1;
+	Material& m = materials.Add(id);
 	m.owner = this;
-	m.index = materials.GetCount()-1;
+	m.id = id;
 	return m;
 }
 
@@ -118,9 +125,37 @@ void Model::Dump() {
 	}
 	LOG("Textures:");
 	for(int i = 0; i < textures.GetCount(); i++) {
-		LOG("\t" << i << ": " << (int)textures[i].sz.cx << "x" << (int)textures[i].sz.cy);
+		Size sz = textures[i].img.GetSize();
+		LOG("\t" << i << ": " << textures[i].path << ": " << (int)sz.cx << "x" << (int)sz.cy);
 	}
 }
+
+int Model::AddTexture(const Image& img, String path) {
+	int id = textures.IsEmpty() ? 0 : textures.GetKey(textures.GetCount()-1) + 1;
+	Texture& t = textures.Add(id);
+	t.img.Set(img);
+	t.path = path;
+	return id;
+}
+
+int Model::GetAddTexture(const Image& img, String path) {
+	int i = FindTexture(path);
+	if (i >= 0)
+		return i;
+	if (img.IsEmpty())
+		return -1;
+	return AddTexture(img, path);
+}
+
+int Model::FindTexture(String path) {
+	for(int i = 0; i < textures.GetCount(); i++) {
+		Texture& tex = textures[i];
+		if (tex.path == path)
+			return textures.GetKey(i);
+	}
+	return -1;
+}
+
 
 #if 0
 
@@ -161,11 +196,11 @@ void Model::Refresh(FramebufferState& s, GfxDataObject& o, Mesh& mesh) {
 	}
     
     
-    /*if (!mesh.is_colored_only)
-	    s.SetBool("is_colored_only", false);
+    /*if (!mesh.disable_textures)
+	    s.SetBool("disable_textures", false);
     else {
         vec4 v4 = MakeVec4(mesh.material.ambient, 1);
-        s.SetBool("is_colored_only", true);
+        s.SetBool("disable_textures", true);
         s.SetVec4("in_color", v4);
     }*/
 	
