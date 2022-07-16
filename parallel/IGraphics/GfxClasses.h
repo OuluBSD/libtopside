@@ -98,6 +98,10 @@ struct GfxDataState : ErrorReporter {
     bool				is_stereo = false;
     bool				user_view = false;
     bool				dbg_render = false;
+    
+	// target framebuffer
+	vec2				resolution;
+	vec2				offset;
 	
 	virtual GfxModelState& AddModel() = 0;
 	virtual GfxModelState& GetModel(int i) = 0;
@@ -118,6 +122,7 @@ struct GfxInputState : ErrorReporter {
 	
 	int id = -1;
 	InputType type;
+	bool is_loopback = false;
 	
 	void Clear() {id = -1; type = GVar::InputType::INVALID;}
 	
@@ -187,14 +192,6 @@ struct GfxFramebuffer : ErrorReporter {
 
 struct GfxShader;
 
-struct GfxShaderPipeline : RTTIBase {
-	RTTI_DECL0(GfxShaderPipeline)
-	GfxShaderPipeline() {}
-	virtual ~GfxShaderPipeline() {}
-	
-	
-};
-
 struct GfxShader : RTTIBase {
 	
 protected:
@@ -237,6 +234,27 @@ public:
 	
 };
 
+struct GfxProgramState : ErrorReporter {
+	RTTI_DECL1(GfxProgramState, ErrorReporter)
+	
+	int		id = -1;
+	bool	pending_compilation = false;
+	
+};
+
+struct GfxPipelineState : RTTIBase {
+	RTTI_DECL0(GfxPipelineState)
+	GfxPipelineState() {}
+	virtual ~GfxPipelineState() {}
+	
+	
+};
+
+struct GfxCompilerArgs {
+	bool is_audio = false;
+	bool is_affine = false;
+};
+	
 struct GfxCompiler : ErrorReporter {
 	RTTI_DECL1(GfxCompiler, ErrorReporter)
 	
@@ -264,12 +282,8 @@ struct GfxBufferStage : ErrorReporter {
 	
 };
 
-struct GfxRuntimeState : ErrorReporter {
-	RTTI_DECL1(GfxRuntimeState, ErrorReporter)
-	
-	int		id = -1;
-	
-};
+
+
 
 
 
@@ -336,7 +350,7 @@ struct GfxStateDraw : Draw {
 	virtual GfxRenderer* GetRenderer() = 0;
 	virtual GfxFramebuffer* GetFramebuffer() = 0;
 	
-	virtual void DrawShaderPipeline(GfxShaderPipeline&) {Panic("not implemented");}
+	virtual void DrawShaderPipeline(GfxPipelineState&) {Panic("not implemented");}
 	*/
 	
 	virtual GfxDataState& GetGfxState() = 0;

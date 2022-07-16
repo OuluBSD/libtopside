@@ -150,7 +150,7 @@ PKG(Graphics, Gfx, G) {
 		CLASS(ShaderPipeline) {
 			
 		}
-		CLASS(RuntimeState) {
+		CLASS(PipelineState) {
 			INHERIT(ErrorReporter)
 			
 		}

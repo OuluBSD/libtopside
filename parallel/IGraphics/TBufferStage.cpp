@@ -39,15 +39,28 @@ void BufferStageT<Gfx>::SetStereoLens() {
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetStereoDataState(DataState* s) {
-	stereo_data = s;
+void BufferStageT<Gfx>::SetDataState(DataState* s) {
+	data = s;
+	pipeline = 0;
+	prog = 0;
+	if (data && data->pipelines.GetCount() == 1) {
+		pipeline = &data->pipelines[0];
+		if (pipeline->programs.GetCount() == 1) {
+			prog = &pipeline->programs[0];
+			
+			if (prog->pending_compilation) {
+				Compile();
+			}
+		}
+	}
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetDataStateOverride(DataState* s) {
-	//ASSERT(!user_data || !s);
-	user_data = s;
-	use_user_data = (s != 0);
+GfxCompilerArgs BufferStageT<Gfx>::GetCompilerArgs() const {
+	GfxCompilerArgs args;
+	args.is_affine = fb.is_affine;
+	args.is_audio = fb.is_audio;
+	return args;
 }
 
 template <class Gfx>
@@ -99,10 +112,10 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 				if (name.GetCount())
 					name += extension;
 				
-				if (path.IsEmpty() && name.IsEmpty() && i == GL::FRAGMENT_SHADER && j == tries-1) {
+				/*if (path.IsEmpty() && name.IsEmpty() && i == GL::FRAGMENT_SHADER && j == tries-1) {
 					LOG("BufferStageT<Gfx>::Initialize: error: no fragment shader given (for stage " << id << ")");
 					return false;
-				}
+				}*/
 				
 				if (path.GetCount()) {
 					conf.is_path = true;
@@ -129,9 +142,9 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 			if (value.IsEmpty())
 				;
 			else if (value == "volume")
-				SetInputVolume(i);
+				prog->SetInputVolume(i);
 			else if (value == "cubemap")
-				SetInputCubemap(i);
+				prog->SetInputCubemap(i);
 			else
 				TODO
 		}
@@ -190,95 +203,8 @@ bool BufferStageT<Gfx>::ImageInitialize() {
 		ShaderConf& conf = shdr_confs[i];
 		
 		if (conf.str.GetCount() &&
-			!LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
+			!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
 			return false;
-	}
-	
-	return true;
-}
-
-template <class Gfx>
-bool BufferStageT<Gfx>::LoadShaderContent(GVar::ShaderType shader_type, String content) {
-	DLOG("BufferStageT::LoadShaderContent");
-	
-	ASSERT(shader_type > GVar::SHADERTYPE_NULL && shader_type < GVar::SHADERTYPE_COUNT);
-	ShaderState& shader = rt.shaders[shader_type];
-	
-	shader.code = content;
-	shader.library = "";
-	
-	return true;
-}
-
-template <class Gfx>
-bool BufferStageT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path) {
-	DLOG("BufferStageT::LoadShaderFile: " << shader_path);
-	
-	ASSERT(shader_type > GVar::SHADERTYPE_NULL && shader_type < GVar::SHADERTYPE_COUNT);
-	ShaderState& shader = rt.shaders[shader_type];
-	
-	Vector<String> libraries = Split(library_path, ";");
-	String library;
-	bool succ = true;
-	for (String& lib : libraries) {
-		String path = RealizeShareFile(lib);
-		if (FileExists(path)) {
-			if (libraries.GetCount() > 1)
-				library << "// FILE: " << path << "\n\n";
-			library << LoadFile(path) << "\n\n";
-		}
-		else {
-			LOG("LoadShaderFile: error: file does not exist: " << path);
-			succ = false;
-		}
-	}
-	if (!succ) return false;
-	
-	if (!FileExists(shader_path))
-		shader_path = ShareDirFile(shader_path);
-	
-	if (!FileExists(shader_path)) {
-		LOG("LoadShaderFile: error: file does not exist: " << shader_path);
-		return false;
-	}
-	
-	String content = LoadFile(shader_path);
-	if (content.IsEmpty()) {
-		LOG("LoadShaderFile: error: got empty shader file from: " << shader_path);
-		return false;
-	}
-	
-	//DUMP(content);
-	shader.code = content;
-	shader.library = library;
-	
-	return true;
-}
-
-template <class Gfx>
-bool BufferStageT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bool is_path, bool is_content, String library_paths) {
-	if (str.IsEmpty()) {
-		LOG("BufferStageT<Gfx>::LoadShader: error: no shader given");
-		return false;
-	}
-	
-	if (is_path) {
-		if (!LoadShaderFile(shader_type, str, library_paths)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from '" + str + "'");
-			return false;
-		}
-	}
-	else if (is_content) {
-		if (!LoadShaderContent(shader_type, str)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from content string");
-			return false;
-		}
-	}
-	else {
-		if (!LoadBuiltinShader(shader_type, str)) {
-			LOG("BufferStageT<Gfx>::LoadShader: error: shader loading failed from name '" + str + "'");
-			return false;
-		}
 	}
 	
 	return true;
@@ -296,19 +222,6 @@ bool BufferStageT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_
 	}
 	return true;
 }*/
-
-template <class Gfx>
-bool BufferStageT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
-	int i = SoftShaderLibrary::GetMap(shader_type).Find(id);
-	if (i < 0) {
-		SetError("could not find shader");
-		return false;
-	}
-	
-	soft[shader_type] = SoftShaderLibrary::GetMap(shader_type)[i]();
-	
-	return true;
-}
 
 template <class Gfx>
 void BufferStageT<Gfx>::MakeFrameQuad() {
@@ -334,16 +247,18 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 
 template <class Gfx>
 void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
-	ASSERT(rt.prog);
-	if (rt.prog == 0)
+	auto& pipeline = *this->prog->owner;
+	auto& prog = *this->prog;
+	
+	ASSERT(prog.native);
+	if (prog.native == 0)
 		return;
 	
-	auto& ctx = buf->ctx;
-	
-	Gfx::BindProgramPipeline(rt.pipeline);
-	Gfx::UseProgram(rt.prog);
-	if (!rt.is_searched_vars)
-		FindVariables();
+	ASSERT(pipeline.native);
+	Gfx::BindProgramPipeline(pipeline.native);
+	Gfx::UseProgram(prog.native);
+	if (!prog.is_searched_vars)
+		prog.FindVariables();
 
 	int bi = NewWriteBuffer();
 	
@@ -359,76 +274,45 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	Gfx::Clear(GVar::DEPTH_BUFFER);
 	//Gfx::Clear(GVar::STENCIL_BUFFER);
 	
-	if (!use_user_data) {
-		DataState& used_data = stereo_data ? *stereo_data : data;
-		
-		/*if (binders.GetCount()) {
-			Buffer* buf = CastPtr<Buffer>(this);
-			ASSERT(buf);
-			Shader shader;
-			shader.SetState(used_data);
-			for (BinderIface* iface : binders)
-				iface->Render(used_data);
-		}*/
-		
-		//if (binders.IsEmpty()) {
+	if (data_writable) {
 		if (0)
 			Gfx::RenderScreenRect();
-		else if (used_data.models.IsEmpty()) {
+		else if (data->models.IsEmpty()) {
 			for(int i = 0; i < quad_count; i++)
 				MakeFrameQuad();
 		}
-		//}
+	}
+	
+	// render VBA from state
+	Gfx::BeginRender();
+	
+	//if (ctx.frames > 0)
+	{
 		
+		prog.SetVars(buf->ctx, buf->env, cfg);
 		
-		// render VBA from state
-		Gfx::BeginRender();
-		
-		//if (ctx.frames > 0)
-		{
-			SetVars(rt.prog, cfg);
-			
-			for (ModelState& m : used_data.models.GetValues()) {
-				for (DataObject& o : m.objects) {
-					if (!o.is_visible)
-						continue;
-					
-					Gfx::BeginRenderObject();
-					
-					SetVars(used_data, m, rt.prog, o);
-					o.Paint(m);
-					
-					Gfx::EndRenderObject();
-				}
+		for (ModelState& m : data->models.GetValues()) {
+			for (DataObject& o : m.objects) {
+				if (!o.is_visible)
+					continue;
+				
+				SetVars(cfg, o);
+				
+				Gfx::BeginRenderObject();
+				
+				typename ProgramState::ViewTarget vtgt = ProgramState::VIEW_TARGET_MONO;
+				if (fb.is_stereo_left)   vtgt = ProgramState::VIEW_TARGET_STEREO_LEFT;
+				if (fb.is_stereo_right)  vtgt = ProgramState::VIEW_TARGET_STEREO_RIGHT;
+				
+				prog.SetVars(buf->ctx, m, o, vtgt);
+				o.Paint(m);
+				
+				Gfx::EndRenderObject();
 			}
 		}
-		
-		Gfx::EndRender();
 	}
-	else if (user_data) {
-		Gfx::BeginRender();
-		
-		//if (ctx.frames > 0)
-		{
-			SetVars(rt.prog, cfg);
-			
-			for (ModelState& m : user_data->models.GetValues()) {
-				for (DataObject& o : m.objects) {
-					if (!o.is_visible)
-						continue;
-					
-					Gfx::BeginRenderObject();
-					
-					SetVars(*user_data, m, rt.prog, o);
-					o.Paint(m);
-					
-					Gfx::EndRenderObject();
-				}
-			}
-		}
-		
-		Gfx::EndRender();
-	}
+	
+	Gfx::EndRender();
 	
 	Gfx::UnbindProgramPipeline();
 	
@@ -472,24 +356,6 @@ void BufferStageT<Gfx>::UseRenderedFramebuffer() {
 	TODO // glReadPixels will crash mysteriously
 	Gfx::ReadPixels(0, 0, s.size.cx, s.size.cy, fmt, type, fb_out.Begin());
 	#endif
-}
-
-template <class Gfx>
-bool BufferStageT<Gfx>::SetupLoopback() {
-	if (loopback < 0)
-		return true;
-	
-	if (loopback >= GVar::INPUT_COUNT) {
-		LOG("SetupLoopback: error: too large loopback id #" << loopback);
-		return false;
-	}
-	
-	InputState& in = rt.inputs[loopback];
-	in.stage = this;
-	in.id = rt.id;
-	in.type = GVar::BUFFER_INPUT;
-	
-	return true;
 }
 
 template <class Gfx>
@@ -635,47 +501,16 @@ void BufferStageT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d
 
 template <class Gfx>
 void BufferStageT<Gfx>::RefreshPipeline() {
-	DLOG("BufferT::RefreshPipeline begin");
-	
-	CreatePipeline();
-	
+	ASSERT(pipeline);
+	pipeline->Realize();
 	UpdateTexBuffers();
-	
-	//if (!CheckInputTextures())
-	//	return;
-	
-	DLOG("BufferT::RefreshPipeline end");
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::ClearPipeline() {
-	if (rt.pipeline) {
-		Gfx::DeleteProgramPipeline(rt.pipeline);
-	}
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::CreatePipeline() {
-	ClearPipeline();
-	
-	Gfx::GenProgramPipeline(rt.pipeline);
-	
-	
-	// only 1 program in pipeline currently
-	{
-		auto& prog = rt.prog;
-		if (prog >= 0) {
-			int bmask = 0;
-			for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
-				if (rt.shaders[(GVar::ShaderType)i].enabled) {
-					int bit = 1 << i;
-					bmask |= bit;
-				}
-			}
-			ASSERT(bmask != 0);
-			Gfx::UseProgramStages(rt.pipeline, bmask, prog);
-		}
-	}
+bool BufferStageT<Gfx>::Compile() {
+	ASSERT(prog);
+	prog->pending_compilation = false;
+	return prog->Compile(GetCompilerArgs());
 }
 
 template <class Gfx>
@@ -784,421 +619,10 @@ void BufferStageT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::FindVariables() {
-	int n_uniforms = 0;
-	Gfx::GetProgramiv(rt.prog, GVar::ACTIVE_UNIFORMS, n_uniforms);
-	
-	memset(rt.var_idx, -1, sizeof(rt.var_idx));
-	rt.user_vars.Clear();
-	RendVer(OnClearVars);
-	for (int i = 0; i < n_uniforms; i++) {
-		int size = 0;
-		int type = 0;
-		String name_str = Gfx::GetActiveUniform(rt.prog, i, &size, &type);
-		const char* name = name_str;
-		
-		bool found = false;
-		bool state_var = false;
-		for(int j = 0; j < GVar::VAR_COUNT; j++) {
-			const char* var_name = GVar::names[j];
-			if (strncmp(var_name, name, 128) == 0) {
-				rt.var_idx[j] = i;
-				if (j == GVar::VAR_COMPAT_DATE && !rt.is_time_used)
-					rt.is_time_used = true;
-				found = true;
-				state_var = !GVar::is_obj_var[j];
-				break;
-			}
-		}
-		
-		if (!found) {
-			rt.user_vars << name_str;
-		}
-		
-		RendVer2(OnRealizeVar, name_str, state_var);
-	}
-	
-	rt.is_searched_vars = true;
-}
-
-template <class Gfx>
 int BufferStageT<Gfx>::NewWriteBuffer() {
 	if (fb.is_doublebuf)
 		fb.buf_i = (fb.buf_i + 1) % 2;
 	return fb.buf_i;
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetVars(DataState& d, ModelState& m, NativeProgram& gl_prog, const DataObject& o) {
-	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
-			SetVar(d, m, i, gl_prog, o);
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetVar(DataState& data, ModelState& mdl, int var, NativeProgram& gl_prog, const DataObject& o) {
-	using namespace GVar;
-	
-	auto& env = buf->env;
-	auto& ctx = buf->ctx;
-	
-	int uindex = rt.var_idx[var];
-	ASSERT(uindex >= 0);
-	if (var == VAR_AUDIOTIME) {
-		//LOG("VAR_AUDIOTIME: " << ctx.time_total);
-		Gfx::Uniform1f(uindex, (float)ctx.time_total);
-	}
-	else if (var == VAR_MODELCOLOR) {
-		Gfx::Uniform4f(uindex, o.color[0], o.color[1], o.color[2], o.color[3]);
-	}
-	else if (var == VAR_VIEW) {
-		if (fb.is_stereo_left) {
-			/*mat4 m = data.view_stereo[0] * Translate(vec3(0,1.76,-6));
-			vec3 pos = Position(m);
-			Gfx::UniformMatrix4fv(uindex, m);*/
-			
-			ASSERT(data.is_stereo);
-			Gfx::UniformMatrix4fv(uindex, data.view_stereo[0]);
-		}
-		else if (fb.is_stereo_right) {
-			/*mat4 m = data.view_stereo[1] * Translate(vec3(0,1.76,-6));
-			vec3 pos = Position(m);
-			Gfx::UniformMatrix4fv(uindex, m);*/
-			
-			ASSERT(data.is_stereo);
-			Gfx::UniformMatrix4fv(uindex, data.view_stereo[1]);
-		}
-		else
-			Gfx::UniformMatrix4fv(uindex, data.view);
-	}
-	else if (var == VAR_LIGHTDIR) {
-		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
-	}
-	else if (var == VAR_PROJECTIONOVERRIDE) {
-		Gfx::UniformMatrix4fv(uindex, o.proj_override);
-	}
-	else if (var == VAR_SCALE) {
-		Gfx::UniformMatrix4fv(uindex, o.scale);
-	}
-	else if (var == VAR_VIEWOVERRIDE) {
-		Gfx::UniformMatrix4fv(uindex, o.view_override);
-	}
-	else if (var == VAR_MODEL) {
-		Gfx::UniformMatrix4fv(uindex, o.model);
-	}
-	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
-		int tex_ch = var - VAR_NONE;
-		if (o.material < 0)
-			return;
-		auto& mat = mdl.materials.Get(o.material);
-		int tex_i = mat.tex_id[tex_ch];
-		int tex_f = mat.tex_filter[tex_ch];
-		if (tex_i >= 0) {
-			auto& tex = mdl.textures[tex_i];
-			Gfx::ActiveTexture(tex_ch);
-			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
-			if (tex_f == 0)
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
-			else if (tex_f == 1)
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
-			Gfx::Uniform1i(uindex, tex_ch);
-			Gfx::DeactivateTexture();
-		}
-	}
-	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL1) {
-		TODO
-	}
-	else if (var == VAR_COMPAT_CHANNELRESOLUTION) {
-		TODO
-	}
-	else if (var == VAR_LENS_CENTER) {
-		if (o.model.data[3][0] < 0)
-			Gfx::Uniform2f(uindex, left_lens_center[0], left_lens_center[1]);
-		else
-			Gfx::Uniform2f(uindex, right_lens_center[0], right_lens_center[1]);
-	}
-	else if (var == VAR_VIEWPORT_SCALE) {
-		Gfx::Uniform2f(uindex, viewport_scale[0], viewport_scale[1]);
-	}
-	else if (var == VAR_WARP_SCALE) {
-		Gfx::Uniform1f(uindex, warp_scale);
-	}
-	else if (var == VAR_HMD_WARP_PARAM) {
-		Gfx::Uniform4f(uindex, hmd_warp_param[0], hmd_warp_param[1], hmd_warp_param[2], hmd_warp_param[3]);
-	}
-	else if (var == VAR_ABERR) {
-		Gfx::Uniform3f(uindex, aberr[0], aberr[1], aberr[2]);
-	}
-	else {
-		TODO
-	}
-	#if 0
-	if (var == VAR_VIEW) {
-		if (o.is_global_view)
-			Gfx::UniformMatrix4fv(uindex, data.view);
-		else
-			Gfx::UniformMatrix4fv(uindex, o.view);
-	}
-	else if (var == VAR_PROJECTION) {
-		/*if (o.is_global_proj)
-			TODO
-		else*/
-		Gfx::UniformMatrix4fv(uindex, o.proj);
-	}
-	else if (var == VAR_SCALE) {
-		Gfx::UniformMatrix4fv(uindex, o.scale);
-	}
-	else if (var == VAR_MODEL) {
-		Gfx::UniformMatrix4fv(uindex, o.model);
-	}
-	#endif
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetVars(NativeProgram& gl_prog, const RealtimeSourceConfig& cfg) {
-	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (!GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
-			SetVar(i, gl_prog, cfg);
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceConfig& cfg) {
-	using namespace GVar;
-	int uindex = rt.var_idx[var];
-	ASSERT(uindex >= 0);
-	if (uindex < 0)
-		return;
-	
-	//RTLOG("BufferT<Gfx>::SetVar: " << GVar::names[var]);
-	
-	EnvStateRef& env = buf->env;
-	ContextState& ctx = buf->ctx;
-	
-	RendVer1(OnUpdateVar, GVar::names[var]);
-	
-	if (var == VAR_AUDIOTIME) {
-		Gfx::Uniform1f(uindex, (float)ctx.time_total);
-	}
-	
-	else if (var == VAR_VIEW) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_VIEWOVERRIDE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_PROJECTIONOVERRIDE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_SCALE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_MODEL) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_COMPAT_RESOLUTION) {
-		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
-		Gfx::Uniform3f(uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
-	}
-	
-	else if (var == VAR_COMPAT_TIME) {
-		//RTLOG("SetVar: " << time_total);
-		Gfx::Uniform1f(uindex, (float)ctx.time_total);
-	}
-	
-	else if (var == VAR_COMPAT_TIMEDELTA) {
-		ASSERT(ctx.frame_time != 0.0);
-		Gfx::Uniform1f(uindex, (float)ctx.frame_time);
-	}
-	
-	else if (var == VAR_COMPAT_FRAME) {
-		Gfx::Uniform1i(uindex, ctx.frames);
-	}
-	
-	else if (var == VAR_COMPAT_MOUSE) {
-		if (env) {
-			#ifdef flagSCREEN
-			Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
-			Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
-			Gfx::Uniform4f(uindex,
-				(float)mouse_drag.x,
-				(float)mouse_drag.y,
-				(float)mouse_click.x,
-				(float)mouse_click.y);
-			#endif
-		}
-	}
-	
-	else if (var == VAR_COMPAT_DATE) {
-		double sec = ((int)ctx.time.hour * 60 + (int)ctx.time.minute) * 60 + (int)ctx.time.second;
-		sec += ctx.time_us;
-		Gfx::Uniform4f(uindex, (float)ctx.time.year, (float)ctx.time.month, (float)ctx.time.day, (float)sec);
-	}
-	
-	else if (var == VAR_COMPAT_SAMPLERATE) {
-		ASSERT(ctx.sample_rate > 0);
-		Gfx::Uniform1f(uindex, (float)ctx.sample_rate);
-	}
-	
-	else if (var == VAR_COMPAT_OFFSET) {
-		if (fb.size.cx > 0 && fb.size.cy > 0) {
-			int x = fb.offset.x;
-			int y = fb.size.cy - fb.size.cy - fb.offset.y; // -y_offset
-			Gfx::Uniform2f(uindex, (float)x, (float)y);
-		} else {
-			Gfx::Uniform2f(uindex, 0.0f, 0.0f);
-		}
-	}
-	
-	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
-		int ch = var - VAR_COMPAT_CHANNEL0;
-		int tex_ch = COMPAT_OFFSET + ch;
-		NativeColorBufferConstRef tex = GetInputTex(ch);
-		// may fail in early program: ASSERT(tex);
-		if (tex) {
-			//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
-			Gfx::ActiveTexture(tex_ch);
-			Gfx::BindTextureRO(GetTexType(ch), tex);
-			Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
-			Gfx::Uniform1i(uindex, tex_ch);
-			Gfx::DeactivateTexture();
-		}
-	}
-	
-	else if (var >= VAR_BUFFERSTAGE0_COLOR && var <= VAR_BUFFERSTAGE4_COLOR) {
-		int ch = var - VAR_BUFFERSTAGE0_COLOR;
-		int tex_ch = BUFFERSTAGE_OFFSET + ch;
-		
-		if (ch < buf->stages.GetCount()) {
-			auto& stage = buf->stages[ch];
-			NativeColorBufferConstRef tex = stage.fb.color_buf[stage.fb.buf_i];
-			// may fail in early program: ASSERT(tex);
-			if (tex) {
-				//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
-				Gfx::ActiveTexture(tex_ch);
-				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
-				Gfx::Uniform1i(uindex, tex_ch);
-				Gfx::DeactivateTexture();
-			}
-		}
-	}
-	
-	else if (var == VAR_COMPAT_FRAMERATE) {
-		ASSERT(fb.fps > 0);
-		Gfx::Uniform1f(uindex, (float)fb.fps);
-	}
-	
-	else if (var == VAR_COMPAT_CHANNELTIME) {
-		float values[INPUT_COUNT];
-		for(int j = 0; j < INPUT_COUNT; j++) {
-			InputState& in = rt.inputs[j];
-			values[j] = in.stage ? in.stage->buf->ctx.time_total : 0;
-		}
-		//Gfx::Uniform1fv(uindex, 4, values);
-		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
-	}
-	
-	else if (var == VAR_COMPAT_CHANNELRESOLUTION) {
-		float values[3*4] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
-		for(int j = 0; j < INPUT_COUNT; j++) {
-			InputState& in = rt.inputs[j];
-			const BufferStageT* in_stage = in.stage;
-			if (in_stage){
-				int off = j * 3;
-				auto& in_fb = in_stage->fb;
-				values[off + 0] = (float)in_fb.size.cx;
-				values[off + 1] = (float)in_fb.size.cy;
-				values[off + 2] = (float)in_fb.depth;
-			}
-		}
-		Gfx::Uniform3fv(uindex, 4, values);
-	}
-	
-	else if (var == VAR_COMPAT_BLOCKOFFSET) {
-		Gfx::Uniform1f(uindex, (float)ctx.block_offset);
-	}
-	else {
-		ASSERT_(false, "Invalid variable");
-	}
-}
-
-template <class Gfx>
-TNG NativeColorBufferConstRef BufferStageT<Gfx>::GetInputTex(int input_i) const {
-	const char* fn_name = "GetInputTex";
-	//DLOG("BufferT::GetInputTex");
-	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
-		return 0;
-	
-	const InputState& in = rt.inputs[input_i];
-	if (in.stage == 0) {
-		RTLOG("GetInputTex: warning: no input fbo stage");
-		return 0;
-	}
-	
-	NativeColorBufferConstRef tex = in.stage->GetOutputTexture(in.stage == this);
-	ASSERT(tex);
-	
-	return tex;
-}
-
-template <class Gfx>
-GVar::TextureType BufferStageT<Gfx>::GetTexType(int input_i) const {
-	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
-		return GVar::TEXTYPE_2D;
-	
-	const InputState& in = rt.inputs[input_i];
-	
-	if (in.type == GVar::VOLUME_INPUT)
-		return GVar::TEXTYPE_3D;
-	
-	else if (in.type == GVar::CUBEMAP_INPUT)
-		return GVar::TEXTYPE_CUBE_MAP;
-	
-	else
-		return GVar::TEXTYPE_2D;
-}
-
-template <class Gfx>
-bool BufferStageT<Gfx>::CompilePrograms() {
-	/*const char* fn_name = "CompilePrograms";
-	for(int i = 0; i < PROG_COUNT; i++) {
-		if (i == FRAGMENT_SHADER && !CompileFragmentShader())
-			return false;
-		if (i == VERTEX_SHADER && !CompileVertexShader())
-			return false;
-	}*/
-	auto& ctx = buf->ctx;
-	
-	int r;
-	if ((r = BuiltinShader()) != 0) {
-		//breaks simple quad rendering: use_user_data = true;
-		return r > 0;
-	}
-	//use_user_data = false;
-	
-	Compiler comps[GVar::SHADERTYPE_COUNT];
-	Linker linker;
-	linker.EnableLog();
-	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
-		auto& s = rt.shaders[i];
-		if (s.code.IsEmpty())
-			continue;
-		
-		Compiler& comp = comps[i];
-		s.enabled = true;
-		
-		if (!comp.Compile(ctx, rt, fb, s, (GVar::ShaderType)i)) {
-			SetError(comp.GetError());
-			return false;
-		}
-	}
-	
-	if (!linker.Link(rt)) {
-		SetError(linker.GetError());
-		return false;
-	}
-	
-	return true;
 }
 
 template <class Gfx>
@@ -1233,50 +657,9 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 		}
 	}
 	else {
+		// if data is InternalPacketData call other LoadInputLink
 		TODO
 	}
-	// if data is InternalPacketData call other LoadInputLink
-	TODO
-	#if 0
-	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
-		//LOG("LoadInputLink: " << name << " #" << in_id);
-		
-		InputState& in = rt.inputs[in_id];
-		in.id = in_id;
-		if (in.fb_for_rawdata.IsEmpty()) {
-			in.fb_for_rawdata.Create();
-			in.fb_for_rawdata->Init(
-				vfmt.GetSize(),
-				vfmt.GetChannels(),
-				vfmt.GetType(),
-				v.Begin(), v.GetCount());
-		}
-		else {
-			in.fb_for_rawdata->ReadTexture(
-				vfmt.GetSize(),
-				vfmt.GetChannels(),
-				vfmt.GetType(),
-				v.Begin(), v.GetCount());
-		}
-		in.in_buf = &*in.fb_for_rawdata;
-		
-		
-		Size3 sz = vfmt.GetSize();
-		ASSERT(sz.cx > 0 && sz.cy > 0);
-		
-		if (fb.is_cubemap)
-			in.type = GVar::CUBEMAP_INPUT;
-		else if (sz.cz > 0)
-			in.type = GVar::VOLUME_INPUT;
-		else {
-			ASSERT(in.type != GVar::VOLUME_INPUT);
-			in.type = GVar::TEXTURE_INPUT;
-		}
-		
-		return true;
-	}
-	#endif
-	
 	
 	RTLOG("LoadInputLink: error: unexpected data");
 	return false;
@@ -1284,110 +667,66 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 
 template <class Gfx>
 bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
-	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
-		//LOG("LoadInputLink: " << name << " #" << in_id);
-		GfxBufferStage* gstage = (GfxBufferStage*)v.ptr;
-		BufferStageT* stage = CastPtr<BufferStageT<Gfx>>(gstage);
-		if (!stage) {
-			ASSERT_(0, "Buffer's Gfx type differs");
-			return false;
-		}
-		ASSERT(v.ptr);
-		InputState& in = rt.inputs[in_id];
-		in.id = in_id;
-		in.stage = stage;
-		
-		auto& fb = stage->fb;
-		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
-		
-		if (fb.is_cubemap)
-			in.type = GVar::CUBEMAP_INPUT;
-		else if (fb.depth > 0)
-			in.type = GVar::VOLUME_INPUT;
-		else {
-			ASSERT(in.type != GVar::VOLUME_INPUT);
-			in.type = GVar::TEXTURE_INPUT;
-		}
-		
-		return true;
-	}
+	return prog->LoadInputLink(in_id, v);
+}
+
+template <class Gfx>
+void BufferStageT<Gfx>::SetVars(const RealtimeSourceConfig& cfg, const DataObject& o) {
+	for(int i = 0; i < GVar::VAR_COUNT; i++)
+		if (!GVar::is_obj_var[i] && prog->var_idx[i] >= 0)
+			SetVar(i, cfg, o);
+}
+
+template <class Gfx>
+void BufferStageT<Gfx>::SetVar(int var, const RealtimeSourceConfig& cfg, const DataObject& o) {
+	using namespace GVar;
+	int uindex = prog->var_idx[var];
+	ASSERT(uindex >= 0);
+	if (uindex < 0)
+		return;
 	
-	RTLOG("LoadInputLink: error: unexpected data");
-	return false;
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetInputVolume(int in_id) {
-	ASSERT(in_id >= 0 && in_id < GVar::INPUT_COUNT);
-	InputState& in = rt.inputs[in_id];
-	in.type = GVar::VOLUME_INPUT;
-}
-
-template <class Gfx>
-void BufferStageT<Gfx>::SetInputCubemap(int in_id) {
-	ASSERT(in_id >= 0 && in_id < GVar::INPUT_COUNT);
-	InputState& in = rt.inputs[in_id];
-	in.type = GVar::CUBEMAP_INPUT;
-}
-
-template <class Gfx>
-int BufferStageT<Gfx>::BuiltinShader() {return 0;}
-
-template <class Gfx>
-template <int>
-int BufferStageT<Gfx>::BuiltinShaderT() {
-	bool succ = false;
-	if (!rt.pipeline)
-		rt.pipeline.Create();
-	int shdr_count = 0;
-	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
-		if (soft[i]) {
-			shdr_count++;
-			GVar::ShaderType t = (GVar::ShaderType)i;
-			auto& s = rt.shaders[i];
-			ASSERT(!s.shader);
-			if (!Gfx::CreateShader((GVar::ShaderType)i, s.shader)) {
-				LOG("BufferStageT<Gfx>::BuiltinShaderT: error: could not create shader");
-				SetError("could not create shader (at BufferT<Gfx>::BuiltinShaderT)");
-				return -1;
+	if (var >= VAR_BUFFERSTAGE0_COLOR && var <= VAR_BUFFERSTAGE4_COLOR) {
+		int ch = var - VAR_BUFFERSTAGE0_COLOR;
+		int tex_ch = BUFFERSTAGE_OFFSET + ch;
+		
+		if (ch < buf->stages.GetCount()) {
+			auto& stage = buf->stages[ch];
+			NativeColorBufferConstRef tex = stage.fb.color_buf[stage.fb.buf_i];
+			// may fail in early program: ASSERT(tex);
+			if (tex) {
+				//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
+				Gfx::ActiveTexture(tex_ch);
+				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+				Gfx::Uniform1i(uindex, tex_ch);
+				Gfx::DeactivateTexture();
 			}
-			ASSERT(s.shader);
-			if (!s.shader) continue;
-			//s.shader.Create(t);
-			s.shader->SetShaderBase(*soft[i]);
-			s.enabled = true;
-			if (!rt.prog) {
-				rt.prog.Create();
-			}
-			rt.prog.Attach(*s.shader);
-			rt.pipeline.Use(rt.prog, 1 << i);
-			if (i == GVar::FRAGMENT_SHADER)
-				succ = true;
 		}
 	}
-	if (!succ) {
-		if (shdr_count == 0)
-			SetError("RuntimeState got no shaders");
+	else if (var == VAR_COMPAT_FRAMERATE) {
+		ASSERT(fb.fps > 0);
+		Gfx::Uniform1f(uindex, (float)fb.fps);
+	}
+	else if (var == VAR_LENS_CENTER) {
+		if (o.model.data[3][0] < 0)
+			Gfx::Uniform2f(uindex, left_lens_center[0], left_lens_center[1]);
 		else
-			SetError("RuntimeState got no soft fragment shader");
+			Gfx::Uniform2f(uindex, right_lens_center[0], right_lens_center[1]);
+	}
+	else if (var == VAR_VIEWPORT_SCALE) {
+		Gfx::Uniform2f(uindex, viewport_scale[0], viewport_scale[1]);
+	}
+	else if (var == VAR_WARP_SCALE) {
+		Gfx::Uniform1f(uindex, warp_scale);
+	}
+	else if (var == VAR_HMD_WARP_PARAM) {
+		Gfx::Uniform4f(uindex, hmd_warp_param[0], hmd_warp_param[1], hmd_warp_param[2], hmd_warp_param[3]);
+	}
+	else if (var == VAR_ABERR) {
+		Gfx::Uniform3f(uindex, aberr[0], aberr[1], aberr[2]);
 	}
 	
-	return succ ? 1 : -1;
 }
-
-#ifdef flagSDL2
-template <>
-int BufferStageT<SdlSwGfx>::BuiltinShader() {
-	return BuiltinShaderT<0>();
-}
-#endif
-
-#ifdef flagPOSIX
-template <>
-int BufferStageT<X11SwGfx>::BuiltinShader() {
-	return BuiltinShaderT<0>();
-}
-#endif
 
 
 

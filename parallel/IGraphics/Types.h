@@ -23,7 +23,7 @@ class VideoFormat;
 	/*GFX_CLS(ShaderState, g)*/ \
 	/*GFX_CLS(Shader, g)*/ \
 	GFX_CLS(ShaderPipeline, g) \
-	/*GFX_CLS(RuntimeState, g)*/ \
+	/*GFX_CLS(PipelineState, g)*/ \
 	/*GFX_CLS(FramebufferStateExt, g)*/ \
 	/*GFX_CLS(ContextState, g)*/ \
 	GFX_CLS(Renderer, g) \

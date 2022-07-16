@@ -13,7 +13,7 @@ SoftShaderT<Gfx>::SoftShaderT() {
 
 template <class Gfx>
 void SoftShaderT<Gfx>::Clear() {
-	
+	s.Clear();
 }
 
 template <class Gfx>

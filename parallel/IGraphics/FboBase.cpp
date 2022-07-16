@@ -27,7 +27,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	draw_mem = ws.Get(".drawmem") == "true"; // Dumb "local render" (forward raw data)
 	//gfxbuf = ws.Get(".gfxbuf") == "true"; // SoftRender rending locally (not just data-forwarding)
 	program = ws.Get(".program");
-	gfxpack = ws.Get(".gfxpack") == "true";
+	//gfxpack = ws.Get(".gfxpack") == "true";
 	
 	if (program.IsEmpty()) {
 		LOG("FboAtomT<Gfx>::Initialize: error: no 'program' attribute was given");
@@ -44,8 +44,43 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	data.prog = bin_map[bin_i]();
-	binders.Add(&*data.prog);
+	Index<String> shader_keys;
+	ws.FindKeys(".shader.", shader_keys);
+	for (String key : shader_keys) {
+		String value = ws.GetString(key);
+		int begin = 8;
+		int i = key.Find(".", begin);
+		if (i <= begin) {
+			LOG("FboAtomT<Gfx>::Initialize: error: invalid key '" << key << "'");
+			return false;
+		}
+		PipelineState& pipe = data.GetAddPipeline("default");
+		
+		String prog_name = key.Mid(begin, i - begin);
+		ProgramState& prog = pipe.GetAddProgram(prog_name);
+		String shader_key = key.Mid(i+1);
+		if (shader_key == "frag.path") {
+			if (!prog.LoadShaderFile(GVar::FRAGMENT_SHADER, value, "")) {
+				LOG("FboAtomT<Gfx>::Initialize: error: loading shader failed from '" << value << "'");
+				return false;
+			}
+		}
+		else if (shader_key == "vtx.path") {
+			if (!prog.LoadShaderFile(GVar::VERTEX_SHADER, ws.GetString(key), "")) {
+				LOG("FboAtomT<Gfx>::Initialize: error: loading shader failed from '" << value << "'");
+				return false;
+			}
+		}
+		else {
+			LOG("FboAtomT<Gfx>::Initialize: error: invalid key '" << shader_key << "'");
+			return false;
+		}
+		
+		prog.pending_compilation = true;
+	}
+	
+	own_binder = bin_map[bin_i]();
+	binders.Add(&*own_binder);
 	
 	Index<String> keys;
 	ws.FindKeys(".program.arg.", keys);
@@ -60,7 +95,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 		}
 	}
 	
-	if (gfxpack) {
+	/*if (gfxpack) {
 		String frag = program + "_fragment";
 		String vtx  = program + "_vertex";
 		auto& frag_map = SoftShaderLibrary::GetMap(GVar::FRAGMENT_SHADER);
@@ -80,7 +115,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 		
 		data.frag_prog = frag_map[frag_i]();
 		data.vtx_prog = vtx_map[vtx_i]();
-	}
+	}*/
 	
 	
 	return true;
@@ -107,7 +142,7 @@ bool FboAtomT<Gfx>::PostInitialize() {
 
 template <class Gfx>
 void FboAtomT<Gfx>::Uninitialize() {
-	data.Uninitialize();
+	data.Clear();
 }
 
 template <class Gfx>
@@ -124,129 +159,18 @@ bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 template <class Gfx>
 bool FboAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	RTLOG("FboAtomT::ProcessPackets:");
-	
-	#if 0
-	int src_ch = io.src_count > 1 ? 1 : 0;
-	int sink_ch = 0; //io.sink_count > 1 ? 1 : 0;
-	
-	if (src_type == VD(CENTER, PROG)) {
-		Size sz(800, 600);
-		
-		pd.Create(sz);
-		for (BinderIfaceVideo* b : binders)
-			b->Render(pd);
-		pd.Finish();
-		
-		if (io.sink_count == 1) {
-			PacketIO::Sink& sink = io.sink[sink_ch];
-			PacketIO::Source& src = io.src[src_ch];
-			
-			ASSERT(sink.p);
-			sink.may_remove = true;
-			src.from_sink_ch = 0;
-			src.p = this->ReplyPacket(src_ch, sink.p);
-			
-			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			data.ptr = &pd.cmd_screen_begin;
-		}
-		else {
-			TODO
-		}
-	}
-	else if (src_type == VD(CENTER, VIDEO)) {
-		Format fmt = io.src[src_ch].val->GetFormat();
-		ASSERT(fmt.IsVideo());
-		
-		Size sz = fmt.vid.GetSize();
-		int stride = fmt.vid.GetPackedCount();
-		
-		// render to memory
-		if (draw_mem) {
-			id.Create(sz, stride);
-			for (BinderIfaceVideo* b : binders)
-				b->Render(id);
-			id.Finish();
-			
-			if (io.sink_count == 1) {
-				PacketIO::Sink& sink = io.sink[sink_ch];
-				PacketIO::Source& src = io.src[src_ch];
-				
-				ASSERT(sink.p);
-				sink.may_remove = true;
-				src.from_sink_ch = 0;
-				src.p = this->ReplyPacket(src_ch, sink.p);
-				
-				#if 0
-				Swap(src.p->Data(), id.Data());
-				#else
-				InternalPacketData& data = src.p->SetData<InternalPacketData>();
-				data.ptr = (byte*)id.Data().Begin();
-				data.count = id.Data().GetCount();
-				data.SetText("gfxvector");
-				#endif
-			}
-			else {
-				TODO
-			}
-		}
-		// render to state
-		else {
-			cpu_fb.size = sz;
-			cpu_fb.channels = stride;
-			cpu_fb.sample = GVar::SAMPLE_U8;
-			cpu_sd.SetTarget(cpu_state);
-			
-			for (BinderIfaceVideo* b : binders)
-				b->Render(cpu_sd);
-			
-			
-			PacketIO::Sink& sink = io.sink[sink_ch];
-			PacketIO::Source& src = io.src[src_ch];
-			
-			ASSERT(sink.p);
-			sink.may_remove = true;
-			src.from_sink_ch = 0;
-			src.p = this->ReplyPacket(src_ch, sink.p);
-			
-			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			data.ptr = &cpu_state;
-			data.SetText("gfxstate");
-		}
-	}
-	else
-	#endif
 	 
 	if (src_type == VD(CENTER,FBO) ||
 		src_type == VD(OGL,FBO)) {
-		/*Format fmt = io.src[src_ch].val->GetFormat();
-		ASSERT(fmt.IsFbo());
-		
-		Size sz = fmt.vid.GetSize();
-		int stride = fmt.vid.GetPackedCount();
-		*/
-		accel_sd.SetTarget(data.accel_state);
+		accel_sd.SetTarget(data);
 		for (BinderIfaceVideo* b : binders)
 			if (!b->Render(accel_sd))
 				return false;
 		
-		/*
-		PacketIO::Sink& sink = io.sink[sink_ch];
-		PacketIO::Source& src = io.src[src_ch];
-		
-		ASSERT(sink.p);
-		sink.may_remove = true;
-		src.from_sink_ch = 0;
-		src.p = ReplyPacket(src_ch, sink.p);*/
-		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
-		if (gfxpack) {
-			data.ptr = &this->data;
-			data.SetText("gfxpack");
-		}
-		else {
-			data.ptr = &(GfxDataState&)this->data.accel_state;
-			data.SetText("gfxstate");
-		}
+		
+		data.ptr = &(GfxDataState&)this->data;
+		data.SetText("gfxstate");
 	}
 	else {
 		ASSERT_(0, "TODO");

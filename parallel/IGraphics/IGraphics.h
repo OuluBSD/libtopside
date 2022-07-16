@@ -99,9 +99,9 @@ typedef unsigned int	Gxbf;
 #include "GfxClasses.h"
 #include "ImageBase.h"
 
+#include "TPipeline.h"
 #include "TState.h"
 #include "TFramebuffer.h"
-#include "TRuntime.h"
 #include "TContext.h"
 #include "TUtil.h"
 #include "TBuffer.h"

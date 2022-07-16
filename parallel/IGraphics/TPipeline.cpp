@@ -23,9 +23,8 @@ bool CompilerT<Gfx>::CompileShader(String code, GVar::ShaderType type, NativeSha
 
 template <class Gfx>
 bool CompilerT<Gfx>::Compile(
-				const ContextState& ctx,
-				RuntimeState& rt,
-				Framebuffer& fb,
+				const GfxCompilerArgs& args,
+				ProgramState& ps,
 				ShaderState& shdr,
 				GVar::ShaderType type) {
 	bool succ = true;
@@ -36,17 +35,17 @@ bool CompilerT<Gfx>::Compile(
 	Gfx::HotfixShaderCode(library);
 	Gfx::HotfixShaderCode(user_code);
 	
-	String sampler0 = rt.inputs[0].GetSamplerString();
-	String sampler1 = rt.inputs[1].GetSamplerString();
-	String sampler2 = rt.inputs[2].GetSamplerString();
-	String sampler3 = rt.inputs[3].GetSamplerString();
+	String sampler0 = ps.inputs[0].GetSamplerString();
+	String sampler1 = ps.inputs[1].GetSamplerString();
+	String sampler2 = ps.inputs[2].GetSamplerString();
+	String sampler3 = ps.inputs[3].GetSamplerString();
 	
 	bool is_fragment = type == GVar::FRAGMENT_SHADER;
 	bool is_vertex = type == GVar::VERTEX_SHADER;
 	code.Replace("${IS_FRAGMENT_SHADER}", IntStr(is_fragment));
 	code.Replace("${IS_VERTEX_SHADER}", IntStr(is_vertex));
-	code.Replace("${IS_AUDIO}", IntStr(fb.is_audio));
-	code.Replace("${IS_AFFINE}", IntStr(fb.is_affine));
+	code.Replace("${IS_AUDIO}", IntStr(args.is_audio));
+	code.Replace("${IS_AFFINE}", IntStr(args.is_affine));
 	code.Replace("${USER_CODE}", user_code);
 	code.Replace("${USER_LIBRARY}", library);
 	code.Replace("${SAMPLER0}", sampler0);
@@ -59,9 +58,9 @@ bool CompilerT<Gfx>::Compile(
 	{
 		EnableGfxAccelDebugMessages(1);
 		
-		succ = CompileShader(code, type, shdr.shader);
+		succ = CompileShader(code, type, shdr.native);
 		
-		rt.is_searched_vars = false;
+		ps.is_searched_vars = false;
 		
 		EnableGfxAccelDebugMessages(0);
 	}
@@ -74,33 +73,33 @@ bool CompilerT<Gfx>::Compile(
 
 
 template <class Gfx>
-bool LinkerT<Gfx>::Link(RuntimeState& rt) {
-	CHKLOGRET0(rt.prog == 0, "Linker::Link: error: trying to overwrite compiled program");
+bool LinkerT<Gfx>::Link(ProgramState& ps) {
+	CHKLOGRET0(ps.native == 0, "Linker::Link: error: trying to overwrite compiled program");
 	
-	Gfx::CreateProgram(rt.prog);
-	CHKLOGRET0(rt.prog, "Linker::Link: error: opengl error")
+	Gfx::CreateProgram(ps.native);
+	CHKLOGRET0(ps.native, "Linker::Link: error: opengl error")
 	
-	Gfx::ProgramParameteri(rt.prog, GVar::PROGRAM_SEPARABLE, true);
+	Gfx::ProgramParameteri(ps.native, GVar::PROGRAM_SEPARABLE, true);
 	
 	uint8 complied_count = 0;
 	EnableGfxAccelDebugMessages(1);
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
-		ShaderState& shd_state = rt.shaders[i];
-		if (!shd_state.shader)
+		ShaderState& shd_state = ps.shaders[i];
+		if (!shd_state.native)
 			continue;
 		complied_count++;
 		
-		Gfx::AttachShader(rt.prog, shd_state.shader);
-		Gfx::DeleteShader(shd_state.shader);
-		shd_state.shader = Null;
+		Gfx::AttachShader(ps.native, shd_state.native);
+		Gfx::DeleteShader(shd_state.native);
+		shd_state.native = Null;
 	}
 	EnableGfxAccelDebugMessages(0);
 	CHKLOGRET0(complied_count, "Linker::Link: error: no compiled shaders found");
 	
-	bool succ = Gfx::LinkProgram(rt.prog);
+	bool succ = Gfx::LinkProgram(ps.native);
 	
 	if (!succ) {
-		String err = Gfx::GetLastErrorP(rt.prog);
+		String err = Gfx::GetLastErrorP(ps.native);
 		SetError(err);
 		return false;
 	}
@@ -108,13 +107,13 @@ bool LinkerT<Gfx>::Link(RuntimeState& rt) {
 	// diagnostics
 	if (log) {
 		int n_uniforms = 0;
-		Gfx::GetProgramiv(rt.prog, GVar::ACTIVE_UNIFORMS, n_uniforms);
+		Gfx::GetProgramiv(ps.native, GVar::ACTIVE_UNIFORMS, n_uniforms);
 		LOG("\t\t" << (int)n_uniforms << " uniforms:");
 		
 		
 		for (int i = 0; i < n_uniforms; i++) {
 			int size = 0, type = 0;
-			String name = Gfx::GetActiveUniform(rt.prog, i, &size, &type);
+			String name = Gfx::GetActiveUniform(ps.native, i, &size, &type);
 			LOG("\t\t\t" << i << ": " << String(name) << " (type: " << HexStr(type) << ", size: " << (int)size << ")");
 		}
 	}
@@ -123,13 +122,67 @@ bool LinkerT<Gfx>::Link(RuntimeState& rt) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <class Gfx>
+ProgramStateT<Gfx>& PipelineStateT<Gfx>::GetAddProgram(String name) {
+	int i = programs.Find(name);
+	if (i >= 0)
+		return programs[i];
+	ProgramStateT<Gfx>& ps = programs.Add(name);
+	ps.owner = this;
+	ps.name = name;
+	return ps;
+}
+
+template <class Gfx>
+void PipelineStateT<Gfx>::Realize() {
+	if (!native)
+		Create();
+	
+	for (ProgramState& prog : programs.GetValues())
+		prog.RefreshProgramStages();
+}
+
+template <class Gfx>
+void PipelineStateT<Gfx>::Clear() {
+	if (native) {
+		Gfx::DeleteProgramPipeline(native);
+	}
+}
+
+template <class Gfx>
+void PipelineStateT<Gfx>::Create() {
+	Clear();
+	
+	Gfx::GenProgramPipeline(native);
+	
+	for (ProgramState& prog : programs.GetValues())
+		prog.RefreshProgramStages();
+}
+
+
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(CompilerT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(LinkerT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderStateT)
-//GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderT)
-GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderPipelineT)
-GFX3D_EXCPLICIT_INITIALIZE_CLASS(RuntimeStateT)
-//GFX3D_EXCPLICIT_INITIALIZE_CLASS(FramebufferStateExtT)
+GFX3D_EXCPLICIT_INITIALIZE_CLASS(PipelineStateT)
 
 
 NAMESPACE_PARALLEL_END

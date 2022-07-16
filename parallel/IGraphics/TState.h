@@ -5,6 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx> struct DataStateT;
 template <class Gfx> struct ModelStateT;
+template <class Gfx> struct PipelineStateT;
 
 
 template <class Gfx>
@@ -122,9 +123,11 @@ struct DataStateT : GfxDataState {
 	using InputState  = InputStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
+	using PipelineState = PipelineStateT<Gfx>;
 	
 	
 	ArrayMap<int, ModelState> models;
+	ArrayMap<String, PipelineState> pipelines;
 	
 	DataStateT();
 	~DataStateT();
@@ -132,6 +135,7 @@ struct DataStateT : GfxDataState {
 	ModelState& AddModelT();
 	GfxModelState& AddModel() override {return AddModelT();}
 	GfxModelState& GetModel(int i) override;
+	PipelineState& GetAddPipeline(String name);
 	
 	int GetModelCount() const {return models.GetCount();}
 	void Clear();

@@ -12,9 +12,13 @@ struct FboAtomT :
 	using Framebuffer = FramebufferT<Gfx>;
 	using ShaderLibrary = ShaderLibraryT<Gfx>;
 	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
-	using ShaderDataPack = ShaderDataPackT<Gfx>;
+	using DataState = DataStateT<Gfx>;
+	using PipelineState = PipelineStateT<Gfx>;
+	using ProgramState = ProgramStateT<Gfx>;
+	//using ShaderDataPack = ShaderDataPackT<Gfx>;
 	
 	Vector<BinderIfaceVideo*> binders;
+	One<BinderIfaceVideo>	own_binder;
 	String					target;
 	EnvStateRef				state;
 	int						prev_iter = -1;
@@ -24,11 +28,12 @@ struct FboAtomT :
 	StateDraw				accel_sd;
 	Framebuffer				cpu_fb;
 	bool					draw_mem = false;
-	bool					gfxpack = false;
+	//bool					gfxpack = false;
 	RealtimeSourceConfig*	last_cfg = 0;
 	String					program;
-	ShaderDataPack			data;
-	
+	//ShaderDataPack		data;
+	DataState				data;
+	One<BinderIfaceVideo>	prog;
 	
 	static FboAtomT*	latest;
 	

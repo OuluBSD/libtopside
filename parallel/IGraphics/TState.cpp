@@ -460,8 +460,20 @@ GfxModelState& DataStateT<Gfx>::GetModel(int i) {
 }
 
 template <class Gfx>
+PipelineStateT<Gfx>& DataStateT<Gfx>::GetAddPipeline(String name) {
+	int i = pipelines.Find(name);
+	if (i >= 0)
+		return pipelines[i];
+	PipelineStateT<Gfx>& ps = pipelines.Add(name);
+	ps.owner = this;
+	ps.name = name;
+	return ps;
+}
+
+template <class Gfx>
 void DataStateT<Gfx>::Clear() {
 	models.Clear();
+	pipelines.Clear();
 }
 
 

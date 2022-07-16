@@ -10,8 +10,10 @@ machine sdl.app: {
 		loop ogl.fbo: {
 			ogl.customer: true;
 			x11.ogl.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
+				drawmem:						"false";
+				program:						"obj_view";
+				shader.obj.frag.path:			"shaders/tests/03f_fragment.glsl";
+				shader.obj.vtx.path:			"shaders/tests/03f_vertex.glsl";
 				program.arg.use.pbr:			true;
 				program.arg.model:				"ms/Gun.obj";
 				program.arg.skybox.diffuse:		"bg5";
@@ -21,8 +23,6 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				shader.frag.path:		"shaders/tests/03f_fragment.glsl";
-				shader.vtx.path:		"shaders/tests/03f_vertex.glsl";
 			};
 		};
 		

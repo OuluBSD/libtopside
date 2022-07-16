@@ -47,7 +47,7 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	
 	ASSERT(stages.IsEmpty());
 	
-	if (type.IsEmpty()) {
+	if (type == "imagebuf") {
 		mode = SINGLE_IMAGEBUF;
 		stages.SetCount(1);
 	}
@@ -64,6 +64,7 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages[0].SetStereo(0);
 		stages[1].SetStereo(1);
 		stages[2].SetStereoLens();
+		DataState& stereo_data = this->data.GetAdd("stereo");
 		stereo_data.is_stereo = true;
 		SetStereoDataState(&stereo_data);
 	}
@@ -77,7 +78,8 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages.SetCount(stage_count);
 	}
 	else {
-		TODO
+		mode = PENDING_PACKET;
+		stages.SetCount(1);
 	}
 	
 	for (BufferStage& s : stages) {
@@ -162,7 +164,7 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 			screen_sz = Size(TS::default_width,TS::default_height);
 	}
 	
-	{
+	if (!stages.IsEmpty()) {
 		auto& fb = stages.Top().fb;
 		fb.is_win_fbo = is_win_fbo;
 		fb.size = screen_sz;
@@ -177,9 +179,17 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 		}
 	}
 	
+	int i = 0;
 	for (BufferStage& s : stages) {
+		if (!s.data && mode != PENDING_PACKET) {
+			DataState& d = data.Add("stage" + IntStr(i));
+			d.GetAddPipeline("image").GetAddProgram("default");
+			s.SetDataState(&d);
+		}
+		
 		if (!s.ImageInitialize())
 			return false;
+		i++;
 	}
 	
 	return true;
@@ -200,10 +210,14 @@ bool BufferT<Gfx>::InitializeRenderer() {
 	EnableGfxAccelDebugMessages(true);
 	
 	for (BufferStage& s : stages) {
-		if (!s.SetupLoopback())
+		ASSERT(s.prog || mode == PENDING_PACKET);
+		if (!s.prog)
+			continue;
+		
+		if (!s.prog->SetupLoopback(s.loopback, s))
 			return false;
 		
-		if (!s.CompilePrograms())
+		if (!s.Compile())
 			return false;
 		
 		s.RefreshPipeline();
@@ -252,7 +266,7 @@ BufferT<Gfx>::GetOutputTexture(bool reading_self) const {
 template <class Gfx>
 DataStateT<Gfx>& BufferT<Gfx>::GetState() {
 	if (mode == MULTI_STEREO) {
-		return stereo_data;
+		return data.Get("stereo");
 	}
 	else if (stages.GetCount() == 1) {
 		return stages[0].GetState();
@@ -268,8 +282,8 @@ void BufferT<Gfx>::SetStereoDataState(DataState* s) {
 	if (mode == MULTI_STEREO) {
 		ASSERT(!s || s->is_stereo);
 		ASSERT(stages.GetCount() == 3);
-		stages[0].SetStereoDataState(s);
-		stages[1].SetStereoDataState(s);
+		stages[0].SetDataState(s);
+		stages[1].SetDataState(s);
 	}
 }
 
@@ -278,13 +292,13 @@ void BufferT<Gfx>::SetDataStateOverride(DataState* s) {
 	if (mode == MULTI_STEREO) {
 		ASSERT(!s || s->is_stereo);
 		ASSERT(stages.GetCount() == 3);
-		stages[0].SetDataStateOverride(s);
-		stages[1].SetDataStateOverride(s);
+		stages[0].SetDataState(s);
+		stages[1].SetDataState(s);
 	}
 	else {
 		ASSERT(stages.GetCount() == 1);
 		auto& stage = stages[0];
-		stage.SetDataStateOverride(s);
+		stage.SetDataState(s);
 	}
 }
 
@@ -322,7 +336,6 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	if (stages.GetCount() == 1) {
 		auto& stage = stages[0];
 		auto& fb = stage.fb;
-		auto& rt = stage.rt;
 		
 		if (env) {
 			if (fb.is_audio) {
@@ -339,8 +352,8 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			}
 		}
 		
-		ASSERT(rt.prog);
-		if (rt.prog == 0)
+		ASSERT(stage.prog && stage.prog->native);
+		if (stage.prog == 0|| stage.prog->native == 0)
 			return;
 		
 		if (fb.is_audio) {
@@ -381,11 +394,11 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			auto& left = stages[0];
 			auto& right = stages[1];
 			auto& top_stage = stages.Top();
-			if (top_stage.data.models.IsEmpty())
+			if (top_stage.data_writable && top_stage.data->models.IsEmpty())
 				for(int i = 0; i < 2; i++)
 					top_stage.MakeFrameQuad();
-			ASSERT(top_stage.data.models.GetCount() == 1);
-			ModelState& m = top_stage.data.models[0];
+			ASSERT(top_stage.data->models.GetCount() == 1);
+			ModelState& m = top_stage.data->models[0];
 			ASSERT(m.objects.GetCount() == 2);
 			
 			mat4 scale_mat = Scale(vec3(0.5, 1.0, 1.0));

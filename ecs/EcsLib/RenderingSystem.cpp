@@ -113,12 +113,12 @@ void RenderingSystem::Update(double dt) {
 		#ifdef flagSCREEN
 		RefT_Atom<X11SwFboProg> x11_fbo = ents->GetRoot()->FindDeep<X11SwFboProg>();
 		if (!state && x11_fbo) {
-			state = &x11_fbo->data.accel_state;
+			state = &x11_fbo->data;
 		}
 		#ifdef flagOGL
 		RefT_Atom<X11OglFboProg> x11_ogl_fbo = ents->GetRoot()->FindDeep<X11OglFboProg>();
 		if (!state && x11_ogl_fbo) {
-			state = &x11_ogl_fbo->data.accel_state;
+			state = &x11_ogl_fbo->data;
 		}
 		RefT_Atom<X11OglSinkDevice> x11_ogl_sink = ents->GetRoot()->FindDeep<X11OglSinkDevice>();
 		if (!state && x11_ogl_sink) {
@@ -127,7 +127,7 @@ void RenderingSystem::Update(double dt) {
 		#ifdef flagSDL2
 		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();
 		if (!state && sdl2_ogl_fbo) {
-			state = &sdl2_ogl_fbo->data.accel_state;
+			state = &sdl2_ogl_fbo->data;
 		}
 		#endif
 		#endif

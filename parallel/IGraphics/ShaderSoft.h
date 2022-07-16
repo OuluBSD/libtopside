@@ -52,7 +52,7 @@ class SoftShaderT {
 	GVar::ShaderType type;
 	String src;
 	String err;
-	SoftShaderBaseT<Gfx>* s = 0;
+	One<SoftShaderBaseT<Gfx>> s;
 	
 protected:
 	using SoftProgram = SoftProgramT<Gfx>;
@@ -70,7 +70,7 @@ public:
 	GVar::ShaderType GetType() const {return type;}
 	SoftShaderBaseT<Gfx>& Get() {ASSERT(s); return *s;}
 	
-	void SetShaderBase(SoftShaderBaseT<Gfx>& s) {this->s = &s;}
+	void SetShaderBase(SoftShaderBaseT<Gfx>* s) {this->s = s;}
 	String GetLastError() const {return err;}
 	
 	SoftProgram* GetSoftProgram() const {return prog;}

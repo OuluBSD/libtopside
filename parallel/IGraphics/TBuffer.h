@@ -10,8 +10,9 @@ struct BufferT;
 template <class Gfx>
 struct BufferStageT : GfxBufferStage {
 	using Framebuffer = FramebufferT<Gfx>;
-	using RuntimeState = RuntimeStateT<Gfx>;
+	using PipelineState = PipelineStateT<Gfx>;
 	using DataState = DataStateT<Gfx>;
+	using ProgramState = ProgramStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
 	using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
@@ -35,18 +36,18 @@ struct BufferStageT : GfxBufferStage {
 	ShaderConf					shdr_confs[GVar::SHADERTYPE_COUNT + 1];
 	
 	Buffer*						buf = 0;
-	RuntimeState				rt;
 	Framebuffer					fb;
 	
-	DataState					data;
-	DataState*					stereo_data = 0;
-	DataState*					user_data = 0;
+	DataState*					data = 0;
+	PipelineState*				pipeline = 0;
+	ProgramState*				prog = 0;
+	bool						data_writable = false;
 	int							loopback = -1;
 	int							quad_count = 0;
 	bool						use_user_data = false;
 	bool						initialized = false;
 	
-	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
+	//One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
 	// VR
 	vec2						viewport_scale;
@@ -55,7 +56,7 @@ struct BufferStageT : GfxBufferStage {
 	float						warp_scale;
 	vec4						hmd_warp_param;
 	vec3						aberr;
-	
+
 	
 	bool Initialize(int id, AtomBase& a, const Script::WorldState& ws);
 	bool PostInitialize();
@@ -63,53 +64,35 @@ struct BufferStageT : GfxBufferStage {
 	void Process(const RealtimeSourceConfig& cfg);
 	void MakeFrameQuad();
 	void UseRenderedFramebuffer();
-	void RefreshPipeline();
 	void UpdateTexBuffers();
-	void CreatePipeline();
-	bool LoadShader(GVar::ShaderType shader_type, String str, bool is_path, bool is_content, String library_path);
+	void RefreshPipeline();
+	bool Compile();
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
-	void FindVariables();
 	int NewWriteBuffer();
 	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-	void ClearPipeline();
 	void ClearTex();
 	void CreateTex(bool create_depth, bool create_fbo);
-	bool CompilePrograms();
-	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	bool LoadInputLink(int in_id, const PacketValue& v);
-	int BuiltinShader();
-	template <int> int BuiltinShaderT();
-	bool SetupLoopback();
+	bool LoadInputLink(int in_id, const InternalPacketData& v);
+	void SetVars(const RealtimeSourceConfig& cfg, const DataObject& o);
+	void SetVar(int var, const RealtimeSourceConfig& cfg, const DataObject& o);
+	GfxCompilerArgs GetCompilerArgs() const;
 	
-	DataState& LocalState() {return stereo_data ? *stereo_data : data;}
-	DataState& GetState() {return user_data ? *user_data : (stereo_data ? *stereo_data : data);}
-	NativeColorBufferConstRef GetInputTex(int input_i) const;
-	GVar::TextureType GetTexType(int input_i) const;
+	DataState& LocalState() {return *data;}
+	DataState& GetState() {return *data;}
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	bool IsInitialized() const {return initialized;}
 	
 	void SetStereo(int stereo_id);
 	void SetStereoLens();
-	void SetDataStateOverride(DataState* s);
-	void SetStereoDataState(DataState* s);
+	void SetDataState(DataState* s);
 	bool SetLoopback(String loopback_str);
-	void SetVars(DataState&, ModelState&, NativeProgram& gl_prog, const DataObject& o);
-	void SetVar(DataState&, ModelState&, int var, NativeProgram& gl_prog, const DataObject& o);
-	void SetVars(NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
-	void SetVar(int var, NativeProgram& gl_prog, const RealtimeSourceConfig& cfg);
-	void SetInputVolume(int in_id);
-	void SetInputCubemap(int in_id);
 	
-	
-private:
-	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
-	bool LoadShaderContent(GVar::ShaderType shader_type, String content);
-	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
 	
 };
 
@@ -120,7 +103,7 @@ struct BufferT : GfxBuffer {
 	using DataState = DataStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
-	using RuntimeState = RuntimeStateT<Gfx>;
+	using PipelineState = PipelineStateT<Gfx>;
 	using ShaderState = ShaderStateT<Gfx>;
 	using InputState  = InputStateT<Gfx>;
 	using ContextState  = ContextStateT<Gfx>;
@@ -140,6 +123,7 @@ struct BufferT : GfxBuffer {
 	
 	enum {
 		MODE_UNDEFINED,
+		PENDING_PACKET,
 		SINGLE_IMAGEBUF,
 		SINGLE_TEXTURE,
 		SINGLE_CUBEMAP,
@@ -153,15 +137,13 @@ struct BufferT : GfxBuffer {
 	
 	int							mode = 0;
 	Vector<String>				link_ids;
-	//Vector<BinderIface*>		binders;
 	
 	
 	// set by user
 	Vector<byte>				fb_out;
 	EnvStateRef					env;
-	//int						test_shader = -1;
 	
-	DataState					stereo_data; // same data for both eyes
+	ArrayMap<String, DataState>	data;
 	Array<BufferStage>			stages;
 	ContextState				ctx;
 	bool						is_local_time = false;
@@ -185,10 +167,6 @@ struct BufferT : GfxBuffer {
 	
 	
 public:
-	
-	//void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
-	//void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
-	
 	void Update(double dt);
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
