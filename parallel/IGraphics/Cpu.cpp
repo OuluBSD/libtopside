@@ -124,7 +124,7 @@ void SwGfxT<Gfx>::DeactivateTexture() {
 }*/
 
 template <class Gfx>
-const char* SwGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
+String SwGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* shader_tmpl = "";
 	return shader_tmpl;
 }
@@ -314,7 +314,7 @@ void SwGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pipe) {
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
+void SwGfxT<Gfx>::TexParameteri(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap repeat) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	if (fb)
@@ -341,7 +341,7 @@ void SwGfxT<Gfx>::BindFramebufferRO(NativeFrameBufferConstRef fb) {
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
+void SwGfxT<Gfx>::BindTextureRO(GVar::TextureMode type, NativeColorBufferConstRef tex) {
 	auto& l = Local();
 	auto& t = l.T();
 	t.r = tex;
@@ -351,7 +351,7 @@ void SwGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRe
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
+void SwGfxT<Gfx>::BindTextureRW(GVar::TextureMode type, NativeColorBufferRef tex) {
 	auto& l = Local();
 	auto& t = l.T();
 	t.r = 0;
@@ -361,19 +361,19 @@ void SwGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
+void SwGfxT<Gfx>::UnbindTexture(GVar::TextureMode type) {
 	auto& t = Local().T();
 	t.r = 0;
 	t.rw = 0;
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::ReserveTexture(GVar::TextureType type, FramebufferT<Gfx>& fb) {
+void SwGfxT<Gfx>::ReserveTexture(GVar::TextureMode type, FramebufferT<Gfx>& fb) {
 	// pass
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
+void SwGfxT<Gfx>::GenerateMipmap(GVar::TextureMode type) {
 	// not supported
 }
 
@@ -501,6 +501,11 @@ void SwGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 	ASSERT(!t.r);
 	ASSERT(t.rw);
 	*t.rw = tex;
+}
+
+template <class Gfx>
+void SwGfxT<Gfx>::TexImage2D(FloatImage& tex) {
+	TODO
 }
 
 template <class Gfx>
@@ -647,12 +652,12 @@ template <class Gfx> void SwGfxT<Gfx>::UnbindFramebuffer() {
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+void SwGfxT<Gfx>::SetTexture(GVar::TextureMode type, Size sz, GVar::Sample sample, int channels, const byte* data) {
 	TODO
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
+void SwGfxT<Gfx>::SetTexture(GVar::TextureMode type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
 	TODO
 }
 

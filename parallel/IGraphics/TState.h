@@ -30,7 +30,6 @@ struct DataObjectT : GfxDataObject {
     int id = -1;
     int material = -1;
 	
-	
 	DataObjectT();
 	~DataObjectT();
 	void SetState(ModelState* state) {this->state = state;}
@@ -70,11 +69,15 @@ struct ModelStateT : GfxModelState {
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using DataObject  = typename Gfx::DataObject;
 	using Material = MaterialT<Gfx>;
+	using DataState = DataStateT<Gfx>;
 	
+	DataState* owner = 0;
 	Array<DataObject> objects;
 	ArrayMap<int, Material> materials;
-	ArrayMap<int, NativeColorBufferRef> textures;
-	
+	ArrayMap<int, NativeColorBufferRef> textures, cube_textures;
+	int env_material = -1; // own material
+	int env_material_model = -1; // other model in same DataState
+	int prog = -1;
 	
 	ModelStateT();
 	~ModelStateT();
@@ -87,6 +90,8 @@ struct ModelStateT : GfxModelState {
 	int GetObjectCount() const override {return objects.GetCount();}
 	GfxDataObject& GetObject(int i) override {return objects[i];}
 	Material& GetAddMaterial(int material_id);
+	Material& AddMaterial();
+	bool SetProgram(String name);
 	
 	void Refresh(Model& m) override;
 	bool LoadModel(ModelLoader& l) override;
@@ -127,7 +132,8 @@ struct DataStateT : GfxDataState {
 	
 	
 	ArrayMap<int, ModelState> models;
-	ArrayMap<String, PipelineState> pipelines;
+	ArrayMap<int, PipelineState> pipelines;
+	Index<String> dictionary;
 	
 	DataStateT();
 	~DataStateT();

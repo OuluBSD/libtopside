@@ -317,6 +317,10 @@ vec3 VecMul(const mat4& m, const vec3& v);
 void GetPrincipalAxes(const vec3& a, const vec3& b, vec3& x, vec3& y, vec3& z);
 mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b);
 
+
+void MakeSpecBRDF(FloatImage& img, int sz);
+
+
 NAMESPACE_TOPSIDE_END
 
 

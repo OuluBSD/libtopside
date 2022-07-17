@@ -1933,4 +1933,151 @@ mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b) {
 }
 
 
+
+
+
+
+
+
+
+
+
+#if 1
+
+
+const uint32 NumSamples = 256;
+const float InvNumSamples = 1.0 / float(NumSamples);
+
+float radicalInverse_VdC(uint32 bits)
+{
+	bits = (bits << 16u) | (bits >> 16u);
+	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+	return float(bits) * 2.3283064365386963e-10;
+}
+
+vec2 sampleHammersley(uint32 i)
+{
+	return vec2(i * InvNumSamples, radicalInverse_VdC(i));
+}
+
+vec3 sampleGGX(float u1, float u2, float roughness)
+{
+	float alpha = roughness * roughness;
+
+	float cosTheta = sqrt((1.0 - u2) / (1.0 + (alpha*alpha - 1.0) * u2));
+	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
+	float phi = M_2PI * u1;
+
+	return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+}
+
+float gaSchlickG1(float cosTheta, float k)
+{
+	return cosTheta / (cosTheta * (1.0 - k) + k);
+}
+
+float gaSchlickGGX_IBL(float cosLi, float cosLo, float roughness)
+{
+	float r = roughness;
+	float k = (r * r) / 2.0;
+	return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
+}
+
+void MakeSpecBRDF(FloatImage& img, int side_len) {
+	Size sz(side_len, side_len);
+	img.Set(sz, 3);
+	
+	const float Epsilon = 0.001;
+	
+	float* begin = img.Begin();
+	
+	for (int x = 0; x < sz.cx; ++x) {
+	
+	    for (int y = 0; y < sz.cy; ++y)
+	    {
+			float cosLo = x / float(sz.cx);
+			float roughness = y / float(sz.cy);
+		
+			cosLo = max(cosLo, Epsilon);
+		
+			vec3 Lo = vec3(sqrt(1.0 - cosLo*cosLo), 0.0, cosLo);
+		
+			float DFG1 = 0;
+			float DFG2 = 0;
+		
+			for(uint32 i=0; i<NumSamples; ++i) {
+				vec2 u  = sampleHammersley(i);
+				vec3 Lh = sampleGGX(u[0], u[1], roughness);
+				vec3 Li = Lh * (2.0f * Dot(Lo, Lh)) - Lo;
+		
+				float cosLi   = Li[2];
+				float cosLh   = Lh[2];
+				float cosLoLh = max(Dot(Lo, Lh), 0.0f);
+		
+				if(cosLi > 0.0f) {
+					float G  = gaSchlickGGX_IBL(cosLi, cosLo, roughness);
+					float Gv = G * cosLoLh / (cosLh * cosLo);
+					float Fc = pow(1.0f - cosLoLh, 5);
+		
+					DFG1 += (1 - Fc) * Gv;
+					DFG2 += Fc * Gv;
+				}
+			}
+			
+	        float* pix = begin + y * img.pitch + x * img.channels;
+	        pix[0] = DFG1 * InvNumSamples;
+	        pix[1] = DFG2 * InvNumSamples;
+	        pix[2] = 0;
+	    }
+	}
+}
+
+#else
+
+void MakeSpecBRDF(FloatImage& img, int side_len) {
+	Size sz(side_len, side_len);
+	img.Set(sz, 3);
+	
+	float* begin = img.Begin();
+	
+	for (int x = 0; x < sz.cx; ++x) {
+	    float xNorm = (float) x / (sz.cx - 1);
+	    float roughness = xNorm;
+	    float alpha = roughness * roughness;
+	    float alphaSqr = alpha * alpha;
+	    float k = roughness + 1;
+	    k = k * k * 0.125f;
+	
+	    float LdotH5 = pow(1 - xNorm, 5);
+	
+	    // R -> F -> LdotH x Spec
+	    // G -> G -> Roughness x NdotL
+	    // G -> G -> Roughness x NdotV
+	    // B -> D -> Roughness x NdotH
+	
+	    for (int y = 0; y < sz.cy; ++y)
+	    {
+	        float yNorm = (float)y / (sz.cy - 1);
+	
+	        float F = yNorm + (1 - yNorm) * LdotH5;
+	
+	        float denom = yNorm * yNorm * (alphaSqr - 1) + 1;
+	
+	        denom = max(M_PI * denom * denom, 0.0000001);
+	        float D = alphaSqr / denom;
+	        
+	        float G = yNorm / max(yNorm * (1 - k) + k, 0.0000001f);
+	
+	        float* pix = begin + y * img.pitch + x * img.channels;
+	        pix[0] = F;
+	        pix[1] = G;
+	        pix[2] = D;
+	    }
+	}
+}
+#endif
+
 NAMESPACE_TOPSIDE_END

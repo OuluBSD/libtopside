@@ -21,6 +21,7 @@ struct BufferStageT : GfxBufferStage {
 	using Buffer = BufferT<Gfx>;
 	using ContextState  = ContextStateT<Gfx>;
 	using InputState  = InputStateT<Gfx>;
+	using Texture  = TextureT<Gfx>;
 	using NativeProgram = typename Gfx::NativeProgram;
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	using Compiler = typename Gfx::Compiler;
@@ -40,13 +41,15 @@ struct BufferStageT : GfxBufferStage {
 	
 	DataState*					data = 0;
 	PipelineState*				pipeline = 0;
-	ProgramState*				prog = 0;
+	String						pipeline_str = "default";
 	bool						data_writable = false;
 	int							loopback = -1;
 	int							quad_count = 0;
 	bool						use_user_data = false;
 	bool						initialized = false;
 	
+	FloatImage					brdf_img;
+	Texture						brdf_tex;
 	//One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
 	// VR
@@ -66,7 +69,7 @@ struct BufferStageT : GfxBufferStage {
 	void UseRenderedFramebuffer();
 	void UpdateTexBuffers();
 	void RefreshPipeline();
-	bool Compile();
+	bool Compile(ProgramState& prog);
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
@@ -74,14 +77,15 @@ struct BufferStageT : GfxBufferStage {
 	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	int NewWriteBuffer();
-	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
+	void TexFlags(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap repeat);
 	void ClearTex();
 	void CreateTex(bool create_depth, bool create_fbo);
 	bool LoadInputLink(int in_id, const PacketValue& v);
-	bool LoadInputLink(int in_id, const InternalPacketData& v);
-	void SetVars(const RealtimeSourceConfig& cfg, const DataObject& o);
-	void SetVar(int var, const RealtimeSourceConfig& cfg, const DataObject& o);
+	bool LoadInputLink(ProgramState& prog, int in_id, const InternalPacketData& v);
+	void SetVars(ProgramState& prog, const RealtimeSourceConfig& cfg, const DataObject& o);
+	void SetVar(ProgramState& prog, int var, const RealtimeSourceConfig& cfg, const DataObject& o);
 	GfxCompilerArgs GetCompilerArgs() const;
+	void CompileJIT();
 	
 	DataState& LocalState() {return *data;}
 	DataState& GetState() {return *data;}
@@ -181,7 +185,7 @@ public:
 	void Reset();
 	bool IsAudio() const {return mode == SINGLE_SOUND;}
 	bool AcceptsOrders() const {return is_initialized;}
-	bool LoadInputLink(int in_id, const InternalPacketData& v);
+	//bool LoadInputLink(int in_id, const InternalPacketData& v);
 	
 	void SetFramebufferSize(Size sz);
 	void SetLocalTime(bool b=true) {is_local_time = b;}

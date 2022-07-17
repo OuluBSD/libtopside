@@ -78,6 +78,8 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 	switch (idx) {
 		case GVar::VAR_VIEW:				return sizeof(GenericVertexShaderArgs::view);
 		case GVar::VAR_LIGHTDIR:			return sizeof(GenericFragmentShaderArgs::light_dir);
+		case GVar::VAR_CAMERA_POS:			return sizeof(GenericFragmentShaderArgs::camera_pos);
+		case GVar::VAR_CAMERA_DIR:			return sizeof(GenericFragmentShaderArgs::camera_dir);
 		/*case Shaders::IPROJ:				return sizeof(GenericVertexShaderArgs::proj);
 		case Shaders::ISCALE:				return sizeof(GenericVertexShaderArgs::scale);*/
 		case GVar::VAR_MODEL:				return sizeof(GenericVertexShaderArgs::model);
@@ -96,6 +98,8 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 		case GVar::VAR_LIGHTMAP:
 		case GVar::VAR_REFLECTION:
 		case GVar::VAR_UNKNOWN:
+		case GVar::VAR_CUBE_DIFFUSE:
+		case GVar::VAR_CUBE_IRRADIANCE:
 		case GVar::VAR_COMPAT_CHANNEL0:
 		case GVar::VAR_COMPAT_CHANNEL1:
 		case GVar::VAR_COMPAT_CHANNEL2:
@@ -105,6 +109,7 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 		case GVar::VAR_BUFFERSTAGE2_COLOR:
 		case GVar::VAR_BUFFERSTAGE3_COLOR:
 		case GVar::VAR_BUFFERSTAGE4_COLOR:
+		case GVar::VAR_BRDF_SPEC:
 											return sizeof(void*);
 		case GVar::VAR_COMPAT_CHANNELRESOLUTION:	return sizeof(GenericShaderArgs::iChannelResolution[0]);
 		default: break;
@@ -171,6 +176,8 @@ void SoftProgramT<Gfx>::SetVar(int i, int j) {
 	if (idx == GVar::VAR_LIGHTMAP) {fargs.iLightmap = j; return;}
 	if (idx == GVar::VAR_REFLECTION) {fargs.iReflection = j; return;}
 	if (idx == GVar::VAR_UNKNOWN) {fargs.iUnknown = j; return;}
+	if (idx == GVar::VAR_CUBE_DIFFUSE) {fargs.iCubeDiffuse = j; return;}
+	if (idx == GVar::VAR_CUBE_IRRADIANCE) {fargs.iCubeIrradiance = j; return;}
 	TODO
 }
 
@@ -203,6 +210,8 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
 	auto& fargs = objs[obj_i].fargs;
 	switch (idx) {
 		case GVar::VAR_LIGHTDIR: fargs.light_dir = vec3(f0,f1,f2); return;
+		case GVar::VAR_CAMERA_POS: fargs.camera_pos = vec3(f0,f1,f2); return;
+		case GVar::VAR_CAMERA_DIR: fargs.camera_dir = vec3(f0,f1,f2); return;
 		default: break;
 	}
 	ASSERT(0);
@@ -211,6 +220,9 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
 template <class Gfx>
 void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2, float f3) {
 	int idx = uniforms.GetKey(i);
+	switch (idx) {
+		default: break;
+	}
 	TODO
 }
 

@@ -113,7 +113,6 @@ void	DataFromImage(const Image& img, Vector<byte>& data);
 Image	MirrorVertical(const Image& img);
 
 
-
 #define DESCRIPTOR_BYTES 32
 #define DESCRIPTOR_UINTS 8
 #define DESCRIPTOR_UINT64 4

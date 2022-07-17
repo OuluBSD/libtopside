@@ -31,18 +31,18 @@ OpenGLMessageCallback( GLenum source,
 	ASSERT(0);
 }
 
-GLenum GetOglTextureType(GVar::TextureType type) {
+GLenum GetOglTextureMode(GVar::TextureMode type) {
 	GLenum gl_t = 0;
 	switch (type) {
-		#define TEX_TYPE(x) case GVar::TEXTYPE##x: gl_t = GL_TEXTURE##x; break;
-		GVAR_TEXTYPE_LIST
-		#undef TEX_TYPE
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_0: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0;
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_1: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1;
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_2: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2;
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_3: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3;
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_4: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4;
-		case GVar::TEXTYPE_CUBE_MAP_SIDE_5: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5;
+		#define TEX_MODE(x) case GVar::TEXMODE##x: gl_t = GL_TEXTURE##x; break;
+		GVAR_TEXMODE_LIST
+		#undef TEX_MODE
+		case GVar::TEXMODE_CUBE_MAP_SIDE_0: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0;
+		case GVar::TEXMODE_CUBE_MAP_SIDE_1: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1;
+		case GVar::TEXMODE_CUBE_MAP_SIDE_2: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2;
+		case GVar::TEXMODE_CUBE_MAP_SIDE_3: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3;
+		case GVar::TEXMODE_CUBE_MAP_SIDE_4: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4;
+		case GVar::TEXMODE_CUBE_MAP_SIDE_5: return GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5;
 		default: break;
 	}
 	ASSERT(gl_t > 0);
@@ -310,38 +310,38 @@ template <class Gfx> void OglGfxT<Gfx>::ActiveTexture(int ch) {
 	glActiveTexture(GL_TEXTURE0 + ch);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
-	glBindTexture(GetOglTextureType(type), tex);
+template <class Gfx> void OglGfxT<Gfx>::BindTextureRO(GVar::TextureMode type, NativeColorBufferConstRef tex) {
+	glBindTexture(GetOglTextureMode(type), tex);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
-	glBindTexture(GetOglTextureType(type), tex);
+template <class Gfx> void OglGfxT<Gfx>::BindTextureRW(GVar::TextureMode type, NativeColorBufferRef tex) {
+	glBindTexture(GetOglTextureMode(type), tex);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
-	glBindTexture(GetOglTextureType(type), 0);
+template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureMode type) {
+	glBindTexture(GetOglTextureMode(type), 0);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureType type, FramebufferT<Gfx>& fb) {
+template <class Gfx> void OglGfxT<Gfx>::ReserveTexture(GVar::TextureMode type, FramebufferT<Gfx>& fb) {
 	auto fmt = fb.GetGlFormat();
 	const Size& sz = fb.size;
-	GLenum target = GetOglTextureType(type);
+	GLenum target = GetOglTextureMode(type);
 	//GLint intl_fmt = GetGfxChannelFormat(fb.sample, fb.channels);
 	//GLenum intl_type = GetGfxType(fb.sample);
 	GLint intl_fmt = GetGfxChannelFormat(GVar::SAMPLE_U8, 4);
 	GLenum intl_type = GetGfxType(GVar::SAMPLE_U8);
 	
-	if (type == GVar::TEXTYPE_CUBE_MAP)
+	if (type == GVar::TEXMODE_CUBE_MAP)
 		; // never
-	else if (type == GVar::TEXTYPE_3D)
+	else if (type == GVar::TEXMODE_3D)
 		glTexImage3D(target, 0, fmt, sz.cx, sz.cy, fb.depth, 0, intl_fmt, intl_type, 0);
 	else
 		glTexImage2D(target, 0, fmt, sz.cx, sz.cy, 0, intl_fmt, intl_type, 0);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size sz, GVar::Sample sample, int channels, const byte* data) {
+template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureMode type, Size sz, GVar::Sample sample, int channels, const byte* data) {
 	ASSERT_(!(sample == GVar::SAMPLE_FLOAT && channels == 2), "2-channel float input is not usually supported by opengl");
-	GLenum t = GetOglTextureType(type);
+	GLenum t = GetOglTextureMode(type);
 	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
 	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
 	GLenum intl_type = GetGfxType(sample);
@@ -357,9 +357,9 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size 
 		data);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
+template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureMode type, Size3 sz, GVar::Sample sample, int channels, const byte* data) {
 	ASSERT_(!(sample == GVar::SAMPLE_FLOAT && channels == 2), "2-channel float input is not usually supported by opengl");
-	GLenum t = GetOglTextureType(type);
+	GLenum t = GetOglTextureMode(type);
 	GLint intl_tgt_fmt = GetGfxChannelFormat(GVar::SAMPLE_FLOAT, channels);
 	GLint intl_fmt = GetGfxChannelFormat(sample, channels);
 	GLenum intl_type = GetGfxType(sample);
@@ -379,7 +379,7 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureType type, Size3
 	// pass
 }*/
 
-template <class Gfx> const char* OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
+template <class Gfx> String OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* common_tmpl = R"SH4D3R(
 #if ${IS_FRAGMENT_SHADER}
 
@@ -388,7 +388,7 @@ template <class Gfx> const char* OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderTyp
 #endif
 )SH4D3R";
 
-	static const char* frag_tmpl = R"SH4D3R(
+	static const char* uniform_tmpl = R"SH4D3R(
 #version 430
 #define GL_ES
 
@@ -405,6 +405,8 @@ uniform sampler2D iDisplacement;
 uniform sampler2D iLightmap;
 uniform sampler2D iReflection;
 uniform sampler2D iUnknown;
+uniform samplerCube iCubeDiffuse;
+uniform samplerCube iCubeIrradiance;
 
 uniform ${SAMPLER0} iChannel0;
 uniform ${SAMPLER1} iChannel1;
@@ -417,6 +419,8 @@ uniform sampler2D iStageColor2;
 uniform sampler2D iStageColor3;
 uniform sampler2D iStageColor4;
 
+uniform sampler2D iBrdfSpecular;
+
 uniform float     iAudioSeconds;
 uniform mat4      iView;
 uniform mat4      iProjection;
@@ -424,6 +428,8 @@ uniform mat4      iScale;
 uniform mat4      iTransform;
 uniform mat4      iModel;
 uniform vec3      iLightDir;
+uniform vec3      iCameraPos;
+uniform vec3      iCameraDir;
 
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iTime;                 // shader playback time (in seconds)
@@ -446,12 +452,16 @@ uniform vec2      iViewportScale;		 // Scale from texture co-ords to m (usually 
 uniform float     iWarpScale;			 // Distortion overall scale in m (usually ~eye_w/2)
 uniform vec4      iHmdWarpParam;		 // Distoriton coefficients (PanoTools model) [a,b,c,d]
 uniform vec3      iAberr;				 // chromatic distortion post scaling
+)SH4D3R";
+	
+static const char* frag_tmpl = R"SH4D3R(
 
+in vec3 vPosition;
 in vec3 vNormal;
 #if ${IS_AFFINE}
-noperspective in vec2 vTexCoord;
+noperspective in vec3 vTexCoord;
 #else
-smooth in vec2 vTexCoord;
+smooth in vec3 vTexCoord;
 #endif
 
 out vec4 out_Color;
@@ -476,8 +486,7 @@ void main() {
 
 
 static const char* vtx_tmpl = R"SH4D3R(
-#version 430
-#define GL_ES
+
 layout (location = 0) in vec4 iPos;
 layout (location = 1) in vec3 iNormal;
 layout (location = 2) in vec2 iTexCoord;
@@ -493,48 +502,29 @@ out gl_PerVertex
   float gl_ClipDistance[];
 };
 
-uniform sampler2D iNone;
-uniform sampler2D iDiffuse;
-uniform sampler2D iSpecular;
-uniform sampler2D iAmbient;
-uniform sampler2D iEmissive;
-uniform sampler2D iHeight;
-uniform sampler2D iNormals ;
-uniform sampler2D iShininess;
-uniform sampler2D iOpacity;
-uniform sampler2D iDisplacement;
-uniform sampler2D iLightmap;
-uniform sampler2D iReflection;
-uniform sampler2D iUnknown;
 
-uniform float     iAudioSeconds;
-uniform mat4      iView;
-uniform mat4      iProjection;
-uniform mat4      iScale;
-uniform mat4      iTransform;
-uniform mat4      iModel;
-uniform vec3      iLightDir;
-
+out vec3 vPosition;
 out vec3 vNormal;
 #if ${IS_AFFINE}
-noperspective out vec2 vTexCoord;
+noperspective out vec3 vTexCoord;
 #else
-smooth out vec2 vTexCoord;
+smooth out vec3 vTexCoord;
 #endif
 
 ${USER_LIBRARY}
 ${USER_CODE}
 
 void main() {
-	vTexCoord = iTexCoord;
+	vPosition = gl_Position.xyz;
+	vTexCoord = vec3(iTexCoord, 0);
 	vNormal = iNormal;
 	mainVertex(gl_Position);
 }
 
 )SH4D3R";
 	switch (t) {
-		case GVar::VERTEX_SHADER: return vtx_tmpl;
-		case GVar::FRAGMENT_SHADER: return frag_tmpl;
+		case GVar::VERTEX_SHADER: return String(uniform_tmpl) + vtx_tmpl;
+		case GVar::FRAGMENT_SHADER: return String(uniform_tmpl) + frag_tmpl;
 		default: Panic("shader is not supported yet");
 	}
 	return "";
@@ -700,8 +690,8 @@ template <class Gfx> void OglGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pi
 	pipe = 0;
 }
 
-template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
-	GLenum gl_t = GetOglTextureType(type);
+template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap wrap) {
+	GLenum gl_t = GetOglTextureMode(type);
 	
 	GLenum min_gl_filter = 0;
 	GLenum mag_gl_filter = 0;
@@ -736,7 +726,7 @@ template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GV
 	
 	glTexParameteri(gl_t, GL_TEXTURE_WRAP_S, gl_wrap);
 	glTexParameteri(gl_t, GL_TEXTURE_WRAP_T, gl_wrap);
-	if (type == GVar::TEXTYPE_3D)
+	if (type == GVar::TEXMODE_3D)
 		glTexParameteri(gl_t, GL_TEXTURE_WRAP_R, gl_wrap);
 }
 
@@ -862,8 +852,20 @@ template <class Gfx> void OglGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 		GL_UNSIGNED_BYTE, tex.data);
 }
 
-template <class Gfx> void OglGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
-	glGenerateMipmap(GetOglTextureType(type));
+template <class Gfx> void OglGfxT<Gfx>::TexImage2D(FloatImage& tex) {
+	ASSERT(tex.channels == 4 || tex.channels == 3);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA32F,
+		tex.GetWidth(), tex.GetHeight(),
+		0,
+		tex.channels == 4 ? GL_RGBA : GL_RGB,
+		GL_FLOAT, tex.data);
+}
+
+template <class Gfx> void OglGfxT<Gfx>::GenerateMipmap(GVar::TextureMode type) {
+	glGenerateMipmap(GetOglTextureMode(type));
 }
 
 template <class Gfx> void OglGfxT<Gfx>::DeleteVertexArray(NativeVertexArray& vao) {

@@ -38,8 +38,8 @@ protected:
 	NativeColorBufferRef color[TEXTYPE_COUNT];
 	Size sz;
 	
-	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
-	GVar::Filter filter[GVar::TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
+	GVar::Wrap wrap[TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
+	GVar::Filter filter[TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
 public:
 	typedef SoftFramebufferT CLASSNAME;
 	SoftFramebufferT();
@@ -49,7 +49,7 @@ public:
 	void ClearDataAll();
 	
 	//void SetLocalData(Size sz, byte channels);
-	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
+	void SetParam(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap repeat);
 	void SetColor(TexType tgt, NativeColorBufferRef fb);
 	void SetDepth(NativeDepthBufferRef fb) {depth = fb;}
 	void SetSize(GVar::RenderTarget tgt, Size sz);

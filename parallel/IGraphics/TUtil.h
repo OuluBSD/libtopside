@@ -25,6 +25,21 @@ struct DrawFramebufferT : GfxStateDraw {
 };*/
 
 template <class Gfx>
+struct TextureT {
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	
+	NativeColorBufferRef tex;
+	
+	TextureT() {}
+	~TextureT() {Clear();}
+	void Clear();
+	void Load(const ByteImage& img);
+	void Load(const FloatImage& img);
+	bool IsEmpty() const {return tex;}
+	
+};
+
+template <class Gfx>
 struct StateDrawT : GfxStateDraw {
 	RTTI_DECL1(StateDrawT, GfxStateDraw)
 	using Base = StateDrawT<Gfx>;

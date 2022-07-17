@@ -182,6 +182,12 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 		else
 			Gfx::UniformMatrix4fv(uindex, data.view);
 	}
+	else if (var == VAR_CAMERA_POS) {
+		Gfx::Uniform3f(uindex, data.camera_pos[0], data.camera_pos[1], data.camera_pos[2]);
+	}
+	else if (var == VAR_CAMERA_DIR) {
+		Gfx::Uniform3f(uindex, data.camera_dir[0], data.camera_dir[1], data.camera_dir[2]);
+	}
 	else if (var == VAR_LIGHTDIR) {
 		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
 	}
@@ -197,7 +203,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 	else if (var == VAR_MODEL) {
 		Gfx::UniformMatrix4fv(uindex, o.model);
 	}
-	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
+	else if (var >= VAR_NONE && var < VAR_CUBE_DIFFUSE) {
 		int tex_ch = var - VAR_NONE;
 		if (o.material < 0)
 			return;
@@ -207,11 +213,36 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 		if (tex_i >= 0) {
 			auto& tex = mdl.textures[tex_i];
 			Gfx::ActiveTexture(tex_ch);
-			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+			TextureMode textmode = GVar::TEXMODE_2D;
+			Gfx::BindTextureRO(textmode, tex);
 			if (tex_f == 0)
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
+				Gfx::TexParameteri(textmode, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
 			else if (tex_f == 1)
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+				Gfx::TexParameteri(textmode, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+			Gfx::Uniform1i(uindex, tex_ch);
+			Gfx::DeactivateTexture();
+		}
+	}
+	else if (var >= VAR_CUBE_DIFFUSE && var <= VAR_TEXTYPE_END) {
+		int tex_ch = var - VAR_NONE;
+		int i = mdl.owner->models.Find(mdl.env_material_model);
+		if (mdl.env_material_model < 0 || i < 0)
+			return;
+		ModelState& used_mdl = mdl.owner->models[i];
+		if (used_mdl.env_material < 0)
+			return;
+		auto& mat = used_mdl.materials.Get(used_mdl.env_material);
+		int tex_i = mat.tex_id[tex_ch];
+		int tex_f = mat.tex_filter[tex_ch];
+		if (tex_i >= 0) {
+			auto& tex = used_mdl.cube_textures[tex_i];
+			Gfx::ActiveTexture(tex_ch);
+			TextureMode textmode = GVar::TEXMODE_CUBE_MAP;
+			Gfx::BindTextureRO(textmode, tex);
+			if (tex_f == 0)
+				Gfx::TexParameteri(textmode, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
+			else if (tex_f == 1)
+				Gfx::TexParameteri(textmode, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
@@ -225,26 +256,6 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 	else {
 		TODO
 	}
-	#if 0
-	if (var == VAR_VIEW) {
-		if (o.is_global_view)
-			Gfx::UniformMatrix4fv(uindex, data.view);
-		else
-			Gfx::UniformMatrix4fv(uindex, o.view);
-	}
-	else if (var == VAR_PROJECTION) {
-		/*if (o.is_global_proj)
-			TODO
-		else*/
-		Gfx::UniformMatrix4fv(uindex, o.proj);
-	}
-	else if (var == VAR_SCALE) {
-		Gfx::UniformMatrix4fv(uindex, o.scale);
-	}
-	else if (var == VAR_MODEL) {
-		Gfx::UniformMatrix4fv(uindex, o.model);
-	}
-	#endif
 }
 
 template <class Gfx>
@@ -268,27 +279,6 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	
 	if (var == VAR_AUDIOTIME) {
 		Gfx::Uniform1f(uindex, (float)ctx.time_total);
-	}
-	
-	else if (var == VAR_VIEW) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_VIEWOVERRIDE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_PROJECTIONOVERRIDE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_SCALE) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_MODEL) {
-		ASSERT(0); // pass
-	}
-	else if (var == VAR_COMPAT_RESOLUTION) {
-		// from fb.size
-		ASSERT(data.resolution[0] > 0 && data.resolution[1] > 0);
-		Gfx::Uniform3f(uindex, (float)data.resolution[0], (float)data.resolution[1], 1.0f);
 	}
 	
 	else if (var == VAR_COMPAT_TIME) {
@@ -352,7 +342,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 			//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
 			Gfx::ActiveTexture(tex_ch);
 			Gfx::BindTextureRO(GetTexType(ch), tex);
-			Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+			Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
@@ -386,6 +376,12 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	
 	else if (var == VAR_COMPAT_BLOCKOFFSET) {
 		Gfx::Uniform1f(uindex, (float)ctx.block_offset);
+	}
+	else if (var == VAR_COMPAT_RESOLUTION) {
+		// pass (not from here)
+	}
+	else if (var == VAR_BRDF_SPEC) {
+		// pass (not from here)
 	}
 	else {
 		ASSERT_(false, "Invalid variable");
@@ -599,7 +595,9 @@ void ProgramStateT<Gfx>::RefreshProgramStages() {
 				bmask |= bit;
 			}
 		}
-		ASSERT(bmask != 0);
+		if (!bmask)
+			return;
+		//ASSERT(bmask != 0);
 		Gfx::UseProgramStages(owner->native, bmask, native);
 	}
 }
@@ -624,20 +622,20 @@ TNG NativeColorBufferConstRef ProgramStateT<Gfx>::GetInputTex(int input_i) const
 }
 
 template <class Gfx>
-GVar::TextureType ProgramStateT<Gfx>::GetTexType(int input_i) const {
+GVar::TextureMode ProgramStateT<Gfx>::GetTexType(int input_i) const {
 	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
-		return GVar::TEXTYPE_2D;
+		return GVar::TEXMODE_2D;
 	
 	const InputState& in = inputs[input_i];
 	
 	if (in.type == GVar::VOLUME_INPUT)
-		return GVar::TEXTYPE_3D;
+		return GVar::TEXMODE_3D;
 	
 	else if (in.type == GVar::CUBEMAP_INPUT)
-		return GVar::TEXTYPE_CUBE_MAP;
+		return GVar::TEXMODE_CUBE_MAP;
 	
 	else
-		return GVar::TEXTYPE_2D;
+		return GVar::TEXMODE_2D;
 }
 
 

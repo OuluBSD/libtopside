@@ -105,7 +105,8 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (in->IsData<InternalPacketData>()) {
-			succ = this->bf.GetBuffer().LoadInputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			TODO
+			//succ = this->bf.GetBuffer().LoadInputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 		}
 		else {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());

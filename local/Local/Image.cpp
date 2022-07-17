@@ -462,6 +462,9 @@ Image MirrorVertical(const Image& img) {
 
 
 
+
+
+
 DescriptorImage::DescriptorImage() {
 	
 }

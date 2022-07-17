@@ -10,6 +10,9 @@ const char* names[TS::GVar::VAR_COUNT+1] = {
 	"iViewOverride",
 	"iProjectionOverride",
 	
+	"iCameraPos",
+	"iCameraDir",
+	
 	"iScale",
 	"iModel",
 	"iModelColor",
@@ -30,11 +33,16 @@ const char* names[TS::GVar::VAR_COUNT+1] = {
 	"iReflection",
 	"iUnknown",
 	
+	"iCubeDiffuse",
+	"iCubeIrradiance",
+	
 	"iStageColor0",
 	"iStageColor1",
 	"iStageColor2",
 	"iStageColor3",
 	"iStageColor4",
+	
+	"iBrdfSpecular",
 	
 	"iResolution",
 	"iTime",
@@ -73,11 +81,6 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	
 	true,
 	true,
-	true,
-	true,
-	true,
-	
-	true,
 	
 	true,
 	true,
@@ -86,8 +89,19 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	true,
 	
 	true,
+	
 	true,
 	true,
+	true,
+	true,
+	true,
+	
+	true,
+	true,
+	true,
+	true,
+	true,
+	
 	true,
 	true,
 	
@@ -95,6 +109,8 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	false,
 	false,
 	false,
+	false,
+	
 	false,
 	
 	false,

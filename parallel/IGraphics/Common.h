@@ -67,6 +67,8 @@ struct GenericVertexShaderArgs {
 
 struct GenericFragmentShaderArgs {
 	vec3 light_dir;
+	vec3 camera_pos;
+	vec3 camera_dir;
 	
 	int iNone;
 	int iDiffuse;
@@ -81,6 +83,8 @@ struct GenericFragmentShaderArgs {
 	int iLightmap;
 	int iReflection;
 	int iUnknown;
+	int iCubeDiffuse;
+	int iCubeIrradiance;
 	
 	const ByteImage* color_buf[TEXTYPE_COUNT];
 	

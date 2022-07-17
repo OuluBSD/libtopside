@@ -42,16 +42,59 @@ template <class Gfx>
 void BufferStageT<Gfx>::SetDataState(DataState* s) {
 	data = s;
 	pipeline = 0;
-	prog = 0;
+	
 	if (data && data->pipelines.GetCount() == 1) {
-		pipeline = &data->pipelines[0];
-		if (pipeline->programs.GetCount() == 1) {
+		if (data->pipelines.GetCount() == 1) {
+			pipeline_str = data->dictionary[data->pipelines.GetKey(0)];
+			pipeline = &data->pipelines[0];
+		}
+		else {
+			int id = data->dictionary.Find(pipeline_str);
+			if (id >= 0) {
+				int i = data->pipelines.Find(id);
+				if (i >= 0)
+					pipeline = &data->pipelines[i];
+			}
+		}
+		/*if (pipeline->programs.GetCount() == 1) {
 			prog = &pipeline->programs[0];
 			
 			if (prog->pending_compilation) {
 				Compile();
 			}
+		}*/
+		
+	}
+	if (pipeline && buf->mode == Buffer::PENDING_PACKET) {
+		for (ProgramState& prog : pipeline->programs.GetValues()) {
+			if (prog.pending_compilation && !prog.failed) {
+				prog.pending_compilation = false;
+				
+				if (!prog.Compile(GetCompilerArgs())) {
+					LOG("BufferStageT::SetDataState: error: shader compiling failed: " << prog.GetError());
+					prog.failed = true;
+					data = 0;
+					pipeline = 0;
+					return;
+				}
+			}
 		}
+		pipeline->Realize();
+	}
+	
+	CompileJIT();
+}
+
+template <class Gfx>
+void BufferStageT<Gfx>::CompileJIT() {
+	if (pipeline) {
+		for (ProgramState& prog : pipeline->programs.GetValues()) {
+			if (prog.pending_compilation) {
+				prog.pending_compilation = false;
+				prog.Compile(GetCompilerArgs());
+			}
+		}
+		pipeline->Realize();
 	}
 }
 
@@ -139,14 +182,17 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 			String key = prefix + "buf" + IntStr(i);
 			//LOG(key);
 			String value = ws.Get(key);
+			
 			if (value.IsEmpty())
-				;
-			else if (value == "volume")
+				continue;
+			
+			TODO
+			/*if (value == "volume")
 				prog->SetInputVolume(i);
 			else if (value == "cubemap")
 				prog->SetInputCubemap(i);
 			else
-				TODO
+				TODO*/
 		}
 	}
 	
@@ -202,9 +248,11 @@ bool BufferStageT<Gfx>::ImageInitialize() {
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		ShaderConf& conf = shdr_confs[i];
 		
-		if (conf.str.GetCount() &&
-			!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
-			return false;
+		if (conf.str.GetCount()) {
+			TODO
+			//if (!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
+			//	return false;
+		}
 	}
 	
 	return true;
@@ -247,19 +295,17 @@ void BufferStageT<Gfx>::MakeFrameQuad() {
 
 template <class Gfx>
 void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
-	auto& pipeline = *this->prog->owner;
-	auto& prog = *this->prog;
-	
-	ASSERT(prog.native);
-	if (prog.native == 0)
+	if (!data)
 		return;
+	ASSERT(this->pipeline);
+	auto& pipeline = *this->pipeline;
 	
 	ASSERT(pipeline.native);
+	if (pipeline.native == 0)
+		return;
+	
 	Gfx::BindProgramPipeline(pipeline.native);
-	Gfx::UseProgram(prog.native);
-	if (!prog.is_searched_vars)
-		prog.FindVariables();
-
+	
 	int bi = NewWriteBuffer();
 	
 	if (!fb.is_win_fbo) {
@@ -288,15 +334,28 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	//if (ctx.frames > 0)
 	{
-		
-		prog.SetVars(buf->ctx, buf->env, cfg);
-		
+		ProgramState* prev_prog = 0;
 		for (ModelState& m : data->models.GetValues()) {
+			ASSERT(m.prog >= 0);
+			if (m.prog < 0)
+				continue;
+			ProgramState& prog = pipeline.programs.Get(m.prog);
+			
+			Gfx::UseProgram(prog.native);
+			if (!prog.is_searched_vars)
+				prog.FindVariables();
+			
+			if (prev_prog != &prog) {
+				prog.SetVars(buf->ctx, buf->env, cfg);
+				prev_prog = &prog;
+			}
+			
 			for (DataObject& o : m.objects) {
 				if (!o.is_visible)
 					continue;
 				
-				SetVars(cfg, o);
+				
+				SetVars(prog, cfg, o);
 				
 				Gfx::BeginRenderObject();
 				
@@ -425,7 +484,7 @@ bool BufferStageT<Gfx>::InitializeVolume(Size3 sz, int channels, Sample sample, 
 
 template <class Gfx>
 void BufferStageT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
-	GVar::TextureType type = GVar::TEXTYPE_2D;
+	GVar::TextureMode type = GVar::TEXMODE_2D;
 	
 	int exp_len = sz.cx * sz.cy * channels * GVar::GetSampleSize(sample);
 	ASSERT(len == exp_len);
@@ -446,7 +505,7 @@ void BufferStageT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const 
 
 template <class Gfx>
 void BufferStageT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data) {
-	GVar::TextureType type = GVar::TEXTYPE_3D;
+	GVar::TextureMode type = GVar::TEXMODE_3D;
 	
 	ASSERT(fb.size.cx == sz.cx && fb.size.cy == sz.cy);
 	auto& color_buf = fb.color_buf[0];
@@ -463,7 +522,7 @@ void BufferStageT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const
 
 template <class Gfx>
 void BufferStageT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
-	GVar::TextureType type = GVar::TEXTYPE_CUBE_MAP;
+	GVar::TextureMode type = GVar::TEXMODE_CUBE_MAP;
 	auto& tex			= fb.color_buf[0];
 	//int ch_code		= GetGfxChannelFormat(channels);
 	
@@ -472,7 +531,7 @@ void BufferStageT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d
 	ASSERT(tex);
 	
 	for(int i = 0; i < 6; i++) {
-		GVar::TextureType tex_type = (GVar::TextureType)(GVar::TEXTYPE_CUBE_MAP_SIDE_0 + i);
+		GVar::TextureMode tex_type = (GVar::TextureMode)(GVar::TEXMODE_CUBE_MAP_SIDE_0 + i);
 		const Vector<byte>* data = 0;
 		switch (i) {
 			case 0: data = &d0; break;
@@ -507,10 +566,9 @@ void BufferStageT<Gfx>::RefreshPipeline() {
 }
 
 template <class Gfx>
-bool BufferStageT<Gfx>::Compile() {
-	ASSERT(prog);
-	prog->pending_compilation = false;
-	return prog->Compile(GetCompilerArgs());
+bool BufferStageT<Gfx>::Compile(ProgramState& prog) {
+	prog.pending_compilation = false;
+	return prog.Compile(GetCompilerArgs());
 }
 
 template <class Gfx>
@@ -561,13 +619,13 @@ void BufferStageT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 	Size sz = fb.size;
 	ASSERT(sz.cx > 0 && sz.cy > 0);
 	
-	GVar::TextureType type = GVar::TEXTYPE_2D;
+	GVar::TextureMode type = GVar::TEXMODE_2D;
 	if (fb.depth > 0) {
-		type = GVar::TEXTYPE_3D;
+		type = GVar::TEXMODE_3D;
 		create_depth = create_fbo = false;
 	}
 	else if (fb.is_cubemap) {
-		type = GVar::TEXTYPE_CUBE_MAP;
+		type = GVar::TEXMODE_CUBE_MAP;
 		create_depth = create_fbo = false;
 	}
 	/*else if (fb.is_audio) {
@@ -639,7 +697,7 @@ TNG NativeColorBufferConstRef BufferStageT<Gfx>::GetOutputTexture(bool reading_s
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
+void BufferStageT<Gfx>::TexFlags(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap repeat) {
 	Gfx::TexParameteri(type, filter, repeat);
 }
 
@@ -666,21 +724,21 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 }
 
 template <class Gfx>
-bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
-	return prog->LoadInputLink(in_id, v);
+bool BufferStageT<Gfx>::LoadInputLink(ProgramState& prog, int in_id, const InternalPacketData& v) {
+	return prog.LoadInputLink(in_id, v);
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetVars(const RealtimeSourceConfig& cfg, const DataObject& o) {
+void BufferStageT<Gfx>::SetVars(ProgramState& prog, const RealtimeSourceConfig& cfg, const DataObject& o) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (!GVar::is_obj_var[i] && prog->var_idx[i] >= 0)
-			SetVar(i, cfg, o);
+		if (!GVar::is_obj_var[i] && prog.var_idx[i] >= 0)
+			SetVar(prog, i, cfg, o);
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetVar(int var, const RealtimeSourceConfig& cfg, const DataObject& o) {
+void BufferStageT<Gfx>::SetVar(ProgramState& prog, int var, const RealtimeSourceConfig& cfg, const DataObject& o) {
 	using namespace GVar;
-	int uindex = prog->var_idx[var];
+	int uindex = prog.var_idx[var];
 	ASSERT(uindex >= 0);
 	if (uindex < 0)
 		return;
@@ -696,8 +754,8 @@ void BufferStageT<Gfx>::SetVar(int var, const RealtimeSourceConfig& cfg, const D
 			if (tex) {
 				//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
 				Gfx::ActiveTexture(tex_ch);
-				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
-				Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+				Gfx::BindTextureRO(GVar::TEXMODE_2D, tex);
+				Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 				Gfx::Uniform1i(uindex, tex_ch);
 				Gfx::DeactivateTexture();
 			}
@@ -725,7 +783,29 @@ void BufferStageT<Gfx>::SetVar(int var, const RealtimeSourceConfig& cfg, const D
 	else if (var == VAR_ABERR) {
 		Gfx::Uniform3f(uindex, aberr[0], aberr[1], aberr[2]);
 	}
-	
+	else if (var == VAR_COMPAT_RESOLUTION) {
+		// from fb.size
+		ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
+		Gfx::Uniform3f(uindex, (float)fb.size.cx, (float)fb.size.cy, 1.0f);
+	}
+	else if (var == VAR_BRDF_SPEC) {
+		if (brdf_img.IsEmpty()) {
+			MakeSpecBRDF(brdf_img, 32);
+			brdf_tex.Load(brdf_img);
+		}
+		//int ch = var - VAR_GLOBAL_BEGIN;
+		int ch = 0;
+		int tex_ch = GLOBAL_OFFSET + ch;
+		
+		// may fail in early program: ASSERT(brdf_tex.tex);
+		if (brdf_tex.tex) {
+			Gfx::ActiveTexture(tex_ch);
+			Gfx::BindTextureRO(GVar::TEXMODE_2D, brdf_tex.tex);
+			Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+			Gfx::Uniform1i(uindex, tex_ch);
+			Gfx::DeactivateTexture();
+		}
+	}
 }
 
 

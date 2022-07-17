@@ -95,6 +95,8 @@ struct GfxDataState : ErrorReporter {
     mat4				view;
     mat4				view_stereo[2];
     vec3				light_dir;
+    vec3				camera_pos;
+    vec3				camera_dir;
     bool				is_stereo = false;
     bool				user_view = false;
     bool				dbg_render = false;

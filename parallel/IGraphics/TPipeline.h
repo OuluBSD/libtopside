@@ -151,6 +151,7 @@ struct ProgramStateT : GfxProgramState {
 	bool				is_time_used = 0;
 	ShaderState			shaders[GVar::SHADERTYPE_COUNT];
 	InputState			inputs[GVar::INPUT_COUNT];
+	bool				failed = false;
 	
 	Vector<String>		user_vars;
 	
@@ -192,7 +193,7 @@ struct ProgramStateT : GfxProgramState {
 	template <int> bool LoadBuiltinShaderT(GVar::ShaderType shader_type, String id);
 	
 	NativeColorBufferConstRef GetInputTex(int input_i) const;
-	GVar::TextureType GetTexType(int input_i) const;
+	GVar::TextureMode GetTexType(int input_i) const;
 	
 	
 };
@@ -213,7 +214,7 @@ struct PipelineStateT : GfxPipelineState {
 	String name;
 	
 	NativePipeline native;
-	ArrayMap<String, ProgramState> programs;
+	ArrayMap<int, ProgramState> programs;
 	
 	
 	

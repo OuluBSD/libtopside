@@ -79,10 +79,16 @@ public:
 		String path;
 	};
 	
+	struct CubeTexture {
+		ByteImage img[6];
+		String path;
+	};
+	
 	Array<Mesh> meshes;
 	Vector<ModelNode> nodes;
 	ArrayMap<int, Material> materials;
 	ArrayMap<int, Texture> textures;
+	ArrayMap<int, CubeTexture> cube_textures;
     String path;
     String directory;
     
@@ -116,6 +122,7 @@ public:
 	bool AddTextureFile(int mesh_i, TexType type, String path);
 	bool AddTextureFile(Mesh& mesh, TexType type, String path);
 	bool SetTexture(Mesh& mesh, TexType type, Image img, String path);
+	bool LoadCubemapFile(Mesh& mesh, TexType type, String path);
 	
 	void MakeModel(Shape2DWrapper& shape);
 	//void Refresh(GfxDataState& s, GfxDataObject& o);
@@ -134,7 +141,9 @@ public:
     int AddTexture(const Image& img, String path);
     int GetAddTexture(const Image& img, String path);
     int FindTexture(String path);
-    
+    int AddCubeTexture(String path);
+	int GetAddCubeTexture(String path);
+
     bool IsEmpty() const {return meshes.IsEmpty();}
     operator bool() const {return !IsEmpty();}
     

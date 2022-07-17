@@ -366,7 +366,7 @@ struct SdlCpuGfx : SwGfxT<SdlCpuGfx>, SdlGfx {
 	NativeFrameBuffer fb;
 	
 	static void BindFramebufferEXT(NativeFrameBuffer& fb);
-	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindTexture(GVar::TextureMode type, const NativeFrameBuffer& tex);
 	static void BindFramebufferDefault();
 	static void RenderScreenRect();
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = fb;}

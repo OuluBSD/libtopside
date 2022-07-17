@@ -36,11 +36,11 @@ bool ObjViewProgT<Gfx>::Arg(const String& key, const String& value) {
 	}
 	else if (key == "skybox.diffuse") {
 		have_skybox = true;
-		skybox_path[TEXTYPE_DIFFUSE] = value;
+		skybox_diffuse = value;
 	}
-	else if (key == "skybox.emissive" || key == "skybox.irradiance") {
+	else if (key == "skybox.irradiance") {
 		have_skybox = true;
-		skybox_path[TEXTYPE_EMISSIVE] = value;
+		skybox_irradiance = value;
 	}
 	else return false;
 	
@@ -60,34 +60,27 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 		DataState& state = sd->GetState();
 		
 		if (state.GetModelCount() == 0) {
+			int env_material_model = -1;
 			
 			if (have_skybox) {
 				ModelState& skybox = state.AddModelT();
+				ASSERT(skybox.id >= 0);
 				float skybox_sz = 1e8;
 				Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
 				Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
 				ModelBuilder mb;
 				Mesh& box_mesh = mb.AddBox(vec3(0), vec3(skybox_sz), true, true);
 				Model& box = mb;
-				for(int i = 0; i < TEXTYPE_COUNT; i++) {
-					String& path = skybox_path[i];
-					if (path.GetCount()) {
-						Image img;
-						for(int j = 0; j < ext_list.GetCount(); j++) {
-							for(int k = 0; k < dir_list.GetCount(); k++) {
-								String s = RealizeShareFile(AppendFileName(dir_list[k], path + ext_list[j]));
-								img = StreamRaster::LoadFileAny(s);
-								if (!img.IsEmpty()) break;
-							}
-							if (!img.IsEmpty()) break;
-						}
-						if (img.IsEmpty()) {
-							LOG("ObjViewProg::Render: error: got empty image from '" << path << "'");
-							return false;
-						}
-						box.SetTexture(box_mesh, (TexType)i, img, path);
-					}
+				
+				if (!box.LoadCubemapFile(box_mesh, TEXTYPE_CUBE_DIFFUSE, skybox_diffuse)) {
+					LOG("ObjViewProg::Render: error: could not load skybox diffuse image '" << skybox_diffuse << "'");
+					return false;
 				}
+				if (!box.LoadCubemapFile(box_mesh, TEXTYPE_CUBE_IRRADIANCE, skybox_irradiance)) {
+					LOG("ObjViewProg::Render: error: could not load skybox irradiance image '" << skybox_irradiance << "'");
+					return false;
+				}
+				
 				loader = mb;
 				if (!skybox.LoadModel(loader)) {
 					RTLOG("ObjViewProg::Render: error: could not load skybox");
@@ -97,9 +90,17 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 					RTLOG("ObjViewProg::Render: error: could not load skybox textures");
 					return false;
 				}
+				
+				skybox.env_material = skybox.materials.GetKey(0);
+				skybox.env_material_model = skybox.id;
+				env_material_model = skybox.id;
+				
+				bool b = skybox.SetProgram("sky");
+				ASSERT(b);
 			}
 			
 			ModelState& mdl = state.AddModelT();
+			mdl.env_material_model = env_material_model;
 			
 			String data_dir = ShareDirFile("models");
 			String obj_path = AppendFileName(data_dir, obj);
@@ -112,6 +113,9 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 				RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
 				return false;
 			}
+			
+			bool b = mdl.SetProgram("obj");
+			ASSERT(b);
 		}
 	}
 	
@@ -154,7 +158,7 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		float z = sin(angle) * rad * SCALAR_FWD_Z;
 		float eye_x = cos(angle);
 		float eye_y = sin(angle);
-		mat4 proj = Perspective(DEG2RAD(110), 1.0, 0.1, 100.0);
+		mat4 proj = Perspective(DEG2RAD(90), 1.0, 0.1, 100.0);
 		
 		vec3 eye {x, 0, z};
 		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
@@ -164,6 +168,8 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		mat4 port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 		mat4 base = port * proj;
 		
+		state.camera_pos = eye;
+		state.camera_dir = (center - eye).GetNormalized();
 		state.view = base * lookat;
 		
 		if (1) {
@@ -186,8 +192,11 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 		//state.view = port * proj * lookat * model * rot;
 		
 	}
-	
+	#if 0
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	#else
+	state.light_dir = AxesDir(M_PI/2, M_PI/4);
+	#endif
 	
 }
 
@@ -210,7 +219,9 @@ void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 template <class Gfx>
 ObjViewFragmentT<Gfx>::ObjViewFragmentT() {
 	this->UseUniform(GVar::VAR_DIFFUSE);
-	this->UseUniform(GVar::VAR_EMISSIVE);
+	this->UseUniform(GVar::VAR_SPECULAR);
+	this->UseUniform(GVar::VAR_CUBE_DIFFUSE);
+	this->UseUniform(GVar::VAR_CUBE_IRRADIANCE);
 }
 
 template <class Gfx>

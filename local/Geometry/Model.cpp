@@ -47,6 +47,65 @@ bool Model::SetTexture(Mesh& mesh, TexType type, Image img, String path) {
     return false;
 }
 
+bool Model::LoadCubemapFile(Mesh& mesh, TexType type, String path) {
+	ASSERT(type >= TEXTYPE_CUBE_DIFFUSE);
+	
+	if (path.IsEmpty())
+		return false;
+	Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
+	Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
+	String abs_path;
+	for(int j = 0; j < ext_list.GetCount(); j++) {
+		for(int k = 0; k < dir_list.GetCount(); k++) {
+			String s = RealizeShareFile(AppendFileName(dir_list[k], path + ext_list[j]));
+			if (FileExists(s)) {
+				abs_path = s;
+				break;
+			}
+		}
+		if (!abs_path.IsEmpty()) break;
+	}
+
+	if (!FileExists(abs_path)) {
+		LOG("Model::LoadCubemapFile: error: file does not exist: " << abs_path);
+		return false;
+	}
+	
+	int cubetex_id = GetAddCubeTexture(abs_path);
+	CubeTexture& cubetex = cube_textures.Get(cubetex_id);
+	cubetex.img[0] = StreamRaster::LoadFileAny(abs_path);
+	
+	String ext = GetFileExt(abs_path);
+	String base = abs_path.Left(abs_path.GetCount() - ext.GetCount());
+	
+	for(int i = 1; i < 6; i++) {
+		String side_path = base + "_" + IntStr(i) + ext;
+		if (!FileExists(side_path)) {
+			LOG("Model::LoadCubemapFile: error: file does not exist: " << side_path);
+			return false;
+		}
+		
+		cubetex.img[i] = StreamRaster::LoadFileAny(side_path);
+	}
+	
+	for(int i = 0; i < 6; i++) {
+		if (cubetex.img[i].IsEmpty()) {
+			LOG("Model::LoadCubemapFile: error: cube side " << i << " image is empty");
+			return false;
+		}
+	}
+	
+	if (mesh.material < 0) {
+		Material& mat = AddMaterial();
+		mesh.material = mat.id;
+	}
+	Material& mat = materials.Get(mesh.material);
+	ASSERT(mat.id >= 0);
+    mat.tex_id[type] = cubetex_id;
+    mat.tex_filter[type] = 1; // LINEAR
+    return true;
+}
+
 void Model::MakeModel(Shape2DWrapper& shape) {
 	ASSERT(shape.shape);
 	if (shape.shape) {
@@ -145,6 +204,20 @@ int Model::GetAddTexture(const Image& img, String path) {
 	if (img.IsEmpty())
 		return -1;
 	return AddTexture(img, path);
+}
+
+int Model::AddCubeTexture(String path) {
+	int id = cube_textures.IsEmpty() ? 0 : cube_textures.GetKey(textures.GetCount()-1) + 1;
+	CubeTexture& t = cube_textures.Add(id);
+	t.path = path;
+	return id;
+}
+
+int Model::GetAddCubeTexture(String path) {
+	int i = FindTexture(path);
+	if (i >= 0)
+		return i;
+	return AddCubeTexture(path);
 }
 
 int Model::FindTexture(String path) {

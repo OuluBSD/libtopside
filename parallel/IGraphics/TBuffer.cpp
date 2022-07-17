@@ -209,7 +209,7 @@ bool BufferT<Gfx>::InitializeRenderer() {
 	
 	EnableGfxAccelDebugMessages(true);
 	
-	for (BufferStage& s : stages) {
+	/*for (BufferStage& s : stages) {
 		ASSERT(s.prog || mode == PENDING_PACKET);
 		if (!s.prog)
 			continue;
@@ -221,7 +221,7 @@ bool BufferT<Gfx>::InitializeRenderer() {
 			return false;
 		
 		s.RefreshPipeline();
-	}
+	}*/
 	
 	Reset();
 	
@@ -244,7 +244,7 @@ void BufferT<Gfx>::Reset() {
 }
 
 
-template <class Gfx>
+/*template <class Gfx>
 bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 	if (mode == MULTI_STEREO) {
 		return
@@ -255,7 +255,7 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 		return
 			stages[0].LoadInputLink(in_id, v);
 	}
-}
+}*/
 
 template <class Gfx>
 typename BufferT<Gfx>::NativeColorBufferConstRef
@@ -351,10 +351,6 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				}
 			}
 		}
-		
-		ASSERT(stage.prog && stage.prog->native);
-		if (stage.prog == 0|| stage.prog->native == 0)
-			return;
 		
 		if (fb.is_audio) {
 			ctx.block_offset += fb.size.cx;

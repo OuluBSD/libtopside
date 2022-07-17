@@ -143,12 +143,14 @@ bool LinkerT<Gfx>::Link(ProgramState& ps) {
 
 template <class Gfx>
 ProgramStateT<Gfx>& PipelineStateT<Gfx>::GetAddProgram(String name) {
-	int i = programs.Find(name);
+	int id = owner->dictionary.FindAdd(name);
+	int i = programs.Find(id);
 	if (i >= 0)
 		return programs[i];
-	ProgramStateT<Gfx>& ps = programs.Add(name);
+	ProgramStateT<Gfx>& ps = programs.Add(id);
 	ps.owner = this;
 	ps.name = name;
+	ps.id = id;
 	return ps;
 }
 

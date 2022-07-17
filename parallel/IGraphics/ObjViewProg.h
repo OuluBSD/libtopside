@@ -41,7 +41,7 @@ struct ObjViewProgT :
 	bool use_pbr = false;
 	
 	bool have_skybox = false;
-	String skybox_path[TEXTYPE_COUNT];
+	String skybox_diffuse, skybox_irradiance;
 	
 	ObjViewProgT();
 	void operator=(const ObjViewProgT& t) {Panic("Can't copy ObjViewProgT");}

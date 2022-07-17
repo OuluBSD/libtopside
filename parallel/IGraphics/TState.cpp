@@ -86,16 +86,29 @@ void DataObjectT<Gfx>::Paint(ModelState& state) {
 	if (material >= 0) {
 		MaterialT<Gfx>& mat = state.materials.Get(material);
 		
-		for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		for(int i = 0; i < TEXTYPE_CUBE_DIFFUSE; i++) {
 			int id = mat.tex_id[i];
 			int ch = TEXTYPE_OFFSET + i;
 			Gfx::ActiveTexture(ch);
 			if (id >= 0) {
 				auto& tex = state.textures.Get(id);
-				Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+				Gfx::BindTextureRO(GVar::TEXMODE_2D, tex);
 			}
 			else {
-				Gfx::UnbindTexture(GVar::TEXTYPE_2D);
+				Gfx::UnbindTexture(GVar::TEXMODE_2D);
+			}
+			Gfx::DeactivateTexture();
+		}
+		for(int i = TEXTYPE_CUBE_DIFFUSE; i < TEXTYPE_COUNT; i++) {
+			int id = mat.tex_id[i];
+			int ch = TEXTYPE_OFFSET + i;
+			Gfx::ActiveTexture(ch);
+			if (id >= 0) {
+				auto& tex = state.cube_textures.Get(id);
+				Gfx::BindTextureRO(GVar::TEXMODE_CUBE_MAP, tex);
+			}
+			else {
+				Gfx::UnbindTexture(GVar::TEXMODE_CUBE_MAP);
 			}
 			Gfx::DeactivateTexture();
 		}
@@ -142,6 +155,10 @@ void ModelStateT<Gfx>::Free() {
 	for (NativeColorBufferRef& t : textures.GetValues())
 		Gfx::DeleteTexture(t);
 	textures.Clear();
+	
+	for (NativeColorBufferRef& t : cube_textures.GetValues())
+		Gfx::DeleteTexture(t);
+	cube_textures.Clear();
 }
 
 template <class Gfx>
@@ -162,7 +179,29 @@ typename Gfx::DataObject& ModelStateT<Gfx>::AddObject() {
 
 template <class Gfx>
 MaterialT<Gfx>& ModelStateT<Gfx>::GetAddMaterial(int material_id) {
-	return materials.GetAdd(material_id);
+	int i = materials.Find(material_id);
+	if (i >= 0)
+		return materials[i];
+	MaterialT<Gfx>& m = materials.Add(material_id);
+	m.id = material_id;
+	return m;
+}
+
+template <class Gfx>
+MaterialT<Gfx>& ModelStateT<Gfx>::AddMaterial() {
+	int material_id = materials.IsEmpty() ? 0 : materials.Top().id + 1;
+	MaterialT<Gfx>& m = materials.Add(material_id);
+	m.id = material_id;
+	return m;
+}
+
+template <class Gfx>
+bool ModelStateT<Gfx>::SetProgram(String name) {
+	int id = owner->dictionary.Find(name);
+	if (id < 0)
+		return false;
+	this->prog = id;
+	return true;
 }
 
 template <class Gfx>
@@ -240,9 +279,9 @@ bool ModelStateT<Gfx>::LoadModelAssimp(ModelLoader& l, String path) {
 
 template <class Gfx>
 bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
-	Model& m = *l.model;
+	Free();
 	
-	textures.Clear();
+	Model& m = *l.model;
 	
 	for(int i = 0; i < m.textures.GetCount(); i++) {
 		int id = m.textures.GetKey(i);
@@ -257,13 +296,42 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 		ASSERT(buf);
 		
 		Gfx::ActiveTexture(CHANNEL_NONE);
-		Gfx::BindTextureRW(GVar::TEXTYPE_2D, buf);
-		//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+		Gfx::BindTextureRW(GVar::TEXMODE_2D, buf);
+		//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 		Gfx::TexImage2D(tex);
-		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
-		Gfx::GenerateMipmap(GVar::TEXTYPE_2D);
+		Gfx::UnbindTexture(GVar::TEXMODE_2D);
+		Gfx::GenerateMipmap(GVar::TEXMODE_2D);
 		Gfx::DeactivateTexture();
 	}
+	
+	for(int i = 0; i < m.cube_textures.GetCount(); i++) {
+		int id = m.cube_textures.GetKey(i);
+		NativeColorBufferRef& buf = cube_textures.GetAdd(id);
+		if (buf)
+			continue;
+		
+		Gfx::GenTexture(buf);
+		ASSERT(buf);
+		Gfx::ActiveTexture(CHANNEL_NONE);
+		Gfx::BindTextureRW(GVar::TEXMODE_CUBE_MAP, buf);
+		for(int j = 0; j < 6; j++) {
+			GVar::TextureMode tex_type = (GVar::TextureMode)(GVar::TEXMODE_CUBE_MAP_SIDE_0 + j);
+			
+			ByteImage& tex = m.cube_textures[i].img[j];
+			if (tex.IsEmpty())
+				continue;
+			
+			Gfx::SetTexture(
+					tex_type,
+					tex.sz,
+					GVar::Sample::SAMPLE_U8,
+					tex.channels,
+					tex.Begin());
+		}
+		Gfx::UnbindTexture(GVar::TEXMODE_CUBE_MAP);
+		Gfx::DeactivateTexture();
+	}
+	
 	
     RefreshTexture(*l.model);
 	
@@ -308,6 +376,8 @@ void ModelStateT<Gfx>::ProcessMaterial(Model& model, TS::Material& m, const aiMa
 				TYPE(LIGHTMAP)
 				TYPE(REFLECTION)
 				TYPE(UNKNOWN)
+				//TYPE(CUBE_DIFFUSE)
+				//TYPE(CUBE_IRRADIANCE)
 				#undef TYPE
 			}
 			if (textype == TEXTYPE_COUNT) continue;
@@ -450,6 +520,7 @@ template <class Gfx>
 ModelStateT<Gfx>& DataStateT<Gfx>::AddModelT() {
 	int id = models.IsEmpty() ? 0 : models.Top().id + 1;
 	ModelState& ms = models.Add(id);
+	ms.owner = this;
 	ms.id = id;
 	return ms;
 }
@@ -461,10 +532,11 @@ GfxModelState& DataStateT<Gfx>::GetModel(int i) {
 
 template <class Gfx>
 PipelineStateT<Gfx>& DataStateT<Gfx>::GetAddPipeline(String name) {
-	int i = pipelines.Find(name);
+	int id = dictionary.FindAdd(name);
+	int i = pipelines.Find(id);
 	if (i >= 0)
 		return pipelines[i];
-	PipelineStateT<Gfx>& ps = pipelines.Add(name);
+	PipelineStateT<Gfx>& ps = pipelines.Add(id);
 	ps.owner = this;
 	ps.name = name;
 	return ps;
