@@ -64,7 +64,7 @@ struct GfxMaterial : RTTIBase {
 	int		id = -1;
 	
 	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
-	int tex_filter[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
+	GVar::Filter tex_filter[TEXTYPE_COUNT];
 	
 };
 

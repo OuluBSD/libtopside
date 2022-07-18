@@ -7,7 +7,7 @@ template <class Gfx>
 MaterialT<Gfx>::MaterialT() {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		tex_id[i] = -1;
-		tex_filter[i] = -1;
+		tex_filter[i] = GVar::DEFAULT_FILTER;
 	}
 }
 
@@ -299,8 +299,8 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 		Gfx::BindTextureRW(GVar::TEXMODE_2D, buf);
 		//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 		Gfx::TexImage2D(tex);
-		Gfx::UnbindTexture(GVar::TEXMODE_2D);
 		Gfx::GenerateMipmap(GVar::TEXMODE_2D);
+		Gfx::UnbindTexture(GVar::TEXMODE_2D);
 		Gfx::DeactivateTexture();
 	}
 	
@@ -328,6 +328,7 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 					tex.channels,
 					tex.Begin());
 		}
+		Gfx::GenerateMipmap(GVar::TEXMODE_CUBE_MAP);
 		Gfx::UnbindTexture(GVar::TEXMODE_CUBE_MAP);
 		Gfx::DeactivateTexture();
 	}
@@ -393,7 +394,7 @@ void ModelStateT<Gfx>::ProcessMaterial(Model& model, TS::Material& m, const aiMa
 	        String path = AppendFileName(model.directory, str.C_Str());
 	        Image img = StreamRaster::LoadFileAny(path);
 	        m.tex_id[textype] = model.GetAddTexture(img, path);
-	        m.tex_filter[textype] = 1;
+	        m.tex_filter[textype] = GVar::FILTER_MIPMAP;
 	    }
 	}
 }

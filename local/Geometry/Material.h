@@ -32,7 +32,7 @@ struct Material {
 	TrackChanges<MaterialParameters> params;
 	
     int tex_id[TEXTYPE_COUNT];
-	int tex_filter[TEXTYPE_COUNT];
+	GVar::Filter tex_filter[TEXTYPE_COUNT];
 	
 	
 	Material();

@@ -54,7 +54,7 @@ struct MaterialT : GfxMaterial {
 	
 	int id = -1;
 	int tex_id[TEXTYPE_COUNT];
-	int tex_filter[TEXTYPE_COUNT];
+	GVar::Filter tex_filter[TEXTYPE_COUNT];
 	
 	MaterialT();
 	

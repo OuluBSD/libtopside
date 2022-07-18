@@ -41,7 +41,7 @@ bool Model::SetTexture(Mesh& mesh, TexType type, Image img, String path) {
 		ASSERT(mat.id >= 0);
 		int tex_id = GetAddTexture(img, path);
         mat.tex_id[type] = tex_id;
-        mat.tex_filter[type] = 1; // LINEAR
+        mat.tex_filter[type] = GVar::FILTER_MIPMAP;
         return true;
     }
     return false;
@@ -102,7 +102,7 @@ bool Model::LoadCubemapFile(Mesh& mesh, TexType type, String path) {
 	Material& mat = materials.Get(mesh.material);
 	ASSERT(mat.id >= 0);
     mat.tex_id[type] = cubetex_id;
-    mat.tex_filter[type] = 1; // LINEAR
+    mat.tex_filter[type] = GVar::FILTER_MIPMAP;
     return true;
 }
 

@@ -28,7 +28,7 @@ void Material::Clear() {
 	});
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		tex_id[i] = -1;
-		tex_filter[i] = -1;
+		tex_filter[i] = GVar::DEFAULT_FILTER;
 	}
 }
 

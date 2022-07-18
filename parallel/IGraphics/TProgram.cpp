@@ -209,16 +209,12 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 			return;
 		auto& mat = mdl.materials.Get(o.material);
 		int tex_i = mat.tex_id[tex_ch];
-		int tex_f = mat.tex_filter[tex_ch];
 		if (tex_i >= 0) {
 			auto& tex = mdl.textures[tex_i];
 			Gfx::ActiveTexture(tex_ch);
 			TextureMode textmode = GVar::TEXMODE_2D;
 			Gfx::BindTextureRO(textmode, tex);
-			if (tex_f == 0)
-				Gfx::TexParameteri(textmode, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
-			else if (tex_f == 1)
-				Gfx::TexParameteri(textmode, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+			Gfx::TexParameteri(textmode, mat.tex_filter[tex_ch], GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
@@ -233,16 +229,12 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 			return;
 		auto& mat = used_mdl.materials.Get(used_mdl.env_material);
 		int tex_i = mat.tex_id[tex_ch];
-		int tex_f = mat.tex_filter[tex_ch];
 		if (tex_i >= 0) {
 			auto& tex = used_mdl.cube_textures[tex_i];
 			Gfx::ActiveTexture(tex_ch);
 			TextureMode textmode = GVar::TEXMODE_CUBE_MAP;
 			Gfx::BindTextureRO(textmode, tex);
-			if (tex_f == 0)
-				Gfx::TexParameteri(textmode, GVar::FILTER_NEAREST, GVar::WRAP_REPEAT);
-			else if (tex_f == 1)
-				Gfx::TexParameteri(textmode, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+			Gfx::TexParameteri(textmode, mat.tex_filter[tex_ch], GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}

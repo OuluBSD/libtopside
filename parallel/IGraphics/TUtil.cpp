@@ -22,8 +22,8 @@ void TextureT<Gfx>::Load(const ByteImage& img) {
 	Gfx::BindTextureRW(GVar::TEXMODE_2D, tex);
 	//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 	Gfx::TexImage2D(const_cast<ByteImage&>(img));
-	Gfx::UnbindTexture(GVar::TEXMODE_2D);
 	Gfx::GenerateMipmap(GVar::TEXMODE_2D);
+	Gfx::UnbindTexture(GVar::TEXMODE_2D);
 	Gfx::DeactivateTexture();
 }
 
@@ -38,8 +38,8 @@ void TextureT<Gfx>::Load(const FloatImage& img) {
 	Gfx::BindTextureRW(GVar::TEXMODE_2D, tex);
 	//not here, requires framebuffer: Gfx::TexParameteri(GVar::TEXMODE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
 	Gfx::TexImage2D(const_cast<FloatImage&>(img));
-	Gfx::UnbindTexture(GVar::TEXMODE_2D);
 	Gfx::GenerateMipmap(GVar::TEXMODE_2D);
+	Gfx::UnbindTexture(GVar::TEXMODE_2D);
 	Gfx::DeactivateTexture();
 }
 

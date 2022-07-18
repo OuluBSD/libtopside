@@ -412,7 +412,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				DataObject& o = m.objects[i];
 				o.material = material.id;
 				material.tex_id[TEXTYPE_DIFFUSE] = i;
-				material.tex_filter[TEXTYPE_DIFFUSE] = 1;
+				material.tex_filter[TEXTYPE_DIFFUSE] = GVar::DEFAULT_FILTER;
 				m.textures.GetAdd(i) = stage.fb.color_buf[stage.fb.buf_i];
 			}
 			
