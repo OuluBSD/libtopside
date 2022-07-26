@@ -235,6 +235,34 @@ void ByteImage::SwapRedBlue() {
 	}
 }
 
+void ByteImage::ToGrayscaleRGB() {
+	if (!data || channels >= 3)
+		return;
+	int old_channels = this->channels;
+	int old_pitch = this->pitch;
+	this->channels = 3;
+	pitch = sz.cx * 3;
+	size = pitch * sz.cy;
+	ASSERT(channels >= 1 && channels <= 4);
+	
+	byte* old_data = data;
+	data = (byte*)malloc(sizeof(byte) * size);
+	
+	for(int y = 0; y < sz.cy; y++) {
+		byte* from = old_data + y * old_pitch;
+		byte* to = data + y * pitch;
+		for(int x = 0; x < sz.cx; x++) {
+			byte gray = *from;
+			for(int i = 0; i < old_channels; i++)
+				*to++ = *from++;
+			for(int i = old_channels; i < 3; i++)
+				*to++ = gray;
+		}
+	}
+	
+	free(old_data);
+}
+
 void ByteImage::SetSwapRedBlue(const ByteImage& i, bool add_alpha_ch) {
 	int new_ch = i.GetChannels();
 	if (new_ch == 3 && add_alpha_ch)

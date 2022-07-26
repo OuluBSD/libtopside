@@ -8,6 +8,7 @@ struct SoftUniform : Moveable<SoftUniform> {
 	
 };
 
+template <class Gfx> class SoftPipelineT;
 
 template <class Gfx>
 class SoftProgramT {
@@ -63,6 +64,10 @@ public:
 	GenericVertexShaderArgs& GetVertexArgs(int i) {return objs[i].vargs;}
 	GenericFragmentShaderArgs& GetFragmentArgs(int i) {return objs[i].fargs;}
 	Vector<SoftShader*>& GetShaders() {return shaders;}
+	
+	
+	
+	SoftPipelineT<Gfx>* pipeline = 0;
 	
 };
 

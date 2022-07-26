@@ -93,11 +93,11 @@ void SoftFramebufferT<Gfx>::SetLocalData(Size sz, byte channels) {
 
 template <class Gfx>
 void SoftFramebufferT<Gfx>::SetParam(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap wrap) {
-	ASSERT(type >= 0 && type < TEXTYPE_COUNT);
+	ASSERT(type >= 0 && type < GVar::TEXMODE_COUNT);
 	this->filter[type] = filter;
 	this->wrap[type] = wrap;
 }
-
+ 
 
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftFramebufferT)
 

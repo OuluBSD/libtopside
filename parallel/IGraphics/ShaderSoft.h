@@ -76,7 +76,7 @@ public:
 	SoftProgram* GetSoftProgram() const {return prog;}
 	void SetSoftProgram(SoftProgram* p) {prog = p;}
 	
-	void SetPassthroughVertexShader(SoftProgram& p, SoftShaderBaseT<Gfx>& s) {prog = &p; type = GVar::VERTEX_SHADER; this->s = &s;};
+	void SetPassthroughVertexShader(SoftProgram& p, SoftShaderBaseT<Gfx>* s) {prog = &p; type = GVar::VERTEX_SHADER; this->s = s;};
 	
 };
 

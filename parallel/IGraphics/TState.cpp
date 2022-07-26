@@ -291,6 +291,8 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 		if (buf || tex.IsEmpty())
 			continue;
 		
+		if (tex.channels < 3)
+			tex.ToGrayscaleRGB();
 		
 		Gfx::GenTexture(buf);
 		ASSERT(buf);
@@ -320,6 +322,9 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 			ByteImage& tex = m.cube_textures[i].img[j];
 			if (tex.IsEmpty())
 				continue;
+				
+			if (tex.channels < 3)
+				tex.ToGrayscaleRGB();
 			
 			Gfx::SetTexture(
 					tex_type,

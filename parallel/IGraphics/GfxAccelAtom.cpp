@@ -343,7 +343,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				DataState* sd = CastPtr<DataState>(gsd);
 				ASSERT(sd);
 				if (sd)
-					bf.GetBuffer().SetDataStateOverride(sd);
+					bf.GetBuffer().SetDataStateOverride(sd, false);
 			}
 			else if (d.IsText("gfxvector")) {
 				fb_packet = p;
@@ -352,8 +352,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 				//Size3 sz = vfmt.GetSize();
 				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 				if (pv.IsData<InternalPacketData>()) {
-					TODO
-					//succ = bf.GetBuffer().LoadInputLink(ch_i - base, d);
+					succ = bf.GetBuffer().LoadInputLink(ch_i - base, d);
 				}
 				else {
 					RTLOG("GfxAccelAtom::Recv: cannot handle packet: " << pv.ToString());

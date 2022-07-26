@@ -13,7 +13,7 @@ machine glx.app: {
 				close_machine:		true;
 				sizeable:			true;
 				env:				event.register;
-				type:				stereo;
+				type:				custom;
 				stages:				3;
 				s0.shader.vtx.name:		"pass";
 				s0.shader.frag.name:	"color_test";

@@ -246,6 +246,7 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	
 	int width = vtx_args.generic->iResolution[0];
 	int height = vtx_args.generic->iResolution[1];
+	ASSERT(width && height); // crash here: vertex shdaer did not call this in ctor: UseUniform(GVar::VAR_COMPAT_RESOLUTION);
 	while (iter_in != iter_in_end) {
 		vtx_args.v = *iter_in++;
 		
@@ -343,11 +344,13 @@ void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
+void SoftRendT<Gfx>::Render(SoftProgram& prog, SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftFramebuffer& fb = *tgt_fb;
 	SoftPipeline& pipe = *tgt_pipe;
+	
+	ASSERT(prog.pipeline == tgt_pipe);
 	
 	//SoftShader* shdrs[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
@@ -356,7 +359,9 @@ void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
 	using Stage = typename SoftPipelineT<Gfx>::Stage;
 	
 	for (Stage& stage : pipe.stages) {
-		SoftProgram& prog = *stage.prog;
+		SoftProgram& p = *stage.prog;
+		if (&p != &prog)
+			continue;
 		
 		if (tmp_sources.GetCount() >= UINT16_MAX)
 			Panic("SoftRend render source limit exceeded");
@@ -386,13 +391,17 @@ void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
 		}
 		
 		if (!rs.vtx) {
-			vtx_passthrough.SetPassthroughVertexShader(prog, vtx_passthrough_base);
+			vtx_passthrough.SetPassthroughVertexShader(prog, new PassthroughSoftShaderBaseT<Gfx>());
 			rs.vtx = &vtx_passthrough;
 		}
 		
 		ProcessVertexShader(*rs.vtx, vao, src_id);
 		DepthTest(vao, src_id);
+		
+		return;
 	}
+	
+	Panic("error");
 }
 
 template <class Gfx>

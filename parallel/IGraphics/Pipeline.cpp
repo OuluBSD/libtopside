@@ -22,10 +22,25 @@ void SoftPipelineT<Gfx>::Clear() {
 }
 
 template <class Gfx>
+void SoftPipelineT<Gfx>::Begin() {
+	for (Stage& s : stages)
+		if (s.prog)
+			s.prog->Begin();
+}
+
+template <class Gfx>
 void SoftPipelineT<Gfx>::Use(SoftProgram& prog, uint32 bmask) {
-	Stage& s = stages.IsEmpty() ? stages.Add() : stages.Top();
+	for (Stage& s : stages) {
+		if (s.prog == &prog) {
+			s.bmask |= bmask;
+			return;
+		}
+	}
+	Stage& s = stages.Add();
 	s.prog = &prog;
 	s.bmask = bmask;
+	ASSERT(prog.pipeline == 0);
+	prog.pipeline = this;
 }
 
 

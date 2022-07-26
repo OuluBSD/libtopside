@@ -17,9 +17,6 @@ bool ShaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	this->SetQueueSize(queue_size);
 	
-	if (!this->bf.ImageInitialize(false, Size(0,0)))
-		return false;
-	
 	return true;
 }
 
@@ -30,6 +27,9 @@ bool ShaderBaseT<Gfx>::PostInitialize() {
 
 template <class Gfx>
 bool ShaderBaseT<Gfx>::Start() {
+	if (!this->bf.ImageInitialize(false, Size(0,0)))
+		return false;
+	
 	return this->bf.PostInitialize();
 }
 
@@ -384,7 +384,7 @@ void TextureBaseT<Gfx>::Visit(RuntimeVisitor& vis) {vis.VisitThis<BufferBase>(th
 template <class Gfx>
 bool TextureBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	// accept all valid video formats for now
-	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
+	if (new_fmt.IsValid() && (new_fmt.IsVideo() || new_fmt.IsVolume())) {
 		ISinkRef sink = this->GetSink();
 		Value& val = sink->GetValue(sink_ch);
 		val.SetFormat(new_fmt);
@@ -845,6 +845,7 @@ GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(FboReaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(KeyboardBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(AudioBaseT)
+//GFX3D_EXCPLICIT_INITIALIZE_CLASS(VolumeBaseT)
 /*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)*/

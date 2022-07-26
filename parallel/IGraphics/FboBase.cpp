@@ -65,9 +65,21 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 				return false;
 			}
 		}
+		else if (shader_key == "frag.name") {
+			if (!prog.LoadBuiltinShader(GVar::FRAGMENT_SHADER, value + "_fragment")) {
+				LOG("FboAtomT<Gfx>::Initialize: error: loading builtin shader failed from '" << value << "'");
+				return false;
+			}
+		}
 		else if (shader_key == "vtx.path") {
-			if (!prog.LoadShaderFile(GVar::VERTEX_SHADER, ws.GetString(key), "")) {
+			if (!prog.LoadShaderFile(GVar::VERTEX_SHADER, value, "")) {
 				LOG("FboAtomT<Gfx>::Initialize: error: loading shader failed from '" << value << "'");
+				return false;
+			}
+		}
+		else if (shader_key == "vtx.name") {
+			if (!prog.LoadBuiltinShader(GVar::VERTEX_SHADER, value + "_vertex")) {
+				LOG("FboAtomT<Gfx>::Initialize: error: loading builtin shader failed from '" << value << "'");
 				return false;
 			}
 		}

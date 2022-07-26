@@ -13,7 +13,8 @@ machine glx.app: {
 				close_machine:		true;
 				sizeable:			true;
 				env:				event.register;
-				type:				stereo;
+				type:				custom;
+				stages:				3;
 				s0.shader.vtx.path:		"shaders/tests/03j_0_vertex.glsl";
 				s0.shader.frag.path:	"shaders/tests/03j_0_fragment.glsl";
 				s1.shader.vtx.path:		"shaders/tests/03j_1_vertex.glsl";

@@ -6,7 +6,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
-	if (1) {
+	sz = Size(TS::default_width, TS::default_height);
+	
+	if (0) {
 		obj = "cube.obj";
 	}
 	else {
@@ -41,6 +43,12 @@ bool ObjViewProgT<Gfx>::Arg(const String& key, const String& value) {
 	else if (key == "skybox.irradiance") {
 		have_skybox = true;
 		skybox_irradiance = value;
+	}
+	else if (key == "width") {
+		sz.cx = StrInt(value);
+	}
+	else if (key == "height") {
+		sz.cy = StrInt(value);
 	}
 	else return false;
 	
@@ -119,12 +127,6 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 		}
 	}
 	
-	Size sz = fb.GetPageSize();
-	//height = width = std::min(sz.cx, sz.cy);
-	width = TS::default_width;
-	height = TS::default_height;
-	
-	//fb.DrawRect(sz, Black());
 	
 	DrawObj(*sd, true);
 	
@@ -146,9 +148,9 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	DataState& state = fb.GetState();
 	
-	float ratio = (float)height / (float)width;
-	float eye_ratio = (float)height / (float)(width * 0.5);
-	float aspect = (float)width / (float)height;
+	float ratio = (float)sz.cy / (float)sz.cx;
+	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
+	float aspect = (float)sz.cx / (float)sz.cy;
 	float f = ts.Seconds() / phase_time;
 	float angle = f * (2.0 * M_PI);
 	
@@ -177,8 +179,8 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 			state.is_stereo = true;
 			mat4 eye_port = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 			mat4 base = eye_port * proj;
-			vec3 l_eye(-eye_dist, 0, +1);
-			vec3 r_eye(+eye_dist, 0, +1);
+			vec3 l_eye(-eye_dist, 0, -1 * SCALAR_FWD_Z);
+			vec3 r_eye(+eye_dist, 0, -1 * SCALAR_FWD_Z);
 			vec3 l_center { -eye_dist, 0, 0};
 			vec3 r_center { +eye_dist, 0, 0};
 			mat4 l_lookat = LookAt(l_eye, l_center, up);
@@ -186,6 +188,9 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 			state.view_stereo[0] = base * l_lookat;
 			state.view_stereo[1] = base * r_lookat;
 		}
+		
+		//state.view_stereo[0] = state.view;
+		//state.view_stereo[1] = state.view;
 		
 		//mat4 rot = rotate(Identity<mat4>(), angle, up);
 		//mat4 model = Translate(vec3(0.0, 0.0, 0.0));

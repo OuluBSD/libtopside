@@ -33,7 +33,7 @@ machine sdl.app: {
 		loop ogl.fbo.tex1: {
 			id: "texture1";
 			ogl.customer: true;
-			ogl.fbo.volume: true [id: "volume"][id: "screen"];
+			sdl.ogl.fbo.volume: true [id: "volume"][id: "screen"];
 		};
 		
 		loop ogl.fbo.screen: {

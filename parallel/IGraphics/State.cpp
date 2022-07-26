@@ -132,12 +132,12 @@ const bool is_obj_var[TS::GVar::VAR_COUNT+1] = {
 	false,
 	
 	false,
-	true,
-	true,
-	true,
-	true,
+	false,
+	false,
+	false,
+	false,
 	
-	true,
+	false,
 	
 	0
 };

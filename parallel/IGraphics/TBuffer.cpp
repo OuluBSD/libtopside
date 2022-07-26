@@ -64,9 +64,9 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages[0].SetStereo(0);
 		stages[1].SetStereo(1);
 		stages[2].SetStereoLens();
-		DataState& stereo_data = this->data.GetAdd("stereo");
+		/*DataState& stereo_data = this->data.GetAdd("stereo");
 		stereo_data.is_stereo = true;
-		SetStereoDataState(&stereo_data);
+		SetStereoDataState(&stereo_data);*/
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;
@@ -169,12 +169,23 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 		fb.is_win_fbo = is_win_fbo;
 		fb.size = screen_sz;
 		fb.fps = 60;
+		fb.channels = 3;
 		if (mode == MULTI_STEREO) {
 			for(int i = 0; i < 2; i++) {
 				auto& eye_fb = stages[i].fb;
 				eye_fb.is_win_fbo = false;
 				eye_fb.size = Size(fb.size.cx / 2, fb.size.cy);
 				eye_fb.fps = fb.fps;
+				eye_fb.channels = 3;
+			}
+		}
+		else if (mode == MULTI_CUSTOM) {
+			for(int i = 0; i < stages.GetCount()-1; i++) {
+				auto& stage_fb = stages[i].fb;
+				stage_fb.is_win_fbo = false;
+				stage_fb.size = screen_sz;
+				stage_fb.fps = 60;
+				stage_fb.channels = 3;
 			}
 		}
 	}
@@ -184,7 +195,7 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 		if (!s.data && mode != PENDING_PACKET) {
 			DataState& d = data.Add("stage" + IntStr(i));
 			d.GetAddPipeline("image").GetAddProgram("default");
-			s.SetDataState(&d);
+			s.SetDataState(&d, true);
 		}
 		
 		if (!s.ImageInitialize())
@@ -244,7 +255,7 @@ void BufferT<Gfx>::Reset() {
 }
 
 
-/*template <class Gfx>
+template <class Gfx>
 bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 	if (mode == MULTI_STEREO) {
 		return
@@ -252,10 +263,11 @@ bool BufferT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 			stages[1].LoadInputLink(in_id, v);
 	}
 	else {
+		ASSERT(stages.GetCount() == 1);
 		return
 			stages[0].LoadInputLink(in_id, v);
 	}
-}*/
+}
 
 template <class Gfx>
 typename BufferT<Gfx>::NativeColorBufferConstRef
@@ -266,7 +278,7 @@ BufferT<Gfx>::GetOutputTexture(bool reading_self) const {
 template <class Gfx>
 DataStateT<Gfx>& BufferT<Gfx>::GetState() {
 	if (mode == MULTI_STEREO) {
-		return data.Get("stereo");
+		return stages[0].GetState();
 	}
 	else if (stages.GetCount() == 1) {
 		return stages[0].GetState();
@@ -282,23 +294,27 @@ void BufferT<Gfx>::SetStereoDataState(DataState* s) {
 	if (mode == MULTI_STEREO) {
 		ASSERT(!s || s->is_stereo);
 		ASSERT(stages.GetCount() == 3);
-		stages[0].SetDataState(s);
-		stages[1].SetDataState(s);
+		stages[0].SetDataState(s, false);
+		stages[1].SetDataState(s, false);
 	}
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetDataStateOverride(DataState* s) {
+void BufferT<Gfx>::SetDataStateOverride(DataState* s, bool data_writable) {
 	if (mode == MULTI_STEREO) {
 		ASSERT(!s || s->is_stereo);
 		ASSERT(stages.GetCount() == 3);
-		stages[0].SetDataState(s);
-		stages[1].SetDataState(s);
+		stages[0].SetDataState(s, data_writable);
+		stages[1].SetDataState(s, data_writable);
+	}
+	else if (mode == MULTI_CUSTOM) {
+		for (auto& stage : stages)
+			stage.SetDataState(s, data_writable);
 	}
 	else {
 		ASSERT(stages.GetCount() == 1);
 		auto& stage = stages[0];
-		stage.SetDataState(s);
+		stage.SetDataState(s, data_writable);
 	}
 }
 
@@ -390,12 +406,12 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			auto& left = stages[0];
 			auto& right = stages[1];
 			auto& top_stage = stages.Top();
-			if (top_stage.data_writable && top_stage.data->models.IsEmpty())
-				for(int i = 0; i < 2; i++)
-					top_stage.MakeFrameQuad();
+			if (top_stage.data_writable && !top_stage.quad)
+				top_stage.MakeFrameQuad(2);
 			ASSERT(top_stage.data->models.GetCount() == 1);
 			ModelState& m = top_stage.data->models[0];
 			ASSERT(m.objects.GetCount() == 2);
+			ASSERT(m.prog >= 0);
 			
 			mat4 scale_mat = Scale(vec3(0.5, 1.0, 1.0));
 			for(int i = 0; i < 2; i++) {
@@ -406,13 +422,13 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				o.model = model;
 			}
 			
-			auto& material = m.GetAddMaterial(0);
 			for(int i = 0; i < 2; i++) {
+				auto& material = m.GetAddMaterial(i);
 				BufferStage& stage = stages[i];
 				DataObject& o = m.objects[i];
 				o.material = material.id;
 				material.tex_id[TEXTYPE_DIFFUSE] = i;
-				material.tex_filter[TEXTYPE_DIFFUSE] = GVar::DEFAULT_FILTER;
+				material.tex_filter[TEXTYPE_DIFFUSE] = GVar::FILTER_LINEAR;
 				m.textures.GetAdd(i) = stage.fb.color_buf[stage.fb.buf_i];
 			}
 			
@@ -420,6 +436,21 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				s.Process(cfg);
 			
 			m.textures.Clear(); // top_stage doesn't own textures
+			
+		}
+		else if (mode == MULTI_CUSTOM) {
+			if (env) {
+				Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+				if (video_size.cx == 0 || video_size.cy == 0)
+					video_size = stages.Top().fb.size;
+				for (BufferStage& s : stages) {
+					s.fb.size = video_size;
+					s.UpdateTexBuffers();
+				}
+			}
+			
+			for (BufferStage& s : stages)
+				s.Process(cfg);
 			
 		}
 		else TODO

@@ -10,20 +10,20 @@ machine glx.app: {
 		loop video: {
 			center.customer: true;
 			x11.sw.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
+				drawmem:					"false";
+				program:					"obj_view";
+				shader.obj.vtx.name:		"obj_view";
+				shader.obj.frag.name:		"obj_view";
+				shader.stereo.vtx.name:		"stereo";
+				shader.stereo.frag.name:	"stereo";
 			};
 			x11.sw.video.pipe: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				type:			stereo;
-				fullscreen:				false;
-				find.vr.screen:			false;
-				shader.vtx.name:		"obj_view";
-				shader.frag.name:		"obj_view";
-				s2.shader.vtx.name:		"stereo";
-				s2.shader.frag.name:	"stereo";
+				close_machine:		true;
+				sizeable:			true;
+				env:				event.register;
+				type:				stereo;
+				fullscreen:			false;
+				find.vr.screen:		false;
 			};
 		};
 		

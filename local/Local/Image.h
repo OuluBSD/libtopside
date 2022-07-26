@@ -88,6 +88,7 @@ public:
 	void SwapRedBlue();
 	void SetSwapRedBlue(const ByteImage& i, bool add_alpha_ch=false);
 	void LockChannels(bool b=true) {lock_channels = b;}
+	void ToGrayscaleRGB();
 	
 	int GetPitch() const;
 	int GetWidth() const;

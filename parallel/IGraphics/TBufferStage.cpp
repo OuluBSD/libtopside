@@ -39,8 +39,9 @@ void BufferStageT<Gfx>::SetStereoLens() {
 }
 
 template <class Gfx>
-void BufferStageT<Gfx>::SetDataState(DataState* s) {
+void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
 	data = s;
+	this->data_writable = data_writable;
 	pipeline = 0;
 	
 	if (data && data->pipelines.GetCount() == 1) {
@@ -65,7 +66,8 @@ void BufferStageT<Gfx>::SetDataState(DataState* s) {
 		}*/
 		
 	}
-	if (pipeline && buf->mode == Buffer::PENDING_PACKET) {
+	
+	/*if (pipeline && buf->mode == Buffer::PENDING_PACKET) {
 		for (ProgramState& prog : pipeline->programs.GetValues()) {
 			if (prog.pending_compilation && !prog.failed) {
 				prog.pending_compilation = false;
@@ -80,7 +82,7 @@ void BufferStageT<Gfx>::SetDataState(DataState* s) {
 			}
 		}
 		pipeline->Realize();
-	}
+	}*/
 	
 	CompileJIT();
 }
@@ -89,7 +91,7 @@ template <class Gfx>
 void BufferStageT<Gfx>::CompileJIT() {
 	if (pipeline) {
 		for (ProgramState& prog : pipeline->programs.GetValues()) {
-			if (prog.pending_compilation) {
+			if (prog.pending_compilation && !prog.failed) {
 				prog.pending_compilation = false;
 				prog.Compile(GetCompilerArgs());
 			}
@@ -186,13 +188,7 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 			if (value.IsEmpty())
 				continue;
 			
-			TODO
-			/*if (value == "volume")
-				prog->SetInputVolume(i);
-			else if (value == "cubemap")
-				prog->SetInputCubemap(i);
-			else
-				TODO*/
+			buf_inputs.GetAdd(i) = value;
 		}
 	}
 	
@@ -245,15 +241,51 @@ bool BufferStageT<Gfx>::ImageInitialize() {
 		aberr = vec3(1,1,1);
 	}
 	
+	ProgramState* prog = 0;
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		ShaderConf& conf = shdr_confs[i];
 		
 		if (conf.str.GetCount()) {
-			TODO
-			//if (!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
-			//	return false;
+			if (!quad) {
+				int quad_count = buf->mode == Buffer::MULTI_STEREO ? 2 : 1;
+				MakeFrameQuad(quad_count);
+			}
+			
+			if (!pipeline)
+				pipeline = &data->GetAddPipeline("default");
+			
+			if (!prog) {
+				prog = &pipeline->GetAddProgram("default");
+				
+				for(int i = 0; i < buf_inputs.GetCount(); i++) {
+					int j = buf_inputs.GetKey(i);
+					String value = buf_inputs[i];
+					
+					if (value == "volume")
+						prog->SetInputVolume(j);
+					else if (value == "cubemap")
+						prog->SetInputCubemap(j);
+					else
+						TODO
+				}
+			}
+			
+			ASSERT(quad->prog < 0 || quad->prog == prog->id);
+			quad->prog = prog->id;
+			
+			if (!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
+				return false;
+			
 		}
 	}
+	
+	if (prog)
+		prog->RealizeCompilation();
+	
+	if (pipeline)
+		pipeline->Realize();
+	
+	UpdateTexBuffers();
 	
 	return true;
 }
@@ -272,25 +304,32 @@ bool BufferStageT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_
 }*/
 
 template <class Gfx>
-void BufferStageT<Gfx>::MakeFrameQuad() {
-	// essentially same as glRectf(-1.0, -1.0, 1.0, 1.0);
-	Mesh m;
-	m.vertices.SetCount(4);
-	Vertex& tl = m.vertices[0];
-	Vertex& tr = m.vertices[1];
-	Vertex& br = m.vertices[2];
-	Vertex& bl = m.vertices[3];
-	float z = 1;
-	tl.SetPosTex(vec3(-1, +1, z), vec2(0,+1));
-	tr.SetPosTex(vec3(+1, +1, z), vec2(+1,+1));
-	br.SetPosTex(vec3(+1, -1, z), vec2(+1,0));
-	bl.SetPosTex(vec3(-1, -1, z), vec2(0,0));
-	m.indices << 0 << 2 << 1; // top-right triangle CCW
-	m.indices << 0 << 3 << 2; // bottom-left triangle CCW
+void BufferStageT<Gfx>::MakeFrameQuad(int count) {
+	ASSERT(!quad);
 	
-	ModelState& mdl = LocalState().models.IsEmpty() ? LocalState().AddModelT() : LocalState().models.Top();
-	DataObject& o = mdl.AddObject();
-	o.Refresh(m);
+	for(int i = 0; i < count; i++) {
+		// essentially same as glRectf(-1.0, -1.0, 1.0, 1.0);
+		Mesh m;
+		m.vertices.SetCount(4);
+		Vertex& tl = m.vertices[0];
+		Vertex& tr = m.vertices[1];
+		Vertex& br = m.vertices[2];
+		Vertex& bl = m.vertices[3];
+		float z = 1;
+		tl.SetPosTex(vec3(-1, +1, z), vec2(0,+1));
+		tr.SetPosTex(vec3(+1, +1, z), vec2(+1,+1));
+		br.SetPosTex(vec3(+1, -1, z), vec2(+1,0));
+		bl.SetPosTex(vec3(-1, -1, z), vec2(0,0));
+		m.indices << 0 << 2 << 1; // top-right triangle CCW
+		m.indices << 0 << 3 << 2; // bottom-left triangle CCW
+		
+		ModelState& mdl = LocalState().models.IsEmpty() ? LocalState().AddModelT() : LocalState().models.Top();
+		DataObject& o = mdl.AddObject();
+		o.Refresh(m);
+		
+		if (i == 0)
+			quad = &mdl;
+	}
 }
 
 template <class Gfx>
@@ -724,8 +763,13 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 }
 
 template <class Gfx>
-bool BufferStageT<Gfx>::LoadInputLink(ProgramState& prog, int in_id, const InternalPacketData& v) {
-	return prog.LoadInputLink(in_id, v);
+bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
+	ASSERT(pipeline);
+	if (!pipeline) return false;
+	bool succ = true;
+	for (ProgramState& prog : pipeline->programs.GetValues())
+		succ = prog.LoadInputLink(in_id, v) && succ;
+	return succ;
 }
 
 template <class Gfx>

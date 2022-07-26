@@ -40,7 +40,6 @@ class SoftRendT {
 	SoftFramebuffer* tgt_fb = 0;
 	
 	SoftShader vtx_passthrough;
-	PassthroughSoftShaderBaseT<Gfx> vtx_passthrough_base;
 	
 	//Vector<Vertex> vertices;
 	//Vector<uint32> indices;
@@ -97,7 +96,7 @@ public:
 	void RenderScreenRect();
 	void SetTarget(SoftPipeline& pipe, SoftFramebuffer& fb) {tgt_pipe = &pipe; tgt_fb = &fb;}
 	//void SetPipeline(SoftPipeline& pipe) {tgt_pipe = &pipe;}
-	void Render(SoftVertexArray& vao);
+	void Render(SoftProgram& prog, SoftVertexArray& vao);
 	
 	float GetDepthResetValue() const {return is_depth_order_less ? +1e10f : -1e10f;}
 	

@@ -1,5 +1,6 @@
 #include "ParallelLib.h"
 #include <Geometry/Geometry.h>
+#include <SerialCore/SerialCore.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -81,8 +82,10 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 		RTLOG("RollingValueBase::Initialize: error: invalid device");
 		return false;
 	}
-	if (main_vd.val == ValCls::AUDIO)
-		internal_fmt.SetAudio(DevCls::CENTER, SoundSample::U8_LE, 2, 44100, 777);
+	if (main_vd.val == ValCls::AUDIO) {
+		internal_fmt = GetDefaultFormat(main_vd);
+		internal_fmt.aud.SetSampleRate(777);
+	}
 	else if (main_vd.val == ValCls::VIDEO)
 		internal_fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, TS::default_width, TS::default_height, 60, 1);
 	else
@@ -98,6 +101,10 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
+/*bool RollingValueBase::PostInitialize() {
+	return GetLink()->NegotiateSourceFormat(0, internal_fmt);
+}*/
+
 bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	ASSERT(internal_fmt.IsValid());
 	
@@ -107,9 +114,19 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 		int sz = internal_fmt.GetFrameSize();
 		Vector<byte>& data = out.Data();
 		data.SetCount(sz);
-		for(byte& dst : data)
-			dst = rolling_value++;
-		
+		AudioFormat& afmt = internal_fmt;
+		if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
+			float* f = (float*)(byte*)data.Begin();
+			float* end = f + sz / sizeof(float);
+			while (f != end)
+				*f++ = rolling_value++ / 255.0 * 2.0 - 1.0;
+		}
+		else if (afmt.type == TS::Serial::BinarySample::U16_LE) {
+			uint16* f = (uint16*)(byte*)data.Begin();
+			uint16* end = f + sz / sizeof(uint16);
+			while (f != end)
+				*f++ = rolling_value++;
+		}
 		time += internal_fmt.GetFrameSeconds();
 	}
 	else if (internal_fmt.IsVideo()) {
@@ -133,7 +150,15 @@ bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
 	String dbg_limit_str = ws.Get(".dbg_limit");
 	if (!dbg_limit_str.IsEmpty())
 		dbg_limit = ScanInt(dbg_limit_str);
-	
+	/*
+	auto sink = GetSink();
+	const int sink_ch_i = sink->GetSinkCount() - 1;
+	if (sink->GetValue(sink_ch_i).GetFormat().IsAudio()) {
+		Format fmt;
+		fmt.SetAudio(DevCls::CENTER, SoundSample::FLT_LE, 2, 44100, 777);
+		sink->GetValue(sink_ch_i).SetFormat(fmt);
+	}
+	*/
 	return true;
 }
 
@@ -162,38 +187,54 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 		
 		// Verify data
 		bool fail = false;
+		int dbg_i = 0, dbg_count = 0;
 		if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
 			float* it = (float*)data;
 			float* end = (float*)((byte*)data + len);
-			int dbg_i = 0;
-			int dbg_count = (int)(end - it);
+			dbg_count = (int)(end - it);
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
 				double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
 				if (!IsClose(f0, f1))
 					fail = true;
 			}
-			dbg_total_samples += dbg_count;
-			dbg_total_bytes += dbg_count * 4;
-			dbg_iter++;
-			
-			if (fail || (dbg_limit > 0 && dbg_iter >= dbg_limit)) {
-				GetMachine().SetNotRunning();
-				LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
-				if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
-				else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
+		}
+		else if (afmt.type == TS::Serial::BinarySample::U16_LE) {
+			uint16* it = (uint16*)data;
+			uint16* end = (uint16*)((byte*)data + len);
+			dbg_count = (int)(end - it);
+			for (; it != end; ++it, ++dbg_i) {
+				uint16 u0 = *it;
+				uint16 u1 = rolling_value++;
+				if (u0 != u1)
+					fail = true;
 			}
-			
-			RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
 		}
 		else {
 			LOG("IntervalPipeLink::IntervalSinkProcess: error: invalid audio format");
 		}
+		dbg_total_samples += dbg_count;
+		dbg_total_bytes += dbg_count * 4;
+		dbg_iter++;
+		
+		if (fail || (dbg_limit > 0 && dbg_iter >= dbg_limit)) {
+			GetMachine().SetNotRunning();
+			LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+			if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
+			else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
+		}
+		
+		RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
 	}
 	
 	return true;
 }
 
+bool VoidSinkBase::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	if (new_fmt.IsAudio())
+		return true;
+	return false;
+}
 
 
 
@@ -277,8 +318,25 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
 				double f1 = t.rolling_value++ / 255.0 * 2.0 - 1.0;
-				ASSERT(IsClose(f0, f1));
 				if (!IsClose(f0, f1)) {
+					fail = true;
+					break;
+				}
+			}
+			dbg_total_samples += dbg_count;
+			dbg_total_bytes += dbg_count * 4;
+			
+			RTLOG("VoidPollerSinkBase::Recv: thrd #" << i << " successfully verified frame size " << data.GetCount());
+		}
+		else if (afmt.type == TS::Serial::BinarySample::U16_LE) {
+			uint16* it = (uint16*)(void*)data.begin();
+			uint16* end = (uint16*)(void*)data.end();
+			int dbg_i = 0;
+			int dbg_count = (int)(end - it);
+			for (; it != end; ++it, ++dbg_i) {
+				uint16 u0 = *it;
+				uint16 u1 = t.rolling_value++;
+				if (u0 != u1) {
 					fail = true;
 					break;
 				}
@@ -478,6 +536,18 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		}
 		#endif
 	}
+	else if(e.type == EVENT_HOLO_LOOK ||
+			e.type == EVENT_HOLO_CALIB ||
+			e.type == EVENT_HOLO_CONTROLLER_DETECTED ||
+			e.type == EVENT_HOLO_CONTROLLER_LOST ||
+			e.type == EVENT_HOLO_MOVE_FAR_RELATIVE ||
+			e.type == EVENT_HOLO_MOVE_NEAR ||
+			e.type == EVENT_HOLO_MOVE_CONTROLLER ||
+			e.type == EVENT_HOLO_PRESSED ||
+			e.type == EVENT_HOLO_RELEASED ||
+			e.type == EVENT_HOLO_UPDATED) {
+		// TODO, but pass
+	}
 	else TODO
 }
 
@@ -626,6 +696,8 @@ bool TestEventSrcBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 	if (out_fmt.vd.val == ValCls::EVENT) {
 		CtrlEvent& ev = out.SetData<CtrlEvent>();
 		RandomizeEvent(ev);
+		ev.trans = &trans;
+		ev.ctrl = &ctrl;
 		sent_count++;
 		return true;
 	}

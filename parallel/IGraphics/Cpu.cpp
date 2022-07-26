@@ -488,11 +488,12 @@ void SwGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
 	ASSERT_(*l.pipe, "pipeline is not inited");
+	ASSERT(l.prog);
 	
 	//for(int i = 0; i < TEXTYPE_COUNT; i++)
 	//	l.rend.BindTexture(i, l.texture[i].GetReadTexture());
 	
-	l.rend.Render(*l.vao);
+	l.rend.Render(*l.prog, *l.vao);
 }
 
 template <class Gfx>
@@ -590,7 +591,7 @@ void SwGfxT<Gfx>::BeginRender() {
 		}
 	}
 	*/
-	l.prog->Begin();
+	l.pipe->Begin();
 	l.rend.SetTarget(*l.pipe, *l.fb);
 	//l.rend.SetPipeline(*l.pipe);
 	l.rend.Begin();

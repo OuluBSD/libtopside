@@ -37,8 +37,8 @@ struct ObjViewProgT :
 	int frame = 0;
 	int phase = 0;
 	int phases = 2;
-	int width, height;
 	bool use_pbr = false;
+	Size sz;
 	
 	bool have_skybox = false;
 	String skybox_diffuse, skybox_irradiance;

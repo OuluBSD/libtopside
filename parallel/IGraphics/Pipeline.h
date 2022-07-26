@@ -24,6 +24,7 @@ public:
 	
 	bool Create();
 	void Clear();
+	void Begin();
 	void Use(SoftProgram& prog, uint32 bmask);
 	
 	void operator=(const Nuller&) {Clear();}

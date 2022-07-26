@@ -212,7 +212,7 @@ void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeS
 		ASSERT(dev.accel_buf.channels == bpp);
 		ASSERT(ctx.fb);
 		ASSERT(!ctx.fb->data);
-		#if 0
+		#if 1
 	    dev.accel_buf_tmp.SetSwapRedBlue(dev.accel_buf, true);
 		ASSERT(dev.accel_buf_tmp.GetLength() == len);
 		ctx.fb->data = (char*)(const unsigned char*)dev.accel_buf_tmp.Begin();

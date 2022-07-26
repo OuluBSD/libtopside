@@ -8,7 +8,7 @@ void Assert(bool b, String s="Assertion failed");
 void AssertFalse(bool b, String s="Assertion failed");
 
 #undef PANIC
-#define PANIC(msg) Panic(msg); UNREACHABLE
+#define PANIC(msg) UPP::Panic(msg); UNREACHABLE
 
 template <class T>
 T& PtrRef(T* o, String throw_msg) {

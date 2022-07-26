@@ -7,5 +7,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	//vec4 clr = texture(iStageColor1, vTexCoord);
     vec4 clr = texture(iDiffuse, vTexCoord);
     fragColor = clr;
-    //fragColor = vec4(vTexCoord.x, vTexCoord.y, clr.x, 1);
+    fragColor = vec4(vTexCoord.x, vTexCoord.y, clr.x, 1);
 }

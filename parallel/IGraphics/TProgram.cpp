@@ -89,6 +89,7 @@ bool ProgramStateT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bo
 		}
 	}
 	
+	pending_compilation = true;
 	return true;
 }
 
@@ -150,6 +151,7 @@ void ProgramStateT<Gfx>::SetVars(ContextState& c, ModelState& m, const DataObjec
 template <class Gfx>
 void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, const DataObject& o, ViewTarget vtgt) {
 	using namespace GVar;
+	const char* name = GVar::names[var];
 	
 	DataState& data = *owner->owner;
 	
@@ -265,6 +267,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	if (uindex < 0)
 		return;
 	
+	const char* name = GVar::names[var];
 	DataState& data = *owner->owner;
 	
 	RendVer1(OnUpdateVar, GVar::names[var]);
@@ -375,6 +378,13 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	else if (var == VAR_BRDF_SPEC) {
 		// pass (not from here)
 	}
+	else if(var == VAR_LENS_CENTER ||
+			var == VAR_VIEWPORT_SCALE ||
+			var == VAR_WARP_SCALE ||
+			var == VAR_HMD_WARP_PARAM ||
+			var == VAR_ABERR) {
+		// pass (not from here)
+	}
 	else {
 		ASSERT_(false, "Invalid variable");
 	}
@@ -453,7 +463,12 @@ bool ProgramStateT<Gfx>::LoadBuiltinShaderT(GVar::ShaderType shader_type, String
 		return false;
 	}
 	
-	shaders[shader_type].native->SetShaderBase(SoftShaderLibrary::GetMap(shader_type)[i]());
+	ShaderState& s = shaders[shader_type];
+	if (!s.native)
+		Gfx::CreateShader(shader_type, s.native);
+	
+	s.native->SetShaderBase(SoftShaderLibrary::GetMap(shader_type)[i]());
+	s.enabled = true;
 	
 	return true;
 }

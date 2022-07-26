@@ -46,6 +46,7 @@ class RollingValueBase :
 public:
 	RTTI_DECL1(RollingValueBase, Atom)
 	bool Initialize(const Script::WorldState& ws) override;
+	//bool PostInitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
@@ -77,7 +78,7 @@ public:
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	bool Consume(const void* data, int len) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
-	
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
 	
 	
 };
@@ -165,6 +166,8 @@ class TestEventSrcBase :
 	public Atom
 {
 	int sent_count = 0;
+	TransformMatrix trans;
+	ControllerMatrix ctrl;
 	
 public:
 	RTTI_DECL1(TestEventSrcBase, Atom)

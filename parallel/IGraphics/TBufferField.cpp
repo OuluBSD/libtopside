@@ -5,7 +5,14 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
-	return buf.Initialize(a, ws);
+	if (!buf.Initialize(a, ws))
+		return false;
+	
+	if (buf.mode == Buffer::MULTI_STEREO)
+		data.is_stereo = true;
+	
+	buf.SetDataStateOverride(&data, true);
+	return true;
 }
 
 template <class Gfx>

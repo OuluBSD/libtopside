@@ -210,6 +210,8 @@ struct TimeSeriesBase {
 	void	SetTimeSeries(double freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
 	void	SetFPS(double fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
 	void	SetDefault() {freq = 1; sample_rate = 1;}
+	void	SetSampleRate(int i) {sample_rate = i;}
+	void	SetFrequency(double d) {freq = d;}
 	
 	String	ToString() const {return "freq: " + DblStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
 	bool	IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}

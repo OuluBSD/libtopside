@@ -85,10 +85,10 @@ public:
 	
 };
 
-
-/*template <class Gfx>
+/*
+template <class Gfx>
 class VolumeBaseT :
-	public VolumeBaseT<Gfx>
+	public BufferBaseT<Gfx>
 {
 	using Filter = GVar::Filter;
 	using Wrap = GVar::Wrap;
@@ -99,10 +99,10 @@ class VolumeBaseT :
 	Array<Packet>	cubemap;
 	
 public:
-	using VolumeBase = VolumeBaseT<Gfx>;
-	RTTI_DECL1(TextureBaseT, BufferBase);
+	using BufferBase = BufferBaseT<Gfx>;
+	RTTI_DECL1(VolumeBaseT, BufferBase);
 	
-	TextureBaseT() {}
+	VolumeBaseT() {}
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
@@ -114,8 +114,8 @@ public:
 	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
 	
 	
-};*/
-
+};
+*/
 
 template <class Gfx>
 class FboReaderBaseT :

@@ -8,6 +8,7 @@ template <class Gfx>
 class PassVertexT : public SoftShaderBaseT<Gfx> {
 	
 public:
+	PassVertexT();
 	void Process(VertexShaderArgsT<Gfx>& args) override;
 	
 };

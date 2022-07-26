@@ -9,10 +9,12 @@ class GfxBufferFieldT : RTTIBase {
 	
 protected:
 	using Buffer = BufferT<Gfx>;
+	using DataState = DataStateT<Gfx>;
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	
 	Buffer buf;
+	DataState data;
 	NativeFrameBufferRef fb = 0;
 	NativeColorBufferRef clr = 0;
 	

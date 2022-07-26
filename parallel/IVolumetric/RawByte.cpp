@@ -1,4 +1,6 @@
 #include "IVolumetric.h"
+#include <SerialCore/SerialCore.h>
+
 
 #if (defined flagLINUX) || (defined flagFREEBSD)
 
@@ -99,7 +101,11 @@ bool VolRawByte::StaticSource_Initialize(NativeStaticSource& dev, AtomBase& a, c
 }
 
 bool VolRawByte::StaticSource_PostInitialize(NativeStaticSource& dev, AtomBase& a) {
-	// pass
+	InterfaceSourceRef iface = a.GetSource();
+	int src_count = iface->GetSourceCount();
+	for(int i = 1; i < src_count; i++)
+		a.GetLink()->NegotiateSourceFormat(i, dev.fmt);
+	
 	return true;
 }
 

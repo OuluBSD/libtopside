@@ -3,6 +3,13 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+
+template <class Gfx>
+PassVertexT<Gfx>::PassVertexT() {
+	this->UseUniform(GVar::VAR_COMPAT_RESOLUTION);
+	
+}
+
 template <class Gfx>
 void PassVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
 	#if 0
@@ -119,6 +126,7 @@ void ProxyInput0FragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 
 template <class Gfx>
 StereoShaderT<Gfx>::StereoShaderT() {
+	this->UseUniform(GVar::VAR_COMPAT_RESOLUTION);
 	this->UseUniform(GVar::VAR_DIFFUSE);
 	this->UseUniform(GVar::VAR_MODEL);
 	
@@ -149,10 +157,16 @@ void StereoShaderT<Gfx>::Process(FragmentShaderArgsT<Gfx>& a) {
 		const auto& fragCoord = a.frag_coord;
 		auto& fragColor = a.frag_color_out;
 		
+		#if 0
 		vec2 uv = fragCoord / iResolution.Splice();
 		clr[0] = uv[0];
 		clr[1] = uv[1];
 		clr[2] = uv[0];
+		#else
+		clr[0] = a.tex_coord[0];
+		clr[1] = a.tex_coord[1];
+		clr[2] = a.tex_coord[0];
+		#endif
 	}
 	else {
 		clr = texture(diffuse, a.tex_coord);

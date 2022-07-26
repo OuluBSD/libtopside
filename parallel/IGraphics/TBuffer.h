@@ -47,10 +47,13 @@ struct BufferStageT : GfxBufferStage {
 	int							quad_count = 0;
 	bool						use_user_data = false;
 	bool						initialized = false;
+	ModelState*					quad = 0;
 	
 	FloatImage					brdf_img;
 	Texture						brdf_tex;
 	//One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
+	
+	VectorMap<int,String>		buf_inputs;
 	
 	// VR
 	vec2						viewport_scale;
@@ -65,7 +68,7 @@ struct BufferStageT : GfxBufferStage {
 	bool PostInitialize();
 	bool ImageInitialize();
 	void Process(const RealtimeSourceConfig& cfg);
-	void MakeFrameQuad();
+	void MakeFrameQuad(int count=1);
 	void UseRenderedFramebuffer();
 	void UpdateTexBuffers();
 	void RefreshPipeline();
@@ -81,7 +84,7 @@ struct BufferStageT : GfxBufferStage {
 	void ClearTex();
 	void CreateTex(bool create_depth, bool create_fbo);
 	bool LoadInputLink(int in_id, const PacketValue& v);
-	bool LoadInputLink(ProgramState& prog, int in_id, const InternalPacketData& v);
+	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	void SetVars(ProgramState& prog, const RealtimeSourceConfig& cfg, const DataObject& o);
 	void SetVar(ProgramState& prog, int var, const RealtimeSourceConfig& cfg, const DataObject& o);
 	GfxCompilerArgs GetCompilerArgs() const;
@@ -94,7 +97,7 @@ struct BufferStageT : GfxBufferStage {
 	
 	void SetStereo(int stereo_id);
 	void SetStereoLens();
-	void SetDataState(DataState* s);
+	void SetDataState(DataState* s, bool data_writable);
 	bool SetLoopback(String loopback_str);
 	
 	
@@ -185,12 +188,12 @@ public:
 	void Reset();
 	bool IsAudio() const {return mode == SINGLE_SOUND;}
 	bool AcceptsOrders() const {return is_initialized;}
-	//bool LoadInputLink(int in_id, const InternalPacketData& v);
+	bool LoadInputLink(int in_id, const InternalPacketData& v);
 	
 	void SetFramebufferSize(Size sz);
 	void SetLocalTime(bool b=true) {is_local_time = b;}
 	void SetStereoDataState(DataState* s);
-	void SetDataStateOverride(DataState* s);
+	void SetDataStateOverride(DataState* s, bool data_writable);
 	
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
