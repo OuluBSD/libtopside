@@ -151,6 +151,7 @@ struct ProgramStateT : GfxProgramState {
 	bool				is_time_used = 0;
 	ShaderState			shaders[GVar::SHADERTYPE_COUNT];
 	InputState			inputs[GVar::INPUT_COUNT];
+	bool				ready = false;
 	bool				failed = false;
 	
 	Vector<String>		user_vars;
@@ -173,7 +174,7 @@ struct ProgramStateT : GfxProgramState {
 	bool SetupLoopback(int loopback_stage_i, BufferStage& s);
 	void RefreshProgramStages();
 	void FindVariables();
-	void RealizeCompilation();
+	void RealizeCompilation(const GfxCompilerArgs& args);
 	
 	typedef enum {
 		VIEW_TARGET_MONO,
@@ -222,6 +223,7 @@ struct PipelineStateT : GfxPipelineState {
 		native = Null;
 	}
 	ProgramState& GetAddProgram(String name);
+	ProgramState* FindProgram(String name);
 	void Realize();
 	void Clear();
 	void Create();

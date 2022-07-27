@@ -85,7 +85,7 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 	rend.output.SetWindowFbo();
 	
 	auto& buf = bf.GetBuffer();
-	auto& buf_fb = buf.GetFramebuffer();
+	auto& buf_fb = buf.Top().GetFramebuffer();
 	buf_fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
@@ -228,7 +228,7 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::Update(double dt) {
 	auto& buf = bf.GetBuffer();
 	auto& env = buf.env;
-	auto& fb = buf.GetFramebuffer();
+	auto& fb = buf.Single().GetFramebuffer();
 	
 	if (env) {
 		Size& video_size = env->template Set<Size>(SCREEN0_SIZE);

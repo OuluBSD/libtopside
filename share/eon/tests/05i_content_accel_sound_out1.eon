@@ -19,7 +19,9 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo.standalone: true {shader.frag.path: "shaders/toys/simple/simple_sound_out/stage0.glsl";};
+			sdl.fbo.standalone: true {
+				shader.frag.path: "shaders/toys/simple/simple_sound_out/stage0.glsl";
+			};
 		};
 		
 		loop ogl.fbo.audio.conv: {

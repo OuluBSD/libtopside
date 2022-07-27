@@ -74,7 +74,7 @@ bool CompilerT<Gfx>::Compile(
 
 template <class Gfx>
 bool LinkerT<Gfx>::Link(ProgramState& ps) {
-	CHKLOGRET0(ps.native == 0, "Linker::Link: error: trying to overwrite compiled program");
+	CHKLOGRET0(!ps.native, "Linker::Link: error: trying to overwrite compiled program");
 	
 	Gfx::CreateProgram(ps.native);
 	CHKLOGRET0(ps.native, "Linker::Link: error: opengl error")
@@ -152,6 +152,17 @@ ProgramStateT<Gfx>& PipelineStateT<Gfx>::GetAddProgram(String name) {
 	ps.name = name;
 	ps.id = id;
 	return ps;
+}
+
+template <class Gfx>
+ProgramStateT<Gfx>* PipelineStateT<Gfx>::FindProgram(String name) {
+	int id = owner->dictionary.Find(name);
+	if (id < 0)
+		return 0;
+	int i = programs.Find(id);
+	if (i < 0)
+		return 0;
+	return &programs[i];
 }
 
 template <class Gfx>

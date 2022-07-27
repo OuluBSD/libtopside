@@ -89,6 +89,7 @@ bool ProgramStateT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bo
 		}
 	}
 	
+	ready = false;
 	pending_compilation = true;
 	return true;
 }
@@ -132,11 +133,11 @@ void ProgramStateT<Gfx>::FindVariables() {
 }
 
 template <class Gfx>
-void ProgramStateT<Gfx>::RealizeCompilation() {
+void ProgramStateT<Gfx>::RealizeCompilation(const GfxCompilerArgs& args) {
 	if (pending_compilation) {
 		pending_compilation = false;
 		
-		Compile(GfxCompilerArgs());
+		Compile(args);
 		owner->Realize();
 	}
 }
@@ -410,6 +411,7 @@ int ProgramStateT<Gfx>::BuiltinShaderT() {
 	bool succ = false;
 	if (!owner->native)
 		owner->native.Create();
+	native.Create();
 	int shdr_count = 0;
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		ShaderState& s = shaders[i];
@@ -430,6 +432,7 @@ int ProgramStateT<Gfx>::BuiltinShaderT() {
 			if (!native) {
 				native.Create();
 			}*/
+			s.enabled = true;
 			native.Attach(*s.native);
 			owner->native.Use(native, 1 << i);
 			if (i == GVar::FRAGMENT_SHADER)
@@ -443,6 +446,7 @@ int ProgramStateT<Gfx>::BuiltinShaderT() {
 			SetError("PipelineState got no soft fragment shader");
 	}
 	
+	ASSERT(!succ || (native && native.pipeline));
 	return succ ? 1 : -1;
 }
 
@@ -504,10 +508,14 @@ bool ProgramStateT<Gfx>::Compile(const GfxCompilerArgs& args) {
 		if (i == VERTEX_SHADER && !CompileVertexShader())
 			return false;
 	}*/
+	if (ready)
+		return true;
+	ASSERT(!native);
 	
 	int r;
 	if ((r = BuiltinShader()) != 0) {
 		//breaks simple quad rendering: use_user_data = true;
+		owner->Realize();
 		return r > 0;
 	}
 	//use_user_data = false;
@@ -535,6 +543,7 @@ bool ProgramStateT<Gfx>::Compile(const GfxCompilerArgs& args) {
 	}
 	
 	owner->Realize();
+	ready = true;
 	
 	return true;
 }

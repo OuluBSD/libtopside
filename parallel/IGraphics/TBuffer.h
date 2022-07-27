@@ -28,6 +28,8 @@ struct BufferStageT : GfxBufferStage {
 	using Linker = typename Gfx::Linker;
 	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	
+	RTTI_DECL1(BufferStageT, GfxBufferStage);
+	
 	struct ShaderConf {
 		String str;
 		bool is_path = false;
@@ -72,6 +74,7 @@ struct BufferStageT : GfxBufferStage {
 	void UseRenderedFramebuffer();
 	void UpdateTexBuffers();
 	void RefreshPipeline();
+	bool RealizeData();
 	bool Compile(ProgramState& prog);
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
@@ -89,11 +92,14 @@ struct BufferStageT : GfxBufferStage {
 	void SetVar(ProgramState& prog, int var, const RealtimeSourceConfig& cfg, const DataObject& o);
 	GfxCompilerArgs GetCompilerArgs() const;
 	void CompileJIT();
+	void SetAudio(bool b);
 	
-	DataState& LocalState() {return *data;}
-	DataState& GetState() {return *data;}
+	DataState& LocalState() {ASSERT(data); return *data;}
+	DataState& GetState() {ASSERT(data); return *data;}
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	bool IsInitialized() const {return initialized;}
+	const Framebuffer& GetFramebuffer() const {return fb;}
+	Framebuffer& GetFramebuffer() {return fb;}
 	
 	void SetStereo(int stereo_id);
 	void SetStereoLens();
@@ -176,12 +182,13 @@ struct BufferT : GfxBuffer {
 public:
 	void Update(double dt);
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
-	bool ImageInitialize(bool is_win_fbo, Size screen_sz);
+	bool ImageInitialize(bool is_win_fbo, Size screen_sz, bool add_data_states);
 	bool PostInitialize();
 	bool InitializeRenderer();
 	void Process(const RealtimeSourceConfig& cfg);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
+	BufferStage& Top() {return stages.Top();}
 	BufferStage& Single() {ASSERT(stages.GetCount() == 1); return stages.Top();}
 	BufferStage& InitSingle();
 	bool IsSingleInitialized() const {return stages.GetCount() == 1 && stages[0].IsInitialized();}
@@ -196,8 +203,6 @@ public:
 	void SetDataStateOverride(DataState* s, bool data_writable);
 	
 	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
-	const Framebuffer& GetFramebuffer() const {return stages.Top().fb;}
-	Framebuffer& GetFramebuffer() {return stages.Top().fb;}
 	DataState& GetState();
 	
 };

@@ -74,6 +74,7 @@ void SwGfxT<Gfx>::SetViewport(Size sz) {
 
 template <class Gfx>
 void SwGfxT<Gfx>::UseProgram(NativeProgram& prog) {
+	ASSERT(prog.pipeline);
 	Local().prog = &prog;
 }
 

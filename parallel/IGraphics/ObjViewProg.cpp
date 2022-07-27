@@ -122,7 +122,7 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 				return false;
 			}
 			
-			bool b = mdl.SetProgram("obj");
+			bool b = mdl.SetProgram("default");
 			ASSERT(b);
 		}
 	}

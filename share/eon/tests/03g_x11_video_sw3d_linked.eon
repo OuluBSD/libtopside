@@ -19,6 +19,7 @@ machine glx.app: {
 				env:				event.register;
 				shader.vtx.name:	"pass";
 				shader.frag.name:	"proxy_input0";
+				recv.data:			false;
 			};
 		};
 	};

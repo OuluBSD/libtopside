@@ -12,8 +12,8 @@ machine glx.app: {
 			x11.sw.fbo.program: true {
 				drawmem:					"false";
 				program:					"obj_view";
-				shader.obj.vtx.name:		"obj_view";
-				shader.obj.frag.name:		"obj_view";
+				shader.default.vtx.name:	"obj_view";
+				shader.default.frag.name:	"obj_view";
 				shader.stereo.vtx.name:		"stereo";
 				shader.stereo.frag.name:	"stereo";
 			};

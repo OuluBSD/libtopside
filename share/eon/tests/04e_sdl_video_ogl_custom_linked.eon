@@ -17,6 +17,7 @@ machine sdl.app: {
 				sizeable:		true;
 				env:			event.register;
 				shader.frag.path:		"shaders/toys/simple/simple_double/stage0.glsl";
+				recv.data:		false;
 			};
 		};
 	};

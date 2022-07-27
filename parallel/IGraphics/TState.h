@@ -142,6 +142,7 @@ struct DataStateT : GfxDataState {
 	GfxModelState& AddModel() override {return AddModelT();}
 	GfxModelState& GetModel(int i) override;
 	PipelineState& GetAddPipeline(String name);
+	PipelineState* FindPipeline(String name);
 	
 	int GetModelCount() const {return models.GetCount();}
 	void Clear();

@@ -122,8 +122,9 @@ class FboReaderBaseT :
 	public BufferBaseT<Gfx>
 {
 	using Buffer = BufferT<Gfx>;
+	using BufferStage = BufferStageT<Gfx>;
 	
-	Buffer* src_buf = 0;
+	BufferStage* src_buf = 0;
 	
 public:
 	using BufferBase = BufferBaseT<Gfx>;

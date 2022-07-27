@@ -64,9 +64,10 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		stages[0].SetStereo(0);
 		stages[1].SetStereo(1);
 		stages[2].SetStereoLens();
-		/*DataState& stereo_data = this->data.GetAdd("stereo");
-		stereo_data.is_stereo = true;
-		SetStereoDataState(&stereo_data);*/
+		DataState& stereo_data = this->data.GetAdd("stereo");
+		stages[2].SetDataState(&stereo_data, true);
+		//stereo_data.is_stereo = true;
+		//SetStereoDataState(&stereo_data);
 	}
 	else if (type == "custom") {
 		mode = MULTI_CUSTOM;
@@ -137,7 +138,7 @@ bool BufferT<Gfx>::PostInitialize() {
 		return false;
 	
 	for (BufferStage& s : stages) {
-		s.fb.is_audio = mode == SINGLE_SOUND;
+		s.SetAudio(mode == SINGLE_SOUND);
 		
 		if (!s.PostInitialize())
 			return false;
@@ -153,7 +154,7 @@ bool BufferT<Gfx>::PostInitialize() {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
+bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz, bool add_data_states) {
 	if (screen_sz.cx == 0 && screen_sz.cy == 0) {
 		if (env) {
 			Size* video_size = env->Get<Size>(SCREEN0_SIZE);
@@ -165,34 +166,42 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	}
 	
 	if (!stages.IsEmpty()) {
+		ASSERT(!screen_sz.IsEmpty());
 		auto& fb = stages.Top().fb;
-		fb.is_win_fbo = is_win_fbo;
-		fb.size = screen_sz;
-		fb.fps = 60;
-		fb.channels = 3;
-		if (mode == MULTI_STEREO) {
-			for(int i = 0; i < 2; i++) {
-				auto& eye_fb = stages[i].fb;
-				eye_fb.is_win_fbo = false;
-				eye_fb.size = Size(fb.size.cx / 2, fb.size.cy);
-				eye_fb.fps = fb.fps;
-				eye_fb.channels = 3;
-			}
+		if (fb.is_audio) {
+			
 		}
-		else if (mode == MULTI_CUSTOM) {
-			for(int i = 0; i < stages.GetCount()-1; i++) {
-				auto& stage_fb = stages[i].fb;
-				stage_fb.is_win_fbo = false;
-				stage_fb.size = screen_sz;
-				stage_fb.fps = 60;
-				stage_fb.channels = 3;
+		else {
+			fb.is_win_fbo = is_win_fbo;
+			fb.size = screen_sz;
+			fb.fps = 60;
+			fb.channels = 3;
+			if (mode == MULTI_STEREO) {
+				for(int i = 0; i < 2; i++) {
+					auto& eye_fb = stages[i].fb;
+					eye_fb.is_win_fbo = false;
+					eye_fb.size = Size(fb.size.cx / 2, fb.size.cy);
+					eye_fb.fps = fb.fps;
+					eye_fb.channels = 3;
+					eye_fb.sample = GVar::SAMPLE_U8;
+				}
+			}
+			else if (mode == MULTI_CUSTOM) {
+				for(int i = 0; i < stages.GetCount()-1; i++) {
+					auto& stage_fb = stages[i].fb;
+					stage_fb.is_win_fbo = false;
+					stage_fb.size = screen_sz;
+					stage_fb.fps = 60;
+					stage_fb.channels = 3;
+					stage_fb.sample = GVar::SAMPLE_U8;
+				}
 			}
 		}
 	}
 	
 	int i = 0;
 	for (BufferStage& s : stages) {
-		if (!s.data && mode != PENDING_PACKET) {
+		if (add_data_states && !s.data && mode != PENDING_PACKET) {
 			DataState& d = data.Add("stage" + IntStr(i));
 			d.GetAddPipeline("image").GetAddProgram("default");
 			s.SetDataState(&d, true);
@@ -408,7 +417,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			auto& top_stage = stages.Top();
 			if (top_stage.data_writable && !top_stage.quad)
 				top_stage.MakeFrameQuad(2);
-			ASSERT(top_stage.data->models.GetCount() == 1);
+			ASSERT(top_stage.data && top_stage.data->models.GetCount() == 1);
 			ModelState& m = top_stage.data->models[0];
 			ASSERT(m.objects.GetCount() == 2);
 			ASSERT(m.prog >= 0);

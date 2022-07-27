@@ -17,6 +17,7 @@ protected:
 	DataState data;
 	NativeFrameBufferRef fb = 0;
 	NativeColorBufferRef clr = 0;
+	bool add_data_states = false;
 	
 public:
 	using GfxBufferField = GfxBufferFieldT<Gfx>;

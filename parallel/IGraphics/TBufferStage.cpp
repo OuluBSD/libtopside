@@ -40,11 +40,18 @@ void BufferStageT<Gfx>::SetStereoLens() {
 
 template <class Gfx>
 void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
+	ASSERT(data == 0 || data == s); // it's too confusing for debugging to allow this to be overwritten
+	// with eon files; add "recv.data: true;" to your atom to avoid crashing
+	// if you skip this: clean quad ptr, etc... who know's what
+	
 	data = s;
 	this->data_writable = data_writable;
 	pipeline = 0;
 	
-	if (data && data->pipelines.GetCount() == 1) {
+	if (data && initialized)
+		RealizeData();
+	
+	/*if (data && data->pipelines.GetCount() == 1) {
 		if (data->pipelines.GetCount() == 1) {
 			pipeline_str = data->dictionary[data->pipelines.GetKey(0)];
 			pipeline = &data->pipelines[0];
@@ -57,31 +64,6 @@ void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
 					pipeline = &data->pipelines[i];
 			}
 		}
-		/*if (pipeline->programs.GetCount() == 1) {
-			prog = &pipeline->programs[0];
-			
-			if (prog->pending_compilation) {
-				Compile();
-			}
-		}*/
-		
-	}
-	
-	/*if (pipeline && buf->mode == Buffer::PENDING_PACKET) {
-		for (ProgramState& prog : pipeline->programs.GetValues()) {
-			if (prog.pending_compilation && !prog.failed) {
-				prog.pending_compilation = false;
-				
-				if (!prog.Compile(GetCompilerArgs())) {
-					LOG("BufferStageT::SetDataState: error: shader compiling failed: " << prog.GetError());
-					prog.failed = true;
-					data = 0;
-					pipeline = 0;
-					return;
-				}
-			}
-		}
-		pipeline->Realize();
 	}*/
 	
 	CompileJIT();
@@ -97,6 +79,20 @@ void BufferStageT<Gfx>::CompileJIT() {
 			}
 		}
 		pipeline->Realize();
+	}
+}
+
+template <class Gfx>
+void BufferStageT<Gfx>::SetAudio(bool b) {
+	bool was_audio = fb.is_audio;
+	fb.is_audio = b;
+	if (fb.is_audio && !was_audio) {
+		int sample_rate = buf->snd_sample_rate;
+		int frame_samples = buf->snd_frame_samples;
+		fb.size = Size(frame_samples,1);
+		fb.channels = 2;
+		fb.fps = (double)sample_rate / frame_samples;
+		fb.sample = GVar::SAMPLE_U16;
 	}
 }
 
@@ -177,6 +173,8 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 		}
 	}
 	
+	SetAudio(ws.GetString(".type", "") == "audio");
+	
 	int tries = id == 0 ? 2 : 1;
 	for(int j = 0; j < tries; j++) {
 		String prefix = "." + (j == 0 ? ("s" + IntStr(id) + ".") : String());
@@ -205,14 +203,9 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 
 template <class Gfx>
 bool BufferStageT<Gfx>::PostInitialize() {
-	if (!fb.is_win_fbo) {
-		if (fb.is_audio) {
-			int sample_rate = buf->snd_sample_rate;
-			int frame_samples = buf->snd_frame_samples;
-			fb.size = Size(frame_samples,1);
-			fb.channels = 2;
-			fb.fps = (double)sample_rate / frame_samples;
-			fb.sample = GVar::SAMPLE_U16;
+	if (!fb.is_win_fbo && fb.size.IsEmpty()) {
+		if (!fb.is_audio) {
+			
 		}
 		else {
 			fb.size = Size(TS::default_width,TS::default_height);
@@ -226,6 +219,7 @@ bool BufferStageT<Gfx>::PostInitialize() {
 
 template <class Gfx>
 bool BufferStageT<Gfx>::ImageInitialize() {
+	ASSERT(!initialized);
 	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
 	
 	if (fb.is_stereo_lenses) {
@@ -241,51 +235,89 @@ bool BufferStageT<Gfx>::ImageInitialize() {
 		aberr = vec3(1,1,1);
 	}
 	
-	ProgramState* prog = 0;
-	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
-		ShaderConf& conf = shdr_confs[i];
-		
-		if (conf.str.GetCount()) {
-			if (!quad) {
-				int quad_count = buf->mode == Buffer::MULTI_STEREO ? 2 : 1;
-				MakeFrameQuad(quad_count);
-			}
+	if (data) {
+		if (!RealizeData())
+			return false;
+	}
+	
+	UpdateTexBuffers();
+	
+	initialized = true;
+	return true;
+}
+
+template <class Gfx>
+bool BufferStageT<Gfx>::RealizeData() {
+	ASSERT(data);
+	if (!data)
+		return false;
+	
+	pipeline = data->FindPipeline("default");
+	ProgramState* prog = pipeline ? pipeline->FindProgram("default") : 0;
+	
+	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
+	
+	// only stereo-left can do this to avoid duplicate
+	if (data_writable && !fb.is_stereo_right) {
+		for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
+			ShaderConf& conf = shdr_confs[i];
 			
-			if (!pipeline)
-				pipeline = &data->GetAddPipeline("default");
-			
-			if (!prog) {
-				prog = &pipeline->GetAddProgram("default");
-				
-				for(int i = 0; i < buf_inputs.GetCount(); i++) {
-					int j = buf_inputs.GetKey(i);
-					String value = buf_inputs[i];
-					
-					if (value == "volume")
-						prog->SetInputVolume(j);
-					else if (value == "cubemap")
-						prog->SetInputCubemap(j);
-					else
-						TODO
+			if (conf.str.GetCount()) {
+				if (!quad && data->models.IsEmpty()) {
+					MakeFrameQuad(quad_count);
 				}
+				
+				if (!pipeline)
+					pipeline = &data->GetAddPipeline("default");
+				
+				if (!prog) {
+					prog = &pipeline->GetAddProgram("default");
+					
+					for(int i = 0; i < buf_inputs.GetCount(); i++) {
+						int j = buf_inputs.GetKey(i);
+						String value = buf_inputs[i];
+						
+						if (value == "volume")
+							prog->SetInputVolume(j);
+						else if (value == "cubemap")
+							prog->SetInputCubemap(j);
+						else
+							TODO
+					}
+				}
+				
+				
+				if (!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
+					return false;
+				
 			}
-			
-			ASSERT(quad->prog < 0 || quad->prog == prog->id);
-			quad->prog = prog->id;
-			
-			if (!prog->LoadShader((GVar::ShaderType)i, conf.str, conf.is_path, conf.is_content, lib_conf.str))
-				return false;
-			
 		}
 	}
 	
-	if (prog)
-		prog->RealizeCompilation();
+	if (pipeline) {
+		for (ProgramState& prog : pipeline->programs.GetValues()) {
+			if (prog.pending_compilation && !prog.failed) {
+				prog.pending_compilation = false;
+	
+				if (!prog.Compile(GetCompilerArgs())) {
+					LOG("BufferStageT::RealizeData: error: shader compiling failed: " << prog.GetError());
+					prog.failed = true;
+					return false;
+				}
+			}
+		}
+	}
+	
+	if (quad && prog) {
+		ASSERT(quad->prog < 0 || quad->prog == prog->id);
+		quad->prog = prog->id;
+	}
+	
+	//if (prog)
+	//	prog->RealizeCompilation(GetCompilerArgs());
 	
 	if (pipeline)
 		pipeline->Realize();
-	
-	UpdateTexBuffers();
 	
 	return true;
 }
@@ -305,7 +337,10 @@ bool BufferStageT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_
 
 template <class Gfx>
 void BufferStageT<Gfx>::MakeFrameQuad(int count) {
+	ASSERT(data && data_writable);
 	ASSERT(!quad);
+	if (!data || !data_writable)
+		return;
 	
 	for(int i = 0; i < count; i++) {
 		// essentially same as glRectf(-1.0, -1.0, 1.0, 1.0);
@@ -343,6 +378,7 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	if (pipeline.native == 0)
 		return;
 	
+	Gfx::SetViewport(fb.size);
 	Gfx::BindProgramPipeline(pipeline.native);
 	
 	int bi = NewWriteBuffer();
@@ -363,8 +399,7 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		if (0)
 			Gfx::RenderScreenRect();
 		else if (data->models.IsEmpty()) {
-			for(int i = 0; i < quad_count; i++)
-				MakeFrameQuad();
+			MakeFrameQuad(quad_count);
 		}
 	}
 	
@@ -375,10 +410,20 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	{
 		ProgramState* prev_prog = 0;
 		for (ModelState& m : data->models.GetValues()) {
-			ASSERT(m.prog >= 0);
-			if (m.prog < 0)
+			int prog_i = m.prog;
+			if (prog_i < 0)
+				prog_i = pipeline.owner->dictionary.Find("default");
+			ASSERT(prog_i >= 0);
+			if (prog_i < 0)
 				continue;
-			ProgramState& prog = pipeline.programs.Get(m.prog);
+			int i = pipeline.programs.Find(prog_i);
+			ASSERT(i >= 0);
+			if (i < 0)
+				continue;
+			
+			ProgramState& prog = pipeline.programs.Get(prog_i);
+			if (!prog.native)
+				continue;
 			
 			Gfx::UseProgram(prog.native);
 			if (!prog.is_searched_vars)

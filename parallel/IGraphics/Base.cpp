@@ -105,8 +105,7 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (in->IsData<InternalPacketData>()) {
-			TODO
-			//succ = this->bf.GetBuffer().LoadInputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			succ = this->bf.GetBuffer().LoadInputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 		}
 		else {
 			RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
@@ -444,8 +443,14 @@ bool FboReaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 		
 		//DUMP(fmt);
 		InternalPacketData& v = in->GetData<InternalPacketData>();
-		src_buf = (Buffer*)v.ptr;
-		ASSERT(src_buf);
+		if (v.IsText("gfxbuf")) {
+			src_buf = CastPtr<BufferStage>(static_cast<GfxBufferStage*>(v.ptr));
+			ASSERT(src_buf);
+		}
+		else {
+			TODO
+			return false;
+		}
 	}
 	
 	return true;
@@ -458,7 +463,7 @@ bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int 
 		//out.AddRouteData(src.from_sink_ch);
 	}
 	else if (fmt.IsAudio()) {
-		if (!src_buf || !src_buf->IsSingleInitialized())
+		if (!src_buf)
 			return false;
 		
 		//out.AddRouteData(src.from_sink_ch);

@@ -549,6 +549,17 @@ PipelineStateT<Gfx>& DataStateT<Gfx>::GetAddPipeline(String name) {
 }
 
 template <class Gfx>
+PipelineStateT<Gfx>* DataStateT<Gfx>::FindPipeline(String name) {
+	int id = dictionary.Find(name);
+	if (id < 0)
+		return 0;
+	int i = pipelines.Find(id);
+	if (i < 0)
+		return 0;
+	return &pipelines[i];
+}
+
+template <class Gfx>
 void DataStateT<Gfx>::Clear() {
 	models.Clear();
 	pipelines.Clear();
