@@ -22,7 +22,7 @@ public:
 	int material = -1;
 	bool disable_textures = false;
 	bool wireframe_only = false;
-	GfxMesh* accel = 0;
+	//GfxMesh* accel = 0;
 	
 	
 public:

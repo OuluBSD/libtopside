@@ -17,32 +17,14 @@ void ShootingInteractionSystemBase::Uninitialize() {
 void ShootingInteractionSystemBase::Attach(ShootingComponentRef c) {
 	ArrayFindAdd(comps, c);
 	
-	
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
 	const mat4 barrel_to_ctrl = Translate(vec3(0.0f, 0.0675f, 0.0f)) * XRotation(ConvertToRadians(-10));
 	//mat4 barrel_to_ctrl = Identity<mat4>();
 	
 	Ref<Entity> entity = c->GetEntity();
-	
-	//auto gun = GetPool()->Create<Gun>();
-	//gun->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
-	
-	// These values were created through trial and error and would be specific to the particular 3D model you choose to use for your gun.
-	// In this scenario, we need to generate two transforms.
-	// First transform is used to align the 3D model with the physical MotionController: model_to_controller
-	// Second transform is used to align the 3D model's barrel with the physical MotionController: barrel_to_ctrl
-	// When using the PlayerHandComponent, the MotionControllerSystem will update the Transform component of the same object to match the controller's location.
-	Ref<ModelComponent> m = entity->Find<ModelComponent>();
-	ASSERT(m);
-	if (m) {
-		m->SetRotation(ConvertToRadians(180), ConvertToRadians(70), 0.0f);
-		m->SetTranslation(vec3(0, 0.05f, 0.0f));
-	}
-	
 	entity->Get<ShootingComponent>()->barrel_to_ctrl = barrel_to_ctrl;
 	//entity->Get<ShootingComponent>()->gun = gun;
 	//entity->Get<ShootingComponent>()->SetEnabled(false);
-	
 }
 
 void ShootingInteractionSystemBase::Detach(ShootingComponentRef c) {
@@ -144,7 +126,7 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
 		bool should_render_controller = e.GetState().props.IsGrasped();
-		model->SetEnabled(should_render_controller);
+		//model->SetEnabled(should_render_controller);
 		model->color[3] = should_render_controller ? 0.25 : 1.0;
 	}
 }
@@ -181,6 +163,28 @@ void ShootingComponent::Uninitialize() {
 	Ref<ShootingInteractionSystemBase> sys = GetEngine().TryGet<ShootingInteractionSystemBase>();
 	if (sys)
 		sys->Detach(AsRefT());
+}
+
+bool ShootingComponent::LoadModel(ModelComponent& mdl) {
+	RenderingSystemRef sys = GetEngine().TryGet<RenderingSystem>();
+	if (!sys)
+		return false;
+	
+	String path = KnownModelNames::GetPath(KnownModelNames::Gun);
+	ModelRef m = sys->GetAddModelFile(path);
+	mdl.SetModelMatrix(YRotation(M_PI));
+	mdl.SetModel(m);
+	
+	if (1) {
+		Ref<ModelComponent> m = GetEntity()->Find<ModelComponent>();
+		ASSERT(m);
+		if (m) {
+			m->SetRotation(ConvertToRadians(180), ConvertToRadians(70), 0.0f);
+			m->SetTranslation(vec3(0, 0.05f, 0.0f));
+		}
+	}
+	
+	return true;
 }
 
 /*void ShootingComponent::SetEnabled(bool enable) {

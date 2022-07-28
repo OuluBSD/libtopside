@@ -1,0 +1,12 @@
+newmtl pine_tree
+  Ns 0
+  Ni 1
+  d 1.0000
+  Tr 0.0000
+  Tf 1.0000 1.0000 1.0000 
+  illum 2
+  map_Kd diffuse_none.jpg
+  map_Ks translucency_none.jpg
+  map_d alpha_none.jpg
+  map_bump normal_none.jpg
+  

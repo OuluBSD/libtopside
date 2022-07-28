@@ -9,13 +9,13 @@ file
 	EcsShell.cpp;
 
 mainconfig
+	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD",
 	"" = "",
 	"" = "SCREEN",
 	"" = "SCREEN OGL FFMPEG",
 	"" = "SCREEN SDL2",
 	"" = "SCREEN SDL2 OGL",
 	"" = "SCREEN SDL2 OGL FFMPEG",
-	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
 	"" = "DEBUG_RT SCREEN",

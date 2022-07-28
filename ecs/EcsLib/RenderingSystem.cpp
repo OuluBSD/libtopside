@@ -23,6 +23,14 @@ bool RenderingSystem::Initialize() {
 	return true;
 }
 
+ModelRef RenderingSystem::GetAddModelFile(String path) {
+	int i = model_cache.Find(path);
+	if (i >= 0)
+		return model_cache[i].GetModel();
+	ModelLoader& l = model_cache.Add(path);
+	l.LoadModel(path);
+	return l.GetModel();
+}
 
 #ifdef flagSDL2
 void RenderingSystem::Attach(String key, Parallel::BufferT<SdlSwGfx>* b) {

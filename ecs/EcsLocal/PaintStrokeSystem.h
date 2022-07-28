@@ -15,7 +15,7 @@ public:
 	
 	
 	Vector<Square> squares;
-	bool stroke_changed = true;
+	bool stroke_changed = false;
 	
 	
 	void Initialize() override;

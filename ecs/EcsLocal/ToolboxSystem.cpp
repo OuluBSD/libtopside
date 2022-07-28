@@ -53,6 +53,7 @@ void ToolComponent::SwitchOff() {
 	if (active_tool) {
 		active_tool->SetEnabled(false);
 		active_tool.Clear();
+		RefreshModel();
 	}
 }
 
@@ -68,7 +69,7 @@ void ToolComponent::SwitchNext() {
 		idx = 0;
 	else {
 		int i = 0;
-		for (ComponentBaseRef& cb : tools) {
+		for (CustomToolComponentRef& cb : tools) {
 			if (cb == active_tool) {
 				idx = i;
 				break;
@@ -82,20 +83,22 @@ void ToolComponent::SwitchNext() {
 	
 	active_tool = tools[idx];
 	active_tool->SetEnabled(true);
+	RefreshModel();
 }
 
-void ToolComponent::AddTool(ComponentBaseRef cb) {
+void ToolComponent::AddTool(CustomToolComponentRef cb) {
 	ArrayFindAdd(tools, cb);
 	
 	if (!active_tool) {
 		active_tool = cb;
 		active_tool->SetEnabled(true);
+		RefreshModel();
 	}
 	else
 		cb->SetEnabled(false);
 }
 
-void ToolComponent::RemoveTool(ComponentBaseRef cb) {
+void ToolComponent::RemoveTool(CustomToolComponentRef cb) {
 	if (active_tool == cb) {
 		if (tools.GetCount() > 1)
 			SwitchNext();
@@ -105,6 +108,18 @@ void ToolComponent::RemoveTool(ComponentBaseRef cb) {
 	
 	ArrayRemoveKey(tools, cb);
 	
+}
+
+void ToolComponent::RefreshModel() {
+	ModelComponentRef mdl = GetEntity()->Find<ModelComponent>();
+	if (mdl) {
+		if (active_tool) {
+			active_tool->LoadModel(*mdl);
+		}
+		else {
+			mdl->Clear();
+		}
+	}
 }
 
 
@@ -149,7 +164,9 @@ void ToolboxSystemBase::Detach(ToolComponentRef tool) {
 
 void ToolboxSystemBase::AddToolSystem(ToolSystemBaseRef system) {
 	//system->Register(entities);
+	#if 0
 	selector_objects.GetAdd(system->GetType()) = system->CreateToolSelector();
+	#endif
 	selectors.GetAdd(system->GetType()) = system;
 	
 	/*if (active_tool_idx < 0) {
@@ -163,7 +180,9 @@ void ToolboxSystemBase::AddToolSystem(ToolSystemBaseRef system) {
 
 void ToolboxSystemBase::RemoveToolSystem(ToolSystemBaseRef system) {
 	selectors.RemoveKey(system->GetType());
+	#if 0
 	selector_objects.RemoveKey(system->GetType());
+	#endif
 	//system->Unregister();
 }
 

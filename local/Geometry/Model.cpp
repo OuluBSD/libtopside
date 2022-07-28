@@ -120,12 +120,6 @@ void Model::ReverseFaces() {
 		m.ReverseFaces();
 }
 
-void Model::GetGfxMeshes(Vector<GfxMesh*>& meshes) {
-	for (Mesh& m : this->meshes)
-		if (m.accel)
-			meshes.Add(m.accel);
-}
-
 Mesh& Model::AddMesh() {
 	Mesh& m = meshes.Add();
 	m.owner = this;
@@ -323,29 +317,156 @@ Ref<Model> ModelLoader::GetModel() {
 	return model ? model->AsRefT() : Null;
 }
 
-#if 0
 
-bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) {
+bool ModelLoader::LoadModel(String path) {
 	model.Clear();
-	
-	if (0)
-		;
 	#ifdef flagASSIMP
-	else if (LoadModelAssimp(o, path))
-		;
+	return LoadModelAssimp(path);
 	#endif
-	else
-		return false;
+	return false;
+}
+
+#ifdef flagASSIMP
+bool ModelLoader::LoadModelAssimp(String path) {
+	LOG("ModelLoader::LoadModelAssimp: " << path);
+    Assimp::Importer import_;
+    const aiScene *scene = import_.ReadFile(path.Begin(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 	
-	model->Refresh(s, o);
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        LOG("ERROR: assimp load failed: " << import_.GetErrorString());
+        return false;
+    }
 	
-	return true;
+	model = new Model();
+	model->SetParent(this);
+    model->path = path;
+    model->directory = GetFileDirectory(path);
+	
+    ProcessMaterials(*model, scene);
+    ProcessNode(*model, scene->mRootNode, scene);
+    
+    return true;
+}
+
+void ModelLoader::ProcessMaterials(Model& model, const aiScene *scene) {
+	model.materials.Clear();
+	for(int i = 0; i < scene->mNumMaterials; i++) {
+		const aiMaterial* m = scene->mMaterials[i];
+		ASSERT(m);
+		TS::Material& mat = model.materials.Add(i);
+		mat.id = i;
+		ProcessMaterial(model, mat, m);
+	}
+	
+}
+
+void ModelLoader::ProcessMaterial(Model& model, TS::Material& m, const aiMaterial *mat) {
+	for (int type = 0; type <= aiTextureType_UNKNOWN; type++) {
+		int c = mat->GetTextureCount((aiTextureType) type);
+		if (c > 1) {
+			TODO
+		}
+		
+		for(unsigned int i = 0; i < c; i++) {
+			TexType textype = TEXTYPE_COUNT;
+			switch (type) {
+				#define TYPE(x) case aiTextureType_##x: textype = TEXTYPE_##x; break;
+				TYPE(NONE)
+				TYPE(DIFFUSE)
+				TYPE(SPECULAR)
+				TYPE(AMBIENT)
+				TYPE(EMISSIVE)
+				TYPE(HEIGHT)
+				TYPE(NORMALS)
+				TYPE(SHININESS)
+				TYPE(OPACITY)
+				TYPE(DISPLACEMENT)
+				TYPE(LIGHTMAP)
+				TYPE(REFLECTION)
+				TYPE(UNKNOWN)
+				//TYPE(CUBE_DIFFUSE)
+				//TYPE(CUBE_IRRADIANCE)
+				#undef TYPE
+			}
+			if (textype == TEXTYPE_COUNT) continue;
+			
+	        if (m.tex_id[type] >= 0) {
+	            LOG("warning: ModelLoader: multiple textures per mesh: " << model.path);
+	            break;
+	        }
+	        aiString str;
+	        str.Clear();
+	        int r = mat->GetTexture((aiTextureType) type, i, &str);
+	        
+	        String path = AppendFileName(model.directory, str.C_Str());
+	        Image img = StreamRaster::LoadFileAny(path);
+	        m.tex_id[textype] = model.GetAddTexture(img, path);
+	        m.tex_filter[textype] = GVar::FILTER_MIPMAP;
+	    }
+	}
+}
+
+void ModelLoader::ProcessNode(Model& model, aiNode *node, const aiScene *scene) {
+	// process all the node's meshes (if any)
+    for(unsigned int i = 0; i < node->mNumMeshes; i++) {
+        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+        ProcessMesh(model, model.meshes.Add(), mesh, scene);
+    }
+    // then do the same for each of its children
+    for(unsigned int i = 0; i < node->mNumChildren; i++) {
+        ProcessNode(model, node->mChildren[i], scene);
+    }
+}
+
+void ModelLoader::ProcessMesh(Model& model, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+	out.vertices.SetCount(mesh->mNumVertices);
+	
+    for(unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        Vertex& vertex = out.vertices[i];
+        
+        // process vertex positions, normals and texture coordinates
+        vertex.position[0] = mesh->mVertices[i][0];
+		vertex.position[1] = mesh->mVertices[i][1];
+		vertex.position[2] = mesh->mVertices[i][2];
+		
+		vertex.normal[0] = mesh->mNormals[i][0];
+		vertex.normal[1] = mesh->mNormals[i][1];
+		vertex.normal[2] = mesh->mNormals[i][2];
+		
+		// does the mesh contain texture coordinates?
+		
+		if(mesh->mTextureCoords[0]) {
+		    vertex.tex_coord[0] = mesh->mTextureCoords[0][i][0];
+		    vertex.tex_coord[1] = mesh->mTextureCoords[0][i][1];
+		}
+		else
+		    vertex.tex_coord = vec2(0.0f, 0.0f);
+		
+		ASSERT(vertex.tex_coord[0] >= 0.0f && vertex.tex_coord[0] <= 1.0f);
+		ASSERT(vertex.tex_coord[1] >= 0.0f && vertex.tex_coord[1] <= 1.0f);
+    }
+    
+    // process indices
+    out.indices.SetCount(0);
+    out.indices.Reserve(mesh->mNumFaces*3);
+    for(unsigned int i = 0; i < mesh->mNumFaces; i++) {
+	    aiFace face = mesh->mFaces[i];
+	    for(unsigned int j = 0; j < face.mNumIndices; j++)
+	        out.indices.Add(face.mIndices[j]);
+	}
+	
+    // process material
+    out.material = mesh->mMaterialIndex;
+	
 }
 
 #endif
 
+
 void ModelLoader::operator=(ModelBuilder& mb) {
 	model = mb.Detach();
+	model->SetParent(this);
 }
 
 

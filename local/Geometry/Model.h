@@ -129,7 +129,6 @@ public:
     //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
     void Dump();
     void ReverseFaces();
-    void GetGfxMeshes(Vector<GfxMesh*>& meshes);
     Mesh& AddMesh();
     Material& AddMaterial();
     ModelNode& AddNode(String name="", NodeIndex parent=-1);
@@ -169,6 +168,7 @@ public:
     void operator=(ModelBuilder& mb);
 	operator bool() const;
     void Visit(RuntimeVisitor& vis);
+	bool LoadModel(String path);
 	
 	void Create();
 	Ref<Model> GetModel();
@@ -178,6 +178,15 @@ public:
 	One<Model> model;
     
     
+protected:
+	#ifdef flagASSIMP
+	bool LoadModelAssimp(String path);
+    void ProcessMaterials(Model& model, const aiScene *scene);
+    void ProcessNode(Model& model, aiNode *node, const aiScene *scene);
+    void ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void ProcessMaterial(Model& mout, TS::Material& m, const aiMaterial *mat);
+	#endif
+	
     
 };
 

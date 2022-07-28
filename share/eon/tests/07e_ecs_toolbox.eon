@@ -79,20 +79,20 @@ engine ecs.dummy: {
             comp transform3;
             comp body;
             comp model: {builtin: "cylinder,0.02,0.2"; yaw: +90;};
-            comp player.hand: {hand: left; body: world.player.body;};
+            comp player.hand: {hand: left; body: world.player.body; simulated: true;};
         };
         
         entity player.hand.right: {
             comp transform3;
             comp body;
             comp model: {builtin: "cylinder,0.02,0.2"; yaw: +90;};
-            comp player.hand: {hand: right; body: world.player.body;};
+            comp player.hand: {hand: right; body: world.player.body; simulated: true;};
         };
         
         entity tool: {
             comp transform3;
             comp tool: {hand: world.player.hand.right;};
-            comp model: {builtin: "cylinder,0.01,0.1"; yaw: +0;};
+            comp model: {always.enabled: true;};
             comp paint;
             comp shoot;
             comp throw;

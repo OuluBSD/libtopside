@@ -316,11 +316,18 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				
 				TransformRef trans = entity->Find<Transform>();
 				if (trans) {
-					if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress) {
+					if (paint->stroke_in_progress) {
 						mat4 location = trans->GetMatrix();
-						mat4 paint_to_world =
-						        *paint->brush_tip_offset_from_holding_pose *
-						        location;
+						mat4 paint_to_world;
+						if (paint->brush_tip_offset_from_holding_pose) {
+							paint_to_world =
+							        *paint->brush_tip_offset_from_holding_pose *
+							        location;
+						}
+						else {
+							paint_to_world = location;
+						}
+						
 						if (dbg_log) {
 							vec3 pos = paint_to_world.GetTranslation();
 							LOG("PaintingInteractionSystemBase::OnControllerUpdated: pos " << pos.ToString());
@@ -388,7 +395,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 		}
 		
 		const bool show_controller = paint->cur_state == PaintComponent::State::Manipulating;
-		entity->Get<ModelComponent>()->SetEnabled(show_controller);
+		//entity->Get<ModelComponent>()->SetEnabled(show_controller);
 		paint->paint_brush->Get<ModelComponent>()->SetEnabled(!show_controller);
 		
 		if (auto location = controller->location) {
@@ -541,6 +548,19 @@ void PaintComponent::Destroy() {
 	if (beam) {
 		beam->Destroy();
 	}
+}
+
+bool PaintComponent::LoadModel(ModelComponent& mdl) {
+	RenderingSystemRef sys = GetEngine().TryGet<RenderingSystem>();
+	if (!sys)
+		return false;
+	
+	String path = KnownModelNames::GetPath(KnownModelNames::PaintBrush);
+	ModelRef m = sys->GetAddModelFile(path);
+	mdl.SetModelMatrix(Identity<mat4>());
+	mdl.SetModel(m);
+	//mdl.dbg = true;
+	return true;
 }
 
 

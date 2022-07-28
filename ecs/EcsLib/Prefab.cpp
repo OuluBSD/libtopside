@@ -17,13 +17,13 @@ String GetPath(String name) {
 		TODO
 	}
 	else if (name == Baseball) {
-		path = "cgtrader/baseball_ball_01/baseball_ball_01.obj";
+		path = "ms/Baseball.obj";
 	}
 	else if (name == PaintBrush) {
-		path = "cgtrader/IcePick/IcePick.obj";
+		path = "ms/Paintbrush.obj";
 	}
 	else if (name == Gun) {
-		path = "cgtrader/Futuristic_pistol/Futuristic_pistol.obj";
+		path = "ms/Gun.obj";
 	}
 	
 	path = ShareDirFile(AppendFileName("models", path));

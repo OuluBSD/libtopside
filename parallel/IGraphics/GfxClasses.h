@@ -78,10 +78,9 @@ struct GfxModelState : ErrorReporter {
 	virtual int GetObjectCount() const = 0;
 	virtual GfxDataObject& GetObject(int i) = 0;
 	virtual void Refresh(Model& m) = 0;
+	virtual void Clear() = 0;
 	virtual bool LoadModel(ModelLoader& l) = 0;
-	virtual bool LoadModel(ModelLoader& l, String path) = 0;
 	virtual bool LoadModelTextures(ModelLoader& l) = 0;
-	
 	
 };
 

@@ -199,7 +199,7 @@ void PlayerBodySystem::Update(double dt) {
 						float horz_deg = (i == 1 ? -1 : +1) * 30;
 						CameraObject(
 							tm.position, head_direction, head_up,
-							DEG2RAD(-horz_deg), DEG2RAD(-30), 0.3f,
+							DEG2RAD(horz_deg), DEG2RAD(-30), 0.3f,
 							hand_trans->data.position);
 							
 						//hand_trans->data.position[2] = -hand_trans->data.position[2];

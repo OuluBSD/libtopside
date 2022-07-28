@@ -60,11 +60,18 @@ void ModelComponent::Initialize() {
 }
 
 void ModelComponent::Uninitialize() {
-	loaded = 0;
+	Clear();
 	
 	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
 	rend->RemoveModel(AsRefT());
 	
+}
+
+void ModelComponent::SetEnabled(bool enable) {
+	if (!enable && always_enabled) {
+		enable = true;
+	}
+	Enableable::SetEnabled(enable);
 }
 
 bool ModelComponent::Arg(String key, Object value) {
@@ -98,7 +105,20 @@ bool ModelComponent::Arg(String key, Object value) {
 			LOG("ModelComponent::Arg: error: invalid model name '" + name + "'");
 			return false;
 		}
+		model_changed = true;
 		loader = mb;
+		model = loader.GetModel();
+	}
+	else if (key == "texture") {
+		Ref<Model> mdl = loader.GetModel();
+		if (mdl && mdl->GetMeshCount()) {
+			String path = RealizeShareFile(value);
+			Image img = StreamRaster::LoadFileAny(path);
+			if (img) {
+				Mesh& m = mdl->meshes[0];
+				mdl->SetTexture(m, TEXTYPE_DIFFUSE, img, path);
+			}
+		}
 	}
 	else if (key == "x") {offset[0] = value.ToDouble(); RefreshExtModel();}
 	else if (key == "y") {offset[1] = value.ToDouble(); RefreshExtModel();}
@@ -109,24 +129,43 @@ bool ModelComponent::Arg(String key, Object value) {
 	else if (key == "pitch") {pitch = DEG2RAD(value.ToDouble()); RefreshExtModel();}
 	else if (key == "yaw") {yaw = DEG2RAD(value.ToDouble()); RefreshExtModel();}
 	else if (key == "roll") {roll = DEG2RAD(value.ToDouble()); RefreshExtModel();}
-	else return false;
+	else if (key == "always.enabled") {always_enabled = (String)value == "true";}
+	else {
+		LOG("ModelComponent::Arg: error: invalid key '" << key << "'");
+		return false;
+	}
 	
 	return true;
 }
 
+void ModelComponent::Create() {
+	loader.Create();
+	model = loader.GetModel();
+	model_changed = true;
+}
+
 void ModelComponent::MakeBall(const vec3& pos, float radius) {
+	ASSERT(!model);
 	ModelBuilder mb;
 	mb.AddSphere(pos, radius);
+	model_changed = true;
 	loader = mb;
+	model = loader.GetModel();
 }
 
 void ModelComponent::MakeCylinder(const vec3& pos, float radius, float length) {
+	ASSERT(!model);
 	ModelBuilder mb;
 	mb.AddCylinder(pos, radius, length);
+	model_changed = true;
 	loader = mb;
+	model = loader.GetModel();
 }
 
 void ModelComponent::RefreshExtModel() {
+	if (dbg) {
+		LOG("debug");
+	}
 	have_ext_model = true;
 	mat4 rotate = AxesMat(yaw, pitch, roll);
 	mat4 tran = Translate(offset);
@@ -151,15 +190,45 @@ void ModelComponent::SetScale(const vec3& v) {
 	RefreshExtModel();
 }
 
+void ModelComponent::SetModel(ModelRef m) {
+	model = m;
+	loader.Clear();
+	prefab_name.Clear();
+	model_changed = true;
+}
+
+void ModelComponent::SetModelMatrix(const mat4& m) {
+	if (dbg) {
+		LOG("debug");
+	}
+	ext_model = m;
+	have_ext_model = true;
+}
+
+void ModelComponent::Clear() {
+	if (gfx_state && gfx_id >= 0) {
+		gfx_state->GetModel(gfx_id).Clear();
+	}
+	model.Clear();
+	loader.Clear();
+	model_changed = true;
+	gfx_state = 0;
+	gfx_id = -1;
+}
+
 bool ModelComponent::Load(GfxDataState& state) {
+	gfx_state = &state;
 	
-	if (!loaded) {
-		if (!loader && !prefab_name.IsEmpty()) {
-			String path = KnownModelNames::GetPath(prefab_name);
+	
+	if (gfx_id < 0) {
+		if (dbg) {
+			LOG("debug");
+		}
+		
+		if (model) {
 			auto& mdl = state.AddModel();
 			gfx_id = mdl.id;
-			if (!mdl.LoadModel(loader, path))
-				return false;
+			mdl.Refresh(*model);
 		}
 		else if (loader) {
 			auto& mdl = state.AddModel();
@@ -168,23 +237,44 @@ bool ModelComponent::Load(GfxDataState& state) {
 				LOG("ModelComponent::Load: error: model loading failed");
 				return false;
 			}
+			model = loader.GetModel();
+		}
+		else if (!prefab_name.IsEmpty()) {
+			String path = KnownModelNames::GetPath(prefab_name);
+			auto& mdl = state.AddModel();
+			gfx_id = mdl.id;
+			if (!loader.LoadModel(path))
+				return false;
+			if (!mdl.LoadModel(loader))
+				return false;
+			model = loader.GetModel();
 		}
 		else {
 			LOG("ModelComponent::Load: error: nothing to load");
 			return false;
 		}
-		loaded = true;
 	}
 	else if (model_changed) {
-		Ref<Model> m = loader.GetModel();
-		if (m) {
-			state.GetModel(gfx_id).Refresh(*m);
+		if (dbg) {
+			LOG("debug");
+		}
+		
+		if (model) {
+			state.GetModel(gfx_id).Refresh(*model);
+		}
+		else {
+			state.GetModel(gfx_id).Clear();
 		}
 	}
-	
+	else {
+		if (dbg) {
+			LOG("debug");
+		}
+	}
 	model_changed = false;
 	
-	mat4 model;
+	
+	mat4 model_mat;
 	TransformRef trans = GetEntity()->Find<Transform>();
 	if (trans) {
 		mat4 pos = Translate(trans->data.position);
@@ -195,38 +285,35 @@ bool ModelComponent::Load(GfxDataState& state) {
 			rot *= YawPitchRoll(pitch, yaw, roll);
 			sz  *= TS::scale(this->scale);
 		}*/
-		model = pos * rot * sz;
+		model_mat = pos * rot * sz;
 		
 		if (trans->verbose) {
 			DUMP(trans->data.position);
 		}
 		
 		if (have_ext_model)
-			model *= ext_model;
+			model_mat *= ext_model;
 		
 	}
 	else if (have_ext_model)
-		model = ext_model;
+		model_mat = ext_model;
 	else
-		model = Identity<mat4>();
+		model_mat = Identity<mat4>();
 		
-	Ref<Model> mesh = loader.GetModel();
-	if (!mesh)
+	if (!model)
 		return false;
 	
 	bool is_visible = IsEnabled();
 	
 	static thread_local Vector<GfxMesh*> meshes;
 	meshes.SetCount(0);
-	mesh->GetGfxMeshes(meshes);
-	for (GfxMesh* m : meshes) {
-		GfxDataObject* obj = CastPtr<GfxDataObject>(m);
-		if (!obj)
-			continue;
-		
-		obj->is_visible = is_visible;
-		obj->model = model;
-		obj->color = color;
+	auto& mdl_state = state.GetModel(gfx_id);
+	int obj_count = mdl_state.GetObjectCount();
+	for(int i = 0; i < obj_count; i++) {
+		GfxDataObject& obj = mdl_state.GetObject(i);
+		obj.is_visible = is_visible;
+		obj.model = model_mat;
+		obj.color = color;
 	}
 	
 	return true;

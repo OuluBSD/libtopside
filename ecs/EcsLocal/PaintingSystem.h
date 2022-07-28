@@ -7,12 +7,11 @@ NAMESPACE_ECS_BEGIN
 
 
 class PaintComponent :
-	public Component<PaintComponent> {
+	public CustomToolComponent {
 	
 public:
-	RTTI_COMP0(PaintComponent)
-	COPY_PANIC(PaintComponent)
-	COMP_DEF_VISIT
+	RTTI_COMP1(PaintComponent, CustomToolComponent)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CustomToolComponent>(this);}
 	
 	
 	
@@ -27,6 +26,7 @@ public:
 	void Uninitialize() override;
 	void SetEnabled(bool enable) override;
 	void Destroy() override;
+	bool LoadModel(ModelComponent&) override;
 	
 	vec4 selected_color = Colors::White;
 	LinkedList<EntityRef> clr_pick_objects;

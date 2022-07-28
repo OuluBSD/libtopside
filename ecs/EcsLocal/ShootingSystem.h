@@ -5,19 +5,18 @@ NAMESPACE_ECS_BEGIN
 
 
 class ShootingComponent :
-	public Component<ShootingComponent> {
+	public CustomToolComponent {
 	
 public:
-	RTTI_COMP0(ShootingComponent)
-	COPY_PANIC(ShootingComponent)
-	COMP_DEF_VISIT //_(vis & gun)
-	
+	RTTI_COMP1(ShootingComponent, CustomToolComponent)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CustomToolComponent>(this); /*vis & gun;*/}
 	
 	
 	void Initialize() override;
 	void Uninitialize() override;
 	//void SetEnabled(bool enable) override;
 	//void Destroy() override;
+	bool LoadModel(ModelComponent&) override;
 	
 	//EntityRef gun;
 	

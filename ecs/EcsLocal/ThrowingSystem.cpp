@@ -204,6 +204,11 @@ void ThrowingComponent::Destroy() {
 	}
 }
 
+bool ThrowingComponent::LoadModel(ModelComponent& mdl) {
+	mdl.Clear();
+	return true;
+}
+
 
 
 NAMESPACE_ECS_END

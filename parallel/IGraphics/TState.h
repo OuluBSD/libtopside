@@ -26,6 +26,7 @@ struct DataObjectT : GfxDataObject {
 	NatVertexArray vao;
 	NatVertexBuffer vbo;
 	NatElementBuffer ebo;
+	Mesh* src = 0;
 	
     int id = -1;
     int material = -1;
@@ -83,7 +84,6 @@ struct ModelStateT : GfxModelState {
 	~ModelStateT();
 	
 	void Free();
-	void Clear();
 	
 	DataObject& AddObject();
 	GfxDataObject& CreateObject() override {return AddObject();}
@@ -95,24 +95,16 @@ struct ModelStateT : GfxModelState {
 	
 	void Refresh(Model& m) override;
 	bool LoadModel(ModelLoader& l) override;
-	bool LoadModel(ModelLoader& l, String path) override;
 	bool LoadModelTextures(ModelLoader& l) override;
+	void Clear() override;
 	
 protected:
 	
 	void ProcessNode(Model& model);
 	void ProcessMaterials(Model& model);
 	void ProcessMesh( Mesh& out);
-	
-	#ifdef flagASSIMP
-	bool LoadModelAssimp(ModelLoader& l, String path);
     void RefreshTexture(Model& model);
     void RefreshTexture(Mesh& out);
-    void ProcessMaterials(Model& model, const aiScene *scene);
-    void ProcessNode(Model& model, aiNode *node, const aiScene *scene);
-    void ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
-    void ProcessMaterial(Model& mout, TS::Material& m, const aiMaterial *mat);
-	#endif
 	
 	
 };

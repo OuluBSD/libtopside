@@ -11,12 +11,29 @@ class PlayerHandComponent;
 using PlayerHandComponentRef = RefT_Entity<PlayerHandComponent>;
 
 
+
+class CustomToolComponent :
+	public Component<CustomToolComponent> {
+	
+public:
+	RTTI_COMP0(CustomToolComponent)
+	COPY_PANIC(CustomToolComponent)
+	COMP_DEF_VISIT
+	
+	virtual bool LoadModel(ModelComponent&) = 0;
+	
+};
+
+using CustomToolComponentRef = Ref<CustomToolComponent>;
+
+
+
 class ToolComponent : public Component<ToolComponent> {
 	
 public:
 	RTTI_COMP0(ToolComponent)
 	COPY_PANIC(ToolComponent)
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis & active_tool & active_hand; vis && tools;)
 	
 	void Initialize() override;
 	void Uninitialize() override;
@@ -24,21 +41,21 @@ public:
 	
 	void SwitchNext();
 	void SwitchOff();
-	void AddTool(ComponentBaseRef cb);
-	void RemoveTool(ComponentBaseRef cb);
+	void AddTool(CustomToolComponentRef cb);
+	void RemoveTool(CustomToolComponentRef cb);
+	void RefreshModel();
 	
 	String title;
 	String description;
 	TypeId tool_type { AsVoidTypeId() };
 	
-	ComponentBaseRef active_tool;
-	Array<ComponentBaseRef> tools;
+	CustomToolComponentRef active_tool;
+	Array<CustomToolComponentRef> tools;
 	PlayerHandComponentRef active_hand;
 	
 };
 
 using ToolComponentRef = Ref<ToolComponent>;
-
 
 
 class ToolboxSystemBase :

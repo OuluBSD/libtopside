@@ -113,8 +113,12 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 			String data_dir = ShareDirFile("models");
 			String obj_path = AppendFileName(data_dir, obj);
 			
-			if (!mdl.LoadModel(loader, obj_path)) {
-				RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
+			if (!loader.LoadModel(obj_path)) {
+				RTLOG("ObjViewProg::Render: error: could not load model file: '" << obj_path << "'");
+				return false;
+			}
+			if (!mdl.LoadModel(loader)) {
+				RTLOG("ObjViewProg::Render: error: could not load model state");
 				return false;
 			}
 			if (!mdl.LoadModelTextures(loader)) {

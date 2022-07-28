@@ -5,18 +5,18 @@ NAMESPACE_ECS_BEGIN
 
 
 class ThrowingComponent :
-	public Component<ThrowingComponent> {
+	public CustomToolComponent {
 	
 public:
-	RTTI_COMP0(ThrowingComponent)
-	COPY_PANIC(ThrowingComponent)
-	COMP_DEF_VISIT_(vis & ball_object)
+	RTTI_COMP1(ThrowingComponent, CustomToolComponent)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CustomToolComponent>(this); vis & ball_object;}
 	
 	
 	void Initialize() override;
 	void Uninitialize() override;
 	void SetEnabled(bool enable) override;
 	void Destroy() override;
+	bool LoadModel(ModelComponent&) override;
 	
 	EntityRef ball_object;
 	

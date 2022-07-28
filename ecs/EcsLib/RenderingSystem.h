@@ -74,6 +74,8 @@ protected:
 	// calibration
 	CalibrationData				calib;
 	
+	ArrayMap<String, ModelLoader> model_cache;
+	
 protected:
     bool Initialize() override;
     void Start() override;
@@ -90,6 +92,8 @@ public:
 	RTTI_DECL1(RenderingSystem, Base)
     ECS_SYS_CTOR(RenderingSystem)
 	SYS_DEF_VISIT
+	
+	ModelRef GetAddModelFile(String path);
 	
 	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);

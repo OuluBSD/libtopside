@@ -164,6 +164,7 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData() {
 		const size_t num_indices_per_face = 6u;
 		const size_t num_back_front_faces = 2u;
 		const size_t num_side_faces = 4u * (squares.GetCount() - 1);
+		
 		// Indices
 		const size_t expected_indices_capacity = num_indices_per_face * (num_back_front_faces + num_side_faces);
 		indices.Reserve(expected_indices_capacity);
@@ -171,11 +172,14 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData() {
 			indices.Add(top_left); indices.Add(top_right); indices.Add(bottom_right);
 			indices.Add(top_left); indices.Add(bottom_right); indices.Add(bottom_left);
 		};
+		
 		// Back face
 		add_square(1, 0, 3, 2);
+		
 		// Front face
 		const uint32 front_start = static_cast<uint32>(4 * (squares.GetCount() - 1));
 		add_square(front_start, front_start + 1, front_start + 2, front_start + 3);
+		
 		// Side faces
 		const uint32 sides_count = static_cast<uint32>(squares.GetCount() - 1);
 		

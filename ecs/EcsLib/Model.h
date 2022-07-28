@@ -35,19 +35,19 @@ class ModelComponent :
 	
 public:
 	RTTI_COMP0(ModelComponent);
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis & model)
 	
 	
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
+	void SetEnabled(bool enable) override;
     void operator=(const ModelComponent& src) {}
     
     bool Load(GfxDataState& state);
     bool LoadModel(String path);
     //void Refresh(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
-    void Dispatch() {TODO}
 	Ref<Model> GetModel() {return loader.GetModel();}
     ModelLoader& GetLoader() {return loader;}
     
@@ -58,27 +58,32 @@ public:
 	void RefreshModel(CpuDataState& state);
 	void RefreshModel(OglDataState& state);*/
 	
+	void Clear();
 	void SetPrefabModel(String prefab); // ResetModel
 	
 public:
 	vec4 color;
 	String prefab_name;
-	
-	
+	bool always_enabled = false;
+	bool dbg = false;
 	
 	
 	void SetRotation(float yaw, float pitch, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
 	void SetModelChanged() {model_changed = true;}
+	void SetModel(ModelRef m);
+	void SetModelMatrix(const mat4& m);
 	
+	void Create();
 	void MakeBall(const vec3& pos, float radius);
 	void MakeCylinder(const vec3& pos, float radius, float length);
 	
 protected:
+	Ref<Model> model;
 	ModelLoader loader;
-	bool loaded = false;
 	int gfx_id = -1;
+	GfxDataState* gfx_state = 0;
 	
 	vec3 offset = zero<vec3>();
 	vec3 scale = one<vec3>();
