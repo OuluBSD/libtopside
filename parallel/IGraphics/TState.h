@@ -76,8 +76,6 @@ struct ModelStateT : GfxModelState {
 	Array<DataObject> objects;
 	ArrayMap<int, Material> materials;
 	ArrayMap<int, NativeColorBufferRef> textures, cube_textures;
-	int env_material = -1; // own material
-	int env_material_model = -1; // other model in same DataState
 	int prog = -1;
 	
 	ModelStateT();
@@ -91,12 +89,14 @@ struct ModelStateT : GfxModelState {
 	GfxDataObject& GetObject(int i) override {return objects[i];}
 	Material& GetAddMaterial(int material_id);
 	Material& AddMaterial();
-	bool SetProgram(String name);
 	
 	void Refresh(Model& m) override;
 	bool LoadModel(ModelLoader& l) override;
-	bool LoadModelTextures(ModelLoader& l) override;
+	bool LoadModel(Model& m) override;
+	bool LoadModelTextures(Model& m) override;
 	void Clear() override;
+	int GetMateriaKey(int i) const override;
+	bool SetProgram(String name) override;
 	
 protected:
 	

@@ -1167,31 +1167,36 @@ struct ControllerMatrix : RTTIBase {
 		TRIGGER_CLICK,
 		SQUEEZE,
 		MENU,
+		
 		HOME,
-		ANALOG_X,
-		ANALOG_X0 = ANALOG_X,
+		ANALOG_X0,
 		ANALOG_X1,
 		ANALOG_X2,
 		ANALOG_X3,
-		ANALOG_Y,
-		ANALOG_Y0 = ANALOG_Y,
+		
+		ANALOG_Y0,
 		ANALOG_Y1,
 		ANALOG_Y2,
 		ANALOG_Y3,
-		ANALOG_PRESS,
-		ANALOG_PRESS0 = ANALOG_PRESS,
+		ANALOG_PRESS0,
+		
 		ANALOG_PRESS1,
 		ANALOG_PRESS2,
 		ANALOG_PRESS3,
 		BUTTON_A,
 		BUTTON_B,
+		
 		BUTTON_X,
 		BUTTON_Y,
 		VOLUME_PLUS,
 		VOLUME_MINUS,
 		MIC_MUTE,
 		
-		VALUE_COUNT
+		VALUE_COUNT,
+		
+		ANALOG_X = ANALOG_X0,
+		ANALOG_Y = ANALOG_Y0,
+		ANALOG_PRESS = ANALOG_PRESS0,
 	} Value;
 
 	static const int CTRL_COUNT = 2;
@@ -1209,6 +1214,15 @@ struct ControllerMatrix : RTTIBase {
 			}
 			trans = c.trans;
 		}
+		
+		float GetTouchpadX(int i=0) const {return value[ANALOG_X0 + i];}
+		float GetTouchpadY(int i=0) const {return value[ANALOG_Y0 + i];}
+		float GetThumbstickX(int i=0) const {return value[ANALOG_X1 + i];}
+		float GetThumbstickY(int i=0) const {return value[ANALOG_Y1 + i];}
+		bool IsGrasped() const {return is_value[SQUEEZE] && value[SQUEEZE] > 0.0f;}
+		bool IsTouchpadTouched(int i=0) const {return value[ANALOG_PRESS0] > 0.0f;}
+		bool IsTouchpadPressed(int i=0) const {return value[ANALOG_PRESS0] > 0.0f;}
+		bool IsSelectPressed(int i=0) const {return value[TRIGGER] > 0.0f;}
 	};
 	Ctrl ctrl[CTRL_COUNT];
 	
@@ -1226,6 +1240,17 @@ struct ControllerMatrix : RTTIBase {
 		for(int i = 0; i < CTRL_COUNT; i++)
 			ctrl[i] = m.ctrl[i];
 	}
+	
+	
+};
+
+struct ControllerState {
+	ControllerSource* source = 0;
+	ControllerMatrix props;
+	
+	const ControllerSource& GetSource() const {ASSERT(source); return *source;}
+	const ControllerMatrix& GetControllerProperties() const {return props;}
+	
 };
 
 

@@ -186,7 +186,9 @@ typedef enum {
     TEXTYPE_CUBE_DIFFUSE,
     TEXTYPE_CUBE_IRRADIANCE,
     
-    TEXTYPE_COUNT
+    TEXTYPE_COUNT,
+    
+    TEXTYPE_SHARED_BEGIN = TEXTYPE_CUBE_DIFFUSE,
 } TexType;
 
 namespace GVar {

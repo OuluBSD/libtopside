@@ -68,10 +68,10 @@ void ShootingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 }
 
 void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	const ControllerState& source_state = e.GetState();
-	const ControllerSource& source = source_state.GetSource();
+	//const ControllerState& source_state = e.GetState();
+	//const ControllerSource& source = source_state.GetSource();
 	
-	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::SELECT) {
+	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerMatrix::TRIGGER) {
 		for (ShootingComponentRef& shooting : comps) {
 			if (!shooting->IsEnabled())
 				continue;
@@ -125,7 +125,8 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		ModelComponentRef model = entity->Find<ModelComponent>();
 		
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
-		bool should_render_controller = e.GetState().props.IsGrasped();
+		ASSERT(e.ctrl);
+		bool should_render_controller = e.ctrl->ctrl[1].IsGrasped();
 		//model->SetEnabled(should_render_controller);
 		model->color[3] = should_render_controller ? 0.25 : 1.0;
 	}
@@ -175,7 +176,7 @@ bool ShootingComponent::LoadModel(ModelComponent& mdl) {
 	mdl.SetModelMatrix(YRotation(M_PI));
 	mdl.SetModel(m);
 	
-	if (1) {
+	if (0) {
 		Ref<ModelComponent> m = GetEntity()->Find<ModelComponent>();
 		ASSERT(m);
 		if (m) {

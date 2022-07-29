@@ -28,7 +28,7 @@ void FakeControllerSource::GetAngularVelocity(float* v3) const {
 FakeSpatialInteractionManager::FakeSpatialInteractionManager() {
 	ctrl.mgr = this;
 	ctrl_state.source = &ctrl;
-	
+
 	for(int i = 0; i < 3; i++) av[i].Resize(30);
 	
 }
@@ -71,6 +71,7 @@ void FakeSpatialInteractionManager::Update(double dt) {
 
 void FakeSpatialInteractionManager::DetectController() {
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_CONTROLLER_DETECTED;
 	
@@ -121,37 +122,52 @@ void FakeSpatialInteractionManager::UpdateStateKeyboard() {
 		Move(VEC_RIGHT, step);
 	}
 	
-	static const int assign[ControllerProperties::BUTTON_COUNT] = {
-		'F',
-		'T',
-		'H',
-		'G',
-		
-		'K',
-		'J',
-		'L',
-		'I',
-		
-		'U',
-		'7',
-		'O',
-		'9',
-		
+	static const int assign[ControllerMatrix::VALUE_COUNT] = {
 		'1',
+		0,
+		0,
 		'2',
 		'3',
+		
+		0,
+		'2',
+		0,
+		0,
+		0,
+		
+		0,
+		0,
+		0,
+		0,
+		0,
+		
+		0,
+		0,
+		0,
+		0,
+		0,
+		
+		0,
+		0,
+		0,
+		0,
+		0,
+		
 	};
 	
-	for(int i = 0; i < ControllerProperties::BUTTON_COUNT; i++) {
+	for(int i = 0; i < ControllerMatrix::VALUE_COUNT; i++) {
 		int key = assign[i];
+		if (!key)
+			continue;
+		
 		bool pushed = data[key] && !prev[key];
 		bool released = !data[key] && prev[key];
 		
 		if (pushed)
-			Pressed((ControllerProperties::Button)i);
+			Pressed((ControllerMatrix::Value)i);
 		
 		if (released)
-			Released((ControllerProperties::Button)i);
+			Released((ControllerMatrix::Value)i);
 		
 	}
 	
@@ -159,10 +175,12 @@ void FakeSpatialInteractionManager::UpdateStateKeyboard() {
 	
 }
 
-void FakeSpatialInteractionManager::Pressed(ControllerProperties::Button b) {
-	ctrl_state.props.pressed[(int)b] = true;
+void FakeSpatialInteractionManager::Pressed(ControllerMatrix::Value b) {
+	ctrl_state.props.ctrl[1].value[(int)b] = 1.0f;
+	ctrl_state.props.ctrl[1].is_value[(int)b] = true;
 	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_PRESSED;
 	ev.value = (int)b;
@@ -170,10 +188,12 @@ void FakeSpatialInteractionManager::Pressed(ControllerProperties::Button b) {
 	WhenSourcePressed(*this, ev);
 }
 
-void FakeSpatialInteractionManager::Released(ControllerProperties::Button b) {
-	ctrl_state.props.pressed[(int)b] = false;
+void FakeSpatialInteractionManager::Released(ControllerMatrix::Value b) {
+	ctrl_state.props.ctrl[1].value[(int)b] = 0.0f;
+	ctrl_state.props.ctrl[1].is_value[(int)b] = true;
 	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_RELEASED;
 	ev.value = (int)b;
@@ -190,6 +210,7 @@ void FakeSpatialInteractionManager::Released(ControllerProperties::Button b) {
 
 void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = mouse_diff; // extra
@@ -233,6 +254,7 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 
 void FakeSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
 	ev.trans = &trans;

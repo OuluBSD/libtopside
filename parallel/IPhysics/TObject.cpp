@@ -90,8 +90,6 @@ template <class Fys>
 bool ObjectT<Fys>::LoadModel(GfxModelState& s) {
 	if (!s.LoadModel(loader))
 		Panic("Couldn't load model: ModelComponent");
-	if (!s.LoadModelTextures(loader))
-		Panic("Couldn't load model textures: ModelComponent");
 	return true;
 }
 /*

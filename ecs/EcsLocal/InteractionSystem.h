@@ -74,8 +74,8 @@ struct FakeSpatialInteractionManager : InteractionManager {
     void UpdateStateKeyboard();
 	void Look(Point mouse_diff);
 	void Move(vec3 rel_dir, float step);
-    void Pressed(ControllerProperties::Button b);
-    void Released(ControllerProperties::Button b);
+    void Pressed(ControllerMatrix::Value b);
+    void Released(ControllerMatrix::Value b);
     
 };
 
@@ -101,14 +101,13 @@ struct VrSpatialInteractionManager : InteractionManager {
 	EnvStateRef state;
 	RenderingSystemRef rend;
 	VrControllerSource ctrl;
-	ControllerState ctrl_state;
 	InteractionSystem* sys = 0;
 	Point prev_mouse = Point(0,0);
 	double time = 0;
 	double last_dt = 0;
 	FboKbd::KeyVec prev;
 	TransformMatrix trans;
-	ControllerMatrix cm;
+	ControllerState ctrl_state;
 	
 	// player camera
 	float pitch = 0;

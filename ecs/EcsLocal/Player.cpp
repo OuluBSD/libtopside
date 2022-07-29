@@ -208,6 +208,8 @@ void PlayerBodySystem::Update(double dt) {
 						//hand_trans->data = tm;
 						hand_trans->anchor_position = tm.position;
 						hand_trans->anchor_orientation = tm.orientation;
+						//hand_trans->anchor_orientation = Identity<quat>();
+						
 						//hand_trans->data.position = vec3(0,0,0);
 						
 						/*float horz_deg = (i == 1 ? -1 : +1) * 30;
@@ -329,13 +331,15 @@ void PlayerBodySystem::OnControllerUpdated(const CtrlEvent& e) {
 						//trans->data.position = trans->anchor_position;
 						mat4 arot = QuatMat(trans->anchor_orientation);
 						mat4 trot = QuatMat(trans->data.orientation);
-						mat4 crot = trot * arot;
+						mat4 crot = arot * trot;
 						trans->data.orientation = MatQuat(crot);
+						//trans->data.orientation = trans->data.orientation;
 						trans->data.FillFromOrientation();
 						
-						mat4 irot = arot.GetInverse();
+						//mat4 irot = arot.GetInverse();
 						vec3 new_position = (arot * trans->data.position.Embed()).Splice();
 						trans->data.position = trans->anchor_position + new_position;
+						//trans->data.position = trans->anchor_position + vec3(0,0,-1);
 						//LOG(trans->data.GetAxesString() << ", " << new_position.ToString() << ", " << trans->data.position.ToString());
 						
 						//trans->data.orientation = AxesQuat(0,0,0);

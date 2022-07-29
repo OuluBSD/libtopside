@@ -70,7 +70,7 @@ void ThrowingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 }
 
 void ThrowingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::SELECT) {
+	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerMatrix::TRIGGER) {
 		for (ThrowingComponentRef& throwing : comps) {
 			if (!throwing->IsEnabled()) continue;
 			
@@ -83,9 +83,10 @@ void ThrowingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 }
 
 void ThrowingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
-	if (e.type == EVENT_HOLO_RELEASED && e.value == ControllerProperties::SELECT) {
+	if (e.type == EVENT_HOLO_RELEASED && e.value == ControllerMatrix::TRIGGER) {
+		ASSERT(e.ctrl);
 		const ControllerState& source_state = e.GetState();
-		const ControllerProperties& source_props = source_state.props;
+		const ControllerMatrix& source_props = source_state.props;
 		const ControllerSource& source = source_state.GetSource();
 		
 		for (ThrowingComponentRef& throwing : comps) {

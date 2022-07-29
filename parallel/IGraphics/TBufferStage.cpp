@@ -820,7 +820,7 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
 template <class Gfx>
 void BufferStageT<Gfx>::SetVars(ProgramState& prog, const RealtimeSourceConfig& cfg, const DataObject& o) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (!GVar::is_obj_var[i] && prog.var_idx[i] >= 0)
+		if (!GVar::gvars[i].is_obj_var && prog.var_idx[i] >= 0)
 			SetVar(prog, i, cfg, o);
 }
 

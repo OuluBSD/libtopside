@@ -111,13 +111,13 @@ void ProgramStateT<Gfx>::FindVariables() {
 		bool found = false;
 		bool state_var = false;
 		for(int j = 0; j < GVar::VAR_COUNT; j++) {
-			const char* var_name = GVar::names[j];
+			const char* var_name = GVar::gvars[j].name;
 			if (strncmp(var_name, name, 128) == 0) {
 				var_idx[j] = i;
 				if (j == GVar::VAR_COMPAT_DATE && !is_time_used)
 					is_time_used = true;
 				found = true;
-				state_var = !GVar::is_obj_var[j];
+				state_var = !GVar::gvars[j].is_obj_var;
 				break;
 			}
 		}
@@ -145,14 +145,45 @@ void ProgramStateT<Gfx>::RealizeCompilation(const GfxCompilerArgs& args) {
 template <class Gfx>
 void ProgramStateT<Gfx>::SetVars(ContextState& c, ModelState& m, const DataObject& o, ViewTarget vtgt) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (GVar::is_obj_var[i] && var_idx[i] >= 0)
+		if (GVar::gvars[i].is_obj_var && var_idx[i] >= 0)
 			SetVar(c, m, i, o, vtgt);
+}
+
+template <class Gfx>
+int FindTexId(ModelStateT<Gfx>& mdl, const DataObjectT<Gfx>& o, int tex_ch, ModelStateT<Gfx>*& used_mdl, MaterialT<Gfx>*& used_mat) {
+	int tex_i;
+	bool shared = tex_ch >= TEXTYPE_SHARED_BEGIN;
+	if (!shared) {
+		if (o.material < 0)
+			return -1;
+		auto& mat = mdl.materials.Get(o.material);
+		tex_i = mat.tex_id[tex_ch];
+		used_mdl = &mdl;
+		used_mat = &mat;
+	}
+	else {
+		int env_material_model =
+			mdl.env_material_model >= 0 ?
+				mdl.env_material_model :
+				mdl.owner->env_material_model;
+		int i = mdl.owner->models.Find(mdl.env_material_model);
+		if (mdl.env_material_model < 0 || i < 0)
+			return -1;
+		ModelStateT<Gfx>& other_mdl = mdl.owner->models[i];
+		if (other_mdl.env_material < 0)
+			return -1;
+		auto& mat = other_mdl.materials.Get(other_mdl.env_material);
+		tex_i = mat.tex_id[tex_ch];
+		used_mdl = &other_mdl;
+		used_mat = &mat;
+	}
+	return tex_i;
 }
 
 template <class Gfx>
 void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, const DataObject& o, ViewTarget vtgt) {
 	using namespace GVar;
-	const char* name = GVar::names[var];
+	const char* name = GVar::gvars[var].name;
 	
 	DataState& data = *owner->owner;
 	
@@ -206,41 +237,33 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 	else if (var == VAR_MODEL) {
 		Gfx::UniformMatrix4fv(uindex, o.model);
 	}
-	else if (var >= VAR_NONE && var < VAR_CUBE_DIFFUSE) {
+	else if (var >= VAR_NONE && var <= VAR_TEXTYPE_END) {
 		int tex_ch = var - VAR_NONE;
-		if (o.material < 0)
-			return;
-		auto& mat = mdl.materials.Get(o.material);
-		int tex_i = mat.tex_id[tex_ch];
+		ModelState* used_mdl;
+		MaterialT<Gfx>* used_mat;
+		int tex_i = FindTexId(mdl, o, tex_ch, used_mdl, used_mat);
 		if (tex_i >= 0) {
-			auto& tex = mdl.textures[tex_i];
+			auto& tex =
+				tex_ch < TEXTYPE_SHARED_BEGIN ?
+					used_mdl->textures.Get(tex_i) :
+					used_mdl->cube_textures.Get(tex_i);
 			Gfx::ActiveTexture(tex_ch);
-			TextureMode textmode = GVar::TEXMODE_2D;
+			TextureMode textmode =
+				tex_ch < TEXTYPE_SHARED_BEGIN ?
+					GVar::TEXMODE_2D :
+					GVar::TEXMODE_CUBE_MAP;
 			Gfx::BindTextureRO(textmode, tex);
-			Gfx::TexParameteri(textmode, mat.tex_filter[tex_ch], GVar::WRAP_REPEAT);
+			Gfx::TexParameteri(textmode, used_mat->tex_filter[tex_ch], GVar::WRAP_REPEAT);
 			Gfx::Uniform1i(uindex, tex_ch);
 			Gfx::DeactivateTexture();
 		}
 	}
-	else if (var >= VAR_CUBE_DIFFUSE && var <= VAR_TEXTYPE_END) {
-		int tex_ch = var - VAR_NONE;
-		int i = mdl.owner->models.Find(mdl.env_material_model);
-		if (mdl.env_material_model < 0 || i < 0)
-			return;
-		ModelState& used_mdl = mdl.owner->models[i];
-		if (used_mdl.env_material < 0)
-			return;
-		auto& mat = used_mdl.materials.Get(used_mdl.env_material);
-		int tex_i = mat.tex_id[tex_ch];
-		if (tex_i >= 0) {
-			auto& tex = used_mdl.cube_textures[tex_i];
-			Gfx::ActiveTexture(tex_ch);
-			TextureMode textmode = GVar::TEXMODE_CUBE_MAP;
-			Gfx::BindTextureRO(textmode, tex);
-			Gfx::TexParameteri(textmode, mat.tex_filter[tex_ch], GVar::WRAP_REPEAT);
-			Gfx::Uniform1i(uindex, tex_ch);
-			Gfx::DeactivateTexture();
-		}
+	else if (var >= VAR_IS_NONE && var <= VAR_IS_TEXTYPE_END) {
+		int tex_ch = var - VAR_IS_NONE;
+		ModelState* used_mdl;
+		MaterialT<Gfx>* used_mat;
+		int tex_i = FindTexId(mdl, o, tex_ch, used_mdl, used_mat);
+		Gfx::Uniform1i(uindex, tex_i >= 0);
 	}
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL1) {
 		TODO
@@ -256,7 +279,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 template <class Gfx>
 void ProgramStateT<Gfx>::SetVars(ContextState& ctx, EnvStateRef& env, const RealtimeSourceConfig& cfg) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
-		if (!GVar::is_obj_var[i] && var_idx[i] >= 0)
+		if (!GVar::gvars[i].is_obj_var && var_idx[i] >= 0)
 			SetVar(ctx, env, i, cfg);
 }
 
@@ -268,7 +291,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	if (uindex < 0)
 		return;
 	
-	const char* name = GVar::names[var];
+	const char* name = GVar::gvars[var].name;
 	DataState& data = *owner->owner;
 	
 	RendVer1(OnUpdateVar, GVar::names[var]);

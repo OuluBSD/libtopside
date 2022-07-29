@@ -178,6 +178,11 @@ void ModelStateT<Gfx>::Clear() {
 }
 
 template <class Gfx>
+int ModelStateT<Gfx>::GetMateriaKey(int i) const {
+	return materials.GetKey(i);
+}
+
+template <class Gfx>
 typename Gfx::DataObject& ModelStateT<Gfx>::AddObject() {
 	DataObject* p = new DataObject();
 	p->SetState(this);
@@ -225,6 +230,16 @@ bool ModelStateT<Gfx>::LoadModel(ModelLoader& l) {
 	
     ProcessNode(*l.model);
     ProcessMaterials(*l.model);
+    LoadModelTextures(*l.model);
+    
+    return true;
+}
+
+template <class Gfx>
+bool ModelStateT<Gfx>::LoadModel(Model& m) {
+    ProcessNode(m);
+    ProcessMaterials(m);
+    LoadModelTextures(m);
     
     return true;
 }
@@ -253,10 +268,8 @@ void ModelStateT<Gfx>::Refresh(Model& m) {
 }
 
 template <class Gfx>
-bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
+bool ModelStateT<Gfx>::LoadModelTextures(Model& m) {
 	Free();
-	
-	Model& m = *l.model;
 	
 	for(int i = 0; i < m.textures.GetCount(); i++) {
 		int id = m.textures.GetKey(i);
@@ -314,7 +327,7 @@ bool ModelStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 	}
 	
 	
-    RefreshTexture(*l.model);
+    RefreshTexture(m);
 	
 	return true;
 }

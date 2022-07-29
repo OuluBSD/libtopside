@@ -10,7 +10,7 @@ bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	dev.sys.user_hmd_idx = ws.GetInt(".device.hmd.idx", dev.sys.require_hmd ? 0 : -1);
 	dev.sys.user_ctrl_idx[0] = ws.GetInt(".device.left.idx", dev.sys.require_left ? 0 : -1);
 	dev.sys.user_ctrl_idx[1] = ws.GetInt(".device.right.idx", dev.sys.require_right ? 0 : -1);
-	dev.sys.verbose = !ws.IsTrue(".quiet", false);
+	dev.sys.verbose = ws.IsTrue(".verbose", false);
 	
 	if (!dev.sys.Initialise())
 		return false;

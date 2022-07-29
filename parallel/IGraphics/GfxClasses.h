@@ -72,7 +72,9 @@ struct GfxModelState : ErrorReporter {
 	RTTI_DECL1(GfxModelState, ErrorReporter)
 	
 	// meta
-	int		id = -1;
+	int id = -1;
+	int env_material = -1; // own material
+	int env_material_model = -1; // other model in same DataState
 	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual int GetObjectCount() const = 0;
@@ -80,7 +82,10 @@ struct GfxModelState : ErrorReporter {
 	virtual void Refresh(Model& m) = 0;
 	virtual void Clear() = 0;
 	virtual bool LoadModel(ModelLoader& l) = 0;
-	virtual bool LoadModelTextures(ModelLoader& l) = 0;
+	virtual bool LoadModel(Model& m) = 0;
+	virtual bool LoadModelTextures(Model& m) = 0;
+	virtual int GetMateriaKey(int i) const = 0;
+	virtual bool SetProgram(String name) = 0;
 	
 };
 
@@ -89,6 +94,9 @@ struct GfxDataState : ErrorReporter {
 	
 	// meta
 	int		id = -1;
+	
+	// models
+	int		env_material_model = -1;
 	
 	// renderer
     mat4				view;

@@ -310,10 +310,13 @@ void System::UpdateData() {
 			HMD::GetDeviceFloat(d, HMD::HMD_POSITION_VECTOR, ctrl.trans.position.data);
 			
 			ctrl.trans.orientation = MatQuat(QuatMat(initial_orient) * QuatMat(ctrl.trans.orientation));
+			//ctrl.trans.orientation = ctrl.trans.orientation;
+			
 			ctrl.trans.FillFromOrientation();
 			if (ctrl.trans.position == vec3(0.5,0,0) ||
 				ctrl.trans.position == vec3(-0.5,0,0)) {
-				ctrl.trans.position += VEC_FWD * 0.2;
+				ctrl.trans.position *= 0.5;
+				ctrl.trans.position += VEC_FWD * 1.0;
 			}
 			if (verbose) {
 				LOG("\tCtrl " << i << ": pos " << ctrl.trans.position.ToString() << ", " << ctrl.trans.GetAxesString());
@@ -370,6 +373,9 @@ void System::UpdateData() {
 					ctrl.is_value[type] = true;
 					ctrl.value[type] = control_state[j];
 				}
+				/*if (type == HMD::HMD_MENU && control_state[j] > 0) {
+					LOG("");
+				}*/
 			}
 		}
 	}

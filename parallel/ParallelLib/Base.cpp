@@ -527,7 +527,7 @@ void EventStateBase::Event(const CtrlEvent& e) {
 				
 				if (ctrl.is_value[t]) {
 					float f = ctrl.value[t];
-					if (i == ControllerMatrix::GENERIC) {
+					if (i == ControllerMatrix::TRIGGER) {
 						// what even is this?
 					}
 					else TODO

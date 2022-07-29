@@ -28,7 +28,7 @@ void VrControllerSource::GetAngularVelocity(float* v3) const {
 VrSpatialInteractionManager::VrSpatialInteractionManager() {
 	ctrl.mgr = this;
 	ctrl_state.source = &ctrl;
-	
+
 	for(int i = 0; i < 3; i++) av[i].Resize(30);
 	
 }
@@ -71,6 +71,7 @@ void VrSpatialInteractionManager::Update(double dt) {
 
 void VrSpatialInteractionManager::DetectController() {
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_CONTROLLER_DETECTED;
 	
@@ -110,6 +111,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	
 	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_CALIB;
 	ev.n = -1;
@@ -244,9 +246,8 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 }
 
 void VrSpatialInteractionManager::Pressed(ControllerMatrix::Value b, float f) {
-	ctrl_state.props.pressed[(int)b] = true;
-	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_PRESSED;
 	ev.value = (int)b;
@@ -255,9 +256,8 @@ void VrSpatialInteractionManager::Pressed(ControllerMatrix::Value b, float f) {
 }
 
 void VrSpatialInteractionManager::Released(ControllerMatrix::Value b, float f) {
-	ctrl_state.props.pressed[(int)b] = false;
-	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_RELEASED;
 	ev.value = (int)b;
@@ -266,9 +266,8 @@ void VrSpatialInteractionManager::Released(ControllerMatrix::Value b, float f) {
 }
 
 void VrSpatialInteractionManager::Updated(ControllerMatrix::Value b, float f) {
-	ctrl_state.props.pressed[(int)b] = false;
-	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_UPDATED;
 	ev.value = (int)b;
@@ -287,6 +286,7 @@ void VrSpatialInteractionManager::Look(const TransformMatrix& tm) {
 	this->trans = tm;
 	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_LOOK;
 	ev.pt = Point(0,0);
@@ -308,10 +308,10 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 	
 	if (0) {
 		CtrlEvent ev;
+		ev.ctrl = &ctrl_state.props;
 		ev.state = &ctrl_state;
 		ev.type = EVENT_HOLO_LOOK;
 		ev.pt = Point(0,0);
-		ev.ctrl = &this->cm;
 		
 		if (sys->debug_log) {
 			mat4 m = QuatMat(trans.orientation);
@@ -327,7 +327,7 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 	
 	if (1) {
 		for(int i = 0; i < 2; i++) {
-			const ControllerMatrix::Ctrl& prev = this->cm.ctrl[i];
+			const ControllerMatrix::Ctrl& prev = ctrl_state.props.ctrl[i];
 			const ControllerMatrix::Ctrl& curr = ctrl.ctrl[i];
 			
 			if (!curr.is_enabled || !prev.is_enabled)
@@ -354,13 +354,13 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 		}
 	}
 	
-	this->cm = ctrl;
+	this->ctrl_state.props = ctrl;
 	
 	
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_CONTROLLER;
-	ev.ctrl = &this->cm;
 	WhenSourceUpdated(*this, ev);
 }
 
@@ -402,6 +402,7 @@ void VrSpatialInteractionManager::Look(const StereoMatrix& st) {
 
 void VrSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;
+	ev.ctrl = &ctrl_state.props;
 	ev.state = &ctrl_state;
 	ev.type = EVENT_HOLO_MOVE_FAR_RELATIVE;
 	TODO

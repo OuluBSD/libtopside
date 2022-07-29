@@ -284,7 +284,7 @@ void ToolboxSystemBase::OnControllerPressed(const CtrlEvent& e) {
 #endif
 
 
-	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerProperties::START) {
+	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerMatrix::SQUEEZE) {
 		if (test_tool_changer) {
 			for (ToolComponentRef& tool : tools)
 				tool->SwitchNext();
@@ -311,12 +311,15 @@ void ToolboxSystemBase::Update(double dt) {
 				*trans = *hand_trans;
 				//trans->position[1] += 0.1;
 				
+				// add offset between hand and tool
+				#if 0
 				mat4 orig_pos = Translate(trans->data.position);
-				mat4 rel_pos = Translate(vec3(0,0.1,0));
+				mat4 rel_pos = Translate(VEC_FWD * 0.1);
 				mat4 orient = QuatMat(trans->data.orientation);
 				mat4 new_pos = orig_pos * (orient * rel_pos);
 				vec3 pos = new_pos.GetTranslation();
 				trans->data.position = pos;
+				#endif
 				
 				//trans->position += hand_trans->direction * 0.2;
 			}

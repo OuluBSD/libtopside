@@ -62,7 +62,7 @@ public:
     }
     void SetVertCoord(int i, vec3 v) {vertices[i].position = v.Embed();}
     void SetVertNormal(int i, vec3 v) {vertices[i].normal = v;}
-    void SetVertTangent(int i, vec3 v) {}//vertices[i].tangent = v;}
+    void SetVertTangent(int i, vec3 v) {vertices[i].tangent = v.Embed();}
     void SetTexCoord(int i, vec2 v) {vertices[i].tex_coord = v;}
     void SetTriangleIndices(int i, const ivec3& v) {
         ASSERT(v[0] >= 0 && v[0] < vertices.GetCount());

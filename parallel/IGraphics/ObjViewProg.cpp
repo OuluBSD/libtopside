@@ -70,6 +70,7 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 		if (state.GetModelCount() == 0) {
 			int env_material_model = -1;
 			
+			// TODO merge dupliate ModelComponent::Load
 			if (have_skybox) {
 				ModelState& skybox = state.AddModelT();
 				ASSERT(skybox.id >= 0);
@@ -94,10 +95,6 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 					RTLOG("ObjViewProg::Render: error: could not load skybox");
 					return false;
 				}
-				if (!skybox.LoadModelTextures(loader)) {
-					RTLOG("ObjViewProg::Render: error: could not load skybox textures");
-					return false;
-				}
 				
 				skybox.env_material = skybox.materials.GetKey(0);
 				skybox.env_material_model = skybox.id;
@@ -119,10 +116,6 @@ bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 			}
 			if (!mdl.LoadModel(loader)) {
 				RTLOG("ObjViewProg::Render: error: could not load model state");
-				return false;
-			}
-			if (!mdl.LoadModelTextures(loader)) {
-				RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
 				return false;
 			}
 			

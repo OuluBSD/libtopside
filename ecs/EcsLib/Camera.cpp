@@ -310,8 +310,8 @@ void ChaseCam::UpdateView() {
 			}
 			
 			float mul = -0.5;
-			mat4 l_trans = Translate(vec3(-eye_dist * mul, 0, 0));
-			mat4 r_trans = Translate(vec3(+eye_dist * mul, 0, 0));
+			mat4 l_trans = Translate(vec3(+eye_dist * mul, 0, 0));
+			mat4 r_trans = Translate(vec3(-eye_dist * mul, 0, 0));
 			//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
 			//this->mvp_stereo[0] = stereo_base;
 			//this->mvp_stereo[1] = stereo_base;

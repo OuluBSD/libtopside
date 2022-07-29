@@ -131,7 +131,7 @@ String SoftProgramT<Gfx>::GetVar(int i) const {
 	if (idx < 0)
 		return "";
 	if (idx < GVar::VAR_COUNT)
-		return GVar::names[idx];
+		return GVar::gvars[idx].name;
 		
 	TODO
 	

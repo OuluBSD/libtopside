@@ -409,7 +409,7 @@ String RealizeShareFile(String rel_path) {
 	if (rel_path.IsEmpty())
 		return String();
 	
-	int tries_count = 5;
+	int tries_count = 6;
 	#ifdef flagDEBUG
 	tries_count++;
 	#endif
@@ -422,8 +422,9 @@ String RealizeShareFile(String rel_path) {
 			case 2: path = ShareDirFile(AppendFileName("imgs", rel_path)); break;
 			case 3: path = ShareDirFile(AppendFileName("videos", rel_path)); break;
 			case 4: path = ShareDirFile(AppendFileName("sounds", rel_path)); break;
+			case 5: path = ShareDirFile(AppendFileName("models", rel_path)); break;
 			#ifdef flagDEBUG
-			case 5: path = GetDataDirectoryFile(rel_path); break;
+			case 6: path = GetDataDirectoryFile(rel_path); break;
 			#endif
 		}
 		

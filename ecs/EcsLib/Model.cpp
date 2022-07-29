@@ -101,6 +101,10 @@ bool ModelComponent::Arg(String key, Object value) {
 			vec3 pos(0,0,0);
 			mb.AddCylinder(pos, rad, len);
 		}
+		else if (name == "skybox") {
+			load_skybox = true;
+			return true;
+		}
 		else {
 			LOG("ModelComponent::Arg: error: invalid model name '" + name + "'");
 			return false;
@@ -108,6 +112,12 @@ bool ModelComponent::Arg(String key, Object value) {
 		model_changed = true;
 		loader = mb;
 		model = loader.GetModel();
+	}
+	else if (key == "skybox.diffuse") {
+		skybox_diffuse = value;
+	}
+	else if (key == "skybox.irradiance") {
+		skybox_irradiance = value;
 	}
 	else if (key == "texture") {
 		Ref<Model> mdl = loader.GetModel();
@@ -119,6 +129,16 @@ bool ModelComponent::Arg(String key, Object value) {
 				mdl->SetTexture(m, TEXTYPE_DIFFUSE, img, path);
 			}
 		}
+	}
+	else if (key == "path") {
+		String path = RealizeShareFile(value);
+		if (!loader.LoadModel(path)) {
+			LOG("ModelComponent::Arg: error: loading model file failed: " << path);
+			return false;
+		}
+		model_changed = true;
+		model = loader.GetModel();
+		return true;
 	}
 	else if (key == "x") {offset[0] = value.ToDouble(); RefreshExtModel();}
 	else if (key == "y") {offset[1] = value.ToDouble(); RefreshExtModel();}
@@ -220,6 +240,50 @@ bool ModelComponent::Load(GfxDataState& state) {
 	gfx_state = &state;
 	
 	
+	// TODO merge dupliate ObjViewProgT<Gfx>::Render
+	if (load_skybox) {
+		load_skybox = false;
+		
+		GfxModelState& skybox = state.AddModel();
+		gfx_id = skybox.id;
+		
+		ASSERT(skybox.id >= 0);
+		float skybox_sz = 1e8;
+		Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
+		Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
+		ModelBuilder mb;
+		Mesh& box_mesh = mb.AddBox(vec3(0), vec3(skybox_sz), true, true);
+		Model& box = mb;
+		
+		if (!box.LoadCubemapFile(box_mesh, TEXTYPE_CUBE_DIFFUSE, skybox_diffuse)) {
+			LOG("ModelComponent::Load: error: could not load skybox diffuse image '" << skybox_diffuse << "'");
+			return false;
+		}
+		if (!box.LoadCubemapFile(box_mesh, TEXTYPE_CUBE_IRRADIANCE, skybox_irradiance)) {
+			LOG("ModelComponent::Load: error: could not load skybox irradiance image '" << skybox_irradiance << "'");
+			return false;
+		}
+		
+		loader = mb;
+		if (!skybox.LoadModel(loader)) {
+			RTLOG("ModelComponent::Load: error: could not load skybox");
+			return false;
+		}
+		
+		skybox.env_material = skybox.GetMateriaKey(0);
+		skybox.env_material_model = skybox.id;
+		
+		bool b = skybox.SetProgram("sky");
+		ASSERT(b);
+		
+		if (state.env_material_model < 0)
+			state.env_material_model = skybox.id;
+		
+		this->model = loader.GetModel();
+		model_changed = false;
+	}
+	
+	
 	if (gfx_id < 0) {
 		if (dbg) {
 			LOG("debug");
@@ -228,7 +292,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		if (model) {
 			auto& mdl = state.AddModel();
 			gfx_id = mdl.id;
-			mdl.Refresh(*model);
+			mdl.LoadModel(*model);
 		}
 		else if (loader) {
 			auto& mdl = state.AddModel();
@@ -250,7 +314,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 			model = loader.GetModel();
 		}
 		else {
-			LOG("ModelComponent::Load: error: nothing to load");
+			//LOG("ModelComponent::Load: error: nothing to load");
 			return false;
 		}
 	}

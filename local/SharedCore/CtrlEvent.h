@@ -130,14 +130,9 @@ struct ControllerProperties {
 	
 };
 
-struct ControllerState {
-	ControllerSource* source = 0;
-	ControllerProperties props;
-	
-	const ControllerSource& GetSource() const {ASSERT(source); return *source;}
-	const ControllerProperties& GetControllerProperties() const {return props;}
-	
-};
+struct ControllerState;
+struct TransformMatrix;
+struct ControllerMatrix;
 
 #define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]
 #define COPY3(dst, from) for(int i = 0; i < 3; i++) dst[i] = from[i]
@@ -146,8 +141,6 @@ struct ControllerState {
 #define COPY4x4(dst, from) for(int i = 0; i < 4; i++) for(int j = 0; j < 4; j++) (dst)[i][j] = (from)[i][j]
 	
 
-struct TransformMatrix;
-struct ControllerMatrix;
 
 struct CtrlEvent : Moveable<CtrlEvent> {
 	CtrlEventType type = EVENT_INVALID;
@@ -168,6 +161,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	RTTI_TYPEIDCLS
 	
 	const ControllerState& GetState() const {ASSERT(state); return *state;}
+	const ControllerMatrix& GetControllerMatrix() const {ASSERT(ctrl); return *ctrl;}
 	
 	void operator=(const CtrlEvent& e) {
 		type = e.type;

@@ -209,8 +209,8 @@ void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 }
 
 void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
-	const ControllerState& source_state = e.GetState();
-	const ControllerSource& source = source_state.GetSource();
+	//const ControllerMatrix& source_state = e.GetState();
+	//const ControllerSource& source = source_state.GetSource();
 	
 	const bool dbg_log = 0;
 	
@@ -257,38 +257,40 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		
 		//if (controller && controller->IsSource(source))
 		{
-			const ControllerProperties& controller_properties = source_state.GetControllerProperties();
-			paint->touchpad_x   = controller_properties.GetTouchpadX();
-			paint->touchpad_y   = controller_properties.GetTouchpadY();
-			paint->thumbstick_x = controller_properties.GetThumbstickX();
-			paint->thumbstick_y = controller_properties.GetThumbstickY();
+			//const ControllerMatrix& controller_properties = source_state.GetControllerProperties();
+			const ControllerMatrix& controller_properties = *e.ctrl;
+			const auto& ctrl = controller_properties.ctrl[1];
+			paint->touchpad_x   = ctrl.GetTouchpadX();
+			paint->touchpad_y   = ctrl.GetTouchpadY();
+			paint->thumbstick_x = ctrl.GetThumbstickX();
+			paint->thumbstick_y = ctrl.GetThumbstickY();
 			
 			if (paint->cur_state == PaintComponent::State::Idle) {
-				if (controller_properties.IsSelectPressed()) {
+				if (ctrl.IsSelectPressed()) {
 					paint->cur_state = PaintComponent::State::Painting;
 					new_stroke_started = true;
 				}
-				else if (controller_properties.IsGrasped()) {
+				else if (ctrl.IsGrasped()) {
 					paint->cur_state = PaintComponent::State::Manipulating;
 				}
-				else if (controller_properties.IsTouchpadTouched()) {
+				else if (ctrl.IsTouchpadTouched()) {
 					paint->cur_state = PaintComponent::State::ColorSelection;
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::Painting) {
-				if (controller_properties.IsSelectPressed() == false) {
+				if (ctrl.IsSelectPressed() == false) {
 					paint->cur_state = PaintComponent::State::Idle;
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::Manipulating) {
-				if (controller_properties.IsGrasped() == false) {
+				if (ctrl.IsGrasped() == false) {
 					paint->cur_state = PaintComponent::State::Idle;
 					paint->prev_manip_loc = nullptr;
 				}
 			}
 			else if (paint->cur_state == PaintComponent::State::ColorSelection) {
 				if (paint->wait_touchpad_release == false) {
-					if (controller_properties.IsTouchpadPressed()) {
+					if (ctrl.IsTouchpadPressed()) {
 						paint->wait_touchpad_release = true;
 						paint->selected_color = SelectColor(paint->touchpad_x, paint->touchpad_y);
 						
@@ -296,11 +298,11 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 					}
 				}
 				
-				if (controller_properties.IsTouchpadPressed() == false) {
+				if (ctrl.IsTouchpadPressed() == false) {
 					paint->wait_touchpad_release = false;
 				}
 				
-				if (controller_properties.IsTouchpadTouched() == false) {
+				if (ctrl.IsTouchpadTouched() == false) {
 					paint->cur_state = PaintComponent::State::Idle;
 				}
 			}

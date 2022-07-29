@@ -107,6 +107,10 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 		}
 	}
 	
+	String type = ws.GetString(".type");
+	if (type == "stereo")
+		data.is_stereo = true;
+	
 	/*if (gfxpack) {
 		String frag = program + "_fragment";
 		String vtx  = program + "_vertex";

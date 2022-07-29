@@ -49,13 +49,14 @@ float GGX(vec3 N, vec3 V, vec3 L, float roughness, float F0) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 	vec2 tex_coord = vTexCoord.xy / vTexCoord.z;
+	
 	float intensity = dot(vNormal, iLightDir);
 	intensity = (1.0 + intensity) * 0.5;
-	if (false) {
+	if (iIsDiffuse == false) {
 		fragColor = vec4(intensity, intensity, intensity, 0);
 		return;
 	}
-	else if (true) {
+	else if (iIsDiffuse == true && (iIsSpecular == false || iIsCubeDiffuse == false || iIsCubeIrradiance == false)) {
 		fragColor = texture(iDiffuse, tex_coord) * intensity;
 		return;
 	}
