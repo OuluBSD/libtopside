@@ -24,6 +24,7 @@
 #include "GaussMotionFilter.h"
 #include "KeypointMotionEstimator.h"
 #include "OnepassStabilizer.h"
+#include "OrbSystem.h"
 
 
 #endif

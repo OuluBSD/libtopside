@@ -16,6 +16,8 @@
 #include "PathCtrl.h"
 #include "Container.h"
 #include "TabMgrCtrl.h"
+#include "GridCtrl.h"
+#include "TimelineCtrl.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN

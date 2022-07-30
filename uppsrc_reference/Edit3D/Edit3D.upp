@@ -1,11 +1,13 @@
 uses
+	CtrlLib,
+	LocalCtrl,
+	Geometry,
 	ComputerVision,
 	plugin/jpg;
 
 file
-	StereoCV.h,
-	StereoCV.cpp,
-	Pointcloud.cpp;
+	Edit3D.h,
+	Edit3D.cpp;
 
 mainconfig
 	"" = "GUI";

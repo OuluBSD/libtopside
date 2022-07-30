@@ -7,6 +7,8 @@ uses
 file
 	Copying,
 	ComputerVision.h,
+	OrbSystem.h,
+	OrbSystem.cpp,
 	Cascade.h,
 	Cascade.cpp,
 	Struct.h,

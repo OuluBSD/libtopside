@@ -3,6 +3,7 @@
 
 #include <ComputerVision/ComputerVision.h>
 #include <LocalCtrl/LocalCtrl.h>
+#include <plugin/jpg/jpg.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -78,6 +79,7 @@ class StereoCV : public TopWindow {
 	Mutex lock;
 	
 	PointcloudBase pointcloud;
+	String export_path;
 	
 	Image NewFrame();
 	void Tick(ImageProcBase& proc);
@@ -106,6 +108,7 @@ public:
 	void OpenDemo(int i);
 	String GetDemoName(int i);
 	
+	void Export(String path);
 	void SelectDemo();
 	void Data();
 	

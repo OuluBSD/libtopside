@@ -11,6 +11,7 @@ CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
 	CalcLens();
+	return;
 	
 	dword tests = 0xFFFFFFFF;
 	

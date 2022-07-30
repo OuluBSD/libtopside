@@ -5,6 +5,8 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <Geometry/Geometry.h>
+using namespace UPP;
 
 bool polynomialfit(int obs, int degree,
 				   double *dx, double *dy, double *store) { /* n, p */
@@ -52,7 +54,8 @@ int CalcLens() {
 	iota(x.begin(), x.end(), 0);
 	
 	vector<double> y { 1, 6, 17, 34, 57, 86, 121, 162, 209, 262, 321 };
-	#else
+	#elif 0
+	// Generic stereo fisheye lens camera from ebay
 	double z = 0.40;
 	vector<double> x(17), pix(17), angle(17);
 	x[0] = 0.08;      pix[0] = 159;
@@ -75,9 +78,23 @@ int CalcLens() {
 	for(int i = 0; i < x.size(); i++) {
 		angle[i] = atan2(x[i], z);// / M_PI * 180;
 	}
+	#else
+	// WMR lenses
+	double z = 0.30;
+	vector<double> x(5), pix(5), angle(5);
+	x[0] = 0.1;      pix[0] = 84;
+	x[1] = 0.2;      pix[1] = 163;
+	x[2] = 0.3;      pix[2] = 233;
+	x[3] = 0.4;      pix[3] = 290;
+	x[4] = 0.5;      pix[4] = 333;
+	for(int i = 0; i < x.size(); i++) {
+		angle[i] = atan2(x[i], z);// / M_PI * 180;
+	}
 	#endif
 
 	vector<double> result(4);
+	
+	double pix_to_angle[4];
 	
 	for(int i = 0; i < 2; i++) {
 		if (i == 0)
@@ -89,6 +106,11 @@ int CalcLens() {
 		double b = result[1];
 		double c = result[2];
 		double d = result[3];
+		
+		if (i == 0) {
+			for(int j = 0; j < 4; j++)
+				pix_to_angle[j] = result[j];
+		}
 		
 		auto abc = [a, b, c, d](double xx) {
 	        return a + b * xx + c * xx*xx + d * xx*xx*xx;
@@ -120,6 +142,69 @@ int CalcLens() {
 		
 	}
     
+    
+    {
+        // Fixed real world point in image
+	    // Distance of the point 70cm
+	    // Eye-distance 12cm
+	    Size res(640, 481);
+        Point l(480,180); // pixel coordinate of real world fixed point
+		Point r(180,180);
+		
+		Point ct(res.cx / 2, res.cy / 2);
+		Point l2 = l - ct;
+		Point r2 = r - ct;
+		l2.y *= -1;
+		r2.y *= -1;
+		vec2 lv(l.x, res.cy - l.y);
+		vec2 rv(r.x, res.cy - r.y);
+		DUMP(l2);
+		DUMP(r2);
+		
+		auto p2a = [pix_to_angle](double xx) {
+	        return pix_to_angle[0] + pix_to_angle[1] * xx + pix_to_angle[2] * xx*xx + pix_to_angle[3] * xx*xx*xx;
+	    };
+	    
+	    double l_len = sqrt(l2.x * l2.x + l2.y * l2.y);
+	    double r_len = sqrt(r2.x * r2.x + r2.y * r2.y);
+	    double l_angle = p2a(l_len);
+	    double r_angle = p2a(r_len);
+	    DUMP(l_angle);
+	    DUMP(r_angle);
+	    
+	    double l_roll_angle = atan2(l2.x, l2.y);
+	    double r_roll_angle = atan2(r2.x, r2.y);
+	    DUMP(l_roll_angle / M_PI * 180);
+	    DUMP(r_roll_angle / M_PI * 180);
+	    
+	    LensPoly lp;
+	    lp.SetSize(res);
+	    lp.SetAnglePixel(result[0], result[1], result[2], result[3]);
+	    lp.MakePixelToAngle();
+	    axes2 ct_ax = lp.Unproject(vec2(res.cx / 2, res.cy / 2));
+	    axes2 l_ax = lp.Unproject(lv);
+	    axes2 r_ax = lp.Unproject(rv);
+	    //DUMP(ct_ax);
+	    //DUMP(ct_ax / M_PI * 180);
+	    DUMP(l_ax);
+	    DUMP(r_ax);
+	    DUMP(l_ax / M_PI * 180);
+	    DUMP(r_ax / M_PI * 180);
+	    
+		// default angle from 0.06 x 0.7
+		float angle = atan2(0.06, 0.7);
+		DUMP(angle / M_PI * 180);
+		
+		// sum yaw diff and /2
+		float camera_angle_sum = r_ax[0] - l_ax[0];
+		float camera_angle = camera_angle_sum - 2 * angle;
+		float lens_angle = camera_angle / 2;
+	    DUMP(camera_angle_sum / M_PI * 180);
+	    DUMP(camera_angle / M_PI * 180);
+	    DUMP(lens_angle / M_PI * 180);
+	    
+	    LOG("Single wmr lens is tilted outwards (to left or right) " << lens_angle / M_PI * 180 << " degrees");
+    }
     
 	return 0;
 }

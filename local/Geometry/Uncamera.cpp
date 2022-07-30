@@ -18,6 +18,8 @@ VirtualStereoUncamera::VirtualStereoUncamera() {
 void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const DescriptorImage& r_img, Octree& o) {
 	ASSERT(l_img.GetResolution() == r_img.GetResolution());
 	
+	if (outward_angle)
+		TODO
 	
 	// Initialize LensPoly
 	InitializeLensPoly(l_img, r_img);

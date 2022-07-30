@@ -11,7 +11,7 @@ CONSOLE_APP_MAIN {
 	daemon.Add("LocalVR");
 	daemon.Add("LocalVRDebug");
 	daemon.Add("LocalHMD");
-	daemon.Add("WmrFusion");
+	//daemon.Add("WmrFusion");
 	
 	daemon.DefaultProcedure();
 	

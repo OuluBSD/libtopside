@@ -13,6 +13,8 @@ public:
 	
 	
 	
+	Octree octree;
+	
 };
 
 

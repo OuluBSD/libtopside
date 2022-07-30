@@ -85,11 +85,21 @@ void StereoCV::GetFrame(TcpSocket& sock) {
 		}
 	}
 	Image img = ib;
-	
+	hash_t new_hash = img.GetHashValue();
+	hash_t old_hash = latest_bright.GetHashValue();
 	
 	lock.Enter();
 	latest_bright = img;
 	lock.Leave();
+	
+	
+	if (!export_path.IsEmpty() && new_hash != old_hash) {
+		JPGEncoder enc;
+		enc.Quality(95);
+		String filename = IntStr(img_i++) + ".jpg";
+		String filepath = AppendFileName(export_path, filename);
+		enc.SaveFile(filepath, img);
+	}
 }
 
 void StereoCV::MainBar(Bar& bar) {
@@ -107,6 +117,10 @@ String StereoCV::GetDemoName(int i) {
 		case DEMO_POINTCLOUD: return "Pointcloud";
 	}
 	return "Invalid id";
+}
+
+void StereoCV::Export(String path) {
+	export_path = path;
 }
 
 void StereoCV::SelectDemo() {
@@ -352,6 +366,10 @@ GUI_APP_MAIN {
 	
 	if (!wc.ConnectDebugVideo())
 		return;
+	
+	const auto& c = CommandLine();
+	if (c.GetCount() && DirectoryExists(c[0]))
+		wc.Export(c[0]);
 	
 	wc.Run();
 }
