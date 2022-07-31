@@ -94,6 +94,14 @@ mat4 Camera::GetViewMatrix() {
 	return inverse;*/
 }
 
+void Camera::SetProgram(int i) {
+	prog_id = i;
+}
+
+int Camera::GetProgram() const {
+	return prog_id;
+}
+
 float Camera::GetAspect() {
 	return aspect;
 }
@@ -386,8 +394,8 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 			
 			axes2 l, r;
 			LookAtStereoAngles(eye_dist, local_obj_pos, l, r);
-			vec2 l_px = Project(l);
-			vec2 r_px = Project(r);
+			vec2 l_px = Project(0, l);
+			vec2 r_px = Project(1, r);
 			
 			l_img.AddDescriptor(l_px[0], l_px[1], angle, desc);
 			r_img.AddDescriptor(r_px[0], r_px[1], angle, desc);
@@ -417,7 +425,7 @@ void LensPoly::SetAnglePixel(float a, float b, float c, float d) {
 	angle_to_pixel_poly[3] = d;
 }
 
-vec2 LensPoly::Project(const axes2& ax) {
+vec2 LensPoly::Project(int lens_i, axes2 axes) {
 	ASSERT(img_sz.cx && img_sz.cy);
 	
 	// Angle from center of "the lens"
@@ -437,7 +445,12 @@ vec2 LensPoly::Project(const axes2& ax) {
 	float roll_deg = roll_angle / M_PI * 180;
 	#endif
 	
-	axes2 roll_axes = GetDirAxesRoll(GetAxesDir(ax));
+	if (lens_i == 0)
+		axes[0] -= outward_angle;
+	else
+		axes[0] += outward_angle;
+	
+	axes2 roll_axes = GetDirAxesRoll(GetAxesDir(axes));
 	float angle = roll_axes.data[0];
 	float roll_angle = roll_axes.data[1];
 	
@@ -459,18 +472,18 @@ vec2 LensPoly::Project(const axes2& ax) {
 	
 	#if 0
 	axes2 a = Unproject(px);
-	if (!IsClose(a, ax, 1)) {
+	if (!IsClose(a, axes, 1)) {
 		DUMP(Unproject(px));
 	}
-	ASSERT(IsClose(a, ax, 1));
+	ASSERT(IsClose(a, axes, 1));
 	#else
-	ASSERT(IsClose(Unproject(px), ax, 0.01));
+	ASSERT(IsClose(Unproject(lens_i, px), axes, 0.01));
 	#endif
 	
 	return px;
 }
 
-axes2 LensPoly::Unproject(const vec2& pixel) {
+axes2 LensPoly::Unproject(int lens_i, const vec2& pixel) {
 	ASSERT(img_sz.cx && img_sz.cy);
 	
 	vec2 ct_rel = pixel - vec2(img_sz.cx / 2, img_sz.cy / 2);
@@ -495,6 +508,11 @@ axes2 LensPoly::Unproject(const vec2& pixel) {
 	//dir.Normalize();
 	vec3 dir = AxesDirRoll(angle, roll_angle);
 	axes2 axes = GetDirAxes(dir).Splice();
+	
+	if (lens_i == 0)
+		axes[0] += outward_angle;
+	else
+		axes[0] -= outward_angle;
 	
 	return axes;
 }

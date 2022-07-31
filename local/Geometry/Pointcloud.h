@@ -14,6 +14,7 @@ public:
 	
 	
 	Octree octree;
+	int id = -1;
 	
 };
 

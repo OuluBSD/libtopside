@@ -224,9 +224,9 @@ int OrbSystem::DetectKeypoints(DescriptorImage& output, int max_allowed) {
     ASSERT(num_corners == screen_corners.GetCount());
     o.Describe(img_u8_smooth, screen_corners, screen_descriptors);
 	
+	output.ClearDescriptors();
 	const Keypoint* kp = screen_corners.Begin();
 	for (const BinDescriptor& bd : screen_descriptors) {
-		output.ClearDescriptors();
 		output.AddDescriptor(
 			kp->x,
 			kp->y,

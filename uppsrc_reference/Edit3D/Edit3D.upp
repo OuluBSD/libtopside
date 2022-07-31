@@ -7,7 +7,8 @@ uses
 
 file
 	Edit3D.h,
-	Edit3D.cpp;
+	Edit3D.cpp,
+	Images.iml;
 
 mainconfig
 	"" = "GUI";

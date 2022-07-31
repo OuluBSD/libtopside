@@ -18,9 +18,6 @@ VirtualStereoUncamera::VirtualStereoUncamera() {
 void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const DescriptorImage& r_img, Octree& o) {
 	ASSERT(l_img.GetResolution() == r_img.GetResolution());
 	
-	if (outward_angle)
-		TODO
-	
 	// Initialize LensPoly
 	InitializeLensPoly(l_img, r_img);
 	
@@ -50,7 +47,7 @@ void VirtualStereoUncamera::InitializeLensPoly(const DescriptorImage& l_img, con
 		return;
 	LensPoly::SetSize(lsz);
 	
-	y_levels = max(lsz.cy / 10, rsz.cy / 10);
+	y_levels = max(lsz.cy / y_level_h, rsz.cy / y_level_h) + 1;
 }
 
 void VirtualStereoUncamera::ResetTempVariables() {
@@ -65,7 +62,7 @@ void VirtualStereoUncamera::ResetTempVariables() {
 
 void VirtualStereoUncamera::FindPreviousFrameMatches(const DescriptorImage& l_img, const DescriptorImage& r_img) {
 	for (const Descriptor& d : l_img.GetDescriptors()) {
-		int yi = d.y / 10;
+		int yi = d.y / y_level_h;
 		if (yi >= 0 && yi < y_levels) {
 			TrackedPoint* tp = FindTrackedPoint(d);
 			if (tp)
@@ -76,7 +73,7 @@ void VirtualStereoUncamera::FindPreviousFrameMatches(const DescriptorImage& l_im
 		}
 	}
 	for (const Descriptor& d : r_img.GetDescriptors()) {
-		int yi = d.y / 10;
+		int yi = d.y / y_level_h;
 		if (yi >= 0 && yi < y_levels) {
 			TrackedPoint* tp = FindTrackedPoint(d);
 			if (tp)
@@ -96,8 +93,8 @@ void VirtualStereoUncamera::UpdateStereoTargets() {
 			tp.has_local_tgt = false;
 			continue;
 		}
-		axes2 l_axes = Unproject(vec2(tp.l->x, tp.l->y));
-		axes2 r_axes = Unproject(vec2(tp.r->x, tp.r->y));
+		axes2 l_axes = Unproject(0, vec2(tp.l->x, tp.l->y));
+		axes2 r_axes = Unproject(1, vec2(tp.r->x, tp.r->y));
 		axes2s eyes = AxesMonoStereo(l_axes, r_axes);
 		tp.prev_local_tgt = tp.local_tgt;
 		tp.has_prev_local_tgt = tp.has_local_tgt;
@@ -131,8 +128,8 @@ void VirtualStereoUncamera::FindHorizontalMatches() {
 			
 			if (best_match) {
 				const Descriptor* r = best_match;
-				axes2 l_eye = Unproject(vec2(l->x, l->y));
-				axes2 r_eye = Unproject(vec2(r->x, r->y));
+				axes2 l_eye = Unproject(0, vec2(l->x, l->y));
+				axes2 r_eye = Unproject(1, vec2(r->x, r->y));
 				axes2s eyes = AxesMonoStereo(l_eye, r_eye);
 				vec3 local_tgt;
 				

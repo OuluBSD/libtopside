@@ -15,11 +15,10 @@ public:
 
 class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	float eye_dist = 0.068f;
-	float outward_angle = 0;
 	float error_factor = 0.25; // error_factor is multiplier for the distance, what is searched
 	int iter = 0;
 	int y_levels = 0;
-	
+	int y_level_h = 10;
 	
 	// temp
 	struct HorizontalMatch : Moveable<HorizontalMatch> {
@@ -47,7 +46,7 @@ public:
 	VirtualStereoUncamera();
 	
 	void SetEyeDistance(float f) {eye_dist = f;}
-	void SetEyeOutwardAngle(float f) {outward_angle = f;}
+	void SetYLevelHeight(int h) {y_level_h = h;}
 	
 	void Unrender(const DescriptorImage& l_img, const DescriptorImage& r_img, Octree& o);
 	
