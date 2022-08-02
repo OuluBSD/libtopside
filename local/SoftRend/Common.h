@@ -1,28 +1,28 @@
 #ifndef _SoftRend_Common_h_
 #define _SoftRend_Common_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx> struct VertexShaderArgsT;
-template <class Gfx> struct FragmentShaderArgsT;
+ struct VertexShaderArgs;
+ struct FragmentShaderArgs;
 
 
-template <class Gfx>
-struct SoftShaderBaseT : RTTIBase {
-	RTTI_DECL0(SoftShaderBaseT)
+
+struct SoftShaderBase : RTTIBase {
+	RTTI_DECL0(SoftShaderBase)
 	Index<dword> used_uniforms;
 	
-	SoftShaderBaseT() {
+	SoftShaderBase() {
 		UseUniform(GVar::VAR_VIEW);
 		UseUniform(GVar::VAR_LIGHTDIR);
 		UseUniform(GVar::VAR_COMPAT_RESOLUTION);
 		UseUniform(GVar::VAR_COMPAT_TIME);
 	}
-	virtual ~SoftShaderBaseT() {}
+	virtual ~SoftShaderBase() {}
 	
-	virtual void Process(VertexShaderArgsT<Gfx>& args) {Panic("not implemented");}
-	virtual void Process(FragmentShaderArgsT<Gfx>& args) {Panic("not implemented");}
+	virtual void Process(VertexShaderArgs& args) {Panic("not implemented");}
+	virtual void Process(FragmentShaderArgs& args) {Panic("not implemented");}
 	
 	void UseUniform(dword d) {used_uniforms.FindAdd(d);}
 	
@@ -30,13 +30,13 @@ struct SoftShaderBaseT : RTTIBase {
 	
 };
 
-template <class Gfx>
-struct PassthroughSoftShaderBaseT : SoftShaderBaseT<Gfx> {
-	using Base = SoftShaderBaseT<Gfx>;
-	RTTI_DECL1(PassthroughSoftShaderBaseT, Base);
+
+struct PassthroughSoftShaderBase : SoftShaderBase {
+	using Base = SoftShaderBase;
+	RTTI_DECL1(PassthroughSoftShaderBase, Base);
 	
-	void Process(VertexShaderArgsT<Gfx>& args) override {}
-	void Process(FragmentShaderArgsT<Gfx>& args) override {}
+	void Process(VertexShaderArgs& args) override {}
+	void Process(FragmentShaderArgs& args) override {}
 };
 
 
@@ -112,10 +112,10 @@ struct GfxFragmentShaderArgs : RTTIBase {
 
 
 
-template <class Gfx>
-struct VertexShaderArgsT : GfxVertexShaderArgs {
-	using Base = VertexShaderArgsT<Gfx>;
-	RTTI_DECL1(VertexShaderArgsT, GfxVertexShaderArgs)
+
+struct VertexShaderArgs : GfxVertexShaderArgs {
+	using Base = VertexShaderArgs;
+	RTTI_DECL1(VertexShaderArgs, GfxVertexShaderArgs)
 	
 	
 	GenericShaderArgs* generic = 0;
@@ -125,17 +125,14 @@ struct VertexShaderArgsT : GfxVertexShaderArgs {
 	
 };
 
-template <class Gfx>
-struct FragmentShaderArgsT : GfxFragmentShaderArgs {
-	using Base = FragmentShaderArgsT<Gfx>;
-	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
-	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
-	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
+
+struct FragmentShaderArgs : GfxFragmentShaderArgs {
+	RTTI_DECL1(FragmentShaderArgs, GfxFragmentShaderArgs)
 	
 	
 	GenericShaderArgs* generic = 0;
 	GenericFragmentShaderArgs* fa = 0;
-	//NativeColorBufferConstRef tex_img[TEXTYPE_COUNT];
+	//ConstByteImage* tex_img[TEXTYPE_COUNT];
 	
 	vec3 normal;
 	vec2 tex_coord;
@@ -144,14 +141,14 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	vec4 frag_color_out;
 	
 	
-	FragmentShaderArgsT() {
-		//for(int i = 0; i < TEXTYPE_COUNT; i++)
+	FragmentShaderArgs() {
+		//for(int i = 0; i < TEXTYPE_COUN; i++)
 		//	tex_img[i] = 0;
 	}
 	
 	vec3 GetResolution() const {return generic->iResolution;}
 	float GetTime() const {return generic->iTime;}
-	NativeColorBufferConstRef GetTexture(int i) {
+	ConstByteImage* GetTexture(int i) {
 		ASSERT(i >= 0 && i < CHANNEL_COUNT);
 		if (i < 0) return 0;
 		if (i < TEXTYPE_COUNT && fa->color_buf[i]) return fa->color_buf[i];
@@ -160,6 +157,6 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	}
 };
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -1,53 +1,53 @@
-#include "IGraphics.h"
+#include "SoftRend.h"
 //#include <Graphics/Graphics.h>
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-SoftProgramT<Gfx>::SoftProgramT() {
+
+SoftProgram::SoftProgram() {
 	
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::Clear() {
+
+void SoftProgram::Clear() {
 	ASSERT(shaders.IsEmpty());
 	inited = false;
 }
 
-template <class Gfx>
-bool SoftProgramT<Gfx>::Create() {
+
+bool SoftProgram::Create() {
 	
 	
 	inited = true;
 	return true;
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::Begin() {
+
+void SoftProgram::Begin() {
 	objs.SetCount(0);
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::BeginObject() {
+
+void SoftProgram::BeginObject() {
 	obj_i = objs.GetCount();
 	objs.Add().Zero();
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::EndObject() {
+
+void SoftProgram::EndObject() {
 	obj_i = -1;
 }
 
-template <class Gfx>
-bool SoftProgramT<Gfx>::LinkProgram() {
+
+bool SoftProgram::LinkProgram() {
 	
 	
 	return true;
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetParameter(GVar::ParamType type, int i) {
+
+void SoftProgram::SetParameter(GVar::ParamType type, int i) {
 	if (type == GVar::PROGRAM_SEPARABLE) {
 		// pass
 	}
@@ -56,8 +56,8 @@ void SoftProgramT<Gfx>::SetParameter(GVar::ParamType type, int i) {
 	}
 }
 
-template <class Gfx>
-int SoftProgramT<Gfx>::GetParamInt(GVar::ProgParamType type) {
+
+int SoftProgram::GetParamInt(GVar::ProgParamType type) {
 	if (type == GVar::ACTIVE_UNIFORMS) {
 		for (SoftShader* s : shaders) {
 			auto& sb = s->Get();
@@ -71,8 +71,8 @@ int SoftProgramT<Gfx>::GetParamInt(GVar::ProgParamType type) {
 	return 0;
 }
 
-template <class Gfx>
-int SoftProgramT<Gfx>::GetVarSize(int i) const {
+
+int SoftProgram::GetVarSize(int i) const {
 	int idx = uniforms.GetKey(i);
 	
 	switch (idx) {
@@ -119,14 +119,14 @@ int SoftProgramT<Gfx>::GetVarSize(int i) const {
 	
 }
 
-template <class Gfx>
-int SoftProgramT<Gfx>::GetVarType(int i) const {
+
+int SoftProgram::GetVarType(int i) const {
 	int idx = uniforms.GetKey(i);
 	return 1;
 }
 
-template <class Gfx>
-String SoftProgramT<Gfx>::GetVar(int i) const {
+
+String SoftProgram::GetVar(int i) const {
 	int idx = uniforms.GetKey(i);
 	if (idx < 0)
 		return "";
@@ -138,15 +138,15 @@ String SoftProgramT<Gfx>::GetVar(int i) const {
 }
 
 
-template <class Gfx>
-void SoftProgramT<Gfx>::Attach(SoftShader& s) {
+
+void SoftProgram::Attach(SoftShader& s) {
 	//ASSERT(s.GetSoftProgram() == 0); // test 03i fails
 	s.SetSoftProgram(this);
 	shaders.Add(&s);
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, int j) {
+
+void SoftProgram::SetVar(int i, int j) {
 	int idx = uniforms.GetKey(i);
 	
 	if (idx == GVar::VAR_COMPAT_CHANNEL0) {args.iChannel0 = j; return;}
@@ -181,8 +181,8 @@ void SoftProgramT<Gfx>::SetVar(int i, int j) {
 	TODO
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, float f) {
+
+void SoftProgram::SetVar(int i, float f) {
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		case GVar::VAR_COMPAT_TIME: args.iTime = f; return;
@@ -191,14 +191,14 @@ void SoftProgramT<Gfx>::SetVar(int i, float f) {
 	ASSERT(0);
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1) {
+
+void SoftProgram::SetVar(int i, float f0, float f1) {
 	int idx = uniforms.GetKey(i);
 	TODO
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
+
+void SoftProgram::SetVar(int i, float f0, float f1, float f2) {
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		case GVar::VAR_COMPAT_RESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
@@ -217,8 +217,8 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2) {
 	ASSERT(0);
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2, float f3) {
+
+void SoftProgram::SetVar(int i, float f0, float f1, float f2, float f3) {
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		default: break;
@@ -226,8 +226,8 @@ void SoftProgramT<Gfx>::SetVar(int i, float f0, float f1, float f2, float f3) {
 	TODO
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVar(int i, const mat4& mat) {
+
+void SoftProgram::SetVar(int i, const mat4& mat) {
 	ASSERT(obj_i >= 0);
 	if (obj_i < 0) return;
 	auto& vargs = objs[obj_i].vargs;
@@ -242,15 +242,15 @@ void SoftProgramT<Gfx>::SetVar(int i, const mat4& mat) {
 	ASSERT(0);
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::SetVarArray(int i, int arr_size, int count, float* f) {
+
+void SoftProgram::SetVarArray(int i, int arr_size, int count, float* f) {
 	/*ASSERT(obj_i >= 0);
 	if (obj_i < 0) return;
 	auto& vargs = objs[obj_i].vargs;*/
 	int idx = uniforms.GetKey(i);
 	
 	if (arr_size == 3) {
-		if (idx == GL::VAR_COMPAT_CHANNELRESOLUTION) {
+		if (idx == GVar::VAR_COMPAT_CHANNELRESOLUTION) {
 			ASSERT(count == 4);
 			for(int i = 0; i < 4; i++) {
 				args.iChannelResolution[i] = vec3(f[0], f[1], f[2]);
@@ -262,8 +262,8 @@ void SoftProgramT<Gfx>::SetVarArray(int i, int arr_size, int count, float* f) {
 	else TODO
 }
 
-template <class Gfx>
-void SoftProgramT<Gfx>::BindTexture(int tex, const ByteImage* buf) {
+
+void SoftProgram::BindTexture(int tex, const ByteImage* buf) {
 	ASSERT(tex >= 0 && tex < CHANNEL_COUNT);
 	if (tex < 0)
 		return;
@@ -278,7 +278,6 @@ void SoftProgramT<Gfx>::BindTexture(int tex, const ByteImage* buf) {
 }
 
 
-SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftProgramT)
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END

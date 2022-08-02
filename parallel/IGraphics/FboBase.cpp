@@ -232,13 +232,6 @@ SDLOGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 
 
 
-template <class Gfx>
-	VectorMap<String, typename SoftShaderLibraryT<Gfx>::ShaderFactory>&
-		SoftShaderLibraryT<Gfx>::GetMap(int i) {
-	static VectorMap<String, typename SoftShaderLibraryT<Gfx>::ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
-	ASSERT(i >= 0 && i < GVar::SHADERTYPE_COUNT);
-	return shader_classes[i];
-}
 
 /*template <class Gfx>
 	VectorMap<String, typename ShaderLibraryT<Gfx>::VideoBinderFactory>&
@@ -248,8 +241,8 @@ template <class Gfx>
 }*/
 
 
-SDLSW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
-X11SW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
+//SDLSW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
+//X11SW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 //X11OGL_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 
 

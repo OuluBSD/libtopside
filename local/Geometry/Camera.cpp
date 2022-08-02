@@ -185,6 +185,10 @@ void Camera::SetWorld(const vec3& position, const quat& orient) {
 	world = Translate(position) * QuatMat(orient).GetInverse();
 }
 
+void Camera::SetWorld(const vec3& position, const quat& orient, const vec3& scale) {
+	world = Translate(position) * Scale(scale).GetInverse() * QuatMat(orient).GetInverse();
+}
+
 Camera CreatePerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
 	Camera result;
 	result.SetPerspective(fieldOfView, aspectRatio, nearPlane, farPlane);

@@ -14,7 +14,7 @@ struct BufferStageT : GfxBufferStage {
 	using DataState = DataStateT<Gfx>;
 	using ProgramState = ProgramStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
-	using SoftShaderBase = SoftShaderBaseT<Gfx>;
+	//using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
 	using Sample = GVar::Sample;
 	using ShaderState = ShaderStateT<Gfx>;
@@ -26,7 +26,7 @@ struct BufferStageT : GfxBufferStage {
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
-	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
+	//using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	
 	RTTI_DECL1(BufferStageT, GfxBufferStage);
 	
@@ -125,8 +125,8 @@ struct BufferT : GfxBuffer {
 	using BufferStage = BufferStageT<Gfx>;
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using Sample = GVar::Sample;
-	using SoftShaderBase = SoftShaderBaseT<Gfx>;
-	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
+	//using SoftShaderBase = SoftShaderBaseT<Gfx>;
+	//using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeProgram = typename Gfx::NativeProgram;
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;

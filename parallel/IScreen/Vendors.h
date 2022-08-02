@@ -82,7 +82,7 @@ struct ScrX11Sw {
 		ByteImage accel_buf;
 		ByteImage accel_buf_tmp;
 		DepthImage accel_zbuf;
-		SoftFramebufferT<X11SwGfx> accel_fbo;
+		SoftFramebuffer accel_fbo;
 	};
 	
 	struct NativeContext {

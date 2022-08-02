@@ -6,28 +6,10 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void InitObjView() {
-	ShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
+	ShaderLibrary::AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
 }
-
-template <class Gfx>
-void InitObjViewSoft() {
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewVertexT<Gfx>>(GVar::VERTEX_SHADER, "obj_view_vertex");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "obj_view_fragment");
-}
-
-template <class Gfx>
-void InitUtils() {
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassVertexT<Gfx>>(GVar::VERTEX_SHADER, "pass_vertex");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<StereoShaderT<Gfx>>(GVar::VERTEX_SHADER, "stereo_vertex");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "pass_fragment");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<StereoShaderT<Gfx>>(GVar::FRAGMENT_SHADER, "stereo_fragment");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ColorTestFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "color_test_fragment");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ProxyInput0FragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "proxy_input0_fragment");
-}
-
 
 NAMESPACE_PARALLEL_END
-
 
 
 INITBLOCK_(Shaders) {
@@ -41,9 +23,6 @@ INITBLOCK_(Shaders) {
 	InitObjView<SdlOglGfx>();
 	#endif
 	#endif
-	
-	InitObjViewSoft<X11SwGfx>();
-	InitUtils<X11SwGfx>();
 	
 }
 

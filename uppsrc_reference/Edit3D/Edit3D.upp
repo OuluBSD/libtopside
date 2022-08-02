@@ -3,12 +3,22 @@ uses
 	LocalCtrl,
 	Geometry,
 	ComputerVision,
-	plugin/jpg;
+	plugin/jpg,
+	SoftRend;
 
 file
 	Edit3D.h,
-	Edit3D.cpp,
-	Images.iml;
+	main.cpp,
+	Editor.h,
+	Editor.cpp,
+	Geom.h,
+	Geom.cpp,
+	Renderer.h,
+	Renderer.cpp,
+	Images.iml,
+	Trash readonly separator,
+	SoftRendCtrl.h,
+	SoftRendCtrl.cpp;
 
 mainconfig
 	"" = "GUI";

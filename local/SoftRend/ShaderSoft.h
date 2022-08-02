@@ -1,24 +1,24 @@
 #ifndef _SoftRend_Shader_h_
 #define _SoftRend_Shader_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-class SoftProgramT;
+
+class SoftProgram;
 
 
-template <class Gfx>
-struct DummySoftShaderLibraryT {
-	typedef SoftShaderBaseT<Gfx>* (*ShaderFactory)();
+
+struct DummySoftShaderLibrary {
+	typedef SoftShaderBase* (*ShaderFactory)();
 	
 	static VectorMap<String, ShaderFactory>& GetMap(int i) {ASSERT(i >= 0 && i < GVar::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GVar::SHADERTYPE_COUNT]; return m[i];}
 	
 };
 
-template <class Gfx>
-struct SoftShaderLibraryT {
-	typedef SoftShaderBaseT<Gfx>* (*ShaderFactory)();
+
+struct SoftShaderLibrary {
+	typedef SoftShaderBase* (*ShaderFactory)();
 	
 	static VectorMap<String, ShaderFactory>& GetMap(int i);// {ASSERT(i>=0&&i<GL::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GL::SHADERTYPE_COUNT]; return m[i];}
 	
@@ -28,13 +28,13 @@ struct SoftShaderLibraryT {
 		GetMap(type).Add(key, &CreateShader<T>);
 	}
 	
-	template <class T> static SoftShaderBaseT<Gfx>* CreateShader() {return new T();}
+	template <class T> static SoftShaderBase* CreateShader() {return new T();}
 	
 	
 };
 
-template <class Gfx>
-struct ShaderLibraryT {
+
+struct ShaderLibrary {
 	typedef BinderIfaceVideo* (*VideoBinderFactory)();
 	static VectorMap<String, VideoBinderFactory>& GetBinders() {static VectorMap<String, VideoBinderFactory> m; return m;}
 	template <class T> static BinderIfaceVideo* CreateBinder() {return new T();}
@@ -47,40 +47,40 @@ struct ShaderLibraryT {
 	
 };
 
-template <class Gfx>
-class SoftShaderT {
+
+class SoftShader {
 	GVar::ShaderType type;
 	String src;
 	String err;
-	One<SoftShaderBaseT<Gfx>> s;
+	One<SoftShaderBase> s;
 	
 protected:
-	using SoftProgram = SoftProgramT<Gfx>;
+	using SoftProgram = SoftProgram;
 	
 	SoftProgram* prog = 0;
 	
 public:
-	typedef SoftShaderT CLASSNAME;
-	SoftShaderT();
+	typedef SoftShader CLASSNAME;
+	SoftShader();
 	
 	void Clear();
 	void SetType(GVar::ShaderType t) {type = t;}
 	
 	void SetSource(String s);
 	GVar::ShaderType GetType() const {return type;}
-	SoftShaderBaseT<Gfx>& Get() {ASSERT(s); return *s;}
+	SoftShaderBase& Get() {ASSERT(s); return *s;}
 	
-	void SetShaderBase(SoftShaderBaseT<Gfx>* s) {this->s = s;}
+	void SetShaderBase(SoftShaderBase* s) {this->s = s;}
 	String GetLastError() const {return err;}
 	
 	SoftProgram* GetSoftProgram() const {return prog;}
 	void SetSoftProgram(SoftProgram* p) {prog = p;}
 	
-	void SetPassthroughVertexShader(SoftProgram& p, SoftShaderBaseT<Gfx>* s) {prog = &p; type = GVar::VERTEX_SHADER; this->s = s;};
+	void SetPassthroughVertexShader(SoftProgram& p, SoftShaderBase* s) {prog = &p; type = GVar::VERTEX_SHADER; this->s = s;};
 	
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

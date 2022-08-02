@@ -7,62 +7,29 @@
 
 
 
-GeomKeypoint& GeomTimeline::GetAddKeypoint(int i) {
-	GeomKeypoint& kp = keypoints.GetAdd(i);
-	kp.frame_id = i;
-	kp.position = Identity<vec3>();
-	kp.orientation = Identity<quat>();
-	return kp;
-}
-
-Camera& GeomProjectFile::GetAddCamera(String name) {
-	int i = dictionary.FindAdd(name);
-	int j = cameras.Find(i);
-	if (j >= 0)
-		return cameras[j];
-	Camera& p = cameras.Add(i);
-	//p.owner = this;
-	p.id = i;
-	return p;
-}
-
-OctreePointModel& GeomProjectFile::GetAddOctree(String name) {
-	int i = dictionary.FindAdd(name);
-	int j = octrees.Find(i);
-	if (j >= 0)
-		return octrees[j];
-	OctreePointModel& p = octrees.Add(i);
-	//p.owner = this;
-	p.id = i;
-	return p;
-}
-
-GeomProgram& GeomProjectFile::GetAddProgram(String name) {
-	int i = dictionary.FindAdd(name);
-	int j = programs.Find(i);
-	if (j >= 0)
-		return programs[j];
-	GeomProgram& p = programs.Add(i);
-	p.owner = this;
-	p.id = i;
-	return p;
-}
-
-
-
-
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
 
 Edit3D::Edit3D() {
+	state.prj = &prj;
+	
+	Sizeable().MaximizeBox();
+	Title("Edit3D");
+	
 	hsplit.Horz().SetPos(2000) << metasplit << vsplit,
 	metasplit.Vert() << tree << props;
 	vsplit.Vert().SetPos(7500) << grid << time;
 	
+	grid.SetGridSize(2,2);
+	for(int i = 0; i < 4; i++) {
+		rends[i].owner = this;
+		rends[i].SetViewMode((ViewMode)i);
+		grid.Add(rends[i]);
+	}
 	
 	Add(hsplit.SizePos());
-	
 	
 	AddFrame(menu);
 	menu.Set([this](Bar& bar) {
@@ -82,7 +49,7 @@ Edit3D::Edit3D() {
 void Edit3D::Toolbar(Bar& bar) {
 	bar.Add(true,  t_("Stop"),  ImagesImg::Stop(),  THISBACK(Stop));
 	
-	if (is_playing)
+	if (state.is_playing)
 		bar.Add(true, t_("Pause"), ImagesImg::Pause(), THISBACK(Pause));
 	else
 		bar.Add(true,  t_("Play"),  ImagesImg::Play(),  THISBACK(Play));
@@ -107,6 +74,11 @@ void Edit3D::Pause() {
 
 void Edit3D::Play() {
 	
+}
+
+void Edit3D::RefrehRenderers() {
+	for(int i = 0; i < 4; i++)
+		rends[i].Refresh();
 }
 
 void Edit3D::Data() {
@@ -164,7 +136,7 @@ void Edit3D::LoadTestProject(int test_i) {
 	prj.Clear();
 	
 	// Add pointcloud
-	OctreePointModel& omodel = prj.GetAddOctree("pointcloud");
+	OctreePointModel& omodel = prj.GetAddOctree("octree");
 	Octree& o = omodel.octree;
 	
 	// Add camera
@@ -178,10 +150,10 @@ void Edit3D::LoadTestProject(int test_i) {
 	if (test_i == 0) {
 		
 		// Create octree
-		o.Initialize(-3, 6); // 1 << 6 = 32x32x32 meters
+		o.Initialize(-3, 8); // 1 << 6 = 32x32x32 meters
 		
 		// Create points in form of sphere
-		float radius = 1;
+		float radius = 100;
 		bool random_points = 1;
 		int points = 256;
 		for(int i = 0; i < points; i++) {
@@ -194,7 +166,7 @@ void Edit3D::LoadTestProject(int test_i) {
 			else {
 				float f = ((float)i / (float)points);
 				yaw = f * M_PI * 2;
-				pitch = fmodf(f * M_PI * 40, M_PI) - M_PI/2;
+				pitch = 0;//fmodf(f * M_PI * 40, M_PI) - M_PI/2;
 			}
 			
 			vec3 pos = AxesDir(yaw, pitch) * radius;
@@ -284,21 +256,19 @@ void Edit3D::LoadWmrStereoPointcloud(String directory) {
 
 
 
-
-
-
-
-
-GUI_APP_MAIN {
-	Edit3D app;
-	
-	const auto& c = CommandLine();
-	if (!c.IsEmpty() && DirectoryExists(c[0]))
-		app.LoadWmrStereoPointcloud(c[0]);
-	else
-		app.LoadTestProject(0);
-	
-	app.Run();
+EditConfiguration::EditConfiguration() {
+	background_clr = Color(86, 87, 91);
 	
 	
 }
+
+
+
+NAMESPACE_TOPSIDE_END
+
+
+
+
+
+
+

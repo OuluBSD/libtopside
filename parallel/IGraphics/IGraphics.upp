@@ -6,7 +6,8 @@ uses
 	Local,
 	Geometry,
 	ParallelLib,
-	ports/MingwDx;
+	ports/MingwDx,
+	SoftRend;
 
 uses(MSC & NEVER) ports/glew;
 
@@ -23,6 +24,7 @@ file
 	Ogl.cpp,
 	Cpu.cpp,
 	SdlCpu.cpp,
+	Backend.cpp,
 	GlobalApi.h,
 	OpenGL.h,
 	State.h,
@@ -39,8 +41,6 @@ file
 	ImageBase.h,
 	ImageBase.cpp,
 	Programs readonly separator,
-	UtilProg.h,
-	UtilProg.cpp,
 	ObjViewProg.h,
 	ObjViewProg.cpp,
 	Templates readonly separator,
@@ -65,25 +65,7 @@ file
 	ModelProg.cpp,
 	DrawProg.cpp,
 	GfxAccelAtom.h,
-	GfxAccelAtom.cpp,
-	SoftRend readonly separator,
-	SoftRend.icpp,
-	Common.h,
-	Backend.h,
-	Backend.cpp,
-	Data.h,
-	Framebuffer.h,
-	Framebuffer.cpp,
-	ShaderSoft.h,
-	ShaderSoft.cpp,
-	Program.h,
-	Program.cpp,
-	Pipeline.h,
-	Pipeline.cpp,
-	Renderer.h,
-	Renderer.cpp,
-	Compiler.h,
-	Compiler.cpp;
+	GfxAccelAtom.cpp;
 
 mainconfig
 	"" = "SCREEN";

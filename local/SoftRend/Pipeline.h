@@ -1,15 +1,15 @@
 #ifndef _SoftRend_Pipeline_h_
 #define _SoftRend_Pipeline_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-class SoftPipelineT {
+
+class SoftPipeline {
 	bool inited = false;
 	
 public:
-	using SoftProgram = SoftProgramT<Gfx>;
+	using SoftProgram = SoftProgram;
 	
 	struct Stage : Moveable<Stage> {
 		SoftProgram* prog = 0;
@@ -19,8 +19,8 @@ public:
 	
 	
 public:
-	typedef SoftPipelineT CLASSNAME;
-	SoftPipelineT();
+	typedef SoftPipeline CLASSNAME;
+	SoftPipeline();
 	
 	bool Create();
 	void Clear();
@@ -33,6 +33,6 @@ public:
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

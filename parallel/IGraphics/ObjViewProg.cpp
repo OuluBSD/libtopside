@@ -202,90 +202,10 @@ void ObjViewProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	
 }
 
-template <class Gfx>
-ObjViewVertexT<Gfx>::ObjViewVertexT() {
-	this->UseUniform(GVar::VAR_VIEW);
-}
-
-template <class Gfx>
-void ObjViewVertexT<Gfx>::Process(VertexShaderArgsT<Gfx>& a) {
-	vec4 pos = a.v.position.Splice().Embed();
-	vec4 screen = a.va->view * pos;
-	if (screen[3] != 0) {
-		screen.Project();
-		a.v.position = screen;
-		//LOG(a.v.position.ToString());
-	}
-}
-
-template <class Gfx>
-ObjViewFragmentT<Gfx>::ObjViewFragmentT() {
-	this->UseUniform(GVar::VAR_DIFFUSE);
-	this->UseUniform(GVar::VAR_SPECULAR);
-	this->UseUniform(GVar::VAR_CUBE_DIFFUSE);
-	this->UseUniform(GVar::VAR_CUBE_IRRADIANCE);
-}
-
-template <class Gfx>
-void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
-	#if 0
-	float w = args.generic->iResolution[0];
-	float h = args.generic->iResolution[1];
-	float x = args.frag_coord[0] / w;
-	float y = args.frag_coord[1] / h;
-	args.frag_color_out = vec4(x, y, 0, 1);
-	#else
-	
-	ASSERT(args.fa);
-	vec3& n = args.normal;
-	vec3& light_dir = args.fa->light_dir;
-	float m = Dot(n, light_dir);
-	
-	vec4& used_clr = args.frag_color_out;
-	used_clr[3] = 0;
-	
-	float intensity = std::max(0.0f, m);
-	
-	intensity = intensity * 0.5 + 0.5;
-	
-	auto& diffuse = args.fa->color_buf[TEXTYPE_DIFFUSE];
-	if (diffuse) {
-		const ByteImage& tex = *diffuse;
-		float tex_x = args.tex_coord[0];
-		float tex_y = args.tex_coord[1];
-		ASSERT(tex_x >= 0.0f && tex_x <= 1.0f);
-		ASSERT(tex_y >= 0.0f && tex_y <= 1.0f);
-		int tex_xi = tex_x * tex.GetWidth();
-		int tex_yi = tex_y * tex.GetHeight();
-		tex_xi = std::max(0, std::min(tex.GetWidth() - 1, tex_xi));
-		tex_yi = std::max(0, std::min(tex.GetHeight() - 1, tex_yi));
-		const byte* b = tex.GetIter(tex_xi, tex_yi);
-		ASSERT(intensity <= 1.0f);
-		float mul = intensity / 255.0;
-		float R = b[0] * mul;
-		float G = b[1] * mul;
-		float B = b[2] * mul;
-		ASSERT(R >= 0.0f && R <= 1.0f);
-		ASSERT(G >= 0.0f && G <= 1.0f);
-		ASSERT(B >= 0.0f && B <= 1.0f);
-		used_clr[0] = R;
-		used_clr[1] = G;
-		used_clr[2] = B;
-	}
-	else {
-		used_clr[0] = intensity;
-		used_clr[1] = intensity;
-		used_clr[2] = intensity;
-	}
-	#endif
-}
-
 
 SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ObjViewProgT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(ObjViewProgT)
 X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewProgT)
-X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewVertexT)
-X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewFragmentT)
 
 
 NAMESPACE_PARALLEL_END

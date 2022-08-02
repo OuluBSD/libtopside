@@ -48,6 +48,7 @@ public:
 	void SetProjection(const mat4& projection);
 	void SetWorld(const mat4& view);
 	void SetWorld(const vec3& position, const quat& orient);
+	void SetWorld(const vec3& position, const quat& orient, const vec3& scale);
 	
 	Frustum GetFrustum();
 	int GetProgram() const;

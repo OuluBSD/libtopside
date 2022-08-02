@@ -10,8 +10,8 @@ struct FboAtomT :
 {
 	using StateDraw = StateDrawT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
-	using ShaderLibrary = ShaderLibraryT<Gfx>;
-	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
+	//using ShaderLibrary = ShaderLibraryT<Gfx>;
+	//using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	using DataState = DataStateT<Gfx>;
 	using PipelineState = PipelineStateT<Gfx>;
 	using ProgramState = ProgramStateT<Gfx>;

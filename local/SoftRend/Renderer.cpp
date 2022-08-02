@@ -1,101 +1,100 @@
-#include "IGraphics.h"
+#include "SoftRend.h"
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-SoftRendT<Gfx>::SoftRendT() {
+
+
+SoftRend::SoftRend() {
 	viewport_size = Size(TS::default_width, TS::default_height);
 	//SET_ZERO(input_texture);
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::DrawDefault(SoftFramebuffer& fb) {
+
+void SoftRend::DrawDefault(SoftFramebuffer& fb) {
 	fb.Zero((GVar::RenderTarget)255, clear_color);
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::ClearTargets() {
+
+void SoftRend::ClearTargets() {
 	/*for (SoftFramebuffer* fb : buffers) {
 		fb->Clear();
 	}*/
 	draw_buffers = (GVar::RenderTarget)0;
 }
 
-/*template <class Gfx>
-void SoftRendT<Gfx>::ClearBuffers() {
+/*
+void SoftRend::ClearBuffers() {
 	buffers.SetCount(0);
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::AddBuffer(SoftFramebuffer& fb) {
+
+void SoftRend::AddBuffer(SoftFramebuffer& fb) {
 	buffers.Add(&fb);
 }*/
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetSmoothShading(bool b) {
+
+void SoftRend::SetSmoothShading(bool b) {
 	shading = b ? GVar::SMOOTH : GVar::FLAT;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetDepthTest(bool b) {
+
+void SoftRend::SetDepthTest(bool b) {
 	is_depth_test = b;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetDepthOrderLess(bool b) {
+
+void SoftRend::SetDepthOrderLess(bool b) {
 	is_depth_order_less = b;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetClearValue(RGBA clr, byte depth) {
+
+void SoftRend::SetClearValue(RGBA clr, byte depth) {
 	clear_color = clr;
 	clear_depth = depth;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetFastPerspectiveCorrection(bool b) {
+
+void SoftRend::SetFastPerspectiveCorrection(bool b) {
 	is_fast_perspective_correction = b;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetTriangleBacksideCulling(bool b) {
+
+void SoftRend::SetTriangleBacksideCulling(bool b) {
 	is_triangle_backside_culling = b;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetTriangleFrontsideCCW(bool b) {
+
+void SoftRend::SetTriangleFrontsideCCW(bool b) {
 	is_triangle_frontside_cw = !b;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::SetViewport(Size sz) {
+
+void SoftRend::SetViewport(Size sz) {
 	viewport_size = sz;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
-	using NativeSurface = typename Gfx::NativeSurface;
-	
+
+void SoftRend::RenderScreenRect0(bool elements) {
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
 	SoftFramebuffer& fb = *tgt_fb;
 	
 	ASSERT(w > 0 && h > 0);
 	
-	NativeDepthBufferRef depth = tgt_fb->GetDepth();
-	NativeSurface surf = 0;
+	DepthImage* depth = tgt_fb->GetDepth();
+	ByteImage* surf = 0;
 	Rect r = RectC(0, 0, w, h);
-	if (!Gfx::LockTextureToSurface(tgt_fb, r, surf) || !surf)
+	if (!LockTextureToSurface(tgt_fb, r, surf) || !surf)
 		return;
 	
-	int stride = Gfx::GetBytesPerPixel(surf);
-	int pitch = Gfx::GetPitch(surf);
-	byte* data = (byte*)Gfx::GetData(surf);
+	int stride = surf->GetChannels();
+	int pitch = surf->GetPitch();
+	byte* data = (byte*)surf->Begin();
 	
 	FragmentShaderArgs frag_args;
 	
-	//for(int i = 0; i < TEXTYPE_COUNT; i++)
+	//for(int i = 0; i < TEXTYPE_COUN; i++)
 	//	frag_args.tex_img[i] = input_texture[i];
 	
 	vec2& coord = frag_args.frag_coord;
@@ -202,13 +201,13 @@ void SoftRendT<Gfx>::RenderScreenRect0(bool elements) {
 		}
 	}
 	
-	Gfx::UnlockTextureToSurface(tgt_fb);
+	UnlockTextureToSurface(tgt_fb);
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect() {
+
+void SoftRend::RenderScreenRect() {
 	ASSERT(tgt_pipe && tgt_fb);
-	using Stage = typename SoftPipelineT<Gfx>::Stage;
+	using Stage = typename SoftPipeline::Stage;
 	for (Stage& stage : tgt_pipe->stages) {
 		SoftProgram& prog = *stage.prog;
 		for (SoftShader* shader : prog.GetShaders()) {
@@ -220,8 +219,8 @@ void SoftRendT<Gfx>::RenderScreenRect() {
 	}
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id) {
+
+void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id) {
 	RenderSource& rs = tmp_sources[src_id];
 	SoftVertexBuffer& processed_vertices = rs.processed_vertices;
 	ASSERT(vao.vbo && vao.ebo);
@@ -230,7 +229,7 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	SoftShaderBase& vs = shdr.Get();
 	SoftProgram& prog = *rs.prog;
 	
-	VertexShaderArgsT<Gfx> vtx_args;
+	VertexShaderArgs vtx_args;
 	GenericShaderArgs& g = prog.GetArgs();
 	vtx_args.generic = &g;
 	vtx_args.va = &prog.GetVertexArgs(src_id);
@@ -262,8 +261,8 @@ void SoftRendT<Gfx>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao,
 	rs.use_processed_vertices = true;
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
+
+void SoftRend::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
 	vec2 bboxmin(w - 1,  h - 1);
 	vec2 bboxmax(0, 0);
 	vec2 clamp(w - 1, h - 1);
@@ -275,7 +274,7 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 		}
 	}
 	
-	NativeDepthBufferRef depth = tgt_fb ? tgt_fb->GetDepth() : 0;
+	DepthImage* depth = tgt_fb ? tgt_fb->GetDepth() : 0;
 	ASSERT(depth);
 	if (!depth) return;
 	
@@ -313,8 +312,8 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthImage::Info& info, const Vertex& a, 
 	}
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
+
+void SoftRend::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	SoftElementBuffer& ebo = *vao.ebo;
 	SoftVertexBuffer& vbo = tmp_sources[src_id].GetVertices();
 	Vertex* vert = (Vertex*)vbo.vertices.Begin();
@@ -343,8 +342,8 @@ void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	//RenderScreenRect(fb, prog, shdr, true);
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::Render(SoftProgram& prog, SoftVertexArray& vao) {
+
+void SoftRend::Render(SoftProgram& prog, SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftFramebuffer& fb = *tgt_fb;
@@ -356,7 +355,7 @@ void SoftRendT<Gfx>::Render(SoftProgram& prog, SoftVertexArray& vao) {
 	
 	
 	//input_vertices = vao.vbo;
-	using Stage = typename SoftPipelineT<Gfx>::Stage;
+	using Stage = typename SoftPipeline::Stage;
 	
 	for (Stage& stage : pipe.stages) {
 		SoftProgram& p = *stage.prog;
@@ -391,7 +390,7 @@ void SoftRendT<Gfx>::Render(SoftProgram& prog, SoftVertexArray& vao) {
 		}
 		
 		if (!rs.vtx) {
-			vtx_passthrough.SetPassthroughVertexShader(prog, new PassthroughSoftShaderBaseT<Gfx>());
+			vtx_passthrough.SetPassthroughVertexShader(prog, new PassthroughSoftShaderBase());
 			rs.vtx = &vtx_passthrough;
 		}
 		
@@ -404,8 +403,8 @@ void SoftRendT<Gfx>::Render(SoftProgram& prog, SoftVertexArray& vao) {
 	Panic("error");
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::Begin() {
+
+void SoftRend::Begin() {
 	ASSERT(tgt_fb && tgt_pipe);
 	
 	tmp_sources.SetCount(0);
@@ -415,10 +414,11 @@ void SoftRendT<Gfx>::Begin() {
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
-	Gfx::QueryTexture(tgt_fb, fmt, access, w, h);
+	
+	QueryTexture(tgt_fb, fmt, access, w, h);
 	
 	if (w == 0 || h == 0) {
-		ASSERT(viewport_size.GetArea() > 0);
+		ASSERT(viewport_size.cx > 0 && viewport_size.cy > 0);
 		w = viewport_size.cx;
 		h = viewport_size.cy;
 		tgt_fb->SetSize(draw_buffers, viewport_size);
@@ -428,27 +428,48 @@ void SoftRendT<Gfx>::Begin() {
 	tgt_fb->Zero(draw_buffers, Black());
 	
 	// reset z-buffer
-	NativeDepthBufferRef depth = tgt_fb->GetDepth();
+	DepthImage* depth = tgt_fb->GetDepth();
 	if (depth) {
 		depth->Set(Size(w,h), 1);
 		depth->Zero(GetDepthResetValue());
 	}
 }
 
-template <class Gfx>
-void SoftRendT<Gfx>::End() {
+
+void SoftRend::End() {
 	RenderScreenRect0(true);
 }
 
 /*
-template <class Gfx>
-void SoftRendT<Gfx>::ClearTemp() {
+
+void SoftRend::ClearTemp() {
 	vertices.SetCount(0);
 	indices.SetCount(0);
 }*/
 
 
-SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftRendT)
 
 
-NAMESPACE_PARALLEL_END
+
+
+bool SoftRend::LockTextureToSurface(SoftFramebuffer* tex, Rect r, ByteImage*& surf) {
+	surf = tex->Get(0);
+	ASSERT(surf);
+	return true;
+}
+
+void SoftRend::QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h) {
+	ASSERT(tex);
+	fmt = 0;
+	access = 0;
+	Size sz = tex->GetSize();
+	w = sz.cx;
+	h = sz.cy;
+}
+
+void SoftRend::UnlockTextureToSurface(SoftFramebuffer* tex) {
+	
+}
+
+
+NAMESPACE_TOPSIDE_END

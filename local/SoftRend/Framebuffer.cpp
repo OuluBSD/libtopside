@@ -1,29 +1,29 @@
-#include "IGraphics.h"
+#include "SoftRend.h"
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-SoftFramebufferT<Gfx>::SoftFramebufferT() {
+
+SoftFramebuffer::SoftFramebuffer() {
 	sz = Size(0,0);
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		color[i] = 0;
 }
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::Clear() {
+
+void SoftFramebuffer::Clear() {
 	sz = Size(0,0);
 	
 }
 
-/*template <class Gfx>
-void SoftFramebufferT<Gfx>::operator=(NativeTexture& tex) {
+/*
+void SoftFramebuffer::operator=(NativeTexture& tex) {
 	ASSERT(!this->tex);
 	this->tex = tex;
 }*/
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
+
+void SoftFramebuffer::ClearData(GVar::BufferType type) {
 	if (type == GVar::COLOR_BUFFER) {
 		for(int i = 0; i < TEXTYPE_COUNT; i++) {
 			if (color[i])
@@ -43,13 +43,13 @@ void SoftFramebufferT<Gfx>::ClearData(GVar::BufferType type) {
 	}
 }
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::ClearDataAll() {
+
+void SoftFramebuffer::ClearDataAll() {
 	
 }
 
-template <class Gfx>
-typename Gfx::NativeColorBufferRef SoftFramebufferT<Gfx>::GetFirst(GVar::RenderTarget tgt) {
+
+ByteImage* SoftFramebuffer::GetFirst(GVar::RenderTarget tgt) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		if ((dword)tgt & (1 << i) && color[i])
 			return color[i];
@@ -57,15 +57,15 @@ typename Gfx::NativeColorBufferRef SoftFramebufferT<Gfx>::GetFirst(GVar::RenderT
 	return NULL;
 }
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::SetColor(TexType tgt, NativeColorBufferRef b) {
+
+void SoftFramebuffer::SetColor(TexType tgt, ByteImage* b) {
 	ASSERT(b);
 	ASSERT(tgt >= TEXTYPE_NONE && tgt < TEXTYPE_COUNT);
 	color[tgt] = b;
 }
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::SetSize(GVar::RenderTarget tgt, Size sz) {
+
+void SoftFramebuffer::SetSize(GVar::RenderTarget tgt, Size sz) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		if ((dword)tgt & (1 << i) && color[i]) {
 			if (color[i]->GetChannels() > 0)
@@ -76,30 +76,29 @@ void SoftFramebufferT<Gfx>::SetSize(GVar::RenderTarget tgt, Size sz) {
 	}
 }
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::Zero(GVar::RenderTarget tgt, RGBA clr) {
+
+void SoftFramebuffer::Zero(GVar::RenderTarget tgt, RGBA clr) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
 		if ((dword)tgt & (1 << i) && color[i])
 			color[i]->Zero(clr);
 	}
 }
 
-/*template <class Gfx>
-void SoftFramebufferT<Gfx>::SetLocalData(Size sz, byte channels) {
+/*
+void SoftFramebuffer::SetLocalData(Size sz, byte channels) {
 	owned.Create();
 	owned->Create(sz, channels);
 	gtex = &*owned;
 }*/
 
-template <class Gfx>
-void SoftFramebufferT<Gfx>::SetParam(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap wrap) {
+
+void SoftFramebuffer::SetParam(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap wrap) {
 	ASSERT(type >= 0 && type < GVar::TEXMODE_COUNT);
 	this->filter[type] = filter;
 	this->wrap[type] = wrap;
 }
  
 
-SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftFramebufferT)
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END

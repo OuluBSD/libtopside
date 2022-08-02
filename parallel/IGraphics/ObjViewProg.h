@@ -6,24 +6,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-class ObjViewVertexT : public SoftShaderBaseT<Gfx> {
-	
-public:
-	ObjViewVertexT();
-	void Process(VertexShaderArgsT<Gfx>& args) override;
-	
-};
-
-template <class Gfx>
-class ObjViewFragmentT : public SoftShaderBaseT<Gfx> {
-	
-public:
-	ObjViewFragmentT();
-	void Process(FragmentShaderArgsT<Gfx>& args) override;
-	
-};
-
-template <class Gfx>
 struct ObjViewProgT :
 	public BinderIfaceVideo
 {

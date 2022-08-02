@@ -1,22 +1,21 @@
 #ifndef _SoftRend_Program_h_
 #define _SoftRend_Program_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct SoftUniform : Moveable<SoftUniform> {
 	
 };
 
-template <class Gfx> class SoftPipelineT;
+struct SoftPipeline;
 
-template <class Gfx>
-class SoftProgramT {
+
+struct SoftProgram {
 	bool inited = false;
 	String err;
 	
 protected:
-	using SoftShader = SoftShaderT<Gfx>;
 	friend class SoftRend;
 	Vector<SoftShader*> shaders;
 	ArrayMap<dword, SoftUniform> uniforms;
@@ -31,8 +30,8 @@ protected:
 	int obj_i = -1;
 	
 public:
-	typedef SoftProgramT CLASSNAME;
-	SoftProgramT();
+	typedef SoftProgram CLASSNAME;
+	SoftProgram();
 	
 	void Begin();
 	void BeginObject();
@@ -67,11 +66,11 @@ public:
 	
 	
 	
-	SoftPipelineT<Gfx>* pipeline = 0;
+	SoftPipeline* pipeline = 0;
 	
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

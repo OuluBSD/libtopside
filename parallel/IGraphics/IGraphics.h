@@ -51,7 +51,7 @@
 #include <Draw/Draw.h>
 #include <Geometry/Geometry.h>
 #include <ParallelLib/ParallelLib.h>
-
+#include <SoftRend/SoftRend.h>
 
 
 typedef float			Gxf;
@@ -83,17 +83,6 @@ typedef unsigned int	Gxbf;
 
 
 
-//SoftRend
-#include "Common.h"
-#include "Backend.h"
-#include "Data.h"
-#include "Framebuffer.h"
-#include "ShaderSoft.h"
-#include "Program.h"
-#include "Pipeline.h"
-#include "Renderer.h"
-#include "Compiler.h"
-
 #include "Types.h"
 #include "State.h"
 #include "GfxClasses.h"
@@ -115,7 +104,6 @@ typedef unsigned int	Gxbf;
 #include "FboBase.h"
 
 #include "ObjViewProg.h"
-#include "UtilProg.h"
 
 
 

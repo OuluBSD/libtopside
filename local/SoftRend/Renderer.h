@@ -1,22 +1,10 @@
 #ifndef _SoftRend_Renderer_h_
 #define _SoftRend_Renderer_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Gfx>
-class SoftRendT {
-	using SoftFramebuffer		= SoftFramebufferT<Gfx>;
-	using SoftPipeline			= SoftPipelineT<Gfx>;
-	using SoftShader			= SoftShaderT<Gfx>;
-	using FragmentShaderArgs	= FragmentShaderArgsT<Gfx>;
-	using SoftProgram			= SoftProgramT<Gfx>;
-	using SoftShaderBase		= SoftShaderBaseT<Gfx>;
-	using NativeTexture				= typename Gfx::NativeTexture;
-	using NativeDepthBufferRef		= typename Gfx::NativeDepthBufferRef;
-	using NativeColorBufferRef		= typename Gfx::NativeColorBufferRef;
-	using NativeColorBufferConstRef	= typename Gfx::NativeColorBufferConstRef;
-	
+class SoftRend {
 	bool verbose = false;
 	//Vector<SoftFramebuffer*> buffers;
 	GVar::ShadeMode shading = GVar::FLAT;
@@ -34,7 +22,7 @@ class SoftRendT {
 	//SoftVertexBuffer processed_vertices;
 	//SoftVertexBuffer* input_vertices = 0;
 	//SoftElementBuffer* input_indices = 0;
-	//NativeColorBufferConstRef input_texture[TEXTYPE_COUNT];
+	//ConstByteImage* input_texture[TEXTYPE_COUNT];
 	
 	SoftPipeline* tgt_pipe = 0;
 	SoftFramebuffer* tgt_fb = 0;
@@ -70,8 +58,8 @@ class SoftRendT {
 	//SoftElementBuffer& GetIndices() {return *input_indices;}
 	
 public:
-	typedef SoftRendT CLASSNAME;
-	SoftRendT();
+	typedef SoftRend CLASSNAME;
+	SoftRend();
 	
 	void Begin();
 	void End();
@@ -100,11 +88,16 @@ public:
 	
 	float GetDepthResetValue() const {return is_depth_order_less ? +1e10f : -1e10f;}
 	
-	//void BindTexture(int type, NativeColorBufferConstRef tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
+	//void BindTexture(int type, ConstByteImage* tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
 	
+
+
+	static bool LockTextureToSurface(SoftFramebuffer* tex, Rect r, ByteImage*& surf);
+	static void QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h);
+	static void UnlockTextureToSurface(SoftFramebuffer* tex);
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

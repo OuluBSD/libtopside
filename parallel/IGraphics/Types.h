@@ -65,12 +65,12 @@ template <class Gfx> struct FramebufferT;
 
 template <class Gfx>
 struct SwGfxT {
-	using SoftRend			= SoftRendT<Gfx>;
+	/*using SoftRend			= SoftRendT<Gfx>;
 	using SoftCompiler		= SoftCompilerT<Gfx>;
 	using SoftShader		= SoftShaderT<Gfx>;
 	using SoftProgram		= SoftProgramT<Gfx>;
 	using SoftFramebuffer	= SoftFramebufferT<Gfx>;
-	using SoftPipeline		= SoftPipelineT<Gfx>;
+	using SoftPipeline		= SoftPipelineT<Gfx>;*/
 	// using SoftVertexArray	= SoftVertexArrayT<Gfx>;
 	using NativeColorBufferRef		= ByteImage*;
 	using NativeColorBufferConstRef	= ConstByteImage*;
@@ -254,7 +254,7 @@ struct X11SwGfx : SwGfxT<X11SwGfx>, X11Gfx {
 	using NativeTexture = SystemFrameBufferRef;
 	using NativeSurface = NativeColorBufferRef;
 	//using NativeColorBufferRef = void*;
-	using SoftShaderLibrary = SoftShaderLibraryT<X11SwGfx>;
+	//using SoftShaderLibrary = SoftShaderLibraryT<X11SwGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;
@@ -283,7 +283,7 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 	#undef GFX_CLS
 	
 	using NativeGLContext = ::GLXContext;
-	using SoftShaderLibrary = DummySoftShaderLibraryT<X11OglGfx>;
+	using SoftShaderLibrary = DummySoftShaderLibrary;//T<X11OglGfx>;
 	
 	static void DeleteContext(NativeGLContext& ctx);
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf);
@@ -406,7 +406,7 @@ struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
 	using NativeTexture = SDL_Texture*;
 	using NativeSurface = SDL_Surface*;
 	//using NativeColorBufferRef = SDL_Texture*;
-	using SoftShaderLibrary = SoftShaderLibraryT<SdlSwGfx>;
+	//using SoftShaderLibrary = SoftShaderLibraryT<SdlSwGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;
@@ -432,7 +432,7 @@ struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
 #ifdef flagOGL
 struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 	using NativeSurface = void*;
-	using SoftShaderLibrary = DummySoftShaderLibraryT<SdlOglGfx>;
+	using SoftShaderLibrary = DummySoftShaderLibrary;//T<SdlOglGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;

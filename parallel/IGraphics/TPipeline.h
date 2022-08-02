@@ -136,7 +136,7 @@ struct ProgramStateT : GfxProgramState {
 	using DataState = DataStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
-	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
+	//using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	using ContextState = ContextStateT<Gfx>;
 	using BufferStage = BufferStageT<Gfx>;
 	using Compiler = CompilerT<Gfx>;

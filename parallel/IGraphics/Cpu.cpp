@@ -10,7 +10,7 @@ template <class Gfx>
 typename SwGfxT<Gfx>::Thread& SwGfxT<Gfx>::Local() {thread_local static Thread t; return t;}
 
 template <class Gfx>
-SoftRendT<Gfx>& SwGfxT<Gfx>::Rend() {return Local().rend;}
+SoftRend& SwGfxT<Gfx>::Rend() {return Local().rend;}
 
 
 template <class Gfx>
@@ -39,7 +39,7 @@ void SwGfxT<Gfx>::SetSmoothShading(bool b) {
 
 template <class Gfx>
 void SwGfxT<Gfx>::SetDepthTest(bool b) {
-	Rend().SetDepthTest(b);
+	Rend(). 
 }
 
 template <class Gfx>
@@ -217,7 +217,7 @@ void SwGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
 
 template <class Gfx>
 bool SwGfxT<Gfx>::CreateShader(GVar::ShaderType t, NativeShaderRef& new_shdr) {
-	new_shdr = new SoftShaderT<Gfx>();
+	new_shdr = new SoftShader();
 	new_shdr->SetType(t);
 	return true;
 }
