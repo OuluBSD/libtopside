@@ -19,6 +19,8 @@ Camera& GeomProjectFile::GetAddCamera(String name) {
 	Camera& p = cameras.Add(i);
 	//p.owner = this;
 	p.id = i;
+	int list_i = i * O_COUNT + O_CAMERA;
+	list.FindAdd(list_i);
 	return p;
 }
 
@@ -30,11 +32,25 @@ OctreePointModel& GeomProjectFile::GetAddOctree(String name) {
 	OctreePointModel& p = octrees.Add(i);
 	//p.owner = this;
 	p.id = i;
+	int list_i = i * O_COUNT + O_OCTREE;
+	list.FindAdd(list_i);
 	return p;
 }
 
-GeomProgram& GeomProjectFile::GetAddProgram(String name) {
-	int i = dictionary.FindAdd(name);
+GeomScene& GeomProjectFile::AddScene() {
+	GeomScene& s = scenes.Add();
+	s.owner = this;
+	return s;
+}
+
+
+
+
+
+
+
+GeomProgram& GeomScene::GetAddProgram(String name) {
+	int i = owner->dictionary.FindAdd(name);
 	int j = programs.Find(i);
 	if (j >= 0)
 		return programs[j];
@@ -47,69 +63,64 @@ GeomProgram& GeomProjectFile::GetAddProgram(String name) {
 
 
 
-void GeomWorldState::LoadCamera(ViewMode m, Camera& camera, Size sz) const {
+
+
+
+GeomWorldState::GeomWorldState() {
+	focus.scale = 100;
+	program.scale = 100;
+	//program.orientation = AxesQuat(M_PI/4, -M_PI/4, 0);
+	
+}
+
+void GeomCamera::LoadCamera(ViewMode m, Camera& cam, Size sz) const {
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float aspect = (float)sz.cx / (float)sz.cy;
 	
-	vec3 position;
-	quat orientation;
-	float scale = 1.0;
+	vec3 position = this->position;
+	quat orientation = this->orientation;
+	float scale = this->scale;
 	float len = 2;
 	bool move_camera = true;
 	switch (m) {
-		case CAMERA_YZ:
-			position = focus_position;
-			orientation = MatQuat(YRotation(M_PI/2));
-			camera.SetOrthographic(len * ratio, len, 0.1, 100.0);
-			scale = focus_scale;
-			break;
-			
-		case CAMERA_XZ:
-			position = focus_position;
-			orientation = MatQuat(XRotation(-M_PI/2));
-			camera.SetOrthographic(len * ratio, len, 0.1, 100.0);
-			scale = focus_scale;
-			break;
-			
-		case CAMERA_XY:
-			position = focus_position;
-			orientation = MatQuat(YRotation(0));
-			camera.SetOrthographic(len * ratio, len, 0.1, 100.0);
-			scale = focus_scale;
-			break;
-			
-		case CAMERA_PERSPECTIVE:
-			position = focus_position;
-			orientation = focus_orientation;
-			camera.SetPerspective(focus_fov, aspect, 0.1, 100.0);
-			scale = focus_scale;
-			break;
-			
-		case CAMERA_CAMERA:
-			position = camera_position;
-			orientation = camera_orientation;
-			camera.SetPerspective(focus_fov, aspect, 0.1, 100.0);
-			move_camera = false;
-			break;
-			
-		default:
-			return;
+		
+	case VIEWMODE_YZ:
+		orientation = MatQuat(YRotation(M_PI/2));
+		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		break;
+		
+	case VIEWMODE_XZ:
+		orientation = MatQuat(XRotation(-M_PI/2));
+		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		break;
+		
+	case VIEWMODE_XY:
+		orientation = MatQuat(YRotation(0));
+		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		break;
+		
+	case VIEWMODE_PERSPECTIVE:
+		cam.SetPerspective(fov, aspect, 0.01, 1000.0);
+		break;
+		
+	default:
+		return;
+		
 	}
 	
 	if (move_camera)
-		position = position + VecMul(QuatMat(orientation), VEC_BWD) * scale;
+		position = position - VecMul(QuatMat(orientation), VEC_FWD) * scale * 0.01;
 	
-	//camera.SetWorld(position, orientation);
-	camera.SetWorld(position, orientation, scale);
+	cam.SetWorld(position, orientation, scale);
 }
 
-mat4 GeomWorldState::GetViewMatrix(ViewMode m, Size sz) const {
+mat4 GeomCamera::GetViewMatrix(ViewMode m, Size sz) const {
 	Camera cam;
 	LoadCamera(m, cam, sz);
 	return cam.GetViewMatrix();
 }
 
-Frustum GeomWorldState::GetFrustum(ViewMode m, Size sz) const {
+Frustum GeomCamera::GetFrustum(ViewMode m, Size sz) const {
 	Camera cam;
 	LoadCamera(m, cam, sz);
 	return cam.GetFrustum();

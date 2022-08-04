@@ -7,6 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 struct GeomProgram;
 struct GeomProjectFile;
+struct GeomScene;
 struct Edit3D;
 
 
@@ -27,61 +28,92 @@ struct GeomTimeline {
 };
 
 struct GeomProgram {
-	GeomProjectFile* owner = 0;
+	GeomScene* owner = 0;
 	GeomTimeline timeline;
 	int id = -1;
 	
 	
 };
 
+struct GeomScene {
+	GeomProjectFile* owner = 0;
+	ArrayMap<int, GeomProgram> programs;
+	int length = 0;
+	
+	GeomProgram& GetAddProgram(String name);
+	
+};
+
 struct GeomProjectFile {
+	enum {
+		O_OCTREE,
+		O_MODEL,
+		O_CAMERA,
+		O_PROGRAM,
+		O_COUNT
+	};
+	
 	Index<String> dictionary;
 	ArrayMap<int, OctreePointModel> octrees;
 	ArrayMap<int, Model> models;
 	ArrayMap<int, Camera> cameras;
-	ArrayMap<int, GeomProgram> programs;
-	int fps = 25;
+	Array<GeomScene> scenes;
+	Index<int> list;
+	int kps = 5;
+	int fps = 60;
 	
 	void Clear() {
 		dictionary.Clear();
 		octrees.Clear();
 		models.Clear();
 		cameras.Clear();
-		programs.Clear();
+		scenes.Clear();
+		list.Clear();
 	}
 	
 	Camera& GetAddCamera(String name);
 	OctreePointModel& GetAddOctree(String name);
-	GeomProgram& GetAddProgram(String name);
+	GeomScene& AddScene();
 	
 };
 
 typedef enum {
-	CAMERA_YZ,
-	CAMERA_XZ,
-	CAMERA_XY,
-	CAMERA_PERSPECTIVE,
-	CAMERA_CAMERA,
+	VIEWMODE_YZ,
+	VIEWMODE_XZ,
+	VIEWMODE_XY,
+	VIEWMODE_PERSPECTIVE,
 } ViewMode;
 
-struct GeomWorldState {
-	GeomProjectFile* prj = 0;
-	vec3 focus_position = vec3(0);
-	quat focus_orientation = Identity<quat>();
-	float focus_distance = 10;
-	float focus_fov = 90;
-	float focus_scale = 100;
-	vec3 camera_position = vec3(0);
-	quat camera_orientation = Identity<quat>();
-	float camera_fov = 90;
-	int active_camera = -1;
-	dword frame_i = 0;
-	bool is_playing = false;
+typedef enum {
+	CAMSRC_FOCUS,
+	CAMSRC_PROGRAM,
+} CameraSource;
+
+struct GeomCamera {
+	vec3 position = vec3(0);
+	quat orientation = Identity<quat>();
+	float distance = 10;
+	float fov = 120;
+	float scale = 1;
 	
 	
 	void LoadCamera(ViewMode m, Camera& cam, Size sz) const;
 	mat4 GetViewMatrix(ViewMode m, Size sz) const;
 	Frustum GetFrustum(ViewMode m, Size sz) const;
+	
+};
+
+struct GeomWorldState {
+	GeomProjectFile* prj = 0;
+	
+	GeomCamera focus, program;
+	
+	CameraSource active_camera;
+	dword frame_i = 0;
+	bool is_playing = false;
+	
+	
+	GeomWorldState();
 	
 };
 

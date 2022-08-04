@@ -12,7 +12,7 @@ Camera::Camera() {
 	this->height = 1.0f;
 
 	this->world = mat4();
-	this->view.SetPerspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
+	this->proj.SetPerspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
 	this->proj_mode = 0;
 }
 
@@ -67,31 +67,13 @@ void Camera::OrthoNormalize() {
 	};
 }
 
+mat4 Camera::GetViewportMatrix() {
+	float ratio = (float)height / (float)width;
+	return GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+}
+
 mat4 Camera::GetViewMatrix() {
-	return world;
-	/*
-	if (!IsOrthoNormal()) {
-		OrthoNormalize();
-	}
-	
-	mat4 inverse = Transpose(world);
-	inverse[3][0] = 0.0f;
-	inverse[0][3] = 0.0f;
-	inverse[3][1] = 0.0f;
-	inverse[1][3] = 0.0f;
-	inverse[3][2] = 0.0f;
-	inverse[2][3] = 0.0f;
-	
-	vec3 right = world[0].Splice();
-	vec3 up = world[1].Splice();
-	vec3 forward = world[2].Splice();
-	vec3 position = world[3].Splice();
-	
-	inverse[3][0] = -Dot(right, position);
-	inverse[3][1] = -Dot(up, position);
-	inverse[3][2] = -Dot(forward, position);
-	
-	return inverse;*/
+	return proj * world;
 }
 
 void Camera::SetProgram(int i) {
@@ -107,7 +89,7 @@ float Camera::GetAspect() {
 }
 
 mat4 Camera::GetProjectionMatrix() {
-	return view;
+	return proj;
 }
 
 void Camera::SetResolution(int width, int height) {
@@ -128,14 +110,14 @@ void Camera::UpdateMatrices() {
 	this->aspect = (float)width / (float)height;
 
 	if (this->proj_mode == 0) {
-		this->view = Perspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
+		this->proj = Perspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
 	}
 	else if (this->proj_mode == 1) {
 
 		float halfW = this->width * 0.5f;
 		float halfH = this->height * 0.5f;
 
-		this->view = Ortho(-halfW, halfW, halfH, -halfH, this->near, this->far);
+		this->proj = Ortho(-halfW, halfW, halfH, -halfH, this->near, this->far);
 	}
 	// this->proj_mode == 2
 		// User defined
@@ -154,8 +136,11 @@ void Camera::SetPerspective(float fov_angle, float aspect, float zNear, float zF
 	this->aspect = aspect;
 	this->near = zNear;
 	this->far = zFar;
-
-	this->view = Perspective(DEG2RAD(fov_angle * 0.5), aspect, zNear, zFar);
+	
+	float ratio = 1.0f / aspect;
+	this->proj =
+		GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1) *
+		Perspective(DEG2RAD(fov_angle * 0.5), 1, zNear, zFar);
 	this->proj_mode = 0;
 }
 
@@ -168,17 +153,17 @@ void Camera::SetOrthographic(float width, float height, float zNear, float zFar)
 	float halfW = width * 0.5f;
 	float halfH = height * 0.5f;
 
-	this->view = Ortho(-halfW, halfW, halfH, -halfH, zNear, zFar);
+	this->proj = Ortho(-halfW, halfW, halfH, -halfH, zNear, zFar);
 	this->proj_mode = 1;
 }
 
 void Camera::SetProjection(const mat4& projection) {
-	this->view = projection;
+	this->proj = projection;
 	this->proj_mode = 2;
 }
 
-void Camera::SetWorld(const mat4& view) {
-	this->world = view;
+void Camera::SetWorld(const mat4& world) {
+	this->world = world;
 }
 
 void Camera::SetWorld(const vec3& position, const quat& orient) {
@@ -186,7 +171,7 @@ void Camera::SetWorld(const vec3& position, const quat& orient) {
 }
 
 void Camera::SetWorld(const vec3& position, const quat& orient, const vec3& scale) {
-	world = Translate(position) * Scale(scale).GetInverse() * QuatMat(orient).GetInverse();
+	world = Scale(scale).GetInverse() * QuatMat(orient).GetInverse() * Translate(position);
 }
 
 Camera CreatePerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
@@ -209,8 +194,8 @@ Frustum Camera::GetFrustum() {
 
 	mat4 vp;
 	mat4 proj = GetProjectionMatrix();
-	mat4 view = GetViewMatrix();
-	vp = proj * view;
+	mat4 world = GetWorldMatrix();
+	vp = proj * world;
 	float vp41 = vp[3][0];
 	float vp42 = vp[3][1];
 	float vp43 = vp[3][2];

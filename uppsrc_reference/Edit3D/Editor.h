@@ -11,7 +11,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 struct EditConfiguration {
 	Color background_clr;
-	
+	float mouse_move_sensitivity = 0.01;
 	
 	EditConfiguration();
 	
@@ -40,6 +40,7 @@ public:
 	Edit3D();
 	
 	void Data();
+	void TimelineData();
 	void TreeSelect();
 	void Exit();
 	void RefreshData();
@@ -51,6 +52,8 @@ public:
 	
 	void LoadTestProject(int test_i);
 	void LoadWmrStereoPointcloud(String directory);
+	
+	GeomScene& GetActiveScene();
 	
 };
 

@@ -25,9 +25,16 @@ Edit3D::Edit3D() {
 	grid.SetGridSize(2,2);
 	for(int i = 0; i < 4; i++) {
 		rends[i].owner = this;
-		rends[i].SetViewMode((ViewMode)i);
 		grid.Add(rends[i]);
 	}
+	rends[0].SetViewMode(VIEWMODE_YZ);
+	rends[1].SetViewMode(VIEWMODE_XZ);
+	rends[2].SetViewMode(VIEWMODE_XY);
+	rends[3].SetViewMode(VIEWMODE_PERSPECTIVE);
+	rends[0].SetCameraSource(CAMSRC_FOCUS);
+	rends[1].SetCameraSource(CAMSRC_FOCUS);
+	rends[2].SetCameraSource(CAMSRC_FOCUS);
+	rends[3].SetCameraSource(CAMSRC_PROGRAM);
 	
 	Add(hsplit.SizePos());
 	
@@ -54,6 +61,10 @@ void Edit3D::Toolbar(Bar& bar) {
 	else
 		bar.Add(true,  t_("Play"),  ImagesImg::Play(),  THISBACK(Play));
 	
+}
+
+GeomScene& Edit3D::GetActiveScene() {
+	return prj.scenes[0];
 }
 
 void Edit3D::Exit() {
@@ -114,6 +125,35 @@ void Edit3D::Data() {
 	TreeSelect();
 }
 
+void Edit3D::TimelineData() {
+	GeomScene& scene = GetActiveScene();
+	
+	time.SetCount(scene.programs.GetCount());
+	time.SetKeypointRate(prj.kps);
+	time.SetLength(scene.length);
+	time.SetKeypointColumnWidth(13);
+	
+	for(int i = 0; i < scene.programs.GetCount(); i++) {
+		/*int j = prj.list[i];
+		int id = j / GeomProjectFile::O_COUNT;
+		int type = j % GeomProjectFile::O_COUNT;*/
+		int id = scene.programs.GetKey(i);
+		String name = prj.dictionary[id];
+		if (name.IsEmpty())
+			name = IntStr(id);
+		
+		TimelineRowCtrl& row = time.GetRowIndex(i);
+		row.SetTitle(name);
+		
+		GeomProgram& prog = scene.programs[i];
+		row.SetKeypoints(prog.timeline.keypoints.GetKeys());
+		
+		row.Refresh();
+	}
+	
+	time.Refresh();
+}
+
 void Edit3D::TreeSelect() {
 	if (!tree.HasFocus())
 		return;
@@ -142,8 +182,11 @@ void Edit3D::LoadTestProject(int test_i) {
 	// Add camera
 	Camera& cam = prj.GetAddCamera("camera");
 	
+	// Add scene
+	GeomScene& scene = prj.AddScene();
+	
 	// Add camera progam
-	GeomProgram& cam_prog = prj.GetAddProgram("camera_program");
+	GeomProgram& cam_prog = scene.GetAddProgram("camera_program");
 	cam.SetProgram(cam_prog.id);
 	
 	
@@ -178,11 +221,12 @@ void Edit3D::LoadTestProject(int test_i) {
 		
 		// Move camera linearly around sphere
 		int seconds = 3;
-		int keypoints = prj.fps * seconds;
-		float step = M_PI * 2 / keypoints;
+		scene.length = prj.kps * seconds;
+		int kp_step = 3;
+		float step = M_PI * 2 / (scene.length / kp_step);
 		float angle = 0;
 		float cam_radius = radius + 2;
-		for(int i = 0; i < keypoints; i++) {
+		for(int i = 0; i < scene.length; i += kp_step) {
 			GeomKeypoint& kp = cam_prog.timeline.GetAddKeypoint(i);
 			kp.position = vec3(sin(angle), 0, cos(angle)) * cam_radius;
 			kp.orientation = AxesQuat(angle, 0, 0);
@@ -195,6 +239,7 @@ void Edit3D::LoadTestProject(int test_i) {
 	
 	
 	Data();
+	TimelineData();
 	tree.OpenDeep(tree_cameras);
 	tree.OpenDeep(tree_octrees);
 }
@@ -257,7 +302,7 @@ void Edit3D::LoadWmrStereoPointcloud(String directory) {
 
 
 EditConfiguration::EditConfiguration() {
-	background_clr = Color(86, 87, 91);
+	background_clr = Color(43, 44, 46);
 	
 	
 }

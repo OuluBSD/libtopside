@@ -15,7 +15,7 @@ protected:
 	float height;
 	
 	mat4 world;
-	mat4 view;
+	mat4 proj;
 	int proj_mode;
 	
 	int prog_id = -1;
@@ -28,6 +28,7 @@ public:
 
 	mat4 GetWorldMatrix();
 	mat4 GetViewMatrix();
+	mat4 GetViewportMatrix();
 	mat4 GetProjectionMatrix();
 
 	float GetAspect();
@@ -46,7 +47,7 @@ public:
 	void SetOrthographic(float width, float height, float zNear, float zFar);
 	
 	void SetProjection(const mat4& projection);
-	void SetWorld(const mat4& view);
+	void SetWorld(const mat4& world);
 	void SetWorld(const vec3& position, const quat& orient);
 	void SetWorld(const vec3& position, const quat& orient, const vec3& scale);
 	

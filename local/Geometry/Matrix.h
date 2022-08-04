@@ -36,8 +36,16 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #if IS_CW_ANGLE
 	#define A_PI (-M_PI)
+	#define VEC_ROT_LEFT axes3(-1,0,0)
+	#define VEC_ROT_RIGHT axes3(+1,0,0)
+	#define VEC_ROT_UP axes3(0,-1,0)
+	#define VEC_ROT_DOWN axes3(0,+1,0)
 #else
 	#define A_PI M_PI
+	#define VEC_ROT_LEFT axes3(+1,0,0)
+	#define VEC_ROT_RIGHT axes3(-1,0,0)
+	#define VEC_ROT_UP axes3(0,+1,0)
+	#define VEC_ROT_DOWN axes3(0,-1,0)
 #endif
 
 template <class T, int I> struct PartVec {};
