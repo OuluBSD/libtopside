@@ -28,12 +28,12 @@ struct Edit3D : public TopWindow {
 	EditRenderer rends[4];
 	EditConfiguration conf;
 	
-	int tree_cameras = -1;
-	int tree_octrees = -1;
-	int tree_pointclouds = -1;
+	int tree_scenes = -1;
 	
 	GeomProjectFile prj;
 	GeomWorldState state;
+	
+	void TreeDirectory(int id, GeomDirectory& dir);
 	
 public:
 	typedef Edit3D CLASSNAME;

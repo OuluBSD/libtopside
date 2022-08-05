@@ -3,6 +3,86 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+GeomObjectCollection::GeomObjectCollection(GeomDirectory& d) {
+	iter.addr[0] = &d;
+}
+
+bool GeomObjectIterator::Next() {
+	if (!*this)
+		return false;
+	
+	while (1) {
+		ASSERT(level >= 0);
+		
+		{
+			GeomDirectory* a = addr[level];
+			int oc = a->objs.GetCount();
+			int sc = a->subdir.GetCount();
+			int& p = pos[level];
+			p++;
+			
+			if (p < oc)
+				; // pass
+			else if (p == oc + sc) {
+				if (!level)
+					break;
+				level--;
+				continue;
+			}
+			else {
+				ASSERT(p >= oc && p < oc + sc);
+				int s = p - oc;
+				addr[level+1] = &a->subdir[s];
+				pos[level+1] = -1;
+				level++;
+				continue;
+			}
+		}
+		
+		return true;
+	}
+	
+	return false;
+}
+
+GeomObjectIterator::operator bool() const {
+	if (!level) {
+		GeomDirectory* a = addr[level];
+		if (!a)
+			return false;
+		int oc = a->objs.GetCount();
+		int sc = a->subdir.GetCount();
+		if (pos[0] >= oc + sc)
+			return false;
+	}
+	return true;
+}
+
+GeomObject& GeomObjectIterator::operator*() {
+	GeomDirectory* a = addr[level];
+	int& p = pos[level];
+	return a->objs[p];
+}
+
+GeomObject* GeomObjectIterator::operator->() {
+	GeomDirectory* a = addr[level];
+	if (!a)
+		return 0;
+	int& p = pos[level];
+	if (p < 0 || p >= a->objs.GetCount())
+		return 0;
+	return &a->objs[p];
+}
+
+
+
+
+
+
+
+
+
+
 GeomKeypoint& GeomTimeline::GetAddKeypoint(int i) {
 	GeomKeypoint& kp = keypoints.GetAdd(i);
 	kp.frame_id = i;
@@ -11,54 +91,69 @@ GeomKeypoint& GeomTimeline::GetAddKeypoint(int i) {
 	return kp;
 }
 
-Camera& GeomProjectFile::GetAddCamera(String name) {
-	int i = dictionary.FindAdd(name);
-	int j = cameras.Find(i);
-	if (j >= 0)
-		return cameras[j];
-	Camera& p = cameras.Add(i);
-	//p.owner = this;
-	p.id = i;
-	int list_i = i * O_COUNT + O_CAMERA;
-	list.FindAdd(list_i);
-	return p;
-}
-
-OctreePointModel& GeomProjectFile::GetAddOctree(String name) {
-	int i = dictionary.FindAdd(name);
-	int j = octrees.Find(i);
-	if (j >= 0)
-		return octrees[j];
-	OctreePointModel& p = octrees.Add(i);
-	//p.owner = this;
-	p.id = i;
-	int list_i = i * O_COUNT + O_OCTREE;
-	list.FindAdd(list_i);
-	return p;
-}
-
 GeomScene& GeomProjectFile::AddScene() {
 	GeomScene& s = scenes.Add();
 	s.owner = this;
 	return s;
 }
 
+/*GeomModel& GeomProjectFile::AddModel() {
+	GeomModel& m = models.Add();
+	m.owner = this;
+	return m;
+}*/
 
 
 
 
 
 
-GeomProgram& GeomScene::GetAddProgram(String name) {
-	int i = owner->dictionary.FindAdd(name);
-	int j = programs.Find(i);
-	if (j >= 0)
-		return programs[j];
-	GeomProgram& p = programs.Add(i);
-	p.owner = this;
-	p.id = i;
-	return p;
+
+GeomObject* GeomDirectory::FindObject(String name) {
+	for(GeomObject& o : objs)
+		if (o.name == name)
+			return &o;
+	return 0;
 }
+
+GeomObject& GeomDirectory::GetAddModel(String name) {
+	GeomObject* o = FindObject(name);
+	if (o)
+		return *o;
+	
+	o = &objs.Add();
+	o->name = name;
+	o->type = GeomObject::O_MODEL;
+	return *o;
+}
+
+GeomObject& GeomDirectory::GetAddCamera(String name) {
+	GeomObject* o = FindObject(name);
+	if (o)
+		return *o;
+	
+	o = &objs.Add();
+	o->name = name;
+	o->type = GeomObject::O_CAMERA;
+	return *o;
+}
+
+GeomObject& GeomDirectory::GetAddOctree(String name) {
+	GeomObject* o = FindObject(name);
+	if (o)
+		return *o;
+	
+	o = &objs.Add();
+	o->name = name;
+	o->type = GeomObject::O_OCTREE;
+	return *o;
+}
+
+
+
+
+
+
 
 
 
@@ -67,13 +162,13 @@ GeomProgram& GeomScene::GetAddProgram(String name) {
 
 
 GeomWorldState::GeomWorldState() {
-	focus.scale = 100;
-	program.scale = 100;
+	//focus.scale = 100;
+	//program.scale = 100;
 	//program.orientation = AxesQuat(M_PI/4, -M_PI/4, 0);
 	
 }
 
-void GeomCamera::LoadCamera(ViewMode m, Camera& cam, Size sz) const {
+void GeomCamera::LoadCamera(ViewMode m, Camera& cam, Size sz, float far) const {
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float aspect = (float)sz.cx / (float)sz.cy;
 	
@@ -86,21 +181,22 @@ void GeomCamera::LoadCamera(ViewMode m, Camera& cam, Size sz) const {
 		
 	case VIEWMODE_YZ:
 		orientation = MatQuat(YRotation(M_PI/2));
-		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		cam.SetOrthographic(len * aspect, len, 0.1, far);
 		break;
 		
 	case VIEWMODE_XZ:
 		orientation = MatQuat(XRotation(-M_PI/2));
-		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		cam.SetOrthographic(len * aspect, len, 0.1, far);
 		break;
 		
 	case VIEWMODE_XY:
 		orientation = MatQuat(YRotation(0));
-		cam.SetOrthographic(len * aspect, len, 0.1, 100.0);
+		cam.SetOrthographic(len * aspect, len, 0.1, far);
 		break;
 		
 	case VIEWMODE_PERSPECTIVE:
-		cam.SetPerspective(fov, aspect, 0.01, 1000.0);
+		cam.SetPerspective(fov, aspect, 0.1, far);
+		move_camera = false;
 		break;
 		
 	default:

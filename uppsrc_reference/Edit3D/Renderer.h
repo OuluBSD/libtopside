@@ -14,7 +14,16 @@ struct EditRenderer : public Ctrl {
 	
 	Point cap_mouse_pos;
 	vec3 cap_begin_pos;
+	quat cap_begin_orientation;
 	bool is_captured_mouse = false;
+	
+	typedef enum {
+		CAPMODE_MOVE_XY,
+		CAPMODE_MOVE_YZ,
+		CAPMODE_ROTATE
+	} CapMode;
+	
+	CapMode cap_mode;
 	
 public:
 	typedef EditRenderer CLASSNAME;
@@ -31,6 +40,7 @@ public:
 	void Move(const vec3& v);
 	void MoveRel(const vec3& v);
 	void Rotate(const axes3& v);
+	void RotateRel(const axes3& v);
 	void SetViewMode(ViewMode i) {view_mode = i;}
 	void SetCameraSource(CameraSource cs) {cam_src = cs;}
 

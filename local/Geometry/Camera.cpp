@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 Camera::Camera() {
-	this->fov = 120.0f;
+	/*this->fov = 120.0f;
 	this->aspect = 1.3f;
 	this->near = 0.01f;
 	this->far = 1000.0f;
@@ -13,58 +13,11 @@ Camera::Camera() {
 
 	this->world = mat4();
 	this->proj.SetPerspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
-	this->proj_mode = 0;
+	this->proj_mode = 0;*/
 }
 
 mat4 Camera::GetWorldMatrix() {
 	return this->world;
-}
-
-bool Camera::IsOrthoNormal() {
-	vec3 right = world[0].Splice();
-	vec3 up = world[1].Splice();
-	vec3 forward = world[2].Splice();
-	
-	// Axis is not normal
-	if (!CMP(Dot(right, right), 1.0f)) {
-		return false;
-	}
-	if (!CMP(Dot(up, up), 1.0f)) {
-		return false;
-	}
-	if (!CMP(Dot(forward, forward), 1.0f)) {
-		return false;
-	}
-	
-	// Not perpendicular
-	if (!CMP(Dot(forward, up), 0.0f)) {
-		return false;
-	}
-	if (!CMP(Dot(forward, right), 0.0f)) {
-		return false;
-	}
-	if (!CMP(Dot(right, up), 0.0f)) {
-		return false;
-	}
-
-	return true;
-}
-
-void Camera::OrthoNormalize() {
-	vec3 right = world[0].Splice();
-	vec3 up = world[1].Splice();
-	vec3 forward = world[2].Splice();
-
-	vec3 f = forward.GetNormalized();
-	vec3 r = Cross(up, f).GetNormalized();
-	vec3 u = Cross(f, r);
-
-	this->world = mat4 {
-		r[0], r[1], r[2], 0.0f,
-		u[0], u[1], u[2], 0.0f,
-		f[0], f[1], f[2], 0.0f,
-		world[3][0], world[3][1], world[3][2], 1.0f
-	};
 }
 
 mat4 Camera::GetViewportMatrix() {
@@ -74,14 +27,6 @@ mat4 Camera::GetViewportMatrix() {
 
 mat4 Camera::GetViewMatrix() {
 	return proj * world;
-}
-
-void Camera::SetProgram(int i) {
-	prog_id = i;
-}
-
-int Camera::GetProgram() const {
-	return prog_id;
 }
 
 float Camera::GetAspect() {
@@ -138,9 +83,7 @@ void Camera::SetPerspective(float fov_angle, float aspect, float zNear, float zF
 	this->far = zFar;
 	
 	float ratio = 1.0f / aspect;
-	this->proj =
-		GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1) *
-		Perspective(DEG2RAD(fov_angle * 0.5), 1, zNear, zFar);
+	this->proj = Perspective(DEG2RAD(fov_angle * 0.5), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
 
@@ -153,7 +96,9 @@ void Camera::SetOrthographic(float width, float height, float zNear, float zFar)
 	float halfW = width * 0.5f;
 	float halfH = height * 0.5f;
 
-	this->proj = Ortho(-halfW, halfW, halfH, -halfH, zNear, zFar);
+	this->proj =
+		Ortho(-halfW, halfW, halfH, -halfH, zNear, zFar)
+		* Scale(vec3(+1,-1,+1));
 	this->proj_mode = 1;
 }
 
@@ -167,11 +112,11 @@ void Camera::SetWorld(const mat4& world) {
 }
 
 void Camera::SetWorld(const vec3& position, const quat& orient) {
-	world = Translate(position) * QuatMat(orient).GetInverse();
+	world = (Translate(position) * QuatMat(orient)).GetInverse();
 }
 
-void Camera::SetWorld(const vec3& position, const quat& orient, const vec3& scale) {
-	world = Scale(scale).GetInverse() * QuatMat(orient).GetInverse() * Translate(position);
+void Camera::SetWorld(const vec3& position, const quat& orient, float scale) {
+	world = (Translate(position) * QuatMat(orient) * Scale(vec3(scale))).GetInverse();
 }
 
 Camera CreatePerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane) {
@@ -188,52 +133,101 @@ Camera CreateOrthographic(float width, float height, float nearPlane, float farP
 
 
 
+void FromNumbers(const vec4& numbers, Plane& p) {
+	vec3 abc = numbers.Splice();
+	float mag = abc.GetLength();
+	abc.Normalize();
+	
+	p.normal = abc;
+	p.distance = numbers[3] / mag;
+}
+
+void NormalizePlane(Plane& p) {
+	float magnitude = sqrtf(p.normal.data[0] * p.normal.data[0] + p.normal.data[1] * p.normal.data[1] + p.normal.data[2] * p.normal.data[2]);
+	p.normal.data[0] /= magnitude;
+	p.normal.data[1] /= magnitude;
+	p.normal.data[2] /= magnitude;
+	p.distance /= magnitude;
+}
 
 Frustum Camera::GetFrustum() {
 	Frustum result;
-
+	
 	mat4 vp;
 	mat4 proj = GetProjectionMatrix();
 	mat4 world = GetWorldMatrix();
 	vp = proj * world;
-	float vp41 = vp[3][0];
-	float vp42 = vp[3][1];
-	float vp43 = vp[3][2];
-	float vp44 = vp[3][3];
 	
-	/*DUMP((proj * vec4(0,0,-1,1)).Splice());
-	DUMP((view * vec4(0,0,-1,1)).Splice());
-	DUMP((vp * vec4(0,0,-1,1)).Splice());*/
+	float clip[16];
+
+	clip[0] = world.data[0].data[0] * proj.data[0].data[0] + world.data[0].data[1] * proj.data[1].data[0] + world.data[0].data[2] * proj.data[2].data[0] + world.data[0].data[3] * proj.data[3].data[0];
+	clip[1] = world.data[0].data[0] * proj.data[0].data[1] + world.data[0].data[1] * proj.data[1].data[1] + world.data[0].data[2] * proj.data[2].data[1] + world.data[0].data[3] * proj.data[3].data[1];
+	clip[2] = world.data[0].data[0] * proj.data[0].data[2] + world.data[0].data[1] * proj.data[1].data[2] + world.data[0].data[2] * proj.data[2].data[2] + world.data[0].data[3] * proj.data[3].data[2];
+	clip[3] = world.data[0].data[0] * proj.data[0].data[3] + world.data[0].data[1] * proj.data[1].data[3] + world.data[0].data[2] * proj.data[2].data[3] + world.data[0].data[3] * proj.data[3].data[3];
+
+	clip[4] = world.data[1].data[0] * proj.data[0].data[0] + world.data[1].data[1] * proj.data[1].data[0] + world.data[1].data[2] * proj.data[2].data[0] + world.data[1].data[3] * proj.data[3].data[0];
+	clip[5] = world.data[1].data[0] * proj.data[0].data[1] + world.data[1].data[1] * proj.data[1].data[1] + world.data[1].data[2] * proj.data[2].data[1] + world.data[1].data[3] * proj.data[3].data[1];
+	clip[6] = world.data[1].data[0] * proj.data[0].data[2] + world.data[1].data[1] * proj.data[1].data[2] + world.data[1].data[2] * proj.data[2].data[2] + world.data[1].data[3] * proj.data[3].data[2];
+	clip[7] = world.data[1].data[0] * proj.data[0].data[3] + world.data[1].data[1] * proj.data[1].data[3] + world.data[1].data[2] * proj.data[2].data[3] + world.data[1].data[3] * proj.data[3].data[3];
+
+	clip[8] = world.data[2].data[0] * proj.data[0].data[0] + world.data[2].data[1] * proj.data[1].data[0] + world.data[2].data[2] * proj.data[2].data[0] + world.data[2].data[3] * proj.data[3].data[0];
+	clip[9] = world.data[2].data[0] * proj.data[0].data[1] + world.data[2].data[1] * proj.data[1].data[1] + world.data[2].data[2] * proj.data[2].data[1] + world.data[2].data[3] * proj.data[3].data[1];
+	clip[10] = world.data[2].data[0] * proj.data[0].data[2] + world.data[2].data[1] * proj.data[1].data[2] + world.data[2].data[2] * proj.data[2].data[2] + world.data[2].data[3] * proj.data[3].data[2];
+	clip[11] = world.data[2].data[0] * proj.data[0].data[3] + world.data[2].data[1] * proj.data[1].data[3] + world.data[2].data[2] * proj.data[2].data[3] + world.data[2].data[3] * proj.data[3].data[3];
+
+	clip[12] = world.data[3].data[0] * proj.data[0].data[0] + world.data[3].data[1] * proj.data[1].data[0] + world.data[3].data[2] * proj.data[2].data[0] + world.data[3].data[3] * proj.data[3].data[0];
+	clip[13] = world.data[3].data[0] * proj.data[0].data[1] + world.data[3].data[1] * proj.data[1].data[1] + world.data[3].data[2] * proj.data[2].data[1] + world.data[3].data[3] * proj.data[3].data[1];
+	clip[14] = world.data[3].data[0] * proj.data[0].data[2] + world.data[3].data[1] * proj.data[1].data[2] + world.data[3].data[2] * proj.data[2].data[2] + world.data[3].data[3] * proj.data[3].data[2];
+	clip[15] = world.data[3].data[0] * proj.data[0].data[3] + world.data[3].data[1] * proj.data[1].data[3] + world.data[3].data[2] * proj.data[2].data[3] + world.data[3].data[3] * proj.data[3].data[3];
+
+	// This will extract the LEFT side of the frustum.
+	result.planes[1].normal.data[0] = clip[3] - clip[0];
+	result.planes[1].normal.data[1] = clip[7] - clip[4];
+	result.planes[1].normal.data[2] = clip[11] - clip[8];
+	result.planes[1].distance = clip[15] - clip[12];
+
+	NormalizePlane(result.planes[1]);
+
+	// This will extract the RIGHT side of the frustum.
+	result.planes[0].normal.data[0] = clip[3] + clip[0];
+	result.planes[0].normal.data[1] = clip[7] + clip[4];
+	result.planes[0].normal.data[2] = clip[11] + clip[8];
+	result.planes[0].distance = clip[15] + clip[12];
+
+	NormalizePlane(result.planes[0]);
+
+	// This will extract the BOTTOM side of the frustum.
+	result.planes[2].normal.data[0] = clip[3] + clip[1];
+	result.planes[2].normal.data[1] = clip[7] + clip[5];
+	result.planes[2].normal.data[2] = clip[11] + clip[9];
+	result.planes[2].distance = clip[15] + clip[13];
+
+	NormalizePlane(result.planes[2]);
+
+	// This will extract the TOP side of the frustum.
+	result.planes[3].normal.data[0] = clip[3] - clip[1];
+	result.planes[3].normal.data[1] = clip[7] - clip[5];
+	result.planes[3].normal.data[2] = clip[11] - clip[9];
+	result.planes[3].distance = clip[15] - clip[13];
+
+	NormalizePlane(result.planes[3]);
+
+	// This will extract the BACK side of the frustum.
+	result.planes[4].normal.data[0] = clip[3] + clip[2];
+	result.planes[4].normal.data[1] = clip[7] + clip[6];
+	result.planes[4].normal.data[2] = clip[11] + clip[10];
+	result.planes[4].distance = clip[15] + clip[14];
+
+	NormalizePlane(result.planes[4]);
+
+	// This will extract the FRONT side of the frustum.
+	result.planes[5].normal.data[0] = clip[3] - clip[2];
+	result.planes[5].normal.data[1] = clip[7] - clip[6];
+	result.planes[5].normal.data[2] = clip[11] - clip[10];
+	result.planes[5].distance = clip[15] - clip[14];
+
+	NormalizePlane(result.planes[5]);
 	
-	
-	vec3 col1 = vp.GetColumn(0).Splice();
-	vec3 col2 = vp.GetColumn(1).Splice();
-	vec3 col3 = vp.GetColumn(2).Splice();
-	vec3 col4 = vp.GetColumn(3).Splice();
-					
-	// Find plane magnitudes
-	result.left.normal	= col4 + col1;
-	result.right.normal = col4 - col1;
-	result.bottom.normal= col4 + col2;
-	result.top.normal	= col4 - col2;
-	result._near.normal	= /*col4 +*/ col3;
-	result._far.normal	= col4 - col3;
-
-	// Find plane distances
-	result.left.distance	= vp44 + vp41;
-	result.right.distance	= vp44 - vp41;
-	result.bottom.distance	= vp44 + vp42;
-	result.top.distance		= vp44 - vp42;
-	result._near.distance	= /*vp44 +*/ vp43;
-	result._far.distance	= vp44 - vp43;
-
-	// Normalize all 6 planes
-	for (int i = 0; i < 6; ++i) {
-		float mag = 1.0f / result[i].normal.GetMagnitude();
-		result[i].normal.Normalize();
-		result[i].distance *= mag;
-	}
-
 	return result;
 }
 

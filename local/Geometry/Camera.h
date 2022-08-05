@@ -18,7 +18,6 @@ protected:
 	mat4 proj;
 	int proj_mode;
 	
-	int prog_id = -1;
 	
 public:
 	Camera();
@@ -35,11 +34,8 @@ public:
 	bool IsOrthographic();
 	bool IsPerspective();
 
-	bool IsOrthoNormal();
-	void OrthoNormalize();
 	void UpdateMatrices();
 	
-	void SetProgram(int i);
 	void SetResolution(int width, int height);
 	void SetResolution(Size sz);
 	
@@ -49,10 +45,9 @@ public:
 	void SetProjection(const mat4& projection);
 	void SetWorld(const mat4& world);
 	void SetWorld(const vec3& position, const quat& orient);
-	void SetWorld(const vec3& position, const quat& orient, const vec3& scale);
+	void SetWorld(const vec3& position, const quat& orient, float scale);
 	
 	Frustum GetFrustum();
-	int GetProgram() const;
 	
 };
 

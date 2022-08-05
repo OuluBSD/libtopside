@@ -96,57 +96,71 @@ void Edit3D::Data() {
 	
 	tree.SetRoot(ImagesImg::Root(), "Project");
 	
-	if (tree_cameras < 0)
-		tree_cameras = tree.Add(0, ImagesImg::Cameras(), "Cameras");
+	if (tree_scenes < 0)
+		tree_scenes = tree.Add(0, ImagesImg::Scenes(), "Scenes");
 	
-	if (tree_octrees < 0)
-		tree_octrees = tree.Add(0, ImagesImg::Octrees(), "Octrees");
-	
-	if (tree_pointclouds < 0)
-		tree_pointclouds = tree.Add(0, ImagesImg::Pointclouds(), "Pointclouds");
-	
-	for(int i = 0; i < prj.cameras.GetCount(); i++) {
-		Camera& c = prj.cameras[i];
-		String name = prj.dictionary[c.id];
-		int j = tree.Add(tree_cameras, ImagesImg::Camera(), c.id, name);
+	for(int i = 0; i < prj.scenes.GetCount(); i++) {
+		GeomScene& scene = prj.scenes[i];
+		String name = scene.name.IsEmpty() ? "Scene #" + IntStr(i) : scene.name;
+		int j = tree.Add(tree_scenes, ImagesImg::Scene(), i, name);
+		
+		TreeDirectory(j, scene);
 		
 		if (i == 0 && !tree.HasFocus())
-			tree.SetCursor(i);
+			tree.SetCursor(j);
 	}
 	
-	for(int i = 0; i < prj.octrees.GetCount(); i++) {
+	/*for(int i = 0; i < prj.octrees.GetCount(); i++) {
 		OctreePointModel& o = prj.octrees[i];
 		String name = prj.dictionary[o.id];
 		tree.Add(tree_octrees, ImagesImg::Octree(), o.id, name);
-	}
+	}*/
 	
 	tree.Open(0);
 	
 	TreeSelect();
 }
 
+void Edit3D::TreeDirectory(int id, GeomDirectory& dir) {
+	for(int i = 0; i < dir.subdir.GetCount(); i++) {
+		GeomDirectory& subdir = dir.subdir[i];
+		String name = dir.subdir.GetKey(i);
+		int j = tree.Add(id, ImagesImg::Directory(), i, name);
+		TreeDirectory(j, subdir);
+	}
+	for(int i = 0; i < dir.objs.GetCount(); i++) {
+		GeomObject& o = dir.objs[i];
+		Image img;
+		switch (o.type) {
+			case GeomObject::O_CAMERA: img = ImagesImg::Camera(); break;
+			case GeomObject::O_MODEL:  img = ImagesImg::Model(); break;
+			case GeomObject::O_OCTREE: img = ImagesImg::Octree(); break;
+			default: img = ImagesImg::Object();
+		}
+		int j = tree.Add(id, img, i, o.name);
+	}
+}
+
 void Edit3D::TimelineData() {
 	GeomScene& scene = GetActiveScene();
 	
-	time.SetCount(scene.programs.GetCount());
+	time.SetCount(scene.objs.GetCount());
 	time.SetKeypointRate(prj.kps);
 	time.SetLength(scene.length);
 	time.SetKeypointColumnWidth(13);
 	
-	for(int i = 0; i < scene.programs.GetCount(); i++) {
+	for(int i = 0; i < scene.objs.GetCount(); i++) {
+		GeomObject& o = scene.objs[i];
 		/*int j = prj.list[i];
 		int id = j / GeomProjectFile::O_COUNT;
 		int type = j % GeomProjectFile::O_COUNT;*/
-		int id = scene.programs.GetKey(i);
-		String name = prj.dictionary[id];
-		if (name.IsEmpty())
-			name = IntStr(id);
+		
+		String name = o.name.IsEmpty() ? IntStr(i) : o.name;
 		
 		TimelineRowCtrl& row = time.GetRowIndex(i);
 		row.SetTitle(name);
 		
-		GeomProgram& prog = scene.programs[i];
-		row.SetKeypoints(prog.timeline.keypoints.GetKeys());
+		row.SetKeypoints(o.timeline.keypoints.GetKeys());
 		
 		row.Refresh();
 	}
@@ -160,12 +174,9 @@ void Edit3D::TreeSelect() {
 	
 	int cursor = tree.GetCursor();
 	int parent = tree.GetParent(cursor);
-	if (parent == tree_cameras) {
-		int id = tree.Get(cursor);
-		Camera& c = prj.cameras.Get(id);
-	}
-	else if (parent == tree_octrees) {
-		
+	if (parent == tree_scenes) {
+		int i = tree.Get(cursor);
+		GeomScene& s = prj.scenes[i];
 	}
 
 }
@@ -175,24 +186,38 @@ void Edit3D::LoadTestProject(int test_i) {
 	// Cler project
 	prj.Clear();
 	
-	// Add pointcloud
-	OctreePointModel& omodel = prj.GetAddOctree("octree");
-	Octree& o = omodel.octree;
-	
-	// Add camera
-	Camera& cam = prj.GetAddCamera("camera");
-	
 	// Add scene
 	GeomScene& scene = prj.AddScene();
 	
-	// Add camera progam
-	GeomProgram& cam_prog = scene.GetAddProgram("camera_program");
-	cam.SetProgram(cam_prog.id);
+	// Add camera
+	GeomObject& cam = scene.GetAddCamera("camera");
 	
 	
 	if (test_i == 0) {
+		GeomObject& mdl = scene.GetAddModel("some model");
+		
+		ModelBuilder mb;
+		mb.AddBox(0, 1, 1);
+		
+		mdl.mdl = mb.Detach();
+		
+		scene.length = prj.kps * 4 + 1;
+		float step = M_PI * 2 / 5;
+		float angle = 0;
+		float cam_radius = 2;
+		for(int i = 0; i < 5; i++) {
+			GeomKeypoint& kp = cam.timeline.GetAddKeypoint(i * prj.kps);
+			kp.position = vec3(sin(angle), 0, cos(angle)) * cam_radius;
+			kp.orientation = AxesQuat(angle, 0, 0);
+			angle += step;
+		}
+		
+	}
+	else if (test_i == 1) {
 		
 		// Create octree
+		GeomObject& omodel = scene.GetAddOctree("octree");
+		Octree& o = omodel.octree.octree;
 		o.Initialize(-3, 8); // 1 << 6 = 32x32x32 meters
 		
 		// Create points in form of sphere
@@ -227,7 +252,7 @@ void Edit3D::LoadTestProject(int test_i) {
 		float angle = 0;
 		float cam_radius = radius + 2;
 		for(int i = 0; i < scene.length; i += kp_step) {
-			GeomKeypoint& kp = cam_prog.timeline.GetAddKeypoint(i);
+			GeomKeypoint& kp = cam.timeline.GetAddKeypoint(i);
 			kp.position = vec3(sin(angle), 0, cos(angle)) * cam_radius;
 			kp.orientation = AxesQuat(angle, 0, 0);
 			angle += step;
@@ -238,15 +263,20 @@ void Edit3D::LoadTestProject(int test_i) {
 	else TODO
 	
 	
+	GeomKeypoint& kp = cam.timeline.keypoints.Get(0);
+	state.program.position = kp.position;
+	state.program.orientation = kp.orientation;
+	
+	
 	Data();
 	TimelineData();
-	tree.OpenDeep(tree_cameras);
-	tree.OpenDeep(tree_octrees);
+	tree.OpenDeep(tree_scenes);
 }
 
 void Edit3D::LoadWmrStereoPointcloud(String directory) {
-	int id = prj.dictionary.FindAdd("pointcloud");
-	OctreePointModel& omodel = prj.octrees.GetAdd(id);
+	GeomScene& scene = GetActiveScene();
+	GeomObject& go = scene.GetAddOctree("octree");
+	OctreePointModel& omodel = go.octree;
 	Octree& o = omodel.octree;
 	
 	o.Initialize(-3,8); // 1 << 8 = 256x256x256 meters

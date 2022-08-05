@@ -8,6 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 struct GeomProgram;
 struct GeomProjectFile;
 struct GeomScene;
+struct GeomDirectory;
 struct Edit3D;
 
 
@@ -20,59 +21,103 @@ struct GeomKeypoint {
 
 struct GeomTimeline {
 	ArrayMap<int, GeomKeypoint> keypoints;
-	GeomProgram* owner = 0;
-	
 	
 	GeomKeypoint& GetAddKeypoint(int i);
 	
 };
 
-struct GeomProgram {
-	GeomScene* owner = 0;
-	GeomTimeline timeline;
-	int id = -1;
+struct GeomObject {
+	enum {
+		O_NULL,
+		O_MODEL,
+		O_CAMERA,
+		O_OCTREE,
+		
+		O_COUNT
+	};
 	
+	GeomDirectory* owner = 0;
+	String name;
+	int type = 0;
+	
+	One<Model> mdl;
+	Camera cam;
+	OctreePointModel octree;
+	
+	GeomTimeline timeline;
+	
+	bool IsModel() const {return type == O_MODEL;}
+	bool IsOctree() const {return type == O_OCTREE;}
 	
 };
 
-struct GeomScene {
-	GeomProjectFile* owner = 0;
-	ArrayMap<int, GeomProgram> programs;
-	int length = 0;
+struct GeomDirectory {
+	ArrayMap<String, GeomDirectory> subdir;
+	Array<GeomObject> objs;
 	
-	GeomProgram& GetAddProgram(String name);
+	
+	GeomObject& GetAddModel(String name);
+	GeomObject& GetAddCamera(String name);
+	GeomObject& GetAddOctree(String name);
+	GeomObject* FindObject(String name);
+	
+};
+
+struct GeomObjectIterator {
+	static const int MAX_LEVELS = 128;
+	int pos[MAX_LEVELS] = {0};
+	GeomDirectory* addr[MAX_LEVELS];
+	GeomObject* obj;
+	int level = 0;
+	
+	
+	bool Next();
+	operator bool() const;
+	GeomObject& operator*();
+	GeomObject* operator->();
+	bool operator==(const GeomObjectIterator& it) const {
+		if (it.level != level || it.obj != obj)
+			return false;
+		for(int i = 0; i <= level; i++)
+			if (pos[i] != it.pos[i])
+				return false;
+		return true;
+	}
+	void operator++() {Next();}
+	void operator++(int) {Next();}
+	
+};
+
+struct GeomObjectCollection {
+	using Iterator = GeomObjectIterator;
+	
+	Iterator iter;
+	
+	
+	GeomObjectCollection(GeomDirectory& d);
+	Iterator begin() const {return iter;}
+	Iterator end() const {return Iterator();}
+	Iterator begin() {return iter;}
+	Iterator end() {return Iterator();}
+	
+};
+
+struct GeomScene : GeomDirectory {
+	GeomProjectFile* owner = 0;
+	String name;
+	int length = 0;
 	
 };
 
 struct GeomProjectFile {
-	enum {
-		O_OCTREE,
-		O_MODEL,
-		O_CAMERA,
-		O_PROGRAM,
-		O_COUNT
-	};
-	
-	Index<String> dictionary;
-	ArrayMap<int, OctreePointModel> octrees;
-	ArrayMap<int, Model> models;
-	ArrayMap<int, Camera> cameras;
 	Array<GeomScene> scenes;
-	Index<int> list;
 	int kps = 5;
 	int fps = 60;
 	
 	void Clear() {
-		dictionary.Clear();
-		octrees.Clear();
-		models.Clear();
-		cameras.Clear();
 		scenes.Clear();
-		list.Clear();
 	}
 	
-	Camera& GetAddCamera(String name);
-	OctreePointModel& GetAddOctree(String name);
 	GeomScene& AddScene();
 	
 };
@@ -97,7 +142,7 @@ struct GeomCamera {
 	float scale = 1;
 	
 	
-	void LoadCamera(ViewMode m, Camera& cam, Size sz) const;
+	void LoadCamera(ViewMode m, Camera& cam, Size sz, float far=1000) const;
 	mat4 GetViewMatrix(ViewMode m, Size sz) const;
 	Frustum GetFrustum(ViewMode m, Size sz) const;
 	

@@ -1910,7 +1910,11 @@ bool CalculateTriangleChange(vec3 local, vec3 prev0, vec3 prev1, vec3 cur0, vec3
 }
 
 vec3 VecMul(const mat4& m, const vec3& v) {
-	return (m * v.Embed()).Splice();
+	vec4 p = m * v.Embed();
+	p.data[0] /= p.data[3];
+	p.data[1] /= p.data[3];
+	p.data[2] /= p.data[3];
+	return p.Splice();
 }
 
 void GetPrincipalAxes(const vec3& a, const vec3& b, vec3& x, vec3& y, vec3& z) {

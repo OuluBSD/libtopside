@@ -10,45 +10,36 @@ vec3 Intersection(Plane p1, Plane p2, Plane p3);
 
 
 struct Frustum {
-	Plane top;
-	Plane bottom;
-	Plane left;
-	Plane right;
-	Plane _near;
-	Plane _far;
+	union {
+		struct {
+			Plane top;
+			Plane bottom;
+			Plane left;
+			Plane right;
+			Plane _near;
+			Plane _far;
+		};
+		Plane planes[6];
+	};
 
 	Frustum() {}
 	Frustum(const Frustum& m) {
 		for(int i = 0; i < 6; i++)
-			(*this)[i] = m[i];
+			planes[i] = m.planes[i];
 	}
 	
+	void operator=(const Frustum& m) {
+		for(int i = 0; i < 6; i++)
+			planes[i] = m.planes[i];
+	}
 	Plane& operator[](int i) {
-		switch (i) {
-			case 0: return top;
-			case 1: return bottom;
-			case 2: return left;
-			case 3: return right;
-			case 4: return _near;
-			case 5: return _far;
-		}
-		Panic("invalid [] pos");
-		NEVER();
-		TODO
+		ASSERT(i >= 0 && i < 6);
+		return planes[i];
 	}
 	
 	const Plane& operator[](int i) const {
-		switch (i) {
-			case 0: return top;
-			case 1: return bottom;
-			case 2: return left;
-			case 3: return right;
-			case 4: return _near;
-			case 5: return _far;
-		}
-		Panic("invalid [] pos");
-		NEVER();
-		TODO
+		ASSERT(i >= 0 && i < 6);
+		return planes[i];
 	}
 	
 	void GetCorners(vec3* outCorners) const;

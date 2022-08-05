@@ -11,7 +11,8 @@ TimelineRowCtrl::TimelineRowCtrl() {
 void TimelineRowCtrl::Paint(Draw& d) {
 	Size sz = GetSize();
 	
-	d.DrawRect(sz, HasFocus() ? owner->bg_focused : owner->bg);
+	bool has_focus = HasFocus();
+	d.DrawRect(sz, has_focus ? owner->bg_focused : owner->bg);
 	
 	Font fnt = SansSerif(sz.cy-6).Bold();
 	d.DrawText(2, 2, title, fnt, owner->text);
@@ -35,7 +36,7 @@ void TimelineRowCtrl::Paint(Draw& d) {
 				is_keypoint = true;
 		}
 		
-		if (selected_i == kp_i)
+		if (has_focus && selected_i == kp_i)
 			d.DrawRect(x, 0, col, sz.cy, owner->bg_focused_keypoint);
 		
 		Color line_clr = first_in_second ?
