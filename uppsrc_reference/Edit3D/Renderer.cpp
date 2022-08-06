@@ -44,11 +44,76 @@ EditRenderer::EditRenderer() {
 	
 }
 
+void EditRenderer::PaintObject(Draw& d, const GeomObjectState& os, const mat4& view, const Frustum& frustum) {
+	GeomObject& go = *os.obj;
+	Size sz = GetSize();
+	Color clr = White();
+	int lw = 1;
+	bool z_cull = view_mode == VIEWMODE_PERSPECTIVE;
+	
+	mat4 o_world = (QuatMat(os.orientation) * Translate(os.position)).GetInverse();
+	mat4 o_view = view * o_world;
+	
+	if (go.IsModel()) {
+		if (!go.mdl)
+			return;
+		
+		const Model& mdl = *go.mdl;
+		for (const Mesh& mesh : mdl.meshes) {
+			int tri_count = mesh.indices.GetCount() / 3;
+			const uint32* tri_idx = mesh.indices.Begin();
+			for(int i = 0; i < tri_count; i++) {
+				const Vertex& v0 = mesh.vertices[tri_idx[0]];
+				const Vertex& v1 = mesh.vertices[tri_idx[1]];
+				const Vertex& v2 = mesh.vertices[tri_idx[2]];
+				
+				bool b0 = frustum.Intersects(v0.position.Splice());
+				bool b1 = frustum.Intersects(v1.position.Splice());
+				bool b2 = frustum.Intersects(v2.position.Splice());
+				
+				if (b0 || b1) DrawLine(sz, d, o_view, v0, v1, lw, clr, z_cull);
+				if (b1 || b2) DrawLine(sz, d, o_view, v1, v2, lw, clr, z_cull);
+				if (b2 || b0) DrawLine(sz, d, o_view, v2, v0, lw, clr, z_cull);
+				
+				tri_idx += 3;
+			}
+		}
+		
+	}
+	else if (go.IsOctree()) {
+		OctreePointModel& o = go.octree;
+		OctreeFrustumIterator iter = o.octree.GetFrustumIterator(frustum);
+		
+		while (iter) {
+			const OctreeNode& n = *iter;
+			
+			for (const auto& one_obj : n.objs) {
+				
+				const OctreeObject& obj = *one_obj;
+				vec3 pos = obj.GetPosition();
+				
+				if (!frustum.Intersects(pos))
+					continue;
+				
+				vec3 cam_pos = VecMul(o_view, pos);
+				
+				float x = (cam_pos[0] + 1) * 0.5 * sz.cx;
+				float y = (-cam_pos[1] + 1) * 0.5 * sz.cy;
+				
+				d.DrawRect(x, y, 1, 1, clr);
+			}
+			
+			iter++;
+		}
+	}
+}
+
 void EditRenderer::Paint(Draw& d) {
 	Size sz = GetSize();
 	d.DrawRect(sz, owner->conf.background_clr);
 	
-	GeomScene& scene = owner->GetActiveScene();
+	GeomWorldState& state = owner->state;
+	GeomScene& scene = state.GetActiveScene();
 	GeomCamera& camera = GetGeomCamera();
 	
 	Camera cam;
@@ -64,69 +129,22 @@ void EditRenderer::Paint(Draw& d) {
 		view = proj * world;
 	}*/
 	
-	{
+	if (owner->anim.is_playing) {
+		for (GeomObjectState& os : state.objs) {
+			PaintObject(d, os, view, frustum);
+		}
+	}
+	else {
 		GeomObjectCollection iter(scene);
-		Color clr = White();
-		int lw = 1;
-		
+		GeomObjectState os;
 		for (GeomObject& go : iter) {
-			
-			if (go.IsModel()) {
-				if (!go.mdl)
-					continue;
-				
-				Model& mdl = *go.mdl;
-				for (Mesh& mesh : mdl.meshes) {
-					int tri_count = mesh.indices.GetCount() / 3;
-					uint32* tri_idx = mesh.indices.Begin();
-					for(int i = 0; i < tri_count; i++) {
-						const Vertex& v0 = mesh.vertices[tri_idx[0]];
-						const Vertex& v1 = mesh.vertices[tri_idx[1]];
-						const Vertex& v2 = mesh.vertices[tri_idx[2]];
-						
-						bool b0 = frustum.Intersects(v0.position.Splice());
-						bool b1 = frustum.Intersects(v1.position.Splice());
-						bool b2 = frustum.Intersects(v2.position.Splice());
-						
-						if (b0 || b1) DrawLine(sz, d, view, v0, v1, lw, clr, z_cull);
-						if (b1 || b2) DrawLine(sz, d, view, v1, v2, lw, clr, z_cull);
-						if (b2 || b0) DrawLine(sz, d, view, v2, v0, lw, clr, z_cull);
-						
-						tri_idx += 3;
-					}
-				}
-				
-			}
-			else if (go.IsOctree()) {
-				OctreePointModel& o = go.octree;
-				OctreeFrustumIterator iter = o.octree.GetFrustumIterator(frustum);
-				
-				while (iter) {
-					const OctreeNode& n = *iter;
-					
-					for (const auto& one_obj : n.objs) {
-						
-						const OctreeObject& obj = *one_obj;
-						vec3 pos = obj.GetPosition();
-						
-						if (!frustum.Intersects(pos))
-							continue;
-						
-						vec3 cam_pos = VecMul(view, pos);
-						
-						float x = (cam_pos[0] + 1) * 0.5 * sz.cx;
-						float y = (-cam_pos[1] + 1) * 0.5 * sz.cy;
-						
-						d.DrawRect(x, y, 1, 1, clr);
-					}
-					
-					iter++;
-				}
-			}
+			os.obj = &go;
+			PaintObject(d, os, view, frustum);
 		}
 	}
 	
-	if (1) {
+	
+	if (&camera != &owner->state.program) {
 		Color clr = Color(255, 255, 172);
 		
 		Vector<vec3> corners;

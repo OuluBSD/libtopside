@@ -83,21 +83,58 @@ GeomObject* GeomObjectIterator::operator->() {
 
 
 
-GeomKeypoint& GeomTimeline::GetAddKeypoint(int i) {
-	GeomKeypoint& kp = keypoints.GetAdd(i);
-	kp.frame_id = i;
+GeomKeypoint& GeomTimeline::GetAddKeypoint(int kp_i) {
+	int i = keypoints.Find(kp_i);
+	if (i >= 0)
+		return keypoints[i];
+	int pos = keypoints.GetCount();
+	for(int i = 0; i < keypoints.GetCount(); i++) {
+		int j = keypoints.GetKey(i);
+		if (j > kp_i) {
+			pos = i;
+			break;
+		}
+	}
+	GeomKeypoint& kp = keypoints.Insert(pos, kp_i);
+	kp.frame_id = kp_i;
 	kp.position = Identity<vec3>();
 	kp.orientation = Identity<quat>();
 	return kp;
 }
 
-GeomScene& GeomProjectFile::AddScene() {
+int GeomTimeline::FindPre(int kp_i) const {
+	for(int i = 0; i < keypoints.GetCount(); i++) {
+		int j = keypoints.GetKey(i);
+		if (j > kp_i)
+			return i-1;
+		if (j == kp_i)
+			return i;
+	}
+	return -1;
+}
+
+int GeomTimeline::FindPost(int kp_i) const {
+	for(int i = keypoints.GetCount()-1; i >= 0; i--) {
+		int j = keypoints.GetKey(i);
+		if (j <= kp_i)
+			return i+1 < keypoints.GetCount() ? i+1 : -1;
+	}
+	return -1;
+}
+
+
+
+
+
+
+	
+GeomScene& GeomProject::AddScene() {
 	GeomScene& s = scenes.Add();
 	s.owner = this;
 	return s;
 }
 
-/*GeomModel& GeomProjectFile::AddModel() {
+/*GeomModel& GeomProject::AddModel() {
 	GeomModel& m = models.Add();
 	m.owner = this;
 	return m;
@@ -168,6 +205,32 @@ GeomWorldState::GeomWorldState() {
 	
 }
 
+void GeomWorldState::UpdateObjects() {
+	GeomScene& scene = GetActiveScene();
+	GeomObjectCollection collection(scene);
+	this->objs.SetCount(0);
+	int i = 0;
+	active_camera_obj_i = -1;
+	for (GeomObject& o : collection) {
+		GeomObjectState& s = objs.Add();
+		s.obj = &o;
+		if (active_camera_obj_i < 0 && o.IsCamera())
+			active_camera_obj_i = i;
+		i++;
+	}
+}
+
+GeomScene& GeomWorldState::GetActiveScene() {
+	ASSERT(active_scene >= 0 && active_scene < prj->scenes.GetCount());
+	return prj->scenes[active_scene];
+}
+
+
+
+
+
+
+
 void GeomCamera::LoadCamera(ViewMode m, Camera& cam, Size sz, float far) const {
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float aspect = (float)sz.cx / (float)sz.cy;
@@ -220,6 +283,81 @@ Frustum GeomCamera::GetFrustum(ViewMode m, Size sz) const {
 	Camera cam;
 	LoadCamera(m, cam, sz);
 	return cam.GetFrustum();
+}
+
+
+
+
+
+
+void GeomAnim::Update(double dt) {
+	if (!is_playing) {
+		return;
+	}
+	
+	time += dt;
+	
+	GeomProject& prj = *state->prj;
+	GeomScene& scene = state->GetActiveScene();
+	
+	double frame_time = 1.0 / state->prj->kps;
+	position = time / frame_time;
+	
+	if (position < 0 || position >= scene.length) {
+		is_playing = false;
+		WhenSceneEnd();
+		return;
+	}
+	
+	for (GeomObjectState& os : state->objs) {
+		GeomObject& o = *os.obj;
+		if (!o.timeline.keypoints.IsEmpty()) {
+			int pre_i = o.timeline.FindPre(position);
+			int post_i = o.timeline.FindPost(position);
+			if (pre_i >= 0 && post_i >= 0) {
+				ASSERT(pre_i < post_i);
+				GeomKeypoint& pre = o.timeline.keypoints[pre_i];
+				GeomKeypoint& post = o.timeline.keypoints[post_i];
+				float pre_time = pre.frame_id / (float)prj.kps;
+				float post_time = post.frame_id / (float)prj.kps;
+				float f = (time - pre_time) / (post_time - pre_time);
+				ASSERT(f >= 0.0 && f <= 1.0);
+				
+				if (1) {
+					os.position = Lerp(pre.position, post.position, f);
+					os.orientation = Slerp(pre.orientation, post.orientation, f);
+				}
+			}
+		}
+	}
+	
+	
+	if (state->active_camera_obj_i >= 0) {
+		GeomObjectState& os = state->objs[state->active_camera_obj_i];
+		ASSERT(os.obj->IsCamera());
+		GeomCamera& cam = state->program;
+		cam.position = os.position;
+		cam.orientation = os.orientation;
+	}
+	
+}
+
+void GeomAnim::Reset() {
+	is_playing = false;
+	position = 0;
+	time = 0;
+}
+
+void GeomAnim::Pause() {
+	is_playing = false;
+}
+
+void GeomAnim::Play() {
+	GeomScene& scene = state->GetActiveScene();
+	if (position < 0 || position >= scene.length)
+		Reset();
+	is_playing = true;
+	state->UpdateObjects();
 }
 
 

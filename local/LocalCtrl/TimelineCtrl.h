@@ -63,6 +63,7 @@ public:
 	void SetKeypointRate(int kps) {this->kps = kps;}
 	void SetLength(int i);
 	void SetKeypointColumnWidth(int i);
+	void SetSelectedColumn(int i) {selected_col = i;}
 	
 	void Paint(Draw& d) override;
 	bool Key(dword key, int) override;

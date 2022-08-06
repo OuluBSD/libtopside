@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct GeomProgram;
-struct GeomProjectFile;
+struct GeomProject;
 struct GeomScene;
 struct GeomDirectory;
 struct Edit3D;
@@ -23,6 +23,8 @@ struct GeomTimeline {
 	ArrayMap<int, GeomKeypoint> keypoints;
 	
 	GeomKeypoint& GetAddKeypoint(int i);
+	int FindPre(int kp_i) const;
+	int FindPost(int kp_i) const;
 	
 };
 
@@ -48,6 +50,7 @@ struct GeomObject {
 	
 	bool IsModel() const {return type == O_MODEL;}
 	bool IsOctree() const {return type == O_OCTREE;}
+	bool IsCamera() const {return type == O_CAMERA;}
 	
 };
 
@@ -103,13 +106,13 @@ struct GeomObjectCollection {
 };
 
 struct GeomScene : GeomDirectory {
-	GeomProjectFile* owner = 0;
+	GeomProject* owner = 0;
 	String name;
 	int length = 0;
 	
 };
 
-struct GeomProjectFile {
+struct GeomProject {
 	Array<GeomScene> scenes;
 	int kps = 5;
 	int fps = 60;
@@ -148,17 +151,42 @@ struct GeomCamera {
 	
 };
 
+struct GeomObjectState {
+	GeomObject* obj;
+	vec3 position;
+	quat orientation;
+};
+
 struct GeomWorldState {
-	GeomProjectFile* prj = 0;
-	
+	GeomProject* prj = 0;
 	GeomCamera focus, program;
-	
-	CameraSource active_camera;
+	int active_scene = -1;
+	int active_camera_obj_i = -1;
 	dword frame_i = 0;
-	bool is_playing = false;
+	
+	Array<GeomObjectState> objs;
 	
 	
 	GeomWorldState();
+	
+	void UpdateObjects();
+	GeomScene& GetActiveScene();
+	
+};
+
+struct GeomAnim {
+	GeomWorldState* state = 0;
+	double time = 0;
+	int position = 0;
+	bool is_playing = false;
+	
+	void Reset();
+	void Play();
+	void Pause();
+	void Update(double dt);
+	
+	
+	Callback WhenSceneEnd;
 	
 };
 

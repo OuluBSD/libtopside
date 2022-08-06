@@ -14,6 +14,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 Edit3D::Edit3D() {
 	state.prj = &prj;
+	anim.state = &state;
+	
+	anim.WhenSceneEnd << THISBACK(OnSceneEnd);
 	
 	Sizeable().MaximizeBox();
 	Title("Edit3D");
@@ -47,24 +50,30 @@ Edit3D::Edit3D() {
 	});
 	
 	AddFrame(tool);
-	tool.Set(THISBACK(Toolbar));
+	RefrehToolbar();
 	
 	tree.WhenAction << THISBACK(TreeSelect);
 	
+	tc.Set(-1000/60, THISBACK(Update));
+	
+}
+
+void Edit3D::RefrehToolbar() {
+	tool.Set(THISBACK(Toolbar));
 }
 
 void Edit3D::Toolbar(Bar& bar) {
-	bar.Add(true,  t_("Stop"),  ImagesImg::Stop(),  THISBACK(Stop));
+	bar.Add(true,  t_("Stop"),  ImagesImg::Stop(),  THISBACK(Stop)).Key(K_F6);
 	
-	if (state.is_playing)
-		bar.Add(true, t_("Pause"), ImagesImg::Pause(), THISBACK(Pause));
+	if (anim.is_playing)
+		bar.Add(true, t_("Pause"), ImagesImg::Pause(), THISBACK(Pause)).Key(K_F5);
 	else
-		bar.Add(true,  t_("Play"),  ImagesImg::Play(),  THISBACK(Play));
+		bar.Add(true,  t_("Play"),  ImagesImg::Play(),  THISBACK(Play)).Key(K_F5);
 	
 }
 
 GeomScene& Edit3D::GetActiveScene() {
-	return prj.scenes[0];
+	return state.GetActiveScene();
 }
 
 void Edit3D::Exit() {
@@ -76,20 +85,44 @@ void Edit3D::RefreshData() {
 }
 
 void Edit3D::Stop() {
-	
+	anim.Reset();
+	RefrehToolbar();
 }
 
 void Edit3D::Pause() {
-	
+	anim.Pause();
+	RefrehToolbar();
 }
 
 void Edit3D::Play() {
-	
+	anim.Play();
+	RefrehToolbar();
+}
+
+void Edit3D::OnSceneEnd() {
+	RefrehToolbar();
 }
 
 void Edit3D::RefrehRenderers() {
 	for(int i = 0; i < 4; i++)
 		rends[i].Refresh();
+}
+
+void Edit3D::Update() {
+	double dt = ts.Seconds();
+	ts.Reset();
+	
+	bool was_playing = anim.is_playing;
+	anim.Update(dt);
+	
+	time.SetSelectedColumn(anim.position);
+	time.Refresh();
+	
+	if (anim.is_playing || was_playing) {
+		for(int i = 0; i < 4; i++) {
+			rends[i].Refresh();
+		}
+	}
 }
 
 void Edit3D::Data() {
@@ -152,8 +185,8 @@ void Edit3D::TimelineData() {
 	for(int i = 0; i < scene.objs.GetCount(); i++) {
 		GeomObject& o = scene.objs[i];
 		/*int j = prj.list[i];
-		int id = j / GeomProjectFile::O_COUNT;
-		int type = j % GeomProjectFile::O_COUNT;*/
+		int id = j / GeomProject::O_COUNT;
+		int type = j % GeomProject::O_COUNT;*/
 		
 		String name = o.name.IsEmpty() ? IntStr(i) : o.name;
 		
@@ -202,7 +235,7 @@ void Edit3D::LoadTestProject(int test_i) {
 		mdl.mdl = mb.Detach();
 		
 		scene.length = prj.kps * 4 + 1;
-		float step = M_PI * 2 / 5;
+		float step = M_PI * 2 / 4;
 		float angle = 0;
 		float cam_radius = 2;
 		for(int i = 0; i < 5; i++) {
@@ -248,7 +281,7 @@ void Edit3D::LoadTestProject(int test_i) {
 		int seconds = 3;
 		scene.length = prj.kps * seconds;
 		int kp_step = 3;
-		float step = M_PI * 2 / (scene.length / kp_step);
+		float step = M_PI * 2 / (scene.length / kp_step - 1);
 		float angle = 0;
 		float cam_radius = radius + 2;
 		for(int i = 0; i < scene.length; i += kp_step) {
@@ -266,7 +299,7 @@ void Edit3D::LoadTestProject(int test_i) {
 	GeomKeypoint& kp = cam.timeline.keypoints.Get(0);
 	state.program.position = kp.position;
 	state.program.orientation = kp.orientation;
-	
+	state.active_scene = 0;
 	
 	Data();
 	TimelineData();

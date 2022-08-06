@@ -43,7 +43,8 @@ public:
 	void RotateRel(const axes3& v);
 	void SetViewMode(ViewMode i) {view_mode = i;}
 	void SetCameraSource(CameraSource cs) {cam_src = cs;}
-
+	void PaintObject(Draw& d, const GeomObjectState& o, const mat4& view, const Frustum& frustum);
+	
 	GeomCamera& GetGeomCamera() const;
 	
 };

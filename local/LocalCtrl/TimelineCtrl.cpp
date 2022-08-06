@@ -36,7 +36,7 @@ void TimelineRowCtrl::Paint(Draw& d) {
 				is_keypoint = true;
 		}
 		
-		if (has_focus && selected_i == kp_i)
+		if (/*has_focus &&*/ selected_i == kp_i)
 			d.DrawRect(x, 0, col, sz.cy, owner->bg_focused_keypoint);
 		
 		Color line_clr = first_in_second ?

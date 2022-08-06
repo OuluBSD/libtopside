@@ -30,8 +30,11 @@ struct Edit3D : public TopWindow {
 	
 	int tree_scenes = -1;
 	
-	GeomProjectFile prj;
+	GeomProject prj;
 	GeomWorldState state;
+	GeomAnim anim;
+	TimeCallback tc;
+	TimeStop ts;
 	
 	void TreeDirectory(int id, GeomDirectory& dir);
 	
@@ -39,6 +42,7 @@ public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();
 	
+	void Update();
 	void Data();
 	void TimelineData();
 	void TreeSelect();
@@ -48,6 +52,8 @@ public:
 	void Pause();
 	void Play();
 	void RefrehRenderers();
+	void RefrehToolbar();
+	void OnSceneEnd();
 	void Toolbar(Bar& bar);
 	
 	void LoadTestProject(int test_i);

@@ -16,7 +16,7 @@ GUI_APP_MAIN {
 	if (!c.IsEmpty() && DirectoryExists(c[0]))
 		app.LoadWmrStereoPointcloud(c[0]);
 	else
-		app.LoadTestProject(1);
+		app.LoadTestProject(0);
 	
 	app.Run();
 	
