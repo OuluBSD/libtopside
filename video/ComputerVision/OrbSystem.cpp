@@ -94,10 +94,8 @@ void OrbSystem::TrainPattern() {
 }
 
 void OrbSystem::InitDefault() {
-	auto& videoWidth = sz.cx;
-	auto& videoHeight = sz.cy;
-
-	KeypointMatchhreshold = 24;
+	
+	keypoint_match_threshold = 24;
 	
     /*img_u8 = new jsfeat.DMatrix(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);
     // after blur
@@ -110,7 +108,10 @@ void OrbSystem::InitDefault() {
     pattern_corners.SetCount(0);
     matches.SetCount(0);
 
-    int i = 640*480;
+	
+	auto& video_width = sz.cx;
+	auto& video_height = sz.cy;
+    int i = video_width * video_height;
     matches.SetCount(i);
     screen_corners.SetCount(i);
     for (Keypoint& k : screen_corners)
@@ -121,6 +122,7 @@ void OrbSystem::InitDefault() {
     match_mask.SetSize(500,1,1);
     
     Grayscale(input, tmp0);
+    
     Resample(tmp0, train_img, sz.cx * 0.25, sz.cy * 0.25);
     
     TrainPattern();
@@ -219,7 +221,7 @@ int OrbSystem::DetectKeypoints(DescriptorImage& output, int max_allowed) {
 
     y.laplacian_threshold = lap_thres;
     y.min_eigen_value_threshold = eigen_thres;
-
+	
     int num_corners = DetectKeypoints(img_u8_smooth, screen_corners, max_allowed);
     ASSERT(num_corners == screen_corners.GetCount());
     o.Describe(img_u8_smooth, screen_corners, screen_descriptors);
@@ -387,7 +389,7 @@ int OrbSystem::MatchPattern() {
         }
 
         // filter out by some threshold
-        if(best_dist < KeypointMatchhreshold) {
+        if(best_dist < keypoint_match_threshold) {
             auto& m = matches.Add();
             m.screen_idx = qidx;
             m.pattern_lev = best_lev;

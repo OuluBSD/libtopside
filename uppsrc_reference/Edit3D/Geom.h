@@ -45,6 +45,7 @@ struct GeomObject {
 	One<Model> mdl;
 	Camera cam;
 	OctreePointModel octree;
+	Octree* octree_ptr = 0;
 	
 	GeomTimeline timeline;
 	
@@ -119,6 +120,8 @@ struct GeomProject {
 	
 	void Clear() {
 		scenes.Clear();
+		kps = 5;
+		fps = 60;
 	}
 	
 	GeomScene& AddScene();
@@ -135,6 +138,8 @@ typedef enum {
 typedef enum {
 	CAMSRC_FOCUS,
 	CAMSRC_PROGRAM,
+	CAMSRC_VIDEOIMPORT_FOCUS,
+	CAMSRC_VIDEOIMPORT_PROGRAM,
 } CameraSource;
 
 struct GeomCamera {
@@ -162,7 +167,6 @@ struct GeomWorldState {
 	GeomCamera focus, program;
 	int active_scene = -1;
 	int active_camera_obj_i = -1;
-	dword frame_i = 0;
 	
 	Array<GeomObjectState> objs;
 	

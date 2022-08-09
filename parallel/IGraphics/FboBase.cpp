@@ -36,7 +36,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	
 	String bin  = program + "_program";
-	auto& bin_map  = ShaderLibrary::GetBinders();
+	auto& bin_map  = ShaderLibrary<Gfx>::GetBinders();
 	int bin_i  = bin_map.Find(bin);
 	
 	if (bin_i < 0) {

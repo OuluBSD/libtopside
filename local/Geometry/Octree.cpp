@@ -155,6 +155,8 @@ int Octree::GetScaleLevel(float len) const {
 }
 
 OctreeNode* Octree::GetAddNode(vec3 pos, int level) {
+	ASSERT_(min_scale_level < 0 || max_scale_level > 0, "Initialize octree first");
+	
 	if (level < min_scale_level ||
 		level > max_scale_level ||
 		!Contains(pos))

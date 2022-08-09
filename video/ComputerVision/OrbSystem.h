@@ -30,7 +30,7 @@ class OrbSystem {
     int blur_size = 5;
     int lap_thres = 30;
     int eigen_thres = 25;
-    int KeypointMatchhreshold = 48;
+    int keypoint_match_threshold = 48;
     
     
     void render_matches(const Vector<KeypointMatch>& matches);

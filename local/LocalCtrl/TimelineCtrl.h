@@ -73,7 +73,7 @@ public:
 	void Layout() override;
 	
 	
-	Callback WhenCursor;
+	Callback1<int> WhenCursor;
 	
 };
 

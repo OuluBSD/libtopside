@@ -62,10 +62,10 @@ MeshTracker::MeshTracker() {
 	
 }
 
-TrackedPoint* MeshTracker::FindTrackedPoint(const Descriptor& d) {
-	TrackedPoint* best_tp_match = 0;
+const TrackedPoint* MeshTracker::FindTrackedPoint(const MeshTrackerFrame& from, const Descriptor& d) {
+	const TrackedPoint* best_tp_match = 0;
 	int best_tp_dist = INT_MAX;
-	for (TrackedPoint& p : tracked_points) {
+	for (const TrackedPoint& p : from.tracked_points) {
 		int dist = GetDescriptor8HammingDistance(p.descriptor, d.u);
 		if (dist <= distance_limit && dist < best_tp_dist) {
 			best_tp_dist = dist;
@@ -119,53 +119,57 @@ OctreeDescriptorPoint* MeshTracker::GetAddNode(const vec3& global_tgt, const uin
 			//LOG("new dp");
 			p = &n->Add<OctreeDescriptorPoint>();
 		}
-		else TODO
+		else return 0;
 	}
 	
 	return p;
 }
 
-void MeshTracker::TriangleUpdate() {
+void MeshTracker::SolveTransform(const MeshTrackerFrame& from, MeshTrackerFrame& to) {
 
-	// Prune old tracked triangles
-	PruneTriangles();
-	
-	// Find new tracked triangles
-	FindTriangles();
-	
 	// Update tracked triangles
-	UpdateTrackedTriangles();
-	UpdateOctreePositions();
+	UpdateTrackedTriangles(from, to);
+	UpdateOctreePositions(from, to);
 	
 }
 
-void MeshTracker::PruneTriangles() {
-	if (tracked_triangles.GetCount() < tracked_triangle_limit)
+void MeshTracker::ProcessTriangles(MeshTrackerFrame& to) {
+
+	// Prune old tracked triangles
+	PruneTriangles(to);
+	
+	// Find new tracked triangles
+	FindTriangles(to);
+	
+}
+	 
+void MeshTracker::PruneTriangles(MeshTrackerFrame& to) {
+	if (to.tracked_triangles.GetCount() < tracked_triangle_limit)
 		return;
 	
 	TODO
 	
 }
 
-void MeshTracker::FindTriangles() {
-	for (TrackedPoint& tp0 : tracked_points) {
-		if (!tp0.has_local_tgt || !tp0.has_prev_local_tgt || tp0.IsMaxTriangles())
+void MeshTracker::FindTriangles(MeshTrackerFrame& to) {
+	for (TrackedPoint& tp0 : to.tracked_points) {
+		if (!tp0.has_next_local_tgt || !tp0.has_local_tgt || tp0.IsMaxTriangles())
 			continue;
-		for (TrackedPoint& tp1 : tracked_points) {
+		for (TrackedPoint& tp1 : to.tracked_points) {
 			if (&tp0 == &tp1)
 				break;
-			if (!tp1.has_local_tgt || !tp1.has_prev_local_tgt ||
+			if (!tp1.has_next_local_tgt || !tp1.has_local_tgt ||
 				tp1.IsMaxTriangles() || IsAlreadyInSameTriangle(tp0, tp1))
 				continue;
 			
-			for (TrackedPoint& tp2 : tracked_points) {
+			for (TrackedPoint& tp2 : to.tracked_points) {
 				if (&tp1 == &tp2)
 					break;
-				if (!tp2.has_local_tgt || !tp2.has_prev_local_tgt ||
+				if (!tp2.has_next_local_tgt || !tp2.has_local_tgt ||
 					tp2.IsMaxTriangles() || IsAlreadyInSameTriangle(tp1, tp2))
 					continue;
 				
-				TrackedTriangle& tt = tracked_triangles.Add();
+				TrackedTriangle& tt = to.tracked_triangles.Add();
 				tt.Track(tp0, tp1, tp2);
 				
 				if (tp0.IsMaxTriangles() || tp1.IsMaxTriangles())
@@ -177,15 +181,15 @@ void MeshTracker::FindTriangles() {
 	}
 }
 
-void MeshTracker::UpdateTrackedTriangles() {
+void MeshTracker::UpdateTrackedTriangles(const MeshTrackerFrame& from, MeshTrackerFrame& to) {
 	PositionOrientationAverage camera_average;
 	int tri_i = -1;
-	for (TrackedTriangle& tt : tracked_triangles) {
+	for (const TrackedTriangle& tt : from.tracked_triangles) {
 		tri_i++;
 		
-		if (!tt.a->has_local_tgt || !tt.b->has_local_tgt ||
-			!tt.a->has_prev_local_tgt || !tt.b->has_prev_local_tgt ||
-			!tt.c->has_prev_local_tgt || !tt.c->has_prev_local_tgt)
+		if (!tt.a->has_next_local_tgt || !tt.b->has_next_local_tgt ||
+			!tt.a->has_local_tgt || !tt.b->has_local_tgt ||
+			!tt.c->has_local_tgt || !tt.c->has_local_tgt)
 			continue;
 		
 		/*if (iter == 7 && tri_i == 3) {
@@ -194,12 +198,12 @@ void MeshTracker::UpdateTrackedTriangles() {
 		
 		mat4 view_diff;
 		if (!CalculateTriangleChange(
-			tt.a->prev_local_tgt,
-			tt.b->prev_local_tgt,
-			tt.c->prev_local_tgt,
 			tt.a->local_tgt,
 			tt.b->local_tgt,
 			tt.c->local_tgt,
+			tt.a->next_local_tgt,
+			tt.b->next_local_tgt,
+			tt.c->next_local_tgt,
 			view_diff))
 			continue;
 		
@@ -225,44 +229,51 @@ void MeshTracker::UpdateTrackedTriangles() {
 		//LOG(position.ToString() << ", " << deg.ToString());
 		#endif
 		
-		mat4 view_change = Translate(position) * QuatMat(orientation);
-		//prev_view = view;
-		//prev_view_inv = view_inv;
-		view = view * view_change;
-		view_inv = view.GetInverse();
+		to.view_change = Translate(position) * QuatMat(orientation);
+		to.view = from.view * to.view_change;
+		to.view_inv = to.view.GetInverse();
 		
 		vec3 scale, skew;
 		vec4 pers;
-		Decompose(view, scale, this->orientation, this->position, skew, pers);
-		this->orientation.Normalize();
+		Decompose(to.view, scale, to.orientation, to.position, skew, pers);
+		to.orientation.Normalize();
 		
 		#if 1
 		{
-			quat full_orient = MatQuat(view);
+			quat full_orient = MatQuat(to.view);
 			vec3 full_axes;
 			QuatAxes(full_orient, full_axes);
 			full_axes = full_axes / M_PI * 180;
-			vec3 pos_comp = view.GetTranslation();
+			vec3 pos_comp = to.view.GetTranslation();
 			LOG("\t" << full_axes[0] << ": " << pos_comp[0] << ", " << pos_comp[2]);
 		}
 		#endif
 	}
-	else if (!tracked_triangles.IsEmpty()) {
-		TODO
+}
+
+void MeshTracker::UpdateOctreePositions(const MeshTrackerFrame& from, MeshTrackerFrame& to) {
+	for (const TrackedPoint& tp : from.tracked_points) {
+		if (tp.has_next_local_tgt) {
+			tp.next_global_tgt = (to.view_inv * tp.next_local_tgt.Embed()).Splice();
+			
+			#if 0
+			if (&from == &to)
+				UpdateOctreePosition(to, const_cast<TrackedPoint&>(tp), true);
+			#endif
+		}
 	}
 }
 
-void MeshTracker::UpdateOctreePositions() {
-	for (TrackedPoint& tp : tracked_points) {
-		vec3 global_pos = (view_inv * tp.local_tgt.Embed()).Splice();
-		UpdateOctreePosition(global_pos, tp);
-	}
-}
-
-void MeshTracker::UpdateOctreePosition(const vec3& global_tgt, TrackedPoint& tp) {
-	tp.global_pos = global_tgt;
+void MeshTracker::UpdateOctreePosition(MeshTrackerFrame& to, TrackedPoint& tp, bool local_value, bool next_value) {
 	OctreeDescriptorPoint& dp = *tp.dp;
-	dp.av.Add(global_tgt, this->orientation);
+	
+	if (local_value)
+		dp.av.Add(tp.local_tgt, to.orientation);
+	else if (next_value)
+		dp.av.Add(tp.next_global_tgt, to.orientation);
+	else
+		dp.av.Add(tp.global_tgt, to.orientation);
+	
 	vec3 pos = dp.av.GetMeanPosition();
 	//LOG("add tgt " << global_tgt.ToString());
 	//LOG("\t" << dp.GetPosition().ToString() << " --> " << pos.ToString());

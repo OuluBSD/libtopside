@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void InitObjView() {
-	ShaderLibrary::AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
+	ShaderLibrary<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
 }
 
 NAMESPACE_PARALLEL_END

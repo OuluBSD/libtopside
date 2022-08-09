@@ -12,14 +12,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-Edit3D::Edit3D() {
-	state.prj = &prj;
-	anim.state = &state;
+GeomProjectCtrl::GeomProjectCtrl(Edit3D* e) {
+	this->e = e;
 	
-	anim.WhenSceneEnd << THISBACK(OnSceneEnd);
-	
-	Sizeable().MaximizeBox();
-	Title("Edit3D");
+	time.WhenCursor << THISBACK(OnCursor);
+	tree.WhenAction << THISBACK(TreeSelect);
 	
 	hsplit.Horz().SetPos(2000) << metasplit << vsplit,
 	metasplit.Vert() << tree << props;
@@ -27,7 +24,7 @@ Edit3D::Edit3D() {
 	
 	grid.SetGridSize(2,2);
 	for(int i = 0; i < 4; i++) {
-		rends[i].owner = this;
+		rends[i].owner = e;
 		grid.Add(rends[i]);
 	}
 	rends[0].SetViewMode(VIEWMODE_YZ);
@@ -39,7 +36,151 @@ Edit3D::Edit3D() {
 	rends[2].SetCameraSource(CAMSRC_FOCUS);
 	rends[3].SetCameraSource(CAMSRC_PROGRAM);
 	
-	Add(hsplit.SizePos());
+	
+}
+
+void GeomProjectCtrl::Update(double dt) {
+	GeomAnim& anim = e->anim;
+	GeomVideo& video = e->video;
+	bool was_playing = anim.is_playing || video.is_importing;
+	
+	if (video.is_importing) {
+		video.Update(dt);
+		TimelineData();
+	}
+	else {
+		anim.Update(dt);
+	}
+	
+	time.SetSelectedColumn(anim.position);
+	time.Refresh();
+	
+	if (anim.is_playing || was_playing) {
+		for(int i = 0; i < 4; i++) {
+			rends[i].Refresh();
+		}
+	}
+}
+
+void GeomProjectCtrl::Data() {
+	GeomProject& prj = e->prj;
+	
+	tree.SetRoot(ImagesImg::Root(), "Project");
+	
+	if (tree_scenes < 0)
+		tree_scenes = tree.Add(0, ImagesImg::Scenes(), "Scenes");
+	
+	for(int i = 0; i < prj.scenes.GetCount(); i++) {
+		GeomScene& scene = prj.scenes[i];
+		String name = scene.name.IsEmpty() ? "Scene #" + IntStr(i) : scene.name;
+		int j = tree.Add(tree_scenes, ImagesImg::Scene(), i, name);
+		
+		TreeDirectory(j, scene);
+		
+		if (i == 0 && !tree.HasFocus())
+			tree.SetCursor(j);
+	}
+	
+	/*for(int i = 0; i < prj.octrees.GetCount(); i++) {
+		OctreePointModel& o = prj.octrees[i];
+		String name = prj.dictionary[o.id];
+		tree.Add(tree_octrees, ImagesImg::Octree(), o.id, name);
+	}*/
+	
+	tree.Open(0);
+	
+	TreeSelect();
+}
+
+void GeomProjectCtrl::TreeSelect() {
+	if (!tree.HasFocus())
+		return;
+	
+	int cursor = tree.GetCursor();
+	int parent = tree.GetParent(cursor);
+	if (parent == tree_scenes) {
+		int i = tree.Get(cursor);
+		GeomScene& s = e->prj.scenes[i];
+		
+	}
+
+}
+
+void GeomProjectCtrl::OnCursor(int i) {
+	e->anim.position = i;
+}
+
+void GeomProjectCtrl::TreeDirectory(int id, GeomDirectory& dir) {
+	for(int i = 0; i < dir.subdir.GetCount(); i++) {
+		GeomDirectory& subdir = dir.subdir[i];
+		String name = dir.subdir.GetKey(i);
+		int j = tree.Add(id, ImagesImg::Directory(), i, name);
+		TreeDirectory(j, subdir);
+	}
+	for(int i = 0; i < dir.objs.GetCount(); i++) {
+		GeomObject& o = dir.objs[i];
+		Image img;
+		switch (o.type) {
+			case GeomObject::O_CAMERA: img = ImagesImg::Camera(); break;
+			case GeomObject::O_MODEL:  img = ImagesImg::Model(); break;
+			case GeomObject::O_OCTREE: img = ImagesImg::Octree(); break;
+			default: img = ImagesImg::Object();
+		}
+		int j = tree.Add(id, img, i, o.name);
+	}
+}
+
+void GeomProjectCtrl::TimelineData() {
+	GeomProject& prj = e->prj;
+	GeomScene& scene = e->state.GetActiveScene();
+	
+	time.SetCount(scene.objs.GetCount());
+	time.SetKeypointRate(prj.kps);
+	time.SetLength(scene.length);
+	time.SetKeypointColumnWidth(13);
+	
+	for(int i = 0; i < scene.objs.GetCount(); i++) {
+		GeomObject& o = scene.objs[i];
+		/*int j = prj.list[i];
+		int id = j / GeomProject::O_COUNT;
+		int type = j % GeomProject::O_COUNT;*/
+		
+		String name = o.name.IsEmpty() ? IntStr(i) : o.name;
+		
+		TimelineRowCtrl& row = time.GetRowIndex(i);
+		row.SetTitle(name);
+		
+		row.SetKeypoints(o.timeline.keypoints.GetKeys());
+		
+		row.Refresh();
+	}
+	
+	time.Refresh();
+}
+
+
+
+
+
+
+
+
+
+Edit3D::Edit3D() :
+	v0(this),
+	v1(this)
+{
+	state.prj = &prj;
+	anim.state = &state;
+	video.anim = &anim;
+	
+	anim.WhenSceneEnd << THISBACK(OnSceneEnd);
+	
+	Sizeable().MaximizeBox();
+	Title("Edit3D");
+	
+	SetView(VIEW_GEOMPROJECT);
+	Add(v0.hsplit.SizePos());
 	
 	AddFrame(menu);
 	menu.Set([this](Bar& bar) {
@@ -52,9 +193,24 @@ Edit3D::Edit3D() {
 	AddFrame(tool);
 	RefrehToolbar();
 	
-	tree.WhenAction << THISBACK(TreeSelect);
 	
 	tc.Set(-1000/60, THISBACK(Update));
+	
+}
+
+void Edit3D::SetView(ViewType view) {
+	
+	if (this->view == VIEW_GEOMPROJECT)
+		RemoveChild(&v0.hsplit);
+	else if (this->view == VIEW_VIDEOIMPORT)
+		RemoveChild(&v1);
+	
+	this->view = view;
+	
+	if (this->view == VIEW_GEOMPROJECT)
+		Add(v0.hsplit.SizePos());
+	else if (this->view == VIEW_VIDEOIMPORT)
+		Add(v1.SizePos());
 	
 }
 
@@ -104,114 +260,28 @@ void Edit3D::OnSceneEnd() {
 }
 
 void Edit3D::RefrehRenderers() {
-	for(int i = 0; i < 4; i++)
-		rends[i].Refresh();
+	if (view == VIEW_GEOMPROJECT) {
+		for(int i = 0; i < 4; i++)
+			v0.rends[i].Refresh();
+	}
+	else if (view == VIEW_VIDEOIMPORT) {
+		v1.RefreshRenderers();
+	}
 }
 
 void Edit3D::Update() {
 	double dt = ts.Seconds();
 	ts.Reset();
 	
-	bool was_playing = anim.is_playing;
-	anim.Update(dt);
-	
-	time.SetSelectedColumn(anim.position);
-	time.Refresh();
-	
-	if (anim.is_playing || was_playing) {
-		for(int i = 0; i < 4; i++) {
-			rends[i].Refresh();
-		}
-	}
+	if (view == VIEW_GEOMPROJECT)
+		v0.Update(dt);
+	else if (view == VIEW_VIDEOIMPORT)
+		v1.Update(dt);
 }
 
 void Edit3D::Data() {
-	
-	tree.SetRoot(ImagesImg::Root(), "Project");
-	
-	if (tree_scenes < 0)
-		tree_scenes = tree.Add(0, ImagesImg::Scenes(), "Scenes");
-	
-	for(int i = 0; i < prj.scenes.GetCount(); i++) {
-		GeomScene& scene = prj.scenes[i];
-		String name = scene.name.IsEmpty() ? "Scene #" + IntStr(i) : scene.name;
-		int j = tree.Add(tree_scenes, ImagesImg::Scene(), i, name);
-		
-		TreeDirectory(j, scene);
-		
-		if (i == 0 && !tree.HasFocus())
-			tree.SetCursor(j);
-	}
-	
-	/*for(int i = 0; i < prj.octrees.GetCount(); i++) {
-		OctreePointModel& o = prj.octrees[i];
-		String name = prj.dictionary[o.id];
-		tree.Add(tree_octrees, ImagesImg::Octree(), o.id, name);
-	}*/
-	
-	tree.Open(0);
-	
-	TreeSelect();
-}
-
-void Edit3D::TreeDirectory(int id, GeomDirectory& dir) {
-	for(int i = 0; i < dir.subdir.GetCount(); i++) {
-		GeomDirectory& subdir = dir.subdir[i];
-		String name = dir.subdir.GetKey(i);
-		int j = tree.Add(id, ImagesImg::Directory(), i, name);
-		TreeDirectory(j, subdir);
-	}
-	for(int i = 0; i < dir.objs.GetCount(); i++) {
-		GeomObject& o = dir.objs[i];
-		Image img;
-		switch (o.type) {
-			case GeomObject::O_CAMERA: img = ImagesImg::Camera(); break;
-			case GeomObject::O_MODEL:  img = ImagesImg::Model(); break;
-			case GeomObject::O_OCTREE: img = ImagesImg::Octree(); break;
-			default: img = ImagesImg::Object();
-		}
-		int j = tree.Add(id, img, i, o.name);
-	}
-}
-
-void Edit3D::TimelineData() {
-	GeomScene& scene = GetActiveScene();
-	
-	time.SetCount(scene.objs.GetCount());
-	time.SetKeypointRate(prj.kps);
-	time.SetLength(scene.length);
-	time.SetKeypointColumnWidth(13);
-	
-	for(int i = 0; i < scene.objs.GetCount(); i++) {
-		GeomObject& o = scene.objs[i];
-		/*int j = prj.list[i];
-		int id = j / GeomProject::O_COUNT;
-		int type = j % GeomProject::O_COUNT;*/
-		
-		String name = o.name.IsEmpty() ? IntStr(i) : o.name;
-		
-		TimelineRowCtrl& row = time.GetRowIndex(i);
-		row.SetTitle(name);
-		
-		row.SetKeypoints(o.timeline.keypoints.GetKeys());
-		
-		row.Refresh();
-	}
-	
-	time.Refresh();
-}
-
-void Edit3D::TreeSelect() {
-	if (!tree.HasFocus())
-		return;
-	
-	int cursor = tree.GetCursor();
-	int parent = tree.GetParent(cursor);
-	if (parent == tree_scenes) {
-		int i = tree.Get(cursor);
-		GeomScene& s = prj.scenes[i];
-	}
-
+	if (view == VIEW_GEOMPROJECT)
+		v0.Data();
 }
 
 void Edit3D::LoadTestProject(int test_i) {
@@ -302,63 +372,18 @@ void Edit3D::LoadTestProject(int test_i) {
 	state.active_scene = 0;
 	
 	Data();
-	TimelineData();
-	tree.OpenDeep(tree_scenes);
+	v0.TimelineData();
+	v0.tree.OpenDeep(v0.tree_scenes);
 }
 
 void Edit3D::LoadWmrStereoPointcloud(String directory) {
-	GeomScene& scene = GetActiveScene();
-	GeomObject& go = scene.GetAddOctree("octree");
-	OctreePointModel& omodel = go.octree;
-	Octree& o = omodel.octree;
+	video.SetWmrCamera();
+	video.LoadDirectory(directory, 30);
+	Data();
+	v0.TimelineData();
+	v0.tree.OpenDeep(v0.tree_scenes);
 	
-	o.Initialize(-3,8); // 1 << 8 = 256x256x256 meters
-	
-	Size res(640,481);
-	
-	DescriptorImage l_dimg, r_dimg;
-	
-	VirtualStereoUncamera uncam;
-	int point_limit = 2048;
-	float eye_dist = 0.12;
-	uncam.SetAnglePixel(17.4932f, 153.022f, 175.333f, -25.7489f);
-	uncam.SetEyeDistance(eye_dist);
-	uncam.SetYLevelHeight(10);
-	uncam.SetEyeOutwardAngle(DEG2RAD(35.50));
-	uncam.SetDistanceLimit(128); // max 256, lower is stricter
-	
-	OrbSystem orb;
-	
-	TimeStop ts;
-	for(int i = 0; i < 100000; i++) {
-		ts.Reset();
-		
-		String filepath = AppendFileName(directory, IntStr(i) + ".jpg");
-		if (!FileExists(filepath))
-			break;
-		
-		Image img = StreamRaster::LoadFileAny(filepath);
-		if (img.IsEmpty())
-			break;
-		
-		Size sz = img.GetSize();
-		Size single_sz(sz.cx / 2, sz.cy);
-		Image l_img, r_img;
-		l_img = Crop(img, RectC(           0, 0, single_sz.cx, single_sz.cy));
-		r_img = Crop(img, RectC(single_sz.cx, 0, single_sz.cx, single_sz.cy));
-		
-		l_dimg.SetResolution(single_sz);
-		r_dimg.SetResolution(single_sz);
-		
-		orb.SetInput(l_img);
-		int lc = orb.DetectKeypoints(l_dimg, point_limit);
-		orb.SetInput(r_img);
-		int rc = orb.DetectKeypoints(r_dimg, point_limit);
-		
-		uncam.Unrender(l_dimg, r_dimg, o);
-		LOG(i << ": " << lc << " + " << rc << " keypoints in " << ts.ToString());
-	}
-	
+	SetView(VIEW_VIDEOIMPORT);
 }
 
 

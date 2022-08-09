@@ -85,7 +85,7 @@ void TimelineRowCtrl::LeftDown(Point p, dword keyflags) {
 		Refresh();
 	
 	if (kp_changes)
-		owner->WhenCursor();
+		owner->WhenCursor(kp_i);
 	
 }
 

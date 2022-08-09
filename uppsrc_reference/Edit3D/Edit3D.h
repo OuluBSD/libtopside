@@ -11,6 +11,9 @@
 #include "SoftRendCtrl.h"
 #include "Geom.h"
 #include "Renderer.h"
+#include "VideoImporter.h"
+#include "StagedVideoImporter.h"
+#include "VideoImportCtrl.h"
 #include "Editor.h"
 
 #endif

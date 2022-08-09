@@ -39,7 +39,7 @@ void SwGfxT<Gfx>::SetSmoothShading(bool b) {
 
 template <class Gfx>
 void SwGfxT<Gfx>::SetDepthTest(bool b) {
-	Rend(). 
+	Rend().SetDepthTest(b);
 }
 
 template <class Gfx>

@@ -9,8 +9,8 @@ struct Edit3D;
 
 struct EditRenderer : public Ctrl {
 	Edit3D* owner = 0;
-	ViewMode view_mode;
-	CameraSource cam_src;
+	ViewMode view_mode = VIEWMODE_YZ;
+	CameraSource cam_src = CAMSRC_FOCUS;
 	
 	Point cap_mouse_pos;
 	vec3 cap_begin_pos;

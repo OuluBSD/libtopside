@@ -34,6 +34,7 @@ struct SoftShaderLibrary {
 };
 
 
+template <class Gfx>
 struct ShaderLibrary {
 	typedef BinderIfaceVideo* (*VideoBinderFactory)();
 	static VectorMap<String, VideoBinderFactory>& GetBinders() {static VectorMap<String, VideoBinderFactory> m; return m;}

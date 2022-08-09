@@ -12,6 +12,27 @@ public:
 	
 };
 
+struct HorizontalMatch : Moveable<HorizontalMatch> {
+	const Descriptor* l;
+	const Descriptor* r;
+	axes2s eyes;
+	vec3 local_tgt;
+	vec3 global_tgt;
+	TrackedPoint* tp = 0;
+};
+
+struct UncameraFrame : MeshTrackerFrame {
+	Octree otree;
+	Image l_img, r_img;
+	DescriptorImage l_dimg, r_dimg;
+	//Vector<vec2> l_keypoints, r_keypoints;
+	//Vector<vec3> points;
+	
+	// temp
+	Vector<Vector<const Descriptor*>> l_desc, r_desc;
+	Vector<HorizontalMatch> horz_match;
+};
+
 
 class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	float eye_dist = 0.068f;
@@ -20,26 +41,10 @@ class VirtualStereoUncamera : public Uncamera, public LensPoly {
 	int y_levels = 0;
 	int y_level_h = 10;
 	
-	// temp
-	struct HorizontalMatch : Moveable<HorizontalMatch> {
-		const Descriptor* l;
-		const Descriptor* r;
-		axes2s eyes;
-		vec3 local_tgt;
-		vec3 global_tgt;
-	};
-	Vector<Vector<const Descriptor*>> l_desc, r_desc;
-	Vector<HorizontalMatch> horz_match;
 	
+public:
+	UncameraFrame incremental;
 	
-	
-	
-	void InitializeLensPoly(const DescriptorImage& l_img, const DescriptorImage& r_img);
-	void ResetTempVariables();
-	void FindPreviousFrameMatches(const DescriptorImage& l_img, const DescriptorImage& r_img);
-	void UpdateStereoTargets();
-	void FindHorizontalMatches();
-	void ProcessHorizontalMatches(Octree& o);
 	
 public:
 	typedef VirtualStereoUncamera CLASSNAME;
@@ -48,7 +53,24 @@ public:
 	void SetEyeDistance(float f) {eye_dist = f;}
 	void SetYLevelHeight(int h) {y_level_h = h;}
 	
-	void Unrender(const DescriptorImage& l_img, const DescriptorImage& r_img, Octree& o);
+	void Unrender(const UncameraFrame& from, UncameraFrame& to);
+	void StageStereoKeypoints(const UncameraFrame& from, UncameraFrame& to);
+	void StageProcessTransform(const UncameraFrame& from, UncameraFrame& to);
+	
+	void InitializeLensPoly(UncameraFrame& to);
+	void ResetTempVariables(UncameraFrame& to);
+	void FindPreviousFrameMatches(const UncameraFrame& from, UncameraFrame& to);
+	void UpdateStereoTargets(const UncameraFrame& from);
+	void FindHorizontalMatches(UncameraFrame& to);
+	void AddHorizontalMatches(const UncameraFrame& from, UncameraFrame& to);
+	void ProcessHorizontalMatches(UncameraFrame& to);
+	void GetAddTrackedPoint(UncameraFrame& to, TrackedPoint& tp);
+	
+};
+
+struct StagedVirtualStereoUncamera : VirtualStereoUncamera {
+	Array<UncameraFrame> frames;
+	
 	
 };
 

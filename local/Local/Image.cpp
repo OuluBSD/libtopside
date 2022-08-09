@@ -512,6 +512,15 @@ void DescriptorImage::AddDescriptor(float x, float y, float angle, void* descrip
 	}
 }
 
+String DescriptorImage::ToString() const {
+	String s;
+	int i = 0;
+	for(const Descriptor& d : descriptors) {
+		s << i++ << ": " << d.x << ", " << d.y << ", " << (int)d.angle << "\n";
+	}
+	return s;
+}
+
 
 
 

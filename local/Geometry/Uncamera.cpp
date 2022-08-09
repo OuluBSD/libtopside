@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 Uncamera::Uncamera() {
-	orientation = AxesQuat(0,0,0);
+	
 }
 
 
@@ -15,34 +15,50 @@ VirtualStereoUncamera::VirtualStereoUncamera() {
 	
 }
 
-void VirtualStereoUncamera::Unrender(const DescriptorImage& l_img, const DescriptorImage& r_img, Octree& o) {
-	ASSERT(l_img.GetResolution() == r_img.GetResolution());
-	
-	// Initialize LensPoly
-	InitializeLensPoly(l_img, r_img);
-	
-	// Reset temp vars
-	ResetTempVariables();
-	
-	// Find previous frame matches or add to stereo-match queue
-	FindPreviousFrameMatches(l_img, r_img);
-	
-	// Update stereo targets
-	UpdateStereoTargets();
-	MeshTracker::TriangleUpdate();
-	
-	// Find horizontal matches
-	FindHorizontalMatches();
-	
-	// Process new horizontal stereo point matches
-	ProcessHorizontalMatches(o);
-	
+void VirtualStereoUncamera::Unrender(const UncameraFrame& from, UncameraFrame& to) {
+	ASSERT(from.l_img.GetResolution() == from.r_img.GetResolution());
+	StageStereoKeypoints(from, to);
+	MeshTracker::SolveTransform(from, to);
+	StageProcessTransform(from, to);
 	iter++;
 }
 
-void VirtualStereoUncamera::InitializeLensPoly(const DescriptorImage& l_img, const DescriptorImage& r_img) {
-	Size lsz = l_img.GetResolution();
-	Size rsz = r_img.GetResolution();
+void VirtualStereoUncamera::StageStereoKeypoints(const UncameraFrame& from, UncameraFrame& to) {
+	
+	// Initialize LensPoly
+	InitializeLensPoly(to);
+	
+	// Reset temp vars
+	ResetTempVariables(to);
+	
+	// Convert descriptor image coordinates to axes
+	//TODO
+	
+	// Find previous frame matches or add to stereo-match queue
+	FindPreviousFrameMatches(from, to);
+	
+	// Find horizontal matches
+	FindHorizontalMatches(to);
+	
+	// Update stereo targets
+	UpdateStereoTargets(from);
+	
+	// Process new horizontal stereo point matches
+	AddHorizontalMatches(from, to);
+	
+}
+
+void VirtualStereoUncamera::StageProcessTransform(const UncameraFrame& from, UncameraFrame& to) {
+	
+	ProcessHorizontalMatches(to);
+	
+}
+
+void VirtualStereoUncamera::InitializeLensPoly(UncameraFrame& to) {
+	Size lsz = to.l_img.GetSize();
+	Size rsz = to.r_img.GetSize();
+	ASSERT(lsz.cx > 0 && lsz.cy > 0);
+	ASSERT(rsz.cx > 0 && rsz.cy > 0);
 	if (lsz != rsz)
 		return;
 	LensPoly::SetSize(lsz);
@@ -50,55 +66,52 @@ void VirtualStereoUncamera::InitializeLensPoly(const DescriptorImage& l_img, con
 	y_levels = max(lsz.cy / y_level_h, rsz.cy / y_level_h) + 1;
 }
 
-void VirtualStereoUncamera::ResetTempVariables() {
+void VirtualStereoUncamera::ResetTempVariables(UncameraFrame& to) {
 	ASSERT(y_levels);
-	l_desc.SetCount(y_levels);
-	r_desc.SetCount(y_levels);
-	for (auto& v : l_desc) {v.SetCount(0); v.Reserve(100);}
-	for (auto& v : r_desc) {v.SetCount(0); v.Reserve(100);}
-	for (TrackedPoint& tp : tracked_points) tp.ResetTemp();
-	horz_match.SetCount(0);
+	to.l_desc.SetCount(y_levels);
+	to.r_desc.SetCount(y_levels);
+	for (auto& v : to.l_desc) {v.SetCount(0); v.Reserve(100);}
+	for (auto& v : to.r_desc) {v.SetCount(0); v.Reserve(100);}
+	for (TrackedPoint& tp : to.tracked_points) tp.ResetTemp();
+	to.horz_match.SetCount(0);
 }
 
-void VirtualStereoUncamera::FindPreviousFrameMatches(const DescriptorImage& l_img, const DescriptorImage& r_img) {
-	for (const Descriptor& d : l_img.GetDescriptors()) {
+void VirtualStereoUncamera::FindPreviousFrameMatches(const UncameraFrame& from, UncameraFrame& to) {
+	for (const Descriptor& d : to.l_dimg.GetDescriptors()) {
 		int yi = d.y / y_level_h;
 		if (yi >= 0 && yi < y_levels) {
-			TrackedPoint* tp = FindTrackedPoint(d);
+			const TrackedPoint* tp = FindTrackedPoint(from, d);
 			if (tp)
 				tp->l = &d;
 			else
-				l_desc[yi].Add(&d);
-
+				to.l_desc[yi].Add(&d);
 		}
 	}
-	for (const Descriptor& d : r_img.GetDescriptors()) {
+	for (const Descriptor& d : to.r_dimg.GetDescriptors()) {
 		int yi = d.y / y_level_h;
 		if (yi >= 0 && yi < y_levels) {
-			TrackedPoint* tp = FindTrackedPoint(d);
+			const TrackedPoint* tp = FindTrackedPoint(from, d);
 			if (tp)
 				tp->r = &d;
 			else
-				r_desc[yi].Add(&d);
+				to.r_desc[yi].Add(&d);
 		}
 	}
 }
 
-void VirtualStereoUncamera::UpdateStereoTargets() {
+void VirtualStereoUncamera::UpdateStereoTargets(const UncameraFrame& from) {
 	int tp_i = -1;
 	int seen_tracked_points = 0;
-	for (TrackedPoint& tp : tracked_points) {
+	for (const TrackedPoint& tp : from.tracked_points) {
 		tp_i++;
 		if (!tp.l || !tp.r) {
-			tp.has_local_tgt = false;
+			tp.has_next_local_tgt = false;
 			continue;
 		}
 		axes2 l_axes = Unproject(0, vec2(tp.l->x, tp.l->y));
 		axes2 r_axes = Unproject(1, vec2(tp.r->x, tp.r->y));
 		axes2s eyes = AxesMonoStereo(l_axes, r_axes);
-		tp.prev_local_tgt = tp.local_tgt;
-		tp.has_prev_local_tgt = tp.has_local_tgt;
-		tp.has_local_tgt = CalculateStereoTarget(eyes, eye_dist, tp.local_tgt);
+		tp.has_next_local_tgt = CalculateStereoTarget(eyes, eye_dist, tp.next_local_tgt);
 		
 		//LOG(tp_i << ": " << tp.local_tgt.ToString() << ", " << tp.prev_local_tgt.ToString());
 		seen_tracked_points++;
@@ -106,10 +119,10 @@ void VirtualStereoUncamera::UpdateStereoTargets() {
 	//LOG("\tseen tracked points: " << seen_tracked_points);
 }
 
-void VirtualStereoUncamera::FindHorizontalMatches() {
+void VirtualStereoUncamera::FindHorizontalMatches(UncameraFrame& to) {
 	for(int i = 0; i < y_levels; i++) {
-		Vector<const Descriptor*>& lv = l_desc[i];
-		Vector<const Descriptor*>& rv = r_desc[i];
+		Vector<const Descriptor*>& lv = to.l_desc[i];
+		Vector<const Descriptor*>& rv = to.r_desc[i];
 		for (const Descriptor* l : lv) {
 			int best_dist = 32*8;
 			const Descriptor* best_match = 0;
@@ -134,37 +147,87 @@ void VirtualStereoUncamera::FindHorizontalMatches() {
 				vec3 local_tgt;
 				
 				if (CalculateStereoTarget(eyes, eye_dist, local_tgt)) {
-					//float deg = VectorAngle(l_dir, r_dir) / M_PI * 180;
-					//LOG(deg << ": " << tgt.ToString() << ", " << l_dir.ToString() << ", " << r_dir.ToString() << ", " << best_dist);
-					//LOG(deg << ": " << tgt.ToString());
+					#if 0
+					float deg = VectorAngle(l_eye, r_eye) / M_PI * 180;
+					LOG(deg << ": " << local_tgt.ToString() << ", " << l_eye.ToString() << ", " << r_eye.ToString() << ", " << best_dist);
+					//LOG(deg << ": " << local_tgt.ToString());
+					#endif
 					
-					HorizontalMatch& hm = horz_match.Add();
+					HorizontalMatch& hm = to.horz_match.Add();
 					hm.l = l;
 					hm.r = r;
 					hm.eyes = eyes;
 					hm.local_tgt = local_tgt;
-					hm.global_tgt = (view_inv * local_tgt.Embed()).Splice();
 				}
 			}
 		}
 	}
 }
 
-void VirtualStereoUncamera::ProcessHorizontalMatches(Octree& o) {
-	for (const HorizontalMatch& hm : horz_match) {
+void VirtualStereoUncamera::GetAddTrackedPoint(UncameraFrame& to, TrackedPoint& tp) {
+	Octree& o = to.otree;
+	
+	OctreeDescriptorPoint* p = MeshTracker::GetAddNode(tp.local_tgt, tp.descriptor, o);
+	if (p) {
+		OctreeDescriptorPoint& dp = *p;
+		tp.dp = &dp;
+		
+		UpdateOctreePosition(to, tp, true, false);
+	}
+}
+
+void VirtualStereoUncamera::AddHorizontalMatches(const UncameraFrame& from, UncameraFrame& to) {
+	Octree& o = to.otree;
+	
+	for (const TrackedPoint& f : from.tracked_points) {
+		TrackedPoint& t = to.tracked_points.Add();
+		t.local_tgt = f.next_local_tgt;
+		t.has_local_tgt = true;
+		memcpy(t.descriptor, f.descriptor, DESCRIPTOR_BYTES);
+		
+		#if 1
+		GetAddTrackedPoint(to, t);
+		#endif
+	}
+	
+	for (HorizontalMatch& hm : to.horz_match) {
+		const auto& descriptor_value = hm.l->u; // left eye by default
+		
+		TrackedPoint& tp = to.tracked_points.Add();
+		hm.tp = &tp;
+		tp.local_tgt = hm.local_tgt;
+		tp.has_local_tgt = true;
+		memcpy(tp.descriptor, descriptor_value, DESCRIPTOR_BYTES);
+		
+		#if 1
+		GetAddTrackedPoint(to, tp);
+		#endif
+	}
+}
+
+void VirtualStereoUncamera::ProcessHorizontalMatches(UncameraFrame& to) {
+	Octree& o = to.otree;
+	
+	for (HorizontalMatch& hm : to.horz_match) {
+		hm.global_tgt = (to.view_inv * hm.local_tgt.Embed()).Splice();
+		
+		#if 0
 		const auto& descriptor_value = hm.l->u; // left eye by default
 		
 		OctreeDescriptorPoint* p = MeshTracker::GetAddNode(hm.global_tgt, descriptor_value, o);
 		
 		if (p) {
 			OctreeDescriptorPoint& dp = *p;
-			TrackedPoint& tp = tracked_points.Add();
+			TrackedPoint& tp = *hm.tp;
 			tp.dp = &dp;
-			tp.local_tgt = hm.local_tgt;
-			memcpy(tp.descriptor, descriptor_value, DESCRIPTOR_BYTES);
+			tp.global_tgt = hm.global_tgt;
 			
-			UpdateOctreePosition(hm.global_tgt, tp);
+			UpdateOctreePosition(to, tp, false);
 		}
+		#else
+		if (hm.tp)
+			hm.tp->global_tgt = hm.global_tgt;
+		#endif
 	}
 }
 

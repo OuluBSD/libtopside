@@ -81,8 +81,8 @@ void EditRenderer::PaintObject(Draw& d, const GeomObjectState& os, const mat4& v
 		
 	}
 	else if (go.IsOctree()) {
-		OctreePointModel& o = go.octree;
-		OctreeFrustumIterator iter = o.octree.GetFrustumIterator(frustum);
+		Octree& o = go.octree_ptr ? *go.octree_ptr : go.octree.octree;
+		OctreeFrustumIterator iter = o.GetFrustumIterator(frustum);
 		
 		while (iter) {
 			const OctreeNode& n = *iter;
@@ -129,6 +129,20 @@ void EditRenderer::Paint(Draw& d) {
 		view = proj * world;
 	}*/
 	
+	if (cam_src == CAMSRC_VIDEOIMPORT_FOCUS ||
+		cam_src == CAMSRC_VIDEOIMPORT_PROGRAM) {
+		int frame_i = owner->anim.position;
+		if (frame_i < 0 || frame_i >= owner->video.uncam.frames.GetCount())
+			return;
+		UncameraFrame& frame = owner->video.uncam.frames[frame_i];
+		
+		GeomObjectState os;
+		GeomObject go;
+		go.type = GeomObject::O_OCTREE;
+		os.obj = &go;
+		go.octree_ptr = &frame.otree;
+		PaintObject(d, os, view, frustum);
+	}
 	if (owner->anim.is_playing) {
 		for (GeomObjectState& os : state.objs) {
 			PaintObject(d, os, view, frustum);
@@ -328,15 +342,17 @@ GeomCamera& EditRenderer::GetGeomCamera() const {
 	switch (cam_src) {
 		
 	case CAMSRC_FOCUS:
+	case CAMSRC_VIDEOIMPORT_FOCUS:
 		return owner->state.focus;
 		break;
 		
 	case CAMSRC_PROGRAM:
+	case CAMSRC_VIDEOIMPORT_PROGRAM:
 		return owner->state.program;
 		break;
 		
 	}
-	Panic("Invalid viewm mode in EditRenderer");
+	Panic("Invalid view mode in EditRenderer");
 	NEVER();
 }
 

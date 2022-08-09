@@ -147,6 +147,8 @@ public:
 	Size GetResolution() const {return resolution;}
 	const Vector<Descriptor>& GetDescriptors() const {return descriptors;}
 	
+	String ToString() const;
+	
 };
 
 NAMESPACE_TOPSIDE_END

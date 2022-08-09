@@ -9,6 +9,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct Edit3D;
+
+
 struct EditConfiguration {
 	Color background_clr;
 	float mouse_move_sensitivity = 0.01;
@@ -17,35 +20,63 @@ struct EditConfiguration {
 	
 };
 
-struct Edit3D : public TopWindow {
+struct GeomProjectCtrl : Ctrl {
+	Edit3D* e;
+	
 	Splitter metasplit, hsplit, vsplit;
 	TreeCtrl tree;
 	ArrayCtrl props;
 	GridCtrl grid;
 	TimelineCtrl time;
-	MenuBar menu;
-	ToolBar tool;
 	EditRenderer rends[4];
-	EditConfiguration conf;
 	
 	int tree_scenes = -1;
+	
+	
+	typedef GeomProjectCtrl CLASSNAME;
+	GeomProjectCtrl(Edit3D* e);
+	void Update(double dt);
+	void Data();
+	void TimelineData();
+	void TreeSelect();
+	void OnCursor(int kp_i);
+	void TreeDirectory(int id, GeomDirectory& dir);
+	
+};
+
+struct Edit3D : TopWindow {
+	typedef enum {
+		VIEW_NONE,
+		VIEW_GEOMPROJECT,
+		VIEW_VIDEOIMPORT,
+	} ViewType;
+	
+	ViewType view = VIEW_NONE;
+	
+	GeomProjectCtrl v0;
+	VideoImportCtrl v1;
+	MenuBar menu;
+	ToolBar tool;
+	
+	EditConfiguration conf;
+	
 	
 	GeomProject prj;
 	GeomWorldState state;
 	GeomAnim anim;
+	//GeomVideo video;
+	GeomStagedVideo video;
 	TimeCallback tc;
 	TimeStop ts;
 	
-	void TreeDirectory(int id, GeomDirectory& dir);
 	
 public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();
 	
+	void SetView(ViewType view);
 	void Update();
 	void Data();
-	void TimelineData();
-	void TreeSelect();
 	void Exit();
 	void RefreshData();
 	void Stop();
