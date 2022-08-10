@@ -4,6 +4,10 @@
 #ifndef _ISynth_Vendors_h_
 #define _ISynth_Vendors_h_
 
+#if defined flagFLUIDSYNTH
+	#include <fluidsynth.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define SYN_CLS_LIST(x) \
@@ -33,6 +37,10 @@ struct SynFluidsynth {
 		fluid_audio_driver_t* adriver;
 		int sfont_id;
 		bool sf_loaded;
+		int sample_rate;
+		Vector<float> buffer;
+		Vector<float*> dry;
+		Vector<float*> fx;
 	};
 	
 	struct Thread {

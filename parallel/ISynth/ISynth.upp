@@ -1,7 +1,9 @@
-description "\377B200,179,81";;
+description "\377B200,179,81";
 
 uses
 	ParallelLib;
+
+library(POSIX) fluidsynth;
 
 file
 	ISynth.h,
@@ -13,5 +15,5 @@ file
 	TmplClasses.h;
 
 mainconfig
-	"" = ""
+	"" = "";
 

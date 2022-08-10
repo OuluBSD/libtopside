@@ -12,7 +12,7 @@ file
 	Volumetric.cpp,
 	Camera.cpp,
 	Holographic.cpp,
-	AudioSynth.cpp,
+	Synth.cpp,
 	MidiHw.cpp,
 	Ev.cpp,
 	Net.cpp,

@@ -1,12 +1,11 @@
 description "\3770,128,128";
 
 uses
-	AtomMinimal,
-	IHolograph;
+	ISynth;
 
 file
-	AtomVR.h,
-	Init.icpp,
+	AtomAudio.h,
+	AtomAudio.icpp,
 	Generated.h,
 	Generated.cpp;
 

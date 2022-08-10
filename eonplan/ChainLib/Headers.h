@@ -509,12 +509,12 @@ HEADER_LINK(		CpuKeyboardSource,	PIPE_OPTSIDE, PROCESS)
 */
 
 
-
+/*
 HEADER11(			SpatialInteractionSA,	SpatialInteractionAtom,			pipe,		CenterEvent,	CenterOrder,	CenterReceipt)
 HEADER_ACTION(		SpatialInteractionSA,	vr.spatial.interaction)
 HEADER_ARG(			SpatialInteractionSA,	reqdef_flagVR,					1)
 HEADER_LINK(		SpatialInteractionSA,	PIPE, PROCESS)
-
+*/
 
 /*
 HEADER12_U01(		SpatialInteractionPipe,	SpatialInteractionAtom			pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterReceipt)
@@ -522,3 +522,39 @@ HEADER_ACTION(		SpatialInteractionPipe,	vr.spatial.interaction)
 HEADER_ARG(			SpatialInteractionPipe,	reqdef_flagVR,					1)
 HEADER_LINK(		SpatialInteractionPipe,	PIPE_OPTSIDE, PROCESS)
 */
+
+
+
+
+
+
+
+
+
+HEADER11(			MidiFileReaderPipe,		MidiFileReaderAtom,			pipe,		CenterMidi,		CenterOrder,	CenterMidi)
+HEADER_ACTION(		MidiFileReaderPipe,		midi.file.reader.pipe)
+HEADER_ARG(			MidiFileReaderPipe,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		MidiFileReaderPipe,		PIPE, PROCESS)
+
+HEADER12_U01(		MidiFileReader,		MidiFileReaderAtom,			pipe,		CenterMidi,		CenterOrder,	CenterMidi,		CenterReceipt)
+HEADER_ACTION(		MidiFileReader,		midi.file.reader)
+HEADER_ARG(			MidiFileReader,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		MidiFileReader,		PIPE, PROCESS)
+
+
+
+HEADER11(			MidiNullSink,		MidiNullAtom,				pipe,		CenterMidi,		CenterMidi,		CenterReceipt)
+HEADER_ACTION(		MidiNullSink,		midi.null.sink)
+HEADER_ARG(			MidiNullSink,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		MidiNullSink,		PIPE, PROCESS)
+
+HEADER21_U10(		FluidsynthPipe,		FluidsynthInstrument,		pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
+HEADER_ACTION(		FluidsynthPipe,		fluidsynth.pipe)
+HEADER_ARG(			FluidsynthPipe,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		FluidsynthPipe,		PIPE, PROCESS)
+
+
+
+
+
+

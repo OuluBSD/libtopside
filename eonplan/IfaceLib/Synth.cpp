@@ -10,7 +10,10 @@ PKG(Synth, Syn, Y) {
 	COLOR(200, 179, 81)
 	DEPENDENCY(ParallelLib)
 	//DEPENDENCY(IMedia)
+	LIBRARY("POSIX", fluidsynth)
 	HAVE_IS_READY
+	//HAVE_UPDATE
+	HAVE_RECV_FINALIZE
 	
 	PKG_IFACE {
 		//NATIVE_CLASS(Camera)
@@ -31,7 +34,9 @@ PKG(Synth, Syn, Y) {
 	
 	VENDOR(Fluidsynth) {
 		VENDOR_ENABLED_FLAG(FLUIDSYNTH)
-		//ENDOR_CLASS(Camera, void*)
+		//VENDOR_CLASS(Camera, void*)
+		VENDOR_INCLUDE("", fluidsynth.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
 		
 		v->AddStruct("NativeInstrument")
 			.Add("settings",		"fluid_settings_t*")
@@ -39,6 +44,10 @@ PKG(Synth, Syn, Y) {
 			.Add("adriver",			"fluid_audio_driver_t*")
 			.Add("sfont_id",		"int")
 			.Add("sf_loaded",		"bool")
+			.Add("sample_rate",		"int")
+			.Add("buffer",			"Vector<float>")
+			.Add("dry",				"Vector<float*>")
+			.Add("fx",				"Vector<float*>")
 		;
 	
 	}

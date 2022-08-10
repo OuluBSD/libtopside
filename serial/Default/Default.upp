@@ -1,8 +1,0 @@
-description "\377B113,42,150";
-
-uses(SCREEN) IGraphics;
-
-file
-	Default.h,
-	Default.cpp;
-

@@ -23,6 +23,10 @@ namespace Parallel {
 	ATOM_TYPE(BLUETOOTH_HOLO_PIPE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
+	ATOM_TYPE(MIDI_FILE_READER_PIPE) \
+	ATOM_TYPE(MIDI_FILE_READER) \
+	ATOM_TYPE(MIDI_NULL_SINK) \
+	ATOM_TYPE(FLUIDSYNTH_PIPE) \
 
 
 #define ATOM_CLASS_LIST \
@@ -41,6 +45,10 @@ namespace Parallel {
 	ATOM_CLASS(BluetoothHoloPipe) \
 	ATOM_CLASS(TestEventSrcPipe) \
 	ATOM_CLASS(VolumeLoaderAtom) \
+	ATOM_CLASS(MidiFileReaderPipe) \
+	ATOM_CLASS(MidiFileReader) \
+	ATOM_CLASS(MidiNullSink) \
+	ATOM_CLASS(FluidsynthPipe) \
 
 
 #define flagFFMPEG_ATOM_TYPE_LIST \
@@ -177,14 +185,6 @@ namespace Parallel {
 
 #define flagLOCALHMD_ATOM_CLASS_LIST \
 	ATOM_CLASS(LocalHMDPipe) \
-
-
-#define flagVR_ATOM_TYPE_LIST \
-	ATOM_TYPE(SPATIAL_INTERACTION_S_A) \
-
-
-#define flagVR_ATOM_CLASS_LIST \
-	ATOM_CLASS(SpatialInteractionSA) \
 
 
 }

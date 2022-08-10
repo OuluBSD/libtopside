@@ -1,0 +1,19 @@
+#include "AtomAudio.h"
+
+NAMESPACE_UPP
+
+
+INITBLOCK_(AtomAudio) {
+	using namespace TS::Parallel;
+	using namespace TS::Serial;
+	using namespace TS;
+	
+	Factory::RegisterAtom<MidiFileReader>();
+	Factory::RegisterAtom<MidiFileReaderPipe>();
+	Factory::RegisterAtom<MidiNullSink>();
+	Factory::RegisterAtom<FluidsynthPipe>();
+	
+}
+
+
+END_UPP_NAMESPACE

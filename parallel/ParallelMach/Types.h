@@ -359,7 +359,7 @@ typedef enum : byte {
 	#endif
 	
 	#ifdef flagVR
-	flagVR_ATOM_TYPE_LIST
+	//flagVR_ATOM_TYPE_LIST
 	#endif
 	
 	#ifdef flagOGL

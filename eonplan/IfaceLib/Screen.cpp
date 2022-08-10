@@ -94,7 +94,7 @@ PKG(Screen, Scr, S) {
 			.Add("accel_buf",			"ByteImage")
 			.Add("accel_buf_tmp",		"ByteImage")
 			.Add("accel_zbuf",			"DepthImage")
-			.Add("accel_fbo",			"SoftFramebufferT<X11SwGfx>")
+			.Add("accel_fbo",			"SoftFramebuffer")
 			;
 		
 		v->AddStruct("NativeContext");

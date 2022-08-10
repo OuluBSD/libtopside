@@ -1,6 +1,9 @@
 
 
 #### Phase 1: ####
+fix:
+	- convert descriptor image to axes and search same pitch instead y-coordinate (now y-level is wrong)
+	- monocular tracking per eye image
 - video tracking import (with image directories)
 - video tracking view
 

@@ -3,144 +3,47 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-#if 0
 
 
-MixerContextConnector::MixerContextConnector() {
+MidiFileReaderAtom::MidiFileReaderAtom() {
 	
 }
 
-void MixerContextConnector::Initialize() {
+bool MidiFileReaderAtom::Initialize(const Script::WorldState& ws) {
+	close_machine = ws.GetBool(".close_machine", false);
 	
-}
-
-void MixerContextConnector::Uninitialize() {
+	String path = ws.GetString(".filepath");
+	if (path.IsEmpty()) {
+		LOG("MidiFileReaderAtom::Initialize: error: 'filepath' argument is required, but not given");
+		return false;
+	}
 	
-}
-
-
-
-MixerChannelContextConnector::MixerChannelContextConnector() {
+	path = RealizeShareFile(path);
+	if (!OpenFilePath(path)) {
+		LOG("MidiFileReaderAtom::Initialize: error: " << last_error << ": " << path);
+		return false;
+	}
 	
-}
-
-void MixerChannelContextConnector::Initialize() {
+	//DumpMidiFile();
 	
-}
-
-void MixerChannelContextConnector::Uninitialize() {
+	AddAtomToUpdateList();
 	
+	return true;
 }
 
-
-
-MixerChannelInputComponent::MixerChannelInputComponent() {
+void MidiFileReaderAtom::Uninitialize() {
+	RemoveAtomFromUpdateList();
 	
+	Clear();
 }
 
-void MixerChannelInputComponent::Initialize() {
-	
-}
-
-void MixerChannelInputComponent::Uninitialize() {
-	
-}
-
-
-
-
-MixerChannelOutputComponent::MixerChannelOutputComponent() {
-	
-}
-
-void MixerChannelOutputComponent::Initialize() {
-	
-}
-
-void MixerChannelOutputComponent::Uninitialize() {
-	
-}
-
-
-AudioStream& MixerChannelOutputComponent::GetStream(AudCtx) {
-	TODO
-}
-
-void MixerChannelOutputComponent::BeginStream(AudCtx) {
-	TODO
-}
-
-void MixerChannelOutputComponent::EndStream(AudCtx) {
-	TODO
-}
-
-AudioFormat MixerChannelOutputComponent::GetFormat(AudCtx) {
-	TODO
-}
-
-Audio& MixerChannelOutputComponent::GetValue(AudCtx) {
-	TODO
-}
-
-
-
-MixerAudioSourceComponent::MixerAudioSourceComponent() {
-	
-}
-
-void MixerAudioSourceComponent::Initialize() {
-	
-}
-
-void MixerAudioSourceComponent::Uninitialize() {
-	
-}
-
-AudioStream& MixerAudioSourceComponent::GetStream(AudCtx) {
-	TODO
-}
-
-void MixerAudioSourceComponent::BeginStream(AudCtx) {
-	TODO
-}
-
-void MixerAudioSourceComponent::EndStream(AudCtx) {
-	TODO
-}
-
-AudioFormat MixerAudioSourceComponent::GetFormat(AudCtx) {
-	TODO
-}
-
-Audio& MixerAudioSourceComponent::GetValue(AudCtx) {
-	TODO
-}
-
-
-
-
-
-MidiFileComponent::MidiFileComponent() {
-	EventSource::SetMultiConnection();
-	
-}
-
-void MidiFileComponent::Initialize() {
-	TODO // DevComponent::Initiralize
-	//AddToContext<CenterSpec>(AsRef<CenterSource>());
-}
-
-void MidiFileComponent::Uninitialize() {
-	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
-}
-
-void MidiFileComponent::Clear() {
+void MidiFileReaderAtom::Clear() {
 	last_error.Clear();
 	song_dt = -1;
 	track_i.SetCount(0);
 }
 
-bool MidiFileComponent::OpenFilePath(String path) {
+bool MidiFileReaderAtom::OpenFilePath(String path) {
 	Clear();
 	
 	if (!FileExists(path)) {
@@ -163,7 +66,7 @@ bool MidiFileComponent::OpenFilePath(String path) {
 	return true;
 }
 
-void MidiFileComponent::DumpMidiFile() {
+void MidiFileReaderAtom::DumpMidiFile() {
 	int track_count = file.GetTrackCount();
 	LOG("TPQ: " << file.GetTicksPerQuarterNote());
 	if (track_count > 1) {
@@ -190,9 +93,9 @@ void MidiFileComponent::DumpMidiFile() {
 	}
 }
 
-#if 0
-
-void MidiFileComponent::EmitMidi(double dt) {
+void MidiFileReaderAtom::Update(double dt) {
+	if (close_machine && IsEnd())
+		GetMachine().SetNotRunning();
 	
 	// The first update is often laggy, so wait until the second one
 	if (song_dt < 0) {
@@ -207,29 +110,17 @@ void MidiFileComponent::EmitMidi(double dt) {
 	
 	for(int i = 0; i < file.GetTrackCount(); i++) {
 		CollectTrackEvents(i);
-		EmitTrack(i);
 	}
 	
 }
 
-void MidiFileComponent::OnLink(Sink sink, Cookie src_c, Cookie sink_c) {
-	TODO
-	/*ComponentBase* comp = iface->AsComponentBase();
-	ASSERT(comp);
-	Ref<MidiSink> sink = comp->AsMidiSink();
-	ASSERT(sink);
-	sink->Configure(file);
-	return NULL;*/
-}
-
-void MidiFileComponent::CollectTrackEvents(int i) {
+void MidiFileReaderAtom::CollectTrackEvents(int i) {
 	if (i >= track_i.GetCount())
 		track_i.SetCount(i+1,0);
 	
 	int& iter = track_i[i];
 	const auto& t = file[i];
 	
-	tmp.Reset();
 	while (iter < t.GetCount()) {
 		const auto& e = t[iter];
 		if (e.seconds <= song_dt) {
@@ -240,19 +131,95 @@ void MidiFileComponent::CollectTrackEvents(int i) {
 	}
 }
 
-void MidiFileComponent::EmitTrack(int i) {
-	if (tmp.midi.IsEmpty())
-		return;
+bool MidiFileReaderAtom::IsEnd() const {
+	for(int i = 0; i < track_i.GetCount(); i++) {
+		const int& iter = track_i[i];
+		const auto& t = file[i];
+		if (iter < t.GetCount())
+			return false;
+	}
+	return true;
+}
+
+bool MidiFileReaderAtom::IsReady(PacketIO& io) {
+	return tmp.midi.GetCount() > 0;
+}
+
+bool MidiFileReaderAtom::Recv(int sink_ch, const Packet& in) {
+	return true;
+}
+
+bool MidiFileReaderAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	Vector<byte>& data = out.Data();
 	
-	//for(const Midi::Event* ev : tmp.midi) {LOG("track " << i << ": " << ev->ToString());}
+	int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
+	data.SetCount(sz);
 	
-	for (Ref<MidiSink> c : MidiSource::GetConnections())
-		if (c->AcceptsTrack(i))
-			c->RecvMidi(tmp);
+	MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
+	for(const MidiIO::Event* ev : tmp.midi) {
+		//LOG("track " << ev->track << ": " << ev->ToString());
+		*dst++ = *ev;
+	}
+	
+	tmp.Reset();
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MidiNullAtom::MidiNullAtom() {
 	
 }
 
-#endif
-#endif
+bool MidiNullAtom::Initialize(const Script::WorldState& ws) {
+	verbose = ws.GetBool(".verbose", false);
+	
+	return true;
+}
+
+void MidiNullAtom::Uninitialize() {
+	
+}
+
+bool MidiNullAtom::IsReady(PacketIO& io) {
+	return true;
+}
+
+bool MidiNullAtom::Recv(int sink_ch, const Packet& in) {
+	
+	if (verbose) {
+		const Vector<byte>& data = in->Data();
+		int count = data.GetCount() / sizeof(MidiIO::Event);
+		LOG("MidiNullAtom::Recv: " << count << " midi events");
+		
+		const MidiIO::Event* ev  = (const MidiIO::Event*)(const byte*)data.Begin();
+		const MidiIO::Event* end = ev + count;
+		while (ev != end) {
+			LOG("track " << ev->track << ": " << ev->ToString());
+			ev++;
+		}
+	}
+	
+	return true;
+}
+
+bool MidiNullAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	return true;
+}
+
+
 
 NAMESPACE_PARALLEL_END

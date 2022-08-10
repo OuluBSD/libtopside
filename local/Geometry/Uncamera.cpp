@@ -32,7 +32,7 @@ void VirtualStereoUncamera::StageStereoKeypoints(const UncameraFrame& from, Unca
 	ResetTempVariables(to);
 	
 	// Convert descriptor image coordinates to axes
-	//TODO
+	TODO
 	
 	// Find previous frame matches or add to stereo-match queue
 	FindPreviousFrameMatches(from, to);

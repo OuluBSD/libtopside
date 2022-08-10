@@ -1,6 +1,7 @@
 uses
 	Shadertoy,
-	EcsMinimal;
+	EcsMinimal,
+	AtomLocal;
 
 uses(!MINIMAL) EcsComplete;
 
@@ -9,7 +10,7 @@ file
 	EcsShell.cpp;
 
 mainconfig
-	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD",
+	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD FLUIDSYNTH",
 	"" = "",
 	"" = "SCREEN",
 	"" = "SCREEN OGL FFMPEG",

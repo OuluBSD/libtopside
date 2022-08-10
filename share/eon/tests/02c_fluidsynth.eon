@@ -1,0 +1,15 @@
+machine midi.app: {
+	chain program: {
+		loop event: {
+			center.customer: true;
+			midi.file.reader: true {filepath: "midi/saturday_show.mid"; close_machine: true;};
+		};
+	
+		loop input: {
+			center.customer: true;
+			fluidsynth.pipe: true {verbose: true;};
+			center.audio.sink.hw: true;
+		};
+	};
+};
+

@@ -7,8 +7,5 @@ INITBLOCK_(AtomLocal) {
 	using namespace TS::Serial;
 	using namespace TS;
 	
-	#ifdef flagVR
-	Factory::RegisterAtom<SpatialInteractionSA>();
-	#endif
 	
 }

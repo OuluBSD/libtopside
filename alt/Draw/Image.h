@@ -44,6 +44,7 @@ public:
 	int GetWidth() const {if (!data) return 0; return data->img.GetWidth();}
 	int GetHeight() const {if (!data) return 0; return data->img.GetHeight();}
 	Size GetSize() const {if (!data) return Size(0,0); return Size(data->img.GetWidth(), data->img.GetHeight());}
+	Size GetResolution() const {if (!data) return Size(0,0); return Size(data->img.GetWidth(), data->img.GetHeight());}
 	int GetStride() const {if (!data) return 0; return data->img.GetStride();}
 	int GetPitch() const {if (!data) return 0; return data->img.GetPitch();}
 	const byte* GetIter(int x, int y) const;

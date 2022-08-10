@@ -51,6 +51,10 @@ BASE(X11OglShaderBase)
 BASE(SdlOglShaderBase)
 
 BASE(SpatialInteractionAtom)
+
+BASE(MidiFileReaderAtom)
+BASE(MidiNullAtom)
+BASE(FluidsynthInstrument)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

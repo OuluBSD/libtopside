@@ -5,6 +5,7 @@ uses
 	AtomMinimal,
 	AtomEcs,
 	AtomVR,
+	AtomAudio,
 	ParallelMach;
 
 mainconfig

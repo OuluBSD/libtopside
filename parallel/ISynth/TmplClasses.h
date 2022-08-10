@@ -49,6 +49,14 @@ struct SynthInstrumentT : SynInstrument {
 		return true;
 	}
 
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Syn::Instrument_Recv(dev, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Syn::Instrument_Finalize(dev, *this, cfg);
+	}
+
 	bool IsReady(PacketIO& io) override {
 		return Syn::Instrument_IsReady(dev, *this, io);
 	}
