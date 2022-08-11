@@ -229,7 +229,7 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	pa_fmt.freq = 44100;
 	pa_fmt.sample_rate = 1024;
 	pa_fmt.channels = 2;
-	pa_fmt.fmt = SND_FLOAT32;
+	pa_fmt.fmt = SND_INT16;
 	int in_channels = 0;
 	
 	// Adjust sink format

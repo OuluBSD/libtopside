@@ -142,7 +142,7 @@ bool MidiFileReaderAtom::IsEnd() const {
 }
 
 bool MidiFileReaderAtom::IsReady(PacketIO& io) {
-	return tmp.midi.GetCount() > 0;
+	return io.full_src_mask == 0 && io.active_sink_mask & 0x1 && tmp.midi.GetCount() > 0;
 }
 
 bool MidiFileReaderAtom::Recv(int sink_ch, const Packet& in) {
@@ -150,18 +150,23 @@ bool MidiFileReaderAtom::Recv(int sink_ch, const Packet& in) {
 }
 
 bool MidiFileReaderAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	Vector<byte>& data = out.Data();
+	Format fmt = out.GetFormat();
 	
-	int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
-	data.SetCount(sz);
-	
-	MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
-	for(const MidiIO::Event* ev : tmp.midi) {
-		//LOG("track " << ev->track << ": " << ev->ToString());
-		*dst++ = *ev;
+	if (fmt.IsMidi()) {
+		Vector<byte>& data = out.Data();
+		
+		int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
+		data.SetCount(sz);
+		
+		MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
+		for(const MidiIO::Event* ev : tmp.midi) {
+			//LOG("track " << ev->track << ": " << ev->ToString());
+			*dst++ = *ev;
+		}
+		
+		tmp.Reset();
 	}
 	
-	tmp.Reset();
 	return true;
 }
 

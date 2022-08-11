@@ -31,7 +31,7 @@ AtomTypeCls MidiFileReader::GetAtomType()
 
 LinkTypeCls MidiFileReader::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void MidiFileReader::Visit(RuntimeVisitor& vis)
@@ -71,7 +71,7 @@ AtomTypeCls FluidsynthPipe::GetAtomType()
 
 LinkTypeCls FluidsynthPipe::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void FluidsynthPipe::Visit(RuntimeVisitor& vis)

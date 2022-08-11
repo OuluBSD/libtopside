@@ -539,7 +539,7 @@ HEADER_LINK(		MidiFileReaderPipe,		PIPE, PROCESS)
 HEADER12_U01(		MidiFileReader,		MidiFileReaderAtom,			pipe,		CenterMidi,		CenterOrder,	CenterMidi,		CenterReceipt)
 HEADER_ACTION(		MidiFileReader,		midi.file.reader)
 HEADER_ARG(			MidiFileReader,		HINT_PKG,					"AtomAudio")
-HEADER_LINK(		MidiFileReader,		PIPE, PROCESS)
+HEADER_LINK(		MidiFileReader,		PIPE_OPTSIDE, PROCESS)
 
 
 
@@ -551,7 +551,7 @@ HEADER_LINK(		MidiNullSink,		PIPE, PROCESS)
 HEADER21_U10(		FluidsynthPipe,		FluidsynthInstrument,		pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
 HEADER_ACTION(		FluidsynthPipe,		fluidsynth.pipe)
 HEADER_ARG(			FluidsynthPipe,		HINT_PKG,					"AtomAudio")
-HEADER_LINK(		FluidsynthPipe,		PIPE, PROCESS)
+HEADER_LINK(		FluidsynthPipe,		PIPE_OPTSIDE, PROCESS)
 
 
 

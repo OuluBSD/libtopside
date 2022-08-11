@@ -147,11 +147,15 @@ bool FboFormat::IsSame(const FboFormat& b) const {
 
 
 int MidiFormat::GetFrameSize() const {
-	TODO
+	return		SampleBase<MidiSample>::GetSampleSize() *
+				DimBase<1>::GetScalar() *
+				SparseTimeSeriesBase::GetSampleRate();
 }
 
 String MidiFormat::ToString() const {
-	TODO
+	return		SampleBase<MidiSample>::ToString() + ", " +
+				DimBase<1>::ToString() + ", " +
+				SparseTimeSeriesBase::ToString();
 }
 
 bool MidiFormat::IsValid() const {

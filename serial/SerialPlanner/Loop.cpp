@@ -499,11 +499,13 @@ void ScriptLoopLoader::PruneSegmentGoals() {
 	
 	int removed_count = 0;
 	
+	bool debug_print = false;
+	
 	for(int i = 0; i < sources.GetCount(); i++) {
 		const Script::ActionPlanner::State& state = sources[i];
 		const Script::WorldState& ws = state.last->GetWorldState();
 		const Script::WorldState* prev_ws = state.previous[0] ? &state.previous[0]->GetWorldState() : 0;
-		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts, debug_print);
 		int ch_i = state.ch_i;
 		
 		if (!stmt) continue;

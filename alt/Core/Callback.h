@@ -75,6 +75,18 @@ public:
 };
 
 
+template <class A0, class A1>
+class StaticCaller_2 : public CallBase {
+	void (* fn)(A0, A1);
+	A0 a0;
+	A1 a1;
+	
+public:
+	StaticCaller_2(void (* fn)(A0,A1), A0 a0, A1 a1) : fn(fn), a0(a0), a1(a1) {}
+	void Execute() override { (*fn)(a0, a1); }
+};
+
+
 
 
 
@@ -369,6 +381,11 @@ inline Callback1<A0> callback1(T* obj, void (T::* fn)(A0, A1), A1 a1) {
 template <class T, class A0, class A1>
 inline Callback2<A0, A1> callback(T* obj, void (T::* fn)(A0, A1)) {
 	return Callback2<A0, A1>(new Caller2<T, A0, A1>(fn, obj));
+}
+
+template <class A0, class A1>
+inline Callback callback2(void (*fn)(A0, A1), A0 a0, A1 a1) {
+	return Callback(new StaticCaller_2<A0, A1>(fn, a0, a1));
 }
 
 template <class T, class A0, class A1>

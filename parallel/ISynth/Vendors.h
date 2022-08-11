@@ -5,7 +5,7 @@
 #define _ISynth_Vendors_h_
 
 #if defined flagFLUIDSYNTH
-	#include <fluidsynth.h>
+	#include <ports/fluidlite/fluidlite.h>
 #endif
 
 NAMESPACE_PARALLEL_BEGIN
@@ -34,13 +34,15 @@ struct SynFluidsynth {
 	struct NativeInstrument {
 		fluid_settings_t* settings;
 		fluid_synth_t* synth;
-		fluid_audio_driver_t* adriver;
 		int sfont_id;
 		bool sf_loaded;
 		int sample_rate;
 		Vector<float> buffer;
 		Vector<float*> dry;
 		Vector<float*> fx;
+		RunningFlag flag;
+		Array<Vector<byte>> packets;
+		Mutex lock;
 	};
 	
 	struct Thread {

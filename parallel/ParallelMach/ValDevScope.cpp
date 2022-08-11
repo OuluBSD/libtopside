@@ -108,6 +108,10 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 		const Vector<byte>& src_data = src->GetData();
 		Vector<byte>& dst_data = dst->Data();
 		dst_data.SetCount(dst_frame_sz, 0);
+		if (src_data.GetCount() != src_frame_sz) {
+			RTLOG("from: " << src_fmt.ToString());
+			RTLOG("to:   " << dst_fmt.ToString());
+		}
 		ASSERT(src_data.GetCount() == src_frame_sz);
 		
 		#else

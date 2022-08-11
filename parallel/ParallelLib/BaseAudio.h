@@ -27,6 +27,7 @@ public:
 			int right_side = frame_remaining;
 			int left_side = copy_size - frame_remaining;
 			memcpy(dst, src, right_side);
+			dst += right_side;
 			src = (byte*)(void*)frame.Begin();
 			memcpy(dst, src, left_side);
 			//frame_offset = left_side;

@@ -35,19 +35,21 @@ PKG(Synth, Syn, Y) {
 	VENDOR(Fluidsynth) {
 		VENDOR_ENABLED_FLAG(FLUIDSYNTH)
 		//VENDOR_CLASS(Camera, void*)
-		VENDOR_INCLUDE("", fluidsynth.h)
+		VENDOR_INCLUDE("", ports/fluidlite/fluidlite.h)
 		VENDOR_HEADER_REQUIRES_INCLUDES
 		
 		v->AddStruct("NativeInstrument")
 			.Add("settings",		"fluid_settings_t*")
 			.Add("synth",			"fluid_synth_t*")
-			.Add("adriver",			"fluid_audio_driver_t*")
 			.Add("sfont_id",		"int")
 			.Add("sf_loaded",		"bool")
 			.Add("sample_rate",		"int")
 			.Add("buffer",			"Vector<float>")
 			.Add("dry",				"Vector<float*>")
 			.Add("fx",				"Vector<float*>")
+			.Add("flag",			"RunningFlag")
+			.Add("packets",			"Array<Vector<byte>>")
+			.Add("lock",			"Mutex")
 		;
 	
 	}

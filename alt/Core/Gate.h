@@ -289,7 +289,7 @@ public:
 
 
 
-
+#if 0
 
 inline Gate0 callback(bool (*fn)()) {
 	return Gate0(new StaticGateCaller(fn));
@@ -315,6 +315,16 @@ inline Gate1<A0> callback(T* obj, bool (T::* fn)(A0)) {
 	return Gate1<A0>(new GateCaller1<T, A0>(fn, obj));
 }
 
+template <class T, class A0, class A1>
+inline Gate2<A0, A1> callback(T* obj, bool (T::* fn)(A0, A1)) {
+	return Gate2<A0, A1>(new GateCaller2<T, A0, A1>(fn, obj));
+}
+
+template <class A0>
+inline Gate0 callback1(bool (*fn)(A0), A0 a0) {
+	return Gate0(new StaticGateCaller1<A0>(fn, a0));
+}
+
 template <class T, class A0>
 inline Gate0 callback1(T* obj, bool (T::* fn)(A0), A0 a0) {
 	return Gate0(new GateCaller_1<T, A0>(fn, obj, a0));
@@ -325,9 +335,9 @@ inline Gate1<A0> callback1(T* obj, bool (T::* fn)(A0, A1), A1 a1) {
 	return Gate1<A0>(new GateCaller1_1<T, A0, A1>(fn, obj, a1));
 }
 
-template <class T, class A0, class A1>
-inline Gate2<A0, A1> callback(T* obj, bool (T::* fn)(A0, A1)) {
-	return Gate2<A0, A1>(new GateCaller2<T, A0, A1>(fn, obj));
+template <class A0, class A1>
+inline Gate0 callback2(bool (*fn)(A0, A1), A0 a0, A1 a1) {
+	return Gate0(new StaticGateCaller2<A0, A1>(fn, a0, a1));
 }
 
 template <class T, class A0, class A1>
@@ -339,6 +349,8 @@ template <class T, class A0, class A1, class A2>
 inline Gate1<A2> callback2(T* obj, bool (T::* fn)(A2, A0, A1), A0 a0, A1 a1) {
 	return Gate1<A2>(new GateCaller1_2<T, A0, A1, A2>(fn, obj, a0, a1));
 }
+
+#endif
 
 
 NAMESPACE_UPP_END

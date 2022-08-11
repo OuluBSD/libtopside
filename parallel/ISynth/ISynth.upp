@@ -1,9 +1,8 @@
 description "\377B200,179,81";
 
 uses
-	ParallelLib;
-
-library(POSIX) fluidsynth;
+	ParallelLib,
+	ports/fluidlite;
 
 file
 	ISynth.h,

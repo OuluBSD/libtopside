@@ -11,28 +11,18 @@ bool SynFluidsynth_LoadSoundfontFile(SynFluidsynth::NativeInstrument& dev, Strin
 bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev);
 void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomBase& a, Vector<byte>& out);
 void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiIO::Event& e, int track_i=-1);
+void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase* a);
 
 
 bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sample_rate = 1024;
 	
-#ifdef flagLINUX
-	bool use_alsa = false;
-	const char *adrivers[] = {"portaudio", "alsa", 0};
-	int res = fluid_audio_driver_register(adrivers);
-	if(res == FLUID_OK)
-		use_alsa = true;
 	
 	dev.settings = new_fluid_settings();
-	if (use_alsa)
-		res = fluid_settings_setstr(dev.settings, "audio.driver", adrivers[0]);
-#else
-	settings = new_fluid_settings();
-#endif
-	
+	fluid_settings_setnum(dev.settings, "synth.sample-rate", 44100);
+	fluid_settings_setstr(dev.settings, "synth.verbose", ws.GetBool(".verbose", false) ? "yes" : "no");
+		
 	dev.synth = new_fluid_synth(dev.settings);
-	dev.adriver = new_fluid_audio_driver(dev.settings, dev.synth);
-	
 	
 	SynFluidsynth_InitializeSoundfont(dev);
 	
@@ -43,62 +33,66 @@ bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, co
 	Format fmt = v.GetFormat();
 	if (fmt.IsAudio()) {
 		AudioFormat& afmt = fmt;
-		dev.sample_rate = afmt.GetSampleRate();
+		//dev.sample_rate = afmt.GetSampleRate();
 		afmt.SetType(BinarySample::FLT_LE);
-		afmt.SetSampleRate(1024);
+		afmt.SetSampleRate(dev.sample_rate);
 		v.SetFormat(fmt);
 	}
 	
+	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+		
     return true;
 }
 
 bool SynFluidsynth::Instrument_PostInitialize(NativeInstrument& dev, AtomBase& a) {
-	/*ISourceRef src = a.GetSource();
-	int c = src->GetSourceCount();
-	Value& v = src->GetSourceValue(c-1);
-	Format fmt = v.GetFormat();
-	if (fmt.IsAudio()) {
-		AudioFormat& afmt = fmt;
-		dev.sample_rate = afmt.GetSampleRate();
-		afmt.SetType(BinarySample::FLT_LE);
-	}*/
     return true;
 }
 
 bool SynFluidsynth::Instrument_Start(NativeInstrument& dev, AtomBase& a) {
-    return true;
+	dev.flag.Start(1);
+	UPP::Thread::Start(callback2(&SynFluidsynth_ProcessThread, &dev, &a));
+	return true;
 }
 
 void SynFluidsynth::Instrument_Stop(NativeInstrument& dev, AtomBase& a) {
-	
+	dev.flag.Stop();
 }
 
 void SynFluidsynth::Instrument_Uninitialize(NativeInstrument& dev, AtomBase& a) {
 	if (dev.settings) {
-		delete_fluid_audio_driver(dev.adriver);
 		delete_fluid_synth(dev.synth);
 		delete_fluid_settings(dev.settings);
 	}
 	dev.settings = 0;
 	dev.synth = 0;
-	dev.adriver = 0;
 	dev.sfont_id = -1;
     dev.sf_loaded = false;
 }
 
 bool SynFluidsynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	SynFluidsynth_Instrument_Update(dev, a, out.Data());
-	/*Format fmt = out.GetFormat();
-	ASSERT(fmt.IsAudio());
-	AudioFormat& afmt = fmt;
-	afmt.SetType(BinarySample::FLT_LE);
-	out.SetFormat(fmt);*/
+	Format fmt = out.GetFormat();
+	if (fmt.IsAudio()) {
+		AudioFormat& afmt = fmt;
+		int sr = afmt.GetSampleRate();
+		ASSERT(sr == dev.sample_rate);
+		ASSERT(afmt.GetSize() == 2);
+		ASSERT(afmt.IsSampleFloat());
+		
+		if (dev.packets.GetCount()) {
+			dev.lock.Enter();
+			Swap(out.Data(), dev.packets[0]);
+			dev.packets.Remove(0);
+			dev.lock.Leave();
+		}
+		else out.Data().SetCount(afmt.GetFrameSize(), 0);
+	}
 	return true;
 }
 
 bool SynFluidsynth::Instrument_IsReady(NativeInstrument& dev, AtomBase& a, PacketIO& io) {
-	//dword iface_sink_mask = a.GetInterface().GetSinkMask();
-	return io.active_sink_mask == 1 && io.full_src_mask == 0;
+	// Primary sink is required always (continuous audio) so ignore midi input, which is mixed
+	// to primary occasionally.
+	return (io.active_sink_mask & 0x1) && io.full_src_mask == 0;
 }
 
 bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink_i, const Packet& in) {
@@ -114,6 +108,9 @@ bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink
 			SynFluidsynth_HandleEvent(dev, *ev);
 			ev++;
 		}
+	}
+	else if (fmt.IsOrder()) {
+		// pass
 	}
 	else {
 		TODO
@@ -169,10 +166,33 @@ bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
 		return false;
 	}
 	
-	
 	return true;
 }
 
+void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase* a) {
+	int max_cache = 32;
+	int buf_size = 2 * dev->sample_rate * sizeof(float);
+	float wait_time = dev->sample_rate / 44100.;
+	
+	while (dev->flag.IsRunning()) {
+		if (dev->packets.GetCount() >= max_cache) {
+			Sleep(1);
+			continue;
+		}
+		
+		Vector<byte>* p = new Vector<byte>();
+		p->SetCount(buf_size);
+		
+		SynFluidsynth_Instrument_Update(*dev, *a, *p);
+		
+		dev->lock.Enter();
+		dev->packets.Add(p);
+		dev->lock.Leave();
+	}
+	
+	dev->flag.DecreaseRunning();
+	
+}
 
 void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomBase& a, Vector<byte>& out) {
 	
@@ -186,15 +206,12 @@ void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomB
     // ... for each effects unit. Each unit takes care of the effects of one MIDI channel.
     // If there are less units than channels, it wraps around and one unit may render effects of multiple
     // MIDI channels.
-    n_fx_chan *= fluid_synth_count_effects_groups(dev.synth);
+    //n_fx_chan *= fluid_synth_count_effects_groups(dev.synth);
     
     // for simplicity, allocate one single sample pool
-    //Vector<float>& samp_buf = dev.buffer;
     int sample_count = dev.sample_rate * (n_aud_chan + n_fx_chan) * 2;
-    //samp_buf.SetCount(sample_count);
-    int total_size = sample_count * sizeof(float);
-    out.SetCount(total_size);
-    float* samp_buf = (float*)(byte*)out.Begin();
+    dev.buffer.SetCount(sample_count);
+    float* samp_buf = (float*)dev.buffer.Begin();
     
     // array of buffers used to setup channel mapping
     Vector<float*>& dry = dev.dry;
@@ -217,12 +234,52 @@ void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomB
         fx[i] = &samp_buf[n_aud_chan * 2 * dev.sample_rate + i * dev.sample_rate];
     }
     
+    int out_samples = dev.sample_rate * 2;
+    int out_size = out_samples * sizeof(float);
+    out.SetCount(out_size);
+    float* o = (float*)(byte*)out.Begin();
+    
+    #if 1
+    
+    fluid_synth_write_float(dev.synth, dev.sample_rate,
+		o, 0, 2,
+		o, 1, 2);
+	
+	
+    #elif 1
+    
+    
     // dont forget to zero sample buffer(s) before each rendering
-    memset(samp_buf, 0, total_size);
+    memset(samp_buf, 0, sample_count * sizeof(float));
     int err = fluid_synth_process(dev.synth, dev.sample_rate, n_fx_chan * 2, fx.Begin(), n_aud_chan * 2, dry.Begin());
     if(err == FLUID_FAILED) {
         ASSERT_(0, "oops");
     }
+    
+    const float* l_from = dry[0];
+    const float* r_from = dry[1];
+    for(int i = 0; i < dev.sample_rate; i++) {
+		*o++ = *l_from++;
+		*o++ = *r_from++;
+    }
+    
+    
+    #else
+    
+    
+    #define FLT_TO_S16(x) (x) * INT16_MAX
+    #define FLT_TO_U16(x) ((x) + 1) * 0.5 * UINT16_MAX
+    static int sample_i;
+    int len = 1.0 / 440.0 * 44100;
+    for(int i = 0; i < dev.sample_rate; i++) {
+        float f = sin(sample_i / (float)len * 2 * M_PI);
+		*o++ = FLT_TO_S16(f);
+		*o++ = FLT_TO_S16(f);
+		sample_i = (sample_i + 1) % len;
+    }
+    
+    
+    #endif
     
 }
 
@@ -233,7 +290,7 @@ bool SynFluidsynth_LoadSoundfontFile(SynFluidsynth::NativeInstrument& dev, Strin
     dev.sf_loaded = false;
     
 	dev.sfont_id = fluid_synth_sfload(dev.synth, path.Begin(), 1);
-    if (dev.sfont_id == FLUID_FAILED)
+    if (dev.sfont_id < 0)
         return false;
     
     dev.sf_loaded = true;
@@ -325,10 +382,10 @@ void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiI
 		
 	}
 	else if (e.IsNoteOff()) {
-		fluid_synth_noteon(dev.synth, channel, e.GetP1(), e.GetP2());
+		fluid_synth_noteoff(dev.synth, channel, e.GetP1());
 	}
 	else if (e.IsNoteOn()) {
-		fluid_synth_noteoff(dev.synth, channel, e.GetP1());
+		fluid_synth_noteon(dev.synth, channel, e.GetP1(), e.GetP2());
 	}
 	else if (e.IsNote()) {
 		LOG("Ignore note: " << e.ToString());
@@ -340,8 +397,14 @@ void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiI
 		int channel = e.GetChannel();
 		int value = e.GetP1();
 		if (track_i < 0 || channel == track_i) {
-			LOG("Changing channel patch: channel " << channel << " to " << value);
-			fluid_synth_program_select(dev.synth, channel, dev.sfont_id, value, 0);
+			LOG("Changing channel patch: channel " << channel << " to " << value << ": " << e.ToString());
+			int bank = 0;
+			// if channel is the midi-standard drum channel
+			if (channel == 9) {
+				bank = 9;
+				value += 128;
+			}
+			fluid_synth_program_select(dev.synth, channel, dev.sfont_id, 0, value);
 		}
 	}
 	else if (e.IsPressure()) {
@@ -352,7 +415,8 @@ void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiI
 		int value = e.GetP1();
 		if (track_i < 0 || channel == track_i) {
 			LOG("Setting pitch bend: channel " << channel << " to " << value);
-			fluid_synth_pitch_bend(dev.synth, channel, value);
+			int fs_pbend = (128 + value) * 0x4000 / 256;
+			fluid_synth_pitch_bend(dev.synth, channel, fs_pbend);
 		}
 	}
 	else {
