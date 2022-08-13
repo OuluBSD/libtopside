@@ -27,7 +27,7 @@ EV_VNDR_LIST
 
 
 
-#if 0
+#if 1
 struct EvSdl {
 	using NativeContext = void*;
 	using NativeSourceDevice = void*;
@@ -42,7 +42,7 @@ struct EvSdl {
 };
 #endif
 
-#if 0
+#if 1
 struct EvGlfw {
 	using NativeContext = void*;
 	using NativeSourceDevice = void*;
@@ -57,7 +57,7 @@ struct EvGlfw {
 };
 #endif
 
-#if 0
+#if 1
 struct EvX11 {
 	using NativeContext = void*;
 	using NativeSourceDevice = void*;
@@ -72,7 +72,7 @@ struct EvX11 {
 };
 #endif
 
-#if 0
+#if 1
 struct EvWin32 {
 	using NativeContext = void*;
 	using NativeSourceDevice = void*;

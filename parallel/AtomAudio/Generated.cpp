@@ -84,6 +84,26 @@ AtomTypeCls FluidsynthPipe::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls SoftInstrumentPipe::GetAtomType()
+{
+	return ATOM11_U10(SOFT_INSTRUMENT_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+}
+
+LinkTypeCls SoftInstrumentPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SoftInstrumentPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SoftInstrument>(this);
+}
+
+AtomTypeCls SoftInstrumentPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 }
 
 }

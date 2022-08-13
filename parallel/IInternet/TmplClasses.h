@@ -60,19 +60,19 @@ struct InternetSocketT : NetSocket {
 	
 };
 
-#if 0
+#if 1
 using PosixSocket = InternetSocketT<NetPosix>;
 #endif
 
-#if 0
+#if 1
 using Win32Socket = InternetSocketT<NetWin32>;
 #endif
 
-#if 0
+#if 1
 using EnetSocket = InternetSocketT<NetEnet>;
 #endif
 
-#if 0
+#if 1
 using NullSerialSocket = InternetSocketT<NetNullSerial>;
 #endif
 

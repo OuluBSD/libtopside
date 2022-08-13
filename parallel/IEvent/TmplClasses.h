@@ -68,19 +68,19 @@ struct EventSourceDeviceT : EvSourceDevice {
 	
 };
 
-#if 0
+#if 1
 using SdlSourceDevice = EventSourceDeviceT<EvSdl>;
 #endif
 
-#if 0
+#if 1
 using GlfwSourceDevice = EventSourceDeviceT<EvGlfw>;
 #endif
 
-#if 0
+#if 1
 using X11SourceDevice = EventSourceDeviceT<EvX11>;
 #endif
 
-#if 0
+#if 1
 using Win32SourceDevice = EventSourceDeviceT<EvWin32>;
 #endif
 

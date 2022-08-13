@@ -11,7 +11,7 @@ struct Instrument
 {
 	Array<Preset> presets;
 	Vector<float> font_samples;
-	Array<Voice> voices;
+	Vector<Voice> voices;
 	Channels channels;
 
 	//int preset_i;
@@ -172,8 +172,8 @@ public:
     void SoundsOffAllChannel(int channel); //end immediately
 
     // Apply a MIDI control change to the channel (not all controllers are supported!)
-    //    (SetChannelMidiControl returns 0 on allocation failure of new channel, otherwise 1)
-    int SetChannelMidiControl(int channel, int controller, int control_value);
+    //    (ChannelMidiControl returns 0 on allocation failure of new channel, otherwise 1)
+    int ChannelMidiControl(int channel, int controller, int control_value);
 
     // Get current values set on the channels
     int GetChannelPresetIndex(int channel);
@@ -204,6 +204,7 @@ public:
 	
 	void Render(Voice& v, float* output_buffer, int sample_count);
 	
+	void HandleEvent(const MidiIO::Event& ev, int track_i=-1);
 	
 };
 

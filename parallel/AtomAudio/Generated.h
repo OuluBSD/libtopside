@@ -67,6 +67,21 @@ public:
 
 };
 
+class SoftInstrumentPipe : public SoftInstrument {
+
+public:
+	RTTI_DECL1(SoftInstrumentPipe, SoftInstrument)
+	COPY_PANIC(SoftInstrumentPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("softinstru.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 using MidiFileReaderPipeRef = Ref<MidiFileReaderPipe, AtomParent>;
 
 using MidiFileReaderRef = Ref<MidiFileReader, AtomParent>;
@@ -74,6 +89,8 @@ using MidiFileReaderRef = Ref<MidiFileReader, AtomParent>;
 using MidiNullSinkRef = Ref<MidiNullSink, AtomParent>;
 
 using FluidsynthPipeRef = Ref<FluidsynthPipe, AtomParent>;
+
+using SoftInstrumentPipeRef = Ref<SoftInstrumentPipe, AtomParent>;
 
 }
 

@@ -225,10 +225,10 @@ String Vendor::GetTreeString(int indent) {
 	return s;
 }
 
-String Vendor::GetPreprocessorEnabler() const {
+String Vendor::GetPreprocessorEnabler(bool def) const {
 	String s;
 	if (enabled.IsEmpty())
-		s << "#if 0";
+		s << "#if " << (def ? "1" : "0");
 	else {
 		s << "#if ";
 		if (enabled.GetCount() > 1) s << "(";

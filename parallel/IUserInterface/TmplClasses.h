@@ -620,7 +620,7 @@ struct UserInterfaceMenuBarT : UiMenuBar {
 	
 };
 
-#if 0
+#if 1
 using ImguiWindow = UserInterfaceWindowT<UiImgui>;
 using ImguiSplitter = UserInterfaceSplitterT<UiImgui>;
 using ImguiSeparatorCtrl = UserInterfaceSeparatorCtrlT<UiImgui>;

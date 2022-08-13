@@ -509,7 +509,7 @@ public:
 		Iterator0 operator-(int i) const {Iterator0 o(*this); o.kit -= I * i; return o;}
 		Iterator0 operator+(int i) const {Iterator0 o(*this); o.kit += I * i; return o;}
 		K* operator->() const {return *kit.Get();}
-		K* Get() const {return *kit.Get();}
+		K* Get() const {if (!kit) return 0; return *kit.Get();}
 		ElPtr GetElPtr() const {return kit.Get();}
 		operator K*() const {return Get();}
 		K& operator*() const {return *Get();}

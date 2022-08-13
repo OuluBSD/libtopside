@@ -553,6 +553,11 @@ HEADER_ACTION(		FluidsynthPipe,		fluidsynth.pipe)
 HEADER_ARG(			FluidsynthPipe,		HINT_PKG,					"AtomAudio")
 HEADER_LINK(		FluidsynthPipe,		PIPE_OPTSIDE, PROCESS)
 
+HEADER21_U10(		SoftInstrumentPipe,	SoftInstrument,				pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
+HEADER_ACTION(		SoftInstrumentPipe,	softinstru.pipe)
+HEADER_ARG(			SoftInstrumentPipe,	HINT_PKG,					"AtomAudio")
+HEADER_LINK(		SoftInstrumentPipe,	PIPE_OPTSIDE, PROCESS)
+
 
 
 

@@ -6,7 +6,7 @@ NAMESPACE_SOFTINSTRU_BEGIN
 bool Instrument::Load(Stream& stream)
 {
 	RiffChunk chunk_head;
-	RiffChunk chunkList;
+	RiffChunk chunk_list;
 	Hydra hydra;
 
 	if (!RiffChunkRead(NULL, chunk_head, stream) || !FourCCEquals(chunk_head.id, "sfbk"))
@@ -16,15 +16,15 @@ bool Instrument::Load(Stream& stream)
 	}
 
 	// Read hydra and locate sample data.
-	while (RiffChunkRead(&chunk_head, chunkList, stream))
+	while (RiffChunkRead(&chunk_head, chunk_list, stream))
 	{
 		RiffChunk chunk;
-		if (FourCCEquals(chunkList.id, "pdta"))
+		if (FourCCEquals(chunk_list.id, "pdta"))
 		{
-			while (RiffChunkRead(&chunkList, chunk, stream))
+			while (RiffChunkRead(&chunk_list, chunk, stream))
 			{
-				#define HandleChunk(chunkName) \
-				(FourCCEquals(chunk.id, #chunkName) && !(chunk.size % chunkName##_SizeInFile)) \
+				#define HandleChunk(chunkId, chunkName) \
+				(FourCCEquals(chunk.id, #chunkId) && !(chunk.size % chunkName##_SizeInFile)) \
 				{ \
 					int num = chunk.size / chunkName##_SizeInFile, i; \
 					hydra.chunkName.SetCount(num); \
@@ -42,22 +42,23 @@ bool Instrument::Load(Stream& stream)
 					instrument_gens_SizeInFile =  4,
 					sample_headers_SizeInFile = 46
 				};
-				if      HandleChunk(preset_headers)
-				else if HandleChunk(preset_bags)
-				else if HandleChunk(preset_mods)
-				else if HandleChunk(preset_gens)
-				else if HandleChunk(instruments)
-				else if HandleChunk(instrument_bags)
-				else if HandleChunk(instrument_mods)
-				else if HandleChunk(instrument_gens)
-				else if HandleChunk(sample_headers)
+					
+				if      HandleChunk(phdr, preset_headers)
+				else if HandleChunk(pbag, preset_bags)
+				else if HandleChunk(pmod, preset_mods)
+				else if HandleChunk(pgen, preset_gens)
+				else if HandleChunk(inst, instruments)
+				else if HandleChunk(ibag, instrument_bags)
+				else if HandleChunk(imod, instrument_mods)
+				else if HandleChunk(igen, instrument_gens)
+				else if HandleChunk(shdr, sample_headers)
 				else (*this.*stream.skip)(stream.data, chunk.size);
 				#undef HandleChunk
 			}
 		}
-		else if (FourCCEquals(chunkList.id, "sdta"))
+		else if (FourCCEquals(chunk_list.id, "sdta"))
 		{
-			while (RiffChunkRead(&chunkList, chunk, stream))
+			while (RiffChunkRead(&chunk_list, chunk, stream))
 			{
 				if (FourCCEquals(chunk.id, "smpl") && font_samples.IsEmpty() && chunk.size >= sizeof(short))
 				{
@@ -67,7 +68,7 @@ bool Instrument::Load(Stream& stream)
 				else (*this.*stream.skip)(stream.data, chunk.size);
 			}
 		}
-		else (*this.*stream.skip)(stream.data, chunkList.size);
+		else (*this.*stream.skip)(stream.data, chunk_list.size);
 	}
 	/*if (hydra.preset_headers.IsEmpty() || hydra.preset_bags || !hydra.preset_mods || !hydra.preset_gens || !hydra.instruments || !hydra.instrument_bags || !hydra.instrument_mods || !hydra.instrument_gens || !hydra.sample_headers)
 	{
@@ -347,19 +348,21 @@ void Instrument::RenderShort(short* buffer, int samples, int flag_mixing)
 		RenderFloat(float_samples, channel_samples, false);
 		samples -= channel_samples;
 
-		if (flag_mixing)
+		if (flag_mixing) {
 			while (buffer != buffer_end)
 			{
 				float v = *float_samples++;
 				int vi = *buffer + (v < -1.00004566f ? (int)-32768 : (v > 1.00001514f ? (int)32767 : (int)(v * 32767.5f)));
 				*buffer++ = (vi < -32768 ? (short)-32768 : (vi > 32767 ? (short)32767 : (short)vi));
 			}
-		else
+		}
+		else {
 			while (buffer != buffer_end)
 			{
 				float v = *float_samples++;
 				*buffer++ = (v < -1.00004566f ? (short)-32768 : (v > 1.00001514f ? (short)32767 : (short)(v * 32767.5f)));
 			}
+		}
 	}
 }
 
@@ -614,7 +617,7 @@ void Instrument::SoundsOffAllChannel(int channel)
 			EndQuick(*v);
 }
 
-int Instrument::SetChannelMidiControl(int channel, int controller, int control_value)
+int Instrument::ChannelMidiControl(int channel, int controller, int control_value)
 {
 	Channel& c = InitChannel(channel);
 	
@@ -779,6 +782,10 @@ void Instrument::EndQuick(Voice& v)
 }
 
 int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
+	ASSERT(hydra.preset_headers.GetCount() > 0);
+	if (hydra.preset_headers.IsEmpty())
+		return 0;
+	
 	enum {
 		GenInstrument = 41,
 		GenKeyRange = 43,
@@ -799,7 +806,8 @@ int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
 		int region_i = 0;
 		Region global_region;
 		
-		for (HydraPresetHeader& other_phdr : hydra.preset_headers) {
+		for (int pphdr_j = 0; pphdr_j < hydra.preset_headers.GetCount()-1; pphdr_j++) {
+			HydraPresetHeader& other_phdr = hydra.preset_headers[pphdr_j];
 			if (&other_phdr == &pphdr || other_phdr.bank > pphdr.bank)
 				continue;
 			else if (other_phdr.bank < pphdr.bank)
@@ -813,7 +821,7 @@ int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
 		}
 		
 		Preset& preset = this->presets[sorted_i];
-		preset.name = pphdr.preset_name;
+		preset.name = pphdr.name;
 		preset.bank = pphdr.bank;
 		preset.preset = pphdr.preset;
 		preset.regions.Clear();
@@ -863,8 +871,8 @@ int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
 					unsigned char ihivel = 127;
 					int begin_l = pibag.gen_idx;
 					int end_l = next_pibag.gen_idx;
-					for (int k = begin_k; k < end_k; k++) {
-						HydraInstrumentGen& pigen = hydra.instrument_gens[k];
+					for (int l = begin_l; l < end_l; l++) {
+						HydraInstrumentGen& pigen = hydra.instrument_gens[l];
 						if (pigen.gen_op == GenKeyRange) {
 							ilokey = pigen.gen_amount.range.lo;
 							ihikey = pigen.gen_amount.range.hi;
@@ -875,12 +883,13 @@ int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
 							ihivel = pigen.gen_amount.range.hi;
 							continue;
 						}
-						if (pigen.gen_op == GenSampleID &&
-							ihikey >= plokey &&
-							ilokey <= phikey &&
-							ihivel >= plovel &&
-							ilovel <= phivel)
-							preset_region_count++;
+						if (pigen.gen_op == GenSampleID) {
+							if (ihikey >= plokey &&
+								ilokey <= phikey &&
+								ihivel >= plovel &&
+								ilovel <= phivel)
+								preset_region_count++;
+						}
 					}
 				}
 			}
@@ -924,8 +933,8 @@ int Instrument::LoadPresets(Hydra& hydra, unsigned int font_sample_count) {
 						int had_sample_id = 0;
 						int begin_l = pibag.gen_idx;
 						int end_l = next_pibag.gen_idx;
-						for (int k = begin_k; k < end_k; k++) {
-							HydraInstrumentGen& pigen = hydra.instrument_gens[k];
+						for (int l = begin_l; l < end_l; l++) {
+							HydraInstrumentGen& pigen = hydra.instrument_gens[l];
 							
 							if (pigen.gen_op == GenSampleID) {
 								
@@ -1170,6 +1179,108 @@ int Instrument::StreamMemory_skip(StreamMemory* m, unsigned int count) {
 		return 0;
 	m->pos += count;
 	return 1;
+}
+
+void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
+	int channel = e.GetChannel();
+
+	if (e.IsController()) {
+		if (track_i < 0 || channel == track_i) {
+			int num = e.GetP1();
+			int value = e.GetP2();
+			LOG("Configure event: " <<
+				e.ToString() << ": " <<
+				MidiIO::GetEventCtrlString(num) << " = " << value);
+			ChannelMidiControl(channel, num, value);
+		}
+	}
+	else if (e.IsMeta()) {
+		bool send = false;
+		int mnum = e.GetP1();
+		int strlen = e.GetP2();
+		String str;
+		for(int i = 3; i < 3 + strlen; i++) {
+			int chr = e[i];
+			str.Cat(i);
+		}
+		switch (mnum) {
+			case MidiIO::MIDIMETA_SEQNUM:
+				break;
+			case MidiIO::MIDIMETA_TEXT:
+				LOG("Midi-string: " << str);
+				break;
+			case MidiIO::MIDIMETA_COPYRIGHT:
+				LOG("Copyright: " << str);
+				break;
+			case MidiIO::MIDIMETA_TRACKNAME:
+				LOG("Track name: " << str);
+				break;
+			case MidiIO::MIDIMETA_INSTRNAME:
+				LOG("Instrument name: " << str);
+				break;
+			case MidiIO::MIDIMETA_LYRICS:
+				break;
+			case MidiIO::MIDIMETA_MARKER:
+				break;
+			case MidiIO::MIDIMETA_CUEPOINT:
+				break;
+			case MidiIO::MIDIMETA_CHPREFIX:
+				break;
+			case MidiIO::MIDIMETA_TRACKEND:
+				break;
+			case MidiIO::MIDIMETA_TEMPO:
+				break;
+			case MidiIO::MIDIMETA_SMPTE:
+				break;
+			case MidiIO::MIDIMETA_TIMESIG:
+				break;
+			case MidiIO::MIDIMETA_KEYSIG:
+				break;
+			case MidiIO::MIDIMETA_CUSTOM:
+				break;
+		}
+		
+	}
+	else if (e.IsNoteOff()) {
+		NoteOffChannel(channel, e.GetP1());
+	}
+	else if (e.IsNoteOn()) {
+		NoteOnChannel(channel, e.GetP1(), e.GetP2() / 127.0f);
+	}
+	else if (e.IsNote()) {
+		LOG("Ignore note: " << e.ToString());
+	}
+	else if (e.IsAftertouch()) {
+		LOG("Ignore aftertouch: " << e.ToString());
+	}
+	else if (e.IsTimbre() || e.IsPatchChange()) {
+		int channel = e.GetChannel();
+		int value = e.GetP1();
+		if (track_i < 0 || channel == track_i) {
+			LOG("Changing channel patch: channel " << channel << " to " << value << ": " << e.ToString());
+			int bank = 0;
+			// if channel is the midi-standard drum channel
+			if (channel == 9) {
+				bank = 128;
+			}
+			SetChannelBankPreset(channel, bank, value);
+		}
+	}
+	else if (e.IsPressure()) {
+		LOG("Ignore pressure: " << e.ToString());
+	}
+	else if (e.IsPitchbend()) {
+		int channel = e.GetChannel();
+		int value = e.GetP1();
+		if (track_i < 0 || channel == track_i) {
+			LOG("Setting pitch bend: channel " << channel << " to " << value);
+			int fs_pbend = (128 + value) * 0x4000 / 256;
+			SetChannelPitchWheel(channel, fs_pbend);
+		}
+	}
+	else {
+		LOG("Unexpected configure event: " << e.ToString());
+	}
 }
 
 

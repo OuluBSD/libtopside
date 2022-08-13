@@ -27,6 +27,7 @@ namespace Parallel {
 	ATOM_TYPE(MIDI_FILE_READER) \
 	ATOM_TYPE(MIDI_NULL_SINK) \
 	ATOM_TYPE(FLUIDSYNTH_PIPE) \
+	ATOM_TYPE(SOFT_INSTRUMENT_PIPE) \
 
 
 #define ATOM_CLASS_LIST \
@@ -49,6 +50,7 @@ namespace Parallel {
 	ATOM_CLASS(MidiFileReader) \
 	ATOM_CLASS(MidiNullSink) \
 	ATOM_CLASS(FluidsynthPipe) \
+	ATOM_CLASS(SoftInstrumentPipe) \
 
 
 #define flagFFMPEG_ATOM_TYPE_LIST \

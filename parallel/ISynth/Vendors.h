@@ -4,6 +4,10 @@
 #ifndef _ISynth_Vendors_h_
 #define _ISynth_Vendors_h_
 
+#if 1
+	#include <SoftInstru/SoftInstru.h>
+#endif
+
 #if defined flagFLUIDSYNTH
 	#include <ports/fluidlite/fluidlite.h>
 #endif
@@ -16,6 +20,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 #define SYN_VNDR_LIST \
+	SYN_VNDR(SynSoft) \
 	SYN_VNDR(SynFluidsynth) \
 
 
@@ -27,6 +32,25 @@ SYN_VNDR_LIST
 #undef SYN_CLS
 
 
+
+#if 1
+struct SynSoft {
+	
+	struct NativeInstrument {
+		SoftInstru::Instrument instrument;
+		bool sf_loaded;
+		int sample_rate;
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
 
 #if defined flagFLUIDSYNTH
 struct SynFluidsynth {

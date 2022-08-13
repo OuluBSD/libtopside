@@ -27,7 +27,7 @@ NET_VNDR_LIST
 
 
 
-#if 0
+#if 1
 struct NetPosix {
 	using NativeSocket = void*;
 	
@@ -41,7 +41,7 @@ struct NetPosix {
 };
 #endif
 
-#if 0
+#if 1
 struct NetWin32 {
 	using NativeSocket = void*;
 	
@@ -55,7 +55,7 @@ struct NetWin32 {
 };
 #endif
 
-#if 0
+#if 1
 struct NetEnet {
 	using NativeSocket = void*;
 	
@@ -69,7 +69,7 @@ struct NetEnet {
 };
 #endif
 
-#if 0
+#if 1
 struct NetNullSerial {
 	using NativeSocket = void*;
 	

@@ -76,7 +76,7 @@ struct VirtualMachineThreadT : VmThread {
 	
 };
 
-#if 0
+#if 1
 using TosVirtualMachine = VirtualMachineVirtualMachineT<VmTos>;
 using TosThread = VirtualMachineThreadT<VmTos>;
 #endif

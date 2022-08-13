@@ -14,7 +14,7 @@ union HydraGenAmount {
 };
 
 struct HydraPresetHeader {
-	String preset_name;
+	String name;
 	uint16 preset;
 	uint16 bank;
 	uint16 preset_bag_idx;

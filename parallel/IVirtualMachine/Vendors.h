@@ -25,7 +25,7 @@ VM_VNDR_LIST
 
 
 
-#if 0
+#if 1
 struct VmTos {
 	using NativeVirtualMachine = void*;
 	using NativeThread = void*;

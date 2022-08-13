@@ -2,6 +2,8 @@
 #define _SoftInstru_SoftInstru_h_
 
 #include <Local/Local.h>
+#include <MidiFile/MidiFile.h>
+
 
 #define NAMESPACE_SOFTINSTRU_BEGIN NAMESPACE_TOPSIDE_BEGIN namespace SoftInstru {
 #define NAMESPACE_SOFTINSTRU_END } NAMESPACE_TOPSIDE_END

@@ -7,7 +7,9 @@ NAMESPACE_SOFTINSTRU_BEGIN
 #define TSFR(FIELD) (*stream.i.*stream.read)(stream.data, &FIELD, sizeof(FIELD));
 
 void HydraPresetHeader::Read(Stream& stream) {
-	TSFR(preset_name) TSFR(preset) TSFR(bank) TSFR(preset_bag_idx) TSFR(library) TSFR(genre) TSFR(morphology)
+	char cname[20];
+	TSFR(cname) TSFR(preset) TSFR(bank) TSFR(preset_bag_idx) TSFR(library) TSFR(genre) TSFR(morphology)
+	name.Set(cname, strnlen(cname, 20));
 }
 
 void HydraPresetBag::Read(Stream& stream) {
@@ -24,7 +26,9 @@ void HydraPresetGen::Read(Stream& stream) {
 }
 
 void HydraInstrument::Read(Stream& stream) {
-	TSFR(name) TSFR(bag_idx)
+	char cname[20];
+	TSFR(cname) TSFR(bag_idx)
+	name.Set(cname, strnlen(cname, 20));
 }
 
 void HydraInstrumentBag::Read(Stream& stream) {
@@ -40,7 +44,9 @@ void HydraInstrumentGen::Read(Stream& stream) {
 }
 
 void HydraSampleHeader::Read(Stream& stream) {
-	TSFR(name) TSFR(start) TSFR(end) TSFR(start_loop) TSFR(end_loop) TSFR(sample_rate) TSFR(orig_pitch) TSFR(pitch_correction) TSFR(sample_link) TSFR(sample_type)
+	char cname[20];
+	TSFR(cname) TSFR(start) TSFR(end) TSFR(start_loop) TSFR(end_loop) TSFR(sample_rate) TSFR(orig_pitch) TSFR(pitch_correction) TSFR(sample_link) TSFR(sample_type)
+	name.Set(cname, strnlen(cname, 20));
 }
 
 #undef TSFR

@@ -64,6 +64,10 @@ struct SynthInstrumentT : SynInstrument {
 	
 };
 
+#if 1
+using SoftInstrument = SynthInstrumentT<SynSoft>;
+#endif
+
 #if defined flagFLUIDSYNTH
 using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 #endif

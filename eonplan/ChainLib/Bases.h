@@ -55,6 +55,7 @@ BASE(SpatialInteractionAtom)
 BASE(MidiFileReaderAtom)
 BASE(MidiNullAtom)
 BASE(FluidsynthInstrument)
+BASE(SoftInstrument)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

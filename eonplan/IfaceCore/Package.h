@@ -118,7 +118,7 @@ struct Vendor {
 	Struct& AddStruct(String type) {return structs.Add(type);}
 	EnabledFlag& AddEnabled() {return enabled.Add();}
 	String GetTreeString(int indent);
-	String GetPreprocessorEnabler() const;
+	String GetPreprocessorEnabler(bool def=true) const;
 	String GetIncludes(int indent=0) const;
 };
 

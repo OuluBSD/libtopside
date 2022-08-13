@@ -140,13 +140,13 @@ bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
 	dirs.Add( "/usr/local/share/soundfonts" );
 	
 	Index<String> files;
+	files.Add("TimGM6mb.sf2");
 	files.Add("FluidR3 GM.sf2");
 	files.Add("FluidR3_GM.sf2");
-	files.Add("TimGM6mb.sf2");
+	files.Add("FluidR3_GS.sf2");
 	files.Add("ChoriumRevA.sf2");
 	files.Add("WeedsGM3.sf2");
 	files.Add("UHD3.sf2");
-	files.Add("FluidR3_GS.sf2");
 	
 	bool loaded = false;
 	for(String file : files) {
@@ -401,10 +401,9 @@ void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiI
 			int bank = 0;
 			// if channel is the midi-standard drum channel
 			if (channel == 9) {
-				bank = 9;
-				value += 128;
+				bank = 128;
 			}
-			fluid_synth_program_select(dev.synth, channel, dev.sfont_id, 0, value);
+			fluid_synth_program_select(dev.synth, channel, dev.sfont_id, bank, value);
 		}
 	}
 	else if (e.IsPressure()) {

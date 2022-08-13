@@ -5,6 +5,7 @@
 #define _ISynth_ISynth_h_
 
 #include <ParallelLib/ParallelLib.h>
+#include <SoftInstru/SoftInstru.h>
 
 #include "Enums.h"
 #include "Vendors.h"
