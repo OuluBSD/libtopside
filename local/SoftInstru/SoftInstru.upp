@@ -1,0 +1,16 @@
+description "\3770,128,128";
+
+uses
+	Local;
+
+file
+	Copying,
+	SoftInstru.h,
+	Common.h,
+	Instrument.h,
+	Instrument.cpp,
+	Hydra.h,
+	Hydra.cpp,
+	Voice.h,
+	Voice.cpp;
+
