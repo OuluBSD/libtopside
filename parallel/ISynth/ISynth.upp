@@ -3,7 +3,8 @@ description "\377B200,179,81";
 uses
 	ParallelLib,
 	SoftInstru,
-	SoftSynth;
+	SoftSynth,
+	AudioCore;
 
 uses(FLUIDSYNTH) ports/fluidlite;
 

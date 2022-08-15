@@ -1,0 +1,23 @@
+topic "class Moog : public Sampler";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:Moog`:`:class:%- [@(0.0.255) class]_[* Moog]_:_[@(0.0.255) public]_[*@3 Samp
+ler]&]
+[s2; moog`-like swept filter sampling synthesis class.&]
+[s2; &]
+[s2;     This instrument uses one attack wave, one&]
+[s2;     looped wave, and an ADSR envelope (inherited&]
+[s2;     from the Sampler class) and adds two sweepable&]
+[s2;     formant (FormSwep) filters.&]
+[s2; &]
+[s2;     Control Change Numbers: &]
+[s2;        `- Filter Q `= 2&]
+[s2;        `- Filter Sweep Rate `= 4&]
+[s2;        `- Vibrato Frequency `= 11&]
+[s2;        `- Vibrato Gain `= 1&]
+[s2;        `- Gain `= 128&]
+[s3;%- &]
+[s0; ]]

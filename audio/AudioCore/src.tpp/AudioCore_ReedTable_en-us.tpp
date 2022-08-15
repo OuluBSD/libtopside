@@ -1,0 +1,22 @@
+topic "class ReedTable : public Function";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:ReedTable`:`:class:%- [@(0.0.255) class]_[* ReedTable]_:_[@(0.0.255) publi
+c]_[*@3 Function]&]
+[s2; reed table class.&]
+[s2; &]
+[s2;     This class implements a simple one breakpoint,&]
+[s2;     non`-linear reed function, as described by&]
+[s2;     Smith (1986).  This function is based on a&]
+[s2;     memoryless non`-linear spring model of the reed&]
+[s2;     (the reed mass is ignored) which saturates when&]
+[s2;     the reed collides with the mouthpiece facing.&]
+[s2; &]
+[s2;     See McIntyre, Schumacher, `& Woodhouse (1983),&]
+[s2;     Smith (1986), Hirschman, Cook, Scavone, and&]
+[s2;     others for more information.&]
+[s3;%- &]
+[s0; ]]

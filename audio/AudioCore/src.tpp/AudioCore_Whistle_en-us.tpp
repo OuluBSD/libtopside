@@ -1,0 +1,21 @@
+topic "class Whistle : public Instrument";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:Whistle`:`:class:%- [@(0.0.255) class]_[* Whistle]_:_[@(0.0.255) public]_[*@3 I
+nstrument]&]
+[s2; police/referee whistle instrument class.&]
+[s2; &]
+[s2;     This class implements a hybrid physical/spectral&]
+[s2;     model of a police whistle (a la Cook).&]
+[s2; &]
+[s2;     Control Change Numbers: &]
+[s2;        `- Noise Gain `= 4&]
+[s2;        `- Fipple Modulation Frequency `= 11&]
+[s2;        `- Fipple Modulation Gain `= 1&]
+[s2;        `- Blowing Frequency Modulation `= 2&]
+[s2;        `- Volume `= 128&]
+[s3;%- &]
+[s0; ]]

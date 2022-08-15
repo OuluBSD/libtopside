@@ -1,0 +1,22 @@
+topic "class Resonate : public Instrument";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:Resonate`:`:class:%- [@(0.0.255) class]_[* Resonate]_:_[@(0.0.255) public]_
+[*@3 Instrument]&]
+[s2; noise driven formant filter.&]
+[s2; &]
+[s2;     This instrument contains a noise source, which&]
+[s2;     excites a biquad resonance filter, with volume&]
+[s2;     controlled by an ADSR.&]
+[s2; &]
+[s2;     Control Change Numbers:&]
+[s2;        `- Resonance Frequency (0`-Nyquist) `= 2&]
+[s2;        `- Pole Radii `= 4&]
+[s2;        `- Notch Frequency (0`-Nyquist) `= 11&]
+[s2;        `- Zero Radii `= 1&]
+[s2;        `- Envelope Gain `= 128&]
+[s3;%- &]
+[s0; ]]

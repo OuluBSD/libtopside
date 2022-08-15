@@ -1,0 +1,22 @@
+topic "class Sitar : public Instrument";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:Sitar`:`:class:%- [@(0.0.255) class]_[* Sitar]_:_[@(0.0.255) public]_[*@3 In
+strument]&]
+[s2; sitar string model class.&]
+[s2; &]
+[s2;     This class implements a sitar plucked string&]
+[s2;     physical model based on the Karplus`-Strong&]
+[s2;     algorithm.&]
+[s2; &]
+[s2;     This is a digital waveguide model, making its&]
+[s2;     use possibly subject to patents held by&]
+[s2;     Stanford University, Yamaha, and others.&]
+[s2;     There exist at least two patents, assigned to&]
+[s2;     Stanford, bearing the names of Karplus and/or&]
+[s2;     Strong.&]
+[s3;%- &]
+[s0; ]]

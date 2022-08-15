@@ -1,0 +1,22 @@
+topic "class Simple : public Instrument";
+[ $$0,0#00000000000000000000000000000000:Default]
+[i448;a25;kKO9; $$1,0#37138531426314131252341829483380:structitem]
+[l288;2 $$2,0#27521748481378242620020725143825:desc]
+[0 $$3,0#96390100711032703541132217272105:end]
+[{_}%EN-US 
+[s1;:AudioCore`:`:Simple`:`:class:%- [@(0.0.255) class]_[* Simple]_:_[@(0.0.255) public]_[*@3 I
+nstrument]&]
+[s2; wavetable/noise instrument.&]
+[s2; &]
+[s2;     This class combines a looped wave, a&]
+[s2;     noise source, a biquad resonance filter,&]
+[s2;     a one`-pole filter, and an ADSR envelope&]
+[s2;     to create some interesting sounds.&]
+[s2; &]
+[s2;     Control Change Numbers: &]
+[s2;        `- Filter Pole Position `= 2&]
+[s2;        `- Noise/Pitched Cross`-Fade `= 4&]
+[s2;        `- Envelope Rate `= 11&]
+[s2;        `- Gain `= 128&]
+[s3;%- &]
+[s0; ]]
