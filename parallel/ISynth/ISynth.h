@@ -6,6 +6,7 @@
 
 #include <ParallelLib/ParallelLib.h>
 #include <SoftInstru/SoftInstru.h>
+#include <SoftSynth/SoftSynth.h>
 
 #include "Enums.h"
 #include "Vendors.h"

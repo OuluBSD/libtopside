@@ -56,6 +56,7 @@ BASE(MidiFileReaderAtom)
 BASE(MidiNullAtom)
 BASE(FluidsynthInstrument)
 BASE(SoftInstrument)
+BASE(FmSynthInstrument)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

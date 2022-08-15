@@ -72,6 +72,10 @@ using SoftInstrument = SynthInstrumentT<SynSoft>;
 using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 #endif
 
+#if 1
+using FmSynthInstrument = SynthInstrumentT<SynFmSynth>;
+#endif
+
 
 NAMESPACE_PARALLEL_END
 

@@ -10,6 +10,7 @@ PKG(Synth, Syn, Y) {
 	COLOR(200, 179, 81)
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(SoftInstru)
+	DEPENDENCY(SoftSynth)
 	DEPENDENCY_("FLUIDSYNTH", ports/fluidlite)
 	//DEPENDENCY(IMedia)
 	//LIBRARY("POSIX", fluidsynth)
@@ -64,6 +65,17 @@ PKG(Synth, Syn, Y) {
 			.Add("flag",			"RunningFlag")
 			.Add("packets",			"Array<Vector<byte>>")
 			.Add("lock",			"Mutex")
+		;
+	
+	}
+	
+	VENDOR(FmSynth) {
+		VENDOR_INCLUDE("", SoftSynth/SoftSynth.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		
+		v->AddStruct("NativeInstrument")
+			.Add("instrument",		"SoftSynth::FmSynth")
+			.Add("sample_rate",		"int")
 		;
 	
 	}

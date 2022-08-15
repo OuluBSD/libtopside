@@ -2,7 +2,8 @@ description "\377B200,179,81";
 
 uses
 	ParallelLib,
-	SoftInstru;
+	SoftInstru,
+	SoftSynth;
 
 uses(FLUIDSYNTH) ports/fluidlite;
 
@@ -10,8 +11,9 @@ file
 	ISynth.h,
 	Enums.h,
 	Vendors.h,
-	Fluidsynth.cpp,
 	Soft.cpp,
+	Fluidsynth.cpp,
+	FmSynth.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;

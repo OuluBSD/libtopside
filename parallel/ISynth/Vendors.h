@@ -12,6 +12,10 @@
 	#include <ports/fluidlite/fluidlite.h>
 #endif
 
+#if 1
+	#include <SoftSynth/SoftSynth.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define SYN_CLS_LIST(x) \
@@ -22,6 +26,7 @@ NAMESPACE_PARALLEL_BEGIN
 #define SYN_VNDR_LIST \
 	SYN_VNDR(SynSoft) \
 	SYN_VNDR(SynFluidsynth) \
+	SYN_VNDR(SynFmSynth) \
 
 
 
@@ -67,6 +72,24 @@ struct SynFluidsynth {
 		RunningFlag flag;
 		Array<Vector<byte>> packets;
 		Mutex lock;
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if 1
+struct SynFmSynth {
+	
+	struct NativeInstrument {
+		SoftSynth::FmSynth instrument;
+		int sample_rate;
 	};
 	
 	struct Thread {

@@ -1,0 +1,12 @@
+description "\3770,128,128";
+
+uses
+	Local;
+
+file
+	Copying,
+	SoftSynth.h,
+	Common.h,
+	Fm.h,
+	Fm.cpp;
+
