@@ -492,7 +492,7 @@ void StoreToGlobal(Callback1<Stream&> x, const char *name) {
 
 
 
-String GetHomeDirectory() {
+/*String GetHomeDirectory() {
 	#ifdef flagPOSIX
 	struct passwd *pw = getpwuid(getuid());
 	return pw->pw_dir;
@@ -502,7 +502,7 @@ String GetHomeDirectory() {
 	#else
 	#error Not implemented yet
 	#endif
-}
+}*/
 
 
 String GetHomeDirFile(const char *fp) {

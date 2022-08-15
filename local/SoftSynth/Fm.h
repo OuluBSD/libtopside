@@ -201,9 +201,6 @@ struct Voice {
 
 
 class FmSynth {
-	ALIGNEDVAR(VoiceParameters params);
-	ALIGNEDVAR(GlobalParameters global_params);
-	
 	float freq;
 	float inv_freq;
 	
@@ -214,6 +211,9 @@ class FmSynth {
 	ALIGNEDVAR(Voice voices[SYNTH_VOICES]);
 	
 public:
+	ALIGNEDVAR(VoiceParameters params);
+	ALIGNEDVAR(GlobalParameters global_params);
+	
 	
 	void Init(float freq);
 	void LoadTest();

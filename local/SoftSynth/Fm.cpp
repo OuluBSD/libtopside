@@ -581,7 +581,10 @@ void FmSynth::ProcessFrames(Voice& voice, float *left, float *right, int samples
 			VoiceOp& op = voice.ops[i];
 			float value = op.env * op.read_mod *
 						  Oscillator(voice.phases[i]);
-
+			
+			if (!IsFin(value))
+				value = 0;
+			
 			cached[i] = value;
 			cached_modulator[i] = value * op.step_rate;
 			op.env += op.target_env_step;
@@ -610,8 +613,15 @@ void FmSynth::ProcessFrames(Voice& voice, float *left, float *right, int samples
 		else {
 			for (int i = 0; i < SYNTH_OPERATORS; i++) {
 				VoiceOp& op = voice.ops[i];
-				left[f]  += cached[i] * op.pan_amp[0];
-				right[f] += cached[i] * op.pan_amp[1];
+				ASSERT(IsFin(cached[i]));
+				ASSERT(IsFin(op.pan_amp[0]));
+				ASSERT(IsFin(op.pan_amp[1]));
+				float l = cached[i] * op.pan_amp[0];
+				float r = cached[i] * op.pan_amp[1];
+				if (IsInf(l)) l = 0;
+				if (IsInf(r)) r = 0;
+				left[f]  += l;
+				right[f] += r;
 			}
 		}
 	}

@@ -22,7 +22,7 @@ NAMESPACE_TOPSIDE_BEGIN
 #define StrategyRandom2Bin			9
 
 
-class GeneticOptimizer {
+struct GeneticOptimizer {
 	
 	Vector<double> min_values, max_values;
 	Vector<double> trial_solution;

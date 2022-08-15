@@ -27,7 +27,7 @@ inline String ReadStdIn() {return Cin().GetLine();}
 
 void SetExeFilePath(String s);
 String GetExeFilePath();
-String GetHomeDir();
+String GetHomeDirectory();
 String ConfigFile(String file_name);
 String GetFileName(String path);
 String GetFileTitle(String path);

@@ -329,7 +329,7 @@ String GetExeFilePath() {
 	return exe_path;
 }
 
-String GetHomeDir() {
+String GetHomeDirectory() {
 	#ifdef flagPOSIX
 	struct passwd *pw = getpwuid(getuid());
 	String homedir = pw->pw_dir;
@@ -349,7 +349,7 @@ String ConfigFile(String file_name) {
 	#ifdef flagWIN32
 	String dir = GetExeDirFile("");
 	#else
-	String home_dir = GetHomeDir();
+	String home_dir = GetHomeDirectory();
 	String upp = AppendFileName(home_dir, ".config");
 	upp = AppendFileName(upp, "u++");
 	String dir = AppendFileName(upp, GetFileTitle(GetExeFilePath()));

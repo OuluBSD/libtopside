@@ -1,0 +1,11 @@
+uses
+	Local,
+	SoftSynth;
+
+file
+	FmPresetSolver.h,
+	FmPresetSolver.cpp;
+
+mainconfig
+	"" = "";
+
