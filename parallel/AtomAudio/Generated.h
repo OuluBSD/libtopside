@@ -97,6 +97,21 @@ public:
 
 };
 
+class CoreSynthPipe : public CoreSynthInstrument {
+
+public:
+	RTTI_DECL1(CoreSynthPipe, CoreSynthInstrument)
+	COPY_PANIC(CoreSynthPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("coresynth.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 using MidiFileReaderPipeRef = Ref<MidiFileReaderPipe, AtomParent>;
 
 using MidiFileReaderRef = Ref<MidiFileReader, AtomParent>;
@@ -108,6 +123,8 @@ using FluidsynthPipeRef = Ref<FluidsynthPipe, AtomParent>;
 using SoftInstrumentPipeRef = Ref<SoftInstrumentPipe, AtomParent>;
 
 using FmSynthPipeRef = Ref<FmSynthPipe, AtomParent>;
+
+using CoreSynthPipeRef = Ref<CoreSynthPipe, AtomParent>;
 
 }
 

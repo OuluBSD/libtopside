@@ -15,6 +15,7 @@ file
 	Soft.cpp,
 	Fluidsynth.cpp,
 	FmSynth.cpp,
+	CoreSynth.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;

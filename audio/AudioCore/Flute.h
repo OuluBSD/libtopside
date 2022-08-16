@@ -8,7 +8,7 @@ NAMESPACE_AUDIO_BEGIN
 class Flute : public Instrument {
 public:
 
-	Flute( double lowest_freq );
+	Flute( double lowest_freq = DEFAULT_LOWEST_FREQ);
 	~Flute();
 	void Clear();
 	void SetFrequency( double frequency );

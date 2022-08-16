@@ -1,65 +1,56 @@
 
 Instruments:
-BandedWaveGuide
-BeeThree
-BlowBottle
-BlowHole
-Bowed
-Brass
-Chorus
-Clarinet
-Drummer
-Guitar
-HeavyMetal
-Mandolin
-Mesh2D
-Modal
-Moog
-PercFlut
-Plucked
-Resonate
-Rhodey
-Sampler
-Saxofony
-Shakers
-Simple
-Sitar
-StifKarp
-TubeBell
-
+	BandedWaveGuide
+	BeeThree
+	BlowBottle
+	BlowHole
+	Bowed
+	Brass
+	Clarinet
+	Drummer
+	Guitar
+	HeavyMetal
+	Mandolin
+	Mesh2D
+	ModalBar
+	Moog
+	PercFlut
+	Plucked
+	Resonate
+	Rhodey
+	Saxofony
+	Shakers
+	Simple
+	Sitar
+	StifKarp
+	TubeBell
+	VoiceFormant
+	Whistle
+	Wurley
 
 
 Effects:
-BiQuad
-Delay
-DelayA
-DelayL
-Echo
-Fir
-Flute
-FormSwep
-FreeVerb
-Iir
-JCRev
-LentPitchShift
-NRev
-OnePole
-OneZero
-PitchShift
-PoleZero
-PRCRev
-TapDelay
-TwoPole
-TwoZero
-
-
-
-
-
-
-
-
-
-
+	BiQuad
+	Chorus
+	Delay
+	DelayA
+	DelayL
+	Echo
+	Fir
+	Flute
+	FormSwep
+	FreeVerb
+	Iir
+	JCRev
+	LentPitchShift
+	NRev
+	OnePole
+	OneZero
+	PitchShift
+	PoleZero
+	PRCRev
+	TapDelay
+	TwoPole
+	TwoZero
 
 

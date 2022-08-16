@@ -78,7 +78,7 @@ void Clarinet::NoteOff( double amplitude ) {
 void Clarinet::ControlChange( int number, double value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::inRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
 		LOG("Clarinet::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;

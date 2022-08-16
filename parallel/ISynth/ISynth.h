@@ -7,6 +7,7 @@
 #include <ParallelLib/ParallelLib.h>
 #include <SoftInstru/SoftInstru.h>
 #include <SoftSynth/SoftSynth.h>
+#include <AudioCore/AudioCore.h>
 
 #include "Enums.h"
 #include "Vendors.h"

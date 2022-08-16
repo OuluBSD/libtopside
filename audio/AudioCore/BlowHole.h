@@ -11,7 +11,7 @@ NAMESPACE_AUDIO_BEGIN
 class BlowHole : public Instrument {
 public:
 
-	BlowHole( double lowest_freq );
+	BlowHole( double lowest_freq = DEFAULT_LOWEST_FREQ);
 	~BlowHole();
 	void Clear();
 	void SetFrequency( double frequency );

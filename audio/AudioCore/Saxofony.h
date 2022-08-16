@@ -8,7 +8,7 @@ NAMESPACE_AUDIO_BEGIN
 class Saxofony : public Instrument {
 public:
 
-	Saxofony( double lowest_freq );
+	Saxofony( double lowest_freq = DEFAULT_LOWEST_FREQ);
 	~Saxofony();
 	void Clear();
 	void SetFrequency( double frequency );

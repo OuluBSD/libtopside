@@ -57,6 +57,7 @@ BASE(MidiNullAtom)
 BASE(FluidsynthInstrument)
 BASE(SoftInstrument)
 BASE(FmSynthInstrument)
+BASE(CoreSynthInstrument)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

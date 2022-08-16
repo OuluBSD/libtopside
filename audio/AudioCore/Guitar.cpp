@@ -136,7 +136,7 @@ void Guitar::NoteOn( double frequency, double amplitude, unsigned int string ) {
 		return;
 	}
 
-	if ( Audio::inRange( amplitude, 0.0, 1.0 ) == false ) {
+	if ( Audio::InRange( amplitude, 0.0, 1.0 ) == false ) {
 		LOG("Guitar::noteOn: amplitude parameter is outside range 0.0 - 1.0!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -159,7 +159,7 @@ void Guitar::NoteOff( double amplitude, unsigned int string ) {
 		return;
 	}
 
-	if ( Audio::inRange( amplitude, 0.0, 1.0 ) == false ) {
+	if ( Audio::InRange( amplitude, 0.0, 1.0 ) == false ) {
 		LOG("Guitar::noteOff: amplitude parameter is outside range 0.0 - 1.0!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -173,7 +173,7 @@ void Guitar::NoteOff( double amplitude, unsigned int string ) {
 void Guitar::ControlChange( int number, double value, int string ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::inRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
 		LOG("Guitar::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -207,5 +207,46 @@ void Guitar::ControlChange( int number, double value, int string ) {
 
 	#endif
 }
+
+float Guitar_NoteToFrequency(byte note) {
+	return 440.0f * powf(2.0f, (note - 69.0f) / 12.0f);
+}
+
+int Guitar::GetString(double frequency) {
+	static bool values;
+	static float freqs[6];
+	if (!values) {
+		freqs[0] = Guitar_NoteToFrequency(40);
+		freqs[1] = Guitar_NoteToFrequency(40+5);
+		freqs[2] = Guitar_NoteToFrequency(40+5+5);
+		freqs[3] = Guitar_NoteToFrequency(40+5+5+5);
+		freqs[4] = Guitar_NoteToFrequency(40+5+5+5+4);
+		freqs[5] = Guitar_NoteToFrequency(40+5+5+5+4+5);
+		values = true;
+	}
+	
+	for(int i = min(6, strings_.GetCount())-1; i >= 0; i--) {
+		if (freqs[i] < frequency)
+			return i;
+	}
+	return 0;
+}
+
+void Guitar::SetFrequency( double frequency ) {
+	SetFrequency(frequency, 0);
+}
+
+void Guitar::NoteOn( double frequency, double amplitude ) {
+	return NoteOn(frequency, amplitude, Guitar_NoteToFrequency(frequency));
+}
+
+void Guitar::NoteOff( double amplitude ) {
+	return NoteOff(amplitude, 0);
+}
+
+void Guitar::ControlChange( int number, double value) {
+	return ControlChange(number, value, -1);
+}
+
 
 NAMESPACE_AUDIO_END

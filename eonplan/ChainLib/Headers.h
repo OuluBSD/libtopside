@@ -531,7 +531,7 @@ HEADER_LINK(		SpatialInteractionPipe,	PIPE_OPTSIDE, PROCESS)
 
 
 
-HEADER11(			MidiFileReaderPipe,		MidiFileReaderAtom,			pipe,		CenterMidi,		CenterOrder,	CenterMidi)
+HEADER11(			MidiFileReaderPipe,		MidiFileReaderAtom,		pipe,		CenterMidi,		CenterOrder,	CenterMidi)
 HEADER_ACTION(		MidiFileReaderPipe,		midi.file.reader.pipe)
 HEADER_ARG(			MidiFileReaderPipe,		HINT_PKG,					"AtomAudio")
 HEADER_LINK(		MidiFileReaderPipe,		PIPE, PROCESS)
@@ -558,10 +558,15 @@ HEADER_ACTION(		SoftInstrumentPipe,	softinstru.pipe)
 HEADER_ARG(			SoftInstrumentPipe,	HINT_PKG,					"AtomAudio")
 HEADER_LINK(		SoftInstrumentPipe,	PIPE_OPTSIDE, PROCESS)
 
-HEADER21_U10(		FmSynthPipe,		FmSynthInstrument,				pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
+HEADER21_U10(		FmSynthPipe,		FmSynthInstrument,			pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
 HEADER_ACTION(		FmSynthPipe,		fmsynth.pipe)
 HEADER_ARG(			FmSynthPipe,		HINT_PKG,					"AtomAudio")
 HEADER_LINK(		FmSynthPipe,		PIPE_OPTSIDE, PROCESS)
+
+HEADER21_U10(		CoreSynthPipe,		CoreSynthInstrument,		pipe,		CenterAudio,	CenterOrder,	CenterMidi,		CenterAudio)
+HEADER_ACTION(		CoreSynthPipe,		coresynth.pipe)
+HEADER_ARG(			CoreSynthPipe,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		CoreSynthPipe,		PIPE_OPTSIDE, PROCESS)
 
 
 

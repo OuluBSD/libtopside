@@ -11,7 +11,7 @@ const unsigned short NYMAX = 12;
 class Mesh2D : public Instrument {
 public:
 
-	Mesh2D( unsigned short nX, unsigned short nY );
+	Mesh2D( unsigned short nX = NXMAX/2, unsigned short nY = NYMAX/2 );
 	~Mesh2D();
 	void Clear();
 	void SetNX( unsigned short lenX );

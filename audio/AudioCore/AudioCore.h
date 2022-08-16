@@ -1,14 +1,23 @@
 #ifndef _AudioCore_AudioCore_h_
 #define _AudioCore_AudioCore_h_
 
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
+	#include <unistd.h>
+#elif defined(__OS_WINDOWS__)
+	#include <windows.h>
+#endif
+
 #include <sys/stat.h>
 
 #include <Local/Local.h>
 #include <Geometry/Geometry.h>
+#include <MidiFile/MidiFile.h>
+
 
 #define NAMESPACE_AUDIO_BEGIN NAMESPACE_TOPSIDE_BEGIN namespace Audio {
 #define NAMESPACE_AUDIO_END   NAMESPACE_TOPSIDE_END }
 
+#define DEFAULT_LOWEST_FREQ 60
 
 #include "Audio.h"
 #include "Instrument.h"

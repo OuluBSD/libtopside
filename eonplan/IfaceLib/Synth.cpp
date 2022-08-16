@@ -11,6 +11,7 @@ PKG(Synth, Syn, Y) {
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(SoftInstru)
 	DEPENDENCY(SoftSynth)
+	DEPENDENCY(AudioCore)
 	DEPENDENCY_("FLUIDSYNTH", ports/fluidlite)
 	//DEPENDENCY(IMedia)
 	//LIBRARY("POSIX", fluidsynth)
@@ -76,6 +77,22 @@ PKG(Synth, Syn, Y) {
 		v->AddStruct("NativeInstrument")
 			.Add("instrument",		"SoftSynth::FmSynth")
 			.Add("sample_rate",		"int")
+		;
+	
+	}
+	
+	VENDOR(CoreSynth) {
+		VENDOR_INCLUDE("", AudioCore/AudioCore.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		
+		v->AddStruct("NativeInstrument")
+			.Add("voices",			"Array<Audio::Instrument>")
+			.Add("notes",			"Vector<int>")
+			.Add("seqs",			"Vector<dword>")
+			.Add("sample_rate",		"int")
+			.Add("multiplier",		"float")
+			.Add("polyphone",		"int")
+			.Add("seq",				"dword")
 		;
 	
 	}

@@ -63,7 +63,7 @@ void Resonate::SetNotch( double frequency, double radius ) {
 void Resonate::ControlChange( int number, double value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::inRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
 		LOG("Resonate::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;

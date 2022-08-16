@@ -76,6 +76,10 @@ using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 using FmSynthInstrument = SynthInstrumentT<SynFmSynth>;
 #endif
 
+#if 1
+using CoreSynthInstrument = SynthInstrumentT<SynCoreSynth>;
+#endif
+
 
 NAMESPACE_PARALLEL_END
 

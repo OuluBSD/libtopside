@@ -111,7 +111,7 @@ void ModalBar::SetPreset( int preset ) {
 void ModalBar::ControlChange( int number, double value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::inRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
 		LOG("ModalBar::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;

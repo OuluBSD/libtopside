@@ -8,7 +8,7 @@ NAMESPACE_AUDIO_BEGIN
 class Mandolin : public Instrument {
 public:
 
-	Mandolin( double lowest_freq );
+	Mandolin( double lowest_freq = DEFAULT_LOWEST_FREQ);
 	~Mandolin();
 	void Clear();
 	void SetDetune( double detune );

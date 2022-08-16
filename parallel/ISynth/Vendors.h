@@ -16,6 +16,10 @@
 	#include <SoftSynth/SoftSynth.h>
 #endif
 
+#if 1
+	#include <AudioCore/AudioCore.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define SYN_CLS_LIST(x) \
@@ -27,6 +31,7 @@ NAMESPACE_PARALLEL_BEGIN
 	SYN_VNDR(SynSoft) \
 	SYN_VNDR(SynFluidsynth) \
 	SYN_VNDR(SynFmSynth) \
+	SYN_VNDR(SynCoreSynth) \
 
 
 
@@ -90,6 +95,29 @@ struct SynFmSynth {
 	struct NativeInstrument {
 		SoftSynth::FmSynth instrument;
 		int sample_rate;
+	};
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if 1
+struct SynCoreSynth {
+	
+	struct NativeInstrument {
+		Array<Audio::Instrument> voices;
+		Vector<int> notes;
+		Vector<dword> seqs;
+		int sample_rate;
+		float multiplier;
+		int polyphone;
+		dword seq;
 	};
 	
 	struct Thread {

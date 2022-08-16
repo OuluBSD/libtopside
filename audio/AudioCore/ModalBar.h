@@ -13,7 +13,7 @@ public:
 	void SetStrikePosition( double position );
 	void SetPreset( int preset );
 	void SetModulationDepth( double mod_depth );
-	void ControlChange( int number, double value );
+	void ControlChange( int number, double value ) override;
 };
 
 NAMESPACE_AUDIO_END

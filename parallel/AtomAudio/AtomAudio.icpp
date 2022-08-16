@@ -14,6 +14,7 @@ INITBLOCK_(AtomAudio) {
 	Factory::RegisterAtom<FluidsynthPipe>();
 	Factory::RegisterAtom<SoftInstrumentPipe>();
 	Factory::RegisterAtom<FmSynthPipe>();
+	Factory::RegisterAtom<CoreSynthPipe>();
 	
 }
 

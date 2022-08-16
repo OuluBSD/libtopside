@@ -95,7 +95,7 @@ void Flute::NoteOff( double amplitude ) {
 void Flute::ControlChange( int number, double value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::inRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
 		LOG("Flute::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;

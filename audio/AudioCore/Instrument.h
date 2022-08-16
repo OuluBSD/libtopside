@@ -17,6 +17,8 @@ public:
 	virtual void SetFrequency( double frequency );
 	virtual void ControlChange(int number, double value);
 	
+	void HandleEvent(const MidiIO::Event& e, int track_i=-1);
+	
 	unsigned int GetChannelsOut() const {
 		return last_frame_.GetChannelCount();
 	};

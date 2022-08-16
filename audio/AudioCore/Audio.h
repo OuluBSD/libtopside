@@ -111,7 +111,7 @@ public:
 	};
 
 	static String GetRawWavePath(void) {
-		return rawwavepath_;
+		return RealizeShareFile(rawwavepath_);
 	}
 
 	static void SetRawwavePath( String path );
@@ -121,7 +121,7 @@ public:
 	static void Sleep( unsigned long milliseconds );
 
 
-	static bool inRange( double value, double min, double max ) {
+	static bool InRange( double value, double min, double max ) {
 		if ( value < min ) return false;
 		else if ( value > max ) return false;
 		else return true;
@@ -347,7 +347,7 @@ const unsigned int RT_BUFFER_SIZE = 512;
 
 
 #if !defined(RAWWAVE_PATH)
-	#define RAWWAVE_PATH "../../rawwaves/"
+	#define RAWWAVE_PATH "audio/stk/"
 #endif
 
 const double PI           = 3.14159265358979;

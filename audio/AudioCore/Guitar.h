@@ -5,27 +5,34 @@
 NAMESPACE_AUDIO_BEGIN
 
 
-class Guitar : public Audio {
+class Guitar : public Instrument {
 public:
 
 	Guitar( unsigned int nStrings = 6, String bodyfile = "" );
-	void Clear();
+	void Clear() override;
 	void SetBodyFile( String bodyfile = "" );
 	void SetPluckPosition( double position, int string = -1 );
 	void SetLoopGain( double gain, int string = -1 );
-	void SetFrequency( double frequency, unsigned int string = 0 );
-	void NoteOn( double frequency, double amplitude, unsigned int string = 0 );
-	void NoteOff( double amplitude, unsigned int string = 0 );
-	void ControlChange( int number, double value, int string = -1 );
+	void SetFrequency( double frequency, unsigned int string );
+	void SetFrequency( double frequency ) override;
+	void NoteOn( double frequency, double amplitude, unsigned int string );
+	void NoteOff( double amplitude, unsigned int string );
+	void ControlChange( int number, double value, int string );
+	void NoteOn( double frequency, double amplitude ) override;
+	void NoteOff( double amplitude ) override;
+	void ControlChange( int number, double value) override;
+	
+	int GetString(double frequency);
 	
 	double GetLastOut() {
 		return last_frame_[0];
 	};
 
 	double Tick( double input = 0.0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 ) override;
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
-
+	double Tick( unsigned int channel = 0 ) override;
+	
 protected:
 
 	Vector< Twang > strings_;
@@ -40,6 +47,10 @@ protected:
 	AudioFrames excitation_;
 	AudioFrames last_frame_;
 };
+
+inline double Guitar::Tick( unsigned int channel ) {
+	return Tick(0.0);
+}
 
 inline double Guitar::Tick( double input ) {
 	double temp, output = 0.0;

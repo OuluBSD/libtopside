@@ -124,6 +124,26 @@ AtomTypeCls FmSynthPipe::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls CoreSynthPipe::GetAtomType()
+{
+	return ATOM11_U10(CORE_SYNTH_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+}
+
+LinkTypeCls CoreSynthPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void CoreSynthPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<CoreSynthInstrument>(this);
+}
+
+AtomTypeCls CoreSynthPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 }
 
 }
