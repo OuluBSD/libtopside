@@ -1,6 +1,8 @@
 #ifndef _EcsLib_EonLoader_h_
 #define _EcsLib_EonLoader_h_
 
+#if 0
+
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -22,4 +24,5 @@ struct ExtScriptEngineLoader : ExtScriptEngineLoaderBase {
 NAMESPACE_SERIAL_END
 
 
+#endif
 #endif

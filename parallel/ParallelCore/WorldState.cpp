@@ -30,6 +30,8 @@ int WorldState::GetValueCount() const {
 	return c;
 }
 
+#if 0
+
 void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 	for(int i = 0; i < values.GetCount(); i++) {
 		if (values[i].IsEmpty())
@@ -39,6 +41,8 @@ void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 			keys.FindAdd(key);
 	}
 }
+
+#endif
 
 bool WorldState::Set(int index, bool value) {
 	if (index < 0) return false;
@@ -101,6 +105,8 @@ hash_t WorldState::GetHashValue() const {
 	}
 	return c;
 }
+
+#if 0
 
 const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
 	for (const Statement& stmt : stmts) {
@@ -395,6 +401,99 @@ int WorldState::Compare(int idx, const WorldState& ws) const {
 		return a == b ? 0 : -2;
 	}
 }
+
+#else
+
+const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
+	TODO
+}
+
+const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts, bool dbg_print) const {
+	TODO
+}
+
+bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
+	TODO
+}
+
+bool WorldState::Set(const String& key, bool value) {
+	TODO
+}
+
+bool WorldState::Set(const String& key, String value) {
+	TODO
+}
+
+bool WorldState::IsTrue(const String& key, bool def) const {
+	TODO
+}
+
+bool WorldState::IsFalse(const String& key, bool def) const {
+	TODO
+}
+
+bool WorldState::IsFalse(int idx) const {
+	TODO
+}
+
+bool WorldState::IsUndefined(const String& key) const {
+	TODO
+}
+
+bool WorldState::IsUndefined(int idx) const {
+	TODO
+}
+
+String WorldState::Get(const String& key) const {
+	TODO
+}
+
+String WorldState::Get(int idx) const {
+	TODO
+}
+
+Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
+	TODO
+}
+
+int WorldState::GetInt(const String& key, int def) const {
+	TODO
+}
+
+bool WorldState::GetBool(const String& key, bool def) const {
+	TODO
+}
+
+String WorldState::GetString(const String& key, String def) const {
+	TODO
+}
+
+String WorldState::ToString() const {
+	TODO
+}
+
+String WorldState::GetFullString() const {
+	TODO
+}
+
+bool WorldState::Contains(const WorldState& ws) const {
+	TODO
+}
+
+bool WorldState::Conflicts(const WorldState& ws) const {
+	TODO
+}
+
+
+int WorldState::Compare(int idx, const WorldState& ws) const {
+	TODO
+}
+
+void WorldState::FindKeys(String key_left, Index<String>& keys) const {
+	TODO
+}
+
+#endif
 
 
 

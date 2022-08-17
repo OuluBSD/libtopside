@@ -2,13 +2,13 @@
 
 using namespace TS;
 
-MAKE_STATIC(Serial::ExtScriptEngineLoader, __ext_script_loader);
+//MAKE_STATIC(Serial::ExtScriptEngineLoader, __ext_script_loader);
 
 INITBLOCK_(EcsLib) {
 	using namespace Serial;
 	using namespace Ecs;
 	
-	__ecs_script_loader = &__ext_script_loader;
+	TODO //__ecs_script_loader = &__ext_script_loader;
 	
 	// System
 	Engine::Register<Ecs::RegistrySystem>("registry");

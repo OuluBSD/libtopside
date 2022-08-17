@@ -1,5 +1,7 @@
 #include "EcsLib.h"
 
+#if 0
+
 
 NAMESPACE_SERIAL_BEGIN
 using namespace Ecs;
@@ -114,3 +116,5 @@ bool ExtScriptEngineLoader::Load(ScriptComponentLoader& l, Ecs::ComponentBase& c
 
 
 NAMESPACE_SERIAL_END
+
+#endif

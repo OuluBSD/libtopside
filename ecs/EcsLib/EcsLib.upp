@@ -24,9 +24,9 @@ file
 	EventSystem.cpp,
 	Prefab.h,
 	Prefab.cpp,
-	EonLoader.h,
-	EonLoader.cpp,
 	WorldLogic.h,
 	WorldLogic.cpp,
-	Trash readonly separator;
+	Trash readonly separator,
+	EonLoader.h,
+	EonLoader.cpp;
 

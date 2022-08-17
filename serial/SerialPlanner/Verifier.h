@@ -1,6 +1,8 @@
 #ifndef _AtomMinimal_Verifier_h_
 #define _AtomMinimal_Verifier_h_
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 struct VerifierAtom {
@@ -186,4 +188,5 @@ public:
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

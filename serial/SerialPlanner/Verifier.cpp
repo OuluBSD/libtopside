@@ -1,5 +1,7 @@
 #include "SerialPlanner.h"
 
+#if 0
+
 
 #if 0
 	#define MVER_LOG(x) RTLOG(x)
@@ -654,3 +656,5 @@ VerifierAtom& VerifierEntity::AddAtomWith(ParallelTypeCls t) {
 }
 
 NAMESPACE_SERIAL_END
+
+#endif

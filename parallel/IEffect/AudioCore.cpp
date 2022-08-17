@@ -14,14 +14,14 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 	
 	String instrument = ToLower(ws.GetString(".filter", "chorus"));
 	
-	if      (instrument == "chorus")		CreateSynCoreEffect<Audio::Chorus>(dev, a, ws);
-	else if (instrument == "jcrev")			CreateSynCoreEffect<Audio::JCRev>(dev, a, ws);
-	else if (instrument == "pitchshift")	CreateSynCoreEffect<Audio::PitchShift>(dev, a, ws);
-	else if (instrument == "prcrev")		CreateSynCoreEffect<Audio::PRCRev>(dev, a, ws);
-	else if (instrument == "echo")			CreateSynCoreEffect<Audio::Echo>(dev, a, ws);
-	else if (instrument == "freeverb")		CreateSynCoreEffect<Audio::FreeVerb>(dev, a, ws);
-	else if (instrument == "nrev")			CreateSynCoreEffect<Audio::NRev>(dev, a, ws);
-	else if (instrument == "lentpitchshift")CreateSynCoreEffect<Audio::LentPitchShift>(dev, a, ws);
+	if      (instrument == "chorus")			CreateSynCoreEffect<Audio::Chorus>(dev, a, ws);
+	else if (instrument == "jcrev")				CreateSynCoreEffect<Audio::JCRev>(dev, a, ws);
+	else if (instrument == "pitchshift")		CreateSynCoreEffect<Audio::PitchShift>(dev, a, ws);
+	else if (instrument == "prcrev")			CreateSynCoreEffect<Audio::PRCRev>(dev, a, ws);
+	else if (instrument == "echo")				CreateSynCoreEffect<Audio::Echo>(dev, a, ws);
+	else if (instrument == "freeverb")			CreateSynCoreEffect<Audio::FreeVerb>(dev, a, ws);
+	else if (instrument == "nrev")				CreateSynCoreEffect<Audio::NRev>(dev, a, ws);
+	else if (instrument == "lentpitchshift")	CreateSynCoreEffect<Audio::LentPitchShift>(dev, a, ws);
 	/*
 	else if (instrument == "delay")			CreateSynCoreEffect<Audio::Delay>(dev, a, ws);
 	else if (instrument == "delaya")		CreateSynCoreEffect<Audio::DelayA>(dev, a, ws);

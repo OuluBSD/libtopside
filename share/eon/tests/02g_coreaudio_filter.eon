@@ -8,7 +8,7 @@ machine midi.app: {
 		loop input: {
 			center.customer: true;
 			softinstru.pipe: true [loop: "event";] {filepath: "TimGM6mb.sf2"; verbose: false;};
-			corefx.pipe: true {filter: "echo";};
+			corefx.pipe: true {filter: "echo ";};
 			center.audio.sink.hw: true;
 		};
 	};

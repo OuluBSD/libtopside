@@ -190,6 +190,8 @@ int ShadertoyContextLoader::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 
 
 String SerialShadertoyLoader::LoadFile(String file_path) {
+	TODO
+	#if 0
 	ShadertoyContextLoader toy_loader;
 	Object o;
 	if (!toy_loader.Load(file_path, o)) {
@@ -206,6 +208,7 @@ String SerialShadertoyLoader::LoadFile(String file_path) {
 	String eon_script = ser_loader.GetResult();
 	
 	return eon_script;
+	#endif
 }
 
 

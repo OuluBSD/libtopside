@@ -186,8 +186,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	{
 		Machine& mach = GetActiveMachine();
 		
-		if (ver)
-			ver->Attach(mach);
+		TODO //if (ver) ver->Attach(mach);
 		
 		
 		if (dbg_ref_visits)
@@ -204,7 +203,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 					LoopStoreRef ls			= mach.FindAdd<LoopStore>();
 					AtomStoreRef as			= mach.FindAdd<AtomStore>();
 				    AtomSystemRef asys		= mach.FindAdd<AtomSystem>();
-				    ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
+				    TODO //ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
 				    
 				    mach.FindAdd<PacketTracker>();
 				}
@@ -215,11 +214,12 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 					return;
 				}
 				
+				TODO /*
 				ScriptLoaderRef script	= mach.Find<ScriptLoader>();
 				if (!script) {
 					LOG("No ScriptLoader added to machine and the machine is already started");
 					return;
-				}
+				}*/
 				
 				LoopRef root = ls->GetRoot();
 				
@@ -249,7 +249,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 				}
 				LOG(script_str);
 				
-		        script->PostLoadString(script_str);
+		        TODO //script->PostLoadString(script_str);
 		    }
 		        
 		    if (!fail) {
