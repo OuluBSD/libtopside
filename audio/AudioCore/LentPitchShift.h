@@ -17,9 +17,9 @@ public:
 		delete cumDt;
 	}
 
-	void Clear();
+	void Clear() override;
 	void SetShift( double shift );
-	double Tick( double input );
+	double Tick( double input, unsigned int channel = 0 ) override;
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
 
@@ -124,7 +124,7 @@ inline void LentPitchShift::Process() {
 }
 
 
-inline double LentPitchShift::Tick( double input ) {
+inline double LentPitchShift::Tick( double input, unsigned int channel ) {
 	double sample;
 	inputFrames[ptrFrames] = input;
 	sample = outputFrames[ptrFrames++];

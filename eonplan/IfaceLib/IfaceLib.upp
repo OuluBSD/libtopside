@@ -13,6 +13,7 @@ file
 	Camera.cpp,
 	Holographic.cpp,
 	Synth.cpp,
+	Effect.cpp,
 	MidiHw.cpp,
 	Ev.cpp,
 	Net.cpp,

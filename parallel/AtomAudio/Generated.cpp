@@ -144,6 +144,26 @@ AtomTypeCls CoreSynthPipe::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls CoreEffectPipe::GetAtomType()
+{
+	return ATOM11(CORE_EFFECT_PIPE, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+LinkTypeCls CoreEffectPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void CoreEffectPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<AudioCoreEffect>(this);
+}
+
+AtomTypeCls CoreEffectPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 }
 
 }

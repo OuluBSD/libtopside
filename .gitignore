@@ -4,3 +4,4 @@
 *.kate-swp
 **/bochsout.txt
 share/presets/fmsynth/generated/*.wav
+pose/**

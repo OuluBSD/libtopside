@@ -5,6 +5,7 @@
 #include <AtomMinimal/AtomMinimal.h>
 #include <IMidiFile/IMidiFile.h>
 #include <ISynth/ISynth.h>
+#include <IEffect/IEffect.h>
 
 #include "Generated.h"
 

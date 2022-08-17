@@ -30,6 +30,7 @@ namespace Parallel {
 	ATOM_TYPE(SOFT_INSTRUMENT_PIPE) \
 	ATOM_TYPE(FM_SYNTH_PIPE) \
 	ATOM_TYPE(CORE_SYNTH_PIPE) \
+	ATOM_TYPE(CORE_EFFECT_PIPE) \
 
 
 #define ATOM_CLASS_LIST \
@@ -55,6 +56,7 @@ namespace Parallel {
 	ATOM_CLASS(SoftInstrumentPipe) \
 	ATOM_CLASS(FmSynthPipe) \
 	ATOM_CLASS(CoreSynthPipe) \
+	ATOM_CLASS(CoreEffectPipe) \
 
 
 #define flagFFMPEG_ATOM_TYPE_LIST \

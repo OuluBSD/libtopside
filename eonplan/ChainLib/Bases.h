@@ -58,6 +58,7 @@ BASE(FluidsynthInstrument)
 BASE(SoftInstrument)
 BASE(FmSynthInstrument)
 BASE(CoreSynthInstrument)
+BASE(AudioCoreEffect)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

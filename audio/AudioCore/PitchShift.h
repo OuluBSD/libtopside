@@ -11,14 +11,14 @@ class PitchShift : public Effect {
 public:
 
 	PitchShift();
-	void Clear();
+	void Clear() override;
 	void SetShift( double shift );
 
 	double GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick( double input );
+	double Tick( double input, unsigned int channel=0 ) override;
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
 
@@ -33,7 +33,7 @@ protected:
 
 };
 
-inline double PitchShift::Tick( double input ) {
+inline double PitchShift::Tick( double input, unsigned int channel ) {
 	delay_[0] += rate_;
 
 	while ( delay_[0] > max_delay - 12 ) delay_[0] -= delay_length_;

@@ -8,7 +8,7 @@ NAMESPACE_AUDIO_BEGIN
 class Echo : public Effect {
 public:
 	Echo( unsigned long maximum_delay = (unsigned long) Audio::GetSampleRate() );
-	void Clear();
+	void Clear() override;
 	void SetMaximumDelay( unsigned long delay );
 	void SetDelay( unsigned long delay );
 
@@ -16,7 +16,7 @@ public:
 		return last_frame_[0];
 	};
 
-	double Tick( double input );
+	double Tick( double input, unsigned int channel = 0 ) override;
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
 
@@ -27,7 +27,7 @@ protected:
 
 };
 
-inline double Echo::Tick( double input ) {
+inline double Echo::Tick( double input, unsigned int channel ) {
 	last_frame_[0] = effect_mix_ * ( delay_line_.Tick( input ) - input ) + input;
 	return last_frame_[0];
 }

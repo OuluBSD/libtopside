@@ -22,7 +22,9 @@ public:
 
 	virtual void Clear() = 0;
 	virtual void SetEffectMix( double mix );
-
+	
+	virtual double Tick( double input, unsigned int channel ) = 0;
+	
 protected:
 
 	bool IsPrime( unsigned int number );

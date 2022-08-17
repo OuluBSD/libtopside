@@ -571,5 +571,13 @@ HEADER_LINK(		CoreSynthPipe,		PIPE_OPTSIDE, PROCESS)
 
 
 
+HEADER11(			CoreEffectPipe,		AudioCoreEffect,			pipe,		CenterAudio,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		CoreEffectPipe,		corefx.pipe)
+HEADER_ARG(			CoreEffectPipe,		HINT_PKG,					"AtomAudio")
+HEADER_LINK(		CoreEffectPipe,		PIPE_OPTSIDE, PROCESS)
+
+
+
+
 
 

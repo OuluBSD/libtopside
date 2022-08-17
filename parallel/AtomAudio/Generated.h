@@ -112,6 +112,21 @@ public:
 
 };
 
+class CoreEffectPipe : public AudioCoreEffect {
+
+public:
+	RTTI_DECL1(CoreEffectPipe, AudioCoreEffect)
+	COPY_PANIC(CoreEffectPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("corefx.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 using MidiFileReaderPipeRef = Ref<MidiFileReaderPipe, AtomParent>;
 
 using MidiFileReaderRef = Ref<MidiFileReader, AtomParent>;
@@ -125,6 +140,8 @@ using SoftInstrumentPipeRef = Ref<SoftInstrumentPipe, AtomParent>;
 using FmSynthPipeRef = Ref<FmSynthPipe, AtomParent>;
 
 using CoreSynthPipeRef = Ref<CoreSynthPipe, AtomParent>;
+
+using CoreEffectPipeRef = Ref<CoreEffectPipe, AtomParent>;
 
 }
 

@@ -11,7 +11,7 @@ public:
 	FreeVerb();
 	~FreeVerb();
 	
-	void SetEffectMix( double mix );
+	void SetEffectMix( double mix ) override;
 	void SetRoomSize( double value );
 	double GetRoomSize();
 	void SetDamping( double value );
@@ -20,8 +20,9 @@ public:
 	double GetWidth();
 	void SetMode( bool isFrozen );
 	double GetMode();
-	void Clear();
+	void Clear() override;
 	double GetLastOut( unsigned int channel = 0 );
+	double Tick( double inputL, unsigned int channel ) override {return Tick(inputL, 0.0, channel);}
 	double Tick( double inputL, double inputR = 0.0, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );

@@ -9,10 +9,10 @@ class NRev : public Effect {
 public:
 
 	NRev( double T60 = 1.0 );
-	void Clear();
+	void Clear() override;
 	void SetT60( double T60 );
 	double GetLastOut( unsigned int channel = 0 );
-	double Tick( double input, unsigned int channel = 0 );
+	double Tick( double input, unsigned int channel = 0 ) override;
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
 
