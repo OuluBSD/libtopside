@@ -1,0 +1,14 @@
+uses
+	Local,
+	High,
+	High,
+	Backend;
+
+file
+	EonTests.h,
+	EonTests.cpp,
+	Test0.eon highlight cpp;
+
+mainconfig
+	"" = "";
+
