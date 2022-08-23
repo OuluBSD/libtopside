@@ -260,6 +260,8 @@ class Tokenizer : public ErrorSource {
 	
 	int tab_size = 4;
 	
+	bool ThrowError(String msg) {AddError(loc, msg); return false;}
+	
 protected:
 	
 	Vector<Token> tokens;
@@ -290,13 +292,13 @@ public:
 	//Token& Insert(int i, int type);
 	
 	int GetPassCursor() const {return pass_cursor;}
-	void PassToken(int tk);
+	bool PassToken(int tk);
 	bool IsToken(int tk);
 	bool TryPassToken(int tk);
-	String ReadString();
-	String ReadId();
-	int64 ReadInt();
-	double ReadDouble();
+	bool ReadString(String& s);
+	bool ReadId(String& s);
+	bool ReadInt(int64& i);
+	bool ReadDouble(double& d);
 	
 	void NewlineToEndStatement();
 	

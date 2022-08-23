@@ -1,9 +1,0 @@
-
-
-void log.repeat.string(int some.arg.0, string some.another.arg):
-	for int i in range(some.arg.0):
-		log some.another.arg
-
-void main():
-	log.repeat.string(5, "h4llooooordzzzz!") // :)
-

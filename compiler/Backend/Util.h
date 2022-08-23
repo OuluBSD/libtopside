@@ -43,6 +43,18 @@ struct MetaConditional {
 };
 
 
+
+struct PathIdentifier {
+	static const int MAX_PARTS = 32;
+	const Token* parts[MAX_PARTS];
+	int part_count = 0;
+	
+	const Token* begin = 0;
+	const Token* end = 0;
+	
+	String ToString() const;
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

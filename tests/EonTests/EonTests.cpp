@@ -29,6 +29,7 @@ bool Tester::ParseStructure() {
 }
 
 bool Tester::Parse() {
+	sp.SetEmitter(emitter);
 	sp.WhenMessage << THISBACK(OnProcMsg);
 	if (!sp.ProcessEon(ts)) {
 		return false;
@@ -50,7 +51,7 @@ CONSOLE_APP_MAIN {
 	String dir = GetDataDirectory();
 	Index<String> files;
 	//GetDirectoryFiles(dir, files);
-	files << GetDataFile("Test0.eon");
+	files << GetDataFile("Test00.eon");
 	
 	bool fail = false;
 	for (String file : files) {
@@ -78,6 +79,7 @@ CONSOLE_APP_MAIN {
 		
 		// Semantically parse & produce meta script
 		TEST(t.Parse())
+		LOG(t.emitter.GetResult());
 		
 		
 		// Run meta script (which makes program AST)

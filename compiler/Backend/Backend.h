@@ -4,6 +4,7 @@
 #include <Local/Local.h>
 
 #include "Node.h"
+#include "Builtin.h"
 #include "Util.h"
 #include "TypeExpr.h"
 #include "MetaExpression.h"
@@ -15,6 +16,9 @@
 #include "Namespace.h"
 #include "CompilationUnit.h"
 #include "Exporter.h"
+#include "TokenStructure.h"
+#include "SemanticParser.h"
+#include "MetaEmitter.h"
 
 
 #endif

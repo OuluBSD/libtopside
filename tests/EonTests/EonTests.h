@@ -12,6 +12,7 @@ struct Tester {
 	Tokenizer t;
 	TokenStructure ts;
 	SemanticParser sp;
+	HighScriptEmitter emitter;
 	
 	
 	

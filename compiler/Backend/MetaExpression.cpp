@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 MetaStatement::MetaStatement() {
 	MetaExpression& me = mexpr.Create();
-	me.SetParent(this);
+	me.SetOwner(this);
 	
 	
 }
@@ -75,7 +75,7 @@ String MetaStatement::GetCodeString(const CodeArgs& args) const {
 
 MetaExpression&	MetaExpression::AddSub() {
 	MetaExpression& me = mexprs.Add();
-	me.SetParent(this);
+	me.SetOwner(this);
 	return me;
 }
 

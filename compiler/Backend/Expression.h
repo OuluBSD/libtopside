@@ -37,7 +37,7 @@ public:
 	typedef Expression CLASSNAME;
 	Expression() {}
 	
-	Expression&	SetParentExpr() {type = PARENT; return *this;}
+	Expression&	SetOwnerExpr() {type = PARENT; return *this;}
 	Expression&	SetReturn() {type = RETURN; return *this;}
 	Expression&	SetId(String key) {type = ID; str = key; return *this;}
 	Expression&	SetIdTemplate(String key) {type = ID_TMPL; str = key; return *this;}

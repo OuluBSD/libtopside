@@ -7,7 +7,7 @@ uses
 file
 	EonTests.h,
 	EonTests.cpp,
-	Test0.eon highlight cpp;
+	Test00.eon highlight cpp;
 
 mainconfig
 	"" = "";

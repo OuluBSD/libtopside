@@ -28,4 +28,19 @@ String MetaConditional::PostCodeString(const CodeArgs& args) const {
 }
 
 
+
+String PathIdentifier::ToString() const {
+	if (!begin || begin == end)
+		return String();
+	String s;
+	const Token* iter = begin;
+	while (iter != end) {
+		//if (iter != begin) s.Cat('.');
+		s.Cat(iter->GetTextValue());
+		iter++;
+	}
+	return s;
+}
+
+
 NAMESPACE_TOPSIDE_END

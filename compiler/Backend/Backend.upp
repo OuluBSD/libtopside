@@ -27,7 +27,15 @@ file
 	TypeExpr.cpp,
 	Util.h,
 	Util.cpp,
+	Builtin.h,
+	Builtin.cpp,
 	Node.h,
 	Node.cpp,
+	TokenStructure.h,
+	TokenStructure.cpp,
+	SemanticParser.h,
+	SemanticParser.cpp,
+	MetaEmitter.h,
+	MetaEmitter.cpp,
 	_ readonly separator;
 

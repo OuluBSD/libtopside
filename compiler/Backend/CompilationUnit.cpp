@@ -3,6 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
 CompilationUnit::CompilationUnit() {
 	
 }
@@ -12,7 +13,7 @@ Namespace& CompilationUnit::GetAddNamespace(String name) {
 	if (i >= 0)
 		return namespaces[i];
 	Namespace& o = namespaces.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	o.name = name;
 	return o;
 }
@@ -57,5 +58,6 @@ String CompilationUnit::GetCodeString(const CodeArgs& args) const {
 	
 	return s;
 }
+
 
 NAMESPACE_TOPSIDE_END

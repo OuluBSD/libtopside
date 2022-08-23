@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 Statement& Statement::Add() {
 	ASSERT(type == BLOCK);
 	auto& s = stmts.Add();
-	s.SetParent(this);
+	s.SetOwner(this);
 	return s;
 }
 
@@ -87,7 +87,7 @@ String Statement::GetCodeString(const CodeArgs& args) const {
 
 UsingStatement::UsingStatement() {
 	Expression& e = expr.Create();
-	e.SetParent(this);
+	e.SetOwner(this);
 }
 
 String UsingStatement::GetTreeString(int indent) const {

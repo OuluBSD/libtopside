@@ -99,6 +99,7 @@ protected:
 	void AddMessage(const ProcMsg& msg) {InternalAddMessage(msg); WhenMessage(msg);}
 	virtual void InternalAddMessage(const ProcMsg& msg) {}
 	
+	
 public:
 	ErrorSource(String src_name) : src(src_name) {}
 

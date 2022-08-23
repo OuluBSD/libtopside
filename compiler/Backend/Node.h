@@ -69,22 +69,22 @@ public:
 	
 };
 
-template <class T, class Parent>
+template <class T, class Owner>
 class CompilerNode : public NodeBase {
-	Parent*		parent = 0;
+	Owner*		parent = 0;
 	T*			subparent = 0;
 public:
 	typedef CompilerNode CLASSNAME;
 	CompilerNode() {}
 	
-	CompilerNode& SetParent(Parent* p) {parent = p; return *this;}
-	CompilerNode& SetParent(T* p) {subparent = p; return *this;}
+	CompilerNode& SetOwner(Owner* p) {parent = p; return *this;}
+	CompilerNode& SetOwner(T* p) {subparent = p; return *this;}
 	
-	Parent*	GetParent() const {return parent;}
-	T*		GetSubParent() const {return subparent;}
+	Owner*	GetOwner() const {return parent;}
+	T*		GetSubOwner() const {return subparent;}
 	
 	String GetClassPath() const override {
-		NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
+		NodeBase* par = GetOwner() ? (NodeBase*)GetOwner() : (NodeBase*)GetSubOwner();
 		String name = GetName();
 		if (par)
 			return par->GetClassPath() + "::" + name;
@@ -93,7 +93,7 @@ public:
 	}
 	
 	String GetPath() const override {
-		NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
+		NodeBase* par = GetOwner() ? (NodeBase*)GetOwner() : (NodeBase*)GetSubOwner();
 		String name = GetName();
 		if (par)
 			return par->GetClassPath() + "::" + name;
@@ -101,16 +101,16 @@ public:
 			return "::" + name;
 	}
 	
-	void DefaultHintFromParent(String key) {
+	void DefaultHintFromOwner(String key) {
 		NodeBase* pn = parent;
 		NodeBase* sn = subparent;
 		NodeBase* p = sn ? sn : pn;
 		if (p)
 			WeakHint(key, p->GetHint(key));
 	}
-	void DefaultHintsFromParent() {
-		DefaultHintFromParent(HINT_PKG);
-		DefaultHintFromParent(HINT_FILE);
+	void DefaultHintsFromOwner() {
+		DefaultHintFromOwner(HINT_PKG);
+		DefaultHintFromOwner(HINT_FILE);
 	}
 	
 };

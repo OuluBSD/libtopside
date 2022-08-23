@@ -261,7 +261,7 @@ bool AssemblyExporter::Visit(CompilationUnit& o) {
 }
 
 bool AssemblyExporter::Visit(Namespace& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -293,7 +293,7 @@ bool AssemblyExporter::Visit(Class& o) {
 	if (o.tmpl.is)
 		return true;
 	
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -321,7 +321,7 @@ bool AssemblyExporter::Visit(Class& o) {
 }
 
 bool AssemblyExporter::Visit(Field& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -334,7 +334,7 @@ bool AssemblyExporter::Visit(Field& o) {
 }
 
 bool AssemblyExporter::Visit(FunctionIdScope& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -347,7 +347,7 @@ bool AssemblyExporter::Visit(FunctionIdScope& o) {
 }
 
 bool AssemblyExporter::Visit(Function& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -360,7 +360,7 @@ bool AssemblyExporter::Visit(Function& o) {
 }
 
 bool AssemblyExporter::Visit(Statement& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -389,7 +389,7 @@ bool AssemblyExporter::Visit(Expression& o) {
 }
 
 bool AssemblyExporter::Visit(MetaStatement& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -402,7 +402,7 @@ bool AssemblyExporter::Visit(MetaStatement& o) {
 }
 
 bool AssemblyExporter::Visit(MetaExpression& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	
@@ -415,7 +415,7 @@ bool AssemblyExporter::Visit(MetaExpression& o) {
 }
 
 bool AssemblyExporter::Visit(UsingStatement& o) {
-	o.DefaultHintsFromParent();
+	o.DefaultHintsFromOwner();
 	
 	ScopeHolder __h(this, o);
 	

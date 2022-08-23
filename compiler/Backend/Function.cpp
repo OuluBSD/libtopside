@@ -47,7 +47,7 @@ Function& Function::AddParam(String key, const TypeExpr& te) {
 Statement& Function::RealizeStatement() {
 	if (impl.IsEmpty()) {
 		impl.Create();
-		impl->SetParent(this);
+		impl->SetOwner(this);
 		impl->SetBlock();
 	}
 	return *impl;
@@ -72,7 +72,7 @@ String Function::GetCodeString(const CodeArgs& args) const {
 	if (!IsContained(args))
 		return String();
 	
-	FunctionIdScope* scope = GetParent();
+	FunctionIdScope* scope = GetOwner();
 	ASSERT(scope);
 	if (!scope) return String();
 	
@@ -98,8 +98,8 @@ String Function::GetCodeString(const CodeArgs& args) const {
 	if (args.have_impl && !is_ext_impl) {
 		CodeArgs subargs = args;
 		
-		ASSERT(GetParent() && !GetSubParent());
-		FunctionIdScope& id_scope = *GetParent();
+		ASSERT(GetOwner() && !GetSubOwner());
+		FunctionIdScope& id_scope = *GetOwner();
 		s << ret.ToString() << " ";
 		s << id_scope.GetClassPath() << "(";
 		for(int i = 0; i < params.GetCount(); i++) {
@@ -145,7 +145,7 @@ String Function::GetCodeString(const CodeArgs& args) const {
 
 Function& FunctionIdScope::AddFunction() {
 	Function& f = funcs.Add();
-	f.SetParent(this);
+	f.SetOwner(this);
 	return f;
 }
 

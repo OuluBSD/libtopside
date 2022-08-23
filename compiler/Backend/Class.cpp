@@ -54,7 +54,7 @@ ClassDecl& ClassPathScope::GetAddClassDecl(String key) {
 		return cdecls[i];
 	
 	ClassDecl& cd = cdecls.Add(key);
-	cd.SetParent(this);
+	cd.SetOwner(this);
 	cd.SetName(key);
 	return cd;
 }
@@ -97,7 +97,7 @@ Field& Class::GetAddField(String name) {
 	if (i >= 0) return fields[i];
 	Field& f = fields.Add(name);
 	f.name = name;
-	f.SetParent(this);
+	f.SetOwner(this);
 	return f;
 }
 
@@ -106,10 +106,10 @@ MStmt& Class::GetAddMetaStatement(String name) {
 	if (i >= 0) return mstmts[i];
 	MStmt& f = mstmts.Add(name);
 	//f.SetName(name);
-	f.SetParent(this);
+	f.SetOwner(this);
 	return f;
 	/*MStmt& ms = mstmts.Add();
-	ms.SetParent(this);
+	ms.SetOwner(this);
 	return ms;*/
 }
 
@@ -118,7 +118,7 @@ FunctionIdScope& Class::GetAddFunctionIdScope(String name) {
 	if (i >= 0) return funcids[i];
 	FunctionIdScope& f = funcids.Add(name);
 	f.SetName(name);
-	f.SetParent(this);
+	f.SetOwner(this);
 	return f;
 }
 
@@ -231,7 +231,7 @@ String Class::GetCodeString(const CodeArgs& args) const {
 }
 
 String Class::GetClassPath() const {
-	Class* par = GetSubParent();
+	Class* par = GetSubOwner();
 	String name = GetName();
 	if (par)
 		return par->GetClassPath() + "::" + name;

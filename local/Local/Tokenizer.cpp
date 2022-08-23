@@ -1,6 +1,5 @@
 #include "Local.h"
 
-#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -24,9 +23,10 @@ Token& Tokenizer::Add(int token_id) {
 	return t;
 }*/
 
-void Tokenizer::PassToken(int tk) {
-	if (!IsToken(tk)) throw Exc("Unexpected token");
+bool Tokenizer::PassToken(int tk) {
+	if (!IsToken(tk)) return ThrowError("Unexpected token");
 	pass_cursor++;
+	return true;
 }
 
 bool Tokenizer::IsToken(int tk) {
@@ -40,24 +40,28 @@ bool Tokenizer::TryPassToken(int tk) {
 	return true;
 }
 
-String Tokenizer::ReadString() {
-	if (!IsToken(TK_STRING)) throw Exc("Unexpected token");
-	return tokens[pass_cursor++].str_value;
+bool Tokenizer::ReadString(String& s) {
+	if (!IsToken(TK_STRING)) return ThrowError("Unexpected token");
+	s = tokens[pass_cursor++].str_value;
+	return true;
 }
 
-String Tokenizer::ReadId() {
-	if (!IsToken(TK_ID)) throw Exc("Unexpected token");
-	return tokens[pass_cursor++].str_value;
+bool Tokenizer::ReadId(String& s) {
+	if (!IsToken(TK_ID)) return ThrowError("Unexpected token");
+	s = tokens[pass_cursor++].str_value;
+	return true;
 }
 
-int64 Tokenizer::ReadInt() {
-	if (!IsToken(TK_INTEGER)) throw Exc("Unexpected token");
-	return StrInt64(tokens[pass_cursor++].str_value);
+bool Tokenizer::ReadInt(int64& i) {
+	if (!IsToken(TK_INTEGER)) return ThrowError("Unexpected token");
+	i = StrInt64(tokens[pass_cursor++].str_value);
+	return true;
 }
 
-double Tokenizer::ReadDouble() {
-	if (!IsToken(TK_DOUBLE) && !IsToken(TK_FLOAT)) throw Exc("Unexpected token");
-	return StrDbl(tokens[pass_cursor++].str_value);
+bool Tokenizer::ReadDouble(double& d) {
+	if (!IsToken(TK_DOUBLE) && !IsToken(TK_FLOAT)) return ThrowError("Unexpected token");
+	d = StrDbl(tokens[pass_cursor++].str_value);
+	return true;
 }
 
 bool Tokenizer::Process(String str, String path) {
@@ -815,6 +819,7 @@ void Tokenizer::CombineTokens() {
 
 
 
+#ifdef flagSTDEXC
 
 void TokenizerCParser::Load(const Vector<Token>& tokens) {
 	this->tokens = &tokens;
@@ -908,6 +913,7 @@ bool TokenizerCParser::IsType(int i) const {
 	return GetCurrent().IsType(i);
 }
 
+#endif
+
 NAMESPACE_TOPSIDE_END
 
-#endif

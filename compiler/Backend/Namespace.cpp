@@ -12,7 +12,7 @@ Class& Namespace::GetAddClass(String name) {
 	if (i >= 0)
 		return classes[i];
 	Class& o = classes.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	o.name = name;
 	return o;
 }
@@ -22,7 +22,7 @@ Class& Namespace::GetAddTemplateClass(String name) {
 	if (i >= 0)
 		return classes[i];
 	Class& o = classes.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	o.is_template = true;
 	o.name = name;
 	return o;
@@ -33,7 +33,7 @@ Namespace& Namespace::GetAddNamespace(String name) {
 	if (i >= 0)
 		return namespaces[i];
 	Namespace& o = namespaces.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	o.name = name;
 	return o;
 }
@@ -43,7 +43,7 @@ UsingStatement& Namespace::GetAddUsing(String name) {
 	if (i >= 0)
 		return using_stmts[i];
 	UsingStatement& o = using_stmts.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	o.name = name;
 	return o;
 }
@@ -53,11 +53,11 @@ MetaStatement& Namespace::GetAddMetaStatement(String name) {
 	if (i >= 0)
 		return mstmts[i];
 	MetaStatement& o = mstmts.Add(name);
-	o.SetParent(this);
+	o.SetOwner(this);
 	//o.name = name;
 	return o;
 	/*MetaStatement& ms = mstmts.Add();
-	ms.SetParent(this);
+	ms.SetOwner(this);
 	return ms;*/
 }
 
