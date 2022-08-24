@@ -1,7 +1,8 @@
 description "\377B128,0,255";
 
 uses
-	Local;
+	Local,
+	High;
 
 file
 	Backend.h,
@@ -37,5 +38,7 @@ file
 	SemanticParser.cpp,
 	MetaEmitter.h,
 	MetaEmitter.cpp,
+	AstBuilder.h,
+	AstBuilder.cpp,
 	_ readonly separator;
 

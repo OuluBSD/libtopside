@@ -10,5 +10,5 @@ file
 	Test00.eon highlight cpp;
 
 mainconfig
-	"" = "";
+	"" = "STDEXC";
 

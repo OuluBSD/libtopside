@@ -16,6 +16,14 @@ SemanticNode& SemanticNode::Add(String name) {
 	return s;
 }
 
+SemanticNode& SemanticNode::GetAdd(String name) {
+	SemanticNode* p = Find(name);
+	if (p)
+		return *p;
+	else
+		return Add(name);
+}
+
 SemanticNode* SemanticNode::Find(String name) {
 	for (auto& s : sub)
 		if (s.name == name)
@@ -41,6 +49,48 @@ String SemanticNode::ToString() const {
 	return name;
 }
 
+String SemanticNode::GetPath() const {
+	static const int MAX_PATH_LEN = 32;
+	const SemanticNode* path[MAX_PATH_LEN];
+	const SemanticNode* cur = this;
+	int count = 0;
+	while (cur) {
+		path[count] = cur;
+		cur = cur->GetSubOwner();
+		count++;
+	}
+	
+	String s;
+	for(int i = count-1, j = 0; i >= 0; i--, j++) {
+		if (j) s += ".";
+		s += path[i]->GetName();
+	}
+	return s;
+}
+
+String SemanticNode::GetPartStringArray() const {
+	static const int MAX_PATH_LEN = 32;
+	const SemanticNode* path[MAX_PATH_LEN];
+	const SemanticNode* cur = this;
+	int count = 0;
+	while (cur) {
+		path[count] = cur;
+		cur = cur->GetSubOwner();
+		count++;
+	}
+	
+	String s;
+	s.Cat('[');
+	for(int i = count-2, j = 0; i >= 0; i--, j++) {
+		if (j) s += ", \"";
+		else s.Cat('\"');
+		s.Cat(path[i]->GetName());
+		s.Cat('\"');
+	}
+	s.Cat(']');
+	return s;
+}
+
 
 
 
@@ -62,7 +112,7 @@ SemanticParser::SemanticParser() :
 
 void SemanticParser::AddBuiltinType(String name) {
 	SemanticNode& sn = root.Add(name);
-	sn.src = CLSRC_BUILTIN;
+	sn.src = SEMT_BUILTIN;
 }
 
 void SemanticParser::InitDefault() {
@@ -77,6 +127,7 @@ void SemanticParser::InitDefault() {
 	AddBuiltinType("char");
 	AddBuiltinType("short");
 	AddBuiltinType("ushort");
+	AddBuiltinType("cstring");
 }
 
 bool SemanticParser::ProcessEon(const TokenStructure& t) {
@@ -86,8 +137,14 @@ bool SemanticParser::ProcessEon(const TokenStructure& t) {
 	InitDefault();
 	
 	path.Add(&t.root);
+	spath.Add().Set(&root,true);
 	
-	return ParseNamespaceBlock();
+	bool succ = ParseNamespaceBlock();
+	
+	spath.Clear();
+	path.Clear();
+	
+	return succ;
 }
 
 bool SemanticParser::ParseNamespaceBlock() {
@@ -220,7 +277,13 @@ bool SemanticParser::ParseFunction(SemanticNode& ret_type, const PathIdentifier&
 	ASSERT(iter.Check(cur));
 	ASSERT(iter->IsType('('));
 	
-	EMIT PushFunction(ret_type, name);
+	SemanticNode& var = DeclareRelative(name);
+	var.src = SEMT_FUNCTION_STATIC;
+	var.type = &ret_type;
+	
+	PushScope(var);
+	
+	EMIT PushFunction(name.begin->loc, ret_type, name);
 	
 	if (!PassToken('(')) return false;
 	
@@ -239,15 +302,17 @@ bool SemanticParser::ParseFunction(SemanticNode& ret_type, const PathIdentifier&
 	
 	
 	if (!iter && cur.sub.GetCount()) {
-		EMIT PushFunctionDefinition();
+		EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
 		
 		if (!ParseStatementList())
 			return false;
 		
-		EMIT PopFunctionDefinition();
+		EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
 	}
 	
-	EMIT PopFunction();
+	EMIT PopFunction(cur.end->loc);
+	
+	PopScope();
 	
 	return true;
 }
@@ -255,9 +320,10 @@ bool SemanticParser::ParseFunction(SemanticNode& ret_type, const PathIdentifier&
 bool SemanticParser::ParseStatementList() {
 	bool succ = true;
 	
-	EMIT PushStatementList();
-	
 	const TokenNode& owner = *path.Top();
+	
+	EMIT PushStatementList(owner.end->loc);
+	
 	const TokenNode*& sub = path.Add();
 	for (const TokenNode& s : owner.sub) {
 		sub = &s;
@@ -274,7 +340,7 @@ bool SemanticParser::ParseStatementList() {
 	}
 	path.Remove(path.GetCount()-1);
 	
-	EMIT PopStatementList();
+	EMIT PopStatementList(owner.end->loc);
 	
 	return succ;
 }
@@ -286,71 +352,73 @@ bool SemanticParser::ParseStatement() {
 	//DUMP(cur)
 	
 	if (Id("if")) {
-		EMIT PushStatement(STMT_IF);
+		EMIT PushStatement(iter->loc, STMT_IF);
 		
 		if (!ParseConditional()) return false;
-		// Emit
 		if (!ParseStatementBlock()) return false;
 		if (Id("else")) {
-			EMIT PushStatement(STMT_ELSE);
+			EMIT PushStatement(iter->loc, STMT_ELSE);
 			
 			if (!ParseStatementBlock()) return false;
 			
-			EMIT PopStatement();
+			EMIT PopStatement(iter->loc);
 		}
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("do")) {
-		EMIT PushStatement(STMT_DOWHILE);
+		EMIT PushStatement(iter->loc, STMT_DOWHILE);
 		
 		if (!ParseStatementBlock()) return false;
 		if (!PassId("while")) return false;
 		if (!ParseExpression()) return false;
-		// Emit
 		if (!PassToken(';')) return false;
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("while")) {
-		EMIT PushStatement(STMT_WHILE);
+		EMIT PushStatement(iter->loc, STMT_WHILE);
 		
 		if (!ParseConditional()) return false;
 		if (!ParseStatementBlock()) return false;
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("for")) {
-		EMIT PushStatement(STMT_FOR);
+		EMIT PushStatement(iter->loc, STMT_FOR);
 		
 		if (!IsToken(',')) {
+			EMIT BindStatementParameter(iter->loc, STMTP_FOR_DECL);
 			if (!ParseDeclExpr()) return false;
 		}
 		if (Id("in") || Char(':')) {
+			EMIT BindStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
 			if (!ParseExpression()) return false;
 		}
 		else {
 			if (!PassToken(',')) return false;
 			if (!IsToken(',')) {
+				EMIT BindStatementParameter(iter->loc, STMTP_WHILE_COND);
 				if (!ParseExpression()) return false;
 			}
 			if (!PassToken(',')) return false;
 			if (iter) {
+				EMIT BindStatementParameter(iter->loc, STMTP_FOR_POST);
 				if (!ParseExpression()) return false;
 			}
 		}
 		
 		if (!ParseStatementBlock()) return false;
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("break")) {
-		EMIT PushStatement(STMT_BREAK);
-		EMIT PopStatement();
+		EMIT PushStatement(iter->loc, STMT_BREAK);
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("continue")) {
-		EMIT PushStatement(STMT_CONTINUE);
-		EMIT PopStatement();
+		EMIT PushStatement(iter->loc, STMT_CONTINUE);
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("case")) {
 		AddError(iter->loc, "misplaced 'case'");
@@ -365,25 +433,25 @@ bool SemanticParser::ParseStatement() {
 		return false;
 	}
 	else if (Id("return")) {
-		EMIT PushStatement(STMT_RETURN);
+		EMIT PushStatement(iter->loc, STMT_RETURN);
 		
 		if (iter) {
 			if (!ParseExpression()) return false;
 		}
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("switch")) {
-		EMIT PushStatement(STMT_SWITCH);
+		EMIT PushStatement(iter->loc, STMT_SWITCH);
 		
 		if (!ParseExpression()) return false;
 		
 		if (!ParseSwitchBlock()) return false;
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("log")) {
-		EMIT PushStatement(STMT_LOG);
+		EMIT PushStatement(iter->loc, STMT_LOG);
 		
 		if (!ParseExpression()) return false;
 		
@@ -391,21 +459,20 @@ bool SemanticParser::ParseStatement() {
 			if (!ParseExpression()) return false;
 		}
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (cur.begin == cur.end && cur.sub.GetCount()) {
-		EMIT PushStatement(STMT_BLOCK);
+		EMIT PushStatement(iter->loc, STMT_BLOCK);
 		
 		if (!ParseStatementBlock()) return false;
 		
-		EMIT PopStatement();
+		EMIT PopStatement(iter->loc);
 	}
 	else if (cur.begin == cur.end) {
 		// empty statement
 	}
 	else {
-		AddError(cur.begin->loc, "unexpected token in statement");
-		return false;
+		if (!ParseExpression()) return false;
 	}
 	
 	return true;
@@ -425,13 +492,27 @@ bool SemanticParser::ParseParameter() {
 		return false;
 	}
 	
+	SemanticNode* tn = FindDeclaration(type);
+	if (!tn || !IsTrivialObjectType(tn->src)) {
+		AddError(iter->loc, "could not find type '" + type.ToString() + "'");
+		return false;
+	}
+	
 	PathIdentifier name;
 	if (!iter->IsType(',')) {
 		if (!ParsePathIdentifier(name))
 			return false;
 	}
 	
-	EMIT Parameter(type, name);
+	SemanticNode& pn = DeclareRelative(name);
+	if (pn.src != SEMT_NULL) {
+		AddError(iter->loc, "variable '" + name.ToString() + "' already declared");
+		return false;
+	}
+	pn.src = SEMT_PARAMETER;
+	pn.type = tn;
+	
+	EMIT Parameter(type.begin->loc, type, name);
 	
 	return true;
 }
@@ -492,24 +573,38 @@ bool SemanticParser::ParseStatementBlock() {
 
 bool SemanticParser::ParseDeclExpr() {
 	const TokenNode& cur = *path.Top();
+	Iterator& iter = TopIterator();
 	//DUMP(cur);
 	
 	PathIdentifier first;
 	if (!ParsePathIdentifier(first))
 		return false;
 	
-	SemanticNode* type = FindDeclaration(first);
+	SemanticNode* tn = FindDeclaration(first);
 	
-	if (type) {
+	if (tn) {
 		PathIdentifier name;
 		if (!ParsePathIdentifier(name))
 			return false;
 		
+		SemanticNode& var = DeclareRelative(name);
+		ASSERT(var.src == SEMT_NULL);
+		var.src = SEMT_VARIABLE;
+		var.type = tn;
+		
+		EMIT DeclareVariable(first.begin->loc, *tn, name);
 	}
 	
 	if (IsChar('=')) {
+		//NO: Expression leaf pushes: EMIT PushExprScope();
+		
 		if (!Assign())
 			return false;
+		
+		EMIT PopExprScopeToCtor(iter->loc);
+	}
+	else if (IsChar('(')) {
+		TODO
 	}
 	
 	return true;
@@ -520,14 +615,19 @@ bool SemanticParser::ParseSwitchBlock() {
 }
 
 bool SemanticParser::ParseExpression() {
-	return Assign();
+	Iterator& iter = TopIterator();
+	bool succ = Assign();
+	
+	EMIT PopExpr(iter->loc);
+	
+	return succ;
 }
 
 bool SemanticParser::Subscript() {
 	for(;;) {
 		if(Char('[')) {
 			if(Char(']')) {
-				// Emit
+				TODO // Emit
 			}
 			else {
 				if(!IsChar(',') && !IsChar(':')) {
@@ -540,7 +640,7 @@ bool SemanticParser::Subscript() {
 						if (!ParseExpression())
 							return false;
 					}
-					// Emit
+					TODO // Emit
 				}
 				else
 				if(Char(':')) {
@@ -548,10 +648,10 @@ bool SemanticParser::Subscript() {
 							if (!ParseExpression())
 						return false;
 					}
-					// Emit
+					TODO // Emit
 				}
 				else {
-					// Emit
+					TODO // Emit
 				}
 				PassChar(']');
 			}
@@ -571,7 +671,7 @@ bool SemanticParser::Subscript() {
 					PassChar(',');
 				}
 			}
-			if(!IsChar2('!', '=') && Char('!')) {
+			if(/*!IsToken(TK_INEQ) &&*/ Char('!')) {
 				Term();
 			}
 			
@@ -586,32 +686,32 @@ bool SemanticParser::Term() {
 	Iterator& iter = TopIterator();
 	
 	if(iter->IsType(TK_HEX)) {
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
 	/*if(iter->IsType(TK_BINARY)) {
-		// Emit
+		TODO // Emit
 		return true;
 	}*/
 	if(iter->IsType(TK_FLOAT) || iter->IsType(TK_DOUBLE)) {
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_OCT)) {
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_INTEGER)) {
 		// TODO: int64 !
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_STRING)) {
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
@@ -621,21 +721,21 @@ bool SemanticParser::Term() {
 			AddError(iter->loc, "invalid character literal");
 			return false;
 		}*/
-		// Emit
+		EMIT PushRvalConstant(iter->loc, iter);
 		iter++;
 		return true;
 	}
 	if(Char('@')) {
-		// Emit
+		TODO // Emit
 		Subscript();
 		return true;
 	}
 	if(Id("void")) {
-		// Emit
+		TODO // Emit
 		return true;
 	}
 	if(Char(TK_INDENT)) {
-		// Emit
+		TODO // Emit
 		if(!Char(TK_DEDENT)) {
 			for(;;) {
 				if (!ParseExpression())
@@ -673,7 +773,7 @@ bool SemanticParser::Term() {
 	
 	bool  _global = false;
 	if(Char('.')) {
-		// Emit
+		TODO // Emit
 	}
 	else
 	if(Char(':'))
@@ -683,28 +783,49 @@ bool SemanticParser::Term() {
 		if (!ParsePathIdentifier(id))
 			return false;
 		
-		/*if(id.part_count == "self") {
-			// Emit
+		SemanticNode* nn = FindDeclaration(id);
+		if (!nn) {
+			AddError(iter->loc, "could not find '" + id.ToString() + "'");
+			return false;
 		}
-		else*/
-		{
-			if (!_global && Char('(')) {
-				
-				int i = 0;
-				while (!Char(')')) {
-					if (i) {
-						if (!PassChar(','))
-							return false;
-					}
-					if (!ParseExpression())
-						return false;
-					i++;
-				}
-				
+		
+		if (!_global && Char('(')) {
+			
+			if (nn->src == SEMT_FUNCTION_METHOD || nn->src == SEMT_FUNCTION_STATIC) {
+				EMIT PushRvalCall(id.begin->loc, *nn);
+			}
+			else if (IsTrivialObjectType(nn->src)) {
+				EMIT PushRvalConstruct(id.begin->loc, *nn);
+			}
+			else {
+				AddError(iter->loc, "can't call or construct '" + id.ToString() + "'");
+				return false;
 			}
 			
-			// Emit id
+			
+			int i = 0;
+			while (!Char(')')) {
+				if (i) {
+					if (!PassChar(','))
+						return false;
+				}
+				if (!ParseExpression())
+					return false;
+				i++;
+			}
+			
 		}
+		else {
+			//DUMP(id);
+			
+			if (nn->src == SEMT_VARIABLE || nn->src == SEMT_PARAMETER) {
+				EMIT PushRval(id.begin->loc, *nn);
+			}
+			else {
+				TODO
+			}
+		}
+		
 		
 		return Subscript();
 	}
@@ -717,37 +838,45 @@ bool SemanticParser::Term() {
 }
 
 bool SemanticParser::Unary() {
-	if(Char2('+', '+')) {
+	const Token& tk = TopIterator();
+	
+	if(TryToken(TK_INC)) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_INC);
 	}
 	else
-	if(Char2('-', '-')) {
+	if(TryToken(TK_DEC)) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_DEC);
 	}
 	else
 	if(Char('-')) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_NEGATIVE);
 	}
 	else
 	if(Char('+')) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_POSITIVE);
 	}
 	else
 	if(Char('!')) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_NOT);
 	}
 	else
 	if(Char('~')) {
 		if (!Unary()) return false;
+		EMIT Expr1(tk.loc, OP_NEGATE);
 	}
 	else
 		if (!Term()) return false;
 
-	if(Char2('+', '+')) {
-		TODO
+	if(TryToken(TK_INC)) {
+		EMIT Expr1(tk.loc, OP_POSTINC);
 	}
-	if(Char2('-', '-')) {
-		TODO
+	if(TryToken(TK_DEC)) {
+		EMIT Expr1(tk.loc, OP_POSTDEC);
 	}
 	
 	return true;
@@ -756,16 +885,21 @@ bool SemanticParser::Unary() {
 bool SemanticParser::Mul() {
 	if (!Unary()) return false;
 	for(;;) {
-		if(!IsChar2('*', '=') && Char('*')) {
+		const Token& tk = TopIterator();
+		
+		if(/*!IsToken(TK_MULASS) &&*/ Char('*')) {
 			if (!Unary()) return false;
+			EMIT Expr2(tk.loc, OP_MUL);
 		}
 		else
-		if(!IsChar2('/', '=') && Char('/')) {
+		if(/*!IsToken(TK_DIVASS) &&*/ Char('/')) {
 			if (!Unary()) return false;
+			EMIT Expr2(tk.loc, OP_DIV);
 		}
 		else
-		if(!IsChar2('%', '=') && Char('%')) {
+		if(/*!IsToken(TK_MODASS) &&*/ Char('%')) {
 			if (!Unary()) return false;
+			EMIT Expr2(tk.loc, OP_MOD);
 		}
 		else
 			break;
@@ -776,13 +910,18 @@ bool SemanticParser::Mul() {
 
 bool SemanticParser::Add() {
 	if (!Mul()) return false;
+	
 	for(;;) {
-		if(!IsChar2('+', '=') && Char('+')) {
+		const Token& tk = TopIterator();
+		
+		if(/*!IsChar2('+', '=') &&*/ Char('+')) {
 			if (!Mul()) return false;
+			EMIT Expr2(tk.loc, OP_ADD);
 		}
 		else
-		if(!IsChar2('-', '=') && Char('-')) {
+		if(/*!IsChar2('-', '=') &&*/ Char('-')) {
 			if (!Mul()) return false;
+			EMIT Expr2(tk.loc, OP_SUB);
 		}
 		else
 			break;
@@ -793,12 +932,16 @@ bool SemanticParser::Add() {
 bool SemanticParser::Shift() {
 	if (!Add()) return false;
 	for(;;) {
-		if(Char2('<', '<')) {
+		const Token& tk = TopIterator();
+		
+		if(TryToken(TK_LSHIFT)) {
 			if (!Add()) return false;
+			EMIT Expr2(tk.loc, OP_LSH);
 		}
 		else
-		if(Char2('>', '>')) {
+		if(TryToken(TK_RSHIFT)) {
 			if (!Add()) return false;
+			EMIT Expr2(tk.loc, OP_RSH);
 		}
 		else
 			break;
@@ -806,26 +949,28 @@ bool SemanticParser::Shift() {
 	return true;
 }
 
-bool SemanticParser::DoCompare(const char *op) {
+bool SemanticParser::DoCompare(const FileLocation& loc, OpType op) {
 	if (!Shift()) return false;
-	// Emit
+	EMIT Expr2(loc, op);
 	return true;
 }
 
 bool SemanticParser::Compare() {
 	if (!Shift()) return false;
 	for(;;) {
-		if (Char2('>', '=')) {
-			if (!DoCompare(">=")) return false;
+		const Token& tk = TopIterator();
+		
+		if (TryToken(TK_GREQ)) {
+			if (!DoCompare(tk.loc, OP_GREQ)) return false;
 		}
-		else if (Char2('<', '=')) {
-			if (!DoCompare("<=")) return false;
+		else if (TryToken(TK_LSEQ)) {
+			if (!DoCompare(tk.loc, OP_LSEQ)) return false;
 		}
 		else if (Char('>')) {
-			if (!DoCompare(">")) return false;
+			if (!DoCompare(tk.loc, OP_GREATER)) return false;
 		}
 		else if (Char('<')) {
-			if (!DoCompare("<")) return false;
+			if (!DoCompare(tk.loc, OP_LESS)) return false;
 		}
 		else
 			break;
@@ -836,12 +981,16 @@ bool SemanticParser::Compare() {
 bool SemanticParser::Equal() {
 	if (!Compare()) return false;
 	for(;;) {
-		if(Char2('=', '=')) {
+		const Token& tk = TopIterator();
+		
+		if(TryToken(TK_EQ)) {
 			if (!Compare()) return false;
+			EMIT Expr2(tk.loc, OP_EQ);
 		}
 		else
-		if(Char2('!', '=')) {
+		if(TryToken(TK_INEQ)) {
 			if (!Compare()) return false;
+			EMIT Expr2(tk.loc, OP_INEQ);
 		}
 		else
 			break;
@@ -851,8 +1000,11 @@ bool SemanticParser::Equal() {
 
 bool SemanticParser::BinAnd() {
 	if (!Equal()) return false;
-	while(!IsChar2('&', '&') && Char('&')) {
+	while(/*!IsChar2('&', '&') &&*/ Char('&')) {
+		const Token& tk = TopIterator().iter[-1];
+		
 		if (!Equal()) return false;
+		EMIT Expr2(tk.loc, OP_BWAND);
 	}
 	return true;
 }
@@ -860,24 +1012,33 @@ bool SemanticParser::BinAnd() {
 bool SemanticParser::BinXor() {
 	if (!BinAnd()) return false;
 	while(Char('^')) {
+		const Token& tk = TopIterator().iter[-1];
+		
 		if (!BinAnd()) return false;
+		EMIT Expr2(tk.loc, OP_BWXOR);
 	}
 	return true;
 }
 
 bool SemanticParser::BinOr() {
 	if (!BinXor()) return false;
-	while(!IsChar2('|', '|') && Char('|')) {
+	while(/*!IsChar2('|', '|') &&*/ Char('|')) {
+		const Token& tk = TopIterator().iter[-1];
+		
 		if (!BinXor()) return false;
+		EMIT Expr2(tk.loc, OP_BWOR);
 	}
 	return true;
 }
 
 bool SemanticParser::And() {
 	if (!BinOr()) return false;
-	if(IsChar2('&', '&')) {
-		while(Char2('&', '&')) {
+	if(TryToken(TK_LOGAND)) {
+		while(TryToken(TK_LOGAND)) {
+			const Token& tk = TopIterator().iter[-1];
+			
 			if (!BinOr()) return false;
+			EMIT Expr2(tk.loc, OP_AND);
 		}
 	}
 	return true;
@@ -885,9 +1046,12 @@ bool SemanticParser::And() {
 
 bool SemanticParser::Or() {
 	if (!And()) return false;
-	if(IsChar2('|', '|')) {
-		while(Char2('|', '|')) {
+	if(TryToken(TK_LOGOR)) {
+		while(TryToken(TK_LOGOR)) {
+			const Token& tk = TopIterator().iter[-1];
+			
 			if (!And()) return false;
+			EMIT Expr2(tk.loc, OP_OR);
 		}
 	}
 	return true;
@@ -896,37 +1060,48 @@ bool SemanticParser::Or() {
 bool SemanticParser::Cond() {
 	if (!Or()) return false;
 	if(Char('?')) {
+		const Token& tk = TopIterator().iter[-1];
+		
 		if (!Cond()) return false;
 		PassChar(':');
 		if (!Cond()) return false;
+		EMIT Expr3(tk.loc, OP_COND);
 	}
 	return true;
 }
 
 bool SemanticParser::Assign() {
 	if (!Cond()) return false;
+	const Token& tk = TopIterator();
+		
 	if(Char('=')) {
 		if (!Assign()) return false;
+		EMIT Expr2(tk.loc, OP_ASSIGN);
 	}
 	else
-	if(Char2('+', '=')) {
+	if(TryToken(TK_ADDASS)) {
 		if (!Cond()) return false;
+		EMIT Expr2(tk.loc, OP_ADDASS);
 	}
 	else
-	if(Char2('-', '=')) {
+	if(TryToken(TK_SUBASS)) {
 		if (!Cond()) return false;
+		EMIT Expr2(tk.loc, OP_SUBASS);
 	}
 	else
-	if(Char2('*', '=')) {
+	if(TryToken(TK_MULASS)) {
 		if (!Cond()) return false;
+		EMIT Expr2(tk.loc, OP_MULASS);
 	}
 	else
-	if(Char2('/', '=')) {
+	if(TryToken(TK_DIVASS)) {
 		if (!Cond()) return false;
+		EMIT Expr2(tk.loc, OP_DIVASS);
 	}
 	else
-	if(Char2('%', '=')) {
+	if(TryToken(TK_MODASS)) {
 		if (!Cond()) return false;
+		EMIT Expr2(tk.loc, OP_MODASS);
 	}
 	return true;
 }
@@ -937,7 +1112,7 @@ bool SemanticParser::IsToken(int tk_type) const {
 	return iter->IsType(tk_type);
 }
 
-bool SemanticParser::IsChar2(int a, int b) const {
+/*bool SemanticParser::IsChar2(int a, int b) const {
 	const Iterator& iter = TopIterator();
 	if (!iter) return false;
 	if (iter.iter + 1 == iter.end) return false;
@@ -949,7 +1124,7 @@ bool SemanticParser::Char2(int a, int b) {
 	if (!IsChar2(a,b)) return false;
 	iter.iter += 2;
 	return true;
-}
+}*/
 
 bool SemanticParser::TryToken(int tk_type) {
 	Iterator& iter = TopIterator();
@@ -1004,20 +1179,29 @@ SemanticNode* SemanticParser::FindDeclaration() {
 }
 
 SemanticNode* SemanticParser::FindDeclaration(const PathIdentifier& id) {
-	SemanticNode* cur = &root;
-	for(int i = 0; i < id.part_count; i++) {
-		const Token* t = id.parts[i];
-		if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
-			cur = cur->Find(t->str_value);
-		}
-		else {
-			TODO
-		}
-		if (!cur)
-			break;
-	}
+	if (id.part_count == 0)
+		return 0;
 	
-	return cur;
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+			
+		SemanticNode* cur = s.n;
+		for(int i = 0; i < id.part_count; i++) {
+			const Token* t = id.parts[i];
+			if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
+				cur = cur->Find(t->str_value);
+			}
+			else {
+				TODO
+			}
+			if (!cur)
+				break;
+		}
+		
+		if (cur)
+			return cur;
+	}
+	return 0;
 }
 
 String SemanticParser::GetTreeString(int indent) const {
@@ -1030,6 +1214,77 @@ String SemanticParser::GetCodeString(const CodeArgs& args) const {
 
 String SemanticParser::ToString() const {
 	return root.ToString();
+}
+
+SemanticNode& SemanticParser::DeclareRelative(const PathIdentifier& id) {
+	ASSERT(id.part_count > 0);
+	SemanticNode* cur = spath.Top().n;
+	for(int i = 0; i < id.part_count; i++) {
+		const Token* t = id.parts[i];
+		if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
+			String id = t->str_value;
+			ASSERT(id.GetCount());
+			cur = &cur->GetAdd(id);
+		}
+		else {
+			TODO
+		}
+	}
+	
+	//LOG("Declared " << GetPath(*cur));
+	
+	return *cur;
+}
+
+String SemanticParser::GetPath(const SemanticNode& n) const {
+	thread_local static Vector<const SemanticNode*> tmp;
+	SemanticNode* cur = spath.Top().n;
+	
+	tmp.SetCount(0);
+	const SemanticNode* iter = &n;
+	while (iter && iter != cur) {
+		tmp.Add(iter);
+		iter = iter->GetSubOwner();
+	}
+	
+	String s;
+	for (int i = tmp.GetCount()-1, j = 0; i >= 0; i--, j++) {
+		if (j) s.Cat('.');
+		s.Cat(tmp[i]->GetName());
+	}
+	return s;
+}
+
+void SemanticParser::PushScope(SemanticNode& n) {
+	ASSERT(!spath.IsEmpty());
+	thread_local static Vector<SemanticNode*> tmp;
+	SemanticNode* cur = spath.Top().n;
+	
+	tmp.SetCount(0);
+	SemanticNode* iter = &n;
+	while (iter && iter != cur) {
+		tmp.Add(iter);
+		iter = iter->GetSubOwner();
+	}
+	
+	for (int i = tmp.GetCount()-1, j = 0; i >= 0; i--, j++) {
+		Scope& s = spath.Add();
+		s.n = tmp[i];
+		s.pop_this = j == 0;
+	}
+}
+
+void SemanticParser::PopScope() {
+	int rm_i = 0;
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+		if (s.pop_this) {
+			rm_i = i;
+			break;
+		}
+	}
+	int c = spath.GetCount() - rm_i;
+	spath.Remove(rm_i, c);
 }
 
 

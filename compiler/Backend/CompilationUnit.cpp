@@ -59,5 +59,9 @@ String CompilationUnit::GetCodeString(const CodeArgs& args) const {
 	return s;
 }
 
+Class* CompilationUnit::FindClass(const PathIdentifier& id) {
+	TODO
+}
+
 
 NAMESPACE_TOPSIDE_END

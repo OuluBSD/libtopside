@@ -13,13 +13,14 @@ struct Tester {
 	TokenStructure ts;
 	SemanticParser sp;
 	HighScriptEmitter emitter;
-	
+	AstBuilder ab;
 	
 	
 	typedef Tester CLASSNAME;
 	bool Tokenize(String filepath, String content);
 	bool ParseStructure();
 	bool Parse();
+	bool RunMeta();
 	
 	void OnProcMsg(ProcMsg msg);
 	

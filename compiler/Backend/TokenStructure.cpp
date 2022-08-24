@@ -84,6 +84,7 @@ bool TokenStructure::ParseStatement(TokenNode& n) {
 	ASSERT(!IsEnd());
 	n.begin = &Current();
 	ASSERT(!n.begin->IsType(':'));
+	ASSERT(!n.begin->IsType(TK_INDENT));
 	bool has_block = false;
 	
 	while (!IsEnd()) {

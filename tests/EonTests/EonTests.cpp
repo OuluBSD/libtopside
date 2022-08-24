@@ -29,12 +29,22 @@ bool Tester::ParseStructure() {
 }
 
 bool Tester::Parse() {
+	emitter.SetDebugIndent();
 	sp.SetEmitter(emitter);
 	sp.WhenMessage << THISBACK(OnProcMsg);
 	if (!sp.ProcessEon(ts)) {
 		return false;
 	}
 	LOG(sp.GetTreeString());
+	emitter.Finish();
+	return true;
+}
+
+bool Tester::RunMeta() {
+	ab.WhenMessage << THISBACK(OnProcMsg);
+	if (!ab.Execute(emitter.GetResult()))
+		return false;
+	
 	return true;
 }
 
@@ -83,6 +93,7 @@ CONSOLE_APP_MAIN {
 		
 		
 		// Run meta script (which makes program AST)
+		TEST(t.RunMeta())
 		
 		
 		// Export High script

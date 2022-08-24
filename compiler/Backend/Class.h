@@ -43,7 +43,7 @@ public:
 class TemplateClass : public CompilerNode<TemplateClass, Class> {
 	
 public:
-	bool					is = false;
+	bool		is = false;
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;
@@ -64,8 +64,8 @@ public:
 	ArrayMap<String,Field>				fields;
 	ArrayMap<String,FunctionIdScope>	funcids;
 	ArrayMap<String, MetaStatement>		mstmts;
-	String					name;
-	bool					is_template = false;
+	String								name;
+	bool								is_template = false;
 	
 public:
 	typedef Class CLASSNAME;

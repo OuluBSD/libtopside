@@ -22,6 +22,8 @@ public:
 	String		GetCodeString(const CodeArgs& args) const override;
 	String		ToString() const override;
 	
+	Class*		FindClass(const PathIdentifier& id);
+	
 };
 
 

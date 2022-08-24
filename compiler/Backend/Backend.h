@@ -2,6 +2,7 @@
 #define _Backend_Backend_h_
 
 #include <Local/Local.h>
+#include <High/High.h>
 
 #include "Node.h"
 #include "Builtin.h"
@@ -19,6 +20,7 @@
 #include "TokenStructure.h"
 #include "SemanticParser.h"
 #include "MetaEmitter.h"
+#include "AstBuilder.h"
 
 
 #endif

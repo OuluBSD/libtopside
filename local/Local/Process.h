@@ -23,6 +23,8 @@ struct FileLocation : Moveable<FileLocation> {
 	bool operator==(const FileLocation& loc) const {return !memcmp(this, &loc, sizeof(FileLocation));}
 	void Serialize(Stream& s) {s % file % cursor % line % col;}
 	
+	String ToString() const {return file + ":" + IntStr(line) + ":" + IntStr(col);}
+	
 };
 
 
