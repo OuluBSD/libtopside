@@ -3,6 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if 0
+
 String MetaConditional::PreCodeString(const CodeArgs& args) const {
 	String s;
 	if (req_meta_defs.GetCount()) {
@@ -27,6 +29,7 @@ String MetaConditional::PostCodeString(const CodeArgs& args) const {
 	return s;
 }
 
+#endif
 
 
 String PathIdentifier::ToString() const {

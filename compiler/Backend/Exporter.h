@@ -33,11 +33,12 @@ private:
 	
 	ArrayMap<String,Package>	pkgs;
 	Vector<NodeBase*>			scopes;
-	CompilationUnit&			cu;
+	//CompilationUnit&			cu;
+	AstNode&					root;
 	String						export_dir;
 	bool						protect_pkg = false;
 	
-	bool Visit(CompilationUnit& cu);
+	/*bool Visit(CompilationUnit& cu);
 	bool Visit(Namespace& ns);
 	bool Visit(Class& c);
 	bool Visit(Field& f);
@@ -47,7 +48,8 @@ private:
 	bool Visit(Expression& e);
 	bool Visit(MetaStatement& ms);
 	bool Visit(MetaExpression& me);
-	bool Visit(UsingStatement& us);
+	bool Visit(UsingStatement& us);*/
+	bool Visit(AstNode& n);
 	void Push(NodeBase& n);
 	void Pop();
 	
@@ -59,7 +61,7 @@ private:
 	
 public:
 	typedef AssemblyExporter CLASSNAME;
-	AssemblyExporter(CompilationUnit& cu);
+	AssemblyExporter(AstNode& root);
 	
 	bool Export(String dir);
 	void Dump();

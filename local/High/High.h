@@ -257,6 +257,7 @@ struct HiEscape {
 	operator     HiValue&()                   { return ret_val; }
 	void         ThrowError(const char *s)     { esc.ThrowError(s); }
 
+	void		 Throw(const FileLocation& loc, String msg);
 	String       DumpType(int i);
 	String       InCall();
 

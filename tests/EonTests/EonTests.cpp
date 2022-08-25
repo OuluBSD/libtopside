@@ -41,6 +41,7 @@ bool Tester::Parse() {
 }
 
 bool Tester::RunMeta() {
+	ab.InitDefault();
 	ab.WhenMessage << THISBACK(OnProcMsg);
 	if (!ab.Execute(emitter.GetResult()))
 		return false;

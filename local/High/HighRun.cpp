@@ -68,6 +68,10 @@ HiValue ReadLambda(const char *s)
 	return ReadLambda(p);
 }
 
+void HiEscape::Throw(const FileLocation& loc, String msg) {
+	TODO
+}
+
 String HiEscape::InCall()
 {
 	return id.IsEmpty() ? String() : " in call to '" + id + "'";

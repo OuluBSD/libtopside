@@ -2,10 +2,14 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-AssemblyExporter::AssemblyExporter(CompilationUnit& cu) : cu(cu) {
+/*AssemblyExporter::AssemblyExporter(CompilationUnit& cu) : cu(cu) {
 	
 	cu.WeakHint(HINT_PKG, "Default");
 	cu.WeakHint(HINT_FILE, "Default");
+	
+}*/
+
+AssemblyExporter::AssemblyExporter(AstNode& root) : root(root) {
 	
 }
 
@@ -20,7 +24,7 @@ void AssemblyExporter::Dump() {
 		}
 	}
 	
-	LOG(cu.GetTreeString());
+	LOG(root.GetTreeString());
 }
 
 bool AssemblyExporter::Export(String dir) {
@@ -32,7 +36,7 @@ bool AssemblyExporter::Export(String dir) {
 	
 	pkgs.Clear();
 	
-	if (!Visit(cu))
+	if (!Visit(root))
 		return false;
 	
 	Dump();
@@ -193,7 +197,7 @@ bool AssemblyExporter::ExportHeader(Package& pkg, PackageFile& file, String path
 	args.pkg = &pkg;
 	args.file = &file;
 	args.have_header = true;
-	fout << cu.GetCodeString(args);
+	fout << root.GetCodeString(args);
 	
 	fout << "\n\n#endif\n";
 	
@@ -213,7 +217,7 @@ bool AssemblyExporter::ExportImplementation(Package& pkg, PackageFile& file, Str
 	args.pkg = &pkg;
 	args.file = &file;
 	args.have_impl = true;
-	fout << cu.GetCodeString(args);
+	fout << root.GetCodeString(args);
 	
 	return true;
 }
@@ -249,13 +253,21 @@ void AssemblyExporter::Pop() {
 	scopes.SetCount(scopes.GetCount()-1);
 }
 
+bool AssemblyExporter::Visit(AstNode& n) {
+	TODO
+}
+
+#if 0
+
 bool AssemblyExporter::Visit(CompilationUnit& o) {
 	ScopeHolder __h(this, o);
 	
-	for (Namespace& ns : o.namespaces.GetValues()) {
+	/*for (Namespace& ns : o.namespaces.GetValues()) {
 		if (!Visit(ns))
 			return false;
-	}
+	}*/
+	if (!Visit(o.root))
+		return false;
 	
 	return true;
 }
@@ -427,6 +439,7 @@ bool AssemblyExporter::Visit(UsingStatement& o) {
 	return true;
 }
 
+#endif
 
 
 NAMESPACE_TOPSIDE_END

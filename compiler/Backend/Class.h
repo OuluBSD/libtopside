@@ -1,6 +1,7 @@
 #ifndef _Backend_Class_h_
 #define _Backend_Class_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -61,8 +62,8 @@ public:
 	TemplateClass						tmpl;
 	Vector<Class*>						inherited;
 	ArrayMap<String, Class>				classes;
-	ArrayMap<String,Field>				fields;
-	ArrayMap<String,FunctionIdScope>	funcids;
+	ArrayMap<String, Field>				fields;
+	ArrayMap<String, FunctionIdScope>	funcids;
 	ArrayMap<String, MetaStatement>		mstmts;
 	String								name;
 	bool								is_template = false;
@@ -78,6 +79,7 @@ public:
 	FunctionIdScope&	GetAddFunctionIdScope(String name);
 	String				GetName() const override {return name;}
 	String				GetClassKey() const {return "class";}
+	Class*				FindClass(const PathIdentifier& id, int i=0);
 	
 	String				GetTreeString(int indent=0) const override;
 	String				GetCodeString(const CodeArgs& args) const override;
@@ -90,4 +92,5 @@ public:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

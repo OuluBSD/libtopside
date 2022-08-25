@@ -1,5 +1,6 @@
 #include "Backend.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -80,6 +81,27 @@ String Namespace::GetTreeString(int indent) const {
 	return s;
 }
 
+Class* Namespace::FindClass(const PathIdentifier& id, int i) {
+	ASSERT(i >= 0 && i < id.part_count);
+	const Token& t = *id.parts[i];
+	if (t.IsType(TK_ID)) {
+		if (i < id.part_count-1) {
+			int j = classes.Find(t.str_value);
+			if (j >= 0) return classes[j].FindClass(id, i+1);
+			j = namespaces.Find(t.str_value);
+			if (j >= 0) return namespaces[j].FindClass(id, i+1);
+		}
+		else {
+			int j = classes.Find(t.str_value);
+			if (j >= 0) return &classes[j];
+		}
+	}
+	else {
+		TODO
+	}
+	return 0;
+}
+
 String Namespace::ToString() const {
 	String s;
 	s << name << ": Namespace";
@@ -141,3 +163,5 @@ String Namespace::GetCodeString(const CodeArgs& args) const {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

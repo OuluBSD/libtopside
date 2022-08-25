@@ -9,6 +9,10 @@ AstBuilder::AstBuilder() :
 	
 }
 
+void AstBuilder::InitDefault() {
+	TODO
+}
+
 bool AstBuilder::Execute(String high_script_content) {
     ArrayMap<String, HiValue> global;
     
@@ -47,8 +51,12 @@ bool AstBuilder::Execute(String high_script_content) {
     return true;
 }
 
-void AstBuilder::PushFunction(const FileLocation& loc, Class& ret_type, const PathIdentifier& name) {
+bool AstBuilder::PushFunction(const FileLocation& loc, Class& ret_type, const PathIdentifier& name) {
+	
+	
 	TODO
+	
+	
 }
 
 void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
@@ -87,7 +95,7 @@ void AstBuilder::BindStatementParameter(const FileLocation& loc, StmtParamType t
 	TODO
 }
 
-void AstBuilder::DeclareVariable(const FileLocation& loc, const SemanticNode& n, const PathIdentifier& id) {
+void AstBuilder::DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
 	TODO
 }
 
@@ -99,15 +107,15 @@ void AstBuilder::PopExpr(const FileLocation& loc) {
 	TODO
 }
 
-void AstBuilder::PushRval(const FileLocation& loc, const SemanticNode& n) {
+void AstBuilder::PushRval(const FileLocation& loc, const AstNode& n) {
 	TODO
 }
 
-void AstBuilder::PushRvalCall(const FileLocation& loc, const SemanticNode& n) {
+void AstBuilder::PushRvalCall(const FileLocation& loc, const AstNode& n) {
 	TODO
 }
 
-void AstBuilder::PushRvalConstruct(const FileLocation& loc, const SemanticNode& n) {
+void AstBuilder::PushRvalConstruct(const FileLocation& loc, const AstNode& n) {
 	TODO
 }
 
@@ -175,13 +183,17 @@ void AstBuilder::HiPushFunction(HiEscape& e) {
 	
 	//DUMP(loc); DUMP(name); DUMP(type);
 	
-	Class* ret_cls = cunit.FindClass(type);
+	TODO
+	/*Class* ret_cls = cunit.FindClass(type);
 	if (!ret_cls) {
-		TODO // internal error
-		// e.Throw
+		e.Throw(loc, "internal error");
+		return;
 	}
 	
-	PushFunction(loc, *ret_cls, name);
+	if (!PushFunction(loc, *ret_cls, name)) {
+		e.Throw(loc, "internal error");
+		return;
+	}*/
 }
 
 void AstBuilder::HiParameter(HiEscape& e) {

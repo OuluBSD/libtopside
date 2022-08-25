@@ -1,5 +1,6 @@
 #include "Backend.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -124,3 +125,5 @@ String Expression::GetCodeString(const CodeArgs& args) const {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

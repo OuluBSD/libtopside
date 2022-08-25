@@ -4,6 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if 0
+
 class AccessControl {
 	CodeAccess				access = ACC_PUBLIC;
 	
@@ -42,6 +44,7 @@ struct MetaConditional {
 	
 };
 
+#endif
 
 
 struct PathIdentifier {

@@ -5,13 +5,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class AstBuilder : public ErrorSource {
-	CompilationUnit cunit;
 	
 	
 	
 public:
 	Vector<Token> tokens[5];
 	Index<String> files;
+	//CompilationUnit cunit;
+	AstNode root;
 	
 	void LoadLocation(const HiValue& v, FileLocation& loc);
 	void LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens);
@@ -20,7 +21,9 @@ public:
 	typedef AstBuilder CLASSNAME;
 	AstBuilder();
 	
-	void PushFunction(const FileLocation& loc, Class& ret_type, const PathIdentifier& name);
+	void InitDefault();
+	
+	bool PushFunction(const FileLocation& loc, Class& ret_type, const PathIdentifier& name);
 	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
 	void PushFunctionDefinition(const FileLocation& loc);
 	void PopFunctionDefinition(const FileLocation& loc);
@@ -30,12 +33,12 @@ public:
 	void PushStatement(const FileLocation& loc, StmtType type);
 	void PopStatement(const FileLocation& loc);
 	void BindStatementParameter(const FileLocation& loc, StmtParamType t);
-	void DeclareVariable(const FileLocation& loc, const SemanticNode& n, const PathIdentifier& id);
+	void DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id);
 	void PopExprScopeToCtor(const FileLocation& loc);
 	void PopExpr(const FileLocation& loc);
-	void PushRval(const FileLocation& loc, const SemanticNode& n);
-	void PushRvalCall(const FileLocation& loc, const SemanticNode& n);
-	void PushRvalConstruct(const FileLocation& loc, const SemanticNode& n);
+	void PushRval(const FileLocation& loc, const AstNode& n);
+	void PushRvalCall(const FileLocation& loc, const AstNode& n);
+	void PushRvalConstruct(const FileLocation& loc, const AstNode& n);
 	void PushRvalConstant(const FileLocation& loc, const Token& t);
 	void Expr1(const FileLocation& loc, OpType op);
 	void Expr2(const FileLocation& loc, OpType op);

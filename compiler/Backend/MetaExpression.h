@@ -1,6 +1,8 @@
 #ifndef _Backend_MetaExpression_h_
 #define _Backend_MetaExpression_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -90,4 +92,5 @@ class MetaScope {
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

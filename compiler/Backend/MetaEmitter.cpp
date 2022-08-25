@@ -64,7 +64,7 @@ String HighScriptEmitter::LocArg(const FileLocation& loc) {
 
 #define DBG_INDENT (dbg_indent ? GetTabString() : String()) <<
 
-void HighScriptEmitter::PushFunction(const FileLocation& loc, SemanticNode& ret_type, const PathIdentifier& name) {
+void HighScriptEmitter::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	Log("PushFunction: " + name.ToString() + ", returns " + ret_type.ToString());
 	
 	main << DBG_INDENT "PushFunction(" << LocArg(loc) << ", " << ret_type.GetPartStringArray() << ", " << GetPartStringArray(name) << ");\n";
@@ -131,7 +131,7 @@ void HighScriptEmitter::BindStatementParameter(const FileLocation& loc, StmtPara
 	main << DBG_INDENT "BindStatementParameter(" << LocArg(loc) << ", \"" << GetStmtParamTypeString(t) << "\");\n";
 }
 
-void HighScriptEmitter::DeclareVariable(const FileLocation& loc, const SemanticNode& n, const PathIdentifier& id) {
+void HighScriptEmitter::DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
 	Log("DeclareVariable: " + n.ToString() + ", " + id.ToString());
 	
 	main << DBG_INDENT "PushFunction(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
@@ -167,7 +167,7 @@ void HighScriptEmitter::PopExpr(const FileLocation& loc) {
 	main << DBG_INDENT "PopExpr(" << LocArg(loc) << ");\n";
 }
 
-void HighScriptEmitter::PushRval(const FileLocation& loc, const SemanticNode& n) {
+void HighScriptEmitter::PushRval(const FileLocation& loc, const AstNode& n) {
 	Log("PushRval: " + n.ToString());
 	
 	main << DBG_INDENT "PushRval(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";
@@ -175,7 +175,7 @@ void HighScriptEmitter::PushRval(const FileLocation& loc, const SemanticNode& n)
 	Enter();
 }
 
-void HighScriptEmitter::PushRvalCall(const FileLocation& loc, const SemanticNode& n) {
+void HighScriptEmitter::PushRvalCall(const FileLocation& loc, const AstNode& n) {
 	Log("PushRvalCall: " + n.ToString());
 	
 	main << DBG_INDENT "PushRvalCall(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";
@@ -183,7 +183,7 @@ void HighScriptEmitter::PushRvalCall(const FileLocation& loc, const SemanticNode
 	Enter();
 }
 
-void HighScriptEmitter::PushRvalConstruct(const FileLocation& loc, const SemanticNode& n) {
+void HighScriptEmitter::PushRvalConstruct(const FileLocation& loc, const AstNode& n) {
 	Log("PushRvalConstruct: " + n.ToString());
 	
 	main << DBG_INDENT "PushRvalConstruct(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";

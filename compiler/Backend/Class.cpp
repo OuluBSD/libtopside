@@ -1,5 +1,6 @@
 #include "Backend.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -122,6 +123,25 @@ FunctionIdScope& Class::GetAddFunctionIdScope(String name) {
 	return f;
 }
 
+Class* Class::FindClass(const PathIdentifier& id, int i) {
+	ASSERT(i >= 0 && i < id.part_count);
+	const Token& t = *id.parts[i];
+	if (t.IsType(TK_ID)) {
+		if (i < id.part_count-1) {
+			int j = classes.Find(t.str_value);
+			if (j >= 0) return classes[j].FindClass(id, i+1);
+		}
+		else {
+			int j = classes.Find(t.str_value);
+			if (j >= 0) return &classes[j];
+		}
+	}
+	else {
+		TODO
+	}
+	return 0;
+}
+
 String Class::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
@@ -241,3 +261,5 @@ String Class::GetClassPath() const {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

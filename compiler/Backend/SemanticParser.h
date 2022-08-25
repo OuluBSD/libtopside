@@ -4,40 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SemanticParser;
-
-class SemanticNode : public CompilerNode<SemanticNode,TokenStructure> {
-	
-public:
-	Array<SemanticNode> sub;
-	String name;
-	SemanticType src = SEMT_NULL;
-	SemanticNode* type = 0;
-	
-public:
-	typedef SemanticNode CLASSNAME;
-	SemanticNode();
-	
-	void			Clear() {sub.Clear();}
-	
-	SemanticNode&	Add(String name="");
-	SemanticNode&	GetAdd(String name="");
-	SemanticNode*	Find(String name);
-	
-	String			GetTreeString(int indent=0) const override;
-	String			GetCodeString(const CodeArgs& args) const override;
-	String			ToString() const override;
-	String			GetName() const override {return name;}
-	String			GetPath() const override;
-	String			GetPartStringArray() const;
-	
-};
-
-
 struct ParserEmitter {
 	
 	
-	virtual void PushFunction(const FileLocation& loc, SemanticNode& ret_type, const PathIdentifier& name) {}
+	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {}
 	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {}
 	virtual void PushFunctionDefinition(const FileLocation& loc) {}
 	virtual void PopFunctionDefinition(const FileLocation& loc) {}
@@ -47,17 +17,17 @@ struct ParserEmitter {
 	virtual void PushStatement(const FileLocation& loc, StmtType type) {}
 	virtual void PopStatement(const FileLocation& loc) {}
 	virtual void BindStatementParameter(const FileLocation& loc, StmtParamType t) {}
-	virtual void DeclareVariable(const FileLocation& loc, const SemanticNode& n, const PathIdentifier& id) {}
-	virtual void Variable(const FileLocation& loc, const SemanticNode& n, const PathIdentifier& id) {}
+	virtual void DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {}
+	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {}
 	//virtual void PushExprScope() {}
 	virtual void PopExprScopeToCtor(const FileLocation& loc) {}
 	//virtual void PushCall(const PathIdentifier& id) {}
 	//virtual void PopCall() {}
 	//virtual void PushExprScopeRval() {}
-	virtual void PushRvalCall(const FileLocation& loc, const SemanticNode& n) {}
-	virtual void PushRvalConstruct(const FileLocation& loc, const SemanticNode& n) {}
+	virtual void PushRvalCall(const FileLocation& loc, const AstNode& n) {}
+	virtual void PushRvalConstruct(const FileLocation& loc, const AstNode& n) {}
 	virtual void PopExpr(const FileLocation& loc) {}
-	virtual void PushRval(const FileLocation& loc, const SemanticNode& n) {}
+	virtual void PushRval(const FileLocation& loc, const AstNode& n) {}
 	virtual void PushRvalConstant(const FileLocation& loc, const Token& t) {}
 	virtual void Expr1(const FileLocation& loc, OpType op) {}
 	virtual void Expr2(const FileLocation& loc, OpType op) {}
@@ -91,21 +61,21 @@ class SemanticParser :
 	
 	
 	struct Scope : Moveable<Scope> {
-		SemanticNode* n;
+		AstNode* n;
 		bool pop_this;
 		
-		void Set(SemanticNode* sn, bool b) {n = sn; pop_this = b;}
+		void Set(AstNode* sn, bool b) {n = sn; pop_this = b;}
 	};
 	Vector<Scope> spath;
 	
 	
-	void PushScope(SemanticNode& n);
+	void PushScope(AstNode& n);
 	void PopScope();
 	
-	String GetPath(const SemanticNode& n) const;
+	String GetPath(const AstNode& n) const;
 	
 public:
-	SemanticNode root;
+	AstNode root;
 	Array<const TokenNode*> path;
 	
 	void SetEmitter(ParserEmitter& e) {emitter = &e;}
@@ -117,9 +87,9 @@ public:
 	Iterator& TopIterator();
 	const Iterator& TopIterator() const;
 	void PopIterator();
-	SemanticNode* FindDeclaration();
-	SemanticNode* FindDeclaration(const PathIdentifier& id);
-	SemanticNode& DeclareRelative(const PathIdentifier& id);
+	AstNode* FindDeclaration();
+	AstNode* FindDeclaration(const PathIdentifier& id);
+	AstNode& DeclareRelative(const PathIdentifier& id);
 	bool PassToken(int tk_type);
 	bool PassId(const char* s);
 	bool IsToken(int tk_type) const;
@@ -140,8 +110,8 @@ public:
 	bool ParseNamespaceBlock();
 	bool ParseDeclaration();
 	bool ParseClass();
-	bool ParseTypedDeclaration(SemanticNode& ret_type);
-	bool ParseFunction(SemanticNode& ret_type, const PathIdentifier& name);
+	bool ParseTypedDeclaration(AstNode& ret_type);
+	bool ParseFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseStatementList();
 	bool ParseStatement();
 	bool ParseConditional();
