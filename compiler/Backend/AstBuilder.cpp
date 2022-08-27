@@ -9,12 +9,17 @@ AstBuilder::AstBuilder() :
 	
 }
 
-void AstBuilder::InitDefault() {
-	TODO
+void AstBuilder::Clear() {
+	spath.Clear();
+	root.Clear();
+	
+	InitDefault();
 }
 
 bool AstBuilder::Execute(String high_script_content) {
     ArrayMap<String, HiValue> global;
+    
+    Clear();
     
 	try {
 		HighCall(global, "AddFile(file)", THISBACK(HiAddFile));
@@ -27,7 +32,8 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "PopStatementList(loc)", THISBACK(HiPopStatementList));
 		HighCall(global, "PushStatement(loc, type)", THISBACK(HiPushStatement));
 		HighCall(global, "PopStatement(loc)", THISBACK(HiPopStatement));
-		HighCall(global, "BindStatementParameter(loc, param_type)", THISBACK(HiBindStatementParameter));
+		HighCall(global, "PushStatementParameter(loc, param_type)", THISBACK(HiPushStatementParameter));
+		HighCall(global, "PopStatementParameter(loc)", THISBACK(HiPopStatementParameter));
 		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
 		HighCall(global, "PopExprScopeToCtor(loc)", THISBACK(HiPopExprScopeToCtor));
 		HighCall(global, "PopExpr(loc)", THISBACK(HiPopExpr));
@@ -51,52 +57,97 @@ bool AstBuilder::Execute(String high_script_content) {
     return true;
 }
 
-bool AstBuilder::PushFunction(const FileLocation& loc, Class& ret_type, const PathIdentifier& name) {
+void AstBuilder::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_FUNCTION_STATIC;
+	var.type = &ret_type;
 	
-	
-	TODO
-	
+	PushScope(var);
 	
 }
 
 void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
-	TODO
+	
+	AstNode* tn = FindTypeDeclaration(type);
+	if (!tn) {
+		DUMP(type);
+		AddError(loc, "internal error");
+		return;
+	}
+	
+	DUMP(name);
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_PARAMETER;
+	var.type = tn;
+	var.locked = true;
 }
 
 void AstBuilder::PushFunctionDefinition(const FileLocation& loc) {
-	TODO
+	AstNode& n = GetTopNode();
+	
+	AstNode* def = n.Find(FN_BLOCK_NAME);
+	if (def) {
+		AddError(loc, "function is already defined");
+		return;
+	}
+	
+	def = &n.Add(FN_BLOCK_NAME);
+	def->src = SEMT_STATEMENT_BLOCK;
+	
+	PushScope(*def);
 }
 
 void AstBuilder::PopFunctionDefinition(const FileLocation& loc) {
-	TODO
+	PopScope();
 }
 
 void AstBuilder::PopFunction(const FileLocation& loc) {
-	TODO
+	PopScope();
 }
 
 void AstBuilder::PushStatementList(const FileLocation& loc) {
-	TODO
+	AstNode& n = GetTopNode();
+	AstNode& stmt = n.Add();
+	stmt.src = SEMT_STATEMENT_BLOCK;
+	
+	PushScope(stmt);
 }
 
 void AstBuilder::PopStatementList(const FileLocation& loc) {
-	TODO
+	PopScope();
 }
 
 void AstBuilder::PushStatement(const FileLocation& loc, StmtType type) {
-	TODO
+	AstNode& n = GetTopNode();
+	AstNode& stmt = n.Add();
+	stmt.src = SEMT_STATEMENT;
+	stmt.stmt = type;
+	
+	PushScope(stmt);
 }
 
 void AstBuilder::PopStatement(const FileLocation& loc) {
-	TODO
+	PopScope();
 }
 
-void AstBuilder::BindStatementParameter(const FileLocation& loc, StmtParamType t) {
-	TODO
+void AstBuilder::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
+	String ts = GetStmtParamTypeString(t);
+	
+	AstNode& n = GetTopNode();
+	AstNode& param = n.Add(ts);
+	PushScope(param);
 }
 
-void AstBuilder::DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
-	TODO
+void AstBuilder::PopStatementParameter(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_VARIABLE;
+	var.type = &type;
+	ASSERT(!var.name.IsEmpty());
+	
 }
 
 void AstBuilder::PopExprScopeToCtor(const FileLocation& loc) {
@@ -104,18 +155,18 @@ void AstBuilder::PopExprScopeToCtor(const FileLocation& loc) {
 }
 
 void AstBuilder::PopExpr(const FileLocation& loc) {
-	TODO
+	PopScope();
 }
 
-void AstBuilder::PushRval(const FileLocation& loc, const AstNode& n) {
-	TODO
+void AstBuilder::PushRval(const FileLocation& loc, AstNode& n) {
+	PushScopeRVal(n);
 }
 
-void AstBuilder::PushRvalCall(const FileLocation& loc, const AstNode& n) {
-	TODO
+void AstBuilder::PushRvalCall(const FileLocation& loc, AstNode& n) {
+	PushScopeRVal(n);
 }
 
-void AstBuilder::PushRvalConstruct(const FileLocation& loc, const AstNode& n) {
+void AstBuilder::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
 	TODO
 }
 
@@ -123,16 +174,86 @@ void AstBuilder::PushRvalConstant(const FileLocation& loc, const Token& t) {
 	TODO
 }
 
+void AstBuilder::PushRvalConstant(const FileLocation& loc, int32 v) {
+	AstNode& n = GetTopNode().Add();
+	n.src = SEMT_CONSTANT;
+	n.con = CONST_INT32;
+	n.i64 = v;
+	PushScope(n);
+}
+
+void AstBuilder::PushRvalConstant(const FileLocation& loc, int64 v) {
+	AstNode& n = GetTopNode().Add();
+	n.src = SEMT_CONSTANT;
+	n.con = CONST_INT64;
+	n.i64 = v;
+	PushScope(n);
+}
+
+void AstBuilder::PushRvalConstant(const FileLocation& loc, double v) {
+	AstNode& n = GetTopNode().Add();
+	n.src = SEMT_CONSTANT;
+	n.con = CONST_DOUBLE;
+	n.dbl = v;
+	PushScope(n);
+}
+
+void AstBuilder::PushRvalConstant(const FileLocation& loc, String v) {
+	AstNode& n = GetTopNode().Add();
+	n.src = SEMT_CONSTANT;
+	n.con = CONST_STRING;
+	n.str = v;
+	PushScope(n);
+}
+
 void AstBuilder::Expr1(const FileLocation& loc, OpType op) {
-	TODO
+	int c = spath.GetCount();
+	ASSERT(c >= 2);
+	AstNode* arg0 = spath[c-1].n;
+	
+	AstNode& owner = *spath[c-2].n;
+	AstNode& expr = owner.Add();
+	expr.src = SEMT_EXPR;
+	expr.op = op;
+	expr.link[0] = arg0;
+	
+	spath[c-1].n = &expr;
 }
 
 void AstBuilder::Expr2(const FileLocation& loc, OpType op) {
-	TODO
+	int c = spath.GetCount();
+	ASSERT(c >= 3);
+	AstNode* arg0 = spath[c-2].n;
+	AstNode* arg1 = spath[c-1].n;
+	
+	AstNode& owner = *spath[c-3].n;
+	AstNode& expr = owner.Add();
+	expr.src = SEMT_EXPR;
+	expr.op = op;
+	expr.link[0] = arg0;
+	expr.link[1] = arg1;
+	
+	spath.SetCount(c-1);
+	spath[c-2].n = &expr;
 }
 
 void AstBuilder::Expr3(const FileLocation& loc, OpType op) {
-	TODO
+	int c = spath.GetCount();
+	ASSERT(c >= 4);
+	AstNode* arg0 = spath[c-3].n;
+	AstNode* arg1 = spath[c-2].n;
+	AstNode* arg2 = spath[c-1].n;
+	
+	AstNode& owner = *spath[c-4].n;
+	AstNode& expr = owner.Add();
+	expr.src = SEMT_EXPR;
+	expr.op = op;
+	expr.link[0] = arg0;
+	expr.link[1] = arg1;
+	expr.link[2] = arg2;
+	
+	spath.SetCount(c-2);
+	spath[c-3].n = &expr;
 }
 
 
@@ -177,63 +298,115 @@ void AstBuilder::HiPushFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
-	PathIdentifier name, type;
+	PathIdentifier type, name;
 	LoadPath(loc, e[1], type, tokens[0]);
 	LoadPath(loc, e[2], name, tokens[1]);
 	
 	//DUMP(loc); DUMP(name); DUMP(type);
 	
-	TODO
-	/*Class* ret_cls = cunit.FindClass(type);
-	if (!ret_cls) {
-		e.Throw(loc, "internal error");
+	AstNode* tn = FindTypeDeclaration(type);
+	if (!tn) {
+		DUMP(type);
+		AddError(loc, "type '" + type.ToString() + "' not found");
 		return;
 	}
 	
-	if (!PushFunction(loc, *ret_cls, name)) {
-		e.Throw(loc, "internal error");
-		return;
-	}*/
+	PushFunction(loc, *tn, name);
 }
 
 void AstBuilder::HiParameter(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	LoadPath(loc, e[2], name, tokens[1]);
+	
+	Parameter(loc, type, name);
 }
 
 void AstBuilder::HiPushFunctionDefinition(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PushFunctionDefinition(loc);
 }
 
 void AstBuilder::HiPopFunctionDefinition(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopFunctionDefinition(loc);
 }
 
 void AstBuilder::HiPopFunction(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopFunction(loc);
 }
 
 void AstBuilder::HiPushStatementList(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PushStatementList(loc);
 }
 
 void AstBuilder::HiPopStatementList(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopStatementList(loc);
 }
 
 void AstBuilder::HiPushStatement(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	StmtType t = (StmtType)(int)e[1];
+	PushStatement(loc, t);
 }
 
 void AstBuilder::HiPopStatement(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopStatement(loc);
 }
 
-void AstBuilder::HiBindStatementParameter(HiEscape& e) {
-	TODO
+void AstBuilder::HiPushStatementParameter(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	StmtParamType t = (StmtParamType)(int)e[1];
+	
+	PushStatementParameter(loc, t);
+}
+
+void AstBuilder::HiPopStatementParameter(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopStatementParameter(loc);
 }
 
 void AstBuilder::HiDeclareVariable(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	LoadPath(loc, e[2], name, tokens[1]);
+	
+	//DUMP(type)
+	AstNode* tn = FindTypeDeclaration(type);
+	if (!tn) {
+		DUMP(type);
+		AddError(loc, "type '" + type.ToString() + "' not found");
+		return;
+	}
+	
+	DeclareVariable(loc, *tn, name);
 }
 
 void AstBuilder::HiPopExprScopeToCtor(HiEscape& e) {
@@ -241,15 +414,46 @@ void AstBuilder::HiPopExprScopeToCtor(HiEscape& e) {
 }
 
 void AstBuilder::HiPopExpr(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopExpr(loc);
 }
 
 void AstBuilder::HiPushRval(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	AstNode* nn = FindDeclaration(name, SEMT_FIELD);
+	if (!nn) {
+		DUMP(GetPathString());
+		DUMP(name);
+		LOG(GetRoot().GetTreeString());
+		AddError(loc, "'" + name.ToString() + "' not found");
+		TODO
+		return;
+	}
+	
+	PushRval(loc, *nn);
 }
 
 void AstBuilder::HiPushRvalCall(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	AstNode* fn = FindDeclaration(name, SEMT_FUNCTION);
+	if (!fn) {
+		AddError(loc, "function '" + name.ToString() + "' not found");
+		return;
+	}
+	
+	PushRvalCall(loc, *fn);
 }
 
 void AstBuilder::HiPushRvalConstruct(HiEscape& e) {
@@ -257,19 +461,43 @@ void AstBuilder::HiPushRvalConstruct(HiEscape& e) {
 }
 
 void AstBuilder::HiPushRvalConstant(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	HiValue& v = e[1];
+	if (v.IsInt())
+		PushRvalConstant(loc, v.GetInt());
+	else if (v.IsInt64())
+		PushRvalConstant(loc, v.GetInt64());
+	else if (v.IsNumber())
+		PushRvalConstant(loc, v.GetNumber());
+	else
+		PushRvalConstant(loc, (String)v);
+	
 }
 
 void AstBuilder::HiExpr1(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	OpType op = (OpType)(int)e[1];
+	
+	Expr1(loc, op);
 }
 
 void AstBuilder::HiExpr2(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	OpType op = (OpType)(int)e[1];
+	
+	Expr2(loc, op);
 }
 
 void AstBuilder::HiExpr3(HiEscape& e) {
-	TODO
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	OpType op = (OpType)(int)e[1];
+	
+	Expr3(loc, op);
 }
 
 

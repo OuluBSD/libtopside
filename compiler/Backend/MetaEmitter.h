@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class HighScriptEmitter : public ParserEmitter {
+class HighScriptEmitter : public SemanticParser {
 	String code, main;
 	int indent = 0;
 	bool dbg_indent = 0;
@@ -35,17 +35,18 @@ public:
 	void PopStatementList(const FileLocation& loc) override;
 	void PushStatement(const FileLocation& loc, StmtType type) override;
 	void PopStatement(const FileLocation& loc) override;
-	void BindStatementParameter(const FileLocation& loc, StmtParamType t) override;
-	void DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) override;
+	void PushStatementParameter(const FileLocation& loc, StmtParamType t) override;
+	void PopStatementParameter(const FileLocation& loc) override;
+	void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) override;
 	//void PushExprScope() override;
 	void PopExprScopeToCtor(const FileLocation& loc) override;
 	//void PushCall(const PathIdentifier& id) override;
 	//void PopCall() override;
 	//void PushExprScopeRval() override;
 	void PopExpr(const FileLocation& loc) override;
-	void PushRval(const FileLocation& loc, const AstNode& n) override;
-	void PushRvalCall(const FileLocation& loc, const AstNode& n) override;
-	void PushRvalConstruct(const FileLocation& loc, const AstNode& n) override;
+	void PushRval(const FileLocation& loc, AstNode& n) override;
+	void PushRvalCall(const FileLocation& loc, AstNode& n) override;
+	void PushRvalConstruct(const FileLocation& loc, AstNode& n) override;
 	void PushRvalConstant(const FileLocation& loc, const Token& t) override;
 	void Expr1(const FileLocation& loc, OpType op) override;
 	void Expr2(const FileLocation& loc, OpType op) override;

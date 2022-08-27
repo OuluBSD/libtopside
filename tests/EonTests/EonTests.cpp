@@ -29,21 +29,26 @@ bool Tester::ParseStructure() {
 }
 
 bool Tester::Parse() {
-	emitter.SetDebugIndent();
-	sp.SetEmitter(emitter);
 	sp.WhenMessage << THISBACK(OnProcMsg);
 	if (!sp.ProcessEon(ts)) {
 		return false;
 	}
 	LOG(sp.GetTreeString());
-	emitter.Finish();
+	sp.Finish();
 	return true;
 }
 
 bool Tester::RunMeta() {
-	ab.InitDefault();
 	ab.WhenMessage << THISBACK(OnProcMsg);
-	if (!ab.Execute(emitter.GetResult()))
+	if (!ab.Execute(sp.GetResult()))
+		return false;
+	
+	return true;
+}
+
+bool Tester::RunHigh() {
+	ex.WhenMessage << THISBACK(OnProcMsg);
+	if (!ex.Process(ab.GetRoot()))
 		return false;
 	
 	return true;
@@ -90,14 +95,17 @@ CONSOLE_APP_MAIN {
 		
 		// Semantically parse & produce meta script
 		TEST(t.Parse())
-		LOG(t.emitter.GetResult());
+		LOG(t.sp.GetResult());
 		
 		
 		// Run meta script (which makes program AST)
 		TEST(t.RunMeta())
+		LOG(t.ab.root.GetTreeString(0));
 		
 		
 		// Export High script
+		TEST(t.RunHigh())
+		LOG(t.ex.GetResult());
 		
 		
 		// Load machine & ecs with High? (Export & dummy loader)

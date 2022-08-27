@@ -81,7 +81,7 @@ void HighScriptEmitter::Parameter(const FileLocation& loc, const PathIdentifier&
 void HighScriptEmitter::PushFunctionDefinition(const FileLocation& loc) {
 	Log("FunctionDefinition:");
 	
-	main << DBG_INDENT "FunctionDefinition(" << LocArg(loc) << ");\n";
+	main << DBG_INDENT "PushFunctionDefinition(" << LocArg(loc) << ");\n";
 	
 	Enter();
 }
@@ -114,7 +114,8 @@ void HighScriptEmitter::PopStatementList(const FileLocation& loc) {
 void HighScriptEmitter::PushStatement(const FileLocation& loc, StmtType type) {
 	Log("PushStatement: " + GetStmtTypeString(type));
 	
-	main << DBG_INDENT "PushStatement(" << LocArg(loc) << ", \"" << GetStmtTypeString(type) << "\");\n";
+	//main << DBG_INDENT "PushStatement(" << LocArg(loc) << ", \"" << GetStmtTypeString(type) << "\");\n";
+	main << DBG_INDENT "PushStatement(" << LocArg(loc) << ", " << IntStr((int)type) << "); // " << GetStmtTypeString(type) << "\n";
 	
 	Enter();
 }
@@ -125,16 +126,22 @@ void HighScriptEmitter::PopStatement(const FileLocation& loc) {
 	main << DBG_INDENT "PopStatement(" << LocArg(loc) << ");\n";
 }
 
-void HighScriptEmitter::BindStatementParameter(const FileLocation& loc, StmtParamType t) {
-	Log("BindStatementParameter: " + GetStmtParamTypeString(t));
+void HighScriptEmitter::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
+	Log("PushStatementParameter: " + GetStmtParamTypeString(t));
 	
-	main << DBG_INDENT "BindStatementParameter(" << LocArg(loc) << ", \"" << GetStmtParamTypeString(t) << "\");\n";
+	main << DBG_INDENT "PushStatementParameter(" << LocArg(loc) << ", \"" << GetStmtParamTypeString(t) << "\");\n";
 }
 
-void HighScriptEmitter::DeclareVariable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
+void HighScriptEmitter::PopStatementParameter(const FileLocation& loc) {
+	Log("PopStatementParameter");
+	
+	main << DBG_INDENT "PopStatementParameter(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) {
 	Log("DeclareVariable: " + n.ToString() + ", " + id.ToString());
 	
-	main << DBG_INDENT "PushFunction(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
+	main << DBG_INDENT "DeclareVariable(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
 }
 
 /*void HighScriptEmitter::PushExprScope() {
@@ -161,32 +168,33 @@ void HighScriptEmitter::PopCall(){
 	
 }
 */
+
 void HighScriptEmitter::PopExpr(const FileLocation& loc) {
 	Leave();
 	
 	main << DBG_INDENT "PopExpr(" << LocArg(loc) << ");\n";
 }
 
-void HighScriptEmitter::PushRval(const FileLocation& loc, const AstNode& n) {
+void HighScriptEmitter::PushRval(const FileLocation& loc, AstNode& n) {
 	Log("PushRval: " + n.ToString());
 	
-	main << DBG_INDENT "PushRval(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";
+	main << DBG_INDENT "PushRval(" << LocArg(loc) << ", " << GetRelativePartStringArray(n) << ");\n";
 	
 	Enter();
 }
 
-void HighScriptEmitter::PushRvalCall(const FileLocation& loc, const AstNode& n) {
+void HighScriptEmitter::PushRvalCall(const FileLocation& loc, AstNode& n) {
 	Log("PushRvalCall: " + n.ToString());
 	
-	main << DBG_INDENT "PushRvalCall(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";
+	main << DBG_INDENT "PushRvalCall(" << LocArg(loc) << ", " << GetRelativePartStringArray(n) << ");\n";
 	
 	Enter();
 }
 
-void HighScriptEmitter::PushRvalConstruct(const FileLocation& loc, const AstNode& n) {
+void HighScriptEmitter::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
 	Log("PushRvalConstruct: " + n.ToString());
 	
-	main << DBG_INDENT "PushRvalConstruct(" << LocArg(loc) << ", " << n.GetPartStringArray() << ");\n";
+	main << DBG_INDENT "PushRvalConstruct(" << LocArg(loc) << ", " << GetRelativePartStringArray(n) << ");\n";
 	
 	Enter();
 }
@@ -203,7 +211,7 @@ void HighScriptEmitter::Expr1(const FileLocation& loc, OpType op) {
 	//Leave();
 	Log("Expr1: " + GetOpString(op));
 	
-	main << DBG_INDENT "Expr1(" << LocArg(loc) << ", \"" << GetOpString(op) << "\");\n";
+	main << DBG_INDENT "Expr1(" << LocArg(loc) << ", " << IntStr((int)op) << "); // " << GetOpString(op) << "\n";
 	
 	//Enter();
 }
@@ -213,7 +221,7 @@ void HighScriptEmitter::Expr2(const FileLocation& loc, OpType op) {
 	Leave();
 	Log("Expr2: " + GetOpString(op));
 	
-	main << DBG_INDENT "Expr2(" << LocArg(loc) << ", \"" << GetOpString(op) << "\");\n";
+	main << DBG_INDENT "Expr2(" << LocArg(loc) << ", " << IntStr((int)op) << "); // " << GetOpString(op) << "\n";
 	
 	//Enter();
 }
@@ -224,7 +232,7 @@ void HighScriptEmitter::Expr3(const FileLocation& loc, OpType op) {
 	Leave();
 	Log("Expr3: " + GetOpString(op));
 	
-	main << DBG_INDENT "Expr3(" << LocArg(loc) << ", \"" << GetOpString(op) << "\");\n";
+	main << DBG_INDENT "Expr3(" << LocArg(loc) << ", " << IntStr((int)op) << "); // " << GetOpString(op) << "\n";
 	
 	//Enter();
 }

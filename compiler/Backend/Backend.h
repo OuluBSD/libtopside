@@ -17,11 +17,13 @@
 //#include "Namespace.h"
 //#include "CompilationUnit.h"
 #include "Ast.h"
+#include "EonStd.h"
 #include "Exporter.h"
 #include "TokenStructure.h"
 #include "SemanticParser.h"
 #include "MetaEmitter.h"
 #include "AstBuilder.h"
+#include "AstExporter.h"
 
 
 #endif

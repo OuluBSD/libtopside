@@ -11,9 +11,9 @@ struct Tester {
 	String filepath, content;
 	Tokenizer t;
 	TokenStructure ts;
-	SemanticParser sp;
-	HighScriptEmitter emitter;
+	HighScriptEmitter sp;
 	AstBuilder ab;
+	AstExporter ex;
 	
 	
 	typedef Tester CLASSNAME;
@@ -21,6 +21,7 @@ struct Tester {
 	bool ParseStructure();
 	bool Parse();
 	bool RunMeta();
+	bool RunHigh();
 	
 	void OnProcMsg(ProcMsg msg);
 	

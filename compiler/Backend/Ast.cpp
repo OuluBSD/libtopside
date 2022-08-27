@@ -8,6 +8,7 @@ AstNode::AstNode() {
 }
 
 AstNode& AstNode::Add(String name) {
+	ASSERT(!locked);
 	AstNode& s = sub.Add();
 	s.SetOwner(this);
 	s.name = name;
@@ -15,6 +16,7 @@ AstNode& AstNode::Add(String name) {
 }
 
 AstNode& AstNode::GetAdd(String name) {
+	ASSERT(name.GetCount());
 	AstNode* p = Find(name);
 	if (p)
 		return *p;
@@ -23,16 +25,47 @@ AstNode& AstNode::GetAdd(String name) {
 }
 
 AstNode* AstNode::Find(String name) {
+	ASSERT(name.GetCount());
 	for (auto& s : sub)
 		if (s.name == name)
 			return &s;
 	return 0;
 }
 
+String AstNode::GetConstantString() const {
+	String s = GetConstString(con) + ": ";
+	switch (con) {
+		case CONST_NULL:	s += "null"; break;
+		case CONST_INT32:	s += IntStr(i64); break;
+		case CONST_INT64:	s += IntStr64(i64); break;
+		case CONST_DOUBLE:	s += DblStr(dbl); break;
+		case CONST_STRING:	s += "\"" + str + "\""; break;
+		default: break;
+	}
+	return s;
+}
+
 String AstNode::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
-	s << ToString() << "\n";
+	
+	s << GetSemanticTypeString(src) << ": ";
+	
+	if (name.GetCount())
+		s << name << "\n";
+	else if (stmt != STMT_NULL)
+		s << "stmt(" << GetStmtTypeString(stmt) << ")\n";
+	else if (op != OP_NULL)
+		s << "op(" << GetOpString(op) << ")\n";
+	else if (con != CONST_NULL)
+		s << "const(" << GetConstantString() << ")\n";
+	//else if (src != SEMT_NULL)
+	//	s << "src(" << GetSemanticTypeString(src) << ")\n";
+	else {
+		DUMP(GetPath());
+		s << "<todo>\n";
+	}
+	
 	for (const AstNode& n : sub) {
 		s << n.GetTreeString(indent+1);
 	}

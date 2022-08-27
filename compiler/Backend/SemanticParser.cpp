@@ -1,6 +1,7 @@
 #include "Backend.h"
 
-#define EMIT if (emitter) emitter->
+//#define EMIT if (emitter) emitter->
+#define EMIT
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -11,26 +12,6 @@ SemanticParser::SemanticParser() :
 	
 }
 
-void SemanticParser::AddBuiltinType(String name) {
-	AstNode& sn = root.Add(name);
-	sn.src = SEMT_BUILTIN;
-}
-
-void SemanticParser::InitDefault() {
-	AddBuiltinType("void");
-	AddBuiltinType("int");
-	AddBuiltinType("long");
-	AddBuiltinType("uint");
-	AddBuiltinType("ulong");
-	AddBuiltinType("float");
-	AddBuiltinType("double");
-	AddBuiltinType("byte");
-	AddBuiltinType("char");
-	AddBuiltinType("short");
-	AddBuiltinType("ushort");
-	AddBuiltinType("cstring");
-}
-
 bool SemanticParser::ProcessEon(const TokenStructure& t) {
 	root.Clear();
 	path.Clear();
@@ -38,7 +19,6 @@ bool SemanticParser::ProcessEon(const TokenStructure& t) {
 	InitDefault();
 	
 	path.Add(&t.root);
-	spath.Add().Set(&root,true);
 	
 	bool succ = ParseNamespaceBlock();
 	
@@ -114,7 +94,7 @@ bool SemanticParser::ParseDeclaration() {
 			}
 			else {
 				// Find previously declared type
-				AstNode* decl = FindDeclaration();
+				AstNode* decl = ParseAndFindDeclaration();
 				
 				if (!decl) {
 					AddError(cur.begin->loc, "could not resolve");
@@ -122,7 +102,7 @@ bool SemanticParser::ParseDeclaration() {
 					return false;
 				}
 				
-				if (IsTrivialObjectType(decl->src)) {
+				if (IsTypedNode(decl->src)) {
 					bool succ = ParseTypedDeclaration(*decl);
 					PopIterator();
 					return succ;
@@ -223,7 +203,7 @@ bool SemanticParser::ParseStatementList() {
 	
 	const TokenNode& owner = *path.Top();
 	
-	EMIT PushStatementList(owner.end->loc);
+	//EMIT PushStatementList(owner.end->loc);
 	
 	const TokenNode*& sub = path.Add();
 	for (const TokenNode& s : owner.sub) {
@@ -241,7 +221,7 @@ bool SemanticParser::ParseStatementList() {
 	}
 	path.Remove(path.GetCount()-1);
 	
-	EMIT PopStatementList(owner.end->loc);
+	//EMIT PopStatementList(owner.end->loc);
 	
 	return succ;
 }
@@ -289,27 +269,35 @@ bool SemanticParser::ParseStatement() {
 		EMIT PushStatement(iter->loc, STMT_FOR);
 		
 		if (!IsToken(',')) {
-			EMIT BindStatementParameter(iter->loc, STMTP_FOR_DECL);
+			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_DECL);
 			if (!ParseDeclExpr()) return false;
 		}
 		if (Id("in") || Char(':')) {
-			EMIT BindStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
+			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
+			EMIT PushStatement(iter->loc, STMT_FOR_RANGE);
 			if (!ParseExpression()) return false;
+			EMIT PopStatement(iter->loc);
 		}
 		else {
 			if (!PassToken(',')) return false;
 			if (!IsToken(',')) {
-				EMIT BindStatementParameter(iter->loc, STMTP_WHILE_COND);
+				//EMIT PushStatementParameter(iter->loc, STMTP_WHILE_COND);
+				EMIT PushStatement(iter->loc, STMT_FOR_COND);
 				if (!ParseExpression()) return false;
+				EMIT PopStatement(iter->loc);
 			}
 			if (!PassToken(',')) return false;
 			if (iter) {
-				EMIT BindStatementParameter(iter->loc, STMTP_FOR_POST);
+				//EMIT PushStatementParameter(iter->loc, STMTP_FOR_POST);
+				EMIT PushStatement(iter->loc, STMT_FOR_POST);
 				if (!ParseExpression()) return false;
+				EMIT PopStatement(iter->loc);
 			}
 		}
 		
+		EMIT PushStatementList(iter->loc);
 		if (!ParseStatementBlock()) return false;
+		EMIT PopStatementList(iter->loc);
 		
 		EMIT PopStatement(iter->loc);
 	}
@@ -394,7 +382,7 @@ bool SemanticParser::ParseParameter() {
 	}
 	
 	AstNode* tn = FindDeclaration(type);
-	if (!tn || !IsTrivialObjectType(tn->src)) {
+	if (!tn || !IsTypedNode(tn->src)) {
 		AddError(iter->loc, "could not find type '" + type.ToString() + "'");
 		return false;
 	}
@@ -406,7 +394,7 @@ bool SemanticParser::ParseParameter() {
 	}
 	
 	AstNode& pn = DeclareRelative(name);
-	if (pn.src != SEMT_NULL) {
+	if (!pn.IsPartially(SEMT_UNDEFINED)) {
 		AddError(iter->loc, "variable '" + name.ToString() + "' already declared");
 		return false;
 	}
@@ -489,7 +477,7 @@ bool SemanticParser::ParseDeclExpr() {
 			return false;
 		
 		AstNode& var = DeclareRelative(name);
-		ASSERT(var.src == SEMT_NULL);
+		ASSERT(var.IsPartially(SEMT_UNDEFINED));
 		var.src = SEMT_VARIABLE;
 		var.type = tn;
 		
@@ -695,7 +683,7 @@ bool SemanticParser::Term() {
 			if (nn->src == SEMT_FUNCTION_METHOD || nn->src == SEMT_FUNCTION_STATIC) {
 				EMIT PushRvalCall(id.begin->loc, *nn);
 			}
-			else if (IsTrivialObjectType(nn->src)) {
+			else if (IsTypedNode(nn->src)) {
 				EMIT PushRvalConstruct(id.begin->loc, *nn);
 			}
 			else {
@@ -1071,38 +1059,12 @@ bool SemanticParser::PassId(const char* s) {
 	return true;
 }
 
-AstNode* SemanticParser::FindDeclaration() {
+AstNode* SemanticParser::ParseAndFindDeclaration() {
 	PathIdentifier id;
 	if (!ParsePathIdentifier(id))
 		return 0;
 	
 	return FindDeclaration(id);
-}
-
-AstNode* SemanticParser::FindDeclaration(const PathIdentifier& id) {
-	if (id.part_count == 0)
-		return 0;
-	
-	for (int i = spath.GetCount()-1; i >= 0; i--) {
-		Scope& s = spath[i];
-			
-		AstNode* cur = s.n;
-		for(int i = 0; i < id.part_count; i++) {
-			const Token* t = id.parts[i];
-			if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
-				cur = cur->Find(t->str_value);
-			}
-			else {
-				TODO
-			}
-			if (!cur)
-				break;
-		}
-		
-		if (cur)
-			return cur;
-	}
-	return 0;
 }
 
 String SemanticParser::GetTreeString(int indent) const {
@@ -1115,26 +1077,6 @@ String SemanticParser::GetCodeString(const CodeArgs& args) const {
 
 String SemanticParser::ToString() const {
 	return root.ToString();
-}
-
-AstNode& SemanticParser::DeclareRelative(const PathIdentifier& id) {
-	ASSERT(id.part_count > 0);
-	AstNode* cur = spath.Top().n;
-	for(int i = 0; i < id.part_count; i++) {
-		const Token* t = id.parts[i];
-		if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
-			String id = t->str_value;
-			ASSERT(id.GetCount());
-			cur = &cur->GetAdd(id);
-		}
-		else {
-			TODO
-		}
-	}
-	
-	//LOG("Declared " << GetPath(*cur));
-	
-	return *cur;
 }
 
 String SemanticParser::GetPath(const AstNode& n) const {
@@ -1154,38 +1096,6 @@ String SemanticParser::GetPath(const AstNode& n) const {
 		s.Cat(tmp[i]->GetName());
 	}
 	return s;
-}
-
-void SemanticParser::PushScope(AstNode& n) {
-	ASSERT(!spath.IsEmpty());
-	thread_local static Vector<AstNode*> tmp;
-	AstNode* cur = spath.Top().n;
-	
-	tmp.SetCount(0);
-	AstNode* iter = &n;
-	while (iter && iter != cur) {
-		tmp.Add(iter);
-		iter = iter->GetSubOwner();
-	}
-	
-	for (int i = tmp.GetCount()-1, j = 0; i >= 0; i--, j++) {
-		Scope& s = spath.Add();
-		s.n = tmp[i];
-		s.pop_this = j == 0;
-	}
-}
-
-void SemanticParser::PopScope() {
-	int rm_i = 0;
-	for (int i = spath.GetCount()-1; i >= 0; i--) {
-		Scope& s = spath[i];
-		if (s.pop_this) {
-			rm_i = i;
-			break;
-		}
-	}
-	int c = spath.GetCount() - rm_i;
-	spath.Remove(rm_i, c);
 }
 
 
