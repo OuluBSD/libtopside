@@ -21,7 +21,7 @@ struct Tester {
 	bool ParseStructure();
 	bool Parse();
 	bool RunMeta();
-	bool RunHigh();
+	bool ExportHigh();
 	
 	void OnProcMsg(ProcMsg msg);
 	

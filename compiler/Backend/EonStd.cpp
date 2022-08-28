@@ -29,7 +29,18 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 	int node_count = 0;
 	const AstNode* iter = &n;
 	while (iter && iter != top && iter != root) {
-		nodes[node_count++] = iter;
+		bool found = false;
+		for (const Scope& s : spath) {
+			if (s.n == iter) {
+				found = true;
+				break;
+			}
+		}
+		if (found)
+			break;
+		
+		if (iter->IsPartially(SEMT_PATH))
+			nodes[node_count++] = iter;
 		iter = iter->GetSubOwner();
 	}
 	
@@ -37,7 +48,9 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 	for(int i = 0; i < node_count; i++) {
 		if (i) s.Cat(',');
 		s.Cat('\"');
-		s.Cat(nodes[node_count-1-i]->name);
+		const String& n = nodes[node_count-1-i]->name;
+		ASSERT(n.GetCount());
+		s.Cat(n);
 		s.Cat('\"');
 	}
 	s.Cat(']');
@@ -59,6 +72,11 @@ void EonStd::InitDefault() {
 	AddBuiltinType("ushort");
 	AddBuiltinType("cstring");
 	
+	{
+		AstNode& logger = GetRoot().Add("LOG");
+		logger.src = SEMT_FUNCTION_BUILTIN;
+	}
+	
 	GetRoot().src = SEMT_ROOT;
 	
 	spath.Add().Set(&GetRoot(),true);
@@ -68,19 +86,18 @@ bool EonStd::ForwardUserspace(AstNode*& n) {
 	if (!n) return false;
 	
 	if (n->IsPartially(SEMT_FUNCTION)) {
-		n = n->Find(FN_BLOCK_NAME);
+		n = n->Find(SEMT_STATEMENT_BLOCK);
 		return n != NULL;
 	}
 	if (n->IsPartially(SEMT_STATEMENT)) {
 		switch (n->stmt) {
 			case STMT_FOR:
-				n = n->Find(FN_BLOCK_NAME);
+				n = n->Find(SEMT_STATEMENT_BLOCK);
 				break;
 			
 			case STMT_FOR_COND:
 			case STMT_FOR_POST:
 			case STMT_FOR_RANGE:
-			case STMT_LOG:
 			case STMT_BLOCK:
 				return false;
 				
@@ -171,9 +188,8 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 	return 0;
 }
 
-AstNode& EonStd::DeclareRelative(const PathIdentifier& id) {
-	ASSERT(id.part_count > 0);
-	AstNode* cur = spath.Top().n;
+AstNode& EonStd::Declare(AstNode& owner, const PathIdentifier& id) {
+	AstNode* cur = &owner;
 	for(int i = 0; i < id.part_count; i++) {
 		const Token* t = id.parts[i];
 		if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
@@ -191,6 +207,20 @@ AstNode& EonStd::DeclareRelative(const PathIdentifier& id) {
 	//LOG("Declared " << GetPath(*cur));
 	
 	return *cur;
+}
+
+AstNode& EonStd::DeclareRelative(const PathIdentifier& id) {
+	ASSERT(id.part_count > 0);
+	return Declare(*spath.Top().n, id);
+}
+
+AstNode& EonStd::GetBlock() {
+	for(int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& scope = spath[i];
+		if (scope.n->IsPartially(SEMT_BLOCK))
+			return *scope.n;
+	}
+	return GetRoot();
 }
 
 void EonStd::PushScope(AstNode& n) {
@@ -233,6 +263,7 @@ void EonStd::PopScope() {
 	}
 	int c = spath.GetCount() - rm_i;
 	spath.Remove(rm_i, c);
+	ASSERT(spath.GetCount() > 0);
 }
 
 

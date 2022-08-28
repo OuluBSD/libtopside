@@ -3,8 +3,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-#define FN_BLOCK_NAME "def"
-
 
 
 typedef enum {
@@ -27,14 +25,22 @@ typedef enum {
 	SEMT_CONSTANT				= 1 << 16,
 	SEMT_IDPART					= 1 << 17,
 	SEMT_ROOT					= 1 << 18,
+	SEMT_RESOLVE				= 1 << 19,
+	SEMT_ARGUMENT				= 1 << 20,
+	SEMT_ARGUMENT_LIST			= 1 << 21,
+	SEMT_FUNCTION_BUILTIN		= 1 << 22,
 	
 	// Current limit: 1 << 31
 	
-	SEMT_FIELD =	SEMT_VARIABLE | SEMT_PARAMETER | SEMT_CONSTANT,
-	SEMT_TYPE =		SEMT_BUILTIN | SEMT_TYPEDEF | SEMT_CLASS_DECL | SEMT_CLASS |
-					SEMT_CLASS_TEMPLATE | SEMT_METAFN_CLASS_DECL | SEMT_METAFN_CLASS,
-	SEMT_FUNCTION =	SEMT_FUNCTION_STATIC | SEMT_FUNCTION_METHOD,
-	SEMT_UNDEFINED = SEMT_NULL | SEMT_IDPART,
+	SEMT_FIELD =			SEMT_VARIABLE | SEMT_PARAMETER | SEMT_CONSTANT,
+	SEMT_TYPE =				SEMT_BUILTIN | SEMT_TYPEDEF | SEMT_CLASS_DECL | SEMT_CLASS |
+							SEMT_CLASS_TEMPLATE | SEMT_METAFN_CLASS_DECL | SEMT_METAFN_CLASS,
+	SEMT_FUNCTION =			SEMT_FUNCTION_STATIC | SEMT_FUNCTION_METHOD | SEMT_FUNCTION_BUILTIN,
+	SEMT_UNDEFINED =		SEMT_NULL | SEMT_IDPART,
+	SEMT_PARAMETER_PATH =	SEMT_PARAMETER | SEMT_IDPART,
+	SEMT_VARIABLE_PATH =	SEMT_VARIABLE | SEMT_IDPART,
+	SEMT_PATH =				SEMT_PARAMETER_PATH | SEMT_VARIABLE_PATH | SEMT_NAMESPACE | SEMT_FUNCTION | SEMT_CLASS,
+	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
 	
 } SemanticType;
 
@@ -61,6 +67,10 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_CONSTANT:				return "constant";
 		case SEMT_IDPART:				return "id-part";
 		case SEMT_ROOT:					return "root";
+		case SEMT_RESOLVE:				return "resolve";
+		case SEMT_ARGUMENT:				return "argument";
+		case SEMT_ARGUMENT_LIST:		return "argument-list";
+		case SEMT_FUNCTION_BUILTIN:		return "builtin-function";
 		case SEMT_FIELD:				return "field";
 		case SEMT_TYPE:					return "type";
 		case SEMT_FUNCTION:				return "function";
@@ -80,6 +90,7 @@ typedef enum {
 	STMT_DOWHILE,
 	STMT_WHILE,
 	STMT_FOR,
+	STMT_CTOR,
 	STMT_FOR_COND,
 	STMT_FOR_POST,
 	STMT_FOR_RANGE,
@@ -89,8 +100,8 @@ typedef enum {
 	STMT_DEFAULT,
 	STMT_RETURN,
 	STMT_SWITCH,
-	STMT_LOG,
 	STMT_BLOCK,
+	STMT_EXPR,
 } StmtType;
 
 inline String GetStmtTypeString(StmtType t) {
@@ -101,6 +112,7 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_DOWHILE: return "do-while";
 		case STMT_WHILE: return "while";
 		case STMT_FOR: return "for";
+		case STMT_CTOR: return "constructor";
 		case STMT_FOR_COND: return "for-conditional";
 		case STMT_FOR_POST: return "for-post";
 		case STMT_FOR_RANGE: return "for-range";
@@ -110,8 +122,8 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_DEFAULT: return "default";
 		case STMT_RETURN: return "return";
 		case STMT_SWITCH: return "switch";
-		case STMT_LOG: return "log";
 		case STMT_BLOCK: return "block";
+		case STMT_EXPR: return "expr";
 	}
 	return String();
 }
@@ -169,6 +181,7 @@ typedef enum {
 	OP_MULASS,
 	OP_DIVASS,
 	OP_MODASS,
+	OP_CALL,
 	
 } OpType;
 
@@ -190,7 +203,7 @@ inline String GetOpString(OpType t) {
 		case OP_MOD: return "modulus";
 		case OP_LSH: return "left-shift";
 		case OP_RSH: return "right-shift";
-		case OP_GREQ: return "greqter-or-equal";
+		case OP_GREQ: return "greater-or-equal";
 		case OP_LSEQ: return "less-or-equal";
 		case OP_GREATER: return "greater";
 		case OP_LESS: return "less";
@@ -208,6 +221,46 @@ inline String GetOpString(OpType t) {
 		case OP_MULASS: return "multiply-and-assign";
 		case OP_DIVASS: return "divide-and-assign";
 		case OP_MODASS: return "modulus-and-assign";
+		case OP_CALL: return "call";
+		default: return "<invalid>";
+	}
+}
+
+inline String GetOpCodeString(OpType t) {
+	switch (t) {
+		case OP_INC: return "++";
+		case OP_DEC: return "--";
+		case OP_POSTINC: return "++";
+		case OP_POSTDEC: return "--";
+		case OP_NEGATIVE: return "-";
+		case OP_POSITIVE: return "+";
+		case OP_NOT: return "!";
+		case OP_NEGATE: return "~";
+		case OP_ADD: return "+";
+		case OP_SUB: return "-";
+		case OP_MUL: return "*";
+		case OP_DIV: return "/";
+		case OP_MOD: return "\%";
+		case OP_LSH: return "<<";
+		case OP_RSH: return ">>";
+		case OP_GREQ: return ">=";
+		case OP_LSEQ: return "<=";
+		case OP_GREATER: return ">";
+		case OP_LESS: return "<";
+		case OP_EQ: return "==";
+		case OP_INEQ: return "!=";
+		case OP_BWAND: return "&";
+		case OP_BWXOR: return "^";
+		case OP_BWOR: return "|";
+		case OP_AND: return "&&";
+		case OP_OR: return "||";
+		case OP_COND: return "?:";
+		case OP_ASSIGN: return "=";
+		case OP_ADDASS: return "+=";
+		case OP_SUBASS: return "-=";
+		case OP_MULASS: return "*=";
+		case OP_DIVASS: return "/=";
+		case OP_MODASS: return "\%=";
 		default: return "<invalid>";
 	}
 }

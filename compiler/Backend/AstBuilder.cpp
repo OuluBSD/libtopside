@@ -25,7 +25,6 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "AddFile(file)", THISBACK(HiAddFile));
 		HighCall(global, "PushFunction(loc, ret_type, name)", THISBACK(HiPushFunction));
 		HighCall(global, "Parameter(loc, type, name)", THISBACK(HiParameter));
-		HighCall(global, "PushFunctionDefinition(loc)", THISBACK(HiPushFunctionDefinition));
 		HighCall(global, "PopFunctionDefinition(loc)", THISBACK(HiPopFunctionDefinition));
 		HighCall(global, "PopFunction(loc)", THISBACK(HiPopFunction));
 		HighCall(global, "PushStatementList(loc)", THISBACK(HiPushStatementList));
@@ -35,10 +34,13 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "PushStatementParameter(loc, param_type)", THISBACK(HiPushStatementParameter));
 		HighCall(global, "PopStatementParameter(loc)", THISBACK(HiPopStatementParameter));
 		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
-		HighCall(global, "PopExprScopeToCtor(loc)", THISBACK(HiPopExprScopeToCtor));
+		HighCall(global, "Variable(loc, n, id)", THISBACK(HiVariable));
+		HighCall(global, "PushRvalResolve(loc, id, t)", THISBACK(HiPushRvalResolve));
+		HighCall(global, "PushRvalArgumentList(loc)", THISBACK(HiPushRvalArgumentList));
+		HighCall(global, "Argument(loc)", THISBACK(HiArgument));
 		HighCall(global, "PopExpr(loc)", THISBACK(HiPopExpr));
 		HighCall(global, "PushRval(loc, n)", THISBACK(HiPushRval));
-		HighCall(global, "PushRvalCall(loc, n)", THISBACK(HiPushRvalCall));
+		//HighCall(global, "PushRvalCall(loc, n)", THISBACK(HiPushRvalCall));
 		HighCall(global, "PushRvalConstruct(loc, n)", THISBACK(HiPushRvalConstruct));
 		HighCall(global, "PushRvalConstant(loc, t)", THISBACK(HiPushRvalConstant));
 		HighCall(global, "Expr1(loc, op)", THISBACK(HiExpr1));
@@ -82,7 +84,7 @@ void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, 
 	var.locked = true;
 }
 
-void AstBuilder::PushFunctionDefinition(const FileLocation& loc) {
+/*void AstBuilder::PushFunctionDefinition(const FileLocation& loc) {
 	AstNode& n = GetTopNode();
 	
 	AstNode* def = n.Find(FN_BLOCK_NAME);
@@ -95,7 +97,7 @@ void AstBuilder::PushFunctionDefinition(const FileLocation& loc) {
 	def->src = SEMT_STATEMENT_BLOCK;
 	
 	PushScope(*def);
-}
+}*/
 
 void AstBuilder::PopFunctionDefinition(const FileLocation& loc) {
 	PopScope();
@@ -143,16 +145,61 @@ void AstBuilder::PopStatementParameter(const FileLocation& loc) {
 }
 
 void AstBuilder::DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
-	AstNode& var = DeclareRelative(name);
+	AstNode& block = GetBlock();
+	AstNode& var = Declare(block, name);
 	var.src = SEMT_VARIABLE;
 	var.type = &type;
+	//DUMP(var.GetPath());
 	ASSERT(!var.name.IsEmpty());
 	
 }
 
-void AstBuilder::PopExprScopeToCtor(const FileLocation& loc) {
+void AstBuilder::Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
 	TODO
 }
+
+void AstBuilder::PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+	AstNode& n = GetTopNode();
+	AstNode& r = n.Add();
+	r.src = SEMT_RESOLVE;
+	r.filter = t;
+	/*ASSERT(id.part_count);
+	for(int i = 0; i < id.part_count; i++)
+		r.path.Add(id.parts[i]->str_value);*/
+	DUMP(id);
+	AstNode* d = FindDeclaration(id, t);
+	if (!d) {
+		AddError(loc, "could not find declaration '" + id.ToString() + "'");
+		return;
+	}
+	r.link[0] = d;
+	
+	PushScopeRVal(*d);
+}
+
+void AstBuilder::PushRvalArgumentList(const FileLocation& loc) {
+	AstNode& n = GetTopNode();
+	AstNode& r = n.Add();
+	r.src = SEMT_ARGUMENT_LIST;
+	
+	PushScopeRVal(r);
+}
+
+void AstBuilder::Argument(const FileLocation& loc) {
+	int c = spath.GetCount();
+	ASSERT(c > 2);
+	AstNode& owner = *spath[c-2].n;
+	AstNode& a = *spath[c-1].n;
+	ASSERT(owner.src == SEMT_ARGUMENT_LIST);
+	AstNode& arg = owner.Add();
+	arg.src = SEMT_ARGUMENT;
+	arg.link[0] = &a;
+	PopScope();
+}
+
+/*void AstBuilder::PopExprScopeToCtor(const FileLocation& loc) {
+	PopScope();
+}*/
 
 void AstBuilder::PopExpr(const FileLocation& loc) {
 	PopScope();
@@ -162,9 +209,9 @@ void AstBuilder::PushRval(const FileLocation& loc, AstNode& n) {
 	PushScopeRVal(n);
 }
 
-void AstBuilder::PushRvalCall(const FileLocation& loc, AstNode& n) {
+/*void AstBuilder::PushRvalCall(const FileLocation& loc, AstNode& n) {
 	PushScopeRVal(n);
-}
+}*/
 
 void AstBuilder::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
 	TODO
@@ -270,6 +317,7 @@ void AstBuilder::LoadLocation(const HiValue& v, FileLocation& loc) {
 void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens) {
 	id.part_count = v.GetCount();
 	int c = id.part_count * 2 - 1;
+	ASSERT(c > 0);
 	tokens.SetCount(c);
 	for(int i = 0, j = 0; i < c; i++) {
 		Token& t = tokens[i];
@@ -325,12 +373,12 @@ void AstBuilder::HiParameter(HiEscape& e) {
 	Parameter(loc, type, name);
 }
 
-void AstBuilder::HiPushFunctionDefinition(HiEscape& e) {
+/*void AstBuilder::HiPushFunctionDefinition(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PushFunctionDefinition(loc);
-}
+}*/
 
 void AstBuilder::HiPopFunctionDefinition(HiEscape& e) {
 	FileLocation loc;
@@ -409,9 +457,42 @@ void AstBuilder::HiDeclareVariable(HiEscape& e) {
 	DeclareVariable(loc, *tn, name);
 }
 
-void AstBuilder::HiPopExprScopeToCtor(HiEscape& e) {
+void AstBuilder::HiVariable(HiEscape& e) {
 	TODO
 }
+
+void AstBuilder::HiPushRvalResolve(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	SemanticType t = (SemanticType)(int)e[2];
+	
+	PushRvalResolve(loc, name, t);
+}
+
+void AstBuilder::HiPushRvalArgumentList(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PushRvalArgumentList(loc);
+}
+
+void AstBuilder::HiArgument(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	Argument(loc);
+}
+
+/*void AstBuilder::HiPopExprScopeToCtor(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopExprScopeToCtor(loc);
+}*/
 
 void AstBuilder::HiPopExpr(HiEscape& e) {
 	FileLocation loc;
@@ -440,7 +521,7 @@ void AstBuilder::HiPushRval(HiEscape& e) {
 	PushRval(loc, *nn);
 }
 
-void AstBuilder::HiPushRvalCall(HiEscape& e) {
+/*void AstBuilder::HiPushRvalCall(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -454,7 +535,7 @@ void AstBuilder::HiPushRvalCall(HiEscape& e) {
 	}
 	
 	PushRvalCall(loc, *fn);
-}
+}*/
 
 void AstBuilder::HiPushRvalConstruct(HiEscape& e) {
 	TODO

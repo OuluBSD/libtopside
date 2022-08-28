@@ -30,7 +30,7 @@ public:
 	
 	void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) override;
 	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) override;
-	void PushFunctionDefinition(const FileLocation& loc) override;
+	//void PushFunctionDefinition(const FileLocation& loc) override;
 	void PopFunctionDefinition(const FileLocation& loc) override;
 	void PopFunction(const FileLocation& loc) override;
 	void PushStatementList(const FileLocation& loc) override;
@@ -40,10 +40,14 @@ public:
 	void PushStatementParameter(const FileLocation& loc, StmtParamType t) override;
 	void PopStatementParameter(const FileLocation& loc) override;
 	void DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) override;
-	void PopExprScopeToCtor(const FileLocation& loc) override;
+	void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) override;
+	void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) override;
+	void PushRvalArgumentList(const FileLocation& loc) override;
+	void Argument(const FileLocation& loc) override;
+	//void PopExprScopeToCtor(const FileLocation& loc) override;
 	void PopExpr(const FileLocation& loc) override;
 	void PushRval(const FileLocation& loc, AstNode& n) override;
-	void PushRvalCall(const FileLocation& loc, AstNode& n) override;
+	//void PushRvalCall(const FileLocation& loc, AstNode& n) override;
 	void PushRvalConstruct(const FileLocation& loc, AstNode& n) override;
 	void PushRvalConstant(const FileLocation& loc, const Token& t) override;
 	void Expr1(const FileLocation& loc, OpType op) override;
@@ -58,7 +62,7 @@ public:
 	void HiAddFile(HiEscape& e);
 	void HiPushFunction(HiEscape& e);
 	void HiParameter(HiEscape& e);
-	void HiPushFunctionDefinition(HiEscape& e);
+	//void HiPushFunctionDefinition(HiEscape& e);
 	void HiPopFunctionDefinition(HiEscape& e);
 	void HiPopFunction(HiEscape& e);
 	void HiPushStatementList(HiEscape& e);
@@ -68,10 +72,14 @@ public:
 	void HiPushStatementParameter(HiEscape& e);
 	void HiPopStatementParameter(HiEscape& e);
 	void HiDeclareVariable(HiEscape& e);
-	void HiPopExprScopeToCtor(HiEscape& e);
+	void HiVariable(HiEscape& e);
+	void HiPushRvalResolve(HiEscape& e);
+	void HiPushRvalArgumentList(HiEscape& e);
+	void HiArgument(HiEscape& e);
+	//void HiPopExprScopeToCtor(HiEscape& e);
 	void HiPopExpr(HiEscape& e);
 	void HiPushRval(HiEscape& e);
-	void HiPushRvalCall(HiEscape& e);
+	//void HiPushRvalCall(HiEscape& e);
 	void HiPushRvalConstruct(HiEscape& e);
 	void HiPushRvalConstant(HiEscape& e);
 	void HiExpr1(HiEscape& e);

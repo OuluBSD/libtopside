@@ -46,7 +46,7 @@ bool Tester::RunMeta() {
 	return true;
 }
 
-bool Tester::RunHigh() {
+bool Tester::ExportHigh() {
 	ex.WhenMessage << THISBACK(OnProcMsg);
 	if (!ex.Process(ab.GetRoot()))
 		return false;
@@ -104,13 +104,14 @@ CONSOLE_APP_MAIN {
 		
 		
 		// Export High script
-		TEST(t.RunHigh())
+		TEST(t.ExportHigh())
 		LOG(t.ex.GetResult());
 		
 		
 		// Load machine & ecs with High? (Export & dummy loader)
 		// - pros: 1 to 1 c++ loader
 		//		- export also c++ main function
+		
 		
 	}
 	

@@ -183,12 +183,12 @@ bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name
 	
 	
 	if (!iter && cur.sub.GetCount()) {
-		EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
+		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
 		
 		if (!ParseStatementList())
 			return false;
 		
-		EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
+		//EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
 	}
 	
 	EMIT PopFunction(cur.end->loc);
@@ -201,12 +201,17 @@ bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name
 bool SemanticParser::ParseStatementList() {
 	bool succ = true;
 	
-	const TokenNode& owner = *path.Top();
+	const TokenNode& tk_owner = *path.Top();
+	AstNode& ast_owner = *spath.Top().n;
 	
-	//EMIT PushStatementList(owner.end->loc);
+	AstNode& block = ast_owner.Add();
+	block.src = SEMT_STATEMENT_BLOCK;
+	PushScope(block);
+	
+	EMIT PushStatementList(tk_owner.end->loc);
 	
 	const TokenNode*& sub = path.Add();
-	for (const TokenNode& s : owner.sub) {
+	for (const TokenNode& s : tk_owner.sub) {
 		sub = &s;
 		//DUMP(s)
 		AddIterator(s);
@@ -221,7 +226,8 @@ bool SemanticParser::ParseStatementList() {
 	}
 	path.Remove(path.GetCount()-1);
 	
-	//EMIT PopStatementList(owner.end->loc);
+	PopScope();
+	EMIT PopStatementList(tk_owner.end->loc);
 	
 	return succ;
 }
@@ -295,9 +301,9 @@ bool SemanticParser::ParseStatement() {
 			}
 		}
 		
-		EMIT PushStatementList(iter->loc);
+		//EMIT PushStatementList(iter->loc);
 		if (!ParseStatementBlock()) return false;
-		EMIT PopStatementList(iter->loc);
+		//EMIT PopStatementList(iter->loc);
 		
 		EMIT PopStatement(iter->loc);
 	}
@@ -340,14 +346,30 @@ bool SemanticParser::ParseStatement() {
 		EMIT PopStatement(iter->loc);
 	}
 	else if (Id("log")) {
-		EMIT PushStatement(iter->loc, STMT_LOG);
+		Token tk;
+		tk.type = TK_ID;
+		tk.str_value = "LOG";
 		
-		if (!ParseExpression()) return false;
+		PathIdentifier id;
+		id.begin = &tk;
+		id.end = &tk;
+		id.part_count = 1;
+		id.parts[0] = &tk;
+		
+		EMIT PushStatement(iter->loc, STMT_EXPR);
+		EMIT PushRvalResolve(iter->loc, id, SEMT_FUNCTION_BUILTIN);
+		EMIT PushRvalArgumentList(iter->loc);
+		
+		if (!Assign()) return false;
+		EMIT Argument(iter->loc);
 		
 		while (Char(',')) {
-			if (!ParseExpression()) return false;
+			if (!Assign()) return false;
+			EMIT Argument(iter->loc);
 		}
 		
+		EMIT Expr2(iter->loc, OP_CALL);
+		EMIT PopExpr(iter->loc);
 		EMIT PopStatement(iter->loc);
 	}
 	else if (cur.begin == cur.end && cur.sub.GetCount()) {
@@ -361,7 +383,15 @@ bool SemanticParser::ParseStatement() {
 		// empty statement
 	}
 	else {
+		AstNode& stmt = spath.Top().n->Add();
+		stmt.src = SEMT_STATEMENT;
+		PushScope(stmt);
+		EMIT PushStatement(iter->loc, STMT_EXPR);
+		
 		if (!ParseExpression()) return false;
+		
+		PopScope();
+		EMIT PopStatement(iter->loc);
 	}
 	
 	return true;
@@ -470,27 +500,35 @@ bool SemanticParser::ParseDeclExpr() {
 		return false;
 	
 	AstNode* tn = FindDeclaration(first);
+	AstNode* var = 0;
 	
-	if (tn) {
+	if (tn && tn->IsPartially(SEMT_TYPE)) {
 		PathIdentifier name;
 		if (!ParsePathIdentifier(name))
 			return false;
 		
-		AstNode& var = DeclareRelative(name);
-		ASSERT(var.IsPartially(SEMT_UNDEFINED));
-		var.src = SEMT_VARIABLE;
-		var.type = tn;
+		var = &DeclareRelative(name);
+		ASSERT(var->IsPartially(SEMT_UNDEFINED));
+		var->src = SEMT_VARIABLE;
+		var->type = tn;
 		
 		EMIT DeclareVariable(first.begin->loc, *tn, name);
 	}
+	else {
+		var = tn;
+		ASSERT(var->name.GetCount());
+	}
 	
-	if (IsChar('=')) {
+	if (Char('=')) {
+		EMIT PushStatement(iter->loc, STMT_CTOR);
+		EMIT PushRval(iter->loc, *var);
+		
 		//NO: Expression leaf pushes: EMIT PushExprScope();
+		if (!Cond()) return false;
+		EMIT Expr2(iter->loc, OP_ASSIGN);
 		
-		if (!Assign())
-			return false;
-		
-		EMIT PopExprScopeToCtor(iter->loc);
+		EMIT PopExpr(iter->loc);
+		EMIT PopStatement(iter->loc);
 	}
 	else if (IsChar('(')) {
 		TODO
@@ -680,17 +718,20 @@ bool SemanticParser::Term() {
 		
 		if (!_global && Char('(')) {
 			
-			if (nn->src == SEMT_FUNCTION_METHOD || nn->src == SEMT_FUNCTION_STATIC) {
-				EMIT PushRvalCall(id.begin->loc, *nn);
+			if (nn->IsPartially(SEMT_FUNCTION)) {
+				//EMIT PushRvalCall(id.begin->loc, *nn);
+				EMIT PushRvalResolve(iter->loc, id, SEMT_FUNCTION);
 			}
 			else if (IsTypedNode(nn->src)) {
-				EMIT PushRvalConstruct(id.begin->loc, *nn);
+				//EMIT PushRvalConstruct(id.begin->loc, *nn);
+				EMIT PushRvalResolve(iter->loc, id, SEMT_TYPE);
 			}
 			else {
 				AddError(iter->loc, "can't call or construct '" + id.ToString() + "'");
 				return false;
 			}
 			
+			EMIT PushRvalArgumentList(iter->loc);
 			
 			int i = 0;
 			while (!Char(')')) {
@@ -698,17 +739,40 @@ bool SemanticParser::Term() {
 					if (!PassChar(','))
 						return false;
 				}
-				if (!ParseExpression())
+				if (!Assign())
 					return false;
+				EMIT Argument(iter->loc);
 				i++;
 			}
 			
+			EMIT Expr2(iter->loc, OP_CALL);
 		}
 		else {
 			//DUMP(id);
 			
-			if (nn->src == SEMT_VARIABLE || nn->src == SEMT_PARAMETER) {
+			if (nn->IsPartially(SEMT_FIELD)) {
 				EMIT PushRval(id.begin->loc, *nn);
+			}
+			else if (nn->IsPartially(SEMT_TYPE)) {
+				const AstNode& owner = *spath.Top().n;
+				if (owner.src == SEMT_STATEMENT && owner.sub.IsEmpty()) {
+					PathIdentifier name;
+					const FileLocation& loc = iter->loc;
+					if (!ParsePathIdentifier(name)) {
+						AddError(loc, "could not parse name");
+						return false;
+					}
+					
+					AstNode& block = GetBlock();
+					AstNode& var = Declare(block, name);
+					
+					// Variable declaration statement
+					EMIT DeclareVariable(iter->loc, *nn, name);
+					EMIT PushRval(id.begin->loc, var);
+				}
+				else {
+					TODO // probably user error --> AddError
+				}
 			}
 			else {
 				TODO

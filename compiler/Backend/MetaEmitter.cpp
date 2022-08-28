@@ -78,13 +78,13 @@ void HighScriptEmitter::Parameter(const FileLocation& loc, const PathIdentifier&
 	main << DBG_INDENT "Parameter(" << LocArg(loc) << ", " << GetPartStringArray(type) << ", " << GetPartStringArray(name) << ");\n";
 }
 
-void HighScriptEmitter::PushFunctionDefinition(const FileLocation& loc) {
+/*void HighScriptEmitter::PushFunctionDefinition(const FileLocation& loc) {
 	Log("FunctionDefinition:");
 	
 	main << DBG_INDENT "PushFunctionDefinition(" << LocArg(loc) << ");\n";
 	
 	Enter();
-}
+}*/
 
 void HighScriptEmitter::PopFunctionDefinition(const FileLocation& loc) {
 	Leave();
@@ -144,15 +144,39 @@ void HighScriptEmitter::DeclareVariable(const FileLocation& loc, AstNode& n, con
 	main << DBG_INDENT "DeclareVariable(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
 }
 
+void HighScriptEmitter::Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
+	Log("Variable: " + n.ToString() + ", " + id.ToString());
+	
+	main << DBG_INDENT "Variable(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
+}
+
+void HighScriptEmitter::PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+	Log("PushRvalResolve: " + id.ToString() + " " + GetSemanticTypeString(t));
+	
+	main << DBG_INDENT "PushRvalResolve(" << LocArg(loc) << ", " << GetPartStringArray(id) << ", " << IntStr((int)t) << ");\n";
+}
+
+void HighScriptEmitter::PushRvalArgumentList(const FileLocation& loc) {
+	Log("PushRvalArgumentList");
+	
+	main << DBG_INDENT "PushRvalArgumentList(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::Argument(const FileLocation& loc) {
+	Log("Argument");
+	
+	main << DBG_INDENT "Argument(" << LocArg(loc) << ");\n";
+}
+
 /*void HighScriptEmitter::PushExprScope() {
 	Enter();
 }*/
 
-void HighScriptEmitter::PopExprScopeToCtor(const FileLocation& loc) {
+/*void HighScriptEmitter::PopExprScopeToCtor(const FileLocation& loc) {
 	Leave();
 	
 	main << DBG_INDENT "PopExprScopeToCtor(" << LocArg(loc) << ");\n";
-}
+}*/
 
 /*void HighScriptEmitter::PushCall(const PathIdentifier& id) {
 	Log("PushCall: " + id.ToString());
@@ -183,13 +207,13 @@ void HighScriptEmitter::PushRval(const FileLocation& loc, AstNode& n) {
 	Enter();
 }
 
-void HighScriptEmitter::PushRvalCall(const FileLocation& loc, AstNode& n) {
+/*void HighScriptEmitter::PushRvalCall(const FileLocation& loc, AstNode& n) {
 	Log("PushRvalCall: " + n.ToString());
 	
 	main << DBG_INDENT "PushRvalCall(" << LocArg(loc) << ", " << GetRelativePartStringArray(n) << ");\n";
 	
 	Enter();
-}
+}*/
 
 void HighScriptEmitter::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
 	Log("PushRvalConstruct: " + n.ToString());

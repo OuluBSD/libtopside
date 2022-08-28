@@ -28,8 +28,10 @@ public:
 	AstNode* FindDeclaration(const PathIdentifier& id, SemanticType accepts=SEMT_NULL);
 	AstNode* GetDeclaration(const PathIdentifier& id, SemanticType accepts=SEMT_NULL);
 	AstNode* GetDeclaration(AstNode* owner, const PathIdentifier& id, SemanticType accepts);
+	AstNode& Declare(AstNode& owner, const PathIdentifier& id);
 	AstNode& DeclareRelative(const PathIdentifier& id);
 	AstNode* FindTypeDeclaration(const PathIdentifier& id);
+	AstNode& GetBlock();
 	void PushScope(AstNode& n);
 	void PushScopeRVal(AstNode& n);
 	void PopScope();

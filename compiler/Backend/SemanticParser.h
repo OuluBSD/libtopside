@@ -7,32 +7,35 @@ NAMESPACE_TOPSIDE_BEGIN
 struct ParserEmitter {
 	
 	
-	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {}
-	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {}
-	virtual void PushFunctionDefinition(const FileLocation& loc) {}
-	virtual void PopFunctionDefinition(const FileLocation& loc) {}
-	virtual void PopFunction(const FileLocation& loc) {}
-	virtual void PushStatementList(const FileLocation& loc) {}
-	virtual void PopStatementList(const FileLocation& loc) {}
-	virtual void PushStatement(const FileLocation& loc, StmtType type) {}
-	virtual void PopStatement(const FileLocation& loc) {}
-	virtual void PushStatementParameter(const FileLocation& loc, StmtParamType t) {}
-	virtual void PopStatementParameter(const FileLocation& loc) {}
-	virtual void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) {}
-	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {}
-	//virtual void PushExprScope() {}
-	virtual void PopExprScopeToCtor(const FileLocation& loc) {}
-	//virtual void PushCall(const PathIdentifier& id) {}
-	//virtual void PopCall() {}
-	//virtual void PushExprScopeRval() {}
-	virtual void PushRvalCall(const FileLocation& loc, AstNode& n) {}
-	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) {}
-	virtual void PopExpr(const FileLocation& loc) {}
-	virtual void PushRval(const FileLocation& loc, AstNode& n) {}
-	virtual void PushRvalConstant(const FileLocation& loc, const Token& t) {}
-	virtual void Expr1(const FileLocation& loc, OpType op) {}
-	virtual void Expr2(const FileLocation& loc, OpType op) {}
-	virtual void Expr3(const FileLocation& loc, OpType op) {}
+	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
+	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
+	//virtual void PushFunctionDefinition(const FileLocation& loc) = 0;
+	virtual void PopFunctionDefinition(const FileLocation& loc) = 0;
+	virtual void PopFunction(const FileLocation& loc) = 0;
+	virtual void PushStatementList(const FileLocation& loc) = 0;
+	virtual void PopStatementList(const FileLocation& loc) = 0;
+	virtual void PushStatement(const FileLocation& loc, StmtType type) = 0;
+	virtual void PopStatement(const FileLocation& loc) = 0;
+	virtual void PushStatementParameter(const FileLocation& loc, StmtParamType t) = 0;
+	virtual void PopStatementParameter(const FileLocation& loc) = 0;
+	virtual void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
+	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) = 0;
+	virtual void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
+	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
+	virtual void Argument(const FileLocation& loc) = 0;
+	//virtual void PushExprScope() = 0;
+	//virtual void PopExprScopeToCtor(const FileLocation& loc) = 0;
+	//virtual void PushCall(const PathIdentifier& id) = 0;
+	//virtual void PopCall() = 0;
+	//virtual void PushExprScopeRval() = 0;
+	//virtual void PushRvalCall(const FileLocation& loc, AstNode& n) = 0;
+	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) = 0;
+	virtual void PopExpr(const FileLocation& loc) = 0;
+	virtual void PushRval(const FileLocation& loc, AstNode& n) = 0;
+	virtual void PushRvalConstant(const FileLocation& loc, const Token& t) = 0;
+	virtual void Expr1(const FileLocation& loc, OpType op) = 0;
+	virtual void Expr2(const FileLocation& loc, OpType op) = 0;
+	virtual void Expr3(const FileLocation& loc, OpType op) = 0;
 	
 };
 

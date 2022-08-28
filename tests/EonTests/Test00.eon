@@ -1,8 +1,8 @@
 
-
 void logger.repeat.string(int some.arg.0, cstring some.another.arg):
-	for int i, i < some.arg.0, i++:
+	for int i = 0, i < some.arg.0, i++:
 		log some.another.arg
+	int j = 10;
 
 void main():
 	logger.repeat.string(5, "h4llooooordzzzz!") // :)

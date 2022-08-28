@@ -32,6 +32,28 @@ AstNode* AstNode::Find(String name) {
 	return 0;
 }
 
+const AstNode* AstNode::Find(String name) const {
+	ASSERT(name.GetCount());
+	for (auto& s : sub)
+		if (s.name == name)
+			return &s;
+	return 0;
+}
+
+AstNode* AstNode::Find(SemanticType t) {
+	for (auto& s : sub)
+		if (s.src == t)
+			return &s;
+	return 0;
+}
+
+const AstNode* AstNode::Find(SemanticType t) const {
+	for (auto& s : sub)
+		if (s.src == t)
+			return &s;
+	return 0;
+}
+
 String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {
@@ -53,18 +75,19 @@ String AstNode::GetTreeString(int indent) const {
 	
 	if (name.GetCount())
 		s << name << "\n";
-	else if (stmt != STMT_NULL)
+	else if (src == SEMT_CONSTANT)
+		s << "const(" << GetConstantString() << ")\n";
+	else if (src == SEMT_STATEMENT)
 		s << "stmt(" << GetStmtTypeString(stmt) << ")\n";
 	else if (op != OP_NULL)
 		s << "op(" << GetOpString(op) << ")\n";
-	else if (con != CONST_NULL)
-		s << "const(" << GetConstantString() << ")\n";
+	else if (filter != SEMT_NULL)
+		s << "filter(" << GetSemanticTypeString(filter) << ")\n";
+	else
+		s << "\n";
+	
 	//else if (src != SEMT_NULL)
 	//	s << "src(" << GetSemanticTypeString(src) << ")\n";
-	else {
-		DUMP(GetPath());
-		s << "<todo>\n";
-	}
 	
 	for (const AstNode& n : sub) {
 		s << n.GetTreeString(indent+1);

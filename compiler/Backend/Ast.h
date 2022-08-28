@@ -12,18 +12,21 @@ public:
 	Array<AstNode> sub;
 	String name;
 	SemanticType src = SEMT_NULL;
-	StmtType stmt = STMT_NULL;
 	AstNode* type = 0;
 	AstNode* link[4] = {0,0,0,0};
-	OpType op = OP_NULL;
 	bool locked = false;
 	
+	StmtType stmt = STMT_NULL;
+	OpType op = OP_NULL;
 	ConstType con = CONST_NULL;
+	SemanticType filter = SEMT_NULL;
+	
 	union {
 		int64 i64;
 		double dbl;
 	};
 	String str;
+	//Vector<String> path;
 	
 public:
 	typedef AstNode CLASSNAME;
@@ -34,6 +37,9 @@ public:
 	AstNode&		Add(String name="");
 	AstNode&		GetAdd(String name="");
 	AstNode*		Find(String name);
+	const AstNode*	Find(String name) const;
+	AstNode*		Find(SemanticType t);
+	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;
 	
 	String			GetTreeString(int indent=0) const override;
