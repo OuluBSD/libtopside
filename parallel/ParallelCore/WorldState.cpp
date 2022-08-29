@@ -1,5 +1,5 @@
 #include "ParallelCore.h"
-#include <SerialPlanner/SerialPlanner.h>
+#include <SerialScript/SerialScript.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN

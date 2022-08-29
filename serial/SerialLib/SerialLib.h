@@ -2,7 +2,7 @@
 #define _SerialLib_SerialLib_h_
 
 
-#include <SerialPlanner/SerialPlanner.h>
+#include <SerialScript/SerialScript.h>
 
 #if 0
 #include <Graphics/Graphics.h>

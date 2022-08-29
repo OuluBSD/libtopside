@@ -1,5 +1,5 @@
-#ifndef _SerialPlanner_SerialPlanner_h_
-#define _SerialPlanner_SerialPlanner_h_
+#ifndef _SerialScript_SerialScript_h_
+#define _SerialScript_SerialScript_h_
 
 #include <SerialCore/SerialCore.h>
 

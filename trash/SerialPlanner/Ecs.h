@@ -1,5 +1,5 @@
-#ifndef _SerialPlanner_Ecs_h_
-#define _SerialPlanner_Ecs_h_
+#ifndef _SerialScript_Ecs_h_
+#define _SerialScript_Ecs_h_
 
 NAMESPACE_SERIAL_BEGIN
 

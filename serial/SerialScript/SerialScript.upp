@@ -4,7 +4,7 @@ uses
 	SerialCore;
 
 file
-	SerialPlanner.h,
+	SerialScript.h,
 	main.cpp,
 	ToyLoader.h,
 	ToyLoader.cpp,

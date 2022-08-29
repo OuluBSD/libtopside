@@ -1,5 +1,5 @@
-#ifndef _SerialPlanner_ScriptBase_h_
-#define _SerialPlanner_ScriptBase_h_
+#ifndef _SerialScript_ScriptBase_h_
+#define _SerialScript_ScriptBase_h_
 
 NAMESPACE_SERIAL_BEGIN
 

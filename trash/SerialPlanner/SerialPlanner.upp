@@ -7,7 +7,7 @@ uses
 	SerialCore;
 
 file
-	SerialPlanner.h,
+	SerialScript.h,
 	Parser.h,
 	Parser.cpp,
 	Planner.h,
