@@ -135,8 +135,6 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 
 
 
-#endif
-
 
 
 
@@ -254,6 +252,8 @@ void DefaultEcsSerialInitializer();
 	} \
 	void UserGuiMainFn_()
 
+
+#endif
 
 
 NAMESPACE_ECS_END

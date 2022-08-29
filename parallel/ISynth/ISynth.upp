@@ -1,4 +1,4 @@
-description "\377B200,179,81";;
+description "\377B200,179,81";
 
 uses
 	ParallelLib,
@@ -21,5 +21,5 @@ file
 	TmplClasses.h;
 
 mainconfig
-	"" = ""
+	"" = "";
 

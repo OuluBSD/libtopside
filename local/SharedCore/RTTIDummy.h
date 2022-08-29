@@ -54,7 +54,7 @@ template <class T> const char* GetTypeNameT() {return typeid(T).name();}
 	#endif
 	template <class T> void Throw(const T& o) {const char* name = AsTypeName<T>(); __BREAK__;}
 	#define THROW_SPECIFIER
-	#define THROW(x)			{Throw(x); UNREACHABLE;}
+	#define THROW(x)			{UPP::Throw(x); UNREACHABLE;}
 	#define TYPE_WRAPPER		RTTIWrapper
 	#define TYPE_WRAPPER_CTOR	RTTIWrapper::RTTIWrapper
 #endif

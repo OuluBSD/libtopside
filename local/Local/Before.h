@@ -63,7 +63,7 @@
 #endif
 
 
-#define MAX_VDTUPLE_SIZE		8
+//#define MAX_VDTUPLE_SIZE		8
 
 
 

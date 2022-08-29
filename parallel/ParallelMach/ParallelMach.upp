@@ -1,8 +1,7 @@
 description "\377B41,32,114";
 
 uses
-	Local,
-	High;
+	LocalPlan;
 
 file
 	ParallelMach.h,

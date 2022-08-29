@@ -1,6 +1,8 @@
 #include "ParallelCore.h"
 #include <SerialMach/SerialMach.h>
 
+#if 0
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -151,3 +153,5 @@ bool DefaultInterfaceSource::Initialize() {
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

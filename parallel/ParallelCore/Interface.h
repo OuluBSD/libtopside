@@ -1,6 +1,8 @@
 #ifndef _SerialCore_Interface_h_
 #define _SerialCore_Interface_h_
 
+#if 0
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -242,4 +244,5 @@ using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			AtomParent>;
 
 NAMESPACE_PARALLEL_END
 
+#endif
 #endif

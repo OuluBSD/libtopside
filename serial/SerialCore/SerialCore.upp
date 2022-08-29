@@ -15,5 +15,6 @@ file
 	Loop.h,
 	Loop.cpp,
 	LoopStore.h,
-	LoopStore.cpp;
+	LoopStore.cpp,
+	_ readonly separator;
 

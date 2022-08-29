@@ -1,6 +1,7 @@
 #ifndef _Local_Exchange_h_
 #define _Local_Exchange_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -620,4 +621,5 @@ public:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

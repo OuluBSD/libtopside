@@ -1,5 +1,7 @@
 #include "Local.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -355,3 +357,5 @@ String MetaDirectoryBase::ToString() const {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

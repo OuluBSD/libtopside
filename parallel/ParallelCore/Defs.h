@@ -8,6 +8,8 @@
 #define ATOM_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); x;}
 #define ATOM_DEF_MAKE_ACTION static bool MakeAction(Script::Action& act) {return false;}
 
+#if 0
+
 #define ATOM_MAKE_ACTION_BEGIN \
 	static bool MakeAction(const AtomTypeCls& cls, Script::Action& act) {\
 		bool fail = false, any_changes = false;\
@@ -18,5 +20,6 @@
 #define ATOM_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
 //#define ATOM_MAKE_ACTION_REQ_TRUE_TO_TRUE(x, y) if (act.Pre().IsTrue(x)) {act.Post().SetTrue(y); any_changes = true;} else fail = true;
 
+#endif
 
 #endif

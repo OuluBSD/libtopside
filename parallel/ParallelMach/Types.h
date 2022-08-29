@@ -22,7 +22,6 @@
 
 #define DEV_IFACE(val) \
 	IFACE_CTX_CLS(CENTER, val, ) \
-	IFACE_CTX_CLS(PERMA, val, Perma) \
 	IFACE_CTX_CLS(NET, val, Net) \
 	IFACE_CTX_CLS(OGL, val, Ogl) \
 
@@ -188,6 +187,8 @@ struct ValDevCls : Moveable<ValDevCls> {
 
 #define VD(dev, val) Parallel::ValDevCls(Parallel::DevCls::dev, Parallel::ValCls::val)
 
+#if 0
+
 #define ATOM11(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0 ) \
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ))
 
@@ -218,6 +219,8 @@ struct ValDevCls : Moveable<ValDevCls> {
 #define ATOM11_U44(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, sid2, siv2, sid3, siv3, sid4, siv4, srd0, srv0, srd1, srv1, srd2, srv2, srd3, srv3, srd4, srv4) \
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 4,4,4,4, VD(sid1, siv1), VD(sid2, siv2), VD(sid3, siv3), VD(sid4, siv4), VD(srd1, srv1), VD(srd2, srv2), VD(srd3, srv3), VD(srd4, srv4))
 
+#endif
+
 
 struct AtomCls : Moveable<AtomCls> {
 	ValDevCls sink, side, src;
@@ -233,32 +236,32 @@ struct AtomCls : Moveable<AtomCls> {
 
 
 struct ValDevTuple : Moveable<ValDevTuple> {
-	static const int MAX_VDS = MAX_VDTUPLE_SIZE;
-	
-	ValDevCls	vd[MAX_VDS];
-	byte		count = 0;
-	
-	
-	ValDevTuple() : count(0) {}
-	ValDevTuple(const ValDevCls& v) : count(1) {vd[0] = v;}
-	ValDevTuple(const ValDevTuple& v) : count(0) {*this = v;}
+	//static const int MAX_VDS = MAX_VDTUPLE_SIZE;
+	//ValDevCls	vd[MAX_VDS];
+	//byte		count = 0;
+	Vector<ValDevCls> vd;
 	
 	
+	ValDevTuple() {}
+	ValDevTuple(const ValDevCls& v) {vd.Add(v);}
+	ValDevTuple(const ValDevTuple& v) {*this = v;}
 	
-	int GetCount() const {return count;}
 	
 	
-	ValDevCls&       operator[](int i)       {ASSERT(i >= 0 && i < count && count <= MAX_VDS); return vd[i];}
-	const ValDevCls& operator[](int i) const {ASSERT(i >= 0 && i < count && count <= MAX_VDS); return vd[i];}
-	ValDevCls&       operator()()            {ASSERT(count >= 1); return vd[0];}
-	const ValDevCls& operator()() const      {ASSERT(count >= 1); return vd[0];}
+	int GetCount() const {return vd.GetCount();}
+	
+	
+	ValDevCls&       operator[](int i)       {return vd[i];}
+	const ValDevCls& operator[](int i) const {return vd[i];}
+	ValDevCls&       operator()()            {ASSERT(vd.GetCount() >= 1); return vd[0];}
+	const ValDevCls& operator()() const      {ASSERT(vd.GetCount() >= 1); return vd[0];}
 	
 	
 	
 	ValDevCls GetCommon(const ValDevTuple& o) const {
-		for(int i = 0; i < MAX_VDS; i++) {
+		for(int i = 0; i < vd.GetCount(); i++) {
 			const ValDevCls& a = vd[i];
-			for(int j = 0; j < MAX_VDS; j++) {
+			for(int j = 0; j < o.vd.GetCount(); j++) {
 				const ValDevCls& b = o.vd[i];
 				if (a == b)
 					return a;
@@ -267,9 +270,10 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 		return ValDevCls();
 	}
 	
-	ValDevTuple& Add(const ValDevCls& o) {ASSERT(count < MAX_VDS); vd[count] = o; count++; return *this;}
+	ValDevTuple& Add(const ValDevCls& o) {vd.Add(o); return *this;}
 	
 	String ToString() const {
+		int count = vd.GetCount();
 		String s;
 		s << "(" << (int)count;
 		for(int i = 0; i < count; i++)
@@ -279,8 +283,7 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	}
 	
 	bool IsValid() const {
-		if (count <= 0 || count > MAX_VDS)
-			return false;
+		int count = vd.GetCount();
 		for(int i = 0; i < count; i++)
 			if (!vd[i].IsValid())
 				return false;
@@ -289,17 +292,13 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	
 	void operator=(const Nuller& n) {memset(this, 0, sizeof(ValDevTuple));}
 	void operator=(const ValDevTuple& o) {
-		count = o.count;
-		ASSERT(count >= 0 && count <= MAX_VDS);
-		for(int i = 0; i < count; i++)
-			vd[i] = o.vd[i];
+		vd <<= o.vd;
 	}
 	
 	bool operator==(const ValDevTuple& o) const {
-		if (count != o.count)
+		if (vd.GetCount() != o.vd.GetCount())
 			return false;
-		ASSERT(count >= 0 && count <= MAX_VDS);
-		for(int i = 0; i < count; i++)
+		for(int i = 0; i < vd.GetCount(); i++)
 			if (vd[i] != o.vd[i])
 				return false;
 		return true;
@@ -308,7 +307,7 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	bool operator!=(const ValDevTuple& o) const {return !operator==(o);}
 	
 	hash_t GetHashValue() const {
-		ASSERT(count >= 0 && count <= MAX_VDS);
+		int count = vd.GetCount();
 		CombineHash ch;
 		ch.Put(count);
 		for(int i = 0; i < count; i++)
@@ -325,6 +324,8 @@ DevCls GetCenterDevCls();
 
 
 
+
+#if 0
 
 #undef INVALID_ATOM
 
@@ -401,6 +402,18 @@ typedef enum : int8 {
 	#undef ATOM_ROLE
 	
 	ROLE_COUNT
+} AtomRole;
+
+#endif
+
+typedef enum : byte {
+	INVALID_ATOM,
+	
+} SubAtomCls;
+
+typedef enum : int8 {
+	INVALID_ROLE=-1,
+	
 } AtomRole;
 
 
@@ -532,8 +545,8 @@ struct IfaceConnLink {
 };
 
 struct IfaceConnTuple {
-	IfaceConnLink		sink	[MAX_VDTUPLE_SIZE];
-	IfaceConnLink		src		[MAX_VDTUPLE_SIZE];
+	Vector<IfaceConnLink>		sink;
+	Vector<IfaceConnLink>		src;
 	AtomTypeCls			type;
 	
 	void Realize(const AtomTypeCls& type);

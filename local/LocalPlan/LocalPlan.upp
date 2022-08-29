@@ -1,0 +1,27 @@
+description "Base classes for Atoms\377B141,0,255";
+
+uses
+	Local,
+	High;
+
+file
+	LocalPlan.h,
+	main.cpp,
+	LocalPlan.cpp,
+	Eon readonly separator,
+	Headers.cpp,
+	Interface.h,
+	Audio.cpp,
+	Hal.cpp,
+	Screen.cpp,
+	Volumetric.cpp,
+	Camera.cpp,
+	Holographic.cpp,
+	Synth.cpp,
+	Effect.cpp,
+	MidiHw.cpp,
+	_ readonly separator;
+
+mainconfig
+	"" = "";
+

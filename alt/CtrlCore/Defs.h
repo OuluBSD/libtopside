@@ -12,6 +12,8 @@
 #endif
 
 
+#if 0
+
 #define GUI_APP_MAIN \
 void UserGuiMainFn_(); \
 \
@@ -21,5 +23,6 @@ RENDER_APP_MAIN {TS::DefaultRunner("Gui App");} \
 \
 void UserGuiMainFn_()
 
+#endif
 
 #endif
