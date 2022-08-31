@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddVolumetric() {
-	Color(28, 85, 0);
+	Package("Volumetric", "Vol");
+	SetColor(28, 85, 0);
 	Dependency("ParallelLib");
 	HaveIsReady();
 	

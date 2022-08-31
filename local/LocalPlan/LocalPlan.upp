@@ -5,12 +5,13 @@ uses
 	High;
 
 file
-	LocalPlan.h,
 	main.cpp,
+	LocalPlan.h,
 	LocalPlan.cpp,
 	Eon readonly separator,
-	Headers.cpp,
 	Interface.h,
+	Interface.cpp,
+	Headers.cpp,
 	Audio.cpp,
 	Hal.cpp,
 	Screen.cpp,

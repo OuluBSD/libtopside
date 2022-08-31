@@ -21,7 +21,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("TestRealtimeSink", "VoidSinkBase", "pipe")
 		.In("CenterAudio").Out("CenterReceipt")
-		.Action("center.audio.sink")
 		.Action("center.audio.sink.test.realtime")
 		.Link("INTERVAL_PIPE", "PROCESS")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -29,7 +28,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("TestPollerSink", "VoidPollerSinkBase", "pipe")
 		.In("CenterAudio").Out("CenterReceipt")
-		.Action("center.audio.sink")
 		.Action("center.audio.sink.test.poller")
 		.Link("PIPE", "PROCESS")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -37,7 +35,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("PortaudioSink", "PortaudioSinkDevice", "pipe")
 		.In("CenterAudio").Out("CenterReceipt")
-		.Action("center.audio.sink")
 		.Action("center.audio.sink.hw")
 		.Link("EXTERNAL_PIPE", "PROCESS")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -60,7 +57,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioSplitter", "VoidBase", "pipe")
 		.In("CenterAudio").Out("CenterReceipt").Out("CenterAudio")
-		.Action("center.audio.side.src")
 		.Action("center.audio.side.src.center")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("SPLITTER", "PROCESS")
@@ -68,7 +64,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioSplitterUser", "VoidBase", "pipe")
 		.In("CenterAudio").Out("CenterReceipt").OutOpt("CenterAudio")
-		.Action("center.audio.side.src")
 		.Action("center.audio.side.src.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("SPLITTER", "PROCESS")
@@ -76,7 +71,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioJoiner", "VoidBase", "pipe")
 		.In("CenterOrder").In("CenterAudio").Out("CenterAudio")
-		.Action("center.audio.side.sink")
 		.Action("center.audio.side.sink.center")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("JOINER", "PROCESS")
@@ -84,7 +78,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioJoinerUser", "VoidBase", "pipe")
 		.In("CenterOrder").InOpt("CenterAudio").Out("CenterAudio")
-		.Action("center.audio.side.sink")
 		.Action("center.audio.side.sink.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("JOINER", "PROCESS")
@@ -92,7 +85,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioJoiner2User", "VoidBase", "pipe")
 		.In("CenterOrder").InOpt("CenterAudio").InOpt("CenterAudio").Out("CenterAudio")
-		.Action("center.audio.side.sink")
 		.Action("center.audio.side.sink2.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("JOINER", "PROCESS")
@@ -177,7 +169,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("SdlOglFboProg", "SdlOglFboBase", "pipe")
 		.In("OglOrder").Out("OglFbo")
-		.Action("any.ogl.fbo.program")
 		.Action("sdl.ogl.fbo.program")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagOGL", "1")
@@ -218,7 +209,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("X11SwShaderPipe", "X11SwShaderBase", "pipe")
 		.In("CenterOrder").Out("CenterFbo")
-		.Action("any.sw.fbo.pipe")
 		.Action("x11.sw.fbo.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -227,7 +217,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("X11OglShaderPipe", "X11OglShaderBase", "pipe")
 		.In("OglOrder").Out("OglFbo")
-		.Action("any.ogl.fbo.pipe")
 		.Action("x11.ogl.fbo.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagOGL", "1")
@@ -237,7 +226,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("SdlOglShaderPipe", "SdlOglShaderBase", "pipe")
 		.In("OglOrder").Out("OglFbo")
-		.Action("any.ogl.fbo.pipe")
 		.Action("sdl.ogl.fbo.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagOGL", "1")
@@ -340,7 +328,6 @@ void InterfaceBuilder::Headers() {
 	AddHeader("X11VideoAtomPipe", "X11SinkDevice", "pipe")
 		.In("CenterVideo").Out("CenterReceipt")
 		.Action("x11.video.pipe")
-		.Action("any.video.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("POLLER_PIPE", "PROCESS")
@@ -409,7 +396,6 @@ void InterfaceBuilder::Headers() {
 	AddHeader("SdlVideoAtomPipe", "SdlCenterVideoSinkDevice", "pipe")
 		.In("CenterVideo").Out("CenterReceipt")
 		.Action("sdl.video.pipe")
-		.Action("any.video.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagSDL2", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -419,7 +405,6 @@ void InterfaceBuilder::Headers() {
 	AddHeader("SdlProgAtomPipe", "SdlCenterVideoSinkDevice", "pipe")
 		.In("CenterProg").Out("CenterReceipt")
 		.Action("sdl.prog.pipe")
-		.Action("any.prog.pipe")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagSDL2", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -438,7 +423,6 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("SdlAudioAtom", "SdlAudioSinkDevice", "pipe")
 		.In("CenterAudio").Out("CenterReceipt")
-		.Action("center.audio.sink")
 		.Action("sdl.audio")
 		.Arg("reqdef_flagSDL2", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
@@ -449,7 +433,6 @@ void InterfaceBuilder::Headers() {
 		.In("OglOrder").InOpt("OglFbo").InOpt("OglFbo").InOpt("OglFbo").InOpt("OglFbo")
 		.Out("OglReceipt").OutOpt("OglFbo").OutOpt("OglFbo").OutOpt("OglFbo").OutOpt("OglFbo")
 		.Action("sdl.ogl.fbo.side")
-		.Action("any.ogl.fbo.side")
 		.Arg("reqdef_flagSCREEN", "1")
 		.Arg("reqdef_flagSDL2", "1")
 		.Arg("reqdef_flagOGL", "1")

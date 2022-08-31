@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddHal() {
-	Color(198, 127, 200);
+	Package("Hal", "Hal");
+	SetColor(198, 127, 200);
 	Dependency("ParallelLib");
 	Dependency("IGraphics");
 	Library("SDL2", "SDL2");

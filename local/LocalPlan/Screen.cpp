@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddScreen() {
-	Color(112, 112, 112);
+	Package("Screen", "Scr");
+	SetColor(112, 112, 112);
 	Dependency("ParallelLib");
 	Dependency("IGraphics");
 	Library("X11 Xrandr Xxf86vm", "POSIX");

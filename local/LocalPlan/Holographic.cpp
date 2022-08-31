@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddHolographic() {
-	Color(85, 42, 150);
+	Package("Holographic", "Holo");
+	SetColor(85, 42, 150);
 	Dependency("ParallelLib");
 	Dependency("IMedia");
 	Dependency("ports/hcidump", "LINUX");
@@ -16,6 +17,10 @@ void InterfaceBuilder::AddHolographic() {
 	Interface("SinkDevice");
 	
 	Vendor("OpenHMD", "LINUX|FREEBSD");
+	Vendor("LocalHMD", "LOCALHMD");
+	Vendor("RemoteVRServer", "LINUX|FREEBSD");
+	Vendor("DevUsb", "LINUX|FREEBSD");
+	Vendor("DevBluetooth", "LINUX|FREEBSD");
 	
 }
 

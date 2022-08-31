@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddCamera() {
-	Color(54, 157, 442);
+	Package("Camera", "Cam");
+	SetColor(54, 157, 42);
 	Dependency("ParallelLib");
 	Dependency("IMedia");
 	HaveIsReady();

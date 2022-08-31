@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddEffect() {
-	Color(28, 255, 150);
+	Package("Effect", "Fx");
+	SetColor(28, 255, 150);
 	Dependency("AudioCore");
 	Dependency("ParallelLib");
 	HaveRecvFinalize();

@@ -4,7 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddSynth() {
-	Color(200, 179, 81);
+	Package("Synth", "Syn");
+	SetColor(200, 179, 81);
 	Dependency("ParallelLib");
 	Dependency("SoftInstru");
 	Dependency("SoftSynth");

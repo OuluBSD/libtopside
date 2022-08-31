@@ -4,13 +4,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddMidiHw() {
-	Color(198, 85, 150);
+	Package("MidiHw", "Mid");
+	SetColor(198, 85, 150);
 	Dependency("ParallelLib");
 	HaveIsReady();
 	
 	Interface("Source");
 	
-	Vendor("Portmidi");
+	Vendor("Portmidi", "PORTMIDI");
 	
 }
 
