@@ -90,7 +90,7 @@ AtomTypeCls RemoteVRServerPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagFREEBSD && defined flagHACK) || (defined flagLINUX && defined flagHACK)
 String BluetoothHoloPipe::GetAction() {
 	return "bluetooth.holo.events";
 }

@@ -20,7 +20,7 @@ void InterfaceBuilder::AddHolographic() {
 	Vendor("LocalHMD", "LOCALHMD");
 	Vendor("RemoteVRServer", "LINUX|FREEBSD");
 	Vendor("DevUsb", "LINUX|FREEBSD");
-	Vendor("DevBluetooth", "LINUX|FREEBSD");
+	Vendor("DevBluetooth", "LINUX&HACK|FREEBSD&HACK");
 	
 }
 

@@ -52,7 +52,7 @@ public:
 };
 #endif
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagFREEBSD && defined flagHACK) || (defined flagLINUX && defined flagHACK)
 class BluetoothHoloPipe : public DevBluetoothSinkDevice {
 
 public:
