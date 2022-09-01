@@ -1,0 +1,12 @@
+#ifdef GEN_ATOM_TYPE_LIST
+
+ATOM_TYPE_LIST
+
+#endif
+
+
+#ifdef GEN_ATOM_CLASS_LIST
+
+ATOM_CLASS_LIST
+
+#endif
