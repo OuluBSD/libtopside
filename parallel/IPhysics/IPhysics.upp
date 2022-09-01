@@ -3,11 +3,11 @@ description "\377B141,85,150";
 uses
 	SoftPhys;
 
-library(DEBUG & WIN32) ode_doubled;
+library(ODE & (DEBUG & WIN32)) ode_doubled;
 
-library(!DEBUG & WIN32) ode_double;
+library(ODE & (!DEBUG & WIN32)) ode_double;
 
-library(!WIN32) ode;
+library(ODE & !WIN32) ode;
 
 file
 	IPhysics.h,

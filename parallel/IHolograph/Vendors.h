@@ -12,7 +12,7 @@
 	#include <LocalHMD/LocalHMD.h>
 #endif
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if defined flagHACK && ((defined flagLINUX) || (defined flagFREEBSD))
 	#include <ports/hcidump/hcidump.h>
 #endif
 
@@ -123,7 +123,7 @@ struct HoloDevUsb {
 };
 #endif
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if defined flagHACK && ((defined flagLINUX) || (defined flagFREEBSD))
 struct HoloDevBluetooth {
 	
 	struct NativeSinkDevice {

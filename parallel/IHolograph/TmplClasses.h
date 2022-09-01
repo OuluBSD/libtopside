@@ -80,7 +80,7 @@ using RemoteVRServerSinkDevice = HolographSinkDeviceT<HoloRemoteVRServer>;
 using DevUsbSinkDevice = HolographSinkDeviceT<HoloDevUsb>;
 #endif
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if defined flagHACK && ((defined flagLINUX) || (defined flagFREEBSD))
 using DevBluetoothSinkDevice = HolographSinkDeviceT<HoloDevBluetooth>;
 #endif
 

@@ -1,7 +1,7 @@
 #include "IHolograph.h"
 
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if defined flagHACK && ((defined flagLINUX) || (defined flagFREEBSD))
 
 /*
 	If data can't be read, run:
