@@ -35,7 +35,9 @@ INITBLOCK_(AtomVR) {
 					Factory::RegisterAtom<LocalHMDPipe>();
 				#endif
 				//Factory::RegisterAtom<UsbHoloPipe>();
-				Factory::RegisterAtom<BluetoothHoloPipe>();
+				#ifdef flagHACK
+					Factory::RegisterAtom<BluetoothHoloPipe>();
+				#endif
 			#endif
 		#endif
 		
