@@ -55,7 +55,7 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
 		keyboard_iter != prev_iter;
-	RTLOG("EcsEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -74,7 +74,7 @@ bool EcsEventsBase::ProcessPackets(PacketIO& io) {
 	prev_iter = state->GetInt(
 	KEYBOARD_STATE_ITER);
 	
-	if (io.sink_count == 1) {
+	if (io.sink.GetCount() == 1) {
 		PacketIO::Sink& sink = io.sink[0];
 		PacketIO::Source& src = io.src[0];
 		
@@ -193,7 +193,7 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 	bool b =	io.active_sink_mask == iface_sink_mask &&
 				io.full_src_mask == 0 &&
 				(binders.GetCount() > 0 || render_win);
-	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	
 	return b;
 }
@@ -240,8 +240,8 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EcsVideoBase::ProcessPackets:");
 	
-	int src_ch = io.src_count > 1 ? 1 : 0;
-	int sink_ch = 0; //io.sink_count > 1 ? 1 : 0;
+	int src_ch = io.src.GetCount() > 1 ? 1 : 0;
+	int sink_ch = 0; //io.sink.GetCount() > 1 ? 1 : 0;
 	
 	if (src_type == VD(CENTER, PROG)) {
 		
@@ -260,7 +260,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 				b->Render(id);
 			id.Finish();
 			
-			if (io.sink_count == 1) {
+			if (io.sink.GetCount() == 1) {
 				PacketIO::Sink& sink = io.sink[sink_ch];
 				PacketIO::Source& src = io.src[src_ch];
 				
@@ -400,7 +400,7 @@ bool EcsOglBase::IsReady(PacketIO& io) {
 	bool b =
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0;
-	RTLOG("EcsOglBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsOglBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

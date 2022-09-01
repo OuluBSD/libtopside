@@ -6,6 +6,23 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct SynFluidsynth::NativeInstrument {
+    fluid_settings_t* settings;
+    fluid_synth_t* synth;
+    int sfont_id;
+    bool sf_loaded;
+    int sample_rate;
+    Vector<float> buffer;
+    Vector<float*> dry;
+    Vector<float*> fx;
+    RunningFlag flag;
+    Array<Vector<byte>> packets;
+    Mutex lock;
+};
+
+
+
 void SynFluidsynth_ConfigureTrack(SynFluidsynth::NativeInstrument& dev, const MidiIO::File& file, int track_i);
 bool SynFluidsynth_LoadSoundfontFile(SynFluidsynth::NativeInstrument& dev, String path);
 bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev);
@@ -130,6 +147,14 @@ void SynFluidsynth::Instrument_Finalize(NativeInstrument& dev, AtomBase&, Realti
 
 
 
+bool SynFluidsynth::Instrument_Create(One<NativeInstrument>& dev) {
+	dev.Create();
+	return true;
+}
+
+void SynFluidsynth::Instrument_Destroy(One<NativeInstrument>& dev) {
+	dev.Clear();
+}
 
 bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
 	Index<String> dirs;

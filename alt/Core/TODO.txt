@@ -3,3 +3,5 @@
  - change all stupid move ctors with Swap() to std::move
  - translation with t_()
  - UTF-8 correct GetLength() in String
+
+ - test SortIndex(idx, StdLess<String>())

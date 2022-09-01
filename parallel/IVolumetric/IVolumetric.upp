@@ -1,17 +1,12 @@
 description "\377B28,85,0";
 
-uses
-	ParallelLib;
+	uses ParallelLib;
+
 
 file
 	IVolumetric.h,
-	Enums.h,
-	Vendors.h,
 	RawByte.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

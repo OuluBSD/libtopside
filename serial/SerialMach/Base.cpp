@@ -165,7 +165,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
 	bool b = true;
 	
-	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+	for(int sink_ch = io.sink.GetCount()-1; sink_ch >= 0; sink_ch--) {
 		PacketIO::Sink& sink = io.sink[sink_ch];
 		Packet& in = sink.p;
 		if (!in)
@@ -215,7 +215,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	return b;
 	/*
 	auto& buf = this->buf;
-	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	ASSERT(io.src.GetCount() == 2 && io.sink.GetCount() == 2);
 	
 	PacketIO::Sink& prim_sink = io.sink[0];
 	PacketIO::Source& prim_src = io.src[0];
@@ -448,7 +448,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
 	bool b = true;
 	
-	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+	for(int sink_ch = io.sink.GetCount()-1; sink_ch >= 0; sink_ch--) {
 		PacketIO::Sink& sink = io.sink[sink_ch];
 		Packet& in = sink.p;
 		if (!in)
@@ -584,7 +584,7 @@ bool JoinerLink::IsReady(PacketIO& io) {
 bool JoinerLink::ProcessPackets(PacketIO& io) {
 	ASSERT(io.active_sink_mask & 0x0001);
 	ASSERT(io.nonempty_sinks >= 2);
-	ASSERT(io.src_count == 1);
+	ASSERT(io.src.GetCount() == 1);
 	PacketIO::Sink& prim_sink = io.sink[0];
 	
 	int side_sink_ch = -1;
@@ -592,7 +592,7 @@ bool JoinerLink::ProcessPackets(PacketIO& io) {
 		int sink_ch = scheduler_iter;
 		
 		scheduler_iter++;
-		if (scheduler_iter >= io.sink_count)
+		if (scheduler_iter >= io.sink.GetCount())
 			scheduler_iter = 1;
 		
 		if (io.sink[sink_ch].p) {
@@ -651,7 +651,7 @@ bool SplitterLink::IsReady(PacketIO& io) {
 }
 
 bool SplitterLink::ProcessPackets(PacketIO& io) {
-	ASSERT(io.src_count > 1 && io.sink_count == 1);
+	ASSERT(io.src.GetCount() > 1 && io.sink.GetCount() == 1);
 	ASSERT(io.active_sink_mask == 0x0001);
 	PacketIO::Sink& sink = io.sink[0];
 	sink.may_remove = true;
@@ -663,7 +663,7 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 	Format in_fmt = sink.p->GetFormat();
 	
 	InterfaceSourceRef src_iface = GetSource();
-	for(int i = 1; i < io.src_count; i++) {
+	for(int i = 1; i < io.src.GetCount(); i++) {
 		PacketIO::Source& src = io.src[i];
 		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
 		if (src_fmt.IsCopyCompatible(in_fmt)) {

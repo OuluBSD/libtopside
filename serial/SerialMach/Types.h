@@ -5,7 +5,6 @@ NAMESPACE_SERIAL_BEGIN
 using namespace Parallel;
 
 
-
 using ValCls				= Parallel::ValCls;
 using DevCls				= Parallel::DevCls;
 using ValDevCls				= Parallel::ValDevCls;
@@ -24,7 +23,7 @@ using SideStatus			= Parallel::SideStatus;
 using PacketIO				= Parallel::PacketIO;
 template <class T> using RefT_Loop	= Ref<T, LoopParent>;
 template <class T> using System		= Parallel::System<T>;
-template <class T> using RefT_Loop	= Parallel::RefT_Loop<T>;
+//template <class T> using RefT_Loop	= Parallel::RefT_Loop<T>;
 
 //class AtomBase;
 //struct AtomTypeCls;

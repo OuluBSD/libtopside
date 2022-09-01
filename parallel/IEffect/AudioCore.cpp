@@ -3,6 +3,26 @@
 #if 1
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct FxAudioCore::NativeEffect {
+    One<Audio::Effect> effect;
+    int channel_count;
+    int sample_rate;
+    Packet last_audio_in;
+};
+
+
+
+
+bool FxAudioCore::Effect_Create(One<NativeEffect>& dev) {
+	dev.Create();
+	return true;
+}
+
+void FxAudioCore::Effect_Destroy(One<NativeEffect>& dev) {
+	dev.Clear();
+}
+
 template <class T>
 void CreateSynCoreEffect(FxAudioCore::NativeEffect& dev, AtomBase& a, const Script::WorldState& ws) {
 	T* t = new T();

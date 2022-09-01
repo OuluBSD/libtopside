@@ -16,7 +16,7 @@ void InterfaceBuilder::AddHolographic() {
 	
 	Interface("SinkDevice");
 	
-	Vendor("OpenHMD", "LINUX|FREEBSD");
+	Vendor("OpenHMD", "LINUX&OPENHMD|FREEBSD&OPENHMD");
 	Vendor("LocalHMD", "LOCALHMD");
 	Vendor("RemoteVRServer", "LINUX|FREEBSD");
 	Vendor("DevUsb", "LINUX|FREEBSD");

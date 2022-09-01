@@ -2,7 +2,6 @@
 #define _Local_Realtime_h_
 
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -26,5 +25,4 @@ public:
 NAMESPACE_TOPSIDE_END
 
 
-#endif
 #endif

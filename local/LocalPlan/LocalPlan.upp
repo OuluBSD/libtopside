@@ -1,4 +1,4 @@
-description "Base classes for Atoms\377B141,0,255";
+description "Generate base classes for Atoms\377B141,0,255";
 
 uses
 	Local,

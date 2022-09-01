@@ -114,13 +114,13 @@ public:
 	void					PostContinueForward();
 	void					SetQueueSize(int queue_size);
 	
-	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
+	/*static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
 		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);
 		if (common_vd.IsValid())
 			return SIDE_ACCEPTED;
 		else
 			return SIDE_NOT_ACCEPTED;
-	}
+	}*/
 	
 	
 	Machine&				GetMachine();

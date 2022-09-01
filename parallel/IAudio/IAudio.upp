@@ -1,21 +1,13 @@
 description "\377B226,212,0";
 
-uses
-	ParallelLib;
+	uses ParallelLib;
+	uses(BUILTIN_PORTAUDIO) ports/portaudio;
 
-uses(BUILTIN_PORTAUDIO | (WIN32&MSC)) ports/portaudio;
-
-library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 
 file
 	IAudio.h,
-	Enums.h,
-	Vendors.h,
 	Portaudio.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

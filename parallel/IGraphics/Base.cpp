@@ -427,7 +427,7 @@ template <class Gfx>
 bool FboReaderBaseT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -565,12 +565,12 @@ void KeyboardBaseT<Gfx>::Uninitialize() {
 template <class Gfx>
 bool KeyboardBaseT<Gfx>::IsReady(PacketIO& io) {
 	if (!state) return false;
-	ASSERT(io.src_count >= 2);
-	if (io.src_count < 2) return false;
+	ASSERT(io.src.GetCount() >= 2);
+	if (io.src.GetCount() < 2) return false;
 	
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("KeyboardBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("KeyboardBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -669,7 +669,7 @@ template <class Gfx>
 bool AudioBaseT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("AudioBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("AudioBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -745,7 +745,7 @@ bool AudioBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 
 /*bool ProcessPackets(PacketIO& io) {
 	RTLOG("OglAudioBase::ProcessPackets");
-	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	ASSERT(io.src.GetCount() == 2 && io.sink.GetCount() == 2);
 	auto& buf = this->buf;
 	
 	PacketIO::Sink&		prim_sink	= io.sink[0];

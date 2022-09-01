@@ -7,6 +7,28 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct VolRawByte::NativeStaticSource {
+    Vector<byte> values;
+    Format fmt;
+    String filepath;
+    Size3 sz;
+    int stride;
+    bool vflip;
+};
+
+
+bool VolRawByte::StaticSource_Create(One<NativeStaticSource>& dev) {
+	dev.Create();
+	return true;
+}
+
+void VolRawByte::StaticSource_Destroy(One<NativeStaticSource>& dev) {
+	dev.Clear();
+}
+
+
+
 bool VolRawByte__LoadFile(VolRawByte::NativeStaticSource& dev, AtomBase& a) {
 	if (!FileExists(dev.filepath)) {
 		LOG("VolumeLoaderBase::LoadFile: error: file does not exist: '" << dev.filepath << "'");

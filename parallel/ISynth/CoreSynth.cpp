@@ -3,6 +3,21 @@
 #if 1
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct SynCoreSynth::NativeInstrument {
+    Array<Audio::Instrument> voices;
+    Vector<int> notes;
+    Vector<dword> seqs;
+    int sample_rate;
+    float multiplier;
+    int polyphone;
+    dword seq;
+};
+
+
+
+
+
 template <class T>
 void CreateSynCoreInstrument(SynCoreSynth::NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	for(int i = 0; i < dev.polyphone; i++) {
@@ -11,6 +26,15 @@ void CreateSynCoreInstrument(SynCoreSynth::NativeInstrument& dev, AtomBase& a, c
 		dev.notes.Add(-1);
 		dev.seqs.Add(0);
 	}
+}
+
+bool SynCoreSynth::Instrument_Create(One<NativeInstrument>& dev) {
+	dev.Create();
+	return true;
+}
+
+void SynCoreSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
+	dev.Clear();
 }
 
 bool SynCoreSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {

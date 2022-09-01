@@ -80,19 +80,19 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 	InterfaceSourceRef src_iface = GetSource();
 	int sink_ch_count = sink_iface->GetSinkCount();
 	int src_ch_count = src_iface->GetSourceCount();
-	int req_sink_ch_count = sink_ch_count - type.user_sink_count;
-	int req_src_ch_count = src_ch_count - type.user_src_count;
+	//int req_sink_ch_count = sink_ch_count - type.user_sink_count;
+	//int req_src_ch_count = src_ch_count - type.user_src_count;
 	ASSERT(src_ch_count);
-	ASSERT(sink_ch_count <= MAX_VDTUPLE_SIZE);
-	ASSERT(src_ch_count <= MAX_VDTUPLE_SIZE);
+	//ASSERT(sink_ch_count <= MAX_VDTUPLE_SIZE);
+	//ASSERT(src_ch_count <= MAX_VDTUPLE_SIZE);
 	if (!src_ch_count) return;
 	
 	bool is_forwarded = false;
 	
 	while (1) {
-		PacketIO io;
-		io.sink_count = sink_ch_count;
-		io.src_count = src_ch_count;
+		static thread_local PacketIO io;
+		io.sink.SetCount(sink_ch_count);
+		io.src.SetCount(src_ch_count);
 		io.nonempty_sinks = 0;
 		io.active_sink_mask = 0;
 		for(int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
@@ -126,7 +126,7 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		}
 		// Set side channels using far link
 		for (Exchange& ex : side_sink_conn) {
-			ASSERT(ex.local_ch_i > 0 && ex.local_ch_i < io.src_count);
+			ASSERT(ex.local_ch_i > 0 && ex.local_ch_i < io.src.GetCount());
 			PacketIO::Source& iface = io.src[ex.local_ch_i];
 			InterfaceSinkRef sink_iface = ex.other->GetSink();
 			iface.val = &sink_iface->GetValue(ex.other_ch_i);
@@ -136,7 +136,7 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
 			PacketIO::Source& iface = io.src[src_ch];
 			if (!iface.val) {
-				ASSERT(src_ch >= req_sink_ch_count);
+				ASSERT(type.iface.src[src_ch].is_opt);
 			}
 			else if (iface.val->IsQueueFull()) {
 				iface.is_full = true;
@@ -352,8 +352,10 @@ void* LinkBase::GetSecondaryPtr() {
 bool LinkBase::IsPacketStuck() {
 	AtomTypeCls type = GetAtomType();
 	InterfaceSinkRef sink_iface = GetSink();
-	int sink_c = sink_iface->GetSinkCount() - type.user_sink_count;
+	int sink_c = sink_iface->GetSinkCount();
 	for(int i = 0; i < sink_c; i++) {
+		if (type.iface.sink[i].is_opt)
+			continue;
 		Value& val = sink_iface->GetValue(i);
 		if (val.GetQueueSize() == 0) {
 			RTLOG("LinkBase::IsPacketStuck: true: sink #" << i << " empty");
@@ -362,8 +364,10 @@ bool LinkBase::IsPacketStuck() {
 	}
 	
 	InterfaceSourceRef src_iface = GetSource();
-	int src_c = src_iface->GetSourceCount() - type.user_src_count;
+	int src_c = src_iface->GetSourceCount();
 	for(int i = 0; i < src_c; i++) {
+		if (type.iface.src[i].is_opt)
+			continue;
 		Value& val = src_iface->GetSourceValue(i);
 		if (val.IsQueueFull()) {
 			RTLOG("LinkBase::IsPacketStuck: true: src #" << i << " full");

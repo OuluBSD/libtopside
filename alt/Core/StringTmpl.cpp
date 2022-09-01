@@ -287,10 +287,22 @@ TMPL(bool) Insert(int begin, const T* str, int n) {
 	return true;
 }
 
+TMPL(bool) operator<(const StringT& s) const {
+	if (s.count == 0) return false;
+	if (count == 0) return true;
+	return Compare(s.Begin(), Begin(), min(count+1, s.count+1)) > 0;
+}
+
+TMPL(bool) operator>(const StringT& s) const {
+	if (s.count == 0) return true;
+	if (count == 0) return false;
+	return Compare(s.Begin(), Begin(), min(count+1, s.count+1)) < 0;
+}
+
 TMPL(bool) operator==(const StringT& s) const {
 	if (s.GetCount() != GetCount())
 		return false;
-	return Compare(s.Begin(), Begin(), count) == 0;
+	return Compare(s.Begin(), Begin(), min(count+1, s.count+1)) == 0;
 }
 
 TMPL(bool) operator!=(const StringT& s) const {

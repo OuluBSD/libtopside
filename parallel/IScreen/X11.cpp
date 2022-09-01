@@ -6,10 +6,52 @@
 #if (defined flagLINUX) || (defined flagFREEBSD)
 NAMESPACE_PARALLEL_BEGIN
 
+struct ScrX11::NativeContext {
+    ::Window win;
+    ::Display* display;
+    ::XImage* fb;
+    ::Visual* visual;
+    ::GC gc;
+    ::XVisualInfo* visual_info;
+    ::Atom  atomWmDeleteWindow;
+    ::XSetWindowAttributes attr;
+};
+
+struct ScrX11::NativeSinkDevice {
+    NativeContext* ctx;
+};
+
+struct ScrX11::NativeEventsBase {
+    NativeContext* ctx;
+    int time;
+    dword seq;
+    UPP::CtrlEvent ev;
+    Size sz;
+    bool ev_sendable;
+    bool is_lalt;
+    bool is_ralt;
+    bool is_lshift;
+    bool is_rshift;
+    bool is_lctrl;
+    bool is_rctrl;
+    Point prev_mouse_pt;
+    ::XEvent xev;
+};
+
+
+bool ScrX11::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
 bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
 	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
-	auto& ctx = ctx_->ctx;
+	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
@@ -240,6 +282,15 @@ bool ScrX11::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) 
 
 
 
+bool ScrX11::Context_Create(One<NativeContext>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11::Context_Destroy(One<NativeContext>& dev) {
+	dev.Clear();
+}
+
 bool ScrX11::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {
 	return true;
 }
@@ -285,11 +336,20 @@ bool ScrX11::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 
 
 
+bool ScrX11::EventsBase_Create(One<NativeEventsBase>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11::EventsBase_Destroy(One<NativeEventsBase>& dev) {
+	dev.Clear();
+}
+
 bool ScrX11::EventsBase_Initialize(NativeEventsBase& ev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
 	ASSERT(ctx_);
 	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
-	ev.ctx = &ctx_->ctx;
+	ev.ctx = &*ctx_->dev;
 	
 	
 	return true;

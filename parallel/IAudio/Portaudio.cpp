@@ -1,5 +1,11 @@
 #include "IAudio.h"
 
+#ifdef flagBUILTIN_PORTAUDIO
+	#include <ports/portaudio/portaudio.h>
+#else
+	#include <portaudio.h>
+#endif
+
 #if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 NAMESPACE_PARALLEL_BEGIN
 
@@ -217,9 +223,26 @@ GLOBAL_VAR(PortaudioStatic, PaStatic);
 
 
 
+struct AudPortaudio::NativeSinkDevice {
+	PaStream* p;
+};
 
+struct AudPortaudio::NativeSourceDevice {
+	PaStream* p;
+};
 
-bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+bool AudPortaudio::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void AudPortaudio::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
+bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, const Script::WorldState& ws) {
+	PaStream*& dev = dev_.p;
+	
 	// Housekeeping vars
 	PaError err = paNoError;
 	dev = 0;
@@ -281,28 +304,28 @@ bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&) {
 bool AudPortaudio::SinkDevice_Start(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
 	
-	err = Pa_StartStream(dev);
+	err = Pa_StartStream(dev.p);
 	CHECK_ERR;
 	if (err != paNoError) // Bail out on errors
 		return false;
 	
-	ASSERT(!Pa_IsStreamStopped(dev));
+	ASSERT(!Pa_IsStreamStopped(dev.p));
 	return true;
 }
 
 void AudPortaudio::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
-	err = Pa_StopStream(dev);
+	err = Pa_StopStream(dev.p);
 	CHECK_ERR;
 }
 
 void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
 	
-	err = Pa_CloseStream(dev);
+	err = Pa_CloseStream(dev.p);
 	CHECK_ERR;
 	
-	PaStatic().Remove(dev);
+	PaStatic().Remove(dev.p);
 }
 
 bool AudPortaudio::SinkDevice_Send(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
@@ -323,29 +346,6 @@ bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBas
 	return false;
 }
 
-int AudPortaudio::SinkDevice_GetSinkDeviceCount() {
-	TODO
-}
-
-bool AudPortaudio::SinkDevice_CreateSinkDevice(int sink_i, NativeSinkDevice& o) {
-	TODO
-}
-
-void AudPortaudio::SinkDevice_ClearSinkDevice(NativeSinkDevice& o) {
-	TODO
-}
-
-bool AudPortaudio::SinkDevice_SetSinkCallback(void* data, DataCallbackFn cb) {
-	TODO
-}
-
-int AudPortaudio::SinkDevice_GetSinkFormatCount(NativeSinkDevice& o) {
-	TODO
-}
-
-bool AudPortaudio::SinkDevice_GetSinkFormat(NativeSinkDevice& o, int ch_i, int& channels, int& samplerate, int& bytes, bool& is_signed, bool& is_float) {
-	TODO
-}
 
 
 
@@ -372,33 +372,6 @@ bool AudPortaudio::SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, Realtim
 	TODO
 }
 
-bool AudPortaudio::SourceDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
-	TODO
-}
-
-int AudPortaudio::SourceDevice_GetSourceDeviceCount() {
-	TODO
-}
-
-bool AudPortaudio::SourceDevice_CreateSourceDevice(int sink_i, NativeSourceDevice& o) {
-	TODO
-}
-
-void AudPortaudio::SourceDevice_ClearSourceDevice(NativeSourceDevice& o) {
-	TODO
-}
-
-bool AudPortaudio::SourceDevice_SetSourceCallback(void* data, DataCallbackFn cb) {
-	TODO
-}
-
-int AudPortaudio::SourceDevice_GetSourceFormatCount(NativeSourceDevice& o) {
-	TODO
-}
-
-bool AudPortaudio::SourceDevice_GetSourceFormat(NativeSourceDevice& o, int ch_i, int& channels, int& samplerate, int& bytes, bool& is_signed, bool& is_float) {
-	TODO
-}
 
 
 

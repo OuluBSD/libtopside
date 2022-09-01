@@ -1,7 +1,6 @@
 #ifndef _SerialCore_Interface_h_
 #define _SerialCore_Interface_h_
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -28,7 +27,7 @@ public:
 		void InitializeContainer(ValDevTuple vt) {
 			ClearContainer();
 			
-			ValDevCls vd = vt();
+			ValDevCls vd = vt.channels[0].vd;
 			ASSERT(vd.IsValid());
 			Format val_fmt = GetDefaultFormat(vd);
 			if (!val_fmt.IsValid()) {DUMP(val_fmt);}
@@ -244,5 +243,4 @@ using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			AtomParent>;
 
 NAMESPACE_PARALLEL_END
 
-#endif
 #endif

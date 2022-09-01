@@ -1,25 +1,19 @@
 description "\377B200,179,81";
 
-uses
-	ParallelLib,
-	SoftInstru,
-	SoftSynth,
-	AudioCore;
+	uses ParallelLib;
+	uses SoftInstru;
+	uses SoftSynth;
+	uses AudioCore;
+	uses(FLUIDSYNTH) ports/fluidlite;
 
-uses(FLUIDSYNTH) ports/fluidlite;
 
 file
 	ISynth.h,
-	Enums.h,
-	Vendors.h,
 	Soft.cpp,
 	Fluidsynth.cpp,
 	FmSynth.cpp,
 	CoreSynth.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

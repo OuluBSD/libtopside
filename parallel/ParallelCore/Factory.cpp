@@ -21,6 +21,7 @@ void Factory::Dump() {
 	}
 }
 
+#if 0
 void Factory::RefreshLinks(AtomData& d) {
 	auto& m = Factory::AtomDataMap();
 	if (!d.searched_sink_links) {
@@ -62,7 +63,7 @@ LinkTypeCls Factory::GetAtomLinkType(AtomTypeCls atom) {
 		return LinkTypeCls();
 	return AtomDataMap()[i].link_type();
 }
-
+#endif
 
 
 NAMESPACE_PARALLEL_END

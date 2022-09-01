@@ -7,6 +7,7 @@ void InterfaceBuilder::AddAudio() {
 	Package("Audio", "Aud");
 	SetColor(226, 212, 0);
 	Dependency("ParallelLib");
+	Dependency("ports/portaudio", "BUILTIN_PORTAUDIO");
 	HaveNegotiateFormat();
 	
 	Interface("SinkDevice");

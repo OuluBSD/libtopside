@@ -5,8 +5,7 @@ uses
 	IAudio,
 	IMedia,
 	IVolumetric,
-	ICamera,
-	IPhysics;
+	ICamera;
 
 uses(GUI | SCREEN) IGraphics;
 

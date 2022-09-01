@@ -1,5 +1,13 @@
 #include "EcsLib.h"
 
+
+#if defined flagOGL
+NAMESPACE_PARALLEL_BEGIN
+GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev);
+NAMESPACE_PARALLEL_END
+#endif
+
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -107,6 +115,7 @@ void RenderingSystem::Start() {
 	
 }
 
+
 void RenderingSystem::Update(double dt) {
 	time += dt;
 	
@@ -130,7 +139,8 @@ void RenderingSystem::Update(double dt) {
 		}
 		RefT_Atom<X11OglSinkDevice> x11_ogl_sink = ents->GetRoot()->FindDeep<X11OglSinkDevice>();
 		if (!state && x11_ogl_sink) {
-			state = &x11_ogl_sink->dev.ogl.GetBuffer().GetState();
+			//state = &x11_ogl_sink->dev->ogl.GetBuffer().GetState();
+			state = &Get_ScrX11Ogl_Ogl(x11_ogl_sink->dev).GetBuffer().GetState();
 		}
 		#ifdef flagSDL2
 		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();

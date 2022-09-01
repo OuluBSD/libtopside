@@ -238,6 +238,8 @@ public:
 	operator const T*() const {return Begin();}
 	const T* operator~() const {return Begin();}
 	
+	bool operator<(const StringT& s) const;
+	bool operator>(const StringT& s) const;
 	bool operator==(const StringT& s) const;
 	bool operator!=(const StringT& s) const;
 	bool operator==(const char* s) const;

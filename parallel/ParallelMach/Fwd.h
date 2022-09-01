@@ -2,10 +2,11 @@
 #define _ParallelMach_Fwd_h_
 
 
+
 NAMESPACE_TOPSIDE_BEGIN
 
 namespace Parallel {
-	
+
 class Space;
 using SpaceParent			= HierExBaseParent;
 using SpaceRef				= Ref<Space,				SpaceParent>;

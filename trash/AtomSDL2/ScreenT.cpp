@@ -137,7 +137,7 @@ bool SDL2ScreenBaseT<Gfx>::IsReady(PacketIO& io) {
 		(io.active_sink_mask & 1 && io.active_sink_mask > 1) :
 		io.active_sink_mask;
 	b = b && FramePollerBase::IsReady(io);
-	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
+	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ")");
 	return b;
 }
 

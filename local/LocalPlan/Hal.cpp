@@ -14,6 +14,7 @@ void InterfaceBuilder::AddHal() {
 	HaveRecvFinalize();
 	HaveUpdate();
 	HaveIsReady();
+	HaveContextFunctions();
 	
 	Interface("AudioSinkDevice");
 	Interface("CenterVideoSinkDevice");

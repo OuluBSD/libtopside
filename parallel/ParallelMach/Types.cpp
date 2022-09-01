@@ -91,7 +91,6 @@ hash_t AtomIfaceTypeCls::GetHashValue() const {
 	CombineHash c;
 	c.Put(sink.GetHashValue());
 	c.Put(src.GetHashValue());
-	c.Put(content.GetHashValue());
 	return c;
 }
 
@@ -100,23 +99,26 @@ hash_t AtomTypeCls::GetHashValue() const {
 	c.Put(iface.GetHashValue());
 	c.Put(sub);
 	c.Put(role);
-	c.Put(user_sink_count);
-	c.Put(user_src_count);
 	return c;
 }
 
 bool AtomTypeCls::IsSinkChannelOptional(int ch_i) const {
-	int sink_begin = iface.sink.count - user_sink_count;
-	int sink_end = iface.sink.count;
-	return ch_i >= sink_begin && ch_i < sink_end;
+	return iface.sink[ch_i].is_opt;
 }
 
 bool AtomTypeCls::IsSourceChannelOptional(int ch_i) const {
-	int src_begin = iface.src.count - user_src_count;
-	int src_end = iface.src.count;
-	return ch_i >= src_begin && ch_i < src_end;
+	return iface.src[ch_i].is_opt;
 }
 
+void AtomTypeCls::AddIn(ValDevCls vd, bool is_opt) {
+	iface.sink.channels.Add().Set(vd, is_opt);
+}
+
+void AtomTypeCls::AddOut(ValDevCls vd, bool is_opt) {
+	iface.src.channels.Add().Set(vd, is_opt);
+}
+
+/*
 AtomTypeCls::AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevCls& si0, const ValDevCls& content, const ValDevCls& sr0, int side_sinks, int side_srcs, int user_sinks, int user_srcs, const ValDevCls& si1, const ValDevCls& sr1) : iface(si0,content,sr0), sub(cls), role(role) {
 	ASSERT(side_sinks > 0 || side_srcs > 0);
 	ASSERT(side_sinks == 0 || si1.IsValid());
@@ -226,46 +228,19 @@ AtomTypeCls::AtomTypeCls(
 	user_src_count = user_srcs;
 }
 
-
+*/
 
 
 
 String GetSubAtomString(SubAtomCls t) {
 	switch (t) {
 		#define ATOM_TYPE(x) case x:	return #x;
-		ATOM_TYPE_LIST
-			
-		#ifdef flagSCREEN
-		flagSCREEN_ATOM_TYPE_LIST
-		#endif
 		
-		#ifdef flagOPENCV
-		flagOPENCV_ATOM_TYPE_LIST
-		#endif
+		#define GEN_ATOM_TYPE_LIST
+		#include "GenAtom.inl"
+		#undef GEN_ATOM_TYPE_LIST
 		
-		#ifdef flagLINUX
-		flagLINUX_ATOM_TYPE_LIST
-		#endif
-		
-		#ifdef flagSDL2
-		flagSDL2_ATOM_TYPE_LIST
-		#endif
-		
-		#ifdef flagOGL
-		flagOGL_ATOM_TYPE_LIST
-		#endif
-		
-		#ifdef flagPOSIX
-		#ifdef flagPOSIX_ATOM_TYPE_LIST
-		flagPOSIX_ATOM_TYPE_LIST
-		#endif
-		#endif
-		
-		#ifdef flagFFMPEG
-		flagFFMPEG_ATOM_TYPE_LIST
-		#endif
-		
-		#undef ATOM_TYPE
+		#undef ATOM_ROLE
 		default: TODO return "invalid";
 	}
 }
@@ -274,6 +249,7 @@ String GetAtomRoleString(AtomRole t) {
 	switch (t) {
 		#define ATOM_ROLE(x) case x: return #x;
 		ATOM_ROLE_LIST
+		
 		#undef ATOM_ROLE
 		default:			return "invalid";
 	}
@@ -294,30 +270,36 @@ void IfaceConnTuple::Realize(const AtomTypeCls& type) {
 }
 
 void IfaceConnTuple::SetSource(int conn, int src_ch, int sink_ch) {
-	ASSERT(src_ch >= 0 && src_ch < type.iface.src.count);
-	ASSERT(src_ch < MAX_VDTUPLE_SIZE);
+	ASSERT(src_ch >= 0 && src_ch < type.iface.src.GetCount());
+	ASSERT(src_ch < type.iface.src.GetCount());
 	src[src_ch].conn = conn;
 	src[src_ch].local = src_ch;
 	src[src_ch].other = sink_ch;
 }
 
 void IfaceConnTuple::SetSink(int conn, int sink_ch, int src_ch) {
-	ASSERT(sink_ch >= 0 && sink_ch < type.iface.sink.count);
-	ASSERT(sink_ch < MAX_VDTUPLE_SIZE);
+	ASSERT(sink_ch >= 0 && sink_ch < type.iface.sink.GetCount());
+	ASSERT(sink_ch < type.iface.src.GetCount());
 	sink[sink_ch].conn = conn;
 	sink[sink_ch].local = sink_ch;
 	sink[sink_ch].other = src_ch;
 }
 
 bool IfaceConnTuple::IsComplete() const {
-	int c0 = type.iface.sink.count - type.user_sink_count;
-	for(int i = 1; i < c0; i++)
-		if (sink[i].conn < 0 /*&& !type.IsSinkChannelOptional(i)*/)
+	ASSERT(sink.GetCount() == type.iface.sink.GetCount());
+	if (sink.GetCount() != type.iface.sink.GetCount()) return false;
+	
+	ASSERT(src.GetCount() == type.iface.src.GetCount());
+	if (src.GetCount() != type.iface.src.GetCount()) return false;
+	
+	for(int i = 1; i < sink.GetCount(); i++)
+		if (sink[i].conn < 0 && !type.iface.sink[i].is_opt)
 			return false;
-	int c1 = type.iface.src.count - type.user_src_count;
-	for(int i = 1; i < c1; i++)
-		if (src[i].conn < 0 /*&& !type.IsSourceChannelOptional(i)*/)
+		
+	for(int i = 1; i < src.GetCount(); i++)
+		if (src[i].conn < 0 && !type.iface.src[i].is_opt)
 			return false;
+	
 	return true;
 }
 
@@ -325,7 +307,7 @@ dword IfaceConnTuple::GetSinkMask() const {
 	// primary link is not usually written to this class,
 	// but it's always required so set it true
 	dword m = 0;
-	for(int i = 0; i < MAX_VDTUPLE_SIZE; i++)
+	for(int i = 0; i < sink.GetCount(); i++)
 		m |= (i == 0 || sink[i].conn >= 0) ? 1 << i : 0;
 	return m;
 }

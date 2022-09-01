@@ -1,168 +1,225 @@
 #include "AtomAudio.h"
 
+// This file is generated. Do not modify this file.
+
 namespace TS {
 
 namespace Parallel {
 
-AtomTypeCls MidiFileReaderPipe::GetAtomType()
-{
-	return ATOM11(MIDI_FILE_READER_PIPE, PIPE, CENTER, MIDI, CENTER, ORDER, CENTER, MIDI);
+String MidiFileReaderPipe::GetAction() {
+	return "midi.file.reader.pipe";
 }
 
-LinkTypeCls MidiFileReaderPipe::GetLinkType()
-{
+AtomTypeCls MidiFileReaderPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::MIDI_FILE_READER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,MIDI),0);
+	return t;
+}
+
+LinkTypeCls MidiFileReaderPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void MidiFileReaderPipe::Visit(RuntimeVisitor& vis)
-{
+void MidiFileReaderPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<MidiFileReaderAtom>(this);
 }
 
-AtomTypeCls MidiFileReaderPipe::GetType() const
-{
+AtomTypeCls MidiFileReaderPipe::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls MidiFileReader::GetAtomType()
-{
-	return ATOM11_U01(MIDI_FILE_READER, PIPE, CENTER, MIDI, CENTER, ORDER, CENTER, RECEIPT, CENTER, MIDI);
+
+String MidiFileReader::GetAction() {
+	return "midi.file.reader";
 }
 
-LinkTypeCls MidiFileReader::GetLinkType()
-{
+AtomTypeCls MidiFileReader::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::MIDI_FILE_READER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,MIDI),1);
+	return t;
+}
+
+LinkTypeCls MidiFileReader::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void MidiFileReader::Visit(RuntimeVisitor& vis)
-{
+void MidiFileReader::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<MidiFileReaderAtom>(this);
 }
 
-AtomTypeCls MidiFileReader::GetType() const
-{
+AtomTypeCls MidiFileReader::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls MidiNullSink::GetAtomType()
-{
-	return ATOM11(MIDI_NULL_SINK, PIPE, CENTER, MIDI, CENTER, MIDI, CENTER, RECEIPT);
+
+String MidiNullSink::GetAction() {
+	return "midi.null.sink";
 }
 
-LinkTypeCls MidiNullSink::GetLinkType()
-{
+AtomTypeCls MidiNullSink::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::MIDI_NULL_SINK;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,MIDI),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls MidiNullSink::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void MidiNullSink::Visit(RuntimeVisitor& vis)
-{
+void MidiNullSink::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<MidiNullAtom>(this);
 }
 
-AtomTypeCls MidiNullSink::GetType() const
-{
+AtomTypeCls MidiNullSink::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls FluidsynthPipe::GetAtomType()
-{
-	return ATOM11_U10(FLUIDSYNTH_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+
+#if defined flagFLUIDSYNTH
+String FluidsynthPipe::GetAction() {
+	return "fluidsynth.pipe";
 }
 
-LinkTypeCls FluidsynthPipe::GetLinkType()
-{
+AtomTypeCls FluidsynthPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::FLUIDSYNTH_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls FluidsynthPipe::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void FluidsynthPipe::Visit(RuntimeVisitor& vis)
-{
+void FluidsynthPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<FluidsynthInstrument>(this);
 }
 
-AtomTypeCls FluidsynthPipe::GetType() const
-{
+AtomTypeCls FluidsynthPipe::GetType() const {
 	return GetAtomType();
 }
+#endif
 
-AtomTypeCls SoftInstrumentPipe::GetAtomType()
-{
-	return ATOM11_U10(SOFT_INSTRUMENT_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+
+String SoftInstrumentPipe::GetAction() {
+	return "softinstru.pipe";
 }
 
-LinkTypeCls SoftInstrumentPipe::GetLinkType()
-{
+AtomTypeCls SoftInstrumentPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SOFT_INSTRUMENT_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls SoftInstrumentPipe::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SoftInstrumentPipe::Visit(RuntimeVisitor& vis)
-{
+void SoftInstrumentPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SoftInstrument>(this);
 }
 
-AtomTypeCls SoftInstrumentPipe::GetType() const
-{
+AtomTypeCls SoftInstrumentPipe::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls FmSynthPipe::GetAtomType()
-{
-	return ATOM11_U10(FM_SYNTH_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+
+String FmSynthPipe::GetAction() {
+	return "fmsynth.pipe";
 }
 
-LinkTypeCls FmSynthPipe::GetLinkType()
-{
+AtomTypeCls FmSynthPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::FM_SYNTH_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls FmSynthPipe::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void FmSynthPipe::Visit(RuntimeVisitor& vis)
-{
+void FmSynthPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<FmSynthInstrument>(this);
 }
 
-AtomTypeCls FmSynthPipe::GetType() const
-{
+AtomTypeCls FmSynthPipe::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls CoreSynthPipe::GetAtomType()
-{
-	return ATOM11_U10(CORE_SYNTH_PIPE, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, MIDI, CENTER, AUDIO);
+
+String CoreSynthPipe::GetAction() {
+	return "coresynth.pipe";
 }
 
-LinkTypeCls CoreSynthPipe::GetLinkType()
-{
+AtomTypeCls CoreSynthPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CORE_SYNTH_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls CoreSynthPipe::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void CoreSynthPipe::Visit(RuntimeVisitor& vis)
-{
+void CoreSynthPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<CoreSynthInstrument>(this);
 }
 
-AtomTypeCls CoreSynthPipe::GetType() const
-{
+AtomTypeCls CoreSynthPipe::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls CoreEffectPipe::GetAtomType()
-{
-	return ATOM11(CORE_EFFECT_PIPE, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, AUDIO);
+
+String CoreEffectPipe::GetAction() {
+	return "corefx.pipe";
 }
 
-LinkTypeCls CoreEffectPipe::GetLinkType()
-{
+AtomTypeCls CoreEffectPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CORE_EFFECT_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls CoreEffectPipe::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void CoreEffectPipe::Visit(RuntimeVisitor& vis)
-{
+void CoreEffectPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<AudioCoreEffect>(this);
 }
 
-AtomTypeCls CoreEffectPipe::GetType() const
-{
+AtomTypeCls CoreEffectPipe::GetType() const {
 	return GetAtomType();
 }
+
 
 }
 

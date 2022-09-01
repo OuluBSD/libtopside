@@ -7,9 +7,8 @@ uses
 file
 	SerialLib.h,
 	Init.icpp,
-	SingleMachine.cpp,
 	Types.h,
-	Generated.h,
+	SingleMachine.cpp,
 	EntitySystem.h,
 	EntitySystem.cpp,
 	CustomAtom.h,

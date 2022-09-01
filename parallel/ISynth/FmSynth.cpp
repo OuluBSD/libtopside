@@ -3,6 +3,24 @@
 #if 1
 NAMESPACE_PARALLEL_BEGIN
 
+struct SynFmSynth::NativeInstrument {
+    SoftSynth::FmSynth instrument;
+    int sample_rate;
+};
+
+
+
+
+
+bool SynFmSynth::Instrument_Create(One<NativeInstrument>& dev) {
+	dev.Create();
+	return true;
+}
+
+void SynFmSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
+	dev.Clear();
+}
+
 bool SynFmSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sample_rate = ws.GetInt(".samplerate", 1024);
 	

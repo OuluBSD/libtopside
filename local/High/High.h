@@ -237,7 +237,8 @@ HiValue ReadLambda(const char *s);
 #endif
 
 namespace UPP {
-	
+using namespace TS;
+
 struct HiEscape {
 	#if USE_HIGH_BYTECODE
 	using Vm = IrVM;

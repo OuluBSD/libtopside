@@ -4,6 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 InterfaceBuilder::Header& InterfaceBuilder::AddHeader(String name, String base, String role) {
+	ASSERT(HasBase(base));
 	Header& h = headers.Add();
 	h.name = name;
 	h.base = base;
@@ -43,6 +44,10 @@ void InterfaceBuilder::HaveIsReady() {
 
 void InterfaceBuilder::HaveNegotiateFormat() {
 	cur->have_negotiate_format = true;
+}
+
+void InterfaceBuilder::HaveContextFunctions() {
+	cur->have_context_fns = true;
 }
 
 void InterfaceBuilder::EnableIf(String conditional) {
@@ -111,8 +116,35 @@ void InterfaceBuilder::Generate(bool write_actually) {
 	String par_dir = AppendFileName(prj_dir, "parallel");
 	
 	String pm_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "Generated.h");
+	String ga_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "GenAtom.inl");
 	LOG("\tParallelMach generated: " << pm_file);
+	LOG("\tParallelMach generated inline: " << ga_file);
 	
+	
+	VectorMap<String, Vector<int>> flag_headers;
+	int i = 0;
+	for (Header& h : headers) {
+		String s;
+		/*for(int j = 0; j < h.args.GetCount(); j++) {
+			String k = h.args.GetKey(j);
+			if (k.Left(7) == "reqdef_") {
+				String flag = k.Mid(7);
+				if (!s.IsEmpty()) s.Cat('_');
+				if (flag.Left(4) == "flag") flag = flag.Mid(4);
+				s << flag;
+			}
+		}*/
+		String cond = GetBaseConds(h.base);
+		if (cond.GetCount()) {
+			cond.Replace("|","_");
+			cond.Replace("&","v");
+		}
+		flag_headers.GetAdd(s).Add(i);
+		++i;
+	}
+	
+
+
 	for (const Pkg& pkg : packages) {
 		String a = pkg.abbr;
 		String n = pkg.name;
@@ -237,9 +269,9 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					String v = pkg.ifaces[j];
 					
 					if (v.GetCount())
-						s << "\t#if " << GetMacroConditionals(v) << ";\n";
+						s << "\t#if " << GetMacroConditionals(v) << "\n";
 					
-					s << "\tstruct Native" << k << "\n";
+					s << "\tstruct Native" << k << ";\n";
 					
 					if (v.GetCount())
 						s << "\t#endif\n";
@@ -294,7 +326,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				if (v.GetCount())
 					s << "#if " << GetMacroConditionals(v) << "\n";
 				
-				s	<< "template <class " << a << "> struct " << n << k << " : "<<a<<k<<" {\n"
+				s	<< "template <class " << a << "> struct " << n << k << "T : "<<a<<k<<" {\n"
 				
 					<< "\tusing CLASSNAME = "<<n<<k<<"T<"<<a<<">;\n"
 					<< "\tRTTI_DECL1(CLASSNAME, "<<a<<k<<")\n"
@@ -303,7 +335,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					<< "\tOne<typename "<<a<<"::Native"<<k<<"> dev;\n"
 					
 					<< "\tbool Initialize(const Script::WorldState& ws) override {\n"
-				    << "\t\tif (!"<<a<<"::"<<k<<"_Create(dev, *this, ws))\n"
+				    << "\t\tif (!"<<a<<"::"<<k<<"_Create(dev))\n"
 				    << "\t\t\treturn false;\n"
 				    << "\t\tif (!"<<a<<"::"<<k<<"_Initialize(*dev, *this, ws))\n"
 				    << "\t\t\treturn false;\n"
@@ -326,7 +358,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					
 					<< "\tvoid Uninitialize() override {\n"
 				    << "\t\t"<<a<<"::"<<k<<"_Uninitialize(*dev, *this);\n"
-				    << "\t\t"<<a<<"::"<<k<<"_Destroy(dev, *this, ws);\n"
+				    << "\t\t"<<a<<"::"<<k<<"_Destroy(dev);\n"
 					<< "\t}\n"
 					
 					<< "\tbool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {\n"
@@ -356,9 +388,18 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 				if (pkg.have_negotiate_format)
 					s	<< "\tbool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {\n"
-						<< "\t\treturn Scr::Context_NegotiateSinkFormat(ctx, *this, link, sink_ch, new_fmt);\n"
+						<< "\t\treturn "<<a<<"::"<<k<<"_NegotiateSinkFormat(*dev, *this, link, sink_ch, new_fmt);\n"
 						<< "\t}\n";
 				
+				if (pkg.have_context_fns) {
+					s	<< "\tbool AttachContext(AtomBase& a) override {\n"
+						<< "\t\treturn "<<a<<"::"<<k<<"_AttachContext(*dev, *this, a);\n"
+						<< "\t}\n";
+						
+					s	<< "\tvoid DetachContext(AtomBase& a) override {\n"
+						<< "\t\t"<<a<<"::"<<k<<"_DetachContext(*dev, *this, a);\n"
+						<< "\t}\n";
+				}
 				s	<< "};\n";
 				
 				if (v.GetCount())
@@ -380,7 +421,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					String iv = pkg.ifaces[j];
 					
 					if (iv.GetCount())
-						s << "#if " << GetMacroConditionals(iv) << ";\n";
+						s << "#if " << GetMacroConditionals(iv) << "\n";
 					
 					s << "using " << vk << ik << " = " << n << ik << "T<" << a << vk << ">;\n";
 					
@@ -418,7 +459,9 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 				String nat_this_ = "Native" + k + "&, ";
 				
-				s	<< "static bool " << k << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n"
+				s	<< "static bool " << k << "_Create(One<Native" + k + ">& dev);\n"
+					<< "static void " << k << "_Destroy(One<Native" + k + ">& dev);\n"
+					<< "static bool " << k << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n"
 					<< "static bool " << k << "_PostInitialize(" << nat_this_ << "AtomBase&);\n"
 					<< "static bool " << k << "_Start(" << nat_this_ << "AtomBase&);\n"
 					<< "static void " << k << "_Stop(" << nat_this_ << "AtomBase&);\n"
@@ -441,6 +484,11 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					s	<< "static bool " << k << "_IsReady(" << nat_this_ << "AtomBase&, PacketIO& io);\n";
 				}
 				
+				if (pkg.have_context_fns) {
+					s	<< "static bool " << k << "_AttachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
+					s	<< "static void " << k << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
+				}
+				
 				s << "\n";
 			}
 			
@@ -450,7 +498,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 	}
 	
 	
-	
+		
 	// ParallerMach/Generated.h
 	{
 		String s;
@@ -463,25 +511,6 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			<< "namespace TS {\n"
 			<< "\n"
 			<< "namespace Parallel {\n";
-		
-		
-		VectorMap<String, Vector<int>> flag_headers;
-		int i = 0;
-		for (Header& h : headers) {
-			String s;
-			for(int j = 0; j < h.args.GetCount(); j++) {
-				String k = h.args.GetKey(j);
-				if (k.Left(7) == "reqdef_") {
-					String flag = k.Mid(7);
-					if (!s.IsEmpty()) s.Cat('_');
-					if (flag.Left(4) == "flag") flag = flag.Mid(4);
-					s << flag;
-				}
-			}
-			flag_headers.GetAdd(s).Add(i);
-			++i;
-		}
-		
 		for(int i = 0; i < flag_headers.GetCount(); i++) {
 			String k = flag_headers.GetKey(i);
 			const Vector<int>& hi = flag_headers[i];
@@ -510,6 +539,46 @@ void InterfaceBuilder::Generate(bool write_actually) {
 		outputs.Add(pm_file, s);
 	}
 	
+	// ParallerMach/GenAtom.inl
+	{
+		String s;
+		
+		s	<< "#ifdef GEN_ATOM_TYPE_LIST\n\n";
+		for(int i = 0; i < flag_headers.GetCount(); i++) {
+			String k = flag_headers.GetKey(i);
+			const Vector<int>& hi = flag_headers[i];
+			String pre = k.IsEmpty() ? String() : k + "_";
+			
+			if (k.IsEmpty())
+				s	<< pre << "ATOM_TYPE_LIST\n";
+			else
+				s	<< "#if " << GetMacroFlags(k) << "\n"
+					<< pre << "ATOM_TYPE_LIST\n"
+					<< "#endif\n\n";
+			
+		}
+		s	<< "\n#endif\n\n\n";
+		
+		s	<< "#ifdef GEN_ATOM_CLASS_LIST\n\n";
+		for(int i = 0; i < flag_headers.GetCount(); i++) {
+			String k = flag_headers.GetKey(i);
+			const Vector<int>& hi = flag_headers[i];
+			String pre = k.IsEmpty() ? String() : k + "_";
+			
+			if (k.IsEmpty())
+				s	<< pre << "ATOM_CLASS_LIST\n";
+			else
+			s	<< "#if " << GetMacroFlags(k) << "\n"
+				<< pre << "ATOM_CLASS_LIST\n"
+				<< "#endif\n\n";
+			
+		}
+		s	<< "\n#endif\n";
+		
+		//LOG(s);
+		outputs.Add(ga_file, s);
+	}
+	
 	// Atoms
 	{
 		String def_atom = "AtomLocal";
@@ -531,17 +600,22 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			{
 				String s;
 				
-				s	<< "#ifndef _AtomAudio_Generated_h_\n"
-					<< "#define _AtomAudio_Generated_h_\n"
+				s	<< "#ifndef _" << k << "_Generated_h_\n"
+					<< "#define _" << k << "_Generated_h_\n"
 					<< "\n"
 					<< "// This file is generated. Do not modify this file.\n"
 					<< "\n"
 					<< "namespace TS {\n"
 					<< "\n"
-					<< "namespace Parallel {\n";
+					<< "namespace Parallel {\n\n";
 				
 				for(int j = 0; j < ai.GetCount(); j++) {
 					const Header& h = headers[ai[j]];
+					
+					String cond = GetBaseConds(h.base);
+					
+					if (cond.GetCount())
+						s << "#if " << GetMacroConditionals(cond) << "\n";
 					
 					s	<< "class " << h.name << " : public " << h.base << " {\n"
 						<< "\n"
@@ -554,9 +628,17 @@ void InterfaceBuilder::Generate(bool write_actually) {
 						<< "\tvoid Visit(RuntimeVisitor& vis) override;\n"
 						<< "\tAtomTypeCls GetType() const override;\n"
 						<< "\t\n"
-						<< "};\n\n";
-
+						<< "};\n";
+					
+					if (cond.GetCount())
+						s << "#endif\n";
+					
+					s	<< "\n";
 				}
+				
+				s << "}\n\n";
+				s << "}\n";
+				s << "#endif\n";
 				
 				outputs.Add(genh_path, s);
 			}
@@ -576,13 +658,18 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				for(int j = 0; j < ai.GetCount(); j++) {
 					const Header& h = headers[ai[j]];
 					
+					String cond = GetBaseConds(h.base);
+					
+					if (cond.GetCount())
+						s << "#if " << GetMacroConditionals(cond) << "\n";
+					
 					s	<< "String " << h.name << "::GetAction() {\n"
 						<< "\treturn \"" << h. action << "\";\n"
 						<< "}\n\n"
 						<< "AtomTypeCls " << h.name << "::GetAtomType() {\n"
 						<< "\tAtomTypeCls t;\n"
 						<< "\tt.sub = SubAtomCls::" << GetMacroName(h.name) << ";\n"
-						<< "\tt.role = AtomRole::" << h.role << ";\n";
+						<< "\tt.role = AtomRole::" << ToUpper(h.role) << ";\n";
 						
 					for(int i = 0; i < h.ins.GetCount(); i++) {
 						String k = h.ins.GetKey(i);
@@ -596,22 +683,27 @@ void InterfaceBuilder::Generate(bool write_actually) {
 						s << "\tt.AddOut(" << GetVD(k) << "," << (int)opt << ");\n";
 					}
 					
-					s	<< "}\n\n"
-						<< "LinkTypeCls " << h.name << "::GetLinkType() {\n"
-						<< "\tLINKTYPE(" << ToUpper(h.link_type) << ", " << ToUpper(h.link_role) << ");\n"
+					s	<< "\treturn t;\n"
 						<< "}\n\n"
-						<< "void " << h.name << "::Visit(RuntimeVisitor& vis) override {\n"
+						<< "LinkTypeCls " << h.name << "::GetLinkType() {\n"
+						<< "\treturn LINKTYPE(" << ToUpper(h.link_type) << ", " << ToUpper(h.link_role) << ");\n"
+						<< "}\n\n"
+						<< "void " << h.name << "::Visit(RuntimeVisitor& vis) {\n"
 						<< "\tvis.VisitThis<" << h.base << ">(this);\n"
 						<< "}\n\n"
-						<< "AtomTypeCls " << h.name << "::GetType() const override {\n"
+						<< "AtomTypeCls " << h.name << "::GetType() const {\n"
 						<< "\treturn GetAtomType();\n"
-						<< "}\n\n"
-						<< "\n\n";
+						<< "}\n";
+						
+					if (cond.GetCount())
+						s << "#endif\n";
+					
+					s	<< "\n\n";
 
 				}
 				
 				
-				s	<< "}\n\n}\n\n#endif\n";
+				s	<< "}\n\n}\n\n";
 				
 				
 				//LOG(s);
@@ -660,6 +752,7 @@ String InterfaceBuilder::GetMacroConditionals(String cond_str) {
 	ASSERT(!cond_str.IsEmpty());
 	Vector<String> ors = Split(cond_str, "|");
 	int i = 0;
+	int parts = 0;
 	for (String o : ors) {
 		if (i++) s << " || ";
 		s << "(";
@@ -668,9 +761,14 @@ String InterfaceBuilder::GetMacroConditionals(String cond_str) {
 		for (String a : ands) {
 			if (j++) s << " && ";
 			s << "defined flag" << a;
+			parts++;
 		}
 		s << ")";
 	}
+	
+	if (parts == 1)
+		return "defined flag" + cond_str;
+	
 	return s;
 }
 
@@ -705,7 +803,77 @@ String InterfaceBuilder::GetMacroName(String name) {
 	return s;
 }
 
+String InterfaceBuilder::GetMacroFlags(String flags) {
+	Vector<String> v = Split(flags, "_");
+	String s;
+	for (String vs : v) {
+		if (!s.IsEmpty())
+			s << " && ";
+		s << "defined flag" << vs;
+	}
+	return s;
+}
 
+bool InterfaceBuilder::HasBase(String s) const {
+	//DUMP(s);
+	for(const Pkg& p : packages) {
+		for(int i = 0; i < p.vendors.GetCount(); i++) {
+			String vendor = p.vendors.GetKey(i);
+			for(int j = 0; j < p.ifaces.GetCount(); j++) {
+				String iface = p.ifaces.GetKey(j);
+				String base = vendor + iface;
+				//DUMP(base);
+				if (base == s) {
+					ASSERT(custom_atom_bases.Find(s) < 0);
+					return true;
+				}
+			}
+		}
+	}
+	
+	if (custom_atom_bases.Find(s) >= 0)
+		return true;
+	
+	DUMP(s);
+	return false;
+}
 
+String InterfaceBuilder::GetBaseConds(String s) const {
+	int i = custom_atom_bases.Find(s);
+	if (i >= 0)
+		return custom_atom_bases[i];
+	
+	for(const Pkg& p : packages) {
+		for(int i = 0; i < p.vendors.GetCount(); i++) {
+			String vendor = p.vendors.GetKey(i);
+			for(int j = 0; j < p.ifaces.GetCount(); j++) {
+				String iface = p.ifaces.GetKey(j);
+				String base = vendor + iface;
+				//DUMP(base);
+				if (base == s) {
+					String vcond = p.vendors[i];
+					String icond = p.ifaces[j];
+					Index<String> ors;
+					for (String cond : Split(vcond, "|"))
+						ors.FindAdd(cond);
+					for (String cond : Split(icond, "|"))
+						ors.FindAdd(cond);
+					
+					SortIndex(ors, StdLess<String>());
+					
+					String s;
+					for(int i = 0; i < ors.GetCount(); i++) {
+						if (i) s.Cat('|');
+						s.Cat(ors[i]);
+					}
+					return s;
+				}
+			}
+		}
+	}
+	
+	NEVER();
+	Panic("error");
+}
 
 NAMESPACE_TOPSIDE_END

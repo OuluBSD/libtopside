@@ -15,6 +15,7 @@ class InterfaceBuilder {
 		bool have_update = false;
 		bool have_is_ready = false;
 		bool have_negotiate_format = false;
+		bool have_context_fns = false;
 		
 	};
 	
@@ -40,6 +41,7 @@ class InterfaceBuilder {
 	
 	Array<Header> headers;
 	Array<Pkg> packages;
+	VectorMap<String,String> custom_atom_bases;
 	Pkg* cur = 0;
 	
 	
@@ -52,6 +54,7 @@ public:
 	void HaveUpdate();
 	void HaveIsReady();
 	void HaveNegotiateFormat();
+	void HaveContextFunctions();
 	void EnableIf(String conditional);
 	void EnableAlways();
 	void Interface(String name, String conditional="");
@@ -67,9 +70,12 @@ public:
 	void AddEffect();
 	void AddMidiHw();
 	
+	bool HasBase(String base) const;
+	String GetBaseConds(String base) const;
 	
 public:
 	
+	void AddCustomBase(String s, String cond="") {custom_atom_bases.Add(s, cond);}
 	Header& AddHeader(String name, String base, String role);
 	
 	
@@ -79,6 +85,7 @@ public:
 	static String GetMacroConditionals(String cond_str);
 	static String GetVD(String vd_name);
 	static String GetMacroName(String vd_name);
+	static String GetMacroFlags(String flags);
 	
 };
 

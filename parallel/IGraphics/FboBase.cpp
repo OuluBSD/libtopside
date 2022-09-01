@@ -168,7 +168,7 @@ bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
 		binders.GetCount() > 0;
-	RTLOG("FboAtomT::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("FboAtomT::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

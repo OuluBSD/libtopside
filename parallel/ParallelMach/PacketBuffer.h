@@ -171,7 +171,7 @@ class Value;
 
 struct PacketIO {
 	
-	struct Sink {
+	struct Sink : Moveable<Sink> {
 		Value*			val = 0;
 		PacketBuffer*	buf = 0;
 		Packet			p;
@@ -179,7 +179,7 @@ struct PacketIO {
 		bool			may_remove = false;
 	};
 	
-	struct Source {
+	struct Source : Moveable<Source> {
 		Value*			val = 0;
 		Packet			p;
 		int				from_sink_ch = -1;
@@ -189,10 +189,8 @@ struct PacketIO {
 	dword			active_sink_mask = 0;
 	dword			full_src_mask = 0;
 	int				nonempty_sinks = 0;
-	int				sink_count = 0;
-	int				src_count = 0;
-	Sink			sink[MAX_VDTUPLE_SIZE];
-	Source			src[MAX_VDTUPLE_SIZE];
+	Vector<Sink>	sink;
+	Vector<Source>	src;
 	
 };
 

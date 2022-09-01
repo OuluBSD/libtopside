@@ -6,10 +6,41 @@
 #if (defined flagLINUX) || (defined flagFREEBSD)
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct ScrX11Sw::NativeContext {
+    ::Window win;
+    ::Display* display;
+    ::XImage* fb;
+    ::Visual* visual;
+    ::GC gc;
+    ::XVisualInfo* visual_info;
+    ::Atom  atomWmDeleteWindow;
+    ::XSetWindowAttributes attr;
+};
+
+struct ScrX11Sw::NativeSinkDevice {
+    NativeContext* ctx;
+    GfxAccelAtom<X11SwGfx> accel;
+    ByteImage accel_buf;
+    ByteImage accel_buf_tmp;
+    DepthImage accel_zbuf;
+    SoftFramebuffer accel_fbo;
+};
+
+
+bool ScrX11Sw::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11Sw::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
 bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
-	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11SwContext>(1);
 	if (!ctx_) {LOG("error: could not find X11 context"); return false;}
-	auto& ctx = ctx_->ctx;
+	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	
 	if (!dev.accel.Initialize(a, ws)) {

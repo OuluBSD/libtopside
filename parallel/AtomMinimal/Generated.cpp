@@ -1,1171 +1,1547 @@
 #include "AtomMinimal.h"
 
+// This file is generated. Do not modify this file.
+
 namespace TS {
 
 namespace Parallel {
 
-AtomTypeCls CenterCustomer::GetAtomType()
-{
-	return ATOM11(CENTER_CUSTOMER, CUSTOMER, CENTER, ORDER, CENTER, RECEIPT, CENTER, ORDER);
+String CenterCustomer::GetAction() {
+	return "center.customer";
 }
 
-LinkTypeCls CenterCustomer::GetLinkType()
-{
+AtomTypeCls CenterCustomer::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CENTER_CUSTOMER;
+	t.role = AtomRole::CUSTOMER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,ORDER),0);
+	return t;
+}
+
+LinkTypeCls CenterCustomer::GetLinkType() {
 	return LINKTYPE(CUSTOMER, CUSTOMER);
 }
 
-void CenterCustomer::Visit(RuntimeVisitor& vis)
-{
+void CenterCustomer::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<CustomerBase>(this);
 }
 
-AtomTypeCls CenterCustomer::GetType() const
-{
+AtomTypeCls CenterCustomer::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls TestRealtimeSrc::GetAtomType()
-{
-	return ATOM11(TEST_REALTIME_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+
+String TestRealtimeSrc::GetAction() {
+	return "center.audio.src.test";
 }
 
-LinkTypeCls TestRealtimeSrc::GetLinkType()
-{
+AtomTypeCls TestRealtimeSrc::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::TEST_REALTIME_SRC;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls TestRealtimeSrc::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
-{
+void TestRealtimeSrc::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<RollingValueBase>(this);
 }
 
-AtomTypeCls TestRealtimeSrc::GetType() const
-{
+AtomTypeCls TestRealtimeSrc::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls TestRealtimeSink::GetAtomType()
-{
-	return ATOM11(TEST_REALTIME_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+
+String TestRealtimeSink::GetAction() {
+	return "center.audio.sink.test.realtime";
 }
 
-LinkTypeCls TestRealtimeSink::GetLinkType()
-{
+AtomTypeCls TestRealtimeSink::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::TEST_REALTIME_SINK;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls TestRealtimeSink::GetLinkType() {
 	return LINKTYPE(INTERVAL_PIPE, PROCESS);
 }
 
-void TestRealtimeSink::Visit(RuntimeVisitor& vis)
-{
+void TestRealtimeSink::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidSinkBase>(this);
 }
 
-AtomTypeCls TestRealtimeSink::GetType() const
-{
+AtomTypeCls TestRealtimeSink::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls TestPollerSink::GetAtomType()
-{
-	return ATOM11(TEST_POLLER_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+
+String TestPollerSink::GetAction() {
+	return "center.audio.sink.test.poller";
 }
 
-LinkTypeCls TestPollerSink::GetLinkType()
-{
+AtomTypeCls TestPollerSink::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::TEST_POLLER_SINK;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls TestPollerSink::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void TestPollerSink::Visit(RuntimeVisitor& vis)
-{
+void TestPollerSink::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidPollerSinkBase>(this);
 }
 
-AtomTypeCls TestPollerSink::GetType() const
-{
+AtomTypeCls TestPollerSink::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls PortaudioSink::GetAtomType()
-{
-	return ATOM11(PORTAUDIO_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+
+#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
+String PortaudioSink::GetAction() {
+	return "center.audio.sink.hw";
 }
 
-LinkTypeCls PortaudioSink::GetLinkType()
-{
+AtomTypeCls PortaudioSink::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::PORTAUDIO_SINK;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls PortaudioSink::GetLinkType() {
 	return LINKTYPE(EXTERNAL_PIPE, PROCESS);
 }
 
-void PortaudioSink::Visit(RuntimeVisitor& vis)
-{
+void PortaudioSink::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<PortaudioSinkDevice>(this);
 }
 
-AtomTypeCls PortaudioSink::GetType() const
-{
+AtomTypeCls PortaudioSink::GetType() const {
 	return GetAtomType();
 }
+#endif
+
 
 #if defined flagFFMPEG
-AtomTypeCls AudioDecoderSrc::GetAtomType()
-{
-	return ATOM11(AUDIO_DECODER_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+String AudioDecoderSrc::GetAction() {
+	return "perma.audio.source.decoder";
 }
 
-LinkTypeCls AudioDecoderSrc::GetLinkType()
-{
+AtomTypeCls AudioDecoderSrc::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_DECODER_SRC;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioDecoderSrc::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
-{
+void AudioDecoderSrc::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<FfmpegSourceDevice>(this);
 }
 
-AtomTypeCls AudioDecoderSrc::GetType() const
-{
+AtomTypeCls AudioDecoderSrc::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-AtomTypeCls AudioDbgSrc::GetAtomType()
-{
-	return ATOM11(AUDIO_DBG_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+
+
+String AudioDbgSrc::GetAction() {
+	return "center.audio.src.dbg_generator";
 }
 
-LinkTypeCls AudioDbgSrc::GetLinkType()
-{
+AtomTypeCls AudioDbgSrc::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_DBG_SRC;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioDbgSrc::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void AudioDbgSrc::Visit(RuntimeVisitor& vis)
-{
+void AudioDbgSrc::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<AudioGenBase>(this);
 }
 
-AtomTypeCls AudioDbgSrc::GetType() const
-{
+AtomTypeCls AudioDbgSrc::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioSplitter::GetAtomType()
-{
-	return ATOM12(AUDIO_SPLITTER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+
+String AudioSplitter::GetAction() {
+	return "center.audio.side.src.center";
 }
 
-LinkTypeCls AudioSplitter::GetLinkType()
-{
+AtomTypeCls AudioSplitter::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_SPLITTER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioSplitter::GetLinkType() {
 	return LINKTYPE(SPLITTER, PROCESS);
 }
 
-void AudioSplitter::Visit(RuntimeVisitor& vis)
-{
+void AudioSplitter::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidBase>(this);
 }
 
-AtomTypeCls AudioSplitter::GetType() const
-{
+AtomTypeCls AudioSplitter::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioSplitterUser::GetAtomType()
-{
-	return ATOM11_U01(AUDIO_SPLITTER_USER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+
+String AudioSplitterUser::GetAction() {
+	return "center.audio.side.src.center.user";
 }
 
-LinkTypeCls AudioSplitterUser::GetLinkType()
-{
+AtomTypeCls AudioSplitterUser::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_SPLITTER_USER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	return t;
+}
+
+LinkTypeCls AudioSplitterUser::GetLinkType() {
 	return LINKTYPE(SPLITTER, PROCESS);
 }
 
-void AudioSplitterUser::Visit(RuntimeVisitor& vis)
-{
+void AudioSplitterUser::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidBase>(this);
 }
 
-AtomTypeCls AudioSplitterUser::GetType() const
-{
+AtomTypeCls AudioSplitterUser::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioJoiner::GetAtomType()
-{
-	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+
+String AudioJoiner::GetAction() {
+	return "center.audio.side.sink.center";
 }
 
-LinkTypeCls AudioJoiner::GetLinkType()
-{
+AtomTypeCls AudioJoiner::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_JOINER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioJoiner::GetLinkType() {
 	return LINKTYPE(JOINER, PROCESS);
 }
 
-void AudioJoiner::Visit(RuntimeVisitor& vis)
-{
+void AudioJoiner::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidBase>(this);
 }
 
-AtomTypeCls AudioJoiner::GetType() const
-{
+AtomTypeCls AudioJoiner::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioJoinerUser::GetAtomType()
-{
-	return ATOM11_U10(AUDIO_JOINER_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+
+String AudioJoinerUser::GetAction() {
+	return "center.audio.side.sink.center.user";
 }
 
-LinkTypeCls AudioJoinerUser::GetLinkType()
-{
+AtomTypeCls AudioJoinerUser::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_JOINER_USER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioJoinerUser::GetLinkType() {
 	return LINKTYPE(JOINER, PROCESS);
 }
 
-void AudioJoinerUser::Visit(RuntimeVisitor& vis)
-{
+void AudioJoinerUser::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidBase>(this);
 }
 
-AtomTypeCls AudioJoinerUser::GetType() const
-{
+AtomTypeCls AudioJoinerUser::GetType() const {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioJoiner2User::GetAtomType()
-{
-	return ATOM11_U20(AUDIO_JOINER2_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO, CENTER, AUDIO);
+
+String AudioJoiner2User::GetAction() {
+	return "center.audio.side.sink2.center.user";
 }
 
-LinkTypeCls AudioJoiner2User::GetLinkType()
-{
+AtomTypeCls AudioJoiner2User::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_JOINER2_USER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioJoiner2User::GetLinkType() {
 	return LINKTYPE(JOINER, PROCESS);
 }
 
-void AudioJoiner2User::Visit(RuntimeVisitor& vis)
-{
+void AudioJoiner2User::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VoidBase>(this);
 }
 
-AtomTypeCls AudioJoiner2User::GetType() const
-{
+AtomTypeCls AudioJoiner2User::GetType() const {
 	return GetAtomType();
 }
 
-#if defined flagSCREEN
-AtomTypeCls VideoDbgSrc::GetAtomType()
-{
-	return ATOM11(VIDEO_DBG_SRC, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+
+String VideoDbgSrc::GetAction() {
+	return "center.video.src.dbg_generator";
 }
 
-LinkTypeCls VideoDbgSrc::GetLinkType()
-{
+AtomTypeCls VideoDbgSrc::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::VIDEO_DBG_SRC;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,VIDEO),0);
+	return t;
+}
+
+LinkTypeCls VideoDbgSrc::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void VideoDbgSrc::Visit(RuntimeVisitor& vis)
-{
+void VideoDbgSrc::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<VideoGenBase>(this);
 }
 
-AtomTypeCls VideoDbgSrc::GetType() const
-{
+AtomTypeCls VideoDbgSrc::GetType() const {
 	return GetAtomType();
 }
 
-#endif
-#if defined flagOPENCV && defined flagLINUX
-AtomTypeCls WebcamPipe::GetAtomType()
-{
-	return ATOM11(WEBCAM_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+
+#if (defined flagOPENCV && defined flagLINUX)
+String WebcamPipe::GetAction() {
+	return "center.video.webcam.pipe";
 }
 
-LinkTypeCls WebcamPipe::GetLinkType()
-{
+AtomTypeCls WebcamPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WEBCAM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,VIDEO),0);
+	return t;
+}
+
+LinkTypeCls WebcamPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void WebcamPipe::Visit(RuntimeVisitor& vis)
-{
+void WebcamPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<V4L2OpenCVCamera>(this);
 }
 
-AtomTypeCls WebcamPipe::GetType() const
-{
+AtomTypeCls WebcamPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagOPENCV && defined flagLINUX
-AtomTypeCls WebcamAtom::GetAtomType()
-{
-	return ATOM11_U01(WEBCAM_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+
+
+#if (defined flagOPENCV && defined flagLINUX)
+String WebcamAtom::GetAction() {
+	return "center.video.webcam";
 }
 
-LinkTypeCls WebcamAtom::GetLinkType()
-{
+AtomTypeCls WebcamAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WEBCAM_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	return t;
+}
+
+LinkTypeCls WebcamAtom::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void WebcamAtom::Visit(RuntimeVisitor& vis)
-{
+void WebcamAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<V4L2OpenCVCamera>(this);
 }
 
-AtomTypeCls WebcamAtom::GetType() const
-{
+AtomTypeCls WebcamAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagFFMPEG
-AtomTypeCls AudioLoaderAtom::GetAtomType()
-{
-	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
+
+
+#if defined flagFFMPEG
+String AudioLoaderAtom::GetAction() {
+	return "center.audio.loader";
 }
 
-LinkTypeCls AudioLoaderAtom::GetLinkType()
-{
+AtomTypeCls AudioLoaderAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_LOADER_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	return t;
+}
+
+LinkTypeCls AudioLoaderAtom::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
-{
+void AudioLoaderAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<FfmpegSourceDevice>(this);
 }
 
-AtomTypeCls AudioLoaderAtom::GetType() const
-{
+AtomTypeCls AudioLoaderAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagFFMPEG
-AtomTypeCls VideoLoaderAtom::GetAtomType()
-{
-	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
+
+
+#if defined flagFFMPEG
+String VideoLoaderAtom::GetAction() {
+	return "center.video.loader";
 }
 
-LinkTypeCls VideoLoaderAtom::GetLinkType()
-{
+AtomTypeCls VideoLoaderAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::VIDEO_LOADER_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	return t;
+}
+
+LinkTypeCls VideoLoaderAtom::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void VideoLoaderAtom::Visit(RuntimeVisitor& vis)
-{
+void VideoLoaderAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<FfmpegSourceDevice>(this);
 }
 
-AtomTypeCls VideoLoaderAtom::GetType() const
-{
+AtomTypeCls VideoLoaderAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
+
+
 #if defined flagSCREEN
-AtomTypeCls EventStatePipe::GetAtomType()
-{
-	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
+String EventStatePipe::GetAction() {
+	return "state.event.pipe";
 }
 
-LinkTypeCls EventStatePipe::GetLinkType()
-{
+AtomTypeCls EventStatePipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::EVENT_STATE_PIPE;
+	t.role = AtomRole::DRIVER_PIPE;
+	t.AddIn(VD(CENTER,EVENT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls EventStatePipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void EventStatePipe::Visit(RuntimeVisitor& vis)
-{
+void EventStatePipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<EventStateBase>(this);
 }
 
-AtomTypeCls EventStatePipe::GetType() const
-{
+AtomTypeCls EventStatePipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11SwFboProg::GetAtomType()
-{
-	return ATOM11(X11_SW_FBO_PROG, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
+
+
+#if (defined flagSCREEN && defined flagPOSIX)
+String X11SwFboProg::GetAction() {
+	return "x11.sw.fbo.program";
 }
 
-LinkTypeCls X11SwFboProg::GetLinkType()
-{
+AtomTypeCls X11SwFboProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_FBO_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11SwFboProg::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11SwFboProg::Visit(RuntimeVisitor& vis)
-{
+void X11SwFboProg::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SwFboBase>(this);
 }
 
-AtomTypeCls X11SwFboProg::GetType() const
-{
+AtomTypeCls X11SwFboProg::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL
-AtomTypeCls X11OglFboProg::GetAtomType()
-{
-	return ATOM11(X11_OGL_FBO_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+
+
+#if (defined flagOGL && defined flagPOSIX)
+String X11OglFboProg::GetAction() {
+	return "x11.ogl.fbo.program";
 }
 
-LinkTypeCls X11OglFboProg::GetLinkType()
-{
+AtomTypeCls X11OglFboProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_FBO_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11OglFboProg::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11OglFboProg::Visit(RuntimeVisitor& vis)
-{
+void X11OglFboProg::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11OglFboBase>(this);
 }
 
-AtomTypeCls X11OglFboProg::GetType() const
-{
+AtomTypeCls X11OglFboProg::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL && defined flagSDL2
-AtomTypeCls SdlOglFboProg::GetAtomType()
-{
-	return ATOM11(SDL_OGL_FBO_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglFboProg::GetAction() {
+	return "sdl.ogl.fbo.program";
 }
 
-LinkTypeCls SdlOglFboProg::GetLinkType()
-{
+AtomTypeCls SdlOglFboProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls SdlOglFboProg::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void SdlOglFboProg::Visit(RuntimeVisitor& vis)
-{
+void SdlOglFboProg::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglFboBase>(this);
 }
 
-AtomTypeCls SdlOglFboProg::GetType() const
-{
+AtomTypeCls SdlOglFboProg::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11SwShaderPipe::GetAtomType()
-{
-	return ATOM11(X11_SW_SHADER_PIPE, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
+
+
+#if defined flagPOSIX
+String X11SwShaderPipe::GetAction() {
+	return "x11.sw.fbo.pipe";
 }
 
-LinkTypeCls X11SwShaderPipe::GetLinkType()
-{
+AtomTypeCls X11SwShaderPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_SHADER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11SwShaderPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11SwShaderPipe::Visit(RuntimeVisitor& vis)
-{
+void X11SwShaderPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SwShaderBase>(this);
 }
 
-AtomTypeCls X11SwShaderPipe::GetType() const
-{
+AtomTypeCls X11SwShaderPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL
-AtomTypeCls X11OglShaderPipe::GetAtomType()
-{
-	return ATOM11(X11_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+
+
+#if (defined flagOGL && defined flagPOSIX)
+String X11OglShaderPipe::GetAction() {
+	return "x11.ogl.fbo.pipe";
 }
 
-LinkTypeCls X11OglShaderPipe::GetLinkType()
-{
+AtomTypeCls X11OglShaderPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_SHADER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11OglShaderPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11OglShaderPipe::Visit(RuntimeVisitor& vis)
-{
+void X11OglShaderPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11OglShaderBase>(this);
 }
 
-AtomTypeCls X11OglShaderPipe::GetType() const
-{
+AtomTypeCls X11OglShaderPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL && defined flagSDL2
-AtomTypeCls SdlOglShaderPipe::GetAtomType()
-{
-	return ATOM11(SDL_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglShaderPipe::GetAction() {
+	return "sdl.ogl.fbo.pipe";
 }
 
-LinkTypeCls SdlOglShaderPipe::GetLinkType()
-{
+AtomTypeCls SdlOglShaderPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_SHADER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls SdlOglShaderPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void SdlOglShaderPipe::Visit(RuntimeVisitor& vis)
-{
+void SdlOglShaderPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglShaderBase>(this);
 }
 
-AtomTypeCls SdlOglShaderPipe::GetType() const
-{
+AtomTypeCls SdlOglShaderPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11SwFboAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_SW_FBO_ATOM_PIPE, PIPE, CENTER, FBO, CENTER, FBO, CENTER, RECEIPT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11SwFboAtomPipe::GetAction() {
+	return "x11.sw.fbo.sink";
 }
 
-LinkTypeCls X11SwFboAtomPipe::GetLinkType()
-{
+AtomTypeCls X11SwFboAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_FBO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,FBO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11SwFboAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11SwFboAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11SwFboAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SwSinkDevice>(this);
 }
 
-AtomTypeCls X11SwFboAtomPipe::GetType() const
-{
+AtomTypeCls X11SwFboAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL
-AtomTypeCls X11OglFboAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_OGL_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+
+
+#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+String X11OglFboAtomPipe::GetAction() {
+	return "x11.ogl.fbo.sink";
 }
 
-LinkTypeCls X11OglFboAtomPipe::GetLinkType()
-{
+AtomTypeCls X11OglFboAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_FBO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,FBO),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11OglFboAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11OglFboAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11OglFboAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11OglSinkDevice>(this);
 }
 
-AtomTypeCls X11OglFboAtomPipe::GetType() const
-{
+AtomTypeCls X11OglFboAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagOGL && defined flagSDL2
-AtomTypeCls SdlOglFboAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_OGL_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+
+
+#if (defined flagOGL) || (defined flagSDL2)
+String SdlOglFboAtomPipe::GetAction() {
+	return "sdl.ogl.fbo.sink";
 }
 
-LinkTypeCls SdlOglFboAtomPipe::GetLinkType()
-{
+AtomTypeCls SdlOglFboAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,FBO),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlOglFboAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlOglFboAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void SdlOglFboAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlOglFboAtomPipe::GetType() const
-{
+AtomTypeCls SdlOglFboAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11ContextAtom::GetAtomType()
-{
-	return ATOM11(X11_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11ContextAtom::GetAction() {
+	return "x11.context";
 }
 
-LinkTypeCls X11ContextAtom::GetLinkType()
-{
+AtomTypeCls X11ContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11ContextAtom::GetLinkType() {
 	return LINKTYPE(DRIVER, DRIVER);
 }
 
-void X11ContextAtom::Visit(RuntimeVisitor& vis)
-{
+void X11ContextAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11Context>(this);
 }
 
-AtomTypeCls X11ContextAtom::GetType() const
-{
+AtomTypeCls X11ContextAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11EventAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11EventAtomPipe::GetAction() {
+	return "x11.event.pipe";
 }
 
-LinkTypeCls X11EventAtomPipe::GetLinkType()
-{
+AtomTypeCls X11EventAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_EVENT_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls X11EventAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11EventAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11EventAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11EventsBase>(this);
 }
 
-AtomTypeCls X11EventAtomPipe::GetType() const
-{
+AtomTypeCls X11EventAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls OglCustomer::GetAtomType()
-{
-	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);
+
+
+String OglCustomer::GetAction() {
+	return "ogl.customer";
 }
 
-LinkTypeCls OglCustomer::GetLinkType()
-{
+AtomTypeCls OglCustomer::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::OGL_CUSTOMER;
+	t.role = AtomRole::CUSTOMER;
+	t.AddIn(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,ORDER),0);
+	return t;
+}
+
+LinkTypeCls OglCustomer::GetLinkType() {
 	return LINKTYPE(CUSTOMER, CUSTOMER);
 }
 
-void OglCustomer::Visit(RuntimeVisitor& vis)
-{
+void OglCustomer::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<CustomerBase>(this);
 }
 
-AtomTypeCls OglCustomer::GetType() const
-{
+AtomTypeCls OglCustomer::GetType() const {
 	return GetAtomType();
 }
 
-#endif
+
 #if defined flagSDL2
-AtomTypeCls SdlContextAtom::GetAtomType()
-{
-	return ATOM11(SDL_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
+String SdlContextAtom::GetAction() {
+	return "sdl.context";
 }
 
-LinkTypeCls SdlContextAtom::GetLinkType()
-{
+AtomTypeCls SdlContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlContextAtom::GetLinkType() {
 	return LINKTYPE(DRIVER, DRIVER);
 }
 
-void SdlContextAtom::Visit(RuntimeVisitor& vis)
-{
+void SdlContextAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlContextBase>(this);
 }
 
-AtomTypeCls SdlContextAtom::GetType() const
-{
+AtomTypeCls SdlContextAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
+
+
 #if defined flagSDL2
-AtomTypeCls SdlEventAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+String SdlEventAtomPipe::GetAction() {
+	return "sdl.event.pipe";
 }
 
-LinkTypeCls SdlEventAtomPipe::GetLinkType()
-{
+AtomTypeCls SdlEventAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_EVENT_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls SdlEventAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void SdlEventAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlEventsBase>(this);
 }
 
-AtomTypeCls SdlEventAtomPipe::GetType() const
-{
+AtomTypeCls SdlEventAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-AtomTypeCls TestEventSrcPipe::GetAtomType()
-{
-	return ATOM11(TEST_EVENT_SRC_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+
+
+String TestEventSrcPipe::GetAction() {
+	return "event.src.test.pipe";
 }
 
-LinkTypeCls TestEventSrcPipe::GetLinkType()
-{
+AtomTypeCls TestEventSrcPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::TEST_EVENT_SRC_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls TestEventSrcPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void TestEventSrcPipe::Visit(RuntimeVisitor& vis)
-{
+void TestEventSrcPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<TestEventSrcBase>(this);
 }
 
-AtomTypeCls TestEventSrcPipe::GetType() const
-{
+AtomTypeCls TestEventSrcPipe::GetType() const {
 	return GetAtomType();
 }
 
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglImageLoader::GetAtomType()
-{
-	return ATOM11_U01(SDL_OGL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglImageLoader::GetAction() {
+	return "center.image.loader";
 }
 
-LinkTypeCls SdlOglImageLoader::GetLinkType()
-{
+AtomTypeCls SdlOglImageLoader::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_IMAGE_LOADER;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglImageLoader::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglImageLoader::Visit(RuntimeVisitor& vis)
-{
+void SdlOglImageLoader::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglImageBase>(this);
 }
 
-AtomTypeCls SdlOglImageLoader::GetType() const
-{
+AtomTypeCls SdlOglImageLoader::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-AtomTypeCls VolumeLoaderAtom::GetAtomType()
-{
-	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
+
+
+String VolumeLoaderAtom::GetAction() {
+	return "center.volume.loader";
 }
 
-LinkTypeCls VolumeLoaderAtom::GetLinkType()
-{
+AtomTypeCls VolumeLoaderAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::VOLUME_LOADER_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,VOLUME),1);
+	return t;
+}
+
+LinkTypeCls VolumeLoaderAtom::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void VolumeLoaderAtom::Visit(RuntimeVisitor& vis)
-{
+void VolumeLoaderAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<RawByteStaticSource>(this);
 }
 
-AtomTypeCls VolumeLoaderAtom::GetType() const
-{
+AtomTypeCls VolumeLoaderAtom::GetType() const {
 	return GetAtomType();
 }
 
-#if defined flagSCREEN
-AtomTypeCls X11VideoAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11VideoAtomPipe::GetAction() {
+	return "x11.video.pipe";
 }
 
-LinkTypeCls X11VideoAtomPipe::GetLinkType()
-{
+AtomTypeCls X11VideoAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_VIDEO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,VIDEO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11VideoAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11VideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11VideoAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SinkDevice>(this);
 }
 
-AtomTypeCls X11VideoAtomPipe::GetType() const
-{
+AtomTypeCls X11VideoAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagOGL
-AtomTypeCls X11OglVideoAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_OGL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+
+
+#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+String X11OglVideoAtomPipe::GetAction() {
+	return "glx.video.pipe";
 }
 
-LinkTypeCls X11OglVideoAtomPipe::GetLinkType()
-{
+AtomTypeCls X11OglVideoAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_VIDEO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,VIDEO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11OglVideoAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11OglVideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11OglVideoAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11OglSinkDevice>(this);
 }
 
-AtomTypeCls X11OglVideoAtomPipe::GetType() const
-{
+AtomTypeCls X11OglVideoAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagOGL
-AtomTypeCls X11OglFboAtomSA::GetAtomType()
-{
-	return ATOM11(X11_OGL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+
+
+#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+String X11OglFboAtomSA::GetAction() {
+	return "x11.ogl.fbo.standalone";
 }
 
-LinkTypeCls X11OglFboAtomSA::GetLinkType()
-{
+AtomTypeCls X11OglFboAtomSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_FBO_ATOM_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11OglFboAtomSA::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11OglFboAtomSA::Visit(RuntimeVisitor& vis)
-{
+void X11OglFboAtomSA::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11OglSinkDevice>(this);
 }
 
-AtomTypeCls X11OglFboAtomSA::GetType() const
-{
+AtomTypeCls X11OglFboAtomSA::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11SwVideoAtomPipe::GetAtomType()
-{
-	return ATOM11(X11_SW_VIDEO_ATOM_PIPE, PIPE, CENTER, FBO, CENTER, FBO, CENTER, RECEIPT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11SwVideoAtomPipe::GetAction() {
+	return "x11.sw.video.pipe";
 }
 
-LinkTypeCls X11SwVideoAtomPipe::GetLinkType()
-{
+AtomTypeCls X11SwVideoAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_VIDEO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,FBO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11SwVideoAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11SwVideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
+void X11SwVideoAtomPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SwSinkDevice>(this);
 }
 
-AtomTypeCls X11SwVideoAtomPipe::GetType() const
-{
+AtomTypeCls X11SwVideoAtomPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN
-AtomTypeCls X11SwFboAtomSA::GetAtomType()
-{
-	return ATOM11(X11_SW_FBO_ATOM_S_A, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, RECEIPT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String X11SwFboAtomSA::GetAction() {
+	return "x11.sw.fbo.standalone";
 }
 
-LinkTypeCls X11SwFboAtomSA::GetLinkType()
-{
+AtomTypeCls X11SwFboAtomSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_FBO_ATOM_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11SwFboAtomSA::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void X11SwFboAtomSA::Visit(RuntimeVisitor& vis)
-{
+void X11SwFboAtomSA::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<X11SwSinkDevice>(this);
 }
 
-AtomTypeCls X11SwFboAtomSA::GetType() const
-{
+AtomTypeCls X11SwFboAtomSA::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglFboAtomSA::GetAtomType()
-{
-	return ATOM11(SDL_OGL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+
+
+#if (defined flagOGL) || (defined flagSDL2)
+String SdlOglFboAtomSA::GetAction() {
+	return "sdl.fbo.standalone";
 }
 
-LinkTypeCls SdlOglFboAtomSA::GetLinkType()
-{
+AtomTypeCls SdlOglFboAtomSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_ATOM_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlOglFboAtomSA::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlOglFboAtomSA::Visit(RuntimeVisitor& vis)
-{
+void SdlOglFboAtomSA::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlOglFboAtomSA::GetType() const
-{
+AtomTypeCls SdlOglFboAtomSA::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglFboPipe::GetAtomType()
-{
-	return ATOM11(SDL_OGL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+
+
+#if (defined flagOGL) || (defined flagSDL2)
+String SdlOglFboPipe::GetAction() {
+	return "sdl.fbo.sink";
 }
 
-LinkTypeCls SdlOglFboPipe::GetLinkType()
-{
+AtomTypeCls SdlOglFboPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,FBO),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlOglFboPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlOglFboPipe::Visit(RuntimeVisitor& vis)
-{
+void SdlOglFboPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlOglFboPipe::GetType() const
-{
+AtomTypeCls SdlOglFboPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglFboAtom::GetAtomType()
-{
-	return ATOM11_U44(SDL_OGL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+
+
+#if (defined flagOGL) || (defined flagSDL2)
+String SdlOglFboAtom::GetAction() {
+	return "sdl.fbo";
 }
 
-LinkTypeCls SdlOglFboAtom::GetLinkType()
-{
+AtomTypeCls SdlOglFboAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglFboAtom::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void SdlOglFboAtom::Visit(RuntimeVisitor& vis)
-{
+void SdlOglFboAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglVideoSinkDevice>(this);
 }
 
-AtomTypeCls SdlOglFboAtom::GetType() const
-{
+AtomTypeCls SdlOglFboAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2
-AtomTypeCls SdlVideoAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
-}
 
-LinkTypeCls SdlVideoAtomPipe::GetLinkType()
-{
-	return LINKTYPE(POLLER_PIPE, PROCESS);
-}
 
-void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
-}
-
-AtomTypeCls SdlVideoAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN && defined flagSDL2
-AtomTypeCls SdlProgAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_PROG_ATOM_PIPE, PIPE, CENTER, PROG, CENTER, PROG, CENTER, RECEIPT);
-}
-
-LinkTypeCls SdlProgAtomPipe::GetLinkType()
-{
-	return LINKTYPE(POLLER_PIPE, PROCESS);
-}
-
-void SdlProgAtomPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
-}
-
-AtomTypeCls SdlProgAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN && defined flagSDL2
-AtomTypeCls SdlVideoAtom::GetAtomType()
-{
-	return ATOM11_U44(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);
-}
-
-LinkTypeCls SdlVideoAtom::GetLinkType()
-{
-	return LINKTYPE(POLLER_PIPE, PROCESS);
-}
-
-void SdlVideoAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
-}
-
-AtomTypeCls SdlVideoAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
 #if defined flagSDL2
-AtomTypeCls SdlAudioAtom::GetAtomType()
-{
-	return ATOM11(SDL_AUDIO_ATOM, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+String SdlVideoAtomPipe::GetAction() {
+	return "sdl.video.pipe";
 }
 
-LinkTypeCls SdlAudioAtom::GetLinkType()
-{
+AtomTypeCls SdlVideoAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_VIDEO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,VIDEO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlVideoAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlVideoAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSDL2
+String SdlProgAtomPipe::GetAction() {
+	return "sdl.prog.pipe";
+}
+
+AtomTypeCls SdlProgAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_PROG_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlProgAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlProgAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlProgAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSDL2
+String SdlVideoAtom::GetAction() {
+	return "sdl.video";
+}
+
+AtomTypeCls SdlVideoAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_VIDEO_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,VIDEO),1);
+	t.AddIn(VD(CENTER,VIDEO),1);
+	t.AddIn(VD(CENTER,VIDEO),1);
+	t.AddIn(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(CENTER,VIDEO),1);
+	return t;
+}
+
+LinkTypeCls SdlVideoAtom::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlVideoAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlCenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlVideoAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSDL2
+String SdlAudioAtom::GetAction() {
+	return "sdl.audio";
+}
+
+AtomTypeCls SdlAudioAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_AUDIO_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlAudioAtom::GetLinkType() {
 	return LINKTYPE(EXTERNAL_PIPE, PROCESS);
 }
 
-void SdlAudioAtom::Visit(RuntimeVisitor& vis)
-{
+void SdlAudioAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlAudioSinkDevice>(this);
 }
 
-AtomTypeCls SdlAudioAtom::GetType() const
-{
+AtomTypeCls SdlAudioAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglShaderAtom::GetAtomType()
-{
-	return ATOM11_U44(SDL_OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglShaderAtom::GetAction() {
+	return "sdl.ogl.fbo.side";
 }
 
-LinkTypeCls SdlOglShaderAtom::GetLinkType()
-{
+AtomTypeCls SdlOglShaderAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_SHADER_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglShaderAtom::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglShaderAtom::Visit(RuntimeVisitor& vis)
-{
+void SdlOglShaderAtom::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglShaderBase>(this);
 }
 
-AtomTypeCls SdlOglShaderAtom::GetType() const
-{
+AtomTypeCls SdlOglShaderAtom::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglShaderAtomSA::GetAtomType()
-{
-	return ATOM11(SDL_OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglShaderAtomSA::GetAction() {
+	return "ogl.fbo.source.standalone";
 }
 
-LinkTypeCls SdlOglShaderAtomSA::GetLinkType()
-{
+AtomTypeCls SdlOglShaderAtomSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_SHADER_ATOM_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlOglShaderAtomSA::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void SdlOglShaderAtomSA::Visit(RuntimeVisitor& vis)
-{
+void SdlOglShaderAtomSA::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglShaderBase>(this);
 }
 
-AtomTypeCls SdlOglShaderAtomSA::GetType() const
-{
+AtomTypeCls SdlOglShaderAtomSA::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglTextureSource::GetAtomType()
-{
-	return ATOM11_U11(SDL_OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglTextureSource::GetAction() {
+	return "sdl.ogl.fbo.image";
 }
 
-LinkTypeCls SdlOglTextureSource::GetLinkType()
-{
+AtomTypeCls SdlOglTextureSource::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_TEXTURE_SOURCE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(CENTER,VIDEO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglTextureSource::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglTextureSource::Visit(RuntimeVisitor& vis)
-{
+void SdlOglTextureSource::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglTextureBase>(this);
 }
 
-AtomTypeCls SdlOglTextureSource::GetType() const
-{
+AtomTypeCls SdlOglTextureSource::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglVolumeSource::GetAtomType()
-{
-	return ATOM11_U11(SDL_OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglVolumeSource::GetAction() {
+	return "sdl.ogl.fbo.volume";
 }
 
-LinkTypeCls SdlOglVolumeSource::GetLinkType()
-{
+AtomTypeCls SdlOglVolumeSource::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_VOLUME_SOURCE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(CENTER,VOLUME),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglVolumeSource::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglVolumeSource::Visit(RuntimeVisitor& vis)
-{
+void SdlOglVolumeSource::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglTextureBase>(this);
 }
 
-AtomTypeCls SdlOglVolumeSource::GetType() const
-{
+AtomTypeCls SdlOglVolumeSource::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglAudioSink::GetAtomType()
-{
-	return ATOM11_U11(SDL_OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglAudioSink::GetAction() {
+	return "sdl.ogl.fbo.center.audio";
 }
 
-LinkTypeCls SdlOglAudioSink::GetLinkType()
-{
+AtomTypeCls SdlOglAudioSink::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_AUDIO_SINK;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglAudioSink::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglAudioSink::Visit(RuntimeVisitor& vis)
-{
+void SdlOglAudioSink::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglFboReaderBase>(this);
 }
 
-AtomTypeCls SdlOglAudioSink::GetType() const
-{
+AtomTypeCls SdlOglAudioSink::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglKeyboardSource::GetAtomType()
-{
-	return ATOM11_U44(SDL_OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglKeyboardSource::GetAction() {
+	return "sdl.ogl.fbo.keyboard";
 }
 
-LinkTypeCls SdlOglKeyboardSource::GetLinkType()
-{
+AtomTypeCls SdlOglKeyboardSource::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_KEYBOARD_SOURCE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddIn(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglKeyboardSource::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglKeyboardSource::Visit(RuntimeVisitor& vis)
-{
+void SdlOglKeyboardSource::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglKeyboardBase>(this);
 }
 
-AtomTypeCls SdlOglKeyboardSource::GetType() const
-{
+AtomTypeCls SdlOglKeyboardSource::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-#if defined flagSCREEN && defined flagSDL2 && defined flagOGL
-AtomTypeCls SdlOglAudioSource::GetAtomType()
-{
-	return ATOM11_U11(SDL_OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);
+
+
+#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+String SdlOglAudioSource::GetAction() {
+	return "sdl.ogl.center.fbo.audio";
 }
 
-LinkTypeCls SdlOglAudioSource::GetLinkType()
-{
+AtomTypeCls SdlOglAudioSource::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_AUDIO_SOURCE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),1);
+	return t;
+}
+
+LinkTypeCls SdlOglAudioSource::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void SdlOglAudioSource::Visit(RuntimeVisitor& vis)
-{
+void SdlOglAudioSource::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<SdlOglAudioBase>(this);
 }
 
-AtomTypeCls SdlOglAudioSource::GetType() const
-{
+AtomTypeCls SdlOglAudioSource::GetType() const {
 	return GetAtomType();
 }
-
 #endif
+
+
 }
 
 }

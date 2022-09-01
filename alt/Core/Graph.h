@@ -104,6 +104,10 @@ public:
 		b = c.b;
 	}
 	
+	T GetR() const {return r;}
+	T GetG() const {return g;}
+	T GetB() const {return b;}
+	
 	template <class K>
 	void operator=(const ColorT<K>& c) {
 		r = (T)c.r;

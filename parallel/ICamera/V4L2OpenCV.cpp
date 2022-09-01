@@ -6,6 +6,39 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct CamV4L2OpenCV::NativeCamera {
+    Array<VideoSourceFormatT<V4L2Media>> fmts;
+    String path;
+    Packet last_p;
+    Image sw_frame;
+    uint32 open_pix_fmt;
+    Size open_frame_sz;
+    TimeStop cur_time;
+    RunningFlag flag;
+    double time_step;
+    int prev_frame_i;
+    Vector<byte> values;
+    Format fmt;
+    String filepath;
+    Size3 sz;
+    int stride;
+    bool vflip;
+    V4L2_DeviceManager devmgr;
+    OpenCVCaptureDevice* cap;
+};
+
+
+
+bool CamV4L2OpenCV::Camera_Create(One<NativeCamera>& dev) {
+	dev.Create();
+	return true;
+}
+
+void CamV4L2OpenCV::Camera_Destroy(One<NativeCamera>& dev) {
+	dev.Clear();
+}
+
 bool CamV4L2OpenCV::Camera_Initialize(NativeCamera& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.cap = 0;
 	dev.time_step = 0;

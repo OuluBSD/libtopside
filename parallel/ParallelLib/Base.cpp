@@ -77,7 +77,7 @@ void CustomerBase::ForwardPacket(PacketValue& in, PacketValue& out) {
 
 bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	AtomTypeCls type = ((AtomBase*)this)->GetType();
-	ValDevCls main_vd = type.iface.src();
+	ValDevCls main_vd = type.iface.src.channels[0].vd;
 	if (main_vd.dev != DevCls::CENTER) {
 		RTLOG("RollingValueBase::Initialize: error: invalid device");
 		return false;
@@ -424,7 +424,7 @@ void EventStateBase::Update(double dt) {
 bool EventStateBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("EventStateBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EventStateBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

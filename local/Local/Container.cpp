@@ -96,7 +96,6 @@ void HugePersistent::LoadData() {
 
 
 
-#if 0
 
 
 bool& EnvState::SetBool(dword key, bool b) {
@@ -125,7 +124,6 @@ int& EnvState::GetInt(dword key) {
 		return o.Create<int>(0);
 }
 
-#endif
 
 
 NAMESPACE_TOPSIDE_END

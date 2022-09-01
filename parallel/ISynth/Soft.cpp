@@ -4,6 +4,23 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+struct SynSoft::NativeInstrument {
+    SoftInstru::Instrument instrument;
+    bool sf_loaded;
+    int sample_rate;
+};
+
+
+
+bool SynSoft::Instrument_Create(One<NativeInstrument>& dev) {
+	dev.Create();
+	return true;
+}
+
+void SynSoft::Instrument_Destroy(One<NativeInstrument>& dev) {
+	dev.Clear();
+}
+
 bool SynSoft::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sample_rate = 1024;
 	

@@ -6,6 +6,7 @@ uses
 file
 	ParallelMach.h,
 	Generated.h,
+	GenAtom.inl highlight cpp,
 	Fwd.h,
 	Types.h,
 	Types.cpp,

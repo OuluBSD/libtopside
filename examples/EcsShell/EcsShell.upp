@@ -10,7 +10,7 @@ file
 	EcsShell.cpp;
 
 mainconfig
-	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD FLUIDSYNTH",
+	"Have everything (Linux)" = "SCREEN SDL2 OGL FFMPEG OPENCV VR LOCALHMD FLUIDSYNTH BUILTIN_PORTAUDIO",
 	"" = "",
 	"" = "SCREEN",
 	"" = "SCREEN OGL FFMPEG",

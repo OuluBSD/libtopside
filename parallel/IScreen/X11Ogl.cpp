@@ -8,6 +8,28 @@
 #if defined flagOGL
 NAMESPACE_PARALLEL_BEGIN
 
+struct ScrX11Ogl::NativeContext {
+    ::Window win;
+    ::Display* display;
+    ::XImage* fb;
+    ::Visual* visual;
+    ::GC gc;
+    ::XVisualInfo* visual_info;
+    ::Atom  atomWmDeleteWindow;
+    ::XSetWindowAttributes attr;
+};
+
+struct ScrX11Ogl::NativeSinkDevice {
+    NativeContext* ctx;
+    ::GLXContext gl_ctx;
+    GfxAccelAtom<X11OglGfx> ogl;
+};
+
+
+GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev) {
+	return dev->ogl;
+}
+
 
 bool X11Ogl_IsExtensionSupported(const char *extList, const char *extension) {
 	const char *start;
@@ -68,11 +90,19 @@ typedef struct {
 	unsigned long   status;
 } Hints;
 
+bool ScrX11Ogl::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11Ogl::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
-	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11OglContext>(1);
 	if (!ctx_) { LOG("error: could not find X11 context"); return false;}
-	auto& ctx = ctx_->ctx;
+	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	
 	bool is_borderless = ws.IsTrue(".borderless");

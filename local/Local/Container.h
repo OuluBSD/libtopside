@@ -601,7 +601,6 @@ public:
 
 
 
-#if 0
 
 class EnvState :
 	public RefScopeEnabler<EnvState, MetaSpaceBase>
@@ -647,7 +646,6 @@ using ExchangeBaseParent	= RefParent1<MetaSpaceBase>;
 using EnvStateParent		= ExchangeBaseParent;
 using EnvStateRef			= Ref<EnvState,				EnvStateParent>;
 
-#endif
 
 
 

@@ -6,20 +6,14 @@ uses
 
 library(POSIX) "X11 Xrandr Xxf86vm";
 
-library(POSIX & OGL) GLX;
-
-library(POSIX & OGL) "GL GLU GLEW glut";
+library(POSIX & OGL) "GLX GL GLU GLEW glut";
 
 file
 	IScreen.h,
-	Enums.h,
-	Vendors.h,
 	X11.cpp,
 	X11Sw.cpp,
 	X11Ogl.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
 	"" = "";

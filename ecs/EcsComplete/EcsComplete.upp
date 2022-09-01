@@ -4,11 +4,8 @@ uses
 	EcsEssential,
 	EcsLocal,
 	EcsMinimal,
-	IPhysics,
 	IMidiHw,
 	IMidiFile;
-
-uses(VR) IVR;
 
 uses(GUI) EcsCtrl;
 

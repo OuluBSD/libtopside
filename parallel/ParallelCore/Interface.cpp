@@ -1,7 +1,6 @@
 #include "ParallelCore.h"
 #include <SerialMach/SerialMach.h>
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -32,9 +31,9 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	Value& to_val = sink->GetValue(ch_i);
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
-		ValDevTuple vd = sink->GetSinkCls();
-		ASSERT(vd.IsValid());
-		to_fmt = GetDefaultFormat(vd());
+		ValDevTuple t = sink->GetSinkCls();
+		ASSERT(t.IsValid());
+		to_fmt = GetDefaultFormat(t[0].vd);
 		ASSERT(to_fmt.IsValid());
 		RTLOG("DefaultExchangePoint::ForwardSetup: fixing sink fmt to: " << to_fmt.ToString());
 		to_val.SetFormat(to_fmt);
@@ -131,9 +130,9 @@ bool DefaultInterfaceSink::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	SetContainerCount(type.iface.sink.count);
-	for(int i = 0; i < type.iface.sink.count; i++)
-		InitializeContainer(i, type.iface.sink.vd[i]);
+	SetContainerCount(type.iface.sink.GetCount());
+	for(int i = 0; i < type.iface.sink.GetCount(); i++)
+		InitializeContainer(i, type.iface.sink[i].vd);
 	
 	return true;
 }
@@ -143,9 +142,9 @@ bool DefaultInterfaceSource::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	SetContainerCount(type.iface.src.count);
-	for(int i = 0; i < type.iface.src.count; i++)
-		InitializeContainer(i, type.iface.src.vd[i]);
+	SetContainerCount(type.iface.src.GetCount());
+	for(int i = 0; i < type.iface.src.GetCount(); i++)
+		InitializeContainer(i, type.iface.src[i].vd);
 	
 	return true;
 }
@@ -154,4 +153,3 @@ bool DefaultInterfaceSource::Initialize() {
 
 NAMESPACE_PARALLEL_END
 
-#endif

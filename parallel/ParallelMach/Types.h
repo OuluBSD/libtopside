@@ -239,67 +239,79 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	//static const int MAX_VDS = MAX_VDTUPLE_SIZE;
 	//ValDevCls	vd[MAX_VDS];
 	//byte		count = 0;
-	Vector<ValDevCls> vd;
+	
+	struct Channel : Moveable<Channel> {
+		ValDevCls vd;
+		bool is_opt = false;
+		
+		void Set(ValDevCls vd, bool is_opt) {this->vd = vd; this->is_opt = is_opt;}
+		String ToString() const {return vd.ToString() + (is_opt ? " optional" : "");}
+		bool IsValid() const {return vd.IsValid();}
+		bool operator==(const Channel& c) const {return vd == c.vd && is_opt == c.is_opt;}
+		bool operator!=(const Channel& c) const {return !(*this == c);}
+		hash_t GetHashValue() const {CombineHash c; c.Put(vd.GetHashValue()); c.Put((int)is_opt); return c;}
+	};
+	Vector<Channel> channels;
 	
 	
 	ValDevTuple() {}
-	ValDevTuple(const ValDevCls& v) {vd.Add(v);}
+	ValDevTuple(const ValDevCls& v) {Add(v,false);}
 	ValDevTuple(const ValDevTuple& v) {*this = v;}
 	
 	
 	
-	int GetCount() const {return vd.GetCount();}
+	int GetCount() const {return channels.GetCount();}
 	
 	
-	ValDevCls&       operator[](int i)       {return vd[i];}
-	const ValDevCls& operator[](int i) const {return vd[i];}
-	ValDevCls&       operator()()            {ASSERT(vd.GetCount() >= 1); return vd[0];}
-	const ValDevCls& operator()() const      {ASSERT(vd.GetCount() >= 1); return vd[0];}
+	Channel&       operator[](int i)       {return channels[i];}
+	const Channel& operator[](int i) const {return channels[i];}
+	//ValDevCls&       operator()()            {ASSERT(channels.GetCount() >= 1); return channels[0];}
+	//const ValDevCls& operator()() const      {ASSERT(channels.GetCount() >= 1); return channels[0];}
 	
 	
 	
-	ValDevCls GetCommon(const ValDevTuple& o) const {
-		for(int i = 0; i < vd.GetCount(); i++) {
-			const ValDevCls& a = vd[i];
-			for(int j = 0; j < o.vd.GetCount(); j++) {
-				const ValDevCls& b = o.vd[i];
-				if (a == b)
-					return a;
+	/*ValDevCls GetCommon(const ValDevTuple& o) const {
+		for(int i = 0; i < channels.GetCount(); i++) {
+			const Channel& a = channels[i];
+			for(int j = 0; j < o.channels.GetCount(); j++) {
+				const Channel& b = o.channels[i];
+				if (a.vd == b.vd)
+					return a.vd;
 			}
 		}
 		return ValDevCls();
-	}
+	}*/
 	
-	ValDevTuple& Add(const ValDevCls& o) {vd.Add(o); return *this;}
+	ValDevTuple& Add(const ValDevCls& o, bool is_opt) {channels.Add().Set(o,is_opt); return *this;}
 	
 	String ToString() const {
-		int count = vd.GetCount();
+		int count = channels.GetCount();
 		String s;
 		s << "(" << (int)count;
 		for(int i = 0; i < count; i++)
-			s << ", " << vd[i].ToString();
+			s << ", " << channels[i].ToString();
 		s << ")";
 		return s;
 	}
 	
 	bool IsValid() const {
-		int count = vd.GetCount();
+		int count = channels.GetCount();
 		for(int i = 0; i < count; i++)
-			if (!vd[i].IsValid())
+			if (!channels[i].IsValid())
 				return false;
 		return true;
 	}
 	
 	void operator=(const Nuller& n) {memset(this, 0, sizeof(ValDevTuple));}
 	void operator=(const ValDevTuple& o) {
-		vd <<= o.vd;
+		channels <<= o.channels;
 	}
 	
 	bool operator==(const ValDevTuple& o) const {
-		if (vd.GetCount() != o.vd.GetCount())
+		if (channels.GetCount() != o.channels.GetCount())
 			return false;
-		for(int i = 0; i < vd.GetCount(); i++)
-			if (vd[i] != o.vd[i])
+		for(int i = 0; i < channels.GetCount(); i++)
+			if (channels[i] != o.channels[i])
 				return false;
 		return true;
 	}
@@ -307,11 +319,11 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	bool operator!=(const ValDevTuple& o) const {return !operator==(o);}
 	
 	hash_t GetHashValue() const {
-		int count = vd.GetCount();
+		int count = channels.GetCount();
 		CombineHash ch;
 		ch.Put(count);
 		for(int i = 0; i < count; i++)
-			ch.Put(vd[i].GetHashValue());
+			ch.Put(channels[i].GetHashValue());
 		return ch;
 	}
 	
@@ -325,7 +337,6 @@ DevCls GetCenterDevCls();
 
 
 
-#if 0
 
 #undef INVALID_ATOM
 
@@ -333,49 +344,10 @@ typedef enum : byte {
 	INVALID_ATOM,
 	
 	#define ATOM_TYPE(x) x,
-	ATOM_TYPE_LIST
 	
-	#ifdef flagSCREEN
-	flagSCREEN_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagOPENCV
-	flagOPENCV_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagLINUX
-	flagLINUX_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagSDL2
-	flagSDL2_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagOPENHMD
-	flagOPENHMD_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagLOCALHMD
-	flagLOCALHMD_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagVR
-	//flagVR_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagOGL
-	flagOGL_ATOM_TYPE_LIST
-	#endif
-	
-	#ifdef flagPOSIX
-	#ifdef flagPOSIX_ATOM_TYPE_LIST
-	flagPOSIX_ATOM_TYPE_LIST
-	#endif
-	#endif
-	
-	#ifdef flagFFMPEG
-	flagFFMPEG_ATOM_TYPE_LIST
-	#endif
+	#define GEN_ATOM_TYPE_LIST
+	#include "GenAtom.inl"
+	#undef GEN_ATOM_TYPE_LIST
 	
 	#undef ATOM_TYPE
 	
@@ -404,17 +376,7 @@ typedef enum : int8 {
 	ROLE_COUNT
 } AtomRole;
 
-#endif
 
-typedef enum : byte {
-	INVALID_ATOM,
-	
-} SubAtomCls;
-
-typedef enum : int8 {
-	INVALID_ROLE=-1,
-	
-} AtomRole;
 
 
 String GetSubAtomString(SubAtomCls t);
@@ -426,36 +388,31 @@ String GetAtomRoleString(AtomRole t);
 struct AtomIfaceTypeCls : Moveable<AtomIfaceTypeCls> {
 	ValDevTuple		sink;
 	ValDevTuple		src;
-	ValDevCls		content;
 	
 	
-	bool IsValid() const {return sink.IsValid() && src.IsValid() && content.IsValid();}
-	void operator=(const Nuller& n) {sink = n; src = n; content = n;}
+	bool IsValid() const {return sink.IsValid() && src.IsValid();}
+	void operator=(const Nuller& n) {sink = n; src = n;}
 	void operator=(const AtomIfaceTypeCls& o) {
 		sink = o.sink;
 		src = o.src;
-		content = o.content;
 	}
 	hash_t GetHashValue() const;
 	
 	bool operator==(const AtomIfaceTypeCls& c) const {
 		return	sink		== c.sink &&
-				src			== c.src &&
-				content		== c.content
+				src			== c.src
 				;
 	}
 	bool operator!=(const AtomIfaceTypeCls& c) const {return !(*this == c);}
-	String ToString() const {return "(sink(" + sink.ToString() + "), src(" + src.ToString() + ", content(" + content.ToString() + "))";}
+	String ToString() const {return "(sink(" + sink.ToString() + "), src(" + src.ToString() + ")";}
 	
 	
 	AtomIfaceTypeCls() {}
 	AtomIfaceTypeCls(const AtomIfaceTypeCls& c) {*this = c;}
 	AtomIfaceTypeCls(const ValDevTuple& sink, const ValDevTuple& src) : sink(sink), src(src) {}
-	AtomIfaceTypeCls(const ValDevTuple& sink, ValDevCls content, const ValDevTuple& src) : sink(sink), src(src), content(content) {}
-	//AtomIfaceTypeCls(ValDevCls sink, ValDevCls src) : sink(sink), src(src) {}
 	
-	void AddSink(const ValDevCls& vd) {sink.Add(vd);}
-	void AddSource(const ValDevCls& vd) {src.Add(vd);}
+	void AddSink(const ValDevCls& vd, bool is_opt) {sink.Add(vd, is_opt);}
+	void AddSource(const ValDevCls& vd, bool is_opt) {src.Add(vd, is_opt);}
 	
 };
 
@@ -464,70 +421,37 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomIfaceTypeCls iface;
 	SubAtomCls sub = SubAtomCls::INVALID_ATOM;
 	AtomRole role = AtomRole::INVALID_ROLE;
-	byte user_sink_count = 0;
-	byte user_src_count = 0;
 	
 	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID_ATOM && role != AtomRole::INVALID_ROLE;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE; user_sink_count = 0; user_src_count = 0;}
+	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE;}
 	void operator=(const AtomTypeCls& o) {
 		iface = o.iface;
 		sub = o.sub;
 		role = o.role;
-		user_sink_count = o.user_sink_count;
-		user_src_count = o.user_src_count;
 	}
 	
 	bool operator==(const AtomTypeCls& c) const {
 		return	iface == c.iface &&
 				sub == c.sub &&
-				role == c.role &&
-				user_sink_count == c.user_sink_count &&
-				user_src_count == c.user_src_count
+				role == c.role
 				;
 	}
 	bool operator!=(const AtomTypeCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubAtomString(sub) + "-" + GetAtomRoleString(role) + "-" + iface.ToString() + "-(" + IntStr(user_sink_count) + "," + IntStr(user_src_count) + ")";}
+	String ToString() const {return GetSubAtomString(sub) + "-" + GetAtomRoleString(role) + "-" + iface.ToString();}
 	
 	
 	AtomTypeCls() {}
 	AtomTypeCls(const AtomTypeCls& c) {*this = c;}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevCls& sink, const ValDevCls& src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevTuple& src) : iface(sink,src), sub(cls), role(role) {}
-	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevCls& sink, const ValDevCls& content, const ValDevCls& src) : iface(sink,content,src), sub(cls), role(role) {}
-	AtomTypeCls(
-		SubAtomCls cls, AtomRole role,
-		const ValDevCls& si0, const ValDevCls& content, const ValDevCls& sr0,
-		int side_sinks, int side_srcs, int user_sinks, int user_srcs,
-		const ValDevCls& si1,
-		const ValDevCls& sr1
-	);
-	AtomTypeCls(
-		SubAtomCls cls, AtomRole role,
-		const ValDevCls& si0, const ValDevCls& content, const ValDevCls& sr0,
-		int side_sinks, int side_srcs, int user_sinks, int user_srcs,
-		const ValDevCls& si1, const ValDevCls& si2,
-		const ValDevCls& sr1, const ValDevCls& sr2
-	);
-	AtomTypeCls(
-		SubAtomCls cls, AtomRole role,
-		const ValDevCls& si0, const ValDevCls& content, const ValDevCls& sr0,
-		int side_sinks, int side_srcs, int user_sinks, int user_srcs,
-		const ValDevCls& si1, const ValDevCls& si2, const ValDevCls& si3,
-		const ValDevCls& sr1, const ValDevCls& sr2, const ValDevCls& sr3
-	);
-	AtomTypeCls(
-		SubAtomCls cls, AtomRole role,
-		const ValDevCls& si0, const ValDevCls& content, const ValDevCls& sr0,
-		int side_sinks, int side_srcs, int user_sinks, int user_srcs,
-		const ValDevCls& si1, const ValDevCls& si2, const ValDevCls& si3, const ValDevCls& si4,
-		const ValDevCls& sr1, const ValDevCls& sr2, const ValDevCls& sr3, const ValDevCls& sr4
-	);
+	
+	void AddIn(ValDevCls vd, bool is_opt);
+	void AddOut(ValDevCls vd, bool is_opt);
 	
 	bool IsRoleDriver()		const {return role == AtomRole::DRIVER;}
 	bool IsRoleCustomer()	const {return role == AtomRole::CUSTOMER;}
 	bool IsRolePipe()		const {return role == AtomRole::PIPE;}
-	bool HasSideChannels()	const {return iface.sink.count > 1 || iface.src.count > 1;}
 	
 	bool IsSourceChannelOptional(int ch_i) const;
 	bool IsSinkChannelOptional(int ch_i) const;
@@ -536,7 +460,7 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 
 
 
-struct IfaceConnLink {
+struct IfaceConnLink : Moveable<IfaceConnLink> {
 	int conn = -1;
 	int local = -1;
 	int other = -1;
@@ -547,13 +471,18 @@ struct IfaceConnLink {
 struct IfaceConnTuple {
 	Vector<IfaceConnLink>		sink;
 	Vector<IfaceConnLink>		src;
-	AtomTypeCls			type;
+	AtomTypeCls					type;
 	
 	void Realize(const AtomTypeCls& type);
 	void SetSource(int conn, int src_ch, int sink_ch);
 	void SetSink(int conn, int sink_ch, int src_ch);
 	bool IsComplete() const;
 	dword GetSinkMask() const;
+	void operator=(const IfaceConnTuple& s) {
+		sink <<= s.sink;
+		src <<= s.src;
+		type = s.type;
+	}
 };
 
 

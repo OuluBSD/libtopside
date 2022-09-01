@@ -291,6 +291,8 @@ template <class T> template <class Arg>
 ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {}
 
 
+inline WString FromUtf8(String s) {return s.ToWString();}
+
 END_UPP_NAMESPACE
 
 #else

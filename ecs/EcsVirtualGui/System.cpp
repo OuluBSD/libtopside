@@ -27,7 +27,6 @@ void VirtualGuiSystem::Uninitialize() {
 
 
 
-#if 0
 bool SingleMachine::Open(void(*arg_fn)()) {
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
@@ -75,6 +74,6 @@ void SingleMachine::Close() {
 	Machine& mach = GetActiveMachine();
 	mach.Stop();
 }
-#endif
+
 
 NAMESPACE_ECS_END

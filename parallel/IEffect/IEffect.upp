@@ -1,18 +1,13 @@
 description "\377B28,255,150";
 
-uses
-	AudioCore,
-	ParallelLib;
+	uses AudioCore;
+	uses ParallelLib;
+
 
 file
 	IEffect.h,
-	Enums.h,
-	Vendors.h,
 	AudioCore.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

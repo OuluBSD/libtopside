@@ -22,18 +22,32 @@
 
 #if HAVE_SHORT_NAMESPACE
 	#define NAMESPACE_TOPSIDE_NAME ts
-	#define NAMESPACE_TOPSIDE_BEGIN namespace NAMESPACE_TOPSIDE_NAME {
+	#define NAMESPACE_TOPSIDE_BEGIN \
+		/*static_assert(is_in_topside == false, "already in topside namespace");*/ \
+		namespace NAMESPACE_TOPSIDE_NAME {
 	#define NAMESPACE_TOPSIDE_END }
 	#define TS ts
 #else
 	#define NAMESPACE_TOPSIDE_NAME Topside
-	#define NAMESPACE_TOPSIDE_BEGIN namespace NAMESPACE_TOPSIDE_NAME {
+	#define NAMESPACE_TOPSIDE_BEGIN \
+		/*static_assert(is_in_topside == false, "already in topside namespace");*/ \
+		namespace NAMESPACE_TOPSIDE_NAME {
 	#define NAMESPACE_TOPSIDE_END }
 	#define TS Topside
 	namespace UPP {}
 	namespace TS {using namespace UPP;}
 #endif
 
+
+static constexpr bool is_in_topside = false;
+static constexpr bool is_in_parallel = false;
+
+namespace TS {
+static constexpr bool is_in_topside = true;
+namespace Parallel {
+static constexpr bool is_in_parallel = true;
+}
+}
 
 // stable 32bit win u++ compatibility (<r13664)
 #if !defined UPP_VERSION && defined UPP_HEAP

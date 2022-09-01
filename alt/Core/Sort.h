@@ -115,7 +115,7 @@ inline void IterSwapIndex(I a, I b, J va, J vb) { if (a != b) {Swap(*a, *b); Swa
 template <class I, class J, class Less>
 inline void OrderIterIndex__(I a, I b, J va, J vb, const Less& less)
 {
-	if(less(*b, *a)) {
+	if(less(*vb, *va)) {
 		IterSwapIndex(a, b, va, vb);
 	}
 }
@@ -134,14 +134,21 @@ inline void FinalSortIndex__(I begin, I end, J vbegin, J vend, const Less& less)
 		J vnext = vlast;
 		J vptr = vlast;
 		for(;;) {
-			if(less(*best, *--ptr)) {  // best holds, scan for better candidate
-				do if(ptr == begin) { // best is the final minimum
-					IterSwapIndex(begin, best, vbegin, vbest);
-					++begin;
-					++vbegin;
-					goto NEXT_ITEM;
+			--ptr;
+			--vptr;
+			if(less(*vbest, *vptr)) {  // best holds, scan for better candidate
+				do {
+					if(ptr == begin) { // best is the final minimum
+						IterSwapIndex(begin, best, vbegin, vbest);
+						++begin;
+						++vbegin;
+						goto NEXT_ITEM;
+					}
+					--ptr;
+					--vptr;
+					ASSERT(vptr != vbegin);
 				}
-				while(less(*best, *--ptr));
+				while(less(*vbest, *vptr));
 				if(ptr == begin) { // begin is the final minimum, best is 2nd least
 					IterSwapIndex(++begin, best, ++vbegin, vbest);
 					++begin;
@@ -192,14 +199,14 @@ void SortIndex__(I l, I h, J vl, J vh, const Less& less)
 				I i = l + 2;
 				J vi = vl + 2;
 				for(; i != h - 1; ++i, ++vi)   // do partitioning; already l <= pivot <= h - 1
-					if(less(*i, *(l + 1)))
+					if(less(*vi, *(vl + 1)))
 						IterSwapIndex(++ii, i, ++vii, vi);
 			}
 			IterSwapIndex(ii, l + 1, vii, vl + 1);          // put pivot back in between partitions
 			I iih = ii;
 			J viih = vii;
 			// Find middle range of elements equal to pivot
-			while(iih + 1 != h && !less(*ii, *(iih + 1))) {
+			while(iih + 1 != h && !less(*vii, *(viih + 1))) {
 				++iih;
 				++viih;
 			}
@@ -272,15 +279,21 @@ inline void FinalSortKey__(H hbegin, H hend, I begin, I end, J vbegin, J vend, c
 		J vnext = vlast;
 		J vptr = vlast;
 		for(;;) {
-			if(less(*best, *--ptr)) {  // best holds, scan for better candidate
-				do if(ptr == begin) { // best is the final minimum
-					IterSwapKey<H,I,J>(hbegin, hbest, begin, best, vbegin, vbest);
-					++hbegin;
-					++begin;
-					++vbegin;
-					goto NEXT_ITEM;
+			--ptr;
+			--vptr;
+			if(less(*best, *ptr)) {  // best holds, scan for better candidate
+				do {
+					if(ptr == begin) { // best is the final minimum
+						IterSwapKey<H,I,J>(hbegin, hbest, begin, best, vbegin, vbest);
+						++hbegin;
+						++begin;
+						++vbegin;
+						goto NEXT_ITEM;
+					}
+					--ptr;
+					--vptr;
 				}
-				while(less(*best, *--ptr));
+				while(less(*best, *ptr));
 				if(ptr == begin) { // begin is the final minimum, best is 2nd least
 					IterSwapKey<H,I,J>(++hbegin, hbest, ++begin, best, ++vbegin, vbest);
 					++hbegin;
@@ -421,15 +434,21 @@ inline void FinalSortObject__(H hbegin, H hend, I begin, I end, J vbegin, J vend
 		J vnext = vlast;
 		J vptr = vlast;
 		for(;;) {
-			if(less(Reff(*best), Reff(*--ptr))) {  // best holds, scan for better candidate
-				do if(ptr == begin) { // best is the final minimum
-					IterSwapObject<H,I,J>(hbegin, hbest, begin, best, vbegin, vbest);
-					++hbegin;
-					++begin;
-					++vbegin;
-					goto NEXT_ITEM;
+			--ptr;
+			--vptr;
+			if(less(Reff(*best), Reff(*ptr))) {  // best holds, scan for better candidate
+				do {
+					if(ptr == begin) { // best is the final minimum
+						IterSwapObject<H,I,J>(hbegin, hbest, begin, best, vbegin, vbest);
+						++hbegin;
+						++begin;
+						++vbegin;
+						goto NEXT_ITEM;
+					}
+					--ptr;
+					--vptr;
 				}
-				while(less(Reff(*best), Reff(*--ptr)));
+				while(less(Reff(*best), Reff(*ptr)));
 				if(ptr == begin) { // begin is the final minimum, best is 2nd least
 					IterSwapObject<H,I,J>(++hbegin, hbest, ++begin, best, ++vbegin, vbest);
 					++hbegin;

@@ -1,12 +1,13 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-static bool StaticSource_Initialize(NativeStaticSource& dev, AtomBase&, const Script::WorldState&);
-static bool StaticSource_PostInitialize(NativeStaticSource& dev, AtomBase&);
-static bool StaticSource_Start(NativeStaticSource& dev, AtomBase&);
-static void StaticSource_Stop(NativeStaticSource& dev, AtomBase&);
-static void StaticSource_Uninitialize(NativeStaticSource& dev, AtomBase&);
-static bool StaticSource_Send(NativeStaticSource& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
-static bool StaticSource_IsReady(NativeStaticSource& dev, AtomBase&, PacketIO& io);
+static bool StaticSource_Create(One<NativeStaticSource>& dev);
+static void StaticSource_Destroy(One<NativeStaticSource>& dev);
+static bool StaticSource_Initialize(NativeStaticSource&, AtomBase&, const Script::WorldState&);
+static bool StaticSource_PostInitialize(NativeStaticSource&, AtomBase&);
+static bool StaticSource_Start(NativeStaticSource&, AtomBase&);
+static void StaticSource_Stop(NativeStaticSource&, AtomBase&);
+static void StaticSource_Uninitialize(NativeStaticSource&, AtomBase&);
+static bool StaticSource_Send(NativeStaticSource&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
+static bool StaticSource_IsReady(NativeStaticSource&, AtomBase&, PacketIO& io);
 
-	

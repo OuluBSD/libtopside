@@ -12,7 +12,6 @@
 
 
 #include "Types.h"
-#include "Generated.h"
 #include "EntitySystem.h"
 #include "CustomAtom.h"
 #include "GfxUtil.h"

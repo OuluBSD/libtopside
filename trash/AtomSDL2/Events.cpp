@@ -60,7 +60,7 @@ bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
 	
 	RTLOG("SDL2ImageBase::ProcessPackets: sink #0: " << in->ToString());
 	
-	if (io.src_count == 1) {
+	if (io.src.GetCount() == 1) {
 		PacketIO::Source& src = io.src[0];
 		Packet& out = src.p;
 		src.from_sink_ch = 0;
@@ -79,13 +79,13 @@ bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
 		dst = ev;
 	}
 	else {
-		ASSERT(io.src_count >= 2);
+		ASSERT(io.src.GetCount() >= 2);
 		PacketIO::Source& prim_src = io.src[0];
 		Packet& prim_out = prim_src.p;
 		prim_src.from_sink_ch = 0;
 		prim_out = ReplyPacket(0, sink.p);
 		
-		ASSERT(io.src_count >= 2);
+		ASSERT(io.src.GetCount() >= 2);
 		PacketIO::Source& src = io.src[1];
 		Packet& out = src.p;
 		src.from_sink_ch = 0;

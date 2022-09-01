@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#if 0
+
 
 #define CONSOLE_APP_(x) CONSOLE_APP_MAIN {TS::SimpleSerialApp<x>();}
 #define RENDER_APP_(x) RENDER_APP_MAIN {TS::SimpleSerialApp<x>();}
@@ -46,7 +46,7 @@ NAMESPACE_TOPSIDE_BEGIN
 	INITBLOCK_(x) {TS::Ecs::Engine::WhenInitialize << callback(init); TS::Ecs::Engine::WhenPreFirstUpdate << callback(startup);} \
 	END_UPP_NAMESPACE
 
-#endif
+
 
 NAMESPACE_TOPSIDE_END
 

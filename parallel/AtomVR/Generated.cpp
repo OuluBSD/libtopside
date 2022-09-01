@@ -1,92 +1,122 @@
 #include "AtomVR.h"
 
+// This file is generated. Do not modify this file.
+
 namespace TS {
 
 namespace Parallel {
 
-#if defined flagOPENHMD
-AtomTypeCls OpenHMDPipe::GetAtomType()
-{
-	return ATOM11(OPEN_H_M_D_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+#if (defined flagFREEBSD && defined flagOPENHMD) || (defined flagLINUX && defined flagOPENHMD)
+String OpenHMDPipe::GetAction() {
+	return "x11.ogl.ohmd.events";
 }
 
-LinkTypeCls OpenHMDPipe::GetLinkType()
-{
+AtomTypeCls OpenHMDPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::OPEN_HMDPIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls OpenHMDPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void OpenHMDPipe::Visit(RuntimeVisitor& vis)
-{
+void OpenHMDPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<OpenHMDSinkDevice>(this);
 }
 
-AtomTypeCls OpenHMDPipe::GetType() const
-{
+AtomTypeCls OpenHMDPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
+
+
 #if defined flagLOCALHMD
-AtomTypeCls LocalHMDPipe::GetAtomType()
-{
-	return ATOM11(LOCAL_H_M_D_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+String LocalHMDPipe::GetAction() {
+	return "x11.ogl.holo.events";
 }
 
-LinkTypeCls LocalHMDPipe::GetLinkType()
-{
+AtomTypeCls LocalHMDPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::LOCAL_HMDPIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls LocalHMDPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void LocalHMDPipe::Visit(RuntimeVisitor& vis)
-{
+void LocalHMDPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<LocalHMDSinkDevice>(this);
 }
 
-AtomTypeCls LocalHMDPipe::GetType() const
-{
+AtomTypeCls LocalHMDPipe::GetType() const {
 	return GetAtomType();
 }
-
 #endif
-AtomTypeCls RemoteVRServerPipe::GetAtomType()
-{
-	return ATOM11(REMOTE_V_R_SERVER_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String RemoteVRServerPipe::GetAction() {
+	return "tcp.ogl.holo.events";
 }
 
-LinkTypeCls RemoteVRServerPipe::GetLinkType()
-{
+AtomTypeCls RemoteVRServerPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::REMOTE_VRSERVER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls RemoteVRServerPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void RemoteVRServerPipe::Visit(RuntimeVisitor& vis)
-{
+void RemoteVRServerPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<RemoteVRServerSinkDevice>(this);
 }
 
-AtomTypeCls RemoteVRServerPipe::GetType() const
-{
+AtomTypeCls RemoteVRServerPipe::GetType() const {
 	return GetAtomType();
 }
+#endif
 
-AtomTypeCls BluetoothHoloPipe::GetAtomType()
-{
-	return ATOM11(BLUETOOTH_HOLO_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+
+#if (defined flagFREEBSD) || (defined flagLINUX)
+String BluetoothHoloPipe::GetAction() {
+	return "bluetooth.holo.events";
 }
 
-LinkTypeCls BluetoothHoloPipe::GetLinkType()
-{
+AtomTypeCls BluetoothHoloPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::BLUETOOTH_HOLO_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls BluetoothHoloPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void BluetoothHoloPipe::Visit(RuntimeVisitor& vis)
-{
+void BluetoothHoloPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<DevBluetoothSinkDevice>(this);
 }
 
-AtomTypeCls BluetoothHoloPipe::GetType() const
-{
+AtomTypeCls BluetoothHoloPipe::GetType() const {
 	return GetAtomType();
 }
+#endif
+
 
 }
 
