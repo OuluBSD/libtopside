@@ -1,17 +1,11 @@
-machine glx.app: {
+machine glx.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context
 	
-	chain program: {
+	chain program:
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.fbo.standalone: true {shader.frag.path: "shaders/toys/simple/simple_single/stage0.glsl";};
-		};
-		
-	};
-	
-};
-
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.standalone:
+				shader.frag.path = "shaders/toys/simple/simple_single/stage0.glsl"

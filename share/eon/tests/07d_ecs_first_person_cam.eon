@@ -1,100 +1,119 @@
-machine sdl.app: {
+machine sdl.app:
 	
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop center.events: {
-			center.customer: true;
-			sdl.event.pipe: true;
-			state.event.pipe: true {target: event.register;};
-		};
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe:
+                target = event.register
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			sdl.ogl.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
-				shader.default.frag.path:	"shaders/tests/07d_fragment.glsl";
-				shader.default.vtx.path:	"shaders/tests/07d_vertex.glsl";
-			};
-			sdl.fbo.sink: true {
-				close_machine:  	true;
-				sizeable:	      	true;
-				env:		      	event.register;
-			};
-		};
-		
-	};
+		loop ogl.fbo:
+			ogl.customer
+			sdl.ogl.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =	"shaders/tests/07d_fragment.glsl"
+				shader.default.vtx.path =	"shaders/tests/07d_vertex.glsl"
+			sdl.fbo.sink:
+				close_machine =  	true
+				sizeable =	      	true
+				env =		      	event.register
 
-};
-
-engine ecs.dummy: {
-    system rendering;
-    system entity.store;
-    system component.store;
-    system events;
-    system interaction: {env: event.register;};
-    system physics;
-    system player;
+				
+engine ecs.dummy:
+    system rendering
+    system entity.store
+    system component.store
+    system events
+    system interaction:
+        env = event.register
+    system physics
+    system player
     
-    pool world: {
-        entity ground: {
-            comp transform3;
-            comp model: {builtin: plane;};
-            comp physics: {bind: true; test.fn: fixed;};
-        };
+    pool world:
+        entity ground:
+            comp transform3
+            comp model:
+                builtin = plane
+            comp physics:
+                bind = true
+                test.fn = fixed
         
-        entity box: {
-            comp transform3: {y: 1;};
-            comp body;
-            comp model: {builtin: box;};
-            comp physics: {bind: true; test.fn: fixed;};
-        };
+        entity box:
+            comp transform3:
+                y = 1
+            comp body
+            comp model:
+                builtin = box
+            comp physics:
+                bind = true
+                test.fn = fixed
         
-        entity box2: {
-            comp transform3: {x: 3; y: 1;};
-            comp body;
-            comp model: {builtin: box;};
-            comp physics: {bind: true; test.fn: fixed;};
-        };
+        entity box2:
+            comp transform3:
+                x = 3
+                y = 1
+            comp body
+            comp model:
+                builtin = box
+            comp physics:
+                bind = true
+                test.fn = fixed
         
-        entity box3: {
-            comp transform3: {x: 5; y: 2; z: 2;};
-            comp body;
-            comp model: {builtin: box;};
-            comp physics: {bind: true; test.fn: fixed;};
-        };
+        entity box3:
+            comp transform3:
+                x = 5
+                y = 2
+                z = 2
+            comp body
+            comp model:
+                builtin = box
+            comp physics:
+                bind = true
+                test.fn = fixed
         
-        entity player.body: {
-            comp transform3: {x: 0; y: 0; z: 6;};
-            comp physics: {bind: true;}; // TODO
-            comp player.body: {height: 1.74;};
-        };
+        entity player.body:
+            comp transform3:
+                x = 0
+                y = 0
+                z = 6
+            comp physics:
+                bind = true
+            comp player.body:
+                height = 1.74
         
-        entity player.head: {
-            comp transform3;
-            comp viewable;
-            comp viewport: {fov: 90;};
-            comp camera.chase;
-            comp player.head: {body: world.player.body;}; 
-        };
+        entity player.head:
+            comp transform3
+            comp viewable
+            comp viewport:
+                fov = 90
+            comp camera.chase
+            comp player.head:
+                body = world.player.body
         
-        entity player.hand.left: {
-            comp transform3;
-            comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
-            comp player.hand: {hand: left; body: world.player.body; simulated: true;};
-        };
+        entity player.hand.left:
+            comp transform3
+            comp body
+            comp model:
+                builtin = "cylinder,0.02,0.2"
+                pitch = -90
+            comp player.hand:
+                hand = left
+                body = world.player.body
+                simulated = true
         
-        entity player.hand.right: {
-            comp transform3;
-            comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
-            comp player.hand: {hand: right; body: world.player.body; simulated: true;};
-        };
-    };
-};
+        entity player.hand.right:
+            comp transform3
+            comp body
+            comp model:
+                builtin = "cylinder,0.02,0.2"
+                pitch = -90
+            comp player.hand:
+                hand = right
+                body = world.player.body
+                simulated = true

@@ -1,73 +1,56 @@
-machine sdl.app: {
+machine sdl.app:
 	
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 	
-	chain program: {
+	chain program:
 		
-		state event.register;
+		state event.register
 		
+		loop center.font.image:
+			center.customer
+			center.image.loader[][loop == ogl.fbo.font]: vflip = true, filepath = "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png"
 		
+		loop center.video:
+			center.customer
+			center.video.loader[][loop == ogl.fbo.video]: vflip: "true", filepath = "videos/e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm"
 		
-		loop center.font.image: {
-			center.customer: true;
-			center.image.loader: true [][loop: ogl.fbo.font] {vflip: true; filepath: "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png";};
-		};
+		loop center.audio:
+			center.customer
+			center.audio.loader[][loop == ogl.fbo.audio]:
+				filepath = "sounds/8_bit_mentality.mp3"
 		
-		loop center.video: {
-			center.customer: true;
-			center.video.loader: true [][loop: ogl.fbo.video] {vflip: "true"; filepath: "videos/e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm";};
-		};
-		
-		loop center.audio: {
-			center.customer: true;
-			center.audio.loader: true [][loop: ogl.fbo.audio;] {
-				filepath: "sounds/8_bit_mentality.mp3";
-			};
-		};
-		
-		loop center.events: {
-			center.customer: true;
-			sdl.event.pipe: true;
-			state.event.pipe: true {target: event.register;};
-		};
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe: target = event.register
 		
 		
 		
-		loop ogl.fbo.font: {
-			ogl.customer: true;
-			sdl.ogl.fbo.image: true [loop: center.font.image][loop: ogl.fbo.screen];
-		};
+		loop ogl.fbo.font:
+			ogl.customer
+			sdl.ogl.fbo.image[loop == center.font.image][loop == ogl.fbo.screen]
 		
-		loop ogl.fbo.video: {
-			ogl.customer: true;
-			sdl.ogl.fbo.image: true [loop: center.video][loop: ogl.fbo.screen] {filter: mipmap;};
-		};
+		loop ogl.fbo.video:
+			ogl.customer
+			sdl.ogl.fbo.image[loop == center.video][loop == ogl.fbo.screen]: filter = mipmap
 		
-		loop ogl.fbo.audio: {
-			ogl.customer: true;
-			sdl.ogl.center.fbo.audio: true [loop: center.audio][loop: ogl.fbo.screen];
-		};
+		loop ogl.fbo.audio:
+			ogl.customer
+			sdl.ogl.center.fbo.audio[loop == center.audio][loop == ogl.fbo.screen]
 		
-		loop ogl.fbo.keyboard: {
-			ogl.customer: true;
-			sdl.ogl.fbo.keyboard: true [][loop: ogl.fbo.screen;;;;] {target: event.register;};
-		};
+		loop ogl.fbo.keyboard:
+			ogl.customer
+			sdl.ogl.fbo.keyboard[][loop == ogl.fbo.screen]: target = event.register
 		
 		
 		
-		loop ogl.fbo.screen: {
-			ogl.customer: true;
-			sdl.fbo: true [loop: ogl.fbo.font; loop: ogl.fbo.video; loop: ogl.fbo.audio; loop: ogl.fbo.keyboard;] {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				shader.frag.path:	"shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl";
-			};
-		};
-		
-	};
-	
-};
+		loop ogl.fbo.screen:
+			ogl.customer
+			sdl.fbo[loop == ogl.fbo.font, loop: ogl.fbo.video, loop: ogl.fbo.audio, loop: ogl.fbo.keyboard]:
+				close_machine =		true
+				sizeable =			true
+				env =				event.register
+				shader.frag.path =	"shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl"
+
 

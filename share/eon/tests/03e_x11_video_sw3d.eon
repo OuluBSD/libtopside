@@ -1,26 +1,19 @@
-machine x11.app: {
+machine x11.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop video: {
-			center.customer: true;
-			x11.sw.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
-			};
-			x11.sw.video.pipe: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				program:		"obj_view";
-			};
-		};
-		
-	};
-
-};
+		loop video:
+			center.customer
+			x11.sw.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+			
+			x11.sw.video.pipe:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+				program =		"obj_view"

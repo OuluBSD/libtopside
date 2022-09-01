@@ -1,31 +1,21 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 		
-	chain program: {
+	chain program:
 		
-		state event.register;
+		state event.register
 		
-		loop center.events: {
-			center.customer: true;
-			sdl.event.pipe: true;
-			state.event.pipe: true {
-                target: event.register;
-            };
-		};
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe:
+                target = event.register
 		
-		loop video: {
-			center.customer: true;
-			center.video.prog.ecs: true;
-			sdl.prog.pipe: true {
-				sizeable:		true;
-				env:			event.register;
-            };
-		};
-		
-	};
-
-};
-
+		loop video:
+			center.customer
+			center.video.prog.ecs
+			sdl.prog.pipe:
+				sizeable =		true
+				env =			event.register

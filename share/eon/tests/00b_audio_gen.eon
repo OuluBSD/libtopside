@@ -1,19 +1,11 @@
-chain tester: {
-	
-	loop output: {
-		center.customer: true;
-		center.audio.src.test: true;
-		center.audio.side.src: true;
-		center.audio.side.src.center: true;
-		return has.output: true;
-	};
-	
-	loop input: {
-		center.customer: true;
-		center.audio.side.sink: true;
-		center.audio.side.sink.center: true;
-		center.audio.sink.test.realtime: true {dbg_limit: 100;};
-		return has.input: true;
-	};
-	
-};
+chain tester:
+	loop output:
+		center.customer
+		center.audio.src.test
+		center.audio.side.src.center
+		
+	loop input:
+		center.customer
+		center.audio.side.sink.center
+		center.audio.sink.test.realtime:
+			dbg_limit = 100

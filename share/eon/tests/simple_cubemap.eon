@@ -1,0 +1,23 @@
+machine sdl.app:
+		
+	driver context:
+		sdl.context
+		
+	chain program:
+		
+		loop center.image:
+			id = "image"
+			center.customer
+			center.image.loader[][id == "texture"]:
+				vflip = true
+				cubemap = true
+				filepath = "imgs/488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg"
+		
+		loop ogl.fbo.tex:
+			ogl.customer
+			ogl.fbo.image[id == "image"][id == "screen"]
+		
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo[id == "texture"]: buf0 = "cubemap", filepath = "shaders/toys/cubemap/copper_mirror_ball/stage0.glsl"

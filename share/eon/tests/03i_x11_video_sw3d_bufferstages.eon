@@ -1,29 +1,23 @@
-machine glx.app: {
+machine glx.app:
 		
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 
-		loop video: {
-			center.customer: true;
-			x11.sw.fbo.standalone: true {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				type:				custom;
-				stages:				3;
-				s0.shader.vtx.name:		"pass";
-				s0.shader.frag.name:	"color_test";
-				s1.shader.vtx.name:		"pass";
-				s1.shader.frag.name:	"color_test";
-				s2.shader.vtx.name:		"stereo";
-				s2.shader.frag.name:	"stereo";
-				s2.quad.count:			2;
-			};
-		};
-	};
-
-};
+		loop video:
+			center.customer
+			x11.sw.fbo.standalone:
+				close_machine =			true
+				sizeable =				true
+				env =					event.register
+				type =					custom
+				stages =				3
+				s0.shader.vtx.name =	"pass"
+				s0.shader.frag.name =	"color_test"
+				s1.shader.vtx.name =	"pass"
+				s1.shader.frag.name =	"color_test"
+				s2.shader.vtx.name =	"stereo"
+				s2.shader.frag.name =	"stereo"
+				s2.quad.count =			2

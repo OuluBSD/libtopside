@@ -1,33 +1,25 @@
-machine sdl.app: {
+machine sdl.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.fbo.program: true {
-				drawmem:						"false";
-				program:						"obj_view";
-				shader.default.frag.path:		"shaders/tests/03n_fragment.glsl";
-				shader.default.vtx.path:		"shaders/tests/03n_vertex.glsl";
-				shader.sky.frag.path:			"shaders/tests/03n_skybox_fragment.glsl";
-				shader.sky.vtx.path:			"shaders/tests/03n_skybox_vertex.glsl";
-				program.arg.use.pbr:			true;
-				program.arg.model:				"ms/Gun.obj";
-				program.arg.skybox.diffuse:		"bg5";
-				program.arg.skybox.irradiance:	"bg1";
-			};
-			x11.ogl.fbo.sink: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-			};
-		};
-		
-	};
-
-};
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.program:
+				drawmem =						"false"
+				program =						"obj_view"
+				shader.default.frag.path =		"shaders/tests/03n_fragment.glsl"
+				shader.default.vtx.path =		"shaders/tests/03n_vertex.glsl"
+				shader.sky.frag.path =			"shaders/tests/03n_skybox_fragment.glsl"
+				shader.sky.vtx.path =			"shaders/tests/03n_skybox_vertex.glsl"
+				program.arg.use.pbr =			true
+				program.arg.model =				"ms/Gun.obj"
+				program.arg.skybox.diffuse =	"bg5"
+				program.arg.skybox.irradiance =	"bg1"
+			x11.ogl.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

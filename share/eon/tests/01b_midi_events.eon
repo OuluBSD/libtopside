@@ -1,10 +1,12 @@
-machine midi.app: {
-	chain program: {
-		loop event: {
-			center.customer: true;
-			midi.file.reader.pipe: true {filepath: "midi/saturday_show.mid"; close_machine: true;};
-			midi.null.sink: true {verbose: true;};
-		};
-	};
-};
+machine midi.app:
+	
+	chain program:
+		loop event:
+			center.customer
+			midi.file.reader.pipe:
+				filepath = "midi/saturday_show.mid"
+				close_machine = true
+			midi.null.sink:
+				verbose = true
+
 

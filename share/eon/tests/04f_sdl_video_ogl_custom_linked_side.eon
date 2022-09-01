@@ -1,35 +1,26 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
+	
+	chain program:
+		state event.register
 		
-	chain program: {
-		state event.register;
+		loop ogl.fbo.buffer:
+			id = "buffer"
+			ogl.customer
+			sdl.ogl.fbo.sidetrue [][id == "screen"]:
+				shader.frag.path = "shaders/toys/simple/simple_double/stage1.glsl"
 		
-		loop ogl.fbo.buffer: {
-			id: "buffer";
-			ogl.customer: true;
-			sdl.ogl.fbo.side: true [][id: "screen";;;;] {
-				shader.frag.path: "shaders/toys/simple/simple_double/stage1.glsl"
-			;};
-		};
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo[id == "buffer"][]:
+				shader.frag.path = "shaders/toys/simple/simple_double/stage0.glsl"
+				recv.data =			false
 		
-		loop ogl.fbo.screen: {
-			id: "screen";
-			ogl.customer: true;
-			sdl.fbo: true [id: "buffer";;;;][] {
-				shader.frag.path: "shaders/toys/simple/simple_double/stage0.glsl";
-				recv.data:		false;
-			};
-		};
-		
-		loop audio: {
-			center.customer: true;
-			center.audio.src.dbg_generator: true {waveform: "noise";};
-			sdl.audio: true;
-		};
-	};
-
-};
-
+		loop audio:
+			center.customer
+			center.audio.src.dbg_generator:
+				waveform = "noise"
+			sdl.audio

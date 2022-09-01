@@ -1,26 +1,19 @@
-machine glx.app: {
+machine glx.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.fbo.pipe: true {
-				shader.frag.path:	"shaders/toys/simple/simple_double/stage1.glsl";
-			};
-			x11.ogl.fbo.sink: true {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				shader.frag.path:	"shaders/toys/simple/simple_double/stage0.glsl";
-				recv.data:			false;
-			};
-		};
-	};
-
-};
-
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.pipe:
+				shader.frag.path =	"shaders/toys/simple/simple_double/stage1.glsl"
+			
+			x11.ogl.fbo.sink:
+				close_machine =		true
+				sizeable =			true
+				env =				event.register
+				shader.frag.path =	"shaders/toys/simple/simple_double/stage0.glsl"
+				recv.data =			false

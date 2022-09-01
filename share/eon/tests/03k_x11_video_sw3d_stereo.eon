@@ -1,32 +1,25 @@
-machine glx.app: {
+machine glx.app:
 		
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 
 		loop video: {
-			center.customer: true;
-			x11.sw.fbo.program: true {
-				drawmem:					"false";
-				program:					"obj_view";
-				shader.default.vtx.name:	"obj_view";
-				shader.default.frag.name:	"obj_view";
-				shader.stereo.vtx.name:		"stereo";
-				shader.stereo.frag.name:	"stereo";
-			};
-			x11.sw.video.pipe: true {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				type:				stereo;
-				fullscreen:			false;
-				find.vr.screen:		false;
-			};
-		};
-		
-	};
-
-};
+			center.customer
+			x11.sw.fbo.program:
+				drawmem =					"false"
+				program =					"obj_view"
+				shader.default.vtx.name =	"obj_view"
+				shader.default.frag.name =	"obj_view"
+				shader.stereo.vtx.name =	"stereo"
+				shader.stereo.frag.name =	"stereo"
+			
+			x11.sw.video.pipe:
+				close_machine =		true
+				sizeable =			true
+				env =				event.register
+				type =				stereo
+				fullscreen =			false
+				find.vr.screen =		false

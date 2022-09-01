@@ -1,0 +1,21 @@
+machine sdl.app:
+	
+	driver context:
+		sdl.context
+	
+	chain program:
+		loop center.video:
+			id = "cam"
+			center.customer
+			center.video.loader[][id == "texture"]: vflip = "true", filepath = "videos/35c87bcb8d7af24c54d41122dadb619dd920646a0bd0e477e7bdc6d12876df17.webm"
+		
+		loop ogl.fbo.tex:
+			id = "texture"
+			ogl.customer
+			ogl.fbo.image[id == "cam"][id == "screen"]
+		
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo[id == "texture"]: filepath = "shaders/toys/simple/simple_video/stage0.glsl"
+

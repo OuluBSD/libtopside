@@ -1,0 +1,9 @@
+machine sdl.app:
+	driver context:
+		sdl.context
+	
+	chain program:
+		loop ogl.fbo:
+			ogl.customer
+			sdl.fbo.standalone:
+				filepath = "shaders/toys/simple/simple_single/stage0.glsl"

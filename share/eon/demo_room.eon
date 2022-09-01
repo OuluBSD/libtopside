@@ -1,24 +1,18 @@
-machine sdl.app: {
+machine sdl.app:
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.holo.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
-			};
-			x11.ogl.fbo.sink: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				shader.frag.path:		"shaders/tests/03f_fragment.glsl";
-				shader.vtx.path:			"shaders/tests/03f_vertex.glsl";
-			};
-		};
-		
-	};
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.holo.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+			x11.ogl.fbo.sink:
+				close_machine =		true
+				sizeable =			true
+				env =				event.register
+				shader.frag.path =	"shaders/tests/03f_fragment.glsl"
+				shader.vtx.path =	"shaders/tests/03f_vertex.glsl"
 
-};
 

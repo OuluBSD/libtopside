@@ -1,31 +1,24 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 		
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop center.events: {
-			center.customer: true;
-			sdl.event.pipe: true;
-			state.event.pipe: true {target: event.register;};
-		};
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe: target = event.register
 		
-		loop ogl.video: {
-			ogl.customer: true;
-			ogl.fbo.ecs.pipe: true;
-			sdl.fbo.sink: true {
-				close_machine:	true;
-				sizeable:		true;
-				env:			event.register;
-				shader.frag.path:		"${FRAGMENT}";
-				shader.vtx.path:			"${VERTEX}";
-			};
-		};
-		
-	};
+		loop ogl.video:
+			ogl.customer
+			ogl.fbo.ecs.pipe
+			sdl.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+				shader.frag.path =	"${FRAGMENT}"
+				shader.vtx.path =	"${VERTEX}"
 
-};
 

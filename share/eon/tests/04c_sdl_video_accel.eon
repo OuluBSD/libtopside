@@ -1,0 +1,17 @@
+machine sdl.app:
+		
+	driver context:
+		sdl.context
+	
+	chain program:
+		
+		loop ogl.fbo:
+			ogl.customer
+			sdl.fbo.standalone:
+				testshader: true
+		
+		loop audio:
+			center.customer
+			center.audio.src.dbg_generator:
+				waveform: "noise"
+			sdl.audio

@@ -1,97 +1,68 @@
-machine sdl.app: {
+machine sdl.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
-				shader.default.frag.path:	"shaders/tests/07d_fragment.glsl";
-				shader.default.vtx.path:	"shaders/tests/07d_vertex.glsl";
-			};
-			x11.ogl.fbo.sink: true {
-				close_machine:  	true;
-				sizeable:	      	true;
-				env:		      	event.register;
-				recv.data:          true;
-			};
-		};
-		
-	};
-
-};
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =	"shaders/tests/07d_fragment.glsl"
+				shader.default.vtx.path =	"shaders/tests/07d_vertex.glsl"
+			x11.ogl.fbo.sink:
+				close_machine =  	true
+				sizeable =	      	true
+				env =		      	event.register
+				recv.data =         true
 
 
-
-
-
-
-engine ecs.dummy: {
-    system rendering;
-    system entity.store;
-    system component.store;
-    system events;
-    system physics: {
-        //log: debug;
-    };
+engine ecs.dummy:
+    system rendering
+    system entity.store
+    system component.store
+    system events
+    system physics:
+        //log: debug
     
-    
-    pool world: {
-        entity ground: {
-            comp transform3: {
-                x: 0;
-                y: 0;
-                z: 0;
-            };
-            comp model: {
-                builtin: plane;
-            };
-            comp physics: {
-                bind: false;
-                test.fn: fixed;
-            };
-        };
+    pool world:
+        entity ground:
+            comp transform3:
+                x = 0
+                y = 0
+                z = 0
+            comp model:
+                builtin = plane
+            comp physics:
+                bind = false
+                test.fn = fixed
         
-        entity ball: {
-            comp transform3: {
-                x: -1;
-                y: 1;
-                z: 0;
-            };
-            comp body;
-            comp model: {
-                builtin: box;
+        entity ball:
+            comp transform3:
+                x = -1
+                y = 1
+                z = 0
+            comp body
+            comp model:
+                builtin = box
             
-            };
-            comp physics: {
-                bind: false;
-                test.fn: fixed;
-            };
-        };
+            comp physics:
+                bind = false
+                test.fn = fixed
         
-        entity player: {
-            comp transform3: {
-                x: 0;
-                y: 1.6;
-                z: -6;
-            };
-            comp viewable;
-            comp viewport;
-            comp camera.chase: {
-                target: world.ball;
-                log: test;
-            };
-            comp physics: {
-                bind: true;
-                test.fn: do.circle;
-            };
-        };
-    };
-    
-};
+        entity player:
+            comp transform3:
+                x = 0
+                y = 1.6
+                z = -6
+            comp viewable
+            comp viewport
+            comp camera.chase:
+                target = world.ball
+                log = test
+            comp physics:
+                bind = true
+                test.fn = do.circle

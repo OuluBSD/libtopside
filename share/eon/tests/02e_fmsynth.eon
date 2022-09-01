@@ -1,14 +1,16 @@
-machine midi.app: {
-	chain program: {
-		loop event: {
-			center.customer: true;
-			midi.file.reader: true [][loop: "input";] {filepath: "midi/short_piano.mid"; close_machine: true;};
-		};
+machine midi.app:
 	
-		loop input: {
-			center.customer: true;
-			fmsynth.pipe: true [loop: "event";] {filepath: "presets/fmsynth/presets/old_school_organ.fmp"; verbose: false;};
-			center.audio.sink.hw: true;
-		};
-	};
-};
+	chain program:
+		
+		loop event:
+			center.customer
+			midi.file.reader[][loop == "input"]:
+				filepath = "midi/short_piano.mid"
+				close_machine = true
+		
+		loop input:
+			center.customer
+			fmsynth.pipe[loop == "event"]:
+				filepath = "presets/fmsynth/presets/old_school_organ.fmp"
+				verbose = false
+			center.audio.sink.hw

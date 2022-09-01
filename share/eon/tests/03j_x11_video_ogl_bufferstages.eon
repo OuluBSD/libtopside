@@ -1,28 +1,22 @@
-machine glx.app: {
+machine glx.app:
 		
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 
-		loop ogl.video: {
-			ogl.customer: true;
-			x11.ogl.fbo.standalone: true {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				type:				custom;
-				stages:				3;
-				s0.shader.vtx.path:		"shaders/tests/03j_0_vertex.glsl";
-				s0.shader.frag.path:	"shaders/tests/03j_0_fragment.glsl";
-				s1.shader.vtx.path:		"shaders/tests/03j_1_vertex.glsl";
-				s1.shader.frag.path:	"shaders/tests/03j_1_fragment.glsl";
-				s2.shader.vtx.path:		"shaders/tests/03j_2_vertex.glsl";
-				s2.shader.frag.path:	"shaders/tests/03j_2_fragment.glsl";
-			};
-		};
-	};
-
-};
+		loop ogl.video:
+			ogl.customer
+			x11.ogl.fbo.standalone:
+				close_machine =			true
+				sizeable =				true
+				env =					event.register
+				type =					custom
+				stages =				3
+				s0.shader.vtx.path =	"shaders/tests/03j_0_vertex.glsl"
+				s0.shader.frag.path =	"shaders/tests/03j_0_fragment.glsl"
+				s1.shader.vtx.path =	"shaders/tests/03j_1_vertex.glsl"
+				s1.shader.frag.path =	"shaders/tests/03j_1_fragment.glsl"
+				s2.shader.vtx.path =	"shaders/tests/03j_2_vertex.glsl"
+				s2.shader.frag.path =	"shaders/tests/03j_2_fragment.glsl"

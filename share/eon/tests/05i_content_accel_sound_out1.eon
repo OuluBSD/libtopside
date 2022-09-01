@@ -1,42 +1,32 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context = true
 		
-	chain program: {
+	chain program:
 		
-		loop ogl.fbo.audio.buffer: {
-			id: "audio_gen";
-			ogl.customer: true;
-			sdl.ogl.fbo.side: true [][id: "audio_conv";;;;] {
-				type: "audio";
-				shader.frag.path: "shaders/toys/simple/simple_sound_out/stage1.glsl";
-				retarded.local.time: true;
-			};
-		};
+		loop ogl.fbo.audio.buffer:
+			id = "audio_gen"
+			ogl.customer
+			sdl.ogl.fbo.side[][id == "audio_conv"]:
+				type = "audio"
+				shader.frag.path = "shaders/toys/simple/simple_sound_out/stage1.glsl"
+				retarded.local.time = true
+		
 				
-		loop ogl.fbo.screen: {
-			id: "screen";
-			ogl.customer: true;
-			sdl.fbo.standalone: true {
-				shader.frag.path: "shaders/toys/simple/simple_sound_out/stage0.glsl";
-			};
-		};
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo.standalone:
+				shader.frag.path = "shaders/toys/simple/simple_sound_out/stage0.glsl"
 		
-		loop ogl.fbo.audio.conv: {
-			id: "audio_conv";
-			ogl.customer: true;
-			sdl.ogl.fbo.center.audio: true [id: "audio_gen"][id: "audio_out"];
-		};
+		loop ogl.fbo.audio.conv:
+			id = "audio_conv"
+			ogl.customer
+			sdl.ogl.fbo.center.audio[id == "audio_gen"][id == "audio_out"]
 		
-		loop audio: {
-			id: "audio_out";
-			center.customer: true;
-			center.audio.side.sink.center.user: true [id: "audio_conv"];
-			sdl.audio: true;
-		};
-	};
-	
-};
-
+		loop audio:
+			id = "audio_out"
+			center.customer
+			center.audio.side.sink.center.user[id == "audio_conv"]
+			sdl.audio

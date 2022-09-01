@@ -1,0 +1,53 @@
+machine sdl.app:
+	
+	driver context:
+		sdl.context
+	
+	chain program:
+		
+		state event.register
+		
+		loop center.font.image:
+			center.customer
+			center.image.loader[][loop == ogl.fbo.font]: vflip = true, filepath = "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png"
+		
+		loop center.video:
+			center.customer
+			center.video.loader[][loop == ogl.fbo.video]: vflip = "true", filepath = "videos/e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm"
+		
+		loop center.audio:
+			center.customer
+			center.audio.loader[][loop == ogl.fbo.audio]: filepath = "sounds/toymusic.mp3"
+		
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe: target = event.register
+		
+		
+		
+		loop ogl.fbo.font:
+			ogl.customer
+			ogl.fbo.image[loop == center.font.image][loop == ogl.fbo.screen]
+		
+		loop ogl.fbo.video:
+			ogl.customer
+			ogl.fbo.image[loop == center.video][loop == ogl.fbo.screen]: filter = mipmap
+		
+		loop ogl.fbo.audio:
+			ogl.customer
+			ogl.fbo.audio[loop == center.audio][loop == ogl.fbo.screen]
+		
+		loop ogl.fbo.keyboard:
+			ogl.customer
+			ogl.fbo.keyboard[][loop == ogl.fbo.screen]: target = event.register
+		
+		
+		
+		loop ogl.fbo.screen:
+			ogl.customer
+			sdl.fbo[loop == ogl.fbo.font, loop: ogl.fbo.video, loop: ogl.fbo.audio, loop: ogl.fbo.keyboard]:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+				filepath =		"shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl"

@@ -1,18 +1,13 @@
-chain player.audio.generator: {
+chain player.audio.generator:
 	
-	loop output: {
-		center.customer: true;
-		perma.audio.source.decoder: true {filepath: "${FILE}"; stop_machine: true;};
-		center.audio.side.src: true;
-		return has.output: true;
-	};
+	loop output:
+		center.customer
+		perma.audio.source.decoder:
+			filepath = "${FILE}"
+			stop_machine = true
+		center.audio.side.src
 	
-	loop input: {
-		center.customer: true;
-		center.audio.side.sink: true;
-		center.audio.sink: true;
-		center.audio.sink.hw: true;
-		return has.input: true;
-	};
-	
-};
+	loop input:
+		center.customer
+		center.audio.side.sink
+		center.audio.sink.hw

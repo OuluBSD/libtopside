@@ -1,14 +1,15 @@
-machine midi.app: {
-	chain program: {
-		loop event: {
-			center.customer: true;
-			midi.file.reader: true [][loop: "input";] {filepath: "midi/saturday_show.mid"; close_machine: true;};
-		};
+machine midi.app:
 	
-		loop input: {
-			center.customer: true;
-			softinstru.pipe: true [loop: "event";] {filepath: "TimGM6mb.sf2"; verbose: false;};
-			center.audio.sink.hw: true;
-		};
-	};
-};
+	chain program:
+		loop event:
+			center.customer
+			midi.file.reader[][loop == "input"]:
+				filepath = "midi/saturday_show.mid"
+				close_machine = true
+		
+		loop input:
+			center.customer
+			softinstru.pipe[loop == "event"]:
+				filepath = "TimGM6mb.sf2"
+				verbose = false
+			center.audio.sink.hw

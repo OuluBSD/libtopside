@@ -1,54 +1,42 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 		
-	chain program: {
+	chain program:
 		
-		loop audio.in: {
-			id: "audio_gen";
-			center.customer: true;
-			center.audio.src.dbg_generator: true;
-			center.audio.side.src.center.user: true [][id: "audio_conv_in"];
-		};
+		loop audio.in:
+			id = "audio_gen"
+			center.customer
+			center.audio.src.dbg_generator
+			center.audio.side.src.center.user[][id == "audio_conv_in"]
 
-		loop ogl.fbo.audio.conv.in: {
-			id: "audio_conv_in";
-			ogl.customer: true;
-			sdl.ogl.center.fbo.audio: true [id: "audio_gen"][id: "audio_fx"];
-		};
+		loop ogl.fbo.audio.conv.in:
+			id = "audio_conv_in"
+			ogl.customer
+			sdl.ogl.center.fbo.audio[id == "audio_gen"][id == "audio_fx"]
 		
-		loop ogl.fbo.audio.buffer: {
-			id: "audio_fx";
-			ogl.customer: true;
-			sdl.ogl.fbo.side: true [id: "audio_conv_in";;;;][id: "audio_conv_out";;;;] {
-				type: "audio";
-				shader.frag.path: "shaders/toys/simple/simple_sound_mixer/stage1.glsl";
-				retarded.local.time: true;
-			};
-		};
+		loop ogl.fbo.audio.buffer:
+			id = "audio_fx"
+			ogl.customer
+			sdl.ogl.fbo.side[id == "audio_conv_in"][id == "audio_conv_out"]:
+				type = "audio"
+				shader.frag.path = "shaders/toys/simple/simple_sound_mixer/stage1.glsl"
+				retarded.local.time = true
 		
-		loop ogl.fbo.audio.conv.out: {
-			id: "audio_conv_out";
-			ogl.customer: true;
-			sdl.ogl.fbo.center.audio: true [id: "audio_fx"][id: "audio_out"];
-		};
+		loop ogl.fbo.audio.conv.out:
+			id = "audio_conv_out"
+			ogl.customer
+			sdl.ogl.fbo.center.audio[id == "audio_fx"][id == "audio_out"]
 		
-		loop audio.out: {
-			id: "audio_out";
-			center.customer: true;
-			center.audio.side.sink.center.user: true [id: "audio_conv_out"];
-			sdl.audio: true;
-		};
+		loop audio.out:
+			id = "audio_out"
+			center.customer
+			center.audio.side.sink.center.user[id == "audio_conv_out"]
+			sdl.audio
 		
-		loop ogl.fbo.screen: {
-			id: "screen";
-			ogl.customer: true;
-			sdl.fbo.standalone: true {shader.frag.path: "shaders/toys/simple/simple_sound_mixer/stage0.glsl";};
-		};
-		
-	};
-	
-};
-
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo.standalone:
+				shader.frag.path = "shaders/toys/simple/simple_sound_mixer/stage0.glsl"

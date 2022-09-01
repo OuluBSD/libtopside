@@ -1,18 +1,12 @@
-machine x11.app: {
+machine x11.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context
 	
-	chain program: {
+	chain program:
 		
-		loop video: {
-			center.customer: true;
-			center.video.src.dbg_generator: true {mode: "noise";};
-			x11.video.pipe: true;
-		};
-		
-	};
-	
-};
-
+		loop video:
+			center.customer
+			center.video.src.dbg_generator:
+				mode: "noise"
+			x11.video.pipe

@@ -1,0 +1,13 @@
+chain player.audio.generator:
+	
+	loop output:
+		center.customer
+		perma.audio.source.decoder:
+			filepath = "${FILE}",
+			stop_machine = true
+		center.audio.side.src
+	
+	loop input:
+		center.customer
+		center.audio.side.sink
+		center.audio.sink.hw

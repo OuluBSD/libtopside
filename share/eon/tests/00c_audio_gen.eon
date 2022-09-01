@@ -1,31 +1,24 @@
-chain tester: {
-
-	loop output0: {
-		id: "out0";
-		center.customer: true;
-		center.audio.src.test: true;
-		center.audio.side.src.center.user: true [][id:"pipe"];
-	};
+chain tester:
+	loop output0:
+		id = "out0"
+		center.customer
+		center.audio.src.test
+		center.audio.side.src.center.user[][id:"pipe"]
 	
-	loop output1: {
-		id: "out1";
-		center.customer: true;
-		center.audio.src.test: true;
-		center.audio.side.src.center.user: true [][id:"in"];
-	};
+	loop output1:
+		id = "out1"
+		center.customer
+		center.audio.src.test
+		center.audio.side.src.center.user[][id:"in"]
 	
-	loop pipe: {
-		id: "pipe";
-		center.customer: true;
-		center.audio.side.sink.center.user: true [id:"out0"];
-		center.audio.side.src.center.user: true [][id:"in"];
-	};
+	loop pipe:
+		id = "pipe"
+		center.customer
+		center.audio.side.sink.center.user[id:"out0"]
+		center.audio.side.src.center.user[][id:"in"]
 	
-	loop input: {
-		id: "in";
-		center.customer: true;
-		center.audio.side.sink2.center.user: true [id:"pipe"; id:"out1"];
-		center.audio.sink.test.poller: true;
-	};
-	
-};
+	loop input:
+		id = "in"
+		center.customer
+		center.audio.side.sink2.center.user[id:"pipe", id:"out1"]
+		center.audio.sink.test.poller

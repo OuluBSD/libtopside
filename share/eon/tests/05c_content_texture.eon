@@ -1,29 +1,24 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
 		
-	chain program: {
+	chain program:
 		
-		loop center.image: {
-			id: "image";
-			center.customer: true;
-			center.image.loader: true [][id: "texture"] {vflip: true; filepath: "bg5.png";};
-		};
+		loop center.image:
+			id = "image"
+			center.customer
+			center.image.loader[][id == "texture"]:
+				vflip = true
+				filepath = "bg5.png"
 		
-		loop ogl.fbo.tex: {
-			id: "texture";
-			ogl.customer: true;
-			sdl.ogl.fbo.image: true [id: "image"][id: "screen"];
-		};
+		loop ogl.fbo.tex:
+			id = "texture"
+			ogl.customer
+			sdl.ogl.fbo.image[id == "image"][id == "screen"]
 		
-		loop ogl.fbo.screen: {
-			id: "screen";
-			ogl.customer: true;
-			sdl.fbo: true [id: "texture";;;;] {shader.frag.path: "shaders/toys/simple/simple_texture/stage0.glsl";};
-		};
-	};
-
-};
-
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo[id == "texture"]:
+				shader.frag.path = "shaders/toys/simple/simple_texture/stage0.glsl"

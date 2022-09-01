@@ -1,29 +1,21 @@
-machine glx.app: {
+machine glx.app:
 		
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context = true
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 
-		loop video: {
-			center.customer: true;
-			x11.sw.fbo.pipe: true {
-				shader.vtx.name:		"pass";
-				shader.frag.name:		"color_test";
-			};
-			x11.sw.fbo.sink: true {
-				close_machine:		true;
-				sizeable:			true;
-				env:				event.register;
-				shader.vtx.name:	"pass";
-				shader.frag.name:	"proxy_input0";
-				recv.data:			false;
-			};
-		};
-	};
-
-};
-
-
+		loop video:
+			center.customer
+			x11.sw.fbo.pipe:
+				shader.vtx.name =		"pass"
+				shader.frag.name =		"color_test"
+			
+			x11.sw.fbo.sink:
+				close_machine =		true
+				sizeable =			true
+				env =				event.register
+				shader.vtx.name =	"pass"
+				shader.frag.name =	"proxy_input0"
+				recv.data =			false

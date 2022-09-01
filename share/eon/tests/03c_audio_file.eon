@@ -1,7 +1,6 @@
-loop player.audio.ffmpeg: {
-	center.customer: true;
-	perma.audio.source.decoder: true {filepath: "${FILE}"; stop_machine: true;};
-	center.audio.sink: true;
-	center.audio.sink.hw: true;
-};
-
+loop player.audio.ffmpeg:
+	center.customer
+	perma.audio.source.decoder:
+		filepath = "${FILE}"
+		stop_machine = true
+	center.audio.sink.hw

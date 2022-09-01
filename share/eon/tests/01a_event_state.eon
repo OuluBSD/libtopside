@@ -1,12 +1,12 @@
-machine sdl.app: {
-	chain program: {
-		state event.register;
+machine sdl.app:
+	
+	chain program:
+		state event.register
 		
-		loop event: {
-			center.customer: true;
-			event.src.test.pipe: true;
-			state.event.pipe: true {target: event.register;};
-		};
-	};
-};
-
+		loop event:
+			center.customer
+			event.src.test.pipe
+			state.event.pipe:
+				target = event.register
+		
+	

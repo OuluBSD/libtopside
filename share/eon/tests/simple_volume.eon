@@ -1,0 +1,33 @@
+machine sdl.app:
+	
+	driver context:
+		sdl.context
+	
+	chain program:
+		
+		loop center.image:
+			id = "image"
+			center.customer
+			center.image.loader[][id == "texture0"]: vflip = true, filepath = "3083c722c0c738cad0f468383167a0d246f91af2bfa373e9c5c094fb8c8413e0.png"
+		
+		loop center.volume:
+			id = "volume"
+			center.customer
+			center.volume.loader[][id == "texture1"]: vflip = true, filepath = "aea6b99da1d53055107966b59ac5444fc8bc7b3ce2d0bbb6a4a3cbae1d97f3aa.bin"
+		
+		loop ogl.fbo.tex0:
+			id = "texture0"
+			ogl.customer
+			ogl.fbo.image[id == "image"][id == "screen"]
+		
+		loop ogl.fbo.tex1:
+			id = "texture1"
+			ogl.customer
+			ogl.fbo.volume[id == "volume"][id == "screen"]
+		
+		loop ogl.fbo.screen:
+			id = "screen"
+			ogl.customer
+			sdl.fbo[id == "texture0", id == "texture1"]: buf1 = "volume", filepath = "shaders/toys/simple/simple_volume/stage0.glsl"
+
+

@@ -1,23 +1,18 @@
-machine sdl.app: {
+machine sdl.app:
 		
-	driver context: {
-		sdl.context: true;
-	};
+	driver context:
+		sdl.context
+	
+	chain program:
 		
-	chain program: {
+		loop video:
+			center.customer
+			center.video.src.dbg_generator:
+				mode: "noise"
+			sdl.video.pipe
 		
-		loop video: {
-			center.customer: true;
-			center.video.src.dbg_generator: true {mode: "noise";};
-			sdl.video.pipe: true;
-		};
-		
-		loop audio: {
-			center.customer: true;
-			center.audio.src.dbg_generator: true {waveform: "noise";};
-			sdl.audio: true;
-		};
-	};
-
-};
-
+		loop audio:
+			center.customer
+			center.audio.src.dbg_generator:
+				waveform = "noise"
+			sdl.audio

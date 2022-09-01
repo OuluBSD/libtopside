@@ -1,122 +1,101 @@
-machine x11.app: {
+machine x11.app:
 	
-	driver context: {
-		x11.context: true;
-	};
+	driver context:
+		x11.context
 	
-	chain program: {
-		state event.register;
+	chain program:
+		state event.register
 		
-		loop center.events: {
-			center.customer: true;
-			x11.ogl.holo.events: true {
-				device.hmd.idx: -1;
-				device.left.idx: -1;
-				device.right.idx: -1;
-			};
-			state.event.pipe: true {
-				target: event.register;
-			};
-		};
+		loop center.events:
+			center.customer
+			x11.ogl.holo.events:
+				device.hmd.idx = -1
+				device.left.idx = -1
+				device.right.idx = -1
+			state.event.pipe:
+				target = event.register
 		
-		loop ogl.fbo: {
-			ogl.customer: true;
-			x11.ogl.fbo.program: true {
-				drawmem:		"false";
-				program:		"obj_view";
-				shader.default.frag.path:		"shaders/tests/07j_fragment.glsl";
-				shader.default.vtx.path:		"shaders/tests/07j_vertex.glsl";
-				shader.sky.frag.path:			"shaders/tests/03n_skybox_fragment.glsl";
-				shader.sky.vtx.path:			"shaders/tests/03n_skybox_vertex.glsl";
-				type:			stereo;
-			};
-			x11.ogl.fbo.sink: true {
-				close_machine:	true;
-				sizeable:		true;
-				fullscreen:     true;
-				find.vr.screen:	true;
-				env:			event.register;
-				type:			stereo;
-			};
-		};
-		
-	};
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =		"shaders/tests/07j_fragment.glsl"
+				shader.default.vtx.path =		"shaders/tests/07j_vertex.glsl"
+				shader.sky.frag.path =			"shaders/tests/03n_skybox_fragment.glsl"
+				shader.sky.vtx.path =			"shaders/tests/03n_skybox_vertex.glsl"
+				type =			                stereo
+			
+			x11.ogl.fbo.sink:
+				close_machine =     true
+				sizeable =		    true
+				fullscreen =        true
+				find.vr.screen =	true
+				env =			    event.register
+				type =			    stereo
 
-};
 
-engine ecs.dummy: {
-    system rendering;
-    system entity.store;
-    system component.store;
-    system events;
-    system interaction: {env: event.register; hmd: state;};
-    system physics: {rm.outsiders: true; rm.area.size: 20;};
-    system player;
-    system paintstroke;
-    system toolbox: {test.tool.changer: true;};
-    system shooting;
-    system painting;
-    system throwing;
+engine ecs.dummy:
+    system rendering
+    system entity.store
+    system component.store
+    system events
+    system interaction: env = event.register, hmd = state
+    system physics: rm.outsiders = true, rm.area.size = 20
+    system player
+    system paintstroke
+    system toolbox: test.tool.changer = true
+    system shooting
+    system painting
+    system throwing
     
     
-    pool world: {
-        entity skybox: {
-            comp model: {
-				skybox.diffuse:		"bg5";
-				skybox.irradiance:	"bg1";
-                builtin:            "skybox";
-            };
-        };
+    pool world:
+        entity skybox:
+            comp model:
+				skybox.diffuse =	"bg5"
+				skybox.irradiance =	"bg1"
+                builtin =           "skybox"
         
-        entity ground: {
-            comp transform3: {x: 0; y: 0; z: 0;};
-            comp model: {path: "plane.obj";};
-            comp physics: {bind: physics; test.fn: fixed;};
-        };
+        entity ground:
+            comp transform3: x = 0, y = 0, z = 0
+            comp model: path = "plane.obj"
+            comp physics: bind = physics, test.fn = fixed
         
-        entity mdl: {
-            comp transform3: {y: 1;};
-            comp body;
-            comp model: {path: "diablo3_pose/diablo3_pose.obj";};
-            comp physics: {bind: physics; test.fn: fixed;};
-        };
+        entity mdl:
+            comp transform3: y = 1
+            comp body
+            comp model: path = "diablo3_pose/diablo3_pose.obj"
+            comp physics: bind = physics, test.fn = fixed
         
-        entity player.body: {
-            comp transform3: {x: 0; y: 0; z: 6;};
-            comp physics: {bind: physics;};
-            comp player.body: {height: 1.74;};
-        };
+        entity player.body:
+            comp transform3: x = 0, y = 0, z = 6
+            comp physics: bind = physics
+            comp player.body: height = 1.74
         
-        entity player.head: {
-            comp transform3;
-            comp viewable;
-            comp viewport: {fov: 90;};
-            comp camera.chase;
-            comp player.head: {body: world.player.body;};
-        };
+        entity player.head:
+            comp transform3
+            comp viewable
+            comp viewport: fov = 90
+            comp camera.chase
+            comp player.head: body = world.player.body
         
-        entity player.hand.left: {
-            comp transform3;
-            comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
-            comp player.hand: {hand: left; body: world.player.body;};
-        };
+        entity player.hand.left:
+            comp transform3
+            comp body
+            comp model: builtin ="cylinder,0.02,0.2", pitch =-90
+            comp player.hand: hand = left, body = world.player.body
         
-        entity player.hand.right: {
-            comp transform3;
-            comp body;
-            comp model: {builtin: "cylinder,0.02,0.2"; pitch: -90;};
-            comp player.hand: {hand: right; body: world.player.body;};
-        };
+        entity player.hand.right:
+            comp transform3
+            comp body
+            comp model: builtin = "cylinder,0.02,0.2", pitch = -90
+            comp player.hand: hand = right, body = world.player.body
         
-        entity tool: {
-            comp transform3;
-            comp tool: {hand: world.player.hand.right;};
-            comp model: {always.enabled: true;};
-            comp shoot;
-            comp paint;
-            comp throw;
-        };
-        
-    };
-};
+        entity tool:
+            comp transform3
+            comp tool: hand = world.player.hand.right
+            comp model: always.enabled = true
+            comp shoot
+            comp paint
+            comp throw

@@ -1,5 +1,6 @@
-loop tester.generator: {
-	center.customer: true;
-	center.audio.src.test: true;
-	center.audio.sink.test.realtime: true {dbg_limit: 100;};
-};
+loop tester.generator:
+	center.customer
+	center.audio.src.test
+	center.audio.sink.test.realtime:
+		dbg_limit = 100
+
