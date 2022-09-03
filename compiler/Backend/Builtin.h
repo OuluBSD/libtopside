@@ -29,6 +29,12 @@ typedef enum {
 	SEMT_ARGUMENT				= 1 << 20,
 	SEMT_ARGUMENT_LIST			= 1 << 21,
 	SEMT_FUNCTION_BUILTIN		= 1 << 22,
+	SEMT_MACHINE_DECL			= 1 << 23,
+	SEMT_MACHINE				= 1 << 24,
+	SEMT_CHAIN_DECL				= 1 << 25,
+	SEMT_CHAIN					= 1 << 26,
+	SEMT_LOOP_DECL				= 1 << 27,
+	SEMT_LOOP					= 1 << 28,
 	
 	// Current limit: 1 << 31
 	
@@ -71,6 +77,8 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_ARGUMENT:				return "argument";
 		case SEMT_ARGUMENT_LIST:		return "argument-list";
 		case SEMT_FUNCTION_BUILTIN:		return "builtin-function";
+		case SEMT_MACHINE_DECL:			return "machine-declaration";
+		case SEMT_MACHINE:				return "machine";
 		case SEMT_FIELD:				return "field";
 		case SEMT_TYPE:					return "type";
 		case SEMT_FUNCTION:				return "function";

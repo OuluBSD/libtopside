@@ -37,7 +37,7 @@ bool SemanticParser::ParseNamespaceBlock() {
 	for (const TokenNode& tns : owner.sub) {
 		cur = &tns;
 		if (!ParseDeclaration())
-			break;
+			return false;
 	}
 	
 	path.Remove(path.GetCount()-1);
@@ -84,13 +84,16 @@ bool SemanticParser::ParseDeclaration() {
 				TODO
 			}
 			else if (id == "machine") {
-				TODO
+				if (!ParseMachine())
+					return false;
 			}
 			else if (id == "chain") {
-				TODO
+				if (!ParseChain())
+					return false;
 			}
 			else if (id == "loop") {
-				TODO
+				if (!ParseLoop())
+					return false;
 			}
 			else {
 				// Find previously declared type
@@ -1110,6 +1113,11 @@ bool SemanticParser::Id(const char* s) {
 	return false;
 }
 
+bool SemanticParser::IsId(const char* s) const {
+	const Iterator& iter = TopIterator();
+	return iter && iter->IsType(TK_ID) && iter->str_value == s;
+}
+
 bool SemanticParser::PassId(const char* s) {
 	Iterator& iter = TopIterator();
 	if (!iter) {
@@ -1162,6 +1170,366 @@ String SemanticParser::GetPath(const AstNode& n) const {
 	return s;
 }
 
+bool SemanticParser::ParseMachine() {
+	Iterator& iter = TopIterator();
+	if (iter->str_value != "machine") {
+		AddError(iter->loc, "expected 'machine'");
+		return false;
+	}
+	iter++;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "invalid machine id");
+		return false;
+	}
+	
+	Iterator& owner_iter = TopIterator();
+	AstNode& owner = GetTopNode();
+	if (owner_iter.node->sub.GetCount()) {
+		AstNode& mach = Declare(owner, id);
+		mach.src = SEMT_MACHINE;
+		PushScope(mach);
+		if (!ParseMachineDefinition())
+			return false;
+		PopScope();
+	}
+	else {
+		TODO // machine declaration-only
+	}
+	
+	return true;
+}
+
+bool SemanticParser::ParseMachineDefinition() {
+	const TokenNode& owner = *path.Top();
+	const TokenNode*& cur = path.Add();
+	
+	for(const TokenNode& tns : owner.sub) {
+		cur = &tns;
+		if (!ParseMachineStatement())
+			return false;
+	}
+	
+	path.Remove(path.GetCount()-1);
+	
+	return true;
+}
+
+bool SemanticParser::ParseMachineStatement() {
+	const TokenNode& cur = *path.Top();
+	Iterator& iter = AddIterator(cur);
+	
+	if (iter) {
+		
+		if (iter->IsType(TK_ID)) {
+			const String& id = iter->str_value;
+			//DUMP(id);
+			
+			if (id == "chain") {
+				if (!ParseChain())
+					return false;
+			}
+			else if (id == "loop") {
+				if (!ParseLoop())
+					return false;
+			}
+			else if (id == "meta") {
+				if (!ParseMeta())
+					return false;
+			}
+			else {
+				AddError(cur.begin->loc, "invalid machine statement");
+				PopIterator();
+				return false;
+			}
+		}
+		else {
+			DUMP(cur);
+			TODO
+		}
+		
+	}
+	
+	PopIterator();
+	return true;
+}
+
+bool SemanticParser::ParseChain() {
+	Iterator& iter = TopIterator();
+	if (iter->str_value != "chain") {
+		AddError(iter->loc, "expected 'chain'");
+		return false;
+	}
+	iter++;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "invalid chain id");
+		return false;
+	}
+	
+	Iterator& owner_iter = TopIterator();
+	AstNode& owner = GetTopNode();
+	if (owner_iter.node->sub.GetCount()) {
+		AstNode& chain = Declare(owner, id);
+		chain.src = SEMT_CHAIN;
+		PushScope(chain);
+		if (!ParseChainDefinition())
+			return false;
+		PopScope();
+	}
+	else {
+		TODO // chain declaration-only
+	}
+	
+	return true;
+}
+
+bool SemanticParser::ParseChainDefinition() {
+	const TokenNode& owner = *path.Top();
+	const TokenNode*& cur = path.Add();
+	
+	for(const TokenNode& tns : owner.sub) {
+		cur = &tns;
+		if (!ParseChainStatement())
+			return false;
+	}
+	
+	path.Remove(path.GetCount()-1);
+	
+	return true;
+}
+
+bool SemanticParser::ParseChainStatement() {
+	const TokenNode& cur = *path.Top();
+	Iterator& iter = AddIterator(cur);
+	
+	if (iter) {
+		
+		if (iter->IsType(TK_ID)) {
+			const String& id = iter->str_value;
+			//DUMP(id);
+			
+			if (id == "loop") {
+				if (!ParseLoop())
+					return false;
+			}
+			else if (id == "state") {
+				if (!ParseState())
+					return false;
+			}
+			else {
+				AddError(cur.begin->loc, "invalid chain statement");
+				PopIterator();
+				return false;
+			}
+		}
+		else {
+			DUMP(cur);
+			TODO
+		}
+		
+	}
+	
+	PopIterator();
+	return true;
+}
+
+bool SemanticParser::ParseLoop() {
+	Iterator& iter = TopIterator();
+	if (iter->str_value != "loop") {
+		AddError(iter->loc, "expected 'loop'");
+		return false;
+	}
+	iter++;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "invalid loop id");
+		return false;
+	}
+	
+	Iterator& owner_iter = TopIterator();
+	AstNode& owner = GetTopNode();
+	if (owner_iter.node->sub.GetCount()) {
+		AstNode& loop = Declare(owner, id);
+		loop.src = SEMT_LOOP;
+		PushScope(loop);
+		if (!ParseLoopDefinition())
+			return false;
+		PopScope();
+	}
+	else {
+		TODO // loop declaration-only
+	}
+	
+	return true;
+}
+
+bool SemanticParser::ParseLoopDefinition() {
+	const TokenNode& owner = *path.Top();
+	const TokenNode*& cur = path.Add();
+	
+	for(const TokenNode& tns : owner.sub) {
+		cur = &tns;
+		if (!ParseLoopStatement())
+			return false;
+	}
+	
+	path.Remove(path.GetCount()-1);
+	
+	return true;
+}
+
+bool SemanticParser::ParseLoopStatement() {
+	const TokenNode& cur = *path.Top();
+	Iterator& iter = AddIterator(cur);
+	
+	if (iter) {
+		
+		if (iter->IsType(TK_ID)) {
+			
+			PathIdentifier id;
+			if (!ParsePathIdentifier(id)) {
+				AddError(iter->loc, "id parsing failed");
+				return false;
+			}
+			
+			if (iter->IsType('[')) {
+				if (!ParseAtom(id))
+					return false;
+			}
+			
+			/*if (id == "") {
+				TODO
+			}
+			else {
+				TODO
+				AddError(cur.begin->loc, "invalid machine statement");
+				PopIterator();
+				return false;
+			}*/
+		}
+		else {
+			DUMP(cur);
+			TODO
+		}
+		
+	}
+	
+	PopIterator();
+	return true;
+}
+
+bool SemanticParser::ParseAtom(PathIdentifier& id) {
+	Iterator& iter = TopIterator();
+	
+	AstNode& owner = GetTopNode();
+	AstNode& atom = Declare(owner, id);
+	PushScope(atom);
+	
+	if (!IsLineEnd()) {
+		if (TryToken('[')) {
+			
+			if (!TryToken(']')) {
+				AstNode& src_cond = atom.Add("src");
+				PushScope(src_cond);
+				if (!Cond())
+					return false;
+				PopScope();
+				
+				if (!PassToken(']'))
+					return false;
+			}
+			if (TryToken('[') && !TryToken(']')) {
+				AstNode& sink_cond = atom.Add("sink");
+				PushScope(sink_cond);
+				if (!Cond())
+					return false;
+				PopScope();
+				
+				if (!PassToken(']'))
+					return false;
+			}
+		}
+		else {
+			AddError(iter->loc, "unexpected token");
+			return false;
+		}
+	}
+	
+	if (iter.node->sub.GetCount()) {
+		TODO
+	}
+	
+	PopScope();
+	
+	return true;
+}
+
+bool SemanticParser::ParseState() {
+	Iterator& iter = TopIterator();
+	
+	if (!PassId("state"))
+		return false;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "id parsing failed");
+		return false;
+	}
+	
+	AstNode& owner = GetTopNode();
+	AstNode& state = Declare(owner, id);
+	
+	
+	return true;
+}
+
+bool SemanticParser::ParseMeta() {
+	Iterator& iter = TopIterator();
+	
+	if (!PassId("meta"))
+		return false;
+	
+	if (IsId("stmt")) {
+		TODO
+		
+	}
+	else if (IsId("params")) {
+		TODO
+		
+	}
+	else if (IsId("def")) {
+		TODO
+		
+	}
+	else if (IsId("for")) {
+		TODO
+		
+	}
+	else {
+		PathIdentifier id;
+		if (!ParsePathIdentifier(id)) {
+			AddError(iter->loc, "id parsing failed");
+			return false;
+		}
+		
+		
+		if (IsToken('(')) {
+			TODO
+		}
+		else if (IsToken(TK_ID)) {
+			TODO // find type
+		}
+		else {
+			TODO // meta expression statement
+		}
+	}
+	
+	return true;
+}
 
 
 NAMESPACE_TOPSIDE_END

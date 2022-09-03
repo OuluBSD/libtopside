@@ -112,13 +112,20 @@ bool TokenStructure::ParseStatement(TokenNode& n) {
 	}
 	
 	if (has_block) {
-		if (!PassType(TK_INDENT))
-			return false;
-		
-		ParseBlock(n);
-		
-		if (!PassType(TK_DEDENT))
-			return false;
+		if (Current().IsType(TK_INDENT)) {
+			if (!PassType(TK_INDENT))
+				return false;
+			
+			ParseBlock(n);
+			
+			if (!PassType(TK_DEDENT))
+				return false;
+		}
+		else {
+			TokenNode& s = n.Add();
+			if (!ParseStatement(s))
+				return false;
+		}
 	}
 	
 	return true;

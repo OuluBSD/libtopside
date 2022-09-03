@@ -55,6 +55,7 @@ class SemanticParser :
 		
 		const Token* operator->() const {return iter;}
 		const Token* operator*() const {return iter;}
+		bool IsEnd() const {return iter == end;}
 		operator bool() const {return iter < end;}
 		operator const Token*() const {return iter;}
 		operator const Token&() const {return *iter;}
@@ -80,6 +81,7 @@ public:
 	void PopIterator();
 	AstNode* ParseAndFindDeclaration();
 	bool PassToken(int tk_type);
+	bool IsId(const char* s) const;
 	bool PassId(const char* s);
 	bool IsToken(int tk_type) const;
 	bool TryToken(int tk_type);
@@ -88,7 +90,7 @@ public:
 	//bool Char2(int a, int b);
 	bool PassChar(int tk_type) {return PassToken(tk_type);}
 	bool Char(int tk_type) {return TryToken(tk_type);}
-	
+	bool IsLineEnd() const {return TopIterator().IsEnd();}
 	
 public:
 	typedef SemanticParser CLASSNAME;
@@ -98,6 +100,9 @@ public:
 	
 	bool ProcessEon(const TokenStructure& t);
 	bool ParseNamespaceBlock();
+	bool ParseMachine();
+	bool ParseChain();
+	bool ParseLoop();
 	bool ParseDeclaration();
 	bool ParseClass();
 	bool ParseTypedDeclaration(AstNode& ret_type);
@@ -110,7 +115,16 @@ public:
 	bool ParseStatementBlock();
 	bool ParseParameter();
 	bool ParsePathIdentifier(PathIdentifier& id);
+	bool ParseMachineDefinition();
+	bool ParseMachineStatement();
+	bool ParseChainDefinition();
+	bool ParseChainStatement();
+	bool ParseLoopDefinition();
+	bool ParseLoopStatement();
+	bool ParseState();
+	bool ParseAtom(PathIdentifier& id);
 	bool ParseDeclExpr();
+	bool ParseMeta();
 	bool Assign();
 	bool Cond();
 	bool Subscript();

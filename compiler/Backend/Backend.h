@@ -7,15 +7,6 @@
 #include "Node.h"
 #include "Builtin.h"
 #include "Util.h"
-//#include "TypeExpr.h"
-//#include "MetaExpression.h"
-//#include "Expression.h"
-//#include "Statement.h"
-//#include "Function.h"
-//#include "Field.h"
-//#include "Class.h"
-//#include "Namespace.h"
-//#include "CompilationUnit.h"
 #include "Ast.h"
 #include "EonStd.h"
 #include "Exporter.h"
@@ -24,6 +15,7 @@
 #include "MetaEmitter.h"
 #include "AstBuilder.h"
 #include "AstExporter.h"
+#include "Compiler.h"
 
 
 #endif
