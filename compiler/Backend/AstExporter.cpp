@@ -58,6 +58,7 @@ void AstExporter::Visit(const AstNode& n) {
 	switch (n.src) {
 	case SEMT_BUILTIN:
 	case SEMT_FUNCTION_BUILTIN:
+	case SEMT_META_BUILTIN:
 		return;
 	
 	case SEMT_ROOT:
@@ -104,8 +105,6 @@ void AstExporter::Visit(const AstNode& n) {
 	case SEMT_CLASS_DECL:
 	case SEMT_CLASS:
 	case SEMT_CLASS_TEMPLATE:
-	case SEMT_METAFN_CLASS_DECL:
-	case SEMT_METAFN_CLASS:
 	case SEMT_FUNCTION_METHOD:
 		TODO
 		break;

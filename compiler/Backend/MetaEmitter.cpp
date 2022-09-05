@@ -72,10 +72,24 @@ void HighScriptEmitter::PushFunction(const FileLocation& loc, AstNode& ret_type,
 	Enter();
 }
 
+void HighScriptEmitter::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+	Log("PushMetaFunction: " + name.ToString() + ", returns " + ret_type.ToString());
+	
+	main << DBG_INDENT "PushMetaFunction(" << LocArg(loc) << ", " << ret_type.GetPartStringArray() << ", " << GetPartStringArray(name) << ");\n";
+	
+	Enter();
+}
+
 void HighScriptEmitter::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
 	Log("Parameter: " + name.ToString() + ", type " + type.ToString());
 	
 	main << DBG_INDENT "Parameter(" << LocArg(loc) << ", " << GetPartStringArray(type) << ", " << GetPartStringArray(name) << ");\n";
+}
+
+void HighScriptEmitter::MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
+	Log("MetaParameter: " + name.ToString() + ", type " + type.ToString());
+	
+	main << DBG_INDENT "MetaParameter(" << LocArg(loc) << ", " << GetPartStringArray(type) << ", " << GetPartStringArray(name) << ");\n";
 }
 
 /*void HighScriptEmitter::PushFunctionDefinition(const FileLocation& loc) {
@@ -97,6 +111,12 @@ void HighScriptEmitter::PopFunction(const FileLocation& loc) {
 	Leave();
 	
 	main << DBG_INDENT "PopFunction(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PopMetaFunction(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopMetaFunction(" << LocArg(loc) << ");\n";
 }
 
 void HighScriptEmitter::PushStatementList(const FileLocation& loc) {
@@ -142,6 +162,12 @@ void HighScriptEmitter::DeclareVariable(const FileLocation& loc, AstNode& n, con
 	Log("DeclareVariable: " + n.ToString() + ", " + id.ToString());
 	
 	main << DBG_INDENT "DeclareVariable(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
+}
+
+void HighScriptEmitter::DeclareMetaVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) {
+	Log("DeclareMetaVariable: " + n.ToString() + ", " + id.ToString());
+	
+	main << DBG_INDENT "DeclareMetaVariable(" << LocArg(loc) << ", " << n.GetPartStringArray() << ", " << GetPartStringArray(id) << ");\n";
 }
 
 void HighScriptEmitter::Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {

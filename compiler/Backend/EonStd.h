@@ -22,6 +22,7 @@ public:
 	
 	void InitDefault();
 	void AddBuiltinType(String name);
+	void AddMetaBuiltinType(String name);
 	String GetRelativePartStringArray(const AstNode& n) const;
 	
 	String GetPathString() const;
@@ -30,7 +31,7 @@ public:
 	AstNode* GetDeclaration(AstNode* owner, const PathIdentifier& id, SemanticType accepts);
 	AstNode& Declare(AstNode& owner, const PathIdentifier& id);
 	AstNode& DeclareRelative(const PathIdentifier& id);
-	AstNode* FindTypeDeclaration(const PathIdentifier& id);
+	//AstNode* FindTypeDeclaration(const PathIdentifier& id);
 	AstNode& GetBlock();
 	void PushScope(AstNode& n);
 	void PushScopeRVal(AstNode& n);

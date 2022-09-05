@@ -44,7 +44,7 @@ public:
 	
 	bool ProcessEon(const Tokenizer& t);
 	bool ParseBlock(TokenNode& n);
-	bool ParseStatement(TokenNode& n);
+	bool ParseStatement(TokenNode& n, bool break_comma);
 	
 	bool PassType(int tk);
 	const Token& Current() {ASSERT(iter <= end); return *iter;}

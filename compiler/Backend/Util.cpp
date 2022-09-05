@@ -37,12 +37,22 @@ String PathIdentifier::ToString() const {
 		return String();
 	String s;
 	const Token* iter = begin;
+	const bool* is_meta = &this->is_meta[0];
 	while (iter != end) {
 		//if (iter != begin) s.Cat('.');
+		if (*is_meta++)
+			s.Cat('$');
 		s.Cat(iter->GetTextValue());
 		iter++;
 	}
 	return s;
+}
+
+bool PathIdentifier::HasMeta() const {
+	for(int i = 0; i < part_count; i++)
+		if (is_meta[i])
+			return true;
+	return false;
 }
 
 

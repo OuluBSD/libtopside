@@ -24,18 +24,18 @@ AstNode& AstNode::GetAdd(String name) {
 		return Add(name);
 }
 
-AstNode* AstNode::Find(String name) {
+AstNode* AstNode::Find(String name, SemanticType accepts) {
 	ASSERT(name.GetCount());
 	for (auto& s : sub)
-		if (s.name == name)
+		if (s.name == name && (accepts == SEMT_NULL || s.IsPartially(accepts)))
 			return &s;
 	return 0;
 }
 
-const AstNode* AstNode::Find(String name) const {
+const AstNode* AstNode::Find(String name, SemanticType accepts) const {
 	ASSERT(name.GetCount());
 	for (auto& s : sub)
-		if (s.name == name)
+		if (s.name == name && (accepts == SEMT_NULL || s.IsPartially(accepts)))
 			return &s;
 	return 0;
 }

@@ -19,6 +19,12 @@ void EonStd::AddBuiltinType(String name) {
 	sn.src = SEMT_BUILTIN;
 }
 
+void EonStd::AddMetaBuiltinType(String name) {
+	AstNode& root = GetRoot();
+	AstNode& sn = root.Add(name);
+	sn.src = SEMT_META_BUILTIN;
+}
+
 String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 	ASSERT(!spath.IsEmpty());
 	AstNode* top = spath.Top().n;
@@ -71,6 +77,24 @@ void EonStd::InitDefault() {
 	AddBuiltinType("short");
 	AddBuiltinType("ushort");
 	AddBuiltinType("cstring");
+	
+	AddMetaBuiltinType("void");
+	AddMetaBuiltinType("int");
+	AddMetaBuiltinType("double");
+	AddMetaBuiltinType("cstring");
+	AddMetaBuiltinType("stmt");
+	
+	AddMetaBuiltinType("machstmt");
+	AddMetaBuiltinType("chainstmt");
+	AddMetaBuiltinType("loopstmt");
+	
+	AddMetaBuiltinType("atomstmt");
+	AddMetaBuiltinType("worldstmt");
+	AddMetaBuiltinType("systemstmt");
+	AddMetaBuiltinType("poolstmt");
+	AddMetaBuiltinType("entitystmt");
+	AddMetaBuiltinType("compstmt");
+	AddMetaBuiltinType("params");
 	
 	{
 		AstNode& logger = GetRoot().Add("LOG");
@@ -135,9 +159,9 @@ AstNode* EonStd::FindDeclaration(const PathIdentifier& id, SemanticType accepts)
 	return 0;
 }
 
-AstNode* EonStd::FindTypeDeclaration(const PathIdentifier& id) {
+/*AstNode* EonStd::FindTypeDeclaration(const PathIdentifier& id) {
 	return FindDeclaration(id, SEMT_TYPE);
-}
+}*/
 
 AstNode* EonStd::GetDeclaration(const PathIdentifier& id, SemanticType accepts) {
 	if (id.part_count == 0 || spath.IsEmpty())
@@ -156,7 +180,7 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 		for (int tries = 0; tries < 100; tries++) {
 			const Token* t = id.parts[i];
 			if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
-				next = cur->Find(t->str_value);
+				next = cur->Find(t->str_value, accepts);
 			}
 			else {
 				TODO
@@ -178,12 +202,8 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 		cur = next;
 	}
 	
-	if (cur) {
-		if (accepts == SEMT_NULL)
-			return cur;
-		if (cur->IsPartially(accepts))
-			return cur;
-	}
+	if (cur && accepts == SEMT_NULL || cur->IsPartially(accepts))
+		return cur;
 	
 	return 0;
 }

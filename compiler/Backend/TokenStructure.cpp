@@ -73,14 +73,25 @@ bool TokenStructure::ParseBlock(TokenNode& n) {
 		if (Current().IsType(TK_DEDENT))
 			break;
 		
-		TokenNode& s = n.Add();
-		if (!ParseStatement(s))
-			return false;
+		if (Current().IsType(TK_INDENT)) {
+			if (!PassType(TK_INDENT))
+				return false;
+			
+			ParseBlock(n);
+			
+			if (!PassType(TK_DEDENT))
+				return false;
+		}
+		else {
+			TokenNode& s = n.Add();
+			if (!ParseStatement(s, false))
+				return false;
+		}
 	}
 	return true;
 }
 
-bool TokenStructure::ParseStatement(TokenNode& n) {
+bool TokenStructure::ParseStatement(TokenNode& n, bool break_comma) {
 	ASSERT(!IsEnd());
 	n.begin = &Current();
 	ASSERT(!n.begin->IsType(':'));
@@ -109,6 +120,9 @@ bool TokenStructure::ParseStatement(TokenNode& n) {
 			break;
 		
 		Next();
+		
+		if (break_comma && Current().IsType(','))
+			break;
 	}
 	
 	if (has_block) {
@@ -123,8 +137,15 @@ bool TokenStructure::ParseStatement(TokenNode& n) {
 		}
 		else {
 			TokenNode& s = n.Add();
-			if (!ParseStatement(s))
+			if (!ParseStatement(s, true))
 				return false;
+			
+			while (Current().IsType(',')) {
+				Next();
+				if (!ParseStatement(s, true))
+					return false;
+			}
+			
 		}
 	}
 	

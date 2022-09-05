@@ -24,9 +24,12 @@ bool AstBuilder::Execute(String high_script_content) {
 	try {
 		HighCall(global, "AddFile(file)", THISBACK(HiAddFile));
 		HighCall(global, "PushFunction(loc, ret_type, name)", THISBACK(HiPushFunction));
+		HighCall(global, "PushMetaFunction(loc, ret_type, name)", THISBACK(HiPushMetaFunction));
 		HighCall(global, "Parameter(loc, type, name)", THISBACK(HiParameter));
+		HighCall(global, "MetaParameter(loc, type, name)", THISBACK(HiMetaParameter));
 		HighCall(global, "PopFunctionDefinition(loc)", THISBACK(HiPopFunctionDefinition));
 		HighCall(global, "PopFunction(loc)", THISBACK(HiPopFunction));
+		HighCall(global, "PopMetaFunction(loc)", THISBACK(HiPopMetaFunction));
 		HighCall(global, "PushStatementList(loc)", THISBACK(HiPushStatementList));
 		HighCall(global, "PopStatementList(loc)", THISBACK(HiPopStatementList));
 		HighCall(global, "PushStatement(loc, type)", THISBACK(HiPushStatement));
@@ -68,9 +71,18 @@ void AstBuilder::PushFunction(const FileLocation& loc, AstNode& ret_type, const 
 	
 }
 
+void AstBuilder::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_META_FUNCTION_STATIC;
+	var.type = &ret_type;
+	
+	PushScope(var);
+	
+}
+
 void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
 	
-	AstNode* tn = FindTypeDeclaration(type);
+	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
 	if (!tn) {
 		DUMP(type);
 		AddError(loc, "internal error");
@@ -80,6 +92,19 @@ void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, 
 	DUMP(name);
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_PARAMETER;
+	var.type = tn;
+	var.locked = true;
+}
+
+void AstBuilder::MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
+	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
+	if (!tn) {
+		AddError(loc, "internal error");
+		return;
+	}
+	
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_META_PARAMETER;
 	var.type = tn;
 	var.locked = true;
 }
@@ -104,6 +129,10 @@ void AstBuilder::PopFunctionDefinition(const FileLocation& loc) {
 }
 
 void AstBuilder::PopFunction(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PopMetaFunction(const FileLocation& loc) {
 	PopScope();
 }
 
@@ -148,6 +177,16 @@ void AstBuilder::DeclareVariable(const FileLocation& loc, AstNode& type, const P
 	AstNode& block = GetBlock();
 	AstNode& var = Declare(block, name);
 	var.src = SEMT_VARIABLE;
+	var.type = &type;
+	//DUMP(var.GetPath());
+	ASSERT(!var.name.IsEmpty());
+	
+}
+
+void AstBuilder::DeclareMetaVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
+	AstNode& block = GetBlock();
+	AstNode& var = Declare(block, name);
+	var.src = SEMT_META_VARIABLE;
 	var.type = &type;
 	//DUMP(var.GetPath());
 	ASSERT(!var.name.IsEmpty());
@@ -352,7 +391,7 @@ void AstBuilder::HiPushFunction(HiEscape& e) {
 	
 	//DUMP(loc); DUMP(name); DUMP(type);
 	
-	AstNode* tn = FindTypeDeclaration(type);
+	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
 	if (!tn) {
 		DUMP(type);
 		AddError(loc, "type '" + type.ToString() + "' not found");
@@ -360,6 +399,26 @@ void AstBuilder::HiPushFunction(HiEscape& e) {
 	}
 	
 	PushFunction(loc, *tn, name);
+}
+
+void AstBuilder::HiPushMetaFunction(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	LoadPath(loc, e[2], name, tokens[1]);
+	
+	//DUMP(loc); DUMP(name); DUMP(type);
+	
+	AstNode* tn = FindDeclaration(type, SEMT_META_TYPE);
+	if (!tn) {
+		DUMP(type);
+		AddError(loc, "type '" + type.ToString() + "' not found");
+		return;
+	}
+	
+	PushMetaFunction(loc, *tn, name);
 }
 
 void AstBuilder::HiParameter(HiEscape& e) {
@@ -371,6 +430,17 @@ void AstBuilder::HiParameter(HiEscape& e) {
 	LoadPath(loc, e[2], name, tokens[1]);
 	
 	Parameter(loc, type, name);
+}
+
+void AstBuilder::HiMetaParameter(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	LoadPath(loc, e[2], name, tokens[1]);
+	
+	MetaParameter(loc, type, name);
 }
 
 /*void AstBuilder::HiPushFunctionDefinition(HiEscape& e) {
@@ -388,6 +458,13 @@ void AstBuilder::HiPopFunctionDefinition(HiEscape& e) {
 }
 
 void AstBuilder::HiPopFunction(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopFunction(loc);
+}
+
+void AstBuilder::HiPopMetaFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -447,7 +524,7 @@ void AstBuilder::HiDeclareVariable(HiEscape& e) {
 	LoadPath(loc, e[2], name, tokens[1]);
 	
 	//DUMP(type)
-	AstNode* tn = FindTypeDeclaration(type);
+	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
 	if (!tn) {
 		DUMP(type);
 		AddError(loc, "type '" + type.ToString() + "' not found");
@@ -455,6 +532,25 @@ void AstBuilder::HiDeclareVariable(HiEscape& e) {
 	}
 	
 	DeclareVariable(loc, *tn, name);
+}
+
+void AstBuilder::HiDeclareMetaVariable(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	LoadPath(loc, e[2], name, tokens[1]);
+	
+	//DUMP(type)
+	AstNode* tn = FindDeclaration(type, SEMT_META_TYPE);
+	if (!tn) {
+		DUMP(type);
+		AddError(loc, "type '" + type.ToString() + "' not found");
+		return;
+	}
+	
+	DeclareMetaVariable(loc, *tn, name);
 }
 
 void AstBuilder::HiVariable(HiEscape& e) {

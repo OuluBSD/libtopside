@@ -21,7 +21,7 @@ public:
 	bool CompileEonFileToHigh(String filepath, String& output);
 	
 public:
-	bool Tokenize(String filepath, String content);
+	bool Tokenize(String filepath, String content, bool pythonic=false);
 	bool ParseStructure();
 	bool Parse();
 	bool RunMeta();

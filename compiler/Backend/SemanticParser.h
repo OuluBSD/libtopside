@@ -8,10 +8,13 @@ struct ParserEmitter {
 	
 	
 	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
+	virtual void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
 	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
+	virtual void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
 	//virtual void PushFunctionDefinition(const FileLocation& loc) = 0;
 	virtual void PopFunctionDefinition(const FileLocation& loc) = 0;
 	virtual void PopFunction(const FileLocation& loc) = 0;
+	virtual void PopMetaFunction(const FileLocation& loc) = 0;
 	virtual void PushStatementList(const FileLocation& loc) = 0;
 	virtual void PopStatementList(const FileLocation& loc) = 0;
 	virtual void PushStatement(const FileLocation& loc, StmtType type) = 0;
@@ -19,6 +22,7 @@ struct ParserEmitter {
 	virtual void PushStatementParameter(const FileLocation& loc, StmtParamType t) = 0;
 	virtual void PopStatementParameter(const FileLocation& loc) = 0;
 	virtual void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
+	virtual void DeclareMetaVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
 	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) = 0;
 	virtual void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
 	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
@@ -46,6 +50,7 @@ class SemanticParser :
 	public ParserEmitter,
 	public ErrorSource
 {
+	bool allow_expr_unresolved = false;
 	
 	struct Iterator {
 		const Token* begin;
@@ -80,6 +85,7 @@ public:
 	const Iterator& TopIterator() const;
 	void PopIterator();
 	AstNode* ParseAndFindDeclaration();
+	AstNode* ParseAndFindMetaDeclaration();
 	bool PassToken(int tk_type);
 	bool IsId(const char* s) const;
 	bool PassId(const char* s);
@@ -105,42 +111,67 @@ public:
 	bool ParseLoop();
 	bool ParseDeclaration();
 	bool ParseClass();
-	bool ParseTypedDeclaration(AstNode& ret_type);
+	bool ParseWorld();
+	bool ParseSystem();
+	bool ParsePool();
+	bool ParseEntity();
+	bool ParseComponent();
+	//bool ParseTypedDeclaration(AstNode& ret_type);
+	//bool ParseTypedMetaDeclaration(AstNode& ret_type);
 	bool ParseFunction(AstNode& ret_type, const PathIdentifier& name);
+	bool ParseMetaFunction(AstNode& ret_type, const PathIdentifier& name);
+	bool ParseAtomStatementList();
 	bool ParseStatementList();
 	bool ParseStatement();
-	bool ParseConditional();
-	bool ParseExpression();
+	bool ParseMetaStatement(bool skip_meta_keywords=false);
+	bool ParseExpression(bool m);
 	bool ParseSwitchBlock();
 	bool ParseStatementBlock();
 	bool ParseParameter();
+	bool ParseMetaParameter();
 	bool ParsePathIdentifier(PathIdentifier& id);
-	bool ParseMachineDefinition();
+	
+	bool ParseMachineStatementList();
 	bool ParseMachineStatement();
-	bool ParseChainDefinition();
+	bool ParseChainStatementList();
 	bool ParseChainStatement();
-	bool ParseLoopDefinition();
+	bool ParseLoopStatementList();
 	bool ParseLoopStatement();
+	
+	bool ParseWorldStatementList();
+	bool ParseWorldStatement();
+	bool ParseSystemStatementList();
+	bool ParseSystemStatement();
+	bool ParsePoolStatementList();
+	bool ParsePoolStatement();
+	bool ParseEntityStatementList();
+	bool ParseEntityStatement();
+	bool ParseComponentStatementList();
+	bool ParseComponentStatement();
+	
 	bool ParseState();
 	bool ParseAtom(PathIdentifier& id);
-	bool ParseDeclExpr();
+	bool ParseDeclExpr(bool must_decl);
+	bool ParseMetaDeclExpr(bool must_decl);
 	bool ParseMeta();
-	bool Assign();
-	bool Cond();
-	bool Subscript();
-	bool Term();
-	bool Unary();
-	bool Mul();
-	bool Add();
-	bool Shift();
-	bool DoCompare(const FileLocation& loc, OpType t);
-	bool Compare();
-	bool Equal();
-	bool BinAnd();
-	bool BinXor();
-	bool BinOr();
-	bool And();
-	bool Or();
+	bool Assign(bool m);
+	bool AssignPost(bool m);
+	bool Cond(bool m);
+	bool Subscript(bool m);
+	bool Term(bool m);
+	bool Unary(bool m);
+	bool Mul(bool m);
+	bool Add(bool m);
+	bool Shift(bool m);
+	bool DoCompare(bool m, const FileLocation& loc, OpType t);
+	bool Compare(bool m);
+	bool Equal(bool m);
+	bool BinAnd(bool m);
+	bool BinXor(bool m);
+	bool BinOr(bool m);
+	bool And(bool m);
+	bool Or(bool m);
+	//bool IsMetaTypeQualifier() const;
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

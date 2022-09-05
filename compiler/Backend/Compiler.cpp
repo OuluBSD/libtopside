@@ -36,7 +36,7 @@ bool Compiler::CompileEonFileToHigh(String filepath, String& output) {
 	#define TEST(x) if (!(x)) {return false;}
 	
 	// Tokenize eon
-	TEST(Tokenize(filepath, content))
+	TEST(Tokenize(filepath, content, true))
 	if (verbose) t.Dump();
 	
 	// Parse error handling structure (for multiple error messages per single try)
@@ -59,17 +59,17 @@ bool Compiler::CompileEonFileToHigh(String filepath, String& output) {
 	return true;
 }
 
-bool Compiler::Tokenize(String filepath, String content) {
+bool Compiler::Tokenize(String filepath, String content, bool pythonic) {
 	this->filepath = filepath;
 	this->content = content;
 	
 	//t.WhenMessage = callback(OnMessage);
-	t.SkipNewLines();
+	t.SkipNewLines(!pythonic);
 	t.SkipComments();
 	if (!t.Process(content, filepath))
 		return false;
 	t.CombineTokens();
-	if (1) // pythonic
+	if (pythonic)
 		t.NewlineToEndStatement();
 	
 	return true;

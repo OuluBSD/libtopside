@@ -26,35 +26,7 @@ public:
 	String GetResult() const {return code;}
 	String GetTabString() const;
 	
-	void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) override;
-	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) override;
-	//void PushFunctionDefinition(const FileLocation& loc) override;
-	void PopFunctionDefinition(const FileLocation& loc) override;
-	void PopFunction(const FileLocation& loc) override;
-	void PushStatementList(const FileLocation& loc) override;
-	void PopStatementList(const FileLocation& loc) override;
-	void PushStatement(const FileLocation& loc, StmtType type) override;
-	void PopStatement(const FileLocation& loc) override;
-	void PushStatementParameter(const FileLocation& loc, StmtParamType t) override;
-	void PopStatementParameter(const FileLocation& loc) override;
-	void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) override;
-	void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) override;
-	void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) override;
-	void PushRvalArgumentList(const FileLocation& loc) override;
-	void Argument(const FileLocation& loc) override;
-	//void PushExprScope() override;
-	//void PopExprScopeToCtor(const FileLocation& loc) override;
-	//void PushCall(const PathIdentifier& id) override;
-	//void PopCall() override;
-	//void PushExprScopeRval() override;
-	void PopExpr(const FileLocation& loc) override;
-	void PushRval(const FileLocation& loc, AstNode& n) override;
-	//void PushRvalCall(const FileLocation& loc, AstNode& n) override;
-	void PushRvalConstruct(const FileLocation& loc, AstNode& n) override;
-	void PushRvalConstant(const FileLocation& loc, const Token& t) override;
-	void Expr1(const FileLocation& loc, OpType op) override;
-	void Expr2(const FileLocation& loc, OpType op) override;
-	void Expr3(const FileLocation& loc, OpType op) override;
+	#include "ParserOverrides.inl"
 	
 };
 

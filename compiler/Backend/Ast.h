@@ -36,8 +36,8 @@ public:
 	
 	AstNode&		Add(String name="");
 	AstNode&		GetAdd(String name="");
-	AstNode*		Find(String name);
-	const AstNode*	Find(String name) const;
+	AstNode*		Find(String name, SemanticType accepts=SEMT_NULL);
+	const AstNode*	Find(String name, SemanticType accepts=SEMT_NULL) const;
 	AstNode*		Find(SemanticType t);
 	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;

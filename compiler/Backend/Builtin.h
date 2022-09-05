@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-typedef enum {
+typedef enum : uint64 {
 	SEMT_NULL					= 1 << 0,
 	SEMT_NAMESPACE				= 1 << 1,
 	SEMT_BUILTIN				= 1 << 2,
@@ -13,8 +13,8 @@ typedef enum {
 	SEMT_CLASS_DECL				= 1 << 4,
 	SEMT_CLASS					= 1 << 5,
 	SEMT_CLASS_TEMPLATE			= 1 << 6,
-	SEMT_METAFN_CLASS_DECL		= 1 << 7,
-	SEMT_METAFN_CLASS			= 1 << 8,
+	SEMT_META_STATEMENT			= 1 << 7,
+	//
 	SEMT_FUNCTION_STATIC		= 1 << 9,
 	SEMT_FUNCTION_METHOD		= 1 << 10,
 	SEMT_VARIABLE				= 1 << 11,
@@ -35,12 +35,21 @@ typedef enum {
 	SEMT_CHAIN					= 1 << 26,
 	SEMT_LOOP_DECL				= 1 << 27,
 	SEMT_LOOP					= 1 << 28,
+	SEMT_META_VARIABLE			= 1 << 29,
+	SEMT_META_PARAMETER			= 1 << 30,
+	SEMT_META_BUILTIN			= 1ULL << 31,
+	SEMT_META_FUNCTION_STATIC	= 1ULL << 32,
+	SEMT_WORLD					= 1ULL << 33,
+	SEMT_ENTITY					= 1ULL << 34,
+	SEMT_COMPONENT				= 1ULL << 35,
+	SEMT_SYSTEM					= 1ULL << 36,
+	SEMT_POOL					= 1ULL << 37,
 	
-	// Current limit: 1 << 31
+	// Current limit: 1 << 63
 	
 	SEMT_FIELD =			SEMT_VARIABLE | SEMT_PARAMETER | SEMT_CONSTANT,
 	SEMT_TYPE =				SEMT_BUILTIN | SEMT_TYPEDEF | SEMT_CLASS_DECL | SEMT_CLASS |
-							SEMT_CLASS_TEMPLATE | SEMT_METAFN_CLASS_DECL | SEMT_METAFN_CLASS,
+							SEMT_CLASS_TEMPLATE,
 	SEMT_FUNCTION =			SEMT_FUNCTION_STATIC | SEMT_FUNCTION_METHOD | SEMT_FUNCTION_BUILTIN,
 	SEMT_UNDEFINED =		SEMT_NULL | SEMT_IDPART,
 	SEMT_PARAMETER_PATH =	SEMT_PARAMETER | SEMT_IDPART,
@@ -48,9 +57,17 @@ typedef enum {
 	SEMT_PATH =				SEMT_PARAMETER_PATH | SEMT_VARIABLE_PATH | SEMT_NAMESPACE | SEMT_FUNCTION | SEMT_CLASS,
 	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
 	
+	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
+	
+	SEMT_META_FIELD =		SEMT_META_VARIABLE | SEMT_META_PARAMETER,
+	SEMT_META_TYPE =		SEMT_META_BUILTIN,
+	SEMT_META_FUNCTION =	SEMT_META_FUNCTION_STATIC /*| SEMT_META_FUNCTION_METHOD | SEMT_META_FUNCTION_BUILTIN*/,
+	
+	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION,
+	
 } SemanticType;
 
-typedef uint32 SemanticTypePrimitive;
+typedef uint64 SemanticTypePrimitive;
 
 inline String GetSemanticTypeString(SemanticType t) {
 	switch (t) {
@@ -61,8 +78,6 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_CLASS_DECL:			return "class-declaration";
 		case SEMT_CLASS:				return "class";
 		case SEMT_CLASS_TEMPLATE:		return "class-template";
-		case SEMT_METAFN_CLASS_DECL:	return "meta-fn -> class-decl";
-		case SEMT_METAFN_CLASS:			return "meta-fn -> class";
 		case SEMT_FUNCTION_STATIC:		return "static function";
 		case SEMT_FUNCTION_METHOD:		return "method function";
 		case SEMT_VARIABLE:				return "variable";
@@ -79,16 +94,33 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_FUNCTION_BUILTIN:		return "builtin-function";
 		case SEMT_MACHINE_DECL:			return "machine-declaration";
 		case SEMT_MACHINE:				return "machine";
+		case SEMT_CHAIN_DECL:			return "chain-decl";
+		case SEMT_CHAIN:				return "chain";
+		case SEMT_LOOP_DECL:			return "loop-decl";
+		case SEMT_LOOP:					return "loop";
 		case SEMT_FIELD:				return "field";
 		case SEMT_TYPE:					return "type";
 		case SEMT_FUNCTION:				return "function";
 		case SEMT_UNDEFINED:			return "undefined";
+		case SEMT_META_VARIABLE:		return "meta-variable";
+		case SEMT_META_PARAMETER:		return "meta-parameter";
+		case SEMT_META_BUILTIN:			return "meta-builtin";
+		case SEMT_META_FUNCTION_STATIC:	return "meta static function";
+		case SEMT_WORLD:				return "world";
+		case SEMT_ENTITY:				return "entity";
+		case SEMT_COMPONENT:			return "component";
+		case SEMT_SYSTEM:				return "system";
+		case SEMT_POOL:					return "pool";
 		default: return "invalid";
 	}
 }
 
 inline bool IsTypedNode(SemanticType src) {
-	return	src & SEMT_TYPE;
+	return src & SEMT_TYPE;
+}
+
+inline bool IsMetaTypedNode(SemanticType src) {
+	return src & SEMT_META_TYPE;
 }
 
 typedef enum {
@@ -110,6 +142,23 @@ typedef enum {
 	STMT_SWITCH,
 	STMT_BLOCK,
 	STMT_EXPR,
+	STMT_META_IF,
+	STMT_META_ELSE,
+	STMT_META_DOWHILE,
+	STMT_META_WHILE,
+	STMT_META_FOR,
+	STMT_META_CTOR,
+	STMT_META_FOR_COND,
+	STMT_META_FOR_POST,
+	STMT_META_FOR_RANGE,
+	STMT_META_BREAK,
+	STMT_META_CONTINUE,
+	STMT_META_CASE,
+	STMT_META_DEFAULT,
+	STMT_META_RETURN,
+	STMT_META_SWITCH,
+	STMT_META_BLOCK,
+	STMT_META_EXPR,
 } StmtType;
 
 inline String GetStmtTypeString(StmtType t) {
@@ -132,8 +181,25 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_SWITCH: return "switch";
 		case STMT_BLOCK: return "block";
 		case STMT_EXPR: return "expr";
+		case STMT_META_IF: return "meta-if";
+		case STMT_META_ELSE: return "meta-else";
+		case STMT_META_DOWHILE: return "meta-do-while";
+		case STMT_META_WHILE: return "meta-while";
+		case STMT_META_FOR: return "meta-for";
+		case STMT_META_CTOR: return "meta-constructor";
+		case STMT_META_FOR_COND: return "meta-for-conditional";
+		case STMT_META_FOR_POST: return "meta-for-post";
+		case STMT_META_FOR_RANGE: return "meta-for-range";
+		case STMT_META_BREAK: return "meta-break";
+		case STMT_META_CONTINUE: return "meta-continue";
+		case STMT_META_CASE: return "meta-case";
+		case STMT_META_DEFAULT: return "meta-default";
+		case STMT_META_RETURN: return "meta-return";
+		case STMT_META_SWITCH: return "meta-switch";
+		case STMT_META_BLOCK: return "meta-block";
+		case STMT_META_EXPR: return "meta-expr";
+		default: return "invalid-type";
 	}
-	return String();
 }
 
 typedef enum {
