@@ -26,7 +26,7 @@ machine sdl.app:
 				env =			event.register
 
 
-engine ecs.dummy:
+world ecs.dummy:
     system rendering
     system entity.store
     system component.store

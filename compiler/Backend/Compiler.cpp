@@ -50,6 +50,8 @@ bool Compiler::CompileEonFileToHigh(String filepath, String& output) {
 	TEST(RunMeta())
 	if (verbose) {LOG(ab.root.GetTreeString(0));}
 	
+	return true;
+	
 	// Export High script
 	TEST(ExportHigh())
 	

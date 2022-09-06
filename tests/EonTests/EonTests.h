@@ -7,21 +7,10 @@
 using namespace TS;
 
 
-struct Tester {
-	String filepath, content;
-	Tokenizer t;
-	TokenStructure ts;
-	HighScriptEmitter sp;
-	AstBuilder ab;
-	AstExporter ex;
+struct Tester : Compiler {
 	
 	
 	typedef Tester CLASSNAME;
-	bool Tokenize(String filepath, String content);
-	bool ParseStructure();
-	bool Parse();
-	bool RunMeta();
-	bool ExportHigh();
 	
 	void OnProcMsg(ProcMsg msg);
 	

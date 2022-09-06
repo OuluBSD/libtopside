@@ -287,4 +287,144 @@ void HighScriptEmitter::Expr3(const FileLocation& loc, OpType op) {
 	//Enter();
 }
 
+void HighScriptEmitter::PushSystem(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushSystem(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopSystem(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopSystem(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushPool(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushSystem(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopPool(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopPool(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushEntity(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushEntity(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopEntity(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopEntity(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushComponent(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushComponent(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopComponent(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopComponent(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushMachine(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushMachine(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopMachine(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopMachine(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushChain(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushChain(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopChain(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopChain(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushLoop(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopLoop(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopLoop(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushAtom(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopAtom(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopAtom(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushAtomConnector(const FileLocation& loc, int part) {
+	main << DBG_INDENT "PushAtomConnector(" << LocArg(loc) << ", " << IntStr(part) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopAtomConnector(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopAtomConnector(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushState(const FileLocation& loc, const PathIdentifier& id) {
+	main << DBG_INDENT "PushState(" << LocArg(loc) << ", " << GetPartStringArray(id) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopState(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopState(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PushCall(const FileLocation& loc) {
+	main << DBG_INDENT "PushCall(" << LocArg(loc) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopCall(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopCall(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::PopExprCallArgument(const FileLocation& loc, int arg_i) {
+	main << DBG_INDENT "PopExprCallArgument(" << LocArg(loc) << ", " << IntStr(arg_i) << ");\n";
+	
+	Enter();
+}
+
+
+
 NAMESPACE_TOPSIDE_END

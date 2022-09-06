@@ -49,6 +49,33 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "Expr1(loc, op)", THISBACK(HiExpr1));
 		HighCall(global, "Expr2(loc, op)", THISBACK(HiExpr2));
 		HighCall(global, "Expr3(loc, op)", THISBACK(HiExpr3));
+		
+		#define CALL(x, args) HighCall(global, #x "(" args ")", THISBACK(Hi##x));
+		CALL(PushSystem, "loc, id")
+		CALL(PopSystem, "loc")
+		CALL(PushPool, "loc, id")
+		CALL(PopPool, "loc")
+		CALL(PushEntity, "loc, id")
+		CALL(PopEntity, "loc")
+		CALL(PushComponent, "loc, id")
+		CALL(PopComponent, "loc")
+		CALL(PushMachine, "loc, id")
+		CALL(PopMachine, "loc")
+		CALL(PushChain, "loc, id")
+		CALL(PopChain, "loc")
+		CALL(PushLoop, "loc, id")
+		CALL(PopLoop, "loc")
+		CALL(PushAtom, "loc, id")
+		CALL(PopAtom, "loc")
+		CALL(PushAtomConnector, "loc, part")
+		CALL(PopAtomConnector, "loc")
+		CALL(PushState, "loc, id")
+		CALL(PopState, "loc")
+		CALL(PushCall, "loc")
+		CALL(PopCall, "loc")
+		CALL(PopExprCallArgument, "loc, arg_i")
+		#undef CALL
+		
 	    StdLib(global);
 	
         Scan(global, high_script_content, "parser");
@@ -341,6 +368,168 @@ void AstBuilder::Expr3(const FileLocation& loc, OpType op) {
 	spath.SetCount(c-2);
 	spath[c-3].n = &expr;
 }
+
+void AstBuilder::PushSystem(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_SYSTEM;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopSystem(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushPool(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_POOL;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopPool(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushEntity(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_ENTITY;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopEntity(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushComponent(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_COMPONENT;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopComponent(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushMachine(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_MACHINE;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopMachine(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushChain(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_CHAIN;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopChain(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_LOOP;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopLoop(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_ATOM;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopAtom(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushAtomConnector(const FileLocation& loc, int part) {
+	int c = spath.GetCount();
+	String str;
+	switch (part) {
+		case 0: str = "sink"; break;
+		case 1: str = "src"; break;
+		default: str = IntStr(part);
+	}
+	AstNode& owner = *spath[c-1].n;
+	AstNode& var = owner.Add(str);
+	var.src = SEMT_STATEMENT;
+	var.stmt = STMT_ATOM_CONNECTOR;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopAtomConnector(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushState(const FileLocation& loc, const PathIdentifier& id) {
+	AstNode& var = DeclareRelative(id);
+	var.src = SEMT_STATEMENT;
+	var.stmt = STMT_STATE;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopState(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushCall(const FileLocation& loc) {
+	int c = spath.GetCount();
+	AstNode& owner = *spath[c-1].n;
+	AstNode& var = owner.Add();
+	var.src = SEMT_EXPR;
+	var.op = OP_CALL;
+	
+	PushScope(var);
+	
+}
+
+void AstBuilder::PopCall(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PopExprCallArgument(const FileLocation& loc, int arg_i) {
+	int c = spath.GetCount();
+	ASSERT(c >= 2);
+	AstNode* arg0 = spath[c-1].n;
+	
+	AstNode& owner = *spath[c-2].n;
+	AstNode& expr = owner.Add();
+	expr.src = SEMT_CALL_ARG;
+	expr.link[0] = arg0;
+	
+	spath.SetCount(c-1);
+}
+
+
+
+
 
 
 
@@ -677,6 +866,197 @@ void AstBuilder::HiExpr3(HiEscape& e) {
 	Expr3(loc, op);
 }
 
+void AstBuilder::HiPushSystem(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushSystem(loc, name);
+}
+
+void AstBuilder::HiPopSystem(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopSystem(loc);
+}
+
+void AstBuilder::HiPushPool(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushPool(loc, name);
+}
+
+void AstBuilder::HiPopPool(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopPool(loc);
+}
+
+void AstBuilder::HiPushEntity(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushEntity(loc, name);
+}
+
+void AstBuilder::HiPopEntity(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopEntity(loc);
+}
+
+void AstBuilder::HiPushComponent(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushComponent(loc, name);
+}
+
+void AstBuilder::HiPopComponent(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopComponent(loc);
+}
+
+void AstBuilder::HiPushMachine(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushMachine(loc, name);
+}
+
+void AstBuilder::HiPopMachine(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopMachine(loc);
+}
+
+void AstBuilder::HiPushChain(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushChain(loc, name);
+}
+
+void AstBuilder::HiPopChain(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopChain(loc);
+}
+
+void AstBuilder::HiPushLoop(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushLoop(loc, name);
+}
+
+void AstBuilder::HiPopLoop(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopLoop(loc);
+}
+
+void AstBuilder::HiPushAtom(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushAtom(loc, name);
+}
+
+void AstBuilder::HiPopAtom(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopAtom(loc);
+}
+
+void AstBuilder::HiPushAtomConnector(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	int part = e[1];
+	
+	PushAtomConnector(loc, part);
+}
+
+void AstBuilder::HiPopAtomConnector(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopAtomConnector(loc);
+}
+
+void AstBuilder::HiPushState(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	PushState(loc, name);
+}
+
+void AstBuilder::HiPopState(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopState(loc);
+}
+
+void AstBuilder::HiPushCall(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PushCall(loc);
+}
+
+void AstBuilder::HiPopCall(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopCall(loc);
+}
+
+void AstBuilder::HiPopExprCallArgument(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	int arg_i = e[1];
+	
+	PopExprCallArgument(loc, arg_i);
+}
 
 
 

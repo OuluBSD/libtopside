@@ -210,11 +210,11 @@ String ToLower(const String& s) {
 }
 
 WString ToUpper(const WString& s) {
-	TODO
+	TODO_
 }
 
 WString ToLower(const WString& s) {
-	TODO
+	TODO_
 }
 
 

@@ -11,5 +11,5 @@ machine midi.app:
 		loop input:
 			center.customer
 			fluidsynth.pipe[loop == "event"]:
-				verbose: false
+				verbose = false
 			center.audio.sink.hw

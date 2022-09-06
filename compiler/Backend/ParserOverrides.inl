@@ -24,3 +24,28 @@ void PushRvalConstant(const FileLocation& loc, const Token& t) override;
 void Expr1(const FileLocation& loc, OpType op) override;
 void Expr2(const FileLocation& loc, OpType op) override;
 void Expr3(const FileLocation& loc, OpType op) override;
+
+void PushSystem(const FileLocation& loc, const PathIdentifier& id) override;
+void PopSystem(const FileLocation& loc) override;
+void PushPool(const FileLocation& loc, const PathIdentifier& id) override;
+void PopPool(const FileLocation& loc) override;
+void PushEntity(const FileLocation& loc, const PathIdentifier& id) override;
+void PopEntity(const FileLocation& loc) override;
+void PushComponent(const FileLocation& loc, const PathIdentifier& id) override;
+void PopComponent(const FileLocation& loc) override;
+void PushMachine(const FileLocation& loc, const PathIdentifier& id) override;
+void PopMachine(const FileLocation& loc) override;
+void PushChain(const FileLocation& loc, const PathIdentifier& id) override;
+void PopChain(const FileLocation& loc) override;
+void PushLoop(const FileLocation& loc, const PathIdentifier& id) override;
+void PopLoop(const FileLocation& loc) override;
+void PushAtom(const FileLocation& loc, const PathIdentifier& id) override;
+void PopAtom(const FileLocation& loc) override;
+void PushAtomConnector(const FileLocation& loc, int part) override;
+void PopAtomConnector(const FileLocation& loc) override;
+void PushState(const FileLocation& loc, const PathIdentifier& id) override;
+void PopState(const FileLocation& loc) override;
+
+void PushCall(const FileLocation& loc) override;
+void PopCall(const FileLocation& loc) override;
+void PopExprCallArgument(const FileLocation& loc, int arg_i) override;

@@ -18,9 +18,9 @@ void InterfaceBuilder::AddScreen() {
 	Interface("Context");
 	Interface("EventsBase");
 	
-	Vendor("X11", "LINUX|FREEBSD");
-	Vendor("X11Sw", "LINUX|FREEBSD");
-	Vendor("X11Ogl", "LINUX&OGL|FREEBSD&OGL");
+	Vendor("X11", "POSIX&SCREEN");
+	Vendor("X11Sw", "POSIX&SCREEN");
+	Vendor("X11Ogl", "POSIX&SCREEN&OGL");
 	
 	
 }

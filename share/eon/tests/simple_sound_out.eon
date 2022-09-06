@@ -1,8 +1,8 @@
 machine sdl.app:
-		
+	
 	driver context:
 		sdl.context
-		
+	
 	chain program:
 		
 		loop ogl.fbo.audio.buffer:

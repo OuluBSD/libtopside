@@ -214,8 +214,10 @@ public:
 		calls.Clear();
 	}
 	bool Execute(const A0& a0) const {
+		bool b = true;
 		for (int i = 0; i < calls.GetCount(); i++)
-			calls[i]->Execute(a0);
+			b = calls[i]->Execute(a0) && b;
+		return b;
 	}
 
 	bool operator()(const A0& a0) const { return Execute(a0); }

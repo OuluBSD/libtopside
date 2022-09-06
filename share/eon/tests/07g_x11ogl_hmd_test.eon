@@ -26,7 +26,7 @@ machine sdl.app:
 				shader.frag.path =	"shaders/tests/07d_fragment.glsl"
 				shader.vtx.pat =	"shaders/tests/07d_vertex.glsl"
 
-engine ecs.dummy:
+world ecs.dummy:
     system rendering
     system entity.store
     system component.store

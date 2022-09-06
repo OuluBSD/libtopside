@@ -11,7 +11,6 @@ struct ParserEmitter {
 	virtual void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
 	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
 	virtual void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
-	//virtual void PushFunctionDefinition(const FileLocation& loc) = 0;
 	virtual void PopFunctionDefinition(const FileLocation& loc) = 0;
 	virtual void PopFunction(const FileLocation& loc) = 0;
 	virtual void PopMetaFunction(const FileLocation& loc) = 0;
@@ -27,12 +26,6 @@ struct ParserEmitter {
 	virtual void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
 	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
 	virtual void Argument(const FileLocation& loc) = 0;
-	//virtual void PushExprScope() = 0;
-	//virtual void PopExprScopeToCtor(const FileLocation& loc) = 0;
-	//virtual void PushCall(const PathIdentifier& id) = 0;
-	//virtual void PopCall() = 0;
-	//virtual void PushExprScopeRval() = 0;
-	//virtual void PushRvalCall(const FileLocation& loc, AstNode& n) = 0;
 	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) = 0;
 	virtual void PopExpr(const FileLocation& loc) = 0;
 	virtual void PushRval(const FileLocation& loc, AstNode& n) = 0;
@@ -40,6 +33,31 @@ struct ParserEmitter {
 	virtual void Expr1(const FileLocation& loc, OpType op) = 0;
 	virtual void Expr2(const FileLocation& loc, OpType op) = 0;
 	virtual void Expr3(const FileLocation& loc, OpType op) = 0;
+	
+	virtual void PushSystem(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopSystem(const FileLocation& loc) = 0;
+	virtual void PushPool(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopPool(const FileLocation& loc) = 0;
+	virtual void PushEntity(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopEntity(const FileLocation& loc) = 0;
+	virtual void PushComponent(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopComponent(const FileLocation& loc) = 0;
+	virtual void PushMachine(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopMachine(const FileLocation& loc) = 0;
+	virtual void PushChain(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopChain(const FileLocation& loc) = 0;
+	virtual void PushLoop(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopLoop(const FileLocation& loc) = 0;
+	virtual void PushAtom(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopAtom(const FileLocation& loc) = 0;
+	virtual void PushAtomConnector(const FileLocation& loc, int part) = 0;
+	virtual void PopAtomConnector(const FileLocation& loc) = 0;
+	virtual void PushState(const FileLocation& loc, const PathIdentifier& id) = 0;
+	virtual void PopState(const FileLocation& loc) = 0;
+	
+	virtual void PushCall(const FileLocation& loc) = 0;
+	virtual void PopCall(const FileLocation& loc) = 0;
+	virtual void PopExprCallArgument(const FileLocation& loc, int arg_i) = 0;
 	
 };
 
@@ -106,21 +124,12 @@ public:
 	
 	bool ProcessEon(const TokenStructure& t);
 	bool ParseNamespaceBlock();
-	bool ParseMachine();
-	bool ParseChain();
-	bool ParseLoop();
 	bool ParseDeclaration();
 	bool ParseClass();
-	bool ParseWorld();
-	bool ParseSystem();
-	bool ParsePool();
-	bool ParseEntity();
-	bool ParseComponent();
 	//bool ParseTypedDeclaration(AstNode& ret_type);
 	//bool ParseTypedMetaDeclaration(AstNode& ret_type);
 	bool ParseFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseMetaFunction(AstNode& ret_type, const PathIdentifier& name);
-	bool ParseAtomStatementList();
 	bool ParseStatementList();
 	bool ParseStatement();
 	bool ParseMetaStatement(bool skip_meta_keywords=false);
@@ -130,14 +139,26 @@ public:
 	bool ParseParameter();
 	bool ParseMetaParameter();
 	bool ParsePathIdentifier(PathIdentifier& id);
+	bool ParseCallArguments();
 	
+	bool ParseMachine();
+	bool ParseChain();
+	bool ParseLoop();
+	bool ParsePool();
 	bool ParseMachineStatementList();
 	bool ParseMachineStatement();
 	bool ParseChainStatementList();
 	bool ParseChainStatement();
 	bool ParseLoopStatementList();
 	bool ParseLoopStatement();
+	bool ParseAtomStatementList();
+	bool ParseAtom(PathIdentifier& id);
+	bool ParseAtomExpressionStatement();
 	
+	bool ParseWorld();
+	bool ParseSystem();
+	bool ParseEntity();
+	bool ParseComponent();
 	bool ParseWorldStatementList();
 	bool ParseWorldStatement();
 	bool ParseSystemStatementList();
@@ -150,7 +171,6 @@ public:
 	bool ParseComponentStatement();
 	
 	bool ParseState();
-	bool ParseAtom(PathIdentifier& id);
 	bool ParseDeclExpr(bool must_decl);
 	bool ParseMetaDeclExpr(bool must_decl);
 	bool ParseMeta();

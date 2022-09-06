@@ -2,57 +2,6 @@
 
 
 
-bool Tester::Tokenize(String filepath, String content) {
-	this->filepath = filepath;
-	this->content = content;
-	
-	//t.WhenMessage = callback(OnMessage);
-	t.SkipNewLines();
-	t.SkipComments();
-	if (!t.Process(content, filepath))
-		return false;
-	t.CombineTokens();
-	if (1) // pythonic
-		t.NewlineToEndStatement();
-	t.Dump();
-	
-	return true;
-}
-
-bool Tester::ParseStructure() {
-	ts.WhenMessage << THISBACK(OnProcMsg);
-	if (!ts.ProcessEon(t)) {
-		return false;
-	}
-	LOG(ts.GetTreeString());
-	return true;
-}
-
-bool Tester::Parse() {
-	sp.WhenMessage << THISBACK(OnProcMsg);
-	if (!sp.ProcessEon(ts)) {
-		return false;
-	}
-	LOG(sp.GetTreeString());
-	sp.Finish();
-	return true;
-}
-
-bool Tester::RunMeta() {
-	ab.WhenMessage << THISBACK(OnProcMsg);
-	if (!ab.Execute(sp.GetResult()))
-		return false;
-	
-	return true;
-}
-
-bool Tester::ExportHigh() {
-	ex.WhenMessage << THISBACK(OnProcMsg);
-	if (!ex.Process(ab.GetRoot()))
-		return false;
-	
-	return true;
-}
 
 void Tester::OnProcMsg(ProcMsg msg) {
 	LOG(msg.ToString());
@@ -86,8 +35,8 @@ CONSOLE_APP_MAIN {
 		#define TEST(x) if (!(x)) {LOG("error: test " #x " failed on file " << file); fail = true; break;}
 		
 		// Tokenize eon
-		TEST(t.Tokenize(file, content))
-		
+		TEST(t.Tokenize(file, content, true))
+		t.t.Dump();
 		
 		// Parse error handling structure (for multiple error messages per single try)
 		TEST(t.ParseStructure())

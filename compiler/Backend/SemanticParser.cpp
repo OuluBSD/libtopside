@@ -320,14 +320,12 @@ bool SemanticParser::ParseAtomStatementList() {
 		
 		if (IsId("meta")) {
 			if (!ParseMeta()) {
-				allow_expr_unresolved = false;
-				return false;
+				succ = false;
+				break;
 			}
 		}
-		else if (!Assign(false)) {
+		else if (!ParseAtomExpressionStatement()) {
 			succ = false;
-			allow_expr_unresolved = false;
-			PopIterator();
 			break;
 		}
 		
@@ -336,9 +334,26 @@ bool SemanticParser::ParseAtomStatementList() {
 	path.Remove(path.GetCount()-1);
 	
 	allow_expr_unresolved = false;
+	if (!succ)
+		PopIterator();
 	
 	PopScope();
 	EMIT PopStatementList(tk_owner.end->loc);
+	
+	return succ;
+}
+
+bool SemanticParser::ParseAtomExpressionStatement() {
+	const TokenNode& cur = CurrentNode();
+	Iterator& iter = TopIterator();
+	
+	EMIT PushStatement(iter->loc, STMT_EXPR);
+	
+	bool succ = Assign(false);
+	
+	EMIT PopExpr(iter->loc);
+	
+	EMIT PopStatement(iter->loc);
 	
 	return succ;
 }
@@ -824,6 +839,30 @@ bool SemanticParser::ParsePathIdentifier(PathIdentifier& id) {
 	return id.part_count > 0;
 }
 
+bool SemanticParser::ParseCallArguments() {
+	Iterator& iter = TopIterator();
+	
+	if (!PassToken('('))
+		return false;
+	
+	EMIT PushCall(iter->loc);
+	
+	int i = 0;
+	while (!TryToken(')')) {
+		if (i > 0 && !PassToken(','))
+			return false;
+		if (!Assign(false))
+			return false;
+		EMIT PopExprCallArgument(iter->loc, i);
+		i++;
+	}
+	
+	EMIT PopCall(iter->loc);
+	
+	return true;
+}
+
+
 bool SemanticParser::ParseClass() {
 	const TokenNode& cur = *path.Top();
 	DUMP(cur);
@@ -988,8 +1027,8 @@ bool SemanticParser::Subscript(bool m) {
 				else
 				if(Char(':')) {
 					if(!IsChar(']')) {
-							if (!ParseExpression(m))
-						return false;
+						if (!ParseExpression(m))
+							return false;
 					}
 					TODO // Emit
 				}
@@ -1014,6 +1053,9 @@ bool SemanticParser::Subscript(bool m) {
 					PassChar(',');
 				}
 			}
+			
+			TODO // Emit
+			
 			if(/*!IsToken(TK_INEQ) &&*/ Char('!')) {
 				Term(m);
 			}
@@ -1670,12 +1712,19 @@ bool SemanticParser::ParseSystem() {
 	AstNode& mach = Declare(owner, id);
 	mach.src = SEMT_SYSTEM;
 	
+	PushScope(mach);
+	
+	EMIT PushSystem(iter.begin->loc, id);
+	
 	if (owner_iter.node->sub.GetCount()) {
-		PushScope(mach);
 		if (!ParseSystemStatementList())
 			return false;
-		PopScope();
+		
 	}
+	
+	EMIT PopSystem(iter.begin->loc);
+	
+	PopScope();
 	
 	return true;
 }
@@ -1691,19 +1740,23 @@ bool SemanticParser::ParsePool() {
 		return false;
 	}
 	
-	Iterator& owner_iter = TopIterator();
 	AstNode& owner = GetTopNode();
+	AstNode& pool = Declare(owner, id);
+	pool.src = SEMT_POOL;
+	
+	PushScope(pool);
+	
+	EMIT PushPool(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {
-		AstNode& mach = Declare(owner, id);
-		mach.src = SEMT_POOL;
-		PushScope(mach);
 		if (!ParsePoolStatementList())
 			return false;
-		PopScope();
 	}
-	else {
-		TODO // declaration-only
-	}
+	
+	EMIT PopPool(iter.begin->loc);
+	
+	PopScope();
 	
 	return true;
 }
@@ -1719,19 +1772,23 @@ bool SemanticParser::ParseEntity() {
 		return false;
 	}
 	
-	Iterator& owner_iter = TopIterator();
 	AstNode& owner = GetTopNode();
+	AstNode& ent = Declare(owner, id);
+	ent.src = SEMT_ENTITY;
+	
+	PushScope(ent);
+	
+	EMIT PushEntity(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {
-		AstNode& mach = Declare(owner, id);
-		mach.src = SEMT_ENTITY;
-		PushScope(mach);
 		if (!ParseEntityStatementList())
 			return false;
-		PopScope();
 	}
-	else {
-		TODO // declaration-only
-	}
+	
+	EMIT PopEntity(iter.begin->loc);
+	
+	PopScope();
 	
 	return true;
 }
@@ -1747,16 +1804,23 @@ bool SemanticParser::ParseComponent() {
 		return false;
 	}
 	
-	Iterator& owner_iter = TopIterator();
 	AstNode& owner = GetTopNode();
-	AstNode& mach = Declare(owner, id);
-	mach.src = SEMT_COMPONENT;
+	AstNode& comp = Declare(owner, id);
+	comp.src = SEMT_COMPONENT;
+	
+	PushScope(comp);
+	
+	EMIT PushComponent(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {
-		PushScope(mach);
 		if (!ParseComponentStatementList())
 			return false;
-		PopScope();
 	}
+	
+	EMIT PopComponent(iter.begin->loc);
+	
+	PopScope();
 	
 	return true;
 }
@@ -1776,26 +1840,207 @@ bool SemanticParser::ParseMachine() {
 		return false;
 	}
 	
-	Iterator& owner_iter = TopIterator();
 	AstNode& owner = GetTopNode();
+	AstNode& mach = Declare(owner, id);
+	mach.src = SEMT_MACHINE;
+	
+	PushScope(mach);
+	
+	EMIT PushMachine(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {
-		AstNode& mach = Declare(owner, id);
-		mach.src = SEMT_MACHINE;
-		PushScope(mach);
 		if (!ParseMachineStatementList())
 			return false;
-		PopScope();
+	}
+	
+	EMIT PopMachine(iter.begin->loc);
+	
+	PopScope();
+	
+	return true;
+}
+
+bool SemanticParser::ParseChain() {
+	Iterator& iter = TopIterator();
+	if (iter->str_value != "chain") {
+		AddError(iter->loc, "expected 'chain'");
+		return false;
+	}
+	iter++;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "invalid chain id");
+		return false;
+	}
+	
+	AstNode& owner = GetTopNode();
+	AstNode& chain = Declare(owner, id);
+	chain.src = SEMT_CHAIN;
+	
+	PushScope(chain);
+	
+	EMIT PushChain(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
+	if (owner_iter.node->sub.GetCount()) {
+		if (!ParseChainStatementList())
+			return false;
+	}
+	
+	EMIT PopChain(iter.begin->loc);
+	
+	PopScope();
+	
+	return true;
+}
+
+bool SemanticParser::ParseLoop() {
+	Iterator& iter = TopIterator();
+	
+	bool is_driver = false;
+	
+	if (IsId("driver")) {
+		is_driver = true;
+		iter++;
+	}
+	else if (!PassId("loop"))
+		return false;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "invalid loop id");
+		return false;
+	}
+	
+	AstNode& owner = GetTopNode();
+	AstNode& loop = Declare(owner, id);
+	loop.src = SEMT_LOOP;
+	
+	PushScope(loop);
+	
+	EMIT PushLoop(iter.begin->loc, id);
+	
+	Iterator& owner_iter = TopIterator();
+	if (owner_iter.node->sub.GetCount()) {
+		if (!ParseLoopStatementList())
+			return false;
 	}
 	else {
-		TODO // machine declaration-only
+		loop.src = SEMT_LOOP_DECL;
 	}
+	
+	EMIT PopLoop(iter.begin->loc);
+	
+	PopScope();
+	
+	return true;
+}
+
+bool SemanticParser::ParseAtom(PathIdentifier& id) {
+	Iterator& iter = TopIterator();
+	
+	AstNode& owner = GetTopNode();
+	AstNode& atom = Declare(owner, id);
+	
+	PushScope(atom);
+	
+	EMIT PushAtom(iter.begin->loc, id);
+	
+	if (!IsLineEnd()) {
+		if (TryToken('[')) {
+			int c = 0;
+			while (!TryToken(']')) {
+				if (c == 0)
+					EMIT PushAtomConnector(iter->loc, 0);
+				
+				AstNode& src_cond = atom.Add("src");
+				PushScope(src_cond);
+				allow_expr_unresolved = true;
+				bool succ = Cond(false);
+				allow_expr_unresolved = false;
+				if (!succ)
+					return false;
+				PopScope();
+				
+				
+				TryToken(',');
+				c++;
+			}
+			if (c > 0)
+				EMIT PopAtomConnector(iter->loc);
+			
+			if (TryToken('[')) {
+				int c = 0;
+				while (!TryToken(']')) {
+					if (c == 0)
+						EMIT PushAtomConnector(iter->loc, 1);
+					
+					AstNode& sink_cond = atom.Add("sink");
+					PushScope(sink_cond);
+					allow_expr_unresolved = true;
+					bool succ = Cond(false);
+					allow_expr_unresolved = false;
+					if (!succ)
+						return false;
+					PopScope();
+					
+					TryToken(',');
+					c++;
+				}
+				
+				if (c > 0)
+					EMIT PopAtomConnector(iter->loc);
+			}
+		}
+		else {
+			AddError(iter->loc, "unexpected token");
+			return false;
+		}
+	}
+	
+	if (iter.node->sub.GetCount()) {
+		
+		if (!ParseAtomStatementList())
+			return false;
+		
+	}
+	
+	EMIT PopAtom(iter.begin->loc);
+	
+	PopScope();
+	
+	return true;
+}
+
+bool SemanticParser::ParseState() {
+	Iterator& iter = TopIterator();
+	
+	if (!PassId("state"))
+		return false;
+	
+	PathIdentifier id;
+	if (!ParsePathIdentifier(id)) {
+		AddError(iter->loc, "id parsing failed");
+		return false;
+	}
+	
+	AstNode& owner = GetTopNode();
+	AstNode& state = Declare(owner, id);
+	
+	EMIT PushState(iter->loc, id);
+	EMIT PopState(iter->loc);
 	
 	return true;
 }
 
 bool SemanticParser::ParseMachineStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -1804,6 +2049,8 @@ bool SemanticParser::ParseMachineStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -1856,40 +2103,11 @@ bool SemanticParser::ParseMachineStatement() {
 	return true;
 }
 
-bool SemanticParser::ParseChain() {
-	Iterator& iter = TopIterator();
-	if (iter->str_value != "chain") {
-		AddError(iter->loc, "expected 'chain'");
-		return false;
-	}
-	iter++;
-	
-	PathIdentifier id;
-	if (!ParsePathIdentifier(id)) {
-		AddError(iter->loc, "invalid chain id");
-		return false;
-	}
-	
-	Iterator& owner_iter = TopIterator();
-	AstNode& owner = GetTopNode();
-	if (owner_iter.node->sub.GetCount()) {
-		AstNode& chain = Declare(owner, id);
-		chain.src = SEMT_CHAIN;
-		PushScope(chain);
-		if (!ParseChainStatementList())
-			return false;
-		PopScope();
-	}
-	else {
-		TODO // chain declaration-only
-	}
-	
-	return true;
-}
-
 bool SemanticParser::ParseChainStatementList() {
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(owner.begin->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -1898,6 +2116,8 @@ bool SemanticParser::ParseChainStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(owner.end->loc);
 	
 	return true;
 }
@@ -1950,45 +2170,11 @@ bool SemanticParser::ParseChainStatement() {
 	return true;
 }
 
-bool SemanticParser::ParseLoop() {
-	Iterator& iter = TopIterator();
-	
-	bool is_driver = false;
-	
-	if (IsId("driver")) {
-		is_driver = true;
-		iter++;
-	}
-	else if (!PassId("loop"))
-		return false;
-	
-	PathIdentifier id;
-	if (!ParsePathIdentifier(id)) {
-		AddError(iter->loc, "invalid loop id");
-		return false;
-	}
-	
-	Iterator& owner_iter = TopIterator();
-	AstNode& owner = GetTopNode();
-	if (owner_iter.node->sub.GetCount()) {
-		AstNode& loop = Declare(owner, id);
-		loop.src = SEMT_LOOP;
-		PushScope(loop);
-		if (!ParseLoopStatementList())
-			return false;
-		PopScope();
-	}
-	else {
-		AstNode& loop = Declare(owner, id);
-		loop.src = SEMT_LOOP_DECL;
-	}
-	
-	return true;
-}
-
 bool SemanticParser::ParseLoopStatementList() {
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(owner.begin->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -1997,6 +2183,8 @@ bool SemanticParser::ParseLoopStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(owner.end->loc);
 	
 	return true;
 }
@@ -2027,16 +2215,16 @@ bool SemanticParser::ParseLoopStatement() {
 					return false;
 			}
 			else if (iter->IsType('=')) {
+				EMIT PushStatement(iter->loc, STMT_EXPR);
+				
 				if (!AssignPost(false))
 					return false;
+				
+				EMIT PopStatement(iter->loc);
 			}
-			else if (TryToken('(')) {
-				if (!TryToken(')')) {
-					if (!ParseExpression(false)) return false;
-					PassChar(')');
-					if (!Subscript(false))
-						return false;
-				}
+			else if (IsToken('(')) {
+				if (!ParseCallArguments())
+					return false;
 			}
 			else {
 				AddError(iter->loc, "invalid loop statement");
@@ -2055,80 +2243,6 @@ bool SemanticParser::ParseLoopStatement() {
 	}
 	
 	PopIterator();
-	return true;
-}
-
-bool SemanticParser::ParseAtom(PathIdentifier& id) {
-	Iterator& iter = TopIterator();
-	
-	AstNode& owner = GetTopNode();
-	AstNode& atom = Declare(owner, id);
-	PushScope(atom);
-	
-	if (!IsLineEnd()) {
-		if (TryToken('[')) {
-			
-			while (!TryToken(']')) {
-				AstNode& src_cond = atom.Add("src");
-				PushScope(src_cond);
-				allow_expr_unresolved = true;
-				bool succ = Cond(false);
-				allow_expr_unresolved = false;
-				if (!succ)
-					return false;
-				PopScope();
-				
-				TryToken(',');
-			}
-			if (TryToken('[')) {
-				while (!TryToken(']')) {
-					AstNode& sink_cond = atom.Add("sink");
-					PushScope(sink_cond);
-					allow_expr_unresolved = true;
-					bool succ = Cond(false);
-					allow_expr_unresolved = false;
-					if (!succ)
-						return false;
-					PopScope();
-					
-					TryToken(',');
-				}
-			}
-		}
-		else {
-			AddError(iter->loc, "unexpected token");
-			return false;
-		}
-	}
-	
-	if (iter.node->sub.GetCount()) {
-		
-		if (!ParseAtomStatementList())
-			return false;
-		
-	}
-	
-	PopScope();
-	
-	return true;
-}
-
-bool SemanticParser::ParseState() {
-	Iterator& iter = TopIterator();
-	
-	if (!PassId("state"))
-		return false;
-	
-	PathIdentifier id;
-	if (!ParsePathIdentifier(id)) {
-		AddError(iter->loc, "id parsing failed");
-		return false;
-	}
-	
-	AstNode& owner = GetTopNode();
-	AstNode& state = Declare(owner, id);
-	
-	
 	return true;
 }
 
@@ -2159,8 +2273,11 @@ bool SemanticParser::ParseMeta() {
 }
 
 bool SemanticParser::ParseWorldStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -2169,6 +2286,8 @@ bool SemanticParser::ParseWorldStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -2210,8 +2329,11 @@ bool SemanticParser::ParseWorldStatement() {
 }
 
 bool SemanticParser::ParseSystemStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -2220,6 +2342,8 @@ bool SemanticParser::ParseSystemStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -2237,11 +2361,15 @@ bool SemanticParser::ParseSystemStatement() {
 				return false;
 		}
 		else if (iter->IsType(TK_ID)) {
+			EMIT PushStatement(iter->loc, STMT_EXPR);
+			
 			allow_expr_unresolved = true;
 			bool succ = Assign(false);
 			allow_expr_unresolved = false;
 			if (!succ)
 				return false;
+			
+			EMIT PopStatement(iter->loc);
 		}
 		else {
 			AddError(iter->loc, "invalid statement");
@@ -2259,8 +2387,11 @@ bool SemanticParser::ParseSystemStatement() {
 }
 
 bool SemanticParser::ParsePoolStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -2269,6 +2400,8 @@ bool SemanticParser::ParsePoolStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -2305,8 +2438,11 @@ bool SemanticParser::ParsePoolStatement() {
 }
 
 bool SemanticParser::ParseEntityStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -2315,6 +2451,8 @@ bool SemanticParser::ParseEntityStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -2351,8 +2489,11 @@ bool SemanticParser::ParseEntityStatement() {
 }
 
 bool SemanticParser::ParseComponentStatementList() {
+	Iterator& iter = TopIterator();
 	const TokenNode& owner = *path.Top();
 	const TokenNode*& cur = path.Add();
+	
+	EMIT PushStatementList(iter->loc);
 	
 	for(const TokenNode& tns : owner.sub) {
 		cur = &tns;
@@ -2361,6 +2502,8 @@ bool SemanticParser::ParseComponentStatementList() {
 	}
 	
 	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(iter->loc);
 	
 	return true;
 }
@@ -2378,11 +2521,15 @@ bool SemanticParser::ParseComponentStatement() {
 				return false;
 		}
 		else if (IsToken(TK_ID)) {
+			EMIT PushStatement(iter->loc, STMT_EXPR);
+			
 			allow_expr_unresolved = true;
 			bool succ = Assign(false);
 			allow_expr_unresolved = false;
 			if (!succ)
 				return false;
+			
+			EMIT PopStatement(iter->loc);
 		}
 		else {
 			AddError(iter->loc, "invalid statement");
@@ -2429,6 +2576,9 @@ bool SemanticParser::ParseComponentStatement() {
 	
 	return false;
 }*/
+
+
+
 
 NAMESPACE_TOPSIDE_END
 

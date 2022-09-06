@@ -1,12 +1,12 @@
 machine glx.app:
-		
+	
 	driver context:
 		x11.context = true
 	
 	chain program:
 		state event.register
-
-		loop video: {
+		
+		loop video:
 			center.customer
 			x11.sw.fbo.program:
 				drawmem =					"false"

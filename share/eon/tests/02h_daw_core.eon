@@ -1,16 +1,16 @@
 machine daw.core:
-	meta channel.count = 10
+	meta int channel.count = 10
 	
-	meta stmt channel.effects():
+	meta loopstmt channel.effects():
 		corefx.pipe: filter="chorus"
 		corefx.pipe: filter="jcrev"
 	
 	meta params channel.links():
-		meta for i in range(channel.count):
+		meta for int i, i < channel.count, i++:
 			loop channel.$i
 	
 	chain program:
-		meta for i in range(channel.count):
+		meta for int i, i < channel.count, i++:
 			loop channel.$i:
 				center.owner
 				softinstru.pipe [true]:

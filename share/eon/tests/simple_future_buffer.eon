@@ -1,8 +1,8 @@
 machine sdl.app:
-		
+	
 	driver context:
 		sdl.context
-		
+	
 	chain program:
 		
 		loop center.image:
@@ -28,7 +28,7 @@ machine sdl.app:
 		loop ogl.fbo.screen:
 			id = "screen"
 			ogl.customer
-			sdl.fbo[id == "buffer2", id: "buffer1", id: "texture"]:
+			sdl.fbo[id == "buffer2", id == "buffer1", id == "texture"]:
 				filepath = "shaders/toys/simple/simple_future_buffer/stage0.glsl"
 		
 		loop audio:

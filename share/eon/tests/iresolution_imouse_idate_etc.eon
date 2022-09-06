@@ -46,7 +46,7 @@ machine sdl.app:
 		
 		loop ogl.fbo.screen:
 			ogl.customer
-			sdl.fbo[loop == ogl.fbo.font, loop: ogl.fbo.video, loop: ogl.fbo.audio, loop: ogl.fbo.keyboard]:
+			sdl.fbo[loop == ogl.fbo.font, loop == ogl.fbo.video, loop == ogl.fbo.audio, loop == ogl.fbo.keyboard]:
 				close_machine =	true
 				sizeable =		true
 				env =			event.register

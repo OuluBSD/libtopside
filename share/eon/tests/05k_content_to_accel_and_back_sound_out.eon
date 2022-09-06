@@ -1,5 +1,5 @@
 machine sdl.app:
-		
+	
 	driver context:
 		sdl.context
 		
@@ -10,7 +10,7 @@ machine sdl.app:
 			center.customer
 			center.audio.src.dbg_generator
 			center.audio.side.src.center.user[][id == "audio_conv_in"]
-
+		
 		loop ogl.fbo.audio.conv.in:
 			id = "audio_conv_in"
 			ogl.customer

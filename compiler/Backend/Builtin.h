@@ -44,6 +44,8 @@ typedef enum : uint64 {
 	SEMT_COMPONENT				= 1ULL << 35,
 	SEMT_SYSTEM					= 1ULL << 36,
 	SEMT_POOL					= 1ULL << 37,
+	SEMT_ATOM					= 1ULL << 38,
+	SEMT_CALL_ARG				= 1ULL << 39,
 	
 	// Current limit: 1 << 63
 	
@@ -58,6 +60,7 @@ typedef enum : uint64 {
 	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
 	
 	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
+	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_LOOP | SEMT_ATOM,
 	
 	SEMT_META_FIELD =		SEMT_META_VARIABLE | SEMT_META_PARAMETER,
 	SEMT_META_TYPE =		SEMT_META_BUILTIN,
@@ -111,6 +114,8 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_COMPONENT:			return "component";
 		case SEMT_SYSTEM:				return "system";
 		case SEMT_POOL:					return "pool";
+		case SEMT_ATOM:					return "atom";
+		case SEMT_CALL_ARG:				return "call-arg";
 		default: return "invalid";
 	}
 }
@@ -159,6 +164,8 @@ typedef enum {
 	STMT_META_SWITCH,
 	STMT_META_BLOCK,
 	STMT_META_EXPR,
+	STMT_ATOM_CONNECTOR,
+	STMT_STATE,
 } StmtType;
 
 inline String GetStmtTypeString(StmtType t) {
@@ -198,6 +205,8 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_META_SWITCH: return "meta-switch";
 		case STMT_META_BLOCK: return "meta-block";
 		case STMT_META_EXPR: return "meta-expr";
+		case STMT_ATOM_CONNECTOR: return "atom-connector";
+		case STMT_STATE: return "state";
 		default: return "invalid-type";
 	}
 }

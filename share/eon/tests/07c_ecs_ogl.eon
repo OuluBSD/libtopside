@@ -20,7 +20,7 @@ machine sdl.app:
 				recv.data =         true
 
 
-engine ecs.dummy:
+world ecs.dummy:
     system rendering
     system entity.store
     system component.store

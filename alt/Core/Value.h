@@ -207,17 +207,17 @@ public:
 	bool     IsRef() const             { return Is(REF); }
 	
 	template <class T>	void     InitSmall(const T& init);
-	template <class T>	T&       GetSmallRaw() const {TODO}
+	template <class T>	T&       GetSmallRaw() const {TODO_}
 	template <class T>	T&       GetSmall() const;
 	
-	int      GetOtherInt() const {TODO}
-	int64    GetOtherInt64() const {TODO}
-	double   GetOtherDouble() const {TODO}
-	bool     GetOtherBool() const {TODO}
-	Date     GetOtherDate() const {TODO}
-	Time     GetOtherTime() const {TODO}
-	String   GetOtherString() const {TODO}
-	hash_t   GetOtherHashValue() const {TODO}
+	int      GetOtherInt() const {TODO_}
+	int64    GetOtherInt64() const {TODO_}
+	double   GetOtherDouble() const {TODO_}
+	bool     GetOtherBool() const {TODO_}
+	Date     GetOtherDate() const {TODO_}
+	Time     GetOtherTime() const {TODO_}
+	String   GetOtherString() const {TODO_}
+	hash_t   GetOtherHashValue() const {TODO_}
 	
 	operator String() const          { return IsString() ? data : GetOtherString(); }
 	operator WString() const;
@@ -232,10 +232,10 @@ public:
 
 
 template <class T>
-Value RawToValue(const T& o) {TODO}
+Value RawToValue(const T& o) {TODO_}
 
 template <class T>
-bool IsTypeRaw(const Value& v) {TODO}
+bool IsTypeRaw(const Value& v) {TODO_}
 
 
 
@@ -416,7 +416,7 @@ public:
 	const Value& operator[](const int key) const;//     { return operator[](Value(key)); }
 	const Value& operator[](const Id& key) const;//     { return operator[](Value(key.ToString())); }
 
-	Value& GetAdd(const Value& key) {TODO}//                 { return UnShare().GetAdd(key); }
+	Value& GetAdd(const Value& key) {TODO_}//                 { return UnShare().GetAdd(key); }
 	Value& operator()(const Value& key);//              { return GetAdd(key); }
 	Value& operator()(const String& key);//             { return operator()(Value(key)); }
 	Value& operator()(const char *key);//               { return operator()(Value(key)); }

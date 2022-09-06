@@ -1,8 +1,8 @@
 machine sdl.app:
-		
+	
 	driver context:
 		sdl.context = true
-		
+	
 	chain program:
 		
 		loop ogl.fbo.audio.buffer:
@@ -13,7 +13,7 @@ machine sdl.app:
 				shader.frag.path = "shaders/toys/simple/simple_sound_out/stage1.glsl"
 				retarded.local.time = true
 		
-				
+		
 		loop ogl.fbo.screen:
 			id = "screen"
 			ogl.customer

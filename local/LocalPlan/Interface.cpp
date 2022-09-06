@@ -596,6 +596,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			String atom_dir = AppendFileName(par_dir, k);
 			String genh_path = AppendFileName(atom_dir, "Generated.h");
 			String genc_path = AppendFileName(atom_dir, "Generated.cpp");
+			String icpp_path = AppendFileName(atom_dir, "Init.icpp");
 			
 			{
 				String s;
@@ -694,12 +695,11 @@ void InterfaceBuilder::Generate(bool write_actually) {
 						<< "AtomTypeCls " << h.name << "::GetType() const {\n"
 						<< "\treturn GetAtomType();\n"
 						<< "}\n";
-						
+					
 					if (cond.GetCount())
 						s << "#endif\n";
 					
 					s	<< "\n\n";
-
 				}
 				
 				
@@ -709,6 +709,39 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				//LOG(s);
 				
 				outputs.Add(genc_path, s);
+			}
+			
+			{
+				String s;
+				
+				s	<< "#include \"" << k << ".h\"\n"
+					<< "\n"
+					<< "// This file is generated. Do not modify this file.\n"
+					<< "\n"
+				
+					<< "INITBLOCK_(" << k << ") {\n"
+					<< "\tusing namespace TS::Parallel;\n"
+					<< "\tusing namespace TS::Serial;\n"
+					<< "\tusing namespace TS;\n";
+				
+				for(int j = 0; j < ai.GetCount(); j++) {
+					const Header& h = headers[ai[j]];
+					
+					String cond = GetBaseConds(h.base);
+					
+					if (cond.GetCount())
+						s << "\t#if " << GetMacroConditionals(cond) << "\n";
+					
+					s << "\tFactory::RegisterAtom<" << h.name << ">();\n";
+					
+					if (cond.GetCount())
+						s << "\t#endif\n";
+					
+				}
+				
+				s << "}\n\n";
+				
+				outputs.Add(icpp_path, s);
 			}
 		}
 		//DUMPC(atom_list.GetKeys());

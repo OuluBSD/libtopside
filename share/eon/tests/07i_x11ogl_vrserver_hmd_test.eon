@@ -23,7 +23,7 @@ machine sdl.app:
 				shader.vtx.path =	"shaders/tests/07d_vertex.glsl"
 
 
-engine ecs.dummy:
+world ecs.dummy:
     system rendering
     system entity.store
     system component.store

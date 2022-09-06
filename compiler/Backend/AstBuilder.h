@@ -65,7 +65,29 @@ public:
 	void HiExpr1(HiEscape& e);
 	void HiExpr2(HiEscape& e);
 	void HiExpr3(HiEscape& e);
-	
+	void HiPushSystem(HiEscape& e);
+	void HiPopSystem(HiEscape& e);
+	void HiPushPool(HiEscape& e);
+	void HiPopPool(HiEscape& e);
+	void HiPushEntity(HiEscape& e);
+	void HiPopEntity(HiEscape& e);
+	void HiPushComponent(HiEscape& e);
+	void HiPopComponent(HiEscape& e);
+	void HiPushMachine(HiEscape& e);
+	void HiPopMachine(HiEscape& e);
+	void HiPushChain(HiEscape& e);
+	void HiPopChain(HiEscape& e);
+	void HiPushLoop(HiEscape& e);
+	void HiPopLoop(HiEscape& e);
+	void HiPushAtom(HiEscape& e);
+	void HiPopAtom(HiEscape& e);
+	void HiPushAtomConnector(HiEscape& e);
+	void HiPopAtomConnector(HiEscape& e);
+	void HiPushState(HiEscape& e);
+	void HiPopState(HiEscape& e);
+	void HiPushCall(HiEscape& e);
+	void HiPopCall(HiEscape& e);
+	void HiPopExprCallArgument(HiEscape& e);
 	
 	bool Execute(String high_script_content);
 	

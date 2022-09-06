@@ -42,7 +42,7 @@ void TestEonTests() {
 	for (String file : files) {
 		LOG("Testing: " << GetFileName(file));
 		
-		//if (file != "/home/sblo/libtopside/share/eon/tests/07b_ecs_sw3d.eon") continue;
+		//if (file != "/home/sblo/libtopside/share/eon/tests/00a_audio_gen.eon") continue;
 		
 		if (!TestEonTest(file)) {
 			LOG("Failed: " << GetFileName(file));
