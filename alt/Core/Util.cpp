@@ -276,24 +276,60 @@ FindFile::FindFile() {
 	
 }
 
-bool FindFile::Search(String path) {
-	TODO
+void FindFile::UpdateFiles() {
+	files.SetCount(0);
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(dir_path.Begin());
+	if (d) {
+		while ((dir = readdir(d)) != NULL) {
+			if (strncmp(dir->d_name, ".", 2) == 0 || strncmp(dir->d_name, "..", 3) == 0)
+				continue;
+			files.Add(dir->d_name);
+		}
+		closedir(d);
+	}
 }
 
+bool FindFile::Search(String path) {
+	dir_path = GetFileDirectory(path);
+	UpdateFiles();
+	
+	String fname = GetFileName(path);
+	ASSERT(!fname.IsEmpty());
+	if (fname.IsEmpty())
+		return false;
+	
+	Vector<String> parts = Split(fname, "*", false);
+	ASSERT_(parts.GetCount() <= 2, "regex pattern matching not implemented yet");
+	
+	pre = parts[0];
+	post = parts.GetCount() >= 2 ? parts[1] : String();
+	i = -1;
+	return Next();
+}
+
+
 bool FindFile::Next() {
-	TODO
+	while (++i < files.GetCount()) {
+		const String& f = files[i];
+		if (f.Left(pre.GetCount()) == pre && f.Right(post.GetCount()) == post)
+			break;
+	}
+	return i < files.GetCount();
 }
 
 bool FindFile::IsDirectory() const {
-	TODO
+	const String& f = files[i];
+	return DirectoryExists(f);
 }
 
 String FindFile::GetPath() const {
-	TODO
+	return AppendFileName(dir_path, files[i]);
 }
 
 String FindFile::GetName() const {
-	TODO
+	return files[i];
 }
 
 

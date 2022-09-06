@@ -225,8 +225,8 @@ public:
 	
 	StringT Mid(int i) const;
 	StringT Mid(int i, int size) const;
-	StringT Left(int i) const { return Mid(0, i); }
-	StringT Right(int i) const { return Mid(GetCount() - i, i); }
+	StringT Left(int i) const { return Mid(0, min(i, GetCount())); }
+	StringT Right(int i) const { return Mid(max(0, GetCount() - i), i); }
 	
 	void Remove(int begin, int count=1);
 	bool Insert(int begin, T chr) {return Insert(begin, &chr, 1);}

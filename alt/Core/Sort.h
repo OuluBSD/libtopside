@@ -146,7 +146,6 @@ inline void FinalSortIndex__(I begin, I end, J vbegin, J vend, const Less& less)
 					}
 					--ptr;
 					--vptr;
-					ASSERT(vptr != vbegin);
 				}
 				while(less(*vbest, *vptr));
 				if(ptr == begin) { // begin is the final minimum, best is 2nd least

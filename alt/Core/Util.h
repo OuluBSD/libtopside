@@ -102,7 +102,11 @@ struct Uuid {
 
 
 class FindFile {
+	Vector<String> files;
+	String dir_path, pre, post;
+	int i = 0;
 	
+	void UpdateFiles();
 	
 public:
 	typedef FindFile CLASSNAME;
