@@ -110,7 +110,7 @@ AtomTypeCls TestPollerSink::GetType() const {
 }
 
 
-#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
+#if (defined flagBUILTIN_PORTAUDIO) || (defined flagPORTAUDIO)
 String PortaudioSink::GetAction() {
 	return "center.audio.sink.hw";
 }
@@ -328,6 +328,7 @@ AtomTypeCls AudioJoiner2User::GetType() const {
 }
 
 
+#if defined flagSCREEN
 String VideoDbgSrc::GetAction() {
 	return "center.video.src.dbg_generator";
 }
@@ -352,6 +353,7 @@ void VideoDbgSrc::Visit(RuntimeVisitor& vis) {
 AtomTypeCls VideoDbgSrc::GetType() const {
 	return GetAtomType();
 }
+#endif
 
 
 #if (defined flagOPENCV && defined flagLINUX)
@@ -498,7 +500,7 @@ AtomTypeCls EventStatePipe::GetType() const {
 #endif
 
 
-#if (defined flagSCREEN && defined flagPOSIX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11SwFboProg::GetAction() {
 	return "x11.sw.fbo.program";
 }
@@ -526,7 +528,7 @@ AtomTypeCls X11SwFboProg::GetType() const {
 #endif
 
 
-#if (defined flagOGL && defined flagPOSIX)
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 String X11OglFboProg::GetAction() {
 	return "x11.ogl.fbo.program";
 }
@@ -554,7 +556,7 @@ AtomTypeCls X11OglFboProg::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglFboProg::GetAction() {
 	return "sdl.ogl.fbo.program";
 }
@@ -582,7 +584,7 @@ AtomTypeCls SdlOglFboProg::GetType() const {
 #endif
 
 
-#if defined flagPOSIX
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11SwShaderPipe::GetAction() {
 	return "x11.sw.fbo.pipe";
 }
@@ -610,7 +612,7 @@ AtomTypeCls X11SwShaderPipe::GetType() const {
 #endif
 
 
-#if (defined flagOGL && defined flagPOSIX)
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 String X11OglShaderPipe::GetAction() {
 	return "x11.ogl.fbo.pipe";
 }
@@ -638,7 +640,7 @@ AtomTypeCls X11OglShaderPipe::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglShaderPipe::GetAction() {
 	return "sdl.ogl.fbo.pipe";
 }
@@ -666,7 +668,7 @@ AtomTypeCls SdlOglShaderPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11SwFboAtomPipe::GetAction() {
 	return "x11.sw.fbo.sink";
 }
@@ -694,7 +696,7 @@ AtomTypeCls X11SwFboAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 String X11OglFboAtomPipe::GetAction() {
 	return "x11.ogl.fbo.sink";
 }
@@ -750,7 +752,7 @@ AtomTypeCls SdlOglFboAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11ContextAtom::GetAction() {
 	return "x11.context";
 }
@@ -778,7 +780,7 @@ AtomTypeCls X11ContextAtom::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11EventAtomPipe::GetAction() {
 	return "x11.event.pipe";
 }
@@ -914,7 +916,7 @@ AtomTypeCls TestEventSrcPipe::GetType() const {
 }
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglImageLoader::GetAction() {
 	return "center.image.loader";
 }
@@ -970,7 +972,7 @@ AtomTypeCls VolumeLoaderAtom::GetType() const {
 }
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11VideoAtomPipe::GetAction() {
 	return "x11.video.pipe";
 }
@@ -998,7 +1000,7 @@ AtomTypeCls X11VideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 String X11OglVideoAtomPipe::GetAction() {
 	return "glx.video.pipe";
 }
@@ -1026,7 +1028,7 @@ AtomTypeCls X11OglVideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD && defined flagOGL) || (defined flagLINUX && defined flagOGL)
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 String X11OglFboAtomSA::GetAction() {
 	return "x11.ogl.fbo.standalone";
 }
@@ -1054,7 +1056,7 @@ AtomTypeCls X11OglFboAtomSA::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11SwVideoAtomPipe::GetAction() {
 	return "x11.sw.video.pipe";
 }
@@ -1082,7 +1084,7 @@ AtomTypeCls X11SwVideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagFREEBSD) || (defined flagLINUX)
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11SwFboAtomSA::GetAction() {
 	return "x11.sw.fbo.standalone";
 }
@@ -1322,7 +1324,7 @@ AtomTypeCls SdlAudioAtom::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglShaderAtom::GetAction() {
 	return "sdl.ogl.fbo.side";
 }
@@ -1358,7 +1360,7 @@ AtomTypeCls SdlOglShaderAtom::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglShaderAtomSA::GetAction() {
 	return "ogl.fbo.source.standalone";
 }
@@ -1386,7 +1388,7 @@ AtomTypeCls SdlOglShaderAtomSA::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglTextureSource::GetAction() {
 	return "sdl.ogl.fbo.image";
 }
@@ -1416,7 +1418,7 @@ AtomTypeCls SdlOglTextureSource::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglVolumeSource::GetAction() {
 	return "sdl.ogl.fbo.volume";
 }
@@ -1446,7 +1448,7 @@ AtomTypeCls SdlOglVolumeSource::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglAudioSink::GetAction() {
 	return "sdl.ogl.fbo.center.audio";
 }
@@ -1476,7 +1478,7 @@ AtomTypeCls SdlOglAudioSink::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglKeyboardSource::GetAction() {
 	return "sdl.ogl.fbo.keyboard";
 }
@@ -1512,7 +1514,7 @@ AtomTypeCls SdlOglKeyboardSource::GetType() const {
 #endif
 
 
-#if (defined flagSDL2 && defined flagOGL && defined flagSCREEN)
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglAudioSource::GetAction() {
 	return "sdl.ogl.center.fbo.audio";
 }
