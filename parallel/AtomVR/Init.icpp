@@ -1,51 +1,22 @@
 #include "AtomVR.h"
 
-NAMESPACE_UPP
-
+// This file is generated. Do not modify this file.
 
 INITBLOCK_(AtomVR) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
-	
-	#ifdef flagFFMPEG
-		#ifdef flagVR
-		#endif
+	#if (defined flagFREEBSD && defined flagOPENHMD) || (defined flagLINUX && defined flagOPENHMD)
+	Factory::RegisterAtom<OpenHMDPipe>();
 	#endif
-	
-	#ifdef flagSDL2
+	#if defined flagLOCALHMD
+	Factory::RegisterAtom<LocalHMDPipe>();
 	#endif
-	
-	#ifdef flagOPENCV
+	#if (defined flagFREEBSD) || (defined flagLINUX)
+	Factory::RegisterAtom<RemoteVRServerPipe>();
 	#endif
-	
-	#if defined flagVR
-		Factory::RegisterAtom<RemoteVRServerPipe>();
-		
-		#ifdef flagOGL
-		#endif
-		
-		
-		#if defined flagPOSIX
-			#ifdef flagOGL
-				#ifdef flagOPENHMD
-					Factory::RegisterAtom<OpenHMDPipe>();
-				#endif
-				#ifdef flagLOCALHMD
-					Factory::RegisterAtom<LocalHMDPipe>();
-				#endif
-				//Factory::RegisterAtom<UsbHoloPipe>();
-				#ifdef flagHACK
-					Factory::RegisterAtom<BluetoothHoloPipe>();
-				#endif
-			#endif
-		#endif
-		
-		#ifdef flagSDL2
-			#ifdef flagOGL
-			#endif
-		#endif
+	#if (defined flagFREEBSD && defined flagHACK) || (defined flagLINUX && defined flagHACK)
+	Factory::RegisterAtom<BluetoothHoloPipe>();
 	#endif
 }
 
-END_UPP_NAMESPACE

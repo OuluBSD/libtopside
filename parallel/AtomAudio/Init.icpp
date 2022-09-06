@@ -1,0 +1,20 @@
+#include "AtomAudio.h"
+
+// This file is generated. Do not modify this file.
+
+INITBLOCK_(AtomAudio) {
+	using namespace TS::Parallel;
+	using namespace TS::Serial;
+	using namespace TS;
+	Factory::RegisterAtom<MidiFileReaderPipe>();
+	Factory::RegisterAtom<MidiFileReader>();
+	Factory::RegisterAtom<MidiNullSink>();
+	#if defined flagFLUIDSYNTH
+	Factory::RegisterAtom<FluidsynthPipe>();
+	#endif
+	Factory::RegisterAtom<SoftInstrumentPipe>();
+	Factory::RegisterAtom<FmSynthPipe>();
+	Factory::RegisterAtom<CoreSynthPipe>();
+	Factory::RegisterAtom<CoreEffectPipe>();
+}
+

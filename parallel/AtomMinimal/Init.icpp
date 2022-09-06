@@ -1,94 +1,146 @@
 #include "AtomMinimal.h"
 
-NAMESPACE_UPP
-
+// This file is generated. Do not modify this file.
 
 INITBLOCK_(AtomMinimal) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
-	
 	Factory::RegisterAtom<CenterCustomer>();
 	Factory::RegisterAtom<TestRealtimeSrc>();
 	Factory::RegisterAtom<TestRealtimeSink>();
 	Factory::RegisterAtom<TestPollerSink>();
+	#if (defined flagBUILTIN_PORTAUDIO) || (defined flagPORTAUDIO)
 	Factory::RegisterAtom<PortaudioSink>();
+	#endif
+	#if defined flagFFMPEG
+	Factory::RegisterAtom<AudioDecoderSrc>();
+	#endif
 	Factory::RegisterAtom<AudioDbgSrc>();
 	Factory::RegisterAtom<AudioSplitter>();
 	Factory::RegisterAtom<AudioSplitterUser>();
 	Factory::RegisterAtom<AudioJoiner>();
 	Factory::RegisterAtom<AudioJoinerUser>();
 	Factory::RegisterAtom<AudioJoiner2User>();
-	Factory::RegisterAtom<TestEventSrcPipe>();
-	Factory::RegisterAtom<VolumeLoaderAtom>();
-	
-	#ifdef flagFFMPEG
-	Factory::RegisterAtom<AudioDecoderSrc>();
-		#ifdef flagSCREEN
-		Factory::RegisterAtom<AudioLoaderAtom>();
-		Factory::RegisterAtom<VideoLoaderAtom>();
-		#endif
+	#if defined flagSCREEN
+	Factory::RegisterAtom<VideoDbgSrc>();
 	#endif
-	
-	#ifdef flagSDL2
-	Factory::RegisterAtom<SdlAudioAtom>();
-	Factory::RegisterAtom<SdlContextAtom>();
-	#endif
-	
-	#ifdef flagOPENCV
+	#if (defined flagOPENCV && defined flagLINUX)
 	Factory::RegisterAtom<WebcamPipe>();
+	#endif
+	#if (defined flagOPENCV && defined flagLINUX)
 	Factory::RegisterAtom<WebcamAtom>();
 	#endif
-	
+	#if defined flagFFMPEG
+	Factory::RegisterAtom<AudioLoaderAtom>();
+	#endif
+	#if defined flagFFMPEG
+	Factory::RegisterAtom<VideoLoaderAtom>();
+	#endif
 	#if defined flagSCREEN
-		
-		#ifdef flagOGL
-			Factory::RegisterAtom<OglCustomer>();
-		#endif
-		
-		Factory::RegisterAtom<VideoDbgSrc>();
-		Factory::RegisterAtom<EventStatePipe>();
-		Factory::RegisterAtom<X11SwFboAtomSA>();
-		Factory::RegisterAtom<X11SwFboProg>();
-		Factory::RegisterAtom<X11SwVideoAtomPipe>();
-		Factory::RegisterAtom<X11ContextAtom>();
-		Factory::RegisterAtom<X11EventAtomPipe>();
-		
-		#if defined flagPOSIX
-			Factory::RegisterAtom<X11VideoAtomPipe>();
-			Factory::RegisterAtom<X11SwShaderPipe>();
-			Factory::RegisterAtom<X11SwFboAtomPipe>();
-			#ifdef flagOGL
-				Factory::RegisterAtom<X11OglVideoAtomPipe>();
-				Factory::RegisterAtom<X11OglFboAtomSA>();
-				Factory::RegisterAtom<X11OglFboProg>();
-				Factory::RegisterAtom<X11OglFboAtomPipe>();
-				Factory::RegisterAtom<X11OglShaderPipe>();
-			#endif
-		#endif
-		
-		#ifdef flagSDL2
-			Factory::RegisterAtom<SdlVideoAtomPipe>();
-			Factory::RegisterAtom<SdlVideoAtom>();
-			Factory::RegisterAtom<SdlEventAtomPipe>();
-			Factory::RegisterAtom<SdlProgAtomPipe>();
-			#ifdef flagOGL
-				Factory::RegisterAtom<SdlOglImageLoader>();
-				Factory::RegisterAtom<SdlOglVolumeSource>();
-				Factory::RegisterAtom<SdlOglKeyboardSource>();
-				Factory::RegisterAtom<SdlOglFboPipe>();
-				Factory::RegisterAtom<SdlOglFboAtom>();
-				Factory::RegisterAtom<SdlOglFboAtomSA>();
-				Factory::RegisterAtom<SdlOglShaderPipe>();
-				Factory::RegisterAtom<SdlOglFboProg>();
-				Factory::RegisterAtom<SdlOglShaderAtom>();
-				Factory::RegisterAtom<SdlOglShaderAtomSA>();
-				Factory::RegisterAtom<SdlOglTextureSource>();
-				Factory::RegisterAtom<SdlOglAudioSink>();
-				Factory::RegisterAtom<SdlOglAudioSource>();
-			#endif
-		#endif
+	Factory::RegisterAtom<EventStatePipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwFboProg>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglFboProg>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglFboProg>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwShaderPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglShaderPipe>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglShaderPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwFboAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglFboAtomPipe>();
+	#endif
+	#if (defined flagOGL) || (defined flagSDL2)
+	Factory::RegisterAtom<SdlOglFboAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11ContextAtom>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11EventAtomPipe>();
+	#endif
+	Factory::RegisterAtom<OglCustomer>();
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlContextAtom>();
+	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlEventAtomPipe>();
+	#endif
+	Factory::RegisterAtom<TestEventSrcPipe>();
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglImageLoader>();
+	#endif
+	Factory::RegisterAtom<VolumeLoaderAtom>();
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11VideoAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglVideoAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglFboAtomSA>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwVideoAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwFboAtomSA>();
+	#endif
+	#if (defined flagOGL) || (defined flagSDL2)
+	Factory::RegisterAtom<SdlOglFboAtomSA>();
+	#endif
+	#if (defined flagOGL) || (defined flagSDL2)
+	Factory::RegisterAtom<SdlOglFboPipe>();
+	#endif
+	#if (defined flagOGL) || (defined flagSDL2)
+	Factory::RegisterAtom<SdlOglFboAtom>();
+	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlVideoAtomPipe>();
+	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlProgAtomPipe>();
+	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlVideoAtom>();
+	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlAudioAtom>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglShaderAtom>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglShaderAtomSA>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglTextureSource>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglVolumeSource>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglAudioSink>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglKeyboardSource>();
+	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglAudioSource>();
 	#endif
 }
 
-END_UPP_NAMESPACE

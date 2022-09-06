@@ -1,0 +1,14 @@
+description "\3770,128,128";
+
+uses
+	AtomLocal;
+
+uses(!SCREEN) AtomNonScreen;
+
+file
+	AtomDebug.h,
+	AtomDebug.cpp,
+	Init.icpp,
+	Verifier.h,
+	Verifier.cpp;
+

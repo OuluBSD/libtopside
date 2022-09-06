@@ -22,7 +22,7 @@ AUD_VNDR_LIST
 #undef AUD_VNDR
 #undef AUD_CLS
 
-#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
+#if (defined flagBUILTIN_PORTAUDIO) || (defined flagPORTAUDIO)
 struct AudPortaudio {
 	struct NativeSinkDevice;
 	struct NativeSourceDevice;
@@ -126,7 +126,7 @@ template <class Aud> struct AudioSourceDeviceT : AudSourceDevice {
 	}
 };
 
-#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
+#if (defined flagBUILTIN_PORTAUDIO) || (defined flagPORTAUDIO)
 using PortaudioSinkDevice = AudioSinkDeviceT<AudPortaudio>;
 using PortaudioSourceDevice = AudioSourceDeviceT<AudPortaudio>;
 #endif

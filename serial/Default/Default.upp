@@ -1,0 +1,10 @@
+description "\377B113,42,150";
+
+uses(SCREEN & !GUI) ScreenSDL2;
+
+uses(SCREEN) Graphics;
+
+file
+	Default.h,
+	Default.cpp;
+

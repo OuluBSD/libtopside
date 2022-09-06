@@ -1,12 +1,12 @@
 #include "IAudio.h"
 
-#ifdef flagBUILTIN_PORTAUDIO
+#if defined flagBUILTIN_PORTAUDIO
 	#include <ports/portaudio/portaudio.h>
-#else
+#elif defined flagPORTAUDIO
 	#include <portaudio.h>
 #endif
 
-#if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
+#if defined flagBUILTIN_PORTAUDIO || defined flagPORTAUDIO
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -223,6 +223,7 @@ GLOBAL_VAR(PortaudioStatic, PaStatic);
 
 
 
+#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
 struct AudPortaudio::NativeSinkDevice {
 	PaStream* p;
 };
@@ -372,7 +373,7 @@ bool AudPortaudio::SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, Realtim
 	TODO
 }
 
-
+#endif
 
 
 

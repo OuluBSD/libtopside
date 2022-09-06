@@ -1,0 +1,30 @@
+#include "AtomDebug.h"
+
+NAMESPACE_UPP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INITBLOCK {
+	using namespace TS::Serial;
+	using namespace TS;
+	
+}
+
+END_UPP_NAMESPACE
