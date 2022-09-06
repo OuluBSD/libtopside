@@ -134,7 +134,7 @@ bool Tokenizer::Process(String str, String path) {
 				Add(TK_INDENT);
 			}
 			else {
-				AddError(loc, Format("Too many indentation levels: %d", line_indent - indent));
+				AddError(loc, Format("Too many indentation levels: " + IntStr(line_indent - indent)));
 				fail = true;
 				break;
 			}
@@ -541,6 +541,10 @@ bool Tokenizer::Process(String str, String path) {
 		else if (IsSpace(chr)) {
 			if (!tokens.IsEmpty())
 				tokens.Top().spaces++;
+			Next();
+		}
+		else if (chr == '$') {
+			Add(TK_DOLLARSIGN);
 			Next();
 		}
 		else if (chr == 0)
