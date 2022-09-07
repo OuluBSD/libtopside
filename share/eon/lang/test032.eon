@@ -1,0 +1,13 @@
+def Foo:
+	int x, y
+	int value(): return this.x + this.y
+
+int main():
+	Foo a { x = 1, y = 2 }
+	Foo b 
+	b.x = 2
+	b.y = 3
+	
+	int result1 = a.value()
+	int result2 = b.value()
+	return result1==3 && result2==5

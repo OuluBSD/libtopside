@@ -45,7 +45,7 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 		if (found)
 			break;
 		
-		if (iter->IsPartially(SEMT_PATH))
+		if (iter->IsPartially(SEMT_PATH) || iter->IsPartially(SEMT_META_PATH))
 			nodes[node_count++] = iter;
 		iter = iter->GetSubOwner();
 	}
@@ -54,7 +54,10 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 	for(int i = 0; i < node_count; i++) {
 		if (i) s.Cat(',');
 		s.Cat('\"');
-		const String& n = nodes[node_count-1-i]->name;
+		const AstNode& node = *nodes[node_count-1-i];
+		if (node.IsPartially(SEMT_META_ANY))
+			s.Cat('$');
+		const String& n = node.name;
 		ASSERT(n.GetCount());
 		s.Cat(n);
 		s.Cat('\"');
@@ -179,8 +182,15 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 		next = 0;
 		for (int tries = 0; tries < 100; tries++) {
 			const Token* t = id.parts[i];
-			if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
-				next = cur->Find(t->str_value, accepts);
+			if ((t->IsType(TK_ID) || t->IsType(TK_INTEGER)) && !t->str_value.IsEmpty()) {
+				if (id.is_meta[i]) {
+					SemanticType a = SEMT_META_ANY;
+					//if (accepts == SEMT_FIELD) a = SEMT_META_FIELD;
+					next = cur->Find(t->str_value, a);
+				}
+				else {
+					next = cur->Find(t->str_value, accepts);
+				}
 			}
 			else {
 				TODO
@@ -202,7 +212,9 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 		cur = next;
 	}
 	
-	if (cur && accepts == SEMT_NULL || cur->IsPartially(accepts))
+	SemanticType a = id.is_meta[id.part_count-1] ? SEMT_META_ANY : accepts;
+	
+	if (cur && accepts == SEMT_NULL || cur->IsPartially(a))
 		return cur;
 	
 	return 0;

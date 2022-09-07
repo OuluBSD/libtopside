@@ -47,6 +47,7 @@ typedef enum : uint64 {
 	SEMT_ATOM					= 1ULL << 38,
 	SEMT_CALL_ARG				= 1ULL << 39,
 	SEMT_UNRESOLVED				= 1ULL << 40,
+	SEMT_META_CLASS				= 1ULL << 41,
 	
 	// Current limit: 1 << 63
 	
@@ -66,8 +67,11 @@ typedef enum : uint64 {
 	SEMT_META_FIELD =		SEMT_META_VARIABLE | SEMT_META_PARAMETER,
 	SEMT_META_TYPE =		SEMT_META_BUILTIN,
 	SEMT_META_FUNCTION =	SEMT_META_FUNCTION_STATIC /*| SEMT_META_FUNCTION_METHOD | SEMT_META_FUNCTION_BUILTIN*/,
+	SEMT_META_PARAMETER_PATH =	SEMT_META_PARAMETER | SEMT_IDPART,
+	SEMT_META_VARIABLE_PATH =	SEMT_META_VARIABLE | SEMT_IDPART,
 	
 	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION,
+	SEMT_META_PATH =		SEMT_META_PARAMETER_PATH | SEMT_META_VARIABLE_PATH | SEMT_META_FUNCTION | SEMT_META_CLASS,
 	
 } SemanticType;
 
@@ -118,6 +122,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_ATOM:					return "atom";
 		case SEMT_CALL_ARG:				return "call-arg";
 		case SEMT_UNRESOLVED:			return "unresolved";
+		case SEMT_META_CLASS:			return "meta-class";
 		default: return "invalid";
 	}
 }

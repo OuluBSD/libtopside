@@ -1,0 +1,8 @@
+int main:
+	// if .. else with blocks
+	int a = 42
+	if (a != 42):
+		return 0
+	else:
+		return 1
+	

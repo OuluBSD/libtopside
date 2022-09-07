@@ -1,0 +1,15 @@
+function foo(int[1]& myarray):
+	myarray[0]++
+
+function bar(int& myvalue):
+	myvalue++
+
+int main:
+	int a = 42
+	int[1] b
+	b[0] = 43
+	
+	foo(b)
+	bar(a)
+	
+	return a==42 && b[0]==44

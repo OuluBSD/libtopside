@@ -1,0 +1,5 @@
+int main:
+	int a = (2<<2)
+	int b = (16>>3)
+	int c = (-1 >>> 16)
+	return a==8 && b==2 && c == 0xFFFF

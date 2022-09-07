@@ -1,0 +1,5 @@
+int main:
+	// test for array join
+	int[] a = [1,2,4,5,7]
+	
+	return a.join(",")=="1,2,4,5,7"

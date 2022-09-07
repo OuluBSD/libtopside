@@ -1,0 +1,4 @@
+int main:
+	void* a = 0
+	b = "foo"
+	return a==0 && b!=0

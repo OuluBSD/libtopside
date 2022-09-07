@@ -1,0 +1,6 @@
+int main:
+	int[] my.array = [ 1, 2, 3, 4, 5 ]
+	int[] my.array2 = [ 1, 2, 3, 4, 5 ]
+	int[8] my.array2 = 42
+	
+	return my.array.length == 5 && my.array2.length == 9

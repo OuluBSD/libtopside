@@ -1,0 +1,8 @@
+
+int add(int x, int y):
+	int a=x+y
+	return a
+
+int main:
+    int a = 7
+    return add(3,6)==9 && a==7

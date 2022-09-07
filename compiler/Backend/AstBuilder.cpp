@@ -37,6 +37,7 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "PushStatementParameter(loc, param_type)", THISBACK(HiPushStatementParameter));
 		HighCall(global, "PopStatementParameter(loc)", THISBACK(HiPopStatementParameter));
 		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
+		HighCall(global, "DeclareMetaVariable(loc, n, id)", THISBACK(HiDeclareMetaVariable));
 		HighCall(global, "Variable(loc, n, id)", THISBACK(HiVariable));
 		HighCall(global, "PushRvalResolve(loc, id, t)", THISBACK(HiPushRvalResolve));
 		HighCall(global, "PushRvalUnresolved(loc, id, t)", THISBACK(HiPushRvalUnresolved));
@@ -566,6 +567,10 @@ void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentif
 			id.parts[j] = &t;
 			t.type = TK_ID;
 			t.str_value = (String)v0;
+			if (!t.str_value.IsEmpty() && t.str_value[0] == '$') {
+				t.str_value = t.str_value.Mid(1);
+				id.is_meta[j] = true;
+			}
 			j++;
 		}
 		else {

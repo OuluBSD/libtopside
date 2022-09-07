@@ -1,0 +1,8 @@
+def a:
+	def b:
+		int i
+
+int main:
+	a.b.i = 1
+	
+	return a.b.i

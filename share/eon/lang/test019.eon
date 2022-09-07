@@ -1,0 +1,19 @@
+def object:
+	cstring food, desert
+
+int main:
+	cstring foo = "foo bar stuff"
+	int r = math.random()
+	int parsed = parse.int("42")
+	
+	cstring a.str = "ABCD"
+	a.char = a.str.at(0)
+	
+	object obj1
+	obj1.food = "cake"
+	obj1.desert = "pie"
+	
+	object obj2 = obj1
+	obj2.food = "kittens"
+	
+	return foo.length==13 && foo.index.of("bar")==4 && foo.mid(8,13)=="stuff" && parsed==42 && a.char.at()==65 && obj1.food=="cake" && obj2.desert=="pie"

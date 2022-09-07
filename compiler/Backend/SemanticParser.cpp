@@ -1006,6 +1006,8 @@ bool SemanticParser::ParseExpression(bool m) {
 }
 
 bool SemanticParser::Subscript(bool m) {
+	Iterator& iter = TopIterator();
+	
 	for(;;) {
 		if(Char('[')) {
 			if(Char(']')) {
@@ -1045,16 +1047,19 @@ bool SemanticParser::Subscript(bool m) {
 		}
 		else
 		if(Char('(')) {
-			if(!Char(')')) {
-				for(;;) {
-					if (!ParseExpression(m))
-						return false;
-					if(Char(')')) break;
-					PassChar(',');
-				}
-			}
 			
-			TODO // Emit
+			EMIT PushRvalArgumentList(iter->loc);
+			
+			if (!Char(')')) do {
+				if (!Assign(m))
+					return false;
+				EMIT Argument(iter->loc);
+				if(Char(')')) break;
+				if (!PassChar(','))
+					return false;
+			} while (1);
+			
+			EMIT Expr2(iter->loc, OP_CALL);
 			
 			if(/*!IsToken(TK_INEQ) &&*/ Char('!')) {
 				Term(m);
@@ -1215,17 +1220,14 @@ bool SemanticParser::Term(bool meta) {
 			
 			EMIT PushRvalArgumentList(iter->loc);
 			
-			int i = 0;
-			while (!Char(')')) {
-				if (i) {
-					if (!PassChar(','))
-						return false;
-				}
+			if (!Char(')')) do {
 				if (!Assign(meta))
 					return false;
 				EMIT Argument(iter->loc);
-				i++;
-			}
+				if(Char(')')) break;
+				if (!PassChar(','))
+					return false;
+			} while (1);
 			
 			EMIT Expr2(iter->loc, OP_CALL);
 		}

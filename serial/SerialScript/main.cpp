@@ -26,8 +26,8 @@ bool TestEonTest(String s) {
 	return true;
 }
 
-void TestEonTests() {
-	String dir = ShareDirFile("eon" DIR_SEPS "tests");
+void TestEonTests(String dir_title) {
+	String dir = ShareDirFile("eon" DIR_SEPS + dir_title);
 	Index<String> files;
 	
 	FindFile ff;
@@ -42,7 +42,7 @@ void TestEonTests() {
 	for (String file : files) {
 		LOG("Testing: " << GetFileName(file));
 		
-		//if (file != "/home/sblo/libtopside/share/eon/tests/00a_audio_gen.eon") continue;
+		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
 		
 		if (!TestEonTest(file)) {
 			LOG("Failed: " << GetFileName(file));
@@ -55,7 +55,8 @@ NAMESPACE_TOPSIDE_END
 
 
 CONSOLE_APP_MAIN {
-	TS::TestEonTests();
+	TS::TestEonTests("lang");
+	//TS::TestEonTests("tests");
 }
 
 

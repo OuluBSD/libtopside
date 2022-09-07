@@ -1,0 +1,4 @@
+int main:
+	int a = 42
+	if (a < 43):
+		return 1

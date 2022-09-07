@@ -1,0 +1,6 @@
+int main:
+	// test for array contains
+	int[] a = [1,2,4,5,7]
+	int[] b = ["bread","cheese","sandwich"]
+	
+	return a.contains(1) && !a.contains(42) && b.contains("cheese") && !b.contains("eggs")

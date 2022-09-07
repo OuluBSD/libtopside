@@ -1,0 +1,12 @@
+def Person:
+	cstring name
+	
+	Person(cstring name):
+		this.name = name
+	
+	void kill(): this.name += " is dead"
+
+int main:
+	Person a("Kenny")
+	a.kill()
+	return a.name == "Kenny is dead"
