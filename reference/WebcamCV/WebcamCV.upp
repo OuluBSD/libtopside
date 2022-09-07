@@ -1,0 +1,30 @@
+uses
+	ComputerVision,
+	LocalCtrl;
+
+file
+	WebcamCV.h,
+	WebcamCV.cpp,
+	Grayscale.cpp,
+	BoxBlur.cpp,
+	GaussianBlur.cpp,
+	PyramidDownsample.cpp,
+	Scharr.cpp,
+	Sobel.cpp,
+	SobelEdge.cpp,
+	EqualizeHist.cpp,
+	CannyEdge.cpp,
+	WarpAffine.cpp,
+	WarpPerspective.cpp,
+	VideoStabilizer.cpp,
+	FastCorners.cpp,
+	YAPE06.cpp,
+	YAPE.cpp,
+	ORB.cpp,
+	OpticalFlowLK.cpp,
+	BBF_Face.cpp,
+	HaarFace.cpp;
+
+mainconfig
+	"" = "GUI";
+

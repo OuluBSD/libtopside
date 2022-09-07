@@ -1,0 +1,18 @@
+description "\3770,128,128";
+
+noblitz;
+
+uses
+	VirtualGui3D;
+
+file
+	SDL2GUI3D.h,
+	After.h,
+	SDL2GUI3D.cpp,
+	Render.cpp,
+	System.h,
+	System.cpp,
+	"Gui Platform" readonly separator,
+	DrawBackend.h,
+	DrawBackend.cpp;
+

@@ -1,0 +1,9 @@
+description "\377B0,128,128";
+
+uses
+	EcsDummy;
+
+file
+	CompleteDummy.h,
+	CompleteDummy.cpp;
+

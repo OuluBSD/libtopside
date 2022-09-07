@@ -1,0 +1,64 @@
+uses
+	CodeEditor,
+	LocalCtrl;
+
+library
+	"clang LLVM clang-cpp LTO Remarks";
+
+file
+	Notes.txt,
+	main.cpp,
+	Editor.h,
+	"User Interface" readonly separator,
+	StartupDialog.h,
+	StartupDialog.cpp,
+	MainEditor.h,
+	MainEditor.cpp,
+	BuilderCtrl.h,
+	BuilderCtrl.cpp,
+	Assist.h,
+	Assist.cpp,
+	DebuggerCtrl.h,
+	DebuggerCtrl.cpp,
+	EditorCtrl.h,
+	EditorCtrl.cpp,
+	Terminal.h,
+	Terminal.cpp,
+	Navigator.h,
+	Navigator.cpp,
+	WrapperWizard.h,
+	WrapperWizard.cpp,
+	WrapperWizard.lay,
+	"Project Manager" readonly separator,
+	ProjectManager.h,
+	ProjectManager.cpp,
+	Project.h,
+	Project.cpp,
+	Builder.h,
+	Builder.cpp,
+	Debugger.h,
+	Debugger.cpp,
+	"Node Cache" readonly separator,
+	NodeCache.h,
+	NodeCache.cpp,
+	Common.h,
+	NodeItem.h,
+	NodeItem.cpp,
+	test1,
+	Trash readonly separator,
+	Clang.h,
+	CodeCompletion.cpp,
+	Completion.cpp,
+	Cursor.cpp,
+	Diagnostic.cpp,
+	File.cpp,
+	Location.cpp,
+	Module.cpp,
+	ClangProject.cpp,
+	Range.cpp,
+	Type.cpp,
+	Unit.cpp;
+
+mainconfig
+	"" = "GUI MT";
+

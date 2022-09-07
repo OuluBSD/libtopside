@@ -1,0 +1,11 @@
+description "\377B207,172,0";
+
+uses
+	Local;
+
+library(FREEBSD) "lomse pthread png16 z fontconfig freetype";
+
+file
+	MusicCore.h,
+	MusicCore.cpp;
+

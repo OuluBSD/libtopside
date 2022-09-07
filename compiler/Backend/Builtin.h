@@ -46,6 +46,7 @@ typedef enum : uint64 {
 	SEMT_POOL					= 1ULL << 37,
 	SEMT_ATOM					= 1ULL << 38,
 	SEMT_CALL_ARG				= 1ULL << 39,
+	SEMT_UNRESOLVED				= 1ULL << 40,
 	
 	// Current limit: 1 << 63
 	
@@ -116,6 +117,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_POOL:					return "pool";
 		case SEMT_ATOM:					return "atom";
 		case SEMT_CALL_ARG:				return "call-arg";
+		case SEMT_UNRESOLVED:			return "unresolved";
 		default: return "invalid";
 	}
 }

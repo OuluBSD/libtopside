@@ -124,6 +124,9 @@ public:
 	void Div(double d) {r /= d; g /= d; b /= d;}
 	void ToRange1() {Div(255.0);}
 	void FromRange1() {Mul(255.0);}
+	
+	hash_t GetHashValue() const {CombineHash c; c.Put(r); c.Put(g); c.Put(b); return c;}
+	
 };
 
 using Color		= ColorT<byte>;

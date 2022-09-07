@@ -1,0 +1,12 @@
+description "English parser based on Stanford NLP\377";
+
+uses
+	Language;
+
+file
+	StanfordNLPParser.cpp,
+	Apple.txt;
+
+mainconfig
+	"" = "";
+

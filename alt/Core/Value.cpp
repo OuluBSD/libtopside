@@ -4,39 +4,43 @@ NAMESPACE_UPP
 
 
 Value::Value(bool b) {
-	TODO
+	Push(BOOL_V, b);
 }
 
 Value::Value(int i) {
-	TODO
+	Push(INT_V, i);
 }
 
 Value::Value(int64 i) {
-	TODO
+	Push(INT64_V, i);
 }
 
 Value::Value(double d) {
-	TODO
+	Push(DOUBLE_V, d);
 }
 
 Value::Value(String s) {
-	TODO
+	data = s;
 }
 
 Value::Value(WString s) {
-	TODO
+	Push(WSTRING_V, s);
 }
 
 Value::Value(Date d) {
-	TODO
+	Push(DATE_V, d);
 }
 
 Value::Value(Time d) {
-	TODO
+	Push(TIME_V, d);
+}
+
+Value::Value() {
+	data.SetSpecial(VOID_V);
 }
 
 Value::Value(Nuller) {
-	TODO
+	data.SetSpecial(VOID_V);
 }
 
 Value::Value(const ValueArray& a) {
@@ -48,19 +52,117 @@ Value::Value(const ValueMap& m) {
 }
 
 Value::Value(Color m) {
-	TODO
+	Push(COLOR_V, m);
 }
 
 Value& Value::operator=(const Value& v) {
-	TODO
+	data = v.data;
+	return *this;
 }
 
 dword Value::GetType() const {
-	TODO
+	if (!data.IsSpecial())
+		return STRING_V;
+	else
+		return data.GetSpecial();
 }
 
 bool Value::IsNull() const {
-	TODO
+	return GetType() == VOID_V;
+}
+
+int Value::GetOtherInt() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case INT_V: return Pop<int>();
+		case INT64_V: return (int)Pop<int64>();
+		case DOUBLE_V: return Pop<double>();
+		case BOOL_V: return Pop<bool>();
+		default: return 0;
+	}
+}
+int64 Value::GetOtherInt64() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case INT_V: return Pop<int>();
+		case INT64_V: return Pop<int64>();
+		case DOUBLE_V: return Pop<double>();
+		case BOOL_V: return Pop<bool>();
+		default: return 0;
+	}
+}
+double Value::GetOtherDouble() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case INT_V: return Pop<int>();
+		case INT64_V: return Pop<int64>();
+		case DOUBLE_V: return Pop<double>();
+		case BOOL_V: return Pop<bool>();
+		default: return 0;
+	}
+}
+bool Value::GetOtherBool() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case INT_V: return Pop<int>();
+		case INT64_V: return Pop<int64>();
+		case DOUBLE_V: return Pop<double>();
+		case BOOL_V: return Pop<bool>();
+		default: return 0;
+	}
+}
+Date Value::GetOtherDate() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case DATE_V: return Pop<Date>();
+		case TIME_V: return Pop<Time>();
+		default: return Date();
+	}
+}
+Time Value::GetOtherTime() const {
+	byte t = data.GetSpecial();
+	if (t == DATE_V) {
+		Date d = Pop<Date>();
+		return Time(d.year, d.month, d.day,0,0,0);
+	}
+	switch (t) {
+		case TIME_V: return Pop<Time>();
+		default: return Time();
+	}
+}
+String Value::GetOtherString() const {
+	byte t = data.GetSpecial();
+	if (t == WSTRING_V) {
+		int chars = data.GetCount() / sizeof(wchar);
+		WString ws;
+		ws.Set((const wchar*)data.Begin(), chars);
+		return ws.ToString();
+	}
+	if (t == COLOR_V) {
+		Color c = Pop<Color>();
+		return "Color(" + IntStr(c.GetR()) + ", " + IntStr(c.GetG()) + ", " + IntStr(c.GetB()) + ")";
+	}
+	switch (t) {
+		case INT_V: return IntStr(Pop<int>());
+		case INT64_V: return IntStr64(Pop<int64>());
+		case DOUBLE_V: return DblStr(Pop<double>());
+		case BOOL_V: return Pop<bool>() ? "true" : "false";
+		default: return 0;
+	}
+}
+hash_t Value::GetOtherHashValue() const {
+	byte t = data.GetSpecial();
+	switch (t) {
+		case VOID_V: return 0;
+		case INT_V: return UPP::GetHashValue(Pop<int>());
+		case INT64_V: return UPP::GetHashValue(Pop<int64>());
+		case DOUBLE_V: return UPP::GetHashValue(Pop<double>());
+		case BOOL_V: return UPP::GetHashValue(Pop<bool>());
+		case DATE_V: return UPP::GetHashValue(Pop<Date>());
+		case TIME_V: return UPP::GetHashValue(Pop<Time>());
+		case COLOR_V: return UPP::GetHashValue(Pop<Color>());
+		default: return 0;
+	}
 }
 
 

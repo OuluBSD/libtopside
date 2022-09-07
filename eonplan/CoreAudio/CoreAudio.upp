@@ -1,0 +1,10 @@
+description "\377B178,0,0";
+
+uses
+	ChainLib;
+
+file
+	CoreAudio.h,
+	CoreAudio.icpp,
+	Headers.h;
+

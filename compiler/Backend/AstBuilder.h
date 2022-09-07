@@ -54,6 +54,7 @@ public:
 	void HiDeclareMetaVariable(HiEscape& e);
 	void HiVariable(HiEscape& e);
 	void HiPushRvalResolve(HiEscape& e);
+	void HiPushRvalUnresolved(HiEscape& e);
 	void HiPushRvalArgumentList(HiEscape& e);
 	void HiArgument(HiEscape& e);
 	//void HiPopExprScopeToCtor(HiEscape& e);

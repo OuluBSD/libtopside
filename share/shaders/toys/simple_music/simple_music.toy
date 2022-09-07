@@ -1,0 +1,24 @@
+{
+	name: "Simple music",
+	owner: "sppp",
+	likes: 1,
+	date: 20210324,
+	
+	stages: [
+		{
+			type: imagebuf,
+			
+			inputs: [
+				{
+					id: 0,
+					type: music,
+					channel: 0,
+					filter: linear,
+					wrap: clamp,
+					vflip: false,
+					filename: "3c33c415862bb7964d256f4749408247da6596f2167dca2c86cc38f83c244aa6.mp3",
+				},
+			],
+		},
+	]
+}

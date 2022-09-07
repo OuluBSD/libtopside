@@ -1,0 +1,18 @@
+description "ECS debugging program, which allows easier debugging with non-hw dummy classes.\377";
+
+uses
+	CompleteDummy;
+
+file
+	SimpleDummy.h,
+	SimpleDummy.cpp;
+
+mainconfig
+	"" = "",
+	"" = "GUI",
+	"" = "VERBOSE_SHADERCORE",
+	"" = "BUILTIN_PORTAUDIO",
+	"" = "BUILTIN_ASSIMP BUILTIN_PORTAUDIO BUILTIN_PORTMIDI",
+	"" = "USEMALLOC",
+	"" = "DEBUG_RT";
+

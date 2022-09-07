@@ -55,7 +55,7 @@ String Huge::Get() const
 	if(size >= INT_MAX)
 		Panic("String is too big!");
 	String s;
-	void* mem = s.GetWritableData(size);
+	void* mem = s.GetWritableData(0xFF, size);
 	Get(mem, 0, size);
 	return s;
 }

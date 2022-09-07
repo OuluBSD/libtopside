@@ -24,6 +24,7 @@ struct ParserEmitter {
 	virtual void DeclareMetaVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
 	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) = 0;
 	virtual void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
+	virtual void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
 	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
 	virtual void Argument(const FileLocation& loc) = 0;
 	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) = 0;

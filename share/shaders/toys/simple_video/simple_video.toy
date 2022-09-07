@@ -1,0 +1,45 @@
+{
+	name: "simple video",
+	owner: "sppp",
+	likes: 1,
+	date: 20210301,
+	
+	stages: [
+		{
+			type: image,
+			inputs: [
+				{
+                    id: 2,
+					type: buffer,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			type: imagebuffer,
+			inputs: [
+				{
+                    id: 0,
+					type: video,
+					filename: "35c87bcb8d7af24c54d41122dadb619dd920646a0bd0e477e7bdc6d12876df17.webm",
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+				{
+                    id: 2,
+					type: buffer,
+				},
+			],
+			outputs: [
+				{
+					id: 2,
+				},
+			],
+		},
+	]
+}

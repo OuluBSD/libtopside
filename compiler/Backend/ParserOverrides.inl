@@ -15,6 +15,7 @@ void DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifie
 void DeclareMetaVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) override;
 void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) override;
 void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) override;
+void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) override;
 void PushRvalArgumentList(const FileLocation& loc) override;
 void Argument(const FileLocation& loc) override;
 void PopExpr(const FileLocation& loc) override;

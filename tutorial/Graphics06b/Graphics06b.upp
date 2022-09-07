@@ -1,0 +1,15 @@
+description "Shaders for the software renderer\377";
+
+uses
+	Complete,
+	Physics;
+
+file
+	Tutorial6.h,
+	Tutorial6.cpp;
+
+mainconfig
+	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI UPP";
+

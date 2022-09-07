@@ -1,0 +1,15 @@
+description "Moving the camera\377";
+
+uses
+	Complete;
+
+file
+	Tutorial5.h,
+	Tutorial5.cpp,
+	DrawObj.cpp;
+
+mainconfig
+	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI UPP";
+

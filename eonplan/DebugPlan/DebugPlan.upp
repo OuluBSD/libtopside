@@ -1,0 +1,10 @@
+uses
+	ChainLib;
+
+file
+	DebugPlan.h,
+	DebugPlan.cpp;
+
+mainconfig
+	"" = "";
+

@@ -1,0 +1,14 @@
+description "Octree\377";
+
+uses
+	Complete;
+
+file
+	Tutorial7.h,
+	Tutorial7.cpp;
+
+mainconfig
+	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI UPP";
+

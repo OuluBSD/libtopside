@@ -155,23 +155,20 @@ class StringT : Moveable<StringT<T>> {
 	typedef String0<T> String0T;
 	static const int buf_size = 8;
 	static const int buf_bytes = buf_size * sizeof(T);
-#if 0
-	String0T* s = NULL;
-	T buf[buf_size];
-	#define BIG_FIELD s
-#else
 	static_assert(buf_bytes % sizeof(void*) == 0, "buffer size modulus ptr size must be zero");
 	static const int ptr_count = buf_bytes / sizeof(void*);
+	
 	union {
 		T buf[buf_size];
 		String0T* s[ptr_count];
 	};
+	
 	#define BIG_FIELD s[0]
 	void Zero() {memset(this, 0, sizeof(StringT));}
-#endif
 	
 	#define BIG (this->BIG_FIELD)
 	
+	byte special = 0;
 	bool is_big = false;
 	int count = 0;
 	
@@ -202,8 +199,8 @@ public:
 	StringT& operator=(const T* c);
 	
 	StringT& Set(const T* c, int len);
-	StringT& SetData(const T* c, int len);
-	void* GetWritableData(int len);
+	StringT& SetData(void* c, int len);
+	void* GetWritableData(byte special, int len);
 	StringT& operator=(const StringT& str);
 	StringT& operator+=(int i) {return Cat(i);}
 	StringT& Cat(T c, int count);
@@ -219,9 +216,11 @@ public:
 	int GetLength() const { return count; }
 	
 	bool IsEmpty() const { return count == 0; }
-	bool IsString() const {TODO_}
-	bool IsSpecial() const {TODO_}
-	bool IsSpecial(byte st) const {TODO_}
+	bool IsString() const {return !IsSpecial();}
+	bool IsSpecial() const {return special != 0;}
+	bool IsSpecial(byte st) const {return special == st;}
+	void SetSpecial(byte st) {special = st;}
+	byte GetSpecial() const {return special;}
 	
 	StringT Mid(int i) const;
 	StringT Mid(int i, int size) const;

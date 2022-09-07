@@ -1,0 +1,12 @@
+uses
+	Complete;
+
+file
+	ShaderPlayer.h,
+	ShaderPlayer.cpp;
+
+mainconfig
+	"" = "GUI OPENGL",
+	"" = "GUI OPENGL VERBOSE_ACCELCORE",
+	"" = "GUI OPENGL VERBOSE_ACCELCORE DEBUG_RT";
+

@@ -1,0 +1,12 @@
+uses
+	Core,
+	Core/SSL;
+
+file
+	some.py,
+	ShaderDownloader.h,
+	ShaderDownloader.cpp;
+
+mainconfig
+	"" = "";
+

@@ -182,6 +182,12 @@ void HighScriptEmitter::PushRvalResolve(const FileLocation& loc, const PathIdent
 	main << DBG_INDENT "PushRvalResolve(" << LocArg(loc) << ", " << GetPartStringArray(id) << ", " << IntStr((int)t) << ");\n";
 }
 
+void HighScriptEmitter::PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+	Log("PushRvalUnresolved: " + id.ToString() + " " + GetSemanticTypeString(t));
+	
+	main << DBG_INDENT "PushRvalUnresolved(" << LocArg(loc) << ", " << GetPartStringArray(id) << ", " << IntStr((int)t) << ");\n";
+}
+
 void HighScriptEmitter::PushRvalArgumentList(const FileLocation& loc) {
 	Log("PushRvalArgumentList");
 	

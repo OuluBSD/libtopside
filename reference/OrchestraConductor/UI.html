@@ -1,0 +1,150 @@
+<!DOCTYPE toy>
+<toy>
+	<head>
+		<title>OrchestraConductor Reference App</title>
+		<meta name="description" content="An reference application for reading and playing MIDI files. Also, basic realtime event-based orchestra playing is shown.">
+		<meta name="keywords" content="reference, midi, orchestra, realtime">
+		<meta name="author" content="Seppo Pakonen">
+		<meta name="classpath" content="org.uscript.reference.orchestraconductor">
+		<style>
+		
+		/* SHORT CSS TUTORIAL
+			- good source: https://www.w3schools.com/cssref/css_selectors.asp
+		*/
+		
+			/* Builtin type style */
+			h1 {}
+
+			/* User defined class style */
+			.user_h1 {}
+
+			/* Multi target */
+			h1, .user_h1 {
+				color: darkgray;
+			}
+
+			/* Child Selector
+				- no other elements between given elements is accepted
+			*/
+			div > p {}
+
+			/* Nested Class Selector (as child selector, but for user classes) */
+			.main-app.auto-splitter.info {}
+
+			
+			/* Descendant Selector
+				- any partial path is accepted, e.g. "div h1 .some_other .info_div .some_p p"
+			*/
+			div .info_div p {}
+			
+			/* Id selector
+				- match with unique id
+				- avoid this! Try to use class-paths for sanity!
+			*/
+			#my_super_special_thing {}
+
+			/* Attribute selector */
+			.main_app.info:hover {
+				background: lightgray;
+			}
+			input[type="text"]:enabled {
+				background: #ffff00;
+			}
+			
+			
+		</style>
+	</head>
+	<body>
+		<div class="app-menu">
+			<ul>
+				<li>OrchestraConductor<ul>
+					<li>Open MIDI file</li>
+					<li>Open MIDI device</li>
+					<li>Open AI player</li>
+					<li class="separator"></li>
+					<li>Quit</li>
+				</ul></li>
+				<li>View<ul>
+					<li>Frontpage</li>
+					<li>Input info</li>
+					<li>Player info</li>
+					<li>FFT spectrum analysis</li>
+				</ul></li>
+			</ul> 
+		</div>
+		<div class="main-app" sizeable=1 maximize=1>
+			<div class="titlebar" minimizebox=1 maximizebox=1>
+				OrchestraConductor Reference App
+			</div>
+			<div class="frontpage">
+				<div class="auto-splitter">
+					<div class="info">
+						This app can:
+						<ul>
+							<li>read and play MIDI files</li>
+							<li>use your connected MIDI instrument and play it</li>
+							<li>generate song with (dummy) AI and play it</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="input-info">
+				<div class="auto-splitter">
+					<div class="property-list">
+						<table style="width:100%">
+							<tr id="input-name"><th>Name</th><th></th></tr>
+							<tr id="input-author"><th>Author</th><th></th></tr>
+							<tr id="input-date"><th>Date</th><th></th></tr>
+							<tr id="input-description"><th>Description</th><th></th></tr>
+							<tr id="input-tracks"><th>Track count</th><th></th></tr>
+						</table>
+					</div>
+					<div class="track-list">
+						<table style="width:100%">
+							<tr class="header">
+								<th>Number</th>
+								<th>Instrument</th>
+								<th>Volume</th>
+								<th>Reverb</th>
+								<th>Chorus</th>
+								<th>Is note on</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="output-info">
+				<div class="auto-splitter">
+					<div class="property-list">
+						<table style="width:100%">
+							<tr id="output-filename"><th>Filename</th><th></th></tr>
+							<tr id="output-size"><th>Size</th><th></th></tr>
+							<tr id="output-name"><th>Name</th><th></th></tr>
+							<tr id="output-author"><th>Author</th><th></th></tr>
+							<tr id="output-description"><th>Description</th><th></th></tr>
+						</table>
+					</div>
+					<div class="output-channel-list">
+						<table style="width:100%">
+							<tr class="header">
+								<th>Name</th>
+								<th>Volume</th>
+								<th>Volume Visualizer</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="output-fft">
+				<canvas id="main-out-fft" width="100%" height="100%"></canvas>
+			</div>
+		</div>
+	</body>
+
+	<script>
+		main() {
+			LOG("Page is loaded. Now we are executing some ESC script.");
+				
+		}
+	</script>
+</toy>

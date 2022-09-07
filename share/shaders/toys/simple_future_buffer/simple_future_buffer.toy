@@ -1,0 +1,76 @@
+{
+	name: "Simple future buffer",
+	description: "Stage takes upcoming stage as input (so the input is from previous iteration).",
+	owner: "sppp",
+	likes: 1,
+	date: 20210305,
+	
+	stages: [
+		{
+			type: image,
+			inputs: [
+				{
+					id: 2,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: false,
+				},
+				{
+					id: 1,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: false,
+				},
+				{
+					type: texture,
+					filename: "uk_street.jpg",
+					filter: linear,
+					wrap: repeat,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 3,
+				},
+			],
+		},
+		{
+			type: imagebuffer,
+			inputs: [
+				{
+					id: 2,
+					type: buffer,
+					filter: linear,
+					wrap: clamp,
+					vflip: false,
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+		{
+			type: imagebuffer,
+			inputs: [
+				{
+					type: texture,
+					filename: "uk_street.jpg",
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 2,
+				},
+			],
+		},
+	]
+}
+

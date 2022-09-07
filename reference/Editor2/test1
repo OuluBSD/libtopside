@@ -1,0 +1,52 @@
+#include <string>
+#include <iostream>
+
+namespace nspace {
+	
+int fn1(char a, int b, char* c) {
+	return 0;
+}
+
+std::string fn2(std::string a, std::string& b, std::string* c) {
+	b = "hello";
+	*c += " ";
+	return "world";
+}
+
+class cls1 {
+	
+public:
+	cls1();
+	
+	void fn1() {};
+	inline int fn2() {return 1;}
+	std::string fn3(const std::string& ref) {return ref;}
+	
+	int var1;
+	std::string var2;
+	
+private:
+	double var3;
+	
+};
+
+cls1::cls1() {}
+
+}
+
+using namespace nspace;
+
+int main() {
+	
+	fn1(1, 2, 0);
+	
+	std::string ref;
+	ref += fn2("a", ref, &ref);
+	
+	std::cout << ref << std::endl;
+	
+	cls1 c;
+	c.fn1();
+	c.fn2();
+	c.fn3("test");
+}

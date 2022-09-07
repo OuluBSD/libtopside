@@ -39,6 +39,7 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
 		HighCall(global, "Variable(loc, n, id)", THISBACK(HiVariable));
 		HighCall(global, "PushRvalResolve(loc, id, t)", THISBACK(HiPushRvalResolve));
+		HighCall(global, "PushRvalUnresolved(loc, id, t)", THISBACK(HiPushRvalUnresolved));
 		HighCall(global, "PushRvalArgumentList(loc)", THISBACK(HiPushRvalArgumentList));
 		HighCall(global, "Argument(loc)", THISBACK(HiArgument));
 		HighCall(global, "PopExpr(loc)", THISBACK(HiPopExpr));
@@ -241,6 +242,16 @@ void AstBuilder::PushRvalResolve(const FileLocation& loc, const PathIdentifier& 
 	r.link[0] = d;
 	
 	PushScopeRVal(*d);
+}
+
+void AstBuilder::PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+	AstNode& n = GetTopNode();
+	AstNode& r = n.Add();
+	r.src = SEMT_UNRESOLVED;
+	r.filter = t;
+	r.str = id.ToString();
+	
+	PushScopeRVal(r);
 }
 
 void AstBuilder::PushRvalArgumentList(const FileLocation& loc) {
@@ -756,6 +767,18 @@ void AstBuilder::HiPushRvalResolve(HiEscape& e) {
 	SemanticType t = (SemanticType)(int)e[2];
 	
 	PushRvalResolve(loc, name, t);
+}
+
+void AstBuilder::HiPushRvalUnresolved(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier name;
+	LoadPath(loc, e[1], name, tokens[0]);
+	
+	SemanticType t = (SemanticType)(int)e[2];
+	
+	PushRvalUnresolved(loc, name, t);
 }
 
 void AstBuilder::HiPushRvalArgumentList(HiEscape& e) {

@@ -1,0 +1,12 @@
+description "English parsing based on ACE: the Answer Constraint Engine\377";
+
+uses
+	Language;
+
+file
+	AceParser.cpp,
+	Apple.txt;
+
+mainconfig
+	"" = "";
+

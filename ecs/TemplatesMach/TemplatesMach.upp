@@ -1,0 +1,31 @@
+description "\377B51,51,51";
+
+noblitz;
+
+uses
+	Local;
+
+file
+	TemplatesMach.h,
+	Defs.h,
+	Classes.h,
+	Classes.cpp,
+	PacketBuffer.h,
+	PacketBuffer.cpp,
+	ValScope.h,
+	ValScope.inl highlight cpp,
+	ValScope.cpp,
+	ValDevScope.h,
+	ValDevScope.inl highlight cpp,
+	ValSpec.h,
+	DevClasses.h,
+	DevScope.h,
+	DevScope.inl highlight cpp,
+	DevSpec.h,
+	ValDevSpec.h,
+	Special.h,
+	Interface.h,
+	Audio.cpp,
+	Trash readonly separator,
+	DefAccel.h;
+

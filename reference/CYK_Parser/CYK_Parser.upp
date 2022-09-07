@@ -1,0 +1,12 @@
+description "Simple Statistical Parser for English\377";
+
+uses
+	Language;
+
+file
+	CYK_Parser.cpp,
+	Apple.txt;
+
+mainconfig
+	"" = "";
+

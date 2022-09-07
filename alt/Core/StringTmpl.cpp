@@ -10,7 +10,9 @@ NAMESPACE_UPP_BEGIN
 
 
 TMPL(void) Clear() {
-	if (is_big) { BIG->Dec(); BIG = NULL; is_big = false;} else {buf[0] = 0;} count = 0;
+	if (is_big) { BIG->Dec(); BIG = NULL; is_big = false;} else {buf[0] = 0;}
+	count = 0;
+	special = 0;
 }
 
 TMPL_THIS operator=(const T* c) {
@@ -48,7 +50,7 @@ TMPL_THIS Set(const T* c, int len) {
 	return *this;
 }
 
-TMPL_THIS SetData(const T* c, int len) {
+TMPL_THIS SetData(void* c, int len) {
 	Clear();
 	if (!c) return *this;
 	if (len == 0) return *this;
@@ -63,14 +65,16 @@ TMPL_THIS SetData(const T* c, int len) {
 		BIG = new String0T(buf, count);
 		is_big = true;
 	}
+	special = 0xFF;
 	//ASSERT(c[len-1] == 0);
 	return *this;
 }
 
-TMPL(void*) GetWritableData(int len) {
+TMPL(void*) GetWritableData(byte special, int len) {
 	Clear();
 	ASSERT(len > 0);
-	count = len+1;
+	count = len;
+	this->special = special;
 	if (count < buf_size) {
 		buf[len] = 0;
 		return buf;
@@ -101,10 +105,12 @@ TMPL_THIS operator=(const StringT& str) {
 		BIG->Inc();
 	}
 	count = str.count;
+	special = str.special;
 	return *this;
 }
 
 TMPL_THIS Cat(T c, int count) {
+	// TODO this is inefficient; optimize
 	for(int i = 0; i < count; i++) Cat(c);
 	return *this;
 }

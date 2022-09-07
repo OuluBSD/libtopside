@@ -1,0 +1,17 @@
+description "Simple shader with the ECS\377";
+
+uses
+	Complete,
+	FusionCore;
+
+file
+	Tutorial6a.h,
+	Tutorial6a.cpp,
+	cornell_box_variant.toy,
+	stage0.glsl;
+
+mainconfig
+	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI UPP";
+

@@ -1,0 +1,12 @@
+uses
+	DAW,
+	Net,
+	NetAudio;
+
+file
+	Complete.h,
+	main.cpp;
+
+mainconfig
+	"" = "";
+

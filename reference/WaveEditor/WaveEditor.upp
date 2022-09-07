@@ -1,0 +1,10 @@
+uses
+	AudioCtrl;
+
+file
+	WaveEditor.h,
+	WaveEditor.cpp;
+
+mainconfig
+	"" = "GUI";
+

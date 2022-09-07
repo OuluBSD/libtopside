@@ -1,0 +1,13 @@
+description "Visualizes parsed English sentence in GUI\377";
+
+uses
+	LanguageCtrl;
+
+file
+	LanguageEditor.cpp,
+	Example.conllu,
+	Apple.txt;
+
+mainconfig
+	"" = "GUI";
+

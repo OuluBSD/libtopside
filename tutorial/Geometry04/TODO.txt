@@ -1,0 +1,11 @@
+
+ - frustrum rotating around map and looking center
+	- it could shoot circles
+ - circles are circling inside quadtree
+ - debug draw all quad nodes
+ - mark nodes which are at least partially inside frustrum
+ - raycast frustrum view
+ - rotate quadtree
+ - allow editing, which affects raycasting
+
+

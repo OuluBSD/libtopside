@@ -1,0 +1,11 @@
+uses
+	Complete;
+
+file
+	ECS_RouteSearch.h,
+	ECS_RouteSearch.cpp;
+
+mainconfig
+	"" = "",
+	"" = "USEMALLOC";
+

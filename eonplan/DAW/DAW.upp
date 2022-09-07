@@ -1,0 +1,12 @@
+description "\377B76,76,76";
+
+uses
+	CoreAudio,
+	AccelMidi,
+	AccelAudio;
+
+file
+	DAW.h,
+	DAW.icpp,
+	Headers.h;
+

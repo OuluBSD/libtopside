@@ -1,0 +1,49 @@
+# sent_id = en_lines-ud-train-doc1-3
+# text = Some of the content in this topic may not be applicable to some languages.
+1       Some    some    PRON    IND     Case=Nom        11      nsubj   _       _
+2       of      of      ADP     _       _       4       case    _       _
+3       the     the     DET     DEF     Definite=Def|PronType=Art       4       det     _       _
+4       content content NOUN    SG-NOM  Number=Sing     1       nmod    _       _
+5       in      in      ADP     _       _       7       case    _       _
+6       this    this    DET     DEM-SG  Number=Sing|PronType=Dem        7       det     _       _
+7       topic   topic   NOUN    SG-NOM  Number=Sing     4       nmod    _       _
+8       may     may     AUX     PRES-AUX        VerbForm=Fin    11      aux     _       _
+9       not     not     PART    NEG     _       11      advmod  _       _
+10      be      be      AUX     INF     VerbForm=Inf    11      cop     _       _
+11      applicable      applicable      ADJ     POS     Degree=Pos      0       root    _       _
+12      to      to      ADP     _       _       14      case    _       _
+13      some    some    DET     IND     _       14      det     _       _
+14      languages       language        NOUN    PL-NOM  Number=Plur     11      nmod    _       SpaceAfter=No
+15      .       .       PUNCT   Period  _       11      punct   _       _
+
+
+# sent_id = en_lines-ud-train-doc1-4
+# text = You can create SQL queries in one of two ANSI SQL query modes:
+1       You     you     PRON    PERS-P2 _       3       nsubj   _       _
+2       can     can     AUX     PRES-AUX        VerbForm=Fin    3       aux     _       _
+3       create  create  VERB    INF     VerbForm=Inf    0       root    _       _
+4       SQL     SQL     PROPN   SG-NOM  Number=Sing     5       compound        _       _
+5       queries query   NOUN    PL-NOM  Number=Plur     3       obj     _       _
+6       in      in      ADP     _       _       7       case    _       _
+7       one     one     NUM     CARD-SG NumType=Card    3       obl     _       _
+8       of      of      ADP     _       _       13      case    _       _
+9       two     two     NUM     CARD-PL NumType=Card    13      nummod  _       _
+10      ANSI    ANSI    PROPN   SG-NOM  Number=Sing     12      compound        _       _
+11      SQL     SQL     PROPN   SG-NOM  Number=Sing     10      flat    _       _
+12      query   query   NOUN    SG-NOM  Number=Sing     13      compound        _       _
+13      modes   mode    NOUN    PL-NOM  Number=Plur     7       nmod    _       SpaceAfter=No
+14      :       :       PUNCT   Colon   _       3       punct   _       _
+
+
+
+# sent_id = en_lines-ud-train-doc1-5
+# text = ANSI-89 describes the traditional Jet SQL syntax.
+1       ANSI-89 ANSI-89 PROPN   SG-NOM  Number=Sing     2       nsubj   _       _
+2       describes       describe        VERB    PRES    Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin   0       root    _       _
+3       the     the     DET     DEF     Definite=Def|PronType=Art       7       det     _       _
+4       traditional     traditional     ADJ     POS     Degree=Pos      5       amod    _       _
+5       Jet     Jet     PROPN   SG-NOM  Case=Nom        7       compound        _       _
+6       SQL     SQL     PROPN   SG-NOM  Number=Sing     5       flat    _       _
+7       syntax  syntax  NOUN    SG-NOM  Number=Sing     2       obj     _       SpaceAfter=No
+8       .       .       PUNCT   Period  _       2       punct   _       _
+

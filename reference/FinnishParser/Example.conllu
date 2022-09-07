@@ -1,0 +1,44 @@
+# sent_id = b101.2
+# text = Jäällä kävely avaa aina hauskoja ja erikoisia näkökulmia kaupunkiin.
+1       Jäällä  jää     NOUN    N       Case=Ade|Number=Sing    2       nmod    2:nmod  _
+2       kävely  kävely  NOUN    N       Case=Nom|Derivation=U|Number=Sing       3       nsubj   3:nsubj _
+3       avaa    avata   VERB    V       Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act 0       root    0:root  _
+4       aina    aina    ADV     Adv     _       3       advmod  3:advmod        _
+5       hauskoja        hauska  ADJ     A       Case=Par|Degree=Pos|Number=Plur 8       amod    8:amod  _
+6       ja      ja      CCONJ   C       _       7       cc      7:cc    _
+7       erikoisia       erikoinen       ADJ     A       Case=Par|Degree=Pos|Derivation=Inen|Number=Plur 5       conj    5:conj|8:amod   _
+8       näkökulmia      näkö#kulma      NOUN    N       Case=Par|Number=Plur    3       obj     3:obj   _
+9       kaupunkiin      kaupunki        NOUN    N       Case=Ill|Number=Sing    8       nmod    8:nmod  SpaceAfter=No
+10      .       .       PUNCT   Punct   _       3       punct   3:punct _
+
+# sent_id = b103.2
+# text = Aurajoen jääkansi oli vihdoin niin kestävä, että ihmiset uskaltautuivat sille kävelemään.
+1       Aurajoen        Aurajoki        PROPN   N       Case=Gen|Number=Sing    2       nmod:poss       2:nmod:poss     _
+2       jääkansi        jää#kansi       NOUN    N       Case=Nom|Number=Sing    6       nsubj:cop       6:nsubj:cop     _
+3       oli     olla    AUX     V       Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act 6       cop     6:cop   _
+4       vihdoin vihdoin ADV     Adv     _       6       advmod  6:advmod        _
+5       niin    niin    ADV     Adv     _       6       advmod  6:advmod        _
+6       kestävä kestävä ADJ     A       Case=Nom|Degree=Pos|Number=Sing 0       root    0:root  SpaceAfter=No
+7       ,       ,       PUNCT   Punct   _       10      punct   10:punct        _
+8       että    että    SCONJ   C       _       10      mark    10:mark _
+9       ihmiset ihminen NOUN    N       Case=Nom|Number=Plur    10      nsubj   10:nsubj|12:nsubj       _
+10      uskaltautuivat  uskaltautua     VERB    V       Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin|Voice=Act 6       ccomp   6:ccomp _
+11      sille   se      PRON    Pron    Case=All|Number=Sing|PronType=Dem       10      obl     10:obl  _
+12      kävelemään      kävellä VERB    V       Case=Ill|InfForm=3|Number=Sing|VerbForm=Inf|Voice=Act   10      xcomp   10:xcomp        SpaceAfter=No
+13      .       .       PUNCT   Punct   _       6       punct   6:punct _
+
+# sent_id = b103.3
+# text = Lauantaina mekin otimme koirun mukaan ja lähdimme kulkemaan jokea yläjuoksulle päin.
+1       Lauantaina      lauantai        NOUN    N       Case=Ess|Number=Sing    3       obl     3:obl|7:obl     _
+2       mekin   minä    PRON    Pron    Case=Nom|Clitic=Kin|Number=Plur|Person=1|PronType=Prs   3       nsubj   3:nsubj|7:nsubj|8:nsubj _
+3       otimme  ottaa   VERB    V       Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin|Voice=Act 0       root    0:root  _
+4       koirun  koira   NOUN    N       Case=Gen|Number=Sing|Style=Coll 3       obj     3:obj   _
+5       mukaan  mukaan  ADV     Adv     _       3       compound:prt    3:compound:prt  _
+6       ja      ja      CCONJ   C       _       7       cc      7:cc    _
+7       lähdimme        lähteä  VERB    V       Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin|Voice=Act 3       conj    3:conj  _
+8       kulkemaan       kulkea  VERB    V       Case=Ill|InfForm=3|Number=Sing|VerbForm=Inf|Voice=Act   7       xcomp   7:xcomp _
+9       jokea   joki    NOUN    N       Case=Par|Number=Sing    8       obj     8:obj   _
+10      yläjuoksulle    ylä#juoksu      NOUN    N       Case=All|Derivation=U|Number=Sing       8       obl     8:obl   _
+11      päin    päin    ADP     Adp     AdpType=Post    10      case    10:case SpaceAfter=No
+12      .       .       PUNCT   Punct   _       3       punct   3:punct _
+

@@ -1,0 +1,15 @@
+description "\3770,128,128";
+
+uses
+	EcsLib;
+
+uses(NEVER) EcsAudioCore;
+
+file
+	EcsDummy.h,
+	EcsDummy.icpp,
+	AudioGenerator.h,
+	AudioGenerator.cpp,
+	SoundCard.h,
+	SoundCard.cpp;
+

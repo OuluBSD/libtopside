@@ -1189,6 +1189,7 @@ bool SemanticParser::Term(bool meta) {
 		AstNode* nn = FindDeclaration(id, meta ? SEMT_META_ANY : SEMT_NULL);
 		if (!nn) {
 			if (allow_expr_unresolved) {
+				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
 				return Subscript(meta);
 			}
 			else {
@@ -1201,11 +1202,11 @@ bool SemanticParser::Term(bool meta) {
 			
 			if (nn->IsPartially(meta ? SEMT_META_FUNCTION : SEMT_FUNCTION)) {
 				//EMIT PushRvalCall(id.begin->loc, *nn);
-				EMIT PushRvalResolve(iter->loc, id, meta ? SEMT_META_FUNCTION : SEMT_FUNCTION);
+				EMIT PushRvalResolve(id.begin->loc, id, meta ? SEMT_META_FUNCTION : SEMT_FUNCTION);
 			}
 			else if (IsTypedNode(nn->src)) {
 				//EMIT PushRvalConstruct(id.begin->loc, *nn);
-				EMIT PushRvalResolve(iter->loc, id, meta ? SEMT_META_TYPE : SEMT_TYPE);
+				EMIT PushRvalResolve(id.begin->loc, id, meta ? SEMT_META_TYPE : SEMT_TYPE);
 			}
 			else {
 				AddError(iter->loc, "can't call or construct '" + id.ToString() + "'");
@@ -1256,7 +1257,7 @@ bool SemanticParser::Term(bool meta) {
 				}
 			}
 			else if (allow_expr_unresolved) {
-				// pass
+				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
 			}
 			else {
 				TODO

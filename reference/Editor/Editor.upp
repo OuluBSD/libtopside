@@ -1,0 +1,25 @@
+noblitz;
+
+uses
+	Esc,
+	LocalCtrl,
+	CodeEditor;
+
+file
+	main.cpp,
+	Init.icpp,
+	Editor.h,
+	Editor.cpp,
+	EditorBottom.cpp,
+	FindInFiles.cpp,
+	Layouts.lay,
+	Bottom.h,
+	Calculator.cpp,
+	RightTabs.cpp,
+	Terminal.h,
+	Terminal.cpp;
+
+mainconfig
+	"" = "GUI",
+	"" = "GUI USEMALLOC";
+

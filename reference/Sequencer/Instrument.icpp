@@ -1,0 +1,15 @@
+#include "Sequencer.h"
+
+using namespace TS;
+
+NAMESPACE_UPP
+
+INITBLOCK {
+	//System::Register<MultiNoteStereo<Sitar> >("Sitar");
+	System::Register<SimpleOscillator>("Simple Oscillator");
+	System::Register<SimpleReverb>("Simple Reverb");
+	
+	
+}
+
+END_UPP_NAMESPACE

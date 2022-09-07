@@ -1,0 +1,12 @@
+#include "AccelMidi.h"
+#include <ChainCore/DefImpl.h>
+
+NAMESPACE_PLAN_BEGIN
+
+INITBLOCK_(AccelMidi) {
+	Factory::SetActivePackage("AccelMidi");
+	
+	#include "Headers.h"
+}
+
+NAMESPACE_PLAN_END

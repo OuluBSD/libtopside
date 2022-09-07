@@ -35,13 +35,17 @@ const dword BOOL_V   = 11;
 
 const dword VALUEMAP_V   = 12;
 
+const dword COLOR_V   = 13;
+
 
 const dword UNKNOWN_V = (dword)0xffffffff;
 
 
 inline int RegisterTypeNo__(const char *type) {
 	MAKE_STATIC(Index<String>, idx);
-	return idx.FindAdd(type);
+	int i = idx.FindAdd(type);
+	ASSERT(i <= 255);
+	return i;
 }
 
 
@@ -172,8 +176,18 @@ protected:
 	enum { STRING = 0, REF = 255, VOIDV = 3 };
 	
 	
+	void ClearSetDataType(byte type);
+	template <class T> void Push(byte special, const T& o) {
+		memcpy(data.GetWritableData(special, sizeof(o)), &o, sizeof(o));
+	}
+	template <class T> T Pop() const {
+		T o;
+		if (data.GetCount() >= sizeof(o))
+			memcpy(&o, data.Begin(), sizeof(o));
+		return o;
+	}
 public:
-	Value() {}
+	Value();
 	Value(bool b);
 	Value(int i);
 	Value(int64 i);
@@ -203,21 +217,21 @@ public:
 	template <class T>	const T& Get() const;
 
 	bool     IsString() const          { return !data.IsSpecial(); }
-	bool     Is(byte v) const          { return data.IsSpecial(v); }
+	bool     Is(byte d) const          { return GetType() == d; }
 	bool     IsRef() const             { return Is(REF); }
 	
 	template <class T>	void     InitSmall(const T& init);
 	template <class T>	T&       GetSmallRaw() const {TODO_}
 	template <class T>	T&       GetSmall() const;
 	
-	int      GetOtherInt() const {TODO_}
-	int64    GetOtherInt64() const {TODO_}
-	double   GetOtherDouble() const {TODO_}
-	bool     GetOtherBool() const {TODO_}
-	Date     GetOtherDate() const {TODO_}
-	Time     GetOtherTime() const {TODO_}
-	String   GetOtherString() const {TODO_}
-	hash_t   GetOtherHashValue() const {TODO_}
+	int      GetOtherInt() const;
+	int64    GetOtherInt64() const;
+	double   GetOtherDouble() const;
+	bool     GetOtherBool() const;
+	Date     GetOtherDate() const;
+	Time     GetOtherTime() const;
+	String   GetOtherString() const;
+	hash_t   GetOtherHashValue() const;
 	
 	operator String() const          { return IsString() ? data : GetOtherString(); }
 	operator WString() const;

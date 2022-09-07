@@ -1,0 +1,5 @@
+#ifndef _AstExt_icpp_init_stub
+#define _AstExt_icpp_init_stub
+#include "CtrlLib/init"
+#include "CodeEditor/init"
+#endif
