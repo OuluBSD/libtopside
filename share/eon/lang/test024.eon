@@ -1,4 +1,4 @@
-int main:
+int main():
 	// Mandelbrot!
 	
 	double X1 =  -2.0  

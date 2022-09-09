@@ -204,7 +204,7 @@ void AstBuilder::PopStatementParameter(const FileLocation& loc) {
 
 void AstBuilder::DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
 	AstNode& block = GetBlock();
-	AstNode& var = Declare(block, name);
+	AstNode& var = Declare(block, name, true);
 	var.src = SEMT_VARIABLE;
 	var.type = &type;
 	//DUMP(var.GetPath());

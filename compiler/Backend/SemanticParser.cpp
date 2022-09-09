@@ -890,12 +890,31 @@ bool SemanticParser::ParseDeclExpr(bool must_decl) {
 		if (!ParsePathIdentifier(name))
 			return false;
 		
-		var = &DeclareRelative(name);
+		var = &Declare(GetBlock(), name);
 		ASSERT(var->IsPartially(SEMT_UNDEFINED));
 		var->src = SEMT_VARIABLE;
 		var->type = tn;
 		
-		EMIT DeclareVariable(first.begin->loc, *tn, name);
+		
+		if (IsChar('(')) {
+			//EMIT PushFunction(first.begin->loc, *tn, name);
+			
+			ASSERT(var);
+			if (!ParseFunction(*tn, name))
+				return false;
+		}
+		else {
+			/*if (cur.sub.GetCount()) {
+				DUMP(cur.GetTreeString());
+				AddError(iter->loc, "expected ()");
+				return false;
+			}*/
+			
+			EMIT DeclareVariable(first.begin->loc, *tn, name);
+			
+		}
+		
+		return true;
 	}
 	else if (!tn || must_decl) {
 		if (must_decl)
@@ -919,15 +938,9 @@ bool SemanticParser::ParseDeclExpr(bool must_decl) {
 		EMIT PopStatement(iter->loc);
 	}
 	else if (IsChar('(')) {
-		if (!tn) {
-			TODO // subscript op
-		}
-		else {
-			ASSERT(var);
-			if (!ParseFunction(*tn, name))
-				return false;
-		}
+		TODO // subscript op
 	}
+	ASSERT(!IsChar('('));
 	
 	return true;
 }
@@ -1249,6 +1262,9 @@ bool SemanticParser::Term(bool meta) {
 					
 					AstNode& block = GetBlock();
 					AstNode& var = Declare(block, name);
+					ASSERT(var.IsPartially(SEMT_UNDEFINED));
+					var.src = SEMT_VARIABLE;
+					var.type = nn;
 					
 					// Variable declaration statement
 					EMIT DeclareVariable(iter->loc, *nn, name);

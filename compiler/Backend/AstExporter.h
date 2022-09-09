@@ -4,6 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct AstExporterLanguage {
+	
+	
+};
+
+
+void InitHighExporter(AstExporterLanguage& l);
+void InitCppExporter(AstExporterLanguage& l);
+
 class AstExporter :
 	public ErrorSource
 {
@@ -25,7 +34,7 @@ class AstExporter :
 	void VisitParameter(const AstNode& n);
 	void VisitStatement(const AstNode& n);
 	void VisitExpression(const AstNode& n, int depth);
-	void VisitVariable(const AstNode& n);
+	void VisitVariable(const AstNode& n, bool declare=false);
 	void VisitArgument(const AstNode& n);
 	void VisitConstant(const AstNode& n);
 	void VisitResolve(const AstNode& n);
@@ -49,9 +58,14 @@ public:
 	String GetResult() const {return output;}
 	
 	
-	void Visit(const AstNode& n);
+	void Visit(const AstNode& n, bool force=false, bool declare=false);
 	void Visit(const AstNode& n, SemanticType t);
 	void VisitStmt(const AstNode& n, StmtType t);
+	void VisitBuiltin(const AstNode& n);
+	
+	
+	
+	AstExporterLanguage lang;
 	
 };
 

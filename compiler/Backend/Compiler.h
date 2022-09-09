@@ -18,7 +18,7 @@ public:
 	typedef Compiler CLASSNAME;
 	Compiler();
 	
-	bool CompileEonFileToHigh(String filepath, String& output);
+	bool CompileEonFile(String filepath, ProgLang lang, String& output);
 	
 public:
 	bool Tokenize(String filepath, String content, bool pythonic=false);
@@ -26,6 +26,7 @@ public:
 	bool Parse();
 	bool RunMeta();
 	bool ExportHigh();
+	bool ExportCpp();
 	
 	void OnProcMsg(ProcMsg msg);
 	

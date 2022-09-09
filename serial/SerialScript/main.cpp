@@ -8,12 +8,12 @@ bool SingleMachine::Open(void(*arg_fn)()) {return false;}
 void SingleMachine::Close() {}
 	
 
-bool TestEonTest(String s) {
+bool TestEonTest(String s, ProgLang tgt) {
 	DUMP(s);
 	
 	Compiler c;
-	String high;
-	bool succ = c.CompileEonFileToHigh(s, high);
+	String code;
+	bool succ = c.CompileEonFile(s, tgt, code);
 	
 	c.t.Dump();
 	LOG(c.sp.GetResult());
@@ -21,7 +21,7 @@ bool TestEonTest(String s) {
 		return false;
 	
 	LOG(c.ab.root.GetTreeString(0));
-	LOG(high);
+	LOG(code);
 	
 	return true;
 }
@@ -39,15 +39,19 @@ void TestEonTests(String dir_title) {
 	SortIndex(files, StdLess<String>());
 	DUMPC(files);
 	
+	int i = -1;
 	for (String file : files) {
-		LOG("Testing: " << GetFileName(file));
+		i++;
+		LOG("Testing " << i << ": " << GetFileName(file));
 		
+		if (i != 2) continue;
 		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
 		
-		if (!TestEonTest(file)) {
+		if (!TestEonTest(file, LANG_CPP)) {
 			LOG("Failed: " << GetFileName(file));
 			break;
 		}
+		
 	}
 }
 

@@ -6,6 +6,7 @@ uses
 
 file
 	Backend.h,
+	Defs.h,
 	Exporter.h,
 	Exporter.cpp,
 	Util.h,

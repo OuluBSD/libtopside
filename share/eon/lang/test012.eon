@@ -1,4 +1,4 @@
-int main:
+int main():
 	// if .. else
 	int a = 42
 	if (a != 42):

@@ -126,6 +126,7 @@ bool EonStd::ForwardUserspace(AstNode*& n) {
 			case STMT_FOR_POST:
 			case STMT_FOR_RANGE:
 			case STMT_BLOCK:
+			case STMT_RETURN:
 				return false;
 				
 			case STMT_IF:
@@ -136,7 +137,6 @@ bool EonStd::ForwardUserspace(AstNode*& n) {
 			case STMT_CONTINUE:
 			case STMT_CASE:
 			case STMT_DEFAULT:
-			case STMT_RETURN:
 			case STMT_SWITCH:
 				TODO
 				
@@ -220,14 +220,21 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 	return 0;
 }
 
-AstNode& EonStd::Declare(AstNode& owner, const PathIdentifier& id) {
+AstNode& EonStd::Declare(AstNode& owner, const PathIdentifier& id, bool insert_before) {
 	AstNode* cur = &owner;
 	for(int i = 0; i < id.part_count; i++) {
 		const Token* t = id.parts[i];
 		if (t->IsType(TK_ID) || t->IsType(TK_INTEGER)) {
 			String id = t->str_value;
 			ASSERT(id.GetCount());
-			cur = &cur->GetAdd(id);
+			if (insert_before) {
+				AstNode* next = cur->Find(id);
+				if (next)
+					cur = next;
+				else
+					cur = &cur->Add(id, max(0, cur->sub.GetCount()-2));
+			}
+			else cur = &cur->GetAdd(id);
 			if (cur->src == SEMT_NULL)
 				cur->src = SEMT_IDPART;
 		}

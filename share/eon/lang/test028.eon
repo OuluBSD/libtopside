@@ -1,4 +1,4 @@
-int main:
+int main():
 	// test for array contains
 	int[] a = [1,2,4,5,7]
 	int[] b = ["bread","cheese","sandwich"]

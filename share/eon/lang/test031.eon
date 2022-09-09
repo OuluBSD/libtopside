@@ -1,4 +1,4 @@
-int main:
+int main():
 	// test for string split
 	cstring b = "1,4,7"
 	cstring a = b.split(",")

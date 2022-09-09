@@ -1,7 +1,7 @@
 def object:
 	cstring food, desert
 
-int main:
+int main():
 	cstring foo = "foo bar stuff"
 	int r = math.random()
 	int parsed = parse.int("42")

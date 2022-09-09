@@ -1,4 +1,4 @@
-int main:
+int main():
 	int a = (2<<2)
 	int b = (16>>3)
 	int c = (-1 >>> 16)

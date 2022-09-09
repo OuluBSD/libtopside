@@ -1,5 +1,5 @@
 int add(int x, int y):
 	return x+y
 
-int main:
+int main():
     return add(3,6)==9

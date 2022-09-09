@@ -7,9 +7,10 @@ AstNode::AstNode() {
 	
 }
 
-AstNode& AstNode::Add(String name) {
+AstNode& AstNode::Add(String name, int idx) {
 	ASSERT(!locked);
-	AstNode& s = sub.Add();
+	AstNode& s =
+		idx >= 0 ? sub.Insert(idx) : sub.Add();
 	s.SetOwner(this);
 	s.name = name;
 	return s;

@@ -1,4 +1,4 @@
-int main:
+int main():
 	// test for array join
 	int[] a = [1,2,4,5,7]
 	

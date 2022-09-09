@@ -6,7 +6,7 @@ def Person:
 	
 	void kill(): this.name += " is dead"
 
-int main:
+int main():
 	Person a("Kenny")
 	a.kill()
 	return a.name == "Kenny is dead"

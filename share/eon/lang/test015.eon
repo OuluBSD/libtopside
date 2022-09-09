@@ -1,4 +1,4 @@
-int main:
+int main():
 	double a = 345    // an "integer", although there is only one numeric type in JavaScript
 	double b = 34.5   // a floating-point number
 	double c = 3.45e2 // another floating-point, equivalent to 345

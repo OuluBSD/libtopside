@@ -34,7 +34,7 @@ public:
 	
 	void			Clear() {sub.Clear();}
 	
-	AstNode&		Add(String name="");
+	AstNode&		Add(String name="", int idx=-1);
 	AstNode&		GetAdd(String name="");
 	AstNode*		Find(String name, SemanticType accepts=SEMT_NULL);
 	const AstNode*	Find(String name, SemanticType accepts=SEMT_NULL) const;

@@ -4,6 +4,7 @@
 #include <Local/Local.h>
 #include <High/High.h>
 
+#include "Defs.h"
 #include "Node.h"
 #include "Builtin.h"
 #include "Util.h"

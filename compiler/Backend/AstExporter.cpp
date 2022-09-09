@@ -53,10 +53,14 @@ void AstExporter::PopInlineScope() {
 	inline_scopes.SetCount(inline_scopes.GetCount()-1);
 }
 
-void AstExporter::Visit(const AstNode& n) {
+void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	
 	switch (n.src) {
 	case SEMT_BUILTIN:
+		if (force) {
+			VisitBuiltin(n);
+			return;
+		}
 	case SEMT_FUNCTION_BUILTIN:
 	case SEMT_META_BUILTIN:
 		return;
@@ -66,7 +70,7 @@ void AstExporter::Visit(const AstNode& n) {
 	case SEMT_STATEMENT_BLOCK:
 		for (const AstNode& s : n.sub) {
 			PushScope(s);
-			Visit(s);
+			Visit(s, false, true);
 			PopScope();
 		}
 		return;
@@ -92,7 +96,7 @@ void AstExporter::Visit(const AstNode& n) {
 		break;
 	
 	case SEMT_VARIABLE:
-		VisitVariable(n);
+		VisitVariable(n, declare);
 		break;
 	
 	case SEMT_ARGUMENT:
@@ -135,10 +139,19 @@ void AstExporter::VisitStmt(const AstNode& n, StmtType t) {
 	}
 }
 
+void AstExporter::VisitBuiltin(const AstNode& n) {
+	output << GetCPath(n);
+}
+
 void AstExporter::VisitFunction(const AstNode& n) {
 	ASSERT(n.src == SEMT_FUNCTION_STATIC);
 	
 	output << GetIndentString();
+	
+	if (n.type) {
+		Visit(*n.type, true);
+		output << " ";
+	}
 	
 	output << GetCPath();
 	
@@ -172,6 +185,7 @@ void AstExporter::VisitParameter(const AstNode& n) {
 }
 
 void AstExporter::VisitStatement(const AstNode& n) {
+	AstNode* p = 0;
 	
 	switch (n.stmt) {
 	case STMT_NULL:
@@ -214,6 +228,18 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		output << ");\n";
 		break;*/
 		
+	case STMT_RETURN:
+		output << GetIndentString() << "return";
+		if (n.sub.GetCount() > 1) {
+			ASSERT_(0, "internal error");
+		}
+		for(int i = 0; i < n.sub.GetCount(); i++) {
+			output << " ";
+			Visit(n.sub[i]);
+		}
+		output << ";\n";
+		break;
+	
 	case STMT_IF:
 	case STMT_ELSE:
 	case STMT_DOWHILE:
@@ -223,7 +249,6 @@ void AstExporter::VisitStatement(const AstNode& n) {
 	case STMT_CONTINUE:
 	case STMT_CASE:
 	case STMT_DEFAULT:
-	case STMT_RETURN:
 	case STMT_SWITCH:
 	case STMT_BLOCK:
 	default:
@@ -339,10 +364,17 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	
 }
 
-void AstExporter::VisitVariable(const AstNode& n) {
+void AstExporter::VisitVariable(const AstNode& n, bool declare) {
 	ASSERT(n.src == SEMT_VARIABLE || n.src == SEMT_PARAMETER);
 	
-	output << GetCPath(n);
+	if (declare) {
+		if (n.type) {
+			output << GetIndentString() << GetCPath(*n.type) << " " << GetCPath(n) << ";\n";
+		}
+	}
+	else {
+		output << GetCPath(n);
+	}
 	
 }
 
@@ -452,14 +484,32 @@ String AstExporter::GetCPath(const AstNode& n) const {
 	}
 	else {
 		String s;
-		for (int i = 0; i < part_count; i++) {
-			const AstNode* part = parts[part_count - 1 -i];
-			if (i) s.Cat('_');
-			s.Cat(part->name);
+		if (!part_count) {
+			s.Cat(scopes.Top().n->name);
+		}
+		else {
+			for (int i = 0; i < part_count; i++) {
+				const AstNode* part = parts[part_count - 1 -i];
+				if (i) s.Cat('_');
+				s.Cat(part->name);
+			}
 		}
 		return s;
 	}
 }
+
+
+
+
+
+void InitHighExporter(AstExporterLanguage& l) {
+	
+}
+
+void InitCppExporter(AstExporterLanguage& l) {
+	
+}
+
 
 
 NAMESPACE_TOPSIDE_END

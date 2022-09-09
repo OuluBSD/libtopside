@@ -1,4 +1,4 @@
-int main:
+int main():
     // comparison
     int a = 42
     return a==42
