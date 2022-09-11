@@ -902,6 +902,8 @@ bool SemanticParser::ParseDeclExpr(bool must_decl) {
 			ASSERT(var);
 			if (!ParseFunction(*tn, name))
 				return false;
+			
+			return true;
 		}
 		else {
 			/*if (cur.sub.GetCount()) {
@@ -914,7 +916,6 @@ bool SemanticParser::ParseDeclExpr(bool must_decl) {
 			
 		}
 		
-		return true;
 	}
 	else if (!tn || must_decl) {
 		if (must_decl)
@@ -1028,13 +1029,13 @@ bool SemanticParser::Subscript(bool m) {
 			}
 			else {
 				if(!IsChar(',') && !IsChar(':')) {
-					if (!ParseExpression(m))
+					if (!Assign(m))
 						return false;
 				}
 				
 				if(Char(',')) {
 					if(!IsChar(']')) {
-						if (!ParseExpression(m))
+						if (!Assign(m))
 							return false;
 					}
 					TODO // Emit
@@ -1042,7 +1043,7 @@ bool SemanticParser::Subscript(bool m) {
 				else
 				if(Char(':')) {
 					if(!IsChar(']')) {
-						if (!ParseExpression(m))
+						if (!Assign(m))
 							return false;
 					}
 					TODO // Emit
@@ -1143,10 +1144,11 @@ bool SemanticParser::Term(bool meta) {
 		TODO // Emit
 		return true;
 	}
-	if(Char(TK_INDENT)) {
+	/*if(Char(TK_INDENT)) {
 		TODO // Emit
 		if(!Char(TK_DEDENT)) {
 			for(;;) {
+				TODO // should be Assign, not ParseExpression
 				if (!ParseExpression(meta))
 					return false;
 				PassChar(':');
@@ -1160,15 +1162,16 @@ bool SemanticParser::Term(bool meta) {
 		if (!Subscript(meta))
 			return false;
 		return true;
-	}
+	}*/
 	if(Char('[')) {
 		if(!Char(']')) {
 			for(;;) {
-				if (!ParseExpression(meta))
+				if (!Assign(meta))
 					return false;
 				if(Char(']'))
 					break;
 				PassChar(',');
+				TODO // Emit
 			}
 		}
 		if (!Subscript(meta))
@@ -1176,7 +1179,7 @@ bool SemanticParser::Term(bool meta) {
 		return true;
 	}
 	if(Char('(')) {
-		if (!ParseExpression(meta))
+		if (!Assign(meta))
 			return false;
 		PassChar(')');
 		if (!Subscript(meta))

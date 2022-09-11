@@ -241,8 +241,9 @@ void AstBuilder::PushRvalResolve(const FileLocation& loc, const PathIdentifier& 
 		return;
 	}
 	r.link[0] = d;
+	r.str = id.ToString();
 	
-	PushScopeRVal(*d);
+	PushScopeRVal(r);
 }
 
 void AstBuilder::PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {

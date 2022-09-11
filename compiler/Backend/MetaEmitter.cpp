@@ -120,6 +120,8 @@ void HighScriptEmitter::PopMetaFunction(const FileLocation& loc) {
 }
 
 void HighScriptEmitter::PushStatementList(const FileLocation& loc) {
+	Log("PushStatementList");
+	
 	main << DBG_INDENT "PushStatementList(" << LocArg(loc) << ");\n";
 	
 	Enter();
@@ -192,9 +194,13 @@ void HighScriptEmitter::PushRvalArgumentList(const FileLocation& loc) {
 	Log("PushRvalArgumentList");
 	
 	main << DBG_INDENT "PushRvalArgumentList(" << LocArg(loc) << ");\n";
+	
+	Enter();
 }
 
 void HighScriptEmitter::Argument(const FileLocation& loc) {
+	Leave();
+	
 	Log("Argument");
 	
 	main << DBG_INDENT "Argument(" << LocArg(loc) << ");\n";
@@ -264,7 +270,7 @@ void HighScriptEmitter::PushRvalConstant(const FileLocation& loc, const Token& t
 }
 
 void HighScriptEmitter::Expr1(const FileLocation& loc, OpType op) {
-	//Leave();
+	//Leave();PushStatementList
 	Log("Expr1: " + GetOpString(op));
 	
 	main << DBG_INDENT "Expr1(" << LocArg(loc) << ", " << IntStr((int)op) << "); // " << GetOpString(op) << "\n";

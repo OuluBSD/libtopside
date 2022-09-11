@@ -103,6 +103,10 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		VisitArgument(n);
 		break;
 		
+	case SEMT_RESOLVE:
+		VisitResolve(n, true);
+		break;
+	
 	case SEMT_NULL:
 	case SEMT_NAMESPACE:
 	case SEMT_TYPEDEF:
@@ -179,7 +183,10 @@ void AstExporter::VisitParameter(const AstNode& n) {
 	if (is.count)
 		output << ", ";
 	
-	output << GetCPath();
+	if (n.type)
+		output << GetCPath(*n.type) << " ";
+	
+	output << GetCPath(n);
 	
 	is.count++;
 }
@@ -194,13 +201,33 @@ void AstExporter::VisitStatement(const AstNode& n) {
 	case STMT_FOR:
 		ASSERT(inline_scopes.IsEmpty());
 		PushInlineScope();
-		output << GetIndentString() << "for(";
+		output << GetIndentString() << "for (";
 		VisitStmt(n, STMT_CTOR);
 		output << "; ";
 		VisitStmt(n, STMT_FOR_COND);
 		output << "; ";
 		VisitStmt(n, STMT_FOR_POST);
 		output << ") {\n";
+		PopInlineScope();
+		Visit(n, SEMT_STATEMENT_BLOCK);
+		output << GetIndentString() << "}\n";
+		break;
+		
+	case STMT_IF:
+		ASSERT(inline_scopes.IsEmpty());
+		PushInlineScope();
+		output << GetIndentString() << "if (";
+		Visit(n, SEMT_EXPR);
+		output << ") {\n";
+		PopInlineScope();
+		Visit(n, SEMT_STATEMENT_BLOCK);
+		output << GetIndentString() << "}\n";
+		break;
+		
+	case STMT_ELSE:
+		ASSERT(inline_scopes.IsEmpty());
+		PushInlineScope();
+		output << GetIndentString() << "else {\n";
 		PopInlineScope();
 		Visit(n, SEMT_STATEMENT_BLOCK);
 		output << GetIndentString() << "}\n";
@@ -230,18 +257,20 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		
 	case STMT_RETURN:
 		output << GetIndentString() << "return";
-		if (n.sub.GetCount() > 1) {
+		/*if (n.sub.GetCount() > 1) {
 			ASSERT_(0, "internal error");
-		}
-		for(int i = 0; i < n.sub.GetCount(); i++) {
+		}*/
+		/*for(int i = 0; i < n.sub.GetCount(); i++) {
 			output << " ";
 			Visit(n.sub[i]);
+		}*/
+		if (n.sub.GetCount()) {
+			output << " ";
+			Visit(n.sub.Top());
 		}
 		output << ";\n";
 		break;
 	
-	case STMT_IF:
-	case STMT_ELSE:
 	case STMT_DOWHILE:
 	case STMT_WHILE:
 	case STMT_FOR_RANGE:
@@ -354,9 +383,7 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 		ASSERT(n.link[0]);
 		ASSERT(n.link[1]);
 		VisitExpression(*n.link[0], depth+1);
-		//PushInlineScope();
 		VisitExpression(*n.link[1], depth+1);
-		//PopInlineScope();
 	}
 	
 	if (depth > 0)
@@ -418,7 +445,7 @@ void AstExporter::VisitConstant(const AstNode& n) {
 	
 }
 
-void AstExporter::VisitResolve(const AstNode& n) {
+void AstExporter::VisitResolve(const AstNode& n, bool rval) {
 	/*ASSERT(n.path.GetCount());
 	if (n.path.GetCount() > 1) {
 		TODO
@@ -426,8 +453,14 @@ void AstExporter::VisitResolve(const AstNode& n) {
 	else {
 		output << n.path[0];
 	}*/
-	ASSERT(n.link[0]);
-	output << GetCPath(*n.link[0]);
+	/*if (rval) {
+		output << GetCPath(n);
+	}
+	else*/
+	{
+		ASSERT(n.link[0]);
+		output << GetCPath(*n.link[0]);
+	}
 }
 
 void AstExporter::VisitArgumentList(const AstNode& n) {

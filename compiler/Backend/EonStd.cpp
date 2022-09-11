@@ -119,6 +119,8 @@ bool EonStd::ForwardUserspace(AstNode*& n) {
 	if (n->IsPartially(SEMT_STATEMENT)) {
 		switch (n->stmt) {
 			case STMT_FOR:
+			case STMT_IF:
+			case STMT_ELSE:
 				n = n->Find(SEMT_STATEMENT_BLOCK);
 				break;
 			
@@ -129,8 +131,6 @@ bool EonStd::ForwardUserspace(AstNode*& n) {
 			case STMT_RETURN:
 				return false;
 				
-			case STMT_IF:
-			case STMT_ELSE:
 			case STMT_DOWHILE:
 			case STMT_WHILE:
 			case STMT_BREAK:
