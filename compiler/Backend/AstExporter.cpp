@@ -107,6 +107,10 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		VisitResolve(n, true);
 		break;
 	
+	case SEMT_RVAL:
+		VisitRval(n);
+		break;
+	
 	case SEMT_NULL:
 	case SEMT_NAMESPACE:
 	case SEMT_TYPEDEF:
@@ -299,6 +303,10 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 		VisitResolve(n);
 		return;
 	}
+	else if (n.src == SEMT_RVAL) {
+		VisitRval(n);
+		return;
+	}
 	else if (n.src == SEMT_ARGUMENT_LIST) {
 		VisitArgumentList(n);
 		return;
@@ -421,6 +429,14 @@ void AstExporter::VisitArgument(const AstNode& n) {
 	else if (arg.IsPartially(SEMT_FIELD)) {
 		output << GetCPath(arg);
 	}
+	else if (arg.src == SEMT_RVAL) {
+		ASSERT(arg.link[0]);
+		if (arg.link[0])
+			output << GetCPath(*arg.link[0]);
+	}
+	else if (arg.src == SEMT_EXPR) {
+		VisitExpression(arg, 0);
+	}
 	else {
 		TODO
 	}
@@ -457,8 +473,23 @@ void AstExporter::VisitResolve(const AstNode& n, bool rval) {
 		output << GetCPath(n);
 	}
 	else*/
-	{
-		ASSERT(n.link[0]);
+	/*if (n.str.GetCount()) {
+		//DUMP(n.str);
+		output << n.str;
+	}*/
+	ASSERT(n.link[0]);
+	if (n.link[0]) {
+		const AstNode& l = *n.link[0];
+		if (l.IsPartially(SEMT_FUNCTION) || l.IsPartially(SEMT_META_FUNCTION)) {
+			DUMP(GetSemanticTypeString(l.src));
+		}
+		output << GetCPath(l);
+	}
+}
+
+void AstExporter::VisitRval(const AstNode& n) {
+	ASSERT(n.link[0]);
+	if (n.link[0]) {
 		output << GetCPath(*n.link[0]);
 	}
 }
@@ -518,7 +549,11 @@ String AstExporter::GetCPath(const AstNode& n) const {
 	else {
 		String s;
 		if (!part_count) {
-			s.Cat(scopes.Top().n->name);
+			/*const AstNode& t = *scopes.Top().n;
+			String name = t.name;*/
+			String name = n.name;
+			ASSERT(name.GetCount());
+			s.Cat(name);
 		}
 		else {
 			for (int i = 0; i < part_count; i++) {

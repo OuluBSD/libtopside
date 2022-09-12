@@ -72,6 +72,7 @@ public:
 	HiValue();
 	
 	bool                   IsNumber() const      { return findarg(type, HIGH_DOUBLE, HIGH_INT64) >= 0; }
+	bool                   IsDouble() const      { return type == HIGH_DOUBLE; }
 	double                 GetNumber() const;
 	bool                   IsInt64() const       { return type == HIGH_INT64; }
 	int64                  GetInt64() const;

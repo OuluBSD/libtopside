@@ -38,6 +38,7 @@ class AstExporter :
 	void VisitArgument(const AstNode& n);
 	void VisitConstant(const AstNode& n);
 	void VisitResolve(const AstNode& n, bool rval=false);
+	void VisitRval(const AstNode& n);
 	void VisitArgumentList(const AstNode& n);
 	void VisitFunctionRval(const AstNode& n);
 	void PushScope(const AstNode& n);

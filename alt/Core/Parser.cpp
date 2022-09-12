@@ -290,6 +290,14 @@ bool CParser::IsInt() const {
 	return false;
 }
 
+bool CParser::IsOctal() const {
+	if (IsChar('0')) {
+		if (pos.cursor+1 < input.GetCount())
+			return IsDigit(input[pos.cursor+1]);
+	}
+	return false;
+}
+
 bool CParser::IsChar(char i) const {
 	if (pos.cursor < input.GetCount())
 		return input[pos.cursor] == i;

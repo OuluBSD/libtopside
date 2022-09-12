@@ -48,6 +48,7 @@ typedef enum : uint64 {
 	SEMT_CALL_ARG				= 1ULL << 39,
 	SEMT_UNRESOLVED				= 1ULL << 40,
 	SEMT_META_CLASS				= 1ULL << 41,
+	SEMT_RVAL					= 1ULL << 42,
 	
 	// Current limit: 1 << 63
 	
@@ -123,6 +124,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_CALL_ARG:				return "call-arg";
 		case SEMT_UNRESOLVED:			return "unresolved";
 		case SEMT_META_CLASS:			return "meta-class";
+		case SEMT_RVAL:					return "rval";
 		default: return "invalid";
 	}
 }

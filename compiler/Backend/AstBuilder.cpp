@@ -285,7 +285,12 @@ void AstBuilder::PopExpr(const FileLocation& loc) {
 }
 
 void AstBuilder::PushRval(const FileLocation& loc, AstNode& n) {
-	PushScopeRVal(n);
+	AstNode& t = GetTopNode();
+	AstNode& r = t.Add();
+	r.src = SEMT_RVAL;
+	r.link[0] = &n;
+	
+	PushScopeRVal(r);
 }
 
 /*void AstBuilder::PushRvalCall(const FileLocation& loc, AstNode& n) {
@@ -860,12 +865,12 @@ void AstBuilder::HiPushRvalConstant(HiEscape& e) {
 	LoadLocation(e[0], loc);
 	
 	HiValue& v = e[1];
-	if (v.IsInt())
+	if (v.IsDouble())
+		PushRvalConstant(loc, v.GetNumber());
+	else if (v.IsInt())
 		PushRvalConstant(loc, v.GetInt());
 	else if (v.IsInt64())
 		PushRvalConstant(loc, v.GetInt64());
-	else if (v.IsNumber())
-		PushRvalConstant(loc, v.GetNumber());
 	else
 		PushRvalConstant(loc, (String)v);
 	

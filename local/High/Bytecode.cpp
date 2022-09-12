@@ -146,11 +146,11 @@ void HiCompiler::Term()
 	Emit(IR_R_SBS_RESET);
 
 	TestLimit();
-	if(Char2('0', 'x') || Char2('0', 'X')) {
+	if(IsChar2('0', 'x') || IsChar2('0', 'X')) {
 		Emit1(IR_ASSIGN_R, ReadNumber64(16));
 		return;
 	}
-	if(Char2('0', 'b') || Char2('0', 'B')) {
+	if(IsChar2('0', 'b') || IsChar2('0', 'B')) {
 		Emit1(IR_ASSIGN_R, ReadNumber64(2));
 		return;
 	}
@@ -158,7 +158,7 @@ void HiCompiler::Term()
 		Emit1(IR_ASSIGN_R, ReadDouble());
 		return;
 	}
-	if(Char('0')) {
+	if(IsOctal()) {
 		Emit1(IR_ASSIGN_R, IsNumber() ? ReadNumber64(8) : 0);
 		return;
 	}

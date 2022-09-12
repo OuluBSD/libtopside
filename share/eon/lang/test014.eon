@@ -1,8 +1,10 @@
 int x
+cstring z
+int twenty
 
 int f():
 	cstring z = "foxes" // A local variable
-	int twenty = 20 // Global because keyword int is not used
+	twenty = 20 // Global because keyword int is not used
 	return x // We can use x here because it is global
 
 int main():
@@ -10,5 +12,5 @@ int main():
 	cstring y = "Hello!"
 	
 	// testing
-	blah = f()
+	int blah = f()
 	return blah==0 && z!="foxes" && twenty==20

@@ -82,6 +82,7 @@ public:
 	bool IsCharDigit() const;
 	bool IsNumber() const;
 	bool IsString() const;
+	bool IsOctal() const;
 	
 	void ThrowError(const char *s);
 	

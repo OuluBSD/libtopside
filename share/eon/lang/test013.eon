@@ -1,8 +1,6 @@
 int main():
-	// if .. else with blocks
+	// if .. else with inline blocks
 	int a = 42
-	if (a != 42):
-		return 0
-	else:
-		return 1
+	if a != 42: return 0
+	else: return 1
 	

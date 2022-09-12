@@ -422,17 +422,38 @@ bool SemanticParser::ParseStatement() {
 		return ParseMetaStatement();
 	}
 	else if (Id("if")) {
+		AstNode& t = GetTopNode();
+		AstNode& stmt = t.Add();
+		stmt.src = SEMT_STATEMENT;
+		stmt.stmt = STMT_IF;
+		PushScope(stmt);
+		
 		EMIT PushStatement(iter->loc, STMT_IF);
 		
 		if (!ParseExpression(false)) return false;
 		if (!ParseStatementBlock()) return false;
-		if (Id("else")) {
-			EMIT PushStatement(iter->loc, STMT_ELSE);
-			
-			if (!ParseStatementBlock()) return false;
-			
-			EMIT PopStatement(iter->loc);
+		
+		EMIT PopStatement(iter->loc);
+		
+		PopScope();
+	}
+	else if (IsId("else")) {
+		AstNode& t = GetTopNode();
+		if (t.sub.IsEmpty()) {
+			AddError(iter->loc, "'else' without 'if'");
+			return false;
 		}
+		const AstNode& prev = t.sub.Top();
+		if (prev.src != SEMT_STATEMENT || prev.stmt != STMT_IF) {
+			AddError(iter->loc, "'else' without 'if'");
+			return false;
+		}
+		
+		PassId("else");
+		
+		EMIT PushStatement(iter->loc, STMT_ELSE);
+		
+		if (!ParseStatementBlock()) return false;
 		
 		EMIT PopStatement(iter->loc);
 	}
@@ -593,6 +614,7 @@ bool SemanticParser::ParseMetaStatement(bool skip_meta_keywords) {
 		
 		if (!ParseExpression(true)) return false;
 		if (!ParseStatementBlock()) return false;
+		
 		if (Id("else")) {
 			EMIT PushStatement(iter->loc, STMT_META_ELSE);
 			
@@ -870,7 +892,10 @@ bool SemanticParser::ParseClass() {
 }
 
 bool SemanticParser::ParseStatementBlock() {
-	return ParseStatementList();
+	if (!ParseStatementList())
+		return false;
+	
+	return true;
 }
 
 bool SemanticParser::ParseDeclExpr(bool must_decl) {
@@ -1492,7 +1517,7 @@ bool SemanticParser::BinOr(bool m) {
 
 bool SemanticParser::And(bool m) {
 	if (!BinOr(m)) return false;
-	if(TryToken(TK_LOGAND)) {
+	if(IsToken(TK_LOGAND)) {
 		while(TryToken(TK_LOGAND)) {
 			const Token& tk = TopIterator().iter[-1];
 			
@@ -1505,7 +1530,7 @@ bool SemanticParser::And(bool m) {
 
 bool SemanticParser::Or(bool m) {
 	if (!And(m)) return false;
-	if(TryToken(TK_LOGOR)) {
+	if(IsToken(TK_LOGOR)) {
 		while(TryToken(TK_LOGOR)) {
 			const Token& tk = TopIterator().iter[-1];
 			
