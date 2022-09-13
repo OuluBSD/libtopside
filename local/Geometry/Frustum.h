@@ -10,17 +10,18 @@ vec3 Intersection(Plane p1, Plane p2, Plane p3);
 
 
 struct Frustum {
-	union {
-		struct {
-			Plane top;
-			Plane bottom;
-			Plane left;
-			Plane right;
-			Plane _near;
-			Plane _far;
-		};
-		Plane planes[6];
+	enum {
+		TOP,
+		BOTTOM,
+		LEFT,
+		RIGHT,
+		NEAR,
+		FAR,
+		
+		PLANE_COUNT
 	};
+	
+	Plane planes[PLANE_COUNT];
 
 	Frustum() {}
 	Frustum(const Frustum& m) {

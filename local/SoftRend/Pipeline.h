@@ -9,8 +9,6 @@ class SoftPipeline {
 	bool inited = false;
 	
 public:
-	using SoftProgram = SoftProgram;
-	
 	struct Stage : Moveable<Stage> {
 		SoftProgram* prog = 0;
 		uint32 bmask = 0;

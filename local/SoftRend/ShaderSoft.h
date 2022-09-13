@@ -56,8 +56,6 @@ class SoftShader {
 	One<SoftShaderBase> s;
 	
 protected:
-	using SoftProgram = SoftProgram;
-	
 	SoftProgram* prog = 0;
 	
 public:
