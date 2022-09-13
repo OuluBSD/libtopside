@@ -10,6 +10,8 @@ public:
 	struct Scope : Moveable<Scope> {
 		AstNode* n;
 		bool pop_this;
+		bool must_declare = false;
+		bool no_declare = false;
 		
 		void Set(AstNode* sn, bool b) {n = sn; pop_this = b;}
 	};

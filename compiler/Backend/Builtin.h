@@ -49,6 +49,7 @@ typedef enum : uint64 {
 	SEMT_UNRESOLVED				= 1ULL << 40,
 	SEMT_META_CLASS				= 1ULL << 41,
 	SEMT_RVAL					= 1ULL << 42,
+	SEMT_CTOR					= 1ULL << 43,
 	
 	// Current limit: 1 << 63
 	
@@ -125,6 +126,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_UNRESOLVED:			return "unresolved";
 		case SEMT_META_CLASS:			return "meta-class";
 		case SEMT_RVAL:					return "rval";
+		case SEMT_CTOR:					return "ctor";
 		default: return "invalid";
 	}
 }
@@ -144,7 +146,6 @@ typedef enum {
 	STMT_DOWHILE,
 	STMT_WHILE,
 	STMT_FOR,
-	STMT_CTOR,
 	STMT_FOR_COND,
 	STMT_FOR_POST,
 	STMT_FOR_RANGE,
@@ -185,7 +186,6 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_DOWHILE: return "do-while";
 		case STMT_WHILE: return "while";
 		case STMT_FOR: return "for";
-		case STMT_CTOR: return "constructor";
 		case STMT_FOR_COND: return "for-conditional";
 		case STMT_FOR_POST: return "for-post";
 		case STMT_FOR_RANGE: return "for-range";
@@ -274,6 +274,7 @@ typedef enum {
 	OP_DIVASS,
 	OP_MODASS,
 	OP_CALL,
+	OP_SUBSCRIPT,
 	
 } OpType;
 
@@ -314,6 +315,7 @@ inline String GetOpString(OpType t) {
 		case OP_DIVASS: return "divide-and-assign";
 		case OP_MODASS: return "modulus-and-assign";
 		case OP_CALL: return "call";
+		case OP_SUBSCRIPT: return "subscript";
 		default: return "<invalid>";
 	}
 }

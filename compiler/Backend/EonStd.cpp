@@ -179,17 +179,18 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 	AstNode* next = 0;
 	AstNode* prev = 0;
 	for(int i = 0; i < id.part_count; i++) {
+		bool last = i == id.part_count-1;
 		next = 0;
 		for (int tries = 0; tries < 100; tries++) {
 			const Token* t = id.parts[i];
 			if ((t->IsType(TK_ID) || t->IsType(TK_INTEGER)) && !t->str_value.IsEmpty()) {
 				if (id.is_meta[i]) {
-					SemanticType a = SEMT_META_ANY;
-					//if (accepts == SEMT_FIELD) a = SEMT_META_FIELD;
+					SemanticType a = last ? (accepts & SEMT_META_ANY ? accepts : SEMT_META_ANY) : SEMT_META_ANY;
 					next = cur->Find(t->str_value, a);
 				}
 				else {
-					next = cur->Find(t->str_value, accepts);
+					SemanticType a = last ? accepts : SEMT_NULL;
+					next = cur->Find(t->str_value, a);
 				}
 			}
 			else {

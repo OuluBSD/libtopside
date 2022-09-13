@@ -9,6 +9,8 @@ void PushStatementList(const FileLocation& loc) override;
 void PopStatementList(const FileLocation& loc) override;
 void PushStatement(const FileLocation& loc, StmtType type) override;
 void PopStatement(const FileLocation& loc) override;
+void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) override;
+void PopConstructor(const FileLocation& loc) override;
 void PushStatementParameter(const FileLocation& loc, StmtParamType t) override;
 void PopStatementParameter(const FileLocation& loc) override;
 void DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) override;

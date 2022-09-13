@@ -69,6 +69,8 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	case SEMT_IDPART:
 	case SEMT_STATEMENT_BLOCK:
 		for (const AstNode& s : n.sub) {
+			if (s.src == SEMT_RVAL)
+				continue;
 			PushScope(s);
 			Visit(s, false, true);
 			PopScope();
@@ -121,6 +123,14 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		TODO
 		break;
 		
+	case SEMT_ARGUMENT_LIST:
+		VisitArgumentList(n);
+		break;
+		
+	case SEMT_CTOR:
+		VisitConstructor(n);
+		break;
+		
 	default:
 		TODO
 	}
@@ -140,6 +150,16 @@ void AstExporter::Visit(const AstNode& n, SemanticType t) {
 void AstExporter::VisitStmt(const AstNode& n, StmtType t) {
 	for(const AstNode& sub : n.sub) {
 		if (sub.src == SEMT_STATEMENT && sub.stmt == t) {
+			PushScope(sub);
+			Visit(sub);
+			PopScope();
+		}
+	}
+}
+
+void AstExporter::VisitCtorExpr(const AstNode& n) {
+	for(const AstNode& sub : n.sub) {
+		if (sub.src == SEMT_CTOR || (sub.src == SEMT_STATEMENT && sub.stmt == STMT_EXPR)) {
 			PushScope(sub);
 			Visit(sub);
 			PopScope();
@@ -206,7 +226,7 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		ASSERT(inline_scopes.IsEmpty());
 		PushInlineScope();
 		output << GetIndentString() << "for (";
-		VisitStmt(n, STMT_CTOR);
+		VisitCtorExpr(n);
 		output << "; ";
 		VisitStmt(n, STMT_FOR_COND);
 		output << "; ";
@@ -237,16 +257,16 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		output << GetIndentString() << "}\n";
 		break;
 		
-	case STMT_CTOR:
 	case STMT_FOR_COND:
 	case STMT_FOR_POST:
-		for (const AstNode& sub : n.sub)
-			Visit(sub);
+		//for (const AstNode& sub : n.sub)
+		//	Visit(sub);
+		Visit(n, SEMT_EXPR);
 		break;
 		
 	case STMT_EXPR:
 		output << GetIndentString() << "";
-		Visit(n, SEMT_EXPR);
+		Visit(n, (SemanticType)(SEMT_EXPR | SEMT_CTOR));
 		output << ";\n";
 		break;
 		
@@ -392,6 +412,19 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 		ASSERT(n.link[1]);
 		VisitExpression(*n.link[0], depth+1);
 		VisitExpression(*n.link[1], depth+1);
+		break;
+		
+	case OP_SUBSCRIPT:
+		ASSERT(n.link[0]);
+		ASSERT(n.link[1]);
+		VisitExpression(*n.link[0], depth+1);
+		output << "[";
+		VisitExpression(*n.link[1], depth+1);
+		output << "]";
+		break;
+		
+	default:
+		TODO
 	}
 	
 	if (depth > 0)
@@ -404,7 +437,8 @@ void AstExporter::VisitVariable(const AstNode& n, bool declare) {
 	
 	if (declare) {
 		if (n.type) {
-			output << GetIndentString() << GetCPath(*n.type) << " " << GetCPath(n) << ";\n";
+			// use ctor instead
+				//output << GetIndentString() << GetCPath(*n.type) << " " << GetCPath(n) << ";\n";
 		}
 	}
 	else {
@@ -430,9 +464,10 @@ void AstExporter::VisitArgument(const AstNode& n) {
 		output << GetCPath(arg);
 	}
 	else if (arg.src == SEMT_RVAL) {
-		ASSERT(arg.link[0]);
+		/*ASSERT(arg.link[0]);
 		if (arg.link[0])
-			output << GetCPath(*arg.link[0]);
+			output << GetCPath(*arg.link[0]);*/
+		VisitRval(arg);
 	}
 	else if (arg.src == SEMT_EXPR) {
 		VisitExpression(arg, 0);
@@ -504,6 +539,18 @@ void AstExporter::VisitArgumentList(const AstNode& n) {
 
 void AstExporter::VisitFunctionRval(const AstNode& n) {
 	output << GetCPath(n);
+}
+
+void AstExporter::VisitConstructor(const AstNode& n) {
+	if (n.type) {
+		output << GetCPath(*n.type) << " ";
+	}
+	
+	if (n.link[0])
+		output << GetCPath(*n.link[0]);
+	
+	for (const AstNode& sub : n.sub)
+		Visit(sub);
 }
 
 String AstExporter::GetCPath() const {

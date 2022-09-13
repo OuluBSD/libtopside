@@ -48,6 +48,8 @@ public:
 	void HiPopStatementList(HiEscape& e);
 	void HiPushStatement(HiEscape& e);
 	void HiPopStatement(HiEscape& e);
+	void HiPushConstructor(HiEscape& e);
+	void HiPopConstructor(HiEscape& e);
 	void HiPushStatementParameter(HiEscape& e);
 	void HiPopStatementParameter(HiEscape& e);
 	void HiDeclareVariable(HiEscape& e);

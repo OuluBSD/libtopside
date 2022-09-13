@@ -32,6 +32,12 @@ String MetaConditional::PostCodeString(const CodeArgs& args) const {
 #endif
 
 
+
+
+void PathIdentifier::Clear() {
+	memset(this, 0, sizeof(PathIdentifier));
+}
+
 String PathIdentifier::ToString() const {
 	if (!begin || begin == end)
 		return String();
@@ -40,9 +46,10 @@ String PathIdentifier::ToString() const {
 	const bool* is_meta = &this->is_meta[0];
 	while (iter != end) {
 		//if (iter != begin) s.Cat('.');
-		if (*is_meta++)
+		if (*is_meta)
 			s.Cat('$');
 		s.Cat(iter->GetTextValue());
+		is_meta++;
 		iter++;
 	}
 	return s;

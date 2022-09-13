@@ -84,6 +84,8 @@ String AstNode::GetTreeString(int indent) const {
 		s << "op(" << GetOpString(op) << ")\n";
 	else if (filter != SEMT_NULL)
 		s << "filter(" << GetSemanticTypeString(filter) << ")\n";
+	else if (src == SEMT_RVAL && link[0])
+		s << link[0]->GetName() << "\n";
 	else
 		s << "\n";
 	
@@ -129,14 +131,15 @@ String AstNode::GetPartStringArray() const {
 	const AstNode* cur = this;
 	int count = 0;
 	while (cur) {
-		path[count] = cur;
+		if (cur->IsPartially((SemanticType)(
+				SEMT_PATH | SEMT_TYPE | SEMT_FIELD | SEMT_META_TYPE | SEMT_META_FIELD)))
+			path[count++] = cur;
 		cur = cur->GetSubOwner();
-		count++;
 	}
 	
 	String s;
 	s.Cat('[');
-	for(int i = count-2, j = 0; i >= 0; i--, j++) {
+	for(int i = count-1, j = 0; i >= 0; i--, j++) {
 		if (j) s += ", \"";
 		else s.Cat('\"');
 		s.Cat(path[i]->GetName());

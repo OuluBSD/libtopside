@@ -34,6 +34,8 @@ bool AstBuilder::Execute(String high_script_content) {
 		HighCall(global, "PopStatementList(loc)", THISBACK(HiPopStatementList));
 		HighCall(global, "PushStatement(loc, type)", THISBACK(HiPushStatement));
 		HighCall(global, "PopStatement(loc)", THISBACK(HiPopStatement));
+		HighCall(global, "PushConstructor(loc, type, var)", THISBACK(HiPushConstructor));
+		HighCall(global, "PopConstructor(loc)", THISBACK(HiPopConstructor));
 		HighCall(global, "PushStatementParameter(loc, param_type)", THISBACK(HiPushStatementParameter));
 		HighCall(global, "PopStatementParameter(loc)", THISBACK(HiPopStatementParameter));
 		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
@@ -187,6 +189,20 @@ void AstBuilder::PushStatement(const FileLocation& loc, StmtType type) {
 }
 
 void AstBuilder::PopStatement(const FileLocation& loc) {
+	PopScope();
+}
+
+void AstBuilder::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
+	AstNode& n = GetTopNode();
+	AstNode& stmt = n.Add();
+	stmt.src = SEMT_CTOR;
+	stmt.type = &type;
+	stmt.link[0] = var;
+	
+	PushScope(stmt);
+}
+
+void AstBuilder::PopConstructor(const FileLocation& loc) {
 	PopScope();
 }
 
@@ -561,6 +577,7 @@ void AstBuilder::LoadLocation(const HiValue& v, FileLocation& loc) {
 }
 
 void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens) {
+	id.Clear();
 	id.part_count = v.GetCount();
 	int c = id.part_count * 2 - 1;
 	ASSERT(c > 0);
@@ -711,6 +728,44 @@ void AstBuilder::HiPopStatement(HiEscape& e) {
 	PopStatement(loc);
 }
 
+void AstBuilder::HiPushConstructor(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PathIdentifier type, name;
+	LoadPath(loc, e[1], type, tokens[0]);
+	
+	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
+	if (!tn) {
+		AddError(loc, "type '" + type.ToString() + "' not found");
+		return;
+	}
+	
+	AstNode* var = 0;
+	
+	HiValue arg2 = e[2];
+	if (arg2.IsInt()) {
+		// pass
+	}
+	else {
+		LoadPath(loc, e[2], name, tokens[1]);
+		var = FindDeclaration(name, SEMT_FIELD);
+		if (!var) {
+			AddError(loc, "variable '" + name.ToString() + "' not found");
+			return;
+		}
+	}
+	
+	PushConstructor(loc, *tn, var);
+}
+
+void AstBuilder::HiPopConstructor(HiEscape& e) {
+	FileLocation loc;
+	LoadLocation(e[0], loc);
+	
+	PopConstructor(loc);
+}
+
 void AstBuilder::HiPushStatementParameter(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
@@ -827,7 +882,7 @@ void AstBuilder::HiPushRval(HiEscape& e) {
 	PathIdentifier name;
 	LoadPath(loc, e[1], name, tokens[0]);
 	
-	AstNode* nn = FindDeclaration(name, SEMT_FIELD);
+	AstNode* nn = FindDeclaration(name, (SemanticType)(SEMT_FIELD | SEMT_FUNCTION | SEMT_TYPE));
 	if (!nn) {
 		DUMP(GetPathString());
 		DUMP(name);

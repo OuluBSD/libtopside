@@ -148,6 +148,23 @@ void HighScriptEmitter::PopStatement(const FileLocation& loc) {
 	main << DBG_INDENT "PopStatement(" << LocArg(loc) << ");\n";
 }
 
+void HighScriptEmitter::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
+	Log("PushConstructor: " + type.ToString() + (var ? ", " + var->ToString() : String("")));
+	
+	if (var)
+		main << DBG_INDENT "PushConstructor(" << LocArg(loc) << ", " << type.GetPartStringArray() << ", " << var->GetPartStringArray() << ");\n";
+	else
+		main << DBG_INDENT "PushConstructor(" << LocArg(loc) << ", " << type.GetPartStringArray() << ", 0);\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopConstructor(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopConstructor(" << LocArg(loc) << ");\n";
+}
+
 void HighScriptEmitter::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
 	Log("PushStatementParameter: " + GetStmtParamTypeString(t));
 	

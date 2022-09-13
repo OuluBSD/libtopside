@@ -18,6 +18,8 @@ struct ParserEmitter {
 	virtual void PopStatementList(const FileLocation& loc) = 0;
 	virtual void PushStatement(const FileLocation& loc, StmtType type) = 0;
 	virtual void PopStatement(const FileLocation& loc) = 0;
+	virtual void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) = 0;
+	virtual void PopConstructor(const FileLocation& loc) = 0;
 	virtual void PushStatementParameter(const FileLocation& loc, StmtParamType t) = 0;
 	virtual void PopStatementParameter(const FileLocation& loc) = 0;
 	virtual void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
@@ -139,7 +141,7 @@ public:
 	bool ParseStatementBlock();
 	bool ParseParameter();
 	bool ParseMetaParameter();
-	bool ParsePathIdentifier(PathIdentifier& id);
+	bool ParsePathIdentifier(PathIdentifier& id, bool declare, bool resolve);
 	bool ParseCallArguments();
 	
 	bool ParseMachine();
@@ -172,7 +174,7 @@ public:
 	bool ParseComponentStatement();
 	
 	bool ParseState();
-	bool ParseDeclExpr(bool must_decl);
+	bool ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn);
 	bool ParseMetaDeclExpr(bool must_decl);
 	bool ParseMeta();
 	bool Assign(bool m);
