@@ -25,6 +25,22 @@ AstNode& AstNode::GetAdd(String name) {
 		return Add(name);
 }
 
+AstNode& AstNode::GetAdd(SemanticType accepts) {
+	ASSERT(name.GetCount());
+	for (AstNode& s : sub) {
+		if (s.IsPartially(accepts))
+			return s;
+	}
+	AstNode& s = Add();
+	s.src = accepts;
+	if (accepts == SEMT_TYPE_POINTER)
+		s.name = "#";
+	else if (accepts == SEMT_TYPE_LREF)
+		s.name = "&";
+	
+	return s;
+}
+
 AstNode* AstNode::Find(String name, SemanticType accepts) {
 	ASSERT(name.GetCount());
 	for (auto& s : sub)

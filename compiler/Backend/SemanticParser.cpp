@@ -73,7 +73,8 @@ bool SemanticParser::ParseDeclaration() {
 	
 	if (!IsLineEnd()) {
 		if (IsId("def")) {
-			TODO
+			if (!ParseClass())
+				return false;
 		}
 		else if (IsId("machine")) {
 			if (!ParseMachine())
@@ -755,12 +756,9 @@ bool SemanticParser::ParseMetaStatement(bool skip_meta_keywords) {
 	return true;
 }
 
-bool SemanticParser::ParseParameter() {
+bool SemanticParser::ParseType(PathIdentifier& type, AstNode*& tn) {
 	Iterator& iter = TopIterator();
-	const TokenNode& cur = *path.Top();
-	ASSERT(iter.Check(cur));
 	
-	PathIdentifier type;
 	if (!ParsePathIdentifier(type, true, false))
 		return false;
 	
@@ -769,11 +767,63 @@ bool SemanticParser::ParseParameter() {
 		return false;
 	}
 	
-	AstNode* tn = FindDeclaration(type);
+	tn = FindDeclaration(type);
 	if (!tn || !IsTypedNode(tn->src)) {
 		AddError(iter->loc, "could not find type '" + type.ToString() + "'");
 		return false;
 	}
+	
+	if (TryToken('[')) {
+		// TODO evaluate expression
+		if (IsToken('$')) {
+			TODO
+		}
+		else if (IsToken(TK_INTEGER)) {
+			int i = StrInt(iter->str_value);
+			AstNode& arr = tn->Add(IntStr(i));
+			arr.src = SEMT_ARRAYSIZE;
+			arr.i64 = i;
+			tn = &arr;
+			iter++;
+		}
+		else {
+			AddError(iter->loc, "not supported (yet?)");
+			return false;
+		}
+		
+		if (!PassToken(']'))
+			return false;
+	}
+	
+	if (iter && (iter->type == '#' || iter->type == '&')) {
+		ASSERT_(type.tail_count == 0, "TODO mixed pointers");
+	}
+	
+	while (iter) {
+		if (iter->type == '#') {
+			tn = &tn->GetAdd(SEMT_TYPE_POINTER);
+			type.tail[type.tail_count++] = PathIdentifier::PTR;
+		}
+		else if (iter->type == '&') {
+			tn = &tn->GetAdd(SEMT_TYPE_LREF);
+			type.tail[type.tail_count++] = PathIdentifier::LREF;
+		}
+		else break;
+		iter++;
+	}
+	
+	return true;
+}
+
+bool SemanticParser::ParseParameter() {
+	Iterator& iter = TopIterator();
+	const TokenNode& cur = *path.Top();
+	ASSERT(iter.Check(cur));
+	
+	PathIdentifier type;
+	AstNode* tn;
+	if (!ParseType(type, tn))
+		return false;
 	
 	PathIdentifier name;
 	if (!iter->IsType(',')) {
@@ -895,7 +945,8 @@ bool SemanticParser::ParsePathIdentifier(PathIdentifier& id, bool declare, bool 
 				id.is_meta[id.part_count] = true;
 			}
 			else {
-				TODO
+				AddError(iter->loc, "unexpected token " + iter->GetTypeString());
+				return false;
 			}
 		}
 		iter++;
@@ -954,9 +1005,41 @@ bool SemanticParser::ParseCallArguments() {
 
 
 bool SemanticParser::ParseClass() {
+	Iterator& iter = TopIterator();
 	const TokenNode& cur = *path.Top();
-	DUMP(cur);
-	TODO
+	
+	if (!PassId("def"))
+		return false;
+	
+	PathIdentifier name;
+	if (!ParsePathIdentifier(name, false, false)) {
+		AddError(iter->loc, "could not parse name");
+		return false;
+	}
+	
+	AstNode& var = DeclareRelative(name);
+	var.src = SEMT_CLASS;
+	
+	PushScope(var);
+	
+	EMIT PushClass(name.begin->loc, name);
+	
+	if (!iter && cur.sub.GetCount()) {
+		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
+		
+		if (!ParseStatementList())
+			return false;
+		
+		//EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
+	}
+	
+	EMIT PopClass(cur.end->loc);
+	
+	PopScope();
+	
+	EMIT PushRval(iter->loc, var);
+	
+	return true;
 }
 
 bool SemanticParser::ParseStatementBlock() {
@@ -999,12 +1082,19 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 		
 		EMIT DeclareVariable(type_id.begin->loc, tn, name);
 		
-		if (IsChar('[')) {
-			TODO
+		if (Char('[')) {
+			EMIT PushConstructor(iter->loc, tn, &var);
+			
+			if (!Cond(false)) return false;
+			EMIT ArraySize(iter->loc);
+			
+			if (!PassChar(']')) return false;
 			
 			if (Char('=')) {
 				TODO
 			}
+			
+			EMIT PopConstructor(iter->loc);
 		}
 		else if (IsChar('(')) {
 			EMIT PushConstructor(iter->loc, tn, &var);
@@ -1246,10 +1336,10 @@ bool SemanticParser::Term(bool meta) {
 			return false;
 		return true;
 	}
-	if(Id("void")) {
+	/*if(Id("void")) {
 		TODO // Emit
 		return true;
-	}
+	}*/
 	/*if(Char(TK_INDENT)) {
 		TODO // Emit
 		if(!Char(TK_DEDENT)) {
@@ -1701,11 +1791,11 @@ bool SemanticParser::TryToken(int tk_type) {
 bool SemanticParser::PassToken(int tk_type) {
 	Iterator& iter = TopIterator();
 	if (!iter) {
-		AddError(iter->loc, "expected '" + Token::GetTypeStringStatic(tk_type) + "' but got EOL");
+		AddError(iter->loc, "expected '" + Token::GetTextValueStatic(tk_type, "") + "' but got EOL");
 		return false;
 	}
 	if (!iter->IsType(tk_type)) {
-		AddError(iter->loc, "expected '" + Token::GetTypeStringStatic(tk_type) + "' but got '" + iter->GetTypeString() + "'");
+		AddError(iter->loc, "expected '" + Token::GetTextValueStatic(tk_type, "") + "' but got '" + iter->GetTypeString() + "'");
 		return false;
 	}
 	iter++;

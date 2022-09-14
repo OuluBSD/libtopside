@@ -42,6 +42,7 @@ class AstExporter :
 	void VisitArgumentList(const AstNode& n);
 	void VisitFunctionRval(const AstNode& n);
 	void VisitConstructor(const AstNode& n);
+	void VisitArraySize(const AstNode& n);
 	void PushScope(const AstNode& n);
 	void PopScope();
 	void PushInlineScope();

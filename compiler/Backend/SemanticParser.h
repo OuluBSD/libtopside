@@ -7,6 +7,8 @@ NAMESPACE_TOPSIDE_BEGIN
 struct ParserEmitter {
 	
 	
+	virtual void PushClass(const FileLocation& loc, const PathIdentifier& name) = 0;
+	virtual void PopClass(const FileLocation& loc) = 0;
 	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
 	virtual void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
 	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
@@ -29,6 +31,7 @@ struct ParserEmitter {
 	virtual void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
 	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
 	virtual void Argument(const FileLocation& loc) = 0;
+	virtual void ArraySize(const FileLocation& loc) = 0;
 	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) = 0;
 	virtual void PopExpr(const FileLocation& loc) = 0;
 	virtual void PushRval(const FileLocation& loc, AstNode& n) = 0;
@@ -139,6 +142,7 @@ public:
 	bool ParseExpression(bool m);
 	bool ParseSwitchBlock();
 	bool ParseStatementBlock();
+	bool ParseType(PathIdentifier& type, AstNode*& tn);
 	bool ParseParameter();
 	bool ParseMetaParameter();
 	bool ParsePathIdentifier(PathIdentifier& id, bool declare, bool resolve);

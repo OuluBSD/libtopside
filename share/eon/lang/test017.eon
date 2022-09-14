@@ -3,7 +3,7 @@ int main():
 	a[0] = 10
 	a[1] = 22
 	
-	int* b = a
+	int# b = a
 	
 	b[0] = 5
 	

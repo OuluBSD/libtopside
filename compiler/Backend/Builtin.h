@@ -50,12 +50,15 @@ typedef enum : uint64 {
 	SEMT_META_CLASS				= 1ULL << 41,
 	SEMT_RVAL					= 1ULL << 42,
 	SEMT_CTOR					= 1ULL << 43,
+	SEMT_ARRAYSIZE				= 1ULL << 44,
+	SEMT_TYPE_POINTER			= 1ULL << 45,
+	SEMT_TYPE_LREF				= 1ULL << 46,
 	
 	// Current limit: 1 << 63
 	
 	SEMT_FIELD =			SEMT_VARIABLE | SEMT_PARAMETER | SEMT_CONSTANT,
 	SEMT_TYPE =				SEMT_BUILTIN | SEMT_TYPEDEF | SEMT_CLASS_DECL | SEMT_CLASS |
-							SEMT_CLASS_TEMPLATE,
+							SEMT_CLASS_TEMPLATE | SEMT_TYPE_POINTER | SEMT_TYPE_LREF,
 	SEMT_FUNCTION =			SEMT_FUNCTION_STATIC | SEMT_FUNCTION_METHOD | SEMT_FUNCTION_BUILTIN,
 	SEMT_UNDEFINED =		SEMT_NULL | SEMT_IDPART,
 	SEMT_PARAMETER_PATH =	SEMT_PARAMETER | SEMT_IDPART,
@@ -127,6 +130,9 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_META_CLASS:			return "meta-class";
 		case SEMT_RVAL:					return "rval";
 		case SEMT_CTOR:					return "ctor";
+		case SEMT_ARRAYSIZE:			return "array-size";
+		case SEMT_TYPE_POINTER:			return "type-pointer";
+		case SEMT_TYPE_LREF:			return "type-lref";
 		default: return "invalid";
 	}
 }

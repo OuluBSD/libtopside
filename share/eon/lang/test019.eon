@@ -1,3 +1,9 @@
+int math.random():
+	return 7 // chosen with a dice, guaranteed to be random
+	
+int parse.int(cstring s):
+	return 42
+
 def object:
 	cstring food, desert
 
@@ -7,7 +13,7 @@ int main():
 	int parsed = parse.int("42")
 	
 	cstring a.str = "ABCD"
-	a.char = a.str.at(0)
+	char a.char = a.str[0]
 	
 	object obj1
 	obj1.food = "cake"

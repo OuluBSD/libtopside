@@ -193,6 +193,14 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 					next = cur->Find(t->str_value, a);
 				}
 			}
+			else if (t->IsType('#')) {
+				next = cur;
+				// pass, next = &cur->GetAdd(SEMT_TYPE_POINTER);
+			}
+			else if (t->IsType('&')) {
+				next = cur;
+				// pass, next = &cur->GetAdd(SEMT_TYPE_LREF);
+			}
 			else {
 				TODO
 			}
@@ -211,6 +219,36 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 		ASSERT(next);
 		prev = cur;
 		cur = next;
+	}
+	
+	if (id.head_count > 0 && id.tail_count > 0) {
+		//AddError(id.begin->loc, "both head and tail qualifiers");
+		return 0;
+	}
+	
+	if (cur && id.head_count > 0) {
+		TODO
+	}
+	else if (cur && id.tail_count > 0) {
+		if (cur->IsPartially(SEMT_TYPE)) {
+			for(int i = 0; i < id.tail_count; i++) {
+				switch (id.tail[i]) {
+				case PathIdentifier::PTR:
+					cur = &cur->GetAdd(SEMT_TYPE_POINTER);
+					break;
+				
+				case PathIdentifier::LREF:
+					cur = &cur->GetAdd(SEMT_TYPE_LREF);
+					break;
+				
+				default:
+					return 0;
+				}
+			}
+		}
+		else {
+			TODO
+		}
 	}
 	
 	SemanticType a = id.is_meta[id.part_count-1] ? SEMT_META_ANY : accepts;

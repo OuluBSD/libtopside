@@ -1,15 +1,15 @@
-function foo(int[1]& myarray):
+void foo(int# myarray):
 	myarray[0]++
 
-function bar(int& myvalue):
+void bar(int& myvalue):
 	myvalue++
 
 int main():
 	int a = 42
-	int[1] b
+	int b[1]
 	b[0] = 43
 	
 	foo(b)
 	bar(a)
 	
-	return a==42 && b[0]==44
+	return a==43 && b[0]==44

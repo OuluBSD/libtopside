@@ -131,6 +131,10 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		VisitConstructor(n);
 		break;
 		
+	case SEMT_ARRAYSIZE:
+		VisitArraySize(n);
+		break;
+		
 	default:
 		TODO
 	}
@@ -266,7 +270,14 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		
 	case STMT_EXPR:
 		output << GetIndentString() << "";
-		Visit(n, (SemanticType)(SEMT_EXPR | SEMT_CTOR));
+		for (int i = n.sub.GetCount()-1; i >= 0; i--) {
+			const AstNode& s = n.sub[i];
+			if (s.IsPartially((SemanticType)(SEMT_EXPR | SEMT_CTOR))) {
+				Visit(s);
+				break;
+			}
+		}
+		//Visit(n, (SemanticType)(SEMT_EXPR | SEMT_CTOR));
 		output << ";\n";
 		break;
 		
@@ -381,6 +392,13 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	case OP_BWOR:
 	case OP_AND:
 	case OP_OR:
+		ASSERT(n.link[0]);
+		ASSERT(n.link[1]);
+		VisitExpression(*n.link[0], depth+1);
+		output << " " << GetOpCodeString(n.op) << " ";
+		VisitExpression(*n.link[1], depth+1);
+		break;
+		
 	case OP_ASSIGN:
 	case OP_ADDASS:
 	case OP_SUBASS:
@@ -389,9 +407,9 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	case OP_MODASS:
 		ASSERT(n.link[0]);
 		ASSERT(n.link[1]);
-		VisitExpression(*n.link[0], depth+1);
+		VisitExpression(*n.link[0], depth);
 		output << " " << GetOpCodeString(n.op) << " ";
-		VisitExpression(*n.link[1], depth+1);
+		VisitExpression(*n.link[1], depth);
 		break;
 		
 	case OP_COND:
@@ -550,7 +568,16 @@ void AstExporter::VisitConstructor(const AstNode& n) {
 		output << GetCPath(*n.link[0]);
 	
 	for (const AstNode& sub : n.sub)
-		Visit(sub);
+		if (sub.src == SEMT_ARGUMENT_LIST || sub.src == SEMT_ARRAYSIZE)
+			Visit(sub);
+	
+}
+
+void AstExporter::VisitArraySize(const AstNode& n) {
+	output << "[";
+	ASSERT(n.link[0]);
+	Visit(*n.link[0]);
+	output << "]";
 }
 
 String AstExporter::GetCPath() const {
@@ -605,8 +632,14 @@ String AstExporter::GetCPath(const AstNode& n) const {
 		else {
 			for (int i = 0; i < part_count; i++) {
 				const AstNode* part = parts[part_count - 1 -i];
-				if (i) s.Cat('_');
-				s.Cat(part->name);
+				if (part->src == SEMT_TYPE_POINTER)
+					s.Cat('*');
+				else if (part->src == SEMT_TYPE_LREF)
+					s.Cat('&');
+				else {
+					if (i) s.Cat('_');
+					s.Cat(part->name);
+				}
 			}
 		}
 		return s;

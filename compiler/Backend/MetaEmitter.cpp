@@ -48,10 +48,32 @@ void HighScriptEmitter::Leave() {
 
 String HighScriptEmitter::GetPartStringArray(const PathIdentifier& name) {
 	String s = "[";
+	
+	for(int i = 0; i < name.head_count; i++) {
+		if (i)
+			s << ", ";
+		switch (name.head[i]) {
+			case PathIdentifier::PTR: s << "\"#\""; break;
+			case PathIdentifier::LREF: s << "\"&\""; break;
+			default: break;
+		}
+	}
+	
 	for(int i = 0; i < name.part_count; i++) {
-		if (i) s << ", ";
+		if (name.head_count || i) s << ", ";
 		s << "\"" << name.parts[i]->GetTextValue() << "\"";
 	}
+	
+	for(int i = 0; i < name.tail_count; i++) {
+		if (name.head_count || name.part_count || i)
+			s << ", ";
+		switch (name.tail[i]) {
+			case PathIdentifier::PTR: s << "\"#\""; break;
+			case PathIdentifier::LREF: s << "\"&\""; break;
+			default: break;
+		}
+	}
+	
 	s << "]";
 	return s;
 }
@@ -63,6 +85,20 @@ String HighScriptEmitter::LocArg(const FileLocation& loc) {
 }
 
 #define DBG_INDENT (dbg_indent ? GetTabString() : String()) <<
+
+void HighScriptEmitter::PushClass(const FileLocation& loc, const PathIdentifier& name) {
+	Log("PushClass: " + name.ToString());
+	
+	main << DBG_INDENT "PushClass(" << LocArg(loc) << ", " << GetPartStringArray(name) << ");\n";
+	
+	Enter();
+}
+
+void HighScriptEmitter::PopClass(const FileLocation& loc) {
+	Leave();
+	
+	main << DBG_INDENT "PopClass(" << LocArg(loc) << ");\n";
+}
 
 void HighScriptEmitter::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	Log("PushFunction: " + name.ToString() + ", returns " + ret_type.ToString());
@@ -221,6 +257,14 @@ void HighScriptEmitter::Argument(const FileLocation& loc) {
 	Log("Argument");
 	
 	main << DBG_INDENT "Argument(" << LocArg(loc) << ");\n";
+}
+
+void HighScriptEmitter::ArraySize(const FileLocation& loc) {
+	Leave();
+	
+	Log("ArraySize");
+	
+	main << DBG_INDENT "ArraySize(" << LocArg(loc) << ");\n";
 }
 
 /*void HighScriptEmitter::PushExprScope() {

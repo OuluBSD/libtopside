@@ -49,6 +49,7 @@ struct MetaConditional {
 
 struct PathIdentifier {
 	enum {
+		DIRECT,
 		PTR,
 		LREF
 	};

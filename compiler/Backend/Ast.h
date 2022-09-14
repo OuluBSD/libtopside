@@ -36,6 +36,7 @@ public:
 	
 	AstNode&		Add(String name="", int idx=-1);
 	AstNode&		GetAdd(String name="");
+	AstNode&		GetAdd(SemanticType accepts);
 	AstNode*		Find(String name, SemanticType accepts=SEMT_NULL);
 	const AstNode*	Find(String name, SemanticType accepts=SEMT_NULL) const;
 	AstNode*		Find(SemanticType t);

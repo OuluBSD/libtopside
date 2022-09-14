@@ -1,3 +1,5 @@
+void PushClass(const FileLocation& loc, const PathIdentifier& name) override;
+void PopClass(const FileLocation& loc) override;
 void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) override;
 void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) override;
 void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) override;
@@ -20,6 +22,7 @@ void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, Semantic
 void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) override;
 void PushRvalArgumentList(const FileLocation& loc) override;
 void Argument(const FileLocation& loc) override;
+void ArraySize(const FileLocation& loc) override;
 void PopExpr(const FileLocation& loc) override;
 void PushRval(const FileLocation& loc, AstNode& n) override;
 void PushRvalConstruct(const FileLocation& loc, AstNode& n) override;

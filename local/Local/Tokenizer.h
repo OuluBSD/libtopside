@@ -168,7 +168,8 @@ struct Token : Moveable<Token> {
 		String s = GetTypeString() + ": " + EscapeString(GetTextValue());
 		return s;
 	}
-	String GetTextValue() const {
+	String GetTextValue() const {return GetTextValueStatic(type, str_value);}
+	static String GetTextValueStatic(int type, String str_value) {
 		switch (type) {
 			case TK_UNKNOWN: return "";
 			case TK_ID: return str_value;

@@ -36,6 +36,8 @@ public:
 	void PushRvalConstant(const FileLocation& loc, String v);
 	
 	void HiAddFile(HiEscape& e);
+	void HiPushClass(HiEscape& e);
+	void HiPopClass(HiEscape& e);
 	void HiPushFunction(HiEscape& e);
 	void HiPushMetaFunction(HiEscape& e);
 	void HiParameter(HiEscape& e);
@@ -59,6 +61,7 @@ public:
 	void HiPushRvalUnresolved(HiEscape& e);
 	void HiPushRvalArgumentList(HiEscape& e);
 	void HiArgument(HiEscape& e);
+	void HiArraySize(HiEscape& e);
 	//void HiPopExprScopeToCtor(HiEscape& e);
 	void HiPopExpr(HiEscape& e);
 	void HiPushRval(HiEscape& e);
