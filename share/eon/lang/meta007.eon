@@ -1,0 +1,8 @@
+
+meta expr add(int x, int y):
+	meta int a=$x+$y
+	$a
+
+int main():
+    meta int a = 7
+    return add(3,6)==9 && $a==7

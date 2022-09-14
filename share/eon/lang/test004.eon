@@ -1,5 +1,5 @@
 int main():
-	int a = 42
-	if (a < 43):
+	meta int a = 42
+	meta if ($a < 43):
 		return 1
 	return 0

@@ -1,0 +1,6 @@
+int main():
+    // simple for loop
+    int a = 0
+    meta for int i=1, i<10, i++:
+        a = a + i
+    return a==45

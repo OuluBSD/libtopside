@@ -1,0 +1,5 @@
+meta int num = 1
+
+int main():
+    // simply testing we can return the correct value
+    return $num

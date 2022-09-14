@@ -1,0 +1,5 @@
+meta int a = 42
+
+int main():
+    // comparison
+    return $a==42
