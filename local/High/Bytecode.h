@@ -287,7 +287,8 @@ public:
 	ArrayMap<String, HiValue>& Var();
 	HiValue& Self();
 	
-	
+	void		SetFailed();
+	bool		IsFailed() const;
 	
 	HiValue return_value;
 	

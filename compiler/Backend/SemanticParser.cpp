@@ -92,6 +92,10 @@ bool SemanticParser::ParseDeclaration() {
 			if (!ParseWorld())
 				return false;
 		}
+		else if (IsId("meta")) {
+			if (!ParseMeta())
+				return false;
+		}
 		else {
 			Scope& t = spath.Top();
 			bool prev = t.must_declare;
@@ -231,6 +235,8 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	var.type = &ret_type;
 	
 	PushScope(var);
+	
+	TODO
 	
 	EMIT PushMetaFunction(name.begin->loc, ret_type, name);
 	
@@ -935,7 +941,11 @@ bool SemanticParser::ParsePathIdentifier(PathIdentifier& id, bool declare, bool 
 		}
 		else {
 			if (iter->IsType(TK_ID) && iter->str_value == "meta") {
-				TODO
+				if (!id.part_count) {
+					AddError(iter->loc, "unexpected 'meta' keyword");
+					return false;
+				}
+				break;
 			}
 			else if (iter->IsType(TK_ID) || iter->IsType(TK_INTEGER)) {
 				id.parts[id.part_count++] = iter;
@@ -1052,13 +1062,6 @@ bool SemanticParser::ParseStatementBlock() {
 bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 	const TokenNode& cur = *path.Top();
 	Iterator& iter = TopIterator();
-	//DUMP(cur);
-	
-	/*PathIdentifier type_id;
-	if (!ParsePathIdentifier(type_id))
-		return false;
-	
-	AstNode* tn = FindDeclaration(type_id);*/
 	
 	PathIdentifier name;
 	
@@ -1136,62 +1139,84 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 	return true;
 }
 
-bool SemanticParser::ParseMetaDeclExpr(bool must_decl) {
+bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 	const TokenNode& cur = *path.Top();
 	Iterator& iter = TopIterator();
-	//DUMP(cur);
 	
-	PathIdentifier first;
-	if (!ParsePathIdentifier(first, false, false))
-		return false;
-	
-	AstNode* tn = FindDeclaration(first, SEMT_META_ANY);
-	AstNode* var = 0;
 	PathIdentifier name;
 	
-	if (tn && tn->IsPartially(SEMT_META_TYPE)) {
-		if (!ParsePathIdentifier(name, false, false))
-			return false;
-		
-		//DUMP(name);
-		var = &DeclareRelative(name);
-		ASSERT(var->IsPartially(SEMT_UNDEFINED));
-		var->src = SEMT_META_VARIABLE;
-		var->type = tn;
-		
-		EMIT DeclareMetaVariable(first.begin->loc, *tn, name);
-	}
-	else if (!tn || must_decl) {
-		if (must_decl)
-			AddError(iter->loc, "could not resolve '" + first.ToString() + "'");
+	//if (tn && tn->IsPartially(SEMT_TYPE)) {
+	if (!ParsePathIdentifier(name, false, false)) {
+		AddError(iter->loc, "could not parse name");
 		return false;
 	}
+	
+	if (IsChar('(') && cur.sub.GetCount()) {
+		
+		if (!ParseMetaFunction(tn, name))
+			return false;
+		
+	}
 	else {
-		var = tn;
-		ASSERT(var->name.GetCount());
+		AstNode& var = Declare(GetBlock(), name);
+		ASSERT(var.IsPartially(SEMT_UNDEFINED));
+		var.src = SEMT_VARIABLE;
+		var.type = &tn;
+		
+		TODO
+		
+		EMIT DeclareVariable(type_id.begin->loc, tn, name);
+		
+		if (Char('[')) {
+			EMIT PushConstructor(iter->loc, tn, &var);
+			
+			if (!Cond(false)) return false;
+			EMIT ArraySize(iter->loc);
+			
+			if (!PassChar(']')) return false;
+			
+			if (Char('=')) {
+				TODO
+			}
+			
+			EMIT PopConstructor(iter->loc);
+		}
+		else if (IsChar('(')) {
+			EMIT PushConstructor(iter->loc, tn, &var);
+			
+			EMIT PushRvalArgumentList(iter->loc);
+			
+			if (!Char(')')) {
+				if (!Cond(false)) return false;
+				EMIT Argument(iter->loc);
+				
+				while (Char(',')) {
+					if (!Cond(false)) return false;
+					EMIT Argument(iter->loc);
+				}
+				
+				if (!PassChar(')'))
+					return false;
+			}
+			
+			EMIT PopExpr(iter->loc);
+			EMIT PopConstructor(iter->loc);
+		}
+		else if (Char('=')) {
+			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushRvalArgumentList(iter->loc);
+			
+			//NO: Expression leaf pushes: EMIT PushExprScope();
+			if (!Cond(false)) return false;
+			EMIT Argument(iter->loc);
+			
+			EMIT PopExpr(iter->loc);
+			EMIT PopConstructor(iter->loc);
+		}
+		
+		EMIT PushRval(iter->loc, var);
 	}
 	
-	if (Char('=')) {
-		EMIT PushConstructor(iter->loc, *tn, var);
-		EMIT PushRval(iter->loc, *var);
-		
-		//NO: Expression leaf pushes: EMIT PushExprScope();
-		if (!Cond(true)) return false;
-		EMIT Expr2(iter->loc, OP_ASSIGN);
-		
-		EMIT PopExpr(iter->loc);
-		EMIT PopConstructor(iter->loc);
-	}
-	else if (IsChar('(')) {
-		if (!tn) {
-			TODO // subscript op
-		}
-		else {
-			ASSERT(var);
-			if (!ParseMetaFunction(*tn, name))
-				return false;
-		}
-	}
 	
 	return true;
 }
@@ -1466,8 +1491,14 @@ bool SemanticParser::Term(bool meta) {
 				// Variable declaration statement
 				EMIT DeclareVariable(iter->loc, *nn, name);
 				EMIT PushRval(id.begin->loc, var);*/
-				if (!ParseDeclExpr(id, *nn))
-					return false;
+				if (meta) {
+					if (!ParseMetaDeclExpr(id, *nn))
+						return false;
+				}
+				else {
+					if (!ParseDeclExpr(id, *nn))
+						return false;
+				}
 			}
 			else if (allow_expr_unresolved) {
 				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
@@ -1476,7 +1507,6 @@ bool SemanticParser::Term(bool meta) {
 				TODO
 			}
 		}
-		
 		
 		return Subscript(meta);
 	}
@@ -2483,7 +2513,6 @@ bool SemanticParser::ParseMeta() {
 	else {
 		return ParseExpression(true);
 	}
-	return true;
 }
 
 bool SemanticParser::ParseWorldStatementList() {

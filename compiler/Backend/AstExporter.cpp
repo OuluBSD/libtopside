@@ -101,6 +101,11 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		VisitVariable(n, declare);
 		break;
 	
+	case SEMT_META_VARIABLE:
+		ASSERT_(0, "meta code should be executed before this, and non-existent here");
+		//VisitMetaVariable(n, declare);
+		break;
+	
 	case SEMT_ARGUMENT:
 		VisitArgument(n);
 		break;
@@ -464,6 +469,21 @@ void AstExporter::VisitVariable(const AstNode& n, bool declare) {
 	}
 	
 }
+
+/*void AstExporter::VisitMetaVariable(const AstNode& n, bool declare) {
+	ASSERT(n.src == SEMT_META_VARIABLE || n.src == SEMT_META_PARAMETER);
+	
+	if (declare) {
+		if (n.type) {
+			// use ctor instead
+				//output << GetIndentString() << GetCPath(*n.type) << " " << GetCPath(n) << ";\n";
+		}
+	}
+	else {
+		output << GetCPath(n);
+	}
+	
+}*/
 
 void AstExporter::VisitArgument(const AstNode& n) {
 	ASSERT(n.src == SEMT_ARGUMENT);

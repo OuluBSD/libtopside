@@ -78,6 +78,30 @@ String HighScriptEmitter::GetPartStringArray(const PathIdentifier& name) {
 	return s;
 }
 
+String HighScriptEmitter::GetCPath(const PathIdentifier& name) {
+	String s;
+	for(int i = 0; i < name.head_count; i++) {
+		switch(name.head[i]) {
+			case PathIdentifier::PTR: s << "*"; break;
+			case PathIdentifier::LREF: s << "&"; break;
+			default: break;
+		}
+	}
+	for(int i = 0; i < name.part_count; i++) {
+		if (i)
+			s.Cat('_');
+		s << name.parts[i]->str_value;
+	}
+	for(int i = 0; i < name.tail_count; i++) {
+		switch(name.tail[i]) {
+			case PathIdentifier::PTR: s << "*"; break;
+			case PathIdentifier::LREF: s << "&"; break;
+			default: break;
+		}
+	}
+	return s;
+}
+
 String HighScriptEmitter::LocArg(const FileLocation& loc) {
 	String s;
 	s += "[" + IntStr(files.FindAdd(loc.file)) + ", " + IntStr(loc.line) + ", " + IntStr(loc.col) + "]";
@@ -186,6 +210,8 @@ void HighScriptEmitter::PopStatement(const FileLocation& loc) {
 
 void HighScriptEmitter::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
 	Log("PushConstructor: " + type.ToString() + (var ? ", " + var->ToString() : String("")));
+	
+	//if (meta) main << DBG_INDENT GetCPath(id) << " = " << GetTypeInitValueString(n) << ";\n";
 	
 	if (var)
 		main << DBG_INDENT "PushConstructor(" << LocArg(loc) << ", " << type.GetPartStringArray() << ", " << var->GetPartStringArray() << ");\n";

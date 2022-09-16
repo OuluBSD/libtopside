@@ -35,6 +35,7 @@ class AstExporter :
 	void VisitStatement(const AstNode& n);
 	void VisitExpression(const AstNode& n, int depth);
 	void VisitVariable(const AstNode& n, bool declare=false);
+	//void VisitMetaVariable(const AstNode& n, bool declare=false);
 	void VisitArgument(const AstNode& n);
 	void VisitConstant(const AstNode& n);
 	void VisitResolve(const AstNode& n, bool rval=false);

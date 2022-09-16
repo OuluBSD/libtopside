@@ -12,8 +12,51 @@ AstBuilder::AstBuilder() :
 void AstBuilder::Clear() {
 	spath.Clear();
 	root.Clear();
+	fail = false;
 	
 	InitDefault();
+}
+
+HiValue AstBuilder::Execute(ArrayMap<String, HiValue>& global, HiValue *self,
+                 const HiValue& lambda, Vector<HiValue>& arg, int op_limit)
+{
+	const HiLambda& l = lambda.GetLambda();
+	if(arg.GetCount() != l.arg.GetCount()) {
+		String argnames;
+		for(int i = 0; i < l.arg.GetCount(); i++)
+			argnames << (i ? ", " : "") << l.arg[i];
+		throw CParser::Error(Format("invalid number of arguments (%d passed, expected: %s)", arg.GetCount(), argnames));
+	}
+	HiValue ret;
+	flag.Start(1);
+	{
+		vm = new Hi(global, op_limit, lambda.GetLambdaRW());
+		Hi& sub = *vm;
+		HiValue& sub_self = sub.Self();
+		if(self)
+			sub_self = *self;
+		for(int i = 0; i < l.arg.GetCount(); i++)
+			sub.VarGetAdd(l.arg[i]) = arg[i];
+		while (flag.IsRunning()) {
+			sub.Run();
+			if (!sub.IsSleepExit())
+				break;
+			while (!sub.CheckSleepFinished())
+				Sleep(1);
+		}
+		if(self)
+			*self = sub_self;
+		ret = sub.return_value;
+	}
+	return ret;
+}
+
+void AstBuilder::AddError(const FileLocation& loc, String msg) {
+	ErrorSource::AddError(loc, msg);
+	flag.SetNotRunning();
+	fail = true;
+	if (vm)
+		vm->SetFailed();
 }
 
 bool AstBuilder::Execute(String high_script_content) {
@@ -86,13 +129,23 @@ bool AstBuilder::Execute(String high_script_content) {
 	    StdLib(global);
 	
         Scan(global, high_script_content, "parser");
-        HiValue ret = TS::Execute(global, "main", INT_MAX);
+        
+        int ii = global.Find(String("main"));
+        if (ii < 0 || !global[ii].IsLambda()) {
+            LOG("internal error: 'main' not found");
+            return false;
+        }
+        Vector<HiValue> arg;
+        HiValue ret = this->Execute(global, NULL, global[ii], arg, INT_MAX);
         DUMP(ret);
     }
     catch(Exc e) {
         LOG("ERROR: " << e << "\n");
         return false;
     }
+    if (fail || (vm && vm->IsFailed()))
+        return false;
+    
     return true;
 }
 
@@ -658,6 +711,19 @@ void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentif
 	id.begin = tokens.Begin();
 	id.end = tokens.End();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void AstBuilder::HiAddFile(HiEscape& e) {
 	String file = e[0];

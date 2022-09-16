@@ -40,6 +40,7 @@ public:
 	void PopScope();
 	AstNode& GetTopNode() {return *spath.Top().n;}
 	
+	String GetTypeInitValueString(AstNode& n) const;
 	
 	static bool ForwardUserspace(AstNode*& n);
 	

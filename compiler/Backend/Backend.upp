@@ -24,12 +24,13 @@ file
 	ParserOverrides.inl highlight java,
 	SemanticParser.h,
 	SemanticParser.cpp,
-	MetaEmitter.h,
-	MetaEmitter.cpp,
 	AstBuilder.h,
 	AstBuilder.cpp,
 	AstExporter.h,
 	AstExporter.cpp,
 	Compiler.h,
-	Compiler.cpp;
+	Compiler.cpp,
+	Trash readonly separator,
+	MetaEmitter.h,
+	MetaEmitter.cpp;
 

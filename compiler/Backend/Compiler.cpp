@@ -86,7 +86,7 @@ bool Compiler::Tokenize(String filepath, String content, bool pythonic) {
 }
 
 bool Compiler::ParseStructure() {
-	ts.WhenMessage << THISBACK(OnProcMsg);
+	ts.WhenMessage = THISBACK(OnProcMsg);
 	if (!ts.ProcessEon(t)) {
 		return false;
 	}
@@ -95,7 +95,7 @@ bool Compiler::ParseStructure() {
 }
 
 bool Compiler::Parse() {
-	sp.WhenMessage << THISBACK(OnProcMsg);
+	sp.WhenMessage = THISBACK(OnProcMsg);
 	if (!sp.ProcessEon(ts)) {
 		return false;
 	}
@@ -105,7 +105,7 @@ bool Compiler::Parse() {
 }
 
 bool Compiler::RunMeta() {
-	ab.WhenMessage << THISBACK(OnProcMsg);
+	ab.WhenMessage = THISBACK(OnProcMsg);
 	if (!ab.Execute(sp.GetResult()))
 		return false;
 	

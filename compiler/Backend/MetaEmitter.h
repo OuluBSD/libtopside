@@ -20,6 +20,7 @@ public:
 	HighScriptEmitter();
 	
 	static String GetPartStringArray(const PathIdentifier& name);
+	static String GetCPath(const PathIdentifier& name);
 	
 	void Finish();
 	void SetDebugIndent(bool b=true) {dbg_indent = b;}

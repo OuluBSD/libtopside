@@ -50,6 +50,17 @@ bool Hi::CheckSleepFinished() {
 	return !b;
 }
 
+void Hi::SetFailed() {
+	fail = true;
+	for (Call& c : calls)
+		if (c.vm)
+			c.vm->fail = true;
+}
+
+bool Hi::IsFailed() const {
+	return fail;
+}
+
 void Hi::OnError(String s) {
 	LOG("error: " << s);
 	fail = true;

@@ -17,6 +17,9 @@ public:
 	Index<String> files;
 	//CompilationUnit cunit;
 	AstNode root;
+	One<Hi> vm;
+	RunningFlag flag;
+	bool fail = false;
 	
 	void LoadLocation(const HiValue& v, FileLocation& loc);
 	void LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens);
@@ -96,7 +99,9 @@ public:
 	void HiPopExprCallArgument(HiEscape& e);
 	
 	bool Execute(String high_script_content);
+	HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self, const HiValue& lambda, Vector<HiValue>& arg, int op_limit);
 	
+	void AddError(const FileLocation& loc, String msg);
 };
 
 

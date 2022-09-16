@@ -179,7 +179,7 @@ public:
 	
 	bool ParseState();
 	bool ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn);
-	bool ParseMetaDeclExpr(bool must_decl);
+	bool ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn);
 	bool ParseMeta();
 	bool Assign(bool m);
 	bool AssignPost(bool m);

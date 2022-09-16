@@ -344,5 +344,16 @@ void EonStd::PopScope() {
 	ASSERT(spath.GetCount() > 0);
 }
 
+String EonStd::GetTypeInitValueString(AstNode& n) const {
+	if (n.src == SEMT_META_BUILTIN) {
+		if (n.name == "int")
+			return "0";
+		TODO
+	}
+	else {
+		TODO
+	}
+}
+
 
 NAMESPACE_TOPSIDE_END
