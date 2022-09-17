@@ -313,8 +313,9 @@ bool SemanticParser::ParseAtomStatementList() {
 	
 	const TokenNode& tk_owner = *path.Top();
 	AstNode& ast_owner = *spath.Top().n;
+	Iterator& iter = TopIterator();
 	
-	AstNode& block = ast_owner.Add();
+	AstNode& block = ast_owner.Add(tk_owner.end->loc);
 	block.src = SEMT_STATEMENT_BLOCK;
 	PushScope(block);
 	
@@ -378,7 +379,7 @@ bool SemanticParser::ParseStatementList() {
 	const TokenNode& tk_owner = *path.Top();
 	AstNode& ast_owner = *spath.Top().n;
 	
-	AstNode& block = ast_owner.Add();
+	AstNode& block = ast_owner.Add(tk_owner.end->loc);
 	block.src = SEMT_STATEMENT_BLOCK;
 	PushScope(block);
 	
@@ -437,7 +438,7 @@ bool SemanticParser::ParseStatement() {
 	}
 	else if (Id("if")) {
 		AstNode& t = GetTopNode();
-		AstNode& stmt = t.Add();
+		AstNode& stmt = t.Add(iter->loc);
 		stmt.src = SEMT_STATEMENT;
 		stmt.stmt = STMT_IF;
 		PushScope(stmt);
@@ -607,7 +608,7 @@ bool SemanticParser::ParseStatement() {
 		// empty statement
 	}
 	else {
-		AstNode& stmt = spath.Top().n->Add();
+		AstNode& stmt = spath.Top().n->Add(iter->loc);
 		stmt.src = SEMT_STATEMENT;
 		PushScope(stmt);
 		EMIT PushStatement(iter->loc, STMT_EXPR);
@@ -748,7 +749,7 @@ bool SemanticParser::ParseMetaStatement(bool skip_meta_keywords) {
 		// empty statement
 	}
 	else {
-		AstNode& stmt = spath.Top().n->Add();
+		AstNode& stmt = spath.Top().n->Add(iter->loc);
 		stmt.src = SEMT_META_STATEMENT;
 		PushScope(stmt);
 		EMIT PushStatement(iter->loc, STMT_META_EXPR);
@@ -786,7 +787,7 @@ bool SemanticParser::ParseType(PathIdentifier& type, AstNode*& tn) {
 		}
 		else if (IsToken(TK_INTEGER)) {
 			int i = StrInt(iter->str_value);
-			AstNode& arr = tn->Add(IntStr(i));
+			AstNode& arr = tn->Add(iter->loc, IntStr(i));
 			arr.src = SEMT_ARRAYSIZE;
 			arr.i64 = i;
 			tn = &arr;
@@ -807,11 +808,11 @@ bool SemanticParser::ParseType(PathIdentifier& type, AstNode*& tn) {
 	
 	while (iter) {
 		if (iter->type == '#') {
-			tn = &tn->GetAdd(SEMT_TYPE_POINTER);
+			tn = &tn->GetAdd(iter->loc, SEMT_TYPE_POINTER);
 			type.tail[type.tail_count++] = PathIdentifier::PTR;
 		}
 		else if (iter->type == '&') {
-			tn = &tn->GetAdd(SEMT_TYPE_LREF);
+			tn = &tn->GetAdd(iter->loc, SEMT_TYPE_LREF);
 			type.tail[type.tail_count++] = PathIdentifier::LREF;
 		}
 		else break;
@@ -1059,7 +1060,7 @@ bool SemanticParser::ParseStatementBlock() {
 	return true;
 }
 
-bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
+bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, AstNode& tn) {
 	const TokenNode& cur = *path.Top();
 	Iterator& iter = TopIterator();
 	
@@ -1078,15 +1079,12 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 		
 	}
 	else {
-		AstNode& var = Declare(GetBlock(), name);
-		ASSERT(var.IsPartially(SEMT_UNDEFINED));
-		var.src = SEMT_VARIABLE;
-		var.type = &tn;
-		
-		EMIT DeclareVariable(type_id.begin->loc, tn, name);
+		AstNode* var = EMIT DeclareVariable(type_id.begin->loc, tn, name);
+		if (!var)
+			return false;
 		
 		if (Char('[')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			
 			if (!Cond(false)) return false;
 			EMIT ArraySize(iter->loc);
@@ -1100,7 +1098,7 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 			EMIT PopConstructor(iter->loc);
 		}
 		else if (IsChar('(')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			
 			EMIT PushRvalArgumentList(iter->loc);
 			
@@ -1121,7 +1119,7 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 			EMIT PopConstructor(iter->loc);
 		}
 		else if (Char('=')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			EMIT PushRvalArgumentList(iter->loc);
 			
 			//NO: Expression leaf pushes: EMIT PushExprScope();
@@ -1132,13 +1130,14 @@ bool SemanticParser::ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 			EMIT PopConstructor(iter->loc);
 		}
 		
-		EMIT PushRval(iter->loc, var);
+		EMIT PushRval(iter->loc, *var);
 	}
 	
 	
 	return true;
 }
 
+#if 0
 bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
 	const TokenNode& cur = *path.Top();
 	Iterator& iter = TopIterator();
@@ -1158,17 +1157,12 @@ bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& t
 		
 	}
 	else {
-		AstNode& var = Declare(GetBlock(), name);
-		ASSERT(var.IsPartially(SEMT_UNDEFINED));
-		var.src = SEMT_VARIABLE;
-		var.type = &tn;
-		
-		TODO
-		
-		EMIT DeclareVariable(type_id.begin->loc, tn, name);
+		AstNode* var = EMIT DeclareVariable(type_id.begin->loc, tn, name);
+		if (!var)
+			return false;
 		
 		if (Char('[')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			
 			if (!Cond(false)) return false;
 			EMIT ArraySize(iter->loc);
@@ -1182,7 +1176,7 @@ bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& t
 			EMIT PopConstructor(iter->loc);
 		}
 		else if (IsChar('(')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			
 			EMIT PushRvalArgumentList(iter->loc);
 			
@@ -1203,7 +1197,7 @@ bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& t
 			EMIT PopConstructor(iter->loc);
 		}
 		else if (Char('=')) {
-			EMIT PushConstructor(iter->loc, tn, &var);
+			EMIT PushConstructor(iter->loc, tn, var);
 			EMIT PushRvalArgumentList(iter->loc);
 			
 			//NO: Expression leaf pushes: EMIT PushExprScope();
@@ -1214,12 +1208,13 @@ bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& t
 			EMIT PopConstructor(iter->loc);
 		}
 		
-		EMIT PushRval(iter->loc, var);
+		EMIT PushRval(iter->loc, *var);
 	}
 	
 	
 	return true;
 }
+#endif
 
 bool SemanticParser::ParseSwitchBlock() {
 	TODO
@@ -1311,7 +1306,7 @@ bool SemanticParser::Term(bool meta) {
 	Iterator& iter = TopIterator();
 	
 	if(iter->IsType(TK_HEX)) {
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, HexInt(iter->str_value));
 		iter++;
 		return true;
 	}
@@ -1320,23 +1315,23 @@ bool SemanticParser::Term(bool meta) {
 		return true;
 	}*/
 	if(iter->IsType(TK_FLOAT) || iter->IsType(TK_DOUBLE)) {
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, StrDbl(iter->str_value));
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_OCT)) {
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, OctInt(iter->str_value));
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_INTEGER)) {
 		// TODO: int64 !
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, StrInt(iter->str_value));
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_STRING)) {
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, iter->str_value);
 		iter++;
 		return true;
 	}
@@ -1346,12 +1341,13 @@ bool SemanticParser::Term(bool meta) {
 			AddError(iter->loc, "invalid character literal");
 			return false;
 		}*/
-		EMIT PushRvalConstant(iter->loc, iter);
+		TODO
+		EMIT PushRvalConstant(iter->loc, iter->str_value);
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_ID) && (iter->str_value == "true" || iter->str_value == "false")) {
-		EMIT PushRvalConstant(iter->loc, iter);
+		EMIT PushRvalConstant(iter->loc, iter->str_value == "true");
 		iter++;
 		return true;
 	}
@@ -1491,14 +1487,14 @@ bool SemanticParser::Term(bool meta) {
 				// Variable declaration statement
 				EMIT DeclareVariable(iter->loc, *nn, name);
 				EMIT PushRval(id.begin->loc, var);*/
-				if (meta) {
+				/*if (meta) {
 					if (!ParseMetaDeclExpr(id, *nn))
 						return false;
 				}
-				else {
-					if (!ParseDeclExpr(id, *nn))
-						return false;
-				}
+				else {*/
+				if (!ParseDeclExpr(meta, id, *nn))
+					return false;
+				//}
 			}
 			else if (allow_expr_unresolved) {
 				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
@@ -2199,7 +2195,7 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 				if (c == 0)
 					EMIT PushAtomConnector(iter->loc, 0);
 				
-				AstNode& src_cond = atom.Add("src");
+				AstNode& src_cond = atom.Add(iter->loc, "src");
 				PushScope(src_cond);
 				allow_expr_unresolved = true;
 				bool succ = Cond(false);
@@ -2221,7 +2217,7 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 					if (c == 0)
 						EMIT PushAtomConnector(iter->loc, 1);
 					
-					AstNode& sink_cond = atom.Add("sink");
+					AstNode& sink_cond = atom.Add(iter->loc, "sink");
 					PushScope(sink_cond);
 					allow_expr_unresolved = true;
 					bool succ = Cond(false);

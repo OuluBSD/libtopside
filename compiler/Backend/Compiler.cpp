@@ -7,7 +7,6 @@ Compiler::Compiler() {
 	t.WhenMessage << THISBACK(OnProcMsg);
 	ts.WhenMessage << THISBACK(OnProcMsg);
 	sp.WhenMessage << THISBACK(OnProcMsg);
-	ab.WhenMessage << THISBACK(OnProcMsg);
 	ex.WhenMessage << THISBACK(OnProcMsg);
 	
 }
@@ -42,13 +41,13 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 	// Parse error handling structure (for multiple error messages per single try)
 	TEST(ParseStructure())
 	
-	// Semantically parse & produce meta script
+	// Semantically parse
 	TEST(Parse())
-	if (verbose) {LOG(sp.GetResult());}
+	if (verbose) {LOG(sp.root.GetTreeString(0));}
 	
-	// Run meta script (which makes program AST)
+	// Run meta
 	TEST(RunMeta())
-	if (verbose) {LOG(ab.root.GetTreeString(0));}
+	TODO //if (verbose) {LOG(ab.root.GetTreeString(0));}
 	
 	if (lang == LANG_HIGH) {
 		// Export High script
@@ -100,13 +99,13 @@ bool Compiler::Parse() {
 		return false;
 	}
 	LOG(sp.GetTreeString());
-	sp.Finish();
+	
 	return true;
 }
 
 bool Compiler::RunMeta() {
-	ab.WhenMessage = THISBACK(OnProcMsg);
-	if (!ab.Execute(sp.GetResult()))
+	ar.WhenMessage = THISBACK(OnProcMsg);
+	if (!ar.Execute(sp.GetRoot()))
 		return false;
 	
 	return true;
@@ -115,9 +114,10 @@ bool Compiler::RunMeta() {
 bool Compiler::ExportHigh() {
 	InitHighExporter(ex.lang);
 	
-	ex.WhenMessage = THISBACK(OnProcMsg);
+	TODO
+	/*ex.WhenMessage = THISBACK(OnProcMsg);
 	if (!ex.Process(ab.GetRoot()))
-		return false;
+		return false;*/
 	
 	return true;
 }
@@ -125,9 +125,10 @@ bool Compiler::ExportHigh() {
 bool Compiler::ExportCpp() {
 	InitCppExporter(ex.lang);
 	
-	ex.WhenMessage = THISBACK(OnProcMsg);
+	TODO
+	/*ex.WhenMessage = THISBACK(OnProcMsg);
 	if (!ex.Process(ab.GetRoot()))
-		return false;
+		return false;*/
 	
 	return true;
 }

@@ -4,74 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct ParserEmitter {
-	
-	
-	virtual void PushClass(const FileLocation& loc, const PathIdentifier& name) = 0;
-	virtual void PopClass(const FileLocation& loc) = 0;
-	virtual void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
-	virtual void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) = 0;
-	virtual void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
-	virtual void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) = 0;
-	virtual void PopFunctionDefinition(const FileLocation& loc) = 0;
-	virtual void PopFunction(const FileLocation& loc) = 0;
-	virtual void PopMetaFunction(const FileLocation& loc) = 0;
-	virtual void PushStatementList(const FileLocation& loc) = 0;
-	virtual void PopStatementList(const FileLocation& loc) = 0;
-	virtual void PushStatement(const FileLocation& loc, StmtType type) = 0;
-	virtual void PopStatement(const FileLocation& loc) = 0;
-	virtual void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) = 0;
-	virtual void PopConstructor(const FileLocation& loc) = 0;
-	virtual void PushStatementParameter(const FileLocation& loc, StmtParamType t) = 0;
-	virtual void PopStatementParameter(const FileLocation& loc) = 0;
-	virtual void DeclareVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
-	virtual void DeclareMetaVariable(const FileLocation& loc, AstNode& n, const PathIdentifier& id) = 0;
-	virtual void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) = 0;
-	virtual void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
-	virtual void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) = 0;
-	virtual void PushRvalArgumentList(const FileLocation& loc) = 0;
-	virtual void Argument(const FileLocation& loc) = 0;
-	virtual void ArraySize(const FileLocation& loc) = 0;
-	virtual void PushRvalConstruct(const FileLocation& loc, AstNode& n) = 0;
-	virtual void PopExpr(const FileLocation& loc) = 0;
-	virtual void PushRval(const FileLocation& loc, AstNode& n) = 0;
-	virtual void PushRvalConstant(const FileLocation& loc, const Token& t) = 0;
-	virtual void Expr1(const FileLocation& loc, OpType op) = 0;
-	virtual void Expr2(const FileLocation& loc, OpType op) = 0;
-	virtual void Expr3(const FileLocation& loc, OpType op) = 0;
-	
-	virtual void PushSystem(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopSystem(const FileLocation& loc) = 0;
-	virtual void PushPool(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopPool(const FileLocation& loc) = 0;
-	virtual void PushEntity(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopEntity(const FileLocation& loc) = 0;
-	virtual void PushComponent(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopComponent(const FileLocation& loc) = 0;
-	virtual void PushMachine(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopMachine(const FileLocation& loc) = 0;
-	virtual void PushChain(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopChain(const FileLocation& loc) = 0;
-	virtual void PushLoop(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopLoop(const FileLocation& loc) = 0;
-	virtual void PushAtom(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopAtom(const FileLocation& loc) = 0;
-	virtual void PushAtomConnector(const FileLocation& loc, int part) = 0;
-	virtual void PopAtomConnector(const FileLocation& loc) = 0;
-	virtual void PushState(const FileLocation& loc, const PathIdentifier& id) = 0;
-	virtual void PopState(const FileLocation& loc) = 0;
-	
-	virtual void PushCall(const FileLocation& loc) = 0;
-	virtual void PopCall(const FileLocation& loc) = 0;
-	virtual void PopExprCallArgument(const FileLocation& loc, int arg_i) = 0;
-	
-};
-
 
 class SemanticParser :
 	public CompilerNode<SemanticParser,NodeBase>,
 	public EonStd,
-	public ParserEmitter,
 	public ErrorSource
 {
 	bool allow_expr_unresolved = false;
@@ -178,8 +114,8 @@ public:
 	bool ParseComponentStatement();
 	
 	bool ParseState();
-	bool ParseDeclExpr(const PathIdentifier& type_id, AstNode& tn);
-	bool ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn);
+	bool ParseDeclExpr(bool meta, const PathIdentifier& type_id, AstNode& tn);
+	//bool ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn);
 	bool ParseMeta();
 	bool Assign(bool m);
 	bool AssignPost(bool m);
@@ -204,6 +140,70 @@ public:
 	String		GetCodeString(const CodeArgs& args) const override;
 	String		ToString() const override;
 	
+	
+	
+public:
+	void PushRvalConstant(const FileLocation& loc, bool v);
+	void PushRvalConstant(const FileLocation& loc, int32 v);
+	void PushRvalConstant(const FileLocation& loc, int64 v);
+	void PushRvalConstant(const FileLocation& loc, double v);
+	void PushRvalConstant(const FileLocation& loc, String v);
+	
+	void PushClass(const FileLocation& loc, const PathIdentifier& name);
+	void PopClass(const FileLocation& loc);
+	void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
+	void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
+	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
+	void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
+	void PopFunctionDefinition(const FileLocation& loc);
+	void PopFunction(const FileLocation& loc);
+	void PopMetaFunction(const FileLocation& loc);
+	void PushStatementList(const FileLocation& loc);
+	void PopStatementList(const FileLocation& loc);
+	void PushStatement(const FileLocation& loc, StmtType type);
+	void PopStatement(const FileLocation& loc);
+	void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var);
+	void PopConstructor(const FileLocation& loc);
+	void PushStatementParameter(const FileLocation& loc, StmtParamType t);
+	void PopStatementParameter(const FileLocation& loc);
+	AstNode* DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name);
+	void DeclareMetaVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name);
+	void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id);
+	void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t);
+	void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t);
+	void PushRvalArgumentList(const FileLocation& loc);
+	void Argument(const FileLocation& loc);
+	void ArraySize(const FileLocation& loc);
+	void PopExpr(const FileLocation& loc);
+	void PushRval(const FileLocation& loc, AstNode& n);
+	void PushRvalConstruct(const FileLocation& loc, AstNode& n);
+	void PushRvalConstant(const FileLocation& loc, const Token& t);
+	void Expr1(const FileLocation& loc, OpType op);
+	void Expr2(const FileLocation& loc, OpType op);
+	void Expr3(const FileLocation& loc, OpType op);
+	void PushSystem(const FileLocation& loc, const PathIdentifier& id);
+	void PopSystem(const FileLocation& loc);
+	void PushPool(const FileLocation& loc, const PathIdentifier& id);
+	void PopPool(const FileLocation& loc);
+	void PushEntity(const FileLocation& loc, const PathIdentifier& id);
+	void PopEntity(const FileLocation& loc);
+	void PushComponent(const FileLocation& loc, const PathIdentifier& id);
+	void PopComponent(const FileLocation& loc);
+	void PushMachine(const FileLocation& loc, const PathIdentifier& id);
+	void PopMachine(const FileLocation& loc);
+	void PushChain(const FileLocation& loc, const PathIdentifier& id);
+	void PopChain(const FileLocation& loc);
+	void PushLoop(const FileLocation& loc, const PathIdentifier& id);
+	void PopLoop(const FileLocation& loc);
+	void PushAtom(const FileLocation& loc, const PathIdentifier& id);
+	void PopAtom(const FileLocation& loc);
+	void PushAtomConnector(const FileLocation& loc, int part);
+	void PopAtomConnector(const FileLocation& loc);
+	void PushState(const FileLocation& loc, const PathIdentifier& id);
+	void PopState(const FileLocation& loc);
+	void PushCall(const FileLocation& loc);
+	void PopCall(const FileLocation& loc);
+	void PopExprCallArgument(const FileLocation& loc, int arg_i);
 	
 };
 

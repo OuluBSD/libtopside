@@ -368,6 +368,7 @@ inline String GetOpCodeString(OpType t) {
 
 typedef enum {
 	CONST_NULL,
+	CONST_BOOL,
 	CONST_INT32,
 	CONST_INT64,
 	CONST_DOUBLE,
@@ -377,6 +378,7 @@ typedef enum {
 inline String GetConstString(ConstType t) {
 	switch (t) {
 		case CONST_NULL:	return "null";
+		case CONST_BOOL:	return "bool";
 		case CONST_INT32:	return "int32";
 		case CONST_INT64:	return "int64";
 		case CONST_DOUBLE:	return "double";

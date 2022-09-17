@@ -16,11 +16,10 @@ bool TestEonTest(String s, ProgLang tgt) {
 	bool succ = c.CompileEonFile(s, tgt, code);
 	
 	c.t.Dump();
-	LOG(c.sp.GetResult());
 	if (!succ)
 		return false;
 	
-	LOG(c.ab.root.GetTreeString(0));
+	LOG(c.sp.root.GetTreeString(0));
 	LOG(code);
 	
 	return true;

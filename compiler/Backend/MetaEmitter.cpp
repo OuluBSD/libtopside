@@ -1,5 +1,7 @@
 #include "Backend.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -527,3 +529,5 @@ void HighScriptEmitter::PopExprCallArgument(const FileLocation& loc, int arg_i) 
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

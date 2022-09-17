@@ -21,16 +21,17 @@ file
 	Ast.cpp,
 	EonStd.h,
 	EonStd.cpp,
-	ParserOverrides.inl highlight java,
 	SemanticParser.h,
 	SemanticParser.cpp,
-	AstBuilder.h,
 	AstBuilder.cpp,
 	AstExporter.h,
 	AstExporter.cpp,
 	Compiler.h,
 	Compiler.cpp,
+	AstRunner.h,
+	AstRunner.cpp,
 	Trash readonly separator,
 	MetaEmitter.h,
-	MetaEmitter.cpp;
+	MetaEmitter.cpp,
+	AstBuilder.h;
 

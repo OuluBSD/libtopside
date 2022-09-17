@@ -15,13 +15,13 @@ String EonStd::GetPathString() const {
 
 void EonStd::AddBuiltinType(String name) {
 	AstNode& root = GetRoot();
-	AstNode& sn = root.Add(name);
+	AstNode& sn = root.Add(FileLocation(), name);
 	sn.src = SEMT_BUILTIN;
 }
 
 void EonStd::AddMetaBuiltinType(String name) {
 	AstNode& root = GetRoot();
-	AstNode& sn = root.Add(name);
+	AstNode& sn = root.Add(FileLocation(), name);
 	sn.src = SEMT_META_BUILTIN;
 }
 
@@ -100,7 +100,7 @@ void EonStd::InitDefault() {
 	AddMetaBuiltinType("params");
 	
 	{
-		AstNode& logger = GetRoot().Add("LOG");
+		AstNode& logger = GetRoot().Add(FileLocation(), "LOG");
 		logger.src = SEMT_FUNCTION_BUILTIN;
 	}
 	
@@ -234,11 +234,11 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 			for(int i = 0; i < id.tail_count; i++) {
 				switch (id.tail[i]) {
 				case PathIdentifier::PTR:
-					cur = &cur->GetAdd(SEMT_TYPE_POINTER);
+					cur = &cur->GetAdd(id.end->loc, SEMT_TYPE_POINTER);
 					break;
 				
 				case PathIdentifier::LREF:
-					cur = &cur->GetAdd(SEMT_TYPE_LREF);
+					cur = &cur->GetAdd(id.end->loc, SEMT_TYPE_LREF);
 					break;
 				
 				default:
@@ -271,9 +271,9 @@ AstNode& EonStd::Declare(AstNode& owner, const PathIdentifier& id, bool insert_b
 				if (next)
 					cur = next;
 				else
-					cur = &cur->Add(id, max(0, cur->sub.GetCount()-2));
+					cur = &cur->Add(t->loc, id, max(0, cur->sub.GetCount()-2));
 			}
-			else cur = &cur->GetAdd(id);
+			else cur = &cur->GetAdd(t->loc, id);
 			if (cur->src == SEMT_NULL)
 				cur->src = SEMT_IDPART;
 		}
@@ -302,22 +302,29 @@ AstNode& EonStd::GetBlock() {
 }
 
 void EonStd::PushScope(AstNode& n) {
-	ASSERT(!spath.IsEmpty());
-	thread_local static Vector<AstNode*> tmp;
-	AstNode* cur = spath.Top().n;
-	
-	tmp.SetCount(0);
-	AstNode* iter = &n;
-	while (iter && iter != cur) {
-		tmp.Add(iter);
-		iter = iter->GetSubOwner();
-	}
-	ASSERT(iter == cur);
-	
-	for (int i = tmp.GetCount()-1, j = 0; i >= 0; i--, j++) {
+	if (spath.IsEmpty()) {
+		ASSERT(&n == &GetRoot());
 		Scope& s = spath.Add();
-		s.n = tmp[i];
-		s.pop_this = j == 0;
+		s.n = &n;
+		s.pop_this = true;
+	}
+	else {
+		thread_local static Vector<AstNode*> tmp;
+		AstNode* cur = spath.Top().n;
+		
+		tmp.SetCount(0);
+		AstNode* iter = &n;
+		while (iter && iter != cur) {
+			tmp.Add(iter);
+			iter = iter->GetSubOwner();
+		}
+		ASSERT(iter == cur);
+		
+		for (int i = tmp.GetCount()-1, j = 0; i >= 0; i--, j++) {
+			Scope& s = spath.Add();
+			s.n = tmp[i];
+			s.pop_this = j == 0;
+		}
 	}
 }
 
@@ -353,6 +360,12 @@ String EonStd::GetTypeInitValueString(AstNode& n) const {
 	else {
 		TODO
 	}
+}
+
+void EonStd::Bind(AstNode& from, AstNode& to) {
+	ASSERT(from.next == 0 && to.prev == 0);
+	from.next = &to;
+	to.prev = &from;
 }
 
 

@@ -1,15 +1,11 @@
 #include "Backend.h"
 
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
-AstBuilder::AstBuilder() :
-	ErrorSource("AstBuilder")
-{
-	
-}
 
-void AstBuilder::Clear() {
+/*void SemanticParser::Clear() {
 	spath.Clear();
 	root.Clear();
 	fail = false;
@@ -17,139 +13,13 @@ void AstBuilder::Clear() {
 	InitDefault();
 }
 
-HiValue AstBuilder::Execute(ArrayMap<String, HiValue>& global, HiValue *self,
-                 const HiValue& lambda, Vector<HiValue>& arg, int op_limit)
-{
-	const HiLambda& l = lambda.GetLambda();
-	if(arg.GetCount() != l.arg.GetCount()) {
-		String argnames;
-		for(int i = 0; i < l.arg.GetCount(); i++)
-			argnames << (i ? ", " : "") << l.arg[i];
-		throw CParser::Error(Format("invalid number of arguments (%d passed, expected: %s)", arg.GetCount(), argnames));
-	}
-	HiValue ret;
-	flag.Start(1);
-	{
-		vm = new Hi(global, op_limit, lambda.GetLambdaRW());
-		Hi& sub = *vm;
-		HiValue& sub_self = sub.Self();
-		if(self)
-			sub_self = *self;
-		for(int i = 0; i < l.arg.GetCount(); i++)
-			sub.VarGetAdd(l.arg[i]) = arg[i];
-		while (flag.IsRunning()) {
-			sub.Run();
-			if (!sub.IsSleepExit())
-				break;
-			while (!sub.CheckSleepFinished())
-				Sleep(1);
-		}
-		if(self)
-			*self = sub_self;
-		ret = sub.return_value;
-	}
-	return ret;
-}
-
-void AstBuilder::AddError(const FileLocation& loc, String msg) {
+void SemanticParser::AddError(const FileLocation& loc, String msg) {
 	ErrorSource::AddError(loc, msg);
 	flag.SetNotRunning();
 	fail = true;
-	if (vm)
-		vm->SetFailed();
-}
+}*/
 
-bool AstBuilder::Execute(String high_script_content) {
-    ArrayMap<String, HiValue> global;
-    
-    Clear();
-    
-	try {
-		HighCall(global, "AddFile(file)", THISBACK(HiAddFile));
-		HighCall(global, "PushClass(loc, name)", THISBACK(HiPushClass));
-		HighCall(global, "PopClass(loc, name)", THISBACK(HiPopClass));
-		HighCall(global, "PushFunction(loc, ret_type, name)", THISBACK(HiPushFunction));
-		HighCall(global, "PushMetaFunction(loc, ret_type, name)", THISBACK(HiPushMetaFunction));
-		HighCall(global, "Parameter(loc, type, name)", THISBACK(HiParameter));
-		HighCall(global, "MetaParameter(loc, type, name)", THISBACK(HiMetaParameter));
-		HighCall(global, "PopFunctionDefinition(loc)", THISBACK(HiPopFunctionDefinition));
-		HighCall(global, "PopFunction(loc)", THISBACK(HiPopFunction));
-		HighCall(global, "PopMetaFunction(loc)", THISBACK(HiPopMetaFunction));
-		HighCall(global, "PushStatementList(loc)", THISBACK(HiPushStatementList));
-		HighCall(global, "PopStatementList(loc)", THISBACK(HiPopStatementList));
-		HighCall(global, "PushStatement(loc, type)", THISBACK(HiPushStatement));
-		HighCall(global, "PopStatement(loc)", THISBACK(HiPopStatement));
-		HighCall(global, "PushConstructor(loc, type, var)", THISBACK(HiPushConstructor));
-		HighCall(global, "PopConstructor(loc)", THISBACK(HiPopConstructor));
-		HighCall(global, "PushStatementParameter(loc, param_type)", THISBACK(HiPushStatementParameter));
-		HighCall(global, "PopStatementParameter(loc)", THISBACK(HiPopStatementParameter));
-		HighCall(global, "DeclareVariable(loc, n, id)", THISBACK(HiDeclareVariable));
-		HighCall(global, "DeclareMetaVariable(loc, n, id)", THISBACK(HiDeclareMetaVariable));
-		HighCall(global, "Variable(loc, n, id)", THISBACK(HiVariable));
-		HighCall(global, "PushRvalResolve(loc, id, t)", THISBACK(HiPushRvalResolve));
-		HighCall(global, "PushRvalUnresolved(loc, id, t)", THISBACK(HiPushRvalUnresolved));
-		HighCall(global, "PushRvalArgumentList(loc)", THISBACK(HiPushRvalArgumentList));
-		HighCall(global, "Argument(loc)", THISBACK(HiArgument));
-		HighCall(global, "ArraySize(loc)", THISBACK(HiArraySize));
-		HighCall(global, "PopExpr(loc)", THISBACK(HiPopExpr));
-		HighCall(global, "PushRval(loc, n)", THISBACK(HiPushRval));
-		//HighCall(global, "PushRvalCall(loc, n)", THISBACK(HiPushRvalCall));
-		HighCall(global, "PushRvalConstruct(loc, n)", THISBACK(HiPushRvalConstruct));
-		HighCall(global, "PushRvalConstant(loc, t)", THISBACK(HiPushRvalConstant));
-		HighCall(global, "Expr1(loc, op)", THISBACK(HiExpr1));
-		HighCall(global, "Expr2(loc, op)", THISBACK(HiExpr2));
-		HighCall(global, "Expr3(loc, op)", THISBACK(HiExpr3));
-		
-		#define CALL(x, args) HighCall(global, #x "(" args ")", THISBACK(Hi##x));
-		CALL(PushSystem, "loc, id")
-		CALL(PopSystem, "loc")
-		CALL(PushPool, "loc, id")
-		CALL(PopPool, "loc")
-		CALL(PushEntity, "loc, id")
-		CALL(PopEntity, "loc")
-		CALL(PushComponent, "loc, id")
-		CALL(PopComponent, "loc")
-		CALL(PushMachine, "loc, id")
-		CALL(PopMachine, "loc")
-		CALL(PushChain, "loc, id")
-		CALL(PopChain, "loc")
-		CALL(PushLoop, "loc, id")
-		CALL(PopLoop, "loc")
-		CALL(PushAtom, "loc, id")
-		CALL(PopAtom, "loc")
-		CALL(PushAtomConnector, "loc, part")
-		CALL(PopAtomConnector, "loc")
-		CALL(PushState, "loc, id")
-		CALL(PopState, "loc")
-		CALL(PushCall, "loc")
-		CALL(PopCall, "loc")
-		CALL(PopExprCallArgument, "loc, arg_i")
-		#undef CALL
-		
-	    StdLib(global);
-	
-        Scan(global, high_script_content, "parser");
-        
-        int ii = global.Find(String("main"));
-        if (ii < 0 || !global[ii].IsLambda()) {
-            LOG("internal error: 'main' not found");
-            return false;
-        }
-        Vector<HiValue> arg;
-        HiValue ret = this->Execute(global, NULL, global[ii], arg, INT_MAX);
-        DUMP(ret);
-    }
-    catch(Exc e) {
-        LOG("ERROR: " << e << "\n");
-        return false;
-    }
-    if (fail || (vm && vm->IsFailed()))
-        return false;
-    
-    return true;
-}
-
-void AstBuilder::PushClass(const FileLocation& loc, const PathIdentifier& name) {
+void SemanticParser::PushClass(const FileLocation& loc, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_CLASS;
 	
@@ -157,11 +27,11 @@ void AstBuilder::PushClass(const FileLocation& loc, const PathIdentifier& name) 
 	
 }
 
-void AstBuilder::PopClass(const FileLocation& loc) {
+void SemanticParser::PopClass(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+void SemanticParser::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_FUNCTION_STATIC;
 	var.type = &ret_type;
@@ -170,7 +40,7 @@ void AstBuilder::PushFunction(const FileLocation& loc, AstNode& ret_type, const 
 	
 }
 
-void AstBuilder::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+void SemanticParser::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_META_FUNCTION_STATIC;
 	var.type = &ret_type;
@@ -179,7 +49,7 @@ void AstBuilder::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, co
 	
 }
 
-void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
+void SemanticParser::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
 	
 	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
 	if (!tn) {
@@ -195,7 +65,7 @@ void AstBuilder::Parameter(const FileLocation& loc, const PathIdentifier& type, 
 	var.locked = true;
 }
 
-void AstBuilder::MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
+void SemanticParser::MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
 	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
 	if (!tn) {
 		AddError(loc, "internal error");
@@ -208,7 +78,7 @@ void AstBuilder::MetaParameter(const FileLocation& loc, const PathIdentifier& ty
 	var.locked = true;
 }
 
-/*void AstBuilder::PushFunctionDefinition(const FileLocation& loc) {
+/*void SemanticParser::PushFunctionDefinition(const FileLocation& loc) {
 	AstNode& n = GetTopNode();
 	
 	AstNode* def = n.Find(FN_BLOCK_NAME);
@@ -223,46 +93,46 @@ void AstBuilder::MetaParameter(const FileLocation& loc, const PathIdentifier& ty
 	PushScope(*def);
 }*/
 
-void AstBuilder::PopFunctionDefinition(const FileLocation& loc) {
+void SemanticParser::PopFunctionDefinition(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PopFunction(const FileLocation& loc) {
+void SemanticParser::PopFunction(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PopMetaFunction(const FileLocation& loc) {
+void SemanticParser::PopMetaFunction(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushStatementList(const FileLocation& loc) {
+void SemanticParser::PushStatementList(const FileLocation& loc) {
 	AstNode& n = GetTopNode();
-	AstNode& stmt = n.Add();
+	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_STATEMENT_BLOCK;
 	
 	PushScope(stmt);
 }
 
-void AstBuilder::PopStatementList(const FileLocation& loc) {
+void SemanticParser::PopStatementList(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushStatement(const FileLocation& loc, StmtType type) {
+void SemanticParser::PushStatement(const FileLocation& loc, StmtType type) {
 	AstNode& n = GetTopNode();
-	AstNode& stmt = n.Add();
+	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_STATEMENT;
 	stmt.stmt = type;
 	
 	PushScope(stmt);
 }
 
-void AstBuilder::PopStatement(const FileLocation& loc) {
+void SemanticParser::PopStatement(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
+void SemanticParser::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
 	AstNode& n = GetTopNode();
-	AstNode& stmt = n.Add();
+	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_CTOR;
 	stmt.type = &type;
 	stmt.link[0] = var;
@@ -273,33 +143,39 @@ void AstBuilder::PushConstructor(const FileLocation& loc, AstNode& type, AstNode
 	PushScope(stmt);
 }
 
-void AstBuilder::PopConstructor(const FileLocation& loc) {
+void SemanticParser::PopConstructor(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
+void SemanticParser::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
 	String ts = GetStmtParamTypeString(t);
 	
 	AstNode& n = GetTopNode();
-	AstNode& param = n.Add(ts);
+	AstNode& param = n.Add(loc, ts);
 	PushScope(param);
 }
 
-void AstBuilder::PopStatementParameter(const FileLocation& loc) {
+void SemanticParser::PopStatementParameter(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
+AstNode* SemanticParser::DeclareVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
 	AstNode& block = GetBlock();
 	AstNode& var = Declare(block, name, true);
-	var.src = SEMT_VARIABLE;
+	if (!var.IsPartially(SEMT_UNDEFINED)) {
+		AddError(loc, "'" + name.ToString() + "' is already declared");
+		return 0;
+	}
+	bool meta = type.IsPartially(SEMT_META_TYPE);
+	var.src = meta ? SEMT_META_VARIABLE : SEMT_VARIABLE;
 	var.type = &type;
 	//DUMP(var.GetPath());
 	ASSERT(!var.name.IsEmpty());
 	
+	return &var;
 }
 
-void AstBuilder::DeclareMetaVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
+void SemanticParser::DeclareMetaVariable(const FileLocation& loc, AstNode& type, const PathIdentifier& name) {
 	AstNode& block = GetBlock();
 	AstNode& var = Declare(block, name);
 	var.src = SEMT_META_VARIABLE;
@@ -309,13 +185,13 @@ void AstBuilder::DeclareMetaVariable(const FileLocation& loc, AstNode& type, con
 	
 }
 
-void AstBuilder::Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
+void SemanticParser::Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id) {
 	TODO
 }
 
-void AstBuilder::PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+void SemanticParser::PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
 	AstNode& n = GetTopNode();
-	AstNode& r = n.Add();
+	AstNode& r = n.Add(loc);
 	r.src = SEMT_RESOLVE;
 	r.filter = t;
 	/*ASSERT(id.part_count);
@@ -333,9 +209,9 @@ void AstBuilder::PushRvalResolve(const FileLocation& loc, const PathIdentifier& 
 	PushScopeRVal(r);
 }
 
-void AstBuilder::PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+void SemanticParser::PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
 	AstNode& n = GetTopNode();
-	AstNode& r = n.Add();
+	AstNode& r = n.Add(loc);
 	r.src = SEMT_UNRESOLVED;
 	r.filter = t;
 	r.str = id.ToString();
@@ -343,106 +219,114 @@ void AstBuilder::PushRvalUnresolved(const FileLocation& loc, const PathIdentifie
 	PushScopeRVal(r);
 }
 
-void AstBuilder::PushRvalArgumentList(const FileLocation& loc) {
+void SemanticParser::PushRvalArgumentList(const FileLocation& loc) {
 	AstNode& n = GetTopNode();
-	AstNode& r = n.Add();
+	AstNode& r = n.Add(loc);
 	r.src = SEMT_ARGUMENT_LIST;
 	
 	PushScopeRVal(r);
 }
 
-void AstBuilder::Argument(const FileLocation& loc) {
+void SemanticParser::Argument(const FileLocation& loc) {
 	int c = spath.GetCount();
 	ASSERT(c > 2);
 	AstNode& owner = *spath[c-2].n;
 	AstNode& a = *spath[c-1].n;
 	ASSERT(owner.src == SEMT_ARGUMENT_LIST);
-	AstNode& arg = owner.Add();
+	AstNode& arg = owner.Add(loc);
 	arg.src = SEMT_ARGUMENT;
 	arg.link[0] = &a;
 	PopScope();
 }
 
-void AstBuilder::ArraySize(const FileLocation& loc) {
+void SemanticParser::ArraySize(const FileLocation& loc) {
 	int c = spath.GetCount();
 	ASSERT(c > 2);
 	AstNode& owner = *spath[c-2].n;
 	AstNode& a = *spath[c-1].n;
 	ASSERT(owner.src == SEMT_CTOR);
-	AstNode& arg = owner.Add();
+	AstNode& arg = owner.Add(loc);
 	arg.src = SEMT_ARRAYSIZE;
 	arg.link[0] = &a;
 	PopScope();
 }
 
-/*void AstBuilder::PopExprScopeToCtor(const FileLocation& loc) {
+/*void SemanticParser::PopExprScopeToCtor(const FileLocation& loc) {
 	PopScope();
 }*/
 
-void AstBuilder::PopExpr(const FileLocation& loc) {
+void SemanticParser::PopExpr(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushRval(const FileLocation& loc, AstNode& n) {
+void SemanticParser::PushRval(const FileLocation& loc, AstNode& n) {
 	AstNode& t = GetTopNode();
-	AstNode& r = t.Add();
+	AstNode& r = t.Add(loc);
 	r.src = SEMT_RVAL;
 	r.link[0] = &n;
 	
 	PushScopeRVal(r);
 }
 
-/*void AstBuilder::PushRvalCall(const FileLocation& loc, AstNode& n) {
+/*void SemanticParser::PushRvalCall(const FileLocation& loc, AstNode& n) {
 	PushScopeRVal(n);
 }*/
 
-void AstBuilder::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
+void SemanticParser::PushRvalConstruct(const FileLocation& loc, AstNode& n) {
 	TODO
 }
 
-void AstBuilder::PushRvalConstant(const FileLocation& loc, const Token& t) {
+void SemanticParser::PushRvalConstant(const FileLocation& loc, const Token& t) {
 	TODO
 }
 
-void AstBuilder::PushRvalConstant(const FileLocation& loc, int32 v) {
-	AstNode& n = GetTopNode().Add();
+void SemanticParser::PushRvalConstant(const FileLocation& loc, bool v) {
+	AstNode& n = GetTopNode().Add(loc);
+	n.src = SEMT_CONSTANT;
+	n.con = CONST_BOOL;
+	n.i64 = v;
+	PushScope(n);
+}
+
+void SemanticParser::PushRvalConstant(const FileLocation& loc, int32 v) {
+	AstNode& n = GetTopNode().Add(loc);
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_INT32;
 	n.i64 = v;
 	PushScope(n);
 }
 
-void AstBuilder::PushRvalConstant(const FileLocation& loc, int64 v) {
-	AstNode& n = GetTopNode().Add();
+void SemanticParser::PushRvalConstant(const FileLocation& loc, int64 v) {
+	AstNode& n = GetTopNode().Add(loc);
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_INT64;
 	n.i64 = v;
 	PushScope(n);
 }
 
-void AstBuilder::PushRvalConstant(const FileLocation& loc, double v) {
-	AstNode& n = GetTopNode().Add();
+void SemanticParser::PushRvalConstant(const FileLocation& loc, double v) {
+	AstNode& n = GetTopNode().Add(loc);
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_DOUBLE;
 	n.dbl = v;
 	PushScope(n);
 }
 
-void AstBuilder::PushRvalConstant(const FileLocation& loc, String v) {
-	AstNode& n = GetTopNode().Add();
+void SemanticParser::PushRvalConstant(const FileLocation& loc, String v) {
+	AstNode& n = GetTopNode().Add(loc);
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_STRING;
 	n.str = v;
 	PushScope(n);
 }
 
-void AstBuilder::Expr1(const FileLocation& loc, OpType op) {
+void SemanticParser::Expr1(const FileLocation& loc, OpType op) {
 	int c = spath.GetCount();
 	ASSERT(c >= 2);
 	AstNode* arg0 = spath[c-1].n;
 	
 	AstNode& owner = *spath[c-2].n;
-	AstNode& expr = owner.Add();
+	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
 	expr.link[0] = arg0;
@@ -450,14 +334,14 @@ void AstBuilder::Expr1(const FileLocation& loc, OpType op) {
 	spath[c-1].n = &expr;
 }
 
-void AstBuilder::Expr2(const FileLocation& loc, OpType op) {
+void SemanticParser::Expr2(const FileLocation& loc, OpType op) {
 	int c = spath.GetCount();
 	ASSERT(c >= 3);
 	AstNode* arg0 = spath[c-2].n;
 	AstNode* arg1 = spath[c-1].n;
 	
 	AstNode& owner = *spath[c-3].n;
-	AstNode& expr = owner.Add();
+	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
 	expr.link[0] = arg0;
@@ -467,7 +351,7 @@ void AstBuilder::Expr2(const FileLocation& loc, OpType op) {
 	spath[c-2].n = &expr;
 }
 
-void AstBuilder::Expr3(const FileLocation& loc, OpType op) {
+void SemanticParser::Expr3(const FileLocation& loc, OpType op) {
 	int c = spath.GetCount();
 	ASSERT(c >= 4);
 	AstNode* arg0 = spath[c-3].n;
@@ -475,7 +359,7 @@ void AstBuilder::Expr3(const FileLocation& loc, OpType op) {
 	AstNode* arg2 = spath[c-1].n;
 	
 	AstNode& owner = *spath[c-4].n;
-	AstNode& expr = owner.Add();
+	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
 	expr.link[0] = arg0;
@@ -486,7 +370,7 @@ void AstBuilder::Expr3(const FileLocation& loc, OpType op) {
 	spath[c-3].n = &expr;
 }
 
-void AstBuilder::PushSystem(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushSystem(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_SYSTEM;
 	
@@ -494,11 +378,11 @@ void AstBuilder::PushSystem(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopSystem(const FileLocation& loc) {
+void SemanticParser::PopSystem(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushPool(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushPool(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_POOL;
 	
@@ -506,11 +390,11 @@ void AstBuilder::PushPool(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopPool(const FileLocation& loc) {
+void SemanticParser::PopPool(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushEntity(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushEntity(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_ENTITY;
 	
@@ -518,11 +402,11 @@ void AstBuilder::PushEntity(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopEntity(const FileLocation& loc) {
+void SemanticParser::PopEntity(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushComponent(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushComponent(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_COMPONENT;
 	
@@ -530,11 +414,11 @@ void AstBuilder::PushComponent(const FileLocation& loc, const PathIdentifier& id
 	
 }
 
-void AstBuilder::PopComponent(const FileLocation& loc) {
+void SemanticParser::PopComponent(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushMachine(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushMachine(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_MACHINE;
 	
@@ -542,11 +426,11 @@ void AstBuilder::PushMachine(const FileLocation& loc, const PathIdentifier& id) 
 	
 }
 
-void AstBuilder::PopMachine(const FileLocation& loc) {
+void SemanticParser::PopMachine(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushChain(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushChain(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_CHAIN;
 	
@@ -554,11 +438,11 @@ void AstBuilder::PushChain(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopChain(const FileLocation& loc) {
+void SemanticParser::PopChain(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_LOOP;
 	
@@ -566,11 +450,11 @@ void AstBuilder::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopLoop(const FileLocation& loc) {
+void SemanticParser::PopLoop(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_ATOM;
 	
@@ -578,11 +462,11 @@ void AstBuilder::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopAtom(const FileLocation& loc) {
+void SemanticParser::PopAtom(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushAtomConnector(const FileLocation& loc, int part) {
+void SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
 	int c = spath.GetCount();
 	String str;
 	switch (part) {
@@ -591,7 +475,7 @@ void AstBuilder::PushAtomConnector(const FileLocation& loc, int part) {
 		default: str = IntStr(part);
 	}
 	AstNode& owner = *spath[c-1].n;
-	AstNode& var = owner.Add(str);
+	AstNode& var = owner.Add(loc, str);
 	var.src = SEMT_STATEMENT;
 	var.stmt = STMT_ATOM_CONNECTOR;
 	
@@ -599,11 +483,11 @@ void AstBuilder::PushAtomConnector(const FileLocation& loc, int part) {
 	
 }
 
-void AstBuilder::PopAtomConnector(const FileLocation& loc) {
+void SemanticParser::PopAtomConnector(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushState(const FileLocation& loc, const PathIdentifier& id) {
+void SemanticParser::PushState(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_STATEMENT;
 	var.stmt = STMT_STATE;
@@ -612,14 +496,14 @@ void AstBuilder::PushState(const FileLocation& loc, const PathIdentifier& id) {
 	
 }
 
-void AstBuilder::PopState(const FileLocation& loc) {
+void SemanticParser::PopState(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PushCall(const FileLocation& loc) {
+void SemanticParser::PushCall(const FileLocation& loc) {
 	int c = spath.GetCount();
 	AstNode& owner = *spath[c-1].n;
-	AstNode& var = owner.Add();
+	AstNode& var = owner.Add(loc);
 	var.src = SEMT_EXPR;
 	var.op = OP_CALL;
 	
@@ -627,17 +511,17 @@ void AstBuilder::PushCall(const FileLocation& loc) {
 	
 }
 
-void AstBuilder::PopCall(const FileLocation& loc) {
+void SemanticParser::PopCall(const FileLocation& loc) {
 	PopScope();
 }
 
-void AstBuilder::PopExprCallArgument(const FileLocation& loc, int arg_i) {
+void SemanticParser::PopExprCallArgument(const FileLocation& loc, int arg_i) {
 	int c = spath.GetCount();
 	ASSERT(c >= 2);
 	AstNode* arg0 = spath[c-1].n;
 	
 	AstNode& owner = *spath[c-2].n;
-	AstNode& expr = owner.Add();
+	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_CALL_ARG;
 	expr.link[0] = arg0;
 	
@@ -651,15 +535,16 @@ void AstBuilder::PopExprCallArgument(const FileLocation& loc, int arg_i) {
 
 
 
+#if 0
 
-void AstBuilder::LoadLocation(const HiValue& v, FileLocation& loc) {
+void SemanticParser::LoadLocation(const HiValue& v, FileLocation& loc) {
 	int f = v[0];
 	loc.line = v[1];
 	loc.col = v[2];
 	loc.file = f >= 0 && f < files.GetCount() ? files[f] : String();
 }
 
-void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens) {
+void SemanticParser::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentifier& id, Vector<Token>& tokens) {
 	id.Clear();
 	id.part_count = v.GetCount();
 	int c = id.part_count * 2 - 1;
@@ -713,24 +598,12 @@ void AstBuilder::LoadPath(const FileLocation& loc, const HiValue& v, PathIdentif
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-void AstBuilder::HiAddFile(HiEscape& e) {
+void SemanticParser::HiAddFile(HiEscape& e) {
 	String file = e[0];
 	files.Add(file);
 }
 
-void AstBuilder::HiPushClass(HiEscape& e) {
+void SemanticParser::HiPushClass(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -742,14 +615,14 @@ void AstBuilder::HiPushClass(HiEscape& e) {
 	PushClass(loc, name);
 }
 
-void AstBuilder::HiPopClass(HiEscape& e) {
+void SemanticParser::HiPopClass(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopClass(loc);
 }
 
-void AstBuilder::HiPushFunction(HiEscape& e) {
+void SemanticParser::HiPushFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -769,7 +642,7 @@ void AstBuilder::HiPushFunction(HiEscape& e) {
 	PushFunction(loc, *tn, name);
 }
 
-void AstBuilder::HiPushMetaFunction(HiEscape& e) {
+void SemanticParser::HiPushMetaFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -789,7 +662,7 @@ void AstBuilder::HiPushMetaFunction(HiEscape& e) {
 	PushMetaFunction(loc, *tn, name);
 }
 
-void AstBuilder::HiParameter(HiEscape& e) {
+void SemanticParser::HiParameter(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -800,7 +673,7 @@ void AstBuilder::HiParameter(HiEscape& e) {
 	Parameter(loc, type, name);
 }
 
-void AstBuilder::HiMetaParameter(HiEscape& e) {
+void SemanticParser::HiMetaParameter(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -811,49 +684,49 @@ void AstBuilder::HiMetaParameter(HiEscape& e) {
 	MetaParameter(loc, type, name);
 }
 
-/*void AstBuilder::HiPushFunctionDefinition(HiEscape& e) {
+/*void SemanticParser::HiPushFunctionDefinition(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PushFunctionDefinition(loc);
 }*/
 
-void AstBuilder::HiPopFunctionDefinition(HiEscape& e) {
+void SemanticParser::HiPopFunctionDefinition(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopFunctionDefinition(loc);
 }
 
-void AstBuilder::HiPopFunction(HiEscape& e) {
+void SemanticParser::HiPopFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopFunction(loc);
 }
 
-void AstBuilder::HiPopMetaFunction(HiEscape& e) {
+void SemanticParser::HiPopMetaFunction(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopFunction(loc);
 }
 
-void AstBuilder::HiPushStatementList(HiEscape& e) {
+void SemanticParser::HiPushStatementList(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PushStatementList(loc);
 }
 
-void AstBuilder::HiPopStatementList(HiEscape& e) {
+void SemanticParser::HiPopStatementList(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopStatementList(loc);
 }
 
-void AstBuilder::HiPushStatement(HiEscape& e) {
+void SemanticParser::HiPushStatement(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -861,14 +734,14 @@ void AstBuilder::HiPushStatement(HiEscape& e) {
 	PushStatement(loc, t);
 }
 
-void AstBuilder::HiPopStatement(HiEscape& e) {
+void SemanticParser::HiPopStatement(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopStatement(loc);
 }
 
-void AstBuilder::HiPushConstructor(HiEscape& e) {
+void SemanticParser::HiPushConstructor(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -899,14 +772,14 @@ void AstBuilder::HiPushConstructor(HiEscape& e) {
 	PushConstructor(loc, *tn, var);
 }
 
-void AstBuilder::HiPopConstructor(HiEscape& e) {
+void SemanticParser::HiPopConstructor(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopConstructor(loc);
 }
 
-void AstBuilder::HiPushStatementParameter(HiEscape& e) {
+void SemanticParser::HiPushStatementParameter(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	StmtParamType t = (StmtParamType)(int)e[1];
@@ -914,14 +787,14 @@ void AstBuilder::HiPushStatementParameter(HiEscape& e) {
 	PushStatementParameter(loc, t);
 }
 
-void AstBuilder::HiPopStatementParameter(HiEscape& e) {
+void SemanticParser::HiPopStatementParameter(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopStatementParameter(loc);
 }
 
-void AstBuilder::HiDeclareVariable(HiEscape& e) {
+void SemanticParser::HiDeclareVariable(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -940,7 +813,7 @@ void AstBuilder::HiDeclareVariable(HiEscape& e) {
 	DeclareVariable(loc, *tn, name);
 }
 
-void AstBuilder::HiDeclareMetaVariable(HiEscape& e) {
+void SemanticParser::HiDeclareMetaVariable(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -959,11 +832,11 @@ void AstBuilder::HiDeclareMetaVariable(HiEscape& e) {
 	DeclareMetaVariable(loc, *tn, name);
 }
 
-void AstBuilder::HiVariable(HiEscape& e) {
+void SemanticParser::HiVariable(HiEscape& e) {
 	TODO
 }
 
-void AstBuilder::HiPushRvalResolve(HiEscape& e) {
+void SemanticParser::HiPushRvalResolve(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -975,7 +848,7 @@ void AstBuilder::HiPushRvalResolve(HiEscape& e) {
 	PushRvalResolve(loc, name, t);
 }
 
-void AstBuilder::HiPushRvalUnresolved(HiEscape& e) {
+void SemanticParser::HiPushRvalUnresolved(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -987,42 +860,42 @@ void AstBuilder::HiPushRvalUnresolved(HiEscape& e) {
 	PushRvalUnresolved(loc, name, t);
 }
 
-void AstBuilder::HiPushRvalArgumentList(HiEscape& e) {
+void SemanticParser::HiPushRvalArgumentList(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PushRvalArgumentList(loc);
 }
 
-void AstBuilder::HiArgument(HiEscape& e) {
+void SemanticParser::HiArgument(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	Argument(loc);
 }
 
-void AstBuilder::HiArraySize(HiEscape& e) {
+void SemanticParser::HiArraySize(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	ArraySize(loc);
 }
 
-/*void AstBuilder::HiPopExprScopeToCtor(HiEscape& e) {
+/*void SemanticParser::HiPopExprScopeToCtor(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopExprScopeToCtor(loc);
 }*/
 
-void AstBuilder::HiPopExpr(HiEscape& e) {
+void SemanticParser::HiPopExpr(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopExpr(loc);
 }
 
-void AstBuilder::HiPushRval(HiEscape& e) {
+void SemanticParser::HiPushRval(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1042,7 +915,7 @@ void AstBuilder::HiPushRval(HiEscape& e) {
 	PushRval(loc, *nn);
 }
 
-/*void AstBuilder::HiPushRvalCall(HiEscape& e) {
+/*void SemanticParser::HiPushRvalCall(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1058,11 +931,11 @@ void AstBuilder::HiPushRval(HiEscape& e) {
 	PushRvalCall(loc, *fn);
 }*/
 
-void AstBuilder::HiPushRvalConstruct(HiEscape& e) {
+void SemanticParser::HiPushRvalConstruct(HiEscape& e) {
 	TODO
 }
 
-void AstBuilder::HiPushRvalConstant(HiEscape& e) {
+void SemanticParser::HiPushRvalConstant(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1078,7 +951,7 @@ void AstBuilder::HiPushRvalConstant(HiEscape& e) {
 	
 }
 
-void AstBuilder::HiExpr1(HiEscape& e) {
+void SemanticParser::HiExpr1(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	OpType op = (OpType)(int)e[1];
@@ -1086,7 +959,7 @@ void AstBuilder::HiExpr1(HiEscape& e) {
 	Expr1(loc, op);
 }
 
-void AstBuilder::HiExpr2(HiEscape& e) {
+void SemanticParser::HiExpr2(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	OpType op = (OpType)(int)e[1];
@@ -1094,7 +967,7 @@ void AstBuilder::HiExpr2(HiEscape& e) {
 	Expr2(loc, op);
 }
 
-void AstBuilder::HiExpr3(HiEscape& e) {
+void SemanticParser::HiExpr3(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	OpType op = (OpType)(int)e[1];
@@ -1102,7 +975,7 @@ void AstBuilder::HiExpr3(HiEscape& e) {
 	Expr3(loc, op);
 }
 
-void AstBuilder::HiPushSystem(HiEscape& e) {
+void SemanticParser::HiPushSystem(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1112,14 +985,14 @@ void AstBuilder::HiPushSystem(HiEscape& e) {
 	PushSystem(loc, name);
 }
 
-void AstBuilder::HiPopSystem(HiEscape& e) {
+void SemanticParser::HiPopSystem(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopSystem(loc);
 }
 
-void AstBuilder::HiPushPool(HiEscape& e) {
+void SemanticParser::HiPushPool(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1129,14 +1002,14 @@ void AstBuilder::HiPushPool(HiEscape& e) {
 	PushPool(loc, name);
 }
 
-void AstBuilder::HiPopPool(HiEscape& e) {
+void SemanticParser::HiPopPool(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopPool(loc);
 }
 
-void AstBuilder::HiPushEntity(HiEscape& e) {
+void SemanticParser::HiPushEntity(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1146,14 +1019,14 @@ void AstBuilder::HiPushEntity(HiEscape& e) {
 	PushEntity(loc, name);
 }
 
-void AstBuilder::HiPopEntity(HiEscape& e) {
+void SemanticParser::HiPopEntity(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopEntity(loc);
 }
 
-void AstBuilder::HiPushComponent(HiEscape& e) {
+void SemanticParser::HiPushComponent(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1163,14 +1036,14 @@ void AstBuilder::HiPushComponent(HiEscape& e) {
 	PushComponent(loc, name);
 }
 
-void AstBuilder::HiPopComponent(HiEscape& e) {
+void SemanticParser::HiPopComponent(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopComponent(loc);
 }
 
-void AstBuilder::HiPushMachine(HiEscape& e) {
+void SemanticParser::HiPushMachine(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1180,14 +1053,14 @@ void AstBuilder::HiPushMachine(HiEscape& e) {
 	PushMachine(loc, name);
 }
 
-void AstBuilder::HiPopMachine(HiEscape& e) {
+void SemanticParser::HiPopMachine(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopMachine(loc);
 }
 
-void AstBuilder::HiPushChain(HiEscape& e) {
+void SemanticParser::HiPushChain(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1197,14 +1070,14 @@ void AstBuilder::HiPushChain(HiEscape& e) {
 	PushChain(loc, name);
 }
 
-void AstBuilder::HiPopChain(HiEscape& e) {
+void SemanticParser::HiPopChain(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopChain(loc);
 }
 
-void AstBuilder::HiPushLoop(HiEscape& e) {
+void SemanticParser::HiPushLoop(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1214,14 +1087,14 @@ void AstBuilder::HiPushLoop(HiEscape& e) {
 	PushLoop(loc, name);
 }
 
-void AstBuilder::HiPopLoop(HiEscape& e) {
+void SemanticParser::HiPopLoop(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopLoop(loc);
 }
 
-void AstBuilder::HiPushAtom(HiEscape& e) {
+void SemanticParser::HiPushAtom(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1231,14 +1104,14 @@ void AstBuilder::HiPushAtom(HiEscape& e) {
 	PushAtom(loc, name);
 }
 
-void AstBuilder::HiPopAtom(HiEscape& e) {
+void SemanticParser::HiPopAtom(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopAtom(loc);
 }
 
-void AstBuilder::HiPushAtomConnector(HiEscape& e) {
+void SemanticParser::HiPushAtomConnector(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1247,14 +1120,14 @@ void AstBuilder::HiPushAtomConnector(HiEscape& e) {
 	PushAtomConnector(loc, part);
 }
 
-void AstBuilder::HiPopAtomConnector(HiEscape& e) {
+void SemanticParser::HiPopAtomConnector(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopAtomConnector(loc);
 }
 
-void AstBuilder::HiPushState(HiEscape& e) {
+void SemanticParser::HiPushState(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1264,28 +1137,28 @@ void AstBuilder::HiPushState(HiEscape& e) {
 	PushState(loc, name);
 }
 
-void AstBuilder::HiPopState(HiEscape& e) {
+void SemanticParser::HiPopState(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopState(loc);
 }
 
-void AstBuilder::HiPushCall(HiEscape& e) {
+void SemanticParser::HiPushCall(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PushCall(loc);
 }
 
-void AstBuilder::HiPopCall(HiEscape& e) {
+void SemanticParser::HiPopCall(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
 	PopCall(loc);
 }
 
-void AstBuilder::HiPopExprCallArgument(HiEscape& e) {
+void SemanticParser::HiPopExprCallArgument(HiEscape& e) {
 	FileLocation loc;
 	LoadLocation(e[0], loc);
 	
@@ -1294,6 +1167,8 @@ void AstBuilder::HiPopExprCallArgument(HiEscape& e) {
 	PopExprCallArgument(loc, arg_i);
 }
 
+#endif
 
 
 NAMESPACE_TOPSIDE_END
+

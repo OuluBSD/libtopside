@@ -9,17 +9,23 @@ class SemanticParser;
 class AstNode : public CompilerNode<AstNode,NodeBase> {
 	
 public:
+	static const int LINK_COUNT = 4;
+	
+	AstNode* prev = 0;
+	AstNode* next = 0;
+	Object* next_obj = 0;
+	AstNode* type = 0;
+	AstNode* link[LINK_COUNT] = {0,0,0,0};
+	bool locked = false;
+	
 	Array<AstNode> sub;
 	String name;
 	SemanticType src = SEMT_NULL;
-	AstNode* type = 0;
-	AstNode* link[4] = {0,0,0,0};
-	bool locked = false;
-	
 	StmtType stmt = STMT_NULL;
 	OpType op = OP_NULL;
 	ConstType con = CONST_NULL;
 	SemanticType filter = SEMT_NULL;
+	FileLocation loc;
 	
 	union {
 		int64 i64;
@@ -33,10 +39,11 @@ public:
 	AstNode();
 	
 	void			Clear() {sub.Clear();}
+	void			CopyFrom(const AstNode& n);
 	
-	AstNode&		Add(String name="", int idx=-1);
-	AstNode&		GetAdd(String name="");
-	AstNode&		GetAdd(SemanticType accepts);
+	AstNode&		Add(const FileLocation& loc, String name="", int idx=-1);
+	AstNode&		GetAdd(const FileLocation& loc, String name="");
+	AstNode&		GetAdd(const FileLocation& loc, SemanticType accepts);
 	AstNode*		Find(String name, SemanticType accepts=SEMT_NULL);
 	const AstNode*	Find(String name, SemanticType accepts=SEMT_NULL) const;
 	AstNode*		Find(SemanticType t);

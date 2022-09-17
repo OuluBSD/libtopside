@@ -42,6 +42,8 @@ public:
 	
 	String GetTypeInitValueString(AstNode& n) const;
 	
+	void Bind(AstNode& from, AstNode& to);
+	
 	static bool ForwardUserspace(AstNode*& n);
 	
 };

@@ -7,31 +7,51 @@ AstNode::AstNode() {
 	
 }
 
-AstNode& AstNode::Add(String name, int idx) {
+void AstNode::CopyFrom(const AstNode& n) {
+	sub.Clear();
+	
+	name = n.name;
+	src = n.src;
+	stmt = n.stmt;
+	op = n.op;
+	con = n.con;
+	filter = n.filter;
+	i64 = n.i64;
+	str = n.str;
+	loc = n.loc;
+	
+	type = n.type ? n.type->next : 0;
+	for(int i = 0; i < AstNode::LINK_COUNT; i++)
+		link[i] = n.link[i] ? n.link[i]->next : 0;
+	
+}
+
+AstNode& AstNode::Add(const FileLocation& loc, String name, int idx) {
 	ASSERT(!locked);
 	AstNode& s =
 		idx >= 0 ? sub.Insert(idx) : sub.Add();
 	s.SetOwner(this);
 	s.name = name;
+	s.loc = loc;
 	return s;
 }
 
-AstNode& AstNode::GetAdd(String name) {
+AstNode& AstNode::GetAdd(const FileLocation& loc, String name) {
 	ASSERT(name.GetCount());
 	AstNode* p = Find(name);
 	if (p)
 		return *p;
 	else
-		return Add(name);
+		return Add(loc, name);
 }
 
-AstNode& AstNode::GetAdd(SemanticType accepts) {
+AstNode& AstNode::GetAdd(const FileLocation& loc, SemanticType accepts) {
 	ASSERT(name.GetCount());
 	for (AstNode& s : sub) {
 		if (s.IsPartially(accepts))
 			return s;
 	}
-	AstNode& s = Add();
+	AstNode& s = Add(loc);
 	s.src = accepts;
 	if (accepts == SEMT_TYPE_POINTER)
 		s.name = "#";

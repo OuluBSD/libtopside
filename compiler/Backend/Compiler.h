@@ -9,10 +9,9 @@ struct Compiler {
 	
 	Tokenizer t;
 	TokenStructure ts;
-	HighScriptEmitter sp;
-	AstBuilder ab;
 	AstExporter ex;
-	
+	SemanticParser sp;
+	AstRunner ar;
 	
 public:
 	typedef Compiler CLASSNAME;
