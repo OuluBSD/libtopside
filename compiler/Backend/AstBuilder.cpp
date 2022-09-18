@@ -31,13 +31,14 @@ void SemanticParser::PopClass(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+AstNode* SemanticParser::PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_FUNCTION_STATIC;
 	var.type = &ret_type;
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {

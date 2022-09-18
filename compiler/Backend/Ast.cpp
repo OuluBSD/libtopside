@@ -26,6 +26,56 @@ void AstNode::CopyFrom(const AstNode& n) {
 	
 }
 
+void AstNode::CopyFromObject(const FileLocation& loc, const Object& o) {
+	sub.Clear();
+	name.Clear();
+	src = SEMT_CONSTANT;
+	stmt = STMT_NULL;
+	op = OP_NULL;
+	filter = SEMT_NULL;
+	i64 = 0;
+	str.Clear();
+	this->loc = loc;
+	
+	dword type = o.GetType();
+	
+	if (type == BOOL_V) {
+		i64 = o.ToInt();
+		con = CONST_BOOL;
+	}
+	else if (type == INT_V) {
+		i64 = o.ToInt();
+		con = CONST_INT32;
+	}
+	else if (type == INT64_V) {
+		i64 = o.ToInt();
+		con = CONST_INT64;
+	}
+	else if (type == STRING_V) {
+		str = o.ToString();
+		con = CONST_STRING;
+	}
+	else if (type == DOUBLE_V) {
+		dbl = o.ToDouble();
+		con = CONST_DOUBLE;
+	}
+	else TODO
+}
+
+void AstNode::CopyToObject(Object& n) const {
+	if (src == SEMT_CONSTANT) {
+		switch (con) {
+			case CONST_BOOL: n = (bool)i64; break;
+			case CONST_INT32: n = (int32)i64; break;
+			case CONST_INT64: n = (int64)i64; break;
+			case CONST_STRING: n = str; break;
+			case CONST_DOUBLE: n = dbl; break;
+			default: TODO break;
+		}
+	}
+	else TODO
+}
+
 AstNode& AstNode::Add(const FileLocation& loc, String name, int idx) {
 	ASSERT(!locked);
 	AstNode& s =

@@ -43,11 +43,11 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 	
 	// Semantically parse
 	TEST(Parse())
-	if (verbose) {LOG(sp.root.GetTreeString(0));}
+	if (verbose) {LOG(sp.GetRoot().GetTreeString(0));}
 	
 	// Run meta
 	TEST(RunMeta())
-	TODO //if (verbose) {LOG(ab.root.GetTreeString(0));}
+	if (verbose) {LOG(ar.GetRoot().GetTreeString(0));}
 	
 	if (lang == LANG_HIGH) {
 		// Export High script
@@ -114,10 +114,9 @@ bool Compiler::RunMeta() {
 bool Compiler::ExportHigh() {
 	InitHighExporter(ex.lang);
 	
-	TODO
-	/*ex.WhenMessage = THISBACK(OnProcMsg);
-	if (!ex.Process(ab.GetRoot()))
-		return false;*/
+	ex.WhenMessage = THISBACK(OnProcMsg);
+	if (!ex.Process(ar.GetRoot()))
+		return false;
 	
 	return true;
 }
@@ -125,10 +124,9 @@ bool Compiler::ExportHigh() {
 bool Compiler::ExportCpp() {
 	InitCppExporter(ex.lang);
 	
-	TODO
-	/*ex.WhenMessage = THISBACK(OnProcMsg);
-	if (!ex.Process(ab.GetRoot()))
-		return false;*/
+	ex.WhenMessage = THISBACK(OnProcMsg);
+	if (!ex.Process(ar.GetRoot()))
+		return false;
 	
 	return true;
 }

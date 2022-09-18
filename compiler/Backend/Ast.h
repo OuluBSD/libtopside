@@ -40,6 +40,8 @@ public:
 	
 	void			Clear() {sub.Clear();}
 	void			CopyFrom(const AstNode& n);
+	void			CopyFromObject(const FileLocation& loc, const Object& n);
+	void			CopyToObject(Object& n) const;
 	
 	AstNode&		Add(const FileLocation& loc, String name="", int idx=-1);
 	AstNode&		GetAdd(const FileLocation& loc, String name="");

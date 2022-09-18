@@ -348,7 +348,6 @@ void EonStd::PopScope() {
 	}
 	int c = spath.GetCount() - rm_i;
 	spath.Remove(rm_i, c);
-	ASSERT(spath.GetCount() > 0);
 }
 
 String EonStd::GetTypeInitValueString(AstNode& n) const {

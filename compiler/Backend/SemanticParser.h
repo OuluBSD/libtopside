@@ -151,7 +151,7 @@ public:
 	
 	void PushClass(const FileLocation& loc, const PathIdentifier& name);
 	void PopClass(const FileLocation& loc);
-	void PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
+	AstNode* PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
 	void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
 	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
 	void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);

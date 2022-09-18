@@ -522,6 +522,7 @@ void AstExporter::VisitConstant(const AstNode& n) {
 	
 	switch (n.con) {
 	case CONST_NULL:	output << "void"; break;
+	case CONST_BOOL:	output << (n.i64 ? "true" : "false"); break;
 	case CONST_INT32:	output << IntStr((int)n.i64); break;
 	case CONST_INT64:	output << IntStr64(n.i64); break;
 	case CONST_DOUBLE:	output << DblStr(n.dbl); break;

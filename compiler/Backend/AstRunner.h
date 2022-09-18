@@ -22,11 +22,16 @@ public:
 	
 	bool		Execute(AstNode& n);
 	bool		Visit(AstNode& n);
-	AstNode&	AddDuplicate(AstNode& n);
+	AstNode*	AddDuplicate(AstNode& n);
+	bool		VisitMetaRVal(AstNode& n);
+	bool		VisitMetaCtor(AstNode& n);
+	AstNode*	Merge(AstNode& n);
+	AstNode*	MergeStatement(AstNode& n);
 	void		PushRuntimeScope(Object& o);
 	void		AddRuntimeScope(const FileLocation& loc, String name);
 	void		PopRuntimeScope();
 	bool		DeclareMetaVariable(AstNode& n);
+	bool		IsMergeable(AstNode& prev, AstNode& to_merge) const;
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

@@ -182,13 +182,8 @@ bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name
 	ASSERT(iter.Check(cur));
 	ASSERT(iter->IsType('('));
 	
-	AstNode& var = DeclareRelative(name);
-	var.src = SEMT_FUNCTION_STATIC;
-	var.type = &ret_type;
-	
-	PushScope(var);
-	
-	EMIT PushFunction(name.begin->loc, ret_type, name);
+	AstNode* var = EMIT PushFunction(name.begin->loc, ret_type, name);
+	if (!var) return false;
 	
 	if (!PassToken('(')) return false;
 	
@@ -217,9 +212,7 @@ bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name
 	
 	EMIT PopFunction(cur.end->loc);
 	
-	PopScope();
-	
-	EMIT PushRval(iter->loc, var);
+	EMIT PushRval(iter->loc, *var);
 	
 	return true;
 }
@@ -377,11 +370,6 @@ bool SemanticParser::ParseStatementList() {
 	bool succ = true;
 	
 	const TokenNode& tk_owner = *path.Top();
-	AstNode& ast_owner = *spath.Top().n;
-	
-	AstNode& block = ast_owner.Add(tk_owner.end->loc);
-	block.src = SEMT_STATEMENT_BLOCK;
-	PushScope(block);
 	
 	EMIT PushStatementList(tk_owner.end->loc);
 	
@@ -421,7 +409,6 @@ bool SemanticParser::ParseStatementList() {
 	}
 	path.Remove(path.GetCount()-1);
 	
-	PopScope();
 	EMIT PopStatementList(tk_owner.end->loc);
 	
 	return succ;
