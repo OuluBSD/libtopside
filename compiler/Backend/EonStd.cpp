@@ -362,7 +362,7 @@ String EonStd::GetTypeInitValueString(AstNode& n) const {
 }
 
 void EonStd::Bind(AstNode& from, AstNode& to) {
-	ASSERT(from.next == 0 && to.prev == 0);
+	//ASSERT(from.next == 0 && to.prev == 0);
 	from.next = &to;
 	to.prev = &from;
 }

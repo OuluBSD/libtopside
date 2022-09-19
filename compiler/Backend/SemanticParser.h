@@ -149,7 +149,9 @@ public:
 	void PushRvalConstant(const FileLocation& loc, double v);
 	void PushRvalConstant(const FileLocation& loc, String v);
 	
-	void PushClass(const FileLocation& loc, const PathIdentifier& name);
+	void PushWorld(const FileLocation& loc, const PathIdentifier& name);
+	void PopWorld(const FileLocation& loc);
+	AstNode* PushClass(const FileLocation& loc, const PathIdentifier& name);
 	void PopClass(const FileLocation& loc);
 	AstNode* PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
 	void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
@@ -193,9 +195,9 @@ public:
 	void PopMachine(const FileLocation& loc);
 	void PushChain(const FileLocation& loc, const PathIdentifier& id);
 	void PopChain(const FileLocation& loc);
-	void PushLoop(const FileLocation& loc, const PathIdentifier& id);
+	AstNode* PushLoop(const FileLocation& loc, const PathIdentifier& id);
 	void PopLoop(const FileLocation& loc);
-	void PushAtom(const FileLocation& loc, const PathIdentifier& id);
+	AstNode* PushAtom(const FileLocation& loc, const PathIdentifier& id);
 	void PopAtom(const FileLocation& loc);
 	void PushAtomConnector(const FileLocation& loc, int part);
 	void PopAtomConnector(const FileLocation& loc);

@@ -111,8 +111,6 @@ public:
 	ObjectMap&   CreateMap();
 	ObjectArray& CreateArray();
 	
-	bool operator==(const Object& v) const {return obj == v.obj;}
-	
 	dword GetType() const {if (obj) return obj->GetType(); return VOID_V;}
 	Object& operator=(const Nuller&) {Clear(); return *this;}
 	template <class T> Object&	operator=(const Object& v) {obj = v.obj; return *this;}
@@ -147,8 +145,11 @@ public:
 	bool IsMap() const;
 	bool IsArrayMapComb() const;
 	bool IsString() const {return !obj.IsEmpty() && obj->GetType() == STRING_V;}
+	bool IsWString() const {return !obj.IsEmpty() && obj->GetType() == WSTRING_V;}
 	bool IsInt() const {return !obj.IsEmpty() && obj->GetType() == INT_V;}
 	bool IsInt64() const {return !obj.IsEmpty() && obj->GetType() == INT64_V;}
+	bool IsDouble() const {return !obj.IsEmpty() && obj->GetType() == DOUBLE_V;}
+	bool IsNumber() const {return !obj.IsEmpty() && (obj->GetType() == DOUBLE_V || obj->GetType() == INT_V || obj->GetType() == INT64_V);}
 	
 	operator String() const {return ToString();}
 	
@@ -156,6 +157,25 @@ public:
 	WString ToWString() const {WString* w=Try<WString>(); if (w) return *w; return ::UPP::ToWString(ToString());}
 	int64 ToInt() const {if (obj) return obj->ToInt(); return 0;}
 	double ToDouble() const {if (obj) return obj->ToDouble(); return 0;}
+	
+	
+	Object operator >(const Object& o) const;
+	Object operator <(const Object& o) const;
+	Object operator >=(const Object& o) const;
+	Object operator <=(const Object& o) const;
+	Object operator !=(const Object& o) const;
+	Object operator ==(const Object& o) const;
+	Object operator &&(const Object& o) const;
+	Object operator ||(const Object& o) const;
+	Object operator +(const Object& o) const;
+	Object operator -(const Object& o) const;
+	Object operator *(const Object& o) const;
+	Object operator /(const Object& o) const;
+	Object operator %(const Object& o) const;
+	Object operator <<(const Object& o) const;
+	Object operator >>(const Object& o) const;
+	Object operator !() const;
+	Object operator -() const;
 };
 
 inline bool IsObjectMap(const Object& v) {return v.IsMap();}

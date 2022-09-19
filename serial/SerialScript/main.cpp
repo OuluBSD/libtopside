@@ -41,11 +41,12 @@ void TestEonTests(String dir_title) {
 	int i = -1;
 	for (String file : files) {
 		String fname = GetFileName(file);
-		i++;
-		LOG("Testing " << i << ": " << fname);
 		
 		if (fname.Find("meta") != 0) continue;
-		if (i >= 16) continue;
+		
+		LOG("Testing " << i << ": " << fname);
+		i++;
+		if (i != 2) continue;
 		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
 		
 		if (!TestEonTest(file, LANG_CPP)) {

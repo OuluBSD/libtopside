@@ -25,6 +25,7 @@ public:
 	AstNode*	AddDuplicate(AstNode& n);
 	bool		VisitMetaRVal(AstNode& n);
 	bool		VisitMetaCtor(AstNode& n);
+	bool		VisitMetaFor(AstNode& n);
 	AstNode*	Merge(AstNode& n);
 	AstNode*	MergeStatement(AstNode& n);
 	void		PushRuntimeScope(Object& o);
@@ -32,6 +33,7 @@ public:
 	void		PopRuntimeScope();
 	bool		DeclareMetaVariable(AstNode& n);
 	bool		IsMergeable(AstNode& prev, AstNode& to_merge) const;
+	bool		Evaluate(AstNode& n, Object& o);
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

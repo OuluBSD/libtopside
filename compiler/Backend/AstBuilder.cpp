@@ -19,12 +19,23 @@ void SemanticParser::AddError(const FileLocation& loc, String msg) {
 	fail = true;
 }*/
 
-void SemanticParser::PushClass(const FileLocation& loc, const PathIdentifier& name) {
+void SemanticParser::PushWorld(const FileLocation& loc, const PathIdentifier& name) {
+	AstNode& mach = DeclareRelative(name);
+	mach.src = SEMT_WORLD;
+	PushScope(mach);
+}
+
+void SemanticParser::PopWorld(const FileLocation& loc) {
+	PopScope();
+}
+
+AstNode* SemanticParser::PushClass(const FileLocation& loc, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_CLASS;
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::PopClass(const FileLocation& loc) {
@@ -123,6 +134,7 @@ void SemanticParser::PushStatement(const FileLocation& loc, StmtType type) {
 	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_STATEMENT;
 	stmt.stmt = type;
+	//ASSERT_(type != STMT_EXPR, "don't add expr here");
 	
 	PushScope(stmt);
 }
@@ -331,6 +343,7 @@ void SemanticParser::Expr1(const FileLocation& loc, OpType op) {
 	expr.src = SEMT_EXPR;
 	expr.op = op;
 	expr.link[0] = arg0;
+	expr.i64 = 1;
 	
 	spath[c-1].n = &expr;
 }
@@ -347,6 +360,7 @@ void SemanticParser::Expr2(const FileLocation& loc, OpType op) {
 	expr.op = op;
 	expr.link[0] = arg0;
 	expr.link[1] = arg1;
+	expr.i64 = 2;
 	
 	spath.SetCount(c-1);
 	spath[c-2].n = &expr;
@@ -366,6 +380,7 @@ void SemanticParser::Expr3(const FileLocation& loc, OpType op) {
 	expr.link[0] = arg0;
 	expr.link[1] = arg1;
 	expr.link[2] = arg2;
+	expr.i64 = 3;
 	
 	spath.SetCount(c-2);
 	spath[c-3].n = &expr;
@@ -443,24 +458,26 @@ void SemanticParser::PopChain(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
+AstNode* SemanticParser::PushLoop(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_LOOP;
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::PopLoop(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
+AstNode* SemanticParser::PushAtom(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
 	var.src = SEMT_ATOM;
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::PopAtom(const FileLocation& loc) {
@@ -507,6 +524,7 @@ void SemanticParser::PushCall(const FileLocation& loc) {
 	AstNode& var = owner.Add(loc);
 	var.src = SEMT_EXPR;
 	var.op = OP_CALL;
+	var.i64 = 2;
 	
 	PushScope(var);
 	

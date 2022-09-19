@@ -1,5 +1,5 @@
 machine daw.core:
-	meta int channel.count = 10
+	meta int channel.count = 3
 	
 	meta loopstmt channel.effects():
 		corefx.pipe: filter="chorus"

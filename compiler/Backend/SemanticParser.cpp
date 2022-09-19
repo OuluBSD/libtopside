@@ -223,12 +223,6 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	ASSERT(iter.Check(cur));
 	ASSERT(iter->IsType('('));
 	
-	AstNode& var = DeclareRelative(name);
-	var.src = SEMT_META_FUNCTION_STATIC;
-	var.type = &ret_type;
-	
-	PushScope(var);
-	
 	TODO
 	
 	EMIT PushMetaFunction(name.begin->loc, ret_type, name);
@@ -296,8 +290,6 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	
 	EMIT PopMetaFunction(cur.end->loc);
 	
-	PopScope();
-	
 	return true;
 }
 
@@ -305,12 +297,6 @@ bool SemanticParser::ParseAtomStatementList() {
 	bool succ = true;
 	
 	const TokenNode& tk_owner = *path.Top();
-	AstNode& ast_owner = *spath.Top().n;
-	Iterator& iter = TopIterator();
-	
-	AstNode& block = ast_owner.Add(tk_owner.end->loc);
-	block.src = SEMT_STATEMENT_BLOCK;
-	PushScope(block);
 	
 	EMIT PushStatementList(tk_owner.end->loc);
 	
@@ -345,7 +331,6 @@ bool SemanticParser::ParseAtomStatementList() {
 	if (!succ)
 		PopIterator();
 	
-	PopScope();
 	EMIT PopStatementList(tk_owner.end->loc);
 	
 	return succ;
@@ -424,20 +409,12 @@ bool SemanticParser::ParseStatement() {
 		return ParseMetaStatement();
 	}
 	else if (Id("if")) {
-		AstNode& t = GetTopNode();
-		AstNode& stmt = t.Add(iter->loc);
-		stmt.src = SEMT_STATEMENT;
-		stmt.stmt = STMT_IF;
-		PushScope(stmt);
-		
 		EMIT PushStatement(iter->loc, STMT_IF);
 		
 		if (!ParseExpression(false)) return false;
 		if (!ParseStatementBlock()) return false;
 		
 		EMIT PopStatement(iter->loc);
-		
-		PopScope();
 	}
 	else if (IsId("else")) {
 		AstNode& t = GetTopNode();
@@ -595,14 +572,10 @@ bool SemanticParser::ParseStatement() {
 		// empty statement
 	}
 	else {
-		AstNode& stmt = spath.Top().n->Add(iter->loc);
-		stmt.src = SEMT_STATEMENT;
-		PushScope(stmt);
 		EMIT PushStatement(iter->loc, STMT_EXPR);
 		
 		if (!ParseExpression(false)) return false;
 		
-		PopScope();
 		EMIT PopStatement(iter->loc);
 	}
 	
@@ -736,14 +709,10 @@ bool SemanticParser::ParseMetaStatement(bool skip_meta_keywords) {
 		// empty statement
 	}
 	else {
-		AstNode& stmt = spath.Top().n->Add(iter->loc);
-		stmt.src = SEMT_META_STATEMENT;
-		PushScope(stmt);
 		EMIT PushStatement(iter->loc, STMT_META_EXPR);
 		
 		if (!ParseExpression(true)) return false;
 		
-		PopScope();
 		EMIT PopStatement(iter->loc);
 	}
 	
@@ -1015,12 +984,8 @@ bool SemanticParser::ParseClass() {
 		return false;
 	}
 	
-	AstNode& var = DeclareRelative(name);
-	var.src = SEMT_CLASS;
-	
-	PushScope(var);
-	
-	EMIT PushClass(name.begin->loc, name);
+	AstNode* var = EMIT PushClass(name.begin->loc, name);
+	if (!var) return false;
 	
 	if (!iter && cur.sub.GetCount()) {
 		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
@@ -1033,9 +998,7 @@ bool SemanticParser::ParseClass() {
 	
 	EMIT PopClass(cur.end->loc);
 	
-	PopScope();
-	
-	EMIT PushRval(iter->loc, var);
+	EMIT PushRval(iter->loc, *var);
 	
 	return true;
 }
@@ -1454,10 +1417,12 @@ bool SemanticParser::Term(bool meta) {
 		else {
 			//DUMP(id);
 			
-			if (nn->IsPartially(meta ? SEMT_META_FIELD : SEMT_FIELD)) {
+			//if (nn->IsPartially(meta ? SEMT_META_FIELD : SEMT_FIELD)) {
+			if (nn->IsPartially((SemanticType)(SEMT_META_FIELD | SEMT_FIELD))) {
 				EMIT PushRval(id.begin->loc, *nn);
 			}
-			else if (nn->IsPartially(meta ? SEMT_META_TYPE : SEMT_TYPE)) {
+			//else if (nn->IsPartially(meta ? SEMT_META_TYPE : SEMT_TYPE)) {
+			else if (nn->IsPartially((SemanticType)(SEMT_META_TYPE | SEMT_TYPE))) {
 				/*PathIdentifier name;
 				const FileLocation& loc = iter->loc;
 				if (!ParsePathIdentifier(name)) {
@@ -1909,12 +1874,12 @@ bool SemanticParser::ParseWorld() {
 	Iterator& owner_iter = TopIterator();
 	AstNode& owner = GetTopNode();
 	if (owner_iter.node->sub.GetCount()) {
-		AstNode& mach = Declare(owner, id);
-		mach.src = SEMT_WORLD;
-		PushScope(mach);
+		EMIT PushWorld(iter->loc, id);
+		
 		if (!ParseWorldStatementList())
 			return false;
-		PopScope();
+		
+		EMIT PopWorld(iter->loc);
 	}
 	else {
 		TODO // declaration-only
@@ -1935,11 +1900,6 @@ bool SemanticParser::ParseSystem() {
 	}
 	
 	Iterator& owner_iter = TopIterator();
-	AstNode& owner = GetTopNode();
-	AstNode& mach = Declare(owner, id);
-	mach.src = SEMT_SYSTEM;
-	
-	PushScope(mach);
 	
 	EMIT PushSystem(iter.begin->loc, id);
 	
@@ -1967,12 +1927,6 @@ bool SemanticParser::ParsePool() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& pool = Declare(owner, id);
-	pool.src = SEMT_POOL;
-	
-	PushScope(pool);
-	
 	EMIT PushPool(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
@@ -1982,8 +1936,6 @@ bool SemanticParser::ParsePool() {
 	}
 	
 	EMIT PopPool(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -1999,12 +1951,6 @@ bool SemanticParser::ParseEntity() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& ent = Declare(owner, id);
-	ent.src = SEMT_ENTITY;
-	
-	PushScope(ent);
-	
 	EMIT PushEntity(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
@@ -2014,8 +1960,6 @@ bool SemanticParser::ParseEntity() {
 	}
 	
 	EMIT PopEntity(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -2031,12 +1975,6 @@ bool SemanticParser::ParseComponent() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& comp = Declare(owner, id);
-	comp.src = SEMT_COMPONENT;
-	
-	PushScope(comp);
-	
 	EMIT PushComponent(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
@@ -2046,8 +1984,6 @@ bool SemanticParser::ParseComponent() {
 	}
 	
 	EMIT PopComponent(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -2067,12 +2003,6 @@ bool SemanticParser::ParseMachine() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& mach = Declare(owner, id);
-	mach.src = SEMT_MACHINE;
-	
-	PushScope(mach);
-	
 	EMIT PushMachine(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
@@ -2082,8 +2012,6 @@ bool SemanticParser::ParseMachine() {
 	}
 	
 	EMIT PopMachine(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -2102,12 +2030,6 @@ bool SemanticParser::ParseChain() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& chain = Declare(owner, id);
-	chain.src = SEMT_CHAIN;
-	
-	PushScope(chain);
-	
 	EMIT PushChain(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
@@ -2117,8 +2039,6 @@ bool SemanticParser::ParseChain() {
 	}
 	
 	EMIT PopChain(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -2141,13 +2061,7 @@ bool SemanticParser::ParseLoop() {
 		return false;
 	}
 	
-	AstNode& owner = GetTopNode();
-	AstNode& loop = Declare(owner, id);
-	loop.src = SEMT_LOOP;
-	
-	PushScope(loop);
-	
-	EMIT PushLoop(iter.begin->loc, id);
+	AstNode* loop = EMIT PushLoop(iter.begin->loc, id);
 	
 	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {
@@ -2155,12 +2069,10 @@ bool SemanticParser::ParseLoop() {
 			return false;
 	}
 	else {
-		loop.src = SEMT_LOOP_DECL;
+		loop->src = SEMT_LOOP_DECL;
 	}
 	
 	EMIT PopLoop(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }
@@ -2168,12 +2080,8 @@ bool SemanticParser::ParseLoop() {
 bool SemanticParser::ParseAtom(PathIdentifier& id) {
 	Iterator& iter = TopIterator();
 	
-	AstNode& owner = GetTopNode();
-	AstNode& atom = Declare(owner, id);
-	
-	PushScope(atom);
-	
-	EMIT PushAtom(iter.begin->loc, id);
+	AstNode* atom = EMIT PushAtom(iter.begin->loc, id);
+	if (!atom) return false;
 	
 	if (!IsLineEnd()) {
 		if (TryToken('[')) {
@@ -2182,7 +2090,7 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 				if (c == 0)
 					EMIT PushAtomConnector(iter->loc, 0);
 				
-				AstNode& src_cond = atom.Add(iter->loc, "src");
+				AstNode& src_cond = atom->Add(iter->loc, "src");
 				PushScope(src_cond);
 				allow_expr_unresolved = true;
 				bool succ = Cond(false);
@@ -2204,7 +2112,7 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 					if (c == 0)
 						EMIT PushAtomConnector(iter->loc, 1);
 					
-					AstNode& sink_cond = atom.Add(iter->loc, "sink");
+					AstNode& sink_cond = atom->Add(iter->loc, "sink");
 					PushScope(sink_cond);
 					allow_expr_unresolved = true;
 					bool succ = Cond(false);
@@ -2235,8 +2143,6 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 	}
 	
 	EMIT PopAtom(iter.begin->loc);
-	
-	PopScope();
 	
 	return true;
 }

@@ -64,6 +64,88 @@ AstNode* AstRunner::Merge(AstNode& n) {
 	return &d;
 }
 
+bool AstRunner::VisitMetaFor(AstNode& n) {
+	ASSERT(n.src == SEMT_STATEMENT && n.stmt == STMT_META_FOR);
+	
+	AstNode* block = 0;
+	AstNode* for_cond = 0;
+	AstNode* for_post = 0;
+	AstNode* for_range = 0;
+	
+	for (AstNode& s : n.sub) {
+		if (s.src == SEMT_CTOR) {
+			if (!VisitMetaCtor(s))
+				return false;
+		}
+		else if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_COND) {
+			for_cond = &s;
+		}
+		else if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_POST) {
+			for_post = &s;
+		}
+		else if (s.src == SEMT_STATEMENT &&  s.stmt == STMT_META_FOR_RANGE) {
+			for_range = &s;
+		}
+		else if (s.src == SEMT_RVAL) {
+			// pass
+		}
+		else if (s.src == SEMT_STATEMENT_BLOCK) {
+			block = &s;
+		}
+		else TODO
+	}
+	
+	if (!block) {
+		AddError(n.loc, "no statement-block in meta-for loop");
+		return false;
+	}
+	
+	if (for_range) {
+		TODO
+	}
+	else {
+		if (!for_cond || !for_post) {
+			AddError(n.loc, "internal error: no for-cond or for-post statement");
+			return false;
+		}
+		
+		
+		
+		Object cond_val, post_val;
+		int dbg_i = 0;
+		while (1) {
+			
+			if (!Evaluate(*for_cond, cond_val))
+				return false;
+			
+			bool b = false;
+			dword type = cond_val.GetType();
+			if (type == BOOL_V)
+				b = cond_val.Get<bool>();
+			else if (type == INT_V || type == INT64_V)
+				b = cond_val.ToInt();
+			else if (type == DOUBLE_V)
+				b = cond_val.ToDouble();
+			
+			if (!b)
+				break;
+			
+			for (AstNode& s : block->sub) {
+				if (!Visit(s))
+					return false;
+			}
+			
+			if (!Evaluate(*for_post, post_val))
+				return false;
+			
+			dbg_i++;
+		}
+		//DUMP(dbg_i);
+	}
+	
+	return true;
+}
+
 AstNode* AstRunner::MergeStatement(AstNode& n) {
 	AstNode& owner = *spath.Top().n;
 	AstNode* d = 0;
@@ -76,14 +158,43 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 		d = &owner.Add(n.loc);
 		d->CopyFrom(n);
 		Bind(n, *d);
+		if (n.sub.GetCount()) {
+			PushScope(*d);
+			for (int i = n.sub.GetCount()-1; i >= 0; i--) {
+				AstNode& s = n.sub[i];
+				if (s.src == SEMT_EXPR) {
+					if (!Visit(s))
+						return 0;
+					for(int j = 1; j < s.i64; j++)
+						PopScope(); // expr rval
+					break;
+				}
+			}
+			PopScope();
+		}
+		return d;
+		
+	case STMT_EXPR:
+		d = &owner.Add(n.loc);
+		d->CopyFrom(n);
+		Bind(n, *d);
 		PushScope(*d);
-		for (AstNode& s : n.sub) {
-			if (!Visit(s))
-				return 0;
+		ASSERT(n.sub.GetCount());
+		for (int i = n.sub.GetCount()-1; i >= 0; i--) {
+			AstNode& s = n.sub[i];
+			if (s.src == SEMT_EXPR || s.src == SEMT_CTOR) {
+				if (!Visit(s))
+					return 0;
+				PopScope(); // expr rval
+				break;
+			}
 		}
 		PopScope();
 		return d;
 		
+	case STMT_META_FOR:
+		break;
+	
 	case STMT_NULL:
 	case STMT_IF:
 	case STMT_ELSE:
@@ -99,7 +210,6 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 	case STMT_DEFAULT:
 	case STMT_SWITCH:
 	case STMT_BLOCK:
-	case STMT_EXPR:
 	default:
 		TODO
 		break;
@@ -159,7 +269,7 @@ bool AstRunner::Visit(AstNode& n) {
 		}
 		PopScope();
 		PopRuntimeScope();
-		ASSERT(spath.IsEmpty());
+		//ASSERT(spath.IsEmpty());
 		break;
 	
 	case SEMT_BUILTIN:
@@ -177,17 +287,57 @@ bool AstRunner::Visit(AstNode& n) {
 	
 	case SEMT_FUNCTION_STATIC:
 	case SEMT_STATEMENT_BLOCK:
+	case SEMT_VARIABLE:
 		s = Merge(n);
 		if (!s)
 			return false;
 		AddRuntimeScope(n.loc, n.name);
-		PushScope(*s);
-		for (AstNode& s : n.sub) {
-			if (!Visit(s))
-				return false;
+		if (!n.sub.IsEmpty()) {
+			PushScope(*s);
+			for (AstNode& s : n.sub) {
+				if (!Visit(s))
+					return false;
+			}
+			PopScope();
 		}
-		PopScope();
 		PopRuntimeScope();
+		break;
+		
+	case SEMT_EXPR:
+		s = Merge(n);
+		if (!s)
+			return false;
+		//AddRuntimeScope(n.loc, n.name);
+		//PushScope(*s);
+		for(int i = 0; i < n.i64; i++) {
+			AstNode& l = *n.link[i];
+			if (!Visit(l))
+				return false;
+			s->link[i] = l.next;
+		}
+		//PopScope();
+		//PopRuntimeScope();
+		for(int i = 1; i < n.i64; i++) {
+			PopScope();
+		}
+		spath.Top().n = s;
+		break;
+		
+	case SEMT_ARGUMENT_LIST:
+	case SEMT_ARGUMENT:
+		if (n.src == SEMT_ARGUMENT)
+			PopScope();
+		s = Merge(n);
+		if (!s)
+			return false;
+		if (!n.sub.IsEmpty()) {
+			PushScope(*s);
+			for (AstNode& s : n.sub) {
+				if (!Visit(s))
+					return false;
+			}
+			PopScope();
+		}
 		break;
 		
 	case SEMT_CTOR:
@@ -204,9 +354,14 @@ bool AstRunner::Visit(AstNode& n) {
 		}
 		PopScope();
 		PopRuntimeScope();
+		PushScopeRVal(*s);
 		break;
 		
 	case SEMT_STATEMENT:
+		switch (n.stmt) {
+			case STMT_META_FOR: return VisitMetaFor(n);
+			default: break;
+		}
 		s = MergeStatement(n);
 		if (!s)
 			return false;
@@ -219,18 +374,30 @@ bool AstRunner::Visit(AstNode& n) {
 				return false;
 		}
 		else {
-			if (!AddDuplicate(n))
+			s = AddDuplicate(n);
+			if (!s)
 				return false;
+			PushScopeRVal(*s);
+			/*
+			expr link is used instead of this:
+			if (n.sub.GetCount()) {
+				for (AstNode& s : n.sub) {
+					if (!Visit(s))
+						return false;
+				}
+			}*/
 		}
 		break;
+		
+	case SEMT_CONSTANT:
+		s = AddDuplicate(n);
+		if (!s)
+			return false;
+		PushScopeRVal(*s);
+		break;
 	
-	case SEMT_ARGUMENT_LIST:
 	case SEMT_IDPART:
 	case SEMT_PARAMETER:
-	case SEMT_EXPR:
-	case SEMT_CONSTANT:
-	case SEMT_VARIABLE:
-	case SEMT_ARGUMENT:
 	case SEMT_RESOLVE:
 	case SEMT_NULL:
 	case SEMT_NAMESPACE:
@@ -269,6 +436,8 @@ bool AstRunner::VisitMetaRVal(AstNode& n) {
 		AstNode& d = owner.Add(n.loc);
 		d.CopyFromObject(n.loc, *ref.next_obj);
 		Bind(n, d);
+		
+		PushScopeRVal(d);
 	}
 	else TODO;
 	
@@ -327,6 +496,111 @@ bool AstRunner::DeclareMetaVariable(AstNode& n) {
 		n.next_obj = &o;
 	}
 	else TODO;
+	
+	return true;
+}
+
+bool AstRunner::Evaluate(AstNode& n, Object& o) {
+	
+	if (n.src == SEMT_STATEMENT) {
+		if (n.stmt == STMT_EXPR ||
+			n.stmt == STMT_META_FOR_COND ||
+			n.stmt == STMT_META_FOR_POST) {
+			for (int i = n.sub.GetCount()-1; i >= 0; i--) {
+				AstNode& e = n.sub[i];
+				if (e.src == SEMT_EXPR) {
+					return Evaluate(e, o);
+				}
+			}
+		}
+		else {
+			TODO
+		}
+	}
+	else if (n.src == SEMT_EXPR) {
+		if (n.op == OP_POSTINC || n.op == OP_POSTDEC) {
+			if (n.link[0] && n.link[0]->src == SEMT_RVAL) {
+				Object* v = 0;
+				if (n.link[0]->next_obj)
+					v = n.link[0]->next_obj;
+				else if (n.link[0]->link[0] && n.link[0]->link[0]->next_obj)
+					v = n.link[0]->link[0]->next_obj;
+				if (v) {
+					o = *v;
+					*v = v->ToInt() + (int64)(n.op == OP_POSTINC ? 1 : -1);
+					return true;
+				}
+			}
+		}
+		
+		Object a[AstNode::LINK_COUNT];
+		
+		ASSERT(n.i64 > 0);
+		for(int i = 0; i < n.i64; i++) {
+			if (!n.link[i]) {
+				AddError(n.loc, "expression failed");
+				return false;
+			}
+			if (!Evaluate(*n.link[i], a[i]))
+				return false;
+		}
+		
+		switch (n.op) {
+			case OP_POSTINC:
+			case OP_POSTDEC:
+			case OP_POSITIVE:	o = a[0]; return true;
+			case OP_NOT:		o = !a[0]; return true;
+			case OP_NEGATIVE:	o = -a[0]; return true;
+			case OP_GREATER:	o = a[0] > a[1]; return true;
+			case OP_LESS:		o = a[0] < a[1]; return true;
+			case OP_ADD:		o = a[0] + a[1]; return true;
+			case OP_SUB:		o = a[0] - a[1]; return true;
+			case OP_MUL:		o = a[0] * a[1]; return true;
+			case OP_DIV:		o = a[0] / a[1]; return true;
+			case OP_MOD:		o = a[0] % a[1]; return true;
+			case OP_LSH:		o = a[0] << a[1]; return true;
+			case OP_RSH:		o = a[0] >> a[1]; return true;
+			
+			case OP_NULL:
+			case OP_INC:
+			case OP_DEC:
+			case OP_NEGATE:
+			case OP_GREQ:
+			case OP_LSEQ:
+			case OP_EQ:
+			case OP_INEQ:
+			case OP_BWAND:
+			case OP_BWXOR:
+			case OP_BWOR:
+			case OP_AND:
+			case OP_OR:
+			case OP_ASSIGN:
+			case OP_ADDASS:
+			case OP_SUBASS:
+			case OP_MULASS:
+			case OP_DIVASS:
+			case OP_MODASS:
+			case OP_COND:
+			case OP_CALL:
+			case OP_SUBSCRIPT:
+			default:
+				TODO
+		}
+	}
+	else if (n.src == SEMT_CONSTANT) {
+		n.CopyToObject(o);
+	}
+	else if (n.src == SEMT_RVAL) {
+		ASSERT(n.link[0]);
+		if (!n.link[0] || !n.link[0]->next_obj) {
+			AddError(n.loc, "internal error: incomplete rval");
+			return false;
+		}
+		
+		Object& v = *n.link[0]->next_obj;
+		o = v;
+	}
+	else TODO
 	
 	return true;
 }

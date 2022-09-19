@@ -304,9 +304,13 @@ void AstExporter::VisitStatement(const AstNode& n) {
 			output << " ";
 			Visit(n.sub[i]);
 		}*/
-		if (n.sub.GetCount()) {
-			output << " ";
-			Visit(n.sub.Top());
+		for(int i = n.sub.GetCount()-1; i >= 0; i--) {
+			const AstNode& s = n.sub[i];
+			if (s.src == SEMT_EXPR) {
+				output << " ";
+				Visit(s);
+				break;
+			}
 		}
 		output << ";\n";
 		break;

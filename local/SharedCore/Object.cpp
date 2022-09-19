@@ -135,6 +135,135 @@ void Object::DeepCopyArrayMap(Object v) {
 	else *this = v;
 }
 
+Object Object::operator >(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() > o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() > o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() > o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() > o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator <(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() < o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() < o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() < o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() < o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator >=(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() >= o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() >= o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() >= o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() >= o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator <=(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() <= o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() <= o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() <= o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() <= o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator !=(const Object& o) const {
+	if (IsVoid() && o.IsVoid()) return false;
+	if (IsVoid() || o.IsVoid()) return Object(true);
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() != o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() != o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() != o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() != o.ToWString();
+	if (!obj || !o.obj) return Object(true);
+	return obj != o.obj;
+}
+
+Object Object::operator ==(const Object& o) const {
+	if (IsVoid() && o.IsVoid()) return true;
+	if (IsVoid() || o.IsVoid()) return Object(false);
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() == o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() == o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() == o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() == o.ToWString();
+	if (!obj || !o.obj) return Object(false);
+	return obj == o.obj;
+}
+
+Object Object::operator &&(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() && o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() && o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() && o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() && o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator ||(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() || o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() || o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() || o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() || o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator +(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() + o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() + o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() + o.ToString();
+	if (IsWString() && o.IsWString()) return ToWString() + o.ToWString();
+	return Object(false);
+}
+
+Object Object::operator -(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() - o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() - o.ToDouble();
+	if (IsString() && o.IsString()) return ToString() - o.ToString();
+	return Object(false);
+}
+
+Object Object::operator *(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() * o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() * o.ToDouble();
+	return Object(false);
+}
+
+Object Object::operator /(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() / o.ToInt();
+	if (IsNumber() && o.IsNumber()) return ToDouble() / o.ToDouble();
+	return Object(false);
+}
+
+Object Object::operator %(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() % o.ToInt();
+	if (IsNumber() && o.IsNumber()) return fmod(ToDouble(), o.ToDouble());
+	return Object(false);
+}
+
+Object Object::operator <<(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() << o.ToInt();
+	if (IsNumber() && o.IsNumber()) return (int64)ToDouble() << (int64)o.ToDouble();
+	return Object(false);
+}
+
+Object Object::operator >>(const Object& o) const {
+	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() >> o.ToInt();
+	if (IsNumber() && o.IsNumber()) return (int64)ToDouble() >> (int64)o.ToDouble();
+	return Object(false);
+}
+
+Object Object::operator !() const {
+	if (IsInt() || IsInt64()) return !ToInt();
+	if (IsNumber()) return !ToDouble();
+	if (IsString()) return ToString().IsEmpty();
+	if (IsWString()) return ToWString().IsEmpty();
+	return Object(false);
+}
+
+Object Object::operator -() const {
+	if (IsInt() || IsInt64()) return -ToInt();
+	if (IsNumber()) return -ToDouble();
+	return Object(false);
+}
+
 
 
 
