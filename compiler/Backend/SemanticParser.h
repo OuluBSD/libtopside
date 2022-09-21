@@ -112,6 +112,7 @@ public:
 	bool ParseEntityStatement();
 	bool ParseComponentStatementList();
 	bool ParseComponentStatement();
+	bool ParseExpressionList();
 	
 	bool ParseState();
 	bool ParseDeclExpr(bool meta, const PathIdentifier& type_id, AstNode& tn);
@@ -154,7 +155,7 @@ public:
 	AstNode* PushClass(const FileLocation& loc, const PathIdentifier& name);
 	void PopClass(const FileLocation& loc);
 	AstNode* PushFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
-	void PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
+	AstNode* PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name);
 	void Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
 	void MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name);
 	void PopFunctionDefinition(const FileLocation& loc);
@@ -206,6 +207,7 @@ public:
 	void PushCall(const FileLocation& loc);
 	void PopCall(const FileLocation& loc);
 	void PopExprCallArgument(const FileLocation& loc, int arg_i);
+	void PopRvalLink(const FileLocation& loc);
 	
 };
 

@@ -72,6 +72,7 @@ struct PathIdentifier {
 	void Clear();
 	String ToString() const;
 	bool HasMeta() const;
+	bool IsEmpty() const;
 	
 };
 

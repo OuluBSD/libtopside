@@ -98,6 +98,7 @@ void EonStd::InitDefault() {
 	AddMetaBuiltinType("entitystmt");
 	AddMetaBuiltinType("compstmt");
 	AddMetaBuiltinType("params");
+	AddMetaBuiltinType("expr");
 	
 	{
 		AstNode& logger = GetRoot().Add(FileLocation(), "LOG");
@@ -301,9 +302,9 @@ AstNode& EonStd::GetBlock() {
 	return GetRoot();
 }
 
-void EonStd::PushScope(AstNode& n) {
-	if (spath.IsEmpty()) {
-		ASSERT(&n == &GetRoot());
+void EonStd::PushScope(AstNode& n, bool non_continuous) {
+	if (spath.IsEmpty() || non_continuous) {
+		ASSERT(&n == &GetRoot() || non_continuous);
 		Scope& s = spath.Add();
 		s.n = &n;
 		s.pop_this = true;

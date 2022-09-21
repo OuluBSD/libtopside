@@ -5,6 +5,7 @@ uses
 	High;
 
 file
+	TODO.txt,
 	Backend.h,
 	Defs.h,
 	Exporter.h,

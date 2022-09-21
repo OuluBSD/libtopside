@@ -26,9 +26,14 @@ public:
 	bool		VisitMetaRVal(AstNode& n);
 	bool		VisitMetaCtor(AstNode& n);
 	bool		VisitMetaFor(AstNode& n);
+	bool		VisitMetaStaticFunction(AstNode& n);
+	bool		VisitMetaCall(AstNode& n, AstNode& rval, AstNode& args);
+	bool		VisitResolve(AstNode& n);
 	AstNode*	Merge(AstNode& n);
 	AstNode*	MergeStatement(AstNode& n);
 	void		PushRuntimeScope(Object& o);
+	ObjectMap*	GetRuntimeScope(const FileLocation& loc);
+	Object*		CreateRuntimeField(const FileLocation& loc, String name);
 	void		AddRuntimeScope(const FileLocation& loc, String name);
 	void		PopRuntimeScope();
 	bool		DeclareMetaVariable(AstNode& n);

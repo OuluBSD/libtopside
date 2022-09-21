@@ -55,6 +55,10 @@ String PathIdentifier::ToString() const {
 	return s;
 }
 
+bool PathIdentifier::IsEmpty() const {
+	return part_count == 0;
+}
+
 bool PathIdentifier::HasMeta() const {
 	for(int i = 0; i < part_count; i++)
 		if (is_meta[i])

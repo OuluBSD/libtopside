@@ -63,16 +63,17 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		}
 	case SEMT_FUNCTION_BUILTIN:
 	case SEMT_META_BUILTIN:
+	case SEMT_META_FUNCTION_STATIC:
 		return;
 	
 	case SEMT_ROOT:
 	case SEMT_IDPART:
 	case SEMT_STATEMENT_BLOCK:
 		for (const AstNode& s : n.sub) {
-			if (s.src == SEMT_RVAL)
-				continue;
 			PushScope(s);
 			Visit(s, false, true);
+			if (IsRvalReturn(s.src))
+				PopScope();
 			PopScope();
 		}
 		return;
@@ -304,14 +305,21 @@ void AstExporter::VisitStatement(const AstNode& n) {
 			output << " ";
 			Visit(n.sub[i]);
 		}*/
-		for(int i = n.sub.GetCount()-1; i >= 0; i--) {
+		if (n.link[0]) {
+			const AstNode& s = *n.link[0];
+			if (IsRvalReturn(s.src)) {
+				output << " ";
+				Visit(s);
+			}
+		}
+		/*for(int i = n.sub.GetCount()-1; i >= 0; i--) {
 			const AstNode& s = n.sub[i];
-			if (s.src == SEMT_EXPR) {
+			if (IsRvalReturn(s.src)) {
 				output << " ";
 				Visit(s);
 				break;
 			}
-		}
+		}*/
 		output << ";\n";
 		break;
 	
@@ -354,6 +362,10 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	else if (n.IsPartially(SEMT_FUNCTION)) {
 		VisitFunctionRval(n);
 		return;
+	}
+	else if (n.src == SEMT_META_RVAL) {
+		LOG(n.GetTreeString(0));
+		TODO
 	}
 	
 	ASSERT(n.src == SEMT_EXPR && n.op != OP_NULL);
@@ -568,7 +580,16 @@ void AstExporter::VisitResolve(const AstNode& n, bool rval) {
 void AstExporter::VisitRval(const AstNode& n) {
 	ASSERT(n.link[0]);
 	if (n.link[0]) {
-		output << GetCPath(*n.link[0]);
+		AstNode& s = *n.link[0];
+		if (s.src == SEMT_CONSTANT)
+			VisitConstant(s);
+		else if (s.IsPartially(SEMT_FIELD))
+			output << GetCPath(*n.link[0]);
+		else
+			Visit(*n.link[0]);
+	}
+	else {
+		AddError(n.loc, "internal error: expected link");
 	}
 }
 

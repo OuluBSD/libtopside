@@ -35,7 +35,7 @@ public:
 	AstNode& DeclareRelative(const PathIdentifier& id);
 	//AstNode* FindTypeDeclaration(const PathIdentifier& id);
 	AstNode& GetBlock();
-	void PushScope(AstNode& n);
+	void PushScope(AstNode& n, bool non_continuous=false);
 	void PushScopeRVal(AstNode& n);
 	void PopScope();
 	AstNode& GetTopNode() {return *spath.Top().n;}

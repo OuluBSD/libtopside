@@ -52,13 +52,14 @@ AstNode* SemanticParser::PushFunction(const FileLocation& loc, AstNode& ret_type
 	return &var;
 }
 
-void SemanticParser::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
+AstNode* SemanticParser::PushMetaFunction(const FileLocation& loc, AstNode& ret_type, const PathIdentifier& name) {
 	AstNode& var = DeclareRelative(name);
 	var.src = SEMT_META_FUNCTION_STATIC;
 	var.type = &ret_type;
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::Parameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
@@ -78,7 +79,7 @@ void SemanticParser::Parameter(const FileLocation& loc, const PathIdentifier& ty
 }
 
 void SemanticParser::MetaParameter(const FileLocation& loc, const PathIdentifier& type, const PathIdentifier& name) {
-	AstNode* tn = FindDeclaration(type, SEMT_TYPE);
+	AstNode* tn = FindDeclaration(type, SEMT_META_TYPE);
 	if (!tn) {
 		AddError(loc, "internal error");
 		return;
@@ -217,7 +218,7 @@ void SemanticParser::PushRvalResolve(const FileLocation& loc, const PathIdentifi
 		return;
 	}
 	r.link[0] = d;
-	r.str = id.ToString();
+	r.id = id;
 	
 	PushScopeRVal(r);
 }
@@ -532,6 +533,17 @@ void SemanticParser::PushCall(const FileLocation& loc) {
 
 void SemanticParser::PopCall(const FileLocation& loc) {
 	PopScope();
+}
+
+void SemanticParser::PopRvalLink(const FileLocation& loc) {
+	int c = spath.GetCount();
+	ASSERT(c >= 2);
+	AstNode* arg0 = spath[c-1].n;
+	
+	AstNode& owner = *spath[c-2].n;
+	owner.link[0] = arg0;
+	
+	spath.SetCount(c-1);
 }
 
 void SemanticParser::PopExprCallArgument(const FileLocation& loc, int arg_i) {

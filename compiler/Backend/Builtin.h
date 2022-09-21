@@ -53,6 +53,7 @@ typedef enum : uint64 {
 	SEMT_ARRAYSIZE				= 1ULL << 44,
 	SEMT_TYPE_POINTER			= 1ULL << 45,
 	SEMT_TYPE_LREF				= 1ULL << 46,
+	SEMT_META_RVAL				= 1ULL << 47,
 	
 	// Current limit: 1 << 63
 	
@@ -65,6 +66,7 @@ typedef enum : uint64 {
 	SEMT_VARIABLE_PATH =	SEMT_VARIABLE | SEMT_IDPART,
 	SEMT_PATH =				SEMT_PARAMETER_PATH | SEMT_VARIABLE_PATH | SEMT_NAMESPACE | SEMT_FUNCTION | SEMT_CLASS,
 	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
+	SEMT_WITH_RVAL_RET =	SEMT_RVAL | SEMT_EXPR | SEMT_CONSTANT,
 	
 	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
 	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_LOOP | SEMT_ATOM,
@@ -75,7 +77,7 @@ typedef enum : uint64 {
 	SEMT_META_PARAMETER_PATH =	SEMT_META_PARAMETER | SEMT_IDPART,
 	SEMT_META_VARIABLE_PATH =	SEMT_META_VARIABLE | SEMT_IDPART,
 	
-	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION,
+	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION | SEMT_META_RVAL,
 	SEMT_META_PATH =		SEMT_META_PARAMETER_PATH | SEMT_META_VARIABLE_PATH | SEMT_META_FUNCTION | SEMT_META_CLASS,
 	
 } SemanticType;
@@ -133,6 +135,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_ARRAYSIZE:			return "array-size";
 		case SEMT_TYPE_POINTER:			return "type-pointer";
 		case SEMT_TYPE_LREF:			return "type-lref";
+		case SEMT_META_RVAL:			return "meta-rval";
 		default: return "invalid";
 	}
 }
@@ -143,6 +146,10 @@ inline bool IsTypedNode(SemanticType src) {
 
 inline bool IsMetaTypedNode(SemanticType src) {
 	return src & SEMT_META_TYPE;
+}
+
+inline bool IsRvalReturn(SemanticType src) {
+	return (int64)src & (int64)SEMT_WITH_RVAL_RET;
 }
 
 typedef enum {

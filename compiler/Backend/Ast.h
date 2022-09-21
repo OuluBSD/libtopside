@@ -26,6 +26,7 @@ public:
 	ConstType con = CONST_NULL;
 	SemanticType filter = SEMT_NULL;
 	FileLocation loc;
+	PathIdentifier id;
 	
 	union {
 		int64 i64;
@@ -42,12 +43,14 @@ public:
 	void			CopyFrom(const AstNode& n);
 	void			CopyFromObject(const FileLocation& loc, const Object& n);
 	void			CopyToObject(Object& n) const;
+	void			CopyPrevNextLinks();
 	
 	AstNode&		Add(const FileLocation& loc, String name="", int idx=-1);
 	AstNode&		GetAdd(const FileLocation& loc, String name="");
 	AstNode&		GetAdd(const FileLocation& loc, SemanticType accepts);
 	AstNode*		Find(String name, SemanticType accepts=SEMT_NULL);
 	const AstNode*	Find(String name, SemanticType accepts=SEMT_NULL) const;
+	AstNode*		FindPartial(SemanticType t);
 	AstNode*		Find(SemanticType t);
 	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;

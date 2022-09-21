@@ -223,9 +223,8 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	ASSERT(iter.Check(cur));
 	ASSERT(iter->IsType('('));
 	
-	TODO
-	
-	EMIT PushMetaFunction(name.begin->loc, ret_type, name);
+	AstNode* var = EMIT PushMetaFunction(name.begin->loc, ret_type, name);
+	if (!var) return false;
 	
 	if (!PassToken('(')) return false;
 	
@@ -282,6 +281,10 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 			if (!ParseComponentStatementList())
 				return false;
 		}
+		else if (ret_type.name == "expr") {
+			if (!ParseExpressionList())
+				return false;
+		}
 		else if (!ParseStatementList())
 			return false;
 		
@@ -289,6 +292,8 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	}
 	
 	EMIT PopMetaFunction(cur.end->loc);
+	
+	EMIT PushRval(iter->loc, *var);
 	
 	return true;
 }
@@ -518,7 +523,8 @@ bool SemanticParser::ParseStatement() {
 		s.no_declare = true;
 		
 		if (iter) {
-			if (!ParseExpression(false)) return false;
+			if (!Assign(false)) return false;
+			EMIT PopRvalLink(iter->loc);
 		}
 		
 		s.no_declare = b;
@@ -1023,10 +1029,14 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 	}
 	
 	if (IsChar('(') && cur.sub.GetCount()) {
-		
-		if (!ParseFunction(tn, name))
-			return false;
-		
+		if (meta) {
+			if (!ParseMetaFunction(tn, name))
+				return false;
+		}
+		else {
+			if (!ParseFunction(tn, name))
+				return false;
+		}
 	}
 	else {
 		AstNode* var = EMIT DeclareVariable(type_id.begin->loc, tn, name);
@@ -2676,6 +2686,51 @@ bool SemanticParser::ParseComponentStatement() {
 	
 	PopIterator();
 	return true;
+}
+
+bool SemanticParser::ParseExpressionList() {
+	bool succ = true;
+	
+	const TokenNode& tk_owner = *path.Top();
+	
+	EMIT PushStatementList(tk_owner.end->loc);
+	
+	int expr_count = 0;
+	
+	const TokenNode*& sub = path.Add();
+	for (const TokenNode& s : tk_owner.sub) {
+		sub = &s;
+		//DUMP(s)
+		AddIterator(s);
+		
+		Iterator& iter = TopIterator();
+		if (!iter)
+			continue;
+		
+		if (IsId("meta")) {
+			if (!ParseMeta())
+				return false;
+		}
+		else {
+			if (expr_count > 0) {
+				AddError(iter->loc, "only single expression is allowed");
+				succ = false;
+			}
+			if (!ParseExpression(false)) {
+				succ = false;
+				PopIterator();
+				break;
+			}
+			expr_count++;
+		}
+		
+		PopIterator();
+	}
+	path.Remove(path.GetCount()-1);
+	
+	EMIT PopStatementList(tk_owner.end->loc);
+	
+	return succ;
 }
 
 /*bool SemanticParser::ParseMetaExpressionStatement() {

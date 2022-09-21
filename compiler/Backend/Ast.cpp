@@ -76,6 +76,17 @@ void AstNode::CopyToObject(Object& n) const {
 	else TODO
 }
 
+void AstNode::CopyPrevNextLinks() {
+	if (prev) {
+		for(int i = 0; i < LINK_COUNT; i++) {
+			if (prev->link[i])
+				link[i] = prev->link[i]->next;
+			else
+				link[i] = 0;
+		}
+	}
+}
+
 AstNode& AstNode::Add(const FileLocation& loc, String name, int idx) {
 	ASSERT(!locked);
 	AstNode& s =
@@ -130,6 +141,13 @@ const AstNode* AstNode::Find(String name, SemanticType accepts) const {
 AstNode* AstNode::Find(SemanticType t) {
 	for (auto& s : sub)
 		if (s.src == t)
+			return &s;
+	return 0;
+}
+
+AstNode* AstNode::FindPartial(SemanticType t) {
+	for (auto& s : sub)
+		if ((int64)s.src & (int64)t)
 			return &s;
 	return 0;
 }

@@ -160,7 +160,11 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 		Bind(n, *d);
 		if (n.sub.GetCount()) {
 			PushScope(*d);
-			for (int i = n.sub.GetCount()-1; i >= 0; i--) {
+			if (n.link[0]) {
+				if (!Visit(*n.link[0]))
+					return 0;
+			}
+			/*for (int i = n.sub.GetCount()-1; i >= 0; i--) {
 				AstNode& s = n.sub[i];
 				if (s.src == SEMT_EXPR) {
 					if (!Visit(s))
@@ -169,9 +173,16 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 						PopScope(); // expr rval
 					break;
 				}
-			}
+				else if (IsRvalReturn(s.src)) {
+					if (!Visit(s))
+						return 0;
+					PopScope();
+					break;
+				}
+			}*/
 			PopScope();
 		}
+		d->CopyPrevNextLinks();
 		return d;
 		
 	case STMT_EXPR:
@@ -195,8 +206,23 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 	case STMT_META_FOR:
 		break;
 	
-	case STMT_NULL:
 	case STMT_IF:
+		d = &owner.Add(n.loc);
+		d->CopyFrom(n);
+		Bind(n, *d);
+		if (n.sub.GetCount()) {
+			PushScope(*d);
+			for (AstNode& s : n.sub) {
+				if (!Visit(s))
+					return 0;
+				if (IsRvalReturn(s.src))
+					PopScope();
+			}
+			PopScope();
+		}
+		return d;
+	
+	case STMT_NULL:
 	case STMT_ELSE:
 	case STMT_DOWHILE:
 	case STMT_WHILE:
@@ -231,18 +257,35 @@ void AstRunner::PushRuntimeScope(Object& o) {
 	rpath.Add(&o);
 }
 
-void AstRunner::AddRuntimeScope(const FileLocation& loc, String name) {
+ObjectMap* AstRunner::GetRuntimeScope(const FileLocation& loc) {
 	Object& o = *rpath.Top();
 	ObjectMap* map = o.TryGetMap();
 	if (!map) {
 		AddError(loc, "internal error: can't add without object map");
-		return;
+		return 0;
+	}
+	return map;
+}
+
+void AstRunner::AddRuntimeScope(const FileLocation& loc, String name) {
+	Object* s = CreateRuntimeField(loc, name);
+	if (!s) return;
+	
+	rpath.Add(s);
+	s->Create<ObjectArrayMapComb>();
+}
+
+Object* AstRunner::CreateRuntimeField(const FileLocation& loc, String name) {
+	ObjectMap* map = GetRuntimeScope(loc);
+	if (!map) return 0;
+	
+	if (name.IsEmpty()) {
+		AddError(loc, "internal error: empty name");
+		return 0;
 	}
 	
 	Object& s = map->Add(name);
-	rpath.Add(&s);
-	s.Create<ObjectArrayMapComb>();
-	
+	return &s;
 }
 
 void AstRunner::PopRuntimeScope() {
@@ -251,7 +294,8 @@ void AstRunner::PopRuntimeScope() {
 
 bool AstRunner::Visit(AstNode& n) {
 	AstNode* s;
-
+	Object* o;
+	
 	switch (n.src) {
 	case SEMT_ROOT:
 		ASSERT(spath.IsEmpty());
@@ -266,6 +310,8 @@ bool AstRunner::Visit(AstNode& n) {
 				continue;
 			if (!Visit(s))
 				return false;
+			if (IsRvalReturn(s.src))
+				PopScope();
 		}
 		PopScope();
 		PopRuntimeScope();
@@ -285,8 +331,31 @@ bool AstRunner::Visit(AstNode& n) {
 		DeclareMetaVariable(n);
 		break;
 	
+	case SEMT_META_FUNCTION_STATIC:
+		return VisitMetaStaticFunction(n);
+		
+	case SEMT_META_PARAMETER:
+		s = AddDuplicate(n);
+		if (!s)
+			return false;
+		AddRuntimeScope(n.loc, n.name);
+		if (!n.sub.IsEmpty()) {
+			PushScope(*s);
+			for (AstNode& s : n.sub) {
+				if (s.src == SEMT_RVAL)
+					continue;
+				if (!Visit(s))
+					return false;
+				if (IsRvalReturn(s.src))
+					PopScope();
+			}
+			PopScope();
+		}
+		PopRuntimeScope();
+		break;
+		
+	
 	case SEMT_FUNCTION_STATIC:
-	case SEMT_STATEMENT_BLOCK:
 	case SEMT_VARIABLE:
 		s = Merge(n);
 		if (!s)
@@ -295,19 +364,41 @@ bool AstRunner::Visit(AstNode& n) {
 		if (!n.sub.IsEmpty()) {
 			PushScope(*s);
 			for (AstNode& s : n.sub) {
+				if (s.src == SEMT_RVAL)
+					continue;
 				if (!Visit(s))
 					return false;
+				if (IsRvalReturn(s.src))
+					PopScope();
 			}
 			PopScope();
 		}
 		PopRuntimeScope();
 		break;
 		
-	case SEMT_EXPR:
+	case SEMT_STATEMENT_BLOCK:
 		s = Merge(n);
 		if (!s)
 			return false;
-		//AddRuntimeScope(n.loc, n.name);
+		if (!n.sub.IsEmpty()) {
+			PushScope(*s);
+			for (AstNode& s : n.sub) {
+				if (s.src == SEMT_RVAL)
+					continue;
+				if (!Visit(s))
+					return false;
+				if (IsRvalReturn(s.src))
+					PopScope();
+			}
+			PopScope();
+		}
+		break;
+		
+	case SEMT_EXPR:
+		s = AddDuplicate(n);
+		if (!s)
+			return false;
+		//AddRuntimeScope(n.loc, n.name);AddDuplicate
 		//PushScope(*s);
 		for(int i = 0; i < n.i64; i++) {
 			AstNode& l = *n.link[i];
@@ -321,13 +412,33 @@ bool AstRunner::Visit(AstNode& n) {
 			PopScope();
 		}
 		spath.Top().n = s;
+		
+		if (s->op == OP_CALL && s->link[0] && s->link[0]->src == SEMT_META_RVAL && s->link[1]) {
+			if (!VisitMetaCall(*s, *s->link[0], *s->link[1]))
+				return false;
+		}
 		break;
 		
 	case SEMT_ARGUMENT_LIST:
-	case SEMT_ARGUMENT:
 		if (n.src == SEMT_ARGUMENT)
 			PopScope();
 		s = Merge(n);
+		if (!s)
+			return false;
+		if (!n.sub.IsEmpty()) {
+			PushScope(*s);
+			for (AstNode& s : n.sub) {
+				if (!Visit(s))
+					return false;
+			}
+			PopScope();
+		}
+		break;
+		
+	case SEMT_ARGUMENT:
+		if (n.src == SEMT_ARGUMENT)
+			PopScope();
+		s = AddDuplicate(n);
 		if (!s)
 			return false;
 		if (!n.sub.IsEmpty()) {
@@ -346,7 +457,7 @@ bool AstRunner::Visit(AstNode& n) {
 		s = AddDuplicate(n);
 		if (!s)
 			return false;
-		AddRuntimeScope(n.loc, n.name);
+		AddRuntimeScope(n.loc, n.name.GetCount() ? n.name : n.link[0]->name);
 		PushScope(*s);
 		for (AstNode& s : n.sub) {
 			if (!Visit(s))
@@ -396,9 +507,16 @@ bool AstRunner::Visit(AstNode& n) {
 		PushScopeRVal(*s);
 		break;
 	
-	case SEMT_IDPART:
 	case SEMT_PARAMETER:
+		s = AddDuplicate(n);
+		o = CreateRuntimeField(n.loc, n.name);
+		if (!o) return false;
+		break;
+	
 	case SEMT_RESOLVE:
+		return VisitResolve(n);
+	
+	case SEMT_IDPART:
 	case SEMT_NULL:
 	case SEMT_NAMESPACE:
 	case SEMT_TYPEDEF:
@@ -428,9 +546,12 @@ bool AstRunner::VisitMetaRVal(AstNode& n) {
 	
 	AstNode& ref = *n.link[0];
 	
-	if (ref.src == SEMT_META_VARIABLE) {
+	if (ref.src == SEMT_META_VARIABLE || ref.src == SEMT_META_PARAMETER) {
 		ASSERT(ref.next_obj);
-		if (!ref.next_obj) return false;
+		if (!ref.next_obj) {
+			AddError(n.loc, "internal error: no object");
+			return false;
+		}
 		
 		AstNode& owner = *spath.Top().n;
 		AstNode& d = owner.Add(n.loc);
@@ -478,6 +599,154 @@ bool AstRunner::VisitMetaCtor(AstNode& n) {
 	else {
 		TODO
 	}
+	
+	return true;
+}
+
+bool AstRunner::VisitMetaStaticFunction(AstNode& n) {
+	ASSERT(n.src == SEMT_META_FUNCTION_STATIC);
+	
+	Object* o = CreateRuntimeField(n.loc, n.name);
+	if (!o)
+		return false;
+	
+	AstNode* d = Merge(n);
+	if (!d)
+		return false;
+	
+	/* This is done while calling the meta function
+	PushScope(*d);
+	for (AstNode& s : n.sub) {
+		if (!Visit(s))
+			return false;
+	}
+	PopScope();*/
+	
+	return true;
+}
+
+bool AstRunner::VisitResolve(AstNode& n) {
+	ASSERT(n.src == SEMT_RESOLVE);
+	ASSERT(n.filter != SEMT_NULL);
+	ASSERT(!n.id.IsEmpty());
+	
+	AstNode* decl = FindDeclaration(n.id, n.filter);
+	if (!decl) {
+		AddError(n.loc, "couldn't find declaration '" + n.id.ToString() + "'");
+		return false;
+	}
+	
+	if (decl->src == SEMT_META_FUNCTION_STATIC) {
+		AstNode& rval = GetTopNode().Add(n.loc);
+		rval.src = SEMT_META_RVAL;
+		rval.link[0] = decl;
+		Bind(n, rval);
+		PushScopeRVal(rval);
+		return true;
+	}
+	else TODO
+}
+
+bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
+	if (rval.src == SEMT_META_RVAL && args.src == SEMT_ARGUMENT_LIST) {
+		//AstNode& ret = GetTopNode().Add(d.loc);
+		
+		AstNode& fn = *rval.link[0]->prev;
+		ASSERT(fn.src == SEMT_META_FUNCTION_STATIC);
+		PushScope(fn, true);
+		
+		Object o;
+		ObjectMap& map = o.CreateMap();
+		
+		/*if (fn.type) {
+			AstNode& ret_type = *fn.type;
+			if (ret_type.name == "expr") {
+				ret.src = SEMT_EXPR;
+			}
+			else TODO
+		}
+		else TODO
+		PushScope(ret, true);*/
+		PushScope(d, true);
+		
+		
+		Vector<AstNode*> arg_ptrs;
+		Vector<AstNode*> param_ptrs;
+		
+		for (AstNode& arg : args.sub) {
+			if (arg.src != SEMT_ARGUMENT) continue;
+			arg_ptrs.Add(&arg);
+		}
+		for (AstNode& param : fn.sub) {
+			if (param.src != SEMT_META_PARAMETER) continue;
+			param_ptrs.Add(&param);
+		}
+		if (arg_ptrs.GetCount() != param_ptrs.GetCount()) {
+			AddError(args.loc, "got '" + IntStr(arg_ptrs.GetCount()) + "' arguments, but expected '" + IntStr(param_ptrs.GetCount()) + "'");
+			return false;
+		}
+		
+		for(int i = 0; i < arg_ptrs.GetCount(); i++) {
+			AstNode& arg = *arg_ptrs[i];
+			AstNode& param = *param_ptrs[i];
+			
+			ASSERT(param.name.GetCount());
+			Object& ao = map.Add(param.name);
+			if (!arg.link[0]) {
+				AddError(arg.loc, "internal error: expected argument expression");
+				return false;
+			}
+			AstNode& aexpr = *arg.link[0];
+			if (!Evaluate(aexpr, ao))
+				return false;
+			
+			param.next_obj = &ao;
+		}
+		
+		AstNode* block = fn.Find(SEMT_STATEMENT_BLOCK);
+		if (!block) {
+			AddError(fn.loc, "internal error: function has no statement block");
+			return false;
+		}
+		
+		PushRuntimeScope(o);
+		AstNode* rval = 0;
+		for (AstNode& s : block->sub) {
+			if (!Visit(s))
+				return false;
+			if (IsRvalReturn(s.src)) {
+				rval = &GetTopNode();
+				PopScope();
+			}
+		}
+		PopRuntimeScope();
+		
+		PopScope(); // ret
+		PopScope(); // fn
+		
+		for (AstNode* param : param_ptrs) param->next_obj = 0;
+		
+		
+		// Override meta-node type and link function return value
+		ASSERT(spath.Top().n == &d); // should be in stack already
+		//d.link[0] = &ret;
+		SemanticType filter = SEMT_NULL;
+		if (fn.type) {
+			AstNode& ret_type = *fn.type;
+			if (ret_type.name == "expr") {
+				d.src = SEMT_RVAL;
+				if (rval)
+					d.link[0] = rval;
+				else
+					filter = SEMT_WITH_RVAL_RET;
+			}
+			else TODO
+		}
+		else TODO;
+		//if (filter != SEMT_NULL)
+		//	d.link[0] = d.FindPartial(filter);
+	}
+	else TODO
 	
 	return true;
 }
