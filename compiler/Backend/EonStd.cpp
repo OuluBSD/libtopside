@@ -338,7 +338,7 @@ void EonStd::PushScopeRVal(AstNode& n) {
 	s.pop_this = true;
 }
 
-void EonStd::PopScope() {
+AstNode* EonStd::PopScope() {
 	int rm_i = 0;
 	for (int i = spath.GetCount()-1; i >= 0; i--) {
 		Scope& s = spath[i];
@@ -348,7 +348,10 @@ void EonStd::PopScope() {
 		}
 	}
 	int c = spath.GetCount() - rm_i;
+	AstNode* ret = 0;
+	if (c) ret = spath[rm_i].n;
 	spath.Remove(rm_i, c);
+	return ret;
 }
 
 String EonStd::GetTypeInitValueString(AstNode& n) const {

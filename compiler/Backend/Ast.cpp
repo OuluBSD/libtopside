@@ -21,8 +21,16 @@ void AstNode::CopyFrom(const AstNode& n) {
 	loc = n.loc;
 	
 	type = n.type ? n.type->next : 0;
-	for(int i = 0; i < AstNode::LINK_COUNT; i++)
-		link[i] = n.link[i] ? n.link[i]->next : 0;
+	rval = n.rval ? n.rval->next : 0;
+	ctx_next = n.ctx_next ? n.ctx_next->next : 0;
+	ASSERT(type != this);
+	ASSERT(rval != this);
+	ASSERT(ctx_next != this);
+
+	for(int i = 0; i < AstNode::ARG_COUNT; i++) {
+		arg[i] = n.arg[i] ? n.arg[i]->next : 0;
+		ASSERT(arg[i] != this);
+	}
 	
 }
 
@@ -78,11 +86,19 @@ void AstNode::CopyToObject(Object& n) const {
 
 void AstNode::CopyPrevNextLinks() {
 	if (prev) {
-		for(int i = 0; i < LINK_COUNT; i++) {
-			if (prev->link[i])
-				link[i] = prev->link[i]->next;
+		type = prev->type ? prev->type->next : 0;
+		rval = prev->rval ? prev->rval->next : 0;
+		ctx_next = prev->ctx_next ? prev->ctx_next->next : 0;
+		ASSERT(type != this);
+		ASSERT(rval != this);
+		ASSERT(ctx_next != this);
+		
+		for(int i = 0; i < ARG_COUNT; i++) {
+			if (prev->arg[i])
+				arg[i] = prev->arg[i]->next;
 			else
-				link[i] = 0;
+				arg[i] = 0;
+			ASSERT(arg[i] != this);
 		}
 	}
 }
@@ -188,8 +204,8 @@ String AstNode::GetTreeString(int indent) const {
 		s << "op(" << GetOpString(op) << ")\n";
 	else if (filter != SEMT_NULL)
 		s << "filter(" << GetSemanticTypeString(filter) << ")\n";
-	else if (src == SEMT_RVAL && link[0])
-		s << link[0]->GetName() << "\n";
+	else if (src == SEMT_RVAL && rval)
+		s << rval->GetName() << "\n";
 	else
 		s << "\n";
 	

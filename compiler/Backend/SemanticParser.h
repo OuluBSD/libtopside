@@ -40,6 +40,7 @@ public:
 	
 	const TokenNode& CurrentNode() {return *path.Top();}
 	bool Id(const char* s);
+	bool Id2(const char* a, const char* b);
 	Iterator& AddIterator(const TokenNode& n);
 	Iterator& TopIterator();
 	const Iterator& TopIterator() const;
@@ -74,8 +75,8 @@ public:
 	bool ParseMetaFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseStatementList();
 	bool ParseStatement();
-	bool ParseMetaStatement(bool skip_meta_keywords=false);
-	bool ParseExpression(bool m);
+	bool ParseMetaStatement(int& cookie, bool skip_meta_keywords=false);
+	AstNode* ParseExpression(bool m);
 	bool ParseSwitchBlock();
 	bool ParseStatementBlock();
 	bool ParseType(PathIdentifier& type, AstNode*& tn);
@@ -89,11 +90,11 @@ public:
 	bool ParseLoop();
 	bool ParsePool();
 	bool ParseMachineStatementList();
-	bool ParseMachineStatement();
+	bool ParseMachineStatement(int& cookie);
 	bool ParseChainStatementList();
-	bool ParseChainStatement();
+	bool ParseChainStatement(int& cookie);
 	bool ParseLoopStatementList();
-	bool ParseLoopStatement();
+	bool ParseLoopStatement(int& cookie);
 	bool ParseAtomStatementList();
 	bool ParseAtom(PathIdentifier& id);
 	bool ParseAtomExpressionStatement();
@@ -103,21 +104,21 @@ public:
 	bool ParseEntity();
 	bool ParseComponent();
 	bool ParseWorldStatementList();
-	bool ParseWorldStatement();
+	bool ParseWorldStatement(int& cookie);
 	bool ParseSystemStatementList();
-	bool ParseSystemStatement();
+	bool ParseSystemStatement(int& cookie);
 	bool ParsePoolStatementList();
-	bool ParsePoolStatement();
+	bool ParsePoolStatement(int& cookie);
 	bool ParseEntityStatementList();
-	bool ParseEntityStatement();
+	bool ParseEntityStatement(int& cookie);
 	bool ParseComponentStatementList();
-	bool ParseComponentStatement();
+	bool ParseComponentStatement(int& cookie);
 	bool ParseExpressionList();
 	
 	bool ParseState();
 	bool ParseDeclExpr(bool meta, const PathIdentifier& type_id, AstNode& tn);
 	//bool ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn);
-	bool ParseMeta();
+	bool ParseMeta(int& cookie);
 	bool Assign(bool m);
 	bool AssignPost(bool m);
 	bool Cond(bool m);
@@ -163,8 +164,8 @@ public:
 	void PopMetaFunction(const FileLocation& loc);
 	void PushStatementList(const FileLocation& loc);
 	void PopStatementList(const FileLocation& loc);
-	void PushStatement(const FileLocation& loc, StmtType type);
-	void PopStatement(const FileLocation& loc);
+	AstNode* PushStatement(const FileLocation& loc, StmtType type);
+	void PopStatement(const FileLocation& loc, AstNode* rval);
 	void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var);
 	void PopConstructor(const FileLocation& loc);
 	void PushStatementParameter(const FileLocation& loc, StmtParamType t);
@@ -177,7 +178,7 @@ public:
 	void PushRvalArgumentList(const FileLocation& loc);
 	void Argument(const FileLocation& loc);
 	void ArraySize(const FileLocation& loc);
-	void PopExpr(const FileLocation& loc);
+	AstNode* PopExpr(const FileLocation& loc);
 	void PushRval(const FileLocation& loc, AstNode& n);
 	void PushRvalConstruct(const FileLocation& loc, AstNode& n);
 	void PushRvalConstant(const FileLocation& loc, const Token& t);

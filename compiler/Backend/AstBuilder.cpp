@@ -130,7 +130,7 @@ void SemanticParser::PopStatementList(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::PushStatement(const FileLocation& loc, StmtType type) {
+AstNode* SemanticParser::PushStatement(const FileLocation& loc, StmtType type) {
 	AstNode& n = GetTopNode();
 	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_STATEMENT;
@@ -138,9 +138,18 @@ void SemanticParser::PushStatement(const FileLocation& loc, StmtType type) {
 	//ASSERT_(type != STMT_EXPR, "don't add expr here");
 	
 	PushScope(stmt);
+	
+	return &stmt;
 }
 
-void SemanticParser::PopStatement(const FileLocation& loc) {
+void SemanticParser::PopStatement(const FileLocation& loc, AstNode* rval) {
+	AstNode& n = GetTopNode();
+	ASSERT(!n.rval || n.rval == rval || !rval);
+	ASSERT(rval != &n);
+	if (!rval && n.rval)
+		; // pass
+	else
+		n.rval = rval;
 	PopScope();
 }
 
@@ -149,10 +158,10 @@ void SemanticParser::PushConstructor(const FileLocation& loc, AstNode& type, Ast
 	AstNode& stmt = n.Add(loc);
 	stmt.src = SEMT_CTOR;
 	stmt.type = &type;
-	stmt.link[0] = var;
+	stmt.rval = var;
 	
-	ASSERT(var->link[0] == 0);
-	var->link[0] = &stmt;
+	ASSERT(var->ctx_next == 0);
+	var->ctx_next = &stmt;
 	
 	PushScope(stmt);
 }
@@ -211,14 +220,15 @@ void SemanticParser::PushRvalResolve(const FileLocation& loc, const PathIdentifi
 	/*ASSERT(id.part_count);
 	for(int i = 0; i < id.part_count; i++)
 		r.path.Add(id.parts[i]->str_value);*/
-	DUMP(id);
+	//DUMP(id);
 	AstNode* d = FindDeclaration(id, t);
 	if (!d) {
 		AddError(loc, "could not find declaration '" + id.ToString() + "'");
 		return;
 	}
-	r.link[0] = d;
+	r.rval = d;
 	r.id = id;
+	ASSERT(&r != d);
 	
 	PushScopeRVal(r);
 }
@@ -249,7 +259,8 @@ void SemanticParser::Argument(const FileLocation& loc) {
 	ASSERT(owner.src == SEMT_ARGUMENT_LIST);
 	AstNode& arg = owner.Add(loc);
 	arg.src = SEMT_ARGUMENT;
-	arg.link[0] = &a;
+	arg.rval = &a;
+	ASSERT(arg.rval);
 	PopScope();
 }
 
@@ -261,7 +272,7 @@ void SemanticParser::ArraySize(const FileLocation& loc) {
 	ASSERT(owner.src == SEMT_CTOR);
 	AstNode& arg = owner.Add(loc);
 	arg.src = SEMT_ARRAYSIZE;
-	arg.link[0] = &a;
+	arg.rval = &a;
 	PopScope();
 }
 
@@ -269,15 +280,15 @@ void SemanticParser::ArraySize(const FileLocation& loc) {
 	PopScope();
 }*/
 
-void SemanticParser::PopExpr(const FileLocation& loc) {
-	PopScope();
+AstNode* SemanticParser::PopExpr(const FileLocation& loc) {
+	return PopScope();
 }
 
 void SemanticParser::PushRval(const FileLocation& loc, AstNode& n) {
 	AstNode& t = GetTopNode();
 	AstNode& r = t.Add(loc);
 	r.src = SEMT_RVAL;
-	r.link[0] = &n;
+	r.rval = &n;
 	
 	PushScopeRVal(r);
 }
@@ -343,7 +354,7 @@ void SemanticParser::Expr1(const FileLocation& loc, OpType op) {
 	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
-	expr.link[0] = arg0;
+	expr.arg[0] = arg0;
 	expr.i64 = 1;
 	
 	spath[c-1].n = &expr;
@@ -359,8 +370,8 @@ void SemanticParser::Expr2(const FileLocation& loc, OpType op) {
 	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
-	expr.link[0] = arg0;
-	expr.link[1] = arg1;
+	expr.arg[0] = arg0;
+	expr.arg[1] = arg1;
 	expr.i64 = 2;
 	
 	spath.SetCount(c-1);
@@ -378,9 +389,9 @@ void SemanticParser::Expr3(const FileLocation& loc, OpType op) {
 	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_EXPR;
 	expr.op = op;
-	expr.link[0] = arg0;
-	expr.link[1] = arg1;
-	expr.link[2] = arg2;
+	expr.arg[0] = arg0;
+	expr.arg[1] = arg1;
+	expr.arg[2] = arg2;
 	expr.i64 = 3;
 	
 	spath.SetCount(c-2);
@@ -541,7 +552,7 @@ void SemanticParser::PopRvalLink(const FileLocation& loc) {
 	AstNode* arg0 = spath[c-1].n;
 	
 	AstNode& owner = *spath[c-2].n;
-	owner.link[0] = arg0;
+	owner.arg[0] = arg0;
 	
 	spath.SetCount(c-1);
 }
@@ -554,7 +565,7 @@ void SemanticParser::PopExprCallArgument(const FileLocation& loc, int arg_i) {
 	AstNode& owner = *spath[c-2].n;
 	AstNode& expr = owner.Add(loc);
 	expr.src = SEMT_CALL_ARG;
-	expr.link[0] = arg0;
+	expr.arg[0] = arg0;
 	
 	spath.SetCount(c-1);
 }

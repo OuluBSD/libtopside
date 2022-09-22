@@ -10,6 +10,7 @@ class AstRunner :
 	public ErrorSource
 {
 	AstNode root;
+	AstNode* meta_builtin_expr = 0;
 	
 public:
 	Object runtime;
@@ -26,9 +27,12 @@ public:
 	bool		VisitMetaRVal(AstNode& n);
 	bool		VisitMetaCtor(AstNode& n);
 	bool		VisitMetaFor(AstNode& n);
+	bool		VisitMetaIf(AstNode& n);
 	bool		VisitMetaStaticFunction(AstNode& n);
 	bool		VisitMetaCall(AstNode& n, AstNode& rval, AstNode& args);
 	bool		VisitResolve(AstNode& n);
+	bool		VisitStatementBlock(AstNode& n, bool req_rval);
+	AstNode*	VisitReturn(AstNode& n);
 	AstNode*	Merge(AstNode& n);
 	AstNode*	MergeStatement(AstNode& n);
 	void		PushRuntimeScope(Object& o);

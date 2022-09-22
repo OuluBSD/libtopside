@@ -9,13 +9,15 @@ class SemanticParser;
 class AstNode : public CompilerNode<AstNode,NodeBase> {
 	
 public:
-	static const int LINK_COUNT = 4;
+	static const int ARG_COUNT = 4;
 	
 	AstNode* prev = 0;
 	AstNode* next = 0;
 	Object* next_obj = 0;
 	AstNode* type = 0;
-	AstNode* link[LINK_COUNT] = {0,0,0,0};
+	AstNode* arg[ARG_COUNT] = {0,0,0,0};
+	AstNode* rval = 0;
+	AstNode* ctx_next = 0;
 	bool locked = false;
 	
 	Array<AstNode> sub;
@@ -63,6 +65,7 @@ public:
 	String			GetPartStringArray() const;
 	SemanticType	GetSemanticType() const {return src;}
 	bool			IsPartially(SemanticType t) const {return (SemanticTypePrimitive)src & (SemanticTypePrimitive)t;}
+	bool			IsStmtPartially(StmtType t) const {return src == SEMT_STATEMENT && ((SemanticTypePrimitive)stmt & (SemanticTypePrimitive)t);}
 	
 };
 

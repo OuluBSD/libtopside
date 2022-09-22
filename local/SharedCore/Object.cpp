@@ -135,6 +135,18 @@ void Object::DeepCopyArrayMap(Object v) {
 	else *this = v;
 }
 
+bool Object::ToBool() const {
+	bool b = false;
+	dword type = GetType();
+	if (type == BOOL_V)
+		b = Get<bool>();
+	else if (type == INT_V || type == INT64_V)
+		b = ToInt();
+	else if (type == DOUBLE_V)
+		b = ToDouble();
+	return b;
+}
+
 Object Object::operator >(const Object& o) const {
 	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() > o.ToInt();
 	if (IsNumber() && o.IsNumber()) return ToDouble() > o.ToDouble();

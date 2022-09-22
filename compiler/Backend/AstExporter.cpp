@@ -64,6 +64,8 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	case SEMT_FUNCTION_BUILTIN:
 	case SEMT_META_BUILTIN:
 	case SEMT_META_FUNCTION_STATIC:
+	case SEMT_META_RVAL:
+	case SEMT_META_PARAMETER:
 		return;
 	
 	case SEMT_ROOT:
@@ -305,8 +307,8 @@ void AstExporter::VisitStatement(const AstNode& n) {
 			output << " ";
 			Visit(n.sub[i]);
 		}*/
-		if (n.link[0]) {
-			const AstNode& s = *n.link[0];
+		if (n.rval) {
+			const AstNode& s = *n.rval;
 			if (IsRvalReturn(s.src)) {
 				output << " ";
 				Visit(s);
@@ -383,15 +385,15 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	case OP_POSITIVE:
 	case OP_NOT:
 	case OP_NEGATE:
-		ASSERT(n.link[0]);
+		ASSERT(n.arg[0]);
 		output << GetOpCodeString(n.op);
-		VisitExpression(*n.link[0], depth+1);
+		VisitExpression(*n.arg[0], depth+1);
 		break;
 		
 	case OP_POSTINC:
 	case OP_POSTDEC:
-		ASSERT(n.link[0]);
-		VisitExpression(*n.link[0], depth+1);
+		ASSERT(n.arg[0]);
+		VisitExpression(*n.arg[0], depth+1);
 		output << GetOpCodeString(n.op);
 		break;
 	
@@ -413,11 +415,11 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	case OP_BWOR:
 	case OP_AND:
 	case OP_OR:
-		ASSERT(n.link[0]);
-		ASSERT(n.link[1]);
-		VisitExpression(*n.link[0], depth+1);
+		ASSERT(n.arg[0]);
+		ASSERT(n.arg[1]);
+		VisitExpression(*n.arg[0], depth+1);
 		output << " " << GetOpCodeString(n.op) << " ";
-		VisitExpression(*n.link[1], depth+1);
+		VisitExpression(*n.arg[1], depth+1);
 		break;
 		
 	case OP_ASSIGN:
@@ -426,39 +428,39 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 	case OP_MULASS:
 	case OP_DIVASS:
 	case OP_MODASS:
-		ASSERT(n.link[0]);
-		ASSERT(n.link[1]);
-		VisitExpression(*n.link[0], depth);
+		ASSERT(n.arg[0]);
+		ASSERT(n.arg[1]);
+		VisitExpression(*n.arg[0], depth);
 		output << " " << GetOpCodeString(n.op) << " ";
-		VisitExpression(*n.link[1], depth);
+		VisitExpression(*n.arg[1], depth);
 		break;
 		
 	case OP_COND:
-		ASSERT(n.link[0]);
-		ASSERT(n.link[1]);
-		ASSERT(n.link[2]);
+		ASSERT(n.arg[0]);
+		ASSERT(n.arg[1]);
+		ASSERT(n.arg[2]);
 		output << "(";
-		VisitExpression(*n.link[0], depth+1);
+		VisitExpression(*n.arg[0], depth+1);
 		output << ") ? (";
-		VisitExpression(*n.link[1], depth+1);
+		VisitExpression(*n.arg[1], depth+1);
 		output << ") : (";
-		VisitExpression(*n.link[2], depth+1);
+		VisitExpression(*n.arg[2], depth+1);
 		output << ")";
 		break;
 		
 	case OP_CALL:
-		ASSERT(n.link[0]);
-		ASSERT(n.link[1]);
-		VisitExpression(*n.link[0], depth+1);
-		VisitExpression(*n.link[1], depth+1);
+		ASSERT(n.arg[0]);
+		ASSERT(n.arg[1]);
+		VisitExpression(*n.arg[0], depth+1);
+		VisitExpression(*n.arg[1], depth+1);
 		break;
 		
 	case OP_SUBSCRIPT:
-		ASSERT(n.link[0]);
-		ASSERT(n.link[1]);
-		VisitExpression(*n.link[0], depth+1);
+		ASSERT(n.arg[0]);
+		ASSERT(n.arg[1]);
+		VisitExpression(*n.arg[0], depth+1);
 		output << "[";
-		VisitExpression(*n.link[1], depth+1);
+		VisitExpression(*n.arg[1], depth+1);
 		output << "]";
 		break;
 		
@@ -504,8 +506,8 @@ void AstExporter::VisitVariable(const AstNode& n, bool declare) {
 void AstExporter::VisitArgument(const AstNode& n) {
 	ASSERT(n.src == SEMT_ARGUMENT);
 	
-	ASSERT(n.link[0]);
-	const AstNode& arg = *n.link[0];
+	ASSERT(n.rval);
+	const AstNode& arg = *n.rval;
 	
 	InlineScope& is = inline_scopes.Top();
 	if (is.count)
@@ -567,26 +569,32 @@ void AstExporter::VisitResolve(const AstNode& n, bool rval) {
 		//DUMP(n.str);
 		output << n.str;
 	}*/
-	ASSERT(n.link[0]);
-	if (n.link[0]) {
-		const AstNode& l = *n.link[0];
-		if (l.IsPartially(SEMT_FUNCTION) || l.IsPartially(SEMT_META_FUNCTION)) {
-			DUMP(GetSemanticTypeString(l.src));
+	ASSERT(n.rval);
+	if (n.rval) {
+		const AstNode& l = *n.rval;
+		if (l.IsPartially(SEMT_META_FUNCTION)) {
+			output << "<error>";
 		}
-		output << GetCPath(l);
+		else {
+			if (l.IsPartially(SEMT_FUNCTION)) {
+				DUMP(GetSemanticTypeString(l.src));
+			}
+			output << GetCPath(l);
+		}
 	}
 }
 
 void AstExporter::VisitRval(const AstNode& n) {
-	ASSERT(n.link[0]);
-	if (n.link[0]) {
-		AstNode& s = *n.link[0];
+	ASSERT(n.rval);
+	ASSERT(n.rval != &n);
+	if (n.rval) {
+		AstNode& s = *n.rval;
 		if (s.src == SEMT_CONSTANT)
 			VisitConstant(s);
 		else if (s.IsPartially(SEMT_FIELD))
-			output << GetCPath(*n.link[0]);
+			output << GetCPath(*n.rval);
 		else
-			Visit(*n.link[0]);
+			Visit(*n.rval);
 	}
 	else {
 		AddError(n.loc, "internal error: expected link");
@@ -610,8 +618,8 @@ void AstExporter::VisitConstructor(const AstNode& n) {
 		output << GetCPath(*n.type) << " ";
 	}
 	
-	if (n.link[0])
-		output << GetCPath(*n.link[0]);
+	if (n.rval)
+		output << GetCPath(*n.rval);
 	
 	for (const AstNode& sub : n.sub)
 		if (sub.src == SEMT_ARGUMENT_LIST || sub.src == SEMT_ARRAYSIZE)
@@ -621,8 +629,8 @@ void AstExporter::VisitConstructor(const AstNode& n) {
 
 void AstExporter::VisitArraySize(const AstNode& n) {
 	output << "[";
-	ASSERT(n.link[0]);
-	Visit(*n.link[0]);
+	ASSERT(n.rval);
+	Visit(*n.rval);
 	output << "]";
 }
 

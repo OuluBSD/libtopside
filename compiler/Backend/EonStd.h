@@ -37,7 +37,7 @@ public:
 	AstNode& GetBlock();
 	void PushScope(AstNode& n, bool non_continuous=false);
 	void PushScopeRVal(AstNode& n);
-	void PopScope();
+	AstNode* PopScope();
 	AstNode& GetTopNode() {return *spath.Top().n;}
 	
 	String GetTypeInitValueString(AstNode& n) const;

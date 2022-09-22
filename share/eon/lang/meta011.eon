@@ -1,8 +1,8 @@
 meta expr a(int x):
 	meta if ($x > 1):
-		x*a(x-1)
+		$x * $a($x-1)
 	meta else:
 		1
 
 int main():
-	return a(5)==1*2*3*4*5
+	return $a(2)==1*2*3*4*5

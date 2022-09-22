@@ -157,7 +157,7 @@ public:
 	WString ToWString() const {WString* w=Try<WString>(); if (w) return *w; return ::UPP::ToWString(ToString());}
 	int64 ToInt() const {if (obj) return obj->ToInt(); return 0;}
 	double ToDouble() const {if (obj) return obj->ToDouble(); return 0;}
-	
+	bool ToBool() const;
 	
 	Object operator >(const Object& o) const;
 	Object operator <(const Object& o) const;

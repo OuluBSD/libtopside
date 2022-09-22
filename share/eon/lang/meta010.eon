@@ -1,5 +1,5 @@
-meta expr a(int x): x+2
-meta expr b(int x): a(x)+1
+meta expr a(int x): $x+2
+meta expr b(int x): $a($x)+1
 int main():
     // double function calls
     return $a(3)==5 && $b(3)==6
