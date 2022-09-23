@@ -293,11 +293,34 @@ AstNode& EonStd::DeclareRelative(const PathIdentifier& id) {
 	return Declare(*spath.Top().n, id);
 }
 
+AstNode* EonStd::GetClosestType(bool skip_locked) {
+	for(int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& scope = spath[i];
+		if (skip_locked && scope.n->locked)
+			continue;
+		if (scope.n->type)
+			return scope.n->type;
+	}
+	return 0;
+}
 AstNode& EonStd::GetBlock() {
 	for(int i = spath.GetCount()-1; i >= 0; i--) {
 		Scope& scope = spath[i];
+		if (scope.n->locked)
+			continue;
 		if (scope.n->IsPartially(SEMT_BLOCK))
 			return *scope.n;
+	}
+	return GetRoot();
+}
+
+
+AstNode& EonStd::GetNonLockedOwner() {
+	for(int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& scope = spath[i];
+		if (scope.n->locked)
+			continue;
+		return *scope.n;
 	}
 	return GetRoot();
 }

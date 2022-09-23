@@ -153,10 +153,10 @@ void SemanticParser::PopStatement(const FileLocation& loc, AstNode* rval) {
 	PopScope();
 }
 
-void SemanticParser::PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var) {
+AstNode* SemanticParser::PushConstructor(const FileLocation& loc, bool meta, AstNode& type, AstNode* var) {
 	AstNode& n = GetTopNode();
 	AstNode& stmt = n.Add(loc);
-	stmt.src = SEMT_CTOR;
+	stmt.src = meta ? SEMT_META_CTOR : SEMT_CTOR;
 	stmt.type = &type;
 	stmt.rval = var;
 	
@@ -164,10 +164,19 @@ void SemanticParser::PushConstructor(const FileLocation& loc, AstNode& type, Ast
 	var->ctx_next = &stmt;
 	
 	PushScope(stmt);
+	
+	return &stmt;
 }
 
 void SemanticParser::PopConstructor(const FileLocation& loc) {
+	AstNode& ctor = GetTopNode();
 	PopScope();
+	AstNode& owner = GetTopNode();
+	if (owner.src == SEMT_STATEMENT) {
+		ASSERT(!owner.locked);
+		owner.stmt = STMT_CTOR;
+		owner.rval = &ctor;
+	}
 }
 
 void SemanticParser::PushStatementParameter(const FileLocation& loc, StmtParamType t) {
@@ -243,12 +252,14 @@ void SemanticParser::PushRvalUnresolved(const FileLocation& loc, const PathIdent
 	PushScopeRVal(r);
 }
 
-void SemanticParser::PushRvalArgumentList(const FileLocation& loc) {
+AstNode* SemanticParser::PushRvalArgumentList(const FileLocation& loc) {
 	AstNode& n = GetTopNode();
 	AstNode& r = n.Add(loc);
 	r.src = SEMT_ARGUMENT_LIST;
 	
 	PushScopeRVal(r);
+	
+	return &r;
 }
 
 void SemanticParser::Argument(const FileLocation& loc) {
@@ -264,7 +275,7 @@ void SemanticParser::Argument(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::ArraySize(const FileLocation& loc) {
+AstNode* SemanticParser::ArraySize(const FileLocation& loc) {
 	int c = spath.GetCount();
 	ASSERT(c > 2);
 	AstNode& owner = *spath[c-2].n;
@@ -274,6 +285,7 @@ void SemanticParser::ArraySize(const FileLocation& loc) {
 	arg.src = SEMT_ARRAYSIZE;
 	arg.rval = &a;
 	PopScope();
+	return &arg;
 }
 
 /*void SemanticParser::PopExprScopeToCtor(const FileLocation& loc) {

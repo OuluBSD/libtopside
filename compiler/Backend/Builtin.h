@@ -54,6 +54,7 @@ typedef enum : uint64 {
 	SEMT_TYPE_POINTER			= 1ULL << 45,
 	SEMT_TYPE_LREF				= 1ULL << 46,
 	SEMT_META_RVAL				= 1ULL << 47,
+	SEMT_META_CTOR				= 1ULL << 48,
 	
 	// Current limit: 1 << 63
 	
@@ -66,7 +67,7 @@ typedef enum : uint64 {
 	SEMT_VARIABLE_PATH =	SEMT_VARIABLE | SEMT_IDPART,
 	SEMT_PATH =				SEMT_PARAMETER_PATH | SEMT_VARIABLE_PATH | SEMT_NAMESPACE | SEMT_FUNCTION | SEMT_CLASS,
 	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
-	SEMT_WITH_RVAL_RET =	SEMT_RVAL | SEMT_EXPR | SEMT_CONSTANT | SEMT_RESOLVE | SEMT_ARGUMENT_LIST,
+	SEMT_WITH_RVAL_RET =	SEMT_RVAL | SEMT_EXPR | SEMT_CONSTANT | SEMT_RESOLVE | SEMT_ARGUMENT_LIST | SEMT_CTOR,
 	
 	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
 	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_LOOP | SEMT_ATOM,
@@ -77,7 +78,7 @@ typedef enum : uint64 {
 	SEMT_META_PARAMETER_PATH =	SEMT_META_PARAMETER | SEMT_IDPART,
 	SEMT_META_VARIABLE_PATH =	SEMT_META_VARIABLE | SEMT_IDPART,
 	
-	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION | SEMT_META_RVAL,
+	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION | SEMT_META_RVAL | SEMT_META_CTOR,
 	SEMT_META_PATH =		SEMT_META_PARAMETER_PATH | SEMT_META_VARIABLE_PATH | SEMT_META_FUNCTION | SEMT_META_CLASS,
 	
 } SemanticType;
@@ -136,6 +137,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_TYPE_POINTER:			return "type-pointer";
 		case SEMT_TYPE_LREF:			return "type-lref";
 		case SEMT_META_RVAL:			return "meta-rval";
+		case SEMT_META_CTOR:			return "meta-ctor";
 		default: return "invalid";
 	}
 }
@@ -172,13 +174,13 @@ typedef enum {
 	STMT_EXPR,
 	STMT_ATOM_CONNECTOR,
 	STMT_STATE,
+	STMT_CTOR,
 	
 	STMT_META_IF,
 	STMT_META_ELSE,
 	STMT_META_DOWHILE,
 	STMT_META_WHILE,
 	STMT_META_FOR,
-	STMT_META_CTOR,
 	STMT_META_FOR_COND,
 	STMT_META_FOR_POST,
 	STMT_META_FOR_RANGE,
@@ -196,7 +198,6 @@ typedef enum {
 					STMT_META_DOWHILE |
 					STMT_META_WHILE |
 					STMT_META_FOR |
-					STMT_META_CTOR |
 					STMT_META_FOR_COND |
 					STMT_META_FOR_POST |
 					STMT_META_FOR_RANGE |
@@ -228,13 +229,16 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_RETURN: return "return";
 		case STMT_SWITCH: return "switch";
 		case STMT_BLOCK: return "block";
+		case STMT_ATOM_CONNECTOR: return "atom-connector";
+		case STMT_STATE: return "state";
+		case STMT_CTOR: return "ctor";
 		case STMT_EXPR: return "expr";
+		
 		case STMT_META_IF: return "meta-if";
 		case STMT_META_ELSE: return "meta-else";
 		case STMT_META_DOWHILE: return "meta-do-while";
 		case STMT_META_WHILE: return "meta-while";
 		case STMT_META_FOR: return "meta-for";
-		case STMT_META_CTOR: return "meta-constructor";
 		case STMT_META_FOR_COND: return "meta-for-conditional";
 		case STMT_META_FOR_POST: return "meta-for-post";
 		case STMT_META_FOR_RANGE: return "meta-for-range";
@@ -246,8 +250,7 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_META_SWITCH: return "meta-switch";
 		case STMT_META_BLOCK: return "meta-block";
 		case STMT_META_EXPR: return "meta-expr";
-		case STMT_ATOM_CONNECTOR: return "atom-connector";
-		case STMT_STATE: return "state";
+		
 		default: return "invalid-type";
 	}
 }

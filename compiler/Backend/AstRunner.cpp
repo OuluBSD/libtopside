@@ -35,7 +35,7 @@ AstNode& AstRunner::GetRoot() {
 }
 
 AstNode* AstRunner::Merge(AstNode& n) {
-	AstNode& owner = *spath.Top().n;
+	AstNode& owner = GetNonLockedOwner();
 	
 	if (n.name.GetCount()) {
 		AstNode* prev = owner.Find(n.name);
@@ -74,11 +74,7 @@ bool AstRunner::VisitMetaFor(AstNode& n) {
 	AstNode* for_range = 0;
 	
 	for (AstNode& s : n.sub) {
-		if (s.src == SEMT_CTOR) {
-			if (!VisitMetaCtor(s))
-				return false;
-		}
-		else if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_COND) {
+		if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_COND) {
 			for_cond = &s;
 		}
 		else if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_POST) {
@@ -92,6 +88,10 @@ bool AstRunner::VisitMetaFor(AstNode& n) {
 		}
 		else if (s.src == SEMT_STATEMENT_BLOCK) {
 			block = &s;
+		}
+		else if (s.src == SEMT_STATEMENT) {
+			if (!Visit(s))
+				return false;
 		}
 		else TODO
 	}
@@ -132,7 +132,9 @@ bool AstRunner::VisitMetaFor(AstNode& n) {
 				return false;
 			
 			dbg_i++;
-			ASSERT(dbg_i < 100);
+			//ASSERT(dbg_i < 100);
+			if (dbg_i >= 10)
+				break;
 		}
 		//DUMP(dbg_i);
 	}
@@ -143,7 +145,7 @@ bool AstRunner::VisitMetaFor(AstNode& n) {
 bool AstRunner::VisitMetaIf(AstNode& n) {
 	ASSERT(n.src == SEMT_STATEMENT && n.stmt == STMT_META_IF);
 	
-	AstNode* d = Merge(n);
+	AstNode* d = AddDuplicate(n); // these can't be merge becaues of re-use
 	if (!d)
 		return false;
 	
@@ -153,6 +155,7 @@ bool AstRunner::VisitMetaIf(AstNode& n) {
 		return false;
 	}
 	
+	AstNode* closest_type = GetClosestType();
 	AstNode& owner_block = GetBlock();
 	AstNode* block = n.Find(SEMT_STATEMENT_BLOCK);
 	if (!block) {
@@ -167,9 +170,13 @@ bool AstRunner::VisitMetaIf(AstNode& n) {
 	if (!Evaluate(*cond, cond_val))
 		return false;
 	
+	d->type = closest_type;
+	PushScope(*d, true);
+	
 	bool b = cond_val.ToBool();
 	if (b) {
-		block->type = owner_block.type;
+		block->locked = true;
+		block->type = closest_type;
 		PushScope(*block, true);
 		if (!VisitStatementBlock(*block, false))
 			return false;
@@ -182,21 +189,25 @@ bool AstRunner::VisitMetaIf(AstNode& n) {
 			return false;
 		}
 		
-		block->type = owner_block.type;
+		block->locked = true;
+		block->type = closest_type;
 		PushScope(*block, true);
 		if (!VisitStatementBlock(*block, false))
 			return false;
 		PopScope();
 	}
 	
-	d->rval = block->rval;
+	PopScope();
+	
+	//d->rval = block->rval;
+	ASSERT(d->rval);
 	ASSERT(d->rval != d);
 	
 	return true;
 }
 
 AstNode* AstRunner::MergeStatement(AstNode& n) {
-	AstNode& owner = *spath.Top().n;
+	AstNode& owner = GetNonLockedOwner();
 	AstNode* d = 0;
 	AstNode* block = 0;
 	
@@ -208,10 +219,8 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 		return VisitReturn(n);
 		
 	case STMT_EXPR:
-		d = &owner.Add(n.loc);
-		d->CopyFrom(n);
-		Bind(n, *d);
-		PushScope(*d);
+		d = AddDuplicate(n);
+		PushScope(*d, true);
 		ASSERT(n.sub.GetCount());
 		ASSERT(n.rval);
 		if (n.rval) {
@@ -220,17 +229,10 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 				return 0;
 			if (IsRvalReturn(s.src))
 				PopScope(); // expr rval
+			//d->rval = s.next->rval;
 		}
-		/*for (int i = n.sub.GetCount()-1; i >= 0; i--) {
-			AstNode& s = n.sub[i];
-			if (IsRvalReturn(s.src) || s.src == SEMT_CTOR) {
-				if (!Visit(s))
-					return 0;
-				PopScope(); // expr rval
-				break;
-			}
-		}*/
 		PopScope();
+		d->CopyPrevNextLinks();
 		return d;
 		
 	case STMT_META_FOR:
@@ -254,6 +256,25 @@ AstNode* AstRunner::MergeStatement(AstNode& n) {
 		}
 		return d;
 	
+	case STMT_CTOR:
+		d = AddDuplicate(n);
+		if (!d)
+			return 0;
+		PushScope(*d);
+		ASSERT(n.sub.GetCount());
+		ASSERT(n.rval);
+		if (n.rval) {
+			AstNode& s = *n.rval;
+			if (!Visit(s))
+				return 0;
+			if (IsRvalReturn(s.src))
+				PopScope(); // expr rval
+		}
+		PopScope();
+		d->CopyPrevNextLinks();
+		ASSERT(d->rval || n.rval->type->IsPartially(SEMT_META_ANY));
+		return d;
+		
 	case STMT_NULL:
 	case STMT_ELSE:
 	case STMT_DOWHILE:
@@ -327,8 +348,8 @@ void AstRunner::PopRuntimeScope() {
 bool AstRunner::Visit(AstNode& n) {
 	AstNode* s;
 	Object* o;
-	int exp_count;
 	int pop_count;
+	CHECK_SPATH_INIT
 	
 	switch (n.src) {
 	case SEMT_ROOT:
@@ -365,6 +386,11 @@ bool AstRunner::Visit(AstNode& n) {
 		DeclareMetaVariable(n);
 		break;
 	
+	case SEMT_META_CTOR:
+		if (!VisitMetaCtor(n))
+			return false;
+		break;
+		
 	case SEMT_META_FUNCTION_STATIC:
 		return VisitMetaStaticFunction(n);
 		
@@ -436,7 +462,7 @@ bool AstRunner::Visit(AstNode& n) {
 			return false;
 		//AddRuntimeScope(n.loc, n.name);AddDuplicate
 		//PushScope(*s);
-		exp_count = spath.GetCount() + 1;
+		CHECK_SPATH_BEGIN_1
 		pop_count = 0;
 		for(int i = 0; i < n.i64; i++) {
 			AstNode& l = *n.arg[i];
@@ -453,7 +479,8 @@ bool AstRunner::Visit(AstNode& n) {
 		}
 		ASSERT(pop_count >= 1);
 		spath.Top().n = s;
-		ASSERT(spath.GetCount() == exp_count);
+		
+		CHECK_SPATH_END
 		
 		if (s->op == OP_CALL && s->arg[0] && s->arg[0]->src == SEMT_META_RVAL && s->arg[1]) {
 			if (!VisitMetaCall(*s, *s->arg[0], *s->arg[1]))
@@ -468,19 +495,26 @@ bool AstRunner::Visit(AstNode& n) {
 		if (!s)
 			return false;
 		if (!n.sub.IsEmpty()) {
-			exp_count = spath.GetCount();
+			
 			PushScope(*s);
+			
+			CHECK_SPATH_BEGIN
+			
 			for (AstNode& s : n.sub) {
 				if (s.src == SEMT_ARGUMENT || s.IsPartially(SEMT_META_ANY)) {
 					if (!Visit(s))
 						return false;
 					if (IsRvalReturn(s.src))
 						PopScope();
-					ASSERT(spath.GetCount() == exp_count + 1);
+					
+					CHECK_SPATH_END
 				}
 			}
+			
+			CHECK_SPATH_END
+			
 			PopScope();
-			ASSERT(spath.GetCount() == exp_count);
+			
 		}
 		PushScopeRVal(*s);
 		break;
@@ -511,15 +545,20 @@ bool AstRunner::Visit(AstNode& n) {
 		s = AddDuplicate(n);
 		if (!s)
 			return false;
-		AddRuntimeScope(n.loc, n.rval ? n.rval->name : n.type->name);
-		PushScope(*s);
-		for (AstNode& s : n.sub) {
-			if (!Visit(s))
+		ASSERT(n.arg[0]);
+		if (n.arg[0]) {
+			AddRuntimeScope(n.loc, n.rval ? n.rval->name : n.type->name);
+			PushScope(*s);
+			if (!Visit(*n.arg[0]))
 				return false;
+			if (IsRvalReturn(n.arg[0]->src))
+				PopScope();
+			PopScope();
+			PopRuntimeScope();
 		}
-		PopScope();
-		PopRuntimeScope();
+		s->CopyPrevNextLinks();
 		PushScopeRVal(*s);
+		ASSERT(s->arg[0]);
 		break;
 		
 	case SEMT_STATEMENT:
@@ -590,7 +629,7 @@ bool AstRunner::Visit(AstNode& n) {
 }
 
 AstNode* AstRunner::AddDuplicate(AstNode& n) {
-	AstNode& owner = *spath.Top().n;
+	AstNode& owner = GetNonLockedOwner();
 	AstNode& d = owner.Add(n.loc);
 	d.CopyFrom(n);
 	Bind(n, d);
@@ -609,7 +648,7 @@ bool AstRunner::VisitMetaRVal(AstNode& n) {
 			return false;
 		}
 		
-		AstNode& owner = *spath.Top().n;
+		AstNode& owner = GetNonLockedOwner();
 		AstNode& d = owner.Add(n.loc);
 		d.CopyFromObject(n.loc, *ref.next_obj);
 		Bind(n, d);
@@ -622,6 +661,7 @@ bool AstRunner::VisitMetaRVal(AstNode& n) {
 }
 
 bool AstRunner::VisitMetaCtor(AstNode& n) {
+	ASSERT(n.src == SEMT_META_CTOR);
 	ASSERT(n.type && n.type->IsPartially(SEMT_META_TYPE));
 	ASSERT(n.rval);
 	
@@ -708,18 +748,32 @@ bool AstRunner::VisitResolve(AstNode& n) {
 }
 
 bool AstRunner::VisitStatementBlock(AstNode& n, bool req_rval) {
+	AstNode& block = GetBlock();
+	AstNode& owner = GetNonLockedOwner();
+	ASSERT(block.src == SEMT_STATEMENT_BLOCK);
+	ASSERT(&n != &block);
+	int dbg_count = 0;
+	
+	//ASSERT(n.next == &block);
+	//LOG(n.GetTreeString(0));
+	
 	if (!n.sub.IsEmpty()) {
 		//PushScope(*n.next);
+		int dbg_i = 0;
 		for (AstNode& s : n.sub) {
+			int prev_count = block.sub.GetCount();
+			CHECK_SPATH_BEGIN
+			
 			if (!Visit(s))
 				return false;
 			
-			if (s.rval) {
-				AstNode& r = *s.rval;
-				if (n.type == meta_builtin_expr) {
+			if (s.next && s.next->rval) {
+				AstNode& r = *s.next->rval;
+				if (block.type == meta_builtin_expr) {
 					if (IsRvalReturn(r.src)) {
-						n.rval = &r;
-						ASSERT(&n != n.rval);
+						owner.rval = &r;
+						//LOG(r.GetTreeString(0, true));
+						ASSERT(&owner != owner.rval);
 					}
 				}
 			}
@@ -727,31 +781,57 @@ bool AstRunner::VisitStatementBlock(AstNode& n, bool req_rval) {
 			if (IsRvalReturn(s.src)) {
 				PopScope();
 			}
+			
+			bool added = block.sub.GetCount() > prev_count;
+			if (added) dbg_count++;
+			
+			if (s.src == SEMT_STATEMENT && s.stmt == STMT_RETURN) {ASSERT(added);}
+			
+			ASSERT(&GetBlock() == &block);
+			CHECK_SPATH_END
+			
+			//DUMP(added);
+			//ASSERT(spath.Top().n == &block);
+			//ASSERT(block.sub.GetCount() == dbg_i+1);
+			
+			dbg_i++;
 		}
 		//PopScope();
 	}
-	if (req_rval && !n.rval) {
-		AddError(n.loc, "internal error: block has no rval");
+	
+	//LOG(n.next->GetTreeString(0));
+	//ASSERT(n.next->sub.GetCount() == n.sub.GetCount());
+	
+	if (req_rval && !owner.rval) {
+		AddError(n.loc, "internal error: no rval");
 		return false;
 	}
 	return true;
 }
 
 AstNode* AstRunner::VisitReturn(AstNode& n) {
-	AstNode& owner = *spath.Top().n;
-	AstNode* d = &owner.Add(n.loc);
-	d->CopyFrom(n);
-	Bind(n, *d);
+	AstNode& block = GetBlock();
+	ASSERT(spath.Top().n == &block);
+	int c = block.sub.GetCount();
+	
+	AstNode* d = AddDuplicate(n);
 	if (n.sub.GetCount()) {
+		CHECK_SPATH_BEGIN
+		
 		PushScope(*d);
 		if (n.rval) {
 			if (!Visit(*n.rval))
 				return 0;
+			if (IsRvalReturn(n.rval->src))
+				PopScope();
 		}
 		PopScope();
+		
+		CHECK_SPATH_END
 	}
 	d->CopyPrevNextLinks();
-	AstNode& block = GetBlock();
+	
+	ASSERT(block.sub.GetCount() > c);
 	block.rval = d->rval;
 	ASSERT(block.rval != &block);
 	return d;
@@ -764,20 +844,12 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 		AstNode& fn = *rval.rval->prev;
 		AstNode& ret_type = *fn.type;
 		ASSERT(fn.src == SEMT_META_FUNCTION_STATIC);
+		fn.locked = true;
 		PushScope(fn, true);
 		
 		Object o;
 		ObjectMap& map = o.CreateMap();
 		
-		/*if (fn.type) {
-			AstNode& ret_type = *fn.type;
-			if (ret_type.name == "expr") {
-				ret.src = SEMT_EXPR;
-			}
-			else TODO
-		}
-		else TODO
-		PushScope(ret, true);*/
 		PushScope(d, true);
 		d.type = fn.type;
 		
@@ -820,8 +892,11 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 			return false;
 		}
 		
-		block->type = fn.type;
-		PushScope(*block, true);
+		AstNode* dup_block = AddDuplicate(*block);
+		
+		block->locked = true;
+		dup_block->type = fn.type;
+		PushScope(*dup_block, true);
 		
 		PushRuntimeScope(o);
 		if (!VisitStatementBlock(*block, true))
@@ -846,13 +921,16 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 		if (fn.type) {
 			if (&ret_type == meta_builtin_expr) {
 				d.src = SEMT_RVAL;
-				if (block->rval) {
+				d.rval = dup_block->rval;
+				ASSERT(d.rval);
+				//LOG(d.rval->GetTreeString(0, true));
+				/*if (block->rval) {
 					d.rval = block->rval;
-					//LOG(d.rval->GetTreeString(0));
+					//LOG(d.rval->GetTreeString(0, true));
 					ASSERT(d.rval != &d);
 				}
 				else
-					filter = SEMT_WITH_RVAL_RET;
+					filter = SEMT_WITH_RVAL_RET;*/
 			}
 			else TODO
 		}
@@ -894,6 +972,7 @@ bool AstRunner::Evaluate(AstNode& n, Object& o) {
 				if (e.src == SEMT_EXPR) {
 					return Evaluate(e, o);
 				}
+				else TODO
 			}
 		}
 		else {
@@ -906,13 +985,14 @@ bool AstRunner::Evaluate(AstNode& n, Object& o) {
 				Object* v = 0;
 				if (n.arg[0]->next_obj)
 					v = n.arg[0]->next_obj;
-				else if (n.arg[0]->arg[0] && n.arg[0]->arg[0]->next_obj)
-					v = n.arg[0]->arg[0]->next_obj;
+				else if (n.arg[0]->rval && n.arg[0]->rval->next_obj)
+					v = n.arg[0]->rval->next_obj;
 				if (v) {
 					o = *v;
 					*v = v->ToInt() + (int64)(n.op == OP_POSTINC ? 1 : -1);
 					return true;
 				}
+				else TODO
 			}
 		}
 		

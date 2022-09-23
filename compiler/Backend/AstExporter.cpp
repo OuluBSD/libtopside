@@ -72,6 +72,8 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	case SEMT_IDPART:
 	case SEMT_STATEMENT_BLOCK:
 		for (const AstNode& s : n.sub) {
+			if (s.src == SEMT_RVAL)
+				continue;
 			PushScope(s);
 			Visit(s, false, true);
 			if (IsRvalReturn(s.src))
@@ -300,13 +302,6 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		
 	case STMT_RETURN:
 		output << GetIndentString() << "return";
-		/*if (n.sub.GetCount() > 1) {
-			ASSERT_(0, "internal error");
-		}*/
-		/*for(int i = 0; i < n.sub.GetCount(); i++) {
-			output << " ";
-			Visit(n.sub[i]);
-		}*/
 		if (n.rval) {
 			const AstNode& s = *n.rval;
 			if (IsRvalReturn(s.src)) {
@@ -314,17 +309,17 @@ void AstExporter::VisitStatement(const AstNode& n) {
 				Visit(s);
 			}
 		}
-		/*for(int i = n.sub.GetCount()-1; i >= 0; i--) {
-			const AstNode& s = n.sub[i];
-			if (IsRvalReturn(s.src)) {
-				output << " ";
-				Visit(s);
-				break;
-			}
-		}*/
 		output << ";\n";
 		break;
 	
+	case STMT_CTOR:
+		if (!n.rval)
+			break;
+		output << GetIndentString();
+		VisitConstructor(*n.rval);
+		output << ";\n";
+		break;
+		
 	case STMT_DOWHILE:
 	case STMT_WHILE:
 	case STMT_FOR_RANGE:
@@ -593,6 +588,12 @@ void AstExporter::VisitRval(const AstNode& n) {
 			VisitConstant(s);
 		else if (s.IsPartially(SEMT_FIELD))
 			output << GetCPath(*n.rval);
+		else if (s.src == SEMT_META_PARAMETER || s.src == SEMT_META_VARIABLE) {
+			if (n.next)
+				Visit(*n.next);
+			else
+				TODO;
+		}
 		else
 			Visit(*n.rval);
 	}
@@ -614,6 +615,8 @@ void AstExporter::VisitFunctionRval(const AstNode& n) {
 }
 
 void AstExporter::VisitConstructor(const AstNode& n) {
+	ASSERT(n.src == SEMT_CTOR);
+	
 	if (n.type) {
 		output << GetCPath(*n.type) << " ";
 	}
@@ -621,10 +624,14 @@ void AstExporter::VisitConstructor(const AstNode& n) {
 	if (n.rval)
 		output << GetCPath(*n.rval);
 	
-	for (const AstNode& sub : n.sub)
-		if (sub.src == SEMT_ARGUMENT_LIST || sub.src == SEMT_ARRAYSIZE)
-			Visit(sub);
-	
+	//for (const AstNode& sub : n.sub)
+	//	if (sub.src == SEMT_ARGUMENT_LIST || sub.src == SEMT_ARRAYSIZE)
+	//		Visit(sub);
+	ASSERT(n.arg[0]);
+	for(int i = 0; i < AstNode::ARG_COUNT; i++) {
+		if (n.arg[i])
+			Visit(*n.arg[i]);
+	}
 }
 
 void AstExporter::VisitArraySize(const AstNode& n) {

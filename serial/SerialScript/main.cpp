@@ -46,7 +46,7 @@ void TestEonTests(String dir_title) {
 		
 		LOG("Testing " << i << ": " << fname);
 		i++;
-		if (i != 2) continue;
+		if (i != 7) continue;
 		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
 		
 		if (!TestEonTest(file, LANG_CPP)) {

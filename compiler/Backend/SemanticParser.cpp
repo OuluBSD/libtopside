@@ -376,6 +376,8 @@ bool SemanticParser::ParseStatementList() {
 		if (!iter)
 			continue;
 		
+		CHECK_SPATH_BEGIN
+		
 		if (IsId("meta")) {
 			if (!ParseMeta(cookie))
 				return false;
@@ -397,6 +399,8 @@ bool SemanticParser::ParseStatementList() {
 			PopIterator();
 			break;
 		}
+		
+		CHECK_SPATH_END
 		
 		PopIterator();
 	}
@@ -589,11 +593,18 @@ bool SemanticParser::ParseStatement() {
 		// empty statement
 	}
 	else {
+		CHECK_SPATH_BEGIN
+		
 		EMIT PushStatement(iter->loc, STMT_EXPR);
 		
 		if (!(link = ParseExpression(false))) return false;
 		
+		if (link->rval && link->rval->src == SEMT_CTOR)
+			link = 0;
+		
 		EMIT PopStatement(iter->loc, link);
+		
+		CHECK_SPATH_END
 	}
 	
 	return true;
@@ -678,7 +689,9 @@ bool SemanticParser::ParseMetaStatement(int& cookie, bool skip_meta_keywords) {
 		
 		if (!IsToken(',')) {
 			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_DECL);
+			EMIT PushStatement(iter->loc, STMT_EXPR);
 			if (!ParseExpression(true)) return false;
+			EMIT PopStatement(iter->loc, 0);
 		}
 		if (Id("in") || Char(':')) {
 			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
@@ -1087,10 +1100,12 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 			return false;
 		
 		if (Char('[')) {
-			EMIT PushConstructor(iter->loc, tn, var);
+			AstNode* ctor = EMIT PushConstructor(iter->loc, meta, tn, var);
 			
 			if (!Cond(false)) return false;
-			EMIT ArraySize(iter->loc);
+			
+			AstNode* arr = EMIT ArraySize(iter->loc);
+			ctor->arg[0] = arr;
 			
 			if (!PassChar(']')) return false;
 			
@@ -1099,11 +1114,16 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 			}
 			
 			EMIT PopConstructor(iter->loc);
+			
+			EMIT PushRval(iter->loc, *ctor);
+			return true;
 		}
 		else if (IsChar('(')) {
-			EMIT PushConstructor(iter->loc, tn, var);
+			AstNode* ctor = EMIT PushConstructor(iter->loc, meta, tn, var);
+			if (!ctor) return false;
 			
-			EMIT PushRvalArgumentList(iter->loc);
+			AstNode* args = EMIT PushRvalArgumentList(iter->loc);
+			ctor->arg[0] = args;
 			
 			if (!Char(')')) {
 				if (!Cond(false)) return false;
@@ -1120,10 +1140,16 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 			
 			EMIT PopExpr(iter->loc);
 			EMIT PopConstructor(iter->loc);
+			
+			EMIT PushRval(iter->loc, *ctor);
+			return true;
 		}
 		else if (Char('=')) {
-			EMIT PushConstructor(iter->loc, tn, var);
-			EMIT PushRvalArgumentList(iter->loc);
+			AstNode* ctor = EMIT PushConstructor(iter->loc, meta, tn, var);
+			if (!ctor) return false;
+			
+			AstNode* args = EMIT PushRvalArgumentList(iter->loc);
+			ctor->arg[0] = args;
 			
 			//NO: Expression leaf pushes: EMIT PushExprScope();
 			if (!Cond(false)) return false;
@@ -1131,6 +1157,9 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 			
 			EMIT PopExpr(iter->loc);
 			EMIT PopConstructor(iter->loc);
+			
+			EMIT PushRval(iter->loc, *ctor);
+			return true;
 		}
 		
 		EMIT PushRval(iter->loc, *var);
@@ -1139,94 +1168,19 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 	
 	return true;
 }
-
-#if 0
-bool SemanticParser::ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn) {
-	const TokenNode& cur = *path.Top();
-	Iterator& iter = TopIterator();
-	
-	PathIdentifier name;
-	
-	//if (tn && tn->IsPartially(SEMT_TYPE)) {
-	if (!ParsePathIdentifier(name, false, false)) {
-		AddError(iter->loc, "could not parse name");
-		return false;
-	}
-	
-	if (IsChar('(') && cur.sub.GetCount()) {
-		
-		if (!ParseMetaFunction(tn, name))
-			return false;
-		
-	}
-	else {
-		AstNode* var = EMIT DeclareVariable(type_id.begin->loc, tn, name);
-		if (!var)
-			return false;
-		
-		if (Char('[')) {
-			EMIT PushConstructor(iter->loc, tn, var);
-			
-			if (!Cond(false)) return false;
-			EMIT ArraySize(iter->loc);
-			
-			if (!PassChar(']')) return false;
-			
-			if (Char('=')) {
-				TODO
-			}
-			
-			EMIT PopConstructor(iter->loc);
-		}
-		else if (IsChar('(')) {
-			EMIT PushConstructor(iter->loc, tn, var);
-			
-			EMIT PushRvalArgumentList(iter->loc);
-			
-			if (!Char(')')) {
-				if (!Cond(false)) return false;
-				EMIT Argument(iter->loc);
-				
-				while (Char(',')) {
-					if (!Cond(false)) return false;
-					EMIT Argument(iter->loc);
-				}
-				
-				if (!PassChar(')'))
-					return false;
-			}
-			
-			EMIT PopExpr(iter->loc);
-			EMIT PopConstructor(iter->loc);
-		}
-		else if (Char('=')) {
-			EMIT PushConstructor(iter->loc, tn, var);
-			EMIT PushRvalArgumentList(iter->loc);
-			
-			//NO: Expression leaf pushes: EMIT PushExprScope();
-			if (!Cond(false)) return false;
-			EMIT Argument(iter->loc);
-			
-			EMIT PopExpr(iter->loc);
-			EMIT PopConstructor(iter->loc);
-		}
-		
-		EMIT PushRval(iter->loc, *var);
-	}
-	
-	
-	return true;
-}
-#endif
 
 bool SemanticParser::ParseSwitchBlock() {
 	TODO
 }
 
 AstNode* SemanticParser::ParseExpression(bool m) {
+	CHECK_SPATH_BEGIN1
+	
 	Iterator& iter = TopIterator();
 	if (!Assign(m))
 		return 0;
+	
+	CHECK_SPATH_END
 	
 	return EMIT PopExpr(iter->loc);
 }
@@ -2756,9 +2710,8 @@ bool SemanticParser::ParseExpressionList() {
 	for (const TokenNode& s : tk_owner.sub) {
 		sub = &s;
 		//DUMP(s)
-		AddIterator(s);
+		Iterator& iter = AddIterator(s);
 		
-		Iterator& iter = TopIterator();
 		if (!iter)
 			continue;
 		
@@ -2771,12 +2724,17 @@ bool SemanticParser::ParseExpressionList() {
 				AddError(iter->loc, "only single expression is allowed");
 				succ = false;
 			}
-			if (!ParseExpression(false)) {
+			
+			AstNode* stmt = EMIT PushStatement(iter->loc, STMT_EXPR);
+			AstNode* expr = ParseExpression(false);
+			if (!expr) {
 				succ = false;
 				PopIterator();
 				break;
 			}
 			expr_count++;
+			
+			EMIT PopStatement(iter->loc, expr);
 		}
 		
 		PopIterator();

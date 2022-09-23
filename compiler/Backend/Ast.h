@@ -57,6 +57,7 @@ public:
 	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;
 	
+	String			GetTreeString(int indent, bool links) const;
 	String			GetTreeString(int indent=0) const override;
 	String			GetCodeString(const CodeArgs& args) const override;
 	String			ToString() const override;
@@ -69,6 +70,9 @@ public:
 	
 };
 
+struct AstNodeLink {
+	
+};
 
 NAMESPACE_TOPSIDE_END
 

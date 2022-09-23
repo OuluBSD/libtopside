@@ -166,7 +166,7 @@ public:
 	void PopStatementList(const FileLocation& loc);
 	AstNode* PushStatement(const FileLocation& loc, StmtType type);
 	void PopStatement(const FileLocation& loc, AstNode* rval);
-	void PushConstructor(const FileLocation& loc, AstNode& type, AstNode* var);
+	AstNode* PushConstructor(const FileLocation& loc, bool meta, AstNode& type, AstNode* var);
 	void PopConstructor(const FileLocation& loc);
 	void PushStatementParameter(const FileLocation& loc, StmtParamType t);
 	void PopStatementParameter(const FileLocation& loc);
@@ -175,9 +175,9 @@ public:
 	void Variable(const FileLocation& loc, const AstNode& n, const PathIdentifier& id);
 	void PushRvalResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t);
 	void PushRvalUnresolved(const FileLocation& loc, const PathIdentifier& id, SemanticType t);
-	void PushRvalArgumentList(const FileLocation& loc);
+	AstNode* PushRvalArgumentList(const FileLocation& loc);
 	void Argument(const FileLocation& loc);
-	void ArraySize(const FileLocation& loc);
+	AstNode* ArraySize(const FileLocation& loc);
 	AstNode* PopExpr(const FileLocation& loc);
 	void PushRval(const FileLocation& loc, AstNode& n);
 	void PushRvalConstruct(const FileLocation& loc, AstNode& n);

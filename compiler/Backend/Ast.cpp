@@ -218,6 +218,34 @@ String AstNode::GetTreeString(int indent) const {
 	return s;
 }
 
+String AstNode::GetTreeString(int indent, bool links) const {
+	String s = GetTreeString(indent);
+	if (!links) return s;
+	for(int i = 0; i < ARG_COUNT; i++) {
+		if (arg[i]) {
+			s.Cat('\t', indent+1);
+			s << "arg:\n";
+			s << arg[i]->GetTreeString(indent+2);
+		}
+	}
+	if (rval) {
+		s.Cat('\t', indent+1);
+		s << "rval:\n";
+		s << rval->GetTreeString(indent+2);
+	}
+	if (ctx_next) {
+		s.Cat('\t', indent+1);
+		s << "ctx_next:\n";
+		s << ctx_next->GetTreeString(indent+2);
+	}
+	if (next) {
+		s.Cat('\t', indent+1);
+		s << "next:\n";
+		s << next->GetTreeString(indent+2);
+	}
+	return s;
+}
+
 String AstNode::GetCodeString(const CodeArgs& args) const {
 	TODO
 }
