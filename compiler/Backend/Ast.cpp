@@ -7,7 +7,7 @@ AstNode::AstNode() {
 	
 }
 
-void AstNode::CopyFrom(const AstNode& n) {
+void AstNode::CopyFrom(EonStd* e, const AstNode& n) {
 	sub.Clear();
 	
 	name = n.name;
@@ -20,16 +20,20 @@ void AstNode::CopyFrom(const AstNode& n) {
 	str = n.str;
 	loc = n.loc;
 	
-	type = n.type ? n.type->next : 0;
-	rval = n.rval ? n.rval->next : 0;
-	ctx_next = n.ctx_next ? n.ctx_next->next : 0;
-	ASSERT(type != this);
-	ASSERT(rval != this);
-	ASSERT(ctx_next != this);
-
-	for(int i = 0; i < AstNode::ARG_COUNT; i++) {
-		arg[i] = n.arg[i] ? n.arg[i]->next : 0;
-		ASSERT(arg[i] != this);
+	prev = &n;
+	
+	if (e) {
+		type = n.type ? e->FindStackWithPrev(n.type) : 0;
+		rval = n.rval ? e->FindStackWithPrev(n.rval) : 0;
+		ctx_next = n.ctx_next ? e->FindStackWithPrev(n.ctx_next) : 0;
+		ASSERT(type != this);
+		ASSERT(rval != this);
+		ASSERT(ctx_next != this);
+	
+		for(int i = 0; i < AstNode::ARG_COUNT; i++) {
+			arg[i] = n.arg[i] ? e->FindStackWithPrev(n.arg[i]) : 0;
+			ASSERT(arg[i] != this);
+		}
 	}
 	
 }
@@ -84,7 +88,7 @@ void AstNode::CopyToObject(Object& n) const {
 	else TODO
 }
 
-void AstNode::CopyPrevNextLinks() {
+/*void AstNode::CopyPrevNextLinks() {
 	if (prev) {
 		type = prev->type ? prev->type->next : 0;
 		rval = prev->rval ? prev->rval->next : 0;
@@ -101,7 +105,7 @@ void AstNode::CopyPrevNextLinks() {
 			ASSERT(arg[i] != this);
 		}
 	}
-}
+}*/
 
 AstNode& AstNode::Add(const FileLocation& loc, String name, int idx) {
 	ASSERT(!locked);
@@ -196,6 +200,8 @@ String AstNode::GetTreeString(int indent) const {
 	
 	if (name.GetCount())
 		s << name << "\n";
+	else if (src == SEMT_OBJECT)
+		s << "object(" << obj.ToString() << ")\n";
 	else if (src == SEMT_CONSTANT)
 		s << "const(" << GetConstantString() << ")\n";
 	else if (src == SEMT_STATEMENT)
@@ -238,11 +244,11 @@ String AstNode::GetTreeString(int indent, bool links) const {
 		s << "ctx_next:\n";
 		s << ctx_next->GetTreeString(indent+2);
 	}
-	if (next) {
+	/*if (next) {
 		s.Cat('\t', indent+1);
 		s << "next:\n";
 		s << next->GetTreeString(indent+2);
-	}
+	}*/
 	return s;
 }
 

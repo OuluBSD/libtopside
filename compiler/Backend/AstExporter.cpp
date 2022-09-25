@@ -26,17 +26,19 @@ String AstExporter::GetIndentString(int offset) const {
 	return s;
 }
 
-void AstExporter::PushScope(const AstNode& n) {
+void AstExporter::PushScope(const AstNode& n, bool skip_indent) {
 	Scope& scope = scopes.Add();
 	scope.pop_this = !n.IsPartially(SEMT_UNDEFINED);
 	scope.n = &n;
+	scope.skip_indent = skip_indent;
 	//if (scope.pop_this)
-	if (n.src == SEMT_STATEMENT_BLOCK)
+	if (n.src == SEMT_STATEMENT_BLOCK && !skip_indent)
 		++indent;
 }
 
 void AstExporter::PopScope() {
-	if (scopes.Top().n->src == SEMT_STATEMENT_BLOCK) {
+	Scope& scope = scopes.Top();
+	if (scope.n->src == SEMT_STATEMENT_BLOCK && !scope.skip_indent) {
 		ASSERT(indent > 0);
 		--indent;
 	}
@@ -54,6 +56,7 @@ void AstExporter::PopInlineScope() {
 }
 
 void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
+	bool skip_indent;
 	
 	switch (n.src) {
 	case SEMT_BUILTIN:
@@ -70,15 +73,43 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	
 	case SEMT_ROOT:
 	case SEMT_IDPART:
-	case SEMT_STATEMENT_BLOCK:
 		for (const AstNode& s : n.sub) {
 			if (s.src == SEMT_RVAL)
 				continue;
+			
+			CHECK_SCOPES_BEGIN
+			
 			PushScope(s);
 			Visit(s, false, true);
-			if (IsRvalReturn(s.src))
-				PopScope();
 			PopScope();
+			
+			CHECK_SCOPES_END
+		}
+		return;
+		
+	case SEMT_STATEMENT_BLOCK:
+		for (const AstNode& s : n.sub) {
+			if (s.src != SEMT_STATEMENT &&
+				s.src != SEMT_STATEMENT_BLOCK &&
+				!s.IsPartially(SEMT_META_ANY))
+				continue;
+			
+			// merge statement blocks which meta created with current block
+			if (s.src == SEMT_STATEMENT_BLOCK && s.sub.GetCount() == 1 && s.prev && s.prev->IsStmtPartially(STMT_META_ANY)) {
+				const auto& ss = s.sub[0];
+				if (ss.src == SEMT_STATEMENT_BLOCK) {
+					Visit(ss, false, true);
+					continue;
+				}
+			}
+			
+			CHECK_SCOPES_BEGIN
+			
+			PushScope(s);
+			Visit(s, false, true);
+			PopScope();
+			
+			CHECK_SCOPES_END
 		}
 		return;
 	
@@ -143,6 +174,10 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		
 	case SEMT_ARRAYSIZE:
 		VisitArraySize(n);
+		break;
+		
+	case SEMT_OBJECT:
+		//VisitConstant(n);
 		break;
 		
 	default:
@@ -340,7 +375,7 @@ void AstExporter::VisitExpression(const AstNode& n, int depth) {
 		VisitVariable(n);
 		return;
 	}
-	else if (n.src == SEMT_CONSTANT) {
+	else if (n.src == SEMT_CONSTANT || n.src == SEMT_OBJECT) {
 		VisitConstant(n);
 		return;
 	}
@@ -531,21 +566,25 @@ void AstExporter::VisitArgument(const AstNode& n) {
 }
 
 void AstExporter::VisitConstant(const AstNode& n) {
-	ASSERT(n.src == SEMT_CONSTANT);
+	ASSERT(n.src == SEMT_CONSTANT || n.src == SEMT_OBJECT);
 	
-	switch (n.con) {
-	case CONST_NULL:	output << "void"; break;
-	case CONST_BOOL:	output << (n.i64 ? "true" : "false"); break;
-	case CONST_INT32:	output << IntStr((int)n.i64); break;
-	case CONST_INT64:	output << IntStr64(n.i64); break;
-	case CONST_DOUBLE:	output << DblStr(n.dbl); break;
-	case CONST_STRING:	output << "\"" << n.str << "\""; break;
-	default:
-		TODO
-		output << "<internal error>";
-		break;
+	if (n.src == SEMT_CONSTANT) {
+		switch (n.con) {
+		case CONST_NULL:	output << "void"; break;
+		case CONST_BOOL:	output << (n.i64 ? "true" : "false"); break;
+		case CONST_INT32:	output << IntStr((int)n.i64); break;
+		case CONST_INT64:	output << IntStr64(n.i64); break;
+		case CONST_DOUBLE:	output << DblStr(n.dbl); break;
+		case CONST_STRING:	output << "\"" << n.str << "\""; break;
+		default:
+			TODO
+			output << "<internal error>";
+			break;
+		}
 	}
-	
+	else if (n.src == SEMT_OBJECT) {
+		output << n.obj.ToString();
+	}
 }
 
 void AstExporter::VisitResolve(const AstNode& n, bool rval) {
@@ -584,15 +623,16 @@ void AstExporter::VisitRval(const AstNode& n) {
 	ASSERT(n.rval != &n);
 	if (n.rval) {
 		AstNode& s = *n.rval;
-		if (s.src == SEMT_CONSTANT)
+		if (s.src == SEMT_CONSTANT || s.src == SEMT_OBJECT)
 			VisitConstant(s);
 		else if (s.IsPartially(SEMT_FIELD))
 			output << GetCPath(*n.rval);
 		else if (s.src == SEMT_META_PARAMETER || s.src == SEMT_META_VARIABLE) {
-			if (n.next)
+			TODO // this s.src shouldn't appear in this phase anymore
+			/*if (n.next)
 				Visit(*n.next);
 			else
-				TODO;
+				TODO;*/
 		}
 		else
 			Visit(*n.rval);

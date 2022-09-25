@@ -10,39 +10,41 @@ class AstRunner :
 	public ErrorSource
 {
 	AstNode root;
+	AstNode* builtin_void = 0;
 	AstNode* meta_builtin_expr = 0;
 	
 public:
-	Object runtime;
-	Vector<Object*> rpath;
+	//Object runtime;
+	//Vector<Object*> rpath;
 	
 public:
 	typedef AstRunner CLASSNAME;
 	AstRunner();
 	
 	
-	bool		Execute(AstNode& n);
-	bool		Visit(AstNode& n);
-	AstNode*	AddDuplicate(AstNode& n);
-	bool		VisitMetaRVal(AstNode& n);
-	bool		VisitMetaCtor(AstNode& n);
-	bool		VisitMetaFor(AstNode& n);
-	bool		VisitMetaIf(AstNode& n);
-	bool		VisitMetaStaticFunction(AstNode& n);
-	bool		VisitMetaCall(AstNode& n, AstNode& rval, AstNode& args);
-	bool		VisitResolve(AstNode& n);
-	bool		VisitStatementBlock(AstNode& n, bool req_rval);
-	AstNode*	VisitReturn(AstNode& n);
-	AstNode*	Merge(AstNode& n);
-	AstNode*	MergeStatement(AstNode& n);
-	void		PushRuntimeScope(Object& o);
-	ObjectMap*	GetRuntimeScope(const FileLocation& loc);
-	Object*		CreateRuntimeField(const FileLocation& loc, String name);
-	void		AddRuntimeScope(const FileLocation& loc, String name);
-	void		PopRuntimeScope();
-	bool		DeclareMetaVariable(AstNode& n);
-	bool		IsMergeable(AstNode& prev, AstNode& to_merge) const;
-	bool		Evaluate(AstNode& n, Object& o);
+	bool		Execute(const AstNode& n);
+	AstNode*	Visit(const AstNode& n);
+	AstNode*	AddDuplicate(const AstNode& n);
+	AstNode*	VisitMetaRVal(const AstNode& n);
+	AstNode*	VisitMetaCtor(const AstNode& n);
+	AstNode*	VisitMetaFor(const AstNode& n);
+	AstNode*	VisitMetaIf(const AstNode& n);
+	AstNode*	VisitMetaStaticFunction(const AstNode& n);
+	bool		VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args);
+	AstNode*	VisitResolve(const AstNode& n);
+	bool		VisitStatementBlock(const AstNode& n, bool req_rval);
+	AstNode*	VisitReturn(const AstNode& n);
+	AstNode*	Merge(const AstNode& n);
+	AstNode*	MergeStatement(const AstNode& n);
+	
+	//void		PushRuntimeScope(Object& o);
+	//ObjectMap*	GetRuntimeScope(const FileLocation& loc);
+	//Object*		CreateRuntimeField(const FileLocation& loc, String name);
+	//void		AddRuntimeScope(const FileLocation& loc, String name);
+	//void		PopRuntimeScope();
+	AstNode*	DeclareMetaVariable(const AstNode& n);
+	bool		IsMergeable(const AstNode& prev, const AstNode& to_merge) const;
+	AstNode*	Evaluate(const AstNode& n);
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

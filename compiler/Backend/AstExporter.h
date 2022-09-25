@@ -19,6 +19,7 @@ class AstExporter :
 	struct Scope {
 		const AstNode* n = 0;
 		bool pop_this = false;
+		bool skip_indent = false;
 	};
 	struct InlineScope {
 		int count = 0;
@@ -44,7 +45,7 @@ class AstExporter :
 	void VisitFunctionRval(const AstNode& n);
 	void VisitConstructor(const AstNode& n);
 	void VisitArraySize(const AstNode& n);
-	void PushScope(const AstNode& n);
+	void PushScope(const AstNode& n, bool skip_indent=false);
 	void PopScope();
 	void PushInlineScope();
 	void PopInlineScope();

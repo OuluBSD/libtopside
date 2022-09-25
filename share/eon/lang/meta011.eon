@@ -5,4 +5,4 @@ meta expr a(int x):
 		1
 
 int main():
-	return $a(2)==1*2*3*4*5
+	return $a(5)==1*2*3*4*5

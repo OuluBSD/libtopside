@@ -67,7 +67,7 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 	return s;
 }
 
-void EonStd::InitDefault() {
+void EonStd::InitDefault(bool add_root) {
 	AddBuiltinType("void");
 	AddBuiltinType("int");
 	AddBuiltinType("long");
@@ -107,7 +107,8 @@ void EonStd::InitDefault() {
 	
 	GetRoot().src = SEMT_ROOT;
 	
-	spath.Add().Set(&GetRoot(),true);
+	if (add_root)
+		spath.Add().Set(&GetRoot(),true);
 }
 
 bool EonStd::ForwardUserspace(AstNode*& n) {
@@ -298,6 +299,8 @@ AstNode* EonStd::GetClosestType(bool skip_locked) {
 		Scope& scope = spath[i];
 		if (skip_locked && scope.n->locked)
 			continue;
+		if (scope.n->IsPartially(SEMT_FUNCTION))
+			return 0;
 		if (scope.n->type)
 			return scope.n->type;
 	}
@@ -388,11 +391,37 @@ String EonStd::GetTypeInitValueString(AstNode& n) const {
 	}
 }
 
-void EonStd::Bind(AstNode& from, AstNode& to) {
+AstNode* EonStd::FindStackObject(String name) {
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+		for (AstNode& ss : s.n->sub) {
+			if (ss.name == name)
+				return &ss;
+		}
+		if (s.n->name == name)
+			return s.n;
+	}
+	return 0;
+}
+
+AstNode* EonStd::FindStackWithPrev(const AstNode* prev) {
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+		for (AstNode& ss : s.n->sub) {
+			if (ss.prev == prev)
+				return &ss;
+		}
+		if (s.n->prev == prev)
+			return s.n;
+	}
+	return 0;
+}
+
+/*void EonStd::Bind(AstNode& from, AstNode& to) {
 	//ASSERT(from.next == 0 && to.prev == 0);
 	from.next = &to;
 	to.prev = &from;
-}
+}*/
 
 
 NAMESPACE_TOPSIDE_END
