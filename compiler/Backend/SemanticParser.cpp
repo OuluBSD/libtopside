@@ -98,14 +98,20 @@ bool SemanticParser::ParseDeclaration() {
 				return false;
 		}
 		else {
-			Scope& t = spath.Top();
-			bool prev = t.must_declare;
-			t.must_declare = true;
+			bool prev;
+			{
+				Scope& t = spath.Top();
+				prev = t.must_declare;
+				t.must_declare = true;
+			}
 			
 			if (!ParseExpression(false))
 				return false;
 			
-			t.must_declare = prev;
+			{
+				Scope& t = spath.Top();
+				t.must_declare = prev;
+			}
 		}
 	}
 	
@@ -532,9 +538,12 @@ bool SemanticParser::ParseStatement() {
 	else if (Id("return")) {
 		EMIT PushStatement(iter->loc, STMT_RETURN);
 		
-		Scope& s = spath.Top();
-		bool b = s.no_declare;
-		s.no_declare = true;
+		bool b;
+		{
+			Scope& s = spath.Top();
+			b = s.no_declare;
+			s.no_declare = true;
+		}
 		
 		link = 0;
 		if (iter) {
@@ -542,7 +551,10 @@ bool SemanticParser::ParseStatement() {
 			link = EMIT PopExpr(iter->loc);
 		}
 		
-		s.no_declare = b;
+		{
+			Scope& s = spath.Top();
+			s.no_declare = b;
+		}
 		
 		EMIT PopStatement(iter->loc, link);
 	}

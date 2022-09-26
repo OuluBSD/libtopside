@@ -38,15 +38,15 @@ void TestEonTests(String dir_title) {
 	SortIndex(files, StdLess<String>());
 	DUMPC(files);
 	
-	int i = -1;
+	int i = 0;
 	for (String file : files) {
 		String fname = GetFileName(file);
 		
 		if (fname.Find("meta") != 0) continue;
 		
-		LOG("Testing " << i << ": " << fname);
 		i++;
-		//if (i != 11) continue;
+		LOG("Testing " << i << ": " << fname);
+		if (i != 5) continue;
 		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
 		
 		if (!TestEonTest(file, LANG_CPP)) {

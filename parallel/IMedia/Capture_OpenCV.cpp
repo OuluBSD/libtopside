@@ -2,8 +2,6 @@
 // problematic hal/interface.h usage fix
 // clang and gcc behaves in a different way
 #if defined flagGCC && defined flagFREEBSD
-	#include "Internal.h"
-	
 	#if flagOPENCV
 		#undef CPU_SSE2
 		#include <opencv2/core.hpp>

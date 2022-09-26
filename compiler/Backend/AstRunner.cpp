@@ -679,6 +679,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				else {
 					d->rval = FindStackWithPrevDeep(n.rval);
 				}
+				//LOG(HexStr((void*)d->rval));
 				ASSERT(d->rval);
 				if (!d->rval) {
 					AddError(n.loc, "internal error: incomplete rval");
@@ -1022,7 +1023,7 @@ AstNode* AstRunner::VisitMetaResolve(const AstNode& n) {
 	AstNode* rval = FindDeclaration(parts);
 	
 	AstNode* d = AddDuplicate(n);
-	d->src == SEMT_RVAL;
+	d->src = SEMT_RVAL;
 	d->rval = rval;
 	
 	return d;
