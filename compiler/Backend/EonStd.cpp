@@ -493,6 +493,8 @@ AstNode* EonStd::FindStackWithPrevDeep(const AstNode* prev) {
 			iter = iter->GetSubOwner();
 		}
 	}
+	if (!spath.IsEmpty())
+		return spath[0].n->FindWithPrevDeep(prev);
 	return 0;
 }
 

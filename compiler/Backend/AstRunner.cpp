@@ -685,6 +685,9 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 					AddError(n.loc, "internal error: incomplete rval");
 					return 0;
 				}
+				
+				if (d->rval->IsPartially(SEMT_META_ANY))
+					d->src = SEMT_META_RVAL;
 			}
 			else TODO
 			PushScopeRVal(*d);
@@ -1041,6 +1044,7 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 		AstNode* call = AddDuplicate(fn);
 		call->src = SEMT_STATEMENT_BLOCK;
 		call->i64 = 1; // skip indent
+		call->prev = 0; // to prevent wrong match
 		PushScope(*call, true);
 		
 		Object o;
