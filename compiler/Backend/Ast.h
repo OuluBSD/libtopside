@@ -60,6 +60,7 @@ public:
 	AstNode*		Find(SemanticType t);
 	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;
+	AstNode*		FindWithPrevDeep(const AstNode* prev);
 	
 	String			GetTreeString(int indent, bool links) const;
 	String			GetTreeString(int indent=0) const override;

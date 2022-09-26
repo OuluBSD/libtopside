@@ -1373,39 +1373,49 @@ bool SemanticParser::Term(bool meta) {
 	if(Char(':'))
 		_global = true;
 	if(iter->IsType(TK_ID) || iter->IsType('$')) {
+		bool typename_ = iter->str_value == "typename";
+		if (typename_)
+			iter++;
+		
 		PathIdentifier id;
 		if (!ParsePathIdentifier(id, true, true))
 			return false;
 		
-		if (id.HasMeta())
-			meta = true;
-		
-		AstNode* nn = FindDeclaration(id, meta ? SEMT_META_ANY : SEMT_NULL);
-		if (!nn) {
-			if (allow_expr_unresolved) {
-				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
-				return Subscript(meta);
+		AstNode* nn = 0;
+		bool partial_meta = id.HasPartialMeta();
+		// e.g. "a.$i"
+		if (partial_meta) {
+			nn = EMIT PartialMetaResolve(id.begin->loc, id, typename_ ? SEMT_META_TYPE : SEMT_META_FIELD);
+			ASSERT(nn);
+		}
+		else {
+			if (id.HasMeta())
+				meta = true;
+			
+			if (typename_) {
+				nn = FindDeclaration(id, meta ? SEMT_META_TYPE : SEMT_TYPE);
+				if (!nn) {
+					AddError(iter->loc, "could not find type '" + id.ToString() + "'");
+					return false;
+				}
 			}
 			else {
-				AddError(iter->loc, "could not find '" + id.ToString() + "'");
-				return false;
+				nn = FindDeclaration(id, meta ? SEMT_META_ANY : SEMT_NULL);
+				if (!nn) {
+					if (allow_expr_unresolved) {
+						EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);
+						return Subscript(meta);
+					}
+					else {
+						AddError(iter->loc, "could not find '" + id.ToString() + "'");
+						return false;
+					}
+				}
 			}
 		}
 		
 		if (!_global && Char('(')) {
-			
-			if (nn->IsPartially(meta ? SEMT_META_FUNCTION : SEMT_FUNCTION)) {
-				//EMIT PushRvalCall(id.begin->loc, *nn);
-				EMIT PushRvalResolve(id.begin->loc, id, meta ? SEMT_META_FUNCTION : SEMT_FUNCTION);
-			}
-			else if (IsTypedNode(nn->src)) {
-				//EMIT PushRvalConstruct(id.begin->loc, *nn);
-				EMIT PushRvalResolve(id.begin->loc, id, meta ? SEMT_META_TYPE : SEMT_TYPE);
-			}
-			else {
-				AddError(iter->loc, "can't call or construct '" + id.ToString() + "'");
-				return false;
-			}
+			EMIT PushRval(id.begin->loc, *nn);
 			
 			EMIT PushRvalArgumentList(iter->loc);
 			
@@ -1421,38 +1431,14 @@ bool SemanticParser::Term(bool meta) {
 			EMIT Expr2(iter->loc, OP_CALL);
 		}
 		else {
-			//DUMP(id);
-			
-			//if (nn->IsPartially(meta ? SEMT_META_FIELD : SEMT_FIELD)) {
-			if (nn->IsPartially((SemanticType)(SEMT_META_FIELD | SEMT_FIELD))) {
+			if (nn->IsPartially((SemanticType)(SEMT_META_FIELD | SEMT_FIELD)) ||
+				(partial_meta && !typename_)) {
 				EMIT PushRval(id.begin->loc, *nn);
 			}
-			//else if (nn->IsPartially(meta ? SEMT_META_TYPE : SEMT_TYPE)) {
-			else if (nn->IsPartially((SemanticType)(SEMT_META_TYPE | SEMT_TYPE))) {
-				/*PathIdentifier name;
-				const FileLocation& loc = iter->loc;
-				if (!ParsePathIdentifier(name)) {
-					AddError(loc, "could not parse name");
-					return false;
-				}
-				
-				AstNode& block = GetBlock();
-				AstNode& var = Declare(block, name);
-				ASSERT(var.IsPartially(SEMT_UNDEFINED));
-				var.src = SEMT_VARIABLE;
-				var.type = nn;
-				
-				// Variable declaration statement
-				EMIT DeclareVariable(iter->loc, *nn, name);
-				EMIT PushRval(id.begin->loc, var);*/
-				/*if (meta) {
-					if (!ParseMetaDeclExpr(id, *nn))
-						return false;
-				}
-				else {*/
+			else if (nn->IsPartially((SemanticType)(SEMT_META_TYPE | SEMT_TYPE)) ||
+				(partial_meta && typename_)) {
 				if (!ParseDeclExpr(meta, id, *nn))
 					return false;
-				//}
 			}
 			else if (allow_expr_unresolved) {
 				EMIT PushRvalUnresolved(id.begin->loc, id, meta ? SEMT_META_ANY : SEMT_NULL);

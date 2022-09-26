@@ -56,6 +56,7 @@ typedef enum : uint64 {
 	SEMT_META_RVAL				= 1ULL << 47,
 	SEMT_META_CTOR				= 1ULL << 48,
 	SEMT_OBJECT					= 1ULL << 49,
+	SEMT_META_RESOLVE			= 1ULL << 50,
 	
 	// Current limit: 1 << 63
 	
@@ -79,7 +80,7 @@ typedef enum : uint64 {
 	SEMT_META_PARAMETER_PATH =	SEMT_META_PARAMETER | SEMT_IDPART,
 	SEMT_META_VARIABLE_PATH =	SEMT_META_VARIABLE | SEMT_IDPART,
 	
-	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION | SEMT_META_RVAL | SEMT_META_CTOR,
+	SEMT_META_ANY =			SEMT_IDPART | SEMT_META_FIELD | SEMT_META_TYPE | SEMT_META_FUNCTION | SEMT_META_RVAL | SEMT_META_CTOR | SEMT_META_RESOLVE,
 	SEMT_META_PATH =		SEMT_META_PARAMETER_PATH | SEMT_META_VARIABLE_PATH | SEMT_META_FUNCTION | SEMT_META_CLASS,
 	
 } SemanticType;
@@ -123,6 +124,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_META_PARAMETER:		return "meta-parameter";
 		case SEMT_META_BUILTIN:			return "meta-builtin";
 		case SEMT_META_FUNCTION_STATIC:	return "meta static function";
+		case SEMT_META_FIELD:			return "meta-field";
 		case SEMT_WORLD:				return "world";
 		case SEMT_ENTITY:				return "entity";
 		case SEMT_COMPONENT:			return "component";
@@ -141,6 +143,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_META_CTOR:			return "meta-ctor";
 		case SEMT_OBJECT:				return "object";
 		case SEMT_BLOCK:				return "block";
+		case SEMT_META_RESOLVE:			return "meta-resolve";
 		default: return "invalid";
 	}
 }

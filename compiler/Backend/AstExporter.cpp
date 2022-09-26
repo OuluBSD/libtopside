@@ -71,6 +71,12 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	case SEMT_META_PARAMETER:
 		return;
 	
+	case SEMT_META_RESOLVE:
+		ASSERT(n.rval);
+		if (n.rval)
+			Visit(*n.rval);
+		return;
+		
 	case SEMT_ROOT:
 	case SEMT_IDPART:
 		for (const AstNode& s : n.sub) {
@@ -95,12 +101,19 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 				continue;
 			
 			// merge statement blocks which meta created with current block
-			if (s.src == SEMT_STATEMENT_BLOCK && s.sub.GetCount() == 1 && s.prev && s.prev->IsStmtPartially(STMT_META_ANY)) {
-				const auto& ss = s.sub[0];
-				if (ss.src == SEMT_STATEMENT_BLOCK) {
+			if (s.src == SEMT_STATEMENT_BLOCK && s.i64 == 1) {
+				/*if (s.sub.GetCount() == 1 &&* s.prev && s.prev->IsStmtPartially(STMT_META_ANY)) {
+					const auto& ss = s.sub[0];
+					if (ss.src == SEMT_STATEMENT_BLOCK) {
+						Visit(ss, false, true);
+						continue;
+					}
+				}*/
+				/*for (AstNode& ss : s.sub) {
 					Visit(ss, false, true);
-					continue;
-				}
+				}*/
+				Visit(s, false, true);
+				continue;
 			}
 			
 			CHECK_SCOPES_BEGIN

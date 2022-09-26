@@ -1,7 +1,7 @@
 int main():
 	int a.0 = 1
 	int a.1 = 2
-	int a.2 = 3
-    meta for int i=1, i<3, i++:
-        a.$i = a.($i-1)
-	return a.2 == 2
+	meta int i = 0
+	meta int j = 1
+	a.$i = a.$j
+	return a.0 == 2

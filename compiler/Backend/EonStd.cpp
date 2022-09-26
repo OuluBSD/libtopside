@@ -164,6 +164,20 @@ AstNode* EonStd::FindDeclaration(const PathIdentifier& id, SemanticType accepts)
 	return 0;
 }
 
+AstNode* EonStd::FindDeclaration(const Vector<String>& id, SemanticType accepts) {
+	if (id.IsEmpty())
+		return 0;
+	
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+			
+		AstNode* n = GetDeclaration(s.n, id, accepts);
+		if (n)
+			return n;
+	}
+	return 0;
+}
+
 /*AstNode* EonStd::FindTypeDeclaration(const PathIdentifier& id) {
 	return FindDeclaration(id, SEMT_TYPE);
 }*/
@@ -254,6 +268,43 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 	}
 	
 	SemanticType a = id.is_meta[id.part_count-1] ? SEMT_META_ANY : accepts;
+	
+	if (cur && accepts == SEMT_NULL || cur->IsPartially(a))
+		return cur;
+	
+	return 0;
+}
+
+AstNode* EonStd::GetDeclaration(AstNode* owner, const Vector<String>& id, SemanticType accepts) {
+	AstNode* cur = owner;
+	AstNode* next = 0;
+	AstNode* prev = 0;
+	
+	for(int i = 0; i < id.GetCount(); i++) {
+		bool last = i == id.GetCount()-1;
+		next = 0;
+		String name = id[i];
+		for (int tries = 0; tries < 100; tries++) {
+			SemanticType a = last ? accepts : SEMT_NULL;
+			next = cur->Find(name, a);
+			
+			if (!next) {
+				if (ForwardUserspace(cur)) {
+					ASSERT(cur);
+					continue;
+				}
+				else
+					return 0;
+			}
+			else break;
+		}
+		
+		ASSERT(next);
+		prev = cur;
+		cur = next;
+	}
+	
+	SemanticType a = accepts;
 	
 	if (cur && accepts == SEMT_NULL || cur->IsPartially(a))
 		return cur;
@@ -391,6 +442,20 @@ String EonStd::GetTypeInitValueString(AstNode& n) const {
 	}
 }
 
+AstNode* EonStd::FindStackName(String name, SemanticType accepts) {
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+		//LOG(s.n->GetTreeString(0));
+		for (AstNode& ss : s.n->sub) {
+			if (ss.name == name && (accepts == SEMT_NULL || ss.IsPartially(accepts)))
+				return &ss;
+		}
+		if (s.n->name == name && (accepts == SEMT_NULL || s.n->IsPartially(accepts)))
+			return s.n;
+	}
+	return 0;
+}
+
 AstNode* EonStd::FindStackObject(String name) {
 	for (int i = spath.GetCount()-1; i >= 0; i--) {
 		Scope& s = spath[i];
@@ -413,6 +478,20 @@ AstNode* EonStd::FindStackWithPrev(const AstNode* prev) {
 		}
 		if (s.n->prev == prev)
 			return s.n;
+	}
+	return 0;
+}
+
+AstNode* EonStd::FindStackWithPrevDeep(const AstNode* prev) {
+	for (int i = spath.GetCount()-1; i >= 0; i--) {
+		Scope& s = spath[i];
+		const AstNode* iter = prev;
+		while (iter) {
+			if (s.n->prev == iter) {
+				return s.n->FindWithPrevDeep(prev);
+			}
+			iter = iter->GetSubOwner();
+		}
 	}
 	return 0;
 }

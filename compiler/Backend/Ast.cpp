@@ -179,6 +179,21 @@ const AstNode* AstNode::Find(SemanticType t) const {
 	return 0;
 }
 
+AstNode* AstNode::FindWithPrevDeep(const AstNode* prev) {
+	if (this->prev == prev)
+		return this;
+	for (AstNode& s : sub) {
+		if (s.prev == prev)
+			return &s;
+	}
+	for (AstNode& s : sub) {
+		AstNode* r = s.FindWithPrevDeep(prev);
+		if (r)
+			return r;
+	}
+	return 0;
+}
+
 String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {

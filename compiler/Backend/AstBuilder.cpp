@@ -582,6 +582,13 @@ void SemanticParser::PopExprCallArgument(const FileLocation& loc, int arg_i) {
 	spath.SetCount(c-1);
 }
 
+AstNode* SemanticParser::PartialMetaResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t) {
+	AstNode& n = GetTopNode().Add(loc);
+	n.src = SEMT_META_RESOLVE;
+	n.id = id;
+	n.filter = t;
+	return &n;
+}
 
 
 

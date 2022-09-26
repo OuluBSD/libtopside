@@ -34,9 +34,10 @@ public:
 	AstNode*	VisitResolve(const AstNode& n);
 	bool		VisitStatementBlock(const AstNode& n, bool req_rval);
 	AstNode*	VisitReturn(const AstNode& n);
+	AstNode*	VisitMetaResolve(const AstNode& n);
 	AstNode*	Merge(const AstNode& n);
 	AstNode*	MergeStatement(const AstNode& n);
-	
+	void		SetMetaBlockType(AstNode& d, AstNode* dup_block, AstNode* closest_type);
 	//void		PushRuntimeScope(Object& o);
 	//ObjectMap*	GetRuntimeScope(const FileLocation& loc);
 	//Object*		CreateRuntimeField(const FileLocation& loc, String name);

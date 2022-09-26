@@ -209,6 +209,7 @@ public:
 	void PopCall(const FileLocation& loc);
 	void PopExprCallArgument(const FileLocation& loc, int arg_i);
 	void PopRvalLink(const FileLocation& loc);
+	AstNode* PartialMetaResolve(const FileLocation& loc, const PathIdentifier& id, SemanticType t);
 	
 };
 
