@@ -69,6 +69,15 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	case SEMT_META_FUNCTION_STATIC:
 	case SEMT_META_RVAL:
 	case SEMT_META_PARAMETER:
+	case SEMT_LOOP:
+	case SEMT_CHAIN:
+	case SEMT_ATOM:
+	case SEMT_MACHINE:
+	case SEMT_WORLD:
+	case SEMT_SYSTEM:
+	case SEMT_POOL:
+	case SEMT_ENTITY:
+	case SEMT_COMPONENT:
 		return;
 	
 	case SEMT_META_RESOLVE:

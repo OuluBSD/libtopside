@@ -5,7 +5,7 @@ machine sdl.app:
 	
 	chain program:
 		
-		loop audio:
+		loop audio.gen:
 			id = "audio_gen"
 			center.customer
 			center.audio.src.dbg_generator

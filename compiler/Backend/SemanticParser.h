@@ -75,6 +75,7 @@ public:
 	bool ParseMetaFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseStatementList();
 	bool ParseStatement();
+	bool ParseExpressionStatement();
 	bool ParseMetaStatement(int& cookie, bool skip_meta_keywords=false);
 	AstNode* ParseExpression(bool m);
 	bool ParseSwitchBlock();
@@ -201,7 +202,7 @@ public:
 	void PopLoop(const FileLocation& loc);
 	AstNode* PushAtom(const FileLocation& loc, const PathIdentifier& id);
 	void PopAtom(const FileLocation& loc);
-	void PushAtomConnector(const FileLocation& loc, int part);
+	AstNode* PushAtomConnector(const FileLocation& loc, int part);
 	void PopAtomConnector(const FileLocation& loc);
 	void PushState(const FileLocation& loc, const PathIdentifier& id);
 	void PopState(const FileLocation& loc);

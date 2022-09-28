@@ -27,13 +27,41 @@ public:
 	Vector<Scope> spath;
 	
 public:
+	AstNode* builtin_void = 0;
+	AstNode* builtin_int = 0;
+	AstNode* builtin_long = 0;
+	AstNode* builtin_uint = 0;
+	AstNode* builtin_ulong = 0;
+	AstNode* builtin_float = 0;
+	AstNode* builtin_double = 0;
+	AstNode* builtin_byte = 0;
+	AstNode* builtin_char = 0;
+	AstNode* builtin_short = 0;
+	AstNode* builtin_ushort = 0;
+	AstNode* builtin_cstring = 0;
+	AstNode* meta_builtin_void = 0;
+	AstNode* meta_builtin_int = 0;
+	AstNode* meta_builtin_double = 0;
+	AstNode* meta_builtin_cstring = 0;
+	AstNode* meta_builtin_stmt = 0;
+	AstNode* meta_builtin_machstmt = 0;
+	AstNode* meta_builtin_chainstmt = 0;
+	AstNode* meta_builtin_loopstmt = 0;
+	AstNode* meta_builtin_atomstmt = 0;
+	AstNode* meta_builtin_worldstmt = 0;
+	AstNode* meta_builtin_systemstmt = 0;
+	AstNode* meta_builtin_poolstmt = 0;
+	AstNode* meta_builtin_entitystmt = 0;
+	AstNode* meta_builtin_compstmt = 0;
+	AstNode* meta_builtin_params = 0;
+	AstNode* meta_builtin_expr = 0;
 	
 	
 	virtual AstNode& GetRoot() = 0;
 	
 	void InitDefault(bool add_root=true);
-	void AddBuiltinType(String name);
-	void AddMetaBuiltinType(String name);
+	AstNode* AddBuiltinType(String name);
+	AstNode* AddMetaBuiltinType(String name);
 	String GetRelativePartStringArray(const AstNode& n) const;
 	
 	String GetPathString() const;

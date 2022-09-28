@@ -10,8 +10,6 @@ class AstRunner :
 	public ErrorSource
 {
 	AstNode root;
-	AstNode* builtin_void = 0;
-	AstNode* meta_builtin_expr = 0;
 	
 public:
 	//Object runtime;

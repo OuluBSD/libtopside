@@ -14,10 +14,6 @@ bool AstRunner::Execute(const AstNode& n) {
 	InitDefault(false);
 	
 	AstNode& root = GetRoot();
-	meta_builtin_expr = root.Find("expr", SEMT_META_BUILTIN);
-	builtin_void = root.Find("void", SEMT_BUILTIN);
-	ASSERT(meta_builtin_expr);
-	ASSERT(builtin_void);
 	
 	for (AstNode& s : n.sub) {
 		if (s.src == SEMT_BUILTIN || s.src == SEMT_META_BUILTIN) {
@@ -274,6 +270,8 @@ void AstRunner::SetMetaBlockType(AstNode& d, AstNode* dup_block, AstNode* closes
 	}
 	else if (closest_type == this->meta_builtin_expr)
 		d.rval = dup_block->rval;
+	else if (closest_type->IsPartially(SEMT_META_BUILTIN))
+		; // pass
 	else
 		TODO
 }
@@ -296,9 +294,9 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 		d = AddDuplicate(n);
 		PushScope(*d, true);
 		ASSERT(n.sub.GetCount());
-		ASSERT(n.rval);
+		ASSERT(n.rval || n.sub.GetCount() == 1);
 		if (n.rval) {
-			AstNode& s = *n.rval;
+			const AstNode& s = *n.rval;
 			sd = Visit(s);
 			if (!sd)
 				return 0;
@@ -306,6 +304,15 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 			if (IsRvalReturn(s.src))
 				PopScope(); // expr rval
 			//d->rval = s.next->rval;
+		}
+		else {
+			const AstNode& s = n.sub[0];
+			sd = Visit(s);
+			if (!sd)
+				return 0;
+			d->rval = sd;
+			if (IsRvalReturn(s.src))
+				PopScope(); // expr rval
 		}
 		PopScope();
 		//d->CopyPrevNextLinks();
@@ -316,8 +323,10 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 	case STMT_META_ELSE:
 		break;
 	
+	case STMT_ATOM_CONNECTOR:
+	case STMT_STATE:
 	case STMT_IF:
-		d = &owner.Add(n.loc);
+		d = AddDuplicate(n);
 		d->CopyFrom(this, n);
 		//Bind(n, *d);
 		if (n.sub.GetCount()) {
@@ -435,12 +444,8 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	switch (n.src) {
 	case SEMT_ROOT:
 		ASSERT(spath.IsEmpty());
-		//ASSERT(rpath.IsEmpty());
-		//runtime.Create<ObjectArrayMapComb>();
-		//PushRuntimeScope(runtime);
 		d = &GetRoot();
 		d->src = SEMT_ROOT;
-		//Bind(n, GetRoot());
 		PushScope(*d);
 		for (AstNode& s : n.sub) {
 			if (s.src == SEMT_RVAL)
@@ -452,10 +457,44 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				PopScope();
 		}
 		PopScope();
-		//PopRuntimeScope();
-		//ASSERT(spath.IsEmpty());
 		break;
-	
+		
+	case SEMT_LOOP:
+	case SEMT_CHAIN:
+	case SEMT_ATOM:
+	case SEMT_MACHINE:
+	case SEMT_LOOP_DECL:
+	case SEMT_WORLD:
+	case SEMT_SYSTEM:
+	case SEMT_POOL:
+		d = Merge(n);
+		PushScope(*d);
+		for (AstNode& s : n.sub) {
+			sd = Visit(s);
+			if (!sd)
+				return 0;
+			if (IsRvalReturn(s.src))
+				PopScope();
+		}
+		PopScope();
+		d->rval = builtin_void;
+		break;
+		
+	case SEMT_ENTITY:
+	case SEMT_COMPONENT:
+		d = AddDuplicate(n);
+		PushScope(*d);
+		for (AstNode& s : n.sub) {
+			sd = Visit(s);
+			if (!sd)
+				return 0;
+			if (IsRvalReturn(s.src))
+				PopScope();
+		}
+		PopScope();
+		d->rval = builtin_void;
+		break;
+		
 	case SEMT_BUILTIN:
 	case SEMT_FUNCTION_BUILTIN:
 		d = Merge(n);
@@ -477,6 +516,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		d = VisitMetaStaticFunction(n);
 		break;
 		
+	case SEMT_UNRESOLVED:
 	case SEMT_META_PARAMETER:
 		d = AddDuplicate(n);
 		if (!d)
@@ -547,6 +587,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				return 0;
 		}
 		PopScope();
+		d->rval = builtin_void;
 		break;
 		
 	case SEMT_EXPR:
@@ -556,6 +597,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		CHECK_SPATH_BEGIN_1
 		pop_count = 0;
 		for(int i = 0; i < n.i64; i++) {
+			ASSERT(n.arg[i]);
 			AstNode& a = *n.arg[i];
 			AstNode* ad = Visit(a);
 			if (!ad)
@@ -564,11 +606,9 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				pop_count++;
 			d->arg[i] = ad;
 		}
-		for(int i = 1; i < pop_count; i++) {
+		for(int i = 0; i < pop_count; i++) {
 			PopScope();
 		}
-		ASSERT(pop_count >= 1);
-		PopScope();
 		PushScope(*d);
 		CHECK_SPATH_END
 		
@@ -673,20 +713,28 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			if (!d)
 				return 0;
 			if (n.rval) {
-				if (n.rval->src == SEMT_META_RESOLVE) {
-					d->rval = VisitMetaResolve(*n.rval);
+				AstNode* rval = n.rval;
+				while (rval && (rval->src == SEMT_RVAL || rval->src == SEMT_META_CTOR))
+					rval = rval->rval;
+				if (!rval) {
+					AddError(n.loc, "internal error: invalid rval");
+					return 0;
+				}
+				
+				if (rval->src == SEMT_META_RESOLVE) {
+					d->rval = VisitMetaResolve(*rval);
 				}
 				else {
-					d->rval = FindStackWithPrevDeep(n.rval);
+					d->rval = FindStackWithPrevDeep(rval);
 				}
 				//LOG(HexStr((void*)d->rval));
-				ASSERT(d->rval);
+				ASSERT(d->rval); // todo crash here might mean succesfull merge (see same named variables)
 				if (!d->rval) {
 					AddError(n.loc, "internal error: incomplete rval");
 					return 0;
 				}
 				
-				if (d->rval->IsPartially(SEMT_META_ANY))
+				if (d->rval->src != SEMT_IDPART && d->rval->IsPartially(SEMT_META_ANY))
 					d->src = SEMT_META_RVAL;
 			}
 			else TODO
@@ -769,6 +817,10 @@ AstNode* AstRunner::VisitMetaRVal(const AstNode& n) {
 			d.CopyFrom(this, *o);
 		}
 		else if (o->src == SEMT_OBJECT) {
+			if (o->obj.IsVoid()) {
+				AddError(o->loc, "meta-object is not initalized yet");
+				return 0;
+			}
 			d.CopyFromObject(n.loc, o->obj);
 		}
 		else
@@ -906,7 +958,6 @@ bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
 			CHECK_SPATH_BEGIN
 			
 			AstNode* sd = Visit(s);
-			ASSERT(sd);
 			if (!sd)
 				return false;
 			
@@ -1041,6 +1092,10 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 		ASSERT(fn.src == SEMT_META_FUNCTION_STATIC);
 		fn.locked = true;
 		
+		bool req_rval = false;
+		if (fn.type == meta_builtin_expr)
+			req_rval = true;
+		
 		AstNode* call = AddDuplicate(fn);
 		call->src = SEMT_STATEMENT_BLOCK;
 		call->i64 = 1; // skip indent
@@ -1108,7 +1163,7 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 		dup_block->type = d.type;
 		PushScope(*dup_block, true);
 		
-		if (!VisitStatementBlock(*block, true))
+		if (!VisitStatementBlock(*block, req_rval))
 			return false;
 		
 		PopScope(); // block
@@ -1137,6 +1192,9 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 				}
 				else
 					filter = SEMT_WITH_RVAL_RET;*/
+			}
+			else if (!req_rval) {
+				d.rval = builtin_void;
 			}
 			else TODO
 		}

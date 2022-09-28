@@ -1,0 +1,6 @@
+machine daw.core:
+	meta int channel.count = 3
+	chain program:
+		meta for int i = 0, i < channel.count, i++:
+			loop channel.$i:
+				center.owner

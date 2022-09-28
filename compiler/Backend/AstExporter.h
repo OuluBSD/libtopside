@@ -31,6 +31,7 @@ class AstExporter :
 	int indent = 0;
 	bool inline_mode = false;
 	
+	void VisitLoop(const AstNode& n);
 	void VisitFunction(const AstNode& n);
 	void VisitParameter(const AstNode& n);
 	void VisitStatement(const AstNode& n);

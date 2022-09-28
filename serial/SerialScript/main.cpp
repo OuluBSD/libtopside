@@ -25,7 +25,7 @@ bool TestEonTest(String s, ProgLang tgt) {
 	return true;
 }
 
-void TestEonTests(String dir_title) {
+void TestEonTests(String dir_title, String prefix="", int single=-1) {
 	String dir = ShareDirFile("eon" DIR_SEPS + dir_title);
 	Index<String> files;
 	
@@ -38,16 +38,15 @@ void TestEonTests(String dir_title) {
 	SortIndex(files, StdLess<String>());
 	DUMPC(files);
 	
-	int i = 0;
+	int i = -1;
 	for (String file : files) {
+		i++;
 		String fname = GetFileName(file);
 		
-		if (fname.Find("meta") != 0) continue;
+		if (prefix.GetCount() && fname.Find(prefix) != 0) continue;
 		
-		i++;
 		LOG("Testing " << i << ": " << fname);
-		//if (i != 13) continue;
-		//if (file != "/home/sblo/libtopside/share/eon/tests/02h_daw_core.eon") continue;
+		if (single >= 0 && i != single) continue;
 		
 		if (!TestEonTest(file, LANG_CPP)) {
 			LOG("Failed: " << fname);
@@ -61,8 +60,11 @@ NAMESPACE_TOPSIDE_END
 
 
 CONSOLE_APP_MAIN {
-	TS::TestEonTests("lang");
-	//TS::TestEonTests("tests");
+	//TS::TestEonTests("lang", "meta", 13);
+	TS::TestEonTests("lang", "meta");
+	//TS::TestEonTests("lang", "test");
+	//TS::TestEonTests("tests", "", 65);
+	TS::TestEonTests("tests");
 }
 
 

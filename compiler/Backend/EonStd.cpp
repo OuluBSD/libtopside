@@ -13,16 +13,18 @@ String EonStd::GetPathString() const {
 	return s;
 }
 
-void EonStd::AddBuiltinType(String name) {
+AstNode* EonStd::AddBuiltinType(String name) {
 	AstNode& root = GetRoot();
 	AstNode& sn = root.Add(FileLocation(), name);
 	sn.src = SEMT_BUILTIN;
+	return &sn;
 }
 
-void EonStd::AddMetaBuiltinType(String name) {
+AstNode* EonStd::AddMetaBuiltinType(String name) {
 	AstNode& root = GetRoot();
 	AstNode& sn = root.Add(FileLocation(), name);
 	sn.src = SEMT_META_BUILTIN;
+	return &sn;
 }
 
 String EonStd::GetRelativePartStringArray(const AstNode& n) const {
@@ -68,37 +70,38 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 }
 
 void EonStd::InitDefault(bool add_root) {
-	AddBuiltinType("void");
-	AddBuiltinType("int");
-	AddBuiltinType("long");
-	AddBuiltinType("uint");
-	AddBuiltinType("ulong");
-	AddBuiltinType("float");
-	AddBuiltinType("double");
-	AddBuiltinType("byte");
-	AddBuiltinType("char");
-	AddBuiltinType("short");
-	AddBuiltinType("ushort");
-	AddBuiltinType("cstring");
+	builtin_void =			AddBuiltinType("void");
+	builtin_int =			AddBuiltinType("int");
+	builtin_long =			AddBuiltinType("long");
+	builtin_uint =			AddBuiltinType("uint");
+	builtin_ulong =			AddBuiltinType("ulong");
+	builtin_float =			AddBuiltinType("float");
+	builtin_double =		AddBuiltinType("double");
+	builtin_byte =			AddBuiltinType("byte");
+	builtin_char =			AddBuiltinType("char");
+	builtin_short =			AddBuiltinType("short");
+	builtin_ushort =		AddBuiltinType("ushort");
+	builtin_cstring =		AddBuiltinType("cstring");
 	
-	AddMetaBuiltinType("void");
-	AddMetaBuiltinType("int");
-	AddMetaBuiltinType("double");
-	AddMetaBuiltinType("cstring");
-	AddMetaBuiltinType("stmt");
+	meta_builtin_void =			AddMetaBuiltinType("void");
+	meta_builtin_int =			AddMetaBuiltinType("int");
+	meta_builtin_double =		AddMetaBuiltinType("double");
+	meta_builtin_cstring =		AddMetaBuiltinType("cstring");
+	meta_builtin_stmt =			AddMetaBuiltinType("stmt");
 	
-	AddMetaBuiltinType("machstmt");
-	AddMetaBuiltinType("chainstmt");
-	AddMetaBuiltinType("loopstmt");
+	meta_builtin_machstmt =		AddMetaBuiltinType("machstmt");
+	meta_builtin_chainstmt =	AddMetaBuiltinType("chainstmt");
+	meta_builtin_loopstmt =		AddMetaBuiltinType("loopstmt");
 	
-	AddMetaBuiltinType("atomstmt");
-	AddMetaBuiltinType("worldstmt");
-	AddMetaBuiltinType("systemstmt");
-	AddMetaBuiltinType("poolstmt");
-	AddMetaBuiltinType("entitystmt");
-	AddMetaBuiltinType("compstmt");
-	AddMetaBuiltinType("params");
-	AddMetaBuiltinType("expr");
+	meta_builtin_atomstmt =		AddMetaBuiltinType("atomstmt");
+	meta_builtin_worldstmt =	AddMetaBuiltinType("worldstmt");
+	meta_builtin_systemstmt =	AddMetaBuiltinType("systemstmt");
+	meta_builtin_poolstmt =		AddMetaBuiltinType("poolstmt");
+	meta_builtin_entitystmt =	AddMetaBuiltinType("entitystmt");
+	meta_builtin_compstmt =		AddMetaBuiltinType("compstmt");
+	meta_builtin_params =		AddMetaBuiltinType("params");
+	meta_builtin_expr =			AddMetaBuiltinType("expr");
+	
 	
 	{
 		AstNode& logger = GetRoot().Add(FileLocation(), "LOG");
@@ -392,9 +395,11 @@ void EonStd::PushScope(AstNode& n, bool non_continuous) {
 		
 		tmp.SetCount(0);
 		AstNode* iter = &n;
+		int dbg_i = 0;
 		while (iter && iter != cur) {
 			tmp.Add(iter);
 			iter = iter->GetSubOwner();
+			dbg_i++;
 		}
 		ASSERT(iter == cur);
 		

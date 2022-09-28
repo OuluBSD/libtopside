@@ -1,0 +1,6 @@
+machine m:
+	meta loopstmt some.loop.fn():
+		some.loop: arg="val"
+	chain program:
+		loop channel.0:
+			$some.loop.fn() 

@@ -50,6 +50,7 @@ void AstNode::CopyFromObject(const FileLocation& loc, const Object& o) {
 	this->loc = loc;
 	
 	dword type = o.GetType();
+	ASSERT(type);
 	
 	if (type == BOOL_V) {
 		i64 = o.ToInt();
@@ -217,6 +218,8 @@ String AstNode::GetTreeString(int indent) const {
 		s << name << "\n";
 	else if (src == SEMT_OBJECT)
 		s << "object(" << obj.ToString() << ")\n";
+	else if (src == SEMT_UNRESOLVED)
+		s << "unresolved(" << str << ")\n";
 	else if (src == SEMT_CONSTANT)
 		s << "const(" << GetConstantString() << ")\n";
 	else if (src == SEMT_STATEMENT)

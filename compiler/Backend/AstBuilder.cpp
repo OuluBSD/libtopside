@@ -150,6 +150,8 @@ void SemanticParser::PopStatement(const FileLocation& loc, AstNode* rval) {
 		; // pass
 	else
 		n.rval = rval;
+	//ASSERT(rval || n.stmt != STMT_EXPR);
+	
 	PopScope();
 }
 
@@ -322,7 +324,7 @@ void SemanticParser::PushRvalConstant(const FileLocation& loc, bool v) {
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_BOOL;
 	n.i64 = v;
-	PushScope(n);
+	PushScopeRVal(n);
 }
 
 void SemanticParser::PushRvalConstant(const FileLocation& loc, int32 v) {
@@ -330,7 +332,7 @@ void SemanticParser::PushRvalConstant(const FileLocation& loc, int32 v) {
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_INT32;
 	n.i64 = v;
-	PushScope(n);
+	PushScopeRVal(n);
 }
 
 void SemanticParser::PushRvalConstant(const FileLocation& loc, int64 v) {
@@ -338,7 +340,7 @@ void SemanticParser::PushRvalConstant(const FileLocation& loc, int64 v) {
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_INT64;
 	n.i64 = v;
-	PushScope(n);
+	PushScopeRVal(n);
 }
 
 void SemanticParser::PushRvalConstant(const FileLocation& loc, double v) {
@@ -346,7 +348,7 @@ void SemanticParser::PushRvalConstant(const FileLocation& loc, double v) {
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_DOUBLE;
 	n.dbl = v;
-	PushScope(n);
+	PushScopeRVal(n);
 }
 
 void SemanticParser::PushRvalConstant(const FileLocation& loc, String v) {
@@ -354,7 +356,7 @@ void SemanticParser::PushRvalConstant(const FileLocation& loc, String v) {
 	n.src = SEMT_CONSTANT;
 	n.con = CONST_STRING;
 	n.str = v;
-	PushScope(n);
+	PushScopeRVal(n);
 }
 
 void SemanticParser::Expr1(const FileLocation& loc, OpType op) {
@@ -508,7 +510,7 @@ void SemanticParser::PopAtom(const FileLocation& loc) {
 	PopScope();
 }
 
-void SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
+AstNode* SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
 	int c = spath.GetCount();
 	String str;
 	switch (part) {
@@ -523,6 +525,7 @@ void SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
 	
 	PushScope(var);
 	
+	return &var;
 }
 
 void SemanticParser::PopAtomConnector(const FileLocation& loc) {
