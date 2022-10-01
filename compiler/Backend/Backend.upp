@@ -34,5 +34,6 @@ file
 	Trash readonly separator,
 	MetaEmitter.h,
 	MetaEmitter.cpp,
-	AstBuilder.h;
+	AstBuilder.h,
+	src.tpp;
 

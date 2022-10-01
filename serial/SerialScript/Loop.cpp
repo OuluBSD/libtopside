@@ -4,10 +4,10 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptLoopLoader::ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::LoopDefinition& def) :
+ScriptLoopLoader::ScriptLoopLoader(ScriptSystemLoader& parent, int id, Script::LoopDefinition& def) :
 	Base(parent, id, def)
 {
-	planner.SetLoopLoader(this);
+	//planner.SetLoopLoader(this);
 }
 
 void ScriptLoopLoader::LoopStatus() {
@@ -38,19 +38,21 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 	s.Cat('\n');
 	
 	int id = 0;
-	for (ScriptLoopSegment& seg : segments) {
+	
+	/*for (ScriptLoopSegment& seg : segments) {
 		s << seg.GetTreeString(id++, indent+1);
-	}
+	}*/
 	
 	String extra;
 	if (status == ScriptStatus::FAILED)
 		extra = err_str;
 	
-	s << GetScriptStatusLine(indent+1, status, extra);
+	//s << GetScriptStatusLine(indent+1, status, extra);
 	
 	return s;
 }
 
+#if 0
 void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& last_state) {
 	static const bool print = true;
 	if (print) RTLOG("ScriptLoopLoader::RealizeConnections: begin");
@@ -173,11 +175,12 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 	
 	MACHVER_STATUS(LoopLoader_RealizeAtoms, this);
 }
+#endif
 
 void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& sink) {
 	ASSERT(type.IsValid());
 	ASSERT(ch_i > 0);
-	ASSERT(type.iface.src.count > 1 && ch_i < type.iface.src.count);
+	ASSERT(type.iface.src.GetCount() > 1 && ch_i < type.iface.src.GetCount());
 	int side_ch_i = ch_i - 1;
 	
 	#if 0
@@ -200,7 +203,10 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " src ch #" << ch_i << " set " << HexStr(&sink));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
 	SideLink& l = atom.src_side_conns[side_ch_i];
+	if (l.link == &sink)
+		return; // todo: prevent this call happening
 	ASSERT(!l.link);
+	if (l.link) {SetError("ScriptLoopLoader::SetSideSourceConnected: internal error: atom already linked"); return;}
 	l.link = &sink;
 	
 	MACHVER_STATUS(LoopLoader_AtomLinked, this);
@@ -209,7 +215,7 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& src) {
 	ASSERT(type.IsValid());
 	ASSERT(ch_i > 0);
-	ASSERT(type.iface.sink.count > 1 && ch_i < type.iface.sink.count);
+	ASSERT(type.iface.sink.GetCount() > 1 && ch_i < type.iface.sink.GetCount());
 	int side_ch_i = ch_i - 1;
 	
 	#if 0
@@ -232,6 +238,8 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " sink ch #" << ch_i << " set " << HexStr(&src));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.sink_side_conns.GetCount());
 	SideLink& l = atom.sink_side_conns[side_ch_i];
+	if (l.link == &src)
+		return; // todo: prevent this call happening
 	ASSERT(!l.link);
 	l.link = &src;
 	
@@ -273,7 +281,7 @@ bool ScriptLoopLoader::IsTopSidesConnected() const {
 	return true;
 }
 
-String ScriptLoopSegment::GetTreeString(int id, int indent) {
+/*String ScriptLoopSegment::GetTreeString(int id, int indent) {
 	String s;
 	s.Cat('\t', indent);
 	s << "Segment " << id;
@@ -295,15 +303,15 @@ String ScriptLoopSegment::GetTreeString(int id, int indent) {
 		s << "empty\n";
 	}
 	return s;
-}
+}*/
 
-void ScriptLoopLoader::SetupSegment(ScriptLoopSegment& s) {
+/*void ScriptLoopLoader::SetupSegment(ScriptLoopSegment& s) {
 	
 	
 	// Do the action plan searching
 	s.as.SetLimit(10000);
 	
-}
+}*/
 
 void ScriptLoopLoader::Forward() {
 	if (IsReady())
@@ -312,9 +320,11 @@ void ScriptLoopLoader::Forward() {
 	ASSERT(!IsFailed());
 	ScriptStatus prev_status = status;
 	
+	TODO
 	
-	if (status == ScriptStatus::IN_BEGINNING) {
-		InitSegments();
+	/*if (status == ScriptStatus::IN_BEGINNING) {
+		if (!InitSegments())
+			return;
 		
 		SetStatus(WAITING_CHILDREN);
 	}
@@ -357,10 +367,12 @@ void ScriptLoopLoader::Forward() {
 		
 	}
 	
-	ASSERT(prev_status != status);
+	ASSERT(prev_status != status);*/
 }
 
-void ScriptLoopLoader::InitSegments() {
+#if 0
+
+bool ScriptLoopLoader::InitSegments() {
 	ASSERT(segments.IsEmpty());
 	
 	DevCls dev = DevCls::Get(def.id.parts.First());
@@ -368,18 +380,20 @@ void ScriptLoopLoader::InitSegments() {
 		dev = DevCls::CENTER;
 	
 	AtomTypeCls consumer;
+	
 	if (dev == DevCls::CENTER)
 		consumer = AsAtomTypeCls<CenterCustomer>();
 	else if (dev == DevCls::OGL) {
 		#ifdef flagSCREEN
 		consumer = AsAtomTypeCls<OglCustomer>();
 		#else
-		SetError("OGL device not supported without this program compiled with GUI compilation flag");
+		SetError("OpenGL device not supported without this program compiled with OGL compilation flag");
+		return false;
 		#endif
 	}
 	else {
-		TODO
-		return;
+		SetError("Unsupported device class: " + dev.GetName());
+		return false;
 	}
 	
 	// Prepare action planner and world states
@@ -388,6 +402,7 @@ void ScriptLoopLoader::InitSegments() {
 	customer.sink = ValDevCls(dev, ValCls::RECEIPT);
 	customer.side = ValDevCls(dev, ValCls::ORDER);
 	customer.src  = ValDevCls(dev, ValCls::ORDER);
+	
 	
 	//start = scope.current_state;
 	start.SetActionPlanner(planner);
@@ -405,16 +420,16 @@ void ScriptLoopLoader::InitSegments() {
 		Script::State* s = GetLoader().FindState(req);
 		if (!s) {
 			SetError("Could not find required state '" + req.ToString() + "'");
-			return;
+			return false;
 		}
 		for (Script::Statement& stmt : s->stmts)
 			if (!SetWorldState(goal, stmt))
-				return;
+				return false;
 	}
 	
 	for (Script::Statement& stmt : def.stmts)
 		if (stmt.IsRouting() && !SetWorldState(goal, stmt))
-			return;
+			return false;
 	
 	goal_node.SetWorldState(goal);
 	goal_node.SetGoal(goal_node);
@@ -426,6 +441,8 @@ void ScriptLoopLoader::InitSegments() {
 	
 	ScriptLoopSegment& seg = segments.Add();
 	seg.start_node = &start_node;
+	
+	return true;
 }
 
 void ScriptLoopLoader::SearchNewSegment() {
@@ -466,7 +483,7 @@ void ScriptLoopLoader::DumpLoop() {
 	for (Script::ActionNode* n : seg.ep.plan) {
 		const Script::WorldState& ws = n->GetWorldState();
 		AtomTypeCls atom = ws.GetAtom();
-		const auto& d = Serial::Factory::AtomDataMap().Get(atom);
+		const auto& d = Parallel::Factory::AtomDataMap().Get(atom);
 		if (ws.IsAddAtom()) {
 			LOG(pos++ << ": add atom: " << d.name);
 		}
@@ -488,11 +505,13 @@ void ScriptLoopLoader::PruneSegmentGoals() {
 	
 	int removed_count = 0;
 	
+	bool debug_print = false;
+	
 	for(int i = 0; i < sources.GetCount(); i++) {
 		const Script::ActionPlanner::State& state = sources[i];
 		const Script::WorldState& ws = state.last->GetWorldState();
 		const Script::WorldState* prev_ws = state.previous[0] ? &state.previous[0]->GetWorldState() : 0;
-		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts, debug_print);
 		int ch_i = state.ch_i;
 		
 		if (!stmt) continue;
@@ -617,6 +636,7 @@ bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::State
 	return true;
 }
 
+#endif
 
 bool ScriptLoopLoader::Load() {
 	RTLOG("ScriptLoopLoader::Load: " << def.id.ToString());
@@ -631,46 +651,83 @@ bool ScriptLoopLoader::Load() {
 		return false;
 	}
 	
+	const auto& map = Parallel::Factory::AtomDataMap();
+	LinkBaseRef first_lb;
+	AtomBaseRef first_ab;
 	
-	added_atoms.Clear();
-	
-	int seg_i = segments.GetCount()-1;
-	ScriptLoopSegment& seg = segments.Top();
-	int plan_i = 0;
-	const Script::WorldState* prev_ws0 = 0;
-	const Script::WorldState* prev_ws1 = 0;
-	for (Script::ActionNode* n : seg.ep.plan) {
-		RTLOG("Loading plan node " << plan_i);
-		Script::WorldState& ws = n->GetWorldState();
-		if (ws.IsAddAtom()) {
-			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
-			AtomTypeCls atom = ws.GetAtom();
-			AtomBaseRef ab =
-				is_last ?
-					l->FindTypeCls(atom) :
-					l->GetAddTypeCls(atom);
+	for(int i = 0; i < def.atoms.GetCount(); i++) {
+		const Script::AtomDefinition& atom_def = def.atoms[i];
+		
+		String loop_action = atom_def.id.ToString();
+		bool found = false;
+		for (const auto& atom_data : map.GetValues()) {
+			bool match = false;
+			for (const String& action : atom_data.actions) {
+				if (action == loop_action) {
+					match = true;
+					break;
+				}
+			}
+			if (!match)
+				continue;
+			
+			bool is_first = i == 0;
+			bool is_last = i == def.atoms.GetCount();
+			AtomTypeCls atom = atom_data.cls;
+			LinkTypeCls link = atom_data.link_type;
+			LinkBaseRef lb;
+			AtomBaseRef ab;
+			
+			if (is_last) {
+				ab = first_ab;
+				lb = first_lb;
+			}
+			else {
+				ab = l->GetSpace()->AddTypeCls(atom);
+				lb = l->AddTypeCls(link);
+			}
+			
+			if (is_first) {
+				first_ab = ab;
+				first_lb = lb;
+				is_first = false;
+			}
+			
 			if (!ab) {
-				String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
+				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
 				SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
 				DUMP(atom);
 				ASSERT(0);
 				return false;
 			}
 			
+			if (!lb) {
+				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+				SetError("Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+				DUMP(atom);
+				ASSERT(0);
+				return false;
+			}
+			
 			ab->SetId(id);
+			lb->SetId(id);
+			
+			ab->link = &*lb;
+			lb->atom = &*ab;
 			
 			auto& c = added_atoms.Add();
-			c.r					= ab;
-			c.plan_i			= plan_i;
-			c.seg_i				= seg_i;
-			c.iface				= n->GetInterface();
-			ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
+			c.a					= ab;
+			c.l					= lb;
+			//c.iface				= n->GetInterface();
+			//ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
 			
-			AtomTypeCls type = ws.GetAtom();
-			ASSERT(!c.iface.type.IsValid() || type == c.iface.type);
-			ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
+			//AtomTypeCls type = ws.GetAtom();
+			//ASSERT(!c.iface.type.IsValid() || type == c.iface.type);
+			//ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
+			
 			
 			// Add arguments to ws
+			#if 0
 			const Script::Statement* stmt = ws.FindStatement(prev_ws0, def.stmts);
 			if (!stmt) stmt = ws.FindStatement(prev_ws1, def.stmts);
 			if (stmt) {
@@ -693,46 +750,69 @@ bool ScriptLoopLoader::Load() {
 				if (!ws.IsEmpty())
 					stmt = ws.FindStatement(prev_ws0, def.stmts, true);
 			}
+			#endif
+			
+			Script::WorldState ws;
+			LOG("TODO");
+			
 			
 			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
-				const auto& a = Serial::Factory::AtomDataMap().Get(type);
+				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
 				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			
-		}
-		else {
-			Panic("Invalid world state type");
+			if (!lb->Initialize(ws)) {
+				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
+				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+				return false;
+			}
+			
+			ab->SetInitialized();
+			
+			
+			found = true;
+			break;
 		}
 		
-		prev_ws1 = prev_ws0;
-		prev_ws0 = &ws;
-		++plan_i;
+		if (!found) {
+			parent.parent.AddError(atom_def.loc, "could not find atom action");
+			return false;
+		}
 	}
+	
 	
 	
 	for(int i = 0; i < added_atoms.GetCount()-1; i++) {
 		AddedAtom& src_info = added_atoms[i];
-		AtomBaseRef src = src_info.r;
+		AtomBaseRef src = src_info.a;
 		
 		AddedAtom& sink_info = added_atoms[i+1];
-		AtomBaseRef sink = sink_info.r;
+		AtomBaseRef sink = sink_info.a;
+		
+		/*
 		ScriptLoopSegment& sink_seg = segments[sink_info.seg_i];
 		Script::ActionNode& sink_an = *sink_seg.ep.plan[sink_info.plan_i];
 		const Script::WorldState& sink_ws = sink_an.GetWorldState();
 		
 		ValDevCls common_vd = sink_ws.GetCommonSink();
 		ASSERT(common_vd.IsValid());
+		*/
 		
-		if (!l->Link(src, sink, common_vd)) {
-			AtomTypeCls atom = sink_ws.GetAtom();
-			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-			String src_sink_name = Serial::Factory::IfaceLinkDataMap().Get(common_vd).name;
-			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");
+		if (!l->MakeLink(src, sink)) {
+			/*AtomTypeCls atom = sink_ws.GetAtom();
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			String src_sink_name = Parallel::Factory::IfaceLinkDataMap().Get(common_vd).name;
+			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");*/
+			parent.parent.AddError(FileLocation(), "could not link atoms");
 			return false;
 		}
 		
-		src->SetInterface(src_info.iface);
+		
+		IfaceConnTuple iface;
+		TODO
+		
+		src->SetInterface(iface);
 		
 		atoms.Add(src);
 	}
@@ -743,18 +823,16 @@ bool ScriptLoopLoader::Load() {
 	
 	AddedAtom& first = added_atoms[0];
 	AddedAtom& last  = added_atoms.Top();
-	ScriptLoopSegment& first_seg = segments[first.seg_i];
-	ScriptLoopSegment& last_seg  = segments[last.seg_i];
 	
 	
 	// Process sub-loops
-	for (Script::Statement& stmt : def.stmts) {
+	/*for (Script::Statement& stmt : def.stmts) {
 		if (!stmt.value || stmt.value->type != Script::Value::VAL_CUSTOMER)
 			continue;
 		//LoadLoopDefinition(stmt.value->customer);
 		SetError("Sub-loops not supported yet");
 		return false;
-	}
+	}*/
 	
 	
 	// Add changes to parent state
@@ -776,9 +854,10 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	int c = added_atoms.GetCount()-1;
 	int total_max = 1000000;
 	int total_min = 0;
+	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
-		InterfaceSourceRef src = info.r->GetSource();
+		InterfaceSourceRef src = info.a->GetSource();
 		int src_c = src->GetSourceCount();
 		for(int j = 0; j < src_c; j++) {
 			int src_min_packets = src->GetSourceValue(j).GetMinPackets();
@@ -787,7 +866,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			total_max = min(total_max, src_max_packets);
 		}
 		
-		InterfaceSinkRef sink = info.r->GetSink();
+		InterfaceSinkRef sink = info.a->GetSink();
 		int sink_c = sink->GetSinkCount();
 		for(int j = 0; j < sink_c; j++) {
 			int sink_min_packets = sink->GetValue(j).GetMinPackets();
@@ -796,6 +875,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			total_max = min(total_max, sink_max_packets);
 		}
 	}
+	
 	if (total_min > total_max) {
 		total_max = total_min;
 	}
@@ -804,9 +884,10 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
-		InterfaceSourceRef src = info.r->GetSource();
-		InterfaceSinkRef sink = info.r->GetSink();
-			
+		
+		InterfaceSourceRef src = info.a->GetSource();
+		InterfaceSinkRef sink = info.a->GetSink();
+		
 		int sink_c = sink->GetSinkCount();
 		for(int k = 0; k < sink_c; k++) {
 			Value& v = sink->GetValue(k);
@@ -821,11 +902,11 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			v.SetMaxQueueSize(total_max);
 		}
 			
-		/*if (link_changes) {
-			DUMP(min_packets);
-			DUMP(sink_min_packets);
-			DUMP(src_min_packets);
-		}*/
+		/*
+		//DUMP(min_packets);
+		//DUMP(sink_min_packets);
+		//DUMP(src_min_packets);
+		*/
 	}
 }
 
@@ -833,7 +914,22 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 bool ScriptLoopLoader::PostInitialize() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		AddedAtom& a = added_atoms[i];
-		if (!a.r->PostInitialize())
+		if (!a.a->PostInitialize())
+			return false;
+		if (!a.l->PostInitialize())
+			return false;
+	}
+	return true;
+}
+
+bool ScriptLoopLoader::Start() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		AddedAtom& a = added_atoms[i];
+		if (!a.a->Start())
+			return false;
+		a.a->SetRunning();
+		
+		if (!a.l->Start())
 			return false;
 	}
 	return true;
@@ -991,7 +1087,6 @@ SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::A
 	
 	return ret;
 }
-#endif
 
 void ScriptLoopLoader::AddSideConnectionSegment(Script::ActionPlanner::State& state) {
 	ScriptLoopSegment& prev = segments.Top();
@@ -1060,7 +1155,9 @@ bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_st
 	return false;
 }
 
-
+#endif
 
 
 NAMESPACE_SERIAL_END
+
+

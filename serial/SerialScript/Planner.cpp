@@ -1,5 +1,6 @@
 #include "Internal.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 namespace Script {
@@ -77,6 +78,8 @@ hash_t WorldState::GetHashValue() const {
 	}
 	return c;
 }
+
+#if 0
 
 const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
 	for (const Statement& stmt : stmts) {
@@ -182,6 +185,8 @@ bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
 	}
 	return true;
 }
+
+#endif
 
 bool WorldState::Set(const String& key, bool value) {
 	ASSERT(ap);
@@ -808,3 +813,5 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 
 
 NAMESPACE_SERIAL_END
+
+#endif

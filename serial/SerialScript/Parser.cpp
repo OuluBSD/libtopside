@@ -1,5 +1,6 @@
 #include "Internal.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 namespace Script {
@@ -17,16 +18,6 @@ void Statement::operator=(const Statement& v) {
 
 
 
-
-String Id::ToString() const {
-	String s;
-	for(String& part : parts) {
-		if (!s.IsEmpty())
-			s << ".";
-		s << part;
-	}
-	return s;
-}
 
 String Id::GetTreeString(int indent) const {
 	String s;
@@ -700,3 +691,5 @@ void Parser::AddError(String msg) {
 
 }
 NAMESPACE_SERIAL_END
+
+#endif

@@ -147,7 +147,7 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 
 bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
 	//DUMP(ws);
-	String dbg_limit_str = ws.Get(".dbg_limit");
+	String dbg_limit_str = ws.GetString(".dbg_limit", "100");
 	if (!dbg_limit_str.IsEmpty())
 		dbg_limit = ScanInt(dbg_limit_str);
 	/*

@@ -7,6 +7,7 @@
 
 #include "ToyLoader.h"
 #include "Verifier.h"
+#include "Loader.h"
 
 
 #endif

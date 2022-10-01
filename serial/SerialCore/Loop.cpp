@@ -199,8 +199,7 @@ String Loop::GetTreeString(int indent) {
 	return s;
 }
 
-bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
-	ASSERT(iface.IsValid());
+bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 	InterfaceSourceRef src = src_atom->GetSource();
 	InterfaceSinkRef sink = dst_atom->GetSink();
 	ASSERT(src && sink);
@@ -214,7 +213,9 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface)
 	CookieRef src_cookie, sink_cookie;
 	
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		auto& sdmap = Parallel::Factory::IfaceLinkDataMap();
+		TODO
+		
+		/*auto& sdmap = Parallel::Factory::IfaceLinkDataMap();
 		int i = sdmap.Find(iface);
 		if (i < 0) {
 			LOG("error: no exchange-point class set for type " + iface.ToString());
@@ -240,7 +241,7 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface)
 		ep->Init(this->GetSpace());
 		ep->Set(src, sink, src_cookie, sink_cookie);
 		src_atom->GetLink()->SetPrimarySink(dst_atom->GetLink()->AsRefT());
-		dst_atom->GetLink()->SetPrimarySource(src_atom->GetLink()->AsRefT());
+		dst_atom->GetLink()->SetPrimarySource(src_atom->GetLink()->AsRefT());*/
 		return true;
 	}
 	return false;

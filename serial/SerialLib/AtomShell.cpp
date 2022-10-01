@@ -144,9 +144,12 @@ int __dbg_time_limit;
 
 
 void DebugMainLoop() {
+	DebugMainLoop(Parallel::GetActiveMachine());
+}
+
+void DebugMainLoop(Parallel::Machine& mach) {
 	using namespace Parallel;
 	
-	Machine& mach = GetActiveMachine();
 	int iter = 0;
     TimeStop t, total;
     double sleep_dt_limit = 1.0 / 300.0;

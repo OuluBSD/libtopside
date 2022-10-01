@@ -1,5 +1,6 @@
 #include "Internal.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -90,3 +91,5 @@ void ScriptMachineLoader::CheckStatusDeep() {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

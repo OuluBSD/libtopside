@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptStateLoader::ScriptStateLoader(ScriptChainLoader& parent, int id, Script::StateDeclaration& def):
+ScriptStateLoader::ScriptStateLoader(ScriptSystemLoader& parent, int id, Script::StateDeclaration& def):
 	Base(parent, id, def)
 {
 	
@@ -42,3 +42,4 @@ bool ScriptStateLoader::PostInitialize() {
 
 
 NAMESPACE_SERIAL_END
+

@@ -57,6 +57,8 @@ typedef enum : uint64 {
 	SEMT_META_CTOR				= 1ULL << 48,
 	SEMT_OBJECT					= 1ULL << 49,
 	SEMT_META_RESOLVE			= 1ULL << 50,
+	SEMT_STATE					= 1ULL << 51,
+	SEMT_DRIVER					= 1ULL << 52,
 	
 	// Current limit: 1 << 63
 	
@@ -72,7 +74,7 @@ typedef enum : uint64 {
 	SEMT_WITH_RVAL_RET =	SEMT_RVAL | SEMT_EXPR | SEMT_CONSTANT | SEMT_RESOLVE | SEMT_ARGUMENT_LIST | SEMT_CTOR | SEMT_OBJECT,
 	
 	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
-	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_LOOP | SEMT_ATOM,
+	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_DRIVER | SEMT_LOOP | SEMT_STATE | SEMT_ATOM,
 	
 	SEMT_META_FIELD =		SEMT_META_VARIABLE | SEMT_META_PARAMETER,
 	SEMT_META_TYPE =		SEMT_META_BUILTIN,
@@ -144,6 +146,8 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_OBJECT:				return "object";
 		case SEMT_BLOCK:				return "block";
 		case SEMT_META_RESOLVE:			return "meta-resolve";
+		case SEMT_STATE:				return "state";
+		case SEMT_DRIVER:				return "driver";
 		default: return "invalid";
 	}
 }
@@ -179,7 +183,6 @@ typedef enum {
 	STMT_BLOCK,
 	STMT_EXPR,
 	STMT_ATOM_CONNECTOR,
-	STMT_STATE,
 	STMT_CTOR,
 	
 	STMT_META_IF,
@@ -236,7 +239,6 @@ inline String GetStmtTypeString(StmtType t) {
 		case STMT_SWITCH: return "switch";
 		case STMT_BLOCK: return "block";
 		case STMT_ATOM_CONNECTOR: return "atom-connector";
-		case STMT_STATE: return "state";
 		case STMT_CTOR: return "ctor";
 		case STMT_EXPR: return "expr";
 		

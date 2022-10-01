@@ -1,5 +1,6 @@
 #include "Internal.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -229,3 +230,5 @@ void ScriptChainLoader::Linker() {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

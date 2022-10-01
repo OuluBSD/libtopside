@@ -1,28 +1,11 @@
 #ifndef _SerialScript_Parser_h_
 #define _SerialScript_Parser_h_
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 namespace Script {
 
-
-struct Id {
-	LinkedList<String> parts;
-	
-	
-	Id() {}
-	Id(const Id& o) {*this = o;}
-	Id(Id&& o) {Swap(parts, o.parts);}
-	
-	void Set(String s) {parts.Clear(); parts.Add(s);}
-	void operator=(const Id& v) {parts <<= v.parts;}
-	String ToString() const;
-	String GetTreeString(int indent=0) const;
-	bool operator==(const Id& id) const;
-	bool IsEmpty() const {return parts.IsEmpty();}
-	void Append(const Id& id) {parts.Append(id.parts);}
-	
-};
 
 struct Value;
 
@@ -40,24 +23,6 @@ struct Statement {
 	
 };
 
-struct LoopDefinition {
-	Id id;
-	LinkedList<Statement> stmts;
-	LinkedList<Statement> ret_list;
-	LinkedList<Id> req;
-	
-	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts; ret_list <<= v.ret_list; req <<= v.req;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-};
-
-struct StateDeclaration {
-	Id id;
-	
-	void operator=(const StateDeclaration& v) {id = v.id;}
-	
-};
-
 struct ChainDefinition {
 	LinkedList<StateDeclaration> states;
 	LinkedList<Statement> ret_list;
@@ -68,16 +33,6 @@ struct ChainDefinition {
 	void operator=(const ChainDefinition& v) {states <<= v.states; ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
 	String GetTreeString(int indent=0) const;
 	void GetSubChainPointers(LinkedList<Script::ChainDefinition*>& ptrs);
-};
-
-struct DriverDefinition {
-	LinkedList<Statement> stmts;
-	Id id;
-	
-	void operator=(const DriverDefinition& v) {id = v.id; stmts <<= v.stmts;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-	
 };
 
 struct Value {
@@ -218,4 +173,5 @@ public:
 NAMESPACE_SERIAL_END
 
 
+#endif
 #endif

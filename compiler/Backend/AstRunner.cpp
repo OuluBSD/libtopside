@@ -324,7 +324,6 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 		break;
 	
 	case STMT_ATOM_CONNECTOR:
-	case STMT_STATE:
 	case STMT_IF:
 		d = AddDuplicate(n);
 		d->CopyFrom(this, n);
@@ -467,6 +466,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	case SEMT_WORLD:
 	case SEMT_SYSTEM:
 	case SEMT_POOL:
+	case SEMT_DRIVER:
 		d = Merge(n);
 		PushScope(*d);
 		for (AstNode& s : n.sub) {

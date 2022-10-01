@@ -534,8 +534,7 @@ void SemanticParser::PopAtomConnector(const FileLocation& loc) {
 
 void SemanticParser::PushState(const FileLocation& loc, const PathIdentifier& id) {
 	AstNode& var = DeclareRelative(id);
-	var.src = SEMT_STATEMENT;
-	var.stmt = STMT_STATE;
+	var.src = SEMT_STATE;
 	
 	PushScope(var);
 	

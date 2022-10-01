@@ -195,6 +195,13 @@ AstNode* AstNode::FindWithPrevDeep(const AstNode* prev) {
 	return 0;
 }
 
+void AstNode::FindAll(Vector<AstNode*>& ptrs, SemanticType accepts) {
+	if (IsPartially(accepts))
+		ptrs.Add(this);
+	for (AstNode& s : sub)
+		s.FindAll(ptrs, accepts);
+}
+
 String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {

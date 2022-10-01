@@ -1,7 +1,8 @@
 #include "Internal.h"
 
-
 NAMESPACE_SERIAL_BEGIN
+
+#if 0
 
 String GetScriptStatusLine(int indent, ScriptStatus status, String extra_str) {
 	String s;
@@ -21,13 +22,35 @@ int GetTotalSegmentCount(Vector<ScriptLoopLoader*>& v) {
 	return count;
 }
 
+#endif
 
+
+namespace Script {
+
+
+String Id::ToString() const {
+	String s;
+	for(String& part : parts) {
+		if (!s.IsEmpty())
+			s << ".";
+		s << part;
+	}
+	return s;
+}
+
+
+}
 
 
 
 int ScriptLoader::loop_counter = 0;
 
 
+ScriptLoader::ScriptLoader(Machine& m) :
+	SP(m),
+	ErrorSource("ScriptLoader") {
+	
+}
 
 ScriptLoader::~ScriptLoader() {
 	//LOG("~ScriptLoader");
@@ -36,11 +59,17 @@ ScriptLoader::~ScriptLoader() {
 bool ScriptLoader::Initialize() {
 	Machine& mach = GetMachine();
 	
-	def_ws.SetActionPlanner(def_planner);
+	//def_ws.SetActionPlanner(def_planner);
 	
 	es = mach.Find<LoopStore>();
 	if (!es) {
 		LOG("ScriptLoader requires LoopStore present in machine");
+		return false;
+	}
+	
+	ss = mach.Find<SpaceStore>();
+	if (!ss) {
+		LOG("ScriptLoader requires SpaceStore present in machine");
 		return false;
 	}
 	
@@ -90,7 +119,9 @@ void ScriptLoader::Stop() {
 }
 
 void ScriptLoader::Uninitialize() {
-	
+	es.Clear();
+	ss.Clear();
+	loader.Clear();
 }
 
 bool ScriptLoader::LoadFile(String path) {
@@ -102,7 +133,7 @@ bool ScriptLoader::LoadFile(String path) {
 	return Load(eon, path);
 }
 
-bool TestParseScriptCode(String content) {
+/*bool TestParseScriptCode(String content) {
 	Script::Parser p;
 	if (!p.Parse(content, "<file>")) {
 		LOG(GetLineNumStr(content, 1));
@@ -110,28 +141,28 @@ bool TestParseScriptCode(String content) {
 	}
 	p.Dump();
 	return true;
-}
+}*/
 
 bool ScriptLoader::Load(const String& content, const String& filepath) {
 	RTLOG("ScriptLoader::Load: Loading \"" << filepath << "\"");
 	
-	if (HAVE_SCRIPTLOADER_MACHVER) {
+	/*if (HAVE_SCRIPTLOADER_MACHVER) {
 		Machine& mach = GetMachine();
 		MachineVerifier* mver = mach.GetMachineVerifier();
 		if (mver)
 			mver->Attach(*this);
-	}
+	}*/
 	
 	WhenEnterScriptLoad(*this);
 	
-	Script::Parser p;
-	if (!p.Parse(content, filepath)) {
+	Compiler c;
+	AstNode* root = c.CompileAst(content, filepath);
+	if (!root) {
 		RTLOG(GetLineNumStr(content, 1));
 		WhenLeaveScriptLoad();
 		return false;
 	}
 	//p.Dump();
-	MemSwap(p.GetResult(), root);
 	
 	if (!LoadCompilationUnit(root)) {
 		LOG("error dump:"); loader->Dump();
@@ -201,12 +232,14 @@ bool ScriptLoader::ImplementScript() {
 		for (ScriptLoopLoader* loop1 : loops) {
 			if (loop0 != loop1) {
 				if (!ConnectSides(*loop0, *loop1)) {
-					AddError("Side connecting failed");
+					AddError(loop0->def.loc, "Side connecting failed");
 					return false;
 				}
 			}
 		}
 	}
+	
+	
 	
 	RTLOG("ScriptLoader::ImplementScript: driver post initialize");
 	for (ScriptDriverLoader* dl: drivers) {
@@ -220,96 +253,162 @@ bool ScriptLoader::ImplementScript() {
 			return false;
 	}
 	
+	
+	
+	RTLOG("ScriptLoader::ImplementScript: driver start");
+	for (ScriptDriverLoader* dl: drivers) {
+		if (!dl->Start())
+			return false;
+	}
+	
+	RTLOG("ScriptLoader::ImplementScript: loop start");
+	for (ScriptLoopLoader* ll : loops) {
+		if (!ll->Start())
+			return false;
+	}
+	
 	return true;
 }
 
-bool ScriptLoader::LoadCompilationUnit(Script::CompilationUnit& cunit) {
-	return LoadGlobalScope(cunit.list);
+bool ScriptLoader::LoadCompilationUnit(AstNode* root) {
+	return LoadGlobalScope(root);
 }
 
-bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
-	//EnterScope();
-	//scopes.Top().glob = &glob;
-	scopes.Add(&glob);
+bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) {
+	Vector<AstNode*> path;
 	
-	loader = new ScriptSystemLoader(*this, 0, glob);
+	AstNode* iter = to;
+	while (iter && iter != from) {
+		if (iter->src == SEMT_IDPART || iter == to) {
+			path.Add(iter);
+		}
+		iter = iter->GetSubOwner();
+	}
+	if (path.IsEmpty()) {
+		AddError(to->loc, "internal error: empty path");
+		return false;
+	}
+	//String path_str;
+	for (int i = path.GetCount()-1; i >= 0; i--) {
+		AstNode* id = path[i];
+		//if (!path_str.IsEmpty())
+		//	path_str.Cat('.');
+		ASSERT(id->name.GetCount());
+		//path_str.Cat(id->name);
+		script_id.parts.Add(id->name);
+	}
+	//DUMP(path_str);
 	
-	int dbg_i = 0;
-	while (!loader->IsFailed() && !loader->IsReady()) {
-		DUMP(dbg_i); loader->Dump();
+	return true;
+}
+
+bool ScriptLoader::LoadGlobalScope(AstNode* root) {
+	ASSERT(root);
+	if (!root) return false;
+	
+	Vector<AstNode*> loops, states, drivers, atoms;
+	
+	LOG(root->GetTreeString(0));
+	root->FindAll(loops, SEMT_LOOP);
+	root->FindAll(drivers, SEMT_DRIVER);
+	root->FindAll(states, SEMT_STATE);
+	
+	//DUMP(loops.GetCount());
+	
+	glob.Clear();
+	
+	for (AstNode* loop : loops) {
+		Script::LoopDefinition& def = glob.loops.Add();
+		def.loc = loop->loc;
 		
-		loader->Forward();
-		++dbg_i;
+		if (!GetPathId(def.id, root, loop))
+			return false;
+		DUMP(def.id);
 		
-		ASSERT_(dbg_i < 100, "Something probably broke");
+		//LOG(loop->GetTreeString(0));
+		
+		AstNode* stmt_block = loop->Find(SEMT_STATEMENT_BLOCK);
+		if (!stmt_block) {
+			AddError(loop->loc, "loop has no statement-block");
+			return false;
+		}
+		
+		atoms.SetCount(0);
+		stmt_block->FindAll(atoms, SEMT_ATOM);
+		if (atoms.IsEmpty()) {
+			AddError(loop->loc, "no atoms in statement-block");
+			return false;
+		}
+		
+		for (AstNode* atom : atoms) {
+			Script::AtomDefinition& atom_def = def.atoms.Add();
+			
+			if (!GetPathId(atom_def.id, loop, atom))
+				return false;
+			
+			DUMP(atom_def.id);
+			
+		}
+		
+	}
+	
+	for (AstNode* driver : drivers) {
+		TODO
+	}
+	
+	for (AstNode* state : states) {
+		TODO
 	}
 	
 	
-	scopes.Remove(scopes.GetCount()-1);
+	loader = new ScriptSystemLoader(*this, 0, glob);
+	
+	if (loader->Load()) {
+		if (!loader->LoadEcs()) {
+			String e = "ecs loading failed: " + loader->GetErrorString();
+			AddError(root->loc, e);
+			//loader->SetError(e);
+			return false;
+		}
+	}
 	
 	return loader->IsReady();
 }
 
 LoopRef ScriptLoader::ResolveLoop(Script::Id& id) {
 	ASSERT(es);
-	LoopRef e;
-	LoopRef p = es->GetRoot();
+	LoopRef l0;
+	LoopRef l1 = es->GetRoot();
+	SpaceRef s0;
+	SpaceRef s1 = ss->GetRoot();
 	int i = 0, count = id.parts.GetCount();
+	
 	for (const String& part : id.parts) {
 		if (i++ == count - 1) {
-			e = p->GetAddEmpty(part);
+			l0 = l1->GetAddEmpty(part);
+			s0 = s1->GetAddEmpty(part);
+			l0->space = &*s0;
+			s0->loop = &*l0;
 		}
 		else {
-			p = p->GetAddLoop(part);
+			l1 = l1->GetAddLoop(part);
+			s1 = s1->GetAddSpace(part);
+			l1->space = &*s1;
+			s1->loop = &*l1;
 		}
 	}
-	return e;
-}
-
-void ScriptLoader::AddError(String msg) {
-	if (!collect_errors) {
-		LOG("ScriptLoader: error: " + msg);
-	}
-	else {
-		ScriptError& e = errs.Add();
-		e.msg = msg;
-	}
-}
-
-void ScriptLoader::AddError(ScriptLoopLoader* ll, String msg) {
-	if (!collect_errors) {
-		LOG("ScriptLoader: error: " + msg);
-	}
-	else {
-		ScriptError& e = errs.Add();
-		e.ll = ll;
-		e.status = ll->GetStatus();
-		e.msg = msg;
-	}
-}
-
-void ScriptLoader::ReleaseErrorBuffer() {
-	if (errs.GetCount()) {
-		ScriptError& e = errs.Top();
-		LOG("ScriptLoader: error: " + e.msg);
-		errs.Clear();
-	}
-}
-
-void ScriptLoader::ClearErrorBuffer() {
-	for (ScriptError& e : errs) {
-		if (e.ll && e.ll->IsFailed() && e.status >= 0)
-			e.ll->SetStatus((ScriptStatus)e.status);
-	}
-	errs.Clear();
+	
+	ASSERT(l0->GetSpace());
+	return l0;
 }
 
 bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1) {
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& sink : loop0.atoms) {
+		LinkBaseRef sink_link = sink->GetLink()->AsRefT();
 		const IfaceConnTuple& sink_iface = sink->GetInterface();
-		for (int sink_ch = 1; sink_ch < sink_iface.type.iface.sink.count; sink_ch++) {
+		for (int sink_ch = 1; sink_ch < sink_iface.type.iface.sink.GetCount(); sink_ch++) {
 			const IfaceConnLink& sink_conn = sink_iface.sink[sink_ch];
 			RTLOG("ScriptLoader::ConnectSides:	sink ch #" << sink_ch << " " << sink_conn.ToString());
 			ASSERT(sink_conn.conn >= 0 || sink_iface.type.IsSinkChannelOptional(sink_ch));
@@ -317,8 +416,9 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 				continue;
 			bool found = false;
 			for (AtomBaseRef& src : loop1.atoms) {
+				LinkBaseRef src_link = src->GetLink()->AsRefT();
 				const IfaceConnTuple& src_iface = src->GetInterface();
-				for (int src_ch = 1; src_ch < src_iface.type.iface.src.count; src_ch++) {
+				for (int src_ch = 1; src_ch < src_iface.type.iface.src.GetCount(); src_ch++) {
 					const IfaceConnLink& src_conn = src_iface.src[src_ch];
 					RTLOG("ScriptLoader::ConnectSides:		src ch #" << src_ch << " " << src_conn.ToString());
 					ASSERT(src_conn.conn >= 0 || src_iface.type.IsSourceChannelOptional(src_ch));
@@ -333,12 +433,12 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 						ASSERT(src_conn.other == sink_conn.local);
 						ASSERT(sink_conn.other == src_conn.local);
 						
-						if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
-							AddError("Side-source refused linking to side-src");
+						if (!src_link->LinkSideSink(sink_link, src_ch_i, sink_ch_i)) {
+							AddError(loop0.def.loc, "Side-source refused linking to side-src");
 							return false;
 						}
-						if (!sink->LinkSideSource(src, sink_ch_i, src_ch_i)) {
-							AddError("Side-src refused linking to side-source");
+						if (!sink_link->LinkSideSource(src_link, sink_ch_i, src_ch_i)) {
+							AddError(loop1.def.loc, "Side-src refused linking to side-source");
 							return false;
 						}
 						
@@ -367,7 +467,7 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	return true;
 }
 
-Script::State* ScriptLoader::FindState(const Script::Id& id) {
+/*Script::State* ScriptLoader::FindState(const Script::Id& id) {
 	auto iter = scopes.rbegin();
 	auto end = scopes.rend();
 	for(; iter != end; --iter) {
@@ -379,7 +479,7 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 		}
 	}
 	return NULL;
-}
+}*/
 
 
 
@@ -498,3 +598,4 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 
 
 NAMESPACE_SERIAL_END
+

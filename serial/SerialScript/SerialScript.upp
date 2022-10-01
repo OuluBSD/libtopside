@@ -6,11 +6,29 @@ uses
 
 file
 	SerialScript.h,
+	Internal.h,
 	main.cpp,
 	ToyLoader.h,
 	ToyLoader.cpp,
 	Verifier.h,
-	Verifier.cpp;
+	Verifier.cpp,
+	Loader.h,
+	Drivers.cpp,
+	Loop.cpp,
+	State.cpp,
+	Script.cpp,
+	Trash readonly separator,
+	Chain.cpp,
+	ConnectionSolver.cpp,
+	Machine.cpp,
+	Parser.h,
+	Parser.cpp,
+	Script.h,
+	System.cpp,
+	TopChain.cpp,
+	Planner.h,
+	Planner.cpp,
+	_ readonly separator;
 
 mainconfig
 	"" = "";

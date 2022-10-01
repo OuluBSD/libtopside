@@ -2085,6 +2085,8 @@ bool SemanticParser::ParseLoop() {
 	
 	CHECK_SPATH_BEGIN
 	AstNode* loop = EMIT PushLoop(iter.begin->loc, id);
+	if (is_driver)
+		loop->src = SEMT_DRIVER;
 	
 	Iterator& owner_iter = TopIterator();
 	if (owner_iter.node->sub.GetCount()) {

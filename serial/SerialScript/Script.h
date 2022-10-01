@@ -1,6 +1,8 @@
 #ifndef _SerialLib_Script_h_
 #define _SerialLib_Script_h_
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -29,47 +31,6 @@ public:
 	String GetTreeString(int id, int indent);
 	
 };
-
-typedef enum {
-	UNASSIGNED,
-	
-	IN_BEGINNING,
-	WAITING_CHILDREN,
-	
-	SEARCH_SEGMENT,
-	PRUNE_SEGMENT_GOALS,
-	WAITING_PARENT_SIDE_LINKS,
-	WAITING_OTHER_LOOPS,
-	
-	MAKE_OPTION_LINK_VECTOR,
-	PRUNE_OPTION_LINKS,
-	LINK_PLANNER,
-	LINKER,
-	
-	READY,
-	FAILED,
-} ScriptStatus;
-
-inline const char* GetScriptStatusString(ScriptStatus status) {
-	const char* t = "<invalid status>";
-	switch (status) {
-		case IN_BEGINNING:					t = "In beginning"; break;
-		case WAITING_PARENT_SIDE_LINKS:		t = "Waiting parent side links"; break;
-		case WAITING_OTHER_LOOPS:				t = "Waiting other loops"; break;
-		case WAITING_CHILDREN:				t = "Waiting children"; break;
-		case SEARCH_SEGMENT:				t = "Search segment"; break;
-		case PRUNE_SEGMENT_GOALS:			t = "Prune segment goals"; break;
-		case MAKE_OPTION_LINK_VECTOR:		t = "Make option link vector"; break;
-		case PRUNE_OPTION_LINKS:			t = "Prune option links"; break;
-		case LINK_PLANNER:					t = "Link planner"; break;
-		case LINKER:						t = "Linker"; break;
-		case READY:							t = "Ready"; break;
-		case FAILED:						t = "Failed"; break;
-		case UNASSIGNED:					t = "Unassigned"; break;
-		default: break;
-	}
-	return t;
-}
 
 String GetScriptStatusLine(int indent, ScriptStatus status, String extra_str=String());
 
@@ -504,7 +465,7 @@ public:
 	
 };
 
-bool TestParseScriptCode(String code);
+//bool TestParseScriptCode(String code);
 
 class ScriptLoader :
 	public System<ScriptLoader>
@@ -520,7 +481,7 @@ protected:
 	Vector<Script::GlobalScope*> scopes;
 	One<ScriptSystemLoader> loader;
 	
-	Script::WorldState def_ws;
+	//Script::WorldState def_ws;
 	Script::ActionPlanner def_planner;
 	int tmp_side_id_counter = 0;
 	
@@ -729,4 +690,5 @@ NAMESPACE_TOPSIDE_END
 
 #include "LoaderBase.inl"
 
+#endif
 #endif

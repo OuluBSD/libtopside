@@ -1,0 +1,11 @@
+uses
+	SerialLib;
+
+file
+	main.cpp,
+	NativeAtomDemo.h,
+	AudioGenTest.cpp;
+
+mainconfig
+	"" = "";
+

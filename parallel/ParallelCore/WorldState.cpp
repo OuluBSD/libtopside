@@ -17,15 +17,15 @@ WorldState::WorldState() {
 
 void WorldState::Clear() {
 	values.Clear();
-	using_act.Clear();
-	cur_atom = Null;
-	type = INVALID;
+	//using_act.Clear();
+	//cur_atom = Null;
+	//type = INVALID;
 }
 
 int WorldState::GetValueCount() const {
 	// this is a bit ankward counting
 	int c = 0;
-	for (const String& v : values)
+	for (const String& v : values.GetValues())
 		c += (v.IsEmpty() ? 0 : 1);
 	return c;
 }
@@ -43,7 +43,7 @@ void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 }
 
 #endif
-
+/*
 bool WorldState::Set(int index, bool value) {
 	if (index < 0) return false;
 	if (using_act.GetCount() <= index) {
@@ -68,21 +68,21 @@ bool WorldState::Set(int index, String value) {
 	if (use_debugging_order)
 		dbg_order.FindAdd(index);
 	return true;
-}
+}*/
 
 WorldState& WorldState::operator=(const WorldState& src) {
 	values		<<= src.values;
-	using_act	<<= src.using_act;
+	/*using_act	<<= src.using_act;
 	dbg_order	<<= src.dbg_order;
 	cur_atom	= src.cur_atom;
 	type		= src.type;
-	ap			= src.ap;
+	ap			= src.ap;*/
 	return *this;
 }
 
 
 hash_t WorldState::GetHashValue() const {
-	CombineHash c;
+	/*CombineHash c;
 	c.Put((int)type);
 	c.Put(cur_atom.GetHashValue());
 	c.Put(side_vd.GetHashValue());
@@ -102,6 +102,12 @@ hash_t WorldState::GetHashValue() const {
 				c.Put(values[i].GetHashValue());
 			}
 		}
+	}
+	return c;*/
+	CombineHash c;
+	for(int i = values.GetCount()-1; i >= 0; i--) {
+		const Object& o = values[i];
+		c.Put(o.GetHashValue());
 	}
 	return c;
 }
@@ -404,7 +410,7 @@ int WorldState::Compare(int idx, const WorldState& ws) const {
 
 #else
 
-const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
+/*const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
 	TODO
 }
 
@@ -414,26 +420,34 @@ const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedL
 
 bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
 	TODO
-}
+}*/
 
 bool WorldState::Set(const String& key, bool value) {
-	TODO
+	values.GetAdd(key) = value;
+	return true;
 }
 
 bool WorldState::Set(const String& key, String value) {
-	TODO
+	values.GetAdd(key) = value;
+	return true;
 }
 
 bool WorldState::IsTrue(const String& key, bool def) const {
-	TODO
+	int i = values.Find(key);
+	if (i >= 0)
+		return values[i].ToBool();
+	return def;
 }
 
 bool WorldState::IsFalse(const String& key, bool def) const {
-	TODO
+	int i = values.Find(key);
+	if (i >= 0)
+		return !values[i].ToBool();
+	return def;
 }
 
 bool WorldState::IsFalse(int idx) const {
-	TODO
+	return !values[idx].ToBool();
 }
 
 bool WorldState::IsUndefined(const String& key) const {
@@ -445,11 +459,15 @@ bool WorldState::IsUndefined(int idx) const {
 }
 
 String WorldState::Get(const String& key) const {
-	TODO
+	const Object& o = values.Get(key);
+	ASSERT(o.IsString());
+	return o.ToString();
 }
 
 String WorldState::Get(int idx) const {
-	TODO
+	const Object& o = values[idx];
+	ASSERT(o.IsString());
+	return o.ToString();
 }
 
 Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
@@ -457,15 +475,32 @@ Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
 }
 
 int WorldState::GetInt(const String& key, int def) const {
-	TODO
+	int i = values.Find(key);
+	if (i >= 0) {
+		const Object& o = values[i];
+		ASSERT(o.IsInt());
+		return o.ToInt();
+	}
+	return def;
 }
 
 bool WorldState::GetBool(const String& key, bool def) const {
-	TODO
+	int i = values.Find(key);
+	if (i >= 0) {
+		const Object& o = values[i];
+		return o.ToBool();
+	}
+	return def;
 }
 
 String WorldState::GetString(const String& key, String def) const {
-	TODO
+	int i = values.Find(key);
+	if (i >= 0) {
+		const Object& o = values[i];
+		ASSERT(o.IsString());
+		return o.ToString();
+	}
+	return def;
 }
 
 String WorldState::ToString() const {
@@ -502,9 +537,9 @@ void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 
 
 
-Action::Action() : cost(1.0) {
+/*Action::Action() : cost(1.0) {
 	
-}
+}*/
 
 
 

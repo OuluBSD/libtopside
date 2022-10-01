@@ -30,12 +30,16 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 		return false;
 	}
 	
+	return CompileEon(content, filepath, lang, output);
+}
+
+#define TEST(x) if (!(x)) {return 0;}
+
+AstNode* Compiler::CompileAst(String content, String path) {
 	bool verbose = true;
 	
-	#define TEST(x) if (!(x)) {return false;}
-	
 	// Tokenize eon
-	TEST(Tokenize(filepath, content, true))
+	TEST(Tokenize(path, content, true))
 	if (verbose) t.Dump();
 	
 	// Parse error handling structure (for multiple error messages per single try)
@@ -49,6 +53,15 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 	TEST(RunMeta())
 	if (verbose) {LOG(ar.GetRoot().GetTreeString(0));}
 	
+	return &ar.GetRoot();
+}
+
+bool Compiler::CompileEon(String content, String path, ProgLang lang, String& output) {
+	bool verbose = true;
+	
+	if (!CompileAst(content, path))
+		return false;
+	
 	if (lang == LANG_HIGH) {
 		// Export High script
 		TEST(ExportHigh())
@@ -59,14 +72,14 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 	else {
 		TODO
 	}
-		
-	
 	
 	output = ex.GetResult();
 	if (verbose) {LOG(output);}
 	
 	return true;
 }
+
+#undef TEST
 
 bool Compiler::Tokenize(String filepath, String content, bool pythonic) {
 	this->filepath = filepath;

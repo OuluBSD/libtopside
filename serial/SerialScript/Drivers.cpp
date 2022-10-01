@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptDriverLoader::ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def) :
+ScriptDriverLoader::ScriptDriverLoader(ScriptSystemLoader& parent, int id, Script::DriverDefinition& def) :
 	Base(parent, id, def)
 {
 	
@@ -17,9 +17,9 @@ String ScriptDriverLoader::GetTreeString(int indent) {
 	s.Cat('\n');
 	/*for (ScriptTopChainLoader& loader : chains) {
 		s << loader.GetTreeString(indent+1);
-	}*/
+	}
 	s << GetScriptStatusLine(indent+1, status);
-	
+	*/
 	return s;
 }
 
@@ -35,7 +35,9 @@ void ScriptDriverLoader::Forward() {
 	if (IsReady())
 		return;
 	
-	ASSERT(!IsFailed());
+	TODO
+	
+	/*ASSERT(!IsFailed());
 	ScriptStatus prev_status = status;
 	
 	ASSERT(status != ScriptStatus::READY);
@@ -53,11 +55,15 @@ void ScriptDriverLoader::Forward() {
 		SetStatus(ScriptStatus::FAILED);
 	}
 	
-	ASSERT(prev_status != status);
+	ASSERT(prev_status != status);*/
 }
 
 bool ScriptDriverLoader::Load() {
 	ScriptLoader& loader = GetLoader();
+	
+	TODO
+	
+	#if 0
 	
 	// Target entity for atoms
 	LoopRef l = loader.ResolveLoop(def.id);
@@ -67,26 +73,47 @@ bool ScriptDriverLoader::Load() {
 	}
 	
 	for (Script::WorldState& ws : atoms) {
-		AtomTypeCls type = ws.GetAtom();
-		ASSERT(type.IsValid());
+		AtomTypeCls atom = ws.GetAtom();
+		LinkTypeCls link = Parallel::Factory::GetAtomLinkType(atom);
+		ASSERT(atom.IsValid());
 		
-		RTLOG("Loading driver atom " << type.ToString());
+		RTLOG("Loading driver atom " << atom.ToString());
 		
-		AtomBaseRef ab = l->FindTypeCls(type);
+		AtomBaseRef ab = l->GetSpace()->FindTypeCls(atom);
 		if (ab) {
-			SetError("loop '" + def.id.ToString() + "' already has atom: " + type.ToString());
+			SetError("loop '" + def.id.ToString() + "' already has atom: " + atom.ToString());
 			return false;
 		}
 		
-		ab = l->GetAddTypeCls(type);
+		LinkBaseRef lb;
+		ab = l->GetSpace()->GetAddTypeCls(atom);
+		lb = l->GetAddTypeCls(link);
 		
 		if (!ab) {
-			String atom_name = Serial::Factory::AtomDataMap().Get(type).name;
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
 			SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
-			DUMP(type);
+			DUMP(atom);
 			ASSERT(0);
 			return false;
 		}
+		
+		if (!lb) {
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			SetError("Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+			DUMP(atom);
+			ASSERT(0);
+			return false;
+		}
+		
+		ab->SetId(id);
+		lb->SetId(id);
+		
+		ab->link = &*lb;
+		lb->atom = &*ab;
+		
+		auto& c = added_atoms.Add();
+		c.a					= ab;
+		c.l					= lb;
 		
 		// Add arguments to ws
 		const Script::Statement* stmt = ws.FindStatement(0, def.stmts);
@@ -100,22 +127,45 @@ bool ScriptDriverLoader::Load() {
 			}
 		}
 		
-		
 		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
-			const auto& a = Serial::Factory::AtomDataMap().Get(type);
+			const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
 			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
 		
-		added_atoms.Add(ab);
+		if (!lb->Initialize(ws)) {
+			const auto& a = Serial::Factory::LinkDataMap().Get(link);
+			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+		
+		ab->SetInitialized();
 	}
 	
 	return true;
+	
+	#endif
 }
 
 bool ScriptDriverLoader::PostInitialize() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
-		if (!added_atoms[i]->PostInitialize())
+		auto& a = added_atoms[i];
+		if (!a.a->PostInitialize())
+			return false;
+		if (!a.l->PostInitialize())
+			return false;
+	}
+	return true;
+}
+
+bool ScriptDriverLoader::Start() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		auto& a = added_atoms[i];
+		if (!a.a->Start())
+			return false;
+		a.a->SetRunning();
+		
+		if (!a.l->Start())
 			return false;
 	}
 	return true;
@@ -130,24 +180,25 @@ void ScriptDriverLoader::LoopStatus() {
 }
 
 void ScriptDriverLoader::CheckStatusDeep() {
-	CheckFlags();
+	TODO //CheckFlags();
 }
 
 void ScriptDriverLoader::FindAtoms() {
 	atoms.Clear();
-	if (def.stmts.IsEmpty()) {
+	/*if (def.stmts.IsEmpty()) {
 		SetError("no statements in driver");
 		return;
-	}
+	}*/
 	
 	
-	for (const auto& atom : Factory::AtomDataMap().GetValues()) {
+	TODO
+	/*
+	for (const auto& atom : Parallel::Factory::AtomDataMap().GetValues()) {
 		Script::Action act;
 		Script::WorldState& pre		= act.Pre();
 		Script::WorldState& post	= act.Post();
 		pre		.SetActionPlanner(planner);
 		post	.SetActionPlanner(planner);
-		
 		if (atom.action_fn(atom.cls, act)) {
 			bool all_match = true;
 			for (Script::Statement& stmt : def.stmts) {
@@ -167,7 +218,7 @@ void ScriptDriverLoader::FindAtoms() {
 				break;
 			}
 		}
-	}
+	}*/
 	
 	if (atoms.IsEmpty()) {
 		SetError("no atom found, which could satisfy driver statements");
@@ -179,3 +230,4 @@ void ScriptDriverLoader::FindAtoms() {
 
 
 NAMESPACE_SERIAL_END
+

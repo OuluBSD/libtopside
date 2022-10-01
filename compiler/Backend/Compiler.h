@@ -9,15 +9,17 @@ struct Compiler {
 	
 	Tokenizer t;
 	TokenStructure ts;
-	AstExporter ex;
 	SemanticParser sp;
 	AstRunner ar;
+	AstExporter ex;
 	
 public:
 	typedef Compiler CLASSNAME;
 	Compiler();
 	
 	bool CompileEonFile(String filepath, ProgLang lang, String& output);
+	bool CompileEon(String content, String path, ProgLang lang, String& output);
+	AstNode* CompileAst(String content, String path);
 	
 public:
 	bool Tokenize(String filepath, String content, bool pythonic=false);

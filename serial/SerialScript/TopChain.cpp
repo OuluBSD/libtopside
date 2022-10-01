@@ -1,5 +1,6 @@
 #include "Internal.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -148,3 +149,5 @@ void ScriptTopChainLoader::ForwardChainLoops() {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

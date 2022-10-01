@@ -1,5 +1,7 @@
 #include "SerialScript.h"
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -431,3 +433,5 @@ bool ScriptConnectionSolver::LinkPlanner() {
 }
 
 NAMESPACE_SERIAL_END
+
+#endif
