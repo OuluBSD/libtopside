@@ -62,6 +62,7 @@ public:
 	String			GetConstantString() const;
 	AstNode*		FindWithPrevDeep(const AstNode* prev);
 	void			FindAll(Vector<AstNode*>& ptrs, SemanticType accepts);
+	void			FindAllStmt(Vector<AstNode*>& ptrs, StmtType accepts);
 	
 	String			GetTreeString(int indent, bool links) const;
 	String			GetTreeString(int indent=0) const override;

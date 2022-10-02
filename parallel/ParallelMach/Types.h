@@ -465,6 +465,7 @@ struct IfaceConnLink : Moveable<IfaceConnLink> {
 	int local = -1;
 	int other = -1;
 	
+	void Set(int conn, int local, int other) {this->conn = conn; this->local = local; this->other = other;}
 	String ToString() const {String s; s << "conn:" << conn << ", local:" << local << ", other:" << other; return s;}
 };
 

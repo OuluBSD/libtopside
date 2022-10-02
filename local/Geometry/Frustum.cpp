@@ -100,6 +100,12 @@ vec3 Intersection(Plane p1, Plane p2, Plane p3) {
 }
 
 void Frustum::GetCorners(vec3* outCorners) const {
+	const Plane& top = planes[TOP];
+	const Plane& bottom = planes[BOTTOM];
+	const Plane& left = planes[LEFT];
+	const Plane& right = planes[RIGHT];
+	const Plane& _near = planes[NEAR];
+	const Plane& _far = planes[FAR];
 	outCorners[0] = Intersection(_near, top,    left);
 	outCorners[1] = Intersection(_near, top,    right);
 	outCorners[2] = Intersection(_near, bottom, left);

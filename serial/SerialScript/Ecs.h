@@ -1,6 +1,8 @@
 #ifndef _SerialScript_Ecs_h_
 #define _SerialScript_Ecs_h_
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 class ScriptEngineLoader;
@@ -164,4 +166,5 @@ extern ExtScriptEngineLoaderBase* __ecs_script_loader;
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

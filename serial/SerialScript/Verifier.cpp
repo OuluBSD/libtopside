@@ -1,7 +1,30 @@
 #include "SerialScript.h"
 
-#if 0
+#if 1
 
+NAMESPACE_PARALLEL_BEGIN
+
+
+void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll) {
+	
+}
+
+void MachineVerifier_OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
+	
+}
+
+void MachineVerifier_OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {
+	
+}
+
+void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll) {
+	
+}
+
+
+NAMESPACE_PARALLEL_END
+
+#else
 
 #if 0
 	#define MVER_LOG(x) RTLOG(x)

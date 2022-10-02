@@ -202,6 +202,13 @@ void AstNode::FindAll(Vector<AstNode*>& ptrs, SemanticType accepts) {
 		s.FindAll(ptrs, accepts);
 }
 
+void AstNode::FindAllStmt(Vector<AstNode*>& ptrs, StmtType accepts) {
+	if (src == SEMT_STATEMENT && stmt == accepts)
+		ptrs.Add(this);
+	for (AstNode& s : sub)
+		s.FindAllStmt(ptrs, accepts);
+}
+
 String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {

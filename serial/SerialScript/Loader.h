@@ -51,6 +51,10 @@ struct Id {
 struct AtomDefinition {
 	Id id;
 	FileLocation loc;
+	ArrayMap<String, Object> args;
+	IfaceConnTuple iface;
+	
+	void Set(String key, const Object& val) {args.GetAdd(key) = val;}
 	
 };
 
@@ -108,20 +112,9 @@ struct GlobalScope {
 
 typedef enum {
 	UNASSIGNED,
-	
+
 	IN_BEGINNING,
-	WAITING_CHILDREN,
-	
-	SEARCH_SEGMENT,
-	PRUNE_SEGMENT_GOALS,
-	WAITING_PARENT_SIDE_LINKS,
-	WAITING_OTHER_LOOPS,
-	
-	MAKE_OPTION_LINK_VECTOR,
-	PRUNE_OPTION_LINKS,
-	LINK_PLANNER,
-	LINKER,
-	
+
 	READY,
 	FAILED,
 } ScriptStatus;
@@ -130,15 +123,6 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 	const char* t = "<invalid status>";
 	switch (status) {
 		case IN_BEGINNING:					t = "In beginning"; break;
-		case WAITING_PARENT_SIDE_LINKS:		t = "Waiting parent side links"; break;
-		case WAITING_OTHER_LOOPS:				t = "Waiting other loops"; break;
-		case WAITING_CHILDREN:				t = "Waiting children"; break;
-		case SEARCH_SEGMENT:				t = "Search segment"; break;
-		case PRUNE_SEGMENT_GOALS:			t = "Prune segment goals"; break;
-		case MAKE_OPTION_LINK_VECTOR:		t = "Make option link vector"; break;
-		case PRUNE_OPTION_LINKS:			t = "Prune option links"; break;
-		case LINK_PLANNER:					t = "Link planner"; break;
-		case LINKER:						t = "Linker"; break;
 		case READY:							t = "Ready"; break;
 		case FAILED:						t = "Failed"; break;
 		case UNASSIGNED:					t = "Unassigned"; break;
@@ -146,6 +130,7 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 	}
 	return t;
 }
+
 
 
 
@@ -223,7 +208,7 @@ protected:
 	struct AddedAtom {
 		AtomBaseRef		a;
 		LinkBaseRef		l;
-		//IfaceConnTuple	iface;
+		IfaceConnTuple	iface;
 	};
 	
 	Array<AddedAtom>		added_atoms;

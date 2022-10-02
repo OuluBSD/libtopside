@@ -33,6 +33,8 @@ bool ScriptSystemLoader::Load() {
 		if (!loader.Load())
 			return false;
 	}
+	
+	status = READY;
 	return true;
 }
 

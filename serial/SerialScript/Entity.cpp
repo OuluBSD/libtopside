@@ -1,5 +1,7 @@
 #include "SerialScript.h"
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 ScriptEntityLoader::ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script::EntityDefinition& def) :
@@ -13,3 +15,5 @@ ScriptEntityLoader::ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script:
 
 
 NAMESPACE_SERIAL_END
+
+#endif

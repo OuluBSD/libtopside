@@ -306,7 +306,7 @@ bool ScriptLoader::LoadGlobalScope(AstNode* root) {
 	ASSERT(root);
 	if (!root) return false;
 	
-	Vector<AstNode*> loops, states, drivers, atoms;
+	Vector<AstNode*> loops, states, drivers, atoms, stmts, conns;
 	
 	LOG(root->GetTreeString(0));
 	root->FindAll(loops, SEMT_LOOP);
@@ -342,12 +342,55 @@ bool ScriptLoader::LoadGlobalScope(AstNode* root) {
 		
 		for (AstNode* atom : atoms) {
 			Script::AtomDefinition& atom_def = def.atoms.Add();
+			IfaceConnTuple& iface = atom_def.iface;
+			
+			conns.SetCount(0);
+			atom->FindAllStmt(conns, STMT_ATOM_CONNECTOR);
+			if (!conns.IsEmpty()) {
+				TODO
+			}
+			else {
+				ASSERT(iface.sink.IsEmpty());
+				iface.sink.Add().Set(0,0,0);
+				iface.src.Add().Set(0,0,0);
+			}
 			
 			if (!GetPathId(atom_def.id, loop, atom))
 				return false;
 			
 			DUMP(atom_def.id);
 			
+			stmts.SetCount(0);
+			atom->FindAll(stmts, SEMT_STATEMENT);
+			for (AstNode* stmt : stmts) {
+				bool succ = false;
+				if (stmt->stmt == STMT_EXPR) {
+					LOG(stmt->GetTreeString(0));
+					if (stmt->rval) {
+						if (stmt->rval->src == SEMT_EXPR) {
+							if (stmt->rval->op == OP_ASSIGN) {
+								AstNode* key = stmt->rval->arg[0];
+								AstNode* value = stmt->rval->arg[1];
+								LOG(key->GetTreeString(0));
+								LOG(value->GetTreeString(0));
+								if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
+									String key_str = key->str;
+									if (value->src == SEMT_CONSTANT) {
+										Object val_obj;
+										value->CopyToObject(val_obj);
+										atom_def.Set(key_str, val_obj);
+										succ = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				if (!succ) {
+					AddError(stmt->loc, "could not resolve statement in atom");
+					return false;
+				}
+			}
 		}
 		
 	}
@@ -363,16 +406,19 @@ bool ScriptLoader::LoadGlobalScope(AstNode* root) {
 	
 	loader = new ScriptSystemLoader(*this, 0, glob);
 	
-	if (loader->Load()) {
+	/*//if (loader->()) {
+		LOG("TODO");
 		if (!loader->LoadEcs()) {
 			String e = "ecs loading failed: " + loader->GetErrorString();
 			AddError(root->loc, e);
 			//loader->SetError(e);
 			return false;
 		}
-	}
+	//}
+	*/
+	LOG("TODO ecs, but no Load()");
 	
-	return loader->IsReady();
+	return true;
 }
 
 LoopRef ScriptLoader::ResolveLoop(Script::Id& id) {

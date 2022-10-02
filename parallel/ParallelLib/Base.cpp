@@ -85,6 +85,7 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	if (main_vd.val == ValCls::AUDIO) {
 		internal_fmt = GetDefaultFormat(main_vd);
 		internal_fmt.aud.SetSampleRate(777);
+		this->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	}
 	else if (main_vd.val == ValCls::VIDEO)
 		internal_fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, TS::default_width, TS::default_height, 60, 1);
@@ -147,9 +148,8 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 
 bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
 	//DUMP(ws);
-	String dbg_limit_str = ws.GetString(".dbg_limit", "100");
-	if (!dbg_limit_str.IsEmpty())
-		dbg_limit = ScanInt(dbg_limit_str);
+	dbg_limit = ws.GetInt(".dbg_limit", 100);
+	
 	/*
 	auto sink = GetSink();
 	const int sink_ch_i = sink->GetSinkCount() - 1;

@@ -7,7 +7,8 @@ using namespace Serial;
 
 const char* eon = R"3ON(
 loop tester.generator:
-	center.customer
+	center.customer:
+		dummy = "value"
 	center.audio.src.test
 	center.audio.sink.test.realtime:
 		dbg_limit = 100

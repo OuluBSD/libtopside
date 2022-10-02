@@ -73,7 +73,7 @@ public:
 	LoopRef				CreateEmpty();
 	LoopRef				GetAddEmpty(String name);
 	
-	bool				MakeLink(AtomBaseRef src_comp, AtomBaseRef dst_comp);
+	bool				MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom);
 	
 	void				OnChange();
 	/*AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);*/

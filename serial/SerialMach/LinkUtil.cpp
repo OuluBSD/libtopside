@@ -55,7 +55,6 @@ bool AsyncMemForwarderBase::IsReady(PacketIO& io) {
 
 bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 	PacketIO::Sink& sink0 = io.sink[0];
-	PacketIO::Sink& sink1 = io.sink[1];
 	PacketIO::Source& src = io.src[0];
 	
 	if (io.sink.GetCount() == 1) {
@@ -67,6 +66,7 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 			Consume(src.from_sink_ch, sink0.p);
 	}
 	else if (io.sink.GetCount() > 1) {
+		PacketIO::Sink& sink1 = io.sink[1];
 		sink0.may_remove = true;
 		sink1.may_remove = true;
 		src.from_sink_ch = 1;

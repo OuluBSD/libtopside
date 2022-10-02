@@ -1,5 +1,6 @@
 #include "SerialScript.h"
 
+#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -86,3 +87,5 @@ void ScriptEngineLoader::CheckStatusDeep() {
 */
 
 NAMESPACE_SERIAL_END
+
+#endif

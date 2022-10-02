@@ -200,11 +200,34 @@ String Loop::GetTreeString(int indent) {
 }
 
 bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
+	// This is for primary link (src_ch==0 to sink_ch== 0) only...
 	InterfaceSourceRef src = src_atom->GetSource();
 	InterfaceSinkRef sink = dst_atom->GetSink();
 	ASSERT(src && sink);
 	if (!src || !sink)
 		return false;
+	
+	int src_ch = 0;
+	int sink_ch = 0;
+	/*if (src_ch < 0 || src_ch >= src->GetSourceCount()) {
+		//AddError(FileLocation(), "source channel not in range");
+		LOG("source channel not in range");
+		return false;
+	}
+	
+	if (sink_ch < 0 || sink_ch >= sink->GetSinkCount()) {
+		//AddError(FileLocation(), "sink channel not in range");
+		LOG("sink channel not in range");
+		return false;
+	}*/
+	
+	Format src_fmt = src->GetSourceValue(src_ch).GetFormat();
+	Format sink_fmt = sink->GetValue(sink_ch).GetFormat();
+	if (src_fmt.vd != sink_fmt.vd) {
+		//AddError(FileLocation(), "sink and source device-value-class mismatch");
+		LOG("sink and source device-value-class mismatch");
+		return false;
+	}
 	
 	ASSERT(src_atom != dst_atom);
 	ASSERT(src_atom->GetLink() != dst_atom->GetLink()); // "stupid" but important
@@ -213,17 +236,17 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 	CookieRef src_cookie, sink_cookie;
 	
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		TODO
 		
-		/*auto& sdmap = Parallel::Factory::IfaceLinkDataMap();
-		int i = sdmap.Find(iface);
+		// Create exchange-point object
+		auto& sdmap = Parallel::Factory::IfaceLinkDataMap();
+		int i = sdmap.Find(src_fmt.vd);
 		if (i < 0) {
-			LOG("error: no exchange-point class set for type " + iface.ToString());
+			LOG("error: no exchange-point class set for type " + src_fmt.vd.ToString());
 			ASSERT(0);
 			return false;
 		}
 		const auto& src_d = sdmap[i];
-		if (src_d.vd != iface) {
+		if (src_d.vd != src_fmt.vd) {
 			ASSERT(0);
 			LOG("internal error: unexpected sink class type");
 			return false;
@@ -231,6 +254,7 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 		
 		TypeCls expt_type = src_d.cls;
 		ASSERT(expt_type);
+		
 		ExchangePointRef ep = space->MetaSpaceBase::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 		RTLOG("                 src-atom: " << HexStr(&src_atom->GetRTTI()));
@@ -241,7 +265,7 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 		ep->Init(this->GetSpace());
 		ep->Set(src, sink, src_cookie, sink_cookie);
 		src_atom->GetLink()->SetPrimarySink(dst_atom->GetLink()->AsRefT());
-		dst_atom->GetLink()->SetPrimarySource(src_atom->GetLink()->AsRefT());*/
+		dst_atom->GetLink()->SetPrimarySource(src_atom->GetLink()->AsRefT());
 		return true;
 	}
 	return false;

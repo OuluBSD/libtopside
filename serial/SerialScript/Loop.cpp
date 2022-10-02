@@ -718,6 +718,8 @@ bool ScriptLoopLoader::Load() {
 			auto& c = added_atoms.Add();
 			c.a					= ab;
 			c.l					= lb;
+			c.iface				= atom_def.iface;
+			c.iface.type		= atom;
 			//c.iface				= n->GetInterface();
 			//ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
 			
@@ -753,8 +755,12 @@ bool ScriptLoopLoader::Load() {
 			#endif
 			
 			Script::WorldState ws;
-			LOG("TODO");
 			
+			for(int i = 0; i < atom_def.args.GetCount(); i++) {
+				String key = atom_def.args.GetKey(i);
+				const Object& obj = atom_def.args[i];
+				ws.values.GetAdd("." + key) = obj;
+			}
 			
 			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
@@ -783,11 +789,12 @@ bool ScriptLoopLoader::Load() {
 	
 	
 	
-	for(int i = 0; i < added_atoms.GetCount()-1; i++) {
+	for(int i = 0; i < added_atoms.GetCount(); i++) {
 		AddedAtom& src_info = added_atoms[i];
 		AtomBaseRef src = src_info.a;
 		
-		AddedAtom& sink_info = added_atoms[i+1];
+		int next_i = (i + 1) % added_atoms.GetCount();
+		AddedAtom& sink_info = added_atoms[next_i];
 		AtomBaseRef sink = sink_info.a;
 		
 		/*
@@ -808,11 +815,9 @@ bool ScriptLoopLoader::Load() {
 			return false;
 		}
 		
-		
-		IfaceConnTuple iface;
-		TODO
-		
-		src->SetInterface(iface);
+		// AtomTypeCls TestRealtimeSrc::GetAtomType()
+		ASSERT(src_info.iface.sink.GetCount() && src_info.iface.src.GetCount());
+		src->SetInterface(src_info.iface);
 		
 		atoms.Add(src);
 	}
@@ -842,7 +847,7 @@ bool ScriptLoopLoader::Load() {
 		return false;
 	}*/
 	
-	
+	status = READY;
 	return true;
 }
 
