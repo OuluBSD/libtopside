@@ -45,7 +45,7 @@ int GetTotalSegmentCount(Vector<ScriptLoopLoader*>& v);
 
 
 template <class ParserDef, class LoaderParent>
-class ScriptLoaderBase : RTTIBase {
+class FScriptLoaderBase : RTTIBase {
 	
 	
 protected:
@@ -62,7 +62,7 @@ public:
 	
 	LoaderParent&				parent;
 	ParserDef&					def;
-	ScriptStatus				status = IN_BEGINNING;
+	//ScriptStatus				status = IN_BEGINNING;
 	String						err_str;
 	int							id = -1;
 	bool						any_waiting_parent = false;
@@ -79,23 +79,23 @@ public:
 	//void				SetStatusRetry() {SetStatus(RETRY);}
 	void				SetError(String s) {err_str = s; SetStatus(FAILED); LOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
-	bool				IsFailed() const {return status == FAILED;}
+	/*bool				IsFailed() const {return status == FAILED;}
 	bool				IsReady() const {return status == READY;}
-	bool				IsStatus(ScriptStatus s) const {return status == s;}
+	bool				IsStatus(ScriptStatus s) const {return status == s;}*/
 	int					GetId() const {return id;}
-	ScriptStatus		GetStatus() const {return status;}
+	//ScriptStatus		GetStatus() const {return status;}
 	ScriptLoader&		GetLoader() {return parent.GetLoader();}
 	String				GetErrorString() const {return err_str;}
 	
 	virtual Script::Id	GetDeepId() const {Script::Id id = parent.GetDeepId(); id.Append(def.id); return id;}
-	virtual void		SetStatus(ScriptStatus s) {status = s;}
+	//virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
 	virtual void		GetLoops(Vector<ScriptLoopLoader*>& v) = 0;
-	virtual void		ForwardLoops() = 0;
+	/*virtual void		ForwardLoops() = 0;
 	virtual void		LoopStatus() = 0;
-	virtual void		CheckStatusDeep() = 0;
+	virtual void		CheckStatusDeep() = 0;*/
 	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
 	virtual void		GetStates(Vector<ScriptStateLoader*>& v) {Panic("not implemented");}
 	
@@ -188,10 +188,10 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis && atoms;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		SetStatus(ScriptStatus status) override;
+	void		SetStatus(ScriptStatus status) override;*/
 };
 
 
@@ -325,9 +325,9 @@ public:
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	Script::Id	GetDeepId() const override;
 	
 };
@@ -348,16 +348,16 @@ public:
 	
 	
 	ScriptTopChainLoader(int mode, ScriptMachineLoader& parent, ScriptTopChainLoader* chain_parent, int id, Script::ChainDefinition& def);
-	void		ForwardSubchainLoops();
-	void		ForwardChainLoops();
+/*	void		ForwardSubchainLoops();
+	void		ForwardChainLoops();*/
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -378,11 +378,11 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override {}
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override {}
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override {}
+	/*void		ForwardLoops() override {}
 	void		LoopStatus() override {}
-	void		CheckStatusDeep() override {}
+	void		CheckStatusDeep() override {}*/
 	String		GetTreeString(int indent) override;
-	void		Forward() {}
+	//void		Forward() {}
 	bool		Load();
 	bool		PostInitialize();
 	
@@ -410,10 +410,10 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		Forward();
+	void		Forward();*/
 	bool		Load();
 	bool		PostInitialize();
 	
@@ -435,9 +435,9 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -457,9 +457,9 @@ public:
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	
 	void		Dump() {LOG(GetTreeString());}
 	
@@ -531,7 +531,7 @@ protected:
 	bool		LoadFile(String path);
 	bool		Load(const String& content, const String& filepath="temp");
 	bool		LoadCompilationUnit(Script::CompilationUnit& cunit);
-	bool		LoadGlobalScope(Script::GlobalScope& list);
+	bool		LoadAstNode(Script::GlobalScope& list);
 	bool		ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1);
 	bool		ImplementScript();
 	

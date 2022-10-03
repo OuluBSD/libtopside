@@ -56,8 +56,15 @@ ScriptLoader::~ScriptLoader() {
 	//LOG("~ScriptLoader");
 }
 
+void ScriptLoader::LogMessage(ProcMsg msg) {
+	LOG(msg.ToString());
+}
+
 bool ScriptLoader::Initialize() {
 	Machine& mach = GetMachine();
+	
+	if (!WhenMessage)
+		WhenMessage << THISBACK(LogMessage);
 	
 	//def_ws.SetActionPlanner(def_planner);
 	
@@ -165,8 +172,9 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 	//p.Dump();
 	
 	if (!LoadCompilationUnit(root)) {
-		LOG("error dump:"); loader->Dump();
-		DumpErrors();
+		LOG("error dump:");
+		if (loader) loader->Dump();
+		//DumpErrors();
 		
 		Cleanup();
 		WhenLeaveScriptLoad();
@@ -174,7 +182,7 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 	}
 	
 	if (!ImplementScript()) {
-		DumpErrors();
+		//DumpErrors();
 		
 		Cleanup();
 		WhenLeaveScriptLoad();
@@ -191,7 +199,7 @@ void ScriptLoader::Cleanup() {
 	loader.Clear();
 }
 
-void ScriptLoader::DumpErrors() {
+/*void ScriptLoader::DumpErrors() {
 	Vector<ScriptLoopLoader*> loops;
 	loader->GetLoops(loops);
 	for (ScriptLoopLoader* ll : loops) {
@@ -199,7 +207,7 @@ void ScriptLoader::DumpErrors() {
 			LOG("ScriptLoopLoader: error: " << ll->GetErrorString());
 		}
 	}
-}
+}*/
 
 bool ScriptLoader::ImplementScript() {
 	
@@ -270,10 +278,6 @@ bool ScriptLoader::ImplementScript() {
 	return true;
 }
 
-bool ScriptLoader::LoadCompilationUnit(AstNode* root) {
-	return LoadGlobalScope(root);
-}
-
 bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) {
 	Vector<AstNode*> path;
 	
@@ -302,23 +306,143 @@ bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) 
 	return true;
 }
 
-bool ScriptLoader::LoadGlobalScope(AstNode* root) {
-	ASSERT(root);
-	if (!root) return false;
+bool ScriptLoader::LoadCompilationUnit(AstNode* root) {
+	loader.Clear();
 	
-	Vector<AstNode*> loops, states, drivers, atoms, stmts, conns;
+	if (!LoadGlobalScope(cunit.glob, root))
+		return false;
 	
-	LOG(root->GetTreeString(0));
+	loader = new ScriptSystemLoader(*this, 0, cunit.glob);
+	
+	return true;
+}
+
+bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
+	ASSERT(n);
+	if (!n) return false;
+	
+	//LOG(n->GetTreeString(0));
+	
+	Vector<AstNode*> items;
+	n->FindAllNonIdEndpoints(items, (SemanticType)(SEMT_ECS_ANY | SEMT_MACH_ANY));
+	
+	if (items.IsEmpty()) {
+		AddError(def.loc, "empty node");
+		return false;
+	}
+	
+	bool has_machine = false;
+	for (AstNode* item : items) {
+		if (item->src == SEMT_MACHINE) {
+			TODO
+			has_machine = true;
+		}
+		else if (item->src == SEMT_ENGINE) {
+			TODO
+		}
+	}
+	
+	if (!has_machine) {
+		Script::MachineDefinition& mach = def.machs.Add();
+		return LoadMachine(mach, n);
+	}
+	
+	return true;
+}
+
+bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
+	Vector<AstNode*> items;
+	n->FindAllNonIdEndpoints(items, (SemanticType)(SEMT_ECS_ANY | SEMT_MACH_ANY));
+	
+	if (items.IsEmpty()) {
+		AddError(def.loc, "empty node");
+		return false;
+	}
+	
+	bool has_chain = false;
+	for (AstNode* item : items) {
+		if (item->src == SEMT_CHAIN) {
+			TODO
+			has_chain = true;
+		}
+		else if (item->src == SEMT_DRIVER) {
+			TODO
+		}
+	}
+	
+	if (!has_chain) {
+		Script::ChainDefinition& chain = def.chains.Add();
+		return LoadChain(chain, n);
+	}
+	
+	return true;
+}
+
+bool ScriptLoader::LoadEngine(Script::EngineDefinition& def, AstNode* n) {
+	
+	TODO
+	/*
+	EcsSysDefinition
+	PoolDefinition
+	*/
+}
+
+bool ScriptLoader::LoadDriver(Script::DriverDefinition& def, AstNode* n) {
+	
+	TODO
+	
+}
+
+bool ScriptLoader::LoadTopChain(Script::ChainDefinition& def, AstNode* n) {
+	
+	TODO
+	/*
+	ScriptLoopLoader
+	ScriptStateLoader
+	*/
+}
+
+bool ScriptLoader::LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n) {
+	
+	TODO
+	
+}
+
+bool ScriptLoader::LoadPool(Script::PoolDefinition& def, AstNode* n) {
+	
+	TODO
+	/*
+	ScriptEntityLoader
+	ScriptPoolLoader
+	*/
+}
+
+bool ScriptLoader::LoadState(Script::StateDeclaration& def, AstNode* n) {
+	
+	TODO
+	
+}
+
+bool ScriptLoader::LoadEntity(Script::EntityDefinition& def, AstNode* n) {
+	
+	TODO
+	
+}
+
+bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* root) {
+	Vector<AstNode*> loops, states, atoms, stmts, conns;
+	
+	//LOG(root->GetTreeString(0));
+	
 	root->FindAll(loops, SEMT_LOOP);
-	root->FindAll(drivers, SEMT_DRIVER);
 	root->FindAll(states, SEMT_STATE);
 	
 	//DUMP(loops.GetCount());
 	
-	glob.Clear();
+	chain.Clear();
 	
 	for (AstNode* loop : loops) {
-		Script::LoopDefinition& def = glob.loops.Add();
+		Script::LoopDefinition& def = chain.loops.Add();
 		def.loc = loop->loc;
 		
 		if (!GetPathId(def.id, root, loop))
@@ -395,16 +519,11 @@ bool ScriptLoader::LoadGlobalScope(AstNode* root) {
 		
 	}
 	
-	for (AstNode* driver : drivers) {
-		TODO
-	}
-	
 	for (AstNode* state : states) {
 		TODO
 	}
 	
 	
-	loader = new ScriptSystemLoader(*this, 0, glob);
 	
 	/*//if (loader->()) {
 		LOG("TODO");

@@ -209,6 +209,22 @@ void AstNode::FindAllStmt(Vector<AstNode*>& ptrs, StmtType accepts) {
 		s.FindAllStmt(ptrs, accepts);
 }
 
+void AstNode::FindAllNonIdEndpoints(Vector<AstNode*>& ptrs, SemanticType accepts) {
+	for (AstNode& s : sub)
+		s.FindAllNonIdEndpoints0(ptrs, accepts);
+	if (sub.IsEmpty() && src != SEMT_IDPART)
+		ptrs.Add(this);
+}
+
+void AstNode::FindAllNonIdEndpoints0(Vector<AstNode*>& ptrs, SemanticType accepts) {
+	if (src == SEMT_IDPART) {
+		for (AstNode& s : sub)
+			s.FindAllNonIdEndpoints0(ptrs, accepts);
+	}
+	else if (accepts == SEMT_NULL || IsPartially(accepts))
+		ptrs.Add(this);
+}
+
 String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {

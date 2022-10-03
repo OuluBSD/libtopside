@@ -31,9 +31,6 @@ file
 	Ecs readonly separator,
 	Ecs.h,
 	Component.cpp,
-	Entity.cpp,
 	Pool.cpp,
-	EcsSystem.cpp,
-	Engine.cpp,
 	_ readonly separator;
 

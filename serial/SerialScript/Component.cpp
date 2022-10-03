@@ -7,5 +7,9 @@ ScriptComponentLoader::ScriptComponentLoader(ScriptEntityLoader& parent, int id,
 	
 }
 
+bool ScriptComponentLoader::Load() {
+	TODO
+}
+
 
 NAMESPACE_SERIAL_END

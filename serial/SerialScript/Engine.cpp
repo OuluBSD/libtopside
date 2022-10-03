@@ -1,6 +1,5 @@
 #include "SerialScript.h"
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -17,6 +16,10 @@ ScriptEngineLoader::ScriptEngineLoader(ScriptSystemLoader& parent, int id, Scrip
 		pools.Add(new ScriptPoolLoader(*this, 0, pools.GetCount(), pool));
 	}
 	
+}
+
+bool ScriptEngineLoader::Load() {
+	TODO
 }
 
 String ScriptEngineLoader::GetTreeString(int indent) {
@@ -88,4 +91,3 @@ void ScriptEngineLoader::CheckStatusDeep() {
 
 NAMESPACE_SERIAL_END
 
-#endif

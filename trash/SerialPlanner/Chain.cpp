@@ -79,7 +79,7 @@ void ScriptChainLoader::Forward() {
 	iter++;
 }
 
-void ScriptChainLoader::ForwardLoops() {
+/*void ScriptChainLoader::ForwardLoops() {
 	if (status == WAITING_CHILDREN) {
 		for (ScriptLoopLoader& loader : loops) {
 			loader.Forward();
@@ -99,7 +99,7 @@ void ScriptChainLoader::CheckStatusDeep() {
 		loader.CheckStatusDeep();
 	
 	CheckFlags();
-}
+}*/
 
 Script::Id ScriptChainLoader::GetDeepId() const {
 	return parent.GetDeepId(); // chain & topchain has same id

@@ -7,5 +7,8 @@ ScriptEcsSystemLoader::ScriptEcsSystemLoader(ScriptEngineLoader& parent, int id,
 	
 }
 
+bool ScriptEcsSystemLoader::Load() {
+	TODO
+}
 
 NAMESPACE_SERIAL_END

@@ -10,13 +10,13 @@ ScriptLoopLoader::ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::Lo
 	planner.SetLoopLoader(this);
 }
 
-void ScriptLoopLoader::LoopStatus() {
+/*void ScriptLoopLoader::LoopStatus() {
 	Panic("internal error");
 }
 
 void ScriptLoopLoader::ForwardLoops() {
 	Panic("internal error");
-}
+}*/
 
 void ScriptLoopLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	Panic("internal error");

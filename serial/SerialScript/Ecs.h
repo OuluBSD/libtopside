@@ -1,9 +1,9 @@
 #ifndef _SerialScript_Ecs_h_
 #define _SerialScript_Ecs_h_
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
+
 
 class ScriptEngineLoader;
 class ScriptPoolLoader;
@@ -24,6 +24,7 @@ public:
 	
 	EcsLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
 	
+	virtual bool		Load() = 0;
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) {TODO}
 	void				SetError(String s) {err_str = s;}
@@ -37,13 +38,14 @@ public:
 	using Base = EcsLoaderBase<Script::EcsSysDefinition, ScriptEngineLoader>;
 	RTTI_DECL1(ScriptEcsSystemLoader, Base)
 	
-	LinkedList<Script::Statement> stmts;
+	ArrayMap<String, Object> args;
 	
 public:
 	
 	
 	ScriptEcsSystemLoader(ScriptEngineLoader& parent, int id, Script::EcsSysDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {/*vis | systems | pools;*/}
+	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -64,6 +66,7 @@ public:
 	
 	ScriptComponentLoader(ScriptEntityLoader& parent, int id, Script::ComponentDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {/*vis | comps;*/}
+	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -85,6 +88,7 @@ public:
 	
 	ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script::EntityDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | comps;}
+	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
@@ -110,10 +114,11 @@ public:
 	
 	
 	ScriptPoolLoader(ScriptEngineLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def);
-	void		ForwardSubchainLoops();
-	void		ForwardChainLoops();
+	/*void		ForwardSubchainLoops();
+	void		ForwardChainLoops();*/
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | entities | pools;}
+	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
@@ -136,6 +141,7 @@ public:
 	ScriptEngineLoader(ScriptSystemLoader& parent, int id, Script::EngineDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | systems | pools;}
 	String		GetTreeString(int indent) override;
+	bool		Load() override;
 	/*void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
@@ -166,5 +172,5 @@ extern ExtScriptEngineLoaderBase* __ecs_script_loader;
 
 NAMESPACE_SERIAL_END
 
-#endif
+
 #endif

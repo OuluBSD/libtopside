@@ -23,18 +23,6 @@ struct Statement {
 	
 };
 
-struct ChainDefinition {
-	LinkedList<StateDeclaration> states;
-	LinkedList<Statement> ret_list;
-	LinkedList<LoopDefinition> loops;
-	LinkedList<ChainDefinition> subchains;
-	Id id;
-	
-	void operator=(const ChainDefinition& v) {states <<= v.states; ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
-	String GetTreeString(int indent=0) const;
-	void GetSubChainPointers(LinkedList<Script::ChainDefinition*>& ptrs);
-};
-
 struct Value {
 	typedef enum : byte {
 		VAL_INVALID,
@@ -88,42 +76,6 @@ struct Value {
 	
 };
 
-struct MachineDefinition {
-	LinkedList<ChainDefinition>		chains;
-	LinkedList<Statement>			stmts;
-	LinkedList<DriverDefinition>	drivers;
-	Id								id;
-	
-	void operator=(const MachineDefinition& v) {id = v.id; chains <<= v.chains;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-};
-
-struct State {
-	LinkedList<Statement>			stmts;
-	LinkedList<Statement>			ret_list;
-	Id								id;
-	
-	void operator=(const State& v) {stmts <<= v.stmts; ret_list <<= v.ret_list; id = v.id;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-};
-
-struct GlobalScope {
-	Array<MachineDefinition>		machs;
-	Array<State>					states;
-	Script::Id						id;
-	
-	String GetTreeString(int indent=0) const;
-	
-};
-
-struct CompilationUnit {
-	GlobalScope						list;
-	
-	String GetTreeString(int indent=0) const;
-	
-};
 
 
 

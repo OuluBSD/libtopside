@@ -163,7 +163,7 @@ bool ScriptDriverLoader::Start() {
 	return true;
 }
 
-void ScriptDriverLoader::ForwardLoops() {
+/*void ScriptDriverLoader::ForwardLoops() {
 	Panic("internal error");
 }
 
@@ -173,7 +173,7 @@ void ScriptDriverLoader::LoopStatus() {
 
 void ScriptDriverLoader::CheckStatusDeep() {
 	CheckFlags();
-}
+}*/
 
 void ScriptDriverLoader::FindAtoms() {
 	atoms.Clear();

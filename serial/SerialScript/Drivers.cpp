@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptDriverLoader::ScriptDriverLoader(ScriptSystemLoader& parent, int id, Script::DriverDefinition& def) :
+ScriptDriverLoader::ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def) :
 	Base(parent, id, def)
 {
 	
@@ -31,11 +31,11 @@ void ScriptDriverLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 	v.Add(this);
 }
 
-void ScriptDriverLoader::Forward() {
+/*void ScriptDriverLoader::Forward() {
 	if (IsReady())
 		return;
 	
-	TODO
+	TODO*/
 	
 	/*ASSERT(!IsFailed());
 	ScriptStatus prev_status = status;
@@ -56,7 +56,7 @@ void ScriptDriverLoader::Forward() {
 	}
 	
 	ASSERT(prev_status != status);*/
-}
+//}
 
 bool ScriptDriverLoader::Load() {
 	ScriptLoader& loader = GetLoader();
@@ -171,17 +171,13 @@ bool ScriptDriverLoader::Start() {
 	return true;
 }
 
-void ScriptDriverLoader::ForwardLoops() {
-	Panic("internal error");
-}
-
-void ScriptDriverLoader::LoopStatus() {
+/*void ScriptDriverLoader::LoopStatus() {
 	Panic("internal error");
 }
 
 void ScriptDriverLoader::CheckStatusDeep() {
 	TODO //CheckFlags();
-}
+}*/
 
 void ScriptDriverLoader::FindAtoms() {
 	atoms.Clear();
@@ -221,11 +217,11 @@ void ScriptDriverLoader::FindAtoms() {
 	}*/
 	
 	if (atoms.IsEmpty()) {
-		SetError("no atom found, which could satisfy driver statements");
+		AddError(def.loc, "no atom found, which could satisfy driver statements");
 		return;
 	}
 	
-	SetStatus(ScriptStatus::READY);
+	//SetStatus(ScriptStatus::READY);
 }
 
 

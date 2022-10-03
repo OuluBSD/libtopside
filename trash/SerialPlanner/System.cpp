@@ -53,20 +53,20 @@ String ScriptSystemLoader::GetTreeString(int indent) {
 	return s;
 }
 
-void ScriptSystemLoader::ForwardLoops() {
+/*void ScriptSystemLoader::ForwardLoops() {
 	if (status == WAITING_CHILDREN) {
 		for (ScriptMachineLoader& loader : machs) {
 			loader.Forward();
 		}
 	}
 	else TODO
-}
+}*/
 
-void ScriptSystemLoader::LoopStatus() {
+/*void ScriptSystemLoader::LoopStatus() {
 	for (ScriptMachineLoader& loader : machs) {
 		CheckStatus(loader.GetStatus());
 	}
-}
+}*/
 
 void ScriptSystemLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	for (ScriptMachineLoader& loader : machs) {

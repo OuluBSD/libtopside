@@ -1,6 +1,5 @@
-#include "Internal.h"
+#include "SerialScript.h"
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -15,6 +14,10 @@ ScriptChainLoader::ScriptChainLoader(ScriptTopChainLoader& parent, int id, Scrip
 	
 }
 
+bool ScriptChainLoader::Load() {
+	TODO
+}
+
 String ScriptChainLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -23,7 +26,7 @@ String ScriptChainLoader::GetTreeString(int indent) {
 	for (ScriptLoopLoader& loader : loops) {
 		s << loader.GetTreeString(indent+1);
 	}
-	s << GetScriptStatusLine(indent+1, status);
+	//s << GetScriptStatusLine(indent+1, status);
 	
 	return s;
 }
@@ -40,13 +43,13 @@ void ScriptChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	}
 }
 
-void ScriptChainLoader::Forward() {
+/*void ScriptChainLoader::Forward() {
 	if (iter == 0) {
 		Index<String> loop_names;
 		for (const ScriptLoopLoader& ll : loops) {
 			String name = ll.def.id.ToString();
 			if (loop_names.Find(name) >= 0) {
-				SetError("duplicate loop with name '" + name + "'");
+				AddError(def.loc, "duplicate loop with name '" + name + "'");
 				return;
 			}
 			loop_names.Add(name);
@@ -78,9 +81,9 @@ void ScriptChainLoader::Forward() {
 		Base::Forward();
 	
 	iter++;
-}
+}*/
 
-void ScriptChainLoader::ForwardLoops() {
+/*void ScriptChainLoader::ForwardLoops() {
 	if (status == WAITING_CHILDREN) {
 		for (ScriptLoopLoader& loader : loops) {
 			loader.Forward();
@@ -100,13 +103,13 @@ void ScriptChainLoader::CheckStatusDeep() {
 		loader.CheckStatusDeep();
 	
 	CheckFlags();
-}
+}*/
 
 Script::Id ScriptChainLoader::GetDeepId() const {
 	return parent.GetDeepId(); // chain & topchain has same id
 }
 
-
+/*
 void ScriptChainLoader::MakeOptionLinkVector() {
 	solver.Create();
 	
@@ -141,9 +144,9 @@ void ScriptChainLoader::LinkPlanner() {
 	}
 	
 	SetStatus(LINKER);
-}
+}*/
 
-void ScriptChainLoader::Linker() {
+/*void ScriptChainLoader::Linker() {
 	const Vector<ScriptLinkOption*>& result = solver->result;
 	const Array<ScriptLoopOptions>& options = solver->loops;
 	
@@ -226,9 +229,7 @@ void ScriptChainLoader::Linker() {
 	else
 		SetStatus(WAITING_CHILDREN);
 	
-}
+}*/
 
 
 NAMESPACE_SERIAL_END
-
-#endif

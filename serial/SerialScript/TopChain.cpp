@@ -1,6 +1,5 @@
-#include "Internal.h"
+#include "SerialScript.h"
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -46,6 +45,10 @@ ScriptTopChainLoader::ScriptTopChainLoader(int mode, ScriptMachineLoader& parent
 	}
 }
 
+bool ScriptTopChainLoader::Load() {
+	TODO
+}
+
 String ScriptTopChainLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -63,7 +66,7 @@ String ScriptTopChainLoader::GetTreeString(int indent) {
 			s << loader.GetTreeString(indent+1);
 		}
 	}
-	s << GetScriptStatusLine(indent+1, status);
+	//s << GetScriptStatusLine(indent+1, status);
 	
 	return s;
 }
@@ -94,16 +97,16 @@ void ScriptTopChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	}
 }
 
-void ScriptTopChainLoader::ForwardLoops() {
+/*void ScriptTopChainLoader::ForwardLoops() {
 	ASSERT(!IsReady() && !IsFailed());
 	
 	if (use_subchains)
 		ForwardSubchainLoops();
 	else
 		ForwardChainLoops();
-}
+}*/
 
-void ScriptTopChainLoader::LoopStatus() {
+/*void ScriptTopChainLoader::LoopStatus() {
 	if (use_subchains) {
 		for (ScriptTopChainLoader& loader : subchains) {
 			CheckStatus(loader.GetStatus());
@@ -127,9 +130,9 @@ void ScriptTopChainLoader::CheckStatusDeep() {
 	}
 	
 	CheckFlags();
-}
+}*/
 
-void ScriptTopChainLoader::ForwardSubchainLoops() {
+/*void ScriptTopChainLoader::ForwardSubchainLoops() {
 	if (status == WAITING_CHILDREN) {
 		for (ScriptTopChainLoader& loader : subchains) {
 			loader.Forward();
@@ -145,9 +148,7 @@ void ScriptTopChainLoader::ForwardChainLoops() {
 		}
 	}
 	else TODO
-}
+}*/
 
 
 NAMESPACE_SERIAL_END
-
-#endif

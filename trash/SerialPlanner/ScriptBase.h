@@ -132,9 +132,9 @@ public:
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
 	virtual void		GetLoops(Vector<ScriptLoopLoader*>& v) = 0;
-	virtual void		ForwardLoops() = 0;
-	virtual void		LoopStatus() = 0;
-	virtual void		CheckStatusDeep() = 0;
+	//virtual void		ForwardLoops() = 0;
+	//virtual void		LoopStatus() = 0;
+	//virtual void		CheckStatusDeep() = 0;
 	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
 	virtual void		GetStates(Vector<ScriptStateLoader*>& v) {Panic("not implemented");}
 	

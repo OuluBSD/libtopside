@@ -4,32 +4,28 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptLoopLoader::ScriptLoopLoader(ScriptSystemLoader& parent, int id, Script::LoopDefinition& def) :
+ScriptLoopLoader::ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::LoopDefinition& def) :
 	Base(parent, id, def)
 {
 	//planner.SetLoopLoader(this);
 }
 
-void ScriptLoopLoader::LoopStatus() {
+/*void ScriptLoopLoader::LoopStatus() {
 	Panic("internal error");
-}
-
-void ScriptLoopLoader::ForwardLoops() {
-	Panic("internal error");
-}
+}*/
 
 void ScriptLoopLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	Panic("internal error");
 }
 
-void ScriptLoopLoader::CheckStatusDeep() {
+/*void ScriptLoopLoader::CheckStatusDeep() {
 	// pass
-}
+}*/
 
-void ScriptLoopLoader::SetStatus(ScriptStatus status) {
+/*void ScriptLoopLoader::SetStatus(ScriptStatus status) {
 	MACHVER_STATUS(LoopLoader_Status, this)
 	Base::SetStatus(status);
-};
+};*/
 
 String ScriptLoopLoader::GetTreeString(int indent) {
 	String s;
@@ -43,9 +39,9 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 		s << seg.GetTreeString(id++, indent+1);
 	}*/
 	
-	String extra;
+	/*String extra;
 	if (status == ScriptStatus::FAILED)
-		extra = err_str;
+		extra = err_str;*/
 	
 	//s << GetScriptStatusLine(indent+1, status, extra);
 	
@@ -206,7 +202,7 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	if (l.link == &sink)
 		return; // todo: prevent this call happening
 	ASSERT(!l.link);
-	if (l.link) {SetError("ScriptLoopLoader::SetSideSourceConnected: internal error: atom already linked"); return;}
+	if (l.link) {AddError(def.loc, "ScriptLoopLoader::SetSideSourceConnected: internal error: atom already linked"); return;}
 	l.link = &sink;
 	
 	MACHVER_STATUS(LoopLoader_AtomLinked, this);
@@ -313,14 +309,14 @@ bool ScriptLoopLoader::IsTopSidesConnected() const {
 	
 }*/
 
-void ScriptLoopLoader::Forward() {
+/*void ScriptLoopLoader::Forward() {
 	if (IsReady())
 		return;
 	
 	ASSERT(!IsFailed());
 	ScriptStatus prev_status = status;
 	
-	TODO
+	TODO*/
 	
 	/*if (status == ScriptStatus::IN_BEGINNING) {
 		if (!InitSegments())
@@ -368,7 +364,7 @@ void ScriptLoopLoader::Forward() {
 	}
 	
 	ASSERT(prev_status != status);*/
-}
+//}
 
 #if 0
 
@@ -647,7 +643,7 @@ bool ScriptLoopLoader::Load() {
 	//DUMP(deep_id);
 	LoopRef l = loader.ResolveLoop(deep_id);
 	if (!l) {
-		SetError("Could not resolve entity with deep id: " + deep_id.ToString());
+		AddError(def.loc, "Could not resolve entity with deep id: " + deep_id.ToString());
 		return false;
 	}
 	
@@ -695,7 +691,7 @@ bool ScriptLoopLoader::Load() {
 			
 			if (!ab) {
 				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
-				SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+				AddError(def.loc, "Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
 				DUMP(atom);
 				ASSERT(0);
 				return false;
@@ -703,7 +699,7 @@ bool ScriptLoopLoader::Load() {
 			
 			if (!lb) {
 				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
-				SetError("Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+				AddError(def.loc, "Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
 				DUMP(atom);
 				ASSERT(0);
 				return false;
@@ -764,13 +760,13 @@ bool ScriptLoopLoader::Load() {
 			
 			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
-				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+				AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			
 			if (!lb->Initialize(ws)) {
 				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
-				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+				AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			
@@ -782,7 +778,7 @@ bool ScriptLoopLoader::Load() {
 		}
 		
 		if (!found) {
-			parent.parent.AddError(atom_def.loc, "could not find atom action");
+			AddError(atom_def.loc, "could not find atom action");
 			return false;
 		}
 	}
@@ -811,7 +807,7 @@ bool ScriptLoopLoader::Load() {
 			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
 			String src_sink_name = Parallel::Factory::IfaceLinkDataMap().Get(common_vd).name;
 			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");*/
-			parent.parent.AddError(FileLocation(), "could not link atoms");
+			AddError(FileLocation(), "could not link atoms");
 			return false;
 		}
 		
@@ -847,7 +843,7 @@ bool ScriptLoopLoader::Load() {
 		return false;
 	}*/
 	
-	status = READY;
+	//status = READY;
 	return true;
 }
 

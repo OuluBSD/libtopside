@@ -55,7 +55,7 @@ void ScriptMachineLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	}
 }
 
-void ScriptMachineLoader::ForwardLoops() {
+/*void ScriptMachineLoader::ForwardLoops() {
 	
 	if (status == WAITING_CHILDREN) {
 		for (ScriptDriverLoader& loader : drivers) {
@@ -68,9 +68,9 @@ void ScriptMachineLoader::ForwardLoops() {
 	}
 	else TODO
 	
-}
+}*/
 
-void ScriptMachineLoader::LoopStatus() {
+/*void ScriptMachineLoader::LoopStatus() {
 	
 	for (ScriptDriverLoader& loader : drivers) {
 		CheckStatus(loader.GetStatus());
@@ -86,7 +86,7 @@ void ScriptMachineLoader::CheckStatusDeep() {
 		loader.CheckStatusDeep();
 	
 	CheckFlags();
-}
+}*/
 
 
 NAMESPACE_SERIAL_END

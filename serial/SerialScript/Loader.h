@@ -15,6 +15,10 @@ class ScriptLoopLoader;
 class ScriptDriverLoader;
 class ScriptStateLoader;
 class ScriptSystemLoader;
+class ScriptTopChainLoader;
+class ScriptChainLoader;
+class ScriptMachineLoader;
+class ScriptEngineLoader;
 
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
 
@@ -22,95 +26,7 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 using namespace Parallel;
 
 
-namespace Script {
-
-class ActionPlanner;
-class ActionNode;
-
-
-
-struct Id {
-	LinkedList<String> parts;
-	
-	
-	Id() {}
-	Id(const Id& o) {*this = o;}
-	Id(Id&& o) {Swap(parts, o.parts);}
-	
-	void Clear() {parts.Clear();}
-	void Set(String s) {parts.Clear(); parts.Add(s);}
-	void operator=(const Id& v) {parts <<= v.parts;}
-	String ToString() const;
-	String GetTreeString(int indent=0) const;
-	bool operator==(const Id& id) const;
-	bool IsEmpty() const {return parts.IsEmpty();}
-	void Append(const Id& id) {parts.Append(id.parts);}
-	
-};
-
-struct AtomDefinition {
-	Id id;
-	FileLocation loc;
-	ArrayMap<String, Object> args;
-	IfaceConnTuple iface;
-	
-	void Set(String key, const Object& val) {args.GetAdd(key) = val;}
-	
-};
-
-	
-struct LoopDefinition {
-	Id id;
-	Array<AtomDefinition> atoms;
-	//LinkedList<Statement> stmts;
-	//LinkedList<Statement> ret_list;
-	//LinkedList<Id> req;
-	FileLocation loc;
-	
-	//void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts; ret_list <<= v.ret_list; req <<= v.req;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-};
-
-struct StateDeclaration {
-	Id id;
-	FileLocation loc;
-	
-	void operator=(const StateDeclaration& v) {id = v.id;}
-	
-};
-
-struct DriverDefinition {
-	//LinkedList<Statement> stmts;
-	Id id;
-	FileLocation loc;
-	
-	//void operator=(const DriverDefinition& v) {id = v.id; stmts <<= v.stmts;}
-	String GetTreeString(int indent=0) const;
-	String ToString() const;
-	
-};
-
-struct GlobalScope {
-	Array<LoopDefinition>			loops;
-	Array<StateDeclaration>			states;
-	Array<DriverDefinition>			drivers;
-	Script::Id						id;
-	FileLocation loc;
-	
-	void Clear() {loops.Clear(); states.Clear(); drivers.Clear(); id.Clear();}
-	String GetTreeString(int indent=0) const;
-	
-};
-
-}
-
-
-
-
-
-
-typedef enum {
+/*typedef enum {
 	UNASSIGNED,
 
 	IN_BEGINNING,
@@ -129,7 +45,7 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 		default: break;
 	}
 	return t;
-}
+}*/
 
 
 
@@ -144,9 +60,9 @@ class ScriptLoaderBase : RTTIBase {
 	
 	
 protected:
-	void ResetFlags() {any_waiting_parent = false; any_waiting_children = false; any_linking = false; any_routing = false; all_ready = true; any_failed = false;}
-	void CheckFlags();
-	void CheckStatus(ScriptStatus s);
+	//void ResetFlags() {any_waiting_parent = false; any_waiting_children = false; any_linking = false; any_routing = false; all_ready = true; any_failed = false;}
+	//void CheckFlags();
+	//void CheckStatus(ScriptStatus s);
 	
 	int							iter = 0;
 	
@@ -157,40 +73,42 @@ public:
 	
 	LoaderParent&				parent;
 	ParserDef&					def;
-	ScriptStatus				status = IN_BEGINNING;
+	//ScriptStatus				status = IN_BEGINNING;
 	String						err_str;
 	int							id = -1;
-	bool						any_waiting_parent = false;
+	/*bool						any_waiting_parent = false;
 	bool						any_waiting_children = false;
 	bool						any_linking = false;
 	bool						any_routing = false;
 	bool						all_ready = false;
 	bool						any_failed = false;
-	int							prev_segment_count = 0;
+	int							prev_segment_count = 0;*/
 	
 	ScriptLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
-	void				Forward();
+	//void				Forward();
 	
 	//void				SetStatusRetry() {SetStatus(RETRY);}
-	void				SetError(String s) {err_str = s; SetStatus(FAILED); LOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
+	//void				SetError(String s) {err_str = s; SetStatus(FAILED); LOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
-	bool				IsFailed() const {return status == FAILED;}
+	/*bool				IsFailed() const {return status == FAILED;}
 	bool				IsReady() const {return status == READY;}
-	bool				IsStatus(ScriptStatus s) const {return status == s;}
+	bool				IsStatus(ScriptStatus s) const {return status == s;}*/
 	int					GetId() const {return id;}
-	ScriptStatus		GetStatus() const {return status;}
+	//ScriptStatus		GetStatus() const {return status;}
 	ScriptLoader&		GetLoader() {return parent.GetLoader();}
 	String				GetErrorString() const {return err_str;}
+	void				AddError(const FileLocation& loc, String msg) {parent.AddError(loc, msg);}
 	
 	virtual Script::Id	GetDeepId() const {Script::Id id = parent.GetDeepId(); id.Append(def.id); return id;}
-	virtual void		SetStatus(ScriptStatus s) {status = s;}
+	//virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
+	virtual bool		Load() = 0;
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
 	virtual void		GetLoops(Vector<ScriptLoopLoader*>& v) = 0;
-	virtual void		ForwardLoops() = 0;
-	virtual void		LoopStatus() = 0;
-	virtual void		CheckStatusDeep() = 0;
+	//virtual void		ForwardLoops() = 0;
+	/*virtual void		LoopStatus() = 0;
+	virtual void		CheckStatusDeep() = 0;*/
 	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
 	virtual void		GetStates(Vector<ScriptStateLoader*>& v) {Panic("not implemented");}
 	
@@ -200,7 +118,7 @@ public:
 
 
 
-class ScriptLoopLoader : public ScriptLoaderBase<Script::LoopDefinition, ScriptSystemLoader> {
+class ScriptLoopLoader : public ScriptLoaderBase<Script::LoopDefinition, ScriptChainLoader> {
 	
 protected:
 	
@@ -214,7 +132,7 @@ protected:
 	Array<AddedAtom>		added_atoms;
 	
 public:
-	using Base = ScriptLoaderBase<Script::LoopDefinition, ScriptSystemLoader>;
+	using Base = ScriptLoaderBase<Script::LoopDefinition, ScriptChainLoader>;
 	RTTI_DECL1(ScriptLoopLoader, Base)
 	
 	
@@ -250,7 +168,7 @@ protected:
 	
 	
 public:
-	ScriptLoopLoader(ScriptSystemLoader& parent, int id, Script::LoopDefinition& def);
+	ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::LoopDefinition& def);
 	
 	
 	void		Forward();
@@ -263,48 +181,110 @@ public:
 	
 	bool		Start();
 	bool		Parse();
-	bool		Load();
 	bool		PostInitialize();
 	void		UpdateLoopLimits();
 	int			GetAtomLinkCount() const {return atom_links.GetCount();}
 	
+	bool		Load() override;
 	void		Visit(RuntimeVisitor& vis) override {vis && atoms;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		SetStatus(ScriptStatus status) override;
+	void		SetStatus(ScriptStatus status) override;*/
 };
 
-class ScriptStateLoader : public ScriptLoaderBase<Script::StateDeclaration, ScriptSystemLoader> {
+class ScriptChainLoader : public ScriptLoaderBase<Script::ChainDefinition, ScriptTopChainLoader> {
+	
+public:
+	using Base = ScriptLoaderBase<Script::ChainDefinition, ScriptTopChainLoader>;
+	RTTI_DECL1(ScriptChainLoader, Base)
+	
+public:
+	Array<ScriptLoopLoader>			loops;
+	Array<ScriptStateLoader>		states;
+	
+	
+	ScriptChainLoader(ScriptTopChainLoader& parent, int id, Script::ChainDefinition& def);
+	
+	void		Forward();
+	void		MakeOptionLinkVector();
+	void		FindAcceptedLinks();
+	void		LinkPlanner();
+	void		Linker();
+	
+	void		Visit(RuntimeVisitor& vis) override {vis | loops | states;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
+	void		CheckStatusDeep() override;
+	bool		Load() override;*/
+	Script::Id	GetDeepId() const override;
+	bool		Load() override;
+	
+};
+
+
+class ScriptTopChainLoader : public ScriptLoaderBase<Script::ChainDefinition, ScriptMachineLoader> {
+public:
+	using Base = ScriptLoaderBase<Script::ChainDefinition, ScriptMachineLoader>;
+	RTTI_DECL1(ScriptTopChainLoader, Base)
+	
+public:
+	enum {NORMAL, SPLITTED_CHAIN, SPLITTED_LOOPS};
+	
+	Array<ScriptChainLoader>		chains;
+	Array<ScriptTopChainLoader>		subchains;
+	ScriptTopChainLoader*			chain_parent;
+	bool							use_subchains = false;
+	
+	
+	ScriptTopChainLoader(int mode, ScriptMachineLoader& parent, ScriptTopChainLoader* chain_parent, int id, Script::ChainDefinition& def);
+	/*void		ForwardSubchainLoops();
+	void		ForwardChainLoops();*/
+	
+	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
+	void		CheckStatusDeep() override;*/
+	bool		Load() override;
+	
+};
+
+class ScriptStateLoader : public ScriptLoaderBase<Script::StateDeclaration, ScriptChainLoader> {
 	
 protected:
 	Script::Id		id;
 	
 public:
-	using Base = ScriptLoaderBase<Script::StateDeclaration, ScriptSystemLoader>;
+	using Base = ScriptLoaderBase<Script::StateDeclaration, ScriptChainLoader>;
 	RTTI_DECL1(ScriptStateLoader, Base)
 	
 public:
 	
 	
-	ScriptStateLoader(ScriptSystemLoader& parent, int id, Script::StateDeclaration& def);
+	ScriptStateLoader(ScriptChainLoader& parent, int id, Script::StateDeclaration& def);
 	void		Visit(RuntimeVisitor& vis) override {}
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override {}
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override {}
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override {}
-	void		LoopStatus() override {}
-	void		CheckStatusDeep() override {}
+	//void		ForwardLoops() override {}
+	/*void		LoopStatus() override {}
+	void		CheckStatusDeep() override {}*/
 	String		GetTreeString(int indent) override;
+	bool		Load() override;
 	void		Forward() {}
-	bool		Load();
 	bool		PostInitialize();
 	
 };
 
-class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, ScriptSystemLoader> {
+class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader> {
 	
 protected:
 	struct AddedAtom {
@@ -318,25 +298,48 @@ protected:
 	void		FindAtoms();
 	
 public:
-	using Base = ScriptLoaderBase<Script::DriverDefinition, ScriptSystemLoader>;
+	using Base = ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader>;
 	RTTI_DECL1(ScriptDriverLoader, Base)
 	
 public:
 	
 	
-	ScriptDriverLoader(ScriptSystemLoader& parent, int id, Script::DriverDefinition& def);
+	ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {} //vis | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		Forward();
-	bool		Load();
+	void		Forward();*/
+	bool		Load() override;
 	bool		PostInitialize();
 	bool		Start();
+	
+};
+
+class ScriptMachineLoader : public ScriptLoaderBase<Script::MachineDefinition, ScriptSystemLoader> {
+public:
+	using Base = ScriptLoaderBase<Script::MachineDefinition, ScriptSystemLoader>;
+	RTTI_DECL1(ScriptMachineLoader, Base)
+	
+public:
+	Array<ScriptTopChainLoader>		chains;
+	Array<ScriptDriverLoader>		drivers;
+	
+	
+	ScriptMachineLoader(ScriptSystemLoader& parent, int id, Script::MachineDefinition& def);
+	void		Visit(RuntimeVisitor& vis) override {vis | chains | drivers;}
+	bool		Load() override;
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
+	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -346,22 +349,21 @@ public:
 	RTTI_DECL1(ScriptSystemLoader, Base)
 	
 public:
-	Array<ScriptLoopLoader>		loops;
-	Array<ScriptDriverLoader>	drivers;
-	Array<ScriptStateLoader>	states;
+	Array<ScriptMachineLoader>		machs;
+	Array<ScriptEngineLoader>		engs;
 	
 	
 	ScriptSystemLoader(ScriptLoader& parent, int id, Script::GlobalScope& glob);
 	
-	void		Visit(RuntimeVisitor& vis) override {vis | loops | drivers | states;}
+	void		Visit(RuntimeVisitor& vis) override {vis | machs | engs;}
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
-	bool		Load();
+	//void		ForwardLoops() override;
+	/*void		LoopStatus() override;
+	void		CheckStatusDeep() override;*/
+	bool		Load() override;
 	bool		LoadEcs();
 	
 	void		Dump() {LOG(GetTreeString());}
@@ -391,7 +393,7 @@ protected:
 	//Script::CompilationUnit root;
 	LoopStoreRef es;
 	SpaceStoreRef ss;
-	Script::GlobalScope glob;
+	Script::CompilationUnit cunit;
 	
 	
 	//Vector<ScriptError> errs;
@@ -411,13 +413,14 @@ public:
 	SYS_RTTI(ScriptLoader)
 	typedef ScriptLoader CLASSNAME;
 	ScriptLoader(Machine& m);
-	SYS_DEF_VISIT_((vis & es); /*if (!loader.IsEmpty()) vis % *loader;*/)
+	SYS_DEF_VISIT_((vis & es & ss); if (!loader.IsEmpty()) vis % *loader;)
 	
 	void PostLoadFile(const String& path) {post_load_file << path;}
 	void PostLoadString(const String& s) {post_load_string << s;}
 	
 	ScriptLoader&	GetLoader() {return *this;}
 	int&			GetSideIdCounter() {return tmp_side_id_counter;}
+	void			AddError(const FileLocation& loc, String msg) {ErrorSource::AddError(loc, msg);}
 	
 	
 	//static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::SCRIPT_LOADER_SYSTEM;}
@@ -431,15 +434,26 @@ protected:
     void		Stop() override;
     void		Uninitialize() override;
     
+    void		LogMessage(ProcMsg msg);
     void		Cleanup();
-    void		DumpErrors();
+    //void		DumpErrors();
     bool		DoPostLoad();
 	bool		LoadFile(String path);
 	bool		Load(const String& content, const String& filepath="temp");
-	bool		LoadCompilationUnit(AstNode* root);
-	bool		LoadGlobalScope(AstNode* root);
 	bool		ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1);
 	bool		ImplementScript();
+	
+	bool		LoadCompilationUnit(AstNode* root);
+	bool		LoadGlobalScope(Script::GlobalScope& glob, AstNode* root);
+	bool		LoadChain(Script::ChainDefinition& chain, AstNode* root);
+	bool		LoadMachine(Script::MachineDefinition& mach, AstNode* root);
+	bool		LoadEngine(Script::EngineDefinition& def, AstNode* n);
+	bool		LoadDriver(Script::DriverDefinition& def, AstNode* n);
+	bool		LoadTopChain(Script::ChainDefinition& def, AstNode* n);
+	bool		LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n);
+	bool		LoadPool(Script::PoolDefinition& def, AstNode* n);
+	bool		LoadState(Script::StateDeclaration& def, AstNode* n);
+	bool		LoadEntity(Script::EntityDefinition& def, AstNode* n);
 	
 	//Script::State*	FindState(const Script::Id& id);
 	

@@ -7,7 +7,9 @@
 
 #include "ToyLoader.h"
 #include "Verifier.h"
+#include "Def.h"
 #include "Loader.h"
+#include "Ecs.h"
 
 
 #endif

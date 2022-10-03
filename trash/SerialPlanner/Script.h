@@ -93,10 +93,10 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis && atoms;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		SetStatus(ScriptStatus status) override;
+	void		SetStatus(ScriptStatus status) override;*/
 };
 
 
@@ -230,9 +230,9 @@ public:
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	Script::Id	GetDeepId() const override;
 	
 };
@@ -253,16 +253,16 @@ public:
 	
 	
 	ScriptTopChainLoader(int mode, ScriptMachineLoader& parent, ScriptTopChainLoader* chain_parent, int id, Script::ChainDefinition& def);
-	void		ForwardSubchainLoops();
-	void		ForwardChainLoops();
+	/*void		ForwardSubchainLoops();
+	void		ForwardChainLoops();*/
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -283,11 +283,11 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override {}
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override {}
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override {}
+	/*void		ForwardLoops() override {}
 	void		LoopStatus() override {}
-	void		CheckStatusDeep() override {}
+	void		CheckStatusDeep() override {}*/
 	String		GetTreeString(int indent) override;
-	void		Forward() {}
+	//void		Forward() {}
 	bool		Load();
 	bool		PostInitialize();
 	
@@ -324,10 +324,10 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
-	void		Forward();
+	void		Forward();*/
 	bool		Load();
 	bool		PostInitialize();
 	bool		Start();
@@ -350,8 +350,8 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
+	/*void		ForwardLoops() override;
+	void		LoopStatus() override;*/
 	void		CheckStatusDeep() override;
 	
 };
@@ -373,9 +373,9 @@ public:
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
-	void		ForwardLoops() override;
+	/*void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		CheckStatusDeep() override;
+	void		CheckStatusDeep() override;*/
 	bool		LoadEcs();
 	
 	void		Dump() {LOG(GetTreeString());}

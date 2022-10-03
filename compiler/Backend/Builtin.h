@@ -59,6 +59,7 @@ typedef enum : uint64 {
 	SEMT_META_RESOLVE			= 1ULL << 50,
 	SEMT_STATE					= 1ULL << 51,
 	SEMT_DRIVER					= 1ULL << 52,
+	SEMT_ENGINE					= 1ULL << 53,
 	
 	// Current limit: 1 << 63
 	
@@ -73,7 +74,7 @@ typedef enum : uint64 {
 	SEMT_BLOCK =			SEMT_ROOT | SEMT_NAMESPACE | SEMT_STATEMENT_BLOCK,
 	SEMT_WITH_RVAL_RET =	SEMT_RVAL | SEMT_EXPR | SEMT_CONSTANT | SEMT_RESOLVE | SEMT_ARGUMENT_LIST | SEMT_CTOR | SEMT_OBJECT,
 	
-	SEMT_ECS_ANY =			SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
+	SEMT_ECS_ANY =			SEMT_ENGINE | SEMT_WORLD | SEMT_ENTITY | SEMT_COMPONENT | SEMT_SYSTEM | SEMT_POOL,
 	SEMT_MACH_ANY =			SEMT_MACHINE_DECL | SEMT_MACHINE | SEMT_CHAIN_DECL | SEMT_CHAIN | SEMT_LOOP_DECL | SEMT_DRIVER | SEMT_LOOP | SEMT_STATE | SEMT_ATOM,
 	
 	SEMT_META_FIELD =		SEMT_META_VARIABLE | SEMT_META_PARAMETER,
@@ -148,6 +149,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_META_RESOLVE:			return "meta-resolve";
 		case SEMT_STATE:				return "state";
 		case SEMT_DRIVER:				return "driver";
+		case SEMT_ENGINE:				return "engine";
 		default: return "invalid";
 	}
 }

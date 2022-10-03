@@ -1,6 +1,5 @@
 #include "Internal.h"
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -19,6 +18,10 @@ ScriptMachineLoader::ScriptMachineLoader(ScriptSystemLoader& parent, int id, Scr
 	
 }
 
+bool ScriptMachineLoader::Load() {
+	TODO
+}
+
 String ScriptMachineLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -30,7 +33,7 @@ String ScriptMachineLoader::GetTreeString(int indent) {
 	for (ScriptTopChainLoader& loader : chains) {
 		s << loader.GetTreeString(indent+1);
 	}
-	s << GetScriptStatusLine(indent+1, status);
+	//s << GetScriptStatusLine(indent+1, status);
 	
 	return s;
 }
@@ -56,7 +59,7 @@ void ScriptMachineLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	}
 }
 
-void ScriptMachineLoader::ForwardLoops() {
+/*void ScriptMachineLoader::ForwardLoops() {
 	
 	if (status == WAITING_CHILDREN) {
 		for (ScriptDriverLoader& loader : drivers) {
@@ -69,9 +72,9 @@ void ScriptMachineLoader::ForwardLoops() {
 	}
 	else TODO
 	
-}
+}*/
 
-void ScriptMachineLoader::LoopStatus() {
+/*void ScriptMachineLoader::LoopStatus() {
 	
 	for (ScriptDriverLoader& loader : drivers) {
 		CheckStatus(loader.GetStatus());
@@ -87,9 +90,7 @@ void ScriptMachineLoader::CheckStatusDeep() {
 		loader.CheckStatusDeep();
 	
 	CheckFlags();
-}
+}*/
 
 
 NAMESPACE_SERIAL_END
-
-#endif
