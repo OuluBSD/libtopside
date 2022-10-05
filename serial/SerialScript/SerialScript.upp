@@ -33,7 +33,6 @@ file
 	Parser.h,
 	Parser.cpp,
 	Script.h,
-	TopChain.cpp,
 	Planner.h,
 	Planner.cpp,
 	_ readonly separator;

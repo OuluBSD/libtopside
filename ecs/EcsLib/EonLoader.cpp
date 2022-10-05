@@ -1,6 +1,5 @@
 #include "EcsLib.h"
 
-#if 0
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -44,13 +43,13 @@ bool ExtScriptEngineLoader::Load(ScriptEngineLoader& l) {
 
 bool ExtScriptEngineLoader::Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys) {
 	
-	for (Script::Statement& stmt : l.def.stmts) {
+	TODO/*for (Script::Statement& stmt : l.def.stmts) {
 		String key = stmt.id.ToString();
 		if (stmt.value) {
 			if (!sys.Arg(key, stmt.value->ToObject()))
 				return false;
 		}
-	}
+	}*/
 	
 	Ecs::Engine& eng = Ecs::GetActiveEngine();
 	TypeCls type = sys.GetTypeId();
@@ -101,13 +100,13 @@ bool ExtScriptEngineLoader::Load(ScriptEntityLoader& l, Ecs::Entity& ent) {
 
 bool ExtScriptEngineLoader::Load(ScriptComponentLoader& l, Ecs::ComponentBase& cb) {
 	
-	for (Script::Statement& stmt : l.def.stmts) {
+	TODO/*for (Script::Statement& stmt : l.def.stmts) {
 		String key = stmt.id.ToString();
 		if (stmt.value) {
 			if (!cb.Arg(key, stmt.value->ToObject()))
 				return false;
 		}
-	}
+	}*/
 	
 	return true;
 }
@@ -117,4 +116,3 @@ bool ExtScriptEngineLoader::Load(ScriptComponentLoader& l, Ecs::ComponentBase& c
 
 NAMESPACE_SERIAL_END
 
-#endif

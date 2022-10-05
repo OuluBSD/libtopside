@@ -20,7 +20,7 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	mach.Add<SpaceStore>();
 	mach.Add<LoopStore>();
 	
-    TODO //mach.Add<ScriptLoader>();
+    mach.Add<ScriptLoader>();
     
 	
     reg->SetAppName("Non-screen machine");

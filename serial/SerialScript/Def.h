@@ -32,6 +32,7 @@ struct AtomDefinition {
 	FileLocation					loc;
 	ArrayMap<String, Object>		args;
 	IfaceConnTuple					iface;
+	LinkTypeCls						link;
 	
 	AtomDefinition() {}
 	AtomDefinition(const AtomDefinition& v) {*this = v;}

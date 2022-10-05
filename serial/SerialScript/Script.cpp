@@ -334,7 +334,11 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 	bool has_machine = false;
 	for (AstNode* item : items) {
 		if (item->src == SEMT_MACHINE) {
-			TODO
+			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
+			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
+			
+			if (!LoadMachine(def.machs.Add(), block))
+				return false;
 			has_machine = true;
 		}
 		else if (item->src == SEMT_ENGINE) {
@@ -362,7 +366,18 @@ bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 	bool has_chain = false;
 	for (AstNode* item : items) {
 		if (item->src == SEMT_CHAIN) {
-			TODO
+			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
+			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
+			
+			Vector<AstNode*> items;
+			block->FindAllNonIdEndpoints(items, SEMT_CHAIN);
+			if (items.IsEmpty()) {
+				if (!LoadChain(def.chains.Add(), block))
+					return false;
+			} else {
+				if (!LoadTopChain(def.chains.Add(), block))
+					return false;
+			}
 			has_chain = true;
 		}
 		else if (item->src == SEMT_DRIVER) {
@@ -430,6 +445,7 @@ bool ScriptLoader::LoadEntity(Script::EntityDefinition& def, AstNode* n) {
 }
 
 bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* root) {
+	const auto& map = Parallel::Factory::AtomDataMap();
 	Vector<AstNode*> loops, states, atoms, stmts, conns;
 	
 	//LOG(root->GetTreeString(0));
@@ -466,37 +482,60 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* root) {
 		
 		for (AstNode* atom : atoms) {
 			Script::AtomDefinition& atom_def = def.atoms.Add();
-			IfaceConnTuple& iface = atom_def.iface;
+			
+			if (!GetPathId(atom_def.id, loop, atom))
+				return false;
+			
+			String loop_action = atom_def.id.ToString();
+			const Parallel::Factory::AtomData* found_atom = 0;
+			for (const Parallel::Factory::AtomData& atom_data : map.GetValues()) {
+				bool match = false;
+				for (const String& action : atom_data.actions) {
+					if (action == loop_action) {
+						match = true;
+						break;
+					}
+				}
+				if (!match)
+					continue;
+				found_atom = &atom_data;
+			}
+			
+			if (!found_atom) {
+				AddError(atom->loc, "could not find atom for '" + loop_action + "'");
+				return false;
+			}
+			
+			AtomTypeCls type = found_atom->cls;
+			LinkTypeCls link = found_atom->link_type;
+			ASSERT(type.IsValid());
+			
+			atom_def.iface.Realize(type);
+			ASSERT(atom_def.iface.sink.GetCount());
+			ASSERT(atom_def.iface.src.GetCount());
+			atom_def.link = link;
 			
 			conns.SetCount(0);
 			atom->FindAllStmt(conns, STMT_ATOM_CONNECTOR);
 			if (!conns.IsEmpty()) {
 				TODO
 			}
-			else {
-				ASSERT(iface.sink.IsEmpty());
-				iface.sink.Add().Set(0,0,0);
-				iface.src.Add().Set(0,0,0);
-			}
 			
-			if (!GetPathId(atom_def.id, loop, atom))
-				return false;
-			
-			DUMP(atom_def.id);
+			//DUMP(atom_def.id);
 			
 			stmts.SetCount(0);
 			atom->FindAll(stmts, SEMT_STATEMENT);
 			for (AstNode* stmt : stmts) {
 				bool succ = false;
 				if (stmt->stmt == STMT_EXPR) {
-					LOG(stmt->GetTreeString(0));
+					//LOG(stmt->GetTreeString(0));
 					if (stmt->rval) {
 						if (stmt->rval->src == SEMT_EXPR) {
 							if (stmt->rval->op == OP_ASSIGN) {
 								AstNode* key = stmt->rval->arg[0];
 								AstNode* value = stmt->rval->arg[1];
-								LOG(key->GetTreeString(0));
-								LOG(value->GetTreeString(0));
+								//LOG(key->GetTreeString(0));
+								//LOG(value->GetTreeString(0));
 								if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
 									String key_str = key->str;
 									if (value->src == SEMT_CONSTANT) {
@@ -517,6 +556,65 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* root) {
 			}
 		}
 		
+	}
+	
+	for (Script::LoopDefinition& src_loop : chain.loops) {
+		for (Script::AtomDefinition& src_atom : src_loop.atoms) {
+			int src_count = src_atom.iface.type.iface.src.GetCount();
+			
+			for(int src_i = 1; src_i < src_count; src_i++) {
+				const ValDevTuple::Channel& src_ch = src_atom.iface.type.iface.src[src_i];
+				const ValDevCls& src_vd = src_ch.vd;
+				bool src_is_opt = src_ch.is_opt;
+				IfaceConnLink& src_conn = src_atom.iface.src[src_i];
+				
+				bool connected = false;
+				
+				ASSERT(src_conn.conn < 0);
+				
+				for (Script::LoopDefinition& sink_loop : chain.loops) {
+					if (&src_loop == &sink_loop)
+						continue;
+					
+					for (Script::AtomDefinition& sink_atom : sink_loop.atoms) {
+						int sink_count = sink_atom.iface.type.iface.sink.GetCount();
+						
+						for(int sink_i = 1; sink_i < sink_count; sink_i++) {
+							const ValDevTuple::Channel& sink_ch = sink_atom.iface.type.iface.sink[sink_i];
+							const ValDevCls& sink_vd = sink_ch.vd;
+							bool sink_is_opt = sink_ch.is_opt;
+							IfaceConnLink& sink_conn = sink_atom.iface.sink[sink_i];
+							
+							if (sink_conn.conn < 0 && src_vd == sink_vd) {
+								int conn_id = GetLoader().NewConnectionId();
+								
+								src_conn.conn = conn_id;
+								src_conn.local = src_i;
+								src_conn.other = sink_i;
+								
+								sink_conn.conn = conn_id;
+								sink_conn.local = sink_i;
+								sink_conn.other = src_i;
+								
+								connected = true;
+								break;
+							}
+						}
+						
+						if (connected)
+							break;
+					}
+					
+					if (connected)
+						break;
+				}
+				
+				if (!connected && !src_is_opt) {
+					AddError(src_atom.loc, "could not connect source to any sink");
+					return false;
+				}
+			}
+		}
 	}
 	
 	for (AstNode* state : states) {

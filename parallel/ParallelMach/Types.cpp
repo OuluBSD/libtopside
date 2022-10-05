@@ -262,7 +262,14 @@ String GetAtomRoleString(AtomRole t) {
 
 void IfaceConnTuple::Realize(const AtomTypeCls& type) {
 	if (!this->type.IsValid()) {
+		//DUMP(type);
 		this->type = type;
+		const ValDevTuple& type_sink = type.iface.sink;
+		const ValDevTuple& type_src = type.iface.src;
+		this->sink.SetCount(0); // clear
+		this->sink.SetCount(type_sink.channels.GetCount());
+		this->src.SetCount(0);
+		this->src.SetCount(type_src.channels.GetCount());
 	}
 	else {
 		ASSERT(this->type == type);

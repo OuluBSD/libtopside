@@ -653,134 +653,117 @@ bool ScriptLoopLoader::Load() {
 	
 	for(int i = 0; i < def.atoms.GetCount(); i++) {
 		const Script::AtomDefinition& atom_def = def.atoms[i];
+		const AtomTypeCls atom = atom_def.iface.type;
+		const LinkTypeCls link = atom_def.link;
 		
 		String loop_action = atom_def.id.ToString();
-		bool found = false;
-		for (const auto& atom_data : map.GetValues()) {
-			bool match = false;
-			for (const String& action : atom_data.actions) {
-				if (action == loop_action) {
-					match = true;
-					break;
-				}
-			}
-			if (!match)
-				continue;
-			
-			bool is_first = i == 0;
-			bool is_last = i == def.atoms.GetCount();
-			AtomTypeCls atom = atom_data.cls;
-			LinkTypeCls link = atom_data.link_type;
-			LinkBaseRef lb;
-			AtomBaseRef ab;
-			
-			if (is_last) {
-				ab = first_ab;
-				lb = first_lb;
-			}
-			else {
-				ab = l->GetSpace()->AddTypeCls(atom);
-				lb = l->AddTypeCls(link);
-			}
-			
-			if (is_first) {
-				first_ab = ab;
-				first_lb = lb;
-				is_first = false;
-			}
-			
-			if (!ab) {
-				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
-				AddError(def.loc, "Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
-				DUMP(atom);
-				ASSERT(0);
-				return false;
-			}
-			
-			if (!lb) {
-				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
-				AddError(def.loc, "Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
-				DUMP(atom);
-				ASSERT(0);
-				return false;
-			}
-			
-			ab->SetId(id);
-			lb->SetId(id);
-			
-			ab->link = &*lb;
-			lb->atom = &*ab;
-			
-			auto& c = added_atoms.Add();
-			c.a					= ab;
-			c.l					= lb;
-			c.iface				= atom_def.iface;
-			c.iface.type		= atom;
-			//c.iface				= n->GetInterface();
-			//ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
-			
-			//AtomTypeCls type = ws.GetAtom();
-			//ASSERT(!c.iface.type.IsValid() || type == c.iface.type);
-			//ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
-			
-			
-			// Add arguments to ws
-			#if 0
-			const Script::Statement* stmt = ws.FindStatement(prev_ws0, def.stmts);
-			if (!stmt) stmt = ws.FindStatement(prev_ws1, def.stmts);
-			if (stmt) {
-				RTLOG("ScriptLoopLoader::Load: stmt found: " << stmt->ToString());
-				for (const Script::Statement& arg : stmt->args) {
-					//LOG("\t" << arg.id.ToString());
-					String k = arg.id.ToString();
-					String v = arg.value ? arg.value->GetValue() : String();
-					ws.Set("." + k, v);
-					LOG("ScriptLoopLoader::Load: set argument: " << k << " = " << v);
-				}
-			}
-			else {
-				RTLOG("ScriptLoopLoader::Load: stmt not found:       ws: " << ws.ToString());
-				if (prev_ws0)
-					RTLOG("                                        prev_ws0: " << prev_ws0->ToString());
-				if (prev_ws0)
-					RTLOG("                                        prev_ws1: " << prev_ws1->ToString());
-				DUMPI(def.stmts);
-				if (!ws.IsEmpty())
-					stmt = ws.FindStatement(prev_ws0, def.stmts, true);
-			}
-			#endif
-			
-			Script::WorldState ws;
-			
-			for(int i = 0; i < atom_def.args.GetCount(); i++) {
-				String key = atom_def.args.GetKey(i);
-				const Object& obj = atom_def.args[i];
-				ws.values.GetAdd("." + key) = obj;
-			}
-			
-			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
-				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
-				AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
-				return false;
-			}
-			
-			if (!lb->Initialize(ws)) {
-				const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
-				AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
-				return false;
-			}
-			
-			ab->SetInitialized();
-			
-			
-			found = true;
-			break;
+		
+		bool is_first = i == 0;
+		bool is_last = i == def.atoms.GetCount();
+		LinkBaseRef lb;
+		AtomBaseRef ab;
+		
+		if (is_last) {
+			ab = first_ab;
+			lb = first_lb;
+		}
+		else {
+			ab = l->GetSpace()->AddTypeCls(atom);
+			lb = l->AddTypeCls(link);
 		}
 		
-		if (!found) {
-			AddError(atom_def.loc, "could not find atom action");
+		if (is_first) {
+			first_ab = ab;
+			first_lb = lb;
+			is_first = false;
+		}
+		
+		if (!ab) {
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			AddError(def.loc, "Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+			DUMP(atom);
+			ASSERT(0);
 			return false;
 		}
+		
+		if (!lb) {
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			AddError(def.loc, "Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+			DUMP(atom);
+			ASSERT(0);
+			return false;
+		}
+		
+		ab->SetId(id);
+		lb->SetId(id);
+		
+		ab->link = &*lb;
+		lb->atom = &*ab;
+		
+		auto& c = added_atoms.Add();
+		c.a					= ab;
+		c.l					= lb;
+		c.iface				= atom_def.iface;
+		c.iface.type		= atom;
+		
+		c.a->SetInterface(c.iface);
+		
+		//c.iface				= n->GetInterface();
+		//ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
+		
+		//AtomTypeCls type = ws.GetAtom();
+		//ASSERT(!c.iface.type.IsValid() || type == c.iface.type);
+		//ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
+		
+		
+		// Add arguments to ws
+		#if 0
+		const Script::Statement* stmt = ws.FindStatement(prev_ws0, def.stmts);
+		if (!stmt) stmt = ws.FindStatement(prev_ws1, def.stmts);
+		if (stmt) {
+			RTLOG("ScriptLoopLoader::Load: stmt found: " << stmt->ToString());
+			for (const Script::Statement& arg : stmt->args) {
+				//LOG("\t" << arg.id.ToString());
+				String k = arg.id.ToString();
+				String v = arg.value ? arg.value->GetValue() : String();
+				ws.Set("." + k, v);
+				LOG("ScriptLoopLoader::Load: set argument: " << k << " = " << v);
+			}
+		}
+		else {
+			RTLOG("ScriptLoopLoader::Load: stmt not found:       ws: " << ws.ToString());
+			if (prev_ws0)
+				RTLOG("                                        prev_ws0: " << prev_ws0->ToString());
+			if (prev_ws0)
+				RTLOG("                                        prev_ws1: " << prev_ws1->ToString());
+			DUMPI(def.stmts);
+			if (!ws.IsEmpty())
+				stmt = ws.FindStatement(prev_ws0, def.stmts, true);
+		}
+		#endif
+		
+		Script::WorldState ws;
+		
+		for(int i = 0; i < atom_def.args.GetCount(); i++) {
+			String key = atom_def.args.GetKey(i);
+			const Object& obj = atom_def.args[i];
+			ws.values.GetAdd("." + key) = obj;
+		}
+		
+		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
+			const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
+			AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+		
+		if (!lb->Initialize(ws)) {
+			const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
+			AddError(def.loc, "Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+		
+		ab->SetInitialized();
+		
 	}
 	
 	
@@ -801,7 +784,6 @@ bool ScriptLoopLoader::Load() {
 		ValDevCls common_vd = sink_ws.GetCommonSink();
 		ASSERT(common_vd.IsValid());
 		*/
-		
 		if (!l->MakeLink(src, sink)) {
 			/*AtomTypeCls atom = sink_ws.GetAtom();
 			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
@@ -810,10 +792,6 @@ bool ScriptLoopLoader::Load() {
 			AddError(FileLocation(), "could not link atoms");
 			return false;
 		}
-		
-		// AtomTypeCls TestRealtimeSrc::GetAtomType()
-		ASSERT(src_info.iface.sink.GetCount() && src_info.iface.src.GetCount());
-		src->SetInterface(src_info.iface);
 		
 		atoms.Add(src);
 	}
