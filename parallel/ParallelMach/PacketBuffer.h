@@ -177,6 +177,14 @@ struct PacketIO {
 		Packet			p;
 		bool			filled = false;
 		bool			may_remove = false;
+		
+		void Reset() {
+			val = 0;
+			buf = 0;
+			p.Clear();
+			filled = false;
+			may_remove = false;
+		}
 	};
 	
 	struct Source : Moveable<Source> {
@@ -184,14 +192,31 @@ struct PacketIO {
 		Packet			p;
 		int				from_sink_ch = -1;
 		bool			is_full = false;
+		
+		void Reset() {
+			val = 0;
+			p.Clear();
+			from_sink_ch = -1;
+			is_full = false;
+		}
 	};
 	
 	dword			active_sink_mask = 0;
 	dword			full_src_mask = 0;
 	int				nonempty_sinks = 0;
-	Vector<Sink>	sink;
-	Vector<Source>	src;
+	Vector<Sink>	sinks;
+	Vector<Source>	srcs;
 	
+	
+	void Reset() {
+		active_sink_mask = 0;
+		full_src_mask = 0;
+		nonempty_sinks = 0;
+		for (Sink& sink : sinks)
+			sink.Reset();
+		for (Source& src : srcs)
+			src.Reset();
+	}
 };
 
 

@@ -91,13 +91,12 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 	
 	while (1) {
 		static thread_local PacketIO io;
-		io.sink.SetCount(sink_ch_count);
-		io.src.SetCount(src_ch_count);
-		io.nonempty_sinks = 0;
-		io.active_sink_mask = 0;
+		io.sinks.SetCount(sink_ch_count);
+		io.srcs.SetCount(src_ch_count);
+		io.Reset();
 		for(int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
 			if (sink_iface->GetValue(sink_ch).GetQueueSize() > 0) {
-				io.sink[sink_ch].filled = true;
+				io.sinks[sink_ch].filled = true;
 				io.active_sink_mask |= 1 << sink_ch;
 				io.nonempty_sinks++;
 			}
@@ -121,20 +120,20 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		
 		// Set some channels directly (only primary channel currently)
 		for (int src_ch = 0; src_ch < 1; src_ch++) {
-			PacketIO::Source& iface = io.src[src_ch];
+			PacketIO::Source& iface = io.srcs[src_ch];
 			iface.val = &src_iface->GetSourceValue(src_ch);
 		}
 		// Set side channels using far link
 		for (Exchange& ex : side_sink_conn) {
-			ASSERT(ex.local_ch_i > 0 && ex.local_ch_i < io.src.GetCount());
-			PacketIO::Source& iface = io.src[ex.local_ch_i];
+			ASSERT(ex.local_ch_i > 0 && ex.local_ch_i < io.srcs.GetCount());
+			PacketIO::Source& iface = io.srcs[ex.local_ch_i];
 			InterfaceSinkRef sink_iface = ex.other->GetSink();
 			iface.val = &sink_iface->GetValue(ex.other_ch_i);
 		}
 		// Make src full mask
 		io.full_src_mask = 0;
 		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
-			PacketIO::Source& iface = io.src[src_ch];
+			PacketIO::Source& iface = io.srcs[src_ch];
 			if (!iface.val) {
 				ASSERT(type.iface.src[src_ch].is_opt);
 			}
@@ -146,17 +145,26 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 			//RTLOG("LinkBase::ForwardPipe: " << (iface.val ? "has val" : "no val") << (iface.is_full ? ", is full" : ", not full"));
 		}
 		
+		#if 0
+		static int dbg_iter;
+		dbg_iter++;
+		DUMP(dbg_iter);
+		if (dbg_iter == 79) {
+			LOG("break here");
+		}
+		#endif
 		
 		if (!IsReady(io))
 			break;
 		
 		
 		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
-			PacketIO::Sink& iface = io.sink[sink_ch];
+			PacketIO::Sink& iface = io.sinks[sink_ch];
 			if (!iface.filled)
 				continue;
 			Value& sink_value = sink_iface->GetValue(sink_ch);
 			PacketBuffer& sink_buf = sink_value.GetBuffer();
+			ASSERT(!sink_buf.IsEmpty());
 			iface.val = &sink_value;
 			iface.buf = &sink_buf;
 			iface.p = sink_buf.First();
@@ -172,7 +180,7 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		
 		
 		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
-			PacketIO::Sink& iface = io.sink[sink_ch];
+			PacketIO::Sink& iface = io.sinks[sink_ch];
 			if (iface.filled && iface.may_remove) {
 				iface.buf->RemoveFirst();
 			}
@@ -186,7 +194,7 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		bool iter_forwarded = false;
 		
 		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
-			PacketIO::Source& iface = io.src[src_ch];
+			PacketIO::Source& iface = io.srcs[src_ch];
 			Packet& sent = iface.p;
 			if (sent) {
 				iter_forwarded = true;

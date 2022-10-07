@@ -97,6 +97,7 @@ class VoidPollerSinkBase :
 	bool				fail = false;
 	int					dbg_total_samples = 0;
 	int					dbg_total_bytes = 0;
+	int					dbg_limit = 0;
 	
 public:
 	RTTI_DECL1(VoidPollerSinkBase, Atom)

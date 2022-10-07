@@ -28,20 +28,29 @@ struct Id {
 };
 
 struct AtomDefinition {
+	struct LinkCandidate : Moveable<LinkCandidate> {
+		AtomDefinition* atom = 0;
+		VectorMap<String, Object> req_args;
+		
+		LinkCandidate() {}
+		LinkCandidate(const LinkCandidate& v) {*this = v;}
+		void operator=(const LinkCandidate& v) {atom = v.atom; req_args <<= v.req_args;}
+	};
 	Id								id;
 	FileLocation					loc;
 	ArrayMap<String, Object>		args;
 	IfaceConnTuple					iface;
 	LinkTypeCls						link;
+	VectorMap<int, LinkCandidate>	src_link_cands, sink_link_cands;
 	
 	AtomDefinition() {}
 	AtomDefinition(const AtomDefinition& v) {*this = v;}
 	void Set(String key, const Object& val) {args.GetAdd(key) = val;}
-	void operator=(const AtomDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; iface = v.iface;}
+	void operator=(const AtomDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; iface = v.iface; src_link_cands <<= v.src_link_cands; sink_link_cands <<= v.sink_link_cands;}
 	
 };
 
-	
+
 struct LoopDefinition {
 	Id								id;
 	FileLocation					loc;
@@ -50,6 +59,7 @@ struct LoopDefinition {
 	
 	LoopDefinition() {}
 	LoopDefinition(const LoopDefinition& v) {*this = v;}
+	void Set(const String& key, const Object& value) {args.GetAdd(key) = value;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 	void operator=(const LoopDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; atoms <<= v.atoms;}

@@ -12,6 +12,10 @@ ScriptChainLoader::ScriptChainLoader(ScriptTopChainLoader& parent, int id, Scrip
 		ScriptLoopLoader& loader = loops.Add(new ScriptLoopLoader(*this, loops.GetCount(), loop));
 	}
 	
+	for (Script::StateDeclaration& state : def.states) {
+		ScriptStateLoader& loader = states.Add(new ScriptStateLoader(*this, states.GetCount(), state));
+	}
+	
 }
 
 bool ScriptChainLoader::Load() {

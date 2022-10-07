@@ -565,8 +565,8 @@ void KeyboardBaseT<Gfx>::Uninitialize() {
 template <class Gfx>
 bool KeyboardBaseT<Gfx>::IsReady(PacketIO& io) {
 	if (!state) return false;
-	ASSERT(io.src.GetCount() >= 2);
-	if (io.src.GetCount() < 2) return false;
+	ASSERT(io.srcs.GetCount() >= 2);
+	if (io.srcs.GetCount() < 2) return false;
 	
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;

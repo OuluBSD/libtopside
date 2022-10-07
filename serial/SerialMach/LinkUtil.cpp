@@ -43,21 +43,21 @@ bool AsyncMemForwarderBase::IsReady(PacketIO& io) {
 	if (!write_mem || write_pos >= write_size)
 		return false;
 	
-	if (io.sink.GetCount() == 1) {
-		b = io.sink[0].filled;
+	if (io.sinks.GetCount() == 1) {
+		b = io.sinks[0].filled;
 	}
-	else if (io.sink.GetCount() > 1) {
-		b = io.sink[0].filled && io.sink[1].filled;
+	else if (io.sinks.GetCount() > 1) {
+		b = io.sinks[0].filled && io.sinks[1].filled;
 	}
 	
 	return b;
 }
 
 bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
-	PacketIO::Sink& sink0 = io.sink[0];
-	PacketIO::Source& src = io.src[0];
+	PacketIO::Sink& sink0 = io.sinks[0];
+	PacketIO::Source& src = io.srcs[0];
 	
-	if (io.sink.GetCount() == 1) {
+	if (io.sinks.GetCount() == 1) {
 		sink0.may_remove = true;
 		src.from_sink_ch = 0;
 		src.p = ReplyPacket(0, sink0.p);
@@ -65,8 +65,8 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 		if (PassConsumePacket(src.from_sink_ch, sink0.p))
 			Consume(src.from_sink_ch, sink0.p);
 	}
-	else if (io.sink.GetCount() > 1) {
-		PacketIO::Sink& sink1 = io.sink[1];
+	else if (io.sinks.GetCount() > 1) {
+		PacketIO::Sink& sink1 = io.sinks[1];
 		sink0.may_remove = true;
 		sink1.may_remove = true;
 		src.from_sink_ch = 1;

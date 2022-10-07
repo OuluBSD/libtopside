@@ -522,6 +522,7 @@ AstNode* SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
 	AstNode& var = owner.Add(loc, str);
 	var.src = SEMT_STATEMENT;
 	var.stmt = STMT_ATOM_CONNECTOR;
+	var.i64 = part;
 	
 	PushScope(var);
 	

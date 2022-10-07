@@ -2112,52 +2112,41 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 	
 	if (!IsLineEnd()) {
 		if (TryToken('[')) {
-			int c = 0;
 			AstNode* conn;
 			while (!TryToken(']')) {
-				if (c == 0)
-					conn = EMIT PushAtomConnector(iter->loc, 0);
+				AstNode* conn = EMIT PushAtomConnector(iter->loc, 0);
 				
 				CHECK_SPATH_BEGIN
-				PushStatement(iter->loc, STMT_ATOM_CONNECTOR);
 				allow_expr_unresolved = true;
 				bool succ = Cond(false);
 				AstNode* rval = PopExpr(iter->loc);
 				allow_expr_unresolved = false;
 				if (!succ)
 					return false;
-				PopStatement(iter->loc, rval);
 				CHECK_SPATH_END
 				
 				TryToken(',');
-				c++;
-			}
-			if (c > 0)
+				
 				EMIT PopAtomConnector(iter->loc);
+			}
 			
 			if (TryToken('[')) {
-				int c = 0;
 				while (!TryToken(']')) {
-					if (c == 0)
-						conn = EMIT PushAtomConnector(iter->loc, 1);
+					AstNode* conn = EMIT PushAtomConnector(iter->loc, 1);
 					
 					CHECK_SPATH_BEGIN
-					PushStatement(iter->loc, STMT_ATOM_CONNECTOR);
 					allow_expr_unresolved = true;
 					bool succ = Cond(false);
 					AstNode* rval = PopExpr(iter->loc);
 					allow_expr_unresolved = false;
 					if (!succ)
 						return false;
-					PopStatement(iter->loc, rval);
 					CHECK_SPATH_END
 					
 					TryToken(',');
-					c++;
-				}
-				
-				if (c > 0)
+					
 					EMIT PopAtomConnector(iter->loc);
+				}
 			}
 		}
 		else {

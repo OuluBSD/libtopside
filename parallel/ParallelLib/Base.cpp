@@ -254,6 +254,7 @@ bool VoidSinkBase::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Fo
 
 bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("VoidPollerSinkBase::Initialize");
+	dbg_limit = ws.GetInt(".dbg_limit", 100);
 	dt = 1.0/60.0;
 	GetSink()->GetValue(0).SetMinQueueSize(5);
 	AddAtomToUpdateList();
@@ -263,7 +264,7 @@ bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 void VoidPollerSinkBase::Uninitialize() {
 	LOG("VoidPollerSinkBase::Uninitialize: " << HexStr(this));
 	LOG("VoidPollerSinkBase::Uninitialize: total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
-	if (!dbg_total_samples)
+	if (dbg_limit > 0 && dbg_total_samples < dbg_limit)
 		fail = true;
 	if (!fail) {LOG("VoidPollerSinkBase::Uninitialize: success!");}
 	else       {LOG("VoidPollerSinkBase::Uninitialize: fail :(");}
@@ -350,6 +351,11 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " invalid audio format");
 			fail = true;
 		}
+		
+		if (dbg_limit > 0 && t.rolling_value >= dbg_limit) {
+			GetMachine().SetNotRunning();
+			LOG("VoidPollerSinkBase::Recv: stops");
+		}
 	}
 	else {
 		RTLOG("VoidPollerSinkBase::Recv: error: unexpected packet " << in.ToString());
@@ -383,7 +389,7 @@ EnvState& EventStateBase::GetState() const {
 bool EventStateBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("EventStateBase::Initialize");
 	
-	target = ws.Get(".target");
+	target = ws.GetString(".target");
 	if (target.IsEmpty()) {
 		LOG("EventStateBase::Initialize: error: target state argument is required");
 		return false;

@@ -467,6 +467,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	case SEMT_SYSTEM:
 	case SEMT_POOL:
 	case SEMT_DRIVER:
+	case SEMT_STATE:
 		d = Merge(n);
 		PushScope(*d);
 		for (AstNode& s : n.sub) {

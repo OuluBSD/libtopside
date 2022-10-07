@@ -26,8 +26,8 @@ void CustomerLink::Uninitialize() {
 bool CustomerLink::ProcessPackets(PacketIO& io) {
 	RTLOG("CustomerLink::ProcessPackets");
 	
-	PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
+	PacketIO::Sink& sink = io.sinks[0];
+	PacketIO::Source& src = io.srcs[0];
 	
 	ASSERT(sink.p);
 	PacketTracker_StopTracking("CustomerLink::ProcessPackets", __FILE__, __LINE__, *sink.p);
@@ -114,8 +114,8 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	const int sink_ch = 0;
 	const int src_ch = 0;
 	
-	PacketIO::Sink& sink = io.sink[sink_ch];
-	PacketIO::Source& src = io.src[src_ch];
+	PacketIO::Sink& sink = io.sinks[sink_ch];
+	PacketIO::Source& src = io.srcs[src_ch];
 	ASSERT(sink.p);
 	sink.may_remove = true;
 	src.from_sink_ch = sink_ch;
@@ -165,8 +165,8 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
 	bool b = true;
 	
-	for(int sink_ch = io.sink.GetCount()-1; sink_ch >= 0; sink_ch--) {
-		PacketIO::Sink& sink = io.sink[sink_ch];
+	for(int sink_ch = io.sinks.GetCount()-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sinks[sink_ch];
 		Packet& in = sink.p;
 		if (!in)
 			continue;
@@ -185,8 +185,8 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 		atom->Finalize(*last_cfg);
 	
 	int src_ch = 0;
-	PacketIO::Sink& prim_sink = io.sink[0];
-	PacketIO::Source& src = io.src[src_ch];
+	PacketIO::Sink& prim_sink = io.sinks[0];
+	PacketIO::Source& src = io.srcs[src_ch];
 	Packet& out = src.p;
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
@@ -197,7 +197,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	InterfaceSourceRef src_iface = this->GetSource();
 	int src_count = src_iface->GetSourceCount();
 	for (int src_ch = 1; src_ch < src_count; src_ch++) {
-		PacketIO::Source& src = io.src[src_ch];
+		PacketIO::Source& src = io.srcs[src_ch];
 		if (!src.val)
 			continue;
 		Packet& out = src.p;
@@ -448,8 +448,8 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 	bool do_finalize = false;
 	bool b = true;
 	
-	for(int sink_ch = io.sink.GetCount()-1; sink_ch >= 0; sink_ch--) {
-		PacketIO::Sink& sink = io.sink[sink_ch];
+	for(int sink_ch = io.sinks.GetCount()-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sinks[sink_ch];
 		Packet& in = sink.p;
 		if (!in)
 			continue;
@@ -468,8 +468,8 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 		atom->Finalize(*last_cfg);
 	
 	int src_ch = 0;
-	PacketIO::Sink& prim_sink = io.sink[0];
-	PacketIO::Source& src = io.src[src_ch];
+	PacketIO::Sink& prim_sink = io.sinks[0];
+	PacketIO::Source& src = io.srcs[src_ch];
 	Packet& out = src.p;
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
@@ -584,18 +584,18 @@ bool JoinerLink::IsReady(PacketIO& io) {
 bool JoinerLink::ProcessPackets(PacketIO& io) {
 	ASSERT(io.active_sink_mask & 0x0001);
 	ASSERT(io.nonempty_sinks >= 2);
-	ASSERT(io.src.GetCount() == 1);
-	PacketIO::Sink& prim_sink = io.sink[0];
+	ASSERT(io.srcs.GetCount() == 1);
+	PacketIO::Sink& prim_sink = io.sinks[0];
 	
 	int side_sink_ch = -1;
 	for (int tries = 0; tries < 3; tries++) {
 		int sink_ch = scheduler_iter;
 		
 		scheduler_iter++;
-		if (scheduler_iter >= io.sink.GetCount())
+		if (scheduler_iter >= io.sinks.GetCount())
 			scheduler_iter = 1;
 		
-		if (io.sink[sink_ch].p) {
+		if (io.sinks[sink_ch].p) {
 			side_sink_ch = sink_ch;
 			break;
 		}
@@ -604,12 +604,12 @@ bool JoinerLink::ProcessPackets(PacketIO& io) {
 	ASSERT(side_sink_ch >= 0);
 	if (side_sink_ch < 0) return false;
 	
-	PacketIO::Sink& sink = io.sink[side_sink_ch];
+	PacketIO::Sink& sink = io.sinks[side_sink_ch];
 	
 	RTLOG("JoinerLink::ProcessPackets: forward packet from sink #" << side_sink_ch << " to src #0: " << sink.p->ToString());
 	prim_sink.may_remove = true;
 	sink.may_remove = true;
-	PacketIO::Source& src = io.src[0];
+	PacketIO::Source& src = io.srcs[0];
 	
 	src.from_sink_ch = side_sink_ch;
 	src.p = sink.p;
@@ -651,20 +651,20 @@ bool SplitterLink::IsReady(PacketIO& io) {
 }
 
 bool SplitterLink::ProcessPackets(PacketIO& io) {
-	ASSERT(io.src.GetCount() > 1 && io.sink.GetCount() == 1);
+	ASSERT(io.srcs.GetCount() > 1 && io.sinks.GetCount() == 1);
 	ASSERT(io.active_sink_mask == 0x0001);
-	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Sink& sink = io.sinks[0];
 	sink.may_remove = true;
 	
-	PacketIO::Source& prim_src = io.src[0];
+	PacketIO::Source& prim_src = io.srcs[0];
 	prim_src.from_sink_ch = 0;
 	prim_src.p = ReplyPacket(0, sink.p);
 	
 	Format in_fmt = sink.p->GetFormat();
 	
 	InterfaceSourceRef src_iface = GetSource();
-	for(int i = 1; i < io.src.GetCount(); i++) {
-		PacketIO::Source& src = io.src[i];
+	for(int i = 1; i < io.srcs.GetCount(); i++) {
+		PacketIO::Source& src = io.srcs[i];
 		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
 		if (src_fmt.IsCopyCompatible(in_fmt)) {
 			src.from_sink_ch = 0;
