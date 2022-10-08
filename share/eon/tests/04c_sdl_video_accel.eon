@@ -8,10 +8,10 @@ machine sdl.app:
 		loop ogl.fbo:
 			ogl.customer
 			sdl.fbo.standalone:
-				testshader: true
+				testshader = true
 		
 		loop audio:
 			center.customer
 			center.audio.src.dbg_generator:
-				waveform: "noise"
+				waveform = "noise"
 			sdl.audio

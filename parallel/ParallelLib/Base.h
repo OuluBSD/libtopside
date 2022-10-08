@@ -132,6 +132,9 @@ class EventStateBase :
 {
 	String			target;
 	EnvStateRef		state;
+	bool			dbg_print = false;
+	int				dbg_iter = 0;
+	int				dbg_limit = 0;
 	
 public:
 	RTTI_DECL1(EventStateBase, Atom)

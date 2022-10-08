@@ -408,6 +408,36 @@ public:
 #endif
 
 #if (defined flagPOSIX && defined flagSCREEN)
+class X11SwContextAtom : public X11SwContext {
+
+public:
+	RTTI_DECL1(X11SwContextAtom, X11SwContext)
+	COPY_PANIC(X11SwContextAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+class X11OglContextAtom : public X11OglContext {
+
+public:
+	RTTI_DECL1(X11OglContextAtom, X11OglContext)
+	COPY_PANIC(X11OglContextAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagPOSIX && defined flagSCREEN)
 class X11EventAtomPipe : public X11EventsBase {
 
 public:

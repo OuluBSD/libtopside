@@ -389,6 +389,10 @@ EnvState& EventStateBase::GetState() const {
 bool EventStateBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("EventStateBase::Initialize");
 	
+	dbg_limit = ws.GetInt(".dbg_limit", 0);
+	if (dbg_limit)
+		dbg_print = true;
+	
 	target = ws.GetString(".target");
 	if (target.IsEmpty()) {
 		LOG("EventStateBase::Initialize: error: target state argument is required");
@@ -454,6 +458,12 @@ bool EventStateBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_c
 }
 
 void EventStateBase::Event(const CtrlEvent& e) {
+	if (dbg_print) {
+		LOG(e.ToString());
+		if (dbg_limit > 0 && ++dbg_iter > dbg_limit)
+			GetMachine().SetNotRunning();
+	}
+	
 	if (e.type == EVENT_INVALID) {
 		ASSERT_(0, "EventStateBase::Event: error: sender sent invalid event packet");
 	}

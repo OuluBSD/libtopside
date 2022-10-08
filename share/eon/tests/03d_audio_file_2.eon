@@ -5,9 +5,9 @@ chain player.audio.generator:
 		perma.audio.source.decoder:
 			filepath = "${FILE}"
 			stop_machine = true
-		center.audio.side.src
+		center.audio.side.src.center
 	
 	loop input:
 		center.customer
-		center.audio.side.sink
+		center.audio.side.sink.center
 		center.audio.sink.hw

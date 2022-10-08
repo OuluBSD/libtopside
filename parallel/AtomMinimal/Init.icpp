@@ -71,6 +71,12 @@ INITBLOCK_(AtomMinimal) {
 	Factory::RegisterAtom<X11ContextAtom>();
 	#endif
 	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwContextAtom>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	Factory::RegisterAtom<X11OglContextAtom>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
 	Factory::RegisterAtom<X11EventAtomPipe>();
 	#endif
 	Factory::RegisterAtom<OglCustomer>();

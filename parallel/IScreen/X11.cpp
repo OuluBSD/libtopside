@@ -55,6 +55,7 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	dev.ctx = &ctx;
 	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
+	display = 0;
 	int screen_num;						// number of screen to place the window on.
 	::Window& win = ctx.win;			// pointer to the newly created window.
 	unsigned int display_width,

@@ -8,5 +8,5 @@ machine sdl.app:
 			event.src.test.pipe
 			state.event.pipe:
 				target = event.register
-		
+				dbg_limit = 100
 	

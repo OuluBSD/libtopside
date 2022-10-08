@@ -30,19 +30,16 @@ int WorldState::GetValueCount() const {
 	return c;
 }
 
-#if 0
-
 void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 	for(int i = 0; i < values.GetCount(); i++) {
-		if (values[i].IsEmpty())
+		if (!values[i])
 			continue;
-		String key = ap->GetAtomKey(i);
+		String key = values.GetKey(i);
 		if (key.Left(key_left.GetCount()) == key_left)
 			keys.FindAdd(key);
 	}
 }
 
-#endif
 /*
 bool WorldState::Set(int index, bool value) {
 	if (index < 0) return false;
@@ -287,14 +284,6 @@ String WorldState::Get(int idx) const {
 	return String();
 }
 
-Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
-	String cx_str = Get(cx);
-	String cy_str = Get(cy);
-	if (cx_str.IsEmpty() || cy_str.IsEmpty())
-		return def;
-	return Size(StrInt(cx_str), StrInt(cy_str));
-}
-
 int WorldState::GetInt(const String& key, int def) const {
 	String str = Get(key);
 	if (str.IsEmpty())
@@ -458,9 +447,11 @@ bool WorldState::IsUndefined(int idx) const {
 	TODO
 }
 
-String WorldState::Get(const String& key) const {
-	const Object& o = values.Get(key);
-	ASSERT(o.IsString());
+String WorldState::Get(const String& key, String def) const {
+	int i = values.Find(key);
+	if (i < 0)
+		return def;
+	const Object& o = values[i];
 	return o.ToString();
 }
 
@@ -471,7 +462,11 @@ String WorldState::Get(int idx) const {
 }
 
 Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
-	TODO
+	String cx_str = Get(cx);
+	String cy_str = Get(cy);
+	if (cx_str.IsEmpty() || cy_str.IsEmpty())
+		return def;
+	return Size(StrInt(cx_str), StrInt(cy_str));
 }
 
 int WorldState::GetInt(const String& key, int def) const {
@@ -521,10 +516,6 @@ bool WorldState::Conflicts(const WorldState& ws) const {
 
 
 int WorldState::Compare(int idx, const WorldState& ws) const {
-	TODO
-}
-
-void WorldState::FindKeys(String key_left, Index<String>& keys) const {
 	TODO
 }
 

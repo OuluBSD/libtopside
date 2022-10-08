@@ -55,7 +55,7 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
 		keyboard_iter != prev_iter;
-	RTLOG("EcsEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

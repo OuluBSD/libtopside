@@ -56,13 +56,14 @@ struct LoopDefinition {
 	FileLocation					loc;
 	ArrayMap<String, Object>		args;
 	Array<AtomDefinition>			atoms;
+	bool							is_driver = false;
 	
 	LoopDefinition() {}
 	LoopDefinition(const LoopDefinition& v) {*this = v;}
 	void Set(const String& key, const Object& value) {args.GetAdd(key) = value;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
-	void operator=(const LoopDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; atoms <<= v.atoms;}
+	void operator=(const LoopDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; atoms <<= v.atoms; is_driver = v.is_driver;}
 };
 
 struct StateDeclaration {

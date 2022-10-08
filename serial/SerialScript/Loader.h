@@ -99,7 +99,7 @@ public:
 	String				GetErrorString() const {return err_str;}
 	void				AddError(const FileLocation& loc, String msg) {parent.AddError(loc, msg);}
 	
-	virtual Script::Id	GetDeepId() const {ASSERT(!def.id.IsEmpty()); Script::Id id = parent.GetDeepId(); id.Append(def.id); return id;}
+	virtual Script::Id	GetDeepId() const {Script::Id id = parent.GetDeepId(); id.Append(def.id); return id;}
 	//virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
 	virtual bool		Load() = 0;

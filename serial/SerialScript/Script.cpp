@@ -281,13 +281,19 @@ bool ScriptLoader::ImplementScript() {
 bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) {
 	Vector<AstNode*> path;
 	
-	AstNode* iter = to;
-	while (iter && iter != from) {
-		//if (iter->src == SEMT_IDPART || iter == to) {
-		if (iter->name.GetCount() || iter == to) {
-			path.Add(iter);
+	if (from == to) {
+		if (to->name.GetCount())
+			path.Add(to);
+	}
+	else {
+		AstNode* iter = to;
+		while (iter && iter != from) {
+			//if (iter->src == SEMT_IDPART || iter == to) {
+			if (iter->name.GetCount() || iter == to) {
+				path.Add(iter);
+			}
+			iter = iter->GetSubOwner();
 		}
-		iter = iter->GetSubOwner();
 	}
 	if (path.IsEmpty()) {
 		AddError(to->loc, "internal error: empty path");
@@ -326,6 +332,7 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 	
 	Vector<AstNode*> items;
 	n->FindAllNonIdEndpoints(items, (SemanticType)(SEMT_ECS_ANY | SEMT_MACH_ANY));
+	Sort(items, AstNodeLess());
 	
 	if (items.IsEmpty()) {
 		AddError(def.loc, "empty node");
@@ -338,7 +345,13 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
 			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
 			
-			if (!LoadMachine(def.machs.Add(), block))
+			Script::MachineDefinition& mach_def = def.machs.Add();
+			
+			if (!GetPathId(mach_def.id, n, item))
+				return false;
+			
+			ASSERT(!mach_def.id.IsEmpty());
+			if (!LoadMachine(mach_def, block))
 				return false;
 			has_machine = true;
 		}
@@ -358,31 +371,47 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 	Vector<AstNode*> items;
 	n->FindAllNonIdEndpoints(items, (SemanticType)(SEMT_ECS_ANY | SEMT_MACH_ANY));
+	Sort(items, AstNodeLess());
 	
 	if (items.IsEmpty()) {
 		AddError(def.loc, "empty node");
 		return false;
 	}
 	
+	Script::ChainDefinition* anon_chain = 0;
+	
 	bool has_chain = false;
 	for (AstNode* item : items) {
 		if (item->src == SEMT_CHAIN) {
+			Script::ChainDefinition& chain_def = def.chains.Add();
+			
+			if (!GetPathId(chain_def.id, n, item))
+				return false;
+			
+			ASSERT(!chain_def.id.IsEmpty());
+			
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
 			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
 			
 			Vector<AstNode*> items;
 			block->FindAllNonIdEndpoints(items, SEMT_CHAIN);
+			//Sort(items, AstNodeLess());
 			if (items.IsEmpty()) {
-				if (!LoadChain(def.chains.Add(), block))
+				if (!LoadChain(chain_def, block))
 					return false;
 			} else {
-				if (!LoadTopChain(def.chains.Add(), block))
+				if (!LoadTopChain(chain_def, block))
 					return false;
 			}
 			has_chain = true;
 		}
-		else if (item->src == SEMT_DRIVER) {
-			TODO
+		else if (item->src == SEMT_DRIVER || item->src == SEMT_LOOP) {
+			if (!anon_chain)
+				anon_chain = &def.chains.Add();
+			
+			if (!LoadChain(*anon_chain, item))
+				return false;
+			has_chain = true;
 		}
 	}
 	
@@ -451,19 +480,21 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 	
 	//LOG(n->GetTreeString(0));
 	
+	n->FindAll(loops, SEMT_DRIVER); // subset of loops
 	n->FindAll(loops, SEMT_LOOP);
-	
+	Sort(loops, AstNodeLess());
 	//DUMP(loops.GetCount());
 	
-	chain.Clear();
-	
 	for (AstNode* loop : loops) {
+		bool is_driver = loop->src == SEMT_DRIVER;
+		
 		Script::LoopDefinition& loop_def = chain.loops.Add();
 		loop_def.loc = loop->loc;
+		loop_def.is_driver = is_driver;
 		
 		if (!GetPathId(loop_def.id, n, loop))
 			return false;
-		DUMP(loop_def.id);
+		//DUMP(loop_def.id);
 		
 		//LOG(loop->GetTreeString(0));
 		
@@ -475,8 +506,14 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		
 		atoms.SetCount(0);
 		stmt_block->FindAll(atoms, SEMT_ATOM);
+		Sort(atoms, AstNodeLess());
 		if (atoms.IsEmpty()) {
 			AddError(loop->loc, "no atoms in statement-block");
+			return false;
+		}
+		
+		if (is_driver && atoms.GetCount() > 1) {
+			AddError(loop->loc, "only single atom is allowed in driver");
 			return false;
 		}
 		
@@ -511,53 +548,63 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 			ASSERT(type.IsValid());
 			
 			atom_def.iface.Realize(type);
-			ASSERT(atom_def.iface.sink.GetCount());
-			ASSERT(atom_def.iface.src.GetCount());
-			atom_def.link = link;
 			
-			conns.SetCount(0);
-			atom->FindAllStmt(conns, STMT_ATOM_CONNECTOR);
-			if (!conns.IsEmpty()) {
-				//DUMP(atom_def.id);
-				int sink_conn_i = 0, src_conn_i = 0; // side ids start from 1, so this shouldn't be -1
-				for (AstNode* conn : conns) {
-					bool is_src = conn->i64 != 0;
-					if (is_src)
-						src_conn_i++;
-					else
-						sink_conn_i++;
-					
-					//LOG(conn->GetTreeString(0));
-					
-					AstNode* expr = conn->Find(SEMT_EXPR);
-					if (!expr) {
-						AddError(conn->loc, "internal error: no expression");
-						return false;
-					}
-					
-					bool succ = false;
-					if (expr->op == OP_EQ) {
-						Script::AtomDefinition::LinkCandidate& cand =
-							is_src ?
-								atom_def.src_link_cands.Add(src_conn_i) :
-								atom_def.sink_link_cands.Add(sink_conn_i);
+			if (!is_driver) {
+				ASSERT(atom_def.iface.sink.GetCount());
+				ASSERT(atom_def.iface.src.GetCount());
+				atom_def.link = link;
+				
+				conns.SetCount(0);
+				atom->FindAllStmt(conns, STMT_ATOM_CONNECTOR);
+				Sort(conns, AstNodeLess());
+				if (!conns.IsEmpty()) {
+					//DUMP(atom_def.id);
+					int sink_conn_i = 0, src_conn_i = 0; // side ids start from 1, so this shouldn't be -1
+					for (AstNode* conn : conns) {
+						bool is_src = conn->i64 != 0;
+						if (is_src)
+							src_conn_i++;
+						else
+							sink_conn_i++;
 						
-						AstNode& a0 = *expr->arg[0];
-						AstNode& a1 = *expr->arg[1];
-						if (a0.src == SEMT_RVAL) {
-							// This shouldn't happen, but the parser is unfinished
-							AstNode& a0r = *a0.rval;
-							String key = a0r.name;
-							if (a1.src == SEMT_CONSTANT) {
-								a1.CopyToObject(cand.req_args.GetAdd(key));
-								succ = true;
+						//LOG(conn->GetTreeString(0));
+						
+						AstNode* expr = conn->Find(SEMT_EXPR);
+						if (!expr) {
+							AddError(conn->loc, "internal error: no expression");
+							return false;
+						}
+						
+						bool succ = false;
+						if (expr->op == OP_EQ) {
+							Script::AtomDefinition::LinkCandidate& cand =
+								is_src ?
+									atom_def.src_link_cands.Add(src_conn_i) :
+									atom_def.sink_link_cands.Add(sink_conn_i);
+							
+							AstNode* a0 = expr->arg[0];
+							AstNode* a1 = expr->arg[1];
+							while (a0->src == SEMT_RVAL && a0->rval) a0 = a0->rval;
+							while (a1->src == SEMT_RVAL && a1->rval) a1 = a1->rval;
+							String key;
+							if (a0->src == SEMT_VARIABLE) {
+								key = a0->name;
+							}
+							else if (a0->src == SEMT_UNRESOLVED) {
+								key = a0->str;
+							}
+							if (key.GetCount()) {
+								if (a1->src == SEMT_CONSTANT) {
+									a1->CopyToObject(cand.req_args.GetAdd(key));
+									succ = true;
+								}
 							}
 						}
-					}
-					
-					if (!succ) {
-						AddError(expr->loc, "invalid atom connector expression");
-						return false;
+						
+						if (!succ) {
+							AddError(expr->loc, "invalid atom connector expression");
+							return false;
+						}
 					}
 				}
 			}
@@ -567,41 +614,43 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 			//if (!block) {AddError(atom->loc, "internal error: no statement block"); return false;}
 			
 			AstNode* atom_block = atom->Find(SEMT_STATEMENT_BLOCK);
-			if (atom_block) for (AstNode& stmt : atom_block->sub) {
-				if (stmt.src != SEMT_STATEMENT || stmt.stmt == STMT_ATOM_CONNECTOR) continue;
-				
-				bool succ = false;
-				if (stmt.stmt == STMT_EXPR) {
-					//LOG(stmt->GetTreeString(0));
-					if (stmt.rval) {
-						if (stmt.rval->src == SEMT_EXPR) {
-							if (stmt.rval->op == OP_ASSIGN) {
-								AstNode* key = stmt.rval->arg[0];
-								AstNode* value = stmt.rval->arg[1];
-								while (key->src == SEMT_RVAL && key->rval) key = key->rval;
-								while (value->src == SEMT_RVAL && value->rval) value = key->rval;
-								//LOG(key->GetTreeString(0));
-								//LOG(value->GetTreeString(0));
-								if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
-									String key_str = key->str;
-									if (value->src == SEMT_CONSTANT) {
-										Object val_obj;
-										value->CopyToObject(val_obj);
-										atom_def.Set(key_str, val_obj);
-										succ = true;
-									}
-									else if (value->src == SEMT_UNRESOLVED && value->str.GetCount()) {
-										atom_def.Set(key_str, value->str);
-										succ = true;
+			if (atom_block) {
+				for (AstNode& stmt : atom_block->sub) {
+					if (stmt.src != SEMT_STATEMENT || stmt.stmt == STMT_ATOM_CONNECTOR) continue;
+					
+					bool succ = false;
+					if (stmt.stmt == STMT_EXPR) {
+						//LOG(stmt->GetTreeString(0));
+						if (stmt.rval) {
+							if (stmt.rval->src == SEMT_EXPR) {
+								if (stmt.rval->op == OP_ASSIGN) {
+									AstNode* key = stmt.rval->arg[0];
+									AstNode* value = stmt.rval->arg[1];
+									while (key->src == SEMT_RVAL && key->rval) key = key->rval;
+									while (value->src == SEMT_RVAL && value->rval) value = key->rval;
+									//LOG(key->GetTreeString(0));
+									//LOG(value->GetTreeString(0));
+									if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
+										String key_str = key->str;
+										if (value->src == SEMT_CONSTANT) {
+											Object val_obj;
+											value->CopyToObject(val_obj);
+											atom_def.Set(key_str, val_obj);
+											succ = true;
+										}
+										else if (value->src == SEMT_UNRESOLVED && value->str.GetCount()) {
+											atom_def.Set(key_str, value->str);
+											succ = true;
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				if (!succ) {
-					AddError(stmt.loc, "could not resolve statement in atom");
-					return false;
+					if (!succ) {
+						AddError(stmt.loc, "could not resolve statement in atom");
+						return false;
+					}
 				}
 			}
 		}
@@ -684,28 +733,42 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 								if (src_cand) {
 									for(int i = 0; i < src_cand->req_args.GetCount() && !cond_prevents; i++) {
 										String key = src_cand->req_args.GetKey(i);
-										int j = sink_loop.args.Find(key);
-										if (j >= 0) {
-											const Object& src_obj = src_cand->req_args[i];
-											const Object& sink_obj = sink_loop.args[j];
-											if (src_obj != sink_obj)
+										if (key == "loop") {
+											String loop_req = src_cand->req_args[i].ToString();
+											if (sink_loop.id.IsEmpty() || sink_loop.id.parts.Top() != loop_req)
 												cond_prevents = true;
 										}
-										else cond_prevents = true;
+										else {
+											int j = sink_loop.args.Find(key);
+											if (j >= 0) {
+												const Object& src_obj = src_cand->req_args[i];
+												const Object& sink_obj = sink_loop.args[j];
+												if (src_obj != sink_obj)
+													cond_prevents = true;
+											}
+											else cond_prevents = true;
+										}
 									}
 								}
 								
 								if (sink_cand) {
 									for(int i = 0; i < sink_cand->req_args.GetCount() && !cond_prevents; i++) {
 										String key = sink_cand->req_args.GetKey(i);
-										int j = src_loop.args.Find(key);
-										if (j >= 0) {
-											const Object& sink_obj = sink_cand->req_args[i];
-											const Object& src_obj = src_loop.args[j];
-											if (sink_obj != src_obj)
+										if (key == "loop") {
+											String loop_req = sink_cand->req_args[i].ToString();
+											if (src_loop.id.IsEmpty() || src_loop.id.parts.Top() != loop_req)
 												cond_prevents = true;
 										}
-										else cond_prevents = true;
+										else {
+											int j = src_loop.args.Find(key);
+											if (j >= 0) {
+												const Object& sink_obj = sink_cand->req_args[i];
+												const Object& src_obj = src_loop.args[j];
+												if (sink_obj != src_obj)
+													cond_prevents = true;
+											}
+											else cond_prevents = true;
+										}
 									}
 								}
 								
@@ -742,7 +805,9 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		}
 	}
 	
+	
 	n->FindAll(states, SEMT_STATE);
+	Sort(states, AstNodeLess());
 	for (AstNode* state : states) {
 		Script::StateDeclaration& state_def = chain.states.Add();
 		state_def.loc = state->loc;

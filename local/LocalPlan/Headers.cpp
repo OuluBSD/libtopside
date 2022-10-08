@@ -293,6 +293,22 @@ void InterfaceBuilder::Headers() {
 		//.Arg("reqdef_flagSCREEN", "1")
 	;
 	
+	AddHeader("X11SwContextAtom", "X11SwContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("x11.sw.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
+	AddHeader("X11OglContextAtom", "X11OglContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("x11.ogl.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
 	AddHeader("X11EventAtomPipe", "X11EventsBase", "pipe")
 		.In("CenterOrder").Out("CenterEvent")
 		.Action("x11.event.pipe")

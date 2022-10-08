@@ -21,6 +21,8 @@ bool ScriptStateLoader::Load() {
 	id = def.id;
 	
 	Script::Id parent_id = parent.GetDeepId();
+	LOG(id.ToString());
+	LOG(parent_id.ToString());
 	
 	ScriptLoader& loader = GetLoader();
 	

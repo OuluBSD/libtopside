@@ -79,7 +79,7 @@ public:
 	bool IsEmpty() const {return values.IsEmpty();}
 	int GetValueCount() const;
 	void FindKeys(String key_left, Index<String>& keys) const;
-	String Get(const String& key) const;
+	String Get(const String& key, String def="") const;
 	String Get(int idx) const;
 	Size GetSize(const String& cx, const String& cy, Size def=Size(0,0)) const;
 	int GetInt(const String& key, int def=0) const;

@@ -128,6 +128,7 @@ public:
 	void					SetInterface(const IfaceConnTuple& iface);
 	const IfaceConnTuple&	GetInterface() const;
 	int						FindSourceWithValDev(ValDevCls vd);
+	void					SetPrimarySinkQueueSize(int i);
 	
 public:
 	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarderData)

@@ -53,6 +53,10 @@ const IfaceConnTuple& AtomBase::GetInterface() const {
 	return iface;
 }
 
+void AtomBase::SetPrimarySinkQueueSize(int i) {
+	GetSink()->GetValue(0).SetMinQueueSize(i);
+}
+
 void AtomBase::AddAtomToUpdateList() {
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
 }

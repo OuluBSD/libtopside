@@ -225,7 +225,7 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 	Format sink_fmt = sink->GetValue(sink_ch).GetFormat();
 	if (src_fmt.vd != sink_fmt.vd) {
 		//AddError(FileLocation(), "sink and source device-value-class mismatch");
-		LOG("sink and source device-value-class mismatch");
+		LOG("sink and source device-value-class mismatch: src(" + src_fmt.vd.ToString() + "), sink(" + sink_fmt.vd.ToString() + ")");
 		return false;
 	}
 	

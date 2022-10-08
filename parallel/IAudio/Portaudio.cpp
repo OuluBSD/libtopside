@@ -140,6 +140,9 @@ struct PortaudioCallbackData {
 			RTLOG("PortaudioCallbackData::SinkCallback: reading memory failed");
 			memset(args.output, 0, size);
 		}
+		else {
+			int i = 0;
+		}
 		
 		#ifdef flagDEBUG
 		this->dbg_async_race = false;
@@ -291,14 +294,12 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, co
 	if (err != paNoError) // Bail out on errors
 		return false;
 	
-	
-	a.GetSink()->GetValue(0).SetMinQueueSize(5);
-	
+	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }
 
-bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&) {
+bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
 	return true;
 }
 

@@ -8,7 +8,7 @@ machine sdl.app:
 		loop video:
 			center.customer
 			center.video.src.dbg_generator:
-				mode: "noise"
+				mode = "noise"
 			sdl.video.pipe
 		
 		loop audio:

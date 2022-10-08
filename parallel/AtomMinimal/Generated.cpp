@@ -781,6 +781,62 @@ AtomTypeCls X11ContextAtom::GetType() const {
 
 
 #if (defined flagPOSIX && defined flagSCREEN)
+String X11SwContextAtom::GetAction() {
+	return "x11.sw.context";
+}
+
+AtomTypeCls X11SwContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11SwContextAtom::GetLinkType() {
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void X11SwContextAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11SwContext>(this);
+}
+
+AtomTypeCls X11SwContextAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+String X11OglContextAtom::GetAction() {
+	return "x11.ogl.context";
+}
+
+AtomTypeCls X11OglContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11OglContextAtom::GetLinkType() {
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void X11OglContextAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11OglContext>(this);
+}
+
+AtomTypeCls X11OglContextAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagPOSIX && defined flagSCREEN)
 String X11EventAtomPipe::GetAction() {
 	return "x11.event.pipe";
 }

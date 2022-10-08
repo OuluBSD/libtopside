@@ -79,7 +79,11 @@ public:
 	
 };
 
-
+struct AstNodeLess {
+	bool operator()(const AstNode* a, const AstNode* b) const {
+		return a->loc < b->loc;
+	}
+};
 
 NAMESPACE_TOPSIDE_END
 

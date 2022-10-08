@@ -7,5 +7,5 @@ chain player.audio.generator:
 	
 	loop input:
 		center.customer
-		center.audio.side.sink
+		center.audio.side.sink.center
 		center.audio.sink.hw

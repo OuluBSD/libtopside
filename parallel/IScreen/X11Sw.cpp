@@ -305,6 +305,55 @@ bool ScrX11Sw::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io
 
 
 
+bool ScrX11Sw::Context_Create(One<NativeContext>& dev) {
+	dev.Create();
+	return true;
+}
+
+void ScrX11Sw::Context_Destroy(One<NativeContext>& dev) {
+	dev.Clear();
+}
+
+bool ScrX11Sw::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {
+	return true;
+}
+
+bool ScrX11Sw::Context_PostInitialize(NativeContext& ctx, AtomBase& a) {
+	return true;
+}
+
+bool ScrX11Sw::Context_Start(NativeContext& ctx, AtomBase& a) {
+	return true;
+}
+
+void ScrX11Sw::Context_Stop(NativeContext& ctx, AtomBase& a) {
+	
+}
+
+void ScrX11Sw::Context_Uninitialize(NativeContext& ctx, AtomBase& a) {
+	
+}
+
+bool ScrX11Sw::Context_Send(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	return false;
+}
+
+bool ScrX11Sw::Context_Recv(NativeContext& ctx, AtomBase& a, int sink_ch, const Packet&) {
+	return false;
+}
+
+void ScrX11Sw::Context_Finalize(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig&) {
+	
+}
+
+bool ScrX11Sw::Context_NegotiateSinkFormat(NativeContext& ctx, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	return false;
+}
+
+bool ScrX11Sw::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
+	return true;
+}
+
 NAMESPACE_PARALLEL_END
 #endif
 
