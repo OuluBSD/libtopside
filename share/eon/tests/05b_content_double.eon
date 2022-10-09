@@ -1,10 +1,10 @@
 machine sdl.app:
-
+	
 	driver context:
 		sdl.context
 	
 	chain program:
-	
+		
 		loop ogl.fbo:
 			ogl.customer
 			sdl.ogl.fbo.pipe:

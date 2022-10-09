@@ -99,7 +99,10 @@ struct ScrEventsBase : public Atom {
 template <class Scr> struct ScreenSinkDeviceT : ScrSinkDevice {
 	using CLASSNAME = ScreenSinkDeviceT<Scr>;
 	RTTI_DECL1(CLASSNAME, ScrSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ScrSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Scr::SinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<ScrSinkDevice>(this);
+	}
 	One<typename Scr::NativeSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Scr::SinkDevice_Create(dev))
@@ -144,7 +147,10 @@ template <class Scr> struct ScreenSinkDeviceT : ScrSinkDevice {
 template <class Scr> struct ScreenContextT : ScrContext {
 	using CLASSNAME = ScreenContextT<Scr>;
 	RTTI_DECL1(CLASSNAME, ScrContext)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ScrContext>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Scr::Context_Visit(*dev, *this, vis);
+		vis.VisitThis<ScrContext>(this);
+	}
 	One<typename Scr::NativeContext> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Scr::Context_Create(dev))
@@ -189,7 +195,10 @@ template <class Scr> struct ScreenContextT : ScrContext {
 template <class Scr> struct ScreenEventsBaseT : ScrEventsBase {
 	using CLASSNAME = ScreenEventsBaseT<Scr>;
 	RTTI_DECL1(CLASSNAME, ScrEventsBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ScrEventsBase>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Scr::EventsBase_Visit(*dev, *this, vis);
+		vis.VisitThis<ScrEventsBase>(this);
+	}
 	One<typename Scr::NativeEventsBase> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Scr::EventsBase_Create(dev))

@@ -16,9 +16,9 @@ bool PlayerHandComponent::IsSource(const ControllerSource& rhs) const {
 
 bool PlayerHandComponent::Arg(String key, Object value) {
 	if (key == "hand") {
-		if ((String)value == "left")
+		if (value.ToString() == "left")
 			req_hand = PlayerHandedness::Left;
-		else if ((String)value == "right")
+		else if (value.ToString() == "right")
 			req_hand = PlayerHandedness::Right;
 		else
 			return false;
@@ -35,12 +35,12 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 			}
 		}
 		else {
-			LOG("PlayerHandComponent::Arg: could not find entity: " + (String)value);
+			LOG("PlayerHandComponent::Arg: could not find entity: " + value.ToString());
 			return false;
 		}
 	}
 	else if (key == "simulated")
-		is_simulated = (String)value == "true";
+		is_simulated = value.ToString() == "true";
 	
 	return true;
 }
@@ -75,7 +75,7 @@ bool PlayerHeadComponent::Arg(String key, Object value) {
 			}
 		}
 		else {
-			LOG("PlayerHeadComponent::Arg: could not find entity: " + (String)value);
+			LOG("PlayerHeadComponent::Arg: could not find entity: " + value.ToString());
 			return false;
 		}
 	}

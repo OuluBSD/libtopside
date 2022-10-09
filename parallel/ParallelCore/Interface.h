@@ -185,7 +185,7 @@ public:
 	DefaultInterfaceSink() {}
 	
 	bool Initialize();
-	void Uninitialize() {UninitializeContainers();}
+	void Uninitialize() {ClearLink(); UninitializeContainers();}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSink>(this);
@@ -221,7 +221,7 @@ public:
 	DefaultInterfaceSource() {}
 	
 	bool Initialize();
-	void Uninitialize() {UninitializeContainers();}
+	void Uninitialize() {ClearLink(); UninitializeContainers();}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSource>(this);

@@ -21,6 +21,10 @@ void SynFmSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
 	dev.Clear();
 }
 
+void SynFmSynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool SynFmSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sample_rate = ws.GetInt(".samplerate", 1024);
 	

@@ -56,7 +56,10 @@ struct AudSourceDevice : public Atom {
 template <class Aud> struct AudioSinkDeviceT : AudSinkDevice {
 	using CLASSNAME = AudioSinkDeviceT<Aud>;
 	RTTI_DECL1(CLASSNAME, AudSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AudSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Aud::SinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<AudSinkDevice>(this);
+	}
 	One<typename Aud::NativeSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Aud::SinkDevice_Create(dev))
@@ -92,7 +95,10 @@ template <class Aud> struct AudioSinkDeviceT : AudSinkDevice {
 template <class Aud> struct AudioSourceDeviceT : AudSourceDevice {
 	using CLASSNAME = AudioSourceDeviceT<Aud>;
 	RTTI_DECL1(CLASSNAME, AudSourceDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AudSourceDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Aud::SourceDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<AudSourceDevice>(this);
+	}
 	One<typename Aud::NativeSourceDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Aud::SourceDevice_Create(dev))

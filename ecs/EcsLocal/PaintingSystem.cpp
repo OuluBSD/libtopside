@@ -31,7 +31,7 @@ void PaintingInteractionSystemBase::Stop() {
 
 bool PaintingInteractionSystemBase::Arg(String key, Object value) {
 	if (key == "debug.model")
-		dbg_model = (String)value == "true";
+		dbg_model = value.ToString() == "true";
 	return true;
 }
 

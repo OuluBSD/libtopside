@@ -63,7 +63,7 @@ protected:
 	IfaceConnTuple			iface;
 	Serial::LinkBase*		link = 0;
 	//Format				user_internal_fmt;
-	AtomBaseRef				atom_dependency;
+	AtomBase*				atom_dependency = 0;
 	HiValue					user_data;
 	
 	
@@ -83,7 +83,7 @@ public:
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}
-	virtual void			Visit(RuntimeVisitor& vis) {vis & atom_dependency;}
+	virtual void			Visit(RuntimeVisitor& vis) {/*vis & atom_dependency;*/}
 	virtual bool			PostInitialize() {return true;}
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
@@ -107,9 +107,9 @@ public:
 	bool					IsInitialized() const {return is_initialized;}
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
-	void					SetDependency(AtomBaseRef a) {atom_dependency = a;}
-	AtomBaseRef				GetDependency() const {return atom_dependency;}
-	void					ClearDependency() {atom_dependency.Clear();}
+	void					SetDependency(AtomBase* a) {atom_dependency = a;}
+	AtomBase*				GetDependency() const {return atom_dependency;}
+	void					ClearDependency() {atom_dependency = 0;}
 	void					UpdateSinkFormat(ValCls val, Format fmt);
 	void					PostContinueForward();
 	void					SetQueueSize(int queue_size);

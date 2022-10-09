@@ -400,6 +400,31 @@ public:
 		operator bool() const {return it;}
 	};
 	
+	class PtrIterator {
+		Item* it = 0;
+		mutable T* ptr = 0;
+		void ChkRef() const {if (ptr == 0 && it) ptr = &it->value;}
+	public:
+		PtrIterator() {}
+		PtrIterator(Item* it) : it(it) {}
+		PtrIterator(PtrIterator&& it) {MemSwap(*this, it);}
+		PtrIterator(const PtrIterator& i) : it(i.it) {}
+		void  Clear() {ptr = 0; it = 0;}
+		void ClearRef() const {ptr = 0;}
+		Item* GetItem() const {return it;}
+		T*   operator->() {ChkRef(); return ptr;}
+		T&   operator*() const {ChkRef(); return *ptr;}
+		void operator=(const PtrIterator& i) {Clear(); it = i.it;}
+		bool operator==(const PtrIterator& i) const {return i.it == it;}
+		bool operator!=(const PtrIterator& i) const {return i.it != it;}
+		void operator++() {ClearRef(); if (it) {it = it->next;}}
+		void operator--() {ClearRef(); if (it) {it = it->prev;}}
+		T&   operator()() const {ASSERT(it); return it->value;}
+		T&   Get() const {ASSERT(it); return it->value;}
+		operator T*() const {ChkRef(); return ptr;}
+		operator bool() const {return it;}
+	};
+	
 	
 	RefLinkedList() {}
 	~RefLinkedList() {Clear();}
@@ -521,6 +546,11 @@ public:
 	Iterator rbegin()	{return Iterator(last);}
 	Iterator rend()		{return Iterator();}
 	
+	PtrIterator pbegin()	{return PtrIterator(first);}
+	PtrIterator pend()		{return PtrIterator();}
+	PtrIterator rpbegin()	{return PtrIterator(last);}
+	PtrIterator rpend()		{return PtrIterator();}
+	
 };
 
 
@@ -628,6 +658,30 @@ public:
 		operator bool() const {return it;}
 	};
 	
+	class PtrIterator {
+		Item* it = 0;
+		mutable T* ptr = 0;
+		void ChkRef() const {if (ptr == 0 && it && !it->value.IsEmpty()) ptr = &*it->value;}
+	public:
+		PtrIterator() {}
+		PtrIterator(Item* it) : it(it) {}
+		PtrIterator(PtrIterator&& i) {it = i.it; i.it = 0; ptr = i.ptr; i.ptr = 0;}
+		PtrIterator(const PtrIterator& i) : it(i.it) {}
+		void Clear() {ptr = 0; it = 0;}
+		void ClearRef() const {ptr = 0;}
+		Item* GetItem() const {return it;}
+		T*   operator->() {ChkRef(); return ptr;}
+		T*   operator*() const {ChkRef(); return ptr;}
+		void operator=(const PtrIterator& i) {Clear(); it = i.it;}
+		bool operator==(const PtrIterator& i) const {return i.it == it;}
+		bool operator!=(const PtrIterator& i) const {return i.it != it;}
+		void operator++() {ClearRef(); if (it) {it = it->next;}}
+		void operator--() {ClearRef(); if (it) {it = it->prev;}}
+		T&   operator()() const {ASSERT(it && !it->value.IsEmpty()); return *it->value;}
+		operator T*() const {ChkRef(); return ptr;}
+		operator bool() const {return it;}
+	};
+	
 	RefLinkedListIndirect() {}
 	~RefLinkedListIndirect() {Clear();}
 	One<T>& Add(T* o=NULL) {
@@ -649,13 +703,27 @@ public:
 	}
 	T* Detach(const Iterator& it) {
 		T* o = it.GetItem()->value.Detach();
-		Remove(it);
+		RemoveItem(it.GetItem());
+		return o;
+	}
+	T* Detach(const PtrIterator& it) {
+		T* o = it.GetItem()->value.Detach();
+		RemoveItem(it.GetItem());
 		return o;
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	Iterator Remove(const Iterator& iter) {
 		Item* item = iter.GetItem();
+		iter.ClearRef(); // clear ref to avoid errors
+		return RemoveItem(item);
+	}
+	PtrIterator RemovePtr(const PtrIterator& iter) {
+		Item* item = iter.GetItem();
+		iter.ClearRef(); // clear ref to avoid errors
+		return RemoveItem(item);
+	}
+	Item* RemoveItem(Item* item) {
 		if (item->prev) {
 			if (item->next) {
 				item->prev->next = item->next;
@@ -682,7 +750,6 @@ public:
 		--count;
 		item->value.Clear();
 		
-		iter.ClearRef(); // clear ref to avoid errors
 		GetRecyclerPool().Return(item);
 		return item;
 	}
@@ -723,6 +790,11 @@ public:
 	Iterator rbegin()	{return last ? Iterator(last) : Iterator();}
 	Iterator rend()		{return Iterator();}
 	
+	PtrIterator pbegin()	{return PtrIterator(first);}
+	PtrIterator pend()		{return PtrIterator();}
+	PtrIterator rpbegin()	{return last ? PtrIterator(last) : PtrIterator();}
+	PtrIterator rpend()		{return PtrIterator();}
+	
 };
 
 template <class K, class V, class Parent = RefParent1<typename V::Parent>>
@@ -734,8 +806,8 @@ public:
 	typedef Ref<V, Parent> R;
 	typedef typename LinkedList<K>::Iterator KeyIter;
 	typedef typename RefLinkedListIndirect<V>::Iterator ValueIter;
+	typedef typename RefLinkedListIndirect<V>::PtrIterator ValuePtrIter;
 	typedef typename RefLinkedListIndirect<V>::R ValueRef;
-	
 	struct Iterator {
 		KeyIter key;
 		ValueIter value;
@@ -749,6 +821,25 @@ public:
 		bool operator!=(const Iterator& i) const {return key != i.key;}
 		V*   operator->() {return &value();}
 		R&   operator*() {return *value;}
+		operator bool() const {return key;}
+		bool IsEmpty() const {return key.IsEmpty();}
+		V& Get() {return value();}
+		V& operator()() {return value();}
+	};
+	
+	struct PtrIterator {
+		KeyIter key;
+		ValuePtrIter value;
+		PtrIterator() {}
+		PtrIterator(KeyIter&& k, ValuePtrIter&& v) : key(std::move(k)), value(std::move(v)) {}
+		PtrIterator(const KeyIter& k, const ValuePtrIter& v) : key(k), value(v) {}
+		void operator=(const PtrIterator& i) {key = i.key; value = i.value;}
+		void operator++() {++key; ++value;}
+		void operator--() {--key; --value;}
+		bool operator==(const PtrIterator& i) const {return key == i.key;}
+		bool operator!=(const PtrIterator& i) const {return key != i.key;}
+		V*   operator->() {return &value();}
+		V&   operator*() {return **value;}
 		operator bool() const {return key;}
 		bool IsEmpty() const {return key.IsEmpty();}
 		V& Get() {return value();}
@@ -774,6 +865,11 @@ public:
 		V* v = values.Detach(iter.value);
 		return v;
 	}
+	V* Detach(const PtrIterator& iter) {
+		keys.Remove(iter.key);
+		V* v = values.Detach(iter.value);
+		return v;
+	}
 	
 	Iterator Find(const K& key) {
 		KeyIter k = keys.begin();
@@ -782,6 +878,15 @@ public:
 			if (*k == key)
 				return Iterator(k, v);
 		return Iterator();
+	}
+	
+	PtrIterator FindPtr(const K& key) {
+		KeyIter k = keys.begin();
+		ValuePtrIter v = values.pbegin();
+		for (;k; ++k, ++v)
+			if (*k == key)
+				return PtrIterator(k, v);
+		return PtrIterator();
 	}
 	
 	R At(int i) {
@@ -800,6 +905,11 @@ public:
 	Iterator end()		{return Iterator();}
 	Iterator rbegin()	{return Iterator(keys.rbegin(), values.rbegin());}
 	Iterator rend()		{return Iterator();}
+	
+	PtrIterator pbegin()	{return PtrIterator(keys.pbegin(), values.pbegin());}
+	PtrIterator pend()		{return PtrIterator();}
+	PtrIterator rpbegin()	{return PtrIterator(keys.rpbegin(), values.rpbegin());}
+	PtrIterator rpend()		{return PtrIterator();}
 	
 };
 

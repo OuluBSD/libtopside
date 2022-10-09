@@ -26,6 +26,7 @@ void AtomBase::UninitializeDeep() {
 		SetInitialized(false);
 	}
 	ClearSinkSource();
+	ClearDependency();
 	UninitializeAtom();
 }
 

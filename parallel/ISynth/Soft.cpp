@@ -21,6 +21,10 @@ void SynSoft::Instrument_Destroy(One<NativeInstrument>& dev) {
 	dev.Clear();
 }
 
+void SynSoft::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool SynSoft::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sample_rate = 1024;
 	

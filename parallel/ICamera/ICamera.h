@@ -47,7 +47,10 @@ struct CamCamera : public Atom {
 template <class Cam> struct CameraCameraT : CamCamera {
 	using CLASSNAME = CameraCameraT<Cam>;
 	RTTI_DECL1(CLASSNAME, CamCamera)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CamCamera>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Cam::Camera_Visit(*dev, *this, vis);
+		vis.VisitThis<CamCamera>(this);
+	}
 	One<typename Cam::NativeCamera> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Cam::Camera_Create(dev))

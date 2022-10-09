@@ -46,7 +46,10 @@ struct MidSource : public Atom {
 template <class Mid> struct MidiHwSourceT : MidSource {
 	using CLASSNAME = MidiHwSourceT<Mid>;
 	RTTI_DECL1(CLASSNAME, MidSource)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MidSource>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Mid::Source_Visit(*dev, *this, vis);
+		vis.VisitThis<MidSource>(this);
+	}
 	One<typename Mid::NativeSource> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mid::Source_Create(dev))

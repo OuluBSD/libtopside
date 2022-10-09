@@ -110,15 +110,15 @@ void Machine::Stop() {
 	DBG_BEGIN_UNREF_CHECK
 	
 	if (was_started) {
-		for (auto it = systems.rbegin(); it != systems.rend(); --it) {
-			(*it)->Stop();
+		for (auto it = systems.rpbegin(); it != systems.rpend(); --it) {
+			it->Stop();
 		}
 	}
 	
 	is_initialized = false;
 	
-	for (auto it = systems.rbegin(); it != systems.rend(); --it) {
-		(*it)->Uninitialize();
+	for (auto it = systems.rpbegin(); it != systems.rpend(); --it) {
+		it->Uninitialize();
 	}
 }
 

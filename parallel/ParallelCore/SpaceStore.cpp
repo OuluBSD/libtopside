@@ -17,11 +17,11 @@ bool SpaceStore::Initialize() {
 }
 
 void SpaceStore::Stop() {
-	GetRoot()->StopDeep();
+	GetRootPtr()->StopDeep();
 }
 
 void SpaceStore::Uninitialize() {
-	GetRoot()->Clear();
+	GetRootPtr()->Clear();
 }
 
 void SpaceStore::Update(double dt) {

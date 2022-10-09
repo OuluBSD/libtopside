@@ -37,6 +37,10 @@ void ScrX11Sw::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
 	dev.Clear();
 }
 
+void ScrX11Sw::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	vis % dev.accel;
+}
+
 bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11SwContext>(1);
 	if (!ctx_) {LOG("error: could not find X11 context"); return false;}
@@ -312,6 +316,10 @@ bool ScrX11Sw::Context_Create(One<NativeContext>& dev) {
 
 void ScrX11Sw::Context_Destroy(One<NativeContext>& dev) {
 	dev.Clear();
+}
+
+void ScrX11Sw::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {
+	
 }
 
 bool ScrX11Sw::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {

@@ -99,6 +99,10 @@ void ScrX11Ogl::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
 	dev.Clear();
 }
 
+void ScrX11Ogl::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	vis % dev.ogl;
+}
+
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11OglContext>(1);
 	if (!ctx_) { LOG("error: could not find X11 context"); return false;}
@@ -531,6 +535,10 @@ bool ScrX11Ogl::Context_Create(One<NativeContext>& dev) {
 
 void ScrX11Ogl::Context_Destroy(One<NativeContext>& dev) {
 	dev.Clear();
+}
+
+void ScrX11Ogl::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {
+	
 }
 
 bool ScrX11Ogl::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {

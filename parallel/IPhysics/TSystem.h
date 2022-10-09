@@ -12,7 +12,7 @@ struct SystemT :
 	using Base = SystemT<Fys>;
 	using Node = NodeT<Fys>;
 	using Space = SpaceT<Fys>;
-	using System = System<SystemT<Fys>>;
+	using System = Parallel::System<SystemT<Fys>>;
 	using NativeWorld = typename Fys::NativeWorld;
 	using NativeSpace = typename Fys::NativeSpace;
 	using NativeJointGroup = typename Fys::NativeJointGroup;

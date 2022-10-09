@@ -306,37 +306,6 @@ String WorldState::GetString(const String& key, String def) const {
 	return str;
 }
 
-String WorldState::ToString() const {
-	ASSERT(ap);
-	String s;
-	if (use_debugging_order && dbg_order.GetCount()) {
-		for(int i = 0; i < dbg_order.GetCount(); i++) {
-			int idx = dbg_order[i];
-			if (!using_act[idx])
-				continue;
-			String v = values[idx];
-			if (v.IsEmpty()) v = "false";
-			String k = ap->GetAtom(idx).ToString();
-			if (!s.IsEmpty())
-				s << ",";
-			s << k << "=" << v;
-		}
-	}
-	else {
-		for(int i = 0; i < values.GetCount(); i++) {
-			if (!using_act[i])
-				continue;
-			String v = values[i];
-			if (v.IsEmpty()) v = "false";
-			String k = ap->GetAtom(i).ToString();
-			if (!s.IsEmpty())
-				s << ",";
-			s << k << "=" << v;
-		}
-	}
-	return s;
-}
-
 String WorldState::GetFullString() const {
 	String s;
 	if (IsAddAtom())
@@ -499,7 +468,17 @@ String WorldState::GetString(const String& key, String def) const {
 }
 
 String WorldState::ToString() const {
-	TODO
+	String s;
+	for(int i = 0; i < values.GetCount(); i++) {
+		const Object& vo = values[i];
+		String v = vo.ToString();
+		if (v.IsEmpty()) v = "false";
+		String k = values.GetKey(i).ToString();
+		if (!s.IsEmpty())
+			s << ",";
+		s << k << "=" << v;
+	}
+	return s;
 }
 
 String WorldState::GetFullString() const {

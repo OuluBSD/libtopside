@@ -200,12 +200,16 @@ bool BufferT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz, bool add_dat
 	}
 	
 	int i = 0;
+	bool rename_stages = stages.GetCount() > 1;
 	for (BufferStage& s : stages) {
 		if (add_data_states && !s.data && mode != PENDING_PACKET) {
 			DataState& d = data.Add("stage" + IntStr(i));
 			d.GetAddPipeline("image").GetAddProgram("default");
 			s.SetDataState(&d, true);
 		}
+		
+		if (rename_stages)
+			s.program_str = "s" + IntStr(i);
 		
 		if (!s.ImageInitialize())
 			return false;

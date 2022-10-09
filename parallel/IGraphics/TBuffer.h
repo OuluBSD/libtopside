@@ -44,6 +44,7 @@ struct BufferStageT : GfxBufferStage {
 	DataState*					data = 0;
 	PipelineState*				pipeline = 0;
 	String						pipeline_str = "default";
+	String						program_str = "default";
 	bool						data_writable = false;
 	int							loopback = -1;
 	int							quad_count = 0;
@@ -180,6 +181,7 @@ struct BufferT : GfxBuffer {
 	
 	
 public:
+	void ClearRef() {env.Clear();}
 	void Update(double dt);
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool ImageInitialize(bool is_win_fbo, Size screen_sz, bool add_data_states);

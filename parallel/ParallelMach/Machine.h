@@ -81,6 +81,12 @@ public:
     }
 
     template<typename SystemT>
+    SystemT* GetPtr() {
+        SystemCollection::PtrIterator it = FindSystemPtr(AsTypeCls<SystemT>());
+        return CastPtr<SystemT>(&*it);
+    }
+
+    template<typename SystemT>
     Ref<SystemT> Find()
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
@@ -160,6 +166,7 @@ private:
     bool is_running = false;
     
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
+    SystemCollection::PtrIterator FindSystemPtr(TypeCls type_id) {return systems.FindPtr(type_id);}
     void Add(TypeCls type_id, SystemBase* system);
     void Remove(TypeCls typeId);
     

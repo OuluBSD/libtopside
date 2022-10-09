@@ -7,7 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 bool AtomSystem::Initialize() {
-	
+	ASSERT_(!GetMachine().Find<AtomStore>().IsEmpty(), "AtomStore must be added before AtomSystem");
 	return true;
 }
 
@@ -31,6 +31,8 @@ void AtomSystem::Stop() {
 void AtomSystem::Uninitialize() {
 	
 	WhenUninit()();
+	
+	updated.Clear();
 }
 
 void AtomSystem::AddUpdated(AtomBaseRef p) {

@@ -124,12 +124,11 @@ void DefaultRunner(bool main_loop, String app_name, String override_eon_file, Ve
 		}
 	}
 	
+	//break_addr = 1;
 	
 	if (!break_addr)
-		//Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0);
 		DebugMain(main_loop, eon_script, eon_file, __def_args);
 	else
-		//Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0, 1, break_addr);
 		DebugMain(main_loop, eon_script, eon_file, __def_args, 1, break_addr);
 }
 

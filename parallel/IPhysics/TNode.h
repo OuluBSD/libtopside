@@ -9,7 +9,7 @@ template <class Fys> struct SystemT;
 template <class Fys>
 struct NodeT : FysNode {
 	using Base = NodeT<Fys>;
-	using SystemT = SystemT<Fys>;
+	using SystemT = Parallel::SystemT<Fys>;
 	using Node = typename Fys::Node;
 	using Object = typename Fys::Object;
 	using Joint = typename Fys::Joint;

@@ -317,6 +317,11 @@ public:
 	Iterator rbegin() const		{return last ? Iterator(last) : Iterator();}
 	Iterator rend() const		{return Iterator();}
 	
+	Iterator pbegin() const		{return Iterator(first);}
+	Iterator pend() const		{return Iterator();}
+	Iterator rpbegin() const	{return last ? Iterator(last) : Iterator();}
+	Iterator rpend() const		{return Iterator();}
+	
 };
 
 

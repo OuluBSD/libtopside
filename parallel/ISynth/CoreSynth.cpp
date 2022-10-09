@@ -37,6 +37,10 @@ void SynCoreSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
 	dev.Clear();
 }
 
+void SynCoreSynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool SynCoreSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.polyphone = min(128, max(0, ws.GetInt(".polyphone", 12)));
 	

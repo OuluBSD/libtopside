@@ -13,7 +13,7 @@ machine sdl.app:
 		loop ogl.fbo.tex:
 			i = "texture"
 			ogl.customer
-			ogl.fbo.image[id == "image"][id == "screen"]
+			sdl.ogl.fbo.image[id == "image"][id == "screen"]
 		
 		loop ogl.fbo.screen:
 			id = "screen"

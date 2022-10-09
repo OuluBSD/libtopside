@@ -609,6 +609,7 @@ class EnvState :
 	String name;
 	
 public:
+	RTTI_DECL0(EnvState)
 	
 	void Visit(RuntimeVisitor& vis) {}
 	void SetName(String s) {name = s;}

@@ -96,7 +96,10 @@ struct HalEventsBase : public Atom {
 template <class Hal> struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 	using CLASSNAME = HalAudioSinkDeviceT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalAudioSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalAudioSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::AudioSinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<HalAudioSinkDevice>(this);
+	}
 	One<typename Hal::NativeAudioSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::AudioSinkDevice_Create(dev))
@@ -147,7 +150,10 @@ template <class Hal> struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 template <class Hal> struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 	using CLASSNAME = HalCenterVideoSinkDeviceT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalCenterVideoSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalCenterVideoSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::CenterVideoSinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<HalCenterVideoSinkDevice>(this);
+	}
 	One<typename Hal::NativeCenterVideoSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::CenterVideoSinkDevice_Create(dev))
@@ -198,7 +204,10 @@ template <class Hal> struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice
 template <class Hal> struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 	using CLASSNAME = HalCenterFboSinkDeviceT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalCenterFboSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalCenterFboSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::CenterFboSinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<HalCenterFboSinkDevice>(this);
+	}
 	One<typename Hal::NativeCenterFboSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::CenterFboSinkDevice_Create(dev))
@@ -250,7 +259,10 @@ template <class Hal> struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 template <class Hal> struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 	using CLASSNAME = HalOglVideoSinkDeviceT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalOglVideoSinkDevice)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalOglVideoSinkDevice>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::OglVideoSinkDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<HalOglVideoSinkDevice>(this);
+	}
 	One<typename Hal::NativeOglVideoSinkDevice> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::OglVideoSinkDevice_Create(dev))
@@ -302,7 +314,10 @@ template <class Hal> struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 template <class Hal> struct HalContextBaseT : HalContextBase {
 	using CLASSNAME = HalContextBaseT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalContextBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalContextBase>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::ContextBase_Visit(*dev, *this, vis);
+		vis.VisitThis<HalContextBase>(this);
+	}
 	One<typename Hal::NativeContextBase> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::ContextBase_Create(dev))
@@ -353,7 +368,10 @@ template <class Hal> struct HalContextBaseT : HalContextBase {
 template <class Hal> struct HalEventsBaseT : HalEventsBase {
 	using CLASSNAME = HalEventsBaseT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalEventsBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalEventsBase>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::EventsBase_Visit(*dev, *this, vis);
+		vis.VisitThis<HalEventsBase>(this);
+	}
 	One<typename Hal::NativeEventsBase> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::EventsBase_Create(dev))

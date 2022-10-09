@@ -26,7 +26,7 @@ public:
 
 template <class Fys>
 struct Sphere : public ScalarObject<Fys> {
-	using ScalarObject = ScalarObject<Fys>;
+	using ScalarObject = Parallel::ScalarObject<Fys>;
 	using Object = typename Fys::Object;
 	
 	double radius = 0.102;

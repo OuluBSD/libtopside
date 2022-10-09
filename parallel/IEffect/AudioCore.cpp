@@ -23,6 +23,10 @@ void FxAudioCore::Effect_Destroy(One<NativeEffect>& dev) {
 	dev.Clear();
 }
 
+void FxAudioCore::Effect_Visit(NativeEffect& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 template <class T>
 void CreateSynCoreEffect(FxAudioCore::NativeEffect& dev, AtomBase& a, const Script::WorldState& ws) {
 	T* t = new T();

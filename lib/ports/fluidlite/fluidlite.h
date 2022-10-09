@@ -22,6 +22,9 @@
 #define _FLUIDLITE_H
 
 #include <stdio.h>
+#include <stdarg.h>
+#include <math.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {

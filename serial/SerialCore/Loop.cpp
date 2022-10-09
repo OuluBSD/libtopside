@@ -133,6 +133,11 @@ void Loop::Initialize(Loop& l, String prefab) {
 	
 }
 
+void Loop::Visit(RuntimeVisitor& vis) {
+	vis || links;
+	vis || loops;
+}
+
 LinkBaseRef Loop::AddTypeCls(LinkTypeCls cls) {
 	return AddPtr(space->GetMachine().Get<LinkStore>()->CreateLinkTypeCls(cls));
 }

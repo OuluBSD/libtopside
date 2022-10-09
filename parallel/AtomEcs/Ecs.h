@@ -25,7 +25,7 @@ public:
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	//bool			ProcessPackets(PacketIO& io) override;
-	void			Visit(RuntimeVisitor& vis) override {}
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this); vis & state;}
 	
 	void AddBinder(BinderIfaceEvents* iface);
 	void RemoveBinder(BinderIfaceEvents* iface);
@@ -55,7 +55,9 @@ class EcsVideoBase :
 	#endif*/
 	bool					draw_mem = false;
 	EntitySystemRef			ents;
+	#ifdef flagGUI
 	Ecs::WindowSystemRef	wins;
+	#endif
 	static EcsVideoBase*	latest;
 	int					screen_id = 0;
 	
@@ -71,7 +73,7 @@ public:
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	//bool			ProcessPackets(PacketIO& io) override;
-	void			Visit(RuntimeVisitor& vis) override {}
+	void			Visit(RuntimeVisitor& vis) override;
 	
 	void AddBinder(BinderIfaceVideo* iface);
 	void RemoveBinder(BinderIfaceVideo* iface);

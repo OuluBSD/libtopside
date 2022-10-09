@@ -64,6 +64,7 @@ bool ProgramStateT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String sha
 
 template <class Gfx>
 bool ProgramStateT<Gfx>::LoadShader(GVar::ShaderType shader_type, String str, bool is_path, bool is_content, String library_paths) {
+	ASSERT(!ready);
 	
 	if (str.IsEmpty()) {
 		LOG("ProgramStateT<Gfx>::LoadShader: error: no shader given");

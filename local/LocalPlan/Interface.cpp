@@ -330,7 +330,10 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 					<< "\tusing CLASSNAME = "<<n<<k<<"T<"<<a<<">;\n"
 					<< "\tRTTI_DECL1(CLASSNAME, "<<a<<k<<")\n"
-					<< "\tvoid Visit(RuntimeVisitor& vis) override {vis.VisitThis<"<<a<<k<<">(this);}\n"
+					<< "\tvoid Visit(RuntimeVisitor& vis) override {\n"
+					   "\t\tif (dev) "<<a<<"::"<<k<<"_Visit(*dev, *this, vis);\n"
+					   "\t\tvis.VisitThis<"<<a<<k<<">(this);\n"
+					   "\t}\n"
 					
 					<< "\tOne<typename "<<a<<"::Native"<<k<<"> dev;\n"
 					
@@ -466,7 +469,9 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					<< "static bool " << k << "_Start(" << nat_this_ << "AtomBase&);\n"
 					<< "static void " << k << "_Stop(" << nat_this_ << "AtomBase&);\n"
 					<< "static void " << k << "_Uninitialize(" << nat_this_ << "AtomBase&);\n"
-					<< "static bool " << k << "_Send(" << nat_this_ << "AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);\n";
+					<< "static bool " << k << "_Send(" << nat_this_ << "AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);\n"
+					<< "static void " << k << "_Visit(" << nat_this_ << "AtomBase&, RuntimeVisitor& vis);\n"
+					;
 				
 				if (pkg.have_recv_finalize) {
 					s	<< "static bool " << k << "_Recv(" << nat_this_ << "AtomBase&, int, const Packet&);\n"

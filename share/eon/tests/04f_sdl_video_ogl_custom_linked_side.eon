@@ -9,13 +9,13 @@ machine sdl.app:
 		loop ogl.fbo.buffer:
 			id = "buffer"
 			ogl.customer
-			sdl.ogl.fbo.sidetrue [][id == "screen"]:
+			sdl.ogl.fbo.side [][id == "screen"]:
 				shader.frag.path = "shaders/toys/simple/simple_double/stage1.glsl"
 		
 		loop ogl.fbo.screen:
 			id = "screen"
 			ogl.customer
-			sdl.fbo[id == "buffer"][]:
+			sdl.fbo:
 				shader.frag.path = "shaders/toys/simple/simple_double/stage0.glsl"
 				recv.data =			false
 		

@@ -25,6 +25,7 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) {vis % buf;}
 	
+	void ClearRef() {buf.ClearRef();}
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool PostInitialize();
 	bool ImageInitialize(bool is_win_fbo, Size screen_sz);

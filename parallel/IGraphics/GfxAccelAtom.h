@@ -40,7 +40,7 @@ struct ShaderDataPackT : RTTIBase {
 
 
 template <class Gfx>
-class GfxAccelAtom {
+class GfxAccelAtom : RTTIBase {
 	
 protected:
 	friend class Events;
@@ -98,6 +98,11 @@ protected:
 	void SetWindowRect(Rect r);
 	
 public:
+	typedef GfxAccelAtom<Gfx> GfxAccelAtomT;
+	RTTI_DECL0(GfxAccelAtomT);
+	
+	void Visit(RuntimeVisitor& vis) {vis % bf;}
+	
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,TS::default_width,TS::default_height);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}

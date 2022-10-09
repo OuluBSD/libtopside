@@ -26,6 +26,12 @@ public:
 		Space& l = root.GetFirst();
 		return l;
 	}
+	Space* GetRootPtr() {
+		if (root.IsEmpty())
+			return 0;
+		Space& l = root.GetFirst();
+		return &l;
+	}
 	SpaceVec& GetRootVec()	{return root;}
 	
 	

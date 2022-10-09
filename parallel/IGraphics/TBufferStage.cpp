@@ -51,7 +51,7 @@ void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
 	if (data && initialized)
 		RealizeData();
 	
-	/*if (data && data->pipelines.GetCount() == 1) {
+	if (data && data->pipelines.GetCount() == 1) {
 		if (data->pipelines.GetCount() == 1) {
 			pipeline_str = data->dictionary[data->pipelines.GetKey(0)];
 			pipeline = &data->pipelines[0];
@@ -64,7 +64,7 @@ void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
 					pipeline = &data->pipelines[i];
 			}
 		}
-	}*/
+	}
 	
 	CompileJIT();
 }
@@ -252,8 +252,8 @@ bool BufferStageT<Gfx>::RealizeData() {
 	if (!data)
 		return false;
 	
-	pipeline = data->FindPipeline("default");
-	ProgramState* prog = pipeline ? pipeline->FindProgram("default") : 0;
+	pipeline = data->FindPipeline(pipeline_str);
+	ProgramState* prog = pipeline ? pipeline->FindProgram(program_str) : 0;
 	
 	ShaderConf& lib_conf = shdr_confs[GVar::SHADERTYPE_COUNT];
 	
@@ -268,10 +268,10 @@ bool BufferStageT<Gfx>::RealizeData() {
 				}
 				
 				if (!pipeline)
-					pipeline = &data->GetAddPipeline("default");
+					pipeline = &data->GetAddPipeline(pipeline_str);
 				
 				if (!prog) {
-					prog = &pipeline->GetAddProgram("default");
+					prog = &pipeline->GetAddProgram(program_str);
 					
 					for(int i = 0; i < buf_inputs.GetCount(); i++) {
 						int j = buf_inputs.GetKey(i);
@@ -412,7 +412,7 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		for (ModelState& m : data->models.GetValues()) {
 			int prog_i = m.prog;
 			if (prog_i < 0)
-				prog_i = pipeline.owner->dictionary.Find("default");
+				prog_i = pipeline.owner->dictionary.Find(program_str);
 			ASSERT(prog_i >= 0);
 			if (prog_i < 0)
 				continue;

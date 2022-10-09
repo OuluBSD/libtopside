@@ -56,6 +56,7 @@ void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>
 
 
 bool LinkSystem::Initialize() {
+	ASSERT_(!GetMachine().Find<LinkStore>().IsEmpty(), "LinkStore must be added before LinkSystem");
 	once_cbs.Create();
 	return true;
 }
@@ -105,10 +106,12 @@ void LinkSystem::Stop() {
 }
 
 void LinkSystem::Uninitialize() {
+	/*
+	Nope... no asserts... LinkSystem is uninitialized first, so go ahead....
 	ASSERT(updated.IsEmpty());
 	ASSERT(customers.IsEmpty());
 	ASSERT(drivers.IsEmpty());
-	ASSERT(pollers.IsEmpty());
+	ASSERT(pollers.IsEmpty());*/
 	once_cbs.Clear();
 	updated.Clear();
 	customers.Clear();

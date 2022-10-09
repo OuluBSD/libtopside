@@ -203,7 +203,7 @@ void RenderingSystem::Uninitialize() {
 bool RenderingSystem::Arg(String key, Object value) {
 	
 	if (key == "dummy")
-		is_dummy = (String)value == "true";
+		is_dummy = value.ToString() == "true";
 	
 	return true;
 }

@@ -21,7 +21,7 @@ machine sdl.app:
 		
 		loop ogl.fbo.tex0:
 			id = "texture0"
-			ogl.custome
+			ogl.customer
 			sdl.ogl.fbo.image[id == "image"][id == "screen"]
 		
 		loop ogl.fbo.tex1:

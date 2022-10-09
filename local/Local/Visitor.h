@@ -109,18 +109,24 @@ public:
 	
 	template <class T>
 	void VisitVector(T& o) {
+		if (o.IsEmpty())
+			return;
 		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
 			Visit(*iter);
 	}
 	
 	template <class T>
 	void VisitVectorRefs(T& o) {
-		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
+		if (o.IsEmpty())
+			return;
+		for (auto iter = o.pbegin(), end = o.pend(); iter != end && !break_out; ++iter)
 			Visit(iter());
 	}
 	
 	template <class T>
 	void VisitRefVector(T& o) {
+		if (o.IsEmpty())
+			return;
 		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
 			VisitRef(*iter);
 	}

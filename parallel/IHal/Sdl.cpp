@@ -92,6 +92,10 @@ void HalSdl::AudioSinkDevice_Destroy(One<NativeAudioSinkDevice>& dev) {
 	dev.Clear();
 }
 
+void HalSdl::AudioSinkDevice_Visit(NativeAudioSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
@@ -110,8 +114,8 @@ bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a,
 }
 
 bool HalSdl::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
-	AtomBaseRef dep = a.GetDependency();
-	if (dep.IsEmpty()) {
+	AtomBase* dep = a.GetDependency();
+	if (dep == 0) {
 		LOG("HalSdl::AudioSinkDevice_PostInitialize: expected dependency atom but got null");
 		return false;
 	}
@@ -236,6 +240,10 @@ void HalSdl::ContextBase_Destroy(One<NativeContextBase>& dev) {
 	dev.Clear();
 }
 
+void HalSdl::ContextBase_Visit(NativeContextBase& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool HalSdl::ContextBase_Initialize(NativeContextBase& ctx, AtomBase& a, const Script::WorldState& ws) {
 	RTLOG("HalSdl::ContextBase_Initialize");
 	return true;
@@ -292,14 +300,14 @@ bool HalSdl::ContextBase_AttachContext(NativeContextBase& ctx, AtomBase& a, Atom
 		LOG("HalSdl::ContextBase_AttachContext: atom already has dependency");
 		return false;
 	}
-	other.SetDependency(a);
+	other.SetDependency(&a);
 	return true;
 }
 
 void HalSdl::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
 	AtomBaseRef aref = a.AsRefT();
-	if (other.GetDependency() == aref)
-		other.SetDependency(AtomBaseRef());
+	if (other.GetDependency() == &*aref)
+		other.SetDependency(0);
 }
 
 bool HalSdl::ContextBase_Recv(NativeContextBase& ctx, AtomBase&, int, const Packet&) {
@@ -336,6 +344,10 @@ bool HalSdl::CenterVideoSinkDevice_Create(One<NativeCenterVideoSinkDevice>& dev)
 
 void HalSdl::CenterVideoSinkDevice_Destroy(One<NativeCenterVideoSinkDevice>& dev) {
 	dev.Clear();
+}
+
+void HalSdl::CenterVideoSinkDevice_Visit(NativeCenterVideoSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	
 }
 
 bool HalSdl::CenterVideoSinkDevice_Initialize(NativeCenterVideoSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -551,6 +563,10 @@ void HalSdl::CenterFboSinkDevice_Destroy(One<NativeCenterFboSinkDevice>& dev) {
 	dev.Clear();
 }
 
+void HalSdl::CenterFboSinkDevice_Visit(NativeCenterFboSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	vis % dev.accel;
+}
+
 bool HalSdl::CenterFboSinkDevice_Initialize(NativeCenterFboSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	
 	if (!dev.accel.Initialize(a, ws))
@@ -705,6 +721,10 @@ bool HalSdl::OglVideoSinkDevice_Create(One<NativeOglVideoSinkDevice>& dev) {
 
 void HalSdl::OglVideoSinkDevice_Destroy(One<NativeOglVideoSinkDevice>& dev) {
 	dev.Clear();
+}
+
+void HalSdl::OglVideoSinkDevice_Visit(NativeOglVideoSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+	vis % dev.accel;
 }
 
 bool HalSdl::OglVideoSinkDevice_Initialize(NativeOglVideoSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -900,6 +920,10 @@ void HalSdl::EventsBase_Destroy(One<NativeEventsBase>& dev) {
 	dev.Clear();
 }
 
+void HalSdl::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool HalSdl::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
 	memset(&dev, 0, sizeof(NativeEventsBase));
 	
@@ -920,8 +944,8 @@ bool HalSdl::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Scr
 }
 
 bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
-	AtomBaseRef dep = a.GetDependency();
-	if (dep.IsEmpty()) {
+	AtomBase* dep = a.GetDependency();
+	if (!dep) {
 		LOG("HalSdl::EventsBase_PostInitialize: expected dependency atom but got null");
 		return false;
 	}

@@ -66,6 +66,7 @@ bool EcsEventsBase::Recv(int sink_ch, const Packet& in) {
 bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
+
 /*
 bool EcsEventsBase::ProcessPackets(PacketIO& io) {
 	
@@ -151,7 +152,19 @@ bool EcsVideoBase::PostInitialize() {
 }
 
 void EcsVideoBase::Uninitialize() {
-	
+	state.Clear();
+	ents.Clear();
+	#ifdef flagGUI
+	wins.Clear();
+	#endif
+}
+
+void EcsVideoBase::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<Atom>(this);
+	vis & state & ents;
+	#ifdef flagGUI
+	vis & wins;
+	#endif
 }
 
 bool EcsVideoBase::IsReady(PacketIO& io) {

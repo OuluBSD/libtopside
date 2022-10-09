@@ -39,6 +39,10 @@ void CamV4L2OpenCV::Camera_Destroy(One<NativeCamera>& dev) {
 	dev.Clear();
 }
 
+void CamV4L2OpenCV::Camera_Visit(NativeCamera& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool CamV4L2OpenCV::Camera_Initialize(NativeCamera& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.cap = 0;
 	dev.time_step = 0;

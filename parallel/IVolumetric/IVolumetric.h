@@ -44,7 +44,10 @@ struct VolStaticSource : public Atom {
 template <class Vol> struct VolumetricStaticSourceT : VolStaticSource {
 	using CLASSNAME = VolumetricStaticSourceT<Vol>;
 	RTTI_DECL1(CLASSNAME, VolStaticSource)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VolStaticSource>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Vol::StaticSource_Visit(*dev, *this, vis);
+		vis.VisitThis<VolStaticSource>(this);
+	}
 	One<typename Vol::NativeStaticSource> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Vol::StaticSource_Create(dev))

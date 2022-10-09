@@ -62,13 +62,13 @@ void PhysicsSystem::Update(double dt)
 bool PhysicsSystem::Arg(String key, Object value) {
 	
 	if (key == "log") {
-		debug_log = (String)value == "debug";
+		debug_log = value.ToString() == "debug";
 	}
 	if (key == "rm.outsiders") {
-		remove_outside_area = (String)value == "true";
+		remove_outside_area = value.ToString() == "true";
 	}
 	if (key == "rm.area.size") {
-		area_length = StrDbl(value);
+		area_length = value.ToDouble();
 	}
 	
 	return true;
@@ -233,11 +233,11 @@ void PhysicsBody::Uninitialize() {
 bool PhysicsBody::Arg(String key, Object value) {
 	
 	if (key == "bind") {
-		if ((String)value == "true")
+		if (value.ToString() == "true")
 			return BindDefault();
 	}
 	else if (key == "test.fn") {
-		String v = value;
+		String v = value.ToString();
 		
 		if      (v == "do.circle")			test_fn = TESTFN_CIRCLE;
 		else if (v == "fixed")				test_fn = TESTFN_FIXED;

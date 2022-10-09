@@ -77,7 +77,7 @@ void ModelComponent::SetEnabled(bool enable) {
 bool ModelComponent::Arg(String key, Object value) {
 	
 	if (key == "builtin") {
-		Vector<String> parts = Split((String)value, ",");
+		Vector<String> parts = Split(value.ToString(), ",");
 		if (parts.IsEmpty()) return false;
 		String name = parts[0];
 		ModelBuilder mb;
@@ -149,7 +149,7 @@ bool ModelComponent::Arg(String key, Object value) {
 	else if (key == "pitch") {pitch = DEG2RAD(value.ToDouble()); RefreshExtModel();}
 	else if (key == "yaw") {yaw = DEG2RAD(value.ToDouble()); RefreshExtModel();}
 	else if (key == "roll") {roll = DEG2RAD(value.ToDouble()); RefreshExtModel();}
-	else if (key == "always.enabled") {always_enabled = (String)value == "true";}
+	else if (key == "always.enabled") {always_enabled = value.ToString() == "true";}
 	else {
 		LOG("ModelComponent::Arg: error: invalid key '" << key << "'");
 		return false;

@@ -11,9 +11,10 @@ machine x11.app:
 			x11.sw.fbo.program:
 				drawmem =		"false"
 				program =		"obj_view"
+				shader.default.frag.name =	"obj_view"
+				shader.default.vtx.name =	"obj_view"
 			
 			x11.sw.video.pipe:
 				close_machine =	true
 				sizeable =		true
 				env =			event.register
-				program =		"obj_view"

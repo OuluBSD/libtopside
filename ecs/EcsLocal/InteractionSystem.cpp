@@ -66,15 +66,17 @@ void InteractionSystem::Uninitialize() {
 	    ReleaseEventHandlers();
 	    spatial_interaction_manager = 0;
 	    
-	    vr_spatial_interaction_manager.Clear();
-	    fake_spatial_interaction_manager.Clear();
 	}
+	
+    interaction_listeners.Clear();
+    vr_spatial_interaction_manager.Clear();
+    fake_spatial_interaction_manager.Clear();
 }
 
 bool InteractionSystem::Arg(String key, Object value) {
 	
 	if (key == "log") {
-		debug_log = (String)value == "debug";
+		debug_log = value.ToString() == "debug";
 	}
 	
 	if (key == "env") {
@@ -82,12 +84,12 @@ bool InteractionSystem::Arg(String key, Object value) {
 	}
 	
 	if (key == "hmd") {
-		if ((String)value == "state")
+		if (value.ToString() == "state")
 			use_state_hmd = true;
 	}
 	
 	if (key == "calibration") {
-		is_calibration = (String)value == "true";
+		is_calibration = value.ToString() == "true";
 	}
 	
 	return true;

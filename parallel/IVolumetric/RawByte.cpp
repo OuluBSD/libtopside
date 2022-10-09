@@ -27,6 +27,10 @@ void VolRawByte::StaticSource_Destroy(One<NativeStaticSource>& dev) {
 	dev.Clear();
 }
 
+void VolRawByte::StaticSource_Visit(NativeStaticSource& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 
 
 bool VolRawByte__LoadFile(VolRawByte::NativeStaticSource& dev, AtomBase& a) {

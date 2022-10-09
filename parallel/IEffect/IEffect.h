@@ -45,7 +45,10 @@ struct FxEffect : public Atom {
 template <class Fx> struct EffectEffectT : FxEffect {
 	using CLASSNAME = EffectEffectT<Fx>;
 	RTTI_DECL1(CLASSNAME, FxEffect)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FxEffect>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Fx::Effect_Visit(*dev, *this, vis);
+		vis.VisitThis<FxEffect>(this);
+	}
 	One<typename Fx::NativeEffect> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Fx::Effect_Create(dev))

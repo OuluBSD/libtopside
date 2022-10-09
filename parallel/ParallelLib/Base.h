@@ -144,7 +144,7 @@ public:
 	bool PostInitialize() override;
 	void Uninitialize() override;
 	void Update(double dt) override;
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this); vis & state;}
 	bool IsReady(PacketIO& io) override;
 	bool Recv(int sink_ch, const Packet& in) override;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;

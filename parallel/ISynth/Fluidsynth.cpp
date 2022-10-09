@@ -156,6 +156,10 @@ void SynFluidsynth::Instrument_Destroy(One<NativeInstrument>& dev) {
 	dev.Clear();
 }
 
+void SynFluidsynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
 	Index<String> dirs;
 	dirs.Add( ShareDirFile("soundfonts") );

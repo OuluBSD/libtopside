@@ -32,12 +32,15 @@ bool RunAudioGenTest() {
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
     reg->SetAppName("AudioGenTest");
 	
-    mach.Add<AtomSystem>();
-	mach.Add<LinkSystem>();
 	mach.Add<AtomStore>();
 	mach.Add<LinkStore>();
+	
 	mach.Add<SpaceStore>();
 	mach.Add<LoopStore>();
+	
+    mach.Add<AtomSystem>();
+	mach.Add<LinkSystem>();
+	
 	ScriptLoaderRef script = mach.FindAdd<ScriptLoader>();
 	mach.Add<PacketTracker>();
 	

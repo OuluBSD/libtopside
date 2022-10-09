@@ -134,7 +134,7 @@ void ChaseCam::Update(double dt) {
 bool ChaseCam::Arg(String key, Object value) {
 	
 	if (key == "fov") {
-		fov = max(0.10f, min(180.f, (float)StrDbl(value)));
+		fov = (float)max(0.10, min(180.0, value.ToDouble()));
 		return true;
 	}
 	if (key == "target") {
@@ -157,7 +157,7 @@ bool ChaseCam::Arg(String key, Object value) {
 		
 	}
 	else if (key == "log") {
-		test_log = (String)value == "test";
+		test_log = value.ToString() == "test";
 	}
 	/*else if (key == "mode") {
 		String m = value;

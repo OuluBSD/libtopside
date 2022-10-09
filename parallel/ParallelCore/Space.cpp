@@ -130,6 +130,12 @@ void Space::AppendCopy(const Space& l) {
 	TODO
 }
 
+void Space::Visit(RuntimeVisitor& vis) {
+	vis || atoms;
+	vis || spaces;
+	vis || states;
+}
+
 void Space::VisitSinks(RuntimeVisitor& vis) {
 	for(AtomBaseRef& c : atoms)
 		c->VisitSink(vis);
@@ -183,6 +189,7 @@ void Space::Clear() {
 	UninitializeAtomsDeep();
 	UnlinkDeep();
 	ClearAtomsDeep();
+	ClearStatesDeep();
 	ClearDeep();
 }
 
@@ -192,10 +199,10 @@ void Space::UnrefDeep() {
 }
 
 void Space::UninitializeAtomsDeep() {
-	for (SpaceRef& p : spaces)
+	for (auto p = spaces.pbegin(), end = spaces.pend(); p != end; ++p)
 		p->UninitializeAtomsDeep();
 	
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+	for (auto it = atoms.rpbegin(); it != atoms.rpend(); --it) {
 		it().UninitializeDeep();
 	}
 	
@@ -205,7 +212,7 @@ void Space::UninitializeAtomsDeep() {
 }
 
 void Space::StopDeep() {
-	for (auto it = spaces.rbegin(); it != spaces.rend(); --it) {
+	for (auto it = spaces.rpbegin(); it != spaces.rpend(); --it) {
 		it().StopDeep();
 	}
 	
@@ -213,7 +220,7 @@ void Space::StopDeep() {
 }
 
 void Space::Stop() {
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+	for (auto it = atoms.rpbegin(); it != atoms.rpend(); --it) {
 		if (it->IsRunning()) {
 			it->Stop();
 			it->SetRunning(false);
@@ -222,7 +229,7 @@ void Space::Stop() {
 }
 
 void Space::UnlinkDeep() {
-	for (auto it = spaces.rbegin(); it != spaces.rend(); --it) {
+	for (auto it = spaces.rpbegin(); it != spaces.rpend(); --it) {
 		it().UnlinkDeep();
 	}
 	
@@ -233,23 +240,31 @@ void Space::UnlinkDeep() {
 	}*/
 }
 
+void Space::ClearStatesDeep() {
+	for (auto p = spaces.pbegin(), end = spaces.pend(); p != end; ++p)
+		p->ClearStatesDeep();
+	
+	states.Clear();
+}
+
 void Space::ClearAtomsDeep() {
-	for (SpaceRef& p : spaces)
+	for (auto p = spaces.pbegin(), end = spaces.pend(); p != end; ++p)
 		p->ClearAtomsDeep();
 	
-	AtomStoreRef sys = GetMachine().Get<AtomStore>();
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+	AtomStore* sys = GetMachine().GetPtr<AtomStore>();
+	for (auto it = atoms.rpbegin(); it != atoms.rpend(); --it) {
 		sys->ReturnAtom(atoms.Detach(it));
 	}
 	
 }
 
 void Space::ClearDeep() {
-	for (SpaceRef& p : spaces)
+	for (auto p = spaces.pbegin(), end = spaces.pend(); p != end; ++p)
 		p->ClearDeep();
 	spaces.Clear();
 	
 	atoms.Clear();
+	states.Clear();
 }
 
 SpaceRef Space::GetAddEmpty(String name) {

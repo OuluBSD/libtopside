@@ -235,6 +235,8 @@ struct AudPortaudio::NativeSourceDevice {
 	PaStream* p;
 };
 
+void AudPortaudio::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {}
+
 bool AudPortaudio::SinkDevice_Create(One<NativeSinkDevice>& dev) {
 	dev.Create();
 	return true;
@@ -356,6 +358,10 @@ bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBas
 
 bool AudPortaudio::SourceDevice_Initialize(NativeSourceDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	TODO
+}
+
+void AudPortaudio::SourceDevice_Visit(NativeSourceDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
 }
 
 bool AudPortaudio::SourceDevice_Start(NativeSourceDevice& dev, AtomBase&) {

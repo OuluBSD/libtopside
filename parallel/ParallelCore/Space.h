@@ -56,6 +56,7 @@ public:
 	void				UnlinkDeep();
 	void				UnrefDeep();
 	void				UninitializeAtomsDeep();
+	void				ClearStatesDeep();
 	void				ClearAtomsDeep();
 	void				ClearDeep();
 	//void				PruneFromContainer();
@@ -165,7 +166,7 @@ public:
 	AtomMap::Iterator			end()			{return atoms.end();}
 	SpaceVec::Iterator			BeginSpace()		{return spaces.begin();}
 	
-	void Visit(RuntimeVisitor& vis) {vis || atoms || spaces || states;}
+	void Visit(RuntimeVisitor& vis);
 	void VisitSinks(RuntimeVisitor& vis);
 	void VisitSources(RuntimeVisitor& vis);
 	

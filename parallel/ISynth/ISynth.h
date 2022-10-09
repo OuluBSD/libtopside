@@ -89,7 +89,10 @@ struct SynInstrument : public Atom {
 template <class Syn> struct SynthInstrumentT : SynInstrument {
 	using CLASSNAME = SynthInstrumentT<Syn>;
 	RTTI_DECL1(CLASSNAME, SynInstrument)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<SynInstrument>(this);}
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Syn::Instrument_Visit(*dev, *this, vis);
+		vis.VisitThis<SynInstrument>(this);
+	}
 	One<typename Syn::NativeInstrument> dev;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Syn::Instrument_Create(dev))

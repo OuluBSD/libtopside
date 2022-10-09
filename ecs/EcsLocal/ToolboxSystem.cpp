@@ -150,7 +150,7 @@ void ToolboxSystemBase::Uninitialize() {
 
 bool ToolboxSystemBase::Arg(String key, Object value) {
 	if (key == "test.tool.changer")
-		test_tool_changer = (String)value == "true";
+		test_tool_changer = value.ToString() == "true";
 	return true;
 }
 

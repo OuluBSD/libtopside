@@ -155,6 +155,10 @@ bool GfxAccelAtom<Gfx>::PostInitialize() {
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Uninitialize() {
 	ab->RemoveAtomFromUpdateList();
+	bf.ClearRef();
+	fb = 0;
+	fb_packet.Clear();
+	raw_packet.Clear();
 }
 
 template <class Gfx>
