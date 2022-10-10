@@ -16,7 +16,7 @@ using namespace UPP;
 typedef unsigned char	Bool;
 
 typedef float			Float;
-typedef float			Clamp;
+//typedef float			Clamp;
 typedef int				Int;
 typedef unsigned int	Uint;
 typedef unsigned char	Byte;

@@ -22,12 +22,12 @@ struct ScrX11Ogl::NativeContext {
 struct ScrX11Ogl::NativeSinkDevice {
     NativeContext* ctx;
     ::GLXContext gl_ctx;
-    GfxAccelAtom<X11OglGfx> ogl;
+    GfxAccelAtom<X11OglGfx> accel;
 };
 
 
 GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev) {
-	return dev->ogl;
+	return dev->accel;
 }
 
 
@@ -100,7 +100,7 @@ void ScrX11Ogl::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
 }
 
 void ScrX11Ogl::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
-	vis % dev.ogl;
+	vis % dev.accel;
 }
 
 bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -115,7 +115,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	bool find_vr = ws.IsTrue(".find.vr.screen");
 	int screen_idx = ws.GetInt(".screen", -1);
 	
-	if (!dev.ogl.Initialize(a, ws)) {
+	if (!dev.accel.Initialize(a, ws)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: accelerator initialization failed");
 		return false;
 	}
@@ -414,9 +414,9 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	XSync(display, False);
 	
 	
-	dev.ogl.SetNative(ctx.display, ctx.win, 0, 0);
+	dev.accel.SetNative(ctx.display, ctx.win, 0, 0);
 	
-	if (!dev.ogl.Open(Size(width, height), 4, true)) {
+	if (!dev.accel.Open(Size(width, height), 4, true)) {
 		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}
@@ -425,7 +425,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 }
 
 bool ScrX11Ogl::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
-	return dev.ogl.PostInitialize();
+	return dev.accel.PostInitialize();
 }
 
 bool ScrX11Ogl::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
@@ -439,7 +439,7 @@ void ScrX11Ogl::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 void ScrX11Ogl::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	auto& ctx = *dev.ctx;
 	
-	dev.ogl.Uninitialize();
+	dev.accel.Uninitialize();
 	
 	//XkbFreeKeyboard(ctx.xkb, XkbAllComponentsMask, True);
 
@@ -456,7 +456,7 @@ void ScrX11Ogl::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 bool ScrX11Ogl::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, const Packet& p) {
-	return dev.ogl.Recv(ch_i, p);
+	return dev.accel.Recv(ch_i, p);
 }
 
 void ScrX11Ogl::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg) {
@@ -511,7 +511,7 @@ bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSour
     
 	XFlush(dev.display);*/
 	//XSync(dev.display, False);
-	dev.ogl.Render(cfg);
+	dev.accel.Render(cfg);
 	
 	return true;
 }

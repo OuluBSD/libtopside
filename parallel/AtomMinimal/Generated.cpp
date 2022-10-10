@@ -724,7 +724,7 @@ AtomTypeCls X11OglFboAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboAtomPipe::GetAction() {
 	return "sdl.ogl.fbo.sink";
 }
@@ -1168,7 +1168,7 @@ AtomTypeCls X11SwFboAtomSA::GetType() const {
 #endif
 
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboAtomSA::GetAction() {
 	return "sdl.fbo.standalone";
 }
@@ -1196,7 +1196,7 @@ AtomTypeCls SdlOglFboAtomSA::GetType() const {
 #endif
 
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboPipe::GetAction() {
 	return "sdl.fbo.sink";
 }
@@ -1224,7 +1224,7 @@ AtomTypeCls SdlOglFboPipe::GetType() const {
 #endif
 
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboAtom::GetAction() {
 	return "sdl.fbo";
 }

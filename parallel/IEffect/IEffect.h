@@ -69,6 +69,7 @@ template <class Fx> struct EffectEffectT : FxEffect {
 		Fx::Effect_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Fx::Effect_Uninitialize(*dev, *this);
 		Fx::Effect_Destroy(dev);
 	}

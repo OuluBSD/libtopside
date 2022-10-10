@@ -5,7 +5,7 @@ uses
 
 library(FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
-library(LINUX & OPENCV) v4l2;
+library(POSIX & OPENCV) v4l2;
 
 library(OPENCV & POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_shape";
 

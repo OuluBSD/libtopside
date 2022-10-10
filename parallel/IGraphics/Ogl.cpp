@@ -680,6 +680,7 @@ template <class Gfx> void OglGfxT<Gfx>::DeleteShader(NativeShaderRef& shdr) {
 }
 
 template <class Gfx> void OglGfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {
+	ASSERT_(glGenProgramPipelines, "glew is not inited yet");
 	glGenProgramPipelines(1, &pipe);
 }
 

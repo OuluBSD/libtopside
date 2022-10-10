@@ -5,7 +5,11 @@
 
 #include <string.h>
 #include <wchar.h>
-#include <hidapi.h>
+#ifdef flagFREEBSD
+	#include <hidapi/hidapi_libusb.h>
+#else
+	#include <hidapi.h>
+#endif
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>

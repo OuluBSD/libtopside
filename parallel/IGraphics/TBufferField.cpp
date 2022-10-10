@@ -13,6 +13,11 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 								a.GetSink()->GetValue(0).GetFormat().IsFbo();
 	add_data_states = !ws.GetBool(".recv.data", def_recv_data_only);
 	
+	return true;
+}
+
+template <class Gfx>
+bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	if (add_data_states) {
 		data.GetAddPipeline("default");
 		
@@ -22,11 +27,6 @@ bool GfxBufferFieldT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws)
 		buf.SetDataStateOverride(&data, true);
 	}
 	
-	return true;
-}
-
-template <class Gfx>
-bool GfxBufferFieldT<Gfx>::ImageInitialize(bool is_win_fbo, Size screen_sz) {
 	return buf.ImageInitialize(is_win_fbo, screen_sz, add_data_states);
 }
 

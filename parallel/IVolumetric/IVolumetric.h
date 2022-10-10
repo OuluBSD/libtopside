@@ -68,6 +68,7 @@ template <class Vol> struct VolumetricStaticSourceT : VolStaticSource {
 		Vol::StaticSource_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Vol::StaticSource_Uninitialize(*dev, *this);
 		Vol::StaticSource_Destroy(dev);
 	}

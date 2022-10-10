@@ -9,11 +9,15 @@ machine sdl.app:
 		
 		loop center.font.image:
 			center.customer
-			center.image.loader[][loop == ogl.fbo.font]: vflip = true, filepath = "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png"
+			center.image.loader[][loop == ogl.fbo.font]:
+				vflip = true
+				filepath = "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png"
 		
 		loop center.video:
 			center.customer
-			center.video.loader[][loop == ogl.fbo.video]: vflip = "true", filepath = "videos/e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm"
+			center.video.loader[][loop == ogl.fbo.video]:
+				vflip = "true"
+				filepath = "videos/e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm"
 		
 		loop center.audio:
 			center.customer

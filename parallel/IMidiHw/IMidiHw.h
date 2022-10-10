@@ -70,6 +70,7 @@ template <class Mid> struct MidiHwSourceT : MidSource {
 		Mid::Source_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Mid::Source_Uninitialize(*dev, *this);
 		Mid::Source_Destroy(dev);
 	}

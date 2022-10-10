@@ -360,6 +360,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					<< "\t}\n"
 					
 					<< "\tvoid Uninitialize() override {\n"
+				    << "\t\tASSERT(this->GetDependencyCount() == 0);\n"
 				    << "\t\t"<<a<<"::"<<k<<"_Uninitialize(*dev, *this);\n"
 				    << "\t\t"<<a<<"::"<<k<<"_Destroy(dev);\n"
 					<< "\t}\n"
@@ -892,10 +893,19 @@ String InterfaceBuilder::GetBaseConds(String s) const {
 					String vcond = p.vendors[i];
 					String icond = p.ifaces[j];
 					Index<String> ors;
-					for (String cond : Split(vcond, "|"))
-						ors.FindAdd(cond);
-					for (String cond : Split(icond, "|"))
-						ors.FindAdd(cond);
+					if (vcond.GetCount() && icond.GetCount()) {
+						for (String a : Split(vcond, "|"))
+							for (String b : Split(icond, "|"))
+								ors.FindAdd(a + "&" + b);
+					}
+					else if (vcond.GetCount()) {
+						for (String cond : Split(vcond, "|"))
+							ors.FindAdd(cond);
+					}
+					else if (icond.GetCount()) {
+						for (String cond : Split(icond, "|"))
+							ors.FindAdd(cond);
+					}
 					
 					SortIndex(ors, StdLess<String>());
 					

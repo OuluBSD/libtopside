@@ -3,7 +3,9 @@
 #if HAVE_V4L2_DEVMGR
 
 #include <fcntl.h>
-#include <linux/videodev2.h>
+#ifdef flagLINUX
+	#include <linux/videodev2.h>
+#endif
 #include <libv4l2.h>
 #include <sys/ioctl.h>
 
@@ -53,6 +55,11 @@ void V4L2_DeviceManager::Refresh() {
 			
 			dev.path = path;
 			
+			#ifdef flagFREEBSD
+			TODO
+			#endif
+			
+			#ifdef flagLINUX
 			OpenCVCaptureDevice* cap = 0;
 			struct v4l2_fmtdesc fmtdesc;
 			memset(&fmtdesc, 0, sizeof(fmtdesc));
@@ -113,6 +120,7 @@ void V4L2_DeviceManager::Refresh() {
 				fmtdesc.index++;
 			}
 			v4l2_close(fd);
+			#endif
 		}
 	}
 }

@@ -47,11 +47,6 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	
-	if (!dev.accel.Initialize(a, ws)) {
-		LOG("ScrX11::SinkDevice_Initialize: error: accelerator initialization failed");
-		return false;
-	}
-	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
 	int screen_num;						// number of screen to place the window on.
 	::Window& win = ctx.win;			// pointer to the newly created window.
@@ -171,6 +166,11 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	int bpp = fb->bits_per_pixel / 8;
 	
 	XSync(display, False);
+	
+	if (!dev.accel.Initialize(a, ws)) {
+		LOG("ScrX11::SinkDevice_Initialize: error: accelerator initialization failed");
+		return false;
+	}
 	
 	dev.accel_buf.Set(width, height, bpp, width * bpp, 0);
 	dev.accel_buf.LockChannels();

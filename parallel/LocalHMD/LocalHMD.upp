@@ -5,9 +5,11 @@ noblitz;
 uses
 	Geometry;
 
-library(POSIX USBONLY) hidapi-libusb;
+library(LINUX USBONLY) hidapi-libusb;
 
-library(POSIX) hidapi-hidraw;
+library(LINUX) hidapi-hidraw;
+
+library(FREEBSD) hidapi;
 
 file
 	README.md,

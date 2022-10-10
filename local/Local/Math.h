@@ -529,6 +529,14 @@ float smoothstep(float edge0, float edge1, float x);
 double GetDistance(Point a, Point b);
 
 
+template <class T>
+T Clamp(T value, T min, T max) {
+	if (value < min) return min;
+	if (value > max) return max;
+	return value;
+}
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

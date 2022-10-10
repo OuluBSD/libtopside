@@ -199,7 +199,7 @@ void Space::UnrefDeep() {
 }
 
 void Space::UninitializeAtomsDeep() {
-	for (auto p = spaces.pbegin(), end = spaces.pend(); p != end; ++p)
+	for (auto p = spaces.rpbegin(), end = spaces.rpend(); p != end; --p)
 		p->UninitializeAtomsDeep();
 	
 	for (auto it = atoms.rpbegin(); it != atoms.rpend(); --it) {

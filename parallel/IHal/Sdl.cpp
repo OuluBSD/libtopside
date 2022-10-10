@@ -437,6 +437,12 @@ void HalSdl::CenterVideoSinkDevice_Stop(NativeCenterVideoSinkDevice& dev, AtomBa
 }
 
 void HalSdl::CenterVideoSinkDevice_Uninitialize(NativeCenterVideoSinkDevice& dev, AtomBase& a) {
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
+	if (ev_ctx)
+		ev_ctx->DetachContext(a);
+	else
+		a.ClearDependency();
+	
 	if (dev.rend) {
 		SDL_DestroyRenderer(dev.rend);
 		dev.rend = 0;
@@ -815,7 +821,6 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 		return false;
 	}
     
-	
 	
 	dev.accel.SetNative(dev.display, dev.win, &dev.rend, 0);
 	

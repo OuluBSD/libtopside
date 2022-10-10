@@ -148,7 +148,7 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 
 
 
-#ifdef flagLINUX
+#ifdef flagPOSIX
 struct V4L2Media {
 	
 };
@@ -156,7 +156,7 @@ struct V4L2Media {
 
 
 
-#if defined flagOPENCV && defined flagLINUX
+#if defined flagOPENCV && defined flagPOSIX
 struct V4L2OpenCVMedia : V4L2Media {
 	
 	

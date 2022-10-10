@@ -64,6 +64,7 @@ protected:
 	Serial::LinkBase*		link = 0;
 	//Format				user_internal_fmt;
 	AtomBase*				atom_dependency = 0;
+	int						dep_count = 0;
 	HiValue					user_data;
 	
 	
@@ -107,9 +108,10 @@ public:
 	bool					IsInitialized() const {return is_initialized;}
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
-	void					SetDependency(AtomBase* a) {atom_dependency = a;}
+	void					SetDependency(AtomBase* a) {if (atom_dependency) atom_dependency->dep_count--; atom_dependency = a; if (a) a->dep_count++;}
 	AtomBase*				GetDependency() const {return atom_dependency;}
-	void					ClearDependency() {atom_dependency = 0;}
+	int						GetDependencyCount() const {return dep_count;}
+	void					ClearDependency() {SetDependency(0);}
 	void					UpdateSinkFormat(ValCls val, Format fmt);
 	void					PostContinueForward();
 	void					SetQueueSize(int queue_size);

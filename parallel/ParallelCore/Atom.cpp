@@ -13,6 +13,7 @@ AtomBase::AtomBase() {
 }
 
 AtomBase::~AtomBase() {
+	ASSERT(dep_count == 0);
 	DBG_DESTRUCT
 }
 

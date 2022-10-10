@@ -1372,7 +1372,7 @@ void GetEdges(const OBB& obb, Vector<line3>& result) {
 	};
 
 	for (int j = 0; j < 12; ++j) {
-		result.Add(Line(
+		result.Add(line3(
 			v[index[j][0]], v[index[j][1]]
 		));
 	}

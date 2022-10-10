@@ -156,7 +156,7 @@ Image LibPngBackend::LoadFileAny(String path) {
 	
 	
 	// Invert red and blue
-	static_assert(sizeof(RGBA) == 4);
+	static_assert(sizeof(RGBA) == 4, "invalid size");
 	byte* it = (byte*)img->data.Begin();
 	byte* end = (byte*)img->data.End();
 	if (img->data.GetCount() % bpp == 0) {

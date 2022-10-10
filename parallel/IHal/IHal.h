@@ -120,6 +120,7 @@ template <class Hal> struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		Hal::AudioSinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::AudioSinkDevice_Uninitialize(*dev, *this);
 		Hal::AudioSinkDevice_Destroy(dev);
 	}
@@ -174,6 +175,7 @@ template <class Hal> struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice
 		Hal::CenterVideoSinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::CenterVideoSinkDevice_Uninitialize(*dev, *this);
 		Hal::CenterVideoSinkDevice_Destroy(dev);
 	}
@@ -228,6 +230,7 @@ template <class Hal> struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 		Hal::CenterFboSinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::CenterFboSinkDevice_Uninitialize(*dev, *this);
 		Hal::CenterFboSinkDevice_Destroy(dev);
 	}
@@ -283,6 +286,7 @@ template <class Hal> struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 		Hal::OglVideoSinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::OglVideoSinkDevice_Uninitialize(*dev, *this);
 		Hal::OglVideoSinkDevice_Destroy(dev);
 	}
@@ -338,6 +342,7 @@ template <class Hal> struct HalContextBaseT : HalContextBase {
 		Hal::ContextBase_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::ContextBase_Uninitialize(*dev, *this);
 		Hal::ContextBase_Destroy(dev);
 	}
@@ -392,6 +397,7 @@ template <class Hal> struct HalEventsBaseT : HalEventsBase {
 		Hal::EventsBase_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Hal::EventsBase_Uninitialize(*dev, *this);
 		Hal::EventsBase_Destroy(dev);
 	}

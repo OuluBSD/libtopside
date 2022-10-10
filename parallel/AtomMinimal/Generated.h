@@ -377,7 +377,7 @@ public:
 };
 #endif
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 class SdlOglFboAtomPipe : public SdlOglVideoSinkDevice {
 
 public:
@@ -611,7 +611,7 @@ public:
 };
 #endif
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 class SdlOglFboAtomSA : public SdlOglVideoSinkDevice {
 
 public:
@@ -626,7 +626,7 @@ public:
 };
 #endif
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 class SdlOglFboPipe : public SdlOglVideoSinkDevice {
 
 public:
@@ -641,7 +641,7 @@ public:
 };
 #endif
 
-#if (defined flagOGL) || (defined flagSDL2)
+#if (defined flagSDL2 && defined flagOGL)
 class SdlOglFboAtom : public SdlOglVideoSinkDevice {
 
 public:

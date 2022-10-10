@@ -123,6 +123,7 @@ template <class Scr> struct ScreenSinkDeviceT : ScrSinkDevice {
 		Scr::SinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Scr::SinkDevice_Uninitialize(*dev, *this);
 		Scr::SinkDevice_Destroy(dev);
 	}
@@ -171,6 +172,7 @@ template <class Scr> struct ScreenContextT : ScrContext {
 		Scr::Context_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Scr::Context_Uninitialize(*dev, *this);
 		Scr::Context_Destroy(dev);
 	}
@@ -219,6 +221,7 @@ template <class Scr> struct ScreenEventsBaseT : ScrEventsBase {
 		Scr::EventsBase_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Scr::EventsBase_Uninitialize(*dev, *this);
 		Scr::EventsBase_Destroy(dev);
 	}

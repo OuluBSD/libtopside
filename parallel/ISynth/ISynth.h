@@ -113,6 +113,7 @@ template <class Syn> struct SynthInstrumentT : SynInstrument {
 		Syn::Instrument_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Syn::Instrument_Uninitialize(*dev, *this);
 		Syn::Instrument_Destroy(dev);
 	}

@@ -40,7 +40,7 @@ inline void ReadPixels(Int x, Int y, Uint width, Uint height, PixFmt format, Pix
 	void* data) {}
 inline void PixelTransfer(PixTrans pname, Float param) {}
 inline void ActiveTexture(TexArb texture) {}
-inline void AlphaFunc(LogicFuncType func, Clamp value) {}
+inline void AlphaFunc(LogicFuncType func, Float value) {}
 inline void GenTextures(Uint n, Uint* textures) {}
 inline void BindTexture(TexBind target, Uint texture) {}
 inline void TexParameter(TexBind target, ParamName pname, Int param) {}

@@ -80,6 +80,7 @@ template <class Aud> struct AudioSinkDeviceT : AudSinkDevice {
 		Aud::SinkDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Aud::SinkDevice_Uninitialize(*dev, *this);
 		Aud::SinkDevice_Destroy(dev);
 	}
@@ -119,6 +120,7 @@ template <class Aud> struct AudioSourceDeviceT : AudSourceDevice {
 		Aud::SourceDevice_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Aud::SourceDevice_Uninitialize(*dev, *this);
 		Aud::SourceDevice_Destroy(dev);
 	}

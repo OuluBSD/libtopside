@@ -58,6 +58,8 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	
+	a.SetDependency(&*ctx_);
+	
 	::Display*& display = ctx.display;	// pointer to X Display structure.
 	display = 0;
 	int screen_num;						// number of screen to place the window on.
@@ -200,6 +202,8 @@ void ScrX11::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	a.SetDependency(0);
+	
 	auto& ctx = *dev.ctx;
 	
 	//XkbFreeKeyboard(ctx.xkb, XkbAllComponentsMask, True);

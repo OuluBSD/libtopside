@@ -1,8 +1,8 @@
 description "\377B28,255,150";
 
-uses
-	AudioCore,
-	ParallelLib;
+	uses AudioCore;
+	uses ParallelLib;
+
 
 file
 	IEffect.h,
@@ -10,5 +10,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

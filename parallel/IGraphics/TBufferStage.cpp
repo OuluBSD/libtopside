@@ -54,9 +54,11 @@ void BufferStageT<Gfx>::SetDataState(DataState* s, bool data_writable) {
 	if (data && data->pipelines.GetCount() == 1) {
 		if (data->pipelines.GetCount() == 1) {
 			pipeline_str = data->dictionary[data->pipelines.GetKey(0)];
+			ASSERT(pipeline_str.GetCount());
 			pipeline = &data->pipelines[0];
 		}
 		else {
+			ASSERT(pipeline_str.GetCount());
 			int id = data->dictionary.Find(pipeline_str);
 			if (id >= 0) {
 				int i = data->pipelines.Find(id);
@@ -252,6 +254,8 @@ bool BufferStageT<Gfx>::RealizeData() {
 	if (!data)
 		return false;
 	
+	ASSERT(pipeline_str.GetCount());
+	ASSERT(program_str.GetCount());
 	pipeline = data->FindPipeline(pipeline_str);
 	ProgramState* prog = pipeline ? pipeline->FindProgram(program_str) : 0;
 	
@@ -408,6 +412,7 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	//if (ctx.frames > 0)
 	{
+		ASSERT(program_str.GetCount());
 		ProgramState* prev_prog = 0;
 		for (ModelState& m : data->models.GetValues()) {
 			int prog_i = m.prog;

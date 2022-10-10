@@ -67,7 +67,7 @@ inline void ReadPixels(Int x, Int y, Uint width, Uint height, PixFmt format, Pix
 }
 inline void PixelTransfer(PixTrans pname, Float param) {glPixelTransferf(pname, param);}
 inline void ActiveTexture(TexArb texture);// winclang error {glActiveTextureARB(texture);}
-inline void AlphaFunc(LogicFuncType func, Clamp value) {glAlphaFunc(func, value);}
+inline void AlphaFunc(LogicFuncType func, Float value) {glAlphaFunc(func, value);}
 inline void GenTextures(Uint n, Uint* textures) {glGenTextures(n, textures);}
 inline void BindTexture(TexBind target, Uint texture) {glBindTexture(target, texture);}
 inline void TexParameter(TexBind target, ParamName pname, Int param) {glTexParameteri(target, pname, param);}

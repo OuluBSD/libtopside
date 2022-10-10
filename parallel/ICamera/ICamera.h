@@ -71,6 +71,7 @@ template <class Cam> struct CameraCameraT : CamCamera {
 		Cam::Camera_Stop(*dev, *this);
 	}
 	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
 		Cam::Camera_Uninitialize(*dev, *this);
 		Cam::Camera_Destroy(dev);
 	}
