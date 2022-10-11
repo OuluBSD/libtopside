@@ -5,11 +5,11 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-struct ExtScriptEngineLoader : ExtScriptEngineLoaderBase {
+struct ExtScriptEcsLoader : ExtScriptEcsLoaderBase {
 	
 	
 	
-	bool Load(ScriptEngineLoader& l) override;
+	bool Load(ScriptWorldLoader& l) override;
 	bool Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys);
 	bool Load(ScriptPoolLoader& l, Ecs::Pool& pool);
 	bool Load(ScriptEntityLoader& l, Ecs::Entity& ent);

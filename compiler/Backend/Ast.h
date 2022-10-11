@@ -85,6 +85,9 @@ struct AstNodeLess {
 	}
 };
 
+Object EvaluateAstNodeObject(AstNode& n);
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

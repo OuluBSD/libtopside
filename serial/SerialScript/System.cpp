@@ -11,8 +11,8 @@ ScriptSystemLoader::ScriptSystemLoader(ScriptLoader& parent, int id, Script::Glo
 		ScriptMachineLoader& loader = machs.Add(new ScriptMachineLoader(*this, machs.GetCount(), mach));
 	}
 	
-	for (Script::EngineDefinition& eng : def.engs) {
-		ScriptEngineLoader& loader = engs.Add(new ScriptEngineLoader(*this, engs.GetCount(), eng));
+	for (Script::WorldDefinition& world : def.worlds) {
+		ScriptWorldLoader& loader = worlds.Add(new ScriptWorldLoader(*this, worlds.GetCount(), world));
 	}
 	
 	/*for (Script::LoopDefinition& loop : def.loops) {
@@ -34,7 +34,7 @@ bool ScriptSystemLoader::Load() {
 		if (!loader.Load())
 			return false;
 	}
-	for (auto& loader : engs) {
+	for (auto& loader : worlds) {
 		if (!loader.Load())
 			return false;
 	}
@@ -57,23 +57,22 @@ bool ScriptSystemLoader::Load() {
 
 bool ScriptSystemLoader::LoadEcs() {
 	
-	TODO
-	/*if (engs.GetCount() > 1) {
-		SetError("Only one engine is supported currently, and script got " + IntStr(engs.GetCount()));
+	if (worlds.GetCount() > 1) {
+		AddError(def.loc, "Only one world is supported currently, and script got " + IntStr(worlds.GetCount()));
 		return false;
 	}
 	
-	if (engs.GetCount() && !__ecs_script_loader) {
-		SetError("Script defines ecs engines, but no ecs loading is built-in to the executable program.");
-		return false;
-	}
-	
-	for (ScriptEngineLoader& e : engs) {
-		if (!__ecs_script_loader->Load(e)) {
-			SetError(__ecs_script_loader->GetErrorString());
+	for (ScriptWorldLoader& e : worlds) {
+		if (!__ecs_script_loader) {
+			AddError(def.loc, "no ecs script loader present in system");
 			return false;
 		}
-	}*/
+		
+		if (!__ecs_script_loader->Load(e)) {
+			AddError(def.loc, __ecs_script_loader->GetErrorString());
+			return false;
+		}
+	}
 	
 	return true;
 }
@@ -95,7 +94,7 @@ String ScriptSystemLoader::GetTreeString(int indent) {
 	for (auto& loader : machs) {
 		s << loader.GetTreeString(indent+1);
 	}
-	for (auto& loader : engs) {
+	for (auto& loader : worlds) {
 		s << loader.GetTreeString(indent+1);
 	}
 	//s << GetScriptStatusLine(indent+1, status);

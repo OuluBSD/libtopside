@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 using namespace Ecs;
 
 
-bool ExtScriptEngineLoader::Load(ScriptEngineLoader& l) {
+bool ExtScriptEcsLoader::Load(ScriptWorldLoader& l) {
 	Ecs::Engine& eng = Ecs::GetActiveEngine();
 	
 	for (ScriptEcsSystemLoader& loader : l.systems) {
@@ -41,15 +41,15 @@ bool ExtScriptEngineLoader::Load(ScriptEngineLoader& l) {
 	return true;
 }
 
-bool ExtScriptEngineLoader::Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys) {
-	
-	TODO/*for (Script::Statement& stmt : l.def.stmts) {
-		String key = stmt.id.ToString();
-		if (stmt.value) {
-			if (!sys.Arg(key, stmt.value->ToObject()))
+bool ExtScriptEcsLoader::Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys) {
+	for(int i = 0; i < l.def.args.GetCount(); i++) {
+		String key = l.def.args.GetKey(i);
+		const Object& value = l.def.args[i];
+		if (!value.IsVoid()) {
+			if (!sys.Arg(key, value))
 				return false;
 		}
-	}*/
+	}
 	
 	Ecs::Engine& eng = Ecs::GetActiveEngine();
 	TypeCls type = sys.GetTypeId();
@@ -58,7 +58,7 @@ bool ExtScriptEngineLoader::Load(ScriptEcsSystemLoader& l, Ecs::SystemBase& sys)
 	return true;
 }
 
-bool ExtScriptEngineLoader::Load(ScriptPoolLoader& l, Ecs::Pool& pool) {
+bool ExtScriptEcsLoader::Load(ScriptPoolLoader& l, Ecs::Pool& pool) {
 	EntityVec& ents = pool.GetEntities();
 	PoolVec& pools = pool.GetPools();
 	
@@ -81,7 +81,7 @@ bool ExtScriptEngineLoader::Load(ScriptPoolLoader& l, Ecs::Pool& pool) {
 	return true;
 }
 
-bool ExtScriptEngineLoader::Load(ScriptEntityLoader& l, Ecs::Entity& ent) {
+bool ExtScriptEcsLoader::Load(ScriptEntityLoader& l, Ecs::Entity& ent) {
 	
 	for (ScriptComponentLoader& c : l.comps) {
 		String name = c.def.id.ToString();
@@ -98,15 +98,15 @@ bool ExtScriptEngineLoader::Load(ScriptEntityLoader& l, Ecs::Entity& ent) {
 	return true;
 }
 
-bool ExtScriptEngineLoader::Load(ScriptComponentLoader& l, Ecs::ComponentBase& cb) {
-	
-	TODO/*for (Script::Statement& stmt : l.def.stmts) {
-		String key = stmt.id.ToString();
-		if (stmt.value) {
-			if (!cb.Arg(key, stmt.value->ToObject()))
+bool ExtScriptEcsLoader::Load(ScriptComponentLoader& l, Ecs::ComponentBase& cb) {
+	for(int i = 0; i < l.def.args.GetCount(); i++) {
+		String key = l.def.args.GetKey(i);
+		const Object& value = l.def.args[i];
+		if (!value.IsVoid()) {
+			if (!cb.Arg(key, value))
 				return false;
 		}
-	}*/
+	}
 	
 	return true;
 }

@@ -192,6 +192,7 @@ void HalSdl::AudioSinkDevice_Stop(NativeAudioSinkDevice& dev, AtomBase& a) {
 }
 
 void HalSdl::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
+	
 	if (dev.id) {
 		SDL_PauseAudioDevice(dev.id, 1);
 		SDL_CloseAudioDevice(dev.id);
@@ -305,8 +306,7 @@ bool HalSdl::ContextBase_AttachContext(NativeContextBase& ctx, AtomBase& a, Atom
 }
 
 void HalSdl::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, AtomBase& other) {
-	AtomBaseRef aref = a.AsRefT();
-	if (other.GetDependency() == &*aref)
+	if (other.GetDependency() == &a)
 		other.SetDependency(0);
 }
 
@@ -437,11 +437,6 @@ void HalSdl::CenterVideoSinkDevice_Stop(NativeCenterVideoSinkDevice& dev, AtomBa
 }
 
 void HalSdl::CenterVideoSinkDevice_Uninitialize(NativeCenterVideoSinkDevice& dev, AtomBase& a) {
-	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
-	if (ev_ctx)
-		ev_ctx->DetachContext(a);
-	else
-		a.ClearDependency();
 	
 	if (dev.rend) {
 		SDL_DestroyRenderer(dev.rend);
@@ -666,6 +661,7 @@ void HalSdl::CenterFboSinkDevice_Stop(NativeCenterFboSinkDevice& dev, AtomBase& 
 }
 
 void HalSdl::CenterFboSinkDevice_Uninitialize(NativeCenterFboSinkDevice& dev, AtomBase& a) {
+	
 	dev.accel.Uninitialize();
 	
 	if (dev.rend) {
@@ -848,7 +844,8 @@ void HalSdl::OglVideoSinkDevice_Stop(NativeOglVideoSinkDevice& dev, AtomBase& a)
 	a.ClearDependency();
 }
 
-void HalSdl::OglVideoSinkDevice_Uninitialize(NativeOglVideoSinkDevice& dev, AtomBase&) {
+void HalSdl::OglVideoSinkDevice_Uninitialize(NativeOglVideoSinkDevice& dev, AtomBase& a) {
+	
 	dev.accel.Uninitialize();
 	
 	#if 0
@@ -972,10 +969,11 @@ bool HalSdl::EventsBase_Start(NativeEventsBase& dev, AtomBase& a) {
 }
 
 void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
-	// pass
+	a.ClearDependency();
 }
 
 void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
+	
 	a.RemoveAtomFromUpdateList();
 }
 

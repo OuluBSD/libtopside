@@ -3,7 +3,7 @@
 
 /*NAMESPACE_TOPSIDE_BEGIN
 namespace Serial {
-struct ExtScriptEngineLoader;
+struct ExtScriptEcsLoader;
 }
 NAMESPACE_TOPSIDE_END*/
 
@@ -28,7 +28,7 @@ public:
 	Engine& GetEngine() const;
 protected:
     friend Engine;
-    //friend struct Serial::ExtScriptEngineLoader;
+    //friend struct Serial::ExtScriptEcsLoader;
 
     virtual bool Initialize() {return true;}
     virtual void Start() {}

@@ -814,7 +814,7 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 
 template <class Gfx>
 bool BufferStageT<Gfx>::LoadInputLink(int in_id, const InternalPacketData& v) {
-	ASSERT(pipeline);
+	ASSERT_(pipeline, "maybe you forgot 'recv.data = false' in eon file");
 	if (!pipeline) return false;
 	bool succ = true;
 	for (ProgramState& prog : pipeline->programs.GetValues())

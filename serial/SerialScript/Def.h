@@ -157,16 +157,16 @@ struct PoolDefinition {
 	String ToString() const;
 };
 
-struct EngineDefinition {
+struct WorldDefinition {
 	Id								id;
 	FileLocation					loc;
 	ArrayMap<String, Object>		args;
 	LinkedList<EcsSysDefinition>	systems;
 	LinkedList<PoolDefinition>		pools;
 	
-	EngineDefinition() {}
-	EngineDefinition(const EngineDefinition& v) {*this = v;}
-	void operator=(const EngineDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; systems <<= v.systems; pools <<= v.pools;}
+	WorldDefinition() {}
+	WorldDefinition(const WorldDefinition& v) {*this = v;}
+	void operator=(const WorldDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; systems <<= v.systems; pools <<= v.pools;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 };
@@ -203,12 +203,12 @@ struct GlobalScope {
 	FileLocation					loc;
 	ArrayMap<String, Object>		args;
 	Array<MachineDefinition>		machs;
-	Array<EngineDefinition>			engs;
+	Array<WorldDefinition>			worlds;
 	Array<State>					states;
 	
 	GlobalScope() {}
 	GlobalScope(const GlobalScope& v) {*this = v;}
-	void operator=(const GlobalScope& v) {id = v.id; loc = v.loc; args <<= v.args; machs <<= v.machs; engs <<= v.engs; states <<= v.states;}
+	void operator=(const GlobalScope& v) {id = v.id; loc = v.loc; args <<= v.args; machs <<= v.machs; worlds <<= v.worlds; states <<= v.states;}
 	String GetTreeString(int indent=0) const;
 	void Clear() {machs.Clear(); states.Clear(); id.Clear();}
 	

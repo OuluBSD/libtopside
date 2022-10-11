@@ -1,7 +1,7 @@
 machine sdl.app:
 	
 	driver context:
-		x11.context
+		x11.sw.context
 	
 	chain program:
 		state event.register
@@ -11,8 +11,8 @@ machine sdl.app:
 			x11.sw.fbo.program:
 				drawmem =		"false"
 				program =		"obj_view"
-				shader.default.frag.path =		"shaders/tests/03f_fragment.glsl"
-				shader.default.vtx.path =		"shaders/tests/03f_vertex.glsl"
+				shader.default.frag.name =	"obj_view"
+				shader.default.vtx.name =	"obj_view"
 			
 			x11.sw.video.pipe:
 				close_machine =	true

@@ -18,7 +18,7 @@ class ScriptSystemLoader;
 class ScriptTopChainLoader;
 class ScriptChainLoader;
 class ScriptMachineLoader;
-class ScriptEngineLoader;
+class ScriptWorldLoader;
 
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
 
@@ -350,12 +350,12 @@ public:
 	
 public:
 	Array<ScriptMachineLoader>		machs;
-	Array<ScriptEngineLoader>		engs;
+	Array<ScriptWorldLoader>		worlds;
 	
 	
 	ScriptSystemLoader(ScriptLoader& parent, int id, Script::GlobalScope& glob);
 	
-	void		Visit(RuntimeVisitor& vis) override {vis | machs | engs;}
+	void		Visit(RuntimeVisitor& vis) override {vis | machs | worlds;}
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		GetStates(Vector<ScriptStateLoader*>& v) override;
@@ -448,14 +448,16 @@ protected:
 	bool		LoadGlobalScope(Script::GlobalScope& glob, AstNode* root);
 	bool		LoadChain(Script::ChainDefinition& chain, AstNode* root);
 	bool		LoadMachine(Script::MachineDefinition& mach, AstNode* root);
-	bool		LoadEngine(Script::EngineDefinition& def, AstNode* n);
+	bool		LoadWorld(Script::WorldDefinition& def, AstNode* n);
 	bool		LoadDriver(Script::DriverDefinition& def, AstNode* n);
 	bool		LoadTopChain(Script::ChainDefinition& def, AstNode* n);
 	bool		LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n);
 	bool		LoadPool(Script::PoolDefinition& def, AstNode* n);
+	bool		LoadTopPool(Script::PoolDefinition& def, AstNode* n);
 	bool		LoadState(Script::StateDeclaration& def, AstNode* n);
 	bool		LoadEntity(Script::EntityDefinition& def, AstNode* n);
-	
+	bool		LoadComponent(Script::ComponentDefinition& def, AstNode* n);
+	bool		LoadArguments(ArrayMap<String, Object>& args, AstNode* n);
 	//Script::State*	FindState(const Script::Id& id);
 	
 	

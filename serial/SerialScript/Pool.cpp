@@ -2,7 +2,7 @@
 
 NAMESPACE_SERIAL_BEGIN
 
-ScriptPoolLoader::ScriptPoolLoader(ScriptEngineLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def) :
+ScriptPoolLoader::ScriptPoolLoader(ScriptWorldLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def) :
 	Base(parent, id, def),
 	chain_parent(chain_parent)
 {

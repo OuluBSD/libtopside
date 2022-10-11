@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-ScriptEngineLoader::ScriptEngineLoader(ScriptSystemLoader& parent, int id, Script::EngineDefinition& def) :
+ScriptWorldLoader::ScriptWorldLoader(ScriptSystemLoader& parent, int id, Script::WorldDefinition& def) :
 	Base(parent, id, def)
 {
 	
@@ -18,11 +18,11 @@ ScriptEngineLoader::ScriptEngineLoader(ScriptSystemLoader& parent, int id, Scrip
 	
 }
 
-bool ScriptEngineLoader::Load() {
+bool ScriptWorldLoader::Load() {
 	TODO
 }
 
-String ScriptEngineLoader::GetTreeString(int indent) {
+String ScriptWorldLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
 	s << "Engine " << id;
@@ -41,23 +41,23 @@ String ScriptEngineLoader::GetTreeString(int indent) {
 
 
 
-ExtScriptEngineLoaderBase* __ecs_script_loader;
+ExtScriptEcsLoaderBase* __ecs_script_loader;
 
 
 /*
-void ScriptEngineLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
+void ScriptWorldLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	
 }
 
-void ScriptEngineLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
+void ScriptWorldLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 	
 }
 
-void ScriptEngineLoader::GetStates(Vector<ScriptStateLoader*>& v) {
+void ScriptWorldLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	
 }
 
-void ScriptEngineLoader::ForwardLoops() {
+void ScriptWorldLoader::ForwardLoops() {
 	
 	if (status == WAITING_CHILDREN) {
 		for (ScriptEcsSystemLoader& loader : systems) {
@@ -72,7 +72,7 @@ void ScriptEngineLoader::ForwardLoops() {
 	
 }
 
-void ScriptEngineLoader::LoopStatus() {
+void ScriptWorldLoader::LoopStatus() {
 	
 	for (ScriptEcsSystemLoader& loader : systems) {
 		CheckStatus(loader.GetStatus());
@@ -83,7 +83,7 @@ void ScriptEngineLoader::LoopStatus() {
 	}
 }
 
-void ScriptEngineLoader::CheckStatusDeep() {
+void ScriptWorldLoader::CheckStatusDeep() {
 	
 	CheckFlags();
 }

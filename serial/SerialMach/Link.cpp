@@ -71,6 +71,7 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 			if (ex.local_ch_i == src_ch)
 				e = &ex;
 		if (!e) {
+			int dbg_i = 0; for (auto& e : side_sink_conn) {LOG(dbg_i++ << ": " << e.ToString());}
 			LOG("LinkBase::NegotiateSourceFormat: error: exchange not found");
 			return false;
 		}
@@ -273,6 +274,12 @@ bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
 	return false;
 }
 
+String LinkBase::Exchange::ToString() const {
+	String s;
+	s << other.ToString() << ", local=" << local_ch_i << ", other=" << other_ch_i;
+	return s;
+}
+
 
 bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size) {
 	ASSERT(l)
@@ -284,6 +291,7 @@ void Serial_Link_PostContinueForward(Link* l) {
 	if (l)
 		l->PostContinueForward();
 }
+
 
 
 NAMESPACE_SERIAL_END

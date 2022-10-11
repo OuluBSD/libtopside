@@ -31,7 +31,7 @@ world ecs.dummy:
 	system component.store
 	system events
 	system interaction:
-		env: event.register
+		env = event.register
 	system physics:
 		rm.outsiders = true
 		rm.area.size = 20

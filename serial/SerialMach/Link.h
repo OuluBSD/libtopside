@@ -45,6 +45,7 @@ protected:
 		RTTI_DECL0(Exchange);
 		void Clear() {other.Clear(); local_ch_i = -1; other_ch_i = -1;}
 		void Visit(RuntimeVisitor& vis) {vis & other;}
+		String ToString() const;
 	};
 	
 	

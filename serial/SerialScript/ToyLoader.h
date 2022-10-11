@@ -2,9 +2,6 @@
 #define _SerialScript_ToyLoader_h_
 
 
-#if 0
-
-
 // ShaderToy file loader (libtopside .toy format == unpacked .js + stage info + separate glsl)
 
 
@@ -70,5 +67,4 @@ public:
 
 NAMESPACE_SERIAL_END
 
-#endif
 #endif

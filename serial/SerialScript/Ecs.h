@@ -5,7 +5,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class ScriptEngineLoader;
+class ScriptWorldLoader;
 class ScriptPoolLoader;
 class ScriptEntityLoader;
 
@@ -33,9 +33,9 @@ public:
 };
 
 
-class ScriptEcsSystemLoader : public EcsLoaderBase<Script::EcsSysDefinition, ScriptEngineLoader> {
+class ScriptEcsSystemLoader : public EcsLoaderBase<Script::EcsSysDefinition, ScriptWorldLoader> {
 public:
-	using Base = EcsLoaderBase<Script::EcsSysDefinition, ScriptEngineLoader>;
+	using Base = EcsLoaderBase<Script::EcsSysDefinition, ScriptWorldLoader>;
 	RTTI_DECL1(ScriptEcsSystemLoader, Base)
 	
 	ArrayMap<String, Object> args;
@@ -43,7 +43,7 @@ public:
 public:
 	
 	
-	ScriptEcsSystemLoader(ScriptEngineLoader& parent, int id, Script::EcsSysDefinition& def);
+	ScriptEcsSystemLoader(ScriptWorldLoader& parent, int id, Script::EcsSysDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {/*vis | systems | pools;*/}
 	bool		Load() override;
 	/*String		GetTreeString(int indent) override;
@@ -99,9 +99,9 @@ public:
 	
 };
 
-class ScriptPoolLoader : public EcsLoaderBase<Script::PoolDefinition, ScriptEngineLoader> {
+class ScriptPoolLoader : public EcsLoaderBase<Script::PoolDefinition, ScriptWorldLoader> {
 public:
-	using Base = EcsLoaderBase<Script::PoolDefinition, ScriptEngineLoader>;
+	using Base = EcsLoaderBase<Script::PoolDefinition, ScriptWorldLoader>;
 	RTTI_DECL1(ScriptPoolLoader, Base)
 	
 public:
@@ -113,7 +113,7 @@ public:
 	bool							use_subpools = false;
 	
 	
-	ScriptPoolLoader(ScriptEngineLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def);
+	ScriptPoolLoader(ScriptWorldLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def);
 	/*void		ForwardSubchainLoops();
 	void		ForwardChainLoops();*/
 	
@@ -128,17 +128,17 @@ public:
 	
 };
 
-class ScriptEngineLoader : public EcsLoaderBase<Script::EngineDefinition, ScriptSystemLoader> {
+class ScriptWorldLoader : public EcsLoaderBase<Script::WorldDefinition, ScriptSystemLoader> {
 public:
-	using Base = EcsLoaderBase<Script::EngineDefinition, ScriptSystemLoader>;
-	RTTI_DECL1(ScriptEngineLoader, Base)
+	using Base = EcsLoaderBase<Script::WorldDefinition, ScriptSystemLoader>;
+	RTTI_DECL1(ScriptWorldLoader, Base)
 	
 public:
 	Array<ScriptEcsSystemLoader>	systems;
 	Array<ScriptPoolLoader>			pools;
 	
 	
-	ScriptEngineLoader(ScriptSystemLoader& parent, int id, Script::EngineDefinition& def);
+	ScriptWorldLoader(ScriptSystemLoader& parent, int id, Script::WorldDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | systems | pools;}
 	String		GetTreeString(int indent) override;
 	bool		Load() override;
@@ -152,12 +152,12 @@ public:
 };
 
 
-struct ExtScriptEngineLoaderBase {
+struct ExtScriptEcsLoaderBase {
 	String err_str;
 	
-	virtual ~ExtScriptEngineLoaderBase() {}
+	virtual ~ExtScriptEcsLoaderBase() {}
 	
-	virtual bool Load(ScriptEngineLoader& l) = 0;
+	virtual bool Load(ScriptWorldLoader& l) = 0;
 	virtual void Clear() {}
 	
 	void SetError(String s) {err_str = s;}
@@ -167,7 +167,7 @@ struct ExtScriptEngineLoaderBase {
 };
 
 
-extern ExtScriptEngineLoaderBase* __ecs_script_loader;
+extern ExtScriptEcsLoaderBase* __ecs_script_loader;
 
 
 NAMESPACE_SERIAL_END

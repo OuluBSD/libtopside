@@ -352,4 +352,30 @@ String AstNode::GetPartStringArray() const {
 }
 
 
+
+Object EvaluateAstNodeObject(AstNode& n) {
+	Object o;
+	if (n.src == SEMT_EXPR) {
+		switch (n.op) {
+			
+		case OP_POSITIVE:
+			o = EvaluateAstNodeObject(*n.arg[0]);
+			break;
+			
+		case OP_NEGATIVE:
+			o = EvaluateAstNodeObject(*n.arg[0]);
+			o = Object(-1) * o;
+			break;
+			
+		default:
+			TODO
+		}
+	}
+	else if (n.src == SEMT_CONSTANT) {
+		n.CopyToObject(o);
+	}
+	else TODO
+	return o;
+}
+
 NAMESPACE_TOPSIDE_END
