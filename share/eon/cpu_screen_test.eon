@@ -9,9 +9,10 @@ machine sdl.app:
 		state event.register
 		
 		loop center.events:
-			center.customer = true
-			sdl.event.pipe = true
-			state.event.pipe = true: target = event.register
+			center.customer
+			sdl.event.pipe
+			state.event.pipe:
+				target = event.register
 		
 		loop center.stage0.image:
 			center.customer

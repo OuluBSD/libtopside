@@ -2114,25 +2114,11 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 		if (TryToken('[')) {
 			AstNode* conn;
 			while (!TryToken(']')) {
-				AstNode* conn = EMIT PushAtomConnector(iter->loc, 0);
-				
-				CHECK_SPATH_BEGIN
-				allow_expr_unresolved = true;
-				bool succ = Cond(false);
-				AstNode* rval = PopExpr(iter->loc);
-				allow_expr_unresolved = false;
-				if (!succ)
-					return false;
-				CHECK_SPATH_END
-				
-				TryToken(',');
-				
-				EMIT PopAtomConnector(iter->loc);
-			}
-			
-			if (TryToken('[')) {
-				while (!TryToken(']')) {
-					AstNode* conn = EMIT PushAtomConnector(iter->loc, 1);
+				if (TryToken(',')) {
+					AddEmptyAtomConnector(iter->loc, 0);
+				}
+				else {
+					AstNode* conn = EMIT PushAtomConnector(iter->loc, 0);
 					
 					CHECK_SPATH_BEGIN
 					allow_expr_unresolved = true;
@@ -2146,6 +2132,30 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 					TryToken(',');
 					
 					EMIT PopAtomConnector(iter->loc);
+				}
+			}
+			
+			if (TryToken('[')) {
+				while (!TryToken(']')) {
+					if (TryToken(',')) {
+						AddEmptyAtomConnector(iter->loc, 1);
+					}
+					else {
+						AstNode* conn = EMIT PushAtomConnector(iter->loc, 1);
+						
+						CHECK_SPATH_BEGIN
+						allow_expr_unresolved = true;
+						bool succ = Cond(false);
+						AstNode* rval = PopExpr(iter->loc);
+						allow_expr_unresolved = false;
+						if (!succ)
+							return false;
+						CHECK_SPATH_END
+						
+						TryToken(',');
+						
+						EMIT PopAtomConnector(iter->loc);
+					}
 				}
 			}
 		}

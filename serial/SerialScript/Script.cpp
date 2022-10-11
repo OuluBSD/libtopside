@@ -667,6 +667,12 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 			return false;
 		}
 		
+		if (atoms.GetCount() == 1 && !is_driver) {
+			LOG(loop->GetTreeString(0));
+			AddError(loop->loc, "only one atom in the loop");
+			return false;
+		}
+		
 		for (AstNode* atom : atoms) {
 			Script::AtomDefinition& atom_def = loop_def.atoms.Add();
 			
@@ -717,6 +723,11 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 						else
 							sink_conn_i++;
 						
+						if (conn->sub.IsEmpty()) {
+							// Empty connector is allowed
+							continue;
+						}
+							
 						//LOG(conn->GetTreeString(0));
 						
 						AstNode* expr = conn->Find(SEMT_EXPR);
@@ -847,7 +858,8 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 										String key = src_cand->req_args.GetKey(i);
 										if (key == "loop") {
 											String loop_req = src_cand->req_args[i].ToString();
-											if (sink_loop.id.IsEmpty() || sink_loop.id.parts.Top() != loop_req)
+											Vector<String> parts = Split(loop_req, ".");
+											if (!sink_loop.IsPathTrailMatch(parts))
 												cond_prevents = true;
 										}
 										else {
@@ -868,7 +880,8 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 										String key = sink_cand->req_args.GetKey(i);
 										if (key == "loop") {
 											String loop_req = sink_cand->req_args[i].ToString();
-											if (src_loop.id.IsEmpty() || src_loop.id.parts.Top() != loop_req)
+											Vector<String> parts = Split(loop_req, ".");
+											if (!src_loop.IsPathTrailMatch(parts))
 												cond_prevents = true;
 										}
 										else {

@@ -63,6 +63,7 @@ struct LoopDefinition {
 	void Set(const String& key, const Object& value) {args.GetAdd(key) = value;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
+	bool IsPathTrailMatch(const Vector<String>& parts) const;
 	void operator=(const LoopDefinition& v) {id = v.id; loc = v.loc; args <<= v.args; atoms <<= v.atoms; is_driver = v.is_driver;}
 };
 

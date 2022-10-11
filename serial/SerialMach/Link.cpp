@@ -71,7 +71,7 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 			if (ex.local_ch_i == src_ch)
 				e = &ex;
 		if (!e) {
-			int dbg_i = 0; for (auto& e : side_sink_conn) {LOG(dbg_i++ << ": " << e.ToString());}
+			//int dbg_i = 0; for (auto& e : side_sink_conn) {LOG(dbg_i++ << ": " << e.ToString());}
 			LOG("LinkBase::NegotiateSourceFormat: error: exchange not found");
 			return false;
 		}

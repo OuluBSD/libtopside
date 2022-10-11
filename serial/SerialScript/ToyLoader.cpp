@@ -337,14 +337,14 @@ bool ToyLoader::MakeScript() {
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << a << ":\n";
 				s << "			center.customer\n";
-				s << "			center.image.loader[][loop == " << b << "]:";
+				s << "			center.image.loader[][loop == " << b << "]:\n";
 				if (input.vflip == "true")
 					s << "				vflip = true\n";
 				s << "				cubemap = true\n";
 				s << "				filepath = \"" << input.filename << "\"\n";
 				s << "		\n";
 				s << "		loop " << b << ":\n";
-				s << "			ogl.customer = true\n";
+				s << "			ogl.customer\n";
 				s << "			sdl.ogl.fbo.image[loop == " << a << "][loop == " << l << "]\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -408,13 +408,13 @@ bool ToyLoader::MakeScript() {
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << a << ":\n";
 				s << "			center.customer\n";
-				s << "			center.volume.loader[][loop == " << b << "]:";
+				s << "			center.volume.loader[][loop == " << b << "]:\n";
 				if (input.vflip == "true")
 					s << "				vflip = true\n";
 				s << "				filepath = \"" << input.filename << "\"\n";
 				s << "		\n";
 				s << "		loop " << b << ":\n";
-				s << "			ogl.customer = true\n";
+				s << "			ogl.customer\n";
 				s << "			sdl.ogl.fbo.volume[loop == " << a << "][loop == " << l << "]\n";
 				s << "		\n";
 				input.stage_name = b;
@@ -427,8 +427,8 @@ bool ToyLoader::MakeScript() {
 				a << "center." << stage.name << ".ct" << input.id;
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << a << ":\n";
-				s << "			center.customer = true\n";
-				s << "			center.video.loader[][loop == " << b << "]:";
+				s << "			center.customer\n";
+				s << "			center.video.loader[][loop == " << b << "]:\n";
 				if (input.vflip == "true")
 					s << "				vflip = true\n";
 				s << "				filepath = \"" << input.filename << "\"\n";
@@ -490,15 +490,15 @@ bool ToyLoader::MakeScript() {
 				if (i < stage.inputs.GetCount()) {
 					ToyInput& input = stage.inputs[i];
 					if (!input.stage_name.IsEmpty())
-						s << (i > 0 ? ", loop == " : "loop == ") << input.stage_name;
+						s << (i > 0 ? " loop == " : "loop == ") << input.stage_name;
 				}
-				//s << ",";
+				s << ",";
 			}
 			s << "][";
 			for(int i = 0; i < 4; i++) {
 				if (i < stage.user_stages.GetCount())
-					s << (i > 0 ? ", loop == " : "loop == ") << stage.user_stages[i];
-				//s << ",";
+					s << (i > 0 ? " loop == " : "loop == ") << stage.user_stages[i];
+				s << ",";
 			}
 			s << "]";
 		}
@@ -554,10 +554,10 @@ bool ToyLoader::MakeScript() {
 		s << "			sdl.ogl.fbo.keyboard[][";
 		for(int i = 0; i < 4; i++) {
 			if (i < keyboard_input_stages.GetCount()) {
-				if (i) s << ", ";
-				s << "loop == " << keyboard_input_stages[i];
+				if (i) s << " ";
+				s << "loop == " << keyboard_input_stages[i] << ",";
 			}
-			//else s << ",";
+			else s << ",";
 		}
 		s << "]:\n";
 		s << "				target = event.register\n";

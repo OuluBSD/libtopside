@@ -4,6 +4,25 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+namespace Script {
+bool LoopDefinition::IsPathTrailMatch(const Vector<String>& parts) const {
+	if (parts.IsEmpty() || parts.GetCount() > id.parts.GetCount())
+		return false;
+	for (int i = 0; i < parts.GetCount(); i++) {
+		int a = parts.GetCount()-1-i;
+		int b = id.parts.GetCount()-1-i;
+		const String& as = parts[a];
+		const String& bs = parts[b];
+		if (as != bs)
+			return false;
+	}
+	return true;
+}
+}
+
+
+
+
 ScriptLoopLoader::ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::LoopDefinition& def) :
 	Base(parent, id, def)
 {

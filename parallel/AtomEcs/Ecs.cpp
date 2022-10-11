@@ -206,7 +206,7 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 	bool b =	io.active_sink_mask == iface_sink_mask &&
 				io.full_src_mask == 0 &&
 				(binders.GetCount() > 0 || render_win);
-	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	
 	return b;
 }

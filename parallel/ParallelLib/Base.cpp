@@ -434,7 +434,7 @@ void EventStateBase::Update(double dt) {
 bool EventStateBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("EventStateBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("EventStateBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

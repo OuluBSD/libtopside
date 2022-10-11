@@ -510,6 +510,23 @@ void SemanticParser::PopAtom(const FileLocation& loc) {
 	PopScope();
 }
 
+AstNode* SemanticParser::AddEmptyAtomConnector(const FileLocation& loc, int part) {
+	int c = spath.GetCount();
+	String str;
+	switch (part) {
+		case 0: str = "sink"; break;
+		case 1: str = "src"; break;
+		default: str = IntStr(part);
+	}
+	AstNode& owner = *spath[c-1].n;
+	AstNode& var = owner.Add(loc, str);
+	var.src = SEMT_STATEMENT;
+	var.stmt = STMT_ATOM_CONNECTOR;
+	var.i64 = part;
+	
+	return &var;
+}
+
 AstNode* SemanticParser::PushAtomConnector(const FileLocation& loc, int part) {
 	int c = spath.GetCount();
 	String str;

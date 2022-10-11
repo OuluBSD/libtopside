@@ -427,7 +427,7 @@ template <class Gfx>
 bool FboReaderBaseT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -570,7 +570,7 @@ bool KeyboardBaseT<Gfx>::IsReady(PacketIO& io) {
 	
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("KeyboardBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("KeyboardBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
@@ -669,7 +669,7 @@ template <class Gfx>
 bool AudioBaseT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = this->iface.GetSinkMask();
 	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
-	RTLOG("AudioBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("AudioBaseT<Gfx>::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
