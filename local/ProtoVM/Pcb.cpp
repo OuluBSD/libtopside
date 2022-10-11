@@ -169,17 +169,6 @@ void Pcb::GetLinks(Array<Link>& links) {
 		}
 	}
 	
-	/*
-	for (ElectricNodeBase& n : refs) {
-		for (ElectricNodeBase::Connector& from : n.conns) {
-			for (ElectricNodeBase::CLink& to : from.links) {
-				Link& l = links.Add();
-				l.node = &n;
-				l.from_conn = &from;
-				l.to_conn = to;
-				
-			}
-		}
-	}*/
+	
 	
 }

@@ -806,39 +806,7 @@ void  HiCompiler::DoStatement()
 		Emit(IR_PUSH_R_EMPTY);
 		if(!IsChar(';'))
 			Exp();
-		/* TODO
-		if(Id("in") || Char(':')) {
-			IrValue range = GetExp();
-			PassChar(')');
-			Pos stmt = GetPos();
-			int i = 0;
-			for(;;) {
-				SetPos(stmt);
-				// TODO iterator in vm
-				// TODO emit if
-				if(range.IsArray()) {
-					if(i >= range.GetCount())
-						break;
-					Emit1(IR_ASSIGN_R, (int64)i);
-				}
-				else
-				if(range.IsMap()) {
-					const VectorMap<IrValue, IrValue>& map = range.GetMap();
-					if(i >= map.GetCount())
-						break;
-					if(map.IsUnlinked(i)) {
-						i++;
-						continue;
-					}
-					Emit1(IR_ASSIGN_R, map.GetKey(i));
-				}
-				DoStatement();
-				no_continue = true;
-				i++;
-			}
-			SkipStatement();
-		}
-		else*/ {
+		{
 			Emit1(IR_JUMP, lbl_first);
 			PassChar(';');
 			
@@ -954,23 +922,7 @@ void  HiCompiler::DoStatement()
 	else
 	if(Char('#')) {
 		TODO
-		/*int type = 0;
-		if(Char('.'))
-			type = 1;
-		else
-		if(Char(':'))
-			type = 2;
-		String id = ReadId();
-		IrValue l = ReadLambda(*this);
-		if(type == 1) {
-			Emit(IR_ASSERT_SELF_NONVOID);
-			Emit2(IR_ASSIGN_SELF_MAP, id, l);
-		}
-		else
-		if(type == 2)
-			global.GetAdd(id) = l;
-		else
-			var.GetAdd(id) = l;*/
+		
 	}
 	else
 	if(Char('{')) {

@@ -50,19 +50,7 @@ int CaptureDevice_V4L2::FillVideoBuffer() {
 		
 		if (is_readable) {
 			TODO
-			/*vbuffer.SetSize Count(buf_size);
-			size_t nb = vid_cap->read(buffer.Begin(), buf_size);
-			if (nb > 0 && nb < buf_size) {
-				if (open_pix_fmt == V4L2_PIX_FMT_MJPEG) {
-					#if V4L2_SLOW
-					MemStream mem(buffer, nb);
-					sw_frame = jpg_raster.Load(mem);
-					Size sz = sw_frame.GetSize();
-					COUT("Got frame size " << sz.ToString());
-					return true;
-					#endif
-				}
-			}*/
+			
 		}
 	}
 	

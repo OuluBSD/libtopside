@@ -145,7 +145,6 @@ public:
 	EntityId			Id() const {return m_id;}
 	
 	void				Destroy() override;
-	//void				SetEnabled(bool) override;
 	
 	Engine&				GetEngine();
 	const Engine&		GetEngine() const;
@@ -163,17 +162,12 @@ public:
 			}
 			...
 		};
-
-		//Callback1<Ref<ComponentBase>> cb = THISBACK(InitializeComponentRef);
-		//tuple.ForEach(cb);
 		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
 		return tuple;
 	}
 	
 	ComponentBaseRef CreateEon(String id);
 	
-	
-	//void CloneComponents(const Entity& e);
 	
 	void Visit(RuntimeVisitor& vis) {vis || comps;}
 	

@@ -17,22 +17,8 @@ void SoftRend::DrawDefault(SoftFramebuffer& fb) {
 
 
 void SoftRend::ClearTargets() {
-	/*for (SoftFramebuffer* fb : buffers) {
-		fb->Clear();
-	}*/
 	draw_buffers = (GVar::RenderTarget)0;
 }
-
-/*
-void SoftRend::ClearBuffers() {
-	buffers.SetCount(0);
-}
-
-
-void SoftRend::AddBuffer(SoftFramebuffer& fb) {
-	buffers.Add(&fb);
-}*/
-
 
 void SoftRend::SetSmoothShading(bool b) {
 	shading = b ? GVar::SMOOTH : GVar::FLAT;

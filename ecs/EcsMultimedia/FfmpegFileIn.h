@@ -104,9 +104,6 @@ protected:
 	bool is_open = false;
 	String errstr;
 	
-	
-	//int read_frame_i = 0;
-	
 	int DecodePacket(AVPacket& pkt, int *got_frame);
 	
 public:

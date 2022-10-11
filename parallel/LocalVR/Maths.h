@@ -5,24 +5,6 @@
 NAMESPACE_HMD_BEGIN
 
 
-#if 0
-typedef struct {
-	float x, y, z;
-} vec3;
-
-typedef struct {
-	double x, y, z;
-} vec3;
-
-typedef struct {
-	double x, y, z, w;
-} quat;
-
-typedef struct {
-	double m[9];
-} mat3;
-#endif
-
 float f16_to_float(uint16 f16);
 
 static inline double vec3_dot(const vec3 *a, const vec3 *b)

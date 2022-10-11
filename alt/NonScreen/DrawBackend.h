@@ -54,7 +54,6 @@ struct SysFont {
 struct SysImage {
 	RawSysImage* raw = 0;
 	
-	//SysImage() {}
 	SysImage(RawSysImage* raw) : raw(raw) {}
 	~SysImage() {Clear();}
 	void Clear();

@@ -59,8 +59,6 @@ struct GenericShaderArgs {
 
 struct GenericVertexShaderArgs {
     mat4 view;
-    /*mat4 proj;
-    mat4 scale;*/
     mat4 model;
     
 };

@@ -219,16 +219,6 @@ public:
 	RTTI_DECL0(ExchangeProviderTmpl);
 	void Visit(RuntimeVisitor& vis) {(vis & expt) & dst;}
 	
-	/*void Unlink(R o) {
-		if (l.dst == o) {
-			l.expt->Destroy();
-			l.dst.Clear();
-		}
-	}*/
-	
-	/*void UnlinkAll() {
-		links.Clear();
-	}*/
 	
 	void				ClearLink() {expt.Clear(); dst.Clear();}
 	ExchangePointRef	GetExPt() const {return expt;}
@@ -244,7 +234,6 @@ class ExchangeProviderBase :
 public:
 	RTTI_DECL_R0(ExchangeProviderBase)
 	
-	//bool UnlinkManually(ExchangeProviderBase& p);
 	virtual String GetConfigString() {return String();}
 	
 };

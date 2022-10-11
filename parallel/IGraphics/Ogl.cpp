@@ -294,10 +294,6 @@ template <class Gfx> void OglGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 		glDrawBuffers(bufs.GetCount(), (GLenum*)bufs.Begin());
 }
 
-/*template <class Gfx> void OglGfxT<Gfx>::Clear_Color() {
-	glClear(GL_COLOR_BUFFER_BIT);
-}*/
-
 template <class Gfx> void OglGfxT<Gfx>::RenderScreenRect() {
 	glRectf(-1.0, -1.0, 1.0, 1.0);
 }
@@ -375,9 +371,6 @@ template <class Gfx> void OglGfxT<Gfx>::SetTexture(GVar::TextureMode type, Size3
 		0, intl_fmt, intl_type,
 		data);
 }
-/*void OglRendererBase::ActivateNextFrame() {
-	// pass
-}*/
 
 template <class Gfx> String OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* common_tmpl = R"SH4D3R(

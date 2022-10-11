@@ -12,8 +12,6 @@ class AstRunner :
 	AstNode root;
 	
 public:
-	//Object runtime;
-	//Vector<Object*> rpath;
 	
 public:
 	typedef AstRunner CLASSNAME;
@@ -36,11 +34,6 @@ public:
 	AstNode*	Merge(const AstNode& n);
 	AstNode*	MergeStatement(const AstNode& n);
 	void		SetMetaBlockType(AstNode& d, AstNode* dup_block, AstNode* closest_type);
-	//void		PushRuntimeScope(Object& o);
-	//ObjectMap*	GetRuntimeScope(const FileLocation& loc);
-	//Object*		CreateRuntimeField(const FileLocation& loc, String name);
-	//void		AddRuntimeScope(const FileLocation& loc, String name);
-	//void		PopRuntimeScope();
 	AstNode*	DeclareMetaVariable(const AstNode& n);
 	bool		IsMergeable(const AstNode& prev, const AstNode& to_merge) const;
 	AstNode*	Evaluate(const AstNode& n);

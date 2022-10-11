@@ -64,34 +64,11 @@ void DummyAudioSinkComponent::Forward(FwdScope& fwd) {
 	using ToPacketTracker			= typename ToValLib::PacketTracker;
 	
 	Audio& sink_value = GetValue(AUDCTX);
-	//Receipt& src_value = GetStream(RCPCTX).Get();
 	auto& sink_buf = sink_value.GetBuffer();
 	auto& src_buf = src_value.GetBuffer();
 	
 	cfg = &fwd.Cfg();
 	
-	/*
-	while (sink_buf.GetCount() && !src_value.IsQueueFull()) {
-		FromPacket in = sink_buf.First();
-		sink_buf.RemoveFirst();
-		
-		Process(in);
-		
-		ToPacket to = ToValMach::CreatePacket(in->GetOffset());
-		
-		ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
-		RTLOG("DummyAudioSinkComponent::Forward: sending packet in format: " << fmt.ToString());
-		to->SetFormat(fmt);
-		
-		InternalPacketData& data = to->template SetData<InternalPacketData>();
-		data.pos = 0;
-		data.count = 1;
-		
-		src_value.StorePacket(to);
-		
-		ToPacketTracker::Track(TrackerInfo("DummySoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
-		src_buf.Add(to);
-	}*/
 	
 	lock.Enter();
 	
@@ -154,13 +131,6 @@ void DummyAudioSinkComponent::LocalSinkValue::SinkCallback(StreamCallbackArgs& a
 		if (qsize > 0 || consumer.HasLeftover()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
-			/*off32 begin_offset = buf.GetOffset();
-			if (0) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
-				buf.Dump();
-			}*/
-			
 			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
@@ -183,18 +153,7 @@ void DummyAudioSinkComponent::LocalSinkValue::SinkCallback(StreamCallbackArgs& a
 			if (sys && par.cfg)
 				sys->AddOnce(par, *par.cfg);
 			
-			/*off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
-				buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}*/
+			
 		}
 		else {
 			#if DEBUG_RT_PIPE

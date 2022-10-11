@@ -117,7 +117,6 @@ public:
 	String					GetSecondaryName() override;
 	void*					GetSecondaryPtr() override;
 	
-	//void					ForwardDriver(FwdScope& fwd);
 	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();
 	LinkedList<Exchange>&	SideSinks() {return side_sink_conn;}
@@ -136,32 +135,11 @@ public:
 	
 };
 
-//using LinkBaseRef = Ref<LinkBase>;
 
 
 using Link = LinkBase;
 using LinkMap = RefLinkTypeMapIndirect<LinkBase>;
 
-/*template<
-	typename Atom
->
-struct Link :
-	virtual public LinkBase
-{
-public:
-	using LinkT = Link<Atom>;
-	RTTI_DECL1(LinkT, LinkBase)
-	
-	void Visit(RuntimeVisitor& vis) override {
-		BaseVisit(vis);
-	}
-	
-	
-	
-	static ParallelTypeCls::Type GetSerialType() {return Atom::GetSerialType();}
-	
-	
-};*/
 
 bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size);
 

@@ -137,25 +137,6 @@ void FfmpegFileInput::FillVideoBuffer() {
 	}
 }
 
-/*void FfmpegFileInput::FillAudioBuffer() {
-	while (!aframe.IsQueueFull() && !IsEof()) {
-		if (ReadFrame()) {
-			if (ProcessVideoFrame())
-				continue;
-			if (ProcessAudioFrame())
-				continue;
-			
-			ClearPacketData();
-		}
-		else break;
-	}
-	
-	if (IsEof())
-		FillBuffersNull();
-	
-	ClearPacketData();
-}*/
-
 bool FfmpegFileInput::ReadFrame() {
 	ClearPacketData();
 	
@@ -201,18 +182,12 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 
 void FfmpegFileInput::FillBuffersNull() {
 	TODO
-	/*if (has_audio)
-		aframe.FillBuffersNull();
-	if (has_video)
-		vframe.FillBuffersNull();*/
+	
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
 	TODO
-	/*frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
 	
-	if (frames)
-		vframe.DropFrames(frames);*/
 }
 
 Audio& FfmpegFileInput::GetAudio() {
@@ -434,9 +409,6 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fm
 	    #error TODO
 	    #endif
 	    
-		//SET_FMT(AV_SAMPLE_FMT_S64, 8, 0, 1, 0);
-		//SET_FMT(AV_SAMPLE_FMT_S64P, 8, 0, 1, 0);
-		
 		default:
 		errstr = "unexpected audio format";
 		return false;
@@ -545,106 +517,10 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	
 	// Non-planar data
 	TODO
-	/*if (frame->data[1] == 0) {
-		if (frame->data[0]) {
-			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
-			auto& p = buf.Add();
-			p = CreateAudioPacket();
-			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
-			off32 offset{frame_counter++};
-			p->Set(fmt, offset, time_pos);
-			Vector<byte>& data = p->Data();
-			data.SetCount(frame->linesize[0], 0);
-			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
-		}
-	}
-	// Planar data
-	else {
-		byte* srcn[AV_NUM_DATA_POINTERS];
-		memset(srcn, 0, sizeof(srcn));
-		auto& p = buf.Add();
-		p = CreateAudioPacket();
-		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
-		off32 offset{frame_counter++};
-		p->Set(fmt, offset, time_pos);
-		
-		if (0) {
-			LOG("frame-sz:     " << frame_sz);
-			LOG("fmt:          " << fmt.ToString());
-			LOG("f-nb-samples: " << frame->nb_samples);
-			LOG("f-channels:   " << frame->channels);
-			__BREAK__
-		}
-		
-		Vector<byte>& data = p->Data();
-		data.SetCount(frame_sz, 0);
-		byte* dst = data.Begin();
-		
-		for(int i = 0; i < frame->channels; i++)
-			srcn[i] = frame->data[i];
-		
-		for (int i = 0; i < frame->nb_samples; i++) {
-			for(int j = 0; j < frame->channels; j++) {
-				byte*& src = srcn[j];
-				for(int k = 0; k < var_size; k++)
-					*dst++ = *src++;
-			}
-		}
-		ASSERT(dst == data.End());
-	}*/
+	
 	
 	exchange_count = 0;
 }
-
-
-
-#if HAVE_OPENGL
-
-#if 0
-bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
-	if (buf.IsEmpty())
-		return false;
-	TODO
-	/*auto frame_iter = buf.begin();
-	Frame& f = *frame_iter();
-	
-	int var_size = av_get_bytes_per_sample(f.frame->format);
-	ASSERT(f.frame->nb_samples == fmt.sample_rate);
-	ASSERT(f.frame->sample_rate == fmt.freq);
-	ASSERT(f.frame->channels == fmt.channels);
-	ASSERT(var_size == fmt.var_size);
-	
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	
-	Size res(fmt.sample_rate, fmt.channels);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F,
-		res.cx,
-		res.cy,
-		0, GL_RED, GetOglDataType(fmt.var_size, fmt.is_var_float),
-		f.frame->data[0]);
-	
-	av_frame_free(&f.frame);
-	buf.Remove(frame_iter);*/
-	return true;
-}
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -705,12 +581,10 @@ void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
 }
 
 int FfmpegVideoFrameQueue::GetQueueSize() const {
-	//return frames.GetCount() * vid_fmt.GetFrameBytes();
 	TODO
 }
 
 bool FfmpegVideoFrameQueue::IsQueueFull() const {
-	//return frames.GetCount() >= min_buf_size;
 	TODO
 }
 

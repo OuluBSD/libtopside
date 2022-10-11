@@ -48,10 +48,6 @@ float Classify(const OBB& obb, const Plane& plane) {
 
 
 vec3 Intersection(Plane p1, Plane p2, Plane p3) {
-	/*return ((Cross(p2.normal, p3.normal) * -p1.distance) +
-		(Cross(p3.normal, p1.normal) * -p2.distance) +
-		(Cross(p1.normal, p2.normal) * -p3.distance)) /
-		(Dot(p1.normal, Cross(p2.normal, p3.normal)));*/
 		
 #if 1
 	mat3 D {

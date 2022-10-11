@@ -22,13 +22,6 @@ void Transform::Uninitialize() {
 		sys->Detach(this);
 }
 
-/*void Transform::SetFromMatrix(const mat4& matrix) {
-	vec3 skew;
-	vec4 persp;
-	bool succ = Decompose(matrix, size, data.orientation, data.position, skew, persp);
-	ASSERT(succ);
-}*/
-
 void Transform::operator=(const Transform& t) {
 	data = t.data;
     size = t.size;

@@ -9,6 +9,5 @@ uses(GUI) EcsVirtualGui;
 file
 	EcsMinimal.h,
 	EcsMinimal.cpp,
-	Prefabs.h,
 	Prefabs.cpp;
 

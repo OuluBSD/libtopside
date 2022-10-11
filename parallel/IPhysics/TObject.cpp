@@ -48,12 +48,7 @@ void ObjectT<Fys>::DetachContent() {
 
 template <class Fys>
 void ObjectT<Fys>::Refresh() {
-	/*if (!fb_obj && !model_err) {
-		LOG("Object::Refresh: warning: loading model while painting");
-		fb_obj = s.CreateObject();
-		if (fb_obj)
-			LoadModel(s);
-	}*/
+	
 	
 	TODO
 	#if 0
@@ -62,14 +57,6 @@ void ObjectT<Fys>::Refresh() {
 		return;
 	
 	
-	/*
-	int width = 1280, height = 720;
-	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
-    mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
-    mat4 model = Identity<mat4>();
-	fb_obj->SetMat4("projection", projection);
-	fb_obj->SetMat4("model", model);
-	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
 		mat4 v = model_geom * override_geom;
@@ -92,29 +79,7 @@ bool ObjectT<Fys>::LoadModel(GfxModelState& s) {
 		Panic("Couldn't load model: ModelComponent");
 	return true;
 }
-/*
-template <class Fys>
-void ObjectT<Fys>::LoadModel(CpuDataState& state) {
-	auto& o = cpu_obj ? *cpu_obj : state.AddObject();
-	cpu_obj = cpu_obj ? cpu_obj : &o;
-	fb_obj = cpu_obj;
-	if (!state.LoadModel(loader, o))
-		Panic("Couldn't load model: ModelComponent");
-	if (!state.LoadModelTextures(loader, o))
-		Panic("Couldn't load model textures: ModelComponent");
-}
 
-template <class Fys>
-void ObjectT<Fys>::LoadModel(OglDataState& state) {
-	auto& o = ogl_obj ? *ogl_obj : state.AddObject();
-	ogl_obj = ogl_obj ? ogl_obj : &o;
-	fb_obj = ogl_obj;
-	if (!state.LoadModel(loader, o))
-		Panic("Couldn't load model: ModelComponent");
-	if (!state.LoadModelTextures(loader, o))
-		Panic("Couldn't load model textures: ModelComponent");
-}
-*/
 
 FYS_EXCPLICIT_INITIALIZE_CLASS(ObjectT)
 

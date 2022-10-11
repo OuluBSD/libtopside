@@ -558,14 +558,7 @@ float FmSynth::Oscillator(float phase) {
 	return x;
 }
 
-/*#if defined(__AVX__) && defined(SIMD)
-#include "x86/avx.c"
-#elif defined(__SSE__) && defined(SIMD)
-#include "x86/sse.c"
-#elif defined(__ARM_NEON__) && defined(SIMD)
-#include "arm/arm.c"*/
-#if 0
-#else
+
 void FmSynth::ProcessFrames(Voice& voice, float *left, float *right, int samples, bool interleaved) {
 	float cached[SYNTH_OPERATORS];
 	float cached_modulator[SYNTH_OPERATORS];
@@ -626,7 +619,6 @@ void FmSynth::ProcessFrames(Voice& voice, float *left, float *right, int samples
 		}
 	}
 }
-#endif
 
 void FmSynth::RenderVoice(Voice& voice, float *left, float *right, int samples, bool interleaved) {
 	while (samples) {

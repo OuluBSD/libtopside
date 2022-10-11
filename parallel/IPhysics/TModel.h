@@ -52,7 +52,6 @@ struct Sphere : public ScalarObject<Fys> {
 		TODO
 		ModelBuilder mb;
 		mb	.AddSphere(vec3(0., 0., 0.), radius)
-			/*.SetMaterial(DefaultMaterial())*/
 			;
 		this->loader = mb;
 		

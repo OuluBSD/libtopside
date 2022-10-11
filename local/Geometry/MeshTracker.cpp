@@ -192,9 +192,6 @@ void MeshTracker::UpdateTrackedTriangles(const MeshTrackerFrame& from, MeshTrack
 			!tt.c->has_local_tgt || !tt.c->has_local_tgt)
 			continue;
 		
-		/*if (iter == 7 && tri_i == 3) {
-			LOG("");
-		}*/
 		
 		mat4 view_diff;
 		if (!CalculateTriangleChange(

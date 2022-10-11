@@ -82,13 +82,6 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 	return true;
 }
 
-#if 0
-void AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
-	RTLOG("AsyncMemForwarderBase::StorePacket");
-	out = this->ReplyPacket(src_ch, in);
-}
-#endif
-
 void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	ASSERT(p);
 	RTLOG("AsyncMemForwarderBase::Consume: " << p->ToString());

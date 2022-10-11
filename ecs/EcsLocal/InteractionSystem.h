@@ -9,9 +9,6 @@ NAMESPACE_ECS_BEGIN
 // - SpatialInteractionManager
 // - SpatialSourceEventArgs
 
-/*struct InteractionEvent {
-	
-};*/
 
 class InteractionSystem;
 struct FakeSpatialInteractionManager;
@@ -36,7 +33,6 @@ struct InteractionManager {
 struct FakeControllerSource : ControllerSource {
 	FakeSpatialInteractionManager* mgr = 0;
 	
-	//bool GetLocation(float* matrix4x4) const override;
 	void GetVelocity(float* v3) const override;
 	void GetAngularVelocity(float* v3) const override;
 	
@@ -91,7 +87,6 @@ struct FakeSpatialInteractionManager : InteractionManager {
 struct VrControllerSource : ControllerSource {
 	VrSpatialInteractionManager* mgr = 0;
 	
-	//bool GetLocation(float* matrix4x4) const override;
 	void GetVelocity(float* v3) const override;
 	void GetAngularVelocity(float* v3) const override;
 	
@@ -213,14 +208,7 @@ private:
     void BindEventHandlers();
     void ReleaseEventHandlers();
     
-    /*enum SourceEvent {
-        Detected, Pressed, Updated, Released, Lost, Count
-    };
-
-    NativeEventToken source_tokens[SourceEvent::Count];
-    */
     
-	
 	
     // Events Handlers
     void HandleSourceDetected(const InteractionManager&, const CtrlEvent& e);

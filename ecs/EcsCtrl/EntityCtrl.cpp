@@ -22,7 +22,6 @@ EntityCtrl::EntityCtrl() {
 	
 	vsplit.Vert();
 	vsplit << ent_browser << ent_content;
-	//vsplit.SetPos(4000);
 	
 	
 	ent_browser.WhenEntityChanged << THISBACK(OnEntityCursorChanged);

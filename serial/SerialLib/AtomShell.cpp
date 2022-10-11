@@ -39,7 +39,6 @@ bool DefaultInitializer(bool skip_eon_file) {
 	
 	if (GetFileExt(eon_file) == ".toy") {
 		eon_script = SerialLoaderFactory::LoadFile(eon_file);
-		//DUMP(eon_script);
 		if (eon_script.IsEmpty())
 			return false;
 	}
@@ -49,8 +48,6 @@ bool DefaultInitializer(bool skip_eon_file) {
 
 
 size_t break_addr = 0;
-bool verify = false;
-//MAKE_STATIC(Serial::MachineVerifier, verifier);
 
 
 void DefaultSerialInitializer() {DefaultSerialInitializer0(false);}
@@ -59,11 +56,6 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 	using namespace Serial;
 	
 	SetCoutLog();
-	//Serial::Factory::Dump();
-	
-	
-	if (0)
-		verify = true;
 	
 	if (0)
 		break_addr = 0x1;
@@ -72,24 +64,6 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 	if (!DefaultInitializer(skip_eon_file))
 		return;
 	
-	if (verify) {
-		TODO // some extension thing is required here to work with only AtomMinimal
-		#if 0
-		verifier.AddSystem<RegistrySystem>();
-		verifier.AddSystem<LoopStore>();
-		verifier.AddSystem<AtomStore>();
-		verifier.AddSystem<AtomSystem>();
-		verifier.AddSystem<ScriptLoader>();
-		
-		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
-		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));
-		auto& src		= ent.AddAtomWith<TestRealtimeSrc>	(VD(CENTER,AUDIO));
-		auto& sink		= ent.AddAtomWith<TestRealtimeSink>	(VD(CENTER,RECEIPT));
-		customer << src << sink << customer;
-		src.SetSourceFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
-		sink.SetSinkFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
-		#endif
-	}
 }
 
 void DefaultSerialInitializerInternalEon() {
@@ -97,9 +71,6 @@ void DefaultSerialInitializerInternalEon() {
 }
 
 void DefaultRunner(bool main_loop, String app_name, String override_eon_file, VectorMap<String,Object>* extra_args, const char* extra_str) {
-	//DUMP(eon_script);
-	//DUMP(eon_file);
-	//DUMPC(args);
 	
 	if (!override_eon_file.IsEmpty())
 		eon_file = override_eon_file;
@@ -156,9 +127,7 @@ void DebugMainLoop(Parallel::Machine& mach) {
         double dt = ResetSeconds(t);
         mach.Update(dt);
         
-        //if (!iter++) mach.Get<LoopStore>()->GetRoot()->Dump();
-		
-		if (dt < sleep_dt_limit)
+        if (dt < sleep_dt_limit)
 			Sleep(1);
         
         double total_seconds = total.Seconds();
@@ -173,7 +142,6 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	using namespace Parallel;
 	
 	SetCoutLog();
-	//Serial::Factory::Dump();
 	
 	if (script_content.IsEmpty() && script_file.IsEmpty()) {
 		LOG("No script file given");
@@ -187,9 +155,6 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	
 	{
 		Machine& mach = GetActiveMachine();
-		
-		//if (ver) ver->Attach(mach);
-		
 		
 		if (dbg_ref_visits)
 			SetDebugRefVisits();
@@ -237,7 +202,6 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 				}
 				else
 					script_str = script_content;
-				//script_str.DebugFollow();
 				
 				if (script_str.IsEmpty()) {
 					LOG("No script");
@@ -276,7 +240,6 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	    }
 	}
     
-    //RefDebugVisitor::Static().DumpUnvisited();
 }
 
 void DefaultRunnerStop() {

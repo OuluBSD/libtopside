@@ -6,8 +6,6 @@ uses
 	Shadertoy,
 	EcsEssential;
 
-uses(NEVER) AccelCore;
-
 uses(NEVER) FusionCore;
 
 uses(NEVER) Physics;

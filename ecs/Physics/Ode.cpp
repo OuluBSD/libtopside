@@ -96,7 +96,6 @@ void OdeFys::AttachThreadPool(NativeThreading& t, NativeThreadPool& p) {
 }
 
 void OdeFys::AttachThreading(NativeWorld& w, NativeThreading& t) {
-	// dWorldSetStepIslandsProcessingMaxThreadCount(world, 1);
 	dWorldSetStepThreadingImplementation(w, dThreadingImplementationGetFunctions(t), t);
 	dAllocateODEDataForThread(dAllocateMaskAll);
 }

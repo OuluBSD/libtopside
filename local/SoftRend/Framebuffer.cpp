@@ -16,11 +16,6 @@ void SoftFramebuffer::Clear() {
 	
 }
 
-/*
-void SoftFramebuffer::operator=(NativeTexture& tex) {
-	ASSERT(!this->tex);
-	this->tex = tex;
-}*/
 
 
 void SoftFramebuffer::ClearData(GVar::BufferType type) {
@@ -83,14 +78,6 @@ void SoftFramebuffer::Zero(GVar::RenderTarget tgt, RGBA clr) {
 			color[i]->Zero(clr);
 	}
 }
-
-/*
-void SoftFramebuffer::SetLocalData(Size sz, byte channels) {
-	owned.Create();
-	owned->Create(sz, channels);
-	gtex = &*owned;
-}*/
-
 
 void SoftFramebuffer::SetParam(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap wrap) {
 	ASSERT(type >= 0 && type < GVar::TEXMODE_COUNT);

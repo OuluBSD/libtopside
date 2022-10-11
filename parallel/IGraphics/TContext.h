@@ -16,7 +16,6 @@ struct RendererT : GfxRenderer {
 	using NativeDisplay = typename Gfx::NativeDisplay;
 	using NativeWindow = typename Gfx::NativeWindow;
 	using NativeRenderer = typename Gfx::NativeRenderer;
-	//using FrameBuf = typename Gfx::Framebuffer;
 	using Framebuffer = FramebufferT<Gfx>;
 	
 	

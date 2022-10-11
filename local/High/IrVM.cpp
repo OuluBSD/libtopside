@@ -718,10 +718,6 @@ bool IrVM::Execute() {
 		const IR& ins = vec[pc];
 		
 		#if VERBOSE_IRVM
-		/*if (pc == 66) {
-			LOG("");
-		}*/
-		
 		LOG(pc);
 		#endif
 		

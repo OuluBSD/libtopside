@@ -677,31 +677,6 @@ struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 				m.data[r].data[c] = data[r].data[c] * f;
 		return m;
 	}
-	#if 0
-	template<int C2> Matrix<T,R,C2> Multiply(const Matrix<T,C,C2>& src) const {
-		Matrix<T,R,C2> m;
-		for(int r = 0; r < R; r++) {
-			for(int c2 = 0; c2 < C2; c2++) {
-				#if 0
-				T& o = m[r][c2];
-				o = 0;
-				for(int c = 0; c < C; c++)
-					o += data[r][c] * src.data[c2][c];
-				#else
-				T o = 0;
-				for(int c = 0; c < C; c++) {
-					T aa = data[r][c];
-					T bb = src.data[c][c2];
-					T mul = aa * bb;
-					o += mul;
-				}
-				m[r][c2] = o;
-				#endif
-			}
-		}
-		return m;
-	}
-	#else
 	template<int R2> Matrix<T,R2,C> Multiply(const Matrix<T,R2,R>& src) const {
 		Matrix<T,R2,C> m;
 		for(int c = 0; c < C; c++) {
@@ -718,7 +693,6 @@ struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 		}
 		return m;
 	}
-	#endif
 	Matrix Translate(const MinorVec& v) const {
 		static_assert(R == C, "must be square matrix");
 		Matrix m;

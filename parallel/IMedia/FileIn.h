@@ -59,12 +59,10 @@ public:
 	using FileInput = typename Backend::FileInput;
 	using Base = VideoInputFrameT<Backend>;
 	RTTI_DECL1(VideoFrameQueueT, Base)
-	//using Parent = FileInputT;
 	~VideoFrameQueueT() {Clear();}
 	
 	void				Visit(RuntimeVisitor& vis) {}
 	void				Init(AVCodecContextRef& ctx);
-	//void				FillBuffersNull();
 	
 	void				Close() override;
 	void				Clear() override;
@@ -104,8 +102,6 @@ protected:
 	bool is_open = false;
 	String errstr;
 	
-	
-	//int read_frame_i = 0;
 	
 	int DecodePacket(AVPacket& pkt, int *got_frame);
 	
@@ -162,7 +158,6 @@ class FileInputT :
 	bool ReadFrame();
 	bool ProcessVideoFrame();
 	bool ProcessAudioFrame();
-	//void FillBuffersNull();
 	
 	
 public:
@@ -187,7 +182,6 @@ public:
 	bool						Open();
 	void						Close();
 	bool						OpenFile(String path);
-	//void						SetFormat(Format fmt);
 	
 	String	GetLastError() const;
 	

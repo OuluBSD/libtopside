@@ -47,17 +47,6 @@ bool ShaderBaseT<Gfx>::IsReady(PacketIO& io) {
 
 template <class Gfx>
 bool ShaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	//BeginDraw();
-	
-	/*Gfx::SetClearValue(RGBA(0,0,0,255), 255);
-	//TODO: useless? Gfx::ClearBuffers();
-	Gfx::SetSmoothShading();
-	Gfx::SetDepthTest();
-	Gfx::SetDepthOrderLess(true);
-	Gfx::SetFastPerspectiveCorrection();
-	Gfx::SetTriangleBacksideCulling();
-	Gfx::SetTriangleFrontsideCCW();
-	Gfx::SetViewport(this->bf.GetBuffer().fb.GetSize());*/
 	
 	Format fmt = out.GetFormat();
 	
@@ -66,25 +55,12 @@ bool ShaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 	}
 	else if (fmt.vd.val == ValCls::FBO) {
 		this->bf.GetBuffer().Process(*this->last_cfg);
-		//CommitDraw();
 		ASSERT(fmt.IsValid());
 		
 		InternalPacketData& data = out.GetData<InternalPacketData>();
 		this->bf.GetBuffer().StoreOutputLink(data);
 		RTLOG("ShaderBaseT::Send: 0, " << out.ToString());
 		
-		/*Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
-		if (src_fmt.vd == VD(OGL,FBO)) {
-			Packet& out = src.p;
-			if (!out) {
-				src.from_sink_ch = 1;
-				out = this->ReplyPacket(src_ch, prim_sink.p);
-			}
-			PacketValue& val = *out;
-			InternalPacketData& data = val.GetData<InternalPacketData>();
-			this->GetBuffer().StoreOutputLink(data);
-			RTLOG("PipeOptSideLink::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
-		}*/
 	}
 	else {
 		TODO
@@ -100,7 +76,6 @@ bool ShaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 	
 	Format in_fmt = in->GetFormat();
 	if (in_fmt.vd == VD(OGL,FBO)) {
-		//Size3 sz = in_fmt.fbo.GetSize();
 		int channels = in_fmt.fbo.GetChannels();
 		
 		int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
@@ -119,83 +94,6 @@ template <class Gfx>
 void ShaderBaseT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	this->last_cfg = &cfg;
 }
-
-/*bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override
-bool ProcessPackets(PacketIO& io) override {
-	auto& buf = this->buf;
-	int src_ch = 0;
-	PacketIO::Sink& prim_sink = io.sink[0];
-	PacketIO::Source& src = io.src[src_ch];
-	src.from_sink_ch = 0;
-	src.p = this->ReplyPacket(src_ch, prim_sink.p);
-	
-	
-	bool succ = true;
-	
-	
-	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
-		PacketIO::Sink& sink = io.sink[sink_ch];
-		Packet& in = sink.p;
-		if (!in) {
-			ASSERT(!sink.filled);
-			continue;
-		}
-		sink.may_remove = true;
-		
-		RTLOG("OglShaderBase::ProcessPackets: " << sink_ch << ", " << src_ch << ": " << in->ToString());
-		
-		
-		Format in_fmt = in->GetFormat();
-		if (in_fmt.vd == VD(OGL,FBO)) {
-			Size3 sz = in_fmt.fbo.GetSize();
-			int channels = in_fmt.fbo.GetChannels();
-			
-			int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
-			if (in->IsData<InternalPacketData>()) {
-				succ = buf.LoadInputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
-			}
-			else {
-				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
-			}
-		}
-		
-		
-		if (sink_ch == 0) {
-			
-			
-			//BeginDraw();
-			buf.Process(*this->last_cfg);
-			//CommitDraw();
-			
-			ASSERT(in->GetFormat().IsValid());
-			
-			
-		}
-	}
-	
-	InterfaceSourceRef src_iface = this->GetSource();
-	int src_count = src_iface->GetSourceCount();
-	for (int src_ch = 0; src_ch < src_count; src_ch++) {
-		PacketIO::Source& src = io.src[src_ch];
-		if (!src.val)
-			continue;
-		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
-		if (src_fmt.vd == VD(OGL,FBO)) {
-			Packet& out = src.p;
-			if (!out) {
-				src.from_sink_ch = 0;
-				out = this->ReplyPacket(src_ch, prim_sink.p);
-			}
-			PacketValue& val = *out;
-			InternalPacketData& data = val.GetData<InternalPacketData>();
-			this->GetBuffer().StoreOutputLink(data);
-			RTLOG("OglShaderBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
-		}
-	}
-	
-	return succ;
-}*/
-
 
 
 
@@ -436,12 +334,6 @@ bool FboReaderBaseT<Gfx>::Recv(int sink_ch, const Packet& in) {
 	Format fmt = in->GetFormat();
 		
 	if (fmt.IsFbo()) {
-		/*int src_queue = src.val->GetMinPackets();
-		int sink_queue = sink.val->GetMinPackets();
-		ASSERT(src_queue > 1);
-		ASSERT(sink_queue > 1);*/
-		
-		//DUMP(fmt);
 		InternalPacketData& v = in->GetData<InternalPacketData>();
 		if (v.IsText("gfxbuf")) {
 			src_buf = CastPtr<BufferStage>(static_cast<GfxBufferStage*>(v.ptr));
@@ -460,30 +352,16 @@ template <class Gfx>
 bool FboReaderBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	Format fmt = out.GetFormat();
 	if (fmt.IsReceipt()) {
-		//out.AddRouteData(src.from_sink_ch);
+		
 	}
 	else if (fmt.IsAudio()) {
 		if (!src_buf)
 			return false;
 		
-		//out.AddRouteData(src.from_sink_ch);
 		AudioFormat& afmt = fmt;
 		
-		//ASSERT(afmt.IsSampleFloat());
-		/*int src_queue = src.val->GetMinPackets();
-		int sink_queue = sink.val->GetMinPackets();
-		ASSERT(src_queue > 1);
-		ASSERT(sink_queue > 1);*/
-		
-		//DUMP(fmt);
 		auto& fb = src_buf->GetFramebuffer();
 		int afmt_size = afmt.GetSize();
-		/*if (fb.size.cx != afmt.sample_rate && fb.size.cy != 1) {
-			afmt.res[0] = afmt.sample_rate;
-			afmt.res[1] = 1;
-			out.SetFormat(fmt);
-			afmt_size = afmt.GetSize();
-		}*/
 		ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
 		int len = afmt.sample_rate * fb.channels * GVar::GetSampleSize(fb.sample);
 		ASSERT(len > 0);
@@ -692,7 +570,6 @@ bool AudioBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		int channels = afmt.GetSize();
 		const Vector<byte>& data = in.GetData();
 		
-		//ASSERT(afmt.type == SoundSample::FLT_LE || afmt.type == SoundSample::U8_LE);
 		GVar::Sample sample = GetGVarType(afmt.type);
 		int sample_size = GVar::GetSampleSize(sample);
 		
@@ -743,87 +620,6 @@ bool AudioBaseT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	return true;
 }
 
-/*bool ProcessPackets(PacketIO& io) {
-	RTLOG("OglAudioBase::ProcessPackets");
-	ASSERT(io.src.GetCount() == 2 && io.sink.GetCount() == 2);
-	auto& buf = this->buf;
-	
-	PacketIO::Sink&		prim_sink	= io.sink[0];
-	PacketIO::Source&	prim_src	= io.src[0];
-	PacketIO::Sink&		sink		= io.sink[1];
-	PacketIO::Source&	src			= io.src[1];
-	
-	ASSERT(prim_sink.p);
-	prim_sink.may_remove = true;
-	prim_src.from_sink_ch = 0;
-	prim_src.p = this->ReplyPacket(0, prim_sink.p);
-	
-	ASSERT(sink.p);
-	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	src.p = this->ReplyPacket(1, sink.p);
-	
-	Packet& from = sink.p;
-	Format from_fmt = from->GetFormat();
-	ASSERT(from_fmt.IsAudio());
-	AudioFormat& afmt = from_fmt;
-	Size sz(afmt.sample_rate, 1);
-	int channels = afmt.GetSize();
-	const Vector<byte>& data = from->GetData();
-	
-	if (!buf.IsInitialized()) {
-		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& fb = buf.fb;
-		fb.is_win_fbo = false;
-		fb.size = sz;
-		fb.channels = channels;
-		ASSERT(afmt.IsSampleFloat());
-		fb.sample = GVar::SAMPLE_FLOAT;
-		fb.fps = 0;
-		
-		if (!buf.InitializeTexture(
-			Size(sz.cx, sz.cy),
-			channels,
-			GVar::SAMPLE_U8,
-			&*data.Begin(),
-			data.GetCount() * sizeof(byte)))
-			return false;
-	}
-	else {
-		buf.ReadTexture(
-			sz,
-			channels,
-			GVar::SAMPL
-template <class Gfx>
-void AudioBaseT<Gfx>::E_U8,
-			&*data.Begin(),
-			data.GetCount() * sizeof(byte));
-	}
-	
-	
-	InterfaceSourceRef src_iface = this->GetSource();
-	int src_count = src_iface->GetSourceCount();
-	for (int src_ch = 1; src_ch < src_count; src_ch++) {
-		PacketIO::Source& src = io.src[src_ch];
-		if (!src.val)
-			continue;
-		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
-		if (src_fmt.vd == VD(OGL,FBO)) {
-			Packet& out = src.p;
-			if (!out) {
-				src.from_sink_ch = 1;
-				out = this->ReplyPacket(src_ch, prim_sink.p);
-			}
-			PacketValue& val = *out;
-			InternalPacketData& data = val.GetData<InternalPacketData>();
-			this->GetBuffer().StoreOutputLink(data);
-			RTLOG("OglKeyboardBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
-		}
-	}
-	
-	return true;
-}*/
-
 template <class Gfx>
 bool AudioBaseT<Gfx>::NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	// accept all valid video formats for now
@@ -850,10 +646,6 @@ GFX3D_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(FboReaderBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(KeyboardBaseT)
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(AudioBaseT)
-//GFX3D_EXCPLICIT_INITIALIZE_CLASS(VolumeBaseT)
-/*X11SW_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
-X11OGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)
-SDLOGL_EXCPLICIT_INITIALIZE_CLASS(ShaderBaseT)*/
 
 
 NAMESPACE_PARALLEL_END

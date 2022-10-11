@@ -16,7 +16,6 @@ void PhysicsSystem::Update(double dt)
 	last_dt = dt;
 	
 	if (debug_log) {
-		//RTLOG("PhysicsSystem::Update: " << dt);
 		
 	}
 	
@@ -104,108 +103,18 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 	else if (b.test_fn == PhysicsBody::TESTFN_FIXED) {
 		// pass
 	}
-	/*else if (b.test_fn == PhysicsBody::TESTFN_PLAYER_BODY) {
-		FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
-		
-		if (!b.player)
-			b.player = b.GetEntity()->Find<PlayerBodyComponent>();
-		
-		if (state->GetBool(MOUSE_LEFTDOWN)) {
-			Point& drag = state->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
-			
-			Point diff = drag - prev_mouse;
-			
-			if (prev_mouse.x != 0 && prev_mouse.y != 0 && (diff.x || diff.y))
-				TestPlayerLookFn(b, diff);
-			
-			prev_mouse = drag;
-		}
-		else {
-		!!!!!!
-			if (!b.trans->use_lookat)
-				TestPlayerLookFn(b, Point(0,0));
-		!!!!
-		
-			prev_mouse = Point(0,0);
-		}
-		
-		
-		bool fwd   = data['w'];
-		bool left  = data['a'];
-		bool down  = data['s'];
-		bool right = data['d'];
-		
-		float step = last_dt * 1.5;
-		
-		if (fwd) {
-			TestPlayerMoveFn(b, VEC_FWD, step);
-		}
-		if (left) {
-			TestPlayerMoveFn(b, vec3(-1,0,0), step);
-		}
-		if (down) {
-			TestPlayerMoveFn(b, vec3(0,0,-1), step);
-		}
-		if (right) {
-			TestPlayerMoveFn(b, vec3(+1,0,0), step);
-		}/
-	}*/
 	else TODO
 	
 }
 
 void PhysicsSystem::TestPlayerLookFn(PhysicsBody& b, Point mouse_diff) {
 	TODO
-	/*
-	double rot_speed = 0.05 / (2*M_PI);
-	yaw += mouse_diff.x * rot_speed;
-	pitch += mouse_diff.y * rot_speed;
 	
-	//b.trans->use_lookat = true;
-	auto head = b.player->GetHead();
-	if (!head)
-		return;
-	
-	head->up = VEC_UP;
-	head->direction =  vec3(
-		 sin(pitch) * sin(yaw),
-		 cos(pitch),
-		-sin(pitch) * cos(yaw));
-	
-	#if 0
-	const vec3& v = b.player->direction;
-	LOG("dx: " << mouse_diff.x << ", dy: " << mouse_diff.y <<
-		", rot: " << v[0] << ", " << v[1] << ", " << v[2] <<
-		", angle: " << yaw << ss", angle1: " << pitch);
-	#endif
-	*/
 }
 
 void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
 	TODO
-	/*
-	auto head = b.player->GetHead();
-	if (!head)
-		return;
 	
-	vec3& pos = b.trans->position;
-	vec3 dir = head->direction;
-	
-	// remove y component
-	dir[1] = 0;
-	
-	float straight = rel_dir[2];
-	float sideways = rel_dir[0];
-	
-	if (straight) {
-		pos += dir * step * straight;
-	}
-	if (sideways) {
-		vec3 s = dir * step * sideways;
-		pos[0] -= s[2];
-		pos[2] += s[0];
-	}
-	*/
 }
 
 

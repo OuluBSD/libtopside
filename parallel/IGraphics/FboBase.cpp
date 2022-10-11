@@ -111,29 +111,6 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (type == "stereo")
 		data.is_stereo = true;
 	
-	/*if (gfxpack) {
-		String frag = program + "_fragment";
-		String vtx  = program + "_vertex";
-		auto& frag_map = SoftShaderLibrary::GetMap(GVar::FRAGMENT_SHADER);
-		auto& vtx_map  = SoftShaderLibrary::GetMap(GVar::VERTEX_SHADER);
-		int frag_i = frag_map.Find(frag);
-		int vtx_i  = vtx_map.Find(vtx);
-		
-		if (frag_i < 0) {
-			LOG("FboAtomT<Gfx>::Initialize: error: fragment program '" << frag << "' not found");
-			return false;
-		}
-		
-		if (vtx_i < 0) {
-			LOG("FboAtomT<Gfx>::Initialize: error: vertex program '" << vtx << "' not found");
-			return false;
-		}
-		
-		data.frag_prog = frag_map[frag_i]();
-		data.vtx_prog = vtx_map[vtx_i]();
-	}*/
-	
-	
 	return true;
 }
 
@@ -227,23 +204,6 @@ X11OGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 SDLSW_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 SDLOGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 
-
-
-
-
-
-
-/*template <class Gfx>
-	VectorMap<String, typename ShaderLibraryT<Gfx>::VideoBinderFactory>&
-		SoftShaderLibraryT<Gfx>::GetBinders() {
-	static VectorMap<String, SoftShaderLibraryT<Gfx>::VideoBinderFactory> m;
-	return m;
-}*/
-
-
-//SDLSW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
-//X11SW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
-//X11OGL_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 
 
 NAMESPACE_PARALLEL_END

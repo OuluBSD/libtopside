@@ -21,7 +21,6 @@ struct DataObjectT : GfxDataObject {
 	using ModelState = ModelStateT<Gfx>;
 	
 	ModelState* state = 0;
-	//VectorMap<int,NatTex> tex;
 	uint32 element_count = 0;
 	NatVertexArray vao;
 	NatVertexBuffer vbo;

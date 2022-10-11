@@ -71,12 +71,10 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef paint) {
 	EntityRef paint_brush = paint->GetEntity();
 	#endif
 	
-	//paint_brush->Get<PlayerHandComponent>()->req_hand = entity->Get<PlayerHandComponent>()->req_hand;
 	
 	auto touchpad_indicator = es->GetRoot()->Create<StaticSphere>();
 	touchpad_indicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
 	touchpad_indicator->Get<ModelComponent>()->color = Colors::Gray;
-	//PaintComponentRef paint = entity->Get<PaintComponent>();
 	paint->selected_color = selected_color;
 	paint->paint_brush = paint_brush;
 	paint->touchpad_indicator = touchpad_indicator;
@@ -91,7 +89,6 @@ void PaintingInteractionSystemBase::Attach(PaintComponentRef paint) {
 	paint->beam = es->GetRoot()->Create<StaticCube>();
 	paint->beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
 	paint->beam->Get<ModelComponent>()->color = Colors::Aquamarine;
-	//paint->SetEnabled(false);
 	
 }
 
@@ -209,19 +206,14 @@ void PaintingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 }
 
 void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
-	//const ControllerMatrix& source_state = e.GetState();
-	//const ControllerSource& source = source_state.GetSource();
-	
 	const bool dbg_log = 0;
 	
-	//if (EntityRef entity = TryGetEntityFromSource(source)) {
 	for (PaintComponentRef& paint : comps) {
 		if (!paint->IsEnabled()) continue;
 		
 		EntityRef entity = paint->GetEntity();
 		
 		bool new_stroke_started = false;
-		//auto paint = entity->Get<ToolComponentRef>().AsRef<PaintComponent>();
 		Ref<Model> paint_brush_model = paint->paint_brush->Get<ModelComponent>()->GetModel();
 		
 		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
@@ -255,9 +247,7 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		if (!controller)
 			continue;
 		
-		//if (controller && controller->IsSource(source))
 		{
-			//const ControllerMatrix& controller_properties = source_state.GetControllerProperties();
 			const ControllerMatrix& controller_properties = *e.ctrl;
 			const auto& ctrl = controller_properties.ctrl[1];
 			paint->touchpad_x   = ctrl.GetTouchpadX();
@@ -340,17 +330,6 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 								->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
 					}
 				}
-				/*const ControllerProperties& properties = source_state.GetControllerProperties();
-				
-				if (auto location = properties.TryGetLocation(
-						GetEngine().Get<HolographicScene>()->WorldCoordinateSystem())) {
-					if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress) {
-						mat4 paint_to_world =
-						        *paint->brush_tip_offset_from_holding_pose *
-						        LocationUtil::Matrix(location);
-						paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(RemoveScale(paint_to_world), paint_tip_thickness);
-					}
-				}*/
 			}
 		}
 	}
@@ -360,18 +339,6 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 void PaintingInteractionSystemBase::Update(double dt) {
 	ASSERT(tb);
 	if (!tb) return;
-	
-	/*const Array<ToolComponentRef>& tools = tb->GetTools();
-	
-	for (const ToolComponentRef& t : tools) {
-		if (!t->active_tool)
-			continue;
-		
-		ToolComponentRef& tool = const_cast<ToolComponentRef&>(t);
-		EntityRef entity = tool->GetEntity();
-		PaintComponentRef paint = tool->active_tool.AsRef<PaintComponent>();
-		if (!paint)
-			continue;*/
 	
 	for (PaintComponentRef& paint : comps) {
 		if (!paint->IsEnabled()) continue;
@@ -397,7 +364,6 @@ void PaintingInteractionSystemBase::Update(double dt) {
 		}
 		
 		const bool show_controller = paint->cur_state == PaintComponent::State::Manipulating;
-		//entity->Get<ModelComponent>()->SetEnabled(show_controller);
 		paint->paint_brush->Get<ModelComponent>()->SetEnabled(!show_controller);
 		
 		if (auto location = controller->location) {
@@ -416,7 +382,6 @@ void PaintingInteractionSystemBase::Update(double dt) {
 					
 					for (auto stroke : paint->strokes) {
 						TODO
-						//stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulation_transform);
 					}
 				}
 				
@@ -561,7 +526,6 @@ bool PaintComponent::LoadModel(ModelComponent& mdl) {
 	ModelRef m = sys->GetAddModelFile(path);
 	mdl.SetModelMatrix(Identity<mat4>());
 	mdl.SetModel(m);
-	//mdl.dbg = true;
 	return true;
 }
 

@@ -341,9 +341,6 @@ bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBas
 	
 	// accept all valid audio formats for now (because packets can be converted)
 	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
-		/*ISinkRef sink = a.GetSink();
-		Value& val = sink->GetValue(sink_ch);
-		val.SetFormat(new_fmt);*/
 		return true;
 	}
 	

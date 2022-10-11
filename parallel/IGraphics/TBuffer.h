@@ -14,7 +14,6 @@ struct BufferStageT : GfxBufferStage {
 	using DataState = DataStateT<Gfx>;
 	using ProgramState = ProgramStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
-	//using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
 	using Sample = GVar::Sample;
 	using ShaderState = ShaderStateT<Gfx>;
@@ -26,7 +25,6 @@ struct BufferStageT : GfxBufferStage {
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
-	//using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	
 	RTTI_DECL1(BufferStageT, GfxBufferStage);
 	
@@ -54,7 +52,6 @@ struct BufferStageT : GfxBufferStage {
 	
 	FloatImage					brdf_img;
 	Texture						brdf_tex;
-	//One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
 	VectorMap<int,String>		buf_inputs;
 	
@@ -126,8 +123,6 @@ struct BufferT : GfxBuffer {
 	using BufferStage = BufferStageT<Gfx>;
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using Sample = GVar::Sample;
-	//using SoftShaderBase = SoftShaderBaseT<Gfx>;
-	//using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	using NativeProgram = typename Gfx::NativeProgram;
 	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
@@ -175,9 +170,7 @@ struct BufferT : GfxBuffer {
 	BufferT() {}
 	
 	void Visit(RuntimeVisitor& vis) override {vis & env;}
-	//void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
-	//void SetBuiltinShader(int i) {test_shader = i;}
 	
 	
 public:

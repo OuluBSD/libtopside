@@ -74,14 +74,6 @@
 #include "Uncamera.h"
 #include "Vr.h"
 
-#include "Pbr.h"
-#include "PbrCommon.h"
-#include "PbrMaterial.h"
-#include "PbrPrimitive.h"
-#include "PbrModel.h"
-#include "GltfHelper.h"
-#include "GltfLoader.h"
-#include "PbrResources.h"
 
 NAMESPACE_UPP_BEGIN
 

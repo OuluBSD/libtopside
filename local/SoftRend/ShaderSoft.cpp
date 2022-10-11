@@ -28,10 +28,6 @@ void SoftShader::SetSource(String s) {
 	src = s;
 }
 
-/*
-void SoftShader::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
-	this->fs = fs;
-}*/
 
 
 

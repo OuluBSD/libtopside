@@ -17,15 +17,6 @@ bool WindowSystem::Initialize() {
 	win.SetFrameRect0(RectC(0, 0, sz.cx, sz.cy));
 	win.Ctrl::SetContentRect(RectC(0, 0, sz.cx, sz.cy));
 	
-	//simple_shader.Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
-	
-	/*Ref<DisplaySystem> rend = GetEngine().TryGet<DisplaySystem>();
-	if (!rend) {
-		LOG("WindowSystem::Initialize: error: couldn't find RenderingSystem");
-		return false;
-	}
-	SetDesktopSize(rend->GetVirtualScreenSize());*/
-	
 	return true;
 }
 
@@ -42,9 +33,6 @@ void WindowSystem::Update(double dt) {
 		closed = w.ProcessCloseQueue() || closed;
 	}
 	
-	/*ASSERT(VirtualGui3DPtr);
-	if (VirtualGui3DPtr)
-		VirtualGui3DPtr->Render(closed);*/
 }
 
 void WindowSystem::Stop() {
@@ -52,8 +40,6 @@ void WindowSystem::Stop() {
 }
 
 void WindowSystem::Uninitialize() {
-	
-	//Close();
 	
 }
 
@@ -76,16 +62,11 @@ void WindowSystemScreen::Render() {
 }
 
 void WindowSystemScreen::Shutdown() {
-	//wm.Shutdown();
 	CloseAll();
 }
 
 void WindowSystemScreen::CloseWindow(CoreWindow& cw) {
 	TODO
-	/*EntityRef ent = GetPool()->FindEntity<CoreWindow>(&cw);
-	if (ent) {
-		ent->Destroy();
-	}*/
 }
 
 

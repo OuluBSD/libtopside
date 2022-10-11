@@ -25,9 +25,6 @@
 #undef main
 
 
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-
 
 NAMESPACE_UPP
 

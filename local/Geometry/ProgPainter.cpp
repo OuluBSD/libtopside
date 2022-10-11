@@ -299,15 +299,9 @@ void ProgPainter::End() {
 	cmd.type = DRAW_END;
 }
 
-/*void ProgPainter::Attach(Ctrl& c) {
-	Attach(c.cmd_begin, c.cmd_end);
-}*/
 
 void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
-	//ASSERT(!begin.prev && !end.next);
 	if (this->begin->next == &begin && this->end->prev == &end) {
-		//cur = &end;
-		//cur_begin = &begin;
 		cur = 0;
 		cur_begin = 0;
 		return;
@@ -315,17 +309,7 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 	if (cur) {
 		TODO
 	}
-	/*if (cur) {
-		end.next = cur->next;
-		ASSERT(end.next);
-		end.next->prev = &end;
-		cur->next = &begin;
-		begin.prev = cur;
-		cur = &end;
-		//cur_begin = &begin;
-	}*/
-	else
-	{
+	else {
 		ASSERT(this->begin && this->end);
 		begin.prev = this->begin;
 		this->begin->next = &begin;
@@ -333,22 +317,7 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		this->end->prev = &end;
 		cur = &end;
 		cur_begin = &begin;
-		/*prev->next = &begin;
-		begin.prev = prev,
-		end.next = &begin;
-		begin.prev = &end;*/
 	}
-	/*if (cur) {
-		end.next = cur->next;
-		end.next->prev = &end;
-		cur->next = &begin;
-		begin.prev = cur;
-		cur = &end;
-		cur_begin = cur;
-	}
-	else {
-		TODO
-	}*/
 }
 
 void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
@@ -361,7 +330,6 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 		cur->next = begin;
 		begin->prev = cur;
 		cur = end;
-		//cur_begin = begin;
 	}
 	else {
 		ASSERT(this->begin && this->end);

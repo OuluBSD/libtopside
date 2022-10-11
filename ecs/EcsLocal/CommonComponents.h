@@ -37,66 +37,6 @@ using RigidBodyRef = Ref<RigidBody>;
 
 
 
-#if 0
-
-class StaticVolumeComponent :
-	public Component<StaticVolumeComponent>,
-	public StaticSource
-{
-	
-protected:
-	friend class VolumeStream;
-	
-	Vector<byte> values;
-	String errstr;
-	Size sz;
-	int depth;
-	int stride;
-	
-	struct VolumeStream : public SimpleStaticStream {
-		StaticVolumeComponent& comp;
-		
-		VolumeStream(StaticVolumeComponent* c) : comp(*c) {}
-		bool LoadFileAny(String path) override {return comp.LoadFileAny(path);}
-		Size GetResolution() const;
-		int GetDepth() const;
-	};
-	
-	VolumeStream stream;
-	
-public:
-	RTTI_COMP1(StaticVolumeComponent, StaticSource)
-	COPY_PANIC(StaticVolumeComponent);
-	COMP_DEF_VISIT
-	
-	
-	StaticVolumeComponent() : stream(this) {}
-	
-	void Initialize() override;
-	void Uninitialize() override;
-	
-	StaticStream& GetStream(StcCtx) override {return stream;}
-	void BeginStream(StcCtx) override {}
-	void EndStream(StcCtx) override {}
-	
-	String GetLastError() const {return errstr;}
-	bool LoadFileAny(String path);
-	
-	
-};
-
-#endif
-
-
-
-
-
-
-
-
-
-
-
 
 
 

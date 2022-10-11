@@ -48,12 +48,7 @@ void RenderingSystem::Attach(String key, Parallel::BufferT<SdlSwGfx>* b) {
 	}
 	
 	TODO
-	/*ASSERT(!sdl_sw_buf);
-	if (sdl_sw_buf) sdl_sw_buf->RemoveBinder(this);
 	
-	ASSERT(b);
-	b->AddBinder(this);
-	sdl_sw_buf = b;*/
 }
 #ifdef flagOGL
 void RenderingSystem::Attach(String key, Parallel::BufferT<SdlOglGfx>* b) {
@@ -63,12 +58,7 @@ void RenderingSystem::Attach(String key, Parallel::BufferT<SdlOglGfx>* b) {
 	}
 	
 	TODO
-	/*ASSERT(!buf);
-	if (sdl_ogl_buf) sdl_ogl_buf->RemoveBinder(this);
 	
-	ASSERT(b);
-	b->AddBinder(this);
-	sdl_ogl_buf = b;*/
 }
 #endif
 #endif
@@ -122,7 +112,6 @@ void RenderingSystem::Update(double dt) {
 	if (is_dummy)
 		return;
 	
-	//if (state.IsEmpty()) {
 	if (!state) {
 		Serial::Machine& mach = Serial::GetActiveMachine();
 		SpaceStoreRef ents = mach.Get<SpaceStore>();
@@ -139,7 +128,6 @@ void RenderingSystem::Update(double dt) {
 		}
 		RefT_Atom<X11OglSinkDevice> x11_ogl_sink = ents->GetRoot()->FindDeep<X11OglSinkDevice>();
 		if (!state && x11_ogl_sink) {
-			//state = &x11_ogl_sink->dev->ogl.GetBuffer().GetState();
 			state = &Get_ScrX11Ogl_Ogl(x11_ogl_sink->dev).GetBuffer().GetState();
 		}
 		#ifdef flagSDL2
@@ -151,14 +139,8 @@ void RenderingSystem::Update(double dt) {
 		#endif
 		#endif
 		#ifdef flagVR
-		/*#ifdef flagOGL
-		RefT_Atom<X11OglHoloFboProg> x11_holo_ogl_fbo = ents->GetRoot()->FindDeep<X11OglHoloFboProg>();
-		if (!state && x11_holo_ogl_fbo) {
-			state = &x11_holo_ogl_fbo->data.accel_state;
-		}
-		#endif*/
+		
 		#endif
-		//GfxDataState& ds = FboAtomT<X11SwGfx>::data.accel_state
 		if (!state) TODO
 	}
 	
@@ -194,10 +176,6 @@ void RenderingSystem::Stop() {
 void RenderingSystem::Uninitialize() {
 	ASSERT_(rends.IsEmpty(), "RenderingSystem must be added to Engine before EntityStore");
 	
-	/*if (buf) {
-		buf->RemoveBinder(this);
-		buf = 0;
-	}*/
 }
 
 bool RenderingSystem::Arg(String key, Object value) {
@@ -209,17 +187,8 @@ bool RenderingSystem::Arg(String key, Object value) {
 }
 
 void RenderingSystem::Render(GfxDataState& data) {
-	//DUMPC(rends);
 	
 	TODO
-	
-	/*for (RenderableRef& rend : rends) {
-		rend->cb(data);
-	}
-	
-	for (ViewableRef& view : views) {
-		view->cb(data);
-	}*/
 	
 }
 

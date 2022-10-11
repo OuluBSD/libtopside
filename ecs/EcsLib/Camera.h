@@ -85,14 +85,6 @@ class ChaseCam :
 	float fov = 110;
 	float used_fov = 0;
 	
-	/*typedef enum {
-		STATIC,
-		CIRCLE_CW,
-		CIRCLE_CCW,
-	} Mode;
-	
-	Mode mode = STATIC;*/
-	
 	
 	float GetUsedFov();
 	

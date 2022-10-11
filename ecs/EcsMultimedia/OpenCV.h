@@ -36,9 +36,6 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis % cap;}
-	
-	//bool LoadFileAny(String path) override;
-	
 	bool LoadInput(int id);
 	
 	String GetLastError() const {return last_error;}

@@ -392,13 +392,10 @@ SystemDraw& GfxAccelAtom<Gfx>::BeginDraw() {
 	    rend.win = win;
 	    rend.rend = nat_rend;
 		rend.SetSize(screen_sz);
-	    //draw.rend = nat_rend;
-	    //draw.fb = &rend.GetFramebuffer();
 	    draw.SetFormat(rend.GetFramebuffer());
 	    sysdraw.ptr = &draw;
 	    
 	    rend.PreFrame();
-	    //draw.fb->Enter();
 	}
 	else if (is_dx11) {
 		TODO
@@ -414,18 +411,9 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::CommitDraw() {
 	AppFlags& flags = GetAppFlags();
 	
-	//draw.fb->Leave();
 	rend.PostFrame();
 }
 
-
-/*#if defined flagSDL2 && defined flagOGL
-template class GfxAccelAtom<SdlOglGfx>;
-#endif
-
-#ifdef flagSDL2
-template class GfxAccelAtom<SdlSwGfx>;
-#endif*/
 
 
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(GfxAccelAtom)

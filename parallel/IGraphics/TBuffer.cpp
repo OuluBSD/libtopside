@@ -6,18 +6,6 @@ template <class Gfx>
 Callback2<String, BufferT<Gfx>*> BufferT<Gfx>::WhenLinkInit;
 
 
-/*template <class Gfx>
-bool BufferT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_path) {
-	if (!LoadShaderFile(stereo_rt, GVar::FRAGMENT_SHADER, shdr_frag_path, "")) {
-		LOG("BufferT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_frag_path + "'");
-		return false;
-	}
-	if (!LoadShaderFile(stereo_rt, GVar::VERTEX_SHADER, shdr_vtx_path, "")) {
-		LOG("BufferT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_vtx_path + "'");
-		return false;
-	}
-	return true;
-}*/
 
 template <class Gfx>
 void BufferT<Gfx>::Update(double dt) {
@@ -102,23 +90,6 @@ bool BufferT<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	
 	
 	AddLink(ws.Get(".link")); // deprecated: ecs link id (could be used to handle buffer in ecs)
-	
-	
-	/*ISourceRef src = a.GetSource();
-	if (IsAudio()) {
-		for(int i = 1; i < src->GetSourceCount(); i++) {
-			Value& val = src->GetSourceValue(i);
-			Format fmt = val.GetFormat();
-			if (fmt.IsFbo()) {
-				FboFormat& ffmt = fmt;
-				ffmt.res[0] = frame_samples;
-				ffmt.res[1] = 1;
-				val.SetFormat(fmt);
-			}
-		}
-	}*/
-	//if (IsAudio())
-	//	a.GetSink()->GetValue(0).SetMinQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	
 	int id = 0;
@@ -233,19 +204,6 @@ bool BufferT<Gfx>::InitializeRenderer() {
 	
 	EnableGfxAccelDebugMessages(true);
 	
-	/*for (BufferStage& s : stages) {
-		ASSERT(s.prog || mode == PENDING_PACKET);
-		if (!s.prog)
-			continue;
-		
-		if (!s.prog->SetupLoopback(s.loopback, s))
-			return false;
-		
-		if (!s.Compile())
-			return false;
-		
-		s.RefreshPipeline();
-	}*/
 	
 	Reset();
 	

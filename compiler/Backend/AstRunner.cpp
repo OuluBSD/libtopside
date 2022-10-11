@@ -46,7 +46,6 @@ AstNode& AstRunner::GetRoot() {
 }
 
 AstNode* AstRunner::Merge(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	AstNode& owner = GetNonLockedOwner();
 	
 	if (n.name.GetCount()) {
@@ -72,13 +71,11 @@ AstNode* AstRunner::Merge(const AstNode& n) {
 	
 	AstNode& d = owner.Add(n.loc);
 	d.CopyFrom(this, n);
-	//Bind(n, d);
 	
 	return &d;
 }
 
 AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	ASSERT(n.src == SEMT_STATEMENT && n.stmt == STMT_META_FOR);
 	
 	AstNode* block = 0;
@@ -149,7 +146,6 @@ AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 			PushScope(*dup_block);
 			dup_block->i64 = 1; // skip indent
 			
-			//LOG(d->GetTreeString(0));
 			for (AstNode& s : block->sub) {
 				if (!Visit(s))
 					return 0;
@@ -165,11 +161,7 @@ AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 				return 0;
 			
 			dbg_i++;
-			//ASSERT(dbg_i < 100);
-			//if (dbg_i >= 10)
-			//	break;
 		}
-		//DUMP(dbg_i);
 	}
 	
 	PopScope(); // d
@@ -180,7 +172,6 @@ AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 }
 
 AstNode* AstRunner::VisitMetaIf(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	ASSERT(n.src == SEMT_STATEMENT && n.stmt == STMT_META_IF);
 	
 	AstNode* d = AddDuplicate(n); // these can't be merge becaues of re-use
@@ -245,16 +236,6 @@ AstNode* AstRunner::VisitMetaIf(const AstNode& n) {
 	
 	PopScope();
 	
-	/*if (!d->rval) {
-		AddError(n.loc, "internal error: no rval in meta-if");
-		return 0;
-	}
-	
-	//d->rval = block->rval;
-	ASSERT(d->rval);
-	ASSERT(d->rval != d);*/
-	
-	//if (dup_block->rval && !d->rval)
 	SetMetaBlockType(*d, dup_block, closest_type);
 	
 	return d;
@@ -277,7 +258,6 @@ void AstRunner::SetMetaBlockType(AstNode& d, AstNode* dup_block, AstNode* closes
 }
 
 AstNode* AstRunner::MergeStatement(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	AstNode& owner = GetNonLockedOwner();
 	AstNode* d = 0;
 	AstNode* sd = 0;
@@ -303,7 +283,6 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 			d->rval = sd;
 			if (IsRvalReturn(s.src))
 				PopScope(); // expr rval
-			//d->rval = s.next->rval;
 		}
 		else {
 			const AstNode& s = n.sub[0];
@@ -315,7 +294,6 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 				PopScope(); // expr rval
 		}
 		PopScope();
-		//d->CopyPrevNextLinks();
 		return d;
 		
 	case STMT_META_FOR:
@@ -327,7 +305,6 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 	case STMT_IF:
 		d = AddDuplicate(n);
 		d->CopyFrom(this, n);
-		//Bind(n, *d);
 		if (n.sub.GetCount()) {
 			PushScope(*d);
 			for (AstNode& s : n.sub) {
@@ -358,7 +335,6 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 				PopScope(); // expr rval
 		}
 		PopScope();
-		//d->CopyPrevNextLinks();
 		ASSERT(d->rval || n.rval->type->IsPartially(SEMT_META_ANY));
 		return d;
 		
@@ -393,46 +369,7 @@ bool AstRunner::IsMergeable(const AstNode& prev, const AstNode& to_merge) const 
 	return true;
 }
 
-/*void AstRunner::PushRuntimeScope(Object& o) {
-	rpath.Add(&o);
-}*/
-
-/*ObjectMap* AstRunner::GetRuntimeScope(const FileLocation& loc) {
-	Object& o = *rpath.Top();
-	ObjectMap* map = o.TryGetMap();
-	if (!map) {
-		AddError(loc, "internal error: can't add without object map");
-		return 0;
-	}
-	return map;
-}
-
-void AstRunner::AddRuntimeScope(const FileLocation& loc, String name) {
-	Object* s = CreateRuntimeField(loc, name);
-	if (!s) return;
-	rpath.Add(s);
-	s->Create<ObjectArrayMapComb>();
-}
-
-Object* AstRunner::CreateRuntimeField(const FileLocation& loc, String name) {
-	ObjectMap* map = GetRuntimeScope(loc);
-	if (!map) return 0;
-	
-	if (name.IsEmpty()) {
-		AddError(loc, "internal error: empty name");
-		return 0;
-	}
-	
-	Object& s = map->Add(name);
-	return &s;
-}
-
-void AstRunner::PopRuntimeScope() {
-	rpath.SetCount(rpath.GetCount()-1);
-}*/
-
 AstNode* AstRunner::Visit(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	AstNode* d = 0;
 	AstNode* sd = 0;
 	AstNode* ad = 0;
@@ -522,7 +459,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		d = AddDuplicate(n);
 		if (!d)
 			return 0;
-		//AddRuntimeScope(n.loc, n.name);
 		if (!n.sub.IsEmpty()) {
 			PushScope(*d);
 			for (AstNode& s : n.sub) {
@@ -536,7 +472,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			}
 			PopScope();
 		}
-		//PopRuntimeScope();
 		break;
 		
 	
@@ -545,7 +480,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		d = Merge(n);
 		if (!d)
 			return 0;
-		//AddRuntimeScope(n.loc, n.name);
 		if (!n.sub.IsEmpty()) {
 			PushScope(*d);
 			for (AstNode& s : n.sub) {
@@ -559,7 +493,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			}
 			PopScope();
 		}
-		//PopRuntimeScope();
 		break;
 		
 	case SEMT_STATEMENT_BLOCK:
@@ -661,7 +594,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				return 0;
 			if (IsRvalReturn(n.rval->src))
 				PopScope();
-			//d->CopyPrevNextLinks();
 			PopScope();
 		}
 		break;
@@ -674,7 +606,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			return 0;
 		ASSERT(n.arg[0]);
 		if (n.arg[0]) {
-			//AddRuntimeScope(n.loc, n.rval ? n.rval->name : n.type->name);
 			PushScope(*d);
 			ad = Visit(*n.arg[0]);
 			if (!ad)
@@ -683,9 +614,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			if (IsRvalReturn(n.arg[0]->src))
 				PopScope();
 			PopScope();
-			//PopRuntimeScope();
 		}
-		//d->CopyPrevNextLinks();
 		d->rval = FindStackWithPrevDeep(n.rval);
 		PushScopeRVal(*d);
 		ASSERT(d->arg[0]);
@@ -728,7 +657,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 				else {
 					d->rval = FindStackWithPrevDeep(rval);
 				}
-				//LOG(HexStr((void*)d->rval));
 				ASSERT(d->rval); // todo crash here might mean succesfull merge (see same named variables)
 				if (!d->rval) {
 					AddError(n.loc, "internal error: incomplete rval");
@@ -740,14 +668,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			}
 			else TODO
 			PushScopeRVal(*d);
-			/*
-			expr link is used instead of this:
-			if (n.sub.GetCount()) {
-				for (AstNode& s : n.sub) {
-					if (!Visit(s))
-						return false;
-				}
-			}*/
+			
 		}
 		break;
 		
@@ -759,12 +680,9 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		break;
 	
 	case SEMT_PARAMETER:
-		//d = AddDuplicate(n);
 		d = &GetTopNode().Add(n.loc, n.name);
 		d->CopyFrom(this, n);
 		d->src = SEMT_OBJECT;
-		//o = CreateRuntimeField(n.loc, n.name);
-		//if (!o) return 0;
 		break;
 	
 	case SEMT_RESOLVE:
@@ -787,16 +705,13 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 }
 
 AstNode* AstRunner::AddDuplicate(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	AstNode& owner = GetNonLockedOwner();
 	AstNode& d = owner.Add(n.loc);
 	d.CopyFrom(this, n);
-	//Bind(n, d);
 	return &d;
 }
 
 AstNode* AstRunner::VisitMetaRVal(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	if (!n.rval || !n.rval->IsPartially(SEMT_META_FIELD)) {ASSERT(0); return 0;}
 	
 	const AstNode& ref = *n.rval;
@@ -826,7 +741,6 @@ AstNode* AstRunner::VisitMetaRVal(const AstNode& n) {
 		}
 		else
 			TODO;
-		//Bind(n, d);
 		
 		PushScopeRVal(d);
 		
@@ -838,7 +752,6 @@ AstNode* AstRunner::VisitMetaRVal(const AstNode& n) {
 }
 
 AstNode* AstRunner::VisitMetaCtor(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	ASSERT(n.src == SEMT_META_CTOR);
 	ASSERT(n.type && n.type->IsPartially(SEMT_META_TYPE));
 	ASSERT(n.rval);
@@ -895,26 +808,16 @@ AstNode* AstRunner::VisitMetaCtor(const AstNode& n) {
 }
 
 AstNode* AstRunner::VisitMetaStaticFunction(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	ASSERT(n.src == SEMT_META_FUNCTION_STATIC);
 	
 	AstNode* d = Merge(n);
 	if (!d)
 		return 0;
 	
-	/* This is done while calling the meta function
-	PushScope(*d);
-	for (AstNode& s : n.sub) {
-		if (!Visit(s))
-			return false;
-	}
-	PopScope();*/
-	
 	return d;
 }
 
 AstNode* AstRunner::VisitResolve(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	ASSERT(n.src == SEMT_RESOLVE);
 	ASSERT(n.filter != SEMT_NULL);
 	ASSERT(!n.id.IsEmpty());
@@ -930,7 +833,6 @@ AstNode* AstRunner::VisitResolve(const AstNode& n) {
 		rval.CopyFrom(this, n);
 		rval.src = SEMT_META_RVAL;
 		rval.rval = decl;
-		//Bind(n, rval);
 		PushScopeRVal(rval);
 		return &rval;
 	}
@@ -938,18 +840,13 @@ AstNode* AstRunner::VisitResolve(const AstNode& n) {
 }
 
 bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
-	// AstNode& n = *link.cur;
 	AstNode& block = GetBlock();
 	AstNode& owner = GetNonLockedOwner();
 	ASSERT(block.src == SEMT_STATEMENT_BLOCK);
 	ASSERT(&n != &block);
 	int dbg_count = 0;
 	
-	//ASSERT(n.next == &block);
-	//LOG(n.GetTreeString(0));
-	
 	if (!n.sub.IsEmpty()) {
-		//PushScope(*n.next);
 		int dbg_i = 0;
 		for (AstNode& s : n.sub) {
 			if (s.src == SEMT_STATEMENT && (s.stmt == STMT_ELSE || s.stmt == STMT_META_ELSE))
@@ -967,7 +864,6 @@ bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
 				if (block.type == meta_builtin_expr) {
 					if (IsRvalReturn(r.src)) {
 						owner.rval = &r;
-						//LOG(r.GetTreeString(0, true));
 						ASSERT(&owner != owner.rval);
 					}
 				}
@@ -985,17 +881,9 @@ bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
 			ASSERT(&GetBlock() == &block);
 			CHECK_SPATH_END
 			
-			//DUMP(added);
-			//ASSERT(spath.Top().n == &block);
-			//ASSERT(block.sub.GetCount() == dbg_i+1);
-			
 			dbg_i++;
 		}
-		//PopScope();
 	}
-	
-	//LOG(n.next->GetTreeString(0));
-	//ASSERT(n.next->sub.GetCount() == n.sub.GetCount());
 	
 	if (req_rval && !owner.rval) {
 		AddError(n.loc, "internal error: no rval");
@@ -1005,7 +893,6 @@ bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
 }
 
 AstNode* AstRunner::VisitReturn(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	AstNode& block = GetBlock();
 	ASSERT(spath.Top().n == &block);
 	int c = block.sub.GetCount();
@@ -1026,7 +913,6 @@ AstNode* AstRunner::VisitReturn(const AstNode& n) {
 		
 		CHECK_SPATH_END
 	}
-	//d->CopyPrevNextLinks();
 	
 	ASSERT(block.sub.GetCount() > c);
 	block.rval = d->rval;
@@ -1047,7 +933,6 @@ AstNode* AstRunner::VisitMetaResolve(const AstNode& n) {
 	for (const Token* tk = n.id.begin ; tk != n.id.end; tk++) {
 		if (tk->type == TK_ID) {
 			if (n.id.is_meta[part_i]) {
-				//DUMP(tk->str_value);
 				AstNode* a = FindStackName(tk->str_value, (SemanticType)(n.filter | SEMT_RVAL));
 				while (a && a->src == SEMT_RVAL)
 					a = a->rval;
@@ -1073,7 +958,6 @@ AstNode* AstRunner::VisitMetaResolve(const AstNode& n) {
 		}
 	}
 	
-	//DUMPC(parts);
 	
 	AstNode* rval = FindDeclaration(parts);
 	
@@ -1086,8 +970,6 @@ AstNode* AstRunner::VisitMetaResolve(const AstNode& n) {
 
 bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 	if (rval.src == SEMT_META_RVAL && args.src == SEMT_ARGUMENT_LIST) {
-		//AstNode& ret = GetTopNode().Add(d.loc);
-		
 		const AstNode& fn = *rval.rval->prev;
 		AstNode& ret_type = *fn.type;
 		ASSERT(fn.src == SEMT_META_FUNCTION_STATIC);
@@ -1177,22 +1059,13 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 			return false;
 		}
 		
-		//d.link[0] = &ret;
 		SemanticType filter = SEMT_NULL;
 		if (d.type) {
 			if (d.type == meta_builtin_expr) {
 				d.src = SEMT_RVAL;
 				d.rval = dup_block->rval;
 				ASSERT(d.rval);
-				//LOG(d.rval->GetTreeString(0, true));
 				
-				/*if (block->rval) {
-					d.rval = block->rval;
-					//LOG(d.rval->GetTreeString(0, true));
-					ASSERT(d.rval != &d);
-				}
-				else
-					filter = SEMT_WITH_RVAL_RET;*/
 			}
 			else if (!req_rval) {
 				d.rval = builtin_void;
@@ -1200,8 +1073,6 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 			else TODO
 		}
 		else TODO;
-		//if (filter != SEMT_NULL)
-		//	d.link[0] = d.FindPartial(filter);
 	}
 	else TODO
 	
@@ -1226,7 +1097,6 @@ AstNode* AstRunner::DeclareMetaVariable(const AstNode& n) {
 }
 
 AstNode* AstRunner::Evaluate(const AstNode& n) {
-	// AstNode& n = *link.cur;
 	
 	if (n.src == SEMT_STATEMENT) {
 		if (n.stmt == STMT_EXPR ||
@@ -1353,12 +1223,6 @@ AstNode* AstRunner::Evaluate(const AstNode& n) {
 			return 0;
 		}
 		else if (rval->src == SEMT_OBJECT) {
-			/*AstNode& r = GetTopNode().Add(n.loc);
-			r.CopyFrom(this, n);
-			r.src = SEMT_RVAL;
-			r.rval = rval;
-			DUMP(rval->obj);
-			return &r;*/
 			return rval;
 		}
 		else if (rval->src == SEMT_CONSTANT) {

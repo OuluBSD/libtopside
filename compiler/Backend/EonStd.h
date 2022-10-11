@@ -72,7 +72,6 @@ public:
 	AstNode* GetDeclaration(AstNode* owner, const PathIdentifier& id, SemanticType accepts);
 	AstNode& Declare(AstNode& owner, const PathIdentifier& id, bool insert_before=false);
 	AstNode& DeclareRelative(const PathIdentifier& id);
-	//AstNode* FindTypeDeclaration(const PathIdentifier& id);
 	AstNode* GetClosestType(bool skip_locked=false);
 	AstNode& GetBlock();
 	AstNode& GetNonLockedOwner();
@@ -87,7 +86,6 @@ public:
 	
 	String GetTypeInitValueString(AstNode& n) const;
 	
-	//void Bind(AstNode& from, AstNode& to);
 	
 	static bool ForwardUserspace(AstNode*& n);
 	

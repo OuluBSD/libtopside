@@ -8,7 +8,6 @@ file
 	EcsPhysics.h,
 	OdePrefab.h,
 	OdePrefab.cpp,
-	System.h,
 	TPrefab.h,
 	TPrefab.cpp;
 

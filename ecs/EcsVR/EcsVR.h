@@ -5,7 +5,5 @@
 #include <EcsLocal/EcsLocal.h>
 #include <IHolograph/IHolograph.h>
 
-#include "SpatialInteractionSystem.h"
-#include "MotionControllerSystem.h"
 
 #endif

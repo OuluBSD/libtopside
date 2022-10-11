@@ -28,8 +28,6 @@ void EasingSystem::Update(double dt)
 			continue;
         
         TODO
-        //transform->data.position = lerp(transform->position, easing->target_position, easing->position_easing_factor);
-        //transform->data.orientation = slerp(transform->orientation, easing->target_orientation, easing->orientation_easing_factor);
     }
 }
 

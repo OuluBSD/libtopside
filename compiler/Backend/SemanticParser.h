@@ -53,8 +53,6 @@ public:
 	bool IsToken(int tk_type) const;
 	bool TryToken(int tk_type);
 	bool IsChar(int tk_type) const {return IsToken(tk_type);}
-	//bool IsChar2(int a, int b) const;
-	//bool Char2(int a, int b);
 	bool PassChar(int tk_type) {return PassToken(tk_type);}
 	bool Char(int tk_type) {return TryToken(tk_type);}
 	bool IsLineEnd() const {return TopIterator().IsEnd();}
@@ -69,8 +67,6 @@ public:
 	bool ParseNamespaceBlock();
 	bool ParseDeclaration();
 	bool ParseClass();
-	//bool ParseTypedDeclaration(AstNode& ret_type);
-	//bool ParseTypedMetaDeclaration(AstNode& ret_type);
 	bool ParseFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseMetaFunction(AstNode& ret_type, const PathIdentifier& name);
 	bool ParseStatementList();
@@ -118,7 +114,6 @@ public:
 	
 	bool ParseState();
 	bool ParseDeclExpr(bool meta, const PathIdentifier& type_id, AstNode& tn);
-	//bool ParseMetaDeclExpr(const PathIdentifier& type_id, AstNode& tn);
 	bool ParseMeta(int& cookie);
 	bool Assign(bool m);
 	bool AssignPost(bool m);
@@ -137,7 +132,6 @@ public:
 	bool BinOr(bool m);
 	bool And(bool m);
 	bool Or(bool m);
-	//bool IsMetaTypeQualifier() const;
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

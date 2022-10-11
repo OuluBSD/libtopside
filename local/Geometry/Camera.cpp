@@ -4,16 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 Camera::Camera() {
-	/*this->fov = 120.0f;
-	this->aspect = 1.3f;
-	this->near = 0.01f;
-	this->far = 1000.0f;
-	this->width = 1.0;
-	this->height = 1.0f;
-
-	this->world = mat4();
-	this->proj.SetPerspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
-	this->proj_mode = 0;*/
+	
 }
 
 mat4 Camera::GetWorldMatrix() {

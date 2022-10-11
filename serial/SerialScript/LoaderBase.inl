@@ -35,21 +35,6 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 			SetStatus(WAITING_CHILDREN);
 		}
 	}
-	#if 0
-	else if (status == MAKE_OPTION_LINK_VECTOR ||
-			 status == PRUNE_OPTION_LINKS ||
-			 status == LINK_PLANNER) {
-		SolveInternal();
-		CheckFlags();
-	}
-	else if (status == WAITING_PARENT) {
-		CheckFlags();
-	}
-	else if (status == ScriptStatus::SOURCE_IS_WAITING ||
-			 status == ScriptStatus::SINK_IS_WAITING) {
-		SetError("no compatible side-source was found for side-sink");
-	}
-	#endif
 	else {
 		TODO
 	}
@@ -130,42 +115,5 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::CheckFlags() {
 	
 }
 
-#if 0
-template <class ParserDef, class LoaderParent>
-void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
-	if (status == MAKE_OPTION_LINK_VECTOR ||
-		status == PRUNE_OPTION_LINKS ||
-		status == LINK_PLANNER
-	) {
-		//LOG(GetTreeString(0));
-		ScriptConnectionSolver conn(GetLoader().GetSideIdCounter());
-		if (conn.Solve(this)) {
-			CheckStatusDeep();
-		}
-		else {
-			TODO
-			#if 0
-			if (conn.IsWaitingSource()) {
-				SetStatus(ScriptStatus::SOURCE_IS_WAITING);
-			}
-			else if (conn.IsWaitingSink()) {
-				SetStatus(ScriptStatus::SINK_IS_WAITING);
-			}
-			else {
-				LOG(conn.GetError());
-				// check error and not-found
-				TODO
-			}
-			#endif
-		}
-	}
-	else if (status == READY) {
-		// pass
-	}
-	else {
-		TODO
-	}
-}
-#endif
 
 NAMESPACE_SERIAL_END

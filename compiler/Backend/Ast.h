@@ -13,10 +13,7 @@ class AstNode : public CompilerNode<AstNode,NodeBase> {
 public:
 	static const int ARG_COUNT = 4;
 	
-	//AstNode* cur = 0;
 	const AstNode* prev = 0;
-	//AstNode* next = 0;
-	//Object* next_obj = 0;
 	AstNode* type = 0;
 	AstNode* arg[ARG_COUNT] = {0,0,0,0};
 	AstNode* rval = 0;
@@ -39,7 +36,6 @@ public:
 		double dbl;
 	};
 	String str;
-	//Vector<String> path;
 	
 public:
 	typedef AstNode CLASSNAME;
@@ -49,7 +45,6 @@ public:
 	void			CopyFrom(EonStd* e, const AstNode& n);
 	void			CopyFromObject(const FileLocation& loc, const Object& n);
 	void			CopyToObject(Object& n) const;
-	//void			CopyPrevNextLinks();
 	
 	AstNode&		Add(const FileLocation& loc, String name="", int idx=-1);
 	AstNode&		GetAdd(const FileLocation& loc, String name="");

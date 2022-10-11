@@ -6,11 +6,6 @@ NAMESPACE_UPP_BEGIN
 Image DefaultImages::Arrow;
 
 
-
-/*void Image::MakeSysAccel() {
-	TODO
-}*/
-
 const byte* Image::GetIter(int x, int y) const {
 	if (!data) return 0;
 	const byte* d = data->img.GetData();

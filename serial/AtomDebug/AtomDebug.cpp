@@ -6,7 +6,6 @@ NAMESPACE_SERIAL_BEGIN
 
 void DebugMain(String script_content, String script_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	SetCoutLog();
-	//Serial::Factory::Dump();
 	
 	if (script_content.IsEmpty() && script_file.IsEmpty()) {
 		LOG("No script file given");
@@ -65,7 +64,6 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 					script_str = LoadFile(path);
 				else
 					script_str = script_content;
-				//script_str.DebugFollow();
 				
 				if (script_str.IsEmpty()) {
 					LOG("No script file in " << path);
@@ -95,9 +93,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 			        double dt = ResetSeconds(t);
 			        mach.Update(dt);
 			        
-			        //if (!iter++) mach.Get<LoopStore>()->GetRoot()->Dump();
-					
-					if (dt < sleep_dt_limit)
+			        if (dt < sleep_dt_limit)
 						Sleep(1);
 			        
 			        double total_seconds = total.Seconds();
@@ -119,7 +115,6 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 	    mach.Clear();
 	}
     
-    //RefDebugVisitor::Static().DumpUnvisited();
 }
 
 

@@ -43,7 +43,7 @@ dSpaceID OdeNode::GetWorldSpaceId() {
 
 
 OdeObject::OdeObject() {
-	//model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
+	
 }
 
 OdeObject::~OdeObject() {
@@ -53,11 +53,7 @@ OdeObject::~OdeObject() {
 
 void OdeObject::LoadModel(GfxDataState& s) {
 	TODO
-	/*model_err = false;
-	if (!model.LoadModel(s, *fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"))) {
-		model_err = true;
-		return;
-	}*/
+	
 }
 
 void OdeObject::AttachContent() {
@@ -66,9 +62,6 @@ void OdeObject::AttachContent() {
 	dBodySetMass(body, &mass);						// Set mass of the physics body
 	dGeomSetBody(geom, body);						// Set physics body of a geometry
 	dBodySetQuaternion(body, orient);				// Set orientation of a physics body
-	
-	
-	//LOG(ToString());
 	
 	
 	dSpaceID space = GetSpace()->GetSpaceId();
@@ -82,26 +75,11 @@ void OdeObject::DetachContent() {
 }
 
 void OdeObject::Refresh() {
-	/*if (!fb_obj && !model_err) {
-		LOG("OdeObject::Refresh: warning: loading model while painting");
-		fb_obj = s.CreateObject();
-		if (fb_obj)
-			LoadModel(s);
-	}*/
 	
 	ASSERT(fb_obj);
 	if (!fb_obj)
 		return;
 	
-	
-	/*
-	int width = 1280, height = 720;
-	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
-    mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
-    mat4 model = Identity<mat4>();
-	fb_obj->SetMat4("projection", projection);
-	fb_obj->SetMat4("model", model);
-	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
 		mat4 v = override_geom * model_geom;
@@ -120,10 +98,6 @@ void OdeObject::Refresh() {
 		q[0] = result[1];
 		q[1] = result[2];
 		q[2] = result[3];
-		/*q[0] = result[0];
-		q[1] = result[1];
-		q[2] = result[2];
-		q[3] = result[3];*/
 		mat4 rot = QuatMat(q);
 		
 		mat4 v = trans * rot * model_geom;

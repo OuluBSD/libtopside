@@ -1,11 +1,6 @@
 #ifndef _EcsMech_Engine_h_
 #define _EcsMech_Engine_h_
 
-/*NAMESPACE_TOPSIDE_BEGIN
-namespace Serial {
-struct ExtScriptEcsLoader;
-}
-NAMESPACE_TOPSIDE_END*/
 
 NAMESPACE_ECS_BEGIN
 
@@ -28,7 +23,6 @@ public:
 	Engine& GetEngine() const;
 protected:
     friend Engine;
-    //friend struct Serial::ExtScriptEcsLoader;
 
     virtual bool Initialize() {return true;}
     virtual void Start() {}

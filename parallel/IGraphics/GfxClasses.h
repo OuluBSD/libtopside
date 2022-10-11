@@ -10,38 +10,16 @@ NAMESPACE_PARALLEL_BEGIN
 
 struct GfxDataState;
 
-#if 0
-struct GfxBinderIface : RTTIBase {
-	RTTI_DECL0(GfxBinderIface)
-	
-	virtual ~GfxBinderIface() {}
-	
-	virtual void Render(GfxDataState& data) = 0;
-	
-};
-#endif
 
 struct GfxDataObject : GfxMesh {
 	RTTI_DECL1(GfxDataObject, GfxMesh)
 	
 	virtual ~GfxDataObject() {}
 	
-    //virtual void Paint() = 0;
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
     virtual void Refresh(Mesh& m) = 0;
     virtual GVar::GfxType GetGfxType() const = 0;
 	virtual void RefreshTexture(Mesh& m) = 0;
-	
-	/*
-	virtual void SetBool(const String &name, bool value) const = 0;
-	virtual void SetInt(const String &name, int value) const = 0;
-	virtual void SetFloat(const String &name, float value) const = 0;
-	virtual void SetVec2(const String &name, const vec2 &value) const = 0;
-	virtual void SetVec3(const String &name, const vec3 &value) const = 0;
-	virtual void SetVec4(const String &name, const vec4 &value) const = 0;
-	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
-	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
-	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
 	
 	bool is_visible = true;
     mat4 view_override;
@@ -217,28 +195,6 @@ public:
 	void PopMat4();
 	void SetStackMat4(const mat4& mat);
 	
-	/*
-	virtual bool Load(String vertex_path, String fragment_path, String geometry_path = "") = 0;
-	virtual bool IsLoaded() const = 0;
-	virtual void Refresh(Model& model) = 0;
-    virtual void Refresh(Model& model, Mesh& mesh) = 0;
-	virtual void Use() = 0;
-	
-	virtual void SetBool(const String &name, bool value) const = 0;
-	virtual void SetInt(const String &name, int value) const = 0;
-	virtual void SetFloat(const String &name, float value) const = 0;
-	virtual void SetVec2(const String &name, const vec2 &value) const = 0;
-	virtual void SetVec3(const String &name, const vec3 &value) const = 0;
-	virtual void SetVec4(const String &name, const vec4 &value) const = 0;
-	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
-	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
-	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;
-	
-	virtual void SetVec2(const String &name, float x, float y) const {SetVec2(name, vec2(x,y));}
-	virtual void SetVec3(const String &name, float x, float y, float z) const {SetVec3(name, vec3(x,y,z));}
-	virtual void SetVec4(const String &name, float x, float y, float z, float w) const {SetVec4(name, vec4(x,y,z,w));}
-	*/
-	
 	virtual GfxDataObject* CreateObject() = 0;
 	
 };
@@ -354,13 +310,6 @@ public:
 
 struct GfxStateDraw : Draw {
 	RTTI_DECL1(GfxStateDraw, Draw)
-	
-	/*
-	virtual GfxRenderer* GetRenderer() = 0;
-	virtual GfxFramebuffer* GetFramebuffer() = 0;
-	
-	virtual void DrawShaderPipeline(GfxPipelineState&) {Panic("not implemented");}
-	*/
 	
 	virtual GfxDataState& GetGfxState() = 0;
 	virtual bool HasTarget() const = 0;

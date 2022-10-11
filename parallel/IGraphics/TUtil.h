@@ -4,26 +4,6 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-/*template <class Gfx>
-struct DrawFramebufferT : GfxStateDraw {
-	RTTI_DECL1(DrawFramebufferT, GfxStateDraw)
-	using Base = DrawFramebufferT<Gfx>;
-	using Renderer = typename Gfx::Renderer;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using ShaderPipeline = typename Gfx::ShaderPipeline;
-	
-	GfxRenderer* rend = 0;
-	GfxFramebuffer* fb = 0;
-	
-	//GfxRenderer* GetRenderer() override {return rend;}
-	//GfxFramebuffer* GetFramebuffer() override {return fb;}
-	
-	
-	void DrawShaderPipeline(ShaderPipeline&);
-	
-	
-};*/
-
 template <class Gfx>
 struct TextureT {
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
@@ -48,8 +28,6 @@ struct StateDrawT : GfxStateDraw {
 	using DataState = DataStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
 	
-	//NativeRenderer* rend = 0;
-	//Framebuffer* fb = 0;
 	DataState* state = 0;
 	Size size;
 	byte channels = 0;
@@ -77,17 +55,6 @@ struct StateDrawT : GfxStateDraw {
 	Draw& Alpha() {TODO}
 };
 
-#if 0
-template <class Gfx>
-struct BinderIfaceT : GfxBinderIface {
-	RTTI_DECL1(BinderIfaceT, GfxBinderIface);
-	using Base = BinderIfaceT<Gfx>;
-	using Buffer = typename Gfx::Buffer;
-	using DataState = DataStateT<Gfx>;
-	
-	
-};
-#endif
 
 NAMESPACE_PARALLEL_END
 

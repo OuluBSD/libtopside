@@ -42,9 +42,6 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     mach.Add<DeviceSystem>();
     mach.Add<FusionSystem>();
     
-    //if (gui)
-	//	mach.Add<WindowSystem>();
-	
     mach.Add<HolographicScene>();
     mach.Add<EasingSystem>();
     mach.Add<MotionControllerSystem>();
@@ -65,7 +62,6 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     
     PoolRef pool = ents->GetRoot()->GetAddPool("windows");
     EntityRef app = pool->Create<SDL2StandaloneWindow>();
-    //app->Find<Connector>()->ConnectAll();
     
 	return true;
 }

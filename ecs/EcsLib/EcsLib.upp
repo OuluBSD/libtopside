@@ -28,5 +28,6 @@ file
 	WorldLogic.cpp,
 	EonLoader.h,
 	EonLoader.cpp,
+	PhysicsSystem.cpp,
 	Trash readonly separator;
 

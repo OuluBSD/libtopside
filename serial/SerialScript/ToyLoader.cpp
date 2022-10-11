@@ -60,26 +60,6 @@ bool ToyLoader::Load(Object& o) {
 	LOG(GetObjectTreeString(stages_o));
 	int stage_count = stages.GetCount();
 	
-	#if 0
-	if (stage_count == 1) {
-		if (GetStageType(0, o) == "image")
-			eon_script = GetSingleBufferVideo(GetStagePath(0, o));
-		else
-			TODO
-	}
-	else if (stage_count == 2) {
-		if (GetStageType(0, o) == "image" && GetStageType(1, o) == "imagebuffer")
-			eon_script = GetDoubleBufferVideo(GetStagePath(0, o), GetStagePath(1, o));
-		else
-			TODO
-	}
-	else {
-		if (GetStageType(0, o) == "image" && GetStageType(1, o) == "imagebuffer" && GetStageType(2, o) == "imagebuffer")
-			eon_script = GetTripleBufferVideo(GetStagePath(0, o), GetStagePath(1, o), GetStagePath(2, o));
-		else
-			TODO
-	}
-	#endif
 	
 	this->stages.SetCount(stage_count);
 	for(int i = 0; i < stage_count; i++) {
@@ -107,8 +87,6 @@ bool ToyLoader::Load(Object& o) {
 		TOY_ASSERT(map.Find(stage_str + "_content") >= 0);
 		String stage_path = map.Get(stage_str + "_path");
 		String stage_content = map.Get(stage_str + "_path");
-		//DUMP(stage_path);
-		//DUMP(type_str);
 		
 		const Object& output = output_arr[0];
 		ASSERT(output.IsMap());
@@ -187,8 +165,6 @@ bool ToyLoader::FindStageNames() {
 							continue; // skip loopbacks
 						
 						LOG("stage " << stage.stage_name << " uses stage " << input.stage_name);
-						//stage.user_stages.Add(input.stage_name);
-						//if (stage.user_stages.GetCount() > 4) {
 						s0.user_stages.Add(stage.stage_name);
 						if (s0.user_stages.GetCount() > 4) {
 							LOG("ToyLoader::FindStageNames: error: more than 4 users for stage '" << s0.name << "'");
@@ -381,8 +357,6 @@ bool ToyLoader::MakeScript() {
 				s << "			center.customer\n";
 				s << "			center.audio.loader[][loop == " << b << "]\n";
 				s << "				filepath = \"" << input.filename << "\"\n";
-				//s << "			perma.audio.source.decoder: true {filepath: \"" << input.filename << "\";};\n";
-				//s << "			center.audio.side.src: true [][loop == " << b << "] {filepath: \"" << input.filename << "\";};\n";
 				s << "		\n";
 				s << "		loop " << b << ":\n";
 				s << "			ogl.customer\n";

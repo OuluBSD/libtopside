@@ -39,26 +39,16 @@ public:
         vertices <<= src.vertices;
         indices <<= src.indices;
         named_vertices <<= src.named_vertices;
-        //tex_coords <<= src.tex_coords;
         material = src.material;
         disable_textures = src.disable_textures;
         wireframe_only = src.wireframe_only;
-        //Refresh();
     }
     
-    /*void Refresh(GfxDataObject& o);
-    void RefreshOgl(GfxDataObject& o);
-    void RefreshSw(GfxDataObject& o);
-    void RefreshSw(CpuDataObject& o);
-#if HAVE_OPENGL
-    void RefreshOgl(OglDataObject& o);
-#endif*/
     
     void SetMaterial(Material& m) {ASSERT(m.owner == owner && m.id >= 0); material = m.id;}
     void SetCount(int vertex_count, int triangle_count) {
         vertices.SetCount(vertex_count);
         indices.SetCount(3 * triangle_count);
-        //tex_coords.SetCount(3 * triangle_count);
     }
     void SetVertCoord(int i, vec3 v) {vertices[i].position = v.Embed();}
     void SetVertNormal(int i, vec3 v) {vertices[i].normal = v;}

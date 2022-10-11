@@ -113,14 +113,6 @@ void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
 }
 
 void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
-	#if 0
-	float w = args.generic->iResolution[0];
-	float h = args.generic->iResolution[1];
-	float x = args.frag_coord[0] / w;
-	float y = args.frag_coord[1] / h;
-	args.frag_color_out = vec4(x, y, 0, 1);
-	#endif
-	
 	ASSERT(args.fa);
 	vec3& n = args.normal;
 	vec3& light_dir = args.fa->light_dir;

@@ -220,12 +220,12 @@ public:
 	bool IsProg()   const {return vd.val == ValCls::PROG;}
 	bool IsOgl()   const {return vd.dev == DevCls::OGL;}
 	bool IsValid() const;
-	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
-	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
-	bool operator ==(const Format& f); // {return IsSame(f);}
-	bool operator !=(const Format& f); // {return !IsSame(f);}
+	bool IsSame(const Format& f) const;
+	bool IsCopyCompatible(const Format& f) const;
+	bool operator ==(const Format& f);
+	bool operator !=(const Format& f);
 	void operator=(const Format& f);
-	void SetDefault(ValDevCls t); // {FormatBase::template SetDefault<DevSpec>();}
+	void SetDefault(ValDevCls t);
 	void Clear();
 	bool HasData() const;
 	

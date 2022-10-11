@@ -5,10 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-//#if /*defined flagSCREEN &&*/ !defined flagGUI
 #include "Ctrl.inl"
-//#endif
-
 
 
 NAMESPACE_TOPSIDE_END

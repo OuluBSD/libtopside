@@ -52,7 +52,6 @@ bool DefaultInitializer(bool skip_eon_file) {
 		}
 		
 		eon_script = ser_loader.GetResult();
-		//DUMP(eon_script);
 	}
 	
 	return true;
@@ -70,8 +69,6 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 	using namespace Serial;
 	
 	SetCoutLog();
-	//Serial::Factory::Dump();
-	
 	
 	if (1)
 		verify = true;
@@ -106,9 +103,6 @@ void DefaultSerialInitializerInternalEon() {
 }
 
 void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args, const char* extra_str) {
-	//DUMP(eon_script);
-	//DUMP(eon_file);
-	//DUMPC(args);
 	
 	if (!override_eon_file.IsEmpty())
 		eon_file = override_eon_file;

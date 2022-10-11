@@ -58,7 +58,6 @@ RTSrcConfig* CustomerLink::GetConfig() {
 }
 
 void CustomerLink::Forward(FwdScope& fwd) {
-	//RTLOG("CustomerLink::Forward");
 	
 	while (atom->IsForwardReady()) {
 		RTLOG("CustomerLink::Forward: create packet");
@@ -80,7 +79,6 @@ void CustomerLink::Forward(FwdScope& fwd) {
 		PacketValue& out = *p;
 		atom->ForwardPacket(null_in, out);
 		
-		//PacketTracker::Track(TrackerInfo("CustomerLink::Forward", __FILE__, __LINE__), *p);
 		sink_val.GetBuffer().Add(p);
 	}
 	
@@ -176,7 +174,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 		
 		b = atom->Recv(sink_ch, in) && b;
 		
-		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
+		if  ((finalize_on_side && sink_ch > 0) ||
 			(!finalize_on_side && sink_ch == 0))
 			do_finalize = true;
 	}
@@ -213,108 +211,6 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	
 	
 	return b;
-	/*
-	auto& buf = this->buf;
-	ASSERT(io.src.GetCount() == 2 && io.sink.GetCount() == 2);
-	
-	PacketIO::Sink& prim_sink = io.sink[0];
-	PacketIO::Source& prim_src = io.src[0];
-	PacketIO::Sink& sink = io.sink[1];
-	
-	ASSERT(prim_sink.p && sink.p);
-	prim_sink.may_remove = true;
-	sink.may_remove = true;
-	prim_src.from_sink_ch = 0;
-	prim_src.p = this->ReplyPacket(0, prim_sink.p);
-	
-	PacketValue& from = *sink.p;
-	const Vector<byte> from_data = from.GetData();
-	
-	Format from_fmt = from.GetFormat();
-	ASSERT(from_fmt.IsVideo() || from_fmt.IsVolume());
-	Size3 sz;
-	int channels;
-	if (from_fmt.IsVideo()) {
-		sz			= from_fmt.vid.GetSize();
-		channels	= from_fmt.vid.GetChannels();
-		
-		if (from_fmt.vid.IsCubemap()) {
-			if (from.seq == 0) {
-				loading_cubemap = true;
-				cubemap.Clear();
-			}
-			
-			if (loading_cubemap) {
-				if (from.seq == cubemap.GetCount())
-					cubemap.Add(sink.p);
-				
-				if (cubemap.GetCount() < 6)
-					return true;
-			}
-		}
-	}
-	else if (from_fmt.IsVolume()) {
-		sz			= from_fmt.vol.GetSize();
-		channels	= from_fmt.vol.GetChannels();
-	}
-	else
-		TODO
-	
-	if (!buf.IsInitialized()) {
-		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& fb = buf.fb;
-		fb.is_win_fbo = false;
-		fb.size = sz;
-		fb.channels = channels;
-		fb.sample = GVar::SAMPLE_FLOAT;
-		fb.filter = this->filter;
-		fb.wrap = this->wrap;
-		fb.fps = 0;
-		
-		if (loading_cubemap) {
-			ASSERT(cubemap.GetCount() == 6);
-			if (!buf.InitializeCubemap(
-					fb.size,
-					fb.channels,
-					GVar::SAMPLE_U8,
-					cubemap[0]->GetData(),
-					cubemap[1]->GetData(),
-					cubemap[2]->GetData(),
-					cubemap[3]->GetData(),
-					cubemap[4]->GetData(),
-					cubemap[5]->GetData()
-				))
-				return false;
-		}
-		else if (sz.cz == 0) {
-			if (!buf.InitializeTexture(
-				fb.size,
-				fb.channels,
-				GVar::SAMPLE_U8,
-				&*from_data.Begin(),
-				from_data.GetCount()))
-				return false;
-		}
-		else {
-			if (!buf.InitializeVolume(
-				fb.size,
-				fb.channels,
-				GVar::SAMPLE_U8,
-				from_data))
-				return false;
-		}
-	}
-	else {
-		buf.ReadTexture(
-			sz,
-			channels,
-			GVar::SAMPLE_U8,
-			from.GetData());
-	}
-	
-	
-	return true;
-	*/
 }
 
 LinkTypeCls PipeOptSideLink::GetType() {
@@ -459,7 +355,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 		
 		b = atom->Recv(sink_ch, in) && b;
 		
-		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
+		if  ((finalize_on_side && sink_ch > 0) ||
 			(!finalize_on_side && sink_ch == 0))
 			do_finalize = true;
 	}
@@ -687,37 +583,6 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 	
 	return true;
 }
-
-#if 0
-void SplitterLink::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packet& out) {
-	if (src_ch > 0) {
-		Format in_fmt = in->GetFormat();
-		Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
-		if (in_fmt.IsCopyCompatible(src_fmt)) {
-			out = in;
-			RTLOG("SplitterLink::StorePacket: active copy-compatible packet: " << out->ToString());
-		}
-		else {
-			out = CreatePacket(in->GetOffset());
-			out->SetFormat(src_fmt);
-			if (Convert(in, out)) {
-				RTLOG("SplitterLink::StorePacket: active converted packet: " << out->ToString());
-				out->CopyRouteData(*in);
-				out->AddRouteData(sink_ch);
-			}
-			else {
-				RTLOG("SplitterLink::StorePacket: packet conversion failed from " << in->ToString());
-				out.Clear();
-			}
-		}
-	}
-	else {
-		RTLOG("SplitterLink::StorePacket: default reply");
-		out = ReplyPacket(src_ch, in);
-	}
-}
-
-#endif
 
 LinkTypeCls SplitterLink::GetType() {
 	return LINKTYPE(SPLITTER, PROCESS);

@@ -85,7 +85,6 @@ bool Compiler::Tokenize(String filepath, String content, bool pythonic) {
 	this->filepath = filepath;
 	this->content = content;
 	
-	//t.WhenMessage = callback(OnMessage);
 	t.SkipNewLines(!pythonic);
 	t.SkipComments();
 	if (!t.Process(content, filepath))

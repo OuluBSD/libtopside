@@ -109,7 +109,6 @@ bool TokenStructure::ParseStatement(TokenNode& n, bool break_comma) {
 		}
 		else if (t.IsType(TK_END_STMT)) {
 			Next();
-			// ?? n.end = &Current();
 			break;
 		}
 		else if (t.IsType(TK_EOF)) {

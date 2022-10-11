@@ -25,12 +25,6 @@ public:
 	void					OpenDefault(void* data, int inchannels=0,int outchannels=2,SampleFormat format=SND_FLOAT32);
 	void					OpenDefault(int inchannels=0, int outchannels=2,SampleFormat format=SND_FLOAT32);
 	
-	/*void					Exchange(AudioEx& e) override {buf.Exchange(e);}
-	int						GetQueueSize() const override {return buf.GetQueueSize();}
-	TS::AudioFormat			GetFormat() const override {return buf.GetFormat();}
-	bool					IsQueueFull() const override {return buf.IsQueueFull();}
-	AudioPacketBuffer&		GetBuffer() {return buf.GetBuffer();}*/
-	
 };
 
 }

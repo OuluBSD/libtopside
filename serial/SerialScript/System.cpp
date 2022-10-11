@@ -15,18 +15,6 @@ ScriptSystemLoader::ScriptSystemLoader(ScriptLoader& parent, int id, Script::Glo
 		ScriptWorldLoader& loader = worlds.Add(new ScriptWorldLoader(*this, worlds.GetCount(), world));
 	}
 	
-	/*for (Script::LoopDefinition& loop : def.loops) {
-		ScriptLoopLoader& loader = loops.Add(new ScriptLoopLoader(*this, loops.GetCount(), loop));
-	}
-	
-	for (Script::DriverDefinition& driver : def.drivers) {
-		ScriptDriverLoader& loader = drivers.Add(new ScriptDriverLoader(*this, drivers.GetCount(), driver));
-	}
-	
-	for (Script::StateDeclaration& state : def.states) {
-		ScriptStateLoader& loader = states.Add(new ScriptStateLoader(*this, states.GetCount(), state));
-	}*/
-	
 }
 
 bool ScriptSystemLoader::Load() {
@@ -38,20 +26,7 @@ bool ScriptSystemLoader::Load() {
 		if (!loader.Load())
 			return false;
 	}
-	/*for (auto& loader : states) {
-		if (!loader.Load())
-			return false;
-	}
-	for (auto& loader : drivers) {
-		if (!loader.Load())
-			return false;
-	}
-	for (auto& loader : loops) {
-		if (!loader.Load())
-			return false;
-	}*/
 	
-	//status = READY;
 	return true;
 }
 
@@ -82,22 +57,13 @@ String ScriptSystemLoader::GetTreeString(int indent) {
 	s.Cat('\t', indent);
 	s << "System " << id;
 	s.Cat('\n');
-	/*for (auto& loader : states) {
-		s << loader.GetTreeString(indent+1);
-	}
-	for (auto& loader : drivers) {
-		s << loader.GetTreeString(indent+1);
-	}
-	for (auto& loader : loops) {
-		s << loader.GetTreeString(indent+1);
-	}*/
+	
 	for (auto& loader : machs) {
 		s << loader.GetTreeString(indent+1);
 	}
 	for (auto& loader : worlds) {
 		s << loader.GetTreeString(indent+1);
 	}
-	//s << GetScriptStatusLine(indent+1, status);
 	
 	return s;
 }
@@ -105,12 +71,6 @@ String ScriptSystemLoader::GetTreeString(int indent) {
 void ScriptSystemLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	for (auto& loader : machs) {
 		loader.GetLoops(v);
-	}
-}
-
-void ScriptSystemLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
-	for (auto& loader : machs) {
-		loader.GetDrivers(v);
 	}
 }
 

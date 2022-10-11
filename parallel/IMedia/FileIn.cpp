@@ -266,22 +266,10 @@ bool FileInputT<Backend>::ProcessAudioFrame() {
 	return false;
 }
 
-/*
-template <class Backend>
-void FileInputT<Backend>::FillBuffersNull() {
-	if (has_audio)
-		aframe.FillBuffersNull();
-	if (has_video)
-		vframe.FillBuffersNull();
-}*/
 
 template <class Backend>
 void FileInputT<Backend>::DropVideoFrames(int frames) {
 	TODO
-	/*frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
-	
-	if (frames)
-		vframe.DropFrames(frames);*/
 }
 
 
@@ -563,55 +551,6 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 
 
 
-#if HAVE_OPENGL
-
-#if 0
-template <class Backend>
-bool AudioFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
-	if (buf.IsEmpty())
-		return false;
-	TODO
-	/*auto frame_iter = buf.begin();
-	Frame& f = *frame_iter();
-	
-	int var_size = av_get_bytes_per_sample(f.frame->format);
-	ASSERT(f.frame->nb_samples == fmt.sample_rate);
-	ASSERT(f.frame->sample_rate == fmt.freq);
-	ASSERT(f.frame->channels == fmt.channels);
-	ASSERT(var_size == fmt.var_size);
-	
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	
-	Size res(fmt.sample_rate, fmt.channels);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F,
-		res.cx,
-		res.cy,
-		0, GL_RED, GetOglDataType(fmt.var_size, fmt.is_var_float),
-		f.frame->data[0]);
-	
-	av_frame_free(&f.frame);
-	buf.Remove(frame_iter);*/
-	return true;
-}
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -629,29 +568,11 @@ void VideoFrameQueueT<Backend>::Init(AVCodecContextRef& ctx) {
 	img_convert_ctx = Backend::GetImgConvContextRef(ctx, sz);
 }
 
-/*
-template <class Backend>
-void VideoFrameQueueT<Backend>::FillBuffersNull() {
-	TODO
-}*/
-
 template <class Backend>
 void VideoFrameQueueT<Backend>::Clear() {
 	Base::Clear();
 	frames.Clear();
-	//Backend::DeleteImgConvContextRef(img_convert_ctx);
 }
-
-/*
-template <class Backend>
-void VideoFrameQueueT<Backend>::Exchange(VideoEx& e) {
-	if (e.IsLoading()) {
-		TODO
-	}
-	else {
-		Panic("Invalid VideoEx in VideoFrameQueueT");
-	}
-}*/
 
 template <class Backend>
 void VideoFrameQueueT<Backend>::DropFrames(int i) {
@@ -676,24 +597,7 @@ void VideoFrameQueueT<Backend>::Process(double time_pos, AVFrame* frame, bool vf
 	buf.Add(p);
 }
 
-#if HAVE_OPENGL
 
-#if 0
-template <class Backend>
-bool VideoFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
-	TODO
-	/*if (frames.IsEmpty())
-		return false;
-	auto frame_iter = frames.begin();
-	Frame& f = *frame_iter();
-	bool b = f.PaintOpenGLTexture(texture, vid_fmt);
-	frames.Remove(frame_iter);
-	return b;*/
-}
-
-#endif
-
-#endif
 
 
 MEDIA_EXCPLICIT_INITIALIZE_CLASS(AudioFrameQueueT)

@@ -97,58 +97,5 @@ void ScriptTopChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 	}
 }
 
-/*void ScriptTopChainLoader::ForwardLoops() {
-	ASSERT(!IsReady() && !IsFailed());
-	
-	if (use_subchains)
-		ForwardSubchainLoops();
-	else
-		ForwardChainLoops();
-}*/
-
-/*void ScriptTopChainLoader::LoopStatus() {
-	if (use_subchains) {
-		for (ScriptTopChainLoader& loader : subchains) {
-			CheckStatus(loader.GetStatus());
-		}
-	}
-	else {
-		for (ScriptChainLoader& loader : chains) {
-			CheckStatus(loader.GetStatus());
-		}
-	}
-}
-
-void ScriptTopChainLoader::CheckStatusDeep() {
-	if (use_subchains) {
-		for (ScriptTopChainLoader& loader : subchains)
-			loader.CheckStatusDeep();
-	}
-	else {
-		for (ScriptChainLoader& loader : chains)
-			loader.CheckStatusDeep();
-	}
-	
-	CheckFlags();
-}*/
-
-/*void ScriptTopChainLoader::ForwardSubchainLoops() {
-	if (status == WAITING_CHILDREN) {
-		for (ScriptTopChainLoader& loader : subchains) {
-			loader.Forward();
-		}
-	}
-	else TODO
-}
-
-void ScriptTopChainLoader::ForwardChainLoops() {
-	if (status == WAITING_CHILDREN) {
-		for (ScriptChainLoader& loader : chains) {
-			loader.Forward();
-		}
-	}
-	else TODO
-}*/
-
 
 NAMESPACE_SERIAL_END

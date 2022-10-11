@@ -10,12 +10,10 @@ file
 	main.cpp,
 	ToyLoader.h,
 	ToyLoader.cpp,
-	Verifier.h,
 	Verifier.cpp,
 	Def.h,
 	Loader.h,
 	Script.cpp,
-	Drivers.cpp,
 	Loop.cpp,
 	State.cpp,
 	System.cpp,
@@ -28,13 +26,7 @@ file
 	EcsSystem.cpp,
 	Component.cpp,
 	Pool.cpp,
-	Trash readonly separator,
-	ConnectionSolver.cpp,
-	Parser.h,
-	Parser.cpp,
-	Script.h,
-	Planner.h,
-	Planner.cpp,
+	LoaderBase.inl highlight cpp,
 	_ readonly separator;
 
 mainconfig

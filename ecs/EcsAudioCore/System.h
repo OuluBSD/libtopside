@@ -69,7 +69,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
 	AudioStream&	GetStream(AudCtx) override {TODO}
@@ -105,7 +104,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
 	AudioStream&	GetStream(AudCtx) override;
@@ -182,8 +180,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//void EmitMidi(double dt) override;
-	//bool IsSupported(DevType type) override {return true;}
 	void OnLink(SinkProv sink, Cookie src_c, Cookie sink_c) override {TODO}
 	bool OpenFilePath(String path);
 	void Clear();
@@ -207,18 +203,14 @@ public:
 
 
 
-/*PREFAB_BEGIN(CompleteMixer)
-		//MixerContextConnector
-PREFAB_END;*/
+
 
 PREFAB_BEGIN(CompleteMixerChannel)
-		//MixerChannelContextConnector,
 		MixerChannelInputComponent,
 		MixerChannelOutputComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMixerOutput)
-		//MixerChannelContextConnector,
 		MixerChannelInputComponent,
 		MixerAudioSourceComponent
 PREFAB_END;

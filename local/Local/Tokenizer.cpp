@@ -17,12 +17,6 @@ Token& Tokenizer::Add(int token_id) {
 	return t;
 }
 
-/*Token& Tokenizer::Insert(int i, int type) {
-	Token& t = tokens.Insert(i);
-	t.type = type;
-	return t;
-}*/
-
 bool Tokenizer::PassToken(int tk) {
 	if (!IsToken(tk)) return ThrowError("Unexpected token");
 	pass_cursor++;

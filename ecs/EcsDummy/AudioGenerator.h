@@ -58,9 +58,7 @@ public:
 				double panvol = (pansin + 1.0) * 0.5;
 				for(int j = 0; j < fmt.channels; j++) {
 					double pan = (j % 2 == 0) ? panvol : (1.0 - panvol);
-					//pan = j == 0  ? 1.0 : 0.0;
 					double value = pan * tonesin;
-					//value = tonesin;
 					*f = ConvertAudioSample<double, T>(value);
 					f++;
 				}
@@ -82,11 +80,6 @@ public:
 	DummySoundGeneratorAudio();
 	
 	void StorePacket(AudioPacket& p) override;
-	/*void Exchange(AudioEx& e) override;
-	AudioFormat GetFormat() const override;
-	int GetQueueSize() const override;
-	bool IsQueueFull() const override;*/
-	
 	
 };
 

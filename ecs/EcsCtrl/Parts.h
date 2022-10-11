@@ -69,7 +69,6 @@ public:
 	EntityBrowserCtrl();
 	
 	void SetEngine(Ecs::Engine& m) {pool_tree.SetEngine(m);}
-	//void SetPool(PoolRef pool) {ent_list.SetPool(pool);}
 	void Updated() override;
 	void Data();
 	Ecs::EntityRef GetSelected() {return ent_list.GetSelected();}

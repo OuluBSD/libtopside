@@ -83,24 +83,6 @@ protected:
 		m.Get<ToolboxSystemBase>()->RemoveToolSystem(AsRef<ToolSystemBase>());
 	}
 	
-	
-	// Internal helpers
-	/*Vector<RTuple<EntityRef, ToolComponentRef>> GetEnabledEntities() const {
-		Vector<RTuple<EntityRef, ToolComponentRef>> entities;
-		
-		for (auto& entity : m_entities) {
-			auto comp = entity->Get<ToolComponent>();
-			
-			if (comp->IsEnabled()) {
-				entities.Add(RTuple<EntityRef, ToolComponentRef>(entity, comp));
-			}
-		}
-		
-		return entities;
-	}*/
-	
-	
-	//LinkedList<EntityRef> m_entities;
 };
 
 NAMESPACE_ECS_END

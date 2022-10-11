@@ -127,70 +127,6 @@ bool SemanticParser::ParseDeclaration() {
 	return true;
 }
 
-/*bool SemanticParser::ParseTypedDeclaration(AstNode& ret_type) {
-	Iterator& iter = TopIterator();
-	const TokenNode& cur = *path.Top();
-	ASSERT(iter.Check(cur));
-	
-	PathIdentifier name;
-	if (!ParsePathIdentifier(name))
-		return false;
-	
-	//DUMP(name);
-	
-	
-	if (iter) {
-		
-		if (Char('(')) {
-			return ParseFunction(ret_type, name);
-		}
-		else {
-			TODO
-		}
-		
-	}
-	
-	
-	TODO
-	
-	
-}
-
-bool SemanticParser::ParseTypedMetaDeclaration(AstNode& ret_type) {
-	Iterator& iter = TopIterator();
-	const TokenNode& cur = *path.Top();
-	ASSERT(iter.Check(cur));
-	
-	PathIdentifier name;
-	if (!ParsePathIdentifier(name))
-		return false;
-	
-	//DUMP(name);
-	
-	
-	if (iter) {
-		
-		if (Char('(')) {
-			return ParseMetaFunction(ret_type, name);
-		}
-		else {
-			AstNode& var = DeclareRelative(name);
-			ASSERT(var.IsPartially(SEMT_UNDEFINED));
-			var.src = SEMT_VARIABLE;
-			var.type = tn;
-			
-			EMIT DeclareVariable(first.begin->loc, *tn, name);
-			if (Char('=')) {
-				iter++;
-				if (!Cond(true))
-					return false;
-			}
-		}
-	}
-	
-	return true;
-}*/
-
 bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name) {
 	Iterator& iter = TopIterator();
 	const TokenNode& cur = *path.Top();
@@ -217,12 +153,10 @@ bool SemanticParser::ParseFunction(AstNode& ret_type, const PathIdentifier& name
 	
 	
 	if (!iter && cur.sub.GetCount()) {
-		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
 		
 		if (!ParseStatementList())
 			return false;
 		
-		//EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
 	}
 	
 	EMIT PopFunction(cur.end->loc);
@@ -258,7 +192,6 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 	
 	
 	if (!iter && cur.sub.GetCount()) {
-		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
 		
 		if (ret_type.name == "machstmt") {
 			if (!ParseMachineStatementList())
@@ -303,7 +236,6 @@ bool SemanticParser::ParseMetaFunction(AstNode& ret_type, const PathIdentifier& 
 		else if (!ParseStatementList())
 			return false;
 		
-		//EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
 	}
 	
 	EMIT PopMetaFunction(cur.end->loc);
@@ -326,7 +258,6 @@ bool SemanticParser::ParseAtomStatementList() {
 	const TokenNode*& sub = path.Add();
 	for (const TokenNode& s : tk_owner.sub) {
 		sub = &s;
-		//DUMP(s)
 		AddIterator(s);
 		
 		Iterator& iter = TopIterator();
@@ -383,7 +314,6 @@ bool SemanticParser::ParseStatementList() {
 	const TokenNode*& sub = path.Add();
 	for (const TokenNode& s : tk_owner.sub) {
 		sub = &s;
-		//DUMP(s)
 		AddIterator(s);
 		
 		Iterator& iter = TopIterator();
@@ -430,8 +360,6 @@ bool SemanticParser::ParseStatement() {
 	Iterator& iter = TopIterator();
 	int cookie = 0;
 	AstNode* link;
-	
-	//DUMP(cur)
 	
 	if (IsId("meta")) {
 		return ParseMetaStatement(cookie);
@@ -491,11 +419,9 @@ bool SemanticParser::ParseStatement() {
 		EMIT PushStatement(iter->loc, STMT_FOR);
 		
 		if (!IsToken(',')) {
-			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_DECL);
 			if (!ParseExpression(false)) return false;
 		}
 		if (Id("in") || Char(':')) {
-			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
 			EMIT PushStatement(iter->loc, STMT_FOR_RANGE);
 			if (!ParseExpression(false)) return false;
 			EMIT PopStatement(iter->loc, 0);
@@ -503,23 +429,19 @@ bool SemanticParser::ParseStatement() {
 		else {
 			if (!PassToken(',')) return false;
 			if (!IsToken(',')) {
-				//EMIT PushStatementParameter(iter->loc, STMTP_WHILE_COND);
 				EMIT PushStatement(iter->loc, STMT_FOR_COND);
 				if (!ParseExpression(false)) return false;
 				EMIT PopStatement(iter->loc, 0);
 			}
 			if (!PassToken(',')) return false;
 			if (iter) {
-				//EMIT PushStatementParameter(iter->loc, STMTP_FOR_POST);
 				EMIT PushStatement(iter->loc, STMT_FOR_POST);
 				if (!ParseExpression(false)) return false;
 				EMIT PopStatement(iter->loc, 0);
 			}
 		}
 		
-		//EMIT PushStatementList(iter->loc);
 		if (!ParseStatementBlock()) return false;
-		//EMIT PopStatementList(iter->loc);
 		
 		EMIT PopStatement(iter->loc, 0);
 	}
@@ -654,7 +576,6 @@ bool SemanticParser::ParseMetaStatement(int& cookie, bool skip_meta_keywords) {
 	const TokenNode& cur = CurrentNode();
 	Iterator& iter = TopIterator();
 	
-	//DUMP(cur)
 	if (!skip_meta_keywords && !PassId("meta"))
 		return false;
 	
@@ -717,14 +638,12 @@ bool SemanticParser::ParseMetaStatement(int& cookie, bool skip_meta_keywords) {
 		EMIT PushStatement(iter->loc, STMT_META_FOR);
 		
 		if (!IsToken(',')) {
-			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_DECL);
 			EMIT PushStatement(iter->loc, STMT_EXPR);
 			AstNode* rval = EMIT ParseExpression(true);
 			if (!rval) return false;
 			EMIT PopStatement(iter->loc, 0);
 		}
 		if (Id("in") || Char(':')) {
-			//EMIT PushStatementParameter(iter->loc, STMTP_FOR_COLLECTION);
 			EMIT PushStatement(iter->loc, STMT_META_FOR_RANGE);
 			AstNode* rval = EMIT ParseExpression(true);
 			if (!rval) return false;
@@ -733,23 +652,19 @@ bool SemanticParser::ParseMetaStatement(int& cookie, bool skip_meta_keywords) {
 		else {
 			if (!PassToken(',')) return false;
 			if (!IsToken(',')) {
-				//EMIT PushStatementParameter(iter->loc, STMTP_WHILE_COND);
 				EMIT PushStatement(iter->loc, STMT_META_FOR_COND);
 				if (!ParseExpression(true)) return false;
 				EMIT PopStatement(iter->loc, 0);
 			}
 			if (!PassToken(',')) return false;
 			if (iter) {
-				//EMIT PushStatementParameter(iter->loc, STMTP_FOR_POST);
 				EMIT PushStatement(iter->loc, STMT_META_FOR_POST);
 				if (!ParseExpression(true)) return false;
 				EMIT PopStatement(iter->loc, 0);
 			}
 		}
 		
-		//EMIT PushStatementList(iter->loc);
 		if (!ParseStatementBlock()) return false;
-		//EMIT PopStatementList(iter->loc);
 		
 		EMIT PopStatement(iter->loc, 0);
 	}
@@ -1081,12 +996,10 @@ bool SemanticParser::ParseClass() {
 	if (!var) return false;
 	
 	if (!iter && cur.sub.GetCount()) {
-		//EMIT PushFunctionDefinition(cur.sub[0].begin->loc);
 		
 		if (!ParseStatementList())
 			return false;
 		
-		//EMIT PopFunctionDefinition(cur.sub.Top().end->loc);
 	}
 	
 	EMIT PopClass(cur.end->loc);
@@ -1109,7 +1022,6 @@ bool SemanticParser::ParseDeclExpr(bool meta, const PathIdentifier& type_id, Ast
 	
 	PathIdentifier name;
 	
-	//if (tn && tn->IsPartially(SEMT_TYPE)) {
 	if (!ParsePathIdentifier(name, false, false)) {
 		AddError(iter->loc, "could not parse name");
 		return false;
@@ -1245,11 +1157,7 @@ bool SemanticParser::Subscript(bool m) {
 					}
 					TODO // Emit
 				}
-				/*else {
-					const Token& cur = **iter;
-					DUMP(cur)
-					TODO // Emit
-				}*/
+				
 				if (!PassChar(']'))
 					return false;
 			}
@@ -1260,7 +1168,6 @@ bool SemanticParser::Subscript(bool m) {
 		else
 		if(Char('.')) {
 			TODO
-			//id = ReadId();
 		}
 		else
 		if(Char('(')) {
@@ -1278,7 +1185,7 @@ bool SemanticParser::Subscript(bool m) {
 			
 			EMIT Expr2(iter->loc, OP_CALL);
 			
-			if(/*!IsToken(TK_INEQ) &&*/ Char('!')) {
+			if(Char('!')) {
 				Term(m);
 			}
 			
@@ -1297,10 +1204,7 @@ bool SemanticParser::Term(bool meta) {
 		iter++;
 		return true;
 	}
-	/*if(iter->IsType(TK_BINARY)) {
-		TODO // Emit
-		return true;
-	}*/
+	
 	if(iter->IsType(TK_FLOAT) || iter->IsType(TK_DOUBLE)) {
 		EMIT PushRvalConstant(iter->loc, StrDbl(iter->str_value));
 		iter++;
@@ -1323,11 +1227,6 @@ bool SemanticParser::Term(bool meta) {
 		return true;
 	}
 	if(iter->IsType(TK_CHAR)) {
-		/*WString s = FromUtf8(ReadString('\'', true));
-		if(s.GetLength() != 1) {
-			AddError(iter->loc, "invalid character literal");
-			return false;
-		}*/
 		TODO
 		EMIT PushRvalConstant(iter->loc, iter->str_value);
 		iter++;
@@ -1344,29 +1243,7 @@ bool SemanticParser::Term(bool meta) {
 			return false;
 		return true;
 	}
-	/*if(Id("void")) {
-		TODO // Emit
-		return true;
-	}*/
-	/*if(Char(TK_INDENT)) {
-		TODO // Emit
-		if(!Char(TK_DEDENT)) {
-			for(;;) {
-				TODO // should be Assign, not ParseExpression
-				if (!ParseExpression(meta))
-					return false;
-				PassChar(':');
-				if (!ParseExpression(meta))
-					return false;
-				if(Char(TK_DEDENT))
-					break;
-				PassChar(',');
-			}
-		}
-		if (!Subscript(meta))
-			return false;
-		return true;
-	}*/
+	
 	if(Char('[')) {
 		if(!Char(']')) {
 			for(;;) {
@@ -1412,7 +1289,6 @@ bool SemanticParser::Term(bool meta) {
 		if (!ParsePathIdentifier(id, true, true))
 			return false;
 		
-		//DUMP(id);
 		
 		AstNode* nn = 0;
 		bool partial_meta = id.HasPartialMeta();
@@ -1541,17 +1417,17 @@ bool SemanticParser::Mul(bool m) {
 	for(;;) {
 		const Token& tk = TopIterator();
 		
-		if(/*!IsToken(TK_MULASS) &&*/ Char('*')) {
+		if(Char('*')) {
 			if (!Unary(m)) return false;
 			EMIT Expr2(tk.loc, OP_MUL);
 		}
 		else
-		if(/*!IsToken(TK_DIVASS) &&*/ Char('/')) {
+		if(Char('/')) {
 			if (!Unary(m)) return false;
 			EMIT Expr2(tk.loc, OP_DIV);
 		}
 		else
-		if(/*!IsToken(TK_MODASS) &&*/ Char('%')) {
+		if(Char('%')) {
 			if (!Unary(m)) return false;
 			EMIT Expr2(tk.loc, OP_MOD);
 		}
@@ -1568,12 +1444,12 @@ bool SemanticParser::Add(bool m) {
 	for(;;) {
 		const Token& tk = TopIterator();
 		
-		if(/*!IsChar2('+', '=') &&*/ Char('+')) {
+		if(Char('+')) {
 			if (!Mul(m)) return false;
 			EMIT Expr2(tk.loc, OP_ADD);
 		}
 		else
-		if(/*!IsChar2('-', '=') &&*/ Char('-')) {
+		if(Char('-')) {
 			if (!Mul(m)) return false;
 			EMIT Expr2(tk.loc, OP_SUB);
 		}
@@ -1654,7 +1530,7 @@ bool SemanticParser::Equal(bool m) {
 
 bool SemanticParser::BinAnd(bool m) {
 	if (!Equal(m)) return false;
-	while(/*!IsChar2('&', '&') &&*/ Char('&')) {
+	while(Char('&')) {
 		const Token& tk = TopIterator().iter[-1];
 		
 		if (!Equal(m)) return false;
@@ -1676,7 +1552,7 @@ bool SemanticParser::BinXor(bool m) {
 
 bool SemanticParser::BinOr(bool m) {
 	if (!BinXor(m)) return false;
-	while(/*!IsChar2('|', '|') &&*/ Char('|')) {
+	while(Char('|')) {
 		const Token& tk = TopIterator().iter[-1];
 		
 		if (!BinXor(m)) return false;
@@ -1768,20 +1644,6 @@ bool SemanticParser::IsToken(int tk_type) const {
 	if (!iter) return false;
 	return iter->IsType(tk_type);
 }
-
-/*bool SemanticParser::IsChar2(int a, int b) const {
-	const Iterator& iter = TopIterator();
-	if (!iter) return false;
-	if (iter.iter + 1 == iter.end) return false;
-	return iter.iter[0].IsType(a) && iter.iter[1].IsType(b);
-}
-
-bool SemanticParser::Char2(int a, int b) {
-	Iterator& iter = TopIterator();
-	if (!IsChar2(a,b)) return false;
-	iter.iter += 2;
-	return true;
-}*/
 
 bool SemanticParser::TryToken(int tk_type) {
 	Iterator& iter = TopIterator();
@@ -2228,7 +2090,6 @@ bool SemanticParser::ParseMachineStatement(int& cookie) {
 		
 		if (iter->IsType(TK_ID)) {
 			const String& id = iter->str_value;
-			//DUMP(id);
 			
 			if (id == "chain") {
 				if (!ParseChain())
@@ -2301,7 +2162,6 @@ bool SemanticParser::ParseChainStatement(int& cookie) {
 		
 		if (iter->IsType(TK_ID)) {
 			const String& id = iter->str_value;
-			//DUMP(id);
 			
 			if (id == "loop" || id == "driver") {
 				if (!ParseLoop())
@@ -2764,7 +2624,6 @@ bool SemanticParser::ParseExpressionList() {
 	const TokenNode*& sub = path.Add();
 	for (const TokenNode& s : tk_owner.sub) {
 		sub = &s;
-		//DUMP(s)
 		Iterator& iter = AddIterator(s);
 		
 		if (!iter)
@@ -2800,39 +2659,6 @@ bool SemanticParser::ParseExpressionList() {
 	
 	return succ;
 }
-
-/*bool SemanticParser::ParseMetaExpressionStatement() {
-	Iterator& iter = TopIterator();
-	
-	AstNode* decl = ParseAndFindMetaDeclaration();
-	
-	if (!decl) {
-		PopIterator();
-		return false;
-	}
-	
-	if (!IsMetaTypedNode(decl->src)) {
-		if (!iter)
-			return true;
-		
-		return AssignPost(true);
-	}
-	else {
-		bool succ = ParseMetaDeclExprPost(decl, true);
-		PopIterator();
-		return succ;
-	}
-}*/
-
-/*bool SemanticParser::IsMetaTypeQualifier() const {
-	if (IsId("stmt") ||
-		IsId("params"))
-		return true;
-	
-	return false;
-}*/
-
-
 
 
 NAMESPACE_TOPSIDE_END

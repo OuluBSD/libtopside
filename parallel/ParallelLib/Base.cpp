@@ -8,10 +8,6 @@ NAMESPACE_PARALLEL_BEGIN
 bool CustomerBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("CustomerBase::Initialize");
 	
-	/*AtomTypeCls type = GetType();
-	if (type.iface.content.val == ValCls::AUDIO)
-		packet_thrds = 10;*/
-	
 	customer.Create();
 	
 	return true;
@@ -102,10 +98,6 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-/*bool RollingValueBase::PostInitialize() {
-	return GetLink()->NegotiateSourceFormat(0, internal_fmt);
-}*/
-
 bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	ASSERT(internal_fmt.IsValid());
 	
@@ -147,18 +139,8 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 
 
 bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
-	//DUMP(ws);
 	dbg_limit = ws.GetInt(".dbg_limit", 100);
 	
-	/*
-	auto sink = GetSink();
-	const int sink_ch_i = sink->GetSinkCount() - 1;
-	if (sink->GetValue(sink_ch_i).GetFormat().IsAudio()) {
-		Format fmt;
-		fmt.SetAudio(DevCls::CENTER, SoundSample::FLT_LE, 2, 44100, 777);
-		sink->GetValue(sink_ch_i).SetFormat(fmt);
-	}
-	*/
 	return true;
 }
 
@@ -514,17 +496,6 @@ void EventStateBase::Event(const CtrlEvent& e) {
 			s.Set<ControllerMatrix>(HMD_CONTROLLER) = *e.ctrl;
 		}
 		
-		/*#if 0
-		TransformMatrix& st = s.Set<StereoMatrix>(HMD_VIEW_STEREO);
-		COPY4x4(st.view[0], e3.l_view);
-		COPY4x4(st.view[1], e3.r_view);
-		COPY4x4(st.proj[0], e3.l_proj);
-		COPY4x4(st.proj[1], e3.r_proj);
-		#else
-		Quaternion& orient = s.Set<Quaternion>(HMD_ORIENTATION);
-		COPY4(orient.data, e3.orient);
-		#endif*/
-		//LOG("EventStateBase::Event: hmd orient: " << orient.ToString());
 		
 		#if 0
 		for(int c = 0; c < ControllerMatrix::CTRL_COUNT; c++) {

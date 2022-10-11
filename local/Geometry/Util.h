@@ -96,17 +96,6 @@ void CameraObject(
 	float obj_yaw_diff, float obj_pitch_diff, float obj_dist,
 	vec3& position);
 
-/*mat4 Rotation(float pitch, float yaw, float roll);
-mat3 Rotation3x3(float pitch, float yaw, float roll);
-mat2 Rotation2x2(float angle);*/
-//mat4 YawPitchRoll(float yaw, float pitch, float roll);
-/*mat4 XRotation(float angle);
-mat3 XRotation3x3(float angle);
-mat4 YRotation(float angle);
-mat3 YRotation3x3(float angle);
-mat4 ZRotation(float angle);
-mat3 ZRotation3x3(float angle);
-float GetXRotation(const mat4& m);*/
 
 void StoreMatrix(mat4* dst, const mat4& src);
 void StoreVec2(vec2* dst, const vec4& src);

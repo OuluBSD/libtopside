@@ -1,6 +1,5 @@
 uses
-	SerialLib,
-	Shadertoy;
+	SerialLib;
 
 file
 	AtomShell.h,

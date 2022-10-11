@@ -6,18 +6,5 @@ uses
 
 file
 	EcsVR.h,
-	Trash readonly separator,
-	MotionControllerSystem.h,
-	MotionControllerSystem.cpp,
-	PbrModelCache.h,
-	PbrModelCache.cpp,
-	HolographicRenderer.h,
-	HolographicRenderer.cpp,
-	HolographicScene.h,
-	HolographicScene.cpp,
-	AtomBinder.h,
-	AtomBinder.cpp,
-	SpatialInteractionSystem.h,
-	SpatialInteractionSystem.cpp,
 	_ readonly separator;
 

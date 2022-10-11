@@ -329,14 +329,6 @@ bool HalSdl::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io
 
 	
 
-
-
-
-/*enum {
-	RENDSRC_BUF,
-	RENDSRC_IMAGEDRAW,
-};*/
-
 bool HalSdl::CenterVideoSinkDevice_Create(One<NativeCenterVideoSinkDevice>& dev) {
 	dev.Create();
 	return true;
@@ -683,17 +675,6 @@ void HalSdl::CenterFboSinkDevice_Finalize(NativeCenterFboSinkDevice& dev, AtomBa
 }
 
 bool HalSdl::CenterFboSinkDevice_Send(NativeCenterFboSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	/*Format fmt = in.GetFormat();
-	if (fmt.IsVideo()) {
-		const Vector<byte>& pixmap = in.Data();
-		VideoFormat& vfmt = fmt;
-		int frame_sz = vfmt.GetFrameSize();
-		ASSERT(pixmap.GetCount() == frame_sz);
-		
-		int width = vfmt.res[0];
-		int height = vfmt.res[1];
-		
-	}*/
 	return true;
 }
 
@@ -864,17 +845,6 @@ void HalSdl::OglVideoSinkDevice_Uninitialize(NativeOglVideoSinkDevice& dev, Atom
 }
 
 bool HalSdl::OglVideoSinkDevice_Send(NativeOglVideoSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	/*Format fmt = in.GetFormat();
-	if (fmt.IsVideo()) {
-		const Vector<byte>& pixmap = in.Data();
-		VideoFormat& vfmt = fmt;
-		int frame_sz = vfmt.GetFrameSize();
-		ASSERT(pixmap.GetCount() == frame_sz);
-		
-		int width = vfmt.res[0];
-		int height = vfmt.res[1];
-		
-	}*/
 	dev.accel.Render(cfg);
 	return true;
 }
@@ -1047,13 +1017,6 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			
 		case SDL_WINDOWEVENT:
 			
-			/*if (event.window.event == SDL_WINDOWEVENT_LEAVE) {
-				if (IsCaptured())
-					;//Ctrl::captured->LeftUp(prev_mouse_pt, 0);
-				else
-					DeepMouseLeave();
-			}
-			else*/
 			if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
 				e.type = EVENT_SHUTDOWN;
 				return true;
@@ -1062,11 +1025,6 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				screen_sz.cx = event.window.data1;
 				screen_sz.cy = event.window.data2;
 				dev.sz = screen_sz;
-				/*SetFrameRect0(RectC(0, 0, screen_sz.cx, screen_sz.cy));
-				SetContentRect(RectC(0, 0, screen_sz.cx, screen_sz.cyh));
-				SetPendingLayout();
-				SetPendingEffectRedraw();
-				SetPendingRedraw();*/
 				e.type = EVENT_WINDOW_RESIZE;
 				e.sz = screen_sz;
 				return true;
@@ -1196,10 +1154,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 						mouse_code = VirtualCtrl::RIGHTTRIPLE;
 						//mouse_code = MOUSE_RIGHTTRIPLE;
 				}
-				/*else if (event.button.button == SDL_BUTTON_WHEELUP)
-					mouse_zdelta = 120;
-				else if (event.button.button == SDL_BUTTON_WHEELDOWN)
-					mouse_zdelta = -120;*/
+				
 			}
 			else if (event.button.state == SDL_RELEASED) {
 				if (event.button.button == SDL_BUTTON_LEFT)

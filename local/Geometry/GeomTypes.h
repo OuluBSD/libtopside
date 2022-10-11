@@ -72,53 +72,6 @@ public:
 typedef const DepthImage ConstDepthImage;
 
 
-/*
-struct Texture : Moveable<Texture> {
-	Vector<byte>	data;
-	uint8			stride;
-	uint16			pitch;
-	uint16			width, height;
-	byte			compression;
-	//int				tex_id = -1;
-	
-	enum {
-		COMP_NONE,
-	};
-	
-	Texture() {}
-	Texture(const Texture& src) {*this = src;}
-	//~Texture() {ClearAccel();}
-	
-	void Clear();
-	void Set(Image i);
-	void Create(Size sz, byte channels);
-	void Zero() {if (data.GetCount()) memset(data.Begin(), 0, data.GetCount());}
-	
-	//void MakeAccel();
-	//void ClearAccel();
-	
-	bool IsEmpty() {return data.IsEmpty();}
-	operator bool() const {return !data.IsEmpty();}
-	byte* GetIter(int x, int y) {return data.Begin() + y * pitch + x * stride;}
-	int GetWidth() const {return width;}
-	int GetHeight() const {return height;}
-	
-	void operator=(const Texture& src) {
-		Clear();
-		stride = src.stride;
-		pitch = src.pitch;
-		width = src.width;
-		height = src.height;
-		compression = src.compression;
-		if (src.data.GetCount()) {
-			int size = width * height * stride;
-			data.SetCount(size);
-			memcpy(data.Begin(), src.data.Begin(), size);
-		}
-	}
-};
-
-typedef Texture FrameBuffer;*/
 
 
 struct DepthValue : Moveable<DepthValue> {

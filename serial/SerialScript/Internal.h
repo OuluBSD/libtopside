@@ -3,7 +3,5 @@
 
 #include "SerialScript.h"
 #include <AtomMinimal/AtomMinimal.h>
-//#include <AtomLocal/AtomLocal.h>
-//#include <AtomDebug/AtomDebug.h>
 
 #endif

@@ -78,7 +78,6 @@ file
 	Debugging.cpp,
 	Ctrl.h,
 	Ctrl.inl highlight cpp,
-	Graphics.h,
 	Graphics.cpp,
 	GEnums.h,
 	Daemon.h,

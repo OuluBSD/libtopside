@@ -1351,10 +1351,6 @@ vec3 GetQuatAxes(const quat& q) {
 	return v;
 }
 
-/*void MatAxes(const mat4& m, vec3& axes) {
-	QuatAxes(MatQuat(m), axes);
-}*/
-
 
 vec3 Right(const mat4& transform)
 {

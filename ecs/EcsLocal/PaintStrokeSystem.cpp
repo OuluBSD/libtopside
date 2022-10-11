@@ -34,7 +34,6 @@ bool PaintStrokeSystemBase::Initialize() {
 void PaintStrokeSystemBase::Update(double) {
 	for (PaintStrokeComponent* paint_stroke : comps) {
 		if (paint_stroke->stroke_changed) {
-			//ModelComponentRef pbr = paint_stroke->GetEntity()->Get<ModelComponent>();
 			ModelComponentRef c = paint_stroke->GetEntity()->Get<ModelComponent>();
 			Ref<Model> m = c->GetModel();
 			
@@ -42,7 +41,6 @@ void PaintStrokeSystemBase::Update(double) {
 				auto& squares = paint_stroke->squares;
 				
 				// Add the primitive into the model.
-				//m->Clear();
 				Mesh& stroke_mesh = m->GetMeshCount() == 0 ? m->AddMesh() : m->GetMesh(0);
 				vec3 normal { 0.0f, 0.0f, 1.0f };
 				vec3 tangent{ 1.0f, 0.0f, 0.0f };

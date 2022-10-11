@@ -1,8 +1,0 @@
-description "\377B0,69,106";
-
-file
-	SteamLib.h,
-	SteamLib.cpp,
-	Spatial.h,
-	MotionController.h;
-

@@ -41,16 +41,12 @@ public:
 	// Atoms
 	
 	typedef AtomBase* (*NewFn)();
-	//typedef bool (*AtomActionFn)(const AtomTypeCls& t, Script::Action& act);
-	//typedef SideStatus (*SideFn)(const AtomTypeCls& src_type, const Serial::Script::WorldState& from, const AtomTypeCls& sink_type, const Serial::Script::WorldState& to);
 	typedef LinkTypeCls (*GetLinkTypeFn)();
 	struct AtomData : Moveable<AtomData> {
 		NewFn			new_fn;
-		//AtomActionFn	action_fn;
 		String			name;
 		AtomTypeCls		cls;
 		TypeCls			rtti_cls;
-		//SideFn			side_fn;
 		LinkTypeCls		link_type;
 		Vector<String>	actions;
 		
@@ -61,9 +57,6 @@ public:
 	static AtomMap& AtomDataMap() {MAKE_STATIC(AtomMap, m); return m;}
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
-	//template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static SideStatus MakeSide(const AtomTypeCls& src_type, const Serial::Script::WorldState& from, const AtomTypeCls& sink_type, const Serial::Script::WorldState& to) {return T::MakeSide(src_type, from, sink_type, to);}
-	//template <class T> static LinkTypeCls GetLinkType() {return T::GetLinkType();}
 	
 	template <class T> static void RegisterAtom() {
 		AtomTypeCls cls = T::GetAtomType();
@@ -73,8 +66,6 @@ public:
 		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateAtom<T>;
-		//d.action_fn = &MakeAtomAction<T>;
-		//d.side_fn = &MakeSide<T>;
 		d.link_type = T::GetLinkType();
 		d.actions.Add(T::GetAction());
 	}
@@ -84,7 +75,6 @@ public:
 	static void Dump();
 	static const Vector<Link>& GetSinkAtoms(AtomTypeCls src_atom);
 	static void RefreshLinks(AtomData& d);
-	//static LinkTypeCls GetAtomLinkType(AtomTypeCls atom);
 	
 	
 	

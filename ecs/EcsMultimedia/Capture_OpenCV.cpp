@@ -60,15 +60,7 @@ public:
 	#if HAVE_OPENGL
 	bool PaintOpenGLTexture(int texture) {
 		TODO
-		/*if (type == OPENCV && data != NULL) {
-			glBindTexture (GL_TEXTURE_2D, texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fmt.res.cx, fmt.res.cy, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-			return true;
-		}*/
+		
 		return false;
 	}
 	#endif

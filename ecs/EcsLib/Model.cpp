@@ -3,44 +3,6 @@
 
 NAMESPACE_ECS_BEGIN
 
-#if 0
-
-/*void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
-	shape.Create(type, ax_vec);
-	
-	model = new Model();
-	model->MakeModel(shape);
-}*/
-
-
-
-
-
-
-
-
-
-
-/*bool ModelComponent::LoadModel(String path) {
-	loader.Clear();
-	return loader.LoadModel(path);
-}*/
-
-bool ModelComponent::AddTextureFile(int mesh_i, TexType type, String path) {
-	if (loader)
-		return loader.GetModel()->AddTextureFile(mesh_i, type, path);
-	return false;
-}
-
-void ModelComponent::GetModels(VectorRendModel& models) {
-	EntityRef e = GetEntity();
-	RendModel& m = models.Add();
-	m.a = GetModel();
-	m.b.a = e->Find<Transform>();
-	m.b.b = e->Find<Renderable>();
-}
-
-#endif
 
 void ModelComponent::Initialize() {
 	color = one<vec4>();
@@ -314,7 +276,6 @@ bool ModelComponent::Load(GfxDataState& state) {
 			model = loader.GetModel();
 		}
 		else {
-			//LOG("ModelComponent::Load: error: nothing to load");
 			return false;
 		}
 	}
@@ -344,11 +305,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		mat4 pos = Translate(trans->data.position);
 		mat4 rot = QuatMat(trans->data.orientation);
 		mat4 sz = TS::Scale(trans->size);
-		/*if (have_ext_model) {
-			pos *= Translate(offset);
-			rot *= YawPitchRoll(pitch, yaw, roll);
-			sz  *= TS::scale(this->scale);
-		}*/
+		
 		model_mat = pos * rot * sz;
 		
 		if (trans->verbose) {
@@ -386,37 +343,6 @@ bool ModelComponent::Load(GfxDataState& state) {
 void ModelComponent::SetPrefabModel(String prefab) {
 	prefab_name = prefab;
 }
-
-/*void ModelComponent::LoadModel(CpuDataState& state) {
-	auto& o = cpu_obj ? *cpu_obj : state.AddObject();
-	cpu_obj = cpu_obj ? cpu_obj : &o;
-	if (!state.LoadModel(loader, o))
-		Panic("Couldn't load model: ModelComponent");
-	if (!state.LoadModelTextures(loader, o))
-		Panic("Couldn't load model textures: ModelComponent");
-}
-
-void ModelComponent::LoadModel(OglDataState& state) {
-	auto& o = ogl_obj ? *ogl_obj : state.AddObject();
-	ogl_obj = ogl_obj ? ogl_obj : &o;
-	if (!state.LoadModel(loader, o))
-		Panic("Couldn't load model: ModelComponent");
-	if (!state.LoadModelTextures(loader, o))
-		Panic("Couldn't load model textures: ModelComponent");
-}*/
-
-/*void ModelComponent::RefreshModel(CpuDataState& state) {
-	ASSERT(cpu_obj);
-	TODO
-}
-
-void ModelComponent::RefreshModel(OglDataState& state) {
-	ASSERT(ogl_obj);
-	TODO
-}*/
-
-
-
 
 
 NAMESPACE_ECS_END

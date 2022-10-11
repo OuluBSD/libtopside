@@ -59,44 +59,6 @@ public:
 	int							GetFrameCount() const {return frame_counter;}
 	Packet						GetPacket() {return last_p;}
 	
-	/*
-	Media&						Get() override {return avproxy;}
-	void						FillBuffer() override {}
-	void						DropBuffer() override {}
-	int							GetActiveFormatIdx() const override;
-	int							GetFormatCount() const override;
-	MediaFormat					GetFormat(int i) const override;
-	
-	//void						FillAudioBuffer() override {}
-	//void						FillVideoBuffer() override;
-	//Audio&						GetAudio() override {return abuffer;}
-	//Video&						GetVideo() override {return vbuffer;}
-	AudioStream&				GetAudioStream() override {return astream;}
-	VideoStream&				GetVideoStream() override {return vstream;}
-	
-	double						GetSeconds() const {return cur_time.Seconds();}
-	*/
-	
-	/*
-	// RealtimeStream
-	
-	// AudioStream
-	void						DropBuffer(AudCtx) override {}
-	
-	// VideoStream
-	void						DropVideoFrames(int frames) override;
-	int							GetVideoBufferSize() const override {return 1;}
-	int							GetActiveVideoFormatIdx() const override;
-	int							GetFormatCount() const override;
-	const VideoSourceFormat&	GetFormat(int i) const override;
-	
-	// MediaStream
-	bool						Open0(String path) override;
-	bool						OpenDevice0(int fmt, int res) override;
-	String						GetPath() const override {return path;}
-	*/
-	
-	
 };
 
 

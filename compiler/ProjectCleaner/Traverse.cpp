@@ -21,107 +21,12 @@ using namespace TS;
 
 
 
-/*
-	NamedDecl - Matches a declaration of anything that could have a name.
-	ValueDecl - Matches any value declaration
-*/
-
-/*#define TRAVERSER_LIST \
-	 TRAVERSE(cxxCtorInitializer, CXXCtorInitializer) \
-	 TRAVERSE(classTemplateDecl, ClassTemplateDecl) \
-	 TRAVERSE(classTemplatePartialSpecializationDecl, ClassTemplatePartialSpecializationDecl) \
-	 TRAVERSE(classTemplateSpecializationDecl, ClassTemplateSpecializationDecl) \
-	 TRAVERSE(cxxConstructorDecl, CXXConstructorDecl) \
-	 TRAVERSE(cxxConversionDecl, CXXConversionDecl) \
-	 TRAVERSE(cxxDestructorDecl, CXXDestructorDecl) \
-	 TRAVERSE(cxxMethodDecl, CXXMethodDecl) \
-	 TRAVERSE(cxxRecordDecl, CXXRecordDecl) \
-	 TRAVERSE(decl, Decl) \
-	 TRAVERSE(declaratorDecl, DeclaratorDecl) \
-	 TRAVERSE(enumConstantDecl, EnumConstantDecl) \
-	 TRAVERSE(enumDecl, EnumDecl) \
-	 TRAVERSE(fieldDecl, FieldDecl) \
-	 TRAVERSE(friendDecl, FriendDecl) \
-	 TRAVERSE(functionDecl, FunctionDecl) \
-	 TRAVERSE(functionTemplateDecl, FunctionTemplateDecl) \
-	 TRAVERSE(indirectFieldDecl, IndirectFieldDecl) \
-	 TRAVERSE(labelDecl, LabelDecl) \
-	 TRAVERSE(namedDecl, NamedDecl) \
-	 TRAVERSE(namespaceAliasDecl, NamespaceAliasDecl) \
-	 TRAVERSE(namespaceDecl, NamespaceDecl) \
-	 TRAVERSE(nonTypeTemplateParmDecl, NonTypeTemplateParmDecl) \
-	 TRAVERSE(parmVarDecl, ParmVarDecl) \
-	 TRAVERSE(recordDecl, RecordDecl) \
-	 TRAVERSE(tagDecl, TagDecl) \
-	 TRAVERSE(templateTemplateParmDecl, TemplateTemplateParmDecl) \
-	 TRAVERSE(templateTypeParmDecl, TemplateTypeParmDecl) \
-	 TRAVERSE(translationUnitDecl, TranslationUnitDecl) \
-	 TRAVERSE(typeAliasDecl, TypeAliasDecl) \
-	 TRAVERSE(typeAliasTemplateDecl, TypeAliasTemplateDecl) \
-	 TRAVERSE(typedefDecl, TypedefDecl) \
-	 TRAVERSE(typedefNameDecl, TypedefNameDecl) \
-	 TRAVERSE(unresolvedUsingTypenameDecl, UnresolvedUsingTypenameDecl) \
-	 TRAVERSE(unresolvedUsingValueDecl, UnresolvedUsingValueDecl) \
-	 TRAVERSE(usingDecl, UsingDecl) \
-	 TRAVERSE(usingDirectiveDecl, UsingDirectiveDecl) \
-	 TRAVERSE(valueDecl, ValueDecl) \
-	 TRAVERSE(varDecl, VarDecl) \
-	 TRAVERSE(nestedNameSpecifierLoc, NestedNameSpecifierLoc) \
-	 TRAVERSE(nestedNameSpecifier, NestedNameSpecifier) \
-	 TRAVERSE(addrLabelExpr, AddrLabelExpr) \
-	 TRAVERSE(callExpr, CallExpr) \
-	 TRAVERSE(cStyleCastExpr, CStyleCastExpr) \
-	 TRAVERSE(cxxConstructExpr, CXXConstructExpr) \
-	 TRAVERSE(cxxDependentScopeMemberExpr, CXXDependentScopeMemberExpr) \
-	 TRAVERSE(cxxFunctionalCastExpr, CXXFunctionalCastExpr) \
-	 TRAVERSE(cxxMemberCallExpr, CXXMemberCallExpr) \
-	 TRAVERSE(memberExpr, MemberExpr) \
-	 TRAVERSE(builtinType, BuiltinType) \
-	 TRAVERSE(elaboratedType, ElaboratedType) \
-	 TRAVERSE(enumType, EnumType)*/
-	 
-
-
-
-
-
-
-
-
-
-
 DeclarationMatcher NamedDecl_matcher = namedDecl().bind("NamedDecl_items");
-
-/*DeclarationMatcher Namespace_matcher = namespaceDecl().bind("namespaces");
-DeclarationMatcher NamespaceRef_matcher = namespaceDecl().bind("namespace_refs");*/
-
-/*DeclarationMatcher Namespace_matcher = namespaceDecl().bind("namespaces");
-DeclarationMatcher NamespaceRef_matcher = namespaceDecl().bind("namespace_refs");
-
-DeclarationMatcher virtual_method_matcher = cxxMethodDecl(isVirtual()).bind("virtual methods");
-DeclarationMatcher method_matcher = cxxMethodDecl().bind("methods");
-//DeclarationMatcher externc_matcher = cxxMethodDecl(isExternC()).bind("extern_c");
-DeclarationMatcher function_matcher = functionDecl().bind("functions");*/
 
 String output;
 bool do_dump_everything;
 
 
-/*
-NAMESPACE,
-CLASS,
-TYPEDEF,
-ENUM,
-STATIC_FUNCTION,
-CLASS_METHOD,
-
-NAMESPACE_REF,
-CLASS_REF,
-TYPEDEF_REF,
-ENUM_REF,
-STATIC_FUNCTION_REF,
-CLASS_METHOD_REF
-*/
 
 struct NamedDeclPrinter : public MatchFinder::MatchCallback {
 	Vector<CodeItem>& out;
@@ -371,7 +276,6 @@ void CppImportToolCode(String code, Vector<CodeItem>& out) {
 	
 	FileOut fout(file);
 	
-	//CHeaders(fout);
 	CppHeaders(fout);
 	
 	fout << code;
@@ -394,7 +298,6 @@ void CppImportToolCode(String code, Vector<CodeItem>& out) {
 	
 	ClangToolMain(ptrs.GetCount(), ptrs.Begin(), out);
 	
-	//LOG(output);
 }
 
 void CppImportTool(String path, const Vector<String>& includes, const Vector<String>& defines, Vector<CodeItem>& out) {
@@ -442,11 +345,9 @@ void CppImportToolFork(String path, const Vector<String>& includes, const Vector
 	for (String def : defines)
 		cmd << " -D" + def;
 	
-	//LOG(cmd);
 	
 	String pipe_out;
 	Sys(cmd, pipe_out);
-	//LOG(pipe_out);
 	
 	FileIn fin(file_path);
 	fin % out;

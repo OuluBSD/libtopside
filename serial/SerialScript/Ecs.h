@@ -44,15 +44,8 @@ public:
 	
 	
 	ScriptEcsSystemLoader(ScriptWorldLoader& parent, int id, Script::EcsSysDefinition& def);
-	void		Visit(RuntimeVisitor& vis) override {/*vis | systems | pools;*/}
+	void		Visit(RuntimeVisitor& vis) override {}
 	bool		Load() override;
-	/*String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
-	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -65,15 +58,8 @@ public:
 	
 	
 	ScriptComponentLoader(ScriptEntityLoader& parent, int id, Script::ComponentDefinition& def);
-	void		Visit(RuntimeVisitor& vis) override {/*vis | comps;*/}
+	void		Visit(RuntimeVisitor& vis) override {}
 	bool		Load() override;
-	/*String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
-	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -89,13 +75,6 @@ public:
 	ScriptEntityLoader(ScriptPoolLoader& parent, int id, Script::EntityDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | comps;}
 	bool		Load() override;
-	/*String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
-	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -105,7 +84,6 @@ public:
 	RTTI_DECL1(ScriptPoolLoader, Base)
 	
 public:
-	//enum {NORMAL, SPLITTED_CHAIN, SPLITTED_LOOPS};
 	
 	Array<ScriptEntityLoader>		entities;
 	Array<ScriptPoolLoader>			pools;
@@ -114,17 +92,9 @@ public:
 	
 	
 	ScriptPoolLoader(ScriptWorldLoader& parent, ScriptPoolLoader* chain_parent, int id, Script::PoolDefinition& def);
-	/*void		ForwardSubchainLoops();
-	void		ForwardChainLoops();*/
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | entities | pools;}
 	bool		Load() override;
-	/*String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;*/
 	
 };
 
@@ -142,12 +112,6 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis | systems | pools;}
 	String		GetTreeString(int indent) override;
 	bool		Load() override;
-	/*void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
-	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
-	void		GetStates(Vector<ScriptStateLoader*>& v) override;
-	void		ForwardLoops() override;
-	void		LoopStatus() override;
-	void		CheckStatusDeep() override;*/
 	
 };
 

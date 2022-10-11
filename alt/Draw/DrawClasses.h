@@ -25,7 +25,6 @@ class Draw :
 public:
 	RTTI_DECL0(Draw)
 	
-	//Draw(){}
 	virtual ~Draw() {}
 	
 	void DrawLine(int x1, int y1, int x2, int y2, int width = 0, Color color = DefaultInk());

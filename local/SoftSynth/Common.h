@@ -2,23 +2,6 @@
 #define _SoftSynth_Common_h_
 
 
-/*#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-
-#ifndef max
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#endif*/
-
-
-
 #if COMPILER_GCC || COMPILER_CLANG
 	#define ALIGNED_PRE(x)
 	#define ALIGNED_CACHE_PRE
@@ -51,7 +34,6 @@
 #define INV_FACTORIAL_7_2PIPOW7 ((1.0f / 5040.0f) * (2.0f * M_PIf) * (2.0f * M_PIf) * (2.0f * M_PIf) * (2.0f * M_PIf) * (2.0f * M_PIf) * (2.0f * M_PIf) * (2.0f * M_PIf))
 
 #define FRAMES_PER_LFO 32
-
 
 
 #endif

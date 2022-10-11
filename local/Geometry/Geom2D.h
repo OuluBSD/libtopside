@@ -118,12 +118,7 @@ struct OrientedRectangle {
 		rot = 0;
 	}
 	
-	/*F Width() const { return sz[0]; }
-	F Height() const { return sz[1]; }
-	vec2 GetSize() const { return sz; }
-	vec2 GetMin() {vec2 p = pos + sz; return vec2 {std::min(pos[0], p[0]), std::min(pos[1], p[1])};}
-	vec2 GetMax() {vec2 p = pos + sz; return vec2 {std::max(pos[0], p[0]), std::max(pos[1], p[1])};}
-	*/
+	
 	bool Contains(const vec2& pt) const;
 	bool Intersects(const line2& l) const;
 	bool Intersects(const Circle& c) const;

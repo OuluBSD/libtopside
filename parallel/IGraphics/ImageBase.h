@@ -8,7 +8,6 @@ template <class Gfx>
 struct ImageBaseAtomT :
 	Atom
 {
-	//One<OOSDL2::Image>			obj;
 	Vector<Image>				imgs;
 	String						last_error;
 	dword						seq = 0;
@@ -29,9 +28,6 @@ public:
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	bool			IsReady(PacketIO& io) override;
 	
-	//OOSDL2::Component&	GetObj() override {return *obj;}
-	//OOSDL2::Image*		GetOOSDL2() {return &*obj;}
-	
 	Size			GetResolution() const;
 	
 	bool			IsOpen() const {return !imgs.IsEmpty();}
@@ -45,8 +41,6 @@ public:
 	
 	
 };
-
-//using ImageBaseAtomTRef			= Ref<ImageBaseAtomT,			AtomParent>;
 
 using SdlOglImageBase = ImageBaseAtomT<SdlOglGfx>;
 

@@ -93,21 +93,8 @@ template <class Gfx>
 void SwGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	auto& l = Local();
 	l.rend.SetDrawBuffers(tgt);
-	/*l.rend.SetTarget(tgt);
-	for(int i = 0; i < CHANNEL_COUNT; i++) {
-		uint32 j = 1 << i;
-		if ((uint32)tgt & j) {
-			auto rw = l.texture[i].rw;
-			ASSERT(rw);
-			if (rw)
-				l.rend.AddTarget(*rw);
-		}
-	}*/
+	
 }
-
-/*void SwGfxT<Gfx>::Clear_Color() {
-	glClear(GL_COLOR_BUFFER_BIT);
-}*/
 
 template <class Gfx>
 void SwGfxT<Gfx>::ActiveTexture(int ch) {
@@ -120,9 +107,6 @@ void SwGfxT<Gfx>::DeactivateTexture() {
 	Local().active_texture = -1;
 }
 
-/*void CpuRendererBase::ActivateNextFrame() {
-	// pass
-}*/
 
 template <class Gfx>
 String SwGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
@@ -229,14 +213,6 @@ void SwGfxT<Gfx>::ShaderSource(NativeShaderRef s, String code) {
 
 template <class Gfx>
 bool SwGfxT<Gfx>::CompileShader(NativeShaderRef s) {
-	/*ASSERT(ctx && rt && shdr);
-	if (!ctx || !rt || !shdr)
-		return false;
-	
-	if (comp.IsEmpty())
-		comp.Create();
-	
-	return comp->Compile(*ctx, *rt, *shdr, s, s->GetType();*/
 	return Local().comp.Compile(*s);
 }
 
@@ -320,11 +296,6 @@ void SwGfxT<Gfx>::TexParameteri(GVar::TextureMode type, GVar::Filter filter, GVa
 	ASSERT(fb);
 	if (fb)
 		fb->SetParam(type, filter, repeat);
-	/*if (Local().active_texture >= 0) {
-		auto& t = Local().T();
-		if (t.rw)
-			t.rw->SetParam(type, filter, repeat);
-	}*/
 }
 
 template <class Gfx>
@@ -579,22 +550,8 @@ void SwGfxT<Gfx>::BeginRender() {
 	ASSERT_(l.pipe, "pipe is not bound yet");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	/*GVar::RenderTarget tgt = l.rend.GetTargets();
-	ASSERT(tgt);
-	l.rend.ClearBuffers();
-	for(int i = 0; i < CHANNEL_COUNT; i++) {
-		uint32 j = 1 << i;
-		if ((uint32)tgt & j) {
-			auto rw = l.texture[i].rw;
-			ASSERT(rw);
-			if (rw)
-				l.rend.AddBuffer(*rw);
-		}
-	}
-	*/
 	l.pipe->Begin();
 	l.rend.SetTarget(*l.pipe, *l.fb);
-	//l.rend.SetPipeline(*l.pipe);
 	l.rend.Begin();
 }
 

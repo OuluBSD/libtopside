@@ -22,46 +22,6 @@ void DummySoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	gen.Play((int)offset, p);
 }
 
-/*void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
-	TODO
-	if (e.IsStoring()) {
-		Audio& sink = e.Sink();
-		const RealtimeSourceConfig& conf = e.SourceConfig();
-		
-		AudioVolatileBuffer* vol_aud;
-		SimpleBufferedAudio* buf_aud;
-		if ((vol_aud = CastPtr<AudioVolatileBuffer>(&sink))) {
-			while (!vol_aud->IsQueueFull()) {
-				off32 offset = og.Create();
-				AudioPacket p = CreateAudioPacket(offset);
-				AudioPacketTracker::Track(TrackerInfo(this, __FILE__, __LINE__), p);
-				p->Set(fmt, time);
-				p->Data().SetCount(fmt.GetFrameSize(), 0);
-				gen.Play(p);
-				vol_aud->Put(p, false);
-				time += fmt.GetFrameSeconds();
-			}
-		}
-		else if ((buf_aud = CastPtr<SimpleBufferedAudio>(&sink))) {
-			buf_aud->Exchange(e);
-		}
-		else TODO
-	}
-	else TODO
-}
-
-int DummySoundGeneratorAudio::GetQueueSize() const {
-	return 10;
-}
-
-AudioFormat DummySoundGeneratorAudio::GetFormat() const {
-	return fmt;
-}
-
-bool DummySoundGeneratorAudio::IsQueueFull() const {
-	return true;
-}*/
-
 
 
 
@@ -81,7 +41,6 @@ DummySoundGeneratorComponent::DummySoundGeneratorComponent() {
 
 void DummySoundGeneratorComponent::Initialize() {
 	Component::Initialize();
-	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 	
 	auto fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<OrderSpec>();
 	sink_value.SetFormat(fmt);
@@ -92,7 +51,6 @@ void DummySoundGeneratorComponent::Initialize() {
 void DummySoundGeneratorComponent::Uninitialize() {
 	Component::Uninitialize();
 	
-	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {

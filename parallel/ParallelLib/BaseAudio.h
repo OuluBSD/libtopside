@@ -30,12 +30,10 @@ public:
 			dst += right_side;
 			src = (byte*)(void*)frame.Begin();
 			memcpy(dst, src, left_side);
-			//frame_offset = left_side;
 		}
 		// 1part
 		else {
 			memcpy(dst, src, copy_size);
-			//frame_offset = (frame_offset + copy_size) % total_bytes;
 		}
 	}
 	
@@ -121,7 +119,6 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
-	//void Forward(FwdScope& fwd) final;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}

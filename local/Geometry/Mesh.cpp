@@ -14,34 +14,6 @@ void Mesh::Clear() {
 	
 }
 
-#if 0
-
-void Mesh::Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
-	this->vertices <<= vertices;
-    this->indices <<= indices;
-    
-    TODO
-    //Refresh(o);
-}
-
-void Mesh::Refresh(GfxDataObject& o) {
-	if (o.IsOpenGL()) {
-#if HAVE_OPENGL
-		RefreshOgl(o);
-#else
-		LOG("Mesh::Refresh: error: opengl is not supported in this executable");
-#endif
-	}
-	else if (o.IsSoftware()) {
-		RefreshSw(o);
-	}
-	else {
-		TODO
-	}
-}
-
-#endif
-
 void Mesh::UpdateBoundingBox() {
 	int m_num_tri = indices.GetCount() / 3;
     TS::ivec3 tri_indices = GetTriangleIndices(0);

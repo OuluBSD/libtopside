@@ -105,9 +105,7 @@ void InteractionSystem::Update(double dt) {
 	
 	if (!spatial_interaction_manager) {
 		TODO
-	    /*spatial_interaction_manager = PlayerInteractionManager::GetForCurrentView();
-	    if (spatial_interaction_manager)
-			BindEventHandlers();*/
+	    
 	}
 }
 

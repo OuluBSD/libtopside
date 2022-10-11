@@ -83,8 +83,6 @@ public:
 	typedef Terminal CLASSNAME;
 	Terminal(IDE* ide);
 	
-	//void PostBuilderLogRefresh() {PostCallback(THISBACK(BuilderLogRefresh));}
-	//void BuilderLogRefresh();
 	void NewLogItem(BuildLogItem item);
 	
 	void WhenSelectBuilderMessage();

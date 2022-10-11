@@ -50,9 +50,6 @@ void MixerChannelInputComponent::Uninitialize() {
 	
 }
 
-/*const AudioHeader& MixerChannelInputComponent::GetHeader() const {
-	TODO
-}*/
 
 
 
@@ -68,9 +65,6 @@ void MixerChannelOutputComponent::Uninitialize() {
 	
 }
 
-/*const AudioHeader& MixerChannelOutputComponent::GetHeader() const {
-	TODO
-}*/
 
 AudioStream& MixerChannelOutputComponent::GetStream(AudCtx) {
 	TODO
@@ -126,9 +120,6 @@ Audio& MixerAudioSourceComponent::GetValue(AudCtx) {
 	TODO
 }
 
-/*void MixerAudioSourceComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
-	
-}*/
 
 
 
@@ -139,11 +130,10 @@ MidiFileComponent::MidiFileComponent() {
 
 void MidiFileComponent::Initialize() {
 	TODO // DevComponent::Initiralize
-	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
+	
 }
 
 void MidiFileComponent::Clear() {
@@ -169,8 +159,6 @@ bool MidiFileComponent::OpenFilePath(String path) {
 	file.LinkNotePairs();
 	
 	track_i.SetCount(file.GetTrackCount(), 0);
-	
-	// DumpMidiFile();
 	
 	return true;
 }
@@ -213,7 +201,6 @@ void MidiFileComponent::EmitMidi(double dt) {
 	}
 	
 	song_dt += dt;
-	//LOG("midi song dt: " << song_dt);
 	
 	tmp.midi.Reserve(1000);
 	
@@ -226,12 +213,7 @@ void MidiFileComponent::EmitMidi(double dt) {
 
 void MidiFileComponent::OnLink(Sink sink, Cookie src_c, Cookie sink_c) {
 	TODO
-	/*ComponentBase* comp = iface->AsComponentBase();
-	ASSERT(comp);
-	Ref<MidiSink> sink = comp->AsMidiSink();
-	ASSERT(sink);
-	sink->Configure(file);
-	return NULL;*/
+	
 }
 
 void MidiFileComponent::CollectTrackEvents(int i) {
@@ -255,8 +237,6 @@ void MidiFileComponent::CollectTrackEvents(int i) {
 void MidiFileComponent::EmitTrack(int i) {
 	if (tmp.midi.IsEmpty())
 		return;
-	
-	//for(const Midi::Event* ev : tmp.midi) {LOG("track " << i << ": " << ev->ToString());}
 	
 	for (Ref<MidiSink> c : MidiSource::GetConnections())
 		if (c->AcceptsTrack(i))

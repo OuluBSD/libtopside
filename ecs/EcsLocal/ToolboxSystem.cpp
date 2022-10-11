@@ -133,19 +133,12 @@ bool ToolboxSystemBase::Initialize() {
 	if (!InteractionListener::Initialize(GetEngine(), AsRefT<InteractionListener>()))
 		return false;
 	
-	//for(int i = 0; i < ctrls.GetCount(); i++)
-	//	ctrls[i].hand = (ControllerHand)i;
-	
 	return true;
 }
 
 void ToolboxSystemBase::Uninitialize() {
 	InteractionListener::Uninitialize(GetEngine(), AsRefT<InteractionListener>());
 	
-	//for (auto& c : ctrls)
-	//	c.Clear();
-	//instruction_text.Clear();
-	//entities.Clear();
 }
 
 bool ToolboxSystemBase::Arg(String key, Object value) {
@@ -163,19 +156,11 @@ void ToolboxSystemBase::Detach(ToolComponentRef tool) {
 }
 
 void ToolboxSystemBase::AddToolSystem(ToolSystemBaseRef system) {
-	//system->Register(entities);
 	#if 0
 	selector_objects.GetAdd(system->GetType()) = system->CreateToolSelector();
 	#endif
 	selectors.GetAdd(system->GetType()) = system;
 	
-	/*if (active_tool_idx < 0) {
-		active_tool_idx = selector_objects.GetCount() - 1;
-		
-	}*/
-	/*for (auto& context : ctrls) {
-		SwitchToolType(context.ctrl, system->GetType());
-	}*/
 }
 
 void ToolboxSystemBase::RemoveToolSystem(ToolSystemBaseRef system) {
@@ -183,7 +168,6 @@ void ToolboxSystemBase::RemoveToolSystem(ToolSystemBaseRef system) {
 	#if 0
 	selector_objects.RemoveKey(system->GetType());
 	#endif
-	//system->Unregister();
 }
 
 void ToolboxSystemBase::Start() {
@@ -293,14 +277,6 @@ void ToolboxSystemBase::OnControllerPressed(const CtrlEvent& e) {
 }
 
 void ToolboxSystemBase::Update(double dt) {
-	/*static const int fps_sz = 32;
-	static float fps[fps_sz] = {};
-	static uint32 curr_fps = 0;
-	fps[curr_fps++] = dt;
-	curr_fps %= fps_sz;
-	const float avg_dt = std::accumulate(std::begin(fps), std::end(fps), 0.0f) / fps_sz;
-	instruction_text->Get<TextRenderable>()->text =
-	        IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;*/
 	
 	for (ToolComponentRef& tool : tools) {
 		if (tool->active_hand) {
@@ -309,7 +285,6 @@ void ToolboxSystemBase::Update(double dt) {
 			if (trans && hand_trans) {
 				// Very simple offset
 				*trans = *hand_trans;
-				//trans->position[1] += 0.1;
 				
 				// add offset between hand and tool
 				#if 0
@@ -337,16 +312,6 @@ void ToolboxSystemBase::Update(double dt) {
 			}
 		}
 		
-		// Update the debug text for each Controller based on the currently selected tool
-		/*for (size_t i = 0; i < ctrls.GetCount(); ++i) {
-			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + ": ";
-			
-			if (auto tool = ctrls[i].ctrl->Get<ToolComponent>()) {
-				displayed_text += tool->title + "\n\n" + tool->description;
-			}
-			
-			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
-		}*/
 	}
 	else {
 #if 0
@@ -372,10 +337,6 @@ void ToolboxSystemBase::Update(double dt) {
 #endif
 	}
 }
-
-/*String ToolboxSystemBase::ControllerHandToString(ControllerHand hand) {
-	return hand == Left ? "Left" : "Right";
-}*/
 
 void ToolboxSystemBase::SwitchToolType(EntityRef entity, const TypeId& new_type) {
 	ToolComponentRef tool = entity->Get<ToolComponent>();

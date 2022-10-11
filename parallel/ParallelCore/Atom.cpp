@@ -132,22 +132,7 @@ void AtomBase::SetQueueSize(int queue_size) {
 
 
 
-#if 0
 
-void AtomMap::Dump() {
-	auto iter = AtomMapBase::begin();
-	for(int i = 0; iter; ++iter, ++i) {
-		LOG(i << ": " <<
-			iter.value().GetDynamicName() << ": \"" <<
-			iter.value().ToString() << "\"");
-	}
-}
-
-void AtomMap::ReturnAtom(AtomStore& s, AtomBase* c) {
-	s.ReturnAtom(c);
-}
-
-#endif
 
 
 NAMESPACE_PARALLEL_END

@@ -51,9 +51,6 @@ class FFT1 : Moveable<FFT1> {
 	Vector<float>   input;
 	Vector<float>   fft_normalized;
 	Vector<float>   fft_phase_normalized;
-	/*RecordBuffer    obj;
-	RecordBuffer    fourier_plot;
-	RecordBuffer    phase_plot;*/
 	int length;
 	Size orig_sz;
 	
@@ -65,16 +62,11 @@ public:
 	void ForwardFFT();
 	void FFTShift();
 	void RemoveFFTShift();
-	//void FFTPlot(const Vector<Complex>& src);
-	//void FFTPlotShifted() {FFTPlot(fft_shifted);}
 	void InverseFFT();
 	void Process(const Vector<Complex>& input, Vector<Complex>& output, int dir);
 	void FFT1D(int dir, int m, const Vector<Complex>& input, Vector<Complex>& output);
 	
 	const Vector<Complex>& GetFFTShifted() const {return fft_shifted;}
-	/*Image GetFourierPlot() const {return fourier_plot;}
-	Image GetPhasePlot() const {return phase_plot;}
-	Image GetImage() const {return GetImageFromSquared(obj, orig_sz);}*/
 	int GetLength()  const{return length;}
 	float GetMagnitude(int pos) const;
 	
@@ -120,9 +112,6 @@ public:
 	void FFT1D(int dir, int m, Vector<double>&  x, Vector<double>&  y);
 	
 	const Vector<Vector<Complex> >& GetFFTShifted() const {return fft_shifted;}
-	/*Image GetFourierPlot() const {return fourier_plot;}
-	Image GetPhasePlot() const {return phase_plot;}
-	Image GetImage() const {return GetImageFromSquared(obj, orig_sz);}*/
 	int GetWidth() const {return width;}
 	void MultiplyShift(const Image& mask) const;
 	double GetMagnitude(int pos) const;

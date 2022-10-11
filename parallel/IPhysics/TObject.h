@@ -44,10 +44,7 @@ public:
 	void DetachContent();
 	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetBodyRotationAxisAngle(body, ax, ay, az, angle);}
 	vec3 GetBodyPosition() {return Fys::GetBodyPosition(body);}
-	//void LoadModel(CpuDataState& state);
-	//void LoadModel(OglDataState& state);
 	bool LoadModel(GfxModelState& s) override;
-	//bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
 	String ToString() const override {return Fys::Id() + "Object";}
 	
 	ObjectT& SetRotationX(double angle) {Fys::SetGeomRotationAxisAngle(geom, 1, 0, 0, angle); return *this;}

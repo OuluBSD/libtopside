@@ -61,13 +61,6 @@ bool WorldState::Set(const String& key, bool value) {
 	return Set(idx, value);
 }
 
-/*bool WorldState::IsTrue(const String& key) const {
-	int idx = ap->GetAddAtom(key);
-	if (idx < values.GetCount())
-		return values[idx] == "true";
-	return false;
-}*/
-
 bool WorldState::IsFalse(const String& key) const {
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())
@@ -277,7 +270,6 @@ void ActionPlannerWrapper::OnResize() {
 String ActionPlannerWrapper::GetWorldstateDescription( const WorldState& ws )
 {
 	String str;
-	//str += ws.GetName() + ": ";
 	for(int i = 0; i < atoms.GetCount(); i++) {
 		if (ws.using_act.GetCount() <= i) break;
 		if (ws.using_act[i]) {

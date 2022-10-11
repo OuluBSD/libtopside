@@ -85,37 +85,7 @@ public:
 	
 };
 
-/*
-template <class Gfx>
-class VolumeBaseT :
-	public BufferBaseT<Gfx>
-{
-	using Filter = GVar::Filter;
-	using Wrap = GVar::Wrap;
-	
-	bool			loading_cubemap = false;
-	Filter			filter = GVar::FILTER_LINEAR;
-	Wrap			wrap = GVar::WRAP_REPEAT;
-	Array<Packet>	cubemap;
-	
-public:
-	using BufferBase = BufferBaseT<Gfx>;
-	RTTI_DECL1(VolumeBaseT, BufferBase);
-	
-	VolumeBaseT() {}
-	
-	bool Initialize(const Script::WorldState& ws) override;
-	bool PostInitialize() override;
-	void Uninitialize() override;
-	bool IsReady(PacketIO& io) override;
-	bool Recv(int sink_ch, const Packet& in) override;
-	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	void Visit(RuntimeVisitor& vis) override;
-	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
-	
-	
-};
-*/
+
 
 template <class Gfx>
 class FboReaderBaseT :
@@ -193,7 +163,6 @@ public:
 #define GFXTYPE(x) \
 	using x##ShaderBase = ShaderBaseT<x##Gfx>; \
 	using x##TextureBase = TextureBaseT<x##Gfx>; \
-	/*using x##VolumeBase = VolumeBaseT<x##Gfx>;*/ \
 	using x##FboReaderBase = FboReaderBaseT<x##Gfx>; \
 	using x##KeyboardBase = KeyboardBaseT<x##Gfx>; \
 	using x##AudioBase = AudioBaseT<x##Gfx>;

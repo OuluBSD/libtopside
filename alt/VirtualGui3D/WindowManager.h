@@ -37,21 +37,6 @@ public:
 	}
 	
 	
-	/*template <class T> CoreWindow& AddWindow(int screen, T* obj_ptr) {
-		lock.Enter();
-		TopWindow* tw = obj_ptr;
-		CoreWindow& cw = owned_wins.Add();
-		cw.tw = tw;
-		screens[screen].AddWindow(cw);
-		lock.Leave();
-		return cw;
-	}*/
-	
-	/*template <class T> T& AddWindow(int screen) {
-		T* obj_ptr = new T();
-		return AddWindow(screen, obj_ptr);
-	}*/
-	
 	void CloseWindow(TopWindow* tw);
 	void Shutdown();
 	

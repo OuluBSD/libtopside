@@ -1,9 +1,6 @@
 #include "IScreen.h"
 
 
-/*#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <GL/glx.h>*/
 		
 #if defined flagOGL
 NAMESPACE_PARALLEL_BEGIN
@@ -64,23 +61,7 @@ bool X11Ogl_IsExtensionSupported(const char *extList, const char *extension) {
 	return false;
 }
 
-/*
-void SetFullScreen(Display* dpy, uint i) {
-	XEvent ev;
-	Atom atom;
-	
-	ev.type = ClientMessage;
-	ev.xclient.window = win;
-	ev.xclient.message_type = XInternAtom(dpy, "_NET_WM_STATE", False);
-	ev.xclient.format = 32;
-	ev.xclient.data.l[0] = i;
-	atom = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
-	ev.xclient.data.l[1] = atom;
-	ev.xclient.data.l[2] = atom;
-	XSendEvent(dpy, root, False, ClientMessage, &ev);
-}
 
-*/
 
 typedef struct {
 	unsigned long   flags;
@@ -276,9 +257,6 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		}
 		
 		// Create OpenGL context
-		/*dev.gl_ctx = glXCreateContext(display, visual, NULL, GL_TRUE);
-		glXMakeCurrent(display, win, context);*/
-		
 		int context_attribs[] = {
 			GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
 			GLX_CONTEXT_MINOR_VERSION_ARB, 2,
@@ -464,53 +442,7 @@ void ScrX11Ogl::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSo
 }
 
 bool ScrX11Ogl::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	/*Format fmt = in.GetFormat();
 	
-	int width = vfmt.res[0];
-	int height = vfmt.res[1];
-	
-	ASSERT(dev.fb);
-	ASSERT(!dev.fb->data);
-    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
-    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
-    ASSERT(width == dev.fb->width);
-    ASSERT(height == dev.fb->height);
-    if (width != dev.fb->width || height != dev.fb->height) {
-        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
-        return false;
-    }
-    
-    int rc = XPutImage(	dev.display,
-						dev.win,
-						dev.gc,
-						dev.fb,
-						0,0,
-						0,0,
-						width,
-						height);
-    
-    if (rc == BadMatch) {
-        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
-        dev.fb->data = 0;
-        return false;
-    }*/
-    
-    /*if (fmt.IsOrder()) {
-        
-        TODO
-        
-    }
-    else if (fmt.IsOgl()) {
-        TODO
-        FboFormat& vfmt = fmt;
-		int frame_sz = vfmt.GetFrameSize();
-    }
-    else {
-        TODO
-    }
-    
-	XFlush(dev.display);*/
-	//XSync(dev.display, False);
 	dev.accel.Render(cfg);
 	
 	return true;

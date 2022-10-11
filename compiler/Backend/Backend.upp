@@ -6,6 +6,7 @@ uses
 
 file
 	TODO.txt,
+	src.tpp,
 	Backend.h,
 	Defs.h,
 	Exporter.h,
@@ -30,10 +31,5 @@ file
 	AstExporter.h,
 	AstExporter.cpp,
 	Compiler.h,
-	Compiler.cpp,
-	Trash readonly separator,
-	MetaEmitter.h,
-	MetaEmitter.cpp,
-	AstBuilder.h,
-	src.tpp;
+	Compiler.cpp;
 

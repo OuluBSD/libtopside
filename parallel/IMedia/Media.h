@@ -42,10 +42,6 @@ public:
 	String GetLastError() const {return last_error;}
 	bool IsSeparateThread() const {return separate_thrd;}
 	
-/*#if HAVE_OPENGL
-	void PaintOpenGL(GLuint active_tex);
-#endif*/
-	
 	
 	Callback WhenError;
 	

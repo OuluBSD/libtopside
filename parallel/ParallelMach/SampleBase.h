@@ -145,7 +145,6 @@ template<> struct DimBase<2> {
 template<> struct DimBase<3> {
 	static const int n = 3;
 	int					res[3];
-	//int					width_pad, height_pad;
 	
 	using DimArg = Size3;
 	
@@ -176,7 +175,6 @@ public:
 	
 	void	Clear() {}
 	void	SetTimeSeries(int,int) {Panic("never");}
-	//void SetDeviceInternal() {}
 	
 	int		GetSampleRate() const {return 1;}
 	bool	IsSame(const OnceBase& b) const {return true;}
@@ -191,7 +189,6 @@ public:
 	
 	void	Clear() {}
 	void	SetTimeSeries(int,int) {Panic("never");}
-	//void SetDeviceInternal() {}
 	
 	int		GetSampleRate() const {return 1;}
 	bool	IsSame(const SparseTimeSeriesBase& b) const {return true;}
@@ -269,7 +266,6 @@ public:
 	
 };
 
-//static_assert(std::is_trivially_constructible<SampleBase<SoundSample>>::value == true, "SampleBase<SoundSample> must be trivial to construct");
 
 
 struct DevBase : RTTIBase {

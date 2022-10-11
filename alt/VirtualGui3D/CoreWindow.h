@@ -85,20 +85,16 @@ class CoreWindow :
 		void DoResize();
 	};
 	
-	//One<Shader> shader;
 	
 	One<TopWindow> owned_tw;
 	TopWindow* tw = 0;
 	void (CoreWindow::*reset_fn)();
 	Windows* wins = NULL;
 	
-	//Framebuffer fb;
 	ResizeFrame resize_frame;
 	WindowDecoration decor;
 	Button minimize, maximize, close;
 	Rect stored_rect;
-	//Point global_mouse;
-	//bool is_global_mouse_override = false;
 	int id = -1;
 	bool pending_partial_redraw = false;
 	

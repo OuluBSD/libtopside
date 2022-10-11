@@ -4,17 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
-//struct GfxShader;
-//struct CpuDataObject;
-/*#if HAVE_OPENGL
-struct OglDataObject;
-class OglShader;
-#endif*/
-
-
-//struct FramebufferState;
-
-
 
 
 struct ModelNode : Moveable<ModelNode>

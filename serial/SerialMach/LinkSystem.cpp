@@ -106,12 +106,7 @@ void LinkSystem::Stop() {
 }
 
 void LinkSystem::Uninitialize() {
-	/*
-	Nope... no asserts... LinkSystem is uninitialized first, so go ahead....
-	ASSERT(updated.IsEmpty());
-	ASSERT(customers.IsEmpty());
-	ASSERT(drivers.IsEmpty());
-	ASSERT(pollers.IsEmpty());*/
+	//Don't assert as empty... LinkSystem is uninitialized first, so go ahead....
 	once_cbs.Clear();
 	updated.Clear();
 	customers.Clear();

@@ -153,11 +153,6 @@ void StereoShader::Process(FragmentShaderArgs& a) {
 	const ByteImage* diffuse = a.fa->color_buf[TEXTYPE_DIFFUSE];
 	ASSERT(diffuse);
 	
-	/*static NativeColorBufferConstRef prev;
-	if (diffuse != prev) {
-		LOG(HexStr((size_t)prev) << " --> " << HexStr((size_t)diffuse));
-		prev = diffuse;
-	}*/
 	vec4 clr;
 	
 	if (0 && (int)a.frag_coord[0] % 2) {
@@ -213,14 +208,6 @@ ObjViewFragment::ObjViewFragment() {
 
 
 void ObjViewFragment::Process(FragmentShaderArgs& args) {
-	#if 0
-	float w = args.generic->iResolution[0];
-	float h = args.generic->iResolution[1];
-	float x = args.frag_coord[0] / w;
-	float y = args.frag_coord[1] / h;
-	args.frag_color_out = vec4(x, y, 0, 1);
-	#else
-	
 	ASSERT(args.fa);
 	vec3& n = args.normal;
 	vec3& light_dir = args.fa->light_dir;
@@ -262,7 +249,6 @@ void ObjViewFragment::Process(FragmentShaderArgs& args) {
 		used_clr[1] = intensity;
 		used_clr[2] = intensity;
 	}
-	#endif
 }
 
 

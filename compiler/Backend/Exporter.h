@@ -33,22 +33,11 @@ private:
 	
 	ArrayMap<String,Package>	pkgs;
 	Vector<NodeBase*>			scopes;
-	//CompilationUnit&			cu;
 	AstNode&					root;
 	String						export_dir;
 	bool						protect_pkg = false;
 	
-	/*bool Visit(CompilationUnit& cu);
-	bool Visit(Namespace& ns);
-	bool Visit(Class& c);
-	bool Visit(Field& f);
-	bool Visit(FunctionIdScope& fis);
-	bool Visit(Function& fn);
-	bool Visit(Statement& s);
-	bool Visit(Expression& e);
-	bool Visit(MetaStatement& ms);
-	bool Visit(MetaExpression& me);
-	bool Visit(UsingStatement& us);*/
+	
 	bool Visit(AstNode& n);
 	void Push(NodeBase& n);
 	void Pop();

@@ -19,12 +19,9 @@ void ShootingInteractionSystemBase::Attach(ShootingComponentRef c) {
 	
 	// The "barrel_to_ctrl" is to transform from the tip of the barrel to the location of the controller
 	const mat4 barrel_to_ctrl = Translate(vec3(0.0f, 0.0675f, 0.0f)) * XRotation(ConvertToRadians(-10));
-	//mat4 barrel_to_ctrl = Identity<mat4>();
 	
 	Ref<Entity> entity = c->GetEntity();
 	entity->Get<ShootingComponent>()->barrel_to_ctrl = barrel_to_ctrl;
-	//entity->Get<ShootingComponent>()->gun = gun;
-	//entity->Get<ShootingComponent>()->SetEnabled(false);
 }
 
 void ShootingInteractionSystemBase::Detach(ShootingComponentRef c) {
@@ -68,8 +65,6 @@ void ShootingInteractionSystemBase::OnControllerReleased(const CtrlEvent& e) {
 }
 
 void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
-	//const ControllerState& source_state = e.GetState();
-	//const ControllerSource& source = source_state.GetSource();
 	
 	if (e.type == EVENT_HOLO_PRESSED && e.value == ControllerMatrix::TRIGGER) {
 		for (ShootingComponentRef& shooting : comps) {
@@ -86,13 +81,10 @@ void ShootingInteractionSystemBase::OnControllerPressed(const CtrlEvent& e) {
 				;
 				
 			vec3 position = Position(barrel_to_world);
-			//const vec3 position = trans->position;
 			quat orientation = MatQuat(barrel_to_world);
-			//const quat orientation = trans->orientation;
 			vec3 forward = Forward(barrel_to_world);
 			forward.Normalize();
 			vec3 bullet_velocity = forward * shooting->bullet_speed;
-			//const vec3 bullet_velocity = forward * 0.1;
 			
 			#if 0
 			LOG("ShootingInteractionSystemBase::OnControllerPressed: "
@@ -127,7 +119,6 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
 		ASSERT(e.ctrl);
 		bool should_render_controller = e.ctrl->ctrl[1].IsGrasped();
-		//model->SetEnabled(should_render_controller);
 		model->color[3] = should_render_controller ? 0.25 : 1.0;
 	}
 }
@@ -187,22 +178,6 @@ bool ShootingComponent::LoadModel(ModelComponent& mdl) {
 	
 	return true;
 }
-
-/*void ShootingComponent::SetEnabled(bool enable) {
-	Enableable::SetEnabled(enable);
-	
-	if (gun) {
-		gun->SetEnabled(enable);
-	}
-}
-
-void ShootingComponent::Destroy() {
-	Destroyable::Destroy();
-	
-	if (gun) {
-		gun->Destroy();
-	}
-}*/
 
 
 NAMESPACE_ECS_END

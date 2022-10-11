@@ -8,27 +8,6 @@ typedef RTuple<Ref<Model>, TransformRef, RenderableRef> RendModel;
 typedef Vector<RendModel> VectorRendModel;
 
 
-/*struct PrimitiveShape :
-	public Component<PrimitiveShape>,
-	public ModelSink
-{
-	RTTI_COMP1(PrimitiveShape, ModelSink)
-	
-	COMP_DEF_VISIT
-    void operator=(const PrimitiveShape& src) {}
-    
-	void SetShape(ShapeId type, const vec2& ax_vec);
-	void Dispatch() {TODO}
-	
-protected:
-	Shape2DWrapper shape;
-	One<Model> model;
-	
-	
-	
-};*/
-
-
 class ModelComponent :
 	public Component<ModelComponent>
 {
@@ -46,17 +25,13 @@ public:
     
     bool Load(GfxDataState& state);
     bool LoadModel(String path);
-    //void Refresh(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
 	Ref<Model> GetModel() {return loader.GetModel();}
     ModelLoader& GetLoader() {return loader;}
     
 	void GetModels(VectorRendModel& models);
 	void Attach(Model* m) {loader.model = m;}
-	/*void LoadModel(CpuDataState& state);
-	void LoadModel(OglDataState& state);
-	void RefreshModel(CpuDataState& state);
-	void RefreshModel(OglDataState& state);*/
+	
 	
 	void Clear();
 	void SetPrefabModel(String prefab); // ResetModel
@@ -93,8 +68,6 @@ protected:
 	mat4 ext_model;
 	bool have_ext_model = false;
 	bool model_changed = false;
-	//CpuDataObject* cpu_obj = 0;
-	//OglDataObject* ogl_obj = 0;
 	
 	void RefreshExtModel();
 	

@@ -10,12 +10,9 @@ struct FboAtomT :
 {
 	using StateDraw = StateDrawT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
-	//using ShaderLibrary = ShaderLibraryT<Gfx>;
-	//using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	using DataState = DataStateT<Gfx>;
 	using PipelineState = PipelineStateT<Gfx>;
 	using ProgramState = ProgramStateT<Gfx>;
-	//using ShaderDataPack = ShaderDataPackT<Gfx>;
 	
 	Vector<BinderIfaceVideo*> binders;
 	One<BinderIfaceVideo>	own_binder;
@@ -24,14 +21,11 @@ struct FboAtomT :
 	int						prev_iter = -1;
 	ValDevCls				src_type;
 	One<ImageDraw>			id;
-	//ProgDraw				pd;
 	StateDraw				accel_sd;
 	Framebuffer				cpu_fb;
 	bool					draw_mem = false;
-	//bool					gfxpack = false;
 	RealtimeSourceConfig*	last_cfg = 0;
 	String					program;
-	//ShaderDataPack		data;
 	DataState				data;
 	One<BinderIfaceVideo>	prog;
 	

@@ -102,7 +102,6 @@ void ProgramStateT<Gfx>::FindVariables() {
 	
 	memset(var_idx, -1, sizeof(var_idx));
 	user_vars.Clear();
-	RendVer(OnClearVars);
 	for (int i = 0; i < n_uniforms; i++) {
 		int size = 0;
 		int type = 0;
@@ -127,7 +126,6 @@ void ProgramStateT<Gfx>::FindVariables() {
 			user_vars << name_str;
 		}
 		
-		RendVer2(OnRealizeVar, name_str, state_var);
 	}
 	
 	is_searched_vars = true;
@@ -191,7 +189,6 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 	int uindex = var_idx[var];
 	ASSERT(uindex >= 0);
 	if (var == VAR_AUDIOTIME) {
-		//LOG("VAR_AUDIOTIME: " << ctx.time_total);
 		Gfx::Uniform1f(uindex, (float)ctx.time_total);
 	}
 	else if (var == VAR_MODELCOLOR) {
@@ -199,18 +196,10 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, ModelState& mdl, int var, con
 	}
 	else if (var == VAR_VIEW) {
 		if (vtgt == VIEW_TARGET_STEREO_LEFT) {
-			/*mat4 m = data.view_stereo[0] * Translate(vec3(0,1.76,-6));
-			vec3 pos = Position(m);
-			Gfx::UniformMatrix4fv(uindex, m);*/
-			
 			ASSERT(data.is_stereo);
 			Gfx::UniformMatrix4fv(uindex, data.view_stereo[0]);
 		}
 		else if (vtgt == VIEW_TARGET_STEREO_RIGHT) {
-			/*mat4 m = data.view_stereo[1] * Translate(vec3(0,1.76,-6));
-			vec3 pos = Position(m);
-			Gfx::UniformMatrix4fv(uindex, m);*/
-			
 			ASSERT(data.is_stereo);
 			Gfx::UniformMatrix4fv(uindex, data.view_stereo[1]);
 		}
@@ -294,8 +283,6 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 	
 	const char* name = GVar::gvars[var].name;
 	DataState& data = *owner->owner;
-	
-	RendVer1(OnUpdateVar, GVar::names[var]);
 	
 	if (var == VAR_AUDIOTIME) {
 		Gfx::Uniform1f(uindex, (float)ctx.time_total);
@@ -441,21 +428,7 @@ int ProgramStateT<Gfx>::BuiltinShaderT() {
 		ShaderState& s = shaders[i];
 		if (s.native) {
 			shdr_count++;
-			/*GVar::ShaderType t = (GVar::ShaderType)i;
-			ASSERT(!s.shader);
-			if (!Gfx::CreateShader((GVar::ShaderType)i, s.shader)) {
-				LOG("BufferStageT<Gfx>::BuiltinShaderT: error: could not create shader");
-				SetError("could not create shader (at BufferT<Gfx>::BuiltinShaderT)");
-				return -1;
-			}
-			ASSERT(s.shader);
-			if (!s.shader) continue;
-			//s.shader.Create(t);
-			s.shader->SetShaderBase(*soft[i]);
-			s.enabled = true;
-			if (!native) {
-				native.Create();
-			}*/
+			
 			s.enabled = true;
 			native.Attach(*s.native);
 			owner->native.Use(native, 1 << i);
@@ -525,13 +498,6 @@ bool ProgramStateT<X11SwGfx>::LoadBuiltinShader(GVar::ShaderType shader_type, St
 
 template <class Gfx>
 bool ProgramStateT<Gfx>::Compile(const GfxCompilerArgs& args) {
-	/*const char* fn_name = "CompilePrograms";
-	for(int i = 0; i < PROG_COUNT; i++) {
-		if (i == FRAGMENT_SHADER && !CompileFragmentShader())
-			return false;
-		if (i == VERTEX_SHADER && !CompileVertexShader())
-			return false;
-	}*/
 	if (ready)
 		return true;
 	ASSERT(!native);
@@ -542,7 +508,6 @@ bool ProgramStateT<Gfx>::Compile(const GfxCompilerArgs& args) {
 		owner->Realize();
 		return r > 0;
 	}
-	//use_user_data = false;
 	
 	Compiler comps[GVar::SHADERTYPE_COUNT];
 	Linker linker;

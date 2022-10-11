@@ -150,15 +150,9 @@ bool BufferStageT<Gfx>::Initialize(int id, AtomBase& a, const Script::WorldState
 				
 				String path = ws.Get(prefix + "path");
 				String name = ws.Get(prefix + "name");
-				//LOG(prefix + "path");
 				
 				if (name.GetCount())
 					name += extension;
-				
-				/*if (path.IsEmpty() && name.IsEmpty() && i == GL::FRAGMENT_SHADER && j == tries-1) {
-					LOG("BufferStageT<Gfx>::Initialize: error: no fragment shader given (for stage " << id << ")");
-					return false;
-				}*/
 				
 				if (path.GetCount()) {
 					conf.is_path = true;
@@ -317,27 +311,11 @@ bool BufferStageT<Gfx>::RealizeData() {
 		quad->prog = prog->id;
 	}
 	
-	//if (prog)
-	//	prog->RealizeCompilation(GetCompilerArgs());
-	
 	if (pipeline)
 		pipeline->Realize();
 	
 	return true;
 }
-
-/*template <class Gfx>
-bool BufferStageT<Gfx>::LoadStereoShader(String shdr_vtx_path, String shdr_frag_path) {
-	if (!LoadShaderFile(stereo_rt, GVar::FRAGMENT_SHADER, shdr_frag_path, "")) {
-		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_frag_path + "'");
-		return false;
-	}
-	if (!LoadShaderFile(stereo_rt, GVar::VERTEX_SHADER, shdr_vtx_path, "")) {
-		LOG("BufferStageT<Gfx>::LoadStereoShader: error: shader loading failed from '" + shdr_vtx_path + "'");
-		return false;
-	}
-	return true;
-}*/
 
 template <class Gfx>
 void BufferStageT<Gfx>::MakeFrameQuad(int count) {
@@ -392,8 +370,6 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	    Gfx::BindFramebuffer(fb.frame_buf[bi]);
 	    Gfx::DrawBuffers(GVar::COLOR0_EXT);
 	}
-	
-	RendVer(OnProcess);
 	
 	Gfx::Clear(GVar::COLOR_BUFFER);
 	Gfx::Clear(GVar::DEPTH_BUFFER);
@@ -717,9 +693,6 @@ void BufferStageT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		type = GVar::TEXMODE_CUBE_MAP;
 		create_depth = create_fbo = false;
 	}
-	/*else if (fb.is_audio) {
-		create_depth = create_fbo = false;
-	}*/
 	
 	for(int bi = 0; bi < buf_count; bi++) {
 		auto& color_buf = fb.color_buf[bi];

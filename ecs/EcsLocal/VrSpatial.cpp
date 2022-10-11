@@ -3,10 +3,6 @@
 NAMESPACE_ECS_BEGIN
 
 
-/*bool VrControllerSource::GetLocation(float* matrix4x4) const {
-	
-}*/
-
 void VrControllerSource::GetVelocity(float* v3) const {
 	COPY3(v3, mgr->hand_velocity);
 }
@@ -14,11 +10,6 @@ void VrControllerSource::GetVelocity(float* v3) const {
 void VrControllerSource::GetAngularVelocity(float* v3) const {
 	COPY3(v3, mgr->hand_angular_velocity);
 }
-
-
-
-
-
 
 
 
@@ -61,7 +52,6 @@ void VrSpatialInteractionManager::Update(double dt) {
 		env_name.Clear();
 		
 		DetectController();
-		//Look(Point(0,0)); // camera might be messed up, so update it immediately
 	}
 	
 	if (state)
@@ -132,16 +122,6 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 			ev.n = HOLO_CALIB_FOV;
 			ev.fvalue = +step;
 		}
-		/*else if (data['a']) {
-			// decrease scale
-			ev.n = HOLO_CALIB_SCALE;
-			ev.fvalue = -step;
-		}
-		else if (data['s']) {
-			// increase scale
-			ev.n = HOLO_CALIB_SCALE;
-			ev.fvalue = +step;
-		}*/
 		else if (data['z']) {
 			// decrease eye distance
 			ev.n = HOLO_CALIB_EYE_DIST;
@@ -364,41 +344,6 @@ void VrSpatialInteractionManager::Control(const ControllerMatrix& ctrl) {
 	WhenSourceUpdated(*this, ev);
 }
 
-/*void VrSpatialInteractionManager::Look(quat orient) {
-	CtrlEvent ev;
-	ev.state = &ctrl_state;
-	ev.type = EVENT_HOLO_LOOK;
-	ev.pt = Point(0,0);
-	ev.spatial = &ev3d;
-	
-	ev3d.use_lookat = false;
-	COPY4(ev3d.orient, orient.data);
-	
-	mat4 m = QuatMat(orient);
-	vec4 dir = vec4(0,0,1,1) * m;
-	DirAxes(dir.Splice(), yaw, pitch);
-	
-	if (sys->debug_log) {
-		LOG("VrSpatialInteractionManager::Look: orientation: " << orient.ToString() <<
-			", angle: " << yaw << ", angle1: " << pitch);
-	}
-	
-	WhenSourceUpdated(*this, ev);
-}
-
-void VrSpatialInteractionManager::Look(const StereoMatrix& st) {
-	CtrlEvent ev;
-	ev.state = &ctrl_state;
-	ev.type = EVENT_HOLO_LOOK;
-	ev.pt = Point(0,0);
-	ev.spatial = &ev3d;
-	
-	ev3d.use_view = true;
-	COPY4x4(ev3d.l_proj, st.proj[0]);
-	COPY4x4(ev3d.r_proj, st.proj[1]);
-	COPY4x4(ev3d.l_view, st.view[0]);
-	COPY4x4(ev3d.r_view, st.view[1]);
-}*/
 
 void VrSpatialInteractionManager::Move(vec3 rel_dir, float step) {
 	CtrlEvent ev;

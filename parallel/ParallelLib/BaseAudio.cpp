@@ -30,21 +30,9 @@ bool AudioGenBase::Initialize(const Script::WorldState& ws) {
 void AudioGenBase::Uninitialize() {
 	
 }
-
-/*
-void AudioGenBase::Forward(FwdScope& fwd) {
-	
-}
-*/
 bool AudioGenBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	const int sink_ch = 0;
 	
-	/*PacketIO::Sink& sink = io.sink[sink_ch];
-	PacketIO::Source& src = io.src[src_ch];
-	Packet& out = src.p;
-	sink.may_remove = true;
-	src.from_sink_ch = sink_ch;
-	out = ReplyPacket(sink_ch, sink.p);*/
 	
 	int frame = fmt.GetFrameSize();
 	dword off = out.GetOffset().value;

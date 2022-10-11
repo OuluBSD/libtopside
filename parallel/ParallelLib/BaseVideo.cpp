@@ -170,10 +170,6 @@ bool VideoGenBase::Initialize(const Script::WorldState& ws) {
 void VideoGenBase::Uninitialize() {
 	
 }
-/*
-void VideoGenBase::Forward(FwdScope& fwd) {
-	
-}*/
 
 bool VideoGenBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	int frame = fmt.GetFrameSize();

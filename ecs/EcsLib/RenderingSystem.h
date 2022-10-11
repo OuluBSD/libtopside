@@ -14,8 +14,6 @@ public:
 	RGBA color;
 	mat4 offset;
 	float alpha_multiplier;
-	//String model_name;
-	//Ref<ModelComponent> model;
 	
 	
 	void Initialize() override;
@@ -25,8 +23,6 @@ public:
 		color = RGBAZero();
 		this->offset = offset;
 		alpha_multiplier = 0;
-		//model_name = name;
-		//model.Clear();
 	}
 	
     void operator=(const Renderable& e) {
@@ -36,7 +32,6 @@ public:
     }
     
 	Callback cb;
-	//Model* GetModel() {return model ? model->GetModel() : 0;}
 	
 	
 };
@@ -66,7 +61,6 @@ protected:
 	Array<ModelComponentRef>	models;
 	Vector<CameraBase*>			cams;
 	
-	//One<GfxDataState> state;
 	GfxDataState*				state = 0;
 	double						time = 0;
 	bool						is_dummy = false;

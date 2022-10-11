@@ -27,7 +27,6 @@ String GetPath(String name) {
 	}
 	
 	path = ShareDirFile(AppendFileName("models", path));
-	//LOG(path);
 	
 	return path;
 }

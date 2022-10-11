@@ -15,24 +15,12 @@ public:
 	COPY_PANIC(DirectWindow)
 	COMP_DEF_VISIT
 	
-	//IFACE_CB(DisplaySink);
-	//IFACE_CB(AudioSink);
-	//IFACE_CB(ControllerSource);
-	//IFACE_CB(ReadFileSink);
-	//IFACE_CB(VideoSink);
-	
 	
 	DirectWindow();
 	
 	void Initialize() override;
 	void Uninitialize() override;
 	
-	/*void EmitCtrlEvent(const CtrlEvent& e) override;
-	
-	void RecvDisplay(DisplaySource& src, double dt) override;
-	void RecvAudio(AudioSource& src, double dt) override;
-	
-	void SetTitle(String title) override;*/
 	
 	Callback WhenClose;
 	

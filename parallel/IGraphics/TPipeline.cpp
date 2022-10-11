@@ -65,9 +65,6 @@ bool CompilerT<Gfx>::Compile(
 		EnableGfxAccelDebugMessages(0);
 	}
 	
-	/*if (!succ) {
-		LOG(GetLineNumStr(code));
-	}*/
 	return succ;
 }
 

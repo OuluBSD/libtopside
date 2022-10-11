@@ -590,7 +590,6 @@ public:
 	
 	Location GetLocation(Unit& storage_unit, int line, int column);
 	Cursor GetCursor(Unit& storage_unit, int line, int column);
-	//Unit GetUnit();
 	
 	bool operator == (const File& file) const;
 	
@@ -637,7 +636,6 @@ public:
 	
 	DiagnosticSet GetDiagnostics();
 	
-	//CodeCompletion GetCodeCompletion(int line, int column, const String& current_content);
 	ArrayMap<uint32, Cursor> GetCodeCompletion(const String& path, int line, int column, const String& current_content);
 	
 	Array<Cursor> GetClasses(String path);

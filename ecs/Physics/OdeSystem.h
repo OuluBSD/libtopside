@@ -122,7 +122,6 @@ public:
 		const dReal *a = dBodyGetPosition(face.body);
 		dJointSetHinge2Anchor(joint, a[0], a[1], a[2]);
 		dVector3 xunit = { 1, 0, 0 }, yunit = { 0, 1, 0 }, zunit = { 0, 0, 1 };
-		//dJointSetHinge2Axes(joint, yunit, xunit);
 		dJointSetHinge2Axis1(joint, yunit[0], yunit[1], yunit[2]);
 		dJointSetHinge2Axis2(joint, xunit[0], xunit[1], xunit[2]);
 	}
@@ -214,7 +213,6 @@ public:
 		threading = dThreadingAllocateMultiThreadedImplementation();
 		pool = dThreadingAllocateThreadPool(4, 0, dAllocateFlagBasicData, NULL);
 		dThreadingThreadPoolServeMultiThreadedImplementation(pool, threading);
-		// dWorldSetStepIslandsProcessingMaxThreadCount(world, 1);
 		dWorldSetStepThreadingImplementation(world, dThreadingImplementationGetFunctions(threading), threading);
 		
 		dAllocateODEDataForThread(dAllocateMaskAll);

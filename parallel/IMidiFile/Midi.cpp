@@ -24,8 +24,6 @@ bool MidiFileReaderAtom::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	//DumpMidiFile();
-	
 	AddAtomToUpdateList();
 	
 	return true;
@@ -60,8 +58,6 @@ bool MidiFileReaderAtom::OpenFilePath(String path) {
 	file.LinkNotePairs();
 	
 	track_i.SetCount(file.GetTrackCount(), 0);
-	
-	// DumpMidiFile();
 	
 	return true;
 }

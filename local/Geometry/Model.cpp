@@ -224,58 +224,8 @@ int Model::FindTexture(String path) {
 }
 
 
-#if 0
 
-void Model::Refresh(FramebufferState& s, GfxDataObject& o) {
-	for (Mesh& m : meshes) {
-		Refresh(s, o, m);
-	}
-}
 
-void Model::Refresh(FramebufferState& s, GfxDataObject& o, Mesh& mesh) {
-	int tex_i = 0;
-	unsigned int diffuseNr = 1;
-	unsigned int specularNr = 1;
-	for(int i = 0; i < TEXTYPE_COUNT; i++) {
-		int tex_id = mesh.tex_id[i];
-	    if (tex_id >= 0) {
-	        Texture& tex = textures[tex_id];
-	        if (tex.compression != Texture::COMP_NONE) {
-	            TODO
-	        }
-	        o.MakeTexture(tex_id, tex.width, tex.height, tex.pitch, tex.stride, tex.data);
-	        
-	        glActiveTexture(GL_TEXTURE0 + tex_i); // activate proper texture unit before binding
-	        // retrieve texture number (the N in diffuse_textureN)
-	        String key;
-	        if (i == TEXTYPE_DIFFUSE)
-	            key = "material.texture_diffuse" + IntStr(diffuseNr++);
-	        else if (i == TEXTYPE_SPECULAR)
-	            key = "material.texture_specular" + IntStr(specularNr++);
-	        
-	        s.SetInt(key, tex_i);
-	        
-	        ASSERT(tex.tex_id >= 0);
-	        glBindTexture(GL_TEXTURE_2D, tex.tex_id);
-	        
-	        tex_i++;
-	    }
-	}
-    
-    
-    /*if (!mesh.disable_textures)
-	    s.SetBool("disable_textures", false);
-    else {
-        vec4 v4 = MakeVec4(mesh.material.ambient, 1);
-        s.SetBool("disable_textures", true);
-        s.SetVec4("in_color", v4);
-    }*/
-	
-	//Dump();
-	
-}
-
-#endif
 
 
 

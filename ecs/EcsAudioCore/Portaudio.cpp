@@ -57,13 +57,6 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
-			/*off32 begin_offset = buf.GetOffset();
-			if (0) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
-				buf.Dump();
-			}*/
-			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
 			consumer.ClearDestination();
@@ -76,18 +69,6 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << consumed_count);
 			}
 			
-			/*off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
-				buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}*/
 		}
 		else {
 			#if DEBUG_RT_PIPE
@@ -152,25 +133,16 @@ PortaudioSinkComponent::~PortaudioSinkComponent() {
 void PortaudioSinkComponent::Initialize() {
 	Component::Initialize();
 	
-	//sys = GetMachine().TryGet<PortaudioSystem>();
-	//if (sys)
-	//	dev.Create(sys->GetDefaultOutput());
-	
 	obj.Create();
 	obj->OpenDefault();
 	
 	obj->Start();
 	
-	//AddToContext<CenterSpec>(AsRef<CenterSink>());
 }
 
 void PortaudioSinkComponent::Uninitialize() {
 	Component::Uninitialize();
 	
-	//RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
-	
-	//dev.Clear();
-	//sys.Clear();
 	obj->Stop();
 	obj.Clear();
 }

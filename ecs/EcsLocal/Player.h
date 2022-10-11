@@ -20,7 +20,6 @@ typedef enum {
 } HandPositionAccuracy;
 
 struct HandActionSourcePose {
-	//bool is_set = false;
 	vec3 forward_direction;
 	quat orientation;
 	vec3 position;
@@ -30,7 +29,6 @@ struct HandActionSourcePose {
 	vec3 GetPosition() const {return position;}
 	vec3 GetForwardDirection() const {return forward_direction;}
 	quat GetOrientation() const {return orientation;}
-	//operator bool() const {return is_set;}
 };
 
 // "SpatialSource"
@@ -84,28 +82,6 @@ using PlayerHandComponentRef = Ref<PlayerHandComponent>;
 
 
 
-/*class PlayerHandToolComponent : public Component<PlayerHandToolComponent> {
-	
-public:
-	RTTI_COMP0(PlayerHandToolComponent)
-	COMP_DEF_VISIT_(vis & hand)
-	
-	COPY_PANIC(PlayerHandToolComponent)
-	
-	void Initialize() override;
-	void Uninitialize() override;
-	bool Arg(String key, Object value) override;
-	
-	
-	
-	PlayerHandComponentRef				hand;
-	
-};
-
-using PlayerHandToolComponentRef = Ref<PlayerHandToolComponent>;*/
-
-
-
 class PlayerHeadComponent : public Component<PlayerHeadComponent> {
 	
 public:
@@ -120,8 +96,6 @@ public:
 	
 	
 	PlayerBodyComponentRef				body;
-	//vec3		up = zero<vec3>();
-	//vec3		direction = VEC_FWD;
 	
 };
 

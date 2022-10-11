@@ -1,7 +1,5 @@
 #include "IScreen.h"
 
-/*#include <X11/Xlib.h>
-#include <X11/Xutil.h>*/
 		
 #if (defined flagLINUX) || (defined flagFREEBSD)
 NAMESPACE_PARALLEL_BEGIN

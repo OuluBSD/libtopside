@@ -10,57 +10,10 @@ void LinkBase::ForwardAtom(FwdScope& fwd) {
 	atom->fwd_lock.Enter();
 	last_cfg = &fwd.Cfg();
 	
-	#if 0
-	int ch_i = 0;
-	int pre_sink_packet_count = GetSinkPacketCount();
-	int pre_src_packet_count = GetSourcePacketCount();
-	int pre_consumed_partial = IsConsumedPartialPacket();
-	int pre_total =
-		  pre_sink_packet_count
-		  + pre_src_packet_count
-		  - pre_consumed_partial; // partial packet stays in sink while fraction is consumed
-	#endif
-	
-	
 	ForwardPipe(fwd);
-	
-	
-	
-	#if 0
-	AtomTypeCls type = GetType();
-	int post_sink_packet_count = GetSinkPacketCount();
-	int post_src_packet_count = GetSourcePacketCount();
-	int post_consumed_partial = IsConsumedPartialPacket();
-	int post_total =
-		  post_sink_packet_count
-		+ post_src_packet_count
-		+ skipped_fwd_count
-		- post_consumed_partial;
-	bool consumed_only_partial =
-		pre_sink_packet_count == post_sink_packet_count &&
-		pre_src_packet_count == post_src_packet_count &&
-		pre_consumed_partial == 1 && post_consumed_partial == 0;
-	if (type.role != CUSTOMER) {
-		bool is_buffered_consumer = type.iface.content.val == ValCls::AUDIO; // todo: other value formats
-		ASSERT_(
-			pre_total == post_total ||
-			dbg_async_race ||
-			consumed_only_partial ||
-			is_buffered_consumer,
-			"Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
-		/*
-		On fail:
-			- have you implemented "IsConsumedPartialPacket() override" while using Value?
-		*/
-	}
-	#endif
 	
 	atom->fwd_lock.Leave();
 }
-
-/*void LinkBase::ForwardDriver(FwdScope& fwd) {
-	Forward(fwd);
-}*/
 
 void LinkBase::Forward(FwdScope& fwd) {
 	last_cfg = &fwd.Cfg();
@@ -80,11 +33,7 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 	InterfaceSourceRef src_iface = GetSource();
 	int sink_ch_count = sink_iface->GetSinkCount();
 	int src_ch_count = src_iface->GetSourceCount();
-	//int req_sink_ch_count = sink_ch_count - type.user_sink_count;
-	//int req_src_ch_count = src_ch_count - type.user_src_count;
 	ASSERT(src_ch_count);
-	//ASSERT(sink_ch_count <= MAX_VDTUPLE_SIZE);
-	//ASSERT(src_ch_count <= MAX_VDTUPLE_SIZE);
 	if (!src_ch_count) return;
 	
 	bool is_forwarded = false;
@@ -145,14 +94,6 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 			//RTLOG("LinkBase::ForwardPipe: " << (iface.val ? "has val" : "no val") << (iface.is_full ? ", is full" : ", not full"));
 		}
 		
-		#if 0
-		static int dbg_iter;
-		dbg_iter++;
-		DUMP(dbg_iter);
-		if (dbg_iter == 79) {
-			LOG("break here");
-		}
-		#endif
 		
 		if (!IsReady(io))
 			break;
@@ -204,16 +145,6 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 				RTLOG("LinkBase::ForwardPipe: packet from sink #" << iface.from_sink_ch << " to #" << src_ch << " src_val=" << HexStr(&src_val) << " sink_val=" << HexStr(iface.val));
 				ASSERT(!iface.val->IsQueueFull());
 				
-				#if 0
-				// This is incorrect now, because data is converted (if possible) in ExchangePoint
-				#ifdef flagDEBUG
-				Format src_fmt = src_val.GetFormat();
-				Format sent_fmt = sent->GetFormat();
-				if (!src_fmt.IsCopyCompatible(sent_fmt)) {DUMP(sent_fmt); DUMP(src_fmt); DUMP(atom->GetType());}
-				ASSERT(src_fmt.IsCopyCompatible(sent_fmt));
-				#endif
-				#endif
-				
 				PacketBuffer& src_buf = src_val.GetBuffer();
 				PacketTracker_Checkpoint("LinkBase::ForwardSource", __FILE__, __LINE__, *sent);
 				sent->AddRouteData(iface.from_sink_ch);
@@ -229,96 +160,6 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		
 		if (iter_forwarded)
 			ForwardSideConnections();
-		
-		
-		#if 0
-		RTLOG("LinkBase::ForwardPipe: packet iteration begin");
-		bool iter_forwarded = false;
-		for (int sink_ch = sink_ch_count-1; sink_ch >= 0; sink_ch--) {
-			if (!(io.active_sink_mask & (1 << sink_ch)))
-				continue;
-			Value& sink_value = sink_iface->GetValue(sink_ch);
-			PacketBuffer& sink_buf = sink_value.GetBuffer();
-			Packet in = sink_buf.First();
-			off32 off = in->GetOffset();
-			Format in_fmt = in->GetFormat();
-			
-			bool is_primary = sink_ch == 0;
-			
-			bool may_remove = false;
-			
-			if (!ProcessPackets(io)) {
-				RTLOG("LinkBase::ForwardPipe: failed to load sink #" << sink_ch << " packet(" << off.ToString() << "), " << in_fmt.ToString());
-				may_remove = !is_primary;
-			}
-			else {
-				// Force sink-0 to src-0 forward because of loop completion
-				if (is_primary) {
-					bool have_prim_fwd = false;
-					for (int src_ch : src_chs)
-						have_prim_fwd = have_prim_fwd || src_ch == 0;
-					if (!have_prim_fwd)
-						src_chs.Add(0);
-				}
-				
-				bool any_src_full = false;
-				for(int src_ch : src_chs) {
-					Value& src_val = src_iface->GetSourceValue(src_ch);
-					if (src_val.IsQueueFull()) {
-						any_src_full = true;
-						break;
-					}
-				}
-				
-				if (any_src_full) {
-					RTLOG("LinkBase::ForwardPipe: skipping send after load because of at least one full source");
-				}
-				else {
-					for(int src_ch : src_chs) {
-						Value& src_val = src_iface->GetSourceValue(src_ch);
-						PacketBuffer& src_buf = src_val.GetBuffer();
-						Format src_fmt = src_val.GetFormat();
-						
-						RTLOG("LinkBase::ForwardPipe: sending sink #" << sink_ch << ", src #" << src_ch << " packet(" << off.ToString() << "), " << src_fmt.ToString());
-						
-						Packet to;
-						
-						WhenEnterStorePacket(*this, to);
-						StorePacket(sink_ch, src_ch, in, to);
-						WhenLeaveStorePacket(to);
-						
-						if (to) {
-							Format to_fmt = to->GetFormat();
-							if (!src_fmt.IsCopyCompatible(to_fmt)) {DUMP(to_fmt); DUMP(src_fmt);}
-							ASSERT(src_fmt.IsCopyCompatible(to_fmt));
-							PacketTracker_Checkpoint(TrackerInfo("LinkBase::ForwardSource", __FILE__, __LINE__), *to);
-							to->AddRouteData(sink_ch);
-							//to->AddRouteData(src_ch); // not needed while single conn per iface
-							src_buf.Add(to);
-							is_forwarded = true;
-							iter_forwarded = true;
-						}
-						else {
-							RTLOG("LinkBase::ForwardPipe: error: StorePacket returned empty package");
-							//StorePacket(sink_ch, src_ch, in, to);
-							ASSERT(0);
-						}
-						
-						if (src_ch == 0 && sink_ch == 0)
-							primary_fwd_count++;
-					}
-					
-					may_remove = true;
-					packets_forwarded++;
-				}
-			}
-			
-			if (may_remove)
-				sink_buf.RemoveFirst();
-		}
-		
-		
-		#endif
 		
 	}
 	
@@ -343,7 +184,6 @@ void LinkBase::ForwardExchange(FwdScope& fwd) {
 	ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(atom);
 	ASSERT(src);
 	ExchangePointRef expt = src->GetExPt();
-	//ASSERT(expt || GetType().role == AtomRole::DRIVER);
 	if (expt) {
 		fwd.AddNext(*expt);
 	}

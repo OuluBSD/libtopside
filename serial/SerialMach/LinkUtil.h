@@ -63,27 +63,9 @@ protected:
 public:
 	RTTI_DECL1(CenterDriver, Link)
 	
-	bool Initialize(const Script::WorldState& ws) override; /*{
-		customer.Create();
-		LinkBaseRef r = LinkBase::AsRefT();
-		ASSERT(r);
-		TODO LinkSystem
-		LinkBase::GetMachine().template Get<AtomSystem>()->AddDriver(r);
-		return true;
-	}*/
-	
-	void Uninitialize() override; /*{
-		LinkBaseRef r = LinkBase::AsRefT();
-		ASSERT(r);
-		LinkBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
-	}*/
-	
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
-	
-	/*cleanup TODO void UpdateConfig(double dt) final {
-		ASSERT(customer);
-		customer->cfg.Update(dt, true);
-	}*/
 	
 	RealtimeSourceConfig* GetConfig() final {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	

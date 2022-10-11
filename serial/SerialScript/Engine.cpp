@@ -33,61 +33,14 @@ String ScriptWorldLoader::GetTreeString(int indent) {
 	for (ScriptPoolLoader& loader : pools) {
 		s << loader.GetTreeString(indent+1);
 	}
-	//s << GetScriptStatusLine(indent+1, status);
 	
 	return s;
 }
 
 
-
-
 ExtScriptEcsLoaderBase* __ecs_script_loader;
 
 
-/*
-void ScriptWorldLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
-	
-}
-
-void ScriptWorldLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
-	
-}
-
-void ScriptWorldLoader::GetStates(Vector<ScriptStateLoader*>& v) {
-	
-}
-
-void ScriptWorldLoader::ForwardLoops() {
-	
-	if (status == WAITING_CHILDREN) {
-		for (ScriptEcsSystemLoader& loader : systems) {
-			loader.Forward();
-		}
-		
-		for (ScriptPoolLoader& loader : pools) {
-			loader.Forward();
-		}
-	}
-	else TODO
-	
-}
-
-void ScriptWorldLoader::LoopStatus() {
-	
-	for (ScriptEcsSystemLoader& loader : systems) {
-		CheckStatus(loader.GetStatus());
-	}
-	
-	for (ScriptPoolLoader& loader : pools) {
-		CheckStatus(loader.GetStatus());
-	}
-}
-
-void ScriptWorldLoader::CheckStatusDeep() {
-	
-	CheckFlags();
-}
-*/
 
 NAMESPACE_SERIAL_END
 

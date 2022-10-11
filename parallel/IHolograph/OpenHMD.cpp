@@ -293,13 +293,6 @@ bool HoloOpenHMD::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO&
 	
 	
 	bool verbose = true;
-	if (verbose) {
-		/*LOG("HoloOpenHMD::SinkDevice_IsReady:");
-		mat4 m;
-		m.Set(dev.ev3d.r_proj);
-		DUMP(m);*/
-	}
-	
 	
 	for(int i = 0; i < 2; i++) {
 		auto d = dev.ctrl[i];

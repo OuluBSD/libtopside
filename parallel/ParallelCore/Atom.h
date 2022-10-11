@@ -62,7 +62,6 @@ protected:
 	Mutex					fwd_lock;
 	IfaceConnTuple			iface;
 	Serial::LinkBase*		link = 0;
-	//Format				user_internal_fmt;
 	AtomBase*				atom_dependency = 0;
 	int						dep_count = 0;
 	HiValue					user_data;
@@ -84,7 +83,7 @@ public:
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}
-	virtual void			Visit(RuntimeVisitor& vis) {/*vis & atom_dependency;*/}
+	virtual void			Visit(RuntimeVisitor& vis) {}
 	virtual bool			PostInitialize() {return true;}
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
@@ -93,8 +92,6 @@ public:
 	virtual bool			Recv(int sink_ch, const Packet& in);
 	virtual void			Finalize(RealtimeSourceConfig& cfg) {}
 	// internal format should be sink:0
-	//virtual const Format&	GetInternalFormat() const {ASSERT(user_internal_fmt.IsValid()) return user_internal_fmt;}
-	//virtual void			SetInternalFormat(const Format& f) {user_internal_fmt = f;}
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
 	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
 	virtual void			ForwardPacket(PacketValue& in, PacketValue& out) {Panic("Unimplemented"); NEVER();}
@@ -115,15 +112,6 @@ public:
 	void					UpdateSinkFormat(ValCls val, Format fmt);
 	void					PostContinueForward();
 	void					SetQueueSize(int queue_size);
-	
-	/*static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
-		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);
-		if (common_vd.IsValid())
-			return SIDE_ACCEPTED;
-		else
-			return SIDE_NOT_ACCEPTED;
-	}*/
-	
 	
 	Machine&				GetMachine();
 	void					UninitializeDeep();
@@ -211,7 +199,6 @@ public:
 		ASSERT(target->GetType() == ((AtomBase*)this)->GetType());
 	    
 	    TODO
-		//*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
 	
 	
@@ -241,11 +228,6 @@ public:
 #define ATOM_RTTI(x)  RTTI_DECL1(x, Atom<x>)
 
 using AtomRefMap	= ArrayMap<AtomTypeCls,Ref<AtomBase>>;
-
-#if 0
-using AtomMap	= RefAtomTypeMapIndirect<AtomBase>;
-#else
-
 using AtomMapBase	= RefAtomTypeMapIndirect<AtomBase>;
 
 class AtomMap : public AtomMapBase {
@@ -322,4 +304,3 @@ public:
 
 NAMESPACE_PARALLEL_END
 
-#endif

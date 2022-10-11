@@ -32,8 +32,6 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	write_size = 0;
 	write_pos = 0;
 	
-	//RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: returning");
-	
 	return succ;
 }
 
@@ -81,13 +79,6 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 	
 	return true;
 }
-
-#if 0
-void AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
-	RTLOG("AsyncMemForwarderBase::StorePacket");
-	out = this->ReplyPacket(src_ch, in);
-}
-#endif
 
 void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	ASSERT(p);

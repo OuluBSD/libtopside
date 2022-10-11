@@ -53,7 +53,6 @@ public:
 	void Serialize(Stream& s);
 	operator bool() const {return data;}
 	
-	//void MakeSysAccel();
 	String ToString() const;
 	
 private:

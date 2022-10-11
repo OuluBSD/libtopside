@@ -20,28 +20,9 @@ Space* Loop::GetSpace() const {
 	return space;
 }
 
-/*void Loop::ClearInterfaces() {
-	for (auto iter = links.rbegin(); iter; --iter)
-		iter()->ClearSinkSource();
-}*/
-
-/*void Loop::CopyTo(Loop& l) const {
-	l.AppendCopy(*this);
-}*/
-
 void Loop::AppendCopy(const Loop& l) {
 	TODO
 }
-
-/*void Loop::VisitSinks(RuntimeVisitor& vis) {
-	for(LinkBaseRef& c : links)
-		c->VisitSink(vis);
-}
-
-void Loop::VisitSources(RuntimeVisitor& vis){
-	for(LinkBaseRef& c : links)
-		c->VisitSource(vis);
-}*/
 
 int Loop::GetLoopDepth() const {
 	int d = 0;
@@ -65,7 +46,6 @@ bool Loop::HasLoopParent(LoopRef pool) const {
 }
 
 void Loop::Clear() {
-	// useless ClearInterfacesDeep();
 	UnrefDeep();
 	UninitializeLinksDeep();
 	ClearDeep();
@@ -84,21 +64,7 @@ void Loop::UninitializeLinksDeep() {
 		it().Uninitialize();
 	}
 	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UninitializeWithExt();
-	}*/
 }
-
-/*void Loop::ClearAtomsDeep() {
-	for (LoopRef& p : loops)
-		p->ClearAtomsDeep();
-	
-	AtomStoreRef sys = GetMachine().Get<AtomStore>();
-	for (auto it = links.rbegin(); it != links.rend(); --it) {
-		sys->ReturnAtom(links.Detach(it));
-	}
-	
-}*/
 
 void Loop::ClearDeep() {
 	for (LoopRef& p : loops)
@@ -127,9 +93,6 @@ LoopRef Loop::CreateEmpty() {
 
 void Loop::Initialize(Loop& l, String prefab) {
 	l.SetPrefab(prefab);
-	/*uint64 ticks = atom->GetMachine().GetTicks();
-	l.SetCreated(ticks);
-	l.SetChanged(ticks);*/
 	
 }
 
@@ -150,7 +113,6 @@ LinkBaseRef Loop::GetAddTypeCls(LinkTypeCls cls) {
 LinkBaseRef Loop::AddPtr(LinkBase* comp) {
 	comp->SetParent(this);
 	LinkTypeCls type = comp->GetLinkType();
-	// not true anymore: ASSERT(!links.Find(type));
 	links.Add(type, comp);
 	InitializeLink(*comp);
 	return LinkBaseRef(this, comp);
@@ -184,7 +146,6 @@ void Loop::InitializeLinks() {
 
 void Loop::InitializeLink(LinkBase& comp) {
 	comp.SetParent(this);
-	//comp.Initialize();
 }
 
 String Loop::GetTreeString(int indent) {
@@ -214,22 +175,11 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 	
 	int src_ch = 0;
 	int sink_ch = 0;
-	/*if (src_ch < 0 || src_ch >= src->GetSourceCount()) {
-		//AddError(FileLocation(), "source channel not in range");
-		LOG("source channel not in range");
-		return false;
-	}
 	
-	if (sink_ch < 0 || sink_ch >= sink->GetSinkCount()) {F
-		//AddError(FileLocation(), "sink channel not in range");
-		LOG("sink channel not in range");
-		return false;
-	}*/
 	
 	Format src_fmt = src->GetSourceValue(src_ch).GetFormat();
 	Format sink_fmt = sink->GetValue(sink_ch).GetFormat();
 	if (src_fmt.vd != sink_fmt.vd) {
-		//AddError(FileLocation(), "sink and source device-value-class mismatch");
 		LOG("error: sink and source device-value-class mismatch: src(" + src_fmt.vd.ToString() + "), sink(" + sink_fmt.vd.ToString() + ")");
 		return false;
 	}
@@ -275,17 +225,6 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 	}
 	return false;
 }
-
-/*EnvStateRef Loop::FindNearestState(String name) {
-	Loop* l = this;
-	while (l) {
-		EnvStateRef e = l->FindState(name);
-		if (e)
-			return e;
-		l = l->GetParent();
-	}
-	return EnvStateRef();
-}*/
 
 String Loop::GetDeepName() const {
 	String s = name;

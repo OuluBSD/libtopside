@@ -65,7 +65,6 @@ String EonStd::GetRelativePartStringArray(const AstNode& n) const {
 		s.Cat('\"');
 	}
 	s.Cat(']');
-	//DUMP(s)
 	return s;
 }
 
@@ -181,10 +180,6 @@ AstNode* EonStd::FindDeclaration(const Vector<String>& id, SemanticType accepts)
 	return 0;
 }
 
-/*AstNode* EonStd::FindTypeDeclaration(const PathIdentifier& id) {
-	return FindDeclaration(id, SEMT_TYPE);
-}*/
-
 AstNode* EonStd::GetDeclaration(const PathIdentifier& id, SemanticType accepts) {
 	if (id.part_count == 0 || spath.IsEmpty())
 		return 0;
@@ -241,7 +236,6 @@ AstNode* EonStd::GetDeclaration(AstNode* owner, const PathIdentifier& id, Semant
 	}
 	
 	if (id.head_count > 0 && id.tail_count > 0) {
-		//AddError(id.begin->loc, "both head and tail qualifiers");
 		return 0;
 	}
 	
@@ -337,8 +331,6 @@ AstNode& EonStd::Declare(AstNode& owner, const PathIdentifier& id, bool insert_b
 			TODO
 		}
 	}
-	
-	//LOG("Declared " << GetPath(*cur));
 	
 	return *cur;
 }
@@ -450,7 +442,6 @@ String EonStd::GetTypeInitValueString(AstNode& n) const {
 AstNode* EonStd::FindStackName(String name, SemanticType accepts) {
 	for (int i = spath.GetCount()-1; i >= 0; i--) {
 		Scope& s = spath[i];
-		//LOG(s.n->GetTreeString(0));
 		for (AstNode& ss : s.n->sub) {
 			if (ss.name == name && (accepts == SEMT_NULL || ss.IsPartially(accepts)))
 				return &ss;
@@ -502,12 +493,6 @@ AstNode* EonStd::FindStackWithPrevDeep(const AstNode* prev) {
 		return spath[0].n->FindWithPrevDeep(prev);
 	return 0;
 }
-
-/*void EonStd::Bind(AstNode& from, AstNode& to) {
-	//ASSERT(from.next == 0 && to.prev == 0);
-	from.next = &to;
-	to.prev = &from;
-}*/
 
 
 NAMESPACE_TOPSIDE_END

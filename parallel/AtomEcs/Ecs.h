@@ -24,7 +24,6 @@ public:
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this); vis & state;}
 	
 	void AddBinder(BinderIfaceEvents* iface);
@@ -44,15 +43,8 @@ class EcsVideoBase :
 	EnvStateRef			state;
 	int					prev_iter = -1;
 	ValDevCls			src_type;
-	//ImageDraw			id;
 	ProgDraw			pd;
-	/*CpuStateDraw		cpu_sd;
-	CpuDataState		cpu_state;
-	CpuFramebuffer		cpu_fb;
-	#if HAVE_OPENGL
-	OglStateDraw		ogl_sd;
-	OglDataState		ogl_state;
-	#endif*/
+	
 	bool					draw_mem = false;
 	EntitySystemRef			ents;
 	#ifdef flagGUI
@@ -72,7 +64,6 @@ public:
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override;
 	
 	void AddBinder(BinderIfaceVideo* iface);
@@ -104,7 +95,6 @@ public:
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	//bool			ProcessPackets(PacketIO& io) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
 	void AddBinder(BinderIfaceOgl* iface);

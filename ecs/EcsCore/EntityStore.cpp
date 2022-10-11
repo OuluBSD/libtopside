@@ -31,15 +31,6 @@ void EntityStore::Update(double dt) {
 		}
 	}
 	
-	/*if (refresh_poolcomps[WRITE]) {
-		lock.Enter();
-		MemSwap(refresh_poolcomps[READ], refresh_poolcomps[WRITE]);
-		refresh_poolcomps[WRITE].Clear();
-		lock.Leave();
-		
-		for (ConnectorBase* comp : refresh_poolcomps[READ])
-			comp->Update(dt);
-	}*/
 	
 }
 
@@ -74,22 +65,6 @@ EntityRef EntityStore::FindEntity(String path) {
 	}
 	return EntityRef();
 }
-
-/*int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
-	Engine& mach = GetEngine();
-	
-	// Don't add refresh if EntityStore haven't called previous refresh yet
-	int64 cur_ticks = mach.GetTicks();
-	if (last_refresh >= cur_ticks)
-		return last_refresh;
-	
-	lock.Enter();
-	refresh_poolcomps[WRITE].Add(comp);
-	lock.Leave();
-	
-	return cur_ticks;
-}*/
-
 
 
 NAMESPACE_ECS_END

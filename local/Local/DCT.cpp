@@ -77,9 +77,7 @@ void ConvertToParamsHLine(const Vector<Pointf>& pts, int size, char* params) {
 			do_fix = true;
 		w++;
 	}
-	/*DUMPC(pts);
-	DUMPC(wave);
-	DUMPC(weight);*/
+	
 	if (do_fix) {
 		int i = 0;
 		
@@ -115,10 +113,6 @@ void ConvertToParamsHLine(const Vector<Pointf>& pts, int size, char* params) {
 	
 	ForwardDCT1d(wave.GetCount(), wave.Begin(), size, paramsf.Begin());
 	
-	/*LOG("IN");
-	DUMPC(wave);
-	DUMPC(paramsf);*/
-	
 	for(int i = 0; i < size; i++)
 		params[i] = max(-127, min(127, (int)(paramsf[i] * param_mul_fwd + 0.5)));
 }
@@ -138,10 +132,6 @@ void ConvertFromParamsHLine(int param_count, const char* params, int width, Vect
 		paramsf[i] = params[i] * param_mul_bwd;
 	
 	BackwardDCT1d(param_count, paramsf.Begin(), width, wave.Begin());
-	
-	/*LOG("OUT");
-	DUMPC(paramsf);
-	DUMPC(wave);*/
 	
 	double* w = wave.Begin();
 	int x = 0;

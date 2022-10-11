@@ -31,7 +31,6 @@ void AstExporter::PushScope(const AstNode& n, bool skip_indent) {
 	scope.pop_this = !n.IsPartially(SEMT_UNDEFINED);
 	scope.n = &n;
 	scope.skip_indent = skip_indent;
-	//if (scope.pop_this)
 	if (n.src == SEMT_STATEMENT_BLOCK && !skip_indent)
 		++indent;
 }
@@ -111,16 +110,6 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 			
 			// merge statement blocks which meta created with current block
 			if (s.src == SEMT_STATEMENT_BLOCK && s.i64 == 1) {
-				/*if (s.sub.GetCount() == 1 &&* s.prev && s.prev->IsStmtPartially(STMT_META_ANY)) {
-					const auto& ss = s.sub[0];
-					if (ss.src == SEMT_STATEMENT_BLOCK) {
-						Visit(ss, false, true);
-						continue;
-					}
-				}*/
-				/*for (AstNode& ss : s.sub) {
-					Visit(ss, false, true);
-				}*/
 				Visit(s, false, true);
 				continue;
 			}
@@ -161,7 +150,6 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 	
 	case SEMT_META_VARIABLE:
 		ASSERT_(0, "meta code should be executed before this, and non-existent here");
-		//VisitMetaVariable(n, declare);
 		break;
 	
 	case SEMT_ARGUMENT:
@@ -199,7 +187,6 @@ void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
 		break;
 		
 	case SEMT_OBJECT:
-		//VisitConstant(n);
 		break;
 		
 	default:
@@ -330,8 +317,6 @@ void AstExporter::VisitStatement(const AstNode& n) {
 		
 	case STMT_FOR_COND:
 	case STMT_FOR_POST:
-		//for (const AstNode& sub : n.sub)
-		//	Visit(sub);
 		Visit(n, SEMT_EXPR);
 		break;
 		
@@ -344,19 +329,9 @@ void AstExporter::VisitStatement(const AstNode& n) {
 				break;
 			}
 		}
-		//Visit(n, (SemanticType)(SEMT_EXPR | SEMT_CTOR));
 		output << ";\n";
 		break;
-		
-	/*case STMT_LOG:
-		output << GetIndentString() << "LOG(";
-		PushInlineScope();
-		for (const AstNode& sub : n.sub)
-			Visit(sub);
-		PopInlineScope();
-		output << ");\n";
-		break;*/
-		
+	
 	case STMT_RETURN:
 		output << GetIndentString() << "return";
 		if (n.rval) {
@@ -540,21 +515,6 @@ void AstExporter::VisitVariable(const AstNode& n, bool declare) {
 	
 }
 
-/*void AstExporter::VisitMetaVariable(const AstNode& n, bool declare) {
-	ASSERT(n.src == SEMT_META_VARIABLE || n.src == SEMT_META_PARAMETER);
-	
-	if (declare) {
-		if (n.type) {
-			// use ctor instead
-				//output << GetIndentString() << GetCPath(*n.type) << " " << GetCPath(n) << ";\n";
-		}
-	}
-	else {
-		output << GetCPath(n);
-	}
-	
-}*/
-
 void AstExporter::VisitArgument(const AstNode& n) {
 	ASSERT(n.src == SEMT_ARGUMENT);
 	
@@ -572,9 +532,6 @@ void AstExporter::VisitArgument(const AstNode& n) {
 		output << GetCPath(arg);
 	}
 	else if (arg.src == SEMT_RVAL) {
-		/*ASSERT(arg.link[0]);
-		if (arg.link[0])
-			output << GetCPath(*arg.link[0]);*/
 		VisitRval(arg);
 	}
 	else if (arg.src == SEMT_EXPR) {
@@ -610,21 +567,6 @@ void AstExporter::VisitConstant(const AstNode& n) {
 }
 
 void AstExporter::VisitResolve(const AstNode& n, bool rval) {
-	/*ASSERT(n.path.GetCount());
-	if (n.path.GetCount() > 1) {
-		TODO
-	}
-	else {
-		output << n.path[0];
-	}*/
-	/*if (rval) {
-		output << GetCPath(n);
-	}
-	else*/
-	/*if (n.str.GetCount()) {
-		//DUMP(n.str);
-		output << n.str;
-	}*/
 	ASSERT(n.rval);
 	if (n.rval) {
 		const AstNode& l = *n.rval;
@@ -651,10 +593,6 @@ void AstExporter::VisitRval(const AstNode& n) {
 			output << GetCPath(*n.rval);
 		else if (s.src == SEMT_META_PARAMETER || s.src == SEMT_META_VARIABLE) {
 			TODO // this s.src shouldn't appear in this phase anymore
-			/*if (n.next)
-				Visit(*n.next);
-			else
-				TODO;*/
 		}
 		else
 			Visit(*n.rval);
@@ -686,9 +624,6 @@ void AstExporter::VisitConstructor(const AstNode& n) {
 	if (n.rval)
 		output << GetCPath(*n.rval);
 	
-	//for (const AstNode& sub : n.sub)
-	//	if (sub.src == SEMT_ARGUMENT_LIST || sub.src == SEMT_ARRAYSIZE)
-	//		Visit(sub);
 	ASSERT(n.arg[0]);
 	for(int i = 0; i < AstNode::ARG_COUNT; i++) {
 		if (n.arg[i])
@@ -746,8 +681,6 @@ String AstExporter::GetCPath(const AstNode& n) const {
 	else {
 		String s;
 		if (!part_count) {
-			/*const AstNode& t = *scopes.Top().n;
-			String name = t.name;*/
 			String name = n.name;
 			ASSERT(name.GetCount());
 			s.Cat(name);

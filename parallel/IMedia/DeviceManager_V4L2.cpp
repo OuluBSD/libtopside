@@ -12,37 +12,12 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-#if 0
-MediaStream* V4L2_Device::FindOpenDevice() {
-	for (OpenCVCaptureDevice& m : caps)
-		if (m.IsOpen())
-			return &m;
-	
-	/*for (FfmpegFileInput& m : inputs)
-		if (m.IsDeviceOpen())
-			return &m;*/
-	
-	return 0;
-}
-#endif
-
-
-
 
 
 
 V4L2_DeviceManager::V4L2_DeviceManager() {
 
 }
-
-/*V4L2_Device& V4L2_DeviceManager::GetAddVirtual(String path) {
-	for(V4L2_Device& v : virtuals)
-		if (v.GetPath() == path)
-			return v;
-	V4L2_Device& v = virtuals.Add();
-	v.path = path;
-	return v;
-}*/
 
 void V4L2_DeviceManager::Refresh() {
 	devs.Clear();

@@ -47,7 +47,6 @@ public:
 	VideoSourceFormatResolution&		operator[](int i) {return res[i];}
 	const VideoSourceFormatResolution&	operator[](int i) const {return res[i];}
 	
-	// IsMJPEG(): is src v4l2 and pix_fmt V4L2_PIX_FMT_MJPEG
 	
 };
 
@@ -94,7 +93,6 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	//void Forward(FwdScope& fwd) override;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	

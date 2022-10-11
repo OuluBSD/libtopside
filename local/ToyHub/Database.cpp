@@ -1003,11 +1003,6 @@ bool Page::Create(
 	int hub,
 	String title,
 	String restrictions,
-	/*bool is_redirect,
-	bool is_new,
-	int latest_rev,
-	int len,
-	String content_model,*/
 	String lang) {
 	Time now = GetUtcTime();
 	if (SQL * Insert(PAGE)

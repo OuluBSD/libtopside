@@ -8,29 +8,13 @@ NAMESPACE_ECS_BEGIN
 void CalculateCameraView(mat4& view, mat4* stereo_view, float eye_dist, const vec3& eye, const vec3& target, const vec3& up, const mat4& port, const mat4& eye_port, const mat4& proj) {
 	mat4 lookat = LookAt(eye, target, up);
 	
-	/*vec3 dir = target - eye;
-	vec3 axes;
-	DirAxes(dir, axes);
-	mat4 lookat = AxesMat(axes);*/
-	
 	
 	#if 1
 	view = port * proj * lookat;
 	#else
 	mat4 p = proj;
-	//p[2][2] = -p[2][2];
-	//p.SetPerspectiveLH_NO(DEG2RAD(45), 1.333, 0.1, 1.0);
-	//p.SetPerspectiveRH_NO(DEG2RAD(45), 1.333, 0.1, 1.0);
 	p.SetPerspectiveRH_ZO(DEG2RAD(45), 1.333, 0.1, 1.0);
 	
-	//p[3][2] *= -1;
-	//p[2][3] *= -1;
-	
-	//p[0][0] *= -1;
-	//p.SetPerspectiveRH_PZO(DEG2RAD(45), 1.333, 0.1, 1.0);
-	//p.SetPerspectiveRH_ZO(DEG2RAD(45), 1.333, 0.1, 1.0);
-	//mat4 p2 = p * Scale(vec3(-1,1,-1));
-	//mat4 p2 = p * GetViewport(1,-1,-2,2,2);
 	view = port * p * lookat;
 	#endif
 	
@@ -46,10 +30,6 @@ void CalculateCameraView(mat4& view, mat4* stereo_view, float eye_dist, const ve
 		vec3 l_target = target - eye_off;
 		vec3 r_target = target + eye_off;
 		mat4 base = eye_port * proj;
-		//vec3 l_eye(-eye_dist, 0, +1);
-		//vec3 r_eye(+eye_dist, 0, +1);
-		//vec3 l_center { -eye_dist, 0, 0};
-		//vec3 r_center { +eye_dist, 0, 0};
 		mat4 l_lookat = LookAt(l_eye, l_target, up);
 		mat4 r_lookat = LookAt(r_eye, r_target, up);
 		stereo_view[0] = base * l_lookat;
@@ -74,11 +54,6 @@ void Viewable::Uninitialize()  {
 	if (rend)
 		rend->RemoveViewable(AsRefT());
 }
-
-/*Ref<Transform> Viewable::GetTransform() {
-	EntityRef ent = GetEntity();
-	return ent->Find<Transform>();
-}*/
 
 
 
@@ -110,9 +85,6 @@ void ChaseCam::Initialize() {
 	
 	RenderingSystemRef rend = this->GetEngine().Get<RenderingSystem>();
 	rend->AddCamera(*this);
-	
-	//if (view)
-	//	view->cb << THISBACK(Refresh);
 	
 	AddToUpdateList();
 }
@@ -159,13 +131,7 @@ bool ChaseCam::Arg(String key, Object value) {
 	else if (key == "log") {
 		test_log = value.ToString() == "test";
 	}
-	/*else if (key == "mode") {
-		String m = value;
-		if (m == "static")			mode = STATIC;
-		else if (m == "circle.cw")	mode = CIRCLE_CW;
-		else if (m == "circle.ccw")	mode = CIRCLE_CCW;
-		else return false;
-	}*/
+	
 	else return false;
 	
 	return true;
@@ -259,8 +225,6 @@ void ChaseCam::UpdateView() {
 			#endif
 			
 		}
-		//mat4 lookat = LookAt(eye, target, up);
-		//this->view = port * projection * lookat;
 		
 		CalculateCameraView(this->view, this->mvp_stereo, eye_dist, eye, target, up, port, port_stereo, projection);
 	    
@@ -280,8 +244,6 @@ void ChaseCam::UpdateView() {
 			CalculateCameraView(this->view, this->mvp_stereo, eye_dist, position, target, up, port, port_stereo, projection);
 		}
 		else if (tm.mode == TransformMatrix::MODE_AXES) {
-			//DUMP(tm.axes);
-			//mat4 rotate = AxesMat(tm.axes[0], tm.axes[1], tm.axes[2]);
 			
 			#if 0
 			// TODO solve and clean this horrible separate-yaw mess!
@@ -300,8 +262,6 @@ void ChaseCam::UpdateView() {
 			this->view = port * projection * rotate * tran;
 			#endif
 			
-			//DUMP(tm.position);
-			
 			if (this->trans->data.eye_dist)
 				eye_dist = this->trans->data.eye_dist;
 			
@@ -312,9 +272,6 @@ void ChaseCam::UpdateView() {
 			float mul = -0.5;
 			mat4 l_trans = Translate(vec3(+eye_dist * mul, 0, 0));
 			mat4 r_trans = Translate(vec3(-eye_dist * mul, 0, 0));
-			//mat4 stereo_base = port_stereo * projection * rotate * yaw * tran;
-			//this->mvp_stereo[0] = stereo_base;
-			//this->mvp_stereo[1] = stereo_base;
 			
 			if (calib.is_enabled) {
 				mat4 scale_mat = Scale(vec3(1.0 + calib.scale));
@@ -341,14 +298,6 @@ void ChaseCam::UpdateView() {
 		else TODO
 	}
 	
-	/*if (calib.is_enabled) {
-		mat4 scale_mat = scale(vec3(1.0 + calib.scale));
-		this->mvp_stereo[0] = this->mvp_stereo[0] * scale_mat;
-		this->mvp_stereo[1] = this->mvp_stereo[1] * scale_mat;
-	}*/
-	
-	/*mat4 model = Translate(target);
-	this->view = port * projection * lookat * model * rot;*/
 }
 
 bool ChaseCam::Load(GfxDataState& s) {
@@ -356,7 +305,6 @@ bool ChaseCam::Load(GfxDataState& s) {
 	s.user_view = true;
 	
 	if (s.is_stereo) {
-	//if (use_stereo) {
 		s.is_stereo = true;
 		s.view_stereo[0] = mvp_stereo[0];
 		s.view_stereo[1] = mvp_stereo[1];

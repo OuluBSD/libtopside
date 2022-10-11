@@ -23,17 +23,10 @@ using SideStatus			= Parallel::SideStatus;
 using PacketIO				= Parallel::PacketIO;
 template <class T> using RefT_Loop	= Ref<T, LoopParent>;
 template <class T> using System		= Parallel::System<T>;
-//template <class T> using RefT_Loop	= Parallel::RefT_Loop<T>;
-
-//class AtomBase;
-//struct AtomTypeCls;
 
 
 
-//class Loop;
 class LoopStore;
-//using LoopParent			= HierExBaseParent;
-//using LoopRef				= Ref<Loop,					LoopParent>;
 using LoopStoreRef			= Ref<LoopStore,			ParallelSystemParent>;
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 using LinkVec				= RefLinkedList<LinkBase,	LinkParent>;

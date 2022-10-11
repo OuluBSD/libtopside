@@ -73,14 +73,6 @@ struct VirtualGui3D {
 	virtual void        WakeUpGuiThread() = 0;
 	virtual bool        IsWaitingEvent() = 0;
 	
-	/*
-	/virtual void		Render(bool do_render) = 0;
-	virtual dword       GetMouseButtons() = 0;
-	virtual dword       GetModKeys() = 0;
-	virtual bool        IsMouseIn() = 0;
-	virtual bool        ProcessEvent(bool *quit) = 0;
-	virtual void        SetMouseCursor(const Image& image) = 0;
-	virtual void        Quit() = 0;*/
 };
 
 extern VirtualGui3D* VirtualGui3DPtr;
@@ -90,20 +82,6 @@ public:
 	ImageDraw(Size sz) : SImageDraw(sz) {}
 	ImageDraw(Size sz, int stride) : SImageDraw(sz, stride) {}
 	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
-	
-	/*Size GetPageSize() const override;
-	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
-	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
-	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		            Color ink, int n, const int *dx) override;
-	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
-	                        const int *counts, int count_count,
-	                        int width, Color color, Color doxor) override;
-	bool ClipOp(const Rect& r) override;
-	void EndOp() override;
-	void DrawImage(int x, int y, Image img, byte alpha) override;
-	
-	Draw& Alpha();*/
 	
 };
 

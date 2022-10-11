@@ -89,25 +89,6 @@ void AstNode::CopyToObject(Object& n) const {
 	else TODO
 }
 
-/*void AstNode::CopyPrevNextLinks() {
-	if (prev) {
-		type = prev->type ? prev->type->next : 0;
-		rval = prev->rval ? prev->rval->next : 0;
-		ctx_next = prev->ctx_next ? prev->ctx_next->next : 0;
-		ASSERT(type != this);
-		ASSERT(rval != this);
-		ASSERT(ctx_next != this);
-		
-		for(int i = 0; i < ARG_COUNT; i++) {
-			if (prev->arg[i])
-				arg[i] = prev->arg[i]->next;
-			else
-				arg[i] = 0;
-			ASSERT(arg[i] != this);
-		}
-	}
-}*/
-
 AstNode& AstNode::Add(const FileLocation& loc, String name, int idx) {
 	ASSERT(!locked);
 	AstNode& s =
@@ -263,9 +244,6 @@ String AstNode::GetTreeString(int indent) const {
 	else
 		s << "\n";
 	
-	//else if (src != SEMT_NULL)
-	//	s << "src(" << GetSemanticTypeString(src) << ")\n";
-	
 	for (const AstNode& n : sub) {
 		s << n.GetTreeString(indent+1);
 	}
@@ -292,11 +270,7 @@ String AstNode::GetTreeString(int indent, bool links) const {
 		s << "ctx_next:\n";
 		s << ctx_next->GetTreeString(indent+2);
 	}
-	/*if (next) {
-		s.Cat('\t', indent+1);
-		s << "next:\n";
-		s << next->GetTreeString(indent+2);
-	}*/
+	
 	return s;
 }
 

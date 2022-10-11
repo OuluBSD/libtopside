@@ -33,11 +33,6 @@ public:
 	Space();
 	~Space();
 	
-	/*typedef enum {
-		BIT_OVERLAP,
-		BIT_TRANSFORM,
-	} Bit;*/
-	
 	
 	SpaceId GetId() const {return id;}
 	
@@ -45,10 +40,6 @@ public:
 	void SetPrefab(String s)		{prefab = s;}
 	void SetCreated(int64 i)		{created = i;}
 	void SetChanged(int64 i)		{changed = i;}
-	/*void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
-	void FreezeOverlap()			{freeze_bits.Set(BIT_OVERLAP, true);}
-	bool IsFrozenTransform() const	{return freeze_bits.Is(BIT_TRANSFORM);}
-	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_OVERLAP);}*/
 	
 	void				Clear();
 	void				StopDeep();
@@ -59,7 +50,6 @@ public:
 	void				ClearStatesDeep();
 	void				ClearAtomsDeep();
 	void				ClearDeep();
-	//void				PruneFromContainer();
 	void				Dump();
 	String				GetTreeString(int indent=0);
 	
@@ -79,7 +69,6 @@ public:
 	
 	bool				Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
-	//void				OnChange();
 	AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);
 	AtomBaseRef			AddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
@@ -98,7 +87,6 @@ public:
 	void				InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}
 	void				UninitializeAtoms();
 	void				ClearAtoms();
-	//void				ClearInterfaces();
 	void				AppendCopy(const Space& l);
 	
 	int					GetSpaceDepth() const;

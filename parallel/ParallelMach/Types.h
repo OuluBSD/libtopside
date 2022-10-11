@@ -51,22 +51,14 @@ class AtomStore;
 class AtomSystem;
 class SoundSample;
 class Machine;
-//class CenterCustomer;
 
 
 using ParallelSystemParent	= MetaSystemParent;
 using AtomParent			= ExchangeBaseParent;
 
 
-//template <class T>
-//using RefT_Space				= Ref<T,					SpaceParent>;
-
 template <class T>
 using RefT_Machine			= Ref<T,					ParallelSystemParent>;
-
-
-//using SpaceParent			= RefParent2<SpaceStore, Space>;
-//using AtomParent			= AtomParent;
 using AtomBaseRef			= Ref<AtomBase,				AtomParent>;
 using AtomStoreRef			= Ref<AtomStore,			ParallelSystemParent>;
 using AtomSystemRef			= Ref<AtomSystem,			ParallelSystemParent>;
@@ -122,7 +114,6 @@ struct ValCls : Moveable<ValCls> {
 	void operator=(const ValCls& n) {type = n.type;}
 	bool operator==(const ValCls& c) const {return type == c.type;}
 	bool operator!=(const ValCls& c) const {return type != c.type;}
-	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)type;}
 };
 
@@ -158,7 +149,6 @@ struct DevCls : Moveable<DevCls> {
 	void operator=(const DevCls& n) {type = n.type;}
 	bool operator==(const DevCls& c) const {return type == c.type;}
 	bool operator!=(const DevCls& c) const {return type != c.type;}
-	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)type;}
 };
 
@@ -179,7 +169,6 @@ struct ValDevCls : Moveable<ValDevCls> {
 	void operator=(const ValDevCls& n) {val = n.val; dev = n.dev;}
 	bool operator==(const ValDevCls& c) const {return val == c.val && dev == c.dev;}
 	bool operator!=(const ValDevCls& c) const {return val != c.val || dev != c.dev;}
-	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)dev.type * (int)ValCls::TYPE_COUNT + (int)val.type;}
 	String ToString() const {return dev.GetName() + "-" + val.GetName();}
 	String GetActionName() const {return ToLower(dev.GetName()) + "." + ToLower(val.GetName());}
@@ -187,39 +176,6 @@ struct ValDevCls : Moveable<ValDevCls> {
 
 #define VD(dev, val) Parallel::ValDevCls(Parallel::DevCls::dev, Parallel::ValCls::val)
 
-#if 0
-
-#define ATOM11(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0 ) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ))
-
-#define ATOM12(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0, srd1, srv1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 0,1,0,0, ValDevCls(), VD(srd1, srv1))
-
-#define ATOM21(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, srd0, srv0 ) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ), 1,0,0,0, VD(sid1, siv1), ValDevCls())
-
-#define ATOM11_U10(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, srd0, srv0 ) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ), 1,0,1,0, VD(sid1, siv1), ValDevCls())
-
-#define ATOM11_U20(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, sid2, siv2,srd0, srv0) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 2,0,2,0, VD(sid1, siv1), VD(sid2, siv2), ValDevCls(), ValDevCls())
-
-#define ATOM11_U01(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0 , srd1, srv1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ), 0,1,0,1, ValDevCls(), VD(srd1, srv1))
-
-#define ATOM11_U02(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0, srd1, srv1, srd2, srv2) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 0,1,0,1, ValDevCls(), ValDevCls(), VD(srd1, srv1), VD(srd2, srv2))
-
-#define ATOM11_U04(atom, role, content_dev, content_val, sid0, siv0, srd0, srv0, srd1, srv1, srd2, srv2, srd3, srv3, srd4, srv4) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 0,4,0,4, ValDevCls(), ValDevCls(), ValDevCls(), ValDevCls(), VD(srd1, srv1), VD(srd2, srv2), VD(srd3, srv3), VD(srd4, srv4))
-
-#define ATOM11_U11(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, srd0, srv0 , srd1, srv1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0 ), 1,1,1,1, VD(sid1, siv1), VD(srd1, srv1))
-
-#define ATOM11_U44(atom, role, content_dev, content_val, sid0, siv0, sid1, siv1, sid2, siv2, sid3, siv3, sid4, siv4, srd0, srv0, srd1, srv1, srd2, srv2, srd3, srv3, srd4, srv4) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sid0, siv0), VD(content_dev, content_val), VD(srd0, srv0), 4,4,4,4, VD(sid1, siv1), VD(sid2, siv2), VD(sid3, siv3), VD(sid4, siv4), VD(srd1, srv1), VD(srd2, srv2), VD(srd3, srv3), VD(srd4, srv4))
-
-#endif
 
 
 struct AtomCls : Moveable<AtomCls> {
@@ -236,9 +192,6 @@ struct AtomCls : Moveable<AtomCls> {
 
 
 struct ValDevTuple : Moveable<ValDevTuple> {
-	//static const int MAX_VDS = MAX_VDTUPLE_SIZE;
-	//ValDevCls	vd[MAX_VDS];
-	//byte		count = 0;
 	
 	struct Channel : Moveable<Channel> {
 		ValDevCls vd;
@@ -265,22 +218,7 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	
 	Channel&       operator[](int i)       {return channels[i];}
 	const Channel& operator[](int i) const {return channels[i];}
-	//ValDevCls&       operator()()            {ASSERT(channels.GetCount() >= 1); return channels[0];}
-	//const ValDevCls& operator()() const      {ASSERT(channels.GetCount() >= 1); return channels[0];}
 	
-	
-	
-	/*ValDevCls GetCommon(const ValDevTuple& o) const {
-		for(int i = 0; i < channels.GetCount(); i++) {
-			const Channel& a = channels[i];
-			for(int j = 0; j < o.channels.GetCount(); j++) {
-				const Channel& b = o.channels[i];
-				if (a.vd == b.vd)
-					return a.vd;
-			}
-		}
-		return ValDevCls();
-	}*/
 	
 	ValDevTuple& Add(const ValDevCls& o, bool is_opt) {channels.Add().Set(o,is_opt); return *this;}
 	
@@ -511,7 +449,6 @@ struct ParallelTypeCls : Moveable<ParallelTypeCls> {
 	void operator=(const ParallelTypeCls& n) {vd = n.vd; type = n.type;}
 	bool operator==(const ParallelTypeCls& c) const {return vd == c.vd && type == c.type;}
 	bool operator!=(const ParallelTypeCls& c) const {return vd != c.vd || type != c.type;}
-	//operator bool() const {return IsValid();}
 	operator ValDevCls() const {return vd;}
 	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)vd.dev.type) * (int)ValCls::TYPE_COUNT + (int)vd.val.type;}
 	String GetTypeString() const {return GetTypeString(type);}

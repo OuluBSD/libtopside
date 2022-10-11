@@ -11,7 +11,6 @@ void BindEcsEventsBase(Serial::EcsEventsBase* b) {
 template <class Gfx>
 void BindGfxBuffer(String id, Parallel::BufferT<Gfx>* b) {
 	TODO
-	//Ecs::GetActiveEngine().Get<Ecs::RenderingSystem>()->Attach(id, b);
 }
 
 void BindEcsToSerial() {
@@ -19,7 +18,6 @@ void BindEcsToSerial() {
 	
 	Serial::EcsEventsBase::WhenInitialize << callback(BindEcsEventsBase);
 	#ifdef flagSDL2
-	//BufferT<SdlCpuGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlCpuGfx>));
 	BufferT<SdlSwGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlSwGfx>));
 	#ifdef flagOGL
 	BufferT<SdlOglGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlOglGfx>));

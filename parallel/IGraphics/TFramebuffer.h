@@ -4,29 +4,6 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-#if 0
-template <class Gfx>
-struct FramebufferT : GfxFramebuffer {
-	RTTI_DECL1(FramebufferT, GfxFramebuffer)
-	using Base = FramebufferT<Gfx>;
-	using NativeFrameBuffer = typename Gfx::NativeFramebuffer;
-	using NatTex = typename Gfx::NativeTexture;
-	
-	NativeFrameBufferRef fb;
-	NatTex tex;
-	
-	
-	FramebufferT() {
-		fb = Null;
-		tex = Null;
-	}
-	
-	const NatTex& GetTexture() const {return tex;}
-	
-};
-#endif
-
-
 template <class Gfx> struct InputStateT;
 
 
@@ -38,15 +15,6 @@ struct FramebufferT : Gfx::FramebufferBase {
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
 	using NativeFrameBufferConstRef = typename Gfx::NativeFrameBufferConstRef;
 	using SystemFrameBufferRef = typename Gfx::SystemFrameBufferRef;
-	//using NativeProgram  = typename Gfx::NativeProgram;
-	//using NativePipeline = typename Gfx::NativePipeline;
-	//using NativeShaderRef = typename Gfx::NativeShaderRef;
-	//using ShaderState = typename Gfx::ShaderState;
-	//using ShaderState = ShaderStateT<Gfx>;
-	//using InputState  = typename Gfx::InputState;
-	//using InputState  = InputStateT<Gfx>;
-	//using DataObject = typename Gfx::DataObject;
-	//using DataState = DataStateT<Gfx>;
 	RTTI_DECL1(FramebufferT, GfxFramebuffer)
 	
 	NativeColorBufferRef	color_buf[2];
@@ -87,22 +55,6 @@ struct FramebufferT : Gfx::FramebufferBase {
 	
 };
 
-/*template <class Gfx>
-struct StandaloneFramebufferT : FramebufferT<Gfx> {
-	using SystemFrameBuffer = typename Gfx::SystemFrameBuffer;
-	using Base = FramebufferT<Gfx>;
-	
-	SystemFrameBuffer sys_buf;
-	
-	
-	RTTI_DECL1(StandaloneFramebufferT, Base);
-	
-	void Init(Size sz, int stride, BinarySample::Type t) {
-		ASSERT(t == BinarySample::U8_LE);
-		Base::Init(sys_buf, sz.cx, sz.cy, stride);
-	}
-	
-};*/
 
 template <class Gfx>
 struct InputStateT : GfxInputState {
@@ -111,14 +63,12 @@ struct InputStateT : GfxInputState {
 	using BufferStage = BufferStageT<Gfx>;
 	
 	const BufferStage* stage = 0;
-	//One<StandaloneFramebufferT<Gfx>> fb_for_rawdata;
 	
 	void Clear() {
 		this->GfxInputState::Clear();
 		stage = 0;
 	}
 	
-	//const Buffer& GetBuffer() const {ASSERT(buf); return *buf;}
 };
 
 

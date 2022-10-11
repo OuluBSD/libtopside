@@ -20,13 +20,6 @@ class WmrFusionSystem {
 	};
 	FrameQueueItem in_dark, in_bright;
 	
-	/*struct SensorData {
-		bool new_data = false;
-		quat orientation;
-		vec3 accel;
-		
-	};
-	SensorData in_hmd, in_ctrl[2];*/
 	
 	ControllerMatrix in_ctrl;
 	TransformMatrix in_trans;
@@ -43,8 +36,6 @@ public:
 	void SendFusionData(TcpSocket& out);
 	void PutBrightFrame(bool& lock, Size sz, const Vector<byte>& data);
 	void PutDarkFrame(bool& lock, Size sz, const Vector<byte>& data);
-	/*void PutHmdSensors(const quat& orientation, const vec3& accel);
-	void PutHmdController(int i, const quat& orientation, const vec3& accel);*/
 	void PutSensorData(CtrlEvent& ev);
 	
 };

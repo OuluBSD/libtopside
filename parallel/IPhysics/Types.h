@@ -36,12 +36,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 
-/*#define FYS_CLS(x, f) struct f##x;
-	#define FYS_SYS(x) FYS_CLS_LIST(x)
-		FYS_FYSSYS_LIST
-	#undef FYS_SYS
-#undef FYS_CLS*/
-
 #define FYS_CLS(x, f) template <class Fys> struct x##T;
 	#define FYS_SYS(x) FYS_CLS_LIST(x)
 		FYS_FYSSYS_LIST

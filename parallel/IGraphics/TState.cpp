@@ -188,7 +188,6 @@ typename Gfx::DataObject& ModelStateT<Gfx>::AddObject() {
 	p->SetState(this);
 	objects.Add(p);
 	p->id = objects.GetCount() - 1;
-	RendVer1(OnRealizeObject, p->id);
 	return *p;
 }
 

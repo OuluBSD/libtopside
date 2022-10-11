@@ -93,34 +93,7 @@ struct ShaderT :
 	GfxDataObject* CreateObject() override {return state ? &state->CreateObject() : 0;}
 
 	
-	
-	
-	
-	#if 0
-	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
-	void SetLoaded(bool b=true) {is_loaded = true;}
-	bool IsLoaded() const override {return is_loaded;}
-	void Refresh(Model& model) override;
-    void Refresh(Model& model, Mesh& mesh) override;
-	void Use() override;
-	
-	
-	void SetBool(const String &name, bool value) const override;
-	void SetInt(const String &name, int value) const override;
-	void SetFloat(const String &name, float value) const override;
-	void SetVec2(const String &name, const vec2 &value) const override;
-	void SetVec3(const String &name, const vec3 &value) const override;
-	void SetVec4(const String &name, const vec4 &value) const override;
-	void SetMat2(const String &name, const mat2 &mat) const override;
-	void SetMat3(const String &name, const mat3 &mat) const override;
-	void SetMat4(const String &name, const mat4 &mat) const override;
-	void SetVec2(const String &name, float x, float y) const override;
-	void SetVec3(const String &name, float x, float y, float z) const override;
-	void SetVec4(const String &name, float x, float y, float z, float w) const override;
-	#endif
-	
 };
-#endif
 
 
 
@@ -136,7 +109,6 @@ struct ProgramStateT : GfxProgramState {
 	using DataState = DataStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
 	using DataObject = DataObjectT<Gfx>;
-	//using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	using ContextState = ContextStateT<Gfx>;
 	using BufferStage = BufferStageT<Gfx>;
 	using Compiler = CompilerT<Gfx>;
@@ -235,3 +207,4 @@ struct PipelineStateT : GfxPipelineState {
 
 NAMESPACE_PARALLEL_END
 
+#endif

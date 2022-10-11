@@ -51,8 +51,6 @@ public:
 public:
 	using Pool = RecyclerPool<PacketValue>;
 	
-	//static const int def_sample_rate = Format::def_sample_rate;
-	
 	
 	RTTI_DECL0(PacketValue);
 	PacketValue(off32 offset) : offset(offset) {custom_data = AsVoidTypeCls();}

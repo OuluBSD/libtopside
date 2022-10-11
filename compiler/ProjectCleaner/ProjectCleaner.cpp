@@ -14,7 +14,6 @@ void RecursiveLoad(UppAssemblyData& ass_data, String pkg, int depth=0) {
 		return;
 	
 	UppProject& prj = ass_data.GetProject(pkg);
-	//prj.Dump();
 	
 	for(int i = 0; i < prj.GetUseCount(); i++) {
 		String use = prj.GetUse(i);
@@ -202,9 +201,7 @@ void UppProjectProcessor::EraseComments() {
 		fout.Close();
 		
 		String file_cmd = "gcc -fpreprocessed -dD -P -E \"" + tmp_path + "\"";
-		//LOG(file_cmd);
 		content = RunCompiler(file_cmd);
-		//LOG(content);
 		
 		DeleteFile(tmp_path);
 		
@@ -238,7 +235,6 @@ void UppProjectProcessor::EraseComments() {
 						else p.PassChar(p.PeekChar());
 					}
 					if (!found) {
-						//LOG(content);
 						LOG("error: didn't find end of multiline comment in file " + path);
 						break;
 					}
@@ -247,10 +243,6 @@ void UppProjectProcessor::EraseComments() {
 					p.ReadDouble();
 				else if (p.IsInt())
 					p.ReadInt();
-				/*else if (p.IsChar('\"'))
-					p.ReadString();
-				else if (p.IsChar('\''))
-					p.ReadString('\'');*/
 				else
 					p.PassChar(p.PeekChar());
 			}
@@ -284,7 +276,6 @@ void UppProjectProcessor::EraseDepreacedHeaderOnce() {
 							const char* cur = p.GetPtr();
 							int chars = cur - begin;
 							content = content.Mid(chars, end - chars);
-							//LOG(content);
 							match = true;
 							file.pragma_once = true;
 						}
@@ -310,10 +301,6 @@ void FindIds(CParser& p, Index<String>& id_list) {
 				p.ReadDouble();
 			else if (p.IsInt())
 				p.ReadInt();
-			/*else if (p.IsChar('\"'))
-				p.ReadString();
-			else if (p.IsChar('\''))
-				p.ReadString('\'');*/
 			else
 				p.PassChar(p.PeekChar());
 		}
@@ -477,7 +464,6 @@ void UppProjectProcessor::RunStdPreprocessorPath(int i) {
 	if (verbose) {LOG(file_cmd);}
 	
 	content = RunCompiler(file_cmd);
-	//LOG(content);
 	DeleteFile(tmp_path);
 	
 	
@@ -555,7 +541,6 @@ void UppProjectProcessor::UninstallMacroPlaceholder_NonConditionallyUsedDefine()
 }
 
 void UppProjectProcessor::FindMacroDefineReferences() {
-	//DUMPC(macro_def_ids);
 	macro_def_ids.RemoveKey("cosf");
 	macro_def_ids.RemoveKey("sinf");
 	macro_def_ids.RemoveKey("tanf");
@@ -635,10 +620,6 @@ void UppProjectProcessor::FindMacroDefineReferences() {
 						p.ReadDouble();
 					else if (p.IsInt())
 						p.ReadInt();
-					/*else if (p.IsChar('\"'))
-						p.ReadString();
-					else if (p.IsChar('\''))
-						p.ReadString('\'');*/
 					else
 						p.PassChar(p.PeekChar());
 				}
@@ -654,7 +635,6 @@ void UppProjectProcessor::FindMacroDefineReferences() {
 
 void UppProjectProcessor::RemoveUnusedMacros() {
 	SortByValue(macro_def_ids, StdGreater<int>());
-	//DUMPM(macro_def_ids);
 	
 	Index<String> unused;
 	for(int i = 0; i < macro_def_ids.GetCount(); i++) {
@@ -663,7 +643,6 @@ void UppProjectProcessor::RemoveUnusedMacros() {
 			unused.Add(id);
 		}
 	}
-	//DUMPC(unused);
 	LOG("Found " << unused.GetCount() << " macro keys");
 	
 	int rem_count = 0;

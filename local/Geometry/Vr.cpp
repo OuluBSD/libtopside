@@ -25,21 +25,6 @@ void WmrFusionSystem::Process() {
 		*in_dark.lock = false;
 	}
 	
-	/*if (in_hmd.new_data) {
-		LOG("WmrFusionSystem::Process: new hmd sensor data process");
-		Sleep(2);
-		
-		in_hmd.new_data = false;
-	}
-	
-	for(int i = 0; i < 2; i++) {
-		if (in_ctrl[i].new_data) {
-			LOG("WmrFusionSystem::Process: new ctrl " << i << " sensor data process");
-			Sleep(2);
-			
-			in_ctrl[i].new_data = false;
-		}
-	}*/
 	
 	if (new_ev) {
 		LOG("WmrFusionSystem::Process: fake EventCtrl process");
@@ -48,21 +33,6 @@ void WmrFusionSystem::Process() {
 		new_ev = false;
 	}
 }
-
-/*void WmrFusionSystem::PutHmdSensors(const quat& orientation, const vec3& accel) {
-	in_hmd.orientation = orientation;
-	in_hmd.accel = accel;
-	in_hmd.new_data = true;
-}
-
-void WmrFusionSystem::PutHmdController(int i, const quat& orientation, const vec3& accel) {
-	ASSERT(i >= 0 && i < 2);
-	if (i < 0 || i >= 2) return;
-	auto& in = in_ctrl[i];
-	in.orientation = orientation;
-	in.accel = accel;
-	in.new_data = true;
-}*/
 
 void WmrFusionSystem::PutSensorData(CtrlEvent& ev) {
 	new_ev = true;

@@ -80,8 +80,6 @@ int SoftProgram::GetVarSize(int i) const {
 		case GVar::VAR_LIGHTDIR:			return sizeof(GenericFragmentShaderArgs::light_dir);
 		case GVar::VAR_CAMERA_POS:			return sizeof(GenericFragmentShaderArgs::camera_pos);
 		case GVar::VAR_CAMERA_DIR:			return sizeof(GenericFragmentShaderArgs::camera_dir);
-		/*case Shaders::IPROJ:				return sizeof(GenericVertexShaderArgs::proj);
-		case Shaders::ISCALE:				return sizeof(GenericVertexShaderArgs::scale);*/
 		case GVar::VAR_MODEL:				return sizeof(GenericVertexShaderArgs::model);
 		case GVar::VAR_COMPAT_RESOLUTION:	return sizeof(GenericShaderArgs::iResolution);
 		case GVar::VAR_COMPAT_TIME:			return sizeof(GenericShaderArgs::iTime);
@@ -234,8 +232,6 @@ void SoftProgram::SetVar(int i, const mat4& mat) {
 	int idx = uniforms.GetKey(i);
 	switch (idx) {
 		case GVar::VAR_VIEW:		vargs.view = mat; return;
-		/*case Shaders::IPROJ:		vargs.proj = mat; return;
-		case Shaders::ISCALE:		vargs.scale = mat; return;*/
 		case GVar::VAR_MODEL:		vargs.model = mat; return;
 		default: break;
 	}
@@ -244,9 +240,6 @@ void SoftProgram::SetVar(int i, const mat4& mat) {
 
 
 void SoftProgram::SetVarArray(int i, int arr_size, int count, float* f) {
-	/*ASSERT(obj_i >= 0);
-	if (obj_i < 0) return;
-	auto& vargs = objs[obj_i].vargs;*/
 	int idx = uniforms.GetKey(i);
 	
 	if (arr_size == 3) {

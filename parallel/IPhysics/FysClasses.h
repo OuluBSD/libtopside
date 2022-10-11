@@ -18,22 +18,6 @@ struct FysNode : RTTIBase {
 	
 };
 
-/*struct FysObject : FysNode {
-	RTTI_DECL1(FysObject, FysNode)
-	
-	
-};
-
-struct FysJoint : FysNode {
-	RTTI_DECL1(FysJoint, FysNode)
-	
-};
-
-struct FysSpace : FysNode {
-	RTTI_DECL1(FysSpace, FysNode)
-	
-};*/
-
 
 
 NAMESPACE_PARALLEL_END

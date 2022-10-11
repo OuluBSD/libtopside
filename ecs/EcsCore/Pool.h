@@ -119,18 +119,6 @@ public:
 		return components;
 	}
 	
-	/*template<typename T>
-	RefT_Pool<T> GetAdd() {
-		RefT_Pool<T> c = comps.Find<T>();
-		if (c)
-			return c;
-		return Add<T>();
-	}
-	
-	template<typename T>
-	RefT_Pool<T> Find() {
-		return comps.Find<T>();
-	}*/
 	
 	void RemoveEntity(Entity* e);
 	
@@ -168,34 +156,12 @@ public:
 	PoolVec::Iterator			BeginPool()		{return pools.begin();}
 	
 	
-	
-	
-	/*template<typename T>
-	void Remove() {
-		comps.Remove<T>(GetEngine().Get<ConnectorStore>());
-	}
-	
-	template<typename T>
-	RefT_Pool<T> Add() {
-		T* comp = GetEngine().Get<ConnectorStore>()->CreateComponent<T>();
-		ASSERT(comp);
-		RefScopeParent<RefParent1<Pool>>* rp = comp;
-		rp->SetParent(this);
-		comps.Add(comp);
-		InitializeComponent(*comp);
-		return RefT_Pool<T>(this, comp);
-	}*/
-	
 	void Visit(RuntimeVisitor& vis) {
 		vis || objects || pools;
 	}
 private:
 	EntityVec				objects;
 	PoolVec					pools;
-	
-	/*ConnectorMap			comps;
-	
-	void InitializeComponent(ConnectorBase& comp);*/
 	
 };
 
@@ -212,39 +178,6 @@ public:
 	
 };
 
-
-/*
-template<typename T>
-RefT_Pool<T> Entity::FindConnector() {
-	RefT_Pool<T> r;
-	Pool* p = &GetPool();
-	while (p) {
-		r = p->Find<T>();
-		if (r) break;
-		p = p->GetParent();
-	}
-	return r;
-}
-
-template<typename T>
-RefT_Pool<T> Entity::FindCommonConnector(EntityRef sink) {
-	RefT_Pool<T> ret;
-	int src_depth = GetPoolDepth();
-	int sink_depth = sink->GetPoolDepth();
-	Pool* src_pool = &GetPool();
-	Pool* sink_pool = &sink->GetPool();
-	while (src_depth > sink_depth) {src_pool = src_pool->GetParent(); --src_depth;}
-	while (sink_depth > src_depth) {sink_pool = sink_pool->GetParent(); --sink_depth;}
-	while (src_pool && sink_pool) {
-		if (src_pool == sink_pool) {
-			ret = src_pool->Find<T>();
-			if (ret) break;
-		}
-		src_pool = src_pool->GetParent();
-		sink_pool = sink_pool->GetParent();
-	}
-	return ret;
-}*/
 
 
 template<typename T>
@@ -263,17 +196,6 @@ RefT_Entity<T> Entity::FindNearestEntityWith() {
 	return c;
 }
 
-/*template<typename T>
-RefT_Pool<T> Entity::FindNearestPoolWith() {
-	RefT_Pool<T> c;
-	Pool* p = &GetPool();
-	while (p) {
-		c = p->Find<T>();
-		if (c) break;
-		p = p->GetParent();
-	}
-	return c;
-}*/
 
 NAMESPACE_ECS_END
 

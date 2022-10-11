@@ -97,10 +97,7 @@ void TransformMatrix::operator=(const TransformMatrix& m) {
 	orientation = m.orientation;
 	eye_dist = m.eye_dist;
 	fov = m.fov;
-	/*proj[0] = m.proj[0];
-	proj[1] = m.proj[1];
-	view[0] = m.view[0];
-	view[1] = m.view[1];*/
+	
 }
 
 vec3 TransformMatrix::GetForwardDirection() const {
@@ -111,11 +108,8 @@ vec3 TransformMatrix::GetForwardDirection() const {
 		return direction;
 	}
 	if (mode == MODE_AXES) {
-		//mat4 yaw = YRotation(axes[0]);
-		//mat4 rotate = AxesMat(M_PI, axes[1], axes[2]);
 		mat4 rotate = AxesMat(axes[0], axes[1], axes[2]);
 		vec4 fwd(0,0,1,1);
-		//vec4 dir = rotate * yaw * fwd;
 		vec4 dir = rotate * fwd;
 		return dir.Splice();
 	}

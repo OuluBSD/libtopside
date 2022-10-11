@@ -2,12 +2,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-/*AssemblyExporter::AssemblyExporter(CompilationUnit& cu) : cu(cu) {
-	
-	cu.WeakHint(HINT_PKG, "Default");
-	cu.WeakHint(HINT_FILE, "Default");
-	
-}*/
 
 AssemblyExporter::AssemblyExporter(AstNode& root) : root(root) {
 	
@@ -62,10 +56,7 @@ bool AssemblyExporter::ExportPackage(Package& pkg) {
 	}
 	
 	String pkg_path = AppendFileName(pkg_dir, pkg.name + ".upp");
-	/*if (protect_pkg && FileExists(pkg_path)) {
-		LOG("error: existing .upp file is protected");
-		return false;
-	}*/
+	
 	if (protect_pkg && FileExists(pkg_path)) {
 		LOG("warning: skipping protected " + pkg_path);
 	}
@@ -158,8 +149,6 @@ bool AssemblyExporter::ExportComplete(String dir) {
 		fout << (i == deps.GetCount()-1 ? ";\n\n" : ",\n");
 	}
 	
-	//fout << "file\n\t;";
-	
 	fout << "mainconfig\n\t\"\" = \"\";\n\n";
 	
 	return true;
@@ -176,7 +165,6 @@ bool AssemblyExporter::ExportHeader(Package& pkg, PackageFile& file, String path
 	fout << "#define _" << pkg.name << "_" << file.name << "_h_\n\n";
 	
 	fout << "// This file is generated. Do not modify this file.\n";
-	//fout << "// Last modified: " << GetSysTime().ToString() << "\n";
 	fout << "\n";
 	
 	String path_name = GetFileTitle(path);
@@ -262,10 +250,7 @@ bool AssemblyExporter::Visit(AstNode& n) {
 bool AssemblyExporter::Visit(CompilationUnit& o) {
 	ScopeHolder __h(this, o);
 	
-	/*for (Namespace& ns : o.namespaces.GetValues()) {
-		if (!Visit(ns))
-			return false;
-	}*/
+	
 	if (!Visit(o.root))
 		return false;
 	

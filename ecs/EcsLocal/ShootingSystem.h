@@ -14,11 +14,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//void SetEnabled(bool enable) override;
-	//void Destroy() override;
 	bool LoadModel(ModelComponent&) override;
-	
-	//EntityRef gun;
 	
 	float bullet_speed = 10.0f;
 	mat4 barrel_to_ctrl;

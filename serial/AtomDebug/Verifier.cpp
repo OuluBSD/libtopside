@@ -239,7 +239,6 @@ void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 	Enter(ONCE_FORWARD);
 	
 	Scope& cur = stack.Top();
-	//cur.MayLeave(true);
 	cur.AddEnter(FWDSCOPE_FORWARD);
 	
 }
@@ -251,7 +250,6 @@ void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
 	Enter(EXTCOMP_FORWARD);
 	
 	Scope& cur = stack.Top();
-	//cur.MayLeave(true);
 	cur.AddEnter(FWDSCOPE_FORWARD);
 	
 }
@@ -263,7 +261,6 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	Enter(FWDSCOPE_FORWARD);
 	
 	Scope& cur = stack.Top();
-	//cur.MayLeave(true);
 	cur.AddEnter(CREATE_EMPTY_PACKET);
 	cur.AddEnter(PROCESS_PACKETS);
 	cur.AddEnter(VALEXPT_FWD);
@@ -355,24 +352,6 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 	
 	if (cur_pk.bytes) {
 		MVER_LOG("Sent: " << cur_pk.count << " packets, " << cur_pk.bytes << " bytes, " << cur_pk.ch_samples << " ch-samples");
-		/*if (c) {
-			Format fmt = c->GetSourceValue().GetFormat();
-			MVER_LOG("Sending format: " << fmt.ToString());
-			
-			if (fmt.IsAudio()) {
-				AudioFormat& afmt = fmt;
-				int sample_rate = afmt.GetSampleRate();
-				int min_ch_samples = fmt.GetMinBufSamples();
-				int max_ch_samples = min_ch_samples + sample_rate;
-				MVER_LOG("Testing: " << min_ch_samples << " <= " << cur_pk.ch_samples << " < " << max_ch_samples);
-				if (cur_pk.ch_samples < min_ch_samples || cur_pk.ch_samples >= max_ch_samples)
-					Panic("Invalid sample count sent");
-			}
-			else if (fmt.vd.val.type == ValCls::RECEIPT) {
-				
-			}
-			else TODO
-		}*/
 	}
 	
 	MayLeaveTop();
@@ -498,20 +477,6 @@ void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 	MVER_LOG("MachineVerifier::OnLoopLoader_Status: set loop " << ll->def.id.ToString() << " " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
 	
 	
-	#if 0
-	if (data.status0 == ScriptStatus::RETRY &&
-		!data.MayCreateAtoms() &&
-		new_status != ScriptStatus::SOURCE_IS_WAITING &&
-		new_status != ScriptStatus::SINK_IS_WAITING) {
-		Panic("Invalid new status for ScriptLoopLoader");
-	}
-	if ((new_status == ScriptStatus::SOURCE_IS_WAITING || new_status == ScriptStatus::SINK_IS_WAITING) &&
-		new_status == data.status0) {
-		Panic("Re-setting same side-waiting status");
-	}
-	#endif
-	
-	
 	data.status1 = data.status0;
 	data.status0 = new_status;
 	
@@ -529,8 +494,6 @@ void MachineVerifier::UpdateLoopData(ScriptLoopLoader* ll) {
 	int atoms_added = atom_count - data.atoms.GetCount();
 	ASSERT(atom_count >= data.atoms.GetCount());
 	data.atoms.SetCount(atom_count);
-	
-	//MVER_LOG("MachineVerifier::UpdateLoopData: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 	
 	if (atoms_added > 0 && !data.MayCreateAtoms())
 		Panic("Loop may not create atoms");
@@ -576,7 +539,6 @@ void MachineVerifier::OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
 	UpdateLoopData(ll);
 	
 	int atoms_added = data.atoms.GetCount() - prev_count;
-	//MVER_LOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 }
 
 void MachineVerifier::OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {

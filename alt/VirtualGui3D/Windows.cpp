@@ -6,10 +6,6 @@
 NAMESPACE_ECS_BEGIN
 
 
-/*#define IMAGECLASS WindowsImg
-#define IMAGEFILE <WindowCtrl/Windows.iml>
-#include <Draw/iml_source.h>*/
-
 Image& WindowsImg::close() {
 	static Image img;
 	if (img.IsEmpty())
@@ -84,14 +80,6 @@ Windows::Windows() {
 	active_pos = -1;
 	active_id = -1;
 	
-	
-	/*menu.WhenFocus = THISBACK(FocusWindowPos);
-	menu.WhenClose = THISBACK(CloseWindow);
-	menu.WhenMaximize = THISBACK(MaximizeWindow);
-	menu.WhenMinimize = THISBACK(MinimizeWindow);
-	menu.WhenTileWindows = THISBACK(OrderTileWindows);
-	menu.WhenCloseAll = THISBACK(CloseAll);
-	menu.WhenCloseOthers = THISBACK(CloseOthers);*/
 }
 
 Windows::~Windows() {

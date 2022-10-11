@@ -3,10 +3,6 @@
 NAMESPACE_ECS_BEGIN
 
 
-/*bool FakeControllerSource::GetLocation(float* matrix4x4) const {
-	
-}*/
-
 void FakeControllerSource::GetVelocity(float* v3) const {
 	COPY3(v3, mgr->hand_velocity);
 }
@@ -14,10 +10,6 @@ void FakeControllerSource::GetVelocity(float* v3) const {
 void FakeControllerSource::GetAngularVelocity(float* v3) const {
 	COPY3(v3, mgr->hand_angular_velocity);
 }
-
-
-
-
 
 
 

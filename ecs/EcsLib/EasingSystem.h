@@ -28,7 +28,6 @@ public:
 };
 
 
-////////////////////////////////////////////////////////////////////////////////
 // EasingSystem
 // Manages the Easing component, which allows objects with a Transform component to be
 // interpolated to new position/orientations.

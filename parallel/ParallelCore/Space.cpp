@@ -103,17 +103,8 @@ void Space::InitializeAtoms() {
 
 void Space::InitializeAtom(AtomBase& comp) {
 	comp.SetParent(this);
-	//comp.Initialize();
 }
 
-/*void Space::UninitializeAtoms() {
-	auto& atoms = this->atoms.GetValues();
-	int dbg_i = 0;
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		it().Uninitialize();
-		dbg_i++;
-	}
-}*/
 
 void Space::ClearAtoms() {
 	AtomStoreRef sys = GetMachine().Get<AtomStore>();
@@ -206,9 +197,6 @@ void Space::UninitializeAtomsDeep() {
 		it().UninitializeDeep();
 	}
 	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UninitializeWithExt();
-	}*/
 }
 
 void Space::StopDeep() {
@@ -235,9 +223,6 @@ void Space::UnlinkDeep() {
 	
 	UnlinkExchangePoints();
 	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UnlinkAll();
-	}*/
 }
 
 void Space::ClearStatesDeep() {

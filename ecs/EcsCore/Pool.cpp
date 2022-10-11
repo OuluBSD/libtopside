@@ -82,9 +82,6 @@ void Pool::UnlinkDeep() {
 		it().UnlinkDeep();
 	}
 	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UnlinkAll();
-	}*/
 }
 
 void Pool::UnrefDeep() {
@@ -100,9 +97,6 @@ void Pool::UninitializeComponentsDeep() {
 		it().UninitializeComponents();
 	}
 	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UninitializeWithExt();
-	}*/
 }
 
 void Pool::ClearComponentsDeep() {
@@ -113,12 +107,6 @@ void Pool::ClearComponentsDeep() {
 		it().ClearComponents();
 	}
 	
-	/*if (!comps.IsEmpty()) {
-		ConnectorStoreRef sys = GetEngine().Get<ConnectorStore>();
-		for (auto iter = comps.rbegin(); iter; --iter)
-			sys->ReturnComponent(comps.Detach(iter));
-		ASSERT(comps.IsEmpty());
-	}*/
 }
 
 void Pool::ClearDeep() {
@@ -134,7 +122,6 @@ void Pool::ReverseEntities() {
 }
 
 void Pool::Clear() {
-	// useless ClearInterfacesDeep();
 	UnrefDeep();
 	UnlinkDeep();
 	UninitializeComponentsDeep();
@@ -148,10 +135,6 @@ void Pool::PruneFromContainer() {
 	Destroyable::PruneFromContainer(objects);
 }
 
-/*void Pool::InitializeComponent(ConnectorBase& comp) {
-	comp.Initialize();
-}*/
-
 void Pool::Dump() {
 	LOG(GetTreeString());
 }
@@ -163,12 +146,6 @@ String Pool::GetTreeString(int indent) {
 	pre.Cat('\t', indent);
 	
 	s << ".." << name << "[" << id << "]\n";
-	
-	/*for (ConnectorRef& c : comps) {
-		s.Cat('\t', indent+1);
-		s << "." << c->ToString();
-		s << "\n";
-	}*/
 	
 	for (EntityRef& e : objects)
 		s << e->GetTreeString(indent+1);

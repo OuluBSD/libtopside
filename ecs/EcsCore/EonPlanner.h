@@ -33,7 +33,6 @@ public:
 	void SetTypes(TypeCls comp, TypeCls src, TypeCls sink) {cur_comp = comp; src_iface = src; sink_iface = sink;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
-	//bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	String Get(const String& key) const;
 	int64 GetHashValue();
@@ -193,7 +192,6 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 	Vector<int> act_ids;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, ws, to, act_ids, action_costs);
-	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount());
 	for(int i = 0; i < to.GetCount(); i++) {
 		Eon::WorldState& ws_to = *to[i];
 		int64 hash = ws_to.GetHashValue();
@@ -210,8 +208,6 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 			n.AddLink(ap.tmp_sub[j]);
 		}
 	}
-	//if (n.GetTotalCount())
-	//	return false;
 	
 	Eon::ActionNode& goal = n.GetGoal();
 	return n.Contains(goal);

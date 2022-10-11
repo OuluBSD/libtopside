@@ -1,7 +1,7 @@
 uses
-	Shadertoy,
 	EcsMinimal,
-	AtomLocal;
+	AtomLocal,
+	Shadertoy;
 
 uses(!MINIMAL) EcsComplete;
 

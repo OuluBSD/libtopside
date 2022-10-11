@@ -4,28 +4,15 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-/*namespace Serial {
-class Format;
-class FboFormat;
-class VideoFormat;
-}*/
+
 
 #define GFX_CLS_LIST(g) \
 	GFX_CLS(VertexShaderArgs, g) \
 	GFX_CLS(FragmentShaderArgs, g) \
-	/*GFX_CLS(BinderIface, g)*/ \
 	GFX_CLS(DataObject, g) \
-	/*GFX_CLS(DataState, g)*/ \
-	/*GFX_CLS(InputState, g)*/ \
-	/*GFX_CLS(Framebuffer, g)*/ \
 	GFX_CLS(Compiler, g) \
 	GFX_CLS(Linker, g) \
-	/*GFX_CLS(ShaderState, g)*/ \
-	/*GFX_CLS(Shader, g)*/ \
 	GFX_CLS(ShaderPipeline, g) \
-	/*GFX_CLS(PipelineState, g)*/ \
-	/*GFX_CLS(FramebufferStateExt, g)*/ \
-	/*GFX_CLS(ContextState, g)*/ \
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
 	GFX_CLS(Buffer, g) \
@@ -33,7 +20,6 @@ class VideoFormat;
 
 
 #define GFX_RENDSYS_LIST \
-	/*GFX_RSYS(SdlCpu)*/ \
 	GFX_RSYS(SdlOgl) \
 	GFX_RSYS(X11Ogl) \
 	GFX_RSYS(X11Sw) \
@@ -47,15 +33,6 @@ GFX_CLS_LIST(_)
 GFX_RENDSYS_LIST
 #undef GFX_RSYS
 
-/*#define GFX_CLS(x, g) struct g##x;
-#define GFX_RSYS(x) GFX_CLS_LIST(x)
-GFX_RENDSYS_LIST
-#undef GFX_RSYS
-#undef GFX_CLS*/
-
-
-
-
 
 struct GfxFramebuffer;
 struct GfxBuffer;
@@ -65,13 +42,6 @@ template <class Gfx> struct FramebufferT;
 
 template <class Gfx>
 struct SwGfxT {
-	/*using SoftRend			= SoftRendT<Gfx>;
-	using SoftCompiler		= SoftCompilerT<Gfx>;
-	using SoftShader		= SoftShaderT<Gfx>;
-	using SoftProgram		= SoftProgramT<Gfx>;
-	using SoftFramebuffer	= SoftFramebufferT<Gfx>;
-	using SoftPipeline		= SoftPipelineT<Gfx>;*/
-	// using SoftVertexArray	= SoftVertexArrayT<Gfx>;
 	using NativeColorBufferRef		= ByteImage*;
 	using NativeColorBufferConstRef	= ConstByteImage*;
 	using NativeDepthBufferRef		= DepthImage*;
@@ -192,24 +162,6 @@ struct Dx11GfxT {
 	using NativeVertexShaderRef = ComPtr <ID3D11VertexShader>;
 	using NativeGeometryShaderRef = ComPtr <ID3D11GeometryShader>;
 	using NativePixelShaderRef = ComPtr <ID3D11PixelShader>;
-	
-	/*using NativeTexture = GLuint;
-	using NativeShaderRef = GLuint;
-	using NativeColorBufferRef = GLuint;
-	using NativeColorBufferConstRef = GLuint;
-	using NativeDepthBufferRef = GLuint;
-	using NativeDepthBufferConstRef = GLuint;
-	using NativeFrameBufferRef = GLuint;
-	using NativeFrameBufferConstRef = GLuint;
-	using NativeBuffer = GLuint;
-	using SystemFrameBufferRef = NativeFrameBufferRef;
-	using NativeVertexArray = GLuint;
-	using NativeVertexBuffer = GLuint;
-	using NativeElementBuffer = GLuint;
-	using NativeProgram = GLuint;
-	using NativePipeline = GLuint;
-	using ValFormat = Serial::FboFormat;*/
-	
 	using FramebufferBase = DxFramebufferBase;
 	using BufferBase = DxBufferBase;
 	
@@ -253,11 +205,8 @@ struct X11SwGfx : SwGfxT<X11SwGfx>, X11Gfx {
 	
 	using NativeTexture = SystemFrameBufferRef;
 	using NativeSurface = NativeColorBufferRef;
-	//using NativeColorBufferRef = void*;
-	//using SoftShaderLibrary = SoftShaderLibraryT<X11SwGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(X11Sw)
 	#undef GFX_CLS
 	
@@ -278,12 +227,11 @@ struct X11SwGfx : SwGfxT<X11SwGfx>, X11Gfx {
 #ifdef flagOGL
 struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
 	using NativeGLContext = ::GLXContext;
-	using SoftShaderLibrary = DummySoftShaderLibrary;//T<X11OglGfx>;
+	using SoftShaderLibrary = DummySoftShaderLibrary;
 	
 	static void DeleteContext(NativeGLContext& ctx);
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf);
@@ -346,33 +294,6 @@ struct SdlGfx {
 	
 };
 
-/*
-struct SdlCpuGfx : SwGfxT<SdlCpuGfx>, SdlGfx {
-	using NativeFrameBuffer = SDL_Texture*;
-	using NativeColorBufferRef = SDL_Texture*;
-	using NativeDepthBufferRef = SDL_Texture*;
-	
-	struct Thread {
-		NativeFrameBuffer fb = 0;
-		NativeFrameBuffer ctx_default_fb = 0;
-	};
-	
-	static Thread& Local();
-	
-	#define GFX_CLS(x, g) using x = g##x;
-	GFX_CLS_LIST(SdlCpu)
-	#undef GFX_CLS
-	
-	NativeFrameBuffer fb;
-	
-	static void BindFramebufferEXT(NativeFrameBuffer& fb);
-	static void BindTexture(GVar::TextureMode type, const NativeFrameBuffer& tex);
-	static void BindFramebufferDefault();
-	static void RenderScreenRect();
-	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = fb;}
-	
-};
-*/
 
 struct SdlCpuGfx : CpuGfx, SdlGfx {
 	using SystemFrameBufferRef = SDL_Texture*;
@@ -383,7 +304,6 @@ struct SdlCpuGfx : CpuGfx, SdlGfx {
 	using NativeColorBufferConstRef = NativeTexture;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
@@ -405,11 +325,8 @@ struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
 	
 	using NativeTexture = SDL_Texture*;
 	using NativeSurface = SDL_Surface*;
-	//using NativeColorBufferRef = SDL_Texture*;
-	//using SoftShaderLibrary = SoftShaderLibraryT<SdlSwGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlSw)
 	#undef GFX_CLS
 	
@@ -422,20 +339,15 @@ struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
 	static bool LockTextureToSurface(SoftFramebuffer* tex, Rect r, NativeSurface& surf);
 	static void QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h);
 	static void UnlockTextureToSurface(SoftFramebuffer* tex);
-	/*
-	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);
-	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
-	static void UnlockTextureToSurface(NativeTexture& tex);
-	*/
+	
 };
 
 #ifdef flagOGL
 struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 	using NativeSurface = void*;
-	using SoftShaderLibrary = DummySoftShaderLibrary;//T<SdlOglGfx>;
+	using SoftShaderLibrary = DummySoftShaderLibrary;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS
 	

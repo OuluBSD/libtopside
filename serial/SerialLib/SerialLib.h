@@ -4,12 +4,6 @@
 
 #include <SerialScript/SerialScript.h>
 
-#if 0
-#include <Graphics/Graphics.h>
-#else
-
-#endif
-
 
 #include "Types.h"
 #include "EntitySystem.h"

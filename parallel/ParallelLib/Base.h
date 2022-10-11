@@ -46,18 +46,15 @@ class RollingValueBase :
 public:
 	RTTI_DECL1(RollingValueBase, Atom)
 	bool Initialize(const Script::WorldState& ws) override;
-	//bool PostInitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 };
 
 
 class VoidSinkBase :
 	public Atom
-			//AsyncMemForwarderBase
 {
 	byte				rolling_value = 0;
 	Format				internal_fmt;
@@ -73,11 +70,9 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	//very old: void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	bool Consume(const void* data, int len) override;
-	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override;
 	
 	
@@ -108,7 +103,6 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool Recv(int sink_ch, const Packet& in) override;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
-	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
 };

@@ -36,10 +36,3 @@
 
 #endif
 
-
-
-/*#if defined flagGUI && defined flagGUI
-	#include <SDL2GUI3D/System.h>
-#endif*/
-
-

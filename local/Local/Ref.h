@@ -47,27 +47,6 @@ struct RefParent1 {
 	}
 };
 
-#if 0
-template <class A, class B>
-struct RefParent1b {
-	A* o = 0;
-	
-	RefParent1b() {}
-	RefParent1b(A& o) : o(&o) {}
-	RefParent1b(A* o) : o(o) {}
-	void Clear() {o = 0;}
-	
-	operator bool() const {return o;}
-	operator A&() const {ASSERT(o); return *o;}
-	operator A*() const {ASSERT(o); return o;}
-	operator B&() const;
-	operator B*() const;
-	A* operator->() const {ASSERT(o); return o;}
-	A* Get() const {ASSERT(o); return o;}
-	String ToString() const {return "RefParent1b(" + HexStr(o) + ")";}
-	
-};
-#endif
 
 template <class A, class B>
 struct RefParent2 {
@@ -86,27 +65,6 @@ struct RefParent2 {
 	
 };
 
-#if 0
-template <class A, class B, class Ab, class Bb>
-struct RefParent2b {
-	static_assert(std::is_convertible<A*, Ab*>::value, "A must inhert Ab trivially");
-	static_assert(std::is_convertible<B*, Bb*>::value, "B must inhert Bb trivially");
-	
-	A* a = 0;
-	B* b = 0;
-	
-	RefParent2b() {}
-	RefParent2b(A* a) : a(a) {}
-	RefParent2b(B* b) : b(b) {}
-	RefParent2b(A* a, B* b) : a(a), b(b) {}
-	
-	void Clear() {a = 0; b = 0;}
-	
-	operator bool() const {return a || b;}
-	String ToString() const {return "RefParent2b(" + HexStr(a) + ", " + HexStr(b) + ")";}
-	
-};
-#endif
 
 struct RefCommon {
 	

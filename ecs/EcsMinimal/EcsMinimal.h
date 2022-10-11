@@ -7,7 +7,6 @@
 #endif
 #include <EcsPhysics/EcsPhysics.h>
 
-#include "Prefabs.h"
 
 NAMESPACE_ECS_BEGIN
 

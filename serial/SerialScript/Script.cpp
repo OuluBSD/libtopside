@@ -2,28 +2,6 @@
 
 NAMESPACE_SERIAL_BEGIN
 
-#if 0
-
-String GetScriptStatusLine(int indent, ScriptStatus status, String extra_str) {
-	String s;
-	s.Cat('\t', indent);
-	const char* t = GetScriptStatusString(status);
-	s << "-> " << t;
-	if (extra_str.GetCount())
-		s << " (" << extra_str << ")";
-	s.Cat('\n');
-	return s;
-}
-
-int GetTotalSegmentCount(Vector<ScriptLoopLoader*>& v) {
-	int count = 0;
-	for (ScriptLoopLoader* l : v)
-		count += l->GetSegmentCount();
-	return count;
-}
-
-#endif
-
 
 namespace Script {
 
@@ -53,7 +31,7 @@ ScriptLoader::ScriptLoader(Machine& m) :
 }
 
 ScriptLoader::~ScriptLoader() {
-	//LOG("~ScriptLoader");
+	
 }
 
 void ScriptLoader::LogMessage(ProcMsg msg) {
@@ -65,8 +43,6 @@ bool ScriptLoader::Initialize() {
 	
 	if (!WhenMessage)
 		WhenMessage << THISBACK(LogMessage);
-	
-	//def_ws.SetActionPlanner(def_planner);
 	
 	es = mach.Find<LoopStore>();
 	if (!es) {
@@ -140,25 +116,8 @@ bool ScriptLoader::LoadFile(String path) {
 	return Load(eon, path);
 }
 
-/*bool TestParseScriptCode(String content) {
-	Script::Parser p;
-	if (!p.Parse(content, "<file>")) {
-		LOG(GetLineNumStr(content, 1));
-		return false;
-	}
-	p.Dump();
-	return true;
-}*/
-
 bool ScriptLoader::Load(const String& content, const String& filepath) {
 	RTLOG("ScriptLoader::Load: Loading \"" << filepath << "\"");
-	
-	/*if (HAVE_SCRIPTLOADER_MACHVER) {
-		Machine& mach = GetMachine();
-		MachineVerifier* mver = mach.GetMachineVerifier();
-		if (mver)
-			mver->Attach(*this);
-	}*/
 	
 	WhenEnterScriptLoad(*this);
 	
@@ -169,12 +128,10 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 		WhenLeaveScriptLoad();
 		return false;
 	}
-	//p.Dump();
 	
 	if (!LoadCompilationUnit(root)) {
 		LOG("error dump:");
 		if (loader) loader->Dump();
-		//DumpErrors();
 		
 		Cleanup();
 		WhenLeaveScriptLoad();
@@ -182,8 +139,6 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 	}
 	
 	if (!ImplementScript()) {
-		//DumpErrors();
-		
 		Cleanup();
 		WhenLeaveScriptLoad();
 		return false;
@@ -207,25 +162,7 @@ void ScriptLoader::Cleanup() {
 	loader.Clear();
 }
 
-/*void ScriptLoader::DumpErrors() {
-	Vector<ScriptLoopLoader*> loops;
-	loader->GetLoops(loops);
-	for (ScriptLoopLoader* ll : loops) {
-		if (ll->GetStatus() == ScriptStatus::FAILED) {
-			LOG("ScriptLoopLoader: error: " << ll->GetErrorString());
-		}
-	}
-}*/
-
 bool ScriptLoader::ImplementScript() {
-	
-	RTLOG("ScriptLoader::ImplementScript: load drivers");
-	Vector<ScriptDriverLoader*> drivers;
-	loader->GetDrivers(drivers);
-	for (ScriptDriverLoader* dl: drivers) {
-		if (!dl->Load())
-			return false;
-	}
 	
 	RTLOG("ScriptLoader::ImplementScript: load states");
 	Vector<ScriptStateLoader*> states;
@@ -256,13 +193,6 @@ bool ScriptLoader::ImplementScript() {
 	}
 	
 	
-	
-	RTLOG("ScriptLoader::ImplementScript: driver post initialize");
-	for (ScriptDriverLoader* dl: drivers) {
-		if (!dl->PostInitialize())
-			return false;
-	}
-	
 	RTLOG("ScriptLoader::ImplementScript: loop post initialize");
 	for (ScriptLoopLoader* ll : loops) {
 		if (!ll->PostInitialize())
@@ -270,12 +200,6 @@ bool ScriptLoader::ImplementScript() {
 	}
 	
 	
-	
-	RTLOG("ScriptLoader::ImplementScript: driver start");
-	for (ScriptDriverLoader* dl: drivers) {
-		if (!dl->Start())
-			return false;
-	}
 	
 	RTLOG("ScriptLoader::ImplementScript: loop start");
 	for (ScriptLoopLoader* ll : loops) {
@@ -296,7 +220,6 @@ bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) 
 	else {
 		AstNode* iter = to;
 		while (iter && iter != from) {
-			//if (iter->src == SEMT_IDPART || iter == to) {
 			if (iter->name.GetCount() || iter == to) {
 				path.Add(iter);
 			}
@@ -307,16 +230,11 @@ bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) 
 		AddError(to->loc, "internal error: empty path");
 		return false;
 	}
-	//String path_str;
 	for (int i = path.GetCount()-1; i >= 0; i--) {
 		AstNode* id = path[i];
-		//if (!path_str.IsEmpty())
-		//	path_str.Cat('.');
 		ASSERT(id->name.GetCount());
-		//path_str.Cat(id->name);
 		script_id.parts.Add(id->name);
 	}
-	//DUMP(path_str);
 	
 	return true;
 }
@@ -427,7 +345,6 @@ bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 			
 			Vector<AstNode*> items;
 			block->FindAllNonIdEndpoints(items, SEMT_CHAIN);
-			//Sort(items, AstNodeLess());
 			if (items.IsEmpty()) {
 				if (!LoadChain(chain_def, block))
 					return false;
@@ -482,7 +399,6 @@ bool ScriptLoader::LoadWorld(Script::WorldDefinition& def, AstNode* n) {
 			
 			Vector<AstNode*> items;
 			block->FindAllNonIdEndpoints(items, SEMT_POOL);
-			//Sort(items, AstNodeLess());
 			if (items.IsEmpty()) {
 				if (!LoadPool(pool_def, block))
 					return false;
@@ -506,11 +422,6 @@ bool ScriptLoader::LoadWorld(Script::WorldDefinition& def, AstNode* n) {
 		}
 	}
 	
-	/*if (!has_chain) {
-		Script::ChainDefinition& chain = def.chains.Add();
-		return LoadChain(chain, n);
-	}*/
-	
 	return true;
 }
 
@@ -523,14 +434,10 @@ bool ScriptLoader::LoadDriver(Script::DriverDefinition& def, AstNode* n) {
 bool ScriptLoader::LoadTopChain(Script::ChainDefinition& def, AstNode* n) {
 	
 	TODO
-	/*
-	ScriptLoopLoader
-	ScriptStateLoader
-	*/
+	
 }
 
 bool ScriptLoader::LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n) {
-	//LOG(n->GetTreeString(0));
 	
 	if (!LoadArguments(def.args, n))
 		return false;
@@ -541,8 +448,6 @@ bool ScriptLoader::LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n) {
 bool ScriptLoader::LoadPool(Script::PoolDefinition& def, AstNode* n) {
 	const auto& map = Parallel::Factory::AtomDataMap();
 	Vector<AstNode*> items;
-	
-	//LOG(n->GetTreeString(0));
 	
 	n->FindAll(items, SEMT_ENTITY);
 	n->FindAll(items, SEMT_POOL);
@@ -592,10 +497,8 @@ bool ScriptLoader::LoadEntity(Script::EntityDefinition& def, AstNode* n) {
 	const auto& map = Parallel::Factory::AtomDataMap();
 	Vector<AstNode*> items;
 	
-	//LOG(n->GetTreeString(0));
-	
 	n->FindAll(items, SEMT_COMPONENT);
-	//Sort(items, AstNodeLess());
+	Sort(items, AstNodeLess());
 	
 	for (AstNode* item : items) {
 		Script::ComponentDefinition& comp_def = def.comps.Add();
@@ -616,8 +519,6 @@ bool ScriptLoader::LoadEntity(Script::EntityDefinition& def, AstNode* n) {
 
 bool ScriptLoader::LoadComponent(Script::ComponentDefinition& def, AstNode* n) {
 	
-	//LOG(n->GetTreeString(0));
-	
 	if (!LoadArguments(def.args, n))
 		return false;
 	
@@ -628,12 +529,9 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 	const auto& map = Parallel::Factory::AtomDataMap();
 	Vector<AstNode*> loops, states, atoms, stmts, conns;
 	
-	//LOG(n->GetTreeString(0));
-	
 	n->FindAll(loops, SEMT_DRIVER); // subset of loops
 	n->FindAll(loops, SEMT_LOOP);
 	Sort(loops, AstNodeLess());
-	//DUMP(loops.GetCount());
 	
 	for (AstNode* loop : loops) {
 		bool is_driver = loop->src == SEMT_DRIVER;
@@ -644,9 +542,6 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		
 		if (!GetPathId(loop_def.id, n, loop))
 			return false;
-		//DUMP(loop_def.id);
-		
-		//LOG(loop->GetTreeString(0));
 		
 		AstNode* stmt_block = loop->Find(SEMT_STATEMENT_BLOCK);
 		if (!stmt_block) {
@@ -714,7 +609,6 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 				atom->FindAllStmt(conns, STMT_ATOM_CONNECTOR);
 				Sort(conns, AstNodeLess());
 				if (!conns.IsEmpty()) {
-					//DUMP(atom_def.id);
 					int sink_conn_i = 0, src_conn_i = 0; // side ids start from 1, so this shouldn't be -1
 					for (AstNode* conn : conns) {
 						bool is_src = conn->i64 != 0;
@@ -728,8 +622,6 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 							continue;
 						}
 							
-						//LOG(conn->GetTreeString(0));
-						
 						AstNode* expr = conn->Find(SEMT_EXPR);
 						if (!expr) {
 							AddError(conn->loc, "internal error: no expression");
@@ -783,14 +675,11 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 			
 			bool succ = false;
 			if (stmt.stmt == STMT_EXPR) {
-				//LOG(stmt->GetTreeString(0));
 				if (stmt.rval) {
 					if (stmt.rval->src == SEMT_EXPR) {
 						if (stmt.rval->op == OP_ASSIGN) {
 							AstNode* key = stmt.rval->arg[0];
 							AstNode* value = stmt.rval->arg[1];
-							//LOG(key->GetTreeString(0));
-							//LOG(value->GetTreeString(0));
 							while (key->src == SEMT_RVAL && key->rval) key = key->rval;
 							while (value->src == SEMT_RVAL && value->rval) value = key->rval;
 							if (key->src == SEMT_VARIABLE && key->name.GetCount()) {
@@ -940,7 +829,6 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		if (!GetPathId(state_def.id, n, state))
 			return false;
 		
-		//DUMP(state_def.id);
 	}
 	
 	return true;
@@ -948,8 +836,6 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 
 bool ScriptLoader::LoadArguments(ArrayMap<String, Object>& args, AstNode* n) {
 	Vector<AstNode*> stmts;
-	//AstNode* block = atom->Find(SEMT_STATEMENT_BLOCK);
-	//if (!block) {AddError(atom->loc, "internal error: no statement block"); return false;}
 	
 	AstNode* block = n->Find(SEMT_STATEMENT_BLOCK);
 	if (block) {
@@ -959,7 +845,6 @@ bool ScriptLoader::LoadArguments(ArrayMap<String, Object>& args, AstNode* n) {
 			static int dbg_i;
 			bool succ = false;
 			if (stmt.stmt == STMT_EXPR) {
-				//LOG(stmt->GetTreeString(0));
 				if (stmt.rval) {
 					if (stmt.rval->src == SEMT_EXPR) {
 						if (stmt.rval->op == OP_ASSIGN) {
@@ -971,8 +856,6 @@ bool ScriptLoader::LoadArguments(ArrayMap<String, Object>& args, AstNode* n) {
 							AstNode* value = stmt.rval->arg[1];
 							while (key->src == SEMT_RVAL && key->rval) key = key->rval;
 							while (value->src == SEMT_RVAL && value->rval) value = key->rval;
-							//LOG(key->GetTreeString(0));
-							//LOG(value->GetTreeString(0));
 							if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
 								String key_str = key->str;
 								if (value->src == SEMT_CONSTANT) {
@@ -1083,12 +966,6 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 				}
 			}
 			
-			/* Not error anymore:
-			if (!found) {
-				RTLOG("ScriptLoader::ConnectSides:		error: could not link side-link: " << sink_conn.ToString());
-				AddError("Could not link connection id " + IntStr(in_conn));
-				return false;
-			}*/
 			
 			dbg_i++;
 		}
@@ -1097,135 +974,6 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	
 	return true;
 }
-
-/*Script::State* ScriptLoader::FindState(const Script::Id& id) {
-	auto iter = scopes.rbegin();
-	auto end = scopes.rend();
-	for(; iter != end; --iter) {
-		Script::GlobalScope& glob = **iter;
-		for (Script::State& state : glob.states) {
-			if (state.id == id) {
-				return &state;
-			}
-		}
-	}
-	return NULL;
-}*/
-
-
-
-#if 0
-{
-	Vector<ScriptLoopLoader*>	waiting_sources;
-	Vector<ScriptLoopLoader*>	waiting_sinks;
-	
-	is_waiting_source = false;
-	is_waiting_sink = false;
-	
-	for (ScriptLoopLoader* ll : loops) {
-		if (ll->IsStatus(ScriptStatus::SOURCE_IS_WAITING))
-			waiting_sources.Add(ll);
-		if (ll->IsStatus(ScriptStatus::SINK_IS_WAITING))
-			waiting_sinks.Add(ll);
-	}
-	
-	if (waiting_sources.IsEmpty() && waiting_sinks.IsEmpty()) {
-		SetError("Internal error. No any waiting sidechannel io exists.");
-		return false;
-	}
-	
-	if (waiting_sources.IsEmpty()) {
-		SetError("No side-sources");
-		is_waiting_sink = true; // because waiting_sinks.count > 0
-		return false;
-	}
-	
-	if (waiting_sinks.IsEmpty()) {
-		SetError("No side-sinks");
-		is_waiting_source = true; // because waiting_sources.count > 0
-		return false;
-	}
-	
-	Vector<ScriptLoopLoader*> retry_list;
-	
-	int accepted_count = 0;
-	for (ScriptLoopLoader* src : waiting_sources) {
-		ScriptLoopLoader* accepted_sink = 0;
-		Script::ActionPlanner::State* accepted_src_node = 0;
-		Script::ActionPlanner::State* accepted_sink_node = 0;
-		int accepted_sink_count = 0;
-		bool accepted_all_multi = true;
-		int dbg_i = 0;
-		for (ScriptLoopLoader* sink : waiting_sinks) {
-			if (!src->IsFailed() &&
-				!sink->IsFailed()) {
-				RTLOG("ScriptConnectionSolver::Process: #" << dbg_i << " check fail state: src " << HexStr(src) << " against sink " << HexStr(sink) << ": passed");
-				SideStatus s = src->AcceptSink(*sink, accepted_src_node, accepted_sink_node);
-				if (s == SIDE_ACCEPTED || s == SIDE_ACCEPTED_MULTI) {
-					ASSERT(accepted_src_node && accepted_sink_node);
-					accepted_sink_count++;
-					accepted_sink = sink;
-					if (s != SIDE_ACCEPTED_MULTI)
-						accepted_all_multi = false;
-				}
-			}
-			else {
-				RTLOG("ScriptConnectionSolver::Process: #" << dbg_i << " check fail state: src " << HexStr(src) << " against sink " << HexStr(sink) << ": failed");
-			}
-			dbg_i++;
-		}
-		if (!accepted_all_multi && accepted_sink_count > 1) {
-			SetError("source loop " + IntStr(src->GetId()) + " cannot accept multiple sinks");
-			return false;
-		}
-		if (accepted_sink_count == 0) {
-			SetError("source loop " + IntStr(src->GetId()) + " cannot accept any sink");
-			is_waiting_sink = true;
-			continue;
-		}
-		
-		src->RealizeConnections(accepted_src_node);
-		accepted_sink->RealizeConnections(accepted_sink_node);
-		
-		ASSERT(accepted_sink);
-		AtomTypeCls src_type = accepted_src_node->last->GetWorldState().GetAtom();
-		AtomTypeCls sink_type = accepted_sink_node->last->GetWorldState().GetAtom();
-		src->SetSideSourceConnected(src_type, accepted_src_node->ch_i, accepted_sink);
-		accepted_sink->SetSideSinkConnected(sink_type, accepted_sink_node->ch_i, src);
-		
-		int conn_id = tmp_side_id_counter++;
-		
-		accepted_src_node->last->GetInterface().Realize(src_type);
-		accepted_src_node->last->GetInterface().SetSource(conn_id,		accepted_src_node->ch_i,	accepted_sink_node->ch_i);
-		
-		accepted_sink_node->last->GetInterface().Realize(sink_type);
-		accepted_sink_node->last->GetInterface().SetSink(conn_id,		accepted_sink_node->ch_i,	accepted_src_node->ch_i);
-		
-		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
-			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
-		
-		
-		if (src->IsTopSidesConnected()) {
-			LOG("Loop " << src->GetId() << " all sides connected");
-			src->AddSideConnectionSegment(accepted_src_node, accepted_sink, accepted_sink_node);
-			retry_list.Add(src);
-		}
-		
-		if (accepted_sink->IsTopSidesConnected()) {
-			LOG("Loop " << accepted_sink->GetId() << " all sides connected");
-			accepted_sink->AddSideConnectionSegment(accepted_sink_node,	src, accepted_src_node);
-			retry_list.Add(accepted_sink);
-		}
-		
-		++accepted_count;
-	}
-	
-	for (ScriptLoopLoader* ll : retry_list)
-		ll->SetStatusRetry();
-	
-	return accepted_count > 0;
-}
-#endif
 
 
 NAMESPACE_SERIAL_END

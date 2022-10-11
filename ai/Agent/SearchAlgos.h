@@ -394,8 +394,6 @@ class AStar : public Searcher<T> {
 	struct NodePtr {
 		NodeT* ptr;
 		NodePtr() : ptr(0), g_score(0), f_score(0), came_from(0) {g_score = DBL_MAX; f_score = DBL_MAX;}
-		//NodePtr(NodeT* ptr) : ptr(ptr), g_score(0), f_score(0), came_from(0) {g_score = DBL_MAX; f_score = DBL_MAX;}
-		//NodePtr(const NodePtr& src) : ptr(src.ptr), g_score(src.g_score), f_score(src.f_score), came_from(src.came_from) {}
 		
 		hash_t GetHashValue() const {return UPP::GetHashValue((size_t)ptr);}
 		bool operator == (const NodePtr& np) const {return np.ptr == ptr;}

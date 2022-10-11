@@ -211,14 +211,7 @@ void SImageDraw::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
 			Point A = a + (c - a) * alpha;
 			Point B = b + (c - b) * beta;
 			if (A.x > B.x) Swap(A, B);
-			/*if (border) {
-				fb.DrawLine(A.x, y, A.x, y, 1, red);
-				fb.DrawLine(B.x, y, B.x, y, 1, green);
-				if (fill)
-					fb.DrawHLine(A.x, B.x, y, 1, white);
-			}
-			else*/
-				DrawHLine(A.x, B.x, y, clr);
+			DrawHLine(A.x, B.x, y, clr);
 		}
 	}
 }

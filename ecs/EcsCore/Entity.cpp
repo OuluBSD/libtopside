@@ -11,7 +11,6 @@ Entity::~Entity() {
 	UnrefDeep();
 	UninitializeComponents();
 	ClearComponents();
-	//Destroy();
 	DBG_DESTRUCT
 }
 
@@ -127,14 +126,6 @@ void Entity::Destroy() {
 		es->AddToDestroyList(this);
 	
 }
-
-/*void Entity::SetEnabled(bool enable) {
-	Enableable::SetEnabled(enable);
-	
-	for (auto& component : comps.GetValues()) {
-		component->SetEnabled(enable);
-	}
-}*/
 
 Engine& Entity::GetEngine() {
 	return GetPool().GetEngine();

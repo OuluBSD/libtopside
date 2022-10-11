@@ -179,13 +179,7 @@ public:
 			for(int i = 0; i < sub.GetCount(); i++)
 				sub[i].parent = this;
 	}
-	/*void Jsonize(JsonIO& json) {
-		json ("sub", sub);
-		if (json.IsLoading())
-			for(int i = 0; i < sub.GetCount(); i++)
-				sub[i].parent = this;
-	}*/
-	//for(int i = 0; i < sub.GetCount(); i++) sub[i].parent = NULL;
+	
 };
 
 

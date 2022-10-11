@@ -91,7 +91,6 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 	Value& src = GetSource()->GetSourceValue(src_ch);
 	src.SetFormat(fmt);
 	
-	//UpdateLinkedExchangeFormats(src_ch, fmt);
 	
 	return true;
 }
@@ -175,7 +174,6 @@ Packet LinkBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
 		to->SetOffset(off);
 	}
 	else {
-		//DUMP(content_fmt); DUMP(src_fmt);
 		Packet to = CreatePacket(off);
 		to->SetFormat(src_fmt);
 		Convert(content, to);
@@ -213,7 +211,6 @@ bool LinkBase::LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i) {
 		return false;
 	
 	AtomTypeCls type = sink->GetAtomType();
-	//DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
 		RTLOG("LinkBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetLinkType().ToString());
@@ -261,7 +258,6 @@ bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
 		return false;
 	
 	AtomTypeCls type = src->GetAtomType();
-	//DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSource(src)) {
 		Exchange& ex = side_src_conn.Add();

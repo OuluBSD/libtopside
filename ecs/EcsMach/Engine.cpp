@@ -205,7 +205,6 @@ void Engine::SystemStartup(TypeCls type_id, SystemBase* system) {
 }
 
 void Engine::Add(TypeCls type_id, SystemBase* system, bool startup) {
-	//ASSERT_(!is_started, "adding systems after the machine has started" is error-prone);
 	ASSERT_(!is_looping_systems, "adding systems while systems are being iterated is error-prone");
 	
 	auto it = FindSystem(type_id);
@@ -304,19 +303,6 @@ void MachineEcsInit() {
 	
 	mach.Add<EntitySystem>();
 	
-	
-	/*Ecs::Engine& eng = Ecs::GetActiveEngine();
-	
-    #ifdef flagOPENVR
-    eng.Add<OpenVR>();
-    #endif*/
-    /*eng.Add<HolographicScene>();
-    eng.Add<EasingSystem>();
-    eng.Add<MotionControllerSystem>();
-    eng.Add<WorldLogicSystem>();*/
-	   
-    //if (flags.HaveOdePhysics())
-	//	eng.Add<OdeSystem>();
 	
     
 }

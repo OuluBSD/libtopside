@@ -308,9 +308,7 @@ protected:
 	dword mouse_pressed = 0;
 	
 	// Script
-	//HiGlobal global;
 	HiAnimContext ctx;
-	//HiValue game;
 	HiValue rooms;
 	HiValue cutscene_override;
 	HiValue verbs;
@@ -339,7 +337,6 @@ public:
 	bool AddHighFunctions();
 	bool ReadGame();
 	HiValue RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0);
-	//void GetReference(SObj& o, bool everywhere=false);
 	void ProcessHi();
 	void ResetPalette();
 	void ResetUI();
@@ -351,7 +348,6 @@ public:
 	
 	void HiCameraFollow(HiEscape& e);
 	void HiChangeRoom(HiEscape& e);
-	//void HiSetGlobalGame(HiEscape& e);
 	void HiCutscene(HiEscape& e);
 	void HiPutAt(HiEscape& e);
 	void HiPrintLine(HiEscape& e);
@@ -388,7 +384,6 @@ public:
 	void HiTodo(HiEscape& e);
 	
 	void ClearCutsceneOverride(Script& s);
-	//void RealizeGame();
 	void CameraFollow(SObj actor);
 	void ChangeRoom(SObj new_room, SObj fade);
 	bool CamScript0();

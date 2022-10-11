@@ -32,7 +32,6 @@ public:
 	
 	Buffer& GetBuffer() {return buf;}
 	bool AcceptsOrder() const {return buf.AcceptsOrders();}
-	//bool AcceptsOrder() const {return is_user_shader || shdr_frag_name.GetCount();}
 	void Update(double dt) {buf.Update(dt);}
 	
 	bool IsAudio() const {return buf.IsAudio();}
