@@ -168,6 +168,33 @@ AtomTypeCls FmSynthPipe::GetType() const {
 }
 
 
+String LV2InstrumentPipe::GetAction() {
+	return "lv2.instrument.pipe";
+}
+
+AtomTypeCls LV2InstrumentPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::LV2_INSTRUMENT_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls LV2InstrumentPipe::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void LV2InstrumentPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<LV2Instrument>(this);
+}
+
+AtomTypeCls LV2InstrumentPipe::GetType() const {
+	return GetAtomType();
+}
+
+
 String CoreSynthPipe::GetAction() {
 	return "coresynth.pipe";
 }
@@ -217,6 +244,32 @@ void CoreEffectPipe::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls CoreEffectPipe::GetType() const {
+	return GetAtomType();
+}
+
+
+String LV2EffectPipe::GetAction() {
+	return "lv2.effect.pipe";
+}
+
+AtomTypeCls LV2EffectPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::LV2_EFFECT_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls LV2EffectPipe::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void LV2EffectPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<LV2Effect>(this);
+}
+
+AtomTypeCls LV2EffectPipe::GetType() const {
 	return GetAtomType();
 }
 

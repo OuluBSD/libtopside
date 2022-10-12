@@ -8,12 +8,14 @@ void InterfaceBuilder::AddEffect() {
 	SetColor(28, 255, 150);
 	Dependency("AudioCore");
 	Dependency("ParallelLib");
+	Dependency("ports/lilv");
 	HaveRecvFinalize();
 	HaveIsReady();
 	
 	Interface("Effect");
 	
 	Vendor("AudioCore");
+	Vendor("LV2");
 	
 }
 

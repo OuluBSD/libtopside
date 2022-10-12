@@ -9,6 +9,7 @@
 #include <SoftSynth/SoftSynth.h>
 #include <AudioCore/AudioCore.h>
 #include <ports/fluidlite/fluidlite.h>
+#include <ports/lilv/lilv.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -20,6 +21,7 @@ NAMESPACE_PARALLEL_BEGIN
 	SYN_VNDR(SynFluidsynth) \
 	SYN_VNDR(SynFmSynth) \
 	SYN_VNDR(SynCoreSynth) \
+	SYN_VNDR(SynLV2) \
 
 #define SYN_CLS(x, v) struct v##x;
 #define SYN_VNDR(x) SYN_CLS_LIST(x)
@@ -66,6 +68,18 @@ struct SynFmSynth {
 	
 };
 struct SynCoreSynth {
+	struct NativeInstrument;
+	
+	struct Thread {
+		
+	};
+	
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+struct SynLV2 {
 	struct NativeInstrument;
 	
 	struct Thread {
@@ -139,6 +153,7 @@ using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 #endif
 using FmSynthInstrument = SynthInstrumentT<SynFmSynth>;
 using CoreSynthInstrument = SynthInstrumentT<SynCoreSynth>;
+using LV2Instrument = SynthInstrumentT<SynLV2>;
 
 NAMESPACE_PARALLEL_END
 

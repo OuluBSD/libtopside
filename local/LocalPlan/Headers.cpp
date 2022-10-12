@@ -583,6 +583,13 @@ void InterfaceBuilder::Headers() {
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;
 	
+	AddHeader("LV2InstrumentPipe", "LV2Instrument", "pipe")
+		.In("CenterOrder").InOpt("CenterMidi").Out("CenterAudio")
+		.Action("lv2.instrument.pipe")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
 	AddHeader("CoreSynthPipe", "CoreSynthInstrument", "pipe")
 		.In("CenterOrder").InOpt("CenterMidi").Out("CenterAudio")
 		.Action("coresynth.pipe")
@@ -593,6 +600,13 @@ void InterfaceBuilder::Headers() {
 	AddHeader("CoreEffectPipe", "AudioCoreEffect", "pipe")
 		.In("CenterAudio").Out("CenterAudio")
 		.Action("corefx.pipe")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("LV2EffectPipe", "LV2Effect", "pipe")
+		.In("CenterAudio").Out("CenterAudio")
+		.Action("lv2.effect.pipe")
 		.Arg("HINT_PKG", "AtomAudio")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

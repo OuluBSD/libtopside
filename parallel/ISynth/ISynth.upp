@@ -5,6 +5,7 @@ description "\377B200,179,81";
 	uses SoftSynth;
 	uses AudioCore;
 	uses(FLUIDSYNTH) ports/fluidlite;
+	uses ports/lilv;
 
 
 file
@@ -13,6 +14,7 @@ file
 	Fluidsynth.cpp,
 	FmSynth.cpp,
 	CoreSynth.cpp,
+	LV2.cpp,
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig

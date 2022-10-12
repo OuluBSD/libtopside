@@ -6,6 +6,7 @@
 
 #include <AudioCore/AudioCore.h>
 #include <ParallelLib/ParallelLib.h>
+#include <ports/lilv/lilv.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -14,6 +15,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define FX_VNDR_LIST \
 	FX_VNDR(FxAudioCore) \
+	FX_VNDR(FxLV2) \
 
 #define FX_CLS(x, v) struct v##x;
 #define FX_VNDR(x) FX_CLS_LIST(x)
@@ -22,6 +24,18 @@ FX_VNDR_LIST
 #undef FX_CLS
 
 struct FxAudioCore {
+	struct NativeEffect;
+	
+	struct Thread {
+		
+	};
+	
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+struct FxLV2 {
 	struct NativeEffect;
 	
 	struct Thread {
@@ -90,6 +104,7 @@ template <class Fx> struct EffectEffectT : FxEffect {
 };
 
 using AudioCoreEffect = EffectEffectT<FxAudioCore>;
+using LV2Effect = EffectEffectT<FxLV2>;
 
 NAMESPACE_PARALLEL_END
 

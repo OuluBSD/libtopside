@@ -11,6 +11,7 @@ void InterfaceBuilder::AddSynth() {
 	Dependency("SoftSynth");
 	Dependency("AudioCore");
 	Dependency("ports/fluidlite", "FLUIDSYNTH");
+	Dependency("ports/lilv");
 	HaveRecvFinalize();
 	HaveIsReady();
 	
@@ -20,6 +21,7 @@ void InterfaceBuilder::AddSynth() {
 	Vendor("Fluidsynth", "FLUIDSYNTH");
 	Vendor("FmSynth");
 	Vendor("CoreSynth");
+	Vendor("LV2");
 	
 }
 

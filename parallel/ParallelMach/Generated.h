@@ -74,8 +74,10 @@ namespace Parallel {
 	ATOM_TYPE(FLUIDSYNTH_PIPE) \
 	ATOM_TYPE(SOFT_INSTRUMENT_PIPE) \
 	ATOM_TYPE(FM_SYNTH_PIPE) \
+	ATOM_TYPE(LV2_INSTRUMENT_PIPE) \
 	ATOM_TYPE(CORE_SYNTH_PIPE) \
 	ATOM_TYPE(CORE_EFFECT_PIPE) \
+	ATOM_TYPE(LV2_EFFECT_PIPE) \
 
 #define ATOM_CLASS_LIST \
 	ATOM_CLASS(CenterCustomer) \
@@ -145,8 +147,10 @@ namespace Parallel {
 	ATOM_CLASS(FluidsynthPipe) \
 	ATOM_CLASS(SoftInstrumentPipe) \
 	ATOM_CLASS(FmSynthPipe) \
+	ATOM_CLASS(LV2InstrumentPipe) \
 	ATOM_CLASS(CoreSynthPipe) \
 	ATOM_CLASS(CoreEffectPipe) \
+	ATOM_CLASS(LV2EffectPipe) \
 
 }}
 

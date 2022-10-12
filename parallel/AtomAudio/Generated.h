@@ -87,6 +87,19 @@ public:
 	
 };
 
+class LV2InstrumentPipe : public LV2Instrument {
+
+public:
+	RTTI_DECL1(LV2InstrumentPipe, LV2Instrument)
+	COPY_PANIC(LV2InstrumentPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 class CoreSynthPipe : public CoreSynthInstrument {
 
 public:
@@ -105,6 +118,19 @@ class CoreEffectPipe : public AudioCoreEffect {
 public:
 	RTTI_DECL1(CoreEffectPipe, AudioCoreEffect)
 	COPY_PANIC(CoreEffectPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
+class LV2EffectPipe : public LV2Effect {
+
+public:
+	RTTI_DECL1(LV2EffectPipe, LV2Effect)
+	COPY_PANIC(LV2EffectPipe)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

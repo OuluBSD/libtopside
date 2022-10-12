@@ -2,11 +2,13 @@ description "\377B28,255,150";
 
 	uses AudioCore;
 	uses ParallelLib;
+	uses ports/lilv;
 
 
 file
 	IEffect.h,
 	AudioCore.cpp,
+	LV2.cpp,
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
