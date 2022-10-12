@@ -6,7 +6,19 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class SemanticParser;
 class EonStd;
+class AstNode;
 
+
+struct Endpoint : Moveable<Endpoint> {
+	AstNode* n;
+	FileLocation rel_loc;
+	
+	Endpoint();
+	Endpoint(AstNode& n);
+	Endpoint(AstNode* n);
+	void operator=(const Endpoint& ep);
+	String ToString() const;
+};
 
 class AstNode : public CompilerNode<AstNode,NodeBase> {
 	
@@ -56,10 +68,10 @@ public:
 	const AstNode*	Find(SemanticType t) const;
 	String			GetConstantString() const;
 	AstNode*		FindWithPrevDeep(const AstNode* prev);
-	void			FindAll(Vector<AstNode*>& ptrs, SemanticType accepts);
-	void			FindAllStmt(Vector<AstNode*>& ptrs, StmtType accepts);
-	void			FindAllNonIdEndpoints(Vector<AstNode*>& ptrs, SemanticType accepts=SEMT_NULL);
-	void			FindAllNonIdEndpoints0(Vector<AstNode*>& ptrs, SemanticType accepts=SEMT_NULL);
+	void			FindAll(Vector<Endpoint>& ptrs, SemanticType accepts, const FileLocation* rel_loc=0);
+	void			FindAllStmt(Vector<Endpoint>& ptrs, StmtType accepts, const FileLocation* rel_loc=0);
+	void			FindAllNonIdEndpoints(Vector<Endpoint>& ptrs, SemanticType accepts=SEMT_NULL, const FileLocation* rel_loc=0);
+	void			FindAllNonIdEndpoints0(Vector<Endpoint>& ptrs, SemanticType accepts=SEMT_NULL, const FileLocation* rel_loc=0);
 	
 	String			GetTreeString(int indent, bool links) const;
 	String			GetTreeString(int indent=0) const override;
@@ -74,9 +86,13 @@ public:
 	
 };
 
+
 struct AstNodeLess {
 	bool operator()(const AstNode* a, const AstNode* b) const {
 		return a->loc < b->loc;
+	}
+	bool operator()(const Endpoint& a, const Endpoint& b) const {
+		return a.rel_loc < b.rel_loc;
 	}
 };
 

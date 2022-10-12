@@ -1,0 +1,15 @@
+machine midi.app:
+	
+	chain program:
+		
+		loop event:
+			center.customer
+			midi.file.reader[][loop == "input"]:
+				filepath = "${FILE}"
+				close_machine = true
+		
+		loop input:
+			center.customer
+			fluidsynth.pipe[loop == "event"]:
+				verbose = false
+			center.audio.sink.hw

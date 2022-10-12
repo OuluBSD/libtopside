@@ -60,6 +60,7 @@ typedef enum : uint64 {
 	SEMT_STATE					= 1ULL << 51,
 	SEMT_DRIVER					= 1ULL << 52,
 	SEMT_ENGINE					= 1ULL << 53,
+	SEMT_SYMBOLIC_LINK			= 1ULL << 54,
 	
 	// Current limit: 1 << 63
 	
@@ -150,6 +151,7 @@ inline String GetSemanticTypeString(SemanticType t) {
 		case SEMT_STATE:				return "state";
 		case SEMT_DRIVER:				return "driver";
 		case SEMT_ENGINE:				return "engine";
+		case SEMT_SYMBOLIC_LINK:		return "symlink";
 		default: return "invalid";
 	}
 }

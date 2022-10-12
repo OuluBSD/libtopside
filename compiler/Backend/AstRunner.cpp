@@ -1067,6 +1067,10 @@ bool AstRunner::VisitMetaCall(AstNode& d, AstNode& rval, AstNode& args) {
 				ASSERT(d.rval);
 				
 			}
+			else if (d.type == meta_builtin_loopstmt) {
+				d.src = SEMT_SYMBOLIC_LINK;
+				d.rval = dup_block;
+			}
 			else if (!req_rval) {
 				d.rval = builtin_void;
 			}

@@ -164,14 +164,15 @@ bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
 	Index<String> dirs;
 	dirs.Add( ShareDirFile("soundfonts") );
 	dirs.Add( ConfigFile("") );
+	dirs.Add( GetHomeDirectory() );
 	dirs.Add( "/usr/share/sounds/sf2" );
 	dirs.Add( "/usr/share/soundfonts" );
 	dirs.Add( "/usr/local/share/soundfonts" );
 	
 	Index<String> files;
-	files.Add("TimGM6mb.sf2");
 	files.Add("FluidR3 GM.sf2");
 	files.Add("FluidR3_GM.sf2");
+	files.Add("TimGM6mb.sf2");
 	files.Add("FluidR3_GS.sf2");
 	files.Add("ChoriumRevA.sf2");
 	files.Add("WeedsGM3.sf2");

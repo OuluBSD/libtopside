@@ -2,6 +2,34 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+Endpoint::Endpoint() : n(0) {
+	
+}
+
+Endpoint::Endpoint(AstNode& n) : n(&n), rel_loc(n.loc) {
+	
+}
+
+Endpoint::Endpoint(AstNode* n) : n(n) {
+	if (n)
+		rel_loc = n->loc;
+}
+
+void Endpoint::operator=(const Endpoint& ep) {
+	n = ep.n;
+	rel_loc = ep.rel_loc;
+}
+
+String Endpoint::ToString() const {
+	String s;
+	if (n)
+		s << GetSemanticTypeString(n->src) << ", " << n->GetPath() << ", " << rel_loc.ToString();
+	return s;
+}
+
+
+
+
 
 AstNode::AstNode() {
 	
@@ -176,34 +204,74 @@ AstNode* AstNode::FindWithPrevDeep(const AstNode* prev) {
 	return 0;
 }
 
-void AstNode::FindAll(Vector<AstNode*>& ptrs, SemanticType accepts) {
-	if (IsPartially(accepts))
-		ptrs.Add(this);
-	for (AstNode& s : sub)
-		s.FindAll(ptrs, accepts);
-}
-
-void AstNode::FindAllStmt(Vector<AstNode*>& ptrs, StmtType accepts) {
-	if (src == SEMT_STATEMENT && stmt == accepts)
-		ptrs.Add(this);
-	for (AstNode& s : sub)
-		s.FindAllStmt(ptrs, accepts);
-}
-
-void AstNode::FindAllNonIdEndpoints(Vector<AstNode*>& ptrs, SemanticType accepts) {
-	for (AstNode& s : sub)
-		s.FindAllNonIdEndpoints0(ptrs, accepts);
-	if (sub.IsEmpty() && src != SEMT_IDPART)
-		ptrs.Add(this);
-}
-
-void AstNode::FindAllNonIdEndpoints0(Vector<AstNode*>& ptrs, SemanticType accepts) {
-	if (src == SEMT_IDPART) {
-		for (AstNode& s : sub)
-			s.FindAllNonIdEndpoints0(ptrs, accepts);
+void AstNode::FindAll(Vector<Endpoint>& ptrs, SemanticType accepts, const FileLocation* rel_loc) {
+	if (IsPartially(accepts)) {
+		Endpoint& p = ptrs.Add();
+		p.n = this;
+		if (rel_loc)
+			p.rel_loc = *rel_loc;
+		else
+			p.rel_loc = loc;
 	}
-	else if (accepts == SEMT_NULL || IsPartially(accepts))
-		ptrs.Add(this);
+	for (AstNode& s : sub) {
+		if (s.src == SEMT_SYMBOLIC_LINK && !rel_loc)
+			s.FindAll(ptrs, accepts, &loc);
+		else
+			s.FindAll(ptrs, accepts, rel_loc);
+	}
+}
+
+void AstNode::FindAllStmt(Vector<Endpoint>& ptrs, StmtType accepts, const FileLocation* rel_loc) {
+	if (src == SEMT_STATEMENT && stmt == accepts) {
+		Endpoint& p = ptrs.Add();
+		p.n = this;
+		if (rel_loc)
+			p.rel_loc = *rel_loc;
+		else
+			p.rel_loc = loc;
+	}
+	for (AstNode& s : sub) {
+		if (s.src == SEMT_SYMBOLIC_LINK && !rel_loc)
+			s.FindAllStmt(ptrs, accepts, &loc);
+		else
+			s.FindAllStmt(ptrs, accepts, rel_loc);
+	}
+}
+
+void AstNode::FindAllNonIdEndpoints(Vector<Endpoint>& ptrs, SemanticType accepts, const FileLocation* rel_loc) {
+	for (AstNode& s : sub) {
+		if (s.src == SEMT_SYMBOLIC_LINK && !rel_loc)
+			s.FindAllNonIdEndpoints0(ptrs, accepts, &loc);
+		else
+			s.FindAllNonIdEndpoints0(ptrs, accepts, rel_loc);
+	}
+	if (sub.IsEmpty() && src != SEMT_IDPART) {
+		Endpoint& p = ptrs.Add();
+		p.n = this;
+		if (rel_loc)
+			p.rel_loc = *rel_loc;
+		else
+			p.rel_loc = loc;
+	}
+}
+
+void AstNode::FindAllNonIdEndpoints0(Vector<Endpoint>& ptrs, SemanticType accepts, const FileLocation* rel_loc) {
+	if (src == SEMT_IDPART) {
+		for (AstNode& s : sub) {
+			if (s.src == SEMT_SYMBOLIC_LINK && !rel_loc)
+				s.FindAllNonIdEndpoints0(ptrs, accepts, &loc);
+			else
+				s.FindAllNonIdEndpoints0(ptrs, accepts, rel_loc);
+		}
+	}
+	else if (accepts == SEMT_NULL || IsPartially(accepts)) {
+		Endpoint& p = ptrs.Add();
+		p.n = this;
+		if (rel_loc)
+			p.rel_loc = *rel_loc;
+		else
+			p.rel_loc = loc;
+	}
 }
 
 String AstNode::GetConstantString() const {

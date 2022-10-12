@@ -211,7 +211,7 @@ bool ScriptLoader::ImplementScript() {
 }
 
 bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) {
-	Vector<AstNode*> path;
+	Vector<Endpoint> path;
 	
 	if (from == to) {
 		if (to->name.GetCount())
@@ -231,7 +231,7 @@ bool ScriptLoader::GetPathId(Script::Id& script_id, AstNode* from, AstNode* to) 
 		return false;
 	}
 	for (int i = path.GetCount()-1; i >= 0; i--) {
-		AstNode* id = path[i];
+		AstNode* id = path[i].n;
 		ASSERT(id->name.GetCount());
 		script_id.parts.Add(id->name);
 	}
@@ -256,12 +256,13 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 	
 	
 	// Serial machine part
-	Vector<AstNode*> items;
+	Vector<Endpoint> items;
 	n->FindAllNonIdEndpoints(items, SEMT_MACH_ANY);
 	Sort(items, AstNodeLess());
 	
 	bool has_machine = false;
-	for (AstNode* item : items) {
+	for (const Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		if (item->src == SEMT_MACHINE) {
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
 			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
@@ -293,7 +294,8 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 	Sort(items, AstNodeLess());
 	
 	bool has_world = false;
-	for (AstNode* item : items) {
+	for (const Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		LOG(item->GetTreeString(0));
 		if (item->src == SEMT_WORLD) {
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
@@ -319,7 +321,7 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& def, AstNode* n) {
 }
 
 bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
-	Vector<AstNode*> items;
+	Vector<Endpoint> items;
 	n->FindAllNonIdEndpoints(items, (SemanticType)(SEMT_ECS_ANY | SEMT_MACH_ANY));
 	Sort(items, AstNodeLess());
 	
@@ -331,7 +333,8 @@ bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 	Script::ChainDefinition* anon_chain = 0;
 	
 	bool has_chain = false;
-	for (AstNode* item : items) {
+	for (const Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		if (item->src == SEMT_CHAIN) {
 			Script::ChainDefinition& chain_def = def.chains.Add();
 			
@@ -343,7 +346,7 @@ bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
 			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
 			
-			Vector<AstNode*> items;
+			Vector<Endpoint> items;
 			block->FindAllNonIdEndpoints(items, SEMT_CHAIN);
 			if (items.IsEmpty()) {
 				if (!LoadChain(chain_def, block))
@@ -373,7 +376,7 @@ bool ScriptLoader::LoadMachine(Script::MachineDefinition& def, AstNode* n) {
 }
 
 bool ScriptLoader::LoadWorld(Script::WorldDefinition& def, AstNode* n) {
-	Vector<AstNode*> items;
+	Vector<Endpoint> items;
 	n->FindAllNonIdEndpoints(items, SEMT_ECS_ANY);
 	Sort(items, AstNodeLess());
 	
@@ -385,7 +388,8 @@ bool ScriptLoader::LoadWorld(Script::WorldDefinition& def, AstNode* n) {
 	Script::PoolDefinition* anon_pool = 0;
 	
 	bool has_chain = false;
-	for (AstNode* item : items) {
+	for (const Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		if (item->src == SEMT_POOL) {
 			Script::PoolDefinition& pool_def = def.pools.Add();
 			
@@ -397,7 +401,7 @@ bool ScriptLoader::LoadWorld(Script::WorldDefinition& def, AstNode* n) {
 			AstNode* block = item->Find(SEMT_STATEMENT_BLOCK);
 			if (!block) {AddError(n->loc, "internal error: no stmt block"); return false;}
 			
-			Vector<AstNode*> items;
+			Vector<Endpoint> items;
 			block->FindAllNonIdEndpoints(items, SEMT_POOL);
 			if (items.IsEmpty()) {
 				if (!LoadPool(pool_def, block))
@@ -447,13 +451,14 @@ bool ScriptLoader::LoadEcsSystem(Script::EcsSysDefinition& def, AstNode* n) {
 
 bool ScriptLoader::LoadPool(Script::PoolDefinition& def, AstNode* n) {
 	const auto& map = Parallel::Factory::AtomDataMap();
-	Vector<AstNode*> items;
+	Vector<Endpoint> items;
 	
 	n->FindAll(items, SEMT_ENTITY);
 	n->FindAll(items, SEMT_POOL);
 	Sort(items, AstNodeLess());
 	
-	for (AstNode* item : items) {
+	for (Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		if (item->src == SEMT_POOL) {
 			Script::PoolDefinition& pool_def = def.pools.Add();
 			pool_def.loc = item->loc;
@@ -495,12 +500,13 @@ bool ScriptLoader::LoadEntity(Script::EntityDefinition& def, AstNode* n) {
 	LOG(n->GetTreeString(0));
 	
 	const auto& map = Parallel::Factory::AtomDataMap();
-	Vector<AstNode*> items;
+	Vector<Endpoint> items;
 	
 	n->FindAll(items, SEMT_COMPONENT);
 	Sort(items, AstNodeLess());
 	
-	for (AstNode* item : items) {
+	for (Endpoint& ep : items) {
+		AstNode* item = ep.n;
 		Script::ComponentDefinition& comp_def = def.comps.Add();
 		comp_def.loc = item->loc;
 		
@@ -527,13 +533,14 @@ bool ScriptLoader::LoadComponent(Script::ComponentDefinition& def, AstNode* n) {
 
 bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 	const auto& map = Parallel::Factory::AtomDataMap();
-	Vector<AstNode*> loops, states, atoms, stmts, conns;
+	Vector<Endpoint> loops, states, atoms, stmts, conns;
 	
 	n->FindAll(loops, SEMT_DRIVER); // subset of loops
 	n->FindAll(loops, SEMT_LOOP);
 	Sort(loops, AstNodeLess());
 	
-	for (AstNode* loop : loops) {
+	for (Endpoint& ep : loops) {
+		AstNode* loop = ep.n;
 		bool is_driver = loop->src == SEMT_DRIVER;
 		
 		Script::LoopDefinition& loop_def = chain.loops.Add();
@@ -552,6 +559,7 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		atoms.SetCount(0);
 		stmt_block->FindAll(atoms, SEMT_ATOM);
 		Sort(atoms, AstNodeLess());
+		
 		if (atoms.IsEmpty()) {
 			AddError(loop->loc, "no atoms in statement-block");
 			return false;
@@ -563,12 +571,12 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 		}
 		
 		if (atoms.GetCount() == 1 && !is_driver) {
-			LOG(loop->GetTreeString(0));
 			AddError(loop->loc, "only one atom in the loop");
 			return false;
 		}
 		
-		for (AstNode* atom : atoms) {
+		for (Endpoint& ep : atoms) {
+			AstNode* atom = ep.n;
 			Script::AtomDefinition& atom_def = loop_def.atoms.Add();
 			
 			if (!GetPathId(atom_def.id, loop, atom))
@@ -610,7 +618,8 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 				Sort(conns, AstNodeLess());
 				if (!conns.IsEmpty()) {
 					int sink_conn_i = 0, src_conn_i = 0; // side ids start from 1, so this shouldn't be -1
-					for (AstNode* conn : conns) {
+					for (Endpoint& ep : conns) {
+						AstNode* conn = ep.n;
 						bool is_src = conn->i64 != 0;
 						if (is_src)
 							src_conn_i++;
@@ -670,36 +679,9 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 				return false;
 		}
 		
-		for (AstNode& stmt : stmt_block->sub) {
-			if (stmt.src != SEMT_STATEMENT) continue;
-			
-			bool succ = false;
-			if (stmt.stmt == STMT_EXPR) {
-				if (stmt.rval) {
-					if (stmt.rval->src == SEMT_EXPR) {
-						if (stmt.rval->op == OP_ASSIGN) {
-							AstNode* key = stmt.rval->arg[0];
-							AstNode* value = stmt.rval->arg[1];
-							while (key->src == SEMT_RVAL && key->rval) key = key->rval;
-							while (value->src == SEMT_RVAL && value->rval) value = key->rval;
-							if (key->src == SEMT_VARIABLE && key->name.GetCount()) {
-								String key_str = key->name;
-								if (value->src == SEMT_CONSTANT) {
-									Object val_obj;
-									value->CopyToObject(val_obj);
-									loop_def.Set(key_str, val_obj);
-									succ = true;
-								}
-							}
-						}
-					}
-				}
-			}
-			if (!succ) {
-				AddError(stmt.loc, "could not resolve statement in loop");
-				return false;
-			}
-		}
+		if (!LoadArguments(loop_def.args, loop))
+			return false;
+		
 	}
 	
 	for (Script::LoopDefinition& src_loop : chain.loops) {
@@ -822,7 +804,8 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 	
 	n->FindAll(states, SEMT_STATE);
 	Sort(states, AstNodeLess());
-	for (AstNode* state : states) {
+	for (Endpoint& ep : states) {
+		AstNode* state = ep.n;
 		Script::StateDeclaration& state_def = chain.states.Add();
 		state_def.loc = state->loc;
 		
@@ -835,57 +818,99 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 }
 
 bool ScriptLoader::LoadArguments(ArrayMap<String, Object>& args, AstNode* n) {
-	Vector<AstNode*> stmts;
+	if (!n)
+		return true; // only failed statements returns false
 	
-	AstNode* block = n->Find(SEMT_STATEMENT_BLOCK);
-	if (block) {
-		for (AstNode& stmt : block->sub) {
-			if (stmt.src != SEMT_STATEMENT || stmt.stmt == STMT_ATOM_CONNECTOR) continue;
-			
-			static int dbg_i;
-			bool succ = false;
-			if (stmt.stmt == STMT_EXPR) {
-				if (stmt.rval) {
-					if (stmt.rval->src == SEMT_EXPR) {
-						if (stmt.rval->op == OP_ASSIGN) {
-							dbg_i++;
-							if (dbg_i == 15) {
-								LOG("");
+	if (n->src != SEMT_STATEMENT_BLOCK) {
+		AstNode* block = n->Find(SEMT_STATEMENT_BLOCK);
+		return LoadArguments(args, block);
+	}
+	
+	AstNode* block = n;
+	Vector<Endpoint> stmts;
+	
+	for (AstNode& stmt : block->sub) {
+		if (stmt.src != SEMT_STATEMENT || stmt.stmt == STMT_ATOM_CONNECTOR) continue;
+		
+		static int dbg_i;
+		bool succ = false;
+		if (stmt.stmt == STMT_EXPR) {
+			if (stmt.rval) {
+				AstNode* r = stmt.rval;
+				while (r->src == SEMT_RVAL && r->rval) r = r->rval;
+				AstNode& rval = *r;
+				
+				if (rval.src == SEMT_EXPR) {
+					if (rval.op == OP_ASSIGN) {
+						dbg_i++;
+						if (dbg_i == 15) {
+							LOG("");
+						}
+						AstNode* key = rval.arg[0];
+						AstNode* value = rval.arg[1];
+						while (key->src == SEMT_RVAL && key->rval) key = key->rval;
+						while (value->src == SEMT_RVAL && value->rval) value = key->rval;
+						if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
+							String key_str = key->str;
+							if (value->src == SEMT_CONSTANT) {
+								Object val_obj;
+								value->CopyToObject(val_obj);
+								args.GetAdd(key_str) = val_obj;
+								succ = true;
 							}
-							AstNode* key = stmt.rval->arg[0];
-							AstNode* value = stmt.rval->arg[1];
-							while (key->src == SEMT_RVAL && key->rval) key = key->rval;
-							while (value->src == SEMT_RVAL && value->rval) value = key->rval;
-							if (key->src == SEMT_UNRESOLVED && key->str.GetCount()) {
-								String key_str = key->str;
-								if (value->src == SEMT_CONSTANT) {
-									Object val_obj;
-									value->CopyToObject(val_obj);
-									args.GetAdd(key_str) = val_obj;
-									succ = true;
-								}
-								else if (value->src == SEMT_UNRESOLVED && value->str.GetCount()) {
-									args.GetAdd(key_str) = value->str;
-									succ = true;
-								}
-								else if (value->src == SEMT_EXPR) {
-									Object val_obj = EvaluateAstNodeObject(*value);
-									args.GetAdd(key_str) = val_obj;
-									succ = true;
-								}
+							else if (value->src == SEMT_UNRESOLVED && value->str.GetCount()) {
+								args.GetAdd(key_str) = value->str;
+								succ = true;
+							}
+							else if (value->src == SEMT_EXPR) {
+								Object val_obj = EvaluateAstNodeObject(*value);
+								args.GetAdd(key_str) = val_obj;
+								succ = true;
+							}
+							else {
+								LOG(rval.GetTreeString(0));
+								TODO
 							}
 						}
+						else {
+							LOG(rval.GetTreeString(0));
+							TODO
+						}
+					}
+					else {
+						LOG(rval.GetTreeString(0));
+						TODO
 					}
 				}
+				else if (rval.src == SEMT_STATEMENT_BLOCK ||
+						 rval.src == SEMT_SYMBOLIC_LINK) {
+					if (!LoadArguments(args, &rval))
+						return false;
+					succ = true;
+				}
+				else {
+					LOG(rval.GetTreeString(0));
+					TODO
+				}
 			}
-			if (!succ) {
-				DUMP(dbg_i);
+			else {
 				LOG(stmt.GetTreeString(0));
-				AddError(stmt.loc, "could not resolve statement in atom");
-				return false;
+				TODO
 			}
 		}
+		else {
+			LOG(stmt.GetTreeString(0));
+			TODO
+		}
+		
+		if (!succ) {
+			DUMP(dbg_i);
+			LOG(stmt.GetTreeString(0));
+			AddError(stmt.loc, "could not resolve statement in atom");
+			return false;
+		}
 	}
+	
 	return true;
 }
 

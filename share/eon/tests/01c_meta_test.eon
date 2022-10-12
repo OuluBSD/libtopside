@@ -1,0 +1,14 @@
+machine sdl.app:
+	
+	meta loopstmt pipe.fn():
+		event.src.test.pipe
+		state.event.pipe:
+			target = event.register
+			dbg_limit = 100
+	
+	chain program:
+		state event.register
+		
+		loop event1:
+			center.customer
+			$pipe.fn()

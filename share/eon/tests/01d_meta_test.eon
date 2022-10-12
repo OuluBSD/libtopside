@@ -1,0 +1,18 @@
+machine sdl.app:
+	
+	meta params channel.links():
+		meta for int i = 0, i < channel.count, i++:
+			loop channel.$i
+	
+	chain program:
+		state event.register
+		
+	loop output:
+		center.customer
+		center.audio.src.dbg_generator
+		center.audio.side.src.center
+	
+	loop input:
+		center.customer
+		center.audio.side.sink.center
+		center.audio.sink.hw

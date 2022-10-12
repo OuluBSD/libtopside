@@ -221,7 +221,12 @@ bool ScriptLoopLoader::Load() {
 	
 	if (has_link) {
 		UpdateLoopLimits();
-	
+		
+		LOG("Linking atoms:");
+		for(int i = 0; i < added_atoms.GetCount(); i++) {
+			LOG(i << ": " << added_atoms[i].iface.type.ToString());
+		}
+		
 		for(int i = 0; i < added_atoms.GetCount(); i++) {
 			AddedAtom& src_info = added_atoms[i];
 			AtomBaseRef src = src_info.a;
