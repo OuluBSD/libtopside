@@ -16,7 +16,7 @@ machine sdl.app:
 		
 		loop center.stage0.image:
 			center.customer
-			sdl.video.standalone:
+			sdl.video:
 				close_machine =			true
 				sizeable =				true
 				env =					event.register

@@ -3,9 +3,9 @@ chain player.audio.generator:
 	loop output:
 		center.customer
 		perma.audio.source.decoder:
-			filepath = "${FILE}",
+			filepath = "${FILE}"
 			stop_machine = true
-		center.audio.side.src
+		center.audio.side.src.center
 	
 	loop input:
 		center.customer

@@ -3,7 +3,7 @@ chain player.audio.generator:
 	loop output:
 		center.customer
 		center.audio.src.dbg_generator
-		center.audio.side.src
+		center.audio.side.src.center
 	
 	loop input:
 		center.customer

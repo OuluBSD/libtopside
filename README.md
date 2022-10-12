@@ -5,6 +5,22 @@ Libtopside is an alternative to a subset of Ultimate++ framework.
 
 ## How to compile
 
+### In Linux
+Follow [Ultimate++](https://www.ultimatepp.org/) installation instructions. Finally, you should have ```umk``` and ```theide``` executables at your command.
+
+Install git, sdl2, sdl2-image, sdl2-ttf, ffmpeg, opencv, portaudio, portmidi, assimp, freeglut, glew, ode, hidapi, hidapi-libusb, x11, v4l2, libpng.
+
+```
+cd ~
+git clone https://github.com/OuluBSD/libtopside.git
+cd ~/libtopside
+umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,gpl,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_Linux.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
+
+Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~/libtopside/share/sounds/8_bit_mentality.mp3
+```
+
+
+
 ### In FreeBSD
 This is an example to build the AtomShell package. Modify it to your needs. System-wide installation doesn't exist.
 
@@ -17,8 +33,8 @@ sudo pkg install upp git
 sudo pkg install ffmpeg sdl2 sdl2_mixer sdl2_image sdl2_ttf opencv
 cd ~
 git clone https://github.com/OuluBSD/libtopside.git
-cd libtopside
-umk examples,reference,tutorial,accel,ai,ecs,serial,parallel,video,audio,compiler,local,alt,lib AtomShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +GUI,SHARED,FFMPEG,SCREEN,OGL,SDL2,OPENCV ~/
+cd ~/libtopside
+umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,gpl,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
 
-Test run e.g:   ~/AtomShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3
+Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~/libtopside/share/sounds/8_bit_mentality.mp3
 ```

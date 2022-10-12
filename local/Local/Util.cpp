@@ -409,6 +409,12 @@ String RealizeShareFile(String rel_path) {
 	if (rel_path.IsEmpty())
 		return String();
 	
+	#ifdef flagPOSIX
+	if (rel_path.Left(2) == "~/") {
+		rel_path = AppendFileName(GetHomeDirectory(), rel_path.Mid(2));
+	}
+	#endif
+	
 	int tries_count = 8;
 	#ifdef flagDEBUG
 	tries_count++;
