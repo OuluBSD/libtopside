@@ -14,7 +14,7 @@ Install git, sdl2, sdl2-image, sdl2-ttf, ffmpeg, opencv, portaudio, portmidi, as
 cd ~
 git clone https://github.com/OuluBSD/libtopside.git
 cd ~/libtopside
-umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,gpl,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_Linux.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
+umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_Linux.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
 
 Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~/libtopside/share/sounds/8_bit_mentality.mp3
 ```
@@ -22,7 +22,7 @@ Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~
 
 
 ### In FreeBSD
-This is an example to build the AtomShell package. Modify it to your needs. System-wide installation doesn't exist.
+This is an example to build the EcsShell package. Modify it to your needs. System-wide installation doesn't exist.
 
 You might want to test other packages in examples and reference directories. However, note that they probably won't build, because this whole repository is in very alpha state still.
 
@@ -34,7 +34,7 @@ sudo pkg install ffmpeg sdl2 sdl2_mixer sdl2_image sdl2_ttf opencv
 cd ~
 git clone https://github.com/OuluBSD/libtopside.git
 cd ~/libtopside
-umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,gpl,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
+umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,lib,local,parallel,script,serial,tests EcsShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +SCREEN,SDL2,OGL,FFMPEG,OPENCV,VR,LOCALHMD,FLUIDSYNTH,BUILTIN_PORTAUDIO,BUILTIN_ASSIMP ~/
 
 Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~/libtopside/share/sounds/8_bit_mentality.mp3
 ```
