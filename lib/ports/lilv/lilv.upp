@@ -1,0 +1,30 @@
+description "\37756,85,255";
+
+uses
+	ports/serd,
+	ports/sord,
+	ports/sratom,
+	ports/zix;
+
+file
+	Copying,
+	lilv.h,
+	lilvmm.hpp,
+	collections.c,
+	filesystem.h,
+	filesystem.c,
+	instance.c,
+	lib.c,
+	lilv_config.h,
+	lilv_internal.h,
+	node.c,
+	plugin.c,
+	pluginclass.c,
+	port.c,
+	query.c,
+	scalepoint.c,
+	state.c,
+	ui.c,
+	util.c,
+	world.c;
+

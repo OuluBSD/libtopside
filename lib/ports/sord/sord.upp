@@ -1,0 +1,17 @@
+description "\37728,0,200";
+
+uses
+	ports/serd;
+
+file
+	Copying,
+	sord.h,
+	sord.c,
+	sord_config.h,
+	sord_internal.h,
+	sord_validate.c,
+	sordi.c,
+	sordmm.hpp,
+	sordmm_test.cpp,
+	syntax.c;
+

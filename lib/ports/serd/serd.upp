@@ -1,0 +1,29 @@
+description "\37728,127,200";
+
+file
+	Copying,
+	serd.h,
+	attributes.h,
+	base64.c,
+	base64.h,
+	byte_sink.h,
+	byte_source.c,
+	byte_source.h,
+	env.c,
+	n3.c,
+	node.c,
+	node.h,
+	reader.c,
+	reader.h,
+	serd_config.h,
+	serd_internal.h,
+	serdi.c,
+	stack.h,
+	string.c,
+	string_utils.h,
+	system.c,
+	system.h,
+	uri.c,
+	uri_utils.h,
+	writer.c;
+
