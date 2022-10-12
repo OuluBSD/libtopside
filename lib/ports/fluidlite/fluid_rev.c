@@ -403,11 +403,11 @@ fluid_revmodel_reset(fluid_revmodel_t* rev)
 }
 
 void
-fluid_revmodel_processreplace(fluid_revmodel_t* rev, fluid_real_t *in,
+fluid_revmodel_processreplace(fluid_revmodel_t* rev, fluid_real_t *in[2],
 			     fluid_real_t *left_out, fluid_real_t *right_out)
 {
   int i, k = 0;
-  fluid_real_t outL, outR, input;
+  fluid_real_t outL, outR, inputL, inputR;
 
   for (k = 0; k < FLUID_BUFSIZE; k++) {
 
@@ -417,12 +417,13 @@ fluid_revmodel_processreplace(fluid_revmodel_t* rev, fluid_real_t *in,
      * is set to the sum of the left and right input sample. Since
      * this code works on a mono signal, 'input' is set to twice the
      * input sample. */
-    input = (2 * in[k] + DC_OFFSET) * rev->gain;
+    inputL = (2 * in[0][k] + DC_OFFSET) * rev->gain;
+    inputR = (2 * in[1][k] + DC_OFFSET) * rev->gain;
 
     /* Accumulate comb filters in parallel */
     for (i = 0; i < numcombs; i++) {
-      fluid_comb_process(rev->combL[i], input, outL);
-      fluid_comb_process(rev->combR[i], input, outR);
+      fluid_comb_process(rev->combL[i], inputL, outL);
+      fluid_comb_process(rev->combR[i], inputR, outR);
     }
     /* Feed through allpasses in series */
     for (i = 0; i < numallpasses; i++) {
@@ -441,11 +442,11 @@ fluid_revmodel_processreplace(fluid_revmodel_t* rev, fluid_real_t *in,
 }
 
 void
-fluid_revmodel_processmix(fluid_revmodel_t* rev, fluid_real_t *in,
+fluid_revmodel_processmix(fluid_revmodel_t* rev, fluid_real_t *in[2],
 			 fluid_real_t *left_out, fluid_real_t *right_out)
 {
   int i, k = 0;
-  fluid_real_t outL, outR, input;
+  fluid_real_t outL, outR, inputL, inputR;
 
   for (k = 0; k < FLUID_BUFSIZE; k++) {
 
@@ -455,12 +456,13 @@ fluid_revmodel_processmix(fluid_revmodel_t* rev, fluid_real_t *in,
      * is set to the sum of the left and right input sample. Since
      * this code works on a mono signal, 'input' is set to twice the
      * input sample. */
-    input = (2 * in[k] + DC_OFFSET) * rev->gain;
+    inputL = (2 * in[0][k] + DC_OFFSET) * rev->gain;
+    inputR = (2 * in[1][k] + DC_OFFSET) * rev->gain;
 
     /* Accumulate comb filters in parallel */
     for (i = 0; i < numcombs; i++) {
-	    fluid_comb_process(rev->combL[i], input, outL);
-	    fluid_comb_process(rev->combR[i], input, outR);
+	    fluid_comb_process(rev->combL[i], inputL, outL);
+	    fluid_comb_process(rev->combR[i], inputR, outR);
     }
     /* Feed through allpasses in series */
     for (i = 0; i < numallpasses; i++) {

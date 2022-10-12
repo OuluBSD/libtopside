@@ -32,9 +32,9 @@ typedef struct _fluid_chorus_t fluid_chorus_t;
  */
 fluid_chorus_t* new_fluid_chorus(fluid_real_t sample_rate);
 void delete_fluid_chorus(fluid_chorus_t* chorus);
-void fluid_chorus_processmix(fluid_chorus_t* chorus, fluid_real_t *in,
+void fluid_chorus_processmix(fluid_chorus_t* chorus, fluid_real_t *in[2],
 			    fluid_real_t *left_out, fluid_real_t *right_out);
-void fluid_chorus_processreplace(fluid_chorus_t* chorus, fluid_real_t *in,
+void fluid_chorus_processreplace(fluid_chorus_t* chorus, fluid_real_t *in[2],
 				fluid_real_t *left_out, fluid_real_t *right_out);
 
 int fluid_chorus_init(fluid_chorus_t* chorus);

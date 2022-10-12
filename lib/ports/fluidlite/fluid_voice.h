@@ -219,7 +219,7 @@ void fluid_voice_start(fluid_voice_t* voice);
 
 int fluid_voice_write(fluid_voice_t* voice,
 		      fluid_real_t* left, fluid_real_t* right,
-		      fluid_real_t* reverb_buf, fluid_real_t* chorus_buf);
+		      fluid_real_t* reverb_buf[2], fluid_real_t* chorus_buf[2]);
 
 int fluid_voice_init(fluid_voice_t* voice, fluid_sample_t* sample,
 		     fluid_channel_t* channel, int key, int vel,

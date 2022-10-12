@@ -2207,8 +2207,8 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   fluid_voice_t* voice;
   fluid_real_t* left_buf;
   fluid_real_t* right_buf;
-  fluid_real_t* reverb_buf;
-  fluid_real_t* chorus_buf;
+  fluid_real_t* reverb_buf[2];
+  fluid_real_t* chorus_buf[2];
   int byte_size = FLUID_BUFSIZE * sizeof(fluid_real_t);
 
 /*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
@@ -2228,8 +2228,10 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
    * enabled on synth level.  Nonexisting buffers are detected in the
    * DSP loop. Not sending the reverb / chorus signal saves some time
    * in that case. */
-  reverb_buf = synth->with_reverb ? synth->fx_left_buf[0] : NULL;
-  chorus_buf = synth->with_chorus ? synth->fx_left_buf[1] : NULL;
+  reverb_buf[0] = synth->with_reverb ? synth->fx_left_buf[0] : NULL;
+  reverb_buf[1] = synth->with_reverb ? synth->fx_right_buf[0] : NULL;
+  chorus_buf[0] = synth->with_chorus ? synth->fx_left_buf[1] : NULL;
+  chorus_buf[1] = synth->with_chorus ? synth->fx_right_buf[1] : NULL;
 
   /* call all playing synthesis processes */
   for (i = 0; i < synth->polyphony; i++) {
@@ -2264,13 +2266,13 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   if (do_not_mix_fx_to_out) {
 
     /* send to reverb */
-    if (reverb_buf) {
+    if (reverb_buf[0]) {
       fluid_revmodel_processreplace(synth->reverb, reverb_buf,
 				   synth->fx_left_buf[0], synth->fx_right_buf[0]);
     }
 
     /* send to chorus */
-    if (chorus_buf) {
+    if (chorus_buf[0]) {
       fluid_chorus_processreplace(synth->chorus, chorus_buf,
 				 synth->fx_left_buf[1], synth->fx_right_buf[1]);
     }
@@ -2278,13 +2280,13 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   } else {
 
     /* send to reverb */
-    if (reverb_buf) {
+    if (reverb_buf[0]) {
       fluid_revmodel_processmix(synth->reverb, reverb_buf,
 			       synth->left_buf[0], synth->right_buf[0]);
     }
 
     /* send to chorus */
-    if (chorus_buf) {
+    if (chorus_buf[0]) {
       fluid_chorus_processmix(synth->chorus, chorus_buf,
 			     synth->left_buf[0], synth->right_buf[0]);
     }

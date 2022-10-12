@@ -49,8 +49,8 @@
 static void fluid_voice_effects (fluid_voice_t *voice, int count,
 				        fluid_real_t* dsp_left_buf,
 				        fluid_real_t* dsp_right_buf,
-				        fluid_real_t* dsp_reverb_buf,
-				        fluid_real_t* dsp_chorus_buf);
+				        fluid_real_t* dsp_reverb_buf[2],
+				        fluid_real_t* dsp_chorus_buf[2]);
 /*
  * new_fluid_voice
  */
@@ -245,7 +245,7 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t* voice, int num)
 int
 fluid_voice_write(fluid_voice_t* voice,
 		 fluid_real_t* dsp_left_buf, fluid_real_t* dsp_right_buf,
-		 fluid_real_t* dsp_reverb_buf, fluid_real_t* dsp_chorus_buf)
+		 fluid_real_t* dsp_reverb_buf[2], fluid_real_t* dsp_chorus_buf[2])
 {
   fluid_real_t fres;
   fluid_real_t target_amp;	/* target amplitude */
@@ -639,7 +639,7 @@ fluid_voice_write(fluid_voice_t* voice,
 static void
 fluid_voice_effects (fluid_voice_t *voice, int count,
 		     fluid_real_t* dsp_left_buf, fluid_real_t* dsp_right_buf,
-		     fluid_real_t* dsp_reverb_buf, fluid_real_t* dsp_chorus_buf)
+		     fluid_real_t* dsp_reverb_buf[2], fluid_real_t* dsp_chorus_buf[2])
 {
   /* IIR filter sample history */
   fluid_real_t dsp_hist1 = voice->hist1;
@@ -736,15 +736,19 @@ fluid_voice_effects (fluid_voice_t *voice, int count,
   /* reverb send. Buffer may be NULL. */
   if ((dsp_reverb_buf != NULL) && (voice->amp_reverb != 0.0))
   {
-    for (dsp_i = 0; dsp_i < count; dsp_i++)
-      dsp_reverb_buf[dsp_i] += voice->amp_reverb * dsp_buf[dsp_i];
+    for (dsp_i = 0; dsp_i < count; dsp_i++) {
+      dsp_reverb_buf[0][dsp_i] += voice->amp_left * voice->amp_reverb * dsp_buf[dsp_i];
+      dsp_reverb_buf[1][dsp_i] += voice->amp_right * voice->amp_reverb * dsp_buf[dsp_i];
+    }
   }
 
   /* chorus send. Buffer may be NULL. */
   if ((dsp_chorus_buf != NULL) && (voice->amp_chorus != 0))
   {
-    for (dsp_i = 0; dsp_i < count; dsp_i++)
-      dsp_chorus_buf[dsp_i] += voice->amp_chorus * dsp_buf[dsp_i];
+    for (dsp_i = 0; dsp_i < count; dsp_i++) {
+      dsp_chorus_buf[0][dsp_i] += voice->amp_left * voice->amp_chorus * dsp_buf[dsp_i];
+      dsp_chorus_buf[1][dsp_i] += voice->amp_right * voice->amp_chorus * dsp_buf[dsp_i];
+    }
   }
 
   voice->hist1 = dsp_hist1;
