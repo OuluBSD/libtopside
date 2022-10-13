@@ -22,8 +22,10 @@ void InterfaceBuilder::SetColor(byte r, byte g, byte b) {
 	cur->clr = UPP::Color(r,g,b);
 }
 
-void InterfaceBuilder::Dependency(String lib, String conditional) {
-	cur->deps.Add(lib,conditional);
+void InterfaceBuilder::Dependency(String lib, String conditional, bool have_header) {
+	struct Dependency& d = cur->deps.Add(lib);
+	d.conditional = conditional;
+	d.have_header = have_header;
 }
 
 void InterfaceBuilder::Library(String lib, String conditional) {
@@ -173,11 +175,12 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 			for(int i = 0; i < pkg.deps.GetCount(); i++) {
 				String k = pkg.deps.GetKey(i);
-				String v = pkg.deps[i];
-				if (v.IsEmpty())
+				const struct Dependency& dep = pkg.deps[i];
+				
+				if (dep.conditional.IsEmpty())
 					s << "\tuses " << k << ";\n";
 				else
-					s << "\tuses(" << v << ") " << k << ";\n";
+					s << "\tuses(" << dep.conditional << ") " << k << ";\n";
 			}
 			
 			s	<< "\n";
@@ -222,8 +225,11 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			
 			for(int i = 0; i < pkg.deps.GetCount(); i++) {
 				String k = pkg.deps.GetKey(i);
-				String title = GetFileTitle(k);
-				s << "#include <" << k << "/" << title << ".h>\n";
+				const struct Dependency& dep = pkg.deps[i];
+				if (dep.have_header) {
+					String title = GetFileTitle(k);
+					s << "#include <" << k << "/" << title << ".h>\n";
+				}
 			}
 			
 			s	<< "\n"

@@ -8,11 +8,10 @@
 #include "sord.h"
 
 #define ZIX_API
-//#include <ports/zix/btree.c>
 #include <ports/zix/btree.h>
 #include <ports/zix/common.h>
-//#include <ports/zix/digest.c>
-//#include <ports/zix/hash.c>
+#include <ports/zix/digest.h>
+#include <ports/zix/hash.h>
 #include <ports/zix/hash.h>
 
 #include <assert.h>

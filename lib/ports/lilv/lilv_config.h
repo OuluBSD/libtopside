@@ -15,6 +15,9 @@
 #ifndef LILV_CONFIG_H
 #define LILV_CONFIG_H
 
+#include <Core/config.h>
+
+
 // Define version unconditionally so a warning will catch a mismatch
 #define LILV_VERSION "0.24.21"
 
@@ -108,7 +111,11 @@
 #  ifdef _WIN32
 #    define LILV_DEFAULT_LV2_PATH "%APPDATA%\\LV2;%COMMONPROGRAMFILES%\\LV2"
 #  else
-#    define LILV_DEFAULT_LV2_PATH "~/.lv2:/usr/local/lib/lv2:/usr/lib/lv2"
+#    if CPU_64
+#      define LILV_DEFAULT_LV2_PATH "~/.lv2:/usr/local/lib/lv2:/usr/local/lib64/lv2:/usr/lib/lv2:/usr/lib64/lv2"
+#    else
+#      define LILV_DEFAULT_LV2_PATH "~/.lv2:/usr/local/lib/lv2:/usr/lib/lv2"
+#    endif
 #  endif
 #endif
 

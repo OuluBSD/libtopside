@@ -5,10 +5,16 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class InterfaceBuilder {
+	struct Dependency : Moveable<Dependency> {
+		String conditional;
+		bool have_header;
+	};
+	
 	struct Pkg {
 		String name, abbr;
 		Color clr;
-		VectorMap<String,String> deps, libs, ifaces, vendors;
+		VectorMap<String,Dependency> deps;
+		VectorMap<String,String> libs, ifaces, vendors;
 		Index<String> enable_if;
 		bool enable_always = false;
 		bool have_recv_finalize = false;
@@ -48,7 +54,7 @@ class InterfaceBuilder {
 public:
 	void Package(String s, String a);
 	void SetColor(byte r, byte g, byte b);
-	void Dependency(String lib, String conditional="");
+	void Dependency(String lib, String conditional="", bool have_header=true);
 	void Library(String lib, String conditional="");
 	void HaveRecvFinalize();
 	void HaveUpdate();

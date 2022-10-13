@@ -12,6 +12,7 @@ void InterfaceBuilder::AddSynth() {
 	Dependency("AudioCore");
 	Dependency("ports/fluidlite", "FLUIDSYNTH");
 	Dependency("ports/lilv");
+	Dependency("LV2Host", "", false);
 	HaveRecvFinalize();
 	HaveIsReady();
 	

@@ -9,6 +9,7 @@ void InterfaceBuilder::AddEffect() {
 	Dependency("AudioCore");
 	Dependency("ParallelLib");
 	Dependency("ports/lilv");
+	Dependency("LV2Host", "", false);
 	HaveRecvFinalize();
 	HaveIsReady();
 	
