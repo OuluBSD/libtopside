@@ -6,4 +6,4 @@
 share/presets/fmsynth/generated/*.wav
 pose/**
 gpl/**
-
+sounds/sf2/**
