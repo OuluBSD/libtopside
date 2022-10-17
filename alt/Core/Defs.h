@@ -68,7 +68,9 @@
 #include <complex>
 #include <numeric>
 
-#include <emmintrin.h>
+#if CPU_X86
+	#include <emmintrin.h>
+#endif
 
 #if defined flagWIN32 && defined flagGCC
 	#include <ports/MingwThreads/mingw.thread.h>
@@ -181,11 +183,11 @@ class Stream;  Stream& VppLog(); void Panic(); void Panic(const char* msg); void
 
 
 typedef unsigned char	uint8;
-typedef char			int8;
+typedef signed char		int8;
 typedef unsigned short	uint16;
-typedef short			int16;
+typedef signed short	int16;
 typedef unsigned int	uint32;
-typedef int				int32;
+typedef signed int		int32;
 typedef uint64_t		uint64;
 typedef int64_t			int64;
 typedef wchar_t			wchar;

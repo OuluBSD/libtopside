@@ -257,12 +257,23 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		}
 		
 		// Create OpenGL context
+		#if CPU_ARM
+		// gles 2.0
+		int context_attribs[] = {
+			GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+			GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+			GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES_PROFILE_BIT_EXT | GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
+			None
+		};
+		#else
+		// opengl 4.2
 		int context_attribs[] = {
 			GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
 			GLX_CONTEXT_MINOR_VERSION_ARB, 2,
 			GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
 			None
 		};
+		#endif
 		
 		dev.gl_ctx = 0;
 		const char *glxExts = glXQueryExtensionsString( display,  screen_num );

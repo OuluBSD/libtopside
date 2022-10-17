@@ -37,7 +37,7 @@ typedef enum : byte {
 	LINK_ROLE(DRIVER) \
 
 
-typedef enum : int8 {
+typedef enum : int {
 	INVALID_ROLE=-1,
 	
 	#define LINK_ROLE(x) LINKROLE_##x,

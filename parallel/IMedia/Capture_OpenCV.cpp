@@ -16,6 +16,7 @@
 	
 	#if flagOPENCV
 		#undef CPU_SSE2
+		// error here means that you didn't add opencv include dir to build method conf
 		#include <opencv2/core.hpp>
 		#include <opencv2/imgproc.hpp>
 		#include <opencv2/highgui.hpp>

@@ -424,16 +424,22 @@ struct Trans8x16 {
 	union {
 		uint16 u16[8];
 		uint8 u8[16];
+		#if CPU_X86
 		__m128i m;
+		#endif
 		uint64 u64[2];
 	};
 	
 	void TransFrom16x8() {
+		#if CPU_X86
 		__m128i x = m;
 	    for (int i = 0; i < 8; ++i) {
 	        u16[7-i] = _mm_movemask_epi8(x);
 	        x = _mm_slli_epi64(x,1);
 	    }
+	    #else
+	    TODO
+	    #endif
 	}
 	
 	void Zero() {u64[0] = 0; u64[1] = 0;}
@@ -444,15 +450,21 @@ struct Trans8x32 {
 	union {
 		uint32 u32[8];
 		uint8 u8[32];
+		#if CPU_X86
 		__m256i m;
+		#endif
 	};
 	
 	void TransFrom32x8() {
+		#if CPU_X86
 		__m256i x = m;
 	    for (int i = 0; i < 8; ++i) {
 	        u32[7-i] = _mm256_movemask_epi8(x);
 	        x = _mm256_slli_epi64(x,1);
 	    }
+	    #else
+	    TODO
+	    #endif
 	}
 };
 #endif

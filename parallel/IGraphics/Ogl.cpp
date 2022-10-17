@@ -381,9 +381,21 @@ template <class Gfx> String OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) 
 #endif
 )SH4D3R";
 
-	static const char* uniform_tmpl = R"SH4D3R(
-#version 430
-#define GL_ES
+	static const char* uniform_tmpl =
+#if CPU_ARM
+R"SH4D3R(
+#version 300 es
+#undef lowp
+#undef mediump
+#undef highp
+precision mediump float;
+)SH4D3R"
+#else
+"#version 430\n"
+#endif
+
+R"SH4D3R(
+
 
 uniform sampler2D iNone;
 uniform sampler2D iDiffuse;
@@ -442,7 +454,7 @@ uniform vec3      iCameraDir;
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iTime;                 // shader playback time (in seconds)
 uniform float     iTimeDelta;            // duration since the previous frame (in seconds)
-uniform int       iFrame;                // frames since the shader (re)started
+uniform highp int iFrame;                // frames since the shader (re)started
 uniform vec2      iOffset;
 uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
 uniform vec4      iDate;                 // (year, month, day, time in secs)
@@ -503,14 +515,22 @@ in int iVertexID;
 in int iInstanceID;
 
 out vec2 TexCoords;
+)SH4D3R"
+
+#if CPU_ARM
+
+#else
+R"SH4D3R(
 out gl_PerVertex
 {
   vec4 gl_Position;
   float gl_PointSize;
   float gl_ClipDistance[];
 };
+)SH4D3R"
+#endif
 
-
+R"SH4D3R(
 out vec3 vPosition;
 out vec3 vNormal;
 #if ${IS_AFFINE}
@@ -608,7 +628,8 @@ template <class Gfx> void OglGfxT<Gfx>::ProgramParameteri(NativeProgram& prog, G
 		PARAMTYPE(PROGRAM_SEPARABLE)
 		default: Panic("OglGfxT<Gfx>::ProgramParameteri: error: invalid ParamType"); return;
 	}
-	glProgramParameteri(prog, gl_type, i);
+	if (glProgramParameteri)
+		glProgramParameteri(prog, gl_type, i);
 }
 
 template <class Gfx>
@@ -854,7 +875,11 @@ template <class Gfx> void OglGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
+		#if CPU_ARM
+		GL_RGB,
+		#else
 		GL_RGBA,
+		#endif
 		tex.GetWidth(), tex.GetHeight(),
 		0,
 		tex.channels == 4 ? GL_RGBA : GL_RGB,
@@ -866,7 +891,11 @@ template <class Gfx> void OglGfxT<Gfx>::TexImage2D(FloatImage& tex) {
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
+		#if CPU_ARM
+		GL_RGB32F,
+		#else
 		GL_RGBA32F,
+		#endif
 		tex.GetWidth(), tex.GetHeight(),
 		0,
 		tex.channels == 4 ? GL_RGBA : GL_RGB,
