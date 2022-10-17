@@ -82,6 +82,34 @@ download: \
 	sf2/76_pan_flute/instrument.sf2 \
 	sf2/77_blown_bottle/instrument.sf2 \
 	sf2/78_shakuhachi/instrument.sf2 \
+	sf2/79_whistle/instrument.sf2 \
+	sf2/80_ocarina/instrument.sf2 \
+	sf2/81_square_synth/instrument.sf2 \
+	sf2/82_sawtooth_synth/instrument.sf2 \
+	sf2/83_calliope_synth/instrument.sf2 \
+	sf2/84_chiff_synth/instrument.sf2 \
+	sf2/85_charang_synth/instrument.sf2 \
+	sf2/86_space_voice/instrument.sf2 \
+	sf2/87_fifths/instrument.sf2 \
+	sf2/88_bass_and_lead/instrument.sf2 \
+	sf2/89_fantasia_pad/instrument.sf2 \
+	sf2/90_warm_pad/instrument.sf2 \
+	sf2/91_polysynth_pad/instrument.sf2 \
+	sf2/92_choir_pad/instrument.sf2 \
+	sf2/93_bowed_glass_pad/instrument.sf2 \
+	sf2/94_metallic_pad/instrument.sf2 \
+	sf2/95_halo_pad/instrument.sf2 \
+	sf2/96_sweep_pad/instrument.sf2 \
+	sf2/105_sitar/instrument.sf2 \
+	sf2/106_banjo/instrument.sf2 \
+	sf2/107_shamisen/instrument.sf2 \
+	sf2/108_koto/instrument.sf2 \
+	sf2/109_kalimba/instrument.sf2 \
+	sf2/110_bag_pipe/instrument.sf2 \
+	sf2/111_fiddle/instrument.sf2 \
+	sf2/112_shanai/instrument.sf2 \
+	sf2/117_taiko_drums/instrument.sf2 \
+	\
 	sf2/AirFont320/instrument.sf2 \
 	sf2/AVL_Drumkits_Perc/instrument.sf2 \
 	sf2/Black_Pearl_4A/instrument.sf2 \
@@ -576,15 +604,168 @@ sf2/78_shakuhachi/instrument.sf2:
 		wget -c https://musical-artifacts.com/artifacts/2150/Shakuhachi_Sustained.sf2 && \
 		mv Shakuhachi_Sustained.sf2 instrument.sf2)
 
-
-
-
-sf2/72_clarinet/instrument.sf2:
+sf2/79_whistle/instrument.sf2:
 	-@mkdir -p $(shell dirname $@)
 	(cd $(shell dirname $@) && \
-		cp ../60_muted_trumpet/5clarinet_b.sf2 instrument.sf2)
+		wget -c https://musical-artifacts.com/artifacts/1800/whistlering.sf2 && \
+		mv whistlering.sf2 instrument.sf2)
+
+sf2/80_ocarina/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2151/azteka_2_.sf2 && \
+		mv azteka_2_.sf2 instrument.sf2)
+
+sf2/81_square_synth/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1797/Lady_Gaga_Square_Lead_V2.sf2 && \
+		mv Lady_Gaga_Square_Lead_V2.sf2 instrument.sf2)
+
+sf2/82_sawtooth_synth/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1092/saw8detune.sf2 && \
+		mv saw8detune.sf2 instrument.sf2)
+
+sf2/83_calliope_synth/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2438/Trance_Synth.sf2 && \
+		mv Trance_Synth.sf2 instrument.sf2)
+
+sf2/84_chiff_synth/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2406/Iconic_EDM_Leads.sf2 && \
+		mv Iconic_EDM_Leads.sf2 instrument.sf2)
+
+sf2/85_charang_synth/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2303/FM_Synthesis_v2.sf2 && \
+		mv FM_Synthesis_v2.sf2 instrument.sf2)
+
+sf2/86_space_voice/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2294/nothing.sf2 && \
+		mv nothing.sf2 instrument.sf2)
+
+sf2/87_fifths/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2004/3xoscSynths.sf2 && \
+		mv 3xoscSynths.sf2 instrument.sf2)
+
+sf2/88_bass_and_lead/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1852/ayako_lead.sf2 && \
+		mv ayako_lead.sf2 instrument.sf2)
+
+sf2/89_fantasia_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c http://www.ibiblio.org/thammer/HammerSound/localfiles/soundfonts/hs_pt1.zip && \
+		7z x hs_pt1.zip && \
+		mv "HS Pads and Textures I.sf2" instrument.sf2)
+
+sf2/90_warm_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../89_fantasia_pad/instrument.sf2 .)
+
+sf2/91_polysynth_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c http://www.ibiblio.org/thammer/HammerSound/localfiles/soundfonts/hs_pt2.zip && \
+		7z x hs_pt2.zip && \
+		mv "HS Pads and Textures II.sf2" instrument.sf2)
+
+sf2/92_choir_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../91_polysynth_pad/instrument.sf2 .)
+
+sf2/93_bowed_glass_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../91_polysynth_pad/instrument.sf2 .)
+
+sf2/94_metallic_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../91_polysynth_pad/instrument.sf2 .)
+
+sf2/95_halo_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../89_fantasia_pad/instrument.sf2 .)
+
+sf2/96_sweep_pad/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../89_fantasia_pad/instrument.sf2 .)
 
 
+
+
+
+sf2/105_sitar/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2131/Realistic_Sitar_GM.sf2 && \
+		mv Realistic_Sitar_GM.sf2 instrument.sf2)
+
+sf2/106_banjo/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/890/Bubsy.sf2 && \
+		mv Bubsy.sf2 instrument.sf2)
+
+sf2/107_shamisen/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1878/Japan_Herentals.sf2 && \
+		mv Japan_Herentals.sf2 instrument.sf2)
+
+sf2/108_koto/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		ln -s ../107_shamisen/instrument.sf2 .)
+
+sf2/109_kalimba/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2186/Kalimba.sf2 && \
+		mv Kalimba.sf2 instrument.sf2)
+
+sf2/110_bag_pipe/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2221/the_real_bagpipe.sf2 && \
+		mv the_real_bagpipe.sf2 instrument.sf2)
+
+sf2/111_fiddle/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1419/Bubsy.sf2 && \
+		mv Bubsy.sf2 instrument.sf2)
+
+sf2/112_shanai/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/2349/sinars_shanai.sf2 && \
+		mv sinars_shanai.sf2 instrument.sf2)
+
+
+
+sf2/117_taiko_drums/instrument.sf2:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://musical-artifacts.com/artifacts/1873/supremetaiko.sf2 && \
+		mv supremetaiko.sf2 instrument.sf2)
 
 
 
