@@ -122,9 +122,8 @@ bool SynFmSynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink_ch
 	else if (fmt.IsOrder()) {
 		// pass
 	}
-	else {
-		TODO
-	}
+	else return false;
+	
 	return true;
 }
 

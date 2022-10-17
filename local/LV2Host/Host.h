@@ -53,6 +53,7 @@ public:
 	void SetParameterAbsolute(int, float);
 	
 	void LoadPlugin(String);
+	void HandleEvent(const MidiIO::Event& ev);
 	
 	void Process(unsigned int nframes);
 	Vector<float*>& GetAudioBuffers();
@@ -69,7 +70,7 @@ protected:
 	bool push_changes_to_ui;
 	
 	bool initialized;
-	bool portsSuitable;
+	bool ports_suitable;
 	
 	int nframes;
 	int samplerate;
@@ -102,8 +103,8 @@ protected:
 	int audio_in_count;
 	int audio_out_count;
 	
-	int ctrl_countInputs;
-	int ctrl_countOutputs;
+	int ctrl_count_inputs;
+	int ctrl_count_outputs;
 	
 	int in_port_left;
 	int in_port_right;

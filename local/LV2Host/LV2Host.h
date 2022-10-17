@@ -22,6 +22,7 @@
 #include <Local/Local.h>
 #include <Structural/Structural.h>
 #include <SerialLib/SerialLib.h>
+#include <MidiFile/MidiFile.h>
 
 #include "Host.h"
 #include "Loader.h"

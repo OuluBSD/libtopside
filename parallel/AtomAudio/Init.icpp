@@ -9,14 +9,18 @@ INITBLOCK_(AtomAudio) {
 	Factory::RegisterAtom<MidiFileReaderPipe>();
 	Factory::RegisterAtom<MidiFileReader>();
 	Factory::RegisterAtom<MidiNullSink>();
-	#if defined flagFLUIDSYNTH
+	#if (defined flagFLUIDLITE) || (defined flagFLUIDSYNTH)
 	Factory::RegisterAtom<FluidsynthPipe>();
 	#endif
 	Factory::RegisterAtom<SoftInstrumentPipe>();
 	Factory::RegisterAtom<FmSynthPipe>();
+	#if defined flagLV2
 	Factory::RegisterAtom<LV2InstrumentPipe>();
+	#endif
 	Factory::RegisterAtom<CoreSynthPipe>();
 	Factory::RegisterAtom<CoreEffectPipe>();
+	#if defined flagLV2
 	Factory::RegisterAtom<LV2EffectPipe>();
+	#endif
 }
 

@@ -1,5 +1,7 @@
 #include "IEffect.h"
 
+#ifdef flagLV2
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -55,3 +57,5 @@ bool FxLV2::Effect_IsReady(NativeEffect&, AtomBase&, PacketIO& io){
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

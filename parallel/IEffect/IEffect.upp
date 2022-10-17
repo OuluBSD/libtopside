@@ -1,10 +1,12 @@
 description "\377B28,255,150";
 
-	uses AudioCore;
-	uses ParallelLib;
-	uses ports/lilv;
-	uses LV2Host;
+uses
+	AudioCore,
+	ParallelLib;
 
+uses(LV2) ports/lilv;
+
+uses(LV2) LV2Host;
 
 file
 	IEffect.h,
@@ -13,4 +15,5 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-        "" = "";
+	"" = "";
+

@@ -46,7 +46,7 @@ public:
 	
 };
 
-#if defined flagFLUIDSYNTH
+#if (defined flagFLUIDLITE) || (defined flagFLUIDSYNTH)
 class FluidsynthPipe : public FluidsynthInstrument {
 
 public:
@@ -87,6 +87,7 @@ public:
 	
 };
 
+#if defined flagLV2
 class LV2InstrumentPipe : public LV2Instrument {
 
 public:
@@ -99,6 +100,7 @@ public:
 	AtomTypeCls GetType() const override;
 	
 };
+#endif
 
 class CoreSynthPipe : public CoreSynthInstrument {
 
@@ -126,6 +128,7 @@ public:
 	
 };
 
+#if defined flagLV2
 class LV2EffectPipe : public LV2Effect {
 
 public:
@@ -138,6 +141,7 @@ public:
 	AtomTypeCls GetType() const override;
 	
 };
+#endif
 
 }
 

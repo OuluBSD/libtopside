@@ -10,19 +10,20 @@ void InterfaceBuilder::AddSynth() {
 	Dependency("SoftInstru");
 	Dependency("SoftSynth");
 	Dependency("AudioCore");
-	Dependency("ports/fluidlite", "FLUIDSYNTH");
-	Dependency("ports/lilv");
-	Dependency("LV2Host", "", false);
+	Dependency("ports/fluidlite", "FLUIDLITE", false);
+	Library("fluidsynth", "FLUIDSYNTH");
+	Dependency("ports/lilv", "LV2", false);
+	Dependency("LV2Host", "LV2", false);
 	HaveRecvFinalize();
 	HaveIsReady();
 	
 	Interface("Instrument");
 	
 	Vendor("Soft");
-	Vendor("Fluidsynth", "FLUIDSYNTH");
+	Vendor("Fluidsynth", "FLUIDSYNTH|FLUIDLITE");
 	Vendor("FmSynth");
 	Vendor("CoreSynth");
-	Vendor("LV2");
+	Vendor("LV2", "LV2");
 	
 }
 

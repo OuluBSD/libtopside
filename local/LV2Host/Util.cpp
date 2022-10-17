@@ -22,21 +22,26 @@ void LoadAllLV2Plugins(Index<String>& lv2_list) {
 	}
 }
 
-String FindLv2InstrumentForPreset(String preset, Index<String>& lv2_list) {
-	if (preset.IsEmpty())
-		return "";
-	
-	Index<String> candidates;
+void GetLv2InstrumentCandidates(String preset, Index<String>& lv2_list, Index<String>& candidates) {
 	
 	if (preset == "piano") {
 		// from https://github.com/falkTX/FluidPlug
-		candidates.Add("http://kxstudio.linuxaudio.org/plugins/FluidPlug_FluidPianos");
+		//candidates.Add("http://kxstudio.linuxaudio.org/plugins/FluidPlug_FluidPianos");
 		
 		// from your linux repo
 		candidates.Add("http://drobilla.net/plugins/mda/Piano");
 	}
 	else TODO
 	
+}
+
+String FindLv2InstrumentForPreset(String preset, Index<String>& lv2_list) {
+	if (preset.IsEmpty())
+		return "";
+	
+	Index<String> candidates;
+	
+	GetLv2InstrumentCandidates(preset, lv2_list, candidates);
 	
 	for (const String& c : candidates) {
 		if (lv2_list.Find(c) >= 0)

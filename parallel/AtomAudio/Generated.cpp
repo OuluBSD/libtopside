@@ -85,7 +85,7 @@ AtomTypeCls MidiNullSink::GetType() const {
 }
 
 
-#if defined flagFLUIDSYNTH
+#if (defined flagFLUIDLITE) || (defined flagFLUIDSYNTH)
 String FluidsynthPipe::GetAction() {
 	return "fluidsynth.pipe";
 }
@@ -168,6 +168,7 @@ AtomTypeCls FmSynthPipe::GetType() const {
 }
 
 
+#if defined flagLV2
 String LV2InstrumentPipe::GetAction() {
 	return "lv2.instrument.pipe";
 }
@@ -193,6 +194,7 @@ void LV2InstrumentPipe::Visit(RuntimeVisitor& vis) {
 AtomTypeCls LV2InstrumentPipe::GetType() const {
 	return GetAtomType();
 }
+#endif
 
 
 String CoreSynthPipe::GetAction() {
@@ -248,6 +250,7 @@ AtomTypeCls CoreEffectPipe::GetType() const {
 }
 
 
+#if defined flagLV2
 String LV2EffectPipe::GetAction() {
 	return "lv2.effect.pipe";
 }
@@ -272,6 +275,7 @@ void LV2EffectPipe::Visit(RuntimeVisitor& vis) {
 AtomTypeCls LV2EffectPipe::GetType() const {
 	return GetAtomType();
 }
+#endif
 
 
 }

@@ -1,4 +1,7 @@
 #include "ISynth.h"
+
+#ifdef flagLV2
+
 #include <ports/lilv/lilv.h>
 #include <ports/lilv/lilv_config.h>
 #include <ports/lilv/lilvmm.hpp>
@@ -11,7 +14,7 @@ NAMESPACE_PARALLEL_BEGIN
 struct SynLV2::NativeInstrument {
     Index<String> lv2_list;
     One<Lv2Host> host;
-    
+    int nframes;
 };
 
 
@@ -29,14 +32,20 @@ bool SynLV2::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Scr
 	
 	LoadAllLV2Plugins(dev.lv2_list);
 	
-	String plugin_uri = ws.GetString("path", "");
+	dev.nframes = ws.GetInt(".nframes", 128);
 	
-	if (plugin_uri.IsEmpty()) {
-		plugin_uri = FindLv2InstrumentForPreset(preset, dev.lv2_list);
+	String plugin_uri = ws.GetString(".path", "");
+	Index<String> plugin_uris;
+	
+	if (plugin_uri.GetCount()) {
+		plugin_uris.Add(plugin_uri);
+	}
+	else {
+		GetLv2InstrumentCandidates(preset, dev.lv2_list, plugin_uris);
 	}
 	
-	if (plugin_uri.IsEmpty()) {
-		LOG("SynLV2::Instrument_Initialize: error: empty lv2 uri '" << plugin_uri << "'");
+	if (plugin_uris.IsEmpty()) {
+		LOG("SynLV2::Instrument_Initialize: error: empty lv2 uri");
 		return false;
 	}
 	
@@ -53,16 +62,19 @@ bool SynLV2::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Scr
 	int sample_rate = afmt.GetSampleRate();
 	int freq = afmt.GetFrequency();
 	
-	ASSERT(plugin_uri.GetCount());
-	dev.host = new Lv2Host(0, freq, sample_rate, plugin_uri);
-	if (dev.host.IsEmpty() || !dev.host->IsInitialized()) {
-		LOG("SynLV2::Instrument_Initialize: error: could not load lv2 uri '" << plugin_uri << "' with"
-			" frequency " << freq <<
-			", sample-rate " << sample_rate);
-		return false;
+	for (String plugin_uri : plugin_uris) {
+		ASSERT(plugin_uri.GetCount());
+		dev.host = new Lv2Host(0, freq, sample_rate, plugin_uri);
+		if (dev.host && dev.host->IsInitialized()) {
+			return true;
+		}
 	}
 	
-	return true;
+	LOG("SynLV2::Instrument_Initialize: error: could not load lv2 preset '" + preset + "' with"
+		" frequency " << freq <<
+		", sample-rate " << sample_rate);
+	
+	return false;
 }
 
 bool SynLV2::Instrument_PostInitialize(NativeInstrument&, AtomBase&) {
@@ -89,8 +101,28 @@ void SynLV2::Instrument_Visit(NativeInstrument&, AtomBase&, RuntimeVisitor& vis)
 	
 }
 
-bool SynLV2::Instrument_Recv(NativeInstrument&, AtomBase&, int, const Packet&) {
+bool SynLV2::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int src_ch, const Packet& p) {
+	Format fmt = p->GetFormat();
 	
+	if (fmt.IsMidi()) {
+		const Vector<byte>& data = p->Data();
+		int count = data.GetCount() / sizeof(MidiIO::Event);
+		
+		const MidiIO::Event* ev  = (const MidiIO::Event*)(const byte*)data.Begin();
+		const MidiIO::Event* end = ev + count;
+		
+		while (ev != end) {
+			dev.host->HandleEvent(*ev);
+			ev++;
+		}
+		return true;
+	}
+	else if (fmt.IsOrder()) {
+		// pass
+	}
+	else return false;
+	
+	return true;
 }
 
 void SynLV2::Instrument_Finalize(NativeInstrument&, AtomBase&, RealtimeSourceConfig&) {
@@ -98,8 +130,10 @@ void SynLV2::Instrument_Finalize(NativeInstrument&, AtomBase&, RealtimeSourceCon
 }
 
 bool SynLV2::Instrument_IsReady(NativeInstrument&, AtomBase&, PacketIO& io) {
-	
+	return io.active_sink_mask & 0x1;
 }
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

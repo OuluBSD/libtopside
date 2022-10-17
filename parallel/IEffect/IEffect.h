@@ -6,7 +6,6 @@
 
 #include <AudioCore/AudioCore.h>
 #include <ParallelLib/ParallelLib.h>
-#include <ports/lilv/lilv.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -35,6 +34,7 @@ struct FxAudioCore {
 	#include "IfaceFuncs.inl"
 	
 };
+#if defined flagLV2
 struct FxLV2 {
 	struct NativeEffect;
 	
@@ -47,6 +47,7 @@ struct FxLV2 {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 struct FxEffect : public Atom {
 	RTTI_DECL1(FxEffect, Atom)
@@ -104,7 +105,9 @@ template <class Fx> struct EffectEffectT : FxEffect {
 };
 
 using AudioCoreEffect = EffectEffectT<FxAudioCore>;
+#if defined flagLV2
 using LV2Effect = EffectEffectT<FxLV2>;
+#endif
 
 NAMESPACE_PARALLEL_END
 

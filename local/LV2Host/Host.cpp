@@ -13,8 +13,8 @@ Lv2Host::Lv2Host(int t, int samprate, int audio_buf_size, String path, int plugi
 		samplerate(samprate),
 		audio_buf_size(audio_buf_size) {
 	port_count = 0;
-	ctrl_countInputs = 0;
-	ctrl_countOutputs = 0;
+	ctrl_count_inputs = 0;
+	ctrl_count_outputs = 0;
 	audio_in_count = 0;
 	audio_out_count = 0;
 	
@@ -220,7 +220,7 @@ void Lv2Host::GetPluginPorts(Lilv::World* world, Lilv::Plugin* plugin) {
 			// to be retrived later when changing parameters
 			param_name_map.Add(i, portName.as_string());
 			// keep track of how many ctrl-ins we have
-			ctrl_countInputs++;
+			ctrl_count_inputs++;
 			SetParameter(i, port_details[i]->def);
 			
 		}
@@ -377,7 +377,7 @@ void Lv2Host::ConnectPorts() {
 			// we don't know how to connect this port properly, its an
 			// unknown type, so don't let the plugin run, as it will segfault
 			// when running with an un-connected port
-			LOG( "Port could not be connected #: " << i );
+			LOG( "Lv2Host::ConnectPorts: error: Port could not be connected #: " << i );
 			initialized = 0;
 		}
 	}
@@ -397,6 +397,10 @@ void Lv2Host::Process(unsigned int nframes) {
 	instance->run(nframes);
 	
 	return;
+}
+
+void Lv2Host::HandleEvent(const MidiIO::Event& ev) {
+	TODO
 }
 
 Lv2Host::~Lv2Host() {

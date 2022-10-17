@@ -1,7 +1,15 @@
 #include "ISynth.h"
 #include <MidiFile/MidiFile.h>
 
-#if defined flagFLUIDSYNTH
+#ifdef flagFLUIDLITE
+	#include <ports/fluidlite/fluidlite.h>
+#endif
+
+#ifdef flagFLUIDSYNTH
+	#include <fluidsynth.h>
+#endif
+
+#if defined flagFLUIDSYNTH || defined flagFLUIDLITE
 
 
 NAMESPACE_PARALLEL_BEGIN

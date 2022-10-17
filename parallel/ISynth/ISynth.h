@@ -8,8 +8,6 @@
 #include <SoftInstru/SoftInstru.h>
 #include <SoftSynth/SoftSynth.h>
 #include <AudioCore/AudioCore.h>
-#include <ports/fluidlite/fluidlite.h>
-#include <ports/lilv/lilv.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -41,7 +39,7 @@ struct SynSoft {
 	#include "IfaceFuncs.inl"
 	
 };
-#if defined flagFLUIDSYNTH
+#if (defined flagFLUIDSYNTH) || (defined flagFLUIDLITE)
 struct SynFluidsynth {
 	struct NativeInstrument;
 	
@@ -79,6 +77,7 @@ struct SynCoreSynth {
 	#include "IfaceFuncs.inl"
 	
 };
+#if defined flagLV2
 struct SynLV2 {
 	struct NativeInstrument;
 	
@@ -91,6 +90,7 @@ struct SynLV2 {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 struct SynInstrument : public Atom {
 	RTTI_DECL1(SynInstrument, Atom)
@@ -148,12 +148,14 @@ template <class Syn> struct SynthInstrumentT : SynInstrument {
 };
 
 using SoftInstrument = SynthInstrumentT<SynSoft>;
-#if defined flagFLUIDSYNTH
+#if (defined flagFLUIDSYNTH) || (defined flagFLUIDLITE)
 using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 #endif
 using FmSynthInstrument = SynthInstrumentT<SynFmSynth>;
 using CoreSynthInstrument = SynthInstrumentT<SynCoreSynth>;
+#if defined flagLV2
 using LV2Instrument = SynthInstrumentT<SynLV2>;
+#endif
 
 NAMESPACE_PARALLEL_END
 
