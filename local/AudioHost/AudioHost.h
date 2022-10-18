@@ -1,5 +1,5 @@
-#ifndef _LV2Host_LV2Host_h_
-#define _LV2Host_LV2Host_h_
+#ifndef _AudioHost_AudioHost_h_
+#define _AudioHost_AudioHost_h_
 
 /*
 
@@ -11,13 +11,14 @@
 	
 */
 
+#ifdef flagLV2
 #include <ports/lilv/lilv.h>
 #include <ports/lilv/lilvmm.hpp>
 #include <ports/lilv/lilv_config.h>
 #include "lv2/lv2plug.in/ns/ext/event/event.h"
 #include "lv2/lv2plug.in/ns/ext/uri-map/uri-map.h"
 #include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
-
+#endif
 
 #include <Local/Local.h>
 #include <Structural/Structural.h>

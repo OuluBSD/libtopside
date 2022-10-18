@@ -28,6 +28,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("SdlOglAudioBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("MidiFileReaderAtom");
 	AddCustomBase("MidiNullAtom");
+	AddCustomBase("AudioMixerBase");
 	
 	AddHeader("CenterCustomer", "CustomerBase", "customer")
 		.In("CenterReceipt").Out("CenterOrder")
@@ -112,6 +113,14 @@ void InterfaceBuilder::Headers() {
 		.Action("center.audio.side.sink2.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("JOINER", "PROCESS")
+	;
+	
+	AddHeader("AudioMixer16", "AudioMixerBase", "pipe")
+		.In("CenterOrder").InOpt(16,"CenterAudio")
+		.Out("CenterAudio")
+		.Action("center.audio.mixer16")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("MERGER", "PROCESS")
 	;
 	
 	AddHeader("VideoDbgSrc", "VideoGenBase", "pipe")

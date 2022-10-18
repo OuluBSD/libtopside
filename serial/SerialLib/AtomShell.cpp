@@ -37,7 +37,7 @@ bool DefaultInitializer(bool skip_eon_file) {
 	eon_file = Parallel::RealizeEonFile(eon_file);
 	
 	
-	if (GetFileExt(eon_file) == ".toy") {
+	if (GetFileExt(eon_file) != ".eon") {
 		eon_script = SerialLoaderFactory::LoadFile(eon_file);
 		if (eon_script.IsEmpty())
 			return false;

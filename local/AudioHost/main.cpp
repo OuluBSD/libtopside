@@ -1,4 +1,4 @@
-#include "LV2Host.h"
+#include "AudioHost.h"
 
 #ifdef flagMAIN
 

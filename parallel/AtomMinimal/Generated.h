@@ -167,6 +167,19 @@ public:
 	
 };
 
+class AudioMixer16 : public AudioMixerBase {
+
+public:
+	RTTI_DECL1(AudioMixer16, AudioMixerBase)
+	COPY_PANIC(AudioMixer16)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 #if defined flagSCREEN
 class VideoDbgSrc : public VideoGenBase {
 

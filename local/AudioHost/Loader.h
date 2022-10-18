@@ -1,13 +1,15 @@
-#ifndef _LV2Host_Loader_h_
-#define _LV2Host_Loader_h_
+#ifndef _AudioHost_Loader_h_
+#define _AudioHost_Loader_h_
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class MidiLV2ContextLoader
+class MidiEonContextLoader
 {
 	int			id_counter = 0;
 	String		last_error;
+	String		result;
 	
 	
 	bool		LoadFileMidi(String path, Object& dst);
@@ -16,10 +18,11 @@ class MidiLV2ContextLoader
 	void		Clear();
 	
 public:
-	typedef MidiLV2ContextLoader CLASSNAME;
-	MidiLV2ContextLoader();
+	typedef MidiEonContextLoader CLASSNAME;
+	MidiEonContextLoader();
 	
 	bool		Load(String path, Object& o);
+	String		GetResult() const {return result;}
 	
 	
 	Callback	WhenError;
@@ -27,7 +30,7 @@ public:
 };
 
 
-struct SerialMidiLV2Loader : SerialLoaderBase {
+struct SerialMidiEonLoader : SerialLoaderBase {
 	
 	virtual String LoadFile(String file_path) override;
 	

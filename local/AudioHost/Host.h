@@ -1,6 +1,7 @@
 #ifndef LV2_HOST
 #define LV2_HOST
 
+#ifdef flagLV2
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -136,5 +137,6 @@ protected:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif
 

@@ -1,5 +1,6 @@
-#ifndef _LV2Host_Util_h_
-#define _LV2Host_Util_h_
+#ifndef _AudioHost_Util_h_
+#define _AudioHost_Util_h_
+#ifdef flagLV2
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -11,4 +12,5 @@ String FindLv2InstrumentForPreset(String preset, Index<String>& lv2_list);
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

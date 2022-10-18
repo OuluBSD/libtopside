@@ -22,6 +22,7 @@ INITBLOCK_(AtomMinimal) {
 	Factory::RegisterAtom<AudioJoiner>();
 	Factory::RegisterAtom<AudioJoinerUser>();
 	Factory::RegisterAtom<AudioJoiner2User>();
+	Factory::RegisterAtom<AudioMixer16>();
 	#if defined flagSCREEN
 	Factory::RegisterAtom<VideoDbgSrc>();
 	#endif

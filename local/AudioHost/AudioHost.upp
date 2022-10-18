@@ -3,10 +3,11 @@ description "Loads midi files and makes lv2-instrument and effect system from th
 file
 	Copying,
 	main.cpp,
-	LV2Host.h,
-	LV2Host.icpp,
+	AudioHost.h,
+	AudioHost.icpp,
 	Loader.h,
 	Loader.cpp,
+	LV2 readonly separator,
 	Util.h,
 	Util.cpp,
 	Host.h,

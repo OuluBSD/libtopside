@@ -19,6 +19,7 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
+	ATOM_TYPE(AUDIO_MIXER16) \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(WEBCAM_PIPE) \
 	ATOM_TYPE(WEBCAM_ATOM) \
@@ -92,6 +93,7 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
+	ATOM_CLASS(AudioMixer16) \
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(WebcamPipe) \
 	ATOM_CLASS(WebcamAtom) \

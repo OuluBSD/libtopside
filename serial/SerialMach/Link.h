@@ -90,7 +90,6 @@ public:
 	LinkBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
 	LinkBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
 	bool					LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i);
-	bool					LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i);
 	
 	bool					NegotiateSourceFormat(int src_ch, const Format& fmt);
 	virtual bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt, bool chk_other=true);

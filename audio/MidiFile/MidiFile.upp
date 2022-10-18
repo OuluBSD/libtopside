@@ -6,6 +6,8 @@ uses
 file
 	Copying,
 	MidiFile.h,
+	Utils.h,
+	Utils.cpp,
 	Binasc.h,
 	Binasc.cpp,
 	Event.h,

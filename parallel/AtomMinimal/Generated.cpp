@@ -328,6 +328,48 @@ AtomTypeCls AudioJoiner2User::GetType() const {
 }
 
 
+String AudioMixer16::GetAction() {
+	return "center.audio.mixer16";
+}
+
+AtomTypeCls AudioMixer16::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::AUDIO_MIXER16;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls AudioMixer16::GetLinkType() {
+	return LINKTYPE(MERGER, PROCESS);
+}
+
+void AudioMixer16::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<AudioMixerBase>(this);
+}
+
+AtomTypeCls AudioMixer16::GetType() const {
+	return GetAtomType();
+}
+
+
 #if defined flagSCREEN
 String VideoDbgSrc::GetAction() {
 	return "center.video.src.dbg_generator";

@@ -5,7 +5,7 @@
 #include <ports/lilv/lilv.h>
 #include <ports/lilv/lilv_config.h>
 #include <ports/lilv/lilvmm.hpp>
-#include <LV2Host/LV2Host.h>
+#include <AudioHost/AudioHost.h>
 
 
 NAMESPACE_PARALLEL_BEGIN

@@ -1,5 +1,6 @@
-#include "LV2Host.h"
+#include "AudioHost.h"
 
+#ifdef flagLV2
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -409,3 +410,5 @@ Lv2Host::~Lv2Host() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

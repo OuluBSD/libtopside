@@ -144,6 +144,25 @@ public:
 	
 };
 
+class MergerLink : public Link
+{
+	byte scheduler_iter = 1;
+	
+public:
+	RTTI_DECL1(MergerLink, Link)
+	MergerLink();
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPackets(PacketIO& io) override;
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
 class JoinerLink : public Link
 {
 	byte scheduler_iter = 1;

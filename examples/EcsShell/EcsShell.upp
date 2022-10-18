@@ -1,7 +1,8 @@
 uses
 	EcsMinimal,
 	AtomLocal,
-	Shadertoy;
+	Shadertoy,
+	AudioHost;
 
 uses(!MINIMAL) EcsComplete;
 
@@ -28,5 +29,6 @@ mainconfig
 	"" = "DEBUG_RT SCREEN SDL2 OGL FFMPEG OPENCV FLUIDSYNTH",
 	"" = "DEBUG_RT BUILTIN_PORTAUDIO FLUIDSYNTH",
 	"" = "SDL2",
-	"" = "FFMPEG";
+	"" = "FFMPEG",
+	"" = "BUILTIN_PORTAUDIO FLUIDLITE";
 

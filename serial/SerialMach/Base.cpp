@@ -443,6 +443,104 @@ LinkTypeCls DriverLink::GetType() {
 
 
 
+MergerLink::MergerLink() {
+	
+}
+
+bool MergerLink::Initialize(const Script::WorldState& ws) {
+	Format fmt = GetSink()->GetValue(1).GetFormat();
+	if (fmt.IsAudio()) {
+		GetAtom()->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	}
+	
+	return true;
+}
+
+bool MergerLink::PostInitialize() {
+	return true;
+}
+
+void MergerLink::Uninitialize() {
+	
+}
+
+bool MergerLink::IsReady(PacketIO& io) {
+	RTLOG("MergerLink::IsReady: " << BinStr(io.active_sink_mask));
+	
+	// require primary and single side channel
+	int src_ch_count = GetSink()->GetSinkCount();
+	if (!(io.active_sink_mask & 1))
+		return false;
+	for (Exchange& e : side_src_conn)
+		if (!(io.active_sink_mask & (1 << e.local_ch_i)))
+			return false;
+	return true;
+}
+
+bool MergerLink::ProcessPackets(PacketIO& io) {
+	bool do_finalize = false;
+	bool b = true;
+	
+	for (Exchange& e : side_src_conn) {
+		int sink_ch = e.local_ch_i;
+		
+		PacketIO::Sink& sink = io.sinks[sink_ch];
+		Packet& in = sink.p;
+		ASSERT(in);
+		sink.may_remove = true;
+		
+		RTLOG("PipeOptSideLink::ProcessPackets: sink #" << sink_ch << ": " << in->ToString());
+		
+		b = atom->Recv(sink_ch, in) && b;
+	}
+	
+	ASSERT(io.sinks[0].p);
+	b = atom->Recv(0, io.sinks[0].p) && b;
+	io.sinks[0].may_remove = true;
+	
+	atom->Finalize(*last_cfg);
+	
+	int src_ch = 0;
+	PacketIO::Sink& prim_sink = io.sinks[0];
+	PacketIO::Source& src = io.srcs[src_ch];
+	Packet& out = src.p;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(src_ch, prim_sink.p);
+	
+	b = atom->Send(*last_cfg, *out, 0) && b;
+	
+	
+	InterfaceSourceRef src_iface = this->GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.srcs[src_ch];
+		if (!src.val)
+			continue;
+		Packet& out = src.p;
+		if (!out) {
+			src.from_sink_ch = 1;
+			out = this->ReplyPacket(src_ch, prim_sink.p);
+		}
+		if (!atom->Send(*last_cfg, *out, src_ch)) {
+			// don't update "b" because non-primary channels are allowed to fail sending
+			src.p.Clear();
+		}
+	}
+	
+	
+	return b;
+}
+
+LinkTypeCls MergerLink::GetType() {
+	return LINKTYPE(MERGER, PROCESS);
+}
+
+
+
+
+
+
+
 JoinerLink::JoinerLink() {
 	
 }

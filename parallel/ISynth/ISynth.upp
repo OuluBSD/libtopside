@@ -6,7 +6,7 @@ description "\377B200,179,81";
 	uses AudioCore;
 	uses(FLUIDLITE) ports/fluidlite;
 	uses(LV2) ports/lilv;
-	uses(LV2) LV2Host;
+	uses(LV2) AudioHost;
 
 	library(FLUIDSYNTH) "fluidsynth";
 

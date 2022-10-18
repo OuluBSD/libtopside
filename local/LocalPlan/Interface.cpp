@@ -82,6 +82,13 @@ InterfaceBuilder::Header& InterfaceBuilder::Header::InOpt(String vd) {
 	return *this;
 }
 
+
+InterfaceBuilder::Header& InterfaceBuilder::Header::InOpt(int count, String vd) {
+	for(int i = 0; i < count; i++)
+		ins.Add(vd, true);
+	return *this;
+}
+
 InterfaceBuilder::Header& InterfaceBuilder::Header::Out(String vd) {
 	outs.Add(vd, false);
 	return *this;

@@ -12,6 +12,7 @@
 #include "EventList.h"
 #include "File.h"
 #include "Binasc.h"
+#include "Utils.h"
 
 
 #endif

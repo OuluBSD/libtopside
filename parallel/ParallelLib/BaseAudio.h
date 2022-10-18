@@ -130,6 +130,38 @@ public:
 };
 
 
+class AudioMixerBase :
+	public Atom
+{
+	bool auto_limit = false;
+	
+	struct Item {
+		Array<Packet> packets;
+		int offset = 0;
+		Format fmt;
+	};
+	
+	Array<Item> queue;
+	Vector<float> buf;
+	int channels = 2;
+	
+public:
+	RTTI_DECL1(AudioMixerBase, Atom)
+	AudioMixerBase();
+	
+	bool Initialize(const Script::WorldState& ws) final;
+	bool PostInitialize() override;
+	void Uninitialize() final;
+	bool Recv(int sink_ch, const Packet& in) override;
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	void Finalize(RealtimeSourceConfig& cfg) override;
+	
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	
+};
+
+
 NAMESPACE_PARALLEL_END
 
 #endif

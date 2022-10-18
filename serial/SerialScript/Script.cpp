@@ -973,11 +973,7 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 						ASSERT(sink_conn.other == src_conn.local);
 						
 						if (!src_link->LinkSideSink(sink_link, src_ch_i, sink_ch_i)) {
-							AddError(loop0.def.loc, "Side-source refused linking to side-src");
-							return false;
-						}
-						if (!sink_link->LinkSideSource(src_link, sink_ch_i, src_ch_i)) {
-							AddError(loop1.def.loc, "Side-src refused linking to side-source");
+							AddError(loop0.def.loc, "Side-linking was refused");
 							return false;
 						}
 						

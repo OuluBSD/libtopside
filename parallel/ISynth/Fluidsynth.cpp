@@ -3,6 +3,10 @@
 
 #ifdef flagFLUIDLITE
 	#include <ports/fluidlite/fluidlite.h>
+	#include <ports/fluidlite/types.h>
+	#include <ports/fluidlite/fluid_list.h>
+	#include <ports/fluidlite/fluid_synth.h>
+	#include <ports/fluidlite/fluid_defsfont.h>
 #endif
 
 #ifdef flagFLUIDSYNTH
@@ -27,13 +31,15 @@ struct SynFluidsynth::NativeInstrument {
     RunningFlag flag;
     Array<Vector<byte>> packets;
     Mutex lock;
+    bool prevent_patch_change;
 };
 
 
 
 void SynFluidsynth_ConfigureTrack(SynFluidsynth::NativeInstrument& dev, const MidiIO::File& file, int track_i);
 bool SynFluidsynth_LoadSoundfontFile(SynFluidsynth::NativeInstrument& dev, String path);
-bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev);
+bool SynFluidsynth_LoadAnyPreset(SynFluidsynth::NativeInstrument& dev);
+bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev, int patch);
 void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomBase& a, Vector<byte>& out);
 void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiIO::Event& e, int track_i=-1);
 void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase* a);
@@ -49,7 +55,9 @@ bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, co
 		
 	dev.synth = new_fluid_synth(dev.settings);
 	
-	SynFluidsynth_InitializeSoundfont(dev);
+	int patch = ws.GetInt(".patch", -1);
+	dev.prevent_patch_change = patch >= 0;
+	SynFluidsynth_InitializeSoundfont(dev, patch);
 	
 	
 	ISourceRef src = a.GetSource();
@@ -128,9 +136,13 @@ bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink
 		
 		const MidiIO::Event* ev  = (const MidiIO::Event*)(const byte*)data.Begin();
 		const MidiIO::Event* end = ev + count;
+		bool prevent_patch_change = dev.prevent_patch_change;
 		
 		while (ev != end) {
-			SynFluidsynth_HandleEvent(dev, *ev);
+			if (prevent_patch_change && ev->IsPatchChange())
+				; // pass
+			else
+				SynFluidsynth_HandleEvent(dev, *ev);
 			ev++;
 		}
 	}
@@ -168,37 +180,96 @@ void SynFluidsynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVi
 	
 }
 
-bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev) {
-	Index<String> dirs;
-	dirs.Add( ShareDirFile("soundfonts") );
-	dirs.Add( ConfigFile("") );
-	dirs.Add( GetHomeDirectory() );
-	dirs.Add( "/usr/share/sounds/sf2" );
-	dirs.Add( "/usr/share/soundfonts" );
-	dirs.Add( "/usr/local/share/soundfonts" );
+bool SynFluidsynth_LoadAnyPreset(SynFluidsynth::NativeInstrument& dev) {
+	int bank = -1, prog = -1;
 	
-	Index<String> files;
-	files.Add("FluidR3 GM.sf2");
-	files.Add("FluidR3_GM.sf2");
-	files.Add("TimGM6mb.sf2");
-	files.Add("FluidR3_GS.sf2");
-	files.Add("ChoriumRevA.sf2");
-	files.Add("WeedsGM3.sf2");
-	files.Add("UHD3.sf2");
+	int sf_count = fluid_synth_sfcount(dev.synth);
 	
+	for(int i = 0; i < sf_count; i++) {
+		fluid_sfont_t* sfont = fluid_synth_get_sfont(dev.synth, i);
+		const char* name = fluid_sfont_get_name(sfont);
+		
+		int preset_i = 0;
+		fluid_sfont_iteration_start(sfont);
+		while (1) {
+			fluid_preset_t* preset = fluid_sfont_iteration_next(sfont);
+			if (!preset) break;
+			bank = fluid_preset_get_banknum(preset);
+			prog = fluid_preset_get_num(preset);
+			preset_i++;
+		}
+	}
+	
+	if (bank >= 0 && prog >= 0) {
+		int channels = fluid_synth_count_midi_channels(dev.synth);
+		for (int i = 0; i < channels; i++){
+			//int prog = fluid_channel_get_prognum(dev.synth->channel[i]);
+			fluid_synth_bank_select(dev.synth, i, bank);
+			fluid_synth_program_change(dev.synth, i, prog);
+		}
+	}
+	return true;
+}
+
+bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev, int patch) {
 	bool loaded = false;
-	for(String file : files) {
-		for(String dir : dirs) {
-			String path = AppendFileName(dir, file);
-			if (FileExists(path)) {
-				LOG("Loading soundfont: " << path);
-				if (SynFluidsynth_LoadSoundfontFile(dev, path))
-					loaded = true;
+	
+	if (patch >= 0) {
+		String dir = ShareDirFile("sf2");
+		Index<String> sf2_dirs;
+		GetDirectoryFiles(dir, sf2_dirs);
+		String patch_str = (patch < 10 ? "0":"") + IntStr(patch+1) + "_";
+		//DUMP(patch_str);
+		//DUMPC(sf2_dirs);
+		for (String sf2_dir : sf2_dirs) {
+			String dir_title = GetFileTitle(sf2_dir);
+			if (dir_title.Left(patch_str.GetCount()) == patch_str) {
+				String instrument = AppendFileName(sf2_dir, "instrument.sf2");
+				DUMP(instrument);
+				if (FileExists(instrument)) {
+					LOG("Loading soundfont: " << instrument);
+					if (SynFluidsynth_LoadSoundfontFile(dev, instrument)) {
+						SynFluidsynth_LoadAnyPreset(dev);
+						loaded = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	if (!loaded) {
+		Index<String> dirs;
+		dirs.Add( ShareDirFile("soundfonts") );
+		dirs.Add( ConfigFile("") );
+		dirs.Add( GetHomeDirectory() );
+		dirs.Add( "/usr/share/sounds/sf2" );
+		dirs.Add( "/usr/share/soundfonts" );
+		dirs.Add( "/usr/local/share/soundfonts" );
+		
+		Index<String> files;
+		files.Add("FluidR3 GM.sf2");
+		files.Add("FluidR3_GM.sf2");
+		files.Add("TimGM6mb.sf2");
+		files.Add("FluidR3_GS.sf2");
+		files.Add("ChoriumRevA.sf2");
+		files.Add("WeedsGM3.sf2");
+		files.Add("UHD3.sf2");
+		
+		for(String file : files) {
+			for(String dir : dirs) {
+				String path = AppendFileName(dir, file);
+				if (FileExists(path)) {
+					LOG("Loading soundfont: " << path);
+					if (SynFluidsynth_LoadSoundfontFile(dev, path))
+						loaded = true;
+				}
+				if (loaded) break;
 			}
 			if (loaded) break;
 		}
-		if (loaded) break;
 	}
+	
 	if (!loaded) {
 		LOG("FluidsynthSystem: error: could not load any soundfont");
 		return false;

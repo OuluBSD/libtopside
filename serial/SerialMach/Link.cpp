@@ -212,15 +212,22 @@ bool LinkBase::LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i) {
 	
 	AtomTypeCls type = sink->GetAtomType();
 	ASSERT(type.IsRolePipe());
-	if (PassLinkSideSink(sink)) {
+	if (PassLinkSideSink(sink) && sink->PassLinkSideSource(AsRefT())) {
 		RTLOG("LinkBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetLinkType().ToString());
 		
-		Exchange& ex = side_sink_conn.Add();
-		ex.other = sink;
-		ex.local_ch_i = local_ch_i;
-		ex.other_ch_i = other_ch_i;
-		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
+		{
+			Exchange& ex = side_sink_conn.Add();
+			ex.other = sink;
+			ex.local_ch_i = local_ch_i;
+			ex.other_ch_i = other_ch_i;
+		}
 		
+		{
+			Exchange& ex = sink->side_src_conn.Add();
+			ex.other = AsRefT();
+			ex.local_ch_i = other_ch_i;
+			ex.other_ch_i = local_ch_i;
+		}
 		
 		// as in LinkBase::LinkSideSink
 		
@@ -248,25 +255,10 @@ bool LinkBase::LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i) {
 		
 		return true;
 	}
-	return false;
-}
-
-bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
-	//side_sink = -1; // SetSideSink(-1)
-	ASSERT(src);
-	if (!src)
-		return false;
-	
-	AtomTypeCls type = src->GetAtomType();
-	ASSERT(type.IsRolePipe());
-	if (PassLinkSideSource(src)) {
-		Exchange& ex = side_src_conn.Add();
-		ex.other = src;
-		ex.local_ch_i = local_ch_i;
-		ex.other_ch_i = other_ch_i;
-		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
-		return true;
+	else {
+		LOG("LinkBase::LinkSideSink: error: failed to like side-channel");
 	}
+	
 	return false;
 }
 
