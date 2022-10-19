@@ -4,7 +4,9 @@ NAMESPACE_AUDIO_BEGIN
 
 void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 	int channel = e.GetChannel();
-
+	
+	//LOG("Instrument::HandleEvent: track " << e.track << ": " << e.GetChannel() << ": " << e.ToString());
+	
 	if (e.IsController()) {
 		if (track_i < 0 || channel == track_i) {
 			int num = e.GetP1();

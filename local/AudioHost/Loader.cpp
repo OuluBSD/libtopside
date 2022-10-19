@@ -80,6 +80,15 @@ machine midi.app:
 			midi.file.reader16[][${SIDEOUT}]:
 				filepath = "${PATH}"
 				close_machine = true
+				drum.ch = ${DRUM_CH}
+				
+		loop drums:
+			center.customer
+			coredrummer.pipe[loop == event][${DRUMOUT}]:
+				ch.oh = 1
+				ch.kick = 2
+				ch.snare = 3
+				ch.toms = 4
 )eon";
 
 	const char* ch_tmpl = R"eon(
@@ -88,6 +97,13 @@ machine midi.app:
 			fluidsynth.pipe[loop == event]:
 				verbose = false
 				patch = ${PATCH}
+			center.audio.side.src.center.user[][loop == mixer]
+)eon";
+
+	const char* drum_ch_tmpl = R"eon(
+		loop ch.${CHANNEL}:
+			center.customer
+			center.audio.side.sink.center.user[loop == drums]
 			center.audio.side.src.center.user[][loop == mixer]
 )eon";
 
@@ -104,6 +120,7 @@ machine midi.app:
 	eon = begin;
 	
 	String sideout;
+	int sideout_count = 0;
 	for(int i = 0; i < track_count; i++) {
 		int patch = patches.Get(i, -1);
 		if (patch >= 0) {
@@ -114,14 +131,38 @@ machine midi.app:
 			
 			if (sideout.GetCount()) sideout << ", ";
 			sideout << "loop == ch." << i;
+			sideout_count++;
 		}
 	}
+	
+	const char* drum_ch[4] {"oh", "kick", "snare", "toms"};
+	String drumout;
+	String sidein = sideout;
+	for(int i = 0; i < 4; i++) {
+		sidein  << ", loop == ch." << drum_ch[i];
+		if (i)
+			drumout << ", ";
+		drumout << "loop == ch." << drum_ch[i];
+		
+		String ch = drum_ch_tmpl;
+		ch.Replace("${CHANNEL}", drum_ch[i]);
+		eon += ch;
+		
+		if (sideout.GetCount()) sideout << ", ";
+		sideout << "loop == ch." << i;
+		sideout_count++;
+	}
+	
+	sideout << ", loop == drums";
+	sideout_count++;
 	
 	eon += end;
 	
 	eon.Replace("${PATH}", path);
 	eon.Replace("${SIDEOUT}", sideout);
-	eon.Replace("${SIDEIN}", sideout);
+	eon.Replace("${SIDEIN}", sidein);
+	eon.Replace("${DRUMOUT}", drumout);
+	eon.Replace("${DRUM_CH}", IntStr(sideout_count));
 	
 	
 	//LOG(eon);

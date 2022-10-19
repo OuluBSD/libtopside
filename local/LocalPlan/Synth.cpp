@@ -23,6 +23,7 @@ void InterfaceBuilder::AddSynth() {
 	Vendor("Fluidsynth", "FLUIDSYNTH|FLUIDLITE");
 	Vendor("FmSynth");
 	Vendor("CoreSynth");
+	Vendor("CoreDrummer");
 	Vendor("LV2", "LV2");
 	
 }

@@ -615,6 +615,14 @@ void InterfaceBuilder::Headers() {
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;
 	
+	AddHeader("CoreDrummerPipe", "CoreDrummerInstrument", "pipe")
+		.In("CenterOrder").InOpt("CenterMidi")
+		.Out("CenterReceipt").OutOpt(4, "CenterAudio")
+		.Action("coredrummer.pipe")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
 	AddHeader("CoreEffectPipe", "AudioCoreEffect", "pipe")
 		.In("CenterAudio").Out("CenterAudio")
 		.Action("corefx.pipe")

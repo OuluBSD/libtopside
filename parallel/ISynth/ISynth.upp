@@ -20,6 +20,7 @@ file
 	Fluidsynth.cpp,
 	FmSynth.cpp,
 	CoreSynth.cpp,
+	CoreDrummer.cpp,
 	LV2.cpp,
 	IfaceFuncs.inl highlight cpp;
 

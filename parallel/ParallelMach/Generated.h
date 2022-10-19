@@ -78,6 +78,7 @@ namespace Parallel {
 	ATOM_TYPE(FM_SYNTH_PIPE) \
 	ATOM_TYPE(LV2_INSTRUMENT_PIPE) \
 	ATOM_TYPE(CORE_SYNTH_PIPE) \
+	ATOM_TYPE(CORE_DRUMMER_PIPE) \
 	ATOM_TYPE(CORE_EFFECT_PIPE) \
 	ATOM_TYPE(LV2_EFFECT_PIPE) \
 
@@ -153,6 +154,7 @@ namespace Parallel {
 	ATOM_CLASS(FmSynthPipe) \
 	ATOM_CLASS(LV2InstrumentPipe) \
 	ATOM_CLASS(CoreSynthPipe) \
+	ATOM_CLASS(CoreDrummerPipe) \
 	ATOM_CLASS(CoreEffectPipe) \
 	ATOM_CLASS(LV2EffectPipe) \
 

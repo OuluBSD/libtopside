@@ -19,6 +19,7 @@ INITBLOCK_(AtomAudio) {
 	Factory::RegisterAtom<LV2InstrumentPipe>();
 	#endif
 	Factory::RegisterAtom<CoreSynthPipe>();
+	Factory::RegisterAtom<CoreDrummerPipe>();
 	Factory::RegisterAtom<CoreEffectPipe>();
 	#if defined flagLV2
 	Factory::RegisterAtom<LV2EffectPipe>();

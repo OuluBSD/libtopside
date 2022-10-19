@@ -11,6 +11,7 @@ MidiFileReaderAtom::MidiFileReaderAtom() {
 
 bool MidiFileReaderAtom::Initialize(const Script::WorldState& ws) {
 	close_machine = ws.GetBool(".close_machine", false);
+	drum_side_ch = ws.GetInt(".drum.ch", -1);
 	
 	String path = ws.GetString(".filepath");
 	if (path.IsEmpty()) {
@@ -175,18 +176,36 @@ bool MidiFileReaderAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 			
 			int count = 0;
 			MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
+			bool is_drum_ch = drum_side_ch >= 0 && src_ch == drum_side_ch;
 			for(const MidiIO::Event* ev : tmp.midi) {
 				//LOG("track " << ev->track << ": " << ev->ToString());
 				
+				#if 0
+				if (is_drum_ch && ev->IsNoteOn()) {
+					LOG("track " << ev->track << ": " << ev->GetChannel() << ": " << ev->ToString());
+				}
+				#endif
+				
 				if (ev->IsNote() ||
+					ev->IsNoteOn() ||
+					ev->IsNoteOff() ||
 					ev->IsPitchbend() ||
 					ev->IsAftertouch() ||
 					ev->IsPressure() ||
 					ev->IsPatchChange()) {
-					// midi tracks starts from 1 practically, like side-channels
-					if (ev->track == src_ch) {
-						*dst++ = *ev;
-						count++;
+					if (is_drum_ch) {
+						// Midi channel 10 is drum channel (here 10-1==9)
+						if (ev->GetChannel() == 9) {
+							*dst++ = *ev;
+							count++;
+						}
+					}
+					else {
+						// midi tracks starts from 1 practically, like side-channels
+						if (ev->track == src_ch) {
+							*dst++ = *ev;
+							count++;
+						}
 					}
 				}
 				else {
@@ -200,12 +219,14 @@ bool MidiFileReaderAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 	}
 	
 	// channel 0 is sent last, so use that information to finalize temp buffer usage
-	if (src_ch == 0 && split_channels) {
-		#if 0
+	#if 0
+	if (src_ch == 0) {
 		for(const MidiIO::Event* ev : tmp.midi) {
-			LOG("track " << ev->track << ": " << ev->ToString());
+			LOG("track " << ev->track << ": " << ev->GetChannel() << ": " << ev->ToString());
 		}
-		#endif
+	}
+	#endif
+	if (src_ch == 0 && split_channels) {
 		tmp.Reset();
 	}
 	

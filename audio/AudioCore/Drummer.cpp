@@ -4,26 +4,26 @@
 NAMESPACE_AUDIO_BEGIN
 
 
-unsigned char genMIDIMap[128] = {
+unsigned char gen_midi_map[128] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 1, 0, 2, 0,
-	2, 3, 6, 3, 6, 4, 7, 4,
-	5, 8, 5, 0, 0, 0, 10, 0,
-	9, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0
+	0, 0, 0, 0, 0, 0, 0, 0,		// 8
+	0, 0, 0, 0, 0, 0, 0, 0,		// 16
+	0, 0, 0, 0, 0, 0, 0, 0,		// 24
+	0, 0, 0, 0, 1, 0, 2, 0,		// 32, kick, snare
+	2, 3, 6, 3, 6, 4, 7, 4,		// 40, esnare, low tom, chh, floor tom, phh, low tom, ohh, mid tom, lmid tom, mid tom
+	5, 8, 5, 7, 0, 0, 10, 0,	// 48, hmid tom, crash, high tom, chinese symbal
+	9, 0, 0, 0, 0, 0, 0, 0,		// 56, cowbell
+	0, 0, 0, 0, 0, 0, 0, 0,		// 64
+	0, 0, 0, 0, 0, 0, 0, 0,		// 72
+	0, 0, 0, 0, 0, 0, 0, 0,		// 80
+	0, 0, 0, 0, 0, 0, 0, 0,		// 88
+	0, 0, 0, 0, 0, 0, 0, 0,		// 96
+	0, 0, 0, 0, 0, 0, 0, 0,		// 104
+	0, 0, 0, 0, 0, 0, 0, 0,		// 112
+	0, 0, 0, 0, 0, 0, 0, 0		// 120
 };
 
-char waveNames[DRUM_NUMWAVES][16] = {
+char wave_names[DRUM_NUMWAVES][16] = {
 	"dope.raw",
 	"bassdrum.raw",
 	"snardrum.raw",
@@ -37,6 +37,14 @@ char waveNames[DRUM_NUMWAVES][16] = {
 	"tambourn.raw"
 };
 
+
+
+
+
+
+
+
+
 Drummer::Drummer() : Instrument() {
 	sounding_count = 0;
 	sound_order_.SetCount(DRUM_POLYPHONY, -1);
@@ -44,65 +52,128 @@ Drummer::Drummer() : Instrument() {
 }
 
 Drummer::~Drummer() {
+
 }
 
-void Drummer::NoteOn( double instrument, double amplitude ) {
-	if ( amplitude < 0.0 || amplitude > 1.0 ) {
+double Drummer::Tick(unsigned int) {
+	last_frame_[0] = 0.0;
+	
+	if (sounding_count == 0)
+		return last_frame_[0];
+		
+	for (int i = 0; i < DRUM_POLYPHONY; i++) {
+		if (sound_order_[i] >= 0) {
+			if (waves_[i].IsFinished()) {
+				for (int j = 0; j < DRUM_POLYPHONY; j++) {
+					if (sound_order_[j] > sound_order_[i])
+						sound_order_[j] -= 1;
+				}
+				
+				sound_order_[i] = -1;
+				
+				sounding_count--;
+			}
+			
+			else
+				last_frame_[0] += filters_[i].Tick(waves_[i].Tick());
+		}
+	}
+	
+	return last_frame_[0];
+}
+
+AudioFrames& Drummer::Tick(AudioFrames& frames, unsigned int channel) {
+	unsigned int channel_count = last_frame_.GetChannelCount();
+#if defined(flagDEBUG)
+	
+	if (channel > frames.GetChannelCount() - channel_count) {
+		LOG("Drummer::Tick(): channel and AudioFrames arguments are incompatible!");
+		HandleError(AudioError::FUNCTION_ARGUMENT);
+	}
+	
+#endif
+	double* samples = &frames[channel];
+	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	
+	if (channel_count == 1) {
+		for (unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step)
+			* samples++ = Tick();
+	}
+	
+	else {
+		for (unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step) {
+			*samples++ = Tick();
+			
+			for (j = 1; j < channel_count; j++)
+				*samples++ = last_frame_[j];
+		}
+	}
+	
+	return frames;
+}
+
+void Drummer::NoteOn(double instrument, double amplitude) {
+	if (amplitude < 0.0 || amplitude > 1.0) {
 		LOG("Drummer::noteOn: amplitude parameter is out of bounds!");
-		HandleError( AudioError::WARNING );
+		HandleError(AudioError::WARNING);
 		return;
 	}
-
-	int note_number = (int) ( ( 12 * log( instrument / 220.0 ) / log( 2.0 ) ) + 57.01 );
-	int iWave;
-
-	for ( iWave = 0; iWave < DRUM_POLYPHONY; iWave++ ) {
-		if ( sound_number_[iWave] == note_number ) {
-			if ( waves_[iWave].IsFinished() ) {
-				sound_order_[iWave] = sounding_count;
+	
+	int note_number = (int)((12 * log(instrument / 220.0) / log(2.0)) + 57.01);
+	int i_wave;
+	
+	for (i_wave = 0; i_wave < DRUM_POLYPHONY; i_wave++) {
+		if (sound_number_[i_wave] == note_number) {
+			if (waves_[i_wave].IsFinished()) {
+				sound_order_[i_wave] = sounding_count;
 				sounding_count++;
 			}
-
-			waves_[iWave].Reset();
-			filters_[iWave].SetPole( 0.999 - (amplitude * 0.6) );
-			filters_[iWave].SetGain( amplitude );
+			
+			waves_[i_wave].Reset();
+			
+			filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
+			filters_[i_wave].SetGain(amplitude);
 			break;
 		}
 	}
-
-	if ( iWave == DRUM_POLYPHONY ) {
-		if ( sounding_count < DRUM_POLYPHONY ) {
-			for ( iWave = 0; iWave < DRUM_POLYPHONY; iWave++ )
-				if ( sound_order_[iWave] < 0 ) break;
-
+	
+	if (i_wave == DRUM_POLYPHONY) {
+		if (sounding_count < DRUM_POLYPHONY) {
+			for (i_wave = 0; i_wave < DRUM_POLYPHONY; i_wave++)
+				if (sound_order_[i_wave] < 0)
+					break;
+					
 			sounding_count += 1;
 		}
+		
 		else {
-			for ( iWave = 0; iWave < DRUM_POLYPHONY; iWave++ )
-				if ( sound_order_[iWave] == 0 ) break;
-
-			for ( int j = 0; j < DRUM_POLYPHONY; j++ ) {
-				if ( sound_order_[j] > sound_order_[iWave] )
+			for (i_wave = 0; i_wave < DRUM_POLYPHONY; i_wave++)
+				if (sound_order_[i_wave] == 0)
+					break;
+					
+			for (int j = 0; j < DRUM_POLYPHONY; j++) {
+				if (sound_order_[j] > sound_order_[i_wave])
 					sound_order_[j] -= 1;
 			}
 		}
-
-		sound_order_[iWave] = sounding_count - 1;
-		sound_number_[iWave] = note_number;
-		waves_[iWave].OpenFile( (Audio::GetRawWavePath() + waveNames[ genMIDIMap[ note_number ] ]).Begin(), true );
-
-		if ( Audio::GetSampleRate() != 22050.0 )
-			waves_[iWave].SetRate( 22050.0 / Audio::GetSampleRate() );
-
-		filters_[iWave].SetPole( 0.999 - (amplitude * 0.6) );
-		filters_[iWave].SetGain( amplitude );
+		
+		sound_order_[i_wave] = sounding_count - 1;
+		sound_number_[i_wave] = note_number;
+		waves_[i_wave].OpenFile((Audio::GetRawWavePath() + wave_names[ gen_midi_map[ note_number ] ]).Begin(), true);
+		
+		if (Audio::GetSampleRate() != 44100.0)
+			waves_[i_wave].SetRate(44100.0 / Audio::GetSampleRate());
+			
+		filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
+		filters_[i_wave].SetGain(amplitude);
 	}
 }
 
-void Drummer::NoteOff( double amplitude ) {
+void Drummer::NoteOff(double amplitude) {
 	int i = 0;
-
-	while ( i < sounding_count ) filters_[i++].SetGain( amplitude * 0.01 );
+	
+	while (i < sounding_count)
+		filters_[i++].SetGain(amplitude * 0.01);
 }
 
 NAMESPACE_AUDIO_END

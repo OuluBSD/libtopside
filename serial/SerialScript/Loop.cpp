@@ -12,7 +12,7 @@ bool LoopDefinition::IsPathTrailMatch(const Vector<String>& parts) const {
 		int a = parts.GetCount()-1-i;
 		int b = id.parts.GetCount()-1-i;
 		const String& as = parts[a];
-		const String& bs = parts[b];
+		const String& bs = id.parts.At(b);
 		if (as != bs)
 			return false;
 	}

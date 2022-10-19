@@ -128,6 +128,19 @@ public:
 	
 };
 
+class CoreDrummerPipe : public CoreDrummerInstrument {
+
+public:
+	RTTI_DECL1(CoreDrummerPipe, CoreDrummerInstrument)
+	COPY_PANIC(CoreDrummerPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 class CoreEffectPipe : public AudioCoreEffect {
 
 public:

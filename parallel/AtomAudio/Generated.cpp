@@ -266,6 +266,37 @@ AtomTypeCls CoreSynthPipe::GetType() const {
 }
 
 
+String CoreDrummerPipe::GetAction() {
+	return "coredrummer.pipe";
+}
+
+AtomTypeCls CoreDrummerPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CORE_DRUMMER_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	return t;
+}
+
+LinkTypeCls CoreDrummerPipe::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void CoreDrummerPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<CoreDrummerInstrument>(this);
+}
+
+AtomTypeCls CoreDrummerPipe::GetType() const {
+	return GetAtomType();
+}
+
+
 String CoreEffectPipe::GetAction() {
 	return "corefx.pipe";
 }

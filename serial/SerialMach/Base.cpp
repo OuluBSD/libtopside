@@ -449,7 +449,7 @@ MergerLink::MergerLink() {
 bool MergerLink::Initialize(const Script::WorldState& ws) {
 	Format fmt = GetSink()->GetValue(1).GetFormat();
 	if (fmt.IsAudio()) {
-		GetAtom()->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+		//GetAtom()->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	}
 	
 	return true;

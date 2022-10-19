@@ -13,6 +13,7 @@ class MidiFileReaderAtom : public Atom
 	Vector<int> track_i;
 	double song_dt = 0;
 	bool split_channels = false;
+	int drum_side_ch = -1;
 	
 	MidiIO::File file;
 	MidiIO::MidiFrame tmp;

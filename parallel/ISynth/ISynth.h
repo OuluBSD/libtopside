@@ -19,6 +19,7 @@ NAMESPACE_PARALLEL_BEGIN
 	SYN_VNDR(SynFluidsynth) \
 	SYN_VNDR(SynFmSynth) \
 	SYN_VNDR(SynCoreSynth) \
+	SYN_VNDR(SynCoreDrummer) \
 	SYN_VNDR(SynLV2) \
 
 #define SYN_CLS(x, v) struct v##x;
@@ -66,6 +67,18 @@ struct SynFmSynth {
 	
 };
 struct SynCoreSynth {
+	struct NativeInstrument;
+	
+	struct Thread {
+		
+	};
+	
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+struct SynCoreDrummer {
 	struct NativeInstrument;
 	
 	struct Thread {
@@ -153,6 +166,7 @@ using FluidsynthInstrument = SynthInstrumentT<SynFluidsynth>;
 #endif
 using FmSynthInstrument = SynthInstrumentT<SynFmSynth>;
 using CoreSynthInstrument = SynthInstrumentT<SynCoreSynth>;
+using CoreDrummerInstrument = SynthInstrumentT<SynCoreDrummer>;
 #if defined flagLV2
 using LV2Instrument = SynthInstrumentT<SynLV2>;
 #endif

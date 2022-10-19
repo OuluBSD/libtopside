@@ -73,7 +73,7 @@ bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, co
 		v.SetFormat(fmt);
 	}
 	
-	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 		
     return true;
 }
