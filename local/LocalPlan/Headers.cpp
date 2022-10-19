@@ -558,8 +558,17 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("MidiFileReader", "MidiFileReaderAtom", "pipe")
-		.In("CenterOrder").Out("CenterReceipt").OutOpt("CenterMidi")
+		.In("CenterOrder")
+		.Out("CenterReceipt").OutOpt("CenterMidi")
 		.Action("midi.file.reader")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("MidiFileReader16", "MidiFileReaderAtom", "pipe")
+		.In("CenterOrder")
+		.Out("CenterReceipt").OutOpt(16, "CenterMidi")
+		.Action("midi.file.reader16")
 		.Arg("HINT_PKG", "AtomAudio")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

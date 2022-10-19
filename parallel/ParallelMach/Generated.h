@@ -71,6 +71,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_OGL_AUDIO_SOURCE) \
 	ATOM_TYPE(MIDI_FILE_READER_PIPE) \
 	ATOM_TYPE(MIDI_FILE_READER) \
+	ATOM_TYPE(MIDI_FILE_READER16) \
 	ATOM_TYPE(MIDI_NULL_SINK) \
 	ATOM_TYPE(FLUIDSYNTH_PIPE) \
 	ATOM_TYPE(SOFT_INSTRUMENT_PIPE) \
@@ -145,6 +146,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlOglAudioSource) \
 	ATOM_CLASS(MidiFileReaderPipe) \
 	ATOM_CLASS(MidiFileReader) \
+	ATOM_CLASS(MidiFileReader16) \
 	ATOM_CLASS(MidiNullSink) \
 	ATOM_CLASS(FluidsynthPipe) \
 	ATOM_CLASS(SoftInstrumentPipe) \

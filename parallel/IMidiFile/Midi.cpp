@@ -1,5 +1,5 @@
 #include "IMidiFile.h"
-
+#include <SerialLib/SerialLib.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -25,6 +25,12 @@ bool MidiFileReaderAtom::Initialize(const Script::WorldState& ws) {
 	}
 	
 	AddAtomToUpdateList();
+	
+	return true;
+}
+
+bool MidiFileReaderAtom::PostInitialize() {
+	split_channels = link->SideSinks().GetCount() > 1;
 	
 	return true;
 }
@@ -151,15 +157,55 @@ bool MidiFileReaderAtom::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 	if (fmt.IsMidi()) {
 		Vector<byte>& data = out.Data();
 		
-		int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
-		data.SetCount(sz);
-		
-		MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
-		for(const MidiIO::Event* ev : tmp.midi) {
-			//LOG("track " << ev->track << ": " << ev->ToString());
-			*dst++ = *ev;
+		if (!split_channels) {
+			int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
+			data.SetCount(sz);
+			
+			MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
+			for(const MidiIO::Event* ev : tmp.midi) {
+				//LOG("track " << ev->track << ": " << ev->ToString());
+				*dst++ = *ev;
+			}
+			
+			tmp.Reset();
 		}
-		
+		else {
+			int sz = tmp.midi.GetCount() * sizeof(MidiIO::Event);
+			data.SetCount(sz);
+			
+			int count = 0;
+			MidiIO::Event* dst = (MidiIO::Event*)(byte*)data.Begin();
+			for(const MidiIO::Event* ev : tmp.midi) {
+				//LOG("track " << ev->track << ": " << ev->ToString());
+				
+				if (ev->IsNote() ||
+					ev->IsPitchbend() ||
+					ev->IsAftertouch() ||
+					ev->IsPressure() ||
+					ev->IsPatchChange()) {
+					// midi tracks starts from 1 practically, like side-channels
+					if (ev->track == src_ch) {
+						*dst++ = *ev;
+						count++;
+					}
+				}
+				else {
+					*dst++ = *ev;
+					count++;
+				}
+			}
+			
+			data.SetCount(count * sizeof(MidiIO::Event));
+		}
+	}
+	
+	// channel 0 is sent last, so use that information to finalize temp buffer usage
+	if (src_ch == 0 && split_channels) {
+		#if 0
+		for(const MidiIO::Event* ev : tmp.midi) {
+			LOG("track " << ev->track << ": " << ev->ToString());
+		}
+		#endif
 		tmp.Reset();
 	}
 	

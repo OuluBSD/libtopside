@@ -7,6 +7,7 @@
 	#include <ports/fluidlite/fluid_list.h>
 	#include <ports/fluidlite/fluid_synth.h>
 	#include <ports/fluidlite/fluid_defsfont.h>
+	#include <ports/fluidlite/fluid_sfont.h>
 #endif
 
 #ifdef flagFLUIDSYNTH
@@ -188,8 +189,17 @@ bool SynFluidsynth_LoadAnyPreset(SynFluidsynth::NativeInstrument& dev) {
 	for(int i = 0; i < sf_count; i++) {
 		fluid_sfont_t* sfont = fluid_synth_get_sfont(dev.synth, i);
 		const char* name = fluid_sfont_get_name(sfont);
-		
 		int preset_i = 0;
+		#ifdef flagFLUIDLITE
+		fluid_defsfont_t* defsfont = (fluid_defsfont_t*)sfont->data;
+		if (defsfont) {
+			fluid_defpreset_t* preset = defsfont->preset;
+			if (preset != NULL) {
+				bank = preset->bank;
+				prog = preset->num;
+			}
+		}
+		#else
 		fluid_sfont_iteration_start(sfont);
 		while (1) {
 			fluid_preset_t* preset = fluid_sfont_iteration_next(sfont);
@@ -198,6 +208,7 @@ bool SynFluidsynth_LoadAnyPreset(SynFluidsynth::NativeInstrument& dev) {
 			prog = fluid_preset_get_num(preset);
 			preset_i++;
 		}
+		#endif
 	}
 	
 	if (bank >= 0 && prog >= 0) {

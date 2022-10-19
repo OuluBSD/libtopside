@@ -99,6 +99,12 @@ InterfaceBuilder::Header& InterfaceBuilder::Header::OutOpt(String vd) {
 	return *this;
 }
 
+InterfaceBuilder::Header& InterfaceBuilder::Header::OutOpt(int count, String vd) {
+	for(int i = 0; i < count; i++)
+		outs.Add(vd, true);
+	return *this;
+}
+
 InterfaceBuilder::Header& InterfaceBuilder::Header::Action(String act) {
 	ASSERT(action.IsEmpty());
 	action = act;

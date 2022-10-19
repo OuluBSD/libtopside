@@ -8,6 +8,7 @@ INITBLOCK_(AtomAudio) {
 	using namespace TS;
 	Factory::RegisterAtom<MidiFileReaderPipe>();
 	Factory::RegisterAtom<MidiFileReader>();
+	Factory::RegisterAtom<MidiFileReader16>();
 	Factory::RegisterAtom<MidiNullSink>();
 	#if (defined flagFLUIDLITE) || (defined flagFLUIDSYNTH)
 	Factory::RegisterAtom<FluidsynthPipe>();

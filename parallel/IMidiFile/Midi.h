@@ -12,6 +12,7 @@ class MidiFileReaderAtom : public Atom
 	String last_error;
 	Vector<int> track_i;
 	double song_dt = 0;
+	bool split_channels = false;
 	
 	MidiIO::File file;
 	MidiIO::MidiFrame tmp;
@@ -24,6 +25,7 @@ public:
 	MidiFileReaderAtom();
 	
 	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
 	void Uninitialize() override;
 	void Update(double dt) override;
 	bool IsReady(PacketIO& io) override;

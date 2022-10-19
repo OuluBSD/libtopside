@@ -33,6 +33,19 @@ public:
 	
 };
 
+class MidiFileReader16 : public MidiFileReaderAtom {
+
+public:
+	RTTI_DECL1(MidiFileReader16, MidiFileReaderAtom)
+	COPY_PANIC(MidiFileReader16)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 class MidiNullSink : public MidiNullAtom {
 
 public:

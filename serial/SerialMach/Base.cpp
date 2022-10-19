@@ -189,9 +189,6 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	b = atom->Send(*last_cfg, *out, 0) && b;
-	
-	
 	InterfaceSourceRef src_iface = this->GetSource();
 	int src_count = src_iface->GetSourceCount();
 	for (int src_ch = 1; src_ch < src_count; src_ch++) {
@@ -208,6 +205,8 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 			src.p.Clear();
 		}
 	}
+	
+	b = atom->Send(*last_cfg, *out, 0) && b;
 	
 	
 	return b;
@@ -507,9 +506,6 @@ bool MergerLink::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(src_ch, prim_sink.p);
 	
-	b = atom->Send(*last_cfg, *out, 0) && b;
-	
-	
 	InterfaceSourceRef src_iface = this->GetSource();
 	int src_count = src_iface->GetSourceCount();
 	for (int src_ch = 1; src_ch < src_count; src_ch++) {
@@ -526,6 +522,8 @@ bool MergerLink::ProcessPackets(PacketIO& io) {
 			src.p.Clear();
 		}
 	}
+	
+	b = atom->Send(*last_cfg, *out, 0) && b;
 	
 	
 	return b;

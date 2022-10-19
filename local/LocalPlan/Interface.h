@@ -39,6 +39,7 @@ class InterfaceBuilder {
 		Header& InOpt(int count, String vd);
 		Header& Out(String vd);
 		Header& OutOpt(String vd);
+		Header& OutOpt(int count, String vd);
 		Header& Action(String act);
 		Header& Arg(String key, String value);
 		Header& Link(String key, String value);

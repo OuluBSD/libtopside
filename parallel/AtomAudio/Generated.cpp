@@ -59,6 +59,48 @@ AtomTypeCls MidiFileReader::GetType() const {
 }
 
 
+String MidiFileReader16::GetAction() {
+	return "midi.file.reader16";
+}
+
+AtomTypeCls MidiFileReader16::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::MIDI_FILE_READER16;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	return t;
+}
+
+LinkTypeCls MidiFileReader16::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void MidiFileReader16::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<MidiFileReaderAtom>(this);
+}
+
+AtomTypeCls MidiFileReader16::GetType() const {
+	return GetAtomType();
+}
+
+
 String MidiNullSink::GetAction() {
 	return "midi.null.sink";
 }

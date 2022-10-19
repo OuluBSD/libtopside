@@ -77,7 +77,7 @@ machine midi.app:
 	chain program:
 		loop event:
 			center.customer
-			midi.file.reader[][${SIDEOUT}]:
+			midi.file.reader16[][${SIDEOUT}]:
 				filepath = "${PATH}"
 				close_machine = true
 )eon";
