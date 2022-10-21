@@ -238,7 +238,7 @@ bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("VoidPollerSinkBase::Initialize");
 	dbg_limit = ws.GetInt(".dbg_limit", 100);
 	dt = 1.0/60.0;
-	GetSink()->GetValue(0).SetMinQueueSize(5);
+	//GetSink()->GetValue(0).SetMinQueueSize(5);
 	AddAtomToUpdateList();
 	return true;
 }

@@ -8,7 +8,6 @@ file
 	Copying,
 	Upp readonly separator,
 	pm_upp.h,
-	pm_upp_platform.c,
 	PortMidi readonly separator,
 	pminternal.h,
 	pmutil.h,
@@ -16,5 +15,17 @@ file
 	portmidi.h,
 	portmidi.c,
 	porttime.h,
-	porttime.c;
+	ptlinux.c,
+	ptwinmm.c,
+	Hostapi readonly separator,
+	hostapi/win/pmwinmm.h,
+	hostapi/win/pmwin.c,
+	hostapi/win/pmwinmm.c,
+	hostapi/linux/pmlinux.h,
+	hostapi/linux/pmlinuxalsa.h,
+	hostapi/linux/finddefault.c,
+	hostapi/linux/pmlinux.c,
+	hostapi/linux/pmlinuxalsa.c,
+	hostapi/freebsd/pmsndio.h,
+	hostapi/freebsd/pmsndio.c;
 

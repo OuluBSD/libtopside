@@ -7,7 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 class SoundSample : public BinarySample {
 	
 public:
-	static const int def_sample_rate = 1024;
+	static const int def_sample_rate = 128;
 	
 };
 

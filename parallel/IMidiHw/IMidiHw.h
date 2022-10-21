@@ -20,7 +20,7 @@ MID_VNDR_LIST
 #undef MID_VNDR
 #undef MID_CLS
 
-#if defined flagPORTMIDI
+#if (defined flagPORTMIDI) || (defined flagBUILTIN_PORTMIDI)
 struct MidPortmidi {
 	struct NativeSource;
 	
@@ -84,7 +84,7 @@ template <class Mid> struct MidiHwSourceT : MidSource {
 	}
 };
 
-#if defined flagPORTMIDI
+#if (defined flagPORTMIDI) || (defined flagBUILTIN_PORTMIDI)
 using PortmidiSource = MidiHwSourceT<MidPortmidi>;
 #endif
 

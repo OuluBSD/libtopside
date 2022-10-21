@@ -1,3 +1,5 @@
+#ifdef flagLINUX
+
 /* pmlinux.c -- PortMidi os-dependent code */
 
 /* This file only needs to implement pm_init(), which calls various
@@ -41,7 +43,7 @@ void pm_init()
     #endif
     // this is set when we return to Pm_Initialize, but we need it
     // now in order to (successfully) call Pm_CountDevices()
-    pm_initialized = TRUE;      
+    pm_initialized = TRUE;
     pm_default_input_device_id = find_default_device(
         "/PortMidi/PM_RECOMMENDED_INPUT_DEVICE", TRUE,
         pm_default_input_device_id);
@@ -71,3 +73,4 @@ void *pm_alloc(size_t s) { return malloc(s); }
 
 void pm_free(void *ptr) { free(ptr); }
 
+#endif

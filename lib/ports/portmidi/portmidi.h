@@ -119,6 +119,10 @@ typedef unsigned int uint32_t;
     #define TRUE 1
 #endif
 
+#ifdef flagLINUX
+	#define PMALSA 1
+#endif
+
 /* default size of buffers for sysex transmission: */
 #define PM_DEFAULT_SYSEX_BUFFER_SIZE 1024
 

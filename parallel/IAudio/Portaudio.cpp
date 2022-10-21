@@ -249,6 +249,8 @@ void AudPortaudio::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
 bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, const Script::WorldState& ws) {
 	PaStream*& dev = dev_.p;
 	
+	bool realtime = ws.GetBool(".realtime", false);
+	
 	// Housekeeping vars
 	PaError err = paNoError;
 	dev = 0;
@@ -256,7 +258,7 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, co
 	// Audio format
 	PortaudioFormat pa_fmt;
 	pa_fmt.freq = 44100;
-	pa_fmt.sample_rate = 1024;
+	pa_fmt.sample_rate = 128;
 	pa_fmt.channels = 2;
 	pa_fmt.fmt = SND_INT16;
 	int in_channels = 0;
@@ -296,7 +298,7 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, co
 	if (err != paNoError) // Bail out on errors
 		return false;
 	
-	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	a.SetQueueSize(realtime ? 1 : DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }

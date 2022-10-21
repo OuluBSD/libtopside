@@ -236,7 +236,7 @@ IntervalPipeLink::~IntervalPipeLink() {
 
 bool IntervalPipeLink::Initialize(const Script::WorldState& ws) {
 	flag.Start(1);
-	GetSink()->GetValue(0).SetMinQueueSize(5);
+	//GetSink()->GetValue(0).SetMinQueueSize(5);
 	Thread::Start(THISBACK(IntervalSinkProcess));
 	
 	return true;
@@ -392,7 +392,7 @@ ExternalPipeLink::~ExternalPipeLink() {
 }
 
 bool ExternalPipeLink::Initialize(const Script::WorldState& ws) {
-	GetSink()->GetValue(0).SetMinQueueSize(5);
+	//GetSink()->GetValue(0).SetMinQueueSize(5);
 	
 	return true;
 }
@@ -545,9 +545,9 @@ JoinerLink::JoinerLink() {
 
 bool JoinerLink::Initialize(const Script::WorldState& ws) {
 	Format fmt = GetSink()->GetValue(1).GetFormat();
-	if (fmt.IsAudio()) {
+	/*if (fmt.IsAudio()) {
 		GetAtom()->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
-	}
+	}*/
 	
 	return true;
 }

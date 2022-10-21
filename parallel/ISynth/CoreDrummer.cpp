@@ -75,7 +75,7 @@ bool SynCoreDrummer::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, c
 	
 	dev.seq = 0;
 	dev.multiplier = 1;
-	dev.sample_rate = ws.GetInt(".samplerate", 1024);
+	dev.sample_rate = ws.GetInt(".samplerate", 128);
 	
 	dev.group_ch[NativeInstrument::OH] = ws.GetInt(".ch.oh", -1);
 	dev.group_ch[NativeInstrument::KICK] = ws.GetInt(".ch.kick", -1);

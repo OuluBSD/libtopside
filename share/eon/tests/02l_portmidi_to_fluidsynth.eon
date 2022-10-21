@@ -1,0 +1,10 @@
+machine midi.app:
+	chain program:
+		loop event:
+			center.customer
+			midi.src.side.portmidi[][loop == "input"]
+		loop input:
+			center.customer
+			fluidsynth.pipe[loop == "event"]
+			center.audio.sink.hw:
+				realtime = true

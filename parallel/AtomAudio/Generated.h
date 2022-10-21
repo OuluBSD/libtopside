@@ -169,6 +169,36 @@ public:
 };
 #endif
 
+#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+class PortmidiPipe : public PortmidiSource {
+
+public:
+	RTTI_DECL1(PortmidiPipe, PortmidiSource)
+	COPY_PANIC(PortmidiPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+class PortmidiSend : public PortmidiSource {
+
+public:
+	RTTI_DECL1(PortmidiSend, PortmidiSource)
+	COPY_PANIC(PortmidiSend)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 }
 
 }

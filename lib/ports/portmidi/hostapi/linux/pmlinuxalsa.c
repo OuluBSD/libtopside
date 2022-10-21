@@ -1,3 +1,5 @@
+#ifdef flagLINUX
+
 /*
  * pmlinuxalsa.c -- system specific definitions
  * 
@@ -777,3 +779,5 @@ void pm_linuxalsa_term(void)
         pm_descriptor_max = 0;
     }
 }
+
+#endif

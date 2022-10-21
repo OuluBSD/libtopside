@@ -108,7 +108,7 @@ bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a,
 	dword sdl_flag = SDL_INIT_AUDIO;
 	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
 	
-	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }

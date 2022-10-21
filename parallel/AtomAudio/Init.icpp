@@ -24,5 +24,11 @@ INITBLOCK_(AtomAudio) {
 	#if defined flagLV2
 	Factory::RegisterAtom<LV2EffectPipe>();
 	#endif
+	#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+	Factory::RegisterAtom<PortmidiPipe>();
+	#endif
+	#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+	Factory::RegisterAtom<PortmidiSend>();
+	#endif
 }
 

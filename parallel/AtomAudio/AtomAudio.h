@@ -4,6 +4,7 @@
 
 #include <AtomMinimal/AtomMinimal.h>
 #include <IMidiFile/IMidiFile.h>
+#include <IMidiHw/IMidiHw.h>
 #include <ISynth/ISynth.h>
 #include <IEffect/IEffect.h>
 

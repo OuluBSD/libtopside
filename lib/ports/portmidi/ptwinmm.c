@@ -1,3 +1,5 @@
+#ifdef flagWIN32
+
 /* ptwinmm.c -- portable timer implementation for win32 */
 
 
@@ -68,3 +70,5 @@ PMEXPORT void Pt_Sleep(int32_t duration)
 {
     Sleep(duration);
 }
+
+#endif

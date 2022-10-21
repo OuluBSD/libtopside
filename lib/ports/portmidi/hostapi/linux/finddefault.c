@@ -1,3 +1,5 @@
+#ifdef flagLINUX
+
 /* finddefault.c -- find_default_device() implementation
    Roger Dannenberg, Jan 2009
 */
@@ -90,3 +92,5 @@ PmDeviceID find_default_device(char *path, int input, PmDeviceID id)
  nopref:
     return id;
 }
+
+#endif

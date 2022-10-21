@@ -636,7 +636,22 @@ void InterfaceBuilder::Headers() {
 		.Arg("HINT_PKG", "AtomAudio")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;
-
+	
+	AddHeader("PortmidiPipe", "PortmidiSource", "pipe")
+		.In("CenterOrder").Out("CenterMidi")
+		.Action("midi.src.portmidi")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE", "PROCESS")
+	;
+	
+	AddHeader("PortmidiSend", "PortmidiSource", "pipe")
+		.In("CenterOrder")
+		.Out("CenterReceipt").OutOpt(4, "CenterMidi")
+		.Action("midi.src.side.portmidi")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
 }
 
 

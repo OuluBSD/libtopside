@@ -81,6 +81,8 @@ namespace Parallel {
 	ATOM_TYPE(CORE_DRUMMER_PIPE) \
 	ATOM_TYPE(CORE_EFFECT_PIPE) \
 	ATOM_TYPE(LV2_EFFECT_PIPE) \
+	ATOM_TYPE(PORTMIDI_PIPE) \
+	ATOM_TYPE(PORTMIDI_SEND) \
 
 #define ATOM_CLASS_LIST \
 	ATOM_CLASS(CenterCustomer) \
@@ -157,6 +159,8 @@ namespace Parallel {
 	ATOM_CLASS(CoreDrummerPipe) \
 	ATOM_CLASS(CoreEffectPipe) \
 	ATOM_CLASS(LV2EffectPipe) \
+	ATOM_CLASS(PortmidiPipe) \
+	ATOM_CLASS(PortmidiSend) \
 
 }}
 

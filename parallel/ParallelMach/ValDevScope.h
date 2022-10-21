@@ -114,7 +114,7 @@ class SimpleValue :
 	double			time = 0;
 	PacketBuffer	buf;
 	int				min_packets = 1;
-	int				max_packets = 2;
+	int				max_packets = 1;
 	bool			lock_format = false;
 	
 public:

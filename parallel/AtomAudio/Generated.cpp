@@ -351,6 +351,66 @@ AtomTypeCls LV2EffectPipe::GetType() const {
 #endif
 
 
+#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+String PortmidiPipe::GetAction() {
+	return "midi.src.portmidi";
+}
+
+AtomTypeCls PortmidiPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::PORTMIDI_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,MIDI),0);
+	return t;
+}
+
+LinkTypeCls PortmidiPipe::GetLinkType() {
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void PortmidiPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<PortmidiSource>(this);
+}
+
+AtomTypeCls PortmidiPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
+String PortmidiSend::GetAction() {
+	return "midi.src.side.portmidi";
+}
+
+AtomTypeCls PortmidiSend::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::PORTMIDI_SEND;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	t.AddOut(VD(CENTER,MIDI),1);
+	return t;
+}
+
+LinkTypeCls PortmidiSend::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void PortmidiSend::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<PortmidiSource>(this);
+}
+
+AtomTypeCls PortmidiSend::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 }
 
 }

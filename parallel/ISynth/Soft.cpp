@@ -56,7 +56,7 @@ bool SynSoft::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Sc
 	dev.instrument.SetOutput(SoftInstru::STEREO_INTERLEAVED, afmt.freq, -9);
 	
 	
-	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }

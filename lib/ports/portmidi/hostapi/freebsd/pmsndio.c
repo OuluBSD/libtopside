@@ -1,3 +1,5 @@
+#ifdef flagFREEBSD
+
 /* pmsndio.c -- PortMidi os-dependent code */
 
 #include <stdlib.h>
@@ -380,3 +382,4 @@ pm_fns_node pm_sndio_out_dictionary = {
     sndio_get_host_error
 };
 
+#endif

@@ -12,6 +12,8 @@
 
  */
 
+#ifdef flagWIN32
+
 #include "stdlib.h"
 #include <ports/portmidi/portmidi.h>
 #include <ports/portmidi/pmutil.h>
@@ -42,7 +44,7 @@ static void pm_exit(void) {
 
 
 /* pm_init is the windows-dependent initialization.*/
-void pm_init(void)
+void pm_init()
 {
     atexit(pm_exit);
 #ifdef DEBUG
@@ -141,3 +143,4 @@ void pm_free(void *ptr) {
 }
 
 
+#endif

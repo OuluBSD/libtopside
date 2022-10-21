@@ -19,6 +19,7 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+#define DETECT_DELAY 0
 
 struct SynFluidsynth::NativeInstrument {
     fluid_settings_t* settings;
@@ -33,6 +34,14 @@ struct SynFluidsynth::NativeInstrument {
     Array<Vector<byte>> packets;
     Mutex lock;
     bool prevent_patch_change;
+    int packet_count;
+    
+    #if DETECT_DELAY
+    TimeStop ts;
+    bool silence;
+    bool detection_ready;
+    #endif
+    
 };
 
 
@@ -47,8 +56,13 @@ void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase*
 
 
 bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
+	dev.packet_count = 0;
 	dev.sample_rate = 1024;
 	
+	#if DETECT_DELAY
+    dev.silence = true;
+    dev.detection_ready = false;
+	#endif
 	
 	dev.settings = new_fluid_settings();
 	fluid_settings_setnum(dev.settings, "synth.sample-rate", 44100);
@@ -106,6 +120,12 @@ void SynFluidsynth::Instrument_Uninitialize(NativeInstrument& dev, AtomBase& a) 
 bool SynFluidsynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	Format fmt = out.GetFormat();
 	if (fmt.IsAudio()) {
+		#if DETECT_DELAY
+		if (!dev.detection_ready && !dev.silence) {
+			LOG("SynFluidsynth::Instrument_Send: Silence lost in " << dev.ts.ToString());
+			dev.detection_ready = true;
+		}
+		#endif
 		AudioFormat& afmt = fmt;
 		int sr = afmt.GetSampleRate();
 		ASSERT(sr == dev.sample_rate);
@@ -140,11 +160,20 @@ bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink
 		bool prevent_patch_change = dev.prevent_patch_change;
 		
 		while (ev != end) {
+			#if DETECT_DELAY
+			if (!dev.packet_count) {
+				dev.silence = true;
+				dev.detection_ready = false;
+				dev.ts.Reset();
+			}
+			#endif
+			
 			if (prevent_patch_change && ev->IsPatchChange())
 				; // pass
 			else
 				SynFluidsynth_HandleEvent(dev, *ev);
 			ev++;
+			dev.packet_count++;
 		}
 	}
 	else if (fmt.IsOrder()) {
@@ -401,6 +430,20 @@ void SynFluidsynth_Instrument_Update(SynFluidsynth::NativeInstrument& dev, AtomB
     
     #endif
     
+    
+    #if DETECT_DELAY
+    if (dev.silence) {
+        float* end = o + dev.sample_rate * 2;
+        float* it = o;
+        while (it != end) {
+            if (fabsf(*it) > 0.01) {
+                dev.silence = false;
+                break;
+            }
+            it++;
+        }
+    }
+    #endif
 }
 
 bool SynFluidsynth_LoadSoundfontFile(SynFluidsynth::NativeInstrument& dev, String path) {
