@@ -147,7 +147,9 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 				
 				PacketBuffer& src_buf = src_val.GetBuffer();
 				PacketTracker_Checkpoint("LinkBase::ForwardSource", __FILE__, __LINE__, *sent);
+				#if HAVE_PACKETTRACKER
 				sent->AddRouteData(iface.from_sink_ch);
+				#endif
 				src_buf.Add(sent);
 				is_forwarded = true;
 			}
@@ -329,7 +331,9 @@ void LinkBase::ForwardSideConnections() {
 				else {
 					to_p = CreatePacket(p->GetOffset());
 					to_p->SetFormat(sink_fmt);
+					#if HAVE_PACKETTRACKER
 					to_p->CopyRouteData(*p);
+					#endif
 					if (Convert(p, to_p)) {
 						RTLOG("LinkBase::ForwardSideConnections: converted packet: " << to_p->ToString());
 					}

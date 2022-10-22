@@ -102,7 +102,8 @@ bool AudioMixerBase::PostInitialize() {
 }
 
 void AudioMixerBase::Uninitialize() {
-	
+	queue.Clear();
+	buf.Clear();
 }
 
 bool AudioMixerBase::Recv(int sink_ch, const Packet& in) {

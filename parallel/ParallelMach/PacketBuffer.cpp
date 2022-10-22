@@ -3,6 +3,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+#if HAVE_PACKETTRACKER
 String TrackerInfo::ToString() const {
 	String s;
 	
@@ -20,10 +21,25 @@ String TrackerInfo::ToString() const {
 		s = "<no info>";
 	return s;
 }
+#endif
 
 
 
+#if HAVE_PACKETTIMING
+MAKE_STATIC(PacketTimingManager, timemgr);
 
+
+PacketTimingManager::PacketTimingManager() {
+	
+}
+
+PacketTimingManager::~PacketTimingManager() {
+	
+}
+#endif
+
+
+	
 void ValStreamState::Clear() {
 	fmt.Clear();
 	sink_frame = 0;
@@ -113,6 +129,24 @@ bool PacketBufferBase::StorePacket(PacketValue& p, double min_time) {
 
 
 
+PacketValue::~PacketValue() {
+	data.Clear();
+	#if HAVE_PACKETTRACKER
+	StopTracking(this);
+	#endif
+}
+
+void PacketValue::Clear() {
+	data.SetCount(0);
+	fmt.Clear();
+	offset.Clear();
+	time = 0;
+	custom_data = AsVoidTypeCls();
+	#if HAVE_PACKETTRACKER
+	id = 0;
+	#endif
+}
+
 int PacketValue::GetSizeChannelSamples() const {
 	int div = fmt.GetScalar() * fmt.GetSampleSize();
 	ASSERT(div > 0);
@@ -124,12 +158,33 @@ void PacketValue::Pick(PacketValue& p) {
 	p.data.Clear();
 	fmt = p.fmt;
 	// no offset: offset = p.offset;
-	id = p.id;
 	custom_data = p.custom_data;
-	route_descriptor = p.route_descriptor;
 	seq = p.seq;
+	#if HAVE_PACKETTRACKER
+	id = p.id;
+	route_descriptor = p.route_descriptor;
+	#endif
 }
 
+#if HAVE_PACKETTIMING
+void PacketValue::CheckTiming() {
+	float time = timemgr.Get();
+	if (limit_time != 0 && time > limit_time) {
+		Panic("error: packet took too long!");
+	}
+}
+
+void PacketValue::SetTimingLimit(float duration_sec) {
+	begin_time = timemgr.Get();
+	limit_time = begin_time + duration_sec;
+}
+
+void PacketValue::CopyTiming(const PacketValue& v) {
+	begin_time = v.begin_time;
+	limit_time = v.limit_time;
+}
+
+#endif
 
 
 NAMESPACE_PARALLEL_END

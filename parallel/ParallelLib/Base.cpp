@@ -272,22 +272,32 @@ bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 
 bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 	const PacketValue& in = *p;
-	uint64 route_desc = in.GetRouteDescriptor();
 	
+	#if HAVE_PACKETTRACKER
+	uint64 route_desc = in.GetRouteDescriptor();
 	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
+	#else
+	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString());
+	#endif
 	
 	Parallel::Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
 		Serial::AudioFormat& afmt = fmt;
 		
+		#if HAVE_PACKETTRACKER
 		int i = thrds.Find(route_desc);
 		if (i < 0) {
 			i = thrds.GetCount();
 			thrds.Add(route_desc);
 			RTLOG("VoidPollerSinkBase::Recv: creating new thread for route " + IntStr64(route_desc));
 		}
+		#else
+		if (thrds.IsEmpty()) thrds.Add(0);
+		int i = 0;
+		#endif
 		
 		Thread& t = thrds[i];
+		
 		const Vector<byte>& data = in.GetData();
 		if (data.IsEmpty()) {
 			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " empty data");

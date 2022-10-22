@@ -5,6 +5,21 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+#ifdef flagPACKETTRACKER
+	#define HAVE_PACKETTRACKER 1
+#else
+	#define HAVE_PACKETTRACKER 0
+#endif
+
+
+#ifdef flagPACKETTIMING
+	#define HAVE_PACKETTIMING 1
+#else
+	#define HAVE_PACKETTIMING 0
+#endif
+
+
+#if HAVE_PACKETTRACKER
 struct TrackerInfo {
 	const RTTI* handler_cls = 0;
 	const char* handler_fn = 0;
@@ -28,7 +43,21 @@ struct TrackerInfo {
 	
 	String ToString() const;
 };
+#endif
 
+
+#if HAVE_PACKETTIMING
+struct PacketTimingManager {
+	TimeStop ts;
+	
+	
+	PacketTimingManager();
+	~PacketTimingManager();
+	void Clear() {}
+	float Get() const {return ts.Seconds();}
+};
+
+#endif
 
 
 class PacketValue :
@@ -38,9 +67,15 @@ class PacketValue :
 	Vector<byte>		data;
 	Format				fmt;
 	off32				offset;
-	PacketId			id = 0;
 	TypeCls				custom_data;
+	#if HAVE_PACKETTRACKER
+	PacketId			id = 0;
 	uint64				route_descriptor = 0;
+	#endif
+	#if HAVE_PACKETTIMING
+	float				begin_time = 0;
+	float				limit_time = 0;
+	#endif
 	
 public:
 	union {
@@ -54,18 +89,15 @@ public:
 	
 	RTTI_DECL0(PacketValue);
 	PacketValue(off32 offset) : offset(offset) {custom_data = AsVoidTypeCls();}
-	~PacketValue() {data.Clear(); StopTracking(this);}
+	~PacketValue();
 	
 	void					Pick(PacketValue& p);
 	Vector<byte>&			Data() {return data;}
 	void					Set(Format fmt, double time) {this->fmt = fmt; this->time = time;}
 	void					SetFormat(Format fmt) {this->fmt = fmt;}
 	void					SetTime(double seconds) {time = seconds;}
-	void					SetTrackingId(PacketId i) {id = i;}
-	void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = AsVoidTypeCls();}
+	void					Clear();
 	void					SetOffset(off32 o) {offset = o;}
-	void					AddRouteData(byte b) {route_descriptor <<= 8ULL; route_descriptor |= (uint64)b;}
-	void					CopyRouteData(const PacketValue& v) {route_descriptor = v.route_descriptor;}
 	
 	const Vector<byte>&		GetData() const {return data;}
 	Format					GetFormat() const {return fmt;}
@@ -75,14 +107,25 @@ public:
 	int						GetSizeBytes() const {return data.GetCount();}
 	int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
 	int						GetSizeChannelSamples() const;
+	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
+	hash_t					GetDataHash() const;
+	
+	#if HAVE_PACKETTRACKER
+	void					AddRouteData(byte b) {route_descriptor <<= 8ULL; route_descriptor |= (uint64)b;}
+	void					CopyRouteData(const PacketValue& v) {route_descriptor = v.route_descriptor;}
+	void					SetTrackingId(PacketId i) {id = i;}
 	void					CheckTracking(TrackerInfo info);
 	void					StopTracking(TrackerInfo info);
 	PacketId				GetTrackingId() const {return id;}
 	bool					HasTrackingId() const {return id != 0;}
-	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
-	hash_t					GetDataHash() const;
 	uint64					GetRouteDescriptor() const {return route_descriptor;}
+	#endif
 	
+	#if HAVE_PACKETTIMING
+	void					CheckTiming();
+	void					SetTimingLimit(float duration_sec);
+	void					CopyTiming(const PacketValue& v);
+	#endif
 	
 	String					ToString() const;
 	String					ToStringWithHash() const;

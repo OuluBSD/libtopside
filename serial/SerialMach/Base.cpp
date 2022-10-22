@@ -118,7 +118,9 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	sink.may_remove = true;
 	src.from_sink_ch = sink_ch;
 	src.p = link.ReplyPacket(sink_ch, sink.p);
+	#if HAVE_PACKETTRACKER
 	src.p->AddRouteData(src.from_sink_ch);
+	#endif
 	
 	auto& cfg = *link.GetConfig();
 	atom.Finalize(cfg);
@@ -665,7 +667,9 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 		else {
 			src.p = CreatePacket(sink.p->GetOffset());
 			src.p->SetFormat(src_fmt);
+			#if HAVE_PACKETTRACKER
 			src.p->CopyRouteData(*sink.p);
+			#endif
 			if (Convert(sink.p, src.p)) {
 				RTLOG("SplitterLink::ProcessPackets: converted packet: " << src.p->ToString());
 			}

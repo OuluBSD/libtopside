@@ -30,13 +30,22 @@ void SimpleValue::Exchange(Ex& e) {
 					RTLOG("SimpleValue::Exchange: converted packet");
 					RTLOG("                       from: " << p->ToString());
 					RTLOG("                       to:   " << dst->ToString());
+					#if HAVE_PACKETTRACKER
 					dst->CopyRouteData(*p);
+					#endif
+					#if HAVE_PACKETTIMING
+					dst->CopyTiming(*p);
+					dst->CheckTiming();
+					#endif
 					sink_buf.Add(dst);
 				}
 				else
 					break;
 			}
 			else {
+				#if HAVE_PACKETTIMING
+				p->CheckTiming();
+				#endif
 				sink_buf.Add(p);
 			}
 		}
@@ -84,7 +93,10 @@ bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* sr
 bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 	RTLOG("Convert(src " << HexStr(&*src) << ", dst " << HexStr(&*dst) << ")");
 	
+	#if HAVE_PACKETTRACKER
 	bool track = keep_tracking && src->GetTrackingId() != 0;
+	#endif
+	
 	bool ret = false;
 	
 	Format src_fmt = src->GetFormat();
@@ -145,9 +157,11 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 	}
 	//else if (src_fmt.vd.val.type == ValCls::ORDER) {
 	
+	#if HAVE_PACKETTRACKER
 	if (track) {
 		PacketTracker_Track("Convert", __FILE__, __LINE__, *dst);
 	}
+	#endif
 	
 	return ret;
 }

@@ -77,7 +77,9 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 	}
 	else return false;
 	
+	#if HAVE_PACKETTRACKER
 	src.p->AddRouteData(src.from_sink_ch);
+	#endif
 	
 	return true;
 }
@@ -87,6 +89,10 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	RTLOG("AsyncMemForwarderBase::Consume: " << p->ToString());
 	partial_packet.Clear();
 	partial_pos = 0;
+	
+	#if HAVE_PACKETTIMING
+	p->CheckTiming();
+	#endif
 	
 	const Vector<byte>& data = p->GetData();
 	int data_sz = data.GetCount();

@@ -11,7 +11,6 @@ using ValDevCls				= Parallel::ValDevCls;
 using ValDevTuple			= Parallel::ValDevTuple;
 using Format				= Parallel::Format;
 using PacketId				= Parallel::PacketId;
-using TrackerInfo			= Parallel::TrackerInfo;
 using PacketValue			= Parallel::PacketValue;
 using Machine				= Parallel::Machine;
 using Packet				= Parallel::Packet;
@@ -24,6 +23,9 @@ using PacketIO				= Parallel::PacketIO;
 template <class T> using RefT_Loop	= Ref<T, LoopParent>;
 template <class T> using System		= Parallel::System<T>;
 
+#if HAVE_PACKETTRACKER
+using TrackerInfo			= Parallel::TrackerInfo;
+#endif
 
 
 class LoopStore;

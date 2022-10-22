@@ -158,7 +158,9 @@ Packet LinkBase::ReplyPacket(int src_ch, const Packet& in) {
 	off32 off = in->GetOffset();
 	Packet to = CreatePacket(off);
 	to->SetFormat(src_fmt);
+	#if HAVE_PACKETTRACKER
 	to->CopyRouteData(*in);
+	#endif
 	InternalPacketData& data = to->template SetData<InternalPacketData>();
 	PacketTracker_Track("LinkBase::ReplyPacket", __FILE__, __LINE__, *to);
 	return to;
@@ -178,7 +180,9 @@ Packet LinkBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
 		to->SetFormat(src_fmt);
 		Convert(content, to);
 	}
+	#if HAVE_PACKETTRACKER
 	to->CopyRouteData(*in);
+	#endif
 	PacketTracker_Track("LinkBase::ReplyPacket", __FILE__, __LINE__, *to);
 	return to;
 }

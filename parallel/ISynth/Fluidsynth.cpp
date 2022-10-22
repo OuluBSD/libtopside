@@ -139,6 +139,10 @@ bool SynFluidsynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtime
 			dev.lock.Leave();
 		}
 		else out.Data().SetCount(afmt.GetFrameSize(), 0);
+		
+		#if HAVE_PACKETTIMING
+		out.SetTimingLimit(0.100f);
+		#endif
 	}
 	return true;
 }

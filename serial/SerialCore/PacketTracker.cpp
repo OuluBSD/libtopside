@@ -3,7 +3,7 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
-
+#if HAVE_PACKETTRACKER
 void PacketValue::CheckTracking(TrackerInfo info) {
 	if (id == 0)
 		return;
@@ -17,13 +17,16 @@ void PacketValue::StopTracking(TrackerInfo info) {
 	
 	PacketTracker::StopTracking(info, *this);
 }
+#endif
 
 String PacketValue::ToString() const {
 	String s;
 	s.Cat('{');
 	s << "offset: " << offset.ToString();
 	s << ", size: " << data.GetCount();
+	#if HAVE_PACKETTRACKER
 	s << ", id: " << IntStr64(id);
+	#endif
 	s << ", format: {" << fmt.ToString() << "}";
 	
 	s.Cat('}');
@@ -35,7 +38,9 @@ String PacketValue::ToStringWithHash() const {
 	s.Cat('{');
 	s << "offset: " << offset.ToString();
 	s << ", size: " << data.GetCount();
+	#if HAVE_PACKETTRACKER
 	s << ", id: " << IntStr64(id);
+	#endif
 	s << ", format: {" << fmt.ToString() << "}";
 	s << ", hash: " << IntStr64(GetDataHash());
 	

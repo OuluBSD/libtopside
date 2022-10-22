@@ -1,7 +1,6 @@
 #ifndef _SerialCore_PacketTracker_h_
 #define _SerialCore_PacketTracker_h_
 
-#define HAVE_PACKETTRACKER 0
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -21,9 +20,11 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
+    #if HAVE_PACKETTRACKER
 	void Track0(TrackerInfo info, PacketValue& p);
 	void Checkpoint0(TrackerInfo info, PacketValue& p);
 	void StopTracking0(TrackerInfo info, PacketValue& p);
+	#endif
 	
 	static PacketTracker*& active_tracker() {static PacketTracker* p; return p;}
 public:
@@ -39,14 +40,6 @@ public:
 	static void Track(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Track0(info,p);}
 	static void Checkpoint(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Checkpoint0(info,p);}
 	static void StopTracking(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->StopTracking0(info,p);}
-	#else
-	static void Track(TrackerInfo info, Packet& p) {}
-	static void Checkpoint(TrackerInfo info, Packet& p) {}
-	static void StopTracking(TrackerInfo info, Packet& p) {}
-	
-	static void Track(TrackerInfo info, PacketValue& p) {}
-	static void Checkpoint(TrackerInfo info, PacketValue& p) {}
-	static void StopTracking(TrackerInfo info, PacketValue& p) {}
 	#endif
 };
 
