@@ -92,6 +92,13 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	
 	#if HAVE_PACKETTIMING
 	p->CheckTiming();
+	static int iter;
+	if (iter % 500 == 0) {
+		Cout() << "AsyncMemForwarderBase::Consume: consuming age " << p->GetAge() << EOL;
+		LOG("AsyncMemForwarderBase::Consume: consuming age " << p->GetAge());
+		iter = 0;
+	}
+	iter++;
 	#endif
 	
 	const Vector<byte>& data = p->GetData();

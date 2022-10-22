@@ -5,7 +5,8 @@ machine midi.app:
 			midi.src.side.portmidi[][loop == "input"]
 		loop input:
 			center.customer
-			fluidsynth.pipe[loop == "event"]:
-				patch = 1
+			coresynth.pipe[loop == "event"]:
+				instrument = "rhodey"
+				verbose = false
 			center.audio.sink.hw:
 				realtime = true

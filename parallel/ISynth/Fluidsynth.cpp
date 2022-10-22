@@ -17,9 +17,14 @@
 #if defined flagFLUIDSYNTH || defined flagFLUIDLITE
 
 
+#ifndef HAVE_PACKETTIMING
+	#error HAVE_PACKETTIMING not defined
+#endif
+
+
 NAMESPACE_PARALLEL_BEGIN
 
-#define DETECT_DELAY 0
+#define DETECT_DELAY 1
 
 struct SynFluidsynth::NativeInstrument {
     fluid_settings_t* settings;
@@ -34,7 +39,9 @@ struct SynFluidsynth::NativeInstrument {
     Array<Vector<byte>> packets;
     Mutex lock;
     bool prevent_patch_change;
+    int max_cache;
     int packet_count;
+    bool realtime;
     
     #if DETECT_DELAY
     TimeStop ts;
@@ -56,8 +63,11 @@ void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase*
 
 
 bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
+	int cache = 6;
 	dev.packet_count = 0;
-	dev.sample_rate = 1024;
+	dev.sample_rate = 64;
+	dev.realtime = ws.GetBool(".realtime", false);
+	dev.max_cache = dev.realtime ? 1 : cache;
 	
 	#if DETECT_DELAY
     dev.silence = true;
@@ -87,6 +97,7 @@ bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, co
 		v.SetFormat(fmt);
 	}
 	
+	a.SetQueueSize(dev.realtime ? 1 : cache);
 	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 		
     return true;
@@ -134,14 +145,20 @@ bool SynFluidsynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtime
 		
 		if (dev.packets.GetCount()) {
 			dev.lock.Enter();
-			Swap(out.Data(), dev.packets[0]);
-			dev.packets.Remove(0);
+			if (!dev.realtime) {
+				Swap(out.Data(), dev.packets[0]);
+				dev.packets.Remove(0);
+			}
+			else {
+				Swap(out.Data(), dev.packets.Top());
+				dev.packets.Clear();
+			}
 			dev.lock.Leave();
 		}
 		else out.Data().SetCount(afmt.GetFrameSize(), 0);
 		
 		#if HAVE_PACKETTIMING
-		out.SetTimingLimit(0.100f);
+		out.SetTimingLimit(0.050f);
 		#endif
 	}
 	return true;
@@ -156,6 +173,12 @@ bool SynFluidsynth::Instrument_IsReady(NativeInstrument& dev, AtomBase& a, Packe
 bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink_i, const Packet& in) {
 	Format fmt = in->GetFormat();
 	if (fmt.IsMidi()) {
+		#if HAVE_PACKETTIMING
+		in->CheckTiming();
+		Cout() << "SynFluidsynth::Instrument_Recv: consuming age " << in->GetAge() << EOL;
+		LOG("SynFluidsynth::Instrument_Recv: consuming age " << in->GetAge());
+		#endif
+		
 		const Vector<byte>& data = in->Data();
 		int count = data.GetCount() / sizeof(MidiIO::Event);
 		
@@ -323,12 +346,11 @@ bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev, int
 }
 
 void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase* a) {
-	int max_cache = 32;
 	int buf_size = 2 * dev->sample_rate * sizeof(float);
 	float wait_time = dev->sample_rate / 44100.;
 	
 	while (dev->flag.IsRunning()) {
-		if (dev->packets.GetCount() >= max_cache) {
+		if (dev->packets.GetCount() >= dev->max_cache) {
 			Sleep(1);
 			continue;
 		}

@@ -4,7 +4,6 @@
 
 #include <LocalPlan/LocalPlan.h>
 
-
 #include "Fwd.h"
 #include "Generated.h"
 #include "Types.h"

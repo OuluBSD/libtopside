@@ -67,7 +67,7 @@
 
 #ifdef flagFREEBSD
 # include <sys/soundcard.h>
-# define DEVICE_NAME_BASE           "/dev/dsp0.0"
+# define DEVICE_NAME_BASE           "/dev/dsp"
 #elif flagLINUX
 # include <linux/soundcard.h>
 # define DEVICE_NAME_BASE            "/dev/dsp"
@@ -529,76 +529,86 @@ error:
  * Aspect DeviceCapabilities: This function calls QueryDevice on each device entry and receives a filled in PaDeviceInfo object
  * per device, these are placed in the host api representation's deviceInfos array.
  */
-static PaError BuildDeviceList( PaOSSHostApiRepresentation *ossApi )
+static PaError BuildDeviceList ( PaOSSHostApiRepresentation *ossApi )
 {
-    PaError result = paNoError;
-    PaUtilHostApiRepresentation *commonApi = &ossApi->inheritedHostApiRep;
-    int i;
-    int numDevices = 0, maxDeviceInfos = 1;
-    PaDeviceInfo **deviceInfos = NULL;
+	PaError result = paNoError;
+	PaUtilHostApiRepresentation *commonApi = &ossApi->inheritedHostApiRep;
+	int i;
+	int numDevices = 0, maxDeviceInfos = 1;
+	PaDeviceInfo **deviceInfos = NULL;
 
-    /* These two will be set to the first working input and output device, respectively */
-    commonApi->info.defaultInputDevice = paNoDevice;
-    commonApi->info.defaultOutputDevice = paNoDevice;
+	/* These two will be set to the first working input and output device, respectively */
+	commonApi->info.defaultInputDevice = paNoDevice;
+	commonApi->info.defaultOutputDevice = paNoDevice;
 
-    /* Find devices by calling QueryDevice on each
-     * potential device names.  When we find a valid one,
-     * add it to a linked list.
-     * A: Set an arbitrary of 100 devices, should probably be a smarter way. */
+	/* Find devices by calling QueryDevice on each
+	 * potential device names.  When we find a valid one,
+	 * add it to a linked list.
+	 * A: Set an arbitrary of 100 devices, should probably be a smarter way. */
 
-    for( i = 0; i < 100; i++ )
-    {
-       char deviceName[32];
-       PaDeviceInfo *deviceInfo;
-       int testResult;
+	for ( i = 0; i < 100; i++ )
+	{
+		char deviceName[32];
+		PaDeviceInfo *deviceInfo;
+		int testResult;
 
-       if( i == 0 )
-          snprintf(deviceName, sizeof (deviceName), "%s", DEVICE_NAME_BASE);
-       else
-          snprintf(deviceName, sizeof (deviceName), "%s%d", DEVICE_NAME_BASE, i);
+		if ( i == 0 )
+			snprintf ( deviceName, sizeof ( deviceName ), "%s", DEVICE_NAME_BASE );
+		else
+#ifdef flagFREEBSD
+			snprintf ( deviceName, sizeof ( deviceName ), "%s%d.0", DEVICE_NAME_BASE, i-1 );
+#else
+			snprintf ( deviceName, sizeof ( deviceName ), "%s%d", DEVICE_NAME_BASE, i-1 );
+#endif
 
-       /* PA_DEBUG(("%s: trying device %s\n", __FUNCTION__, deviceName )); */
-       if( (testResult = QueryDevice( deviceName, ossApi, &deviceInfo )) != paNoError )
-       {
-           if( testResult != paDeviceUnavailable )
-               PA_ENSURE( testResult );
+		/* PA_DEBUG(("%s: trying device %s\n", __FUNCTION__, deviceName )); */
+		if ( ( testResult = QueryDevice ( deviceName, ossApi, &deviceInfo ) ) != paNoError )
+		{
+			if ( testResult != paDeviceUnavailable )
+				PA_ENSURE ( testResult );
 
-           continue;
-       }
+			continue;
+		}
 
-       ++numDevices;
-       if( !deviceInfos || numDevices > maxDeviceInfos )
-       {
-           maxDeviceInfos *= 2;
-           PA_UNLESS( deviceInfos = (PaDeviceInfo **) realloc( deviceInfos, maxDeviceInfos * sizeof (PaDeviceInfo *) ),
-                   paInsufficientMemory );
-       }
-       {
-           int devIdx = numDevices - 1;
-           deviceInfos[devIdx] = deviceInfo;
+		++numDevices;
 
-           if( commonApi->info.defaultInputDevice == paNoDevice && deviceInfo->maxInputChannels > 0 )
-               commonApi->info.defaultInputDevice = devIdx;
-           if( commonApi->info.defaultOutputDevice == paNoDevice && deviceInfo->maxOutputChannels > 0 )
-               commonApi->info.defaultOutputDevice = devIdx;
-       }
-    }
+		if ( !deviceInfos || numDevices > maxDeviceInfos )
+		{
+			maxDeviceInfos *= 2;
+			PA_UNLESS ( deviceInfos = ( PaDeviceInfo ** ) realloc ( deviceInfos, maxDeviceInfos * sizeof ( PaDeviceInfo * ) ),
+						paInsufficientMemory );
+		}
 
-    /* Make an array of PaDeviceInfo pointers out of the linked list */
+		{
+			int devIdx = numDevices - 1;
+			deviceInfos[devIdx] = deviceInfo;
 
-    PA_DEBUG(("PaOSS %s: Total number of devices found: %d\n", __FUNCTION__, numDevices));
+			if ( commonApi->info.defaultInputDevice == paNoDevice && deviceInfo->maxInputChannels > 0 )
+				commonApi->info.defaultInputDevice = devIdx;
 
-    commonApi->deviceInfos = (PaDeviceInfo**)PaUtil_GroupAllocateMemory(
-        ossApi->allocations, sizeof(PaDeviceInfo*) * numDevices );
-    memcpy( commonApi->deviceInfos, deviceInfos, numDevices * sizeof (PaDeviceInfo *) );
+			if ( commonApi->info.defaultOutputDevice == paNoDevice && deviceInfo->maxOutputChannels > 0 )
+				commonApi->info.defaultOutputDevice = devIdx;
+			
+		}
+	}
 
-    commonApi->info.deviceCount = numDevices;
+	/* Make an array of PaDeviceInfo pointers out of the linked list */
+
+	PA_DEBUG ( ( "PaOSS %s: Total number of devices found: %d\n", __FUNCTION__, numDevices ) );
+
+	commonApi->deviceInfos = ( PaDeviceInfo** ) PaUtil_GroupAllocateMemory (
+				ossApi->allocations, sizeof ( PaDeviceInfo* ) * numDevices );
+
+	memcpy ( commonApi->deviceInfos, deviceInfos, numDevices * sizeof ( PaDeviceInfo * ) );
+
+	commonApi->info.deviceCount = numDevices;
 
 error:
-    free( deviceInfos );
+	free ( deviceInfos );
 
-    return result;
+	return result;
 }
+
 
 static void Terminate( struct PaUtilHostApiRepresentation *hostApi )
 {

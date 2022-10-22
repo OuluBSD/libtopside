@@ -89,8 +89,10 @@ bool PacketBufferBase::HasPacketOverTime(double time) const {
 
 bool PacketBufferBase::StorePacket(PacketValue& p) {
 	if (buf.GetCount()) {
+		buf.EnterWrite();
 		Packet n = buf.First();
 		buf.RemoveFirst();
+		buf.LeaveWrite();
 		p.Pick(*n);
 		return true;
 	}
@@ -99,6 +101,7 @@ bool PacketBufferBase::StorePacket(PacketValue& p) {
 }
 
 bool PacketBufferBase::StorePacket(PacketValue& p, double min_time) {
+	buf.EnterWrite();
 	int rem_count = 0;
 	bool found = false;
 	for (Packet& n : buf) {
@@ -117,6 +120,7 @@ bool PacketBufferBase::StorePacket(PacketValue& p, double min_time) {
 		found = true;
 	}
 	buf.RemoveFirst(rem_count);
+	buf.LeaveWrite();
 	return found;
 }
 
@@ -170,7 +174,9 @@ void PacketValue::Pick(PacketValue& p) {
 void PacketValue::CheckTiming() {
 	float time = timemgr.Get();
 	if (limit_time != 0 && time > limit_time) {
-		Panic("error: packet took too long!");
+		LOG(ToString());
+		float overtime = time - limit_time;
+		Panic("error: packet took " + DblStr(overtime) + "s too long!");
 	}
 }
 
@@ -182,6 +188,14 @@ void PacketValue::SetTimingLimit(float duration_sec) {
 void PacketValue::CopyTiming(const PacketValue& v) {
 	begin_time = v.begin_time;
 	limit_time = v.limit_time;
+}
+
+double PacketValue::GetAge() const {
+	if (begin_time != 0) {
+		float time = timemgr.Get();
+		return time - begin_time;
+	}
+	return 0;
 }
 
 #endif

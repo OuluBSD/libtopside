@@ -113,8 +113,8 @@ public:
 	void Clear() {T::Pool::StaticPool().Return(obj); obj = 0;}
 	void Inc() {refs++;}
 	void Dec() {
-		refs--;
-		if (refs <= 0) {
+		int r = --refs;
+		if (r == 0) {
 			for(int i = 0; i < weaks.GetCount(); i++) weaks[i]->SetDeleted();
 			Clear();
 			Pool::StaticPool().Return(this);

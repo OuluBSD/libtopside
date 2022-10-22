@@ -108,8 +108,11 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 			ASSERT(!sink_buf.IsEmpty());
 			iface.val = &sink_value;
 			iface.buf = &sink_buf;
+			
+			iface.buf->EnterRead();
 			iface.p = sink_buf.First();
 			iface.may_remove = false;
+			iface.buf->LeaveRead();
 		}
 		
 		
@@ -123,7 +126,9 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
 			PacketIO::Sink& iface = io.sinks[sink_ch];
 			if (iface.filled && iface.may_remove) {
+				iface.buf->EnterWrite();
 				iface.buf->RemoveFirst();
+				iface.buf->LeaveWrite();
 			}
 			else if (iface.filled) {
 				RTLOG("LinkBase::ForwardPipe: warning: NOT removing first in sink #" << sink_ch << " " << HexStr(iface.buf));
@@ -150,7 +155,9 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 				#if HAVE_PACKETTRACKER
 				sent->AddRouteData(iface.from_sink_ch);
 				#endif
+				src_buf.EnterWrite();
 				src_buf.Add(sent);
+				src_buf.LeaveWrite();
 				is_forwarded = true;
 			}
 			else if (src_ch == 0) {
@@ -309,6 +316,7 @@ void LinkBase::ForwardSideConnections() {
 		ASSERT(ex.local_ch_i > 0 && ex.other_ch_i > 0);
 		Value& src_val = src_iface->GetSourceValue(ex.local_ch_i);
 		PacketBuffer& src_buf = src_val.GetBuffer();
+		src_buf.EnterWrite();
 		if (src_buf.GetCount()) {
 			InterfaceSinkRef sink_iface = ex.other->GetSink();
 			Value& sink_val = sink_iface->GetValue(ex.other_ch_i);
@@ -344,13 +352,16 @@ void LinkBase::ForwardSideConnections() {
 					}
 				}
 				
+				sink_buf.EnterWrite();
 				sink_buf.Add(to_p);
+				sink_buf.LeaveWrite();
 			}
 			#else
 			sink_buf.PickAppend(src_buf);
 			ASSERT(src_buf.IsEmpty());
 			#endif
 		}
+		src_buf.LeaveWrite();
 	}
 }
 

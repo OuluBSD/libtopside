@@ -3,6 +3,10 @@
 
 #include <AtomMinimal/AtomMinimal.h>
 
+#ifndef HAVE_PACKETTIMING
+	#error HAVE_PACKETTIMING not defined
+#endif
+
 
 #undef Serial
 #define NAMESPACE_SERIAL_NAME	Serial

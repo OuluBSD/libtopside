@@ -4,12 +4,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sndio.h>
+#include <sndio.h> // pkg install sndio
 #include <string.h>
 #include <poll.h>
 #include <errno.h>
 #include <pthread.h>
 #include <glob.h>
+#include <unistd.h>
 #include "../../portmidi.h"
 #include "../../pmutil.h"
 #include "../../pminternal.h"
@@ -37,16 +38,23 @@ struct mio_dev {
     int mode;
     char errmsg[PM_HOST_ERROR_MSG_LEN];
     pthread_t thread;
+    int running;
+    int stopped;
 } devs[NDEVS];
 
-static void set_mode(struct mio_dev *, unsigned int);
+static void set_mode(struct mio_dev*, unsigned int);
 
 void pm_init()
 {
     int i, j, k = 0;
     char devices[][16] = {"midithru", "rmidi", "midi", "snd"};
     glob_t out;
-
+	
+	for(i = 0; i < NDEVS; i++) {
+		devs[i].running = 0;
+		devs[i].stopped = 1;
+	}
+	
     /* default */
     strcpy(devs[0].name, MIO_PORTANY);
     pm_add_device("SNDIO", devs[k].name, TRUE, (void *) &devs[k],
@@ -140,7 +148,7 @@ void* input_thread(void *param)
     PmEvent pm_ev, pm_ev_rt;
     unsigned char sysex_data[SYSEX_MAXLEN];
 
-    while(dev->mode & MIO_IN) {
+    while(dev->mode & MIO_IN && dev->running != 0) {
         if (todo == 0) {
             nfds = mio_pollfd(dev->hdl, pfd, POLLIN);
             rc = poll(pfd, nfds, 100);
@@ -207,6 +215,9 @@ void* input_thread(void *param)
     }
 
     pthread_exit(NULL);
+    
+    dev->running = 0;
+    dev->stopped = 1;
     return NULL;
 }
 
@@ -256,6 +267,8 @@ static PmError sndio_in_open(PmInternal *midi, void *driverInfo)
     midi->descriptor = (void *)dev;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
+    dev->running = 1;
+    dev->stopped = 0;
     pthread_create(&dev->thread, &attr, input_thread, ( void* )midi);
     return pmNoError;
 }
@@ -263,9 +276,15 @@ static PmError sndio_in_open(PmInternal *midi, void *driverInfo)
 static PmError sndio_out_close(PmInternal *midi)
 {
     struct mio_dev *dev = (struct mio_dev *) midi->descriptor;
-
+    
     if (dev->mode & MIO_OUT)
         set_mode(dev, dev->mode & ~MIO_OUT);
+    
+    dev->running = 0;
+    while (dev->stopped != 0) {
+        usleep(10000);
+    }
+    
     return pmNoError;
 }
 

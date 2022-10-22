@@ -16,6 +16,7 @@ void SimpleValue::Exchange(Ex& e) {
 	
 	if ((src_val = CastPtr<SimpleValue>(&src))) {
 		auto& src_buf = src_val->GetBuffer();
+		src_buf.EnterWrite();
 		
 		while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
 			Packet p = src_buf.First();
@@ -37,7 +38,9 @@ void SimpleValue::Exchange(Ex& e) {
 					dst->CopyTiming(*p);
 					dst->CheckTiming();
 					#endif
+					sink_buf.EnterWrite();
 					sink_buf.Add(dst);
+					sink_buf.LeaveWrite();
 				}
 				else
 					break;
@@ -46,9 +49,12 @@ void SimpleValue::Exchange(Ex& e) {
 				#if HAVE_PACKETTIMING
 				p->CheckTiming();
 				#endif
+				sink_buf.EnterWrite();
 				sink_buf.Add(p);
+				sink_buf.LeaveWrite();
 			}
 		}
+		src_buf.LeaveWrite();
 	}
 	else TODO
 }
@@ -68,8 +74,10 @@ bool SimpleValue::IsQueueFull() const {
 Packet SimpleValue::Pick() {
 	if (buf.IsEmpty())
 		return Packet();
+	buf.EnterWrite();
 	Packet p = buf.First();
 	buf.RemoveFirst();
+	buf.LeaveWrite();
 	return p;
 }
 

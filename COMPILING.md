@@ -1,6 +1,11 @@
 
 
-### In ubuntu
+### In Ubuntu
 ```
 apt install libglew-dev libsdl2-ttf-dev libsdl2-gfx-dev libsdl2-dev libsdl2-image-dev libhidapi-libusb0 libhidapi-dev libv4l-dev libopencv-core-dev libopencv-imgproc-dev libopencv-highgui-dev libvorbis-dev libopencv-shape-dev  freeglut3-dev libavdevice-dev libfluidsynth-dev
+```
+
+### In FreeBSD
+```
+apt install upp sndio ffmpeg hidapi sdl2 sdl2_ttf sdl2_image opencv glew freeglut portmidi portaudio
 ```

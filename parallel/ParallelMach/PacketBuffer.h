@@ -125,6 +125,7 @@ public:
 	void					CheckTiming();
 	void					SetTimingLimit(float duration_sec);
 	void					CopyTiming(const PacketValue& v);
+	double					GetAge() const;
 	#endif
 	
 	String					ToString() const;
@@ -165,8 +166,20 @@ public:
 
 
 using Packet			= SharedRecycler<PacketValue>;
-using PacketBuffer		= LinkedList<Packet>;
 using RecRefBase		= RecyclerRefBase<PacketValue>;
+
+struct PacketBuffer : LinkedList<Packet> {
+	RWMutex lock;
+	bool chk_lock = false;
+	
+	void Add(const Packet& p) {ASSERT(chk_lock); LinkedList<Packet>::Add(p);}
+	void RemoveFirst() {ASSERT(chk_lock); LinkedList<Packet>::RemoveFirst();}
+	void RemoveFirst(int i) {ASSERT(chk_lock); LinkedList<Packet>::RemoveFirst(i);}
+	void EnterRead() {lock.EnterRead(); chk_lock = true;}
+	void EnterWrite() {lock.EnterWrite(); chk_lock = true;}
+	void LeaveRead() {chk_lock = false; lock.LeaveRead();}
+	void LeaveWrite() {chk_lock = false; lock.LeaveWrite();}
+};
 
 static Packet CreatePacket(off32 off) {
 	PacketValue* obj = PacketValue::Pool::StaticPool().New(off);

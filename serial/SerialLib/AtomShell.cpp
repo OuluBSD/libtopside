@@ -122,13 +122,17 @@ void DebugMainLoop(Parallel::Machine& mach) {
 	
 	int iter = 0;
     TimeStop t, total;
-    double sleep_dt_limit = 1.0 / 300.0;
+    double sleep_dt_limit = 0.001;
+    int fast_iter = 0;
     while (mach.IsRunning()) {
         double dt = ResetSeconds(t);
         mach.Update(dt);
         
-        if (dt < sleep_dt_limit)
+        if (dt < sleep_dt_limit && fast_iter > 5) {
 			Sleep(1);
+			fast_iter = 0;
+        }
+        else fast_iter++;
         
         double total_seconds = total.Seconds();
         if (__dbg_time_limit > 0 && total_seconds >= __dbg_time_limit)

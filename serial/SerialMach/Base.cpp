@@ -79,7 +79,10 @@ void CustomerLink::Forward(FwdScope& fwd) {
 		PacketValue& out = *p;
 		atom->ForwardPacket(null_in, out);
 		
-		sink_val.GetBuffer().Add(p);
+		PacketBuffer& buf = sink_val.GetBuffer();
+		buf.EnterWrite();
+		buf.Add(p);
+		buf.LeaveWrite();
 	}
 	
 }
@@ -184,12 +187,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 	if (do_finalize)
 		atom->Finalize(*last_cfg);
 	
-	int src_ch = 0;
 	PacketIO::Sink& prim_sink = io.sinks[0];
-	PacketIO::Source& src = io.srcs[src_ch];
-	Packet& out = src.p;
-	src.from_sink_ch = 0;
-	out = ReplyPacket(src_ch, prim_sink.p);
 	
 	InterfaceSourceRef src_iface = this->GetSource();
 	int src_count = src_iface->GetSourceCount();
@@ -199,7 +197,7 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 			continue;
 		Packet& out = src.p;
 		if (!out) {
-			src.from_sink_ch = 1;
+			src.from_sink_ch = 0;
 			out = this->ReplyPacket(src_ch, prim_sink.p);
 		}
 		if (!atom->Send(*last_cfg, *out, src_ch)) {
@@ -208,8 +206,15 @@ bool PipeOptSideLink::ProcessPackets(PacketIO& io) {
 		}
 	}
 	
-	b = atom->Send(*last_cfg, *out, 0) && b;
-	
+	{
+		int src_ch = 0;
+		PacketIO::Source& src = io.srcs[src_ch];
+		Packet& out = src.p;
+		src.from_sink_ch = 0;
+		out = ReplyPacket(src_ch, prim_sink.p);
+		
+		b = atom->Send(*last_cfg, *out, 0) && b;
+	}
 	
 	return b;
 }

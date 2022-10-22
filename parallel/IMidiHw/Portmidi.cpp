@@ -15,6 +15,10 @@
 #endif
 
 
+#ifndef HAVE_PACKETTIMING
+	#error HAVE_PACKETTIMING not defined
+#endif
+
 // see Sequencer/Midi.h
 
 
@@ -148,8 +152,9 @@ bool MidPortmidi::Source_Send(NativeSource& dev, AtomBase& a, RealtimeSourceConf
 			int length = Pm_Read(dev.midi_in, buffer, BUFSIZE);
 			int track_i = 0;
 			
-			if (!length)
+			if (length <= 0)
 				continue;
+			ASSERT(length < 10000);
 			
 			int offset = count;
 			count += length;
@@ -163,7 +168,7 @@ bool MidPortmidi::Source_Send(NativeSource& dev, AtomBase& a, RealtimeSourceConf
 			for(int i = 0; i < length; i++) {
 				PmEvent& e = buffer[i];
 				
-				#if 0
+				#if 1
 				LOG("Got message " << dev.msg_count << ": time " <<
 		            (int)(long) e.timestamp << ", " <<
 		            (int)(long) Pm_MessageStatus(e.message) << " " <<
@@ -195,6 +200,13 @@ bool MidPortmidi::Source_Send(NativeSource& dev, AtomBase& a, RealtimeSourceConf
 			}
 			
 		}
+		
+		#if HAVE_PACKETTIMING
+		out.SetTimingLimit(0.050);
+		#endif
+	}
+	else if (fmt.IsReceipt()) {
+		return true;
 	}
 	
 	
