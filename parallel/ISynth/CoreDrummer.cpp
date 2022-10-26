@@ -45,8 +45,16 @@ const int SynCoreDrummer::NativeInstrument::toms_notes[] = {41,43,45,47,48,50,60
 
 template <class T>
 void CreateSynCoreInstrument(SynCoreDrummer::NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
+	String preset_file = ws.Get(".preset");
+	String preset;
+	
+	preset_file = RealizeShareFile(preset_file);
+	if (FileExists(preset_file))
+		preset = LoadFile(preset_file);
+	
 	for(int i = 0; i < dev.polyphone; i++) {
 		T* t = new T();
+		t->SetPreset(preset);
 		dev.voices.Add(t);
 		dev.notes.Add(-1);
 		dev.seqs.Add(0);
@@ -169,14 +177,15 @@ bool SynCoreDrummer::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtim
 			int frame_channel_count = last_frame.GetChannelCount();
 			float mul = dev.multiplier;
 			for(int i = 0; i < sr; i++) {
-				float v = instrument.Tick() * mul + *f;
+				instrument.Tick();
+				
+				float v = last_frame[0] * mul + *f;
 				float av = fabsf(v);
 				if (av > abs_max)
 					abs_max = av;
-				*f++ = v;
 				
-				for (int j = 1; j < frame_channel_count; j++ )
-					*f++ += last_frame[j];
+				for (int j = 0; j < frame_channel_count; j++ )
+					*f++ += last_frame[j] * mul;
 				for (int j = frame_channel_count; j < channel_count; j++ ) {
 					float prev = f[-1];
 					*f++ += prev;

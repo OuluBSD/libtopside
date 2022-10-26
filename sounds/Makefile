@@ -109,6 +109,10 @@ download: \
 	sf2/111_fiddle/instrument.sf2 \
 	sf2/112_shanai/instrument.sf2 \
 	sf2/117_taiko_drums/instrument.sf2 \
+	samples/pearl_zildjians/ready.txt \
+	samples/gscw/ready.txt \
+	samples/ruffrider/ready.txt \
+	samples/easyrider/ready.txt \
 	\
 	sf2/AirFont320/instrument.sf2 \
 	sf2/AVL_Drumkits_Perc/instrument.sf2 \
@@ -766,6 +770,45 @@ sf2/117_taiko_drums/instrument.sf2:
 	(cd $(shell dirname $@) && \
 		wget -c https://musical-artifacts.com/artifacts/1873/supremetaiko.sf2 && \
 		mv supremetaiko.sf2 instrument.sf2)
+
+samples/pearl_zildjians/ready.txt:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c https://web.archive.org/web/20100726154028/http://www.rhythminmind.net/Samples/raw%20samples%20-%20pearl%20master%20custom%20with%20zildjians.zip && \
+		7z x "raw samples - pearl master custom with zildjians.zip" && \
+		touch ready.txt)
+
+samples/gscw/ready.txt:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		git clone https://github.com/gregharvey/drum-samples && \
+		touch ready.txt)
+
+samples/ruffrider/ready.txt:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c http://www.michaelkingston.fi/kingstondrums/kits/ruffrider.rar && \
+		7z x "ruffrider.rar" && \
+		touch ready.txt)
+
+samples/easyrider/ready.txt:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c http://www.michaelkingston.fi/kingstondrums/kits/easyrider.rar && \
+		7z x "easyrider.rar" && \
+		touch ready.txt)
+
+samples/mdk_kit/ready.txt:
+	-@mkdir -p $(shell dirname $@)
+	(cd $(shell dirname $@) && \
+		wget -c http://download.linuxaudio.org/lau/drum_soundfonts/mdk_kit.tar.bz2 && \
+		tar xf mdk_kit.tar.bz2 && \
+		touch ready.txt)
+
+
+
+
+
 
 
 

@@ -7,9 +7,7 @@ NAMESPACE_AUDIO_BEGIN
 class Instrument : public Audio {
 public:
 
-	Instrument() {
-		last_frame_.SetCount( 1, 1, 0.0 );
-	};
+	Instrument();
 	
 	virtual void Clear() {};
 	virtual void NoteOn( double frequency, double amplitude ) = 0;

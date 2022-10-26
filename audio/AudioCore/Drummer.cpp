@@ -23,7 +23,7 @@ unsigned char gen_midi_map[128] = {
 	0, 0, 0, 0, 0, 0, 0, 0		// 120
 };
 
-char wave_names[DRUM_NUMWAVES][16] = {
+const char wave_names[DRUM_NUMWAVES][16] = {
 	"dope.raw",
 	"bassdrum.raw",
 	"snardrum.raw",
@@ -49,21 +49,53 @@ Drummer::Drummer() : Instrument() {
 	sounding_count = 0;
 	sound_order_.SetCount(DRUM_POLYPHONY, -1);
 	sound_number_.SetCount(DRUM_POLYPHONY, -1);
+	
+	for(int i = 0; i < 128; i++) {
+		preset.Add(i, wave_names[gen_midi_map[i]]);
+	}
 }
 
 Drummer::~Drummer() {
 
 }
 
+void Drummer::SetPreset(String preset_txt) {
+	this->preset.Clear();
+	Vector<String> lines = Split(preset_txt, "\n");
+	String dir;
+	for (const String& line : lines) {
+		Vector<String> parts = Split(line, ",");
+		if (parts.GetCount() != 2)
+			continue;
+		String key = TrimBoth(parts[0]);
+		String value = TrimBoth(parts[1]);
+		
+		if (key == "dir") {
+			dir = value;
+		}
+		else {
+			int note = StrInt(key.Left(2));
+			String path = AppendFileName(dir, value);
+			path = RealizeShareFile(path);
+			ASSERT(FileExists(path));
+			if (FileExists(path))
+				preset.Add(note, path);
+		}
+	}
+	//DUMPM(preset);
+}
+
 double Drummer::Tick(unsigned int) {
-	last_frame_[0] = 0.0;
+	last_frame_.Zero();
 	
 	if (sounding_count == 0)
 		return last_frame_[0];
 		
 	for (int i = 0; i < DRUM_POLYPHONY; i++) {
 		if (sound_order_[i] >= 0) {
-			if (waves_[i].IsFinished()) {
+			auto& w = waves_[i];
+			
+			if (w.IsFinished() || !w.GetChannelsOut()) {
 				for (int j = 0; j < DRUM_POLYPHONY; j++) {
 					if (sound_order_[j] > sound_order_[i])
 						sound_order_[j] -= 1;
@@ -74,8 +106,15 @@ double Drummer::Tick(unsigned int) {
 				sounding_count--;
 			}
 			
-			else
-				last_frame_[0] += filters_[i].Tick(waves_[i].Tick());
+			else{
+				w.Tick();
+				
+				const auto& src_frame = w.GetLastFrame();
+				int chs = src_frame.GetChannelCount();
+				for(int ch = 0; ch < chs; ch++) {
+					last_frame_[ch] += filters_[i].Tick(src_frame[ch]);
+				}
+			}
 		}
 	}
 	
@@ -159,7 +198,14 @@ void Drummer::NoteOn(double instrument, double amplitude) {
 		
 		sound_order_[i_wave] = sounding_count - 1;
 		sound_number_[i_wave] = note_number;
+		
+		#if 0
 		waves_[i_wave].OpenFile((Audio::GetRawWavePath() + wave_names[ gen_midi_map[ note_number ] ]).Begin(), true);
+		#else
+		String path = preset.Get(note_number, String());
+		if (!path.IsEmpty())
+			waves_[i_wave].OpenFile(path.Begin(), false);
+		#endif
 		
 		if (Audio::GetSampleRate() != 44100.0)
 			waves_[i_wave].SetRate(44100.0 / Audio::GetSampleRate());

@@ -172,7 +172,8 @@ struct PacketBuffer : LinkedList<Packet> {
 	RWMutex lock;
 	bool chk_lock = false;
 	
-	void Add(const Packet& p) {ASSERT(chk_lock); LinkedList<Packet>::Add(p);}
+	Packet& Add() {ASSERT(chk_lock); return LinkedList<Packet>::Add();}
+	Packet& Add(const Packet& p) {ASSERT(chk_lock); return LinkedList<Packet>::Add(p);}
 	void RemoveFirst() {ASSERT(chk_lock); LinkedList<Packet>::RemoveFirst();}
 	void RemoveFirst(int i) {ASSERT(chk_lock); LinkedList<Packet>::RemoveFirst(i);}
 	void EnterRead() {lock.EnterRead(); chk_lock = true;}

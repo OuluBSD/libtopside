@@ -65,7 +65,7 @@ void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase*
 bool SynFluidsynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws) {
 	int cache = 6;
 	dev.packet_count = 0;
-	dev.sample_rate = 64;
+	dev.sample_rate = 128;
 	dev.realtime = ws.GetBool(".realtime", false);
 	dev.max_cache = dev.realtime ? 1 : cache;
 	

@@ -85,6 +85,7 @@ machine midi.app:
 		loop drums:
 			center.customer
 			coredrummer.pipe[loop == event][${DRUMOUT}]:
+				preset = "presets/gscw1.preset"
 				ch.oh = 1
 				ch.kick = 2
 				ch.snare = 3

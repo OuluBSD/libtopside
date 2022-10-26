@@ -7,5 +7,7 @@ share/presets/fmsynth/generated/*.wav
 pose/**
 gpl/**
 sounds/sf2/**
+sounds/samples/**
 share/sf2/**
+share/samples
 **.md.swp

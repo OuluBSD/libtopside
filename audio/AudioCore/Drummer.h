@@ -13,11 +13,12 @@ public:
 
 	Drummer();
 	~Drummer();
+	void SetPreset(String preset);
 	void NoteOn( double instrument, double amplitude );
 	void NoteOff( double amplitude );
 	double Tick( unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-
+	
 protected:
 
 	FileWaveIn waves_[DRUM_POLYPHONY];
@@ -25,6 +26,8 @@ protected:
 	Vector<int> sound_order_;
 	Vector<int> sound_number_;
 	int sounding_count;
+	VectorMap<int, String> preset;
+	
 };
 
 

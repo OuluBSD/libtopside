@@ -2,6 +2,10 @@
 
 NAMESPACE_AUDIO_BEGIN
 
+Instrument::Instrument() {
+	last_frame_.SetCount( 1, 2, 0.0 );
+}
+
 void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 	int channel = e.GetChannel();
 	
