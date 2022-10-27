@@ -24,6 +24,8 @@ public:
 	virtual void SetEffectMix( double mix );
 	
 	virtual double Tick( double input, unsigned int channel ) = 0;
+	virtual double Tick2( double input1, double input2, unsigned int channel ) {Panic("not implemented"); return 0;}
+	virtual void LoadState(const ArrayMap<String, Object>& state) {}
 	
 protected:
 

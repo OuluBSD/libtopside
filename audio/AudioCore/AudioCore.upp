@@ -40,6 +40,8 @@ file
 	Chorus.cpp,
 	Clarinet.h,
 	Clarinet.cpp,
+	Compressor.h,
+	Compressor.cpp,
 	Cubic.h,
 	Delay.h,
 	Delay.cpp,

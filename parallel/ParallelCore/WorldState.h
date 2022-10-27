@@ -34,7 +34,7 @@ protected:
 	friend class ::TS::Serial::ScriptDriverLoader;
 	
 	
-	ArrayMap<String, Object>	values;
+	ArrayMap<String, Object> values;
 	
 public:
 	
@@ -69,6 +69,8 @@ public:
 	int Compare(int idx, const WorldState& ws) const;
 	
 	WorldState& operator=(const WorldState& src);
+	
+	const ArrayMap<String, Object>& GetValues() const {return values;}
 	
 	bool operator==(const WorldState& ws) const {return GetHashValue() == ws.GetHashValue();}
 	bool operator!=(const WorldState& ws) const {return GetHashValue() != ws.GetHashValue();}

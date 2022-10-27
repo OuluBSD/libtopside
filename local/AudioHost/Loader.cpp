@@ -98,17 +98,31 @@ machine midi.app:
 			fluidsynth.pipe[loop == event]:
 				verbose = false
 				patch = ${PATCH}
-			center.audio.side.src.center.user[][loop == mixer]
+			corefx.pipe:
+				filter = "compressor"
+				gain.db = 10
+			center.audio.side.src.center.user[][loop == sidecomp]
 )eon";
 
 	const char* drum_ch_tmpl = R"eon(
 		loop ch.${CHANNEL}:
 			center.customer
 			center.audio.side.sink.center.user[loop == drums]
+			corefx.pipe:
+				filter = "compressor"
 			center.audio.side.src.center.user[][loop == mixer]
 )eon";
 
 	const char* end = R"eon(
+		loop sidecomp:
+			center.customer
+			center.audio.mixer16[${SIDECOMPIN}]:
+				auto.limit = true
+			//corefx.pipe:
+			//	filter = "compressor"
+			//	sidechain = true
+			center.audio.side.src.center.user[][loop == mixer]
+		
 		loop mixer:
 			center.customer
 			center.audio.mixer16[${SIDEIN}]:
@@ -138,7 +152,11 @@ machine midi.app:
 	
 	const char* drum_ch[4] {"oh", "kick", "snare", "toms"};
 	String drumout;
-	String sidein = sideout;
+	String sidecompin = sideout;
+	String sidein;
+	
+	sidein << "loop == sidecomp";
+	
 	for(int i = 0; i < 4; i++) {
 		sidein  << ", loop == ch." << drum_ch[i];
 		if (i)
@@ -162,6 +180,7 @@ machine midi.app:
 	eon.Replace("${PATH}", path);
 	eon.Replace("${SIDEOUT}", sideout);
 	eon.Replace("${SIDEIN}", sidein);
+	eon.Replace("${SIDECOMPIN}", sidecompin);
 	eon.Replace("${DRUMOUT}", drumout);
 	eon.Replace("${DRUM_CH}", IntStr(sideout_count));
 	

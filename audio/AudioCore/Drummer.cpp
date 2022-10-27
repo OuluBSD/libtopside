@@ -102,11 +102,9 @@ double Drummer::Tick(unsigned int) {
 				}
 				
 				sound_order_[i] = -1;
-				
 				sounding_count--;
 			}
-			
-			else{
+			else {
 				w.Tick();
 				
 				const auto& src_frame = w.GetLastFrame();

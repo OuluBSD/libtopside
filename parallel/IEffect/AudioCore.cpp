@@ -30,6 +30,7 @@ void FxAudioCore::Effect_Visit(NativeEffect& dev, AtomBase&, RuntimeVisitor& vis
 template <class T>
 void CreateSynCoreEffect(FxAudioCore::NativeEffect& dev, AtomBase& a, const Script::WorldState& ws) {
 	T* t = new T();
+	t->LoadState(ws.GetValues());
 	dev.effect = t;
 }
 
@@ -46,6 +47,7 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 	else if (instrument == "freeverb")			CreateSynCoreEffect<Audio::FreeVerb>(dev, a, ws);
 	else if (instrument == "nrev")				CreateSynCoreEffect<Audio::NRev>(dev, a, ws);
 	else if (instrument == "lentpitchshift")	CreateSynCoreEffect<Audio::LentPitchShift>(dev, a, ws);
+	else if (instrument == "compressor")		CreateSynCoreEffect<Audio::Compressor>(dev, a, ws);
 	/*
 	else if (instrument == "delay")			CreateSynCoreEffect<Audio::Delay>(dev, a, ws);
 	else if (instrument == "delaya")		CreateSynCoreEffect<Audio::DelayA>(dev, a, ws);
@@ -66,7 +68,7 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 		return false;
 	}
 	
-	dev.sample_rate = ws.GetInt(".samplerate", 1024);
+	dev.sample_rate = ws.GetInt(".samplerate", 128);
 	{
 		ISinkRef sink = a.GetSink();
 		int c = sink->GetSinkCount();

@@ -121,4 +121,6 @@
 #include "TwoPole.h"
 #include "NRev.h"
 
+#include "Compressor.h"
+
 #endif
