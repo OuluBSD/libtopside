@@ -5,6 +5,7 @@
 #define _IMidiHw_IMidiHw_h_
 
 #include <ParallelLib/ParallelLib.h>
+#include <MidiFile/MidiFile.h>
 
 NAMESPACE_PARALLEL_BEGIN
 

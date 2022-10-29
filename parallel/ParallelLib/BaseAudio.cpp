@@ -106,6 +106,10 @@ void AudioMixerBase::Uninitialize() {
 	buf.Clear();
 }
 
+bool AudioMixerBase::IsReady(PacketIO& io) {
+	return io.full_src_mask == 0 && (io.active_sink_mask & 0x1);
+}
+
 bool AudioMixerBase::Recv(int sink_ch, const Packet& in) {
 	
 	Format fmt = in->GetFormat();
@@ -136,6 +140,8 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 	}
 	
 	//DUMP(min_remaining);
+	if (min_remaining == INT_MAX)
+		return;
 	int total_samples = min_remaining * channels;
 	buf.SetCount(total_samples);
 	float* begin = buf.Begin();
@@ -216,6 +222,12 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 				*dst++ *= mul;
 		}
 	}
+	
+	#if 0
+	dst = begin;
+	while (dst != end)
+		*dst++ = RandomFloat32();
+	#endif
 	
 	//DUMPC(buf);
 }

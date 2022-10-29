@@ -6,6 +6,7 @@ NAMESPACE_AUDIO_BEGIN
 
 
 struct CompressorParameter {
+	float freq;
     float gain_db;		// gain_db is the pre-gain or input-gain level (dB)
     float ratio;		// ratio is the compression ratio
     float th_db;		// th_db is the threshold level (dB)

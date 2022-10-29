@@ -28,6 +28,8 @@ void CompressorParameter::SetDefault(float freq) {
 
 void CompressorParameter::Init(float freq)
 {
+	this->freq = freq;
+	
 	// Apply parameters limits
 	if (gain_db > 20)
 		gain_db = 20;
@@ -197,6 +199,9 @@ double Compressor::Tick2( double input1, double input2, unsigned int channel ) {
 	this->sample = LinearToDb(this->sign * this->sample);
 	static float gain_db = 0;
 	
+	int input2_sign = input2 < 0 ? -1 : +1;
+	input2 = LinearToDb(input2_sign * input2);
+	
 	gain_db = PreGainDb();
 	this->sample += gain_db;
 	
@@ -219,9 +224,35 @@ double Compressor::Tick2( double input1, double input2, unsigned int channel ) {
 void Compressor::LoadState(const ArrayMap<String, Object>& state) {
 	int i;
 	
-	i = state.Find(".gain.db");
-	if (i >= 0) param.gain_db = state[i].ToDouble();
+	i = state.Find(".gain");
+	if (i >= 0)
+		param.gain_db = state[i].ToDouble();
 	
+	i = state.Find(".treshold");
+	if (i >= 0)
+		param.th_db = state[i].ToDouble();
+	
+	i = state.Find(".knee");
+	if (i >= 0)
+		param.w_db = state[i].ToDouble();
+	
+	i = state.Find(".ratio");
+	if (i >= 0)
+		param.ratio = state[i].ToDouble();
+	
+	i = state.Find(".attack");
+	if (i >= 0)
+		param.att = state[i].ToDouble();
+	
+	i = state.Find(".release");
+	if (i >= 0)
+		param.rlt = state[i].ToDouble();
+	
+	i = state.Find(".auto.makeup");
+	if (i >= 0)
+		param.is_auto_makeup = state[i].ToBool();
+	
+	param.Init(param.freq);
 }
 
 

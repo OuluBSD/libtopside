@@ -306,6 +306,14 @@ AtomTypeCls CoreEffectPipe::GetAtomType() {
 	t.sub = SubAtomCls::CORE_EFFECT_PIPE;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
 	t.AddOut(VD(CENTER,AUDIO),0);
 	return t;
 }
@@ -319,6 +327,40 @@ void CoreEffectPipe::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls CoreEffectPipe::GetType() const {
+	return GetAtomType();
+}
+
+
+String CoreEffectAtom::GetAction() {
+	return "corefx.atom";
+}
+
+AtomTypeCls CoreEffectAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CORE_EFFECT_ATOM;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddIn(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),0);
+	return t;
+}
+
+LinkTypeCls CoreEffectAtom::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void CoreEffectAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<AudioCoreEffect>(this);
+}
+
+AtomTypeCls CoreEffectAtom::GetType() const {
 	return GetAtomType();
 }
 

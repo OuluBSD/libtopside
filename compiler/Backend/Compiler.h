@@ -18,8 +18,8 @@ public:
 	Compiler();
 	
 	bool CompileEonFile(String filepath, ProgLang lang, String& output);
-	bool CompileEon(String content, String path, ProgLang lang, String& output);
-	AstNode* CompileAst(String content, String path);
+	bool CompileEon(String content, String path, ProgLang lang, String& output, bool verbose=false);
+	AstNode* CompileAst(String content, String path, bool verbose=false);
 	
 public:
 	bool Tokenize(String filepath, String content, bool pythonic=false);

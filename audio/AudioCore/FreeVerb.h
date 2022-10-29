@@ -26,7 +26,8 @@ public:
 	double Tick( double inputL, double inputR = 0.0, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
 	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
-
+	void LoadState(const ArrayMap<String, Object>& state) override;
+	
 protected:
 
 	void Refresh();

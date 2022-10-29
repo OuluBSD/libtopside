@@ -143,12 +143,13 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 			PacketIO::Source& iface = io.srcs[src_ch];
 			Packet& sent = iface.p;
 			if (sent) {
+				ASSERT(iface.val);
 				iter_forwarded = true;
 				
 				ASSERT(iface.from_sink_ch >= 0);
 				Value& src_val = src_iface->GetSourceValue(src_ch);
 				RTLOG("LinkBase::ForwardPipe: packet from sink #" << iface.from_sink_ch << " to #" << src_ch << " src_val=" << HexStr(&src_val) << " sink_val=" << HexStr(iface.val));
-				ASSERT(!iface.val->IsQueueFull());
+				ASSERT(!src_val.IsQueueFull());
 				
 				PacketBuffer& src_buf = src_val.GetBuffer();
 				PacketTracker_Checkpoint("LinkBase::ForwardSource", __FILE__, __LINE__, *sent);

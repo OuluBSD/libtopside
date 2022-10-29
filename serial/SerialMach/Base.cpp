@@ -642,7 +642,7 @@ void SplitterLink::Uninitialize() {
 }
 
 bool SplitterLink::IsReady(PacketIO& io) {
-	bool b = io.full_src_mask == 0;
+	bool b = io.full_src_mask == 0 && (io.active_sink_mask & 0x1);
 	
 	RTLOG("SplitterLink::IsReady: " << (b ? "true " : "false ") << BinStr(io.full_src_mask));
 	
@@ -664,6 +664,8 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 	InterfaceSourceRef src_iface = GetSource();
 	for(int i = 1; i < io.srcs.GetCount(); i++) {
 		PacketIO::Source& src = io.srcs[i];
+		if (!src.val)
+			continue;
 		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
 		if (src_fmt.IsCopyCompatible(in_fmt)) {
 			src.from_sink_ch = 0;

@@ -100,8 +100,8 @@ machine midi.app:
 				patch = ${PATCH}
 			corefx.pipe:
 				filter = "compressor"
-				gain.db = 10
-			center.audio.side.src.center.user[][loop == sidecomp]
+				gain = 10
+			center.audio.side.src.center.user[][loop == sidemixer]
 )eon";
 
 	const char* drum_ch_tmpl = R"eon(
@@ -110,17 +110,36 @@ machine midi.app:
 			center.audio.side.sink.center.user[loop == drums]
 			corefx.pipe:
 				filter = "compressor"
-			center.audio.side.src.center.user[][loop == mixer]
+			center.audio.side.src.center.user[][loop == mixer${DRUMSIDEOUT}]
 )eon";
 
 	const char* end = R"eon(
-		loop sidecomp:
+		loop sidemixer:
 			center.customer
 			center.audio.mixer16[${SIDECOMPIN}]:
 				auto.limit = true
-			//corefx.pipe:
-			//	filter = "compressor"
-			//	sidechain = true
+			center.audio.side.src.center.user[][loop == sidecomp, loop == reverb]
+		
+		loop sidecomp:
+			center.customer
+			corefx.atom[loop == sidemixer, ${SIDECOMPCHAININ}]:
+				filter = "compressor"
+				sidechain = true
+				treshold = -20
+				attack = 20
+				release = 100
+				ratio = 5
+				auto.makeup = false
+			center.audio.side.src.center.user[][loop == mixer]
+		
+		loop reverb:
+			center.customer
+			center.audio.mixer16[loop == sidemixer${REVERBIN}]:
+				auto.limit = true
+			corefx.pipe:
+				filter = "freeverb"
+				mix = 1.0
+				roomsize = 0.98
 			center.audio.side.src.center.user[][loop == mixer]
 		
 		loop mixer:
@@ -154,17 +173,34 @@ machine midi.app:
 	String drumout;
 	String sidecompin = sideout;
 	String sidein;
+	String sidecompchainin;
+	String reverbin;
 	
-	sidein << "loop == sidecomp";
+	sidein << "loop == sidecomp, loop == reverb";
 	
 	for(int i = 0; i < 4; i++) {
+		String drumsideout;
+		
 		sidein  << ", loop == ch." << drum_ch[i];
 		if (i)
 			drumout << ", ";
 		drumout << "loop == ch." << drum_ch[i];
 		
+		// Others than 'oh'
+		if (i != 0) {
+			if (!sidecompchainin.IsEmpty()) sidecompchainin << ", ";
+			sidecompchainin << "loop == ch." << drum_ch[i];
+			drumsideout << ", loop == sidecomp";
+		}
+		// Others than 'kick' are connected to reverb
+		if (i != 1) {
+			reverbin << ", loop == ch." << drum_ch[i];
+			drumsideout << ", loop == reverb";
+		}
+		
 		String ch = drum_ch_tmpl;
 		ch.Replace("${CHANNEL}", drum_ch[i]);
+		ch.Replace("${DRUMSIDEOUT}", drumsideout);
 		eon += ch;
 		
 		if (sideout.GetCount()) sideout << ", ";
@@ -181,8 +217,10 @@ machine midi.app:
 	eon.Replace("${SIDEOUT}", sideout);
 	eon.Replace("${SIDEIN}", sidein);
 	eon.Replace("${SIDECOMPIN}", sidecompin);
+	eon.Replace("${SIDECOMPCHAININ}", sidecompchainin);
 	eon.Replace("${DRUMOUT}", drumout);
 	eon.Replace("${DRUM_CH}", IntStr(sideout_count));
+	eon.Replace("${REVERBIN}", reverbin);
 	
 	
 	//LOG(eon);

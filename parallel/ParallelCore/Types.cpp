@@ -9,7 +9,7 @@ Format GetDefaultFormat(ValDevCls type) {
 	Format fmt;
 	
 	if (type.val == ValCls::AUDIO) {
-		fmt.SetAudio(type.dev, SoundSample::U16_LE, 2, 44100, 128);
+		fmt.SetAudio(type.dev, SoundSample::FLT_LE, 2, 44100, 128);
 	}
 	else if (type.val == ValCls::ORDER) {
 		fmt.SetOrder(type.dev);

@@ -230,6 +230,13 @@ AtomTypeCls AudioSplitterUser::GetAtomType() {
 	t.AddIn(VD(CENTER,AUDIO),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
 	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
+	t.AddOut(VD(CENTER,AUDIO),1);
 	return t;
 }
 

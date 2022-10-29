@@ -35,8 +35,7 @@ bool Compiler::CompileEonFile(String filepath, ProgLang lang, String& output) {
 
 #define TEST(x) if (!(x)) {return 0;}
 
-AstNode* Compiler::CompileAst(String content, String path) {
-	bool verbose = true;
+AstNode* Compiler::CompileAst(String content, String path, bool verbose) {
 	
 	// Tokenize eon
 	TEST(Tokenize(path, content, true))
@@ -56,8 +55,7 @@ AstNode* Compiler::CompileAst(String content, String path) {
 	return &ar.GetRoot();
 }
 
-bool Compiler::CompileEon(String content, String path, ProgLang lang, String& output) {
-	bool verbose = true;
+bool Compiler::CompileEon(String content, String path, ProgLang lang, String& output, bool verbose) {
 	
 	if (!CompileAst(content, path))
 		return false;

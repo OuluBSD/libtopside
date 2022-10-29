@@ -276,6 +276,22 @@ void IfaceConnTuple::Realize(const AtomTypeCls& type) {
 	}
 }
 
+bool IfaceConnTuple::HasCommonConnection(const IfaceConnTuple& src) const {
+	for (const IfaceConnLink& a : this->sink) {
+		for (const IfaceConnLink& b : src.src) {
+			if (a.conn == b.conn)
+				return true;
+		}
+	}
+	for (const IfaceConnLink& a : this->src) {
+		for (const IfaceConnLink& b : src.sink) {
+			if (a.conn == b.conn)
+				return true;
+		}
+	}
+	return false;
+}
+
 void IfaceConnTuple::SetSource(int conn, int src_ch, int sink_ch) {
 	ASSERT(src_ch >= 0 && src_ch < type.iface.src.GetCount());
 	ASSERT(src_ch < type.iface.src.GetCount());

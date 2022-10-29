@@ -155,6 +155,7 @@ public:
 	bool Recv(int sink_ch, const Packet& in) override;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void Finalize(RealtimeSourceConfig& cfg) override;
+	bool IsReady(PacketIO& io) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	

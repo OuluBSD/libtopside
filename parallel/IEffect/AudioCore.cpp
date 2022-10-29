@@ -1,4 +1,6 @@
 #include "IEffect.h"
+#include <SerialMach/SerialMach.h>
+
 
 #if 1
 NAMESPACE_PARALLEL_BEGIN
@@ -8,7 +10,11 @@ struct FxAudioCore::NativeEffect {
     One<Audio::Effect> effect;
     int channel_count;
     int sample_rate;
+    int prim_audio_sink_ch;
+    dword packet_in_mask;
     Packet last_audio_in;
+    ArrayMap<int, Packet> last_audio_side_in;
+    Vector<float> buffer;
 };
 
 
@@ -72,18 +78,31 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 	{
 		ISinkRef sink = a.GetSink();
 		int c = sink->GetSinkCount();
-		Value& v = sink->GetValue(c-1);
-		Format fmt = v.GetFormat();
-		if (!fmt.IsAudio())
+		
+		dev.prim_audio_sink_ch = -1;
+		float freq = 0;
+		for(int i = 0; i < c; i++) {
+			Value& v = sink->GetValue(i);
+			Format fmt = v.GetFormat();
+			if (fmt.IsAudio()) {
+				AudioFormat& afmt = fmt;
+				if (dev.prim_audio_sink_ch < 0) {
+					freq = afmt.freq;
+					dev.prim_audio_sink_ch = i;
+				}
+
+				afmt.SetType(BinarySample::FLT_LE);
+				afmt.SetSampleRate(dev.sample_rate);
+				v.SetFormat(fmt);
+			}
+		}
+		if (dev.prim_audio_sink_ch < 0)
 			return false;
 		
-		AudioFormat& afmt = fmt;
-		afmt.SetType(BinarySample::FLT_LE);
-		afmt.SetSampleRate(dev.sample_rate);
-		dev.effect->SetSampleRate(afmt.freq);
 		
-		v.SetFormat(fmt);
+		dev.effect->SetSampleRate(freq);
 	}
+	
 	{
 		ISourceRef src = a.GetSource();
 		int c = src->GetSourceCount();
@@ -104,6 +123,14 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 }
 
 bool FxAudioCore::Effect_PostInitialize(NativeEffect& dev, AtomBase& a) {
+	dev.packet_in_mask = 0x1;
+	dev.packet_in_mask |= 1 << dev.prim_audio_sink_ch;
+	Serial::Link* lb = a.GetLink();
+	const auto& srcs = lb->SideSources();
+	for(const auto& src : srcs) {
+		int ch = src.local_ch_i;
+		dev.packet_in_mask |= 1 << ch;
+	}
 	return true;
 }
 
@@ -121,34 +148,12 @@ void FxAudioCore::Effect_Uninitialize(NativeEffect& dev, AtomBase& a) {
 
 bool FxAudioCore::Effect_Send(NativeEffect& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	Format fmt = out.GetFormat();
-	if (fmt.IsAudio() && dev.last_audio_in) {
-		AudioFormat& afmt = fmt;
-		int sr = afmt.GetSampleRate();
-		int ch = afmt.GetSize();
-		ASSERT(ch == dev.channel_count);
-		ASSERT(afmt.IsSampleFloat());
-		
-		Format in_fmt = dev.last_audio_in->GetFormat();
-		AudioFormat& in_afmt = in_fmt;
-		int in_sr = in_afmt.GetSampleRate();
-		const Vector<byte>& in = dev.last_audio_in->Data();
-		const float* in_f = (const float*)(const byte*)in.Begin();
-		
+	if (dev.buffer.GetCount()) {
 		Vector<byte>& d = out.Data();
-		d.SetCount(afmt.GetFrameSize(), 0);
+		int bytes = dev.buffer.GetCount() * sizeof(float);
+		d.SetCount(bytes, 0);
 		float* f = (float*)(byte*)d.Begin();
-		
-		Audio::Effect& fx = *dev.effect;
-		ch = min(ch, dev.channel_count);
-		
-		for(int i = 0; i < sr; i++) {
-			for(int j = 0; j < ch; j++) {
-				float iv = *in_f++;
-				float ov = fx.Tick(iv, j);
-				*f++ = ov;
-			}
-		}
-		dev.last_audio_in.Clear();
+		memcpy(f, dev.buffer.Begin(), bytes);
 	}
 	return true;
 }
@@ -156,7 +161,10 @@ bool FxAudioCore::Effect_Send(NativeEffect& dev, AtomBase& a, RealtimeSourceConf
 bool FxAudioCore::Effect_Recv(NativeEffect& dev, AtomBase& a, int sink_ch, const Packet& in) {
 	Format fmt = in->GetFormat();
 	if (fmt.IsAudio()) {
-		dev.last_audio_in = in;
+		if (sink_ch == dev.prim_audio_sink_ch)
+			dev.last_audio_in = in;
+		else
+			dev.last_audio_side_in.GetAdd(sink_ch) = in;
 	}
 	else if (fmt.IsOrder()) {
 		// pass
@@ -168,13 +176,91 @@ bool FxAudioCore::Effect_Recv(NativeEffect& dev, AtomBase& a, int sink_ch, const
 }
 
 void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
-	
+	if (dev.last_audio_in) {
+		if (dev.last_audio_side_in.IsEmpty()) {
+			Format fmt = dev.last_audio_in->GetFormat();
+			
+			AudioFormat& afmt = fmt;
+			int sr = afmt.GetSampleRate();
+			int ch = afmt.GetSize();
+			ASSERT(ch == dev.channel_count);
+			ASSERT(afmt.IsSampleFloat());
+			
+			Format in_fmt = dev.last_audio_in->GetFormat();
+			AudioFormat& in_afmt = in_fmt;
+			int in_sr = in_afmt.GetSampleRate();
+			const Vector<byte>& in = dev.last_audio_in->Data();
+			const float* in_f = (const float*)(const byte*)in.Begin();
+			
+			dev.buffer.SetCount(sr * ch, 0);
+			float* f = (float*)dev.buffer.Begin();
+			
+			Audio::Effect& fx = *dev.effect;
+			ch = min(ch, dev.channel_count);
+			
+			for(int i = 0; i < sr; i++) {
+				for(int j = 0; j < ch; j++) {
+					float iv = *in_f++;
+					float ov = fx.Tick(iv, j);
+					*f++ = ov;
+				}
+			}
+			dev.last_audio_in.Clear();
+		}
+		else {
+			Format fmt = dev.last_audio_in->GetFormat();
+			
+			AudioFormat& afmt = fmt;
+			int sr = afmt.GetSampleRate();
+			int ch = afmt.GetSize();
+			ASSERT(ch == dev.channel_count);
+			ASSERT(afmt.IsSampleFloat());
+			
+			Format in_fmt = dev.last_audio_in->GetFormat();
+			AudioFormat& in_afmt = in_fmt;
+			int in_sr = in_afmt.GetSampleRate();
+			const Vector<byte>& in = dev.last_audio_in->Data();
+			const float* in_f = (const float*)(const byte*)in.Begin();
+			
+			
+			const float* side_in_f[16];
+			const int side_c = min(16,dev.last_audio_side_in.GetCount());
+			for(int i = 0; i < side_c; i++) {
+				Packet& side_p = dev.last_audio_side_in[i];
+				const Vector<byte>& side_in = side_p->Data();
+				side_in_f[i] = (const float*)(const byte*)side_in.Begin();
+			}
+			
+			dev.buffer.SetCount(afmt.GetSampleRate() * afmt.GetSize(), 0);
+			float* f = (float*)dev.buffer.Begin();
+			
+			Audio::Effect& fx = *dev.effect;
+			ch = min(ch, dev.channel_count);
+			
+			for(int i = 0; i < sr; i++) {
+				for(int j = 0; j < ch; j++) {
+					float iv = *in_f++;
+					float siv = 0;
+					for(int k = 0; k < side_c; k++)
+						siv += *side_in_f[k]++;
+					float ov = fx.Tick2(iv, siv, j);
+					*f++ = ov;
+				}
+			}
+			dev.last_audio_in.Clear();
+			dev.last_audio_side_in.Clear();
+		}
+	}
 }
 
 bool FxAudioCore::Effect_IsReady(NativeEffect& dev, AtomBase& a, PacketIO& io) {
 	// Primary sink is required always (continuous audio) so ignore midi input, which is mixed
 	// to primary occasionally.
-	return (io.active_sink_mask & 0x1) && io.full_src_mask == 0;
+	bool b = ((io.active_sink_mask & dev.packet_in_mask) == dev.packet_in_mask) && io.full_src_mask == 0;
+	if (b && dev.packet_in_mask != 1) {
+		LOG("");
+	}
+	return b;
 }
 
 

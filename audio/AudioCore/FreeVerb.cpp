@@ -51,6 +51,19 @@ FreeVerb::FreeVerb() {
 FreeVerb::~FreeVerb() {
 }
 
+void FreeVerb::LoadState(const ArrayMap<String, Object>& state) {
+	int i;
+	
+	i = state.Find(".mix");
+	if (i >= 0)
+		SetEffectMix(state[i].ToDouble());
+	
+	i = state.Find(".roomsize");
+	if (i >= 0)
+		SetRoomSize(state[i].ToDouble());
+	
+}
+
 void FreeVerb::SetEffectMix( double mix ) {
 	Effect::SetEffectMix( mix );
 	Refresh();

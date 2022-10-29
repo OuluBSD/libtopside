@@ -164,13 +164,13 @@ void Drummer::NoteOn(double instrument, double amplitude) {
 			if (waves_[i_wave].IsFinished()) {
 				sound_order_[i_wave] = sounding_count;
 				sounding_count++;
+				
+				waves_[i_wave].Reset();
+				
+				filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
+				filters_[i_wave].SetGain(amplitude);
+				break;
 			}
-			
-			waves_[i_wave].Reset();
-			
-			filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
-			filters_[i_wave].SetGain(amplitude);
-			break;
 		}
 	}
 	
@@ -214,6 +214,9 @@ void Drummer::NoteOn(double instrument, double amplitude) {
 }
 
 void Drummer::NoteOff(double amplitude) {
+	if (skip_note_off)
+		return;
+	
 	int i = 0;
 	
 	while (i < sounding_count)

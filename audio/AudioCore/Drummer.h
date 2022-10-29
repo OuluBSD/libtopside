@@ -6,7 +6,7 @@ NAMESPACE_AUDIO_BEGIN
 
 
 const int DRUM_NUMWAVES = 11;
-const int DRUM_POLYPHONY = 4;
+const int DRUM_POLYPHONY = 64;
 
 class Drummer : public Instrument {
 public:
@@ -27,6 +27,7 @@ protected:
 	Vector<int> sound_number_;
 	int sounding_count;
 	VectorMap<int, String> preset;
+	bool skip_note_off = true;
 	
 };
 

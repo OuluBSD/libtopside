@@ -422,6 +422,9 @@ struct IfaceConnTuple {
 		src <<= s.src;
 		type = s.type;
 	}
+	
+	bool HasCommonConnection(const IfaceConnTuple& src) const;
+	
 };
 
 

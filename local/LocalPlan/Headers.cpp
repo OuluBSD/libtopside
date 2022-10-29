@@ -88,8 +88,8 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("AudioSplitterUser", "VoidBase", "pipe")
-		.In("CenterAudio").Out("CenterReceipt").OutOpt("CenterAudio")
-		.Action("center.audio.side.src.center.user")
+		.In("CenterAudio").Out("CenterReceipt").OutOpt(8, "CenterAudio")
+		.Action(" center.audio.side.src.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("SPLITTER", "PROCESS")
 	;
@@ -624,8 +624,17 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("CoreEffectPipe", "AudioCoreEffect", "pipe")
-		.In("CenterAudio").Out("CenterAudio")
+		.In("CenterAudio").InOpt(8, "CenterAudio")
+		.Out("CenterAudio")
 		.Action("corefx.pipe")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("CoreEffectAtom", "AudioCoreEffect", "pipe")
+		.In("CenterOrder").InOpt(8, "CenterAudio")
+		.Out("CenterAudio")
+		.Action("corefx.atom")
 		.Arg("HINT_PKG", "AtomAudio")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

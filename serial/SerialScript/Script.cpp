@@ -721,6 +721,12 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 								sink_cand_i >= 0 ?
 									&sink_atom.sink_link_cands[sink_cand_i] : 0;
 							
+							// Only single fully optional is tried (so continue if connection exists)
+							if ((sink_is_opt && !sink_cand) || (src_is_opt && !src_cand)) {
+								if (src_atom.iface.HasCommonConnection(sink_atom.iface))
+									continue;
+							}
+							
 							if (sink_conn.conn < 0 && src_vd == sink_vd) {
 								bool cond_prevents = false;
 								

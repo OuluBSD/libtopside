@@ -132,7 +132,7 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 			RTLOG("from: " << src_fmt.ToString());
 			RTLOG("to:   " << dst_fmt.ToString());
 		}
-		ASSERT(src_data.GetCount() == src_frame_sz);
+		ASSERT(src_data.IsEmpty() || src_data.GetCount() == src_frame_sz);
 		
 		#else
 		
@@ -157,7 +157,10 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 		
 		#endif
 		
-		ret = AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
+		if (src_data.IsEmpty())
+			ret = true;
+		else
+			ret = AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
 	}
 	else {
 		LOG("from: " << src_fmt.ToString() << "\nto:   " << dst_fmt.ToString());

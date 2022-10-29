@@ -154,6 +154,19 @@ public:
 	
 };
 
+class CoreEffectAtom : public AudioCoreEffect {
+
+public:
+	RTTI_DECL1(CoreEffectAtom, AudioCoreEffect)
+	COPY_PANIC(CoreEffectAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 #if defined flagLV2
 class LV2EffectPipe : public LV2Effect {
 
