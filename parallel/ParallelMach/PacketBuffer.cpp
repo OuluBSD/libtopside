@@ -36,6 +36,17 @@ PacketTimingManager::PacketTimingManager() {
 PacketTimingManager::~PacketTimingManager() {
 	
 }
+
+PacketTimingManager& PacketTimingManager::Local() {
+	return timemgr;
+}
+
+float PacketTimingManager::Get() const {
+	float s = ts.Seconds();
+	ASSERT(s > 0.0f);
+	return s;
+}
+
 #endif
 
 
@@ -170,7 +181,7 @@ void PacketValue::Pick(PacketValue& p) {
 	#endif
 }
 
-#if HAVE_PACKETTIMING
+#if HAVE_PACKETTIMINGCHECK
 void PacketValue::CheckTiming() {
 	float time = timemgr.Get();
 	if (limit_time != 0 && time > limit_time) {
@@ -184,10 +195,23 @@ void PacketValue::SetTimingLimit(float duration_sec) {
 	begin_time = timemgr.Get();
 	limit_time = begin_time + duration_sec;
 }
+#endif
+
+#if HAVE_PACKETTIMING
+void PacketValue::SetAge(float sec) {
+	begin_time = sec;
+}
+
+void PacketValue::SetBeginTime() {
+	begin_time = timemgr.Get();
+	ASSERT(begin_time > 0);
+}
 
 void PacketValue::CopyTiming(const PacketValue& v) {
 	begin_time = v.begin_time;
+#if HAVE_PACKETTIMINGCHECK
 	limit_time = v.limit_time;
+#endif
 }
 
 double PacketValue::GetAge() const {
@@ -196,6 +220,10 @@ double PacketValue::GetAge() const {
 		return time - begin_time;
 	}
 	return 0;
+}
+
+double PacketValue::GetBeginTime() const {
+	return begin_time;
 }
 
 #endif

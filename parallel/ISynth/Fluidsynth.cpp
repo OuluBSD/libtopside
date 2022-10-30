@@ -158,6 +158,10 @@ bool SynFluidsynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtime
 		else out.Data().SetCount(afmt.GetFrameSize(), 0);
 		
 		#if HAVE_PACKETTIMING
+		out.SetBeginTime();
+		#endif
+		
+		#if HAVE_PACKETTIMINGCHECK
 		out.SetTimingLimit(0.050f);
 		#endif
 	}
@@ -173,7 +177,7 @@ bool SynFluidsynth::Instrument_IsReady(NativeInstrument& dev, AtomBase& a, Packe
 bool SynFluidsynth::Instrument_Recv(NativeInstrument& dev, AtomBase& a, int sink_i, const Packet& in) {
 	Format fmt = in->GetFormat();
 	if (fmt.IsMidi()) {
-		#if HAVE_PACKETTIMING
+		#if HAVE_PACKETTIMINGCHECK
 		in->CheckTiming();
 		Cout() << "SynFluidsynth::Instrument_Recv: consuming age " << in->GetAge() << EOL;
 		LOG("SynFluidsynth::Instrument_Recv: consuming age " << in->GetAge());

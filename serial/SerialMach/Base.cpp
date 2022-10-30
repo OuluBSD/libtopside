@@ -677,6 +677,9 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 			#if HAVE_PACKETTRACKER
 			src.p->CopyRouteData(*sink.p);
 			#endif
+			#if HAVE_PACKETTIMING
+			src.p->CopyTiming(*sink.p);
+			#endif
 			if (Convert(sink.p, src.p)) {
 				RTLOG("SplitterLink::ProcessPackets: converted packet: " << src.p->ToString());
 			}
@@ -686,6 +689,8 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 				return false;
 			}
 		}
+		ASSERT(!src_fmt.IsAudio() || sink.p->GetBeginTime());
+		ASSERT(!src_fmt.IsAudio() || src.p->GetBeginTime());
 	}
 	
 	return true;

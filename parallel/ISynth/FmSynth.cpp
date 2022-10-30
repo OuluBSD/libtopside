@@ -101,6 +101,11 @@ bool SynFmSynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeSou
 		Vector<byte>& d = out.Data();
 		d.SetCount(afmt.GetFrameSize(), 0);
 		dev.instrument.RenderInterleaved((float*)(byte*)d.Begin(), sr);
+		
+		#if HAVE_PACKETTIMING
+		out.SetBeginTime();
+		#endif
+		
 	}
 	return true;
 }

@@ -168,6 +168,10 @@ bool SynCoreSynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeS
 				for (int j = 0; j < channel_count; j++ )
 					*f++ *= mul;
 		}
+		
+		#if HAVE_PACKETTIMING
+		out.SetBeginTime();
+		#endif
 	}
 	return true;
 }

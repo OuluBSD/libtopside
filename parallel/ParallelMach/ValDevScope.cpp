@@ -36,6 +36,8 @@ void SimpleValue::Exchange(Ex& e) {
 					#endif
 					#if HAVE_PACKETTIMING
 					dst->CopyTiming(*p);
+					#endif
+					#if HAVE_PACKETTIMINGCHECK
 					dst->CheckTiming();
 					#endif
 					sink_buf.EnterWrite();
@@ -46,7 +48,7 @@ void SimpleValue::Exchange(Ex& e) {
 					break;
 			}
 			else {
-				#if HAVE_PACKETTIMING
+				#if HAVE_PACKETTIMINGCHECK
 				p->CheckTiming();
 				#endif
 				sink_buf.EnterWrite();

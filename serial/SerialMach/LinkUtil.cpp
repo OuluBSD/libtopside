@@ -90,7 +90,7 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	partial_packet.Clear();
 	partial_pos = 0;
 	
-	#if HAVE_PACKETTIMING
+	#if HAVE_PACKETTIMINGCHECK
 	p->CheckTiming();
 	static int iter;
 	if (iter % 500 == 0) {

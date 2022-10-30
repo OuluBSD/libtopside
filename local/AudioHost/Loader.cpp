@@ -118,6 +118,7 @@ machine midi.app:
 			center.customer
 			center.audio.mixer16[${SIDECOMPIN}]:
 				auto.limit = true
+				sync = true
 			center.audio.side.src.center.user[][loop == sidecomp, loop == reverb]
 		
 		loop sidecomp:
@@ -136,6 +137,7 @@ machine midi.app:
 			center.customer
 			center.audio.mixer16[loop == sidemixer${REVERBIN}]:
 				auto.limit = true
+				sync = true
 			corefx.pipe:
 				filter = "freeverb"
 				mix = 1.0
@@ -146,6 +148,7 @@ machine midi.app:
 			center.customer
 			center.audio.mixer16[${SIDEIN}]:
 				auto.limit = true
+				sync = true
 			center.audio.sink.hw
 )eon";
 

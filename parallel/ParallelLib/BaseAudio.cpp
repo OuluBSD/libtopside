@@ -71,6 +71,8 @@ AudioMixerBase::AudioMixerBase() {
 
 bool AudioMixerBase::Initialize(const Script::WorldState& ws) {
 	auto_limit = ws.GetBool(".auto.limit", false);
+	sync = ws.GetBool(".sync", false);
+	max_sync_drift_time = ws.GetDouble(".sync.drift.limit", 0.010); // ms
 	
 	return true;
 }
@@ -125,9 +127,36 @@ bool AudioMixerBase::Recv(int sink_ch, const Packet& in) {
 }
 
 void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
+	int skip_count = 0, nonempty_count = 0;
+	if (sync) {
+		float min_begin = FLT_MAX;
+		int ch_i = -1;
+		for (auto& it : queue) {
+			ch_i++;
+			if (it.packets.IsEmpty()) continue;
+			Packet& p = it.packets[0];
+			float begin = p->GetBeginTime();
+			ASSERT(begin != 0);
+			min_begin = min(min_begin, begin);
+		}
+		float begin_limit = min_begin + max_sync_drift_time;
+		for (auto& it : queue) {
+			if (it.packets.IsEmpty()) continue;
+			Packet& p = it.packets[0];
+			float begin = p->GetBeginTime();
+			it.skip = begin >= begin_limit;
+			nonempty_count++;
+			skip_count += it.skip ? 1 : 0;
+		}
+	}
+	ASSERT(!nonempty_count || skip_count < nonempty_count);
+	
 	int min_remaining = INT_MAX;
+	float min_begin = FLT_MAX;
 	for (auto& it : queue) {
 		if (it.packets.IsEmpty())
+			continue;
+		if (it.skip)
 			continue;
 		Packet& p = it.packets[0];
 		it.fmt = p->GetFormat();
@@ -137,7 +166,11 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 		int remaining = samples - it.offset;
 		min_remaining = min(remaining, min_remaining);
 		//DUMP(remaining);
+		float begin = p->GetBeginTime();
+		min_begin = min(min_begin, begin);
 	}
+	if (!min_begin) min_begin = PacketTimingManager::Local().Get();
+	buffer_time = min_begin;
 	
 	//DUMP(min_remaining);
 	if (min_remaining == INT_MAX)
@@ -152,6 +185,8 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 	
 	for (auto& it : queue) {
 		if (it.packets.IsEmpty())
+			continue;
+		if (it.skip)
 			continue;
 		
 		AudioFormat& afmt = it.fmt;
@@ -179,19 +214,7 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 					src += skip_channels;
 				}
 			}
-			/*else if (st == SoundSample::U16_LE) {
-				const Vector<byte>& bdata = p->GetData();
-				const uint16* src = (const uint16*)(const byte*)bdata.Begin();
-				src += it.offset;
-				
-				dst = begin;
-				float* end = dst + copy;
-				while (dst != end) {
-					*dst++ += ConvertAudioSample<uint16,float>(*src++);
-				}
-			}*/
 			else {
-				TODO
 				it.packets.Remove(0);
 				it.offset = 0;
 				continue;
@@ -249,11 +272,13 @@ bool AudioMixerBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_c
 			int fsz = fmt.GetFrameSize();
 			ASSERT(bytes == fsz);
 			memcpy((byte*)data.Begin(), (const float*)this->buf.Begin(), bytes);
+			out.SetAge(buffer_time);
+			ASSERT(buffer_time != 0);
 			return true;
 		}
 	}
 	
-	return false;
+	return true;
 }
 
 

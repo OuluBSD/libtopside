@@ -12,10 +12,11 @@ NAMESPACE_PARALLEL_BEGIN
 #endif
 
 
+#define HAVE_PACKETTIMING 1
 #ifdef flagPACKETTIMING
-	#define HAVE_PACKETTIMING 1
+	#define HAVE_PACKETTIMINGCHECK 1
 #else
-	#define HAVE_PACKETTIMING 0
+	#define HAVE_PACKETTIMINGCHECK 0
 #endif
 
 
@@ -54,7 +55,8 @@ struct PacketTimingManager {
 	PacketTimingManager();
 	~PacketTimingManager();
 	void Clear() {}
-	float Get() const {return ts.Seconds();}
+	float Get() const;
+	static PacketTimingManager& Local();
 };
 
 #endif
@@ -74,6 +76,8 @@ class PacketValue :
 	#endif
 	#if HAVE_PACKETTIMING
 	float				begin_time = 0;
+	#endif
+	#if HAVE_PACKETTIMINGCHECK
 	float				limit_time = 0;
 	#endif
 	
@@ -121,11 +125,16 @@ public:
 	uint64					GetRouteDescriptor() const {return route_descriptor;}
 	#endif
 	
-	#if HAVE_PACKETTIMING
+	#if HAVE_PACKETTIMINGCHECK
 	void					CheckTiming();
 	void					SetTimingLimit(float duration_sec);
+	#endif
+	#if HAVE_PACKETTIMING
+	void					SetBeginTime();
+	void					SetAge(float sec);
 	void					CopyTiming(const PacketValue& v);
 	double					GetAge() const;
+	double					GetBeginTime() const;
 	#endif
 	
 	String					ToString() const;

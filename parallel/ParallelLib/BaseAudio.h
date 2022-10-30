@@ -134,9 +134,13 @@ class AudioMixerBase :
 	public Atom
 {
 	bool auto_limit = false;
+	bool sync = false;
+	float max_sync_drift_time = 0;
+	float buffer_time = 0;
 	
 	struct Item {
 		Array<Packet> packets;
+		bool skip = false;
 		int offset = 0;
 		Format fmt;
 	};

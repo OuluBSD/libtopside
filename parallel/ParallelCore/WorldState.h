@@ -59,6 +59,7 @@ public:
 	String Get(int idx) const;
 	Size GetSize(const String& cx, const String& cy, Size def=Size(0,0)) const;
 	int GetInt(const String& key, int def=0) const;
+	double GetDouble(const String& key, double def=0) const;
 	bool GetBool(const String& key, bool def=false) const;
 	String GetString(const String& key, String def="") const;
 	hash_t GetHashValue() const;

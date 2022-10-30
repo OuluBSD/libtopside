@@ -202,6 +202,10 @@ bool MidPortmidi::Source_Send(NativeSource& dev, AtomBase& a, RealtimeSourceConf
 		}
 		
 		#if HAVE_PACKETTIMING
+		out.SetBeginTime();
+		#endif
+		
+		#if HAVE_PACKETTIMINGCHECK
 		out.SetTimingLimit(0.050);
 		#endif
 	}

@@ -15,6 +15,7 @@ struct FxAudioCore::NativeEffect {
     Packet last_audio_in;
     ArrayMap<int, Packet> last_audio_side_in;
     Vector<float> buffer;
+    float buffer_time;
 };
 
 
@@ -148,12 +149,16 @@ void FxAudioCore::Effect_Uninitialize(NativeEffect& dev, AtomBase& a) {
 
 bool FxAudioCore::Effect_Send(NativeEffect& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	Format fmt = out.GetFormat();
-	if (dev.buffer.GetCount()) {
-		Vector<byte>& d = out.Data();
-		int bytes = dev.buffer.GetCount() * sizeof(float);
-		d.SetCount(bytes, 0);
-		float* f = (float*)(byte*)d.Begin();
-		memcpy(f, dev.buffer.Begin(), bytes);
+	if (fmt.IsAudio()) {
+		if (dev.buffer.GetCount()) {
+			Vector<byte>& d = out.Data();
+			int bytes = dev.buffer.GetCount() * sizeof(float);
+			d.SetCount(bytes, 0);
+			float* f = (float*)(byte*)d.Begin();
+			memcpy(f, dev.buffer.Begin(), bytes);
+		}
+		out.SetAge(dev.buffer_time);
+		ASSERT(dev.buffer_time);
 	}
 	return true;
 }
@@ -205,6 +210,8 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 					*f++ = ov;
 				}
 			}
+			
+			dev.buffer_time = dev.last_audio_in->GetBeginTime();
 			dev.last_audio_in.Clear();
 		}
 		else {
@@ -247,6 +254,8 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 					*f++ = ov;
 				}
 			}
+			
+			dev.buffer_time = dev.last_audio_in->GetBeginTime();
 			dev.last_audio_in.Clear();
 			dev.last_audio_side_in.Clear();
 		}
@@ -257,9 +266,6 @@ bool FxAudioCore::Effect_IsReady(NativeEffect& dev, AtomBase& a, PacketIO& io) {
 	// Primary sink is required always (continuous audio) so ignore midi input, which is mixed
 	// to primary occasionally.
 	bool b = ((io.active_sink_mask & dev.packet_in_mask) == dev.packet_in_mask) && io.full_src_mask == 0;
-	if (b && dev.packet_in_mask != 1) {
-		LOG("");
-	}
 	return b;
 }
 

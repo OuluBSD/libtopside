@@ -124,6 +124,15 @@ int WorldState::GetInt(const String& key, int def) const {
 	return def;
 }
 
+double WorldState::GetDouble(const String& key, double def) const {
+	int i = values.Find(key);
+	if (i >= 0) {
+		const Object& o = values[i];
+		return o.ToDouble();
+	}
+	return def;
+}
+
 bool WorldState::GetBool(const String& key, bool def) const {
 	int i = values.Find(key);
 	if (i >= 0) {

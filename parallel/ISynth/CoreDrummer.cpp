@@ -201,6 +201,12 @@ bool SynCoreDrummer::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtim
 				for (int j = 0; j < channel_count; j++ )
 					*f++ *= mul;
 		}
+		
+		#if HAVE_PACKETTIMING
+		out.SetBeginTime();
+		#endif
+		
+		ASSERT(out.GetBeginTime());
 	}
 	return true;
 }
