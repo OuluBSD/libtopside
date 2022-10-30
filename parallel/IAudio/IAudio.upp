@@ -1,11 +1,9 @@
 description "\377B226,212,0";
 
-uses
-	ParallelLib;
+	uses ParallelLib;
+	uses(BUILTIN_PORTAUDIO) ports/portaudio;
 
-uses(BUILTIN_PORTAUDIO) ports/portaudio;
-
-library(PORTAUDIO) portaudio;
+	library(PORTAUDIO) "portaudio";
 
 file
 	IAudio.h,
@@ -13,5 +11,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

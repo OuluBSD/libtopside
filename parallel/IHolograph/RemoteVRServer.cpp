@@ -4,6 +4,28 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+
+struct HoloRemoteVRServer::NativeSinkDevice {
+	SerialServiceClient svc;
+	WmrFusionSystemReceiver recv;
+};
+
+
+
+
+bool HoloRemoteVRServer::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HoloRemoteVRServer::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
+void HoloRemoteVRServer::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool HoloRemoteVRServer::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	String addr = ws.GetString(".addr", "127.0.0.1");
 	int port = ws.GetInt(".port", 7776);

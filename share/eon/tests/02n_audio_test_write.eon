@@ -1,0 +1,4 @@
+loop player.audio.generator:
+	center.customer
+	center.audio.src.dbg_generator
+	center.audio.sink.hw

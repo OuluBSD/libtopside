@@ -1,4 +1,2 @@
 description "\377B128,0,255";
 
-uses(VR & UWP) IHolograph;
-

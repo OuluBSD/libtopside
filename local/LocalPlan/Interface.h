@@ -77,6 +77,7 @@ public:
 	void AddSynth();
 	void AddEffect();
 	void AddMidiHw();
+	void AddAudioFileOut();
 	
 	bool HasBase(String base) const;
 	String GetBaseConds(String base) const;

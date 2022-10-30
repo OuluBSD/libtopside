@@ -12,6 +12,7 @@ MidiFileReaderAtom::MidiFileReaderAtom() {
 bool MidiFileReaderAtom::Initialize(const Script::WorldState& ws) {
 	close_machine = ws.GetBool(".close_machine", false);
 	drum_side_ch = ws.GetInt(".drum.ch", -1);
+	use_global_time = ws.GetBool(".use.global.time", false);
 	
 	String path = ws.GetString(".filepath");
 	if (path.IsEmpty()) {
@@ -124,9 +125,15 @@ void MidiFileReaderAtom::CollectTrackEvents(int i) {
 	int& iter = track_i[i];
 	const auto& t = file[i];
 	
+	float dt_limit;
+	if (use_global_time)
+		dt_limit = GlobalAudioTime::Local().Get();
+	else
+		dt_limit = song_dt;
+	
 	while (iter < t.GetCount()) {
 		const auto& e = t[iter];
-		if (e.seconds <= song_dt) {
+		if (e.seconds <= dt_limit) {
 			iter++;
 			tmp.midi.Add(&e);
 		}

@@ -1,7 +1,31 @@
 #include "IHolograph.h"
 
 #if defined flagLOCALHMD
+#include <LocalHMD/LocalHMD.h>
+
+
 NAMESPACE_PARALLEL_BEGIN
+
+
+
+struct HoloLocalHMD::NativeSinkDevice {
+	TS::HMD::System sys;
+	TimeStop ts;
+};
+
+
+bool HoloLocalHMD::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HoloLocalHMD::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
+void HoloLocalHMD::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
 
 bool HoloLocalHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.sys.require_hmd = !ws.IsTrue(".device.optional.hmd", false);

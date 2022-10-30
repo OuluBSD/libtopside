@@ -21,6 +21,7 @@ file
 	Synth.cpp,
 	Effect.cpp,
 	MidiHw.cpp,
+	AudioFileOut.cpp,
 	_ readonly separator;
 
 mainconfig

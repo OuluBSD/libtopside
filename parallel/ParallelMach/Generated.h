@@ -84,6 +84,7 @@ namespace Parallel {
 	ATOM_TYPE(LV2_EFFECT_PIPE) \
 	ATOM_TYPE(PORTMIDI_PIPE) \
 	ATOM_TYPE(PORTMIDI_SEND) \
+	ATOM_TYPE(CORE_AUDIO_FILE_OUT) \
 
 #define ATOM_CLASS_LIST \
 	ATOM_CLASS(CenterCustomer) \
@@ -163,6 +164,7 @@ namespace Parallel {
 	ATOM_CLASS(LV2EffectPipe) \
 	ATOM_CLASS(PortmidiPipe) \
 	ATOM_CLASS(PortmidiSend) \
+	ATOM_CLASS(CoreAudioFileOut) \
 
 }}
 

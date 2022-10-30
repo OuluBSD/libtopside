@@ -1,9 +1,30 @@
 #include "IHolograph.h"
 
 #if defined flagOPENHMD && ((defined flagLINUX) || (defined flagFREEBSD))
+#include <openhmd.h>
 
 
 NAMESPACE_PARALLEL_BEGIN
+
+
+struct HoloOpenHMD::NativeSinkDevice {
+	ohmd_context* ctx;
+	ohmd_device_settings* settings;
+	const char* fragment;
+	const char* vertex;
+	ohmd_device* hmd;
+	ohmd_device* ctrl[2];
+	Size screen_sz;
+	CtrlEvent ev;
+	ControllerMatrix ev3d;
+	bool ev_sendable;
+	int seq;
+	TimeStop ts;
+	int control_count[2];
+	int controls_fn[2][64];
+	int controls_types[2][64];
+};
+
 
 
 void PrintOHMD(HoloOpenHMD::NativeSinkDevice& dev, String name, int len, ohmd_float_value val)
@@ -36,6 +57,15 @@ void PrintOHMD(HoloOpenHMD::NativeSinkDevice& dev, String name, int len, ohmd_in
 		s << IntStr(v[i]);
 	}
 	LOG("HoloOpenHMD: info: " << s);
+}
+
+bool HoloOpenHMD::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HoloOpenHMD::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
 }
 
 bool HoloOpenHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {

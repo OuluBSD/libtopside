@@ -3,6 +3,8 @@
 
 #if defined flagHACK && ((defined flagLINUX) || (defined flagFREEBSD))
 
+#include <ports/hcidump/hcidump.h>
+
 /*
 	If data can't be read, run:
 		setcap 'cap_net_raw,cap_net_admin+eip' /path/to/compiled/executable
@@ -15,6 +17,31 @@ int hcidump_device(int device);
 
 NAMESPACE_PARALLEL_BEGIN
 
+
+
+
+struct HoloDevBluetooth::NativeSinkDevice {
+	SimpleBluetoothConnection bt[2];
+	Vector<byte> data[2];
+	TcpSocket sock;
+	int mode;
+	int ctrl_idx[2];
+};
+
+
+
+bool HoloDevBluetooth::SinkDevice_Create(One<NativeSink>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HoloDevBluetooth::SinkDevice_Destroy(One<NativeSink>& dev) {
+	dev.Clear();
+}
+
+void HoloDevBluetooth::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
 
 bool HoloDevBluetooth::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	dev.ctrl_idx[0] = ws.GetInt(".controller.left.idx", -1);

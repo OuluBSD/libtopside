@@ -81,6 +81,7 @@ machine midi.app:
 				filepath = "${PATH}"
 				close_machine = true
 				drum.ch = ${DRUM_CH}
+				use.global.time = ${GLOBALTIME}
 				
 		loop drums:
 			center.customer
@@ -149,9 +150,30 @@ machine midi.app:
 			center.audio.mixer16[${SIDEIN}]:
 				auto.limit = true
 				sync = true
-			center.audio.sink.hw
+			corefx.pipe:
+				filter = "compressor"
+				treshold = -2
+				ratio = 10
+			${AUDIO_OUT_ATOM}
 )eon";
 
+	
+	// fast hack to allow audio file out switch
+	bool audio_file_out = false;
+	const auto& cmdline = CommandLine();
+	for (String cmd : cmdline) {
+		if (cmd == "-EXPORT_AUDIO_FILE=y")
+			audio_file_out = true;
+	}
+	
+	String audio_out_atom = "center.audio.sink.hw";
+	bool use_global_time = false;
+	
+	if (audio_file_out) {
+		audio_out_atom = "audio.file.writer";
+		use_global_time = true;
+	}
+	
 	String eon;
 	
 	eon = begin;
@@ -224,6 +246,8 @@ machine midi.app:
 	eon.Replace("${DRUMOUT}", drumout);
 	eon.Replace("${DRUM_CH}", IntStr(sideout_count));
 	eon.Replace("${REVERBIN}", reverbin);
+	eon.Replace("${AUDIO_OUT_ATOM}", audio_out_atom);
+	eon.Replace("${GLOBALTIME}", use_global_time ? "true" : "false");
 	
 	
 	//LOG(eon);

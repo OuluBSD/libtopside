@@ -166,6 +166,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 		String iname = "I" + pkg.name;
 		String dir = AppendFileName(par_dir, iname);
 		LOG("Package directory: " << dir);
+		RealizeDirectory(dir);
 		
 		String upp_file = AppendFileName(dir, iname + ".upp");
 		LOG("\tProject file: " << upp_file);

@@ -212,6 +212,19 @@ public:
 };
 #endif
 
+class CoreAudioFileOut : public CoreAudioSink {
+
+public:
+	RTTI_DECL1(CoreAudioFileOut, CoreAudioSink)
+	COPY_PANIC(CoreAudioFileOut)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
 }
 
 }

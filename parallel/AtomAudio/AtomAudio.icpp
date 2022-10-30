@@ -29,6 +29,7 @@ INITBLOCK_(AtomAudio) {
 	Factory::RegisterAtom<PortmidiPipe>();
 	Factory::RegisterAtom<PortmidiSend>();
 	#endif
+	Factory::RegisterAtom<CoreAudioFileOut>();
 	
 }
 

@@ -18,12 +18,13 @@ public:
 
 	virtual ~FileWaveOut();
 
-	void OpenFile( String file_name,
+	bool OpenFile( String file_name,
 				   unsigned int channel_count,
 				   FileWrite::FILE_TYPE type,
 				   Audio::AudioFormat format );
 	void CloseFile();
 	void Tick( const double sample );
+	void Tick( const double l, const double r );
 	void Tick( const AudioFrames& frames );
 
 protected:

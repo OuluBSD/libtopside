@@ -14,6 +14,7 @@ class MidiFileReaderAtom : public Atom
 	double song_dt = 0;
 	bool split_channels = false;
 	int drum_side_ch = -1;
+	bool use_global_time = false;
 	
 	MidiIO::File file;
 	MidiIO::MidiFrame tmp;

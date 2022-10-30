@@ -15,6 +15,7 @@ CONSOLE_APP_MAIN {
 	ib.AddSynth();
 	ib.AddEffect();
 	ib.AddMidiHw();
+	ib.AddAudioFileOut();
 	
 	ib.Headers();
 	

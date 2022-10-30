@@ -31,5 +31,6 @@ INITBLOCK_(AtomAudio) {
 	#if (defined flagBUILTIN_PORTMIDI) || (defined flagPORTMIDI)
 	Factory::RegisterAtom<PortmidiSend>();
 	#endif
+	Factory::RegisterAtom<CoreAudioFileOut>();
 }
 

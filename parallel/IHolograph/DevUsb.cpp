@@ -5,6 +5,26 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+struct HoloDevUsb::NativeSinkDevice {
+	
+};
+
+
+
+
+bool HoloDevUsb::SinkDevice_Create(One<NativeSinkDevice>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HoloDevUsb::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
+	dev.Clear();
+}
+
+void HoloDevUsb::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
 bool HoloDevUsb::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	TODO
 }

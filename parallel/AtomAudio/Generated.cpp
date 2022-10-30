@@ -453,6 +453,32 @@ AtomTypeCls PortmidiSend::GetType() const {
 #endif
 
 
+String CoreAudioFileOut::GetAction() {
+	return "audio.file.writer";
+}
+
+AtomTypeCls CoreAudioFileOut::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::CORE_AUDIO_FILE_OUT;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,AUDIO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls CoreAudioFileOut::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void CoreAudioFileOut::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<CoreAudioSink>(this);
+}
+
+AtomTypeCls CoreAudioFileOut::GetType() const {
+	return GetAtomType();
+}
+
+
 }
 
 }

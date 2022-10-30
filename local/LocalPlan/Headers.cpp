@@ -89,7 +89,7 @@ void InterfaceBuilder::Headers() {
 	
 	AddHeader("AudioSplitterUser", "VoidBase", "pipe")
 		.In("CenterAudio").Out("CenterReceipt").OutOpt(8, "CenterAudio")
-		.Action(" center.audio.side.src.center.user")
+		.Action("center.audio.side.src.center.user")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("SPLITTER", "PROCESS")
 	;
@@ -657,6 +657,14 @@ void InterfaceBuilder::Headers() {
 		.In("CenterOrder")
 		.Out("CenterReceipt").OutOpt(4, "CenterMidi")
 		.Action("midi.src.side.portmidi")
+		.Arg("HINT_PKG", "AtomAudio")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("CoreAudioFileOut", "CoreAudioSink", "pipe")
+		.In("CenterAudio")
+		.Out("CenterReceipt")
+		.Action("audio.file.writer")
 		.Arg("HINT_PKG", "AtomAudio")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

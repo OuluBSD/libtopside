@@ -14,6 +14,7 @@
 #include <IMedia/IMedia.h>
 #include <IVolumetric/IVolumetric.h>
 #include <ICamera/ICamera.h>
+#include <IAudioFileOut/IAudioFileOut.h>
 
 
 #include "Prefabs.h"

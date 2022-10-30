@@ -28,7 +28,7 @@ void FileWaveOut::CloseFile() {
 	}
 }
 
-void FileWaveOut::OpenFile( String file_name,
+bool FileWaveOut::OpenFile( String file_name,
 							  unsigned int channel_count,
 							  FileWrite::FILE_TYPE type,
 							  Audio::AudioFormat format ) {
@@ -37,12 +37,15 @@ void FileWaveOut::OpenFile( String file_name,
 	if ( channel_count < 1 ) {
 		LOG("FileWaveOut::openFile: the channels argument must be greater than zero!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
+		return false;
 	}
 
 	file_.Open( file_name, channel_count, type, format );
 	data_.SetCount( bufferFrames_, channel_count );
 	bufferIndex_ = 0;
 	iData_ = 0;
+	
+	return true;
 }
 
 void FileWaveOut::incrementFrame() {
@@ -72,6 +75,27 @@ void FileWaveOut::Tick( const double sample ) {
 
 	for ( unsigned int j = 0; j < channel_count; j++ )
 		data_[iData_++] = input;
+
+	this->incrementFrame();
+}
+
+void FileWaveOut::Tick( const double l, const double r ) {
+	#if defined(flagDEBUG)
+
+	if ( !file_.isOpen() ) {
+		LOG("FileWaveOut::Tick(): no file open!");
+		HandleError( AudioError::WARNING );
+		return;
+	}
+
+	#endif
+	unsigned int channel_count = data_.GetChannelCount();
+	
+	for(int j = 0; j < channel_count; j++) {
+		double input = j == 0 ? l : r;
+		ClipTest( input );
+		data_[iData_++] = input;
+	}
 
 	this->incrementFrame();
 }

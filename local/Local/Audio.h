@@ -121,6 +121,20 @@ FLOATS_TO_INTEGERS(float)
 FLOATS_TO_INTEGERS(double)
 
 
+
+
+
+
+struct GlobalAudioTime {
+	float time = 0;
+	
+	static GlobalAudioTime& Local();
+	float Get() const {return time;}
+	void Set(float f) {time = f;}
+	void Add(float f) {time += f;}
+	void Clear() {time = 0;}
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif
