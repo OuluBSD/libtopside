@@ -308,6 +308,10 @@ String GetHomeDirectory() {
 	struct passwd *pw = getpwuid(getuid());
 	String homedir = pw->pw_dir;
 	return homedir;
+	#elif defined flagWIN32
+	char buff[255];
+    SHGetSpecialFolderPathA(HWND_DESKTOP, buff, CSIDL_PROFILE, FALSE);
+    return buff;
 	#else
 	char homedir[2048];
 	getenv_s(0, homedir, 2048, "USERPROFILE");

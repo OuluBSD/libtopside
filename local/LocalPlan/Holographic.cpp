@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void InterfaceBuilder::AddHolographic() {
-	Package("Holographic", "Holo");
+	Package("Holograph", "Holo");
 	SetColor(85, 42, 150);
 	Dependency("ParallelLib");
 	Dependency("IMedia");
@@ -21,6 +21,8 @@ void InterfaceBuilder::AddHolographic() {
 	Vendor("RemoteVRServer", "LINUX|FREEBSD");
 	Vendor("DevUsb", "LINUX|FREEBSD");
 	Vendor("DevBluetooth", "LINUX&HACK|FREEBSD&HACK");
+	Vendor("OpenVR", "WIN32&OPENVR");
+	
 	
 }
 

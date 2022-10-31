@@ -1,7 +1,7 @@
 description "\377B28,85,0";
 
-uses
-	ParallelLib;
+	uses ParallelLib;
+
 
 file
 	IVolumetric.h,
@@ -9,5 +9,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

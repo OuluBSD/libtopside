@@ -112,8 +112,15 @@ InterfaceBuilder::Header& InterfaceBuilder::Header::Link(String type, String rol
 void InterfaceBuilder::Generate(bool write_actually) {
 	VectorMap<String, String> outputs;
 	
-	String prj_dir = AppendFileName(GetHomeDirectory(), "libtopside");
+	#ifdef flagWIN32
+	String dir = "C:\\git";
+	#else
+	String dir = GetHomeDirectory();
+	#endif
+	
+	String prj_dir = AppendFileName(dir, "libtopside");
 	String par_dir = AppendFileName(prj_dir, "parallel");
+	LOG("\tProject directory: " << prj_dir);
 	
 	String pm_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "Generated.h");
 	String ga_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "GenAtom.inl");

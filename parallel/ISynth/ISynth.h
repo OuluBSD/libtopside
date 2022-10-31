@@ -8,7 +8,7 @@
 #include <SoftInstru/SoftInstru.h>
 #include <SoftSynth/SoftSynth.h>
 #include <AudioCore/AudioCore.h>
-#include <ports/fluidlite/fluidlite.h>
+#include <ports/fluidlite/ports/fluidlite.h>
 
 NAMESPACE_PARALLEL_BEGIN
 

@@ -2,9 +2,9 @@ description "\377B85,42,150";
 
 uses
 	ParallelLib,
-	IGraphics;
+	IMedia;
 
-uses(HACK) ports/hcidump;
+uses(LINUX) ports/hcidump;
 
 uses(LOCALHMD) LocalHMD;
 
@@ -12,16 +12,13 @@ library(LINUX & OPENHMD) "openhmd hidapi-libusb";
 
 file
 	IHolograph.h,
-	Enums.h,
-	Vendors.h,
 	OpenHMD.cpp,
 	LocalHMD.cpp,
 	RemoteVRServer.cpp,
 	DevUsb.cpp,
 	DevBluetooth.cpp,
-	IfaceFuncs.inl highlight cpp,
-	BaseClasses.h,
-	TmplClasses.h;
+	OpenVR.cpp,
+	IfaceFuncs.inl highlight cpp;
 
 mainconfig
 	"" = "";
