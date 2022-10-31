@@ -3,6 +3,38 @@
 
 NAMESPACE_UPP_BEGIN
 
+#if defined flagWIN32
+
+typedef struct DIR DIR;
+
+struct dirent
+{
+    char *d_name;
+};
+
+#ifdef flagMSC
+typedef ::_finddata64i32_t _finddata_t;
+#endif
+
+DIR           *opendir(const char *);
+int           closedir(DIR *);
+struct dirent *readdir(DIR *);
+void          rewinddir(DIR *);
+
+typedef ptrdiff_t handle_type; /* C99's intptr_t not sufficiently portable */
+
+struct DIR
+{
+    handle_type         handle; /* -1 for failed rewind */
+    _finddata_t         info;
+    struct dirent       result; /* d_name null iff first time */
+    String              name;  /* null-terminated char string */
+};
+
+
+#endif
+
+
 void Panic(String s);
 void Assert(bool b, String s="Assertion failed");
 void AssertFalse(bool b, String s="Assertion failed");

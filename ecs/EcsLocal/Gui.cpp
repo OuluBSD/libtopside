@@ -48,6 +48,11 @@ void DefaultGuiAppComponent::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	TODO
 }
 
+bool DefaultGuiAppComponent::Arg(const String& key, const String& value) {
+	
+	return true;
+}
+
 #endif
 
 

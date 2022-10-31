@@ -80,7 +80,7 @@ class FileChannelT
 {
 	
 protected:
-	using FileInput = class FileInputT<Backend>;
+	using FileInput = typename FileInputT<Backend>;
 	using AVFrame = typename Backend::AVFrame;
 	using AVCodecContextRef = typename Backend::AVCodecContextRef;
 	using AVFormatContext = typename Backend::AVFormatContext;

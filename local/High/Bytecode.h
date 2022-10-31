@@ -240,7 +240,7 @@ class Hi {
 	HiValue self;
 	
 protected:
-	friend class IrVM;
+	friend struct IrVM;
 	
 	bool fail = false;
 	bool sleep = false;

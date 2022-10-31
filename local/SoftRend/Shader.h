@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SoftProgram;
+struct SoftProgram;
 
 
 struct SoftShaderLibrary {
@@ -29,7 +29,7 @@ class SoftShader {
 	SoftShaderBase* s = 0;
 	
 protected:
-	friend class SoftProgram;
+	friend struct SoftProgram;
 	SoftProgram* prog = 0;
 	
 public:

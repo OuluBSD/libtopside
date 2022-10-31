@@ -10,7 +10,7 @@ void InterfaceBuilder::AddSynth() {
 	Dependency("SoftInstru");
 	Dependency("SoftSynth");
 	Dependency("AudioCore");
-	Dependency("ports/fluidlite", "FLUIDSYNTH");
+	Dependency("ports/fluidlite", "FLUIDLITE");
 	HaveRecvFinalize();
 	HaveIsReady();
 	

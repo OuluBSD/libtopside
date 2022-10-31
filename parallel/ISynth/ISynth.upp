@@ -1,11 +1,12 @@
 description "\377B200,179,81";
 
-	uses ParallelLib;
-	uses SoftInstru;
-	uses SoftSynth;
-	uses AudioCore;
-	uses(FLUIDSYNTH) ports/fluidlite;
+uses
+	ParallelLib,
+	SoftInstru,
+	SoftSynth,
+	AudioCore;
 
+uses(FLUIDLITE) ports/fluidlite;
 
 file
 	ISynth.h,
@@ -16,4 +17,5 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-        "" = "";
+	"" = "";
+

@@ -1,7 +1,9 @@
 #include "StaticInterface.h"
 #include "tga_reader.h"
 
-#include <png.h>
+#if HAVE_LIBPNG
+	#include <png.h>
+#endif
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -46,6 +48,8 @@ void TgaReaderBackend::ClearImage(SysImage& img) {
 	
 }
 
+
+#if HAVE_LIBPNG
 
 // http://zarb.org/~gc/html/libpng.html
 Image LibPngBackend::LoadFileAny(String path) {
@@ -181,6 +185,8 @@ Image LibPngBackend::LoadStringAny(String str) {
 void LibPngBackend::ClearImage(SysImage& img) {
 	
 }
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

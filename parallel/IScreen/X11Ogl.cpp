@@ -2,7 +2,7 @@
 
 
 		
-#if defined flagOGL
+#if defined flagPOSIX && defined flagOGL
 NAMESPACE_PARALLEL_BEGIN
 
 struct ScrX11Ogl::NativeContext {

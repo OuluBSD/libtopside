@@ -116,14 +116,14 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 			got = sock.Get(&x, sizeof(x));
 		#define GET_ERROR(x) \
 			if (got != sizeof(x)) { \
-				LOG("SerialServiceServer::ClientHandler: error: expected " << sizeof(x) << ", but got " << got); break;}
+				LOG("SerialServiceServer::ClientHandler: error: expected " << (int)sizeof(x) << ", but got " << got); break;}
 		#define GET(x) \
 			RECV(x) \
 			GET_ERROR(x)
 		#define SEND(x) \
 			sent = sock.Put(&x, sizeof(x)); \
 			if (sent != sizeof(x)) { \
-				LOG("SerialServiceServer::ClientHandler: error: expected to send " << sizeof(x) << ", but sent " << sent); break;}
+				LOG("SerialServiceServer::ClientHandler: error: expected to send " << (int)sizeof(x) << ", but sent " << sent); break;}
 		
 		RECV(magic);
 		if (!magic) {
@@ -283,14 +283,14 @@ void SerialServiceClient::CloseTcp() {
 	got = sock.Get(&x, sizeof(x));
 #define GET_ERROR(x) \
 	if (got != sizeof(x)) { \
-		LOG("SerialServiceClient::CallMem: error: expected " << sizeof(x) << ", but got " << got); sock.Close(); return false;}
+		LOG("SerialServiceClient::CallMem: error: expected " << (int)sizeof(x) << ", but got " << got); sock.Close(); return false;}
 #define GET(x) \
 	RECV(x) \
 	GET_ERROR(x)
 #define SEND(x) \
 	sent = sock.Put(&x, sizeof(x)); \
 	if (sent != sizeof(x)) { \
-		LOG("SerialServiceClient::CallMem: error: expected to send " << sizeof(x) << ", but sent " << sent); sock.Close(); return false;}
+		LOG("SerialServiceClient::CallMem: error: expected to send " << (int)sizeof(x) << ", but sent " << sent); sock.Close(); return false;}
 
 
 bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, void* in, int in_sz) {

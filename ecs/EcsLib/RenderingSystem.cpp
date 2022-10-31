@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-#if defined flagOGL
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 NAMESPACE_PARALLEL_BEGIN
 GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev);
 NAMESPACE_PARALLEL_END
@@ -116,7 +116,7 @@ void RenderingSystem::Update(double dt) {
 		Serial::Machine& mach = Serial::GetActiveMachine();
 		SpaceStoreRef ents = mach.Get<SpaceStore>();
 		
-		#ifdef flagSCREEN
+		#if (defined flagPOSIX && defined flagSCREEN)
 		RefT_Atom<X11SwFboProg> x11_fbo = ents->GetRoot()->FindDeep<X11SwFboProg>();
 		if (!state && x11_fbo) {
 			state = &x11_fbo->data;
@@ -130,12 +130,14 @@ void RenderingSystem::Update(double dt) {
 		if (!state && x11_ogl_sink) {
 			state = &Get_ScrX11Ogl_Ogl(x11_ogl_sink->dev).GetBuffer().GetState();
 		}
+		#endif
+		#endif
 		#ifdef flagSDL2
+		#ifdef flagOGL
 		RefT_Atom<SdlOglFboProg> sdl2_ogl_fbo = ents->GetRoot()->FindDeep<SdlOglFboProg>();
 		if (!state && sdl2_ogl_fbo) {
 			state = &sdl2_ogl_fbo->data;
 		}
-		#endif
 		#endif
 		#endif
 		#ifdef flagVR

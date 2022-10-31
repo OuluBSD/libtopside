@@ -328,8 +328,8 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 		transform2d->size[1] = r.Height();
 	}
 	if (!transform.IsEmpty()) {
-		transform->position[0] = r.left;
-		transform->position[1] = r.top;
+		transform->data.position[0] = r.left;
+		transform->data.position[1] = r.top;
 		transform->size[0] = r.Width();
 		transform->size[1] = r.Height();
 	}

@@ -14,6 +14,9 @@ INITBLOCK_(StaticInterface) {
 	#endif
 	
 	StaticIfaceFactory::AddFileFormat<TgaReaderBackend>("tga", true, false);
+	
+	#if HAVE_LIBPNG
 	StaticIfaceFactory::AddFileFormat<LibPngBackend>("png", true, false);
+	#endif
 	
 }

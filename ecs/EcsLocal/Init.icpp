@@ -38,7 +38,7 @@ INITBLOCK_(EcsLocal) {
 	ComponentFactory::Register<PlayerHeadComponent>("player.head");
 	ComponentFactory::Register<PlayerBodyComponent>("player.body");
 #ifdef flagGUI
-	ComponentFactory::Register<DefaultGuiAppComponent>(a"");
+	ComponentFactory::Register<DefaultGuiAppComponent>("");
 #endif
 	
 	

@@ -15,7 +15,7 @@ OpenGLMessageCallback( GLenum source,
                  const GLchar* message,
                  const void* userParam )
 {
-	if (!IsGfxAccelDebugMessages() &&
+	if (/*!IsGfxAccelDebugMessages() &&*/
 		severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 		return;
 	if (type == GL_DEBUG_TYPE_PERFORMANCE_ARB)
@@ -984,7 +984,9 @@ template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, G
 
 
 #if defined flagOGL && defined flagSCREEN
+#ifdef flagPOSIX
 template struct OglGfxT<X11OglGfx>;
+#endif
 #ifdef flagSDL2
 template struct OglGfxT<SdlOglGfx>;
 #endif

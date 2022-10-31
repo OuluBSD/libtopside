@@ -25,7 +25,7 @@ String HiTypeName(int sv_type);
 struct HiEscape;
 class  HiLambda;
 struct HiHandle;
-struct Hi;
+class Hi;
 
 class HiValue : Moveable<HiValue> {
 	using AtomBase = TS::Parallel::AtomBase;

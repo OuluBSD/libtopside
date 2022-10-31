@@ -19,10 +19,17 @@ NAMESPACE_PARALLEL_BEGIN
 	GFX_CLS(BufferStage, g) \
 
 
+#if defined flagOGL && defined flagPOSIX
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(SdlOgl) \
 	GFX_RSYS(X11Ogl) \
 	GFX_RSYS(X11Sw) \
+
+#elif defined flagOGL && defined flagWIN32
+#define GFX_RENDSYS_LIST \
+	GFX_RSYS(SdlOgl) \
+
+#endif
 
 
 #define GFX_CLS(x, g) template <class Gfx> struct x##T;

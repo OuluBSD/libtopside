@@ -53,10 +53,13 @@ public:
 };
 
 
+#if defined flagPOSIX
 using X11SwFboBase = FboAtomT<X11SwGfx>;
 
 #ifdef flagOGL
 using X11OglFboBase = FboAtomT<X11OglGfx>;
+#endif
+
 #endif
 
 #if defined flagOGL && defined flagSDL2

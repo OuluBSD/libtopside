@@ -240,8 +240,10 @@ public:
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Ctrl* c);
 	Ctrl* GetLastChild();
+	Ctrl* GetIndexChild(int i) {return children[i];}
 	void RemoveChild(Ctrl* c);
 	void DeepLayout();
+	int GetChildCount() const {return children.GetCount();}
 	
 	Ctrl* GetParent();
 	TopWindow* GetTopWindow();
