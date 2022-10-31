@@ -1,5 +1,7 @@
 #include "IGraphics.h"
 
+#if defined flagSCREEN && defind flagPOSIX
+
 NAMESPACE_PARALLEL_BEGIN
 
 #if 0
@@ -87,5 +89,6 @@ void X11SwGfx::UnlockTextureToSurface(NativeTexture& tex) {
 }
 
 
-
 NAMESPACE_PARALLEL_END
+
+#endif

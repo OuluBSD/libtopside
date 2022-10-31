@@ -182,7 +182,7 @@ bool FileRead::GetWavInfo( const char* file_name ) {
 	}
 
 	if ( format_tag != 1 && format_tag != 3 ) {
-		LOG("FileRead: " << file_name << " contains an unsupported data format type (" << format_tag << ").");
+		LOG("FileRead: " << file_name << " contains an unsupported data format type (" << (int)format_tag << ").");
 		return false;
 	}
 
@@ -230,7 +230,7 @@ bool FileRead::GetWavInfo( const char* file_name ) {
 	}
 
 	if ( data_type_ == 0 ) {
-		LOG("FileRead: " << temp << " bits per sample with data format " << format_tag << " are not supported (" << file_name << ").");
+		LOG("FileRead: " << (int)temp << " bits per sample with data format " << (int)format_tag << " are not supported (" << file_name << ").");
 		return false;
 	}
 

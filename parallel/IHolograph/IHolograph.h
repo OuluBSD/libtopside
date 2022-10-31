@@ -6,8 +6,6 @@
 
 #include <ParallelLib/ParallelLib.h>
 #include <IMedia/IMedia.h>
-#include <ports/hcidump/hcidump.h>
-#include <LocalHMD/LocalHMD.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -20,6 +18,7 @@ NAMESPACE_PARALLEL_BEGIN
 	HOLO_VNDR(HoloRemoteVRServer) \
 	HOLO_VNDR(HoloDevUsb) \
 	HOLO_VNDR(HoloDevBluetooth) \
+	HOLO_VNDR(HoloOpenVR) \
 
 #define HOLO_CLS(x, v) struct v##x;
 #define HOLO_VNDR(x) HOLO_CLS_LIST(x)
@@ -85,6 +84,21 @@ struct HoloDevUsb {
 #endif
 #if (defined flagLINUX && defined flagHACK) || (defined flagFREEBSD && defined flagHACK)
 struct HoloDevBluetooth {
+	struct NativeSinkDevice;
+	
+	struct Thread {
+		
+	};
+	
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if (defined flagWIN32 && defined flagOPENVR)
+struct HoloOpenVR {
 	struct NativeSinkDevice;
 	
 	struct Thread {
@@ -167,6 +181,9 @@ using DevUsbSinkDevice = HolographSinkDeviceT<HoloDevUsb>;
 #endif
 #if (defined flagLINUX && defined flagHACK) || (defined flagFREEBSD && defined flagHACK)
 using DevBluetoothSinkDevice = HolographSinkDeviceT<HoloDevBluetooth>;
+#endif
+#if (defined flagWIN32 && defined flagOPENVR)
+using OpenVRSinkDevice = HolographSinkDeviceT<HoloOpenVR>;
 #endif
 
 NAMESPACE_PARALLEL_END

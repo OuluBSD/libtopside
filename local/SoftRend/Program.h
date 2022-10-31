@@ -8,7 +8,7 @@ struct SoftUniform : Moveable<SoftUniform> {
 	
 };
 
-struct SoftPipeline;
+class SoftPipeline;
 
 
 struct SoftProgram {

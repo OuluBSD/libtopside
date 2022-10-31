@@ -13,6 +13,10 @@ uses(MSC & NEVER) ports/glew;
 
 uses(MSC & NEVER) ports/glext;
 
+library(MSC) glew32;
+
+library(MSC) OpenGL32;
+
 file
 	IGraphics.h,
 	main.cpp,

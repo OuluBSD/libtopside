@@ -2,7 +2,6 @@
 #include <SerialCore/SerialCore.h>
 
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -169,5 +168,4 @@ bool VolRawByte::StaticSource_IsReady(NativeStaticSource& dev, AtomBase&, Packet
 
 
 NAMESPACE_PARALLEL_END
-#endif
 

@@ -53,7 +53,7 @@ void GfxAccelAtom<SdlSwGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem,
 
 
 
-#if defined flagOGL
+#if defined flagPOSIX && defined flagOGL
 template <>
 void GfxAccelAtom<X11OglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
@@ -68,7 +68,7 @@ bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
 
 
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagPOSIX
 template <>
 void GfxAccelAtom<X11SwGfx>::GfxFlags(uint32& flags) {
 	is_sw = true;

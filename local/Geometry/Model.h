@@ -45,9 +45,9 @@ struct ModelNode : Moveable<ModelNode>
 	static const int RootIdx = 0;
 	
 private:
-    friend struct Model;
-    friend struct MeshFactory;
-    friend struct ModelBuilder;
+    friend class Model;
+    friend class MeshFactory;
+    friend class ModelBuilder;
     
     mat4			local_transform;
     

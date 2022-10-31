@@ -55,7 +55,7 @@ TcpSocket::TcpSocket() {
 	
 }
 
-bool TcpSocket::IsOpen() {return sock && is_open;}
+bool TcpSocket::IsOpen() const {return sock && is_open;}
 
 bool TcpSocket::Listen(int port, int max_conn) {
 	Close();
@@ -235,6 +235,18 @@ bool TcpSocket::Connect(String addr, int port) {
     Close();
     freeaddrinfo(result);
     return false;
+}
+
+void TcpSocket::Shutdown() {
+	shutdown(sock, SD_BOTH);
+}
+
+void TcpSocket::Timeout(int ms) {
+	int timeout = ms;
+	if (sock) {
+		setsockopt(sock, IPPROTO_TCP, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+		setsockopt(sock, IPPROTO_TCP, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
+	}
 }
 
 #endif

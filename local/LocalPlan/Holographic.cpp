@@ -21,6 +21,8 @@ void InterfaceBuilder::AddHolographic() {
 	Vendor("RemoteVRServer", "LINUX|FREEBSD");
 	Vendor("DevUsb", "LINUX|FREEBSD");
 	Vendor("DevBluetooth", "LINUX&HACK|FREEBSD&HACK");
+	Vendor("OpenVR", "WIN32&OPENVR");
+	
 	
 }
 

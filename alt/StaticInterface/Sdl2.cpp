@@ -1,9 +1,15 @@
 #include "StaticInterface.h"
 
 #ifdef flagSDL2
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_rwops.h>
-#include <SDL2/SDL_ttf.h>
+#ifdef flagMSC
+	#include <SDL_image.h>
+	#include <SDL_rwops.h>
+	#include <SDL_ttf.h>
+#else
+	#include <SDL2/SDL_image.h>
+	#include <SDL2/SDL_rwops.h>
+	#include <SDL2/SDL_ttf.h>
+#endif
 
 NAMESPACE_TOPSIDE_BEGIN
 

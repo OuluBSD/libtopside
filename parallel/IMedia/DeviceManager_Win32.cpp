@@ -1,5 +1,5 @@
 #include "IMedia.h"
-#ifdef flagWIN32
+#if HAVE_WIN32_DEVMGR
 
 NAMESPACE_PARALLEL_BEGIN
 

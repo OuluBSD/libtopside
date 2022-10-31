@@ -107,12 +107,12 @@ double Mesh2D::GetEnergy() {
 
 void Mesh2D::SetNX( unsigned short lenX ) {
 	if ( lenX < 2 ) {
-		LOG("Mesh2D::SetNX(" << lenX << "): Minimum GetCount is 2!");
+		LOG("Mesh2D::SetNX(" << (int)lenX << "): Minimum GetCount is 2!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 	else if ( lenX > NXMAX ) {
-		LOG("Mesh2D::SetNX(" << lenX << "): Maximum GetCount is " << NXMAX << '!');
+		LOG("Mesh2D::SetNX(" << (int)lenX << "): Maximum GetCount is " << (int)NXMAX << '!');
 		HandleError( AudioError::WARNING );
 		return;
 	}
@@ -122,12 +122,12 @@ void Mesh2D::SetNX( unsigned short lenX ) {
 
 void Mesh2D::SetNY( unsigned short lenY ) {
 	if ( lenY < 2 ) {
-		LOG("Mesh2D::SetNY(" << lenY << "): Minimum GetCount is 2!");
+		LOG("Mesh2D::SetNY(" << (int)lenY << "): Minimum GetCount is 2!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 	else if ( lenY > NYMAX ) {
-		LOG("Mesh2D::SetNY(" << lenY << "): Maximum GetCount is " << NXMAX << '!');
+		LOG("Mesh2D::SetNY(" << (int)lenY << "): Maximum GetCount is " << (int)NXMAX << '!');
 		HandleError( AudioError::WARNING );
 		return;
 	}

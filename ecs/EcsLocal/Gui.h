@@ -16,11 +16,12 @@ struct DefaultGuiAppComponent :
 	
 	DefaultGuiAppComponent();
 	void operator=(const DefaultGuiAppComponent& t) {Panic("Can't copy DefaultGuiAppComponent");}
-	void Visit(RuntimeVisitor& vis) override {/*if (test) vis % *test;*/}
+	void Visit(RuntimeVisitor& vis) override {/*if (test) vis % *test;*/ vis & wins;}
 	void Initialize() override;
 	void Uninitialize() override;
 	void Update(double dt) override;
 	bool Render(Draw& d) override;
+	bool Arg(const String& key, const String& value) override;
 	
 	void DrawObj(GfxStateDraw& fb, bool use_texture);
 	void StateStartup(GfxDataState& s);

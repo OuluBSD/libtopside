@@ -3,6 +3,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+#ifdef flagPOSIX
 bool X11SwGfx::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
 	surf = tex->Get(0);
 	ASSERT(surf);
@@ -17,6 +18,7 @@ void X11SwGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w
 	w = sz.cx;
 	h = sz.cy;
 }
+#endif
 
 
 #ifdef flagSDL2

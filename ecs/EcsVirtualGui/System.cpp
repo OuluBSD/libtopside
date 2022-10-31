@@ -27,49 +27,6 @@ void VirtualGuiSystem::Uninitialize() {
 
 
 
-bool SingleMachine::Open(void(*arg_fn)()) {
-	const AppFlags& flags = GetAppFlags();
-	Machine& mach = GetActiveMachine();
-	
-	RegistrySystemRef reg = mach.Add<RegistrySystem>();
-	EntityStoreRef ents = mach.Add<EntityStore>();
-    mach.Add<ComponentStore>();
-    mach.Add<SDL2System>();
-    mach.Add<VirtualGuiSystem>();
-    mach.Add<HumanSystem>();
-    mach.Add<DisplaySystem>();
-    mach.Add<AudioSystem>();
-    mach.Add<DeviceSystem>();
-    mach.Add<FusionSystem>();
-    
-    mach.Add<HolographicScene>();
-    mach.Add<EasingSystem>();
-    mach.Add<MotionControllerSystem>();
-    mach.Add<WorldLogicSystem>();
-	   
-    if (flags.HaveOdePhysics())
-		mach.Add<OdeSystem>();
-	
-    
-    #ifdef flagOPENVR
-    mach.Add<OpenVR>();
-    #endif
-    
-    reg->SetAppName("SDL2 ECS machine");
-    
-    if (!mach.Start())
-		return false;
-    
-    PoolRef pool = ents->GetRoot()->GetAddPool("windows");
-    EntityRef app = pool->Create<SDL2StandaloneWindow>();
-    
-	return true;
-}
-
-void SingleMachine::Close() {
-	Machine& mach = GetActiveMachine();
-	mach.Stop();
-}
 
 
 NAMESPACE_ECS_END

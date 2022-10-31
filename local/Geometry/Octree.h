@@ -39,7 +39,7 @@ class OctreeNode {
 	
 protected:
 	friend class Octree;
-	friend class OctreeObject;
+	friend struct OctreeObject;
 	
 	typedef byte BitVec;
 	

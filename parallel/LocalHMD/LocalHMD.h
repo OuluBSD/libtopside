@@ -7,7 +7,7 @@
 #include <wchar.h>
 #ifdef flagFREEBSD
 	#include <hidapi/hidapi_libusb.h>
-#else
+#elif defined flagLINUX
 	// error here means that you didn't add hidapi include dir to build method conf
 	#include <hidapi.h>
 #endif

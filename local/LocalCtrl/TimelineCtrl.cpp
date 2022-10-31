@@ -14,7 +14,8 @@ void TimelineRowCtrl::Paint(Draw& d) {
 	bool has_focus = HasFocus();
 	d.DrawRect(sz, has_focus ? owner->bg_focused : owner->bg);
 	
-	Font fnt = SansSerif(sz.cy-6).Bold();
+	Font fnt = SansSerif(sz.cy-6);
+	fnt.Bold();
 	d.DrawText(2, 2, title, fnt, owner->text);
 	
 	int col = owner->GetColumnWidth();
@@ -130,9 +131,9 @@ TimelineCtrl::TimelineCtrl() {
 	AddFrame(vsb);
 	AddFrame(hsb.Horz());
 	
-	vsb.WhenScroll = [=] { Refresh(); };
+	vsb.WhenScroll = THISBACK(Refresh);
 	vsb.SetLine(GetLineHeight());
-	hsb.WhenScroll = [=] { Refresh(); };
+	hsb.WhenScroll = THISBACK(Refresh);
 	hsb.SetLine(GetColumnWidth());
 }
 

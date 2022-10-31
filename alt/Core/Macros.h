@@ -34,6 +34,7 @@ NAMESPACE_UPP_BEGIN
 
 
 #ifndef M_E
+	#undef M_PI
 	#define M_E        2.71828182845904523536   // e
 	#define M_LOG2E    1.44269504088896340736   // log2(e)
 	#define M_LOG10E   0.434294481903251827651  // log10(e)

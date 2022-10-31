@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
+#ifdef flagPOSIX
+	#include <unistd.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>

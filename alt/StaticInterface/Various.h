@@ -1,6 +1,9 @@
 #ifndef _StaticInterface_Various_h_
 #define _StaticInterface_Various_h_
 
+#ifdef flagPOSIX
+	#define HAVE_LIBPNG 1
+#endif
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -16,6 +19,8 @@ struct TgaReaderBackend : StaticIfaceBackend {
 	
 };
 
+
+#if HAVE_LIBPNG
 struct LibPngBackend : StaticIfaceBackend {
 	RTTI_DECL1(LibPngBackend, StaticIfaceBackend)
 	
@@ -25,6 +30,7 @@ struct LibPngBackend : StaticIfaceBackend {
 	void ClearImage(SysImage& img) override;
 	
 };
+#endif
 
 
 NAMESPACE_TOPSIDE_END

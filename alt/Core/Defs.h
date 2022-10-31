@@ -48,6 +48,8 @@
 
 #if defined flagMSC
 	#include <string.h> // memcmp
+	#include <corecrt_io.h>
+	#include <Shlobj.h>
 #endif
 
 #include <functional>

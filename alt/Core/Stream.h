@@ -71,6 +71,9 @@ public:
 	Stream& operator << (const char* c) {int len = (int)strnlen(c, 10000000); if (len > 0) Put(c, len); return *this;}
 	Stream& operator << (unsigned long l) {return *this << IntStr64(l);}
 	Stream& operator << (unsigned int l) {return *this << IntStr64(l);}
+	#ifdef flagMSC
+	Stream& operator << (size_t l) {return *this << IntStr64(l);}
+	#endif
 	virtual Stream& operator << (int i) {return *this << IntStr(i);}
 	virtual Stream& operator << (String s) {if (s.GetCount()) Put(s.Begin(), s.GetCount()); return *this;}
 	

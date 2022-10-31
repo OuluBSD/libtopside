@@ -2,9 +2,15 @@
 
 #if defined flagSDL2
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#ifdef flagMSC
+	#include <SDL.h>
+	#include <SDL_ttf.h>
+	#include <SDL_image.h>
+#else
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_ttf.h>
+	#include <SDL2/SDL_image.h>
+#endif
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -761,6 +767,8 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 	// Window
 	uint32 flags = 0;
 	
+	flags |= SDL_WINDOW_OPENGL;
+	
 	if (is_fullscreen)	flags |= SDL_WINDOW_FULLSCREEN;
 	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
 	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
@@ -790,6 +798,11 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	dev.gl_ctx = SDL_GL_CreateContext(dev.win);
 	GetAppFlags().SetOpenGLContextOpen();
+	
+	if (!dev.gl_ctx) {
+		LOG("Could not open opengl context: " << SDL_GetError());
+		return false;
+	}
 	
 	// Glew
 	GLenum err = glewInit();
