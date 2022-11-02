@@ -15,9 +15,18 @@ void AddExitBlock(Callback cb) {
 	__exitblocks() << cb;
 }
 
+
+#ifdef flagCMAKE
+void RunInitBlocksManually();
+#endif
+
 void RunInitBlocks() {
+#ifdef flagCMAKE
+	RunInitBlocksManually();
+#else
 	for (Callback& cb : __initblocks())
 		cb();
+#endif
 }
 
 void RunExitBlocks() {

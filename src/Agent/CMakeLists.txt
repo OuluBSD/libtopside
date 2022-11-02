@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -20,60 +20,39 @@ endif()
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
-      TODO.txt
-      Backend.h
-      Defs.h
-      Exporter.h
-      Util.h
-      Builtin.h
+      Agent.h
       Node.h
-      TokenStructure.h
-      Ast.h
-      EonStd.h
-      SemanticParser.h
-      AstRunner.h
-      AstExporter.h
-      Compiler.h
+      SearchAlgos.h
+      ActionPlanner.h
+      QueryTable.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      Exporter.cpp
-      Util.cpp
-      Builtin.cpp
-      Node.cpp
-      TokenStructure.cpp
-      Ast.cpp
-      EonStd.cpp
-      SemanticParser.cpp
-      AstBuilder.cpp
-      AstRunner.cpp
-      AstExporter.cpp
-      Compiler.cpp
+      ActionPlanner.cpp
 )
 
-list ( APPEND Backend_DEPEND_LIST
+list ( APPEND Agent_DEPEND_LIST
       Local-lib
-      High-lib
 )
 
 # Module properties
 create_cpps_from_icpps()
 set_source_files_properties ( ${HEADER_LIST} PROPERTIES HEADER_FILE_ONLY ON )
-add_library ( Backend-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
-target_include_directories ( Backend-lib PUBLIC ${INCLUDE_LIST} )
-set_property ( TARGET Backend-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
+add_library ( Agent-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
+target_include_directories ( Agent-lib PUBLIC ${INCLUDE_LIST} )
+set_property ( TARGET Agent-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
 
 # Module link
-if ( Backend_DEPEND_LIST OR LINK_LIST )
-  target_link_libraries ( Backend-lib ${Backend_DEPEND_LIST} ${LINK_LIST} )
+if ( Agent_DEPEND_LIST OR LINK_LIST )
+  target_link_libraries ( Agent-lib ${Agent_DEPEND_LIST} ${LINK_LIST} )
 endif()
 
 # Precompiled headers settings
 get_directory_property ( PCH_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-set_target_properties ( Backend-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
-set_target_properties ( Backend-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
-set_target_properties ( Backend-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
-set_target_properties ( Backend-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
+set_target_properties ( Agent-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
+set_target_properties ( Agent-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
+set_target_properties ( Agent-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
+set_target_properties ( Agent-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
 
 list ( LENGTH PCH_FILE PCH_FILE_LENGTH )
 if ( PCH_FILE_LENGTH GREATER 1 )
@@ -82,7 +61,7 @@ endif()
 
 if ( PCH_FILE AND DEFINED flagPCH )
   get_filename_component ( PCH_NAME ${PCH_FILE} NAME )
-  set ( PCH_DIR ${PROJECT_PCH_DIR}/Backend-lib )
+  set ( PCH_DIR ${PROJECT_PCH_DIR}/Agent-lib )
   set ( PCH_HEADER ${PCH_DIR}/${PCH_NAME} )
   if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
       if ( ${CMAKE_VERBOSE_MAKEFILE} EQUAL 1 )
@@ -95,7 +74,7 @@ if ( PCH_FILE AND DEFINED flagPCH )
       set ( PCH_INCLUDE_PARAMS " -Winvalid-pch -include-pch ${PCH_HEADER}.pch" )
   endif()
   if ( MSVC )
-      set_target_properties ( Backend-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
+      set_target_properties ( Agent-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
       set_source_files_properties ( ${SOURCE_LIST_CPP} PROPERTIES COMPILE_FLAGS "Yc${PCH_NAME} -Fp${PCH_HEADER}.pch" )
   endif()
   if ( PCH_INCLUDE_PARAMS )

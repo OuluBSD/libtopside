@@ -4,7 +4,7 @@ file
 	Copying,
 	main.cpp,
 	AudioHost.h,
-	AudioHost.icpp,
+	AudioHost.cpp,
 	Loader.h,
 	Loader.cpp,
 	LV2 readonly separator,

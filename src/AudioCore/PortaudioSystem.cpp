@@ -170,7 +170,7 @@ NAMESPACE_TOPSIDE_END;
 
 
 #if defined flagBUILTIN_PORTAUDIO || defined BUILTIN_PORTAUDIO
-INITBLOCK {
+INITBLOCK_(PortaudioSystem) {
 	// Check if the sizes of types match current platform
 	ASSERT_((sizeof(PaUint16) == 2) &&
 	        (sizeof(PaInt16)  == 2) &&

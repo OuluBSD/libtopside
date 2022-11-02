@@ -5,7 +5,7 @@ uses
 
 file
 	SoftRend.h,
-	SoftRend.icpp,
+	SoftRend.cpp,
 	Common.h,
 	Compiler.h,
 	Compiler.cpp,

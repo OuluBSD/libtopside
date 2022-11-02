@@ -3,9 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-INITBLOCK {
-	ContextConnectorBase::RegisterDefaultFileExt<AccelSpec>(".toy");
-	ContextConnectorBase::Register<AccelSpec, ShadertoyContextLoader>(".toy");
+INITBLOCK_(ShaderToy) {
+	SerialLoaderFactory::Register<SerialShadertoyLoader>(".toy");
 }
 
 

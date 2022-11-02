@@ -1,7 +1,10 @@
 #include "Local.h"
 
 
-INITBLOCK_(iGraphics_State) {
+NAMESPACE_UPP_BEGIN
+
+
+INITBLOCK_(Local) {
 	using namespace TS::GVar;
 	
 	gvars[VAR_AUDIOTIME].Set("iAudioSeconds", true);
@@ -79,3 +82,6 @@ INITBLOCK_(iGraphics_State) {
 		ASSERT(gvars[i].name);
 	}
 }
+
+
+NAMESPACE_UPP_END

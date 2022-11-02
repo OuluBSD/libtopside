@@ -1,7 +1,7 @@
 #include "SoftRend.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_UPP_BEGIN
 
 
 void InitObjViewSoft() {
@@ -19,8 +19,6 @@ void InitUtils() {
 }
 
 
-NAMESPACE_TOPSIDE_END
-
 
 
 INITBLOCK_(SoftRendShaders) {
@@ -30,3 +28,6 @@ INITBLOCK_(SoftRendShaders) {
 	InitUtils();
 	
 }
+
+
+NAMESPACE_UPP_END

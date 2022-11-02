@@ -7,7 +7,7 @@ uses
 file
 	TODO.txt,
 	EcsLib.h,
-	EcsLib.icpp,
+	EcsLib.cpp,
 	NonGui.cpp,
 	Defs.h,
 	CommonComponents.h,

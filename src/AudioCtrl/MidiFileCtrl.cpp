@@ -2,7 +2,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-INITBLOCK {
+INITBLOCK_(MidiFileCtrl) {
 	MakeComponentCtrlFactory<MidiFileComponent, MidiFileCtrl>();
 }
 

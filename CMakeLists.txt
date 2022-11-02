@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -47,10 +47,10 @@ include_directories ( BEFORE ${CMAKE_SOURCE_DIR}/./flat )
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
 
 # Project definitions
-add_definitions ( -DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagGCC -DflagSHARED -DflagPOSIX -DflagLINUX -DflagGNUC14 -DflagMP )
+add_definitions ( -DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagSHARED -DflagCMAKE -DflagGNUC14 -DflagMP -DflagPCH )
 
 # Option to distinguish whether to build binary with removed unused code and functions
-option ( REMOVE_UNUSED_CODE "Build binary with removed unused code and functions." OFF )
+option ( REMOVE_UNUSED_CODE "Build binary with removed unused code and functions." ON )
 
 # Option to enable static analysis with include-what-you-use
 option ( ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF )
@@ -110,7 +110,7 @@ endif()
 # Extra compilation and link flags
 set ( PROJECT_EXTRA_COMPILE_FLAGS "-I/usr/include/opencv4" )
 message ( STATUS "Extra compilation flags: ${PROJECT_EXTRA_COMPILE_FLAGS}" )
-set ( PROJECT_EXTRA_LINK_FLAGS "-Wl,--whole-archive,--allow-multiple-definition" )
+set ( PROJECT_EXTRA_LINK_FLAGS "" )
 message ( STATUS "Extra link flags: ${PROJECT_EXTRA_LINK_FLAGS}" )
 
 # Remove flags which are set by CMake

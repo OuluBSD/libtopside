@@ -1,19 +1,9 @@
 #include "SerialLib.h"
 
-NAMESPACE_UPP
+NAMESPACE_UPP_BEGIN
 
 
-
-
-
-
-
-
-
-
-
-
-INITBLOCK {
+INITBLOCK_(SerialLib) {
 	
 	#define ECS_CTX(dev, val, prefix) \
 		TS::Parallel::Factory::RegisterInterfaceLink<TS::Parallel::DefaultExchangePoint>(TS::Parallel::DevCls::dev, TS::Parallel::ValCls::val);
@@ -26,4 +16,4 @@ INITBLOCK {
 	
 }
 
-END_UPP_NAMESPACE
+NAMESPACE_UPP_END

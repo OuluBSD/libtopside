@@ -8,7 +8,7 @@ uses
 
 file
 	AtomAudio.h,
-	AtomAudio.icpp,
+	AtomAudio.cpp,
 	Generated.h,
 	Generated.cpp;
 

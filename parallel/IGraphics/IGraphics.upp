@@ -20,7 +20,7 @@ library(MSC) OpenGL32;
 file
 	IGraphics.h,
 	main.cpp,
-	IGraphics.icpp,
+	IGraphics.cpp,
 	Types.h,
 	TypeFuncList.inl highlight cpp,
 	Sdl.cpp,

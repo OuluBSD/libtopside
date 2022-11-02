@@ -6,7 +6,7 @@ uses
 
 file
 	SerialMach.h,
-	SerialMach.icpp,
+	SerialMach.cpp,
 	Fn.h,
 	Types.h,
 	Types.cpp,

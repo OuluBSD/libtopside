@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -20,37 +20,60 @@ endif()
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
-      Structural.h
-      Graph.h
+      TODO.txt
+      Backend.h
+      Defs.h
+      Exporter.h
+      Util.h
+      Builtin.h
+      Node.h
+      TokenStructure.h
+      Ast.h
+      EonStd.h
+      SemanticParser.h
+      AstRunner.h
+      AstExporter.h
+      Compiler.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      Tests.cpp
-      Graph.cpp
+      Exporter.cpp
+      Util.cpp
+      Builtin.cpp
+      Node.cpp
+      TokenStructure.cpp
+      Ast.cpp
+      EonStd.cpp
+      SemanticParser.cpp
+      AstBuilder.cpp
+      AstRunner.cpp
+      AstExporter.cpp
+      Compiler.cpp
 )
 
-list ( APPEND Structural_DEPEND_LIST
+list ( APPEND Backend_DEPEND_LIST
       Local-lib
+      High-lib
 )
 
 # Module properties
 create_cpps_from_icpps()
 set_source_files_properties ( ${HEADER_LIST} PROPERTIES HEADER_FILE_ONLY ON )
-add_library ( Structural-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
-target_include_directories ( Structural-lib PUBLIC ${INCLUDE_LIST} )
-set_property ( TARGET Structural-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
+add_library ( Backend-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
+target_include_directories ( Backend-lib PUBLIC ${INCLUDE_LIST} )
+set_property ( TARGET Backend-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
 
 # Module link
-if ( Structural_DEPEND_LIST OR LINK_LIST )
-  target_link_libraries ( Structural-lib ${Structural_DEPEND_LIST} ${LINK_LIST} )
+if ( Backend_DEPEND_LIST OR LINK_LIST )
+  target_link_libraries ( Backend-lib ${Backend_DEPEND_LIST} ${LINK_LIST} )
 endif()
 
 # Precompiled headers settings
 get_directory_property ( PCH_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-set_target_properties ( Structural-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
-set_target_properties ( Structural-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
-set_target_properties ( Structural-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
-set_target_properties ( Structural-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
+set_target_properties ( Backend-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
+set_target_properties ( Backend-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
+set_target_properties ( Backend-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
+set_target_properties ( Backend-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
 
 list ( LENGTH PCH_FILE PCH_FILE_LENGTH )
 if ( PCH_FILE_LENGTH GREATER 1 )
@@ -59,7 +82,7 @@ endif()
 
 if ( PCH_FILE AND DEFINED flagPCH )
   get_filename_component ( PCH_NAME ${PCH_FILE} NAME )
-  set ( PCH_DIR ${PROJECT_PCH_DIR}/Structural-lib )
+  set ( PCH_DIR ${PROJECT_PCH_DIR}/Backend-lib )
   set ( PCH_HEADER ${PCH_DIR}/${PCH_NAME} )
   if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
       if ( ${CMAKE_VERBOSE_MAKEFILE} EQUAL 1 )
@@ -72,7 +95,7 @@ if ( PCH_FILE AND DEFINED flagPCH )
       set ( PCH_INCLUDE_PARAMS " -Winvalid-pch -include-pch ${PCH_HEADER}.pch" )
   endif()
   if ( MSVC )
-      set_target_properties ( Structural-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
+      set_target_properties ( Backend-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
       set_source_files_properties ( ${SOURCE_LIST_CPP} PROPERTIES COMPILE_FLAGS "Yc${PCH_NAME} -Fp${PCH_HEADER}.pch" )
   endif()
   if ( PCH_INCLUDE_PARAMS )

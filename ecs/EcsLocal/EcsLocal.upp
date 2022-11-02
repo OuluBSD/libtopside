@@ -6,7 +6,7 @@ uses
 
 file
 	EcsLocal.h,
-	Init.icpp,
+	Init.cpp,
 	EcsLocal.cpp,
 	Viewport.h,
 	Viewport.cpp,

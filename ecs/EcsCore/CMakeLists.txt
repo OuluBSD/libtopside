@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -33,6 +33,7 @@ list ( APPEND HEADER_LIST
 )
 
 list ( APPEND SOURCE_LIST_CPP
+      EcsCore.cpp
       EntityStore.cpp
       Component.cpp
       Factory.cpp
@@ -40,10 +41,6 @@ list ( APPEND SOURCE_LIST_CPP
       ComponentStore.cpp
       Pool.cpp
       EntityVisitor.cpp
-)
-
-list ( APPEND SOURCE_LIST_ICPP
-      EcsCore.icpp
 )
 
 list ( APPEND EcsCore_DEPEND_LIST

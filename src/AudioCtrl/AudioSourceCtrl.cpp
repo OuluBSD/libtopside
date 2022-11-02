@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-INITBLOCK {
+INITBLOCK_(AudioSourceCtrl) {
 	MakeInterfaceCtrlFactory<AudioSource, AudioSourceCtrl>();
 }
 

@@ -1,6 +1,7 @@
 #include "AtomMinimal.h"
 
-// This file is generated. Do not modify this file.
+NAMESPACE_UPP_BEGIN
+
 
 INITBLOCK_(AtomMinimal) {
 	using namespace TS::Parallel;
@@ -151,3 +152,5 @@ INITBLOCK_(AtomMinimal) {
 	#endif
 }
 
+
+NAMESPACE_UPP_END

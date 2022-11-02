@@ -7,7 +7,7 @@ NAMESPACE_UPP
 
 
 
-INITBLOCK {
+INITBLOCK_(EcsDummy) {
 	EcsFactory::RegisterComponent<DummySoundGeneratorComponent>();
 	EcsFactory::RegisterComponent<DummyAudioSinkComponent>();
 }

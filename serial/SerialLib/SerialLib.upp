@@ -6,7 +6,7 @@ uses
 
 file
 	SerialLib.h,
-	Init.icpp,
+	Init.cpp,
 	Types.h,
 	SingleMachine.cpp,
 	EntitySystem.h,

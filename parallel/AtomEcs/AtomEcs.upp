@@ -5,7 +5,7 @@ uses
 
 file
 	AtomEcs.h,
-	AtomEcs.icpp,
+	AtomEcs.cpp,
 	Generated.h,
 	Generated.cpp,
 	Ecs.h,

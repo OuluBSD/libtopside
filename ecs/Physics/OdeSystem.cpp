@@ -183,7 +183,7 @@ NAMESPACE_ECS_END
 #ifdef flagAUTOSTART_SYSTEMS
 NAMESPACE_UPP
 
-INITBLOCK(OdeSystem) {
+INITBLOCK_(OdeSystem) {
 	TS::Engine::WhenInitialize << callback(TS::AddEngineOdeSystem);
 }
 

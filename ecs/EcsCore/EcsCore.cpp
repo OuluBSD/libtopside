@@ -1,6 +1,6 @@
 #include "EcsCore.h"
 
-using namespace TS;
+NAMESPACE_UPP_BEGIN
 
 
 INITBLOCK_(EcsCore) {
@@ -12,3 +12,6 @@ INITBLOCK_(EcsCore) {
 	Engine::Register<ComponentStore>("component.store");
 	
 }
+
+
+NAMESPACE_UPP_END

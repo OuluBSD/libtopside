@@ -16,7 +16,7 @@ uses(GUI | SCREEN) IScreen;
 
 file
 	AtomMinimal.h,
-	Init.icpp,
+	Init.cpp,
 	Prefabs.h,
 	Generated.h,
 	Generated.cpp;

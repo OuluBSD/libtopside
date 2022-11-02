@@ -4,7 +4,7 @@ using namespace TS;
 
 NAMESPACE_UPP
 
-INITBLOCK {
+INITBLOCK_(Sequencer) {
 	//System::Register<MultiNoteStereo<Sitar> >("Sitar");
 	System::Register<SimpleOscillator>("Simple Oscillator");
 	System::Register<SimpleReverb>("Simple Reverb");

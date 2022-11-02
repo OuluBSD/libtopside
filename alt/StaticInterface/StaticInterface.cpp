@@ -1,5 +1,6 @@
 #include "StaticInterface.h"
 
+NAMESPACE_UPP_BEGIN
 
 
 INITBLOCK_(StaticInterface) {
@@ -20,3 +21,6 @@ INITBLOCK_(StaticInterface) {
 	#endif
 	
 }
+
+
+NAMESPACE_UPP_END

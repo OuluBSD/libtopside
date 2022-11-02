@@ -145,8 +145,8 @@ LOG("}"); \
 #define LINEID(pre, x) COMBINE(COMBINE(pre, x), __LINE__)
 #define INITBLOCK void LINEID(Init,MK__s) (); MAKE_STATIC_(TS::Callinit, initcb##__LINESTR__, (LINEID(Init,MK__s))); void LINEID(Init,MK__s) ()
 #define EXITBLOCK void LINEID(Exit,MK__s) (); MAKE_STATIC_(TS::Callexit, exitcb##__LINESTR__, (LINEID(Exit,MK__s))); void LINEID(Exit,MK__s) ()
-#define INITBLOCK_(x) void LINEID(Init,x) (); MAKE_STATIC_(TS::Callinit, initcb##x, (LINEID(Init,x))); void LINEID(Init,x) ()
-#define EXITBLOCK_(x) void LINEID(Exit,x) (); MAKE_STATIC_(TS::Callexit, exitcb##x, (LINEID(Exit,x))); void LINEID(Exit,x) ()
+#define INITBLOCK_(x) void COMBINE(Init,x) (); MAKE_STATIC_(TS::Callinit, initcb##x, (COMBINE(Init,x))); void COMBINE(Init,x) ()
+#define EXITBLOCK_(x) void COMBINE(Exit,x) (); MAKE_STATIC_(TS::Callexit, exitcb##x, (COMBINE(Exit,x))); void COMBINE(Exit,x) ()
 #define ONCELOCK static std::atomic_flag __once; if (!__once.test_and_set())
 #define ONCELOCK_(once) if (!once.test_and_set())
 

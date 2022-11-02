@@ -255,6 +255,22 @@ void DefaultRunnerStop() {
 }
 
 
+String SerialLoaderFactory::LoadFile(String file_path) {
+	Cout() << "SerialLoaderFactory::LoadFile" << file_path << "\n";
+	const auto& l = GetLoaders();
+	for(int i = 0; i < l.GetCount(); i++) {
+		Cout() << i << ": " << l.GetKey(i) << "\n";
+	}
+	String ext = GetFileExt(file_path);
+	int i = l.Find(ext);
+	if (i < 0) {
+		LOG("SerialLoaderFactory: error: no loader for file extension: " << ext);
+		return String();
+	}
+	const Loader& el = l[i];
+	One<SerialLoaderBase> loader = el.fn();
+	return loader->LoadFile(file_path);
+}
 
 NAMESPACE_TOPSIDE_END
 

@@ -7,7 +7,7 @@ uses
 file
 	TODO.txt,
 	EcsCore.h,
-	EcsCore.icpp,
+	EcsCore.cpp,
 	Defs.h,
 	EntityStore.h,
 	EntityStore.cpp,

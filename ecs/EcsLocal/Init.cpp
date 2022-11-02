@@ -1,6 +1,6 @@
 #include "EcsLocal.h"
 
-using namespace TS;
+NAMESPACE_UPP_BEGIN
 
 INITBLOCK_(EcsLocal) {
 	using namespace Serial;
@@ -43,3 +43,5 @@ INITBLOCK_(EcsLocal) {
 	
 	
 }
+
+NAMESPACE_UPP_END

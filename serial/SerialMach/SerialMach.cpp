@@ -5,25 +5,7 @@ NAMESPACE_UPP
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-INITBLOCK {
+INITBLOCK_(SerialMach) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;

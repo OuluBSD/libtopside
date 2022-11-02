@@ -32,8 +32,8 @@ GENERATE_DEBUG="1"          # set to "1" - enable debug output during script pro
 
 #GENERATE_NOT_Cxx="1"                # set to "1" - do not use compiler -std=c++14 parameter (compiler parameter is enabled as default)
 #GENERATE_NOT_PARALLEL="1"           # set to "1" - do not build with multiple processes (parralel build is enabled as default)
-GENERATE_NOT_PCH="1"                # set to "1" - do not build with precompiled header support (precompiled header support is enabled as default)
-GENERATE_NOT_REMOVE_UNUSED_CODE="1" # set to "1" - do not use compile and link parameters to remove unused code and functions (unused code and functions are removed as default)
+#GENERATE_NOT_PCH="1"                # set to "1" - do not build with precompiled header support (precompiled header support is enabled as default)
+#GENERATE_NOT_REMOVE_UNUSED_CODE="1" # set to "1" - do not use compile and link parameters to remove unused code and functions (unused code and functions are removed as default)
 
 #CMAKE_VERBOSE_OVERWRITE="0" # set to "0" - do not generate cmake verbose makefile output (even when the debug flag is set)
 #CMAKE_VERBOSE_OVERWRITE="1" # set to "1" - always generate cmake verbose makefile output
@@ -44,10 +44,10 @@ UPP_SRC_DIR="${UPP_SRC_BASE}/flat"
 #PROJECT_EXTRA_INCLUDE_DIR="${pwd}"
 #PROJECT_EXTRA_INCLUDE_SUBDIRS="1"
 PROJECT_NAME="${UPP_SRC_DIR}/EcsShell/EcsShell.upp"
-PROJECT_FLAGS="-DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagGCC -DflagSHARED -DflagPOSIX -DflagLINUX"
+PROJECT_FLAGS="-DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagSHARED -DflagCMAKE"
 
 PROJECT_EXTRA_COMPILE_FLAGS="-I/usr/include/opencv4"
-PROJECT_EXTRA_LINK_FLAGS="-Wl,--whole-archive,--allow-multiple-definition"
+PROJECT_EXTRA_LINK_FLAGS=""
 
 #PROJECT_NAME="${UPP_SRC_BASE}/reference/brc/brc.upp"
 #PROJECT_FLAGS="-DflagLINUX -DflagPOSIX -DflagDEBUG"
@@ -73,4 +73,4 @@ ln -s ${CURDIR}/tutorial/* flat/
 touch flat/uppconfig.h
 
 generate_main_cmake_file "${PROJECT_NAME}" "${PROJECT_FLAGS}"
-
+#  -DflagPOSIX -DflagLINUX -DflagGCC 

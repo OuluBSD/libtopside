@@ -6,7 +6,7 @@ library(POSIX) png;
 
 file
 	StaticInterface.h,
-	StaticInterface.icpp,
+	StaticInterface.cpp,
 	Factory.h,
 	Factory.cpp,
 	Screen.h,

@@ -8,7 +8,6 @@ uses(SCREEN) IGraphics;
 
 file
 	AtomLocal.h,
-	Init.icpp,
 	Generated.h,
 	Generated.cpp;
 

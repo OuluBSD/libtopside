@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -46,16 +46,13 @@ list ( APPEND SOURCE_LIST_C
 )
 
 list ( APPEND SOURCE_LIST_CPP
+      StaticInterface.cpp
       Factory.cpp
       Screen.cpp
       DrawBackend.cpp
       Sdl2.cpp
       Stb.cpp
       Various.cpp
-)
-
-list ( APPEND SOURCE_LIST_ICPP
-      StaticInterface.icpp
 )
 
 # Module properties

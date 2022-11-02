@@ -1,6 +1,6 @@
 #include "Editor.h"
 
-INITBLOCK {
+INITBLOCK_(Editor) {
 	
 	
 	#define COMPONENT(x)		Fos::System::RegisterComponent<x>(#x);

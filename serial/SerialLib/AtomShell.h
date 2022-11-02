@@ -42,18 +42,7 @@ struct SerialLoaderFactory {
 	}
 	
 	
-	static String LoadFile(String file_path) {
-		const auto& l = GetLoaders();
-		String ext = GetFileExt(file_path);
-		int i = l.Find(ext);
-		if (i < 0) {
-			LOG("SerialLoaderFactory: error: no loader for file extension: " << ext);
-			return String();
-		}
-		const Loader& el = l[i];
-		One<SerialLoaderBase> loader = el.fn();
-		return loader->LoadFile(file_path);
-	}
+	static String LoadFile(String file_path);
 };
 
 

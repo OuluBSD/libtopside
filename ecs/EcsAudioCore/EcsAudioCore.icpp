@@ -2,7 +2,7 @@
 
 NAMESPACE_UPP
 
-INITBLOCK {
+INITBLOCK_(EcsAudioCore) {
 	EcsFactory::RegisterComponent<MixerChannelInputComponent>();
 	EcsFactory::RegisterComponent<MixerChannelOutputComponent>();
 	EcsFactory::RegisterComponent<MixerAudioSourceComponent>();

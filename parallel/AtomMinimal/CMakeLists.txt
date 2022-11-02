@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 02:16:20 EET 2022
+# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -41,11 +41,8 @@ list ( APPEND HEADER_LIST
 )
 
 list ( APPEND SOURCE_LIST_CPP
+      Init.cpp
       Generated.cpp
-)
-
-list ( APPEND SOURCE_LIST_ICPP
-      Init.icpp
 )
 
 list ( APPEND AtomMinimal_DEPEND_LIST

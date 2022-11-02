@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-INITBLOCK {
+INITBLOCK_(VideoSourceCtrl) {
 	MakeInterfaceCtrlFactory<VideoSource, VideoSourceCtrl>();
 }
 

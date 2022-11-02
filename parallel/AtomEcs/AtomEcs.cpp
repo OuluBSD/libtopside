@@ -1,6 +1,6 @@
 #include "AtomEcs.h"
 
-NAMESPACE_UPP
+NAMESPACE_UPP_BEGIN
 
 
 INITBLOCK_(AtomEcs) {
@@ -15,4 +15,4 @@ INITBLOCK_(AtomEcs) {
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_UPP_END

@@ -1,6 +1,6 @@
 #include "EcsLib.h"
 
-using namespace TS;
+NAMESPACE_UPP
 
 MAKE_STATIC(Serial::ExtScriptEcsLoader, __ext_script_loader);
 
@@ -26,3 +26,5 @@ INITBLOCK_(EcsLib) {
 	
 	
 }
+
+END_UPP_NAMESPACE

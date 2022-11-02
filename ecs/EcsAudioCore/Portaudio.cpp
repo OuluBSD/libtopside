@@ -108,7 +108,7 @@ void CloseAudioSys() {
 	__is_portaudio_uninit = true;
 }
 
-INITBLOCK {
+INITBLOCK_(Portaudio) {
 	CenterSystem::WhenUninit() << callback(CloseAudioSys);
 }
 
