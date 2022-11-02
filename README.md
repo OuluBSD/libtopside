@@ -5,7 +5,7 @@ Libtopside is an alternative to a subset of Ultimate++ framework.
 
 ## How to compile
 
-### In Linux
+### In Linux (u++ method)
 Follow [Ultimate++](https://www.ultimatepp.org/) installation instructions. Finally, you should have ```umk``` and ```theide``` executables at your command.
 
 Install git, sdl2, sdl2-image, sdl2-ttf, ffmpeg, opencv, portaudio, portmidi, assimp, freeglut, glew, ode, hidapi, hidapi-libusb, x11, v4l2, libpng.
@@ -19,6 +19,20 @@ umk examples,reference,tutorial,ai,alt,audio,compiler,ecs,lib,local,parallel,scr
 Test run e.g:   ~/EcsShell -e play_audio_file.eon -MACHINE_TIME_LIMIT=10 -FILE=~/libtopside/share/sounds/8_bit_mentality.mp3
 ```
 
+
+### In Linux (using cmake)
+
+Install cmake, git, sdl2, sdl2-image, sdl2-ttf, ffmpeg, opencv, portaudio, portmidi, assimp, freeglut, glew, ode, hidapi, hidapi-libusb, x11, v4l2, libpng.
+
+```
+cd ~
+git clone https://github.com/OuluBSD/libtopside.git
+cd libtopside
+mkdir build
+cd build
+cmake ..
+make
+```
 
 
 ### In FreeBSD

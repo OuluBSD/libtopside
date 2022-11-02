@@ -1,0 +1,18 @@
+description "Example TopWindow usage, which is similar to U++ CtrlLib TopWindow usage.\377";
+
+uses
+	EcsMinimal,
+	Complete;
+
+file
+	main.cpp,
+	AltTopWindow.h,
+	AltTopWindow.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2",
+	"" = "GUI VIRTUALGUI3DALT SDL2GUI3DALT",
+	"" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"" = "GUI",
+	"" = "DEBUG_RT GUI SDL2";
+

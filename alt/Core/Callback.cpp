@@ -16,20 +16,22 @@ void AddExitBlock(Callback cb) {
 }
 
 
-#ifdef flagCMAKE
 void RunInitBlocksManually();
-#endif
+void RunExitBlocksManually();
 
 void RunInitBlocks() {
-#ifdef flagCMAKE
+	#ifdef flagCMAKE
 	RunInitBlocksManually();
-#else
+	#else
 	for (Callback& cb : __initblocks())
 		cb();
-#endif
+	#endif
 }
 
 void RunExitBlocks() {
+	#ifdef flagCMAKE
+	RunExitBlocksManually();
+	#else
 	RunThreadExitBlocks();
 	auto it = __exitblocks().rbegin();
 	auto end = __exitblocks().rend();
@@ -37,6 +39,7 @@ void RunExitBlocks() {
 		(*it)();
 	__initblocks().Clear();
 	__exitblocks().Clear();
+	#endif
 }
 
 void AddThreadShutdownCallback(Callback cb) {

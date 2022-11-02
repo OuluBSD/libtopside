@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Copyright (C) 2016-2020 Radek Malcic
+# Copyright (C) 2022 Seppo Pakonen
 #
 # All rights reserved.
 #
@@ -39,38 +40,14 @@ GENERATE_DEBUG="1"          # set to "1" - enable debug output during script pro
 #CMAKE_VERBOSE_OVERWRITE="1" # set to "1" - always generate cmake verbose makefile output
 CMAKE_SOURCE_DIR="."
 UPP_SRC_BASE="."
-UPP_SRC_DIR="${UPP_SRC_BASE}/flat"
-#PROJECT_EXTRA_INCLUDE="${UPP_SRC_BASE}/local ${UPP_SRC_BASE}/ecs"
-#PROJECT_EXTRA_INCLUDE_DIR="${pwd}"
-#PROJECT_EXTRA_INCLUDE_SUBDIRS="1"
-PROJECT_NAME="${UPP_SRC_DIR}/EcsShell/EcsShell.upp"
+UPP_SRC_DIR="${UPP_SRC_BASE}/src"
+PROJECT_EXTRA_INCLUDE_DIR="${UPP_SRC_BASE}/alt" # this can be changed to u++'s uppsrc directory
+PROJECT_NAME="${UPP_SRC_DIR}/Shell/Shell.upp"
 PROJECT_FLAGS="-DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagSHARED -DflagCMAKE"
+#  -DflagPOSIX -DflagLINUX -DflagGCC 
 
 PROJECT_EXTRA_COMPILE_FLAGS="-I/usr/include/opencv4"
 PROJECT_EXTRA_LINK_FLAGS=""
 
-#PROJECT_NAME="${UPP_SRC_BASE}/reference/brc/brc.upp"
-#PROJECT_FLAGS="-DflagLINUX -DflagPOSIX -DflagDEBUG"
-
-CURDIR=$(pwd)
-
-rm flat/*
-rmdir flat
-mkdir flat
-ln -s ${CURDIR}/ai/* flat/
-ln -s ${CURDIR}/alt/* flat/
-ln -s ${CURDIR}/audio/* flat/
-ln -s ${CURDIR}/compiler/* flat/
-ln -s ${CURDIR}/ecs/* flat/
-ln -s ${CURDIR}/examples/* flat/
-ln -s ${CURDIR}/lib/* flat/
-ln -s ${CURDIR}/local/* flat/
-ln -s ${CURDIR}/parallel/* flat/
-ln -s ${CURDIR}/reference/* flat/
-ln -s ${CURDIR}/serial/* flat/
-ln -s ${CURDIR}/tests/* flat/
-ln -s ${CURDIR}/tutorial/* flat/
-touch flat/uppconfig.h
 
 generate_main_cmake_file "${PROJECT_NAME}" "${PROJECT_FLAGS}"
-#  -DflagPOSIX -DflagLINUX -DflagGCC 

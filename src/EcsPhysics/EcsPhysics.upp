@@ -1,0 +1,13 @@
+description "\377B56,85,200";
+
+uses
+	SoftPhys,
+	Physics;
+
+file
+	EcsPhysics.h,
+	OdePrefab.h,
+	OdePrefab.cpp,
+	TPrefab.h,
+	TPrefab.cpp;
+

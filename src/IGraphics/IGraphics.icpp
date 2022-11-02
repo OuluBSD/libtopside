@@ -1,0 +1,30 @@
+#include "IGraphics.h"
+
+
+
+
+NAMESPACE_UPP_BEGIN
+
+template <class Gfx>
+void InitObjView() {
+	ShaderLibrary<Gfx>::template AddProgramClass<Parallel::ObjViewProgT<Gfx>>("obj_view_program");
+}
+
+INITBLOCK_(IGraphics) {
+	using namespace TS;
+	using namespace TS::Parallel;
+	
+	#ifdef flagPOSIX
+	InitObjView<X11SwGfx>();
+	#ifdef flagOGL
+	InitObjView<X11OglGfx>();
+	#endif
+	#endif
+	
+	#if defined flagSDL2 && defined flagOGL
+	InitObjView<SdlOglGfx>();
+	#endif
+	
+}
+
+NAMESPACE_UPP_END

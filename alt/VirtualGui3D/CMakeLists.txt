@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Nov  2 17:42:41 EET 2022
+# CMakeLists.txt generated Thu Nov  3 01:48:30 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################

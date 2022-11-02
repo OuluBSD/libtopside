@@ -1,0 +1,73 @@
+description "\377B64,161,0";
+
+noblitz;
+
+uses
+	Local,
+	Geometry,
+	ParallelLib,
+	ports/MingwDx,
+	SoftRend;
+
+uses(WIN32&MSC&NEVER) ports/glew;
+
+uses(WIN32&MSC) ports/glext;
+
+library(MSC) glew32;
+
+library(MSC) OpenGL32;
+
+file
+	IGraphics.h,
+	main.cpp,
+	IGraphics.icpp,
+	Types.h,
+	TypeFuncList.inl highlight cpp,
+	Sdl.cpp,
+	X11.cpp,
+	Ogl.cpp,
+	Cpu.cpp,
+	SdlCpu.cpp,
+	Backend.cpp,
+	GlobalApi.h,
+	OpenGL.h,
+	State.h,
+	GfxClasses.h,
+	GfxClasses.cpp,
+	IfaceOgl.h,
+	Atoms readonly separator,
+	Base.h,
+	Base.cpp,
+	FboBase.h,
+	FboBase.cpp,
+	ImageBase.h,
+	ImageBase.cpp,
+	Programs readonly separator,
+	ObjViewProg.h,
+	ObjViewProg.cpp,
+	Templates readonly separator,
+	TState.h,
+	TState.cpp,
+	TFramebuffer.h,
+	TFramebuffer.cpp,
+	TPipeline.h,
+	TPipeline.cpp,
+	TProgram.cpp,
+	TContext.h,
+	TContext.cpp,
+	TUtil.h,
+	TUtil.cpp,
+	TBuffer.h,
+	TBuffer.cpp,
+	TBufferStage.cpp,
+	TBufferField.h,
+	TBufferField.cpp,
+	ProgDraw.h,
+	ProgDraw.cpp,
+	DrawProg.cpp,
+	GfxAccelAtom.h,
+	GfxAccelAtom.cpp;
+
+mainconfig
+	"" = "SCREEN";
+

@@ -1,0 +1,20 @@
+machine x11.app:
+	
+	driver context:
+		x11.sw.context
+	
+	chain program:
+		state event.register
+		
+		loop video:
+			center.customer
+			x11.sw.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.name =	"obj_view"
+				shader.default.vtx.name =	"obj_view"
+			
+			x11.sw.video.pipe:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

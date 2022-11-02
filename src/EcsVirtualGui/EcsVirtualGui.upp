@@ -1,0 +1,19 @@
+description "\377B0,0,255";
+
+noblitz;
+
+uses
+	VirtualGui3D;
+
+file
+	EcsVirtualGui.h,
+	EcsVirtualGui.cpp,
+	EcsVirtualGuiInit.cpp,
+	After.h,
+	Render.cpp,
+	System.h,
+	System.cpp,
+	"Gui Platform" readonly separator,
+	DrawBackend.h,
+	DrawBackend.cpp;
+

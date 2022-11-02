@@ -1,0 +1,12 @@
+description "\3770,128,128";
+
+uses
+	EcsLocal,
+	EcsPhysics;
+
+uses(GUI) EcsVirtualGui;
+
+file
+	EcsMinimal.h,
+	EcsMinimal.cpp;
+
