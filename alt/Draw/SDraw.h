@@ -75,6 +75,10 @@ public:
 	void DrawHLine(int x0, int x1, int y, Color color);
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 	
+	
+	operator Image() {return GetImage();}
+	Image GetImage();
+	
 };
 
 END_UPP_NAMESPACE

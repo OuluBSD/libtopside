@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_config_h_
-#define _CoreAlt_config_h_
+#ifndef _Core_config_h_
+#define _Core_config_h_
 
 #define LIBTOPSIDE 1
 

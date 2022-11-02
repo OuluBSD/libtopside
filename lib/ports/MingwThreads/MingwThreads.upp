@@ -2,6 +2,7 @@ description "\37728,170,255";
 
 file
 	Copying,
+	MingwThreads.cpp,
 	mingw.thread.h,
 	mingw.condition_variable.h,
 	mingw.future.h,

@@ -1,4 +1,6 @@
 #include "CtrlCore.h"
+#include <EcsLib/EcsLib.h>
+
 
 NAMESPACE_UPP_BEGIN
 

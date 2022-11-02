@@ -3,6 +3,7 @@ description "\3770,128,128";
 file
 	VirtualGui3D.h,
 	VirtualGui.cpp,
+	Internal.h,
 	Local.h,
 	Keys.h,
 	After.h,

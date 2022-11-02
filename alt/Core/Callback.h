@@ -429,10 +429,12 @@ void RunThreadExitBlocks();
 
 struct Callinit {
 	Callinit(void (*fn)());
+	void Clear();
 };
 
 struct Callexit {
 	Callexit(void (*fn)());
+	void Clear();
 };
 
 

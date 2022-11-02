@@ -8,8 +8,9 @@ uses
 	ports/bz2lib,
 	RTTI,
 	SharedCore,
-	ports/MingwThreads,
 	StaticInterface;
+
+uses(GCC WIN32) ports/MingwThreads;
 
 library(WIN32) "shlwapi comdlg32";
 

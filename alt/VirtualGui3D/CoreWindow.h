@@ -1,5 +1,5 @@
-#ifndef _CtrlCore_CoreWindow_h_
-#define _CtrlCore_CoreWindow_h_
+#ifndef _VirtualGui3D_CoreWindow_h_
+#define _VirtualGui3D_CoreWindow_h_
 
 #ifdef flagGUI
 

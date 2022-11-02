@@ -22,11 +22,11 @@
 	#define NAMESPACE_UPP_END }
 	#define UPP ts
 #else
-	#define NAMESPACE_UPP namespace  Upp {
+	#define NAMESPACE_UPP namespace  Topside {
 	#define END_UPP_NAMESPACE }
-	#define NAMESPACE_UPP_BEGIN namespace  Upp {
+	#define NAMESPACE_UPP_BEGIN namespace  Topside {
 	#define NAMESPACE_UPP_END }
-	#define UPP Upp
+	#define UPP Topside
 #endif
 
 

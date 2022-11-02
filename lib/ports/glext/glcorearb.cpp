@@ -1,3 +1,5 @@
+#ifdef flagWIN32
+
 #include "maindef.h"
 #include "glcorearb.h"
 
@@ -317,3 +319,4 @@ glIsTexture,
 )
 
 
+#endif

@@ -11,3 +11,6 @@ sounds/samples/**
 share/sf2/**
 share/samples
 **.md.swp
+flat/**
+build/**
+*.bz2

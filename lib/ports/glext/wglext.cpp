@@ -1,3 +1,5 @@
+#ifdef flagWIN32
+
 #include "maindef.h"
 #include <gl/GL.h>
 #include "wglext.h"
@@ -345,3 +347,4 @@ WGLPROC_RETURN1(BOOL, wglWaitForSbcOML,
 (hdc,target_sbc,ust,msc,sbc))
 
 
+#endif

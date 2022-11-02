@@ -1,5 +1,6 @@
-#include <EcsLib/EcsLib.h>
+#include "Internal.h"
 
+#if HAVE_WINDOWSYSTEM
 
 NAMESPACE_UPP
 
@@ -41,3 +42,5 @@ TS::Ecs::Windows* Ctrl::GetWindows() {
 }
 
 END_UPP_NAMESPACE
+
+#endif

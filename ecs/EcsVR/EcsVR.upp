@@ -6,5 +6,6 @@ uses
 
 file
 	EcsVR.h,
+	EcsVR.cpp,
 	_ readonly separator;
 

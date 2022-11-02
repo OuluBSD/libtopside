@@ -1,6 +1,8 @@
 description "\377I28,212,255";
 
 file
+	rapidjson.h,
+	rapidjson.cpp,
 	allocators.h,
 	document.h,
 	encodedstream.h,
@@ -14,7 +16,6 @@ file
 	ostreamwrapper.h,
 	pointer.h,
 	prettywriter.h,
-	rapidjson.h,
 	reader.h,
 	schema.h,
 	stream.h,

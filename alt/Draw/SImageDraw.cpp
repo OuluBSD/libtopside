@@ -429,7 +429,9 @@ bool SImageDraw::DoOps(Rect& r) {
 	return true;
 }
 
-
+Image SImageDraw::GetImage() {
+	TODO
+}
 
 
 

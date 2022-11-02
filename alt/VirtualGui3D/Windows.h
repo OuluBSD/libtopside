@@ -1,5 +1,5 @@
-#ifndef _CtrlCore_Windows_h_
-#define _CtrlCore_Windows_h_
+#ifndef _VirtualGui3D_Windows_h_
+#define _VirtualGui3D_Windows_h_
 
 #ifdef flagGUI
 
@@ -39,7 +39,7 @@ public:
 	void LocalMenu(Bar& bar);
 };
 
-class Windows : public Screen {
+class Windows : public TS::Screen {
 	RTTI_DECL1(Windows, Screen)
 	virtual void Visit(RuntimeVisitor& vis) {}
 	

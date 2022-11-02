@@ -1,6 +1,7 @@
 #ifndef _EcsLib_EcsLib_h_
 #define _EcsLib_EcsLib_h_
 
+#include <Core/Core.h>
 #include <EcsCore/EcsCore.h>
 
 #if defined UPP_VERSION || (defined flagSTDEXC)
@@ -11,10 +12,17 @@
 	#include <IHolograph/IHolograph.h>
 #endif
 
-#if !defined LIBTOPSIDE && defined flagGUI
-	// No WindowSystem
-#elif defined(flagGUI)
+#if defined LIBTOPSIDE && defined flagGUI
 	#define HAVE_WINDOWSYSTEM 1
+	#include <VirtualGui3D/VirtualGui3D.h>
+#endif
+
+#if !defined flagGUI
+	#error GUI not defined
+#endif
+
+#if !defined LIBTOPSIDE
+	#error LIBTOPSIDE not defined
 #endif
 
 #define BIG_NUMBER 100000000
@@ -32,6 +40,8 @@
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
+#else
+	#error GUIPLATFORM_INCLUDE_AFTER_ECSLIB not defined
 #endif
 
 #endif

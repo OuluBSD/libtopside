@@ -12,7 +12,7 @@ void InitObjView() {
 NAMESPACE_PARALLEL_END
 
 
-INITBLOCK_(Shaders) {
+INITBLOCK_(IGraphicsShaders) {
 	using namespace TS;
 	using namespace TS::Parallel;
 	

@@ -1,5 +1,6 @@
-#include <EcsLocal/EcsLocal.h>
+#include "Internal.h"
 
+#if HAVE_WINDOWSYSTEM
 
 NAMESPACE_UPP
 
@@ -92,3 +93,5 @@ void Ctrl::Invalidate() {
 }
 
 END_UPP_NAMESPACE
+
+#endif

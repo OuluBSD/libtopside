@@ -54,8 +54,12 @@ Callinit::Callinit(void (*fn)()) {
 	AddInitBlock(Callback(fn));
 }
 
+void Callinit::Clear() {}
+
 Callexit::Callexit(void (*fn)()) {
 	AddExitBlock(Callback(fn));
 }
+
+void Callexit::Clear() {}
 
 NAMESPACE_UPP_END

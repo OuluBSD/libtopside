@@ -1,7 +1,6 @@
 description "\377B0,131,159";
 
 uses
-	EcsEssential,
 	EcsLocal,
 	EcsMinimal,
 	IMidiHw,
@@ -12,5 +11,6 @@ uses(GUI) EcsCtrl;
 uses(VR) EcsVR;
 
 file
-	EcsComplete.h;
+	EcsComplete.h,
+	EcsComplete.cpp;
 

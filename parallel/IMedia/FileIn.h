@@ -80,7 +80,11 @@ class FileChannelT
 {
 	
 protected:
+	#ifdef flagMSC
 	using FileInput = typename FileInputT<Backend>;
+	#else
+	using FileInput = class FileInputT<Backend>;
+	#endif
 	using AVFrame = typename Backend::AVFrame;
 	using AVCodecContextRef = typename Backend::AVCodecContextRef;
 	using AVFormatContext = typename Backend::AVFormatContext;

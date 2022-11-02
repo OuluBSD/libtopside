@@ -1,3 +1,5 @@
+#ifdef flagWIN32
+
 #include "maindef.h"
 #include <gl/GL.h>
 #include "glext.h"
@@ -12317,4 +12319,4 @@ GLPROC_VOID(glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN,
 
 
 
-
+#endif

@@ -8,8 +8,7 @@
 #ifdef flagFREEBSD
 	#include <hidapi/hidapi_libusb.h>
 #elif defined flagLINUX
-	// error here means that you didn't add hidapi include dir to build method conf
-	#include <hidapi.h>
+	#include <hidapi/hidapi.h>
 #endif
 #include <assert.h>
 #include <limits.h>

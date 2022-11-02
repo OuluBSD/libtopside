@@ -1,6 +1,6 @@
-#include <EcsLocal/EcsLocal.h>
+#include "Internal.h"
 
-#ifdef flagGUI
+#if HAVE_WINDOWSYSTEM
 
 NAMESPACE_ECS_BEGIN
 

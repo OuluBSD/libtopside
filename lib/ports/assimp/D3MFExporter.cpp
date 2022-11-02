@@ -325,5 +325,14 @@ void D3MFExporter::writeRelInfoToFile( const std::string &folder, const std::str
 } // Namespace D3MF
 } // Namespace Assimp
 
+#else
+#include <ports/assimp/scene.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/IOStream.hpp>
+#include <ports/assimp/Exporter.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
+namespace Assimp {
+void ExportScene3MF( const char* pFile, IOSystem* pIOSystem, const aiScene* pScene, const ExportProperties* /*pProperties*/ ) {}
+}
 #endif // ASSIMP_BUILD_NO3MF_EXPORTER
-#endif // ASSIMP_BUILD_NO_EXPORT
+#endif

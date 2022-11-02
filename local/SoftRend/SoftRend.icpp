@@ -23,7 +23,7 @@ NAMESPACE_TOPSIDE_END
 
 
 
-INITBLOCK_(Shaders) {
+INITBLOCK_(SoftRendShaders) {
 	using namespace TS;
 	
 	InitObjViewSoft();

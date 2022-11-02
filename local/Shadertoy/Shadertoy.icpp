@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-INITBLOCK {
+INITBLOCK_(ShaderToy) {
 	SerialLoaderFactory::Register<SerialShadertoyLoader>(".toy");
 }
 

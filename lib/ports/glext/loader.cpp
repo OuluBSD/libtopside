@@ -1,3 +1,4 @@
+#ifdef flagWIN32
 #include "maindef.h"
 #include <gl/GL.h>
 #include <stdio.h>
@@ -190,3 +191,5 @@ extern "C" GLAPI void* APIENTRY glExtGetProcAddress(const char* name)
 	loadproc((char*) name, &addr);
 	return (void*) addr;
 }
+
+#endif
