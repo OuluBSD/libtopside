@@ -6,6 +6,8 @@
 
 #include <ParallelLib/ParallelLib.h>
 #include <IMedia/IMedia.h>
+#include <ports/hcidump/hcidump.h>
+#include <LocalHMD/LocalHMD.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -96,7 +98,6 @@ struct HoloDevBluetooth {
 	
 };
 #endif
-
 #if (defined flagWIN32 && defined flagOPENVR)
 struct HoloOpenVR {
 	struct NativeSinkDevice;

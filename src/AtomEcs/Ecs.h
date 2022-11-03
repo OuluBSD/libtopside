@@ -8,10 +8,12 @@ NAMESPACE_PARALLEL_BEGIN
 class EcsEventsBase :
 	public Atom
 {
-	Vector<BinderIfaceEvents*> binders;
-	String			target;
-	EnvStateRef		state;
-	int				prev_iter = -1;
+	Vector<BinderIfaceEvents*>	binders;
+	String						target;
+	EnvStateRef					state;
+	int							prev_iter = -1;
+	static EcsEventsBase*		latest;
+	Packet						last_packet;
 	
 public:
 	RTTI_DECL1(EcsEventsBase, Atom);
@@ -30,6 +32,9 @@ public:
 	void RemoveBinder(BinderIfaceEvents* iface);
 	
 	static Callback1<EcsEventsBase*>	WhenInitialize;
+	static EcsEventsBase* Latest() {return latest;}
+	
+	EnvStateRef& State() {return state;}
 	
 };
 
@@ -38,20 +43,19 @@ public:
 class EcsVideoBase :
 	public Atom
 {
-	Vector<BinderIfaceVideo*> binders;
-	String				target;
-	EnvStateRef			state;
-	int					prev_iter = -1;
-	ValDevCls			src_type;
-	ProgDraw			pd;
+	static Vector<BinderIfaceVideo*> binders;
+	String					target;
+	EnvStateRef				state;
+	int						prev_iter = -1;
+	ValDevCls				src_type;
+	ProgDraw				pd;
 	
 	bool					draw_mem = false;
 	EntitySystemRef			ents;
 	#ifdef flagGUI
 	Ecs::WindowSystemRef	wins;
 	#endif
-	static EcsVideoBase*	latest;
-	int					screen_id = 0;
+	int						screen_id = 0;
 	
 public:
 	RTTI_DECL1(EcsVideoBase, Atom);
@@ -66,11 +70,10 @@ public:
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override;
 	
-	void AddBinder(BinderIfaceVideo* iface);
-	void RemoveBinder(BinderIfaceVideo* iface);
+	static void AddBinder(BinderIfaceVideo* iface);
+	static void RemoveBinder(BinderIfaceVideo* iface);
 	
 	static Callback1<EcsVideoBase*>	WhenInitialize;
-	static EcsVideoBase& Latest();
 	
 	ProgDraw& GetProgDraw() {return pd;}
 	

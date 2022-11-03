@@ -13,6 +13,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("VideoGenBase", "SCREEN");
 	AddCustomBase("FfmpegSourceDevice", "FFMPEG");
 	AddCustomBase("EventStateBase", "SCREEN");
+	AddCustomBase("EcsEventsBase", "SCREEN");
 	AddCustomBase("EcsVideoBase", "SCREEN");
 	AddCustomBase("X11SwFboBase", "POSIX&SCREEN");
 	AddCustomBase("X11SwShaderBase", "POSIX&SCREEN");
@@ -171,6 +172,14 @@ void InterfaceBuilder::Headers() {
 		.In("CenterEvent").Out("CenterReceipt")
 		.Action("state.event.pipe")
 		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("PIPE", "PROCESS")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
+	AddHeader("EcsProgEvents", "EcsEventsBase", "pipe")
+		.In("CenterEvent").Out("CenterEvent")
+		.Action("center.events.prog.ecs")
+		.Arg("HINT_PKG", "AtomEcs")
 		.Link("PIPE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 	;

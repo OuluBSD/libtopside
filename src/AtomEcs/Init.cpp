@@ -7,6 +7,9 @@ INITBLOCK_(AtomEcs) {
 	using namespace TS::Serial;
 	using namespace TS;
 	#if defined flagSCREEN
+	Factory::RegisterAtom<EcsProgEvents>();
+	#endif
+	#if defined flagSCREEN
 	Factory::RegisterAtom<EcsProgVideo>();
 	#endif
 }

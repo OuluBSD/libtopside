@@ -8,8 +8,6 @@
 #include "CommonComponents.h"
 #include "Viewport.h"
 #include "EasingSystem.h"
-#include "WindowSystem.h"
-#include "Gui.h"
 #include "PaintStrokeSystem.h"
 #include "InteractionSystem.h"
 #include "ToolboxSystem.h"

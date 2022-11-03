@@ -59,6 +59,7 @@ NAMESPACE_ECS_END
 
 
 #include "System.h"
+#include "WindowSystem.h"
 
 
 #endif

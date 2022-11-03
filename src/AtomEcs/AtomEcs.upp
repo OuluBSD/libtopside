@@ -6,6 +6,7 @@ uses
 file
 	AtomEcs.h,
 	AtomEcs.cpp,
+	Init.cpp,
 	Generated.h,
 	Generated.cpp,
 	Ecs.h,

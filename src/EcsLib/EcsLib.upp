@@ -29,5 +29,7 @@ file
 	EonLoader.h,
 	EonLoader.cpp,
 	PhysicsSystem.cpp,
+	Gui.h,
+	Gui.cpp,
 	Trash readonly separator;
 

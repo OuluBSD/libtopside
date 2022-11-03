@@ -8,6 +8,21 @@ namespace TS {
 namespace Parallel {
 
 #if defined flagSCREEN
+class EcsProgEvents : public EcsEventsBase {
+
+public:
+	RTTI_DECL1(EcsProgEvents, EcsEventsBase)
+	COPY_PANIC(EcsProgEvents)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if defined flagSCREEN
 class EcsProgVideo : public EcsVideoBase {
 
 public:

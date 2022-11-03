@@ -19,10 +19,6 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<PlayerBodySystem>("player");
 	Engine::Register<InteractionSystem>("interaction");
 	
-	#if HAVE_WINDOWSYSTEM
-	Engine::Register<WindowSystem>("windows");
-	#endif
-	
 	
 	// Component
 	ComponentFactory::Register<RigidBody>("body");

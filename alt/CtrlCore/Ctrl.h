@@ -386,7 +386,7 @@ public:
 	
 	virtual bool Init() = 0;
 	virtual void AddWindow(Ecs::CoreWindow&) = 0;
-	//virtual bool Poll(ScreenEvent& e) = 0;
+	virtual bool Poll(CtrlEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;
 	virtual bool ProcessCloseQueue() = 0;

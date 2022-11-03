@@ -108,6 +108,17 @@ void Windows::AddWindow(CoreWindow& sw) {
 	sw.Refresh();
 }
 
+bool Windows::ProcessCloseQueue() {
+	bool ret = close_window_queue.GetCount();
+    
+	for (int i = 0; i < close_window_queue.GetCount(); i++)
+		CloseWindow(close_window_queue[i]);
+    
+	close_window_queue.Clear();
+    
+	return ret;
+}
+
 CoreWindow& Windows::GetWindow(TopWindow& tw) {
 	for(int i = 0; i < wins.GetCount(); i++) {
 		TopWindow* ptr = wins[i]->GetTopWindow();

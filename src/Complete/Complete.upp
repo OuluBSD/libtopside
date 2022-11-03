@@ -13,5 +13,6 @@ uses(NEVER) Physics;
 file
 	Complete.h,
 	Complete.cpp,
+	Cmake.inl highlight cpp,
 	Prefabs.h;
 

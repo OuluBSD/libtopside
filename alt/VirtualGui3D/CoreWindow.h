@@ -216,8 +216,12 @@ struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
 #endif
 
 
-
-struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
+struct Window2D :
+	EntityPrefab<
+		CoreWindow,
+		Transform2D,
+		DefaultGuiAppComponent
+	> {
     static Components Make(Entity& e)
     {
         auto components = EntityPrefab::Make(e);

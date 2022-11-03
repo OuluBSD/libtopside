@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Thu Nov  3 01:48:30 EET 2022
+# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -32,6 +32,7 @@ list ( APPEND HEADER_LIST
       Prefab.h
       WorldLogic.h
       EonLoader.h
+      Gui.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -47,6 +48,7 @@ list ( APPEND SOURCE_LIST_CPP
       WorldLogic.cpp
       EonLoader.cpp
       PhysicsSystem.cpp
+      Gui.cpp
 )
 
 list ( APPEND EcsLib_DEPEND_LIST

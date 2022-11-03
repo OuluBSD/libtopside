@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Thu Nov  3 01:48:30 EET 2022
+# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -34,7 +34,7 @@ if ((DEFINED flagLV2))
   list ( APPEND ISynth_DEPEND_LIST AudioHost-lib )
 endif()
 
-# library(FLUIDSYNTH) fluidsynth;
+# library(FLUIDSYNTH) "fluidsynth";
 if ((DEFINED flagFLUIDSYNTH))
   list ( APPEND LINK_LIST fluidsynth )
 endif()

@@ -111,7 +111,7 @@ public:
 	hash_t GetHashValue() const {return (hash_t)(size_t)this;}
 	
 	void AddWindow(CoreWindow&) override;
-	bool ProcessCloseQueue() override {bool ret = close_window_queue.GetCount(); for(int i = 0; i < close_window_queue.GetCount(); i++) CloseWindow(close_window_queue[i]); close_window_queue.Clear(); return ret;}
+	bool ProcessCloseQueue() override;
 	
 	CoreWindow& GetWindow(TopWindow& ctrl);
 	CoreWindow* GetActiveWindow() {int i = wins.Find(active_id); return i >= 0 ? wins[i] : NULL;}
@@ -144,6 +144,25 @@ public:
 	
 	
 	Callback WhenActiveWindowChanges, WhenWindowClose;
+};
+
+
+class WindowSystemScreen : public Windows {
+	
+public:
+	WindowSystem* sys = 0;
+	
+	
+	void Visit(RuntimeVisitor& vis) override {
+		vis.VisitThis<Windows>(this);
+	}
+	
+    void CloseWindow(CoreWindow& cw) override;
+    bool Init() override;
+	void Render() override;
+	void Shutdown()override;
+    bool Poll(CtrlEvent& e) override;
+    
 };
 
 

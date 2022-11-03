@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Thu Nov  3 01:48:30 EET 2022
+# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -26,10 +26,8 @@ list ( APPEND HEADER_LIST
       InteractionSystem.h
       Player.h
       EasingSystem.h
-      WindowSystem.h
       PhysicsSystem.h
       Prefabs.h
-      Gui.h
       PaintStrokeSystem.h
       ToolboxSystem.h
       ToolSystem.h
@@ -48,9 +46,7 @@ list ( APPEND SOURCE_LIST_CPP
       VrSpatial.cpp
       Player.cpp
       EasingSystem.cpp
-      WindowSystem.cpp
       PhysicsSystem.cpp
-      Gui.cpp
       PaintStrokeSystem.cpp
       ToolboxSystem.cpp
       ToolSystem.cpp

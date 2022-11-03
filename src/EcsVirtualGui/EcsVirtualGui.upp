@@ -13,6 +13,8 @@ file
 	Render.cpp,
 	System.h,
 	System.cpp,
+	WindowSystem.h,
+	WindowSystem.cpp,
 	"Gui Platform" readonly separator,
 	DrawBackend.h,
 	DrawBackend.cpp;

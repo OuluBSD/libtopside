@@ -7,6 +7,34 @@ namespace TS {
 namespace Parallel {
 
 #if defined flagSCREEN
+String EcsProgEvents::GetAction() {
+	return "center.events.prog.ecs";
+}
+
+AtomTypeCls EcsProgEvents::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::ECS_PROG_EVENTS;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,EVENT),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls EcsProgEvents::GetLinkType() {
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void EcsProgEvents::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<EcsEventsBase>(this);
+}
+
+AtomTypeCls EcsProgEvents::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSCREEN
 String EcsProgVideo::GetAction() {
 	return "center.video.prog.ecs";
 }

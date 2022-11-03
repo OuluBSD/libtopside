@@ -128,7 +128,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 	VectorMap<String, String> outputs;
 	
 	String prj_dir = AppendFileName(GetHomeDirectory(), "libtopside");
-	String par_dir = AppendFileName(prj_dir, "parallel");
+	String par_dir = AppendFileName(prj_dir, "src");
 	
 	String pm_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "Generated.h");
 	String ga_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "GenAtom.inl");

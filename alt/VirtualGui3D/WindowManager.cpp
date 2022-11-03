@@ -14,28 +14,32 @@ WindowManager::WindowManager() {
 	
 	
 	while (flag.IsRunning()) {
-		
-		for(int i = 0; i < screens.GetCount(); i++) {
-			Screen& s = screens[i];
-			
-			Event e;
-			while (s.Poll(e)) {
-				
-				if (e.type == EVENT_SHUTDOWN)
-					flag.SetNotRunning();
-				
-			}
-			s.ProcessCloseQueue();
-			
-			s.Render();
-		}
-		
+		Update();
 		Sleep(1);
 	}
 	
 	
 	flag.SetStopped();
 }*/
+
+void WindowManager::Update(double dt) {
+	bool closed = false;
+	
+	for(int i = 0; i < screens.GetCount(); i++) {
+		Screen& s = screens[i];
+		
+		CtrlEvent e;
+		while (s.Poll(e)) {
+			
+			if (e.type == EVENT_SHUTDOWN)
+				flag.SetNotRunning();
+			
+		}
+		closed = s.ProcessCloseQueue() || closed;
+		
+		s.Render();
+	}
+}
 
 void WindowManager::Close() {
 	for(int i = 0; i < screens.GetCount(); i++) {

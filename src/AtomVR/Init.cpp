@@ -1,8 +1,6 @@
 #include "AtomVR.h"
 
-
-NAMESPACE_UPP_BEGIN
-
+// This file is generated. Do not modify this file.
 
 INITBLOCK_(AtomVR) {
 	using namespace TS::Parallel;
@@ -22,4 +20,3 @@ INITBLOCK_(AtomVR) {
 	#endif
 }
 
-NAMESPACE_UPP_END

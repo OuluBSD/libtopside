@@ -41,6 +41,7 @@ public:
 	void Shutdown();
 	
 	void Run();
+	void Update(double dt);
 	
 	
 	int GetScreenCount() const {return screens.GetCount();}

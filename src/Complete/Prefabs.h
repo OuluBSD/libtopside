@@ -7,7 +7,7 @@ void UserGuiMainFn_(); \
 APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializer, TS::DefaultStartup) \
 ECS_APP_MAIN { \
 	TS::Ecs::Engine::WhenGuiProgram << Callback(UserGuiMainFn_); \
-	TS::DefaultRunner(0, "Gui App", "default_gui.eon");} \
+	TS::DefaultRunner(0, "Gui App", "deps/default_gui_app.eon");} \
 \
 void UserGuiMainFn_()
 

@@ -4,6 +4,7 @@
 #include <Core/Core.h>
 #include <EcsLib/EcsLib.h>
 #include <EcsLocal/EcsLocal.h>
+#include <EcsVirtualGui/EcsVirtualGui.h>
 #include <CtrlCore/CtrlCore.h>
 
 #ifndef GUIPLATFORM_INCLUDE_AFTER_ECSLIB

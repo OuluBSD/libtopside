@@ -6,32 +6,12 @@
 NAMESPACE_ECS_BEGIN
 
 
-
-class WindowSystem;
-
-class WindowSystemScreen : public Windows {
-	
-public:
-	WindowSystem* sys = 0;
-	
-	
-	void Visit(RuntimeVisitor& vis) override {
-		vis.VisitThis<Windows>(this);
-	}
-	
-    void CloseWindow(CoreWindow& cw) override;
-    bool Init() override;
-	void Render() override;
-	void Shutdown()override;
-    
-};
-
 class WindowSystem :
 	public System<WindowSystem>
 {
 	Ref<EntityStore> ents;
 	Size vdesktop_sz;
-	//Shader simple_shader;
+	EnvStateRef env;
 	WindowManager wm;
 	
 	void Visit(RuntimeVisitor& vis) override {
@@ -73,7 +53,6 @@ using WindowSystemRef = Ref<WindowSystem>;
 
 
 NAMESPACE_ECS_END
-
 
 #endif
 #endif

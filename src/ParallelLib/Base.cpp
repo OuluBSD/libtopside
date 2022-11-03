@@ -368,8 +368,10 @@ bool VoidPollerSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 
 #ifdef flagSCREEN
 
+EventStateBase* EventStateBase::latest;
+
 EventStateBase::EventStateBase() {
-	
+	latest = this;
 }
 
 EnvState& EventStateBase::GetState() const {

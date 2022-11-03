@@ -1,4 +1,4 @@
-#include "EcsLocal.h"
+#include "EcsVirtualGui.h"
 
 #if HAVE_WINDOWSYSTEM
 
@@ -11,7 +11,6 @@ bool WindowSystem::Initialize() {
 	
 	Ctrl::SetWindows(&win);
 	
-	
 	Size sz = VirtualGui3DPtr->GetSize();
 	
 	win.SetFrameRect0(RectC(0, 0, sz.cx, sz.cy));
@@ -23,15 +22,19 @@ bool WindowSystem::Initialize() {
 void WindowSystem::Start() {
 	
 	ents = GetEngine().Get<EntityStore>();
+	ASSERT(ents);
 	
 }
 
 void WindowSystem::Update(double dt) {
-	bool closed = false;
-	
-	for (Windows& w : wm.screens) {
-		closed = w.ProcessCloseQueue() || closed;
+	Ecs::EventStateBase* ev = Ecs::EventStateBase::Latest();
+	if (ev) {
+		EnvState& state = ev->GetState();
+		
+		//TODO
 	}
+	
+	wm.Update(dt);
 	
 }
 
@@ -58,7 +61,7 @@ bool WindowSystemScreen::Init() {
 }
 
 void WindowSystemScreen::Render() {
-	TODO
+	// --> EcsVideoBase
 }
 
 void WindowSystemScreen::Shutdown() {
@@ -68,6 +71,11 @@ void WindowSystemScreen::Shutdown() {
 void WindowSystemScreen::CloseWindow(CoreWindow& cw) {
 	TODO
 }
+
+bool WindowSystemScreen::Poll(CtrlEvent& e) {
+	return false;
+}
+
 
 
 NAMESPACE_ECS_END

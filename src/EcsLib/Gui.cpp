@@ -1,4 +1,6 @@
-#include "EcsLocal.h"
+#include "EcsLib.h"
+#include <EcsLocal/EcsLocal.h>
+#include <EcsVirtualGui/EcsVirtualGui.h>
 
 NAMESPACE_ECS_BEGIN
 
@@ -9,14 +11,19 @@ DefaultGuiAppComponent::DefaultGuiAppComponent() {
 	
 }
 
+void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
+	/*if (test) vis % *test;*/
+	vis & wins;
+}
+
 void DefaultGuiAppComponent::Initialize() {
 	AddToUpdateList();
-	Serial::EcsVideoBase::Latest().AddBinder(this);
+	Serial::EcsVideoBase::AddBinder(this);
 }
 
 void DefaultGuiAppComponent::Uninitialize() {
 	RemoveFromUpdateList();
-	Serial::EcsVideoBase::Latest().RemoveBinder(this);
+	Serial::EcsVideoBase::RemoveBinder(this);
 }
 
 void DefaultGuiAppComponent::Update(double dt) {

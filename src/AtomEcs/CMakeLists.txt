@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Thu Nov  3 01:48:30 EET 2022
+# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -27,6 +27,7 @@ list ( APPEND HEADER_LIST
 
 list ( APPEND SOURCE_LIST_CPP
       AtomEcs.cpp
+      Init.cpp
       Generated.cpp
       Ecs.cpp
 )

@@ -1,6 +1,7 @@
 #include "AtomEcs.h"
 #include <SerialLib/SerialLib.h>
 #include <EcsLocal/EcsLocal.h>
+#include <EcsVirtualGui/EcsVirtualGui.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -8,9 +9,10 @@ NAMESPACE_PARALLEL_BEGIN
 
 Callback1<EcsEventsBase*> EcsEventsBase::WhenInitialize;
 
+EcsEventsBase* EcsEventsBase::latest;
 
 EcsEventsBase::EcsEventsBase() {
-	
+	latest = this;
 }
 
 bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
@@ -28,13 +30,14 @@ bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	
+	#if 0
 	if (!WhenInitialize) {
 		LOG("EcsEventsBase::Initialize: internal error: expected ecs system to prepare this");
 		return false;
 	}
 	
 	WhenInitialize(this);
+	#endif
 	
 	return true;
 }
@@ -44,7 +47,7 @@ bool EcsEventsBase::PostInitialize() {
 }
 
 void EcsEventsBase::Uninitialize() {
-	
+	last_packet.Clear();
 }
 
 bool EcsEventsBase::IsReady(PacketIO& io) {
@@ -60,7 +63,7 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 }
 
 bool EcsEventsBase::Recv(int sink_ch, const Packet& in) {
-	TODO
+	last_packet = in;
 }
 
 bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
@@ -68,7 +71,7 @@ bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 }
 
 void EcsEventsBase::AddBinder(BinderIfaceEvents* iface) {
-	VectorFindAdd(binders, iface);
+	TODO
 }
 
 void EcsEventsBase::RemoveBinder(BinderIfaceEvents* iface) {
@@ -83,12 +86,10 @@ void EcsEventsBase::RemoveBinder(BinderIfaceEvents* iface) {
 
 #if defined flagSCREEN
 
-EcsVideoBase* EcsVideoBase::latest;
-EcsVideoBase& EcsVideoBase::Latest() {ASSERT(latest); return *latest;}
-
+Vector<BinderIfaceVideo*> EcsVideoBase::binders;
 
 EcsVideoBase::EcsVideoBase() {
-	latest = this;
+	
 }
 
 bool EcsVideoBase::Initialize(const Script::WorldState& ws) {

@@ -130,6 +130,8 @@ class EventStateBase :
 	int				dbg_iter = 0;
 	int				dbg_limit = 0;
 	
+	static EventStateBase* latest;
+	
 public:
 	RTTI_DECL1(EventStateBase, Atom)
 	
@@ -156,6 +158,8 @@ public:
 	bool			GetBool(dword key) {return state->GetBool(key);}
 	int				GetInt(dword key) {return state->GetInt(key);}
 	EnvState&		GetState() const;
+	
+	static EventStateBase* Latest() {return latest;}
 	
 };
 #endif

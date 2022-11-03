@@ -1,8 +1,8 @@
 machine sdl.app:
-		
+	
 	driver context:
 		sdl.context
-		
+	
 	chain program:
 		
 		state event.register
@@ -11,7 +11,7 @@ machine sdl.app:
 			center.customer
 			sdl.event.pipe
 			state.event.pipe:
-                target = event.register
+				target = event.register
 		
 		loop video:
 			center.customer

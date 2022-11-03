@@ -15,6 +15,7 @@ INITBLOCK_(EcsLib) {
 	Engine::Register<EventSystem>("events");
 	Engine::Register<RenderingSystem>("rendering");
 	
+	
 	// Component
 	ComponentFactory::Register<Transform>("transform3");
 	ComponentFactory::Register<Transform2D>("transform2");
