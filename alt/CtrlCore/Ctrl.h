@@ -8,6 +8,7 @@ class WindowManager;
 class CoreWindow;
 class VirtualGui;
 class WindowSystem;
+class DefaultGuiAppComponent;
 
 }}
 
@@ -202,13 +203,17 @@ protected:
 	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	
 	virtual bool Redraw(bool only_pending);
+	void DeepMouseLeave();
+	void Refresh0() {Refresh();}
+	void Layout0() {Layout();}
+	
+public:
+	friend class TS::Ecs::DefaultGuiAppComponent;
+	
 	bool DeepKey(dword key, int count);
 	bool DeepMouseMove(const Point& pt, dword keyflags);
 	bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
 	bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
-	void DeepMouseLeave();
-	void Refresh0() {Refresh();}
-	void Layout0() {Layout();}
 	
 protected:
 	friend class TS::Ecs::VirtualGui;

@@ -375,36 +375,28 @@ bool Ctrl::Redraw(bool only_pending) {
 }
 
 Ctrl* Ctrl::GetCaptured() {
-	TODO
-	//return GetWindows()->GetCaptured();
+	return GetWindows()->GetCaptured();
 }
 Ctrl* Ctrl::GetWithMouse() {
-	TODO
-	//return GetWindows()->GetWithMouse();
+	return GetWindows()->GetWithMouse();
 }
 void Ctrl::SetCaptured(Ctrl* c) {
-	TODO
-	//GetWindows()->SetCaptured(c);
+	GetWindows()->SetCaptured(c);
 }
 void Ctrl::SetWithMouse(Ctrl* c) {
-	TODO
-	//GetWindows()->SetWithMouse(c);
+	GetWindows()->SetWithMouse(c);
 }
 CtrlFrame* Ctrl::GetFrameCaptured() {
-	TODO
-	//return GetWindows()->GetFrameCaptured();
+	return GetWindows()->GetFrameCaptured();
 }
 CtrlFrame* Ctrl::GetFrameWithMouse() {
-	TODO
-	//return GetWindows()->GetFrameWithMouse();
+	return GetWindows()->GetFrameWithMouse();
 }
 void Ctrl::SetFrameCaptured(CtrlFrame* c) {
-	TODO
-	//GetWindows()->SetFrameCaptured(c);
+	GetWindows()->SetFrameCaptured(c);
 }
 void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
-	TODO
-	//GetWindows()->SetFrameWithMouse(c);
+	GetWindows()->SetFrameWithMouse(c);
 }
 
 
@@ -459,8 +451,7 @@ void Ctrl::DeepLayout() {
 }
 
 bool Ctrl::DeepKey(dword key, int count) {
-	TODO
-	/*if (HasFocus()) {
+	if (HasFocus()) {
 		return Key(key, count);
 	}
 	else {
@@ -470,12 +461,11 @@ bool Ctrl::DeepKey(dword key, int count) {
 				return c.DeepKey(key, count);
 		}
 		return false;
-	}*/
+	}
 }
 
 bool Ctrl::DeepMouseMove(const Point& pt, dword keyflags) {
-	TODO
-	/*int deep_count = 0;
+	int deep_count = 0;
 	for(int i = children.GetCount()-1; i >= 0; i--) {
 		Ctrl* c = children[i];
 		if (c->HasMouseDeep()) {
@@ -644,12 +634,11 @@ bool Ctrl::DeepMouseMove(const Point& pt, dword keyflags) {
 			ASSERT(!has_mouse);
 		}
 	}
-	return false;*/
+	return false;
 }
 
 bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
-	TODO
-	/*if (GetCaptured()) {
+	if (GetCaptured()) {
 		if (has_mouse) {
 			Point ftl = frame_r.TopLeft();
 			Point ctl = content_r.TopLeft();
@@ -658,27 +647,27 @@ bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 			
 			
 			switch (mouse_code) {
-				case LEFT_DOWN: LeftDown(cpt, keyflags); break;
-				case LEFT_DOUBLE: LeftDouble(cpt, keyflags); break;
-				case LEFT_TRIPLE: LeftTriple(cpt, keyflags); break;
-				case LEFT_DRAG: LeftDrag(cpt, keyflags); break;
-				case LEFT_HOLD: LeftHold(cpt, keyflags); break;
-				case LEFT_REPEAT: LeftRepeat(cpt, keyflags); break;
-				case LEFT_UP: LeftUp(cpt, keyflags); break;
-				case RIGHT_DOWN: RightDown(cpt, keyflags); break;
-				case RIGHT_DOUBLE: RightDouble(cpt, keyflags); break;
-				case RIGHT_TRIPLE: RightTriple(cpt, keyflags); break;
-				case RIGHT_DRAG: RightDrag(cpt, keyflags); break;
-				case RIGHT_HOLD: RightHold(cpt, keyflags); break;
-				case RIGHT_REPEAT: RightRepeat(cpt, keyflags); break;
-				case RIGHT_UP: RightUp(cpt, keyflags); break;
-				case MIDDLE_DOWN: MiddleDown(cpt, keyflags); break;
-				case MIDDLE_DOUBLE: MiddleDouble(cpt, keyflags); break;
-				case MIDDLE_TRIPLE: MiddleTriple(cpt, keyflags); break;
-				case MIDDLE_DRAG: MiddleDrag(cpt, keyflags); break;
-				case MIDDLE_HOLD: MiddleHold(cpt, keyflags); break;
-				case MIDDLE_REPEAT: MiddleRepeat(cpt, keyflags); break;
-				case MIDDLE_UP: MiddleUp(cpt, keyflags); break;
+				case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+				case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+				case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+				case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+				case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+				case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+				case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+				case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+				case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+				case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+				case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+				case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+				case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+				case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+				case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+				case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+				case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+				case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+				case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
 			}
 			return true;
 		}
@@ -706,27 +695,27 @@ bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 					CtrlFrame* f = last_fitting;
 					Point fitting_pt = fpt - fitting_rect.TopLeft();
 					switch (mouse_code) {
-						case LEFT_DOWN: f->LeftDown(fitting_pt, keyflags); break;
-						case LEFT_DOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
-						case LEFT_TRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
-						case LEFT_DRAG: f->LeftDrag(fitting_pt, keyflags); break;
-						case LEFT_HOLD: f->LeftHold(fitting_pt, keyflags); break;
-						case LEFT_REPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
-						case LEFT_UP: f->LeftUp(fitting_pt, keyflags); break;
-						case RIGHT_DOWN: f->RightDown(fitting_pt, keyflags); break;
-						case RIGHT_DOUBLE: f->RightDouble(fitting_pt, keyflags); break;
-						case RIGHT_TRIPLE: f->RightTriple(fitting_pt, keyflags); break;
-						case RIGHT_DRAG: f->RightDrag(fitting_pt, keyflags); break;
-						case RIGHT_HOLD: f->RightHold(fitting_pt, keyflags); break;
-						case RIGHT_REPEAT: f->RightRepeat(fitting_pt, keyflags); break;
-						case RIGHT_UP: f->RightUp(fitting_pt, keyflags); break;
-						case MIDDLE_DOWN: f->MiddleDown(fitting_pt, keyflags); break;
-						case MIDDLE_DOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
-						case MIDDLE_TRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
-						case MIDDLE_DRAG: f->MiddleDrag(fitting_pt, keyflags); break;
-						case MIDDLE_HOLD: f->MiddleHold(fitting_pt, keyflags); break;
-						case MIDDLE_REPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
-						case MIDDLE_UP: f->MiddleUp(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDOWN: f->LeftDown(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
+						case MOUSE_LEFTTRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDRAG: f->LeftDrag(fitting_pt, keyflags); break;
+						case MOUSE_LEFTHOLD: f->LeftHold(fitting_pt, keyflags); break;
+						case MOUSE_LEFTREPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
+						case MOUSE_LEFTUP: f->LeftUp(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDOWN: f->RightDown(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDOUBLE: f->RightDouble(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTTRIPLE: f->RightTriple(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDRAG: f->RightDrag(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTHOLD: f->RightHold(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTREPEAT: f->RightRepeat(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTUP: f->RightUp(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDOWN: f->MiddleDown(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLETRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDRAG: f->MiddleDrag(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEHOLD: f->MiddleHold(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEREPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEUP: f->MiddleUp(fitting_pt, keyflags); break;
 					}
 					return true;
 				}
@@ -755,27 +744,27 @@ bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 						return true;
 				}
 				switch (mouse_code) {
-					case LEFT_DOWN: LeftDown(cpt, keyflags); break;
-					case LEFT_DOUBLE: LeftDouble(cpt, keyflags); break;
-					case LEFT_TRIPLE: LeftTriple(cpt, keyflags); break;
-					case LEFT_DRAG: LeftDrag(cpt, keyflags); break;
-					case LEFT_HOLD: LeftHold(cpt, keyflags); break;
-					case LEFT_REPEAT: LeftRepeat(cpt, keyflags); break;
-					case LEFT_UP: LeftUp(cpt, keyflags); break;
-					case RIGHT_DOWN: RightDown(cpt, keyflags); break;
-					case RIGHT_DOUBLE: RightDouble(cpt, keyflags); break;
-					case RIGHT_TRIPLE: RightTriple(cpt, keyflags); break;
-					case RIGHT_DRAG: RightDrag(cpt, keyflags); break;
-					case RIGHT_HOLD: RightHold(cpt, keyflags); break;
-					case RIGHT_REPEAT: RightRepeat(cpt, keyflags); break;
-					case RIGHT_UP: RightUp(cpt, keyflags); break;
-					case MIDDLE_DOWN: MiddleDown(cpt, keyflags); break;
-					case MIDDLE_DOUBLE: MiddleDouble(cpt, keyflags); break;
-					case MIDDLE_TRIPLE: MiddleTriple(cpt, keyflags); break;
-					case MIDDLE_DRAG: MiddleDrag(cpt, keyflags); break;
-					case MIDDLE_HOLD: MiddleHold(cpt, keyflags); break;
-					case MIDDLE_REPEAT: MiddleRepeat(cpt, keyflags); break;
-					case MIDDLE_UP: MiddleUp(cpt, keyflags); break;
+					case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+					case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+					case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+					case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+					case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+					case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+					case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+					case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+					case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+					case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+					case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+					case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+					case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+					case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+					case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+					case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+					case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+					case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+					case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+					case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+					case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
 				}
 			}
 			else {
@@ -808,27 +797,27 @@ bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 						f->MouseEnter(fitting_pt, keyflags);
 					}
 					switch (mouse_code) {
-						case LEFT_DOWN: f->LeftDown(fitting_pt, keyflags); break;
-						case LEFT_DOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
-						case LEFT_TRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
-						case LEFT_DRAG: f->LeftDrag(fitting_pt, keyflags); break;
-						case LEFT_HOLD: f->LeftHold(fitting_pt, keyflags); break;
-						case LEFT_REPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
-						case LEFT_UP: f->LeftUp(fitting_pt, keyflags); break;
-						case RIGHT_DOWN: f->RightDown(fitting_pt, keyflags); break;
-						case RIGHT_DOUBLE: f->RightDouble(fitting_pt, keyflags); break;
-						case RIGHT_TRIPLE: f->RightTriple(fitting_pt, keyflags); break;
-						case RIGHT_DRAG: f->RightDrag(fitting_pt, keyflags); break;
-						case RIGHT_HOLD: f->RightHold(fitting_pt, keyflags); break;
-						case RIGHT_REPEAT: f->RightRepeat(fitting_pt, keyflags); break;
-						case RIGHT_UP: f->RightUp(fitting_pt, keyflags); break;
-						case MIDDLE_DOWN: f->MiddleDown(fitting_pt, keyflags); break;
-						case MIDDLE_DOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
-						case MIDDLE_TRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
-						case MIDDLE_DRAG: f->MiddleDrag(fitting_pt, keyflags); break;
-						case MIDDLE_HOLD: f->MiddleHold(fitting_pt, keyflags); break;
-						case MIDDLE_REPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
-						case MIDDLE_UP: f->MiddleUp(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDOWN: f->LeftDown(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
+						case MOUSE_LEFTTRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
+						case MOUSE_LEFTDRAG: f->LeftDrag(fitting_pt, keyflags); break;
+						case MOUSE_LEFTHOLD: f->LeftHold(fitting_pt, keyflags); break;
+						case MOUSE_LEFTREPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
+						case MOUSE_LEFTUP: f->LeftUp(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDOWN: f->RightDown(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDOUBLE: f->RightDouble(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTTRIPLE: f->RightTriple(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTDRAG: f->RightDrag(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTHOLD: f->RightHold(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTREPEAT: f->RightRepeat(fitting_pt, keyflags); break;
+						case MOUSE_RIGHTUP: f->RightUp(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDOWN: f->MiddleDown(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLETRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEDRAG: f->MiddleDrag(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEHOLD: f->MiddleHold(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEREPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
+						case MOUSE_MIDDLEUP: f->MiddleUp(fitting_pt, keyflags); break;
 					}
 				}
 			}
@@ -836,12 +825,11 @@ bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 			return true;
 		}
 		return false;
-	}*/
+	}
 }
 
 bool Ctrl::DeepMouseWheel(const Point& pt, int zdelta, dword keyflags) {
-	TODO
-	/*if (GetCaptured()) {
+	if (GetCaptured()) {
 		if (has_mouse) {
 			ASSERT(this == GetCaptured());
 			Point ftl = frame_r.TopLeft();
@@ -920,12 +908,11 @@ bool Ctrl::DeepMouseWheel(const Point& pt, int zdelta, dword keyflags) {
 			return true;
 		}
 		return false;
-	}*/
+	}
 }
 
 void Ctrl::DeepMouseLeave() {
-	TODO
-	/*if (GetCaptured()) {
+	if (GetCaptured()) {
 		
 	}
 	else {
@@ -948,7 +935,7 @@ void Ctrl::DeepMouseLeave() {
 				c->DeepMouseLeave();
 			}
 		}
-	}*/
+	}
 }
 
 
@@ -979,7 +966,8 @@ Ctrl* Ctrl::GetCaptureCtrl() {
 }
 
 Image Ctrl::DefaultCursor() {
-	TODO
+	LOG("TODO Ctrl::DefaultCursor");
+	return Image();
 }
 
 void Ctrl::Update() {

@@ -605,6 +605,34 @@ AtomTypeCls X11OglFboProg::GetType() const {
 #endif
 
 
+#if defined flagSDL2
+String SdlSwFboProg::GetAction() {
+	return "sdl.sw.fbo.program";
+}
+
+AtomTypeCls SdlSwFboProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_SW_FBO_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,FBO),0);
+	return t;
+}
+
+LinkTypeCls SdlSwFboProg::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlSwFboProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlCenterFboSinkDevice>(this);
+}
+
+AtomTypeCls SdlSwFboProg::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 #if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 String SdlOglFboProg::GetAction() {
 	return "sdl.ogl.fbo.program";
@@ -773,6 +801,34 @@ AtomTypeCls X11OglFboAtomPipe::GetType() const {
 #endif
 
 
+#if defined flagSDL2
+String SdlSwFboAtomPipe::GetAction() {
+	return "sdl.sw.fbo.sink";
+}
+
+AtomTypeCls SdlSwFboAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_SW_FBO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,FBO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlSwFboAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlSwFboAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlCenterFboSinkDevice>(this);
+}
+
+AtomTypeCls SdlSwFboAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 #if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboAtomPipe::GetAction() {
 	return "sdl.ogl.fbo.sink";
@@ -908,6 +964,34 @@ void X11EventAtomPipe::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls X11EventAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagPOSIX && defined flagSCREEN)
+String X11SwEventAtomPipe::GetAction() {
+	return "x11.sw.event.pipe";
+}
+
+AtomTypeCls X11SwEventAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_EVENT_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls X11SwEventAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11SwEventAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11SwEventsBase>(this);
+}
+
+AtomTypeCls X11SwEventAtomPipe::GetType() const {
 	return GetAtomType();
 }
 #endif

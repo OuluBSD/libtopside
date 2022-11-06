@@ -90,7 +90,7 @@ struct VirtualCtrl : RTTIBase {
 	RTTI_DECL0(VirtualCtrl)
 	
 	
-	enum {
+	/*enum {
 		UNKNOWN,
 		LEFT_DOWN,
 		LEFT_DOUBLE,
@@ -172,7 +172,7 @@ struct VirtualCtrl : RTTIBase {
 		MIDDLEDRAG     = MIDDLE|DRAG,
 		MIDDLEHOLD     = MIDDLE|HOLD,
 		MIDDLETRIPLE   = MIDDLE|TRIPLE
-	};
+	};*/
 	
 };
 

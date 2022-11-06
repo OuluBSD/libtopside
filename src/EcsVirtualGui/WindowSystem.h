@@ -21,7 +21,8 @@ class WindowSystem :
 	
 public:
 	SYS_RTTI(WindowSystem)
-	ECS_SYS_CTOR(WindowSystem);
+	typedef WindowSystem CLASSNAME; \
+	WindowSystem(Engine& m);
 	
 	static constexpr const char* POOL_NAME = "windows";
 	

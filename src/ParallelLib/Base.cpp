@@ -369,6 +369,7 @@ bool VoidPollerSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int s
 #ifdef flagSCREEN
 
 EventStateBase* EventStateBase::latest;
+Vector<BinderIfaceEvents*> EventStateBase::binders;
 
 EventStateBase::EventStateBase() {
 	latest = this;
@@ -440,6 +441,9 @@ bool EventStateBase::Recv(int sink_ch, const Packet& p) {
 	if (fmt.vd.val == ValCls::EVENT) {
 		const CtrlEvent& ev = in.GetData<CtrlEvent>();
 		Event(ev);
+		
+		for (BinderIfaceEvents* e : binders)
+			e->Dispatch(ev);
 	}
 	else TODO
 	
@@ -472,21 +476,21 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	}
 	else if (e.type == EVENT_MOUSE_EVENT) {
 		switch (e.n) {
-			case VirtualCtrl::LEFTDOWN:		LeftDown(e.pt, e.value);break;
-			case VirtualCtrl::MIDDLEDOWN:	break;
-			case VirtualCtrl::RIGHTDOWN:	break;
+			case MOUSE_LEFTDOWN:		LeftDown(e.pt, e.value);break;
+			case MOUSE_MIDDLEDOWN:	break;
+			case MOUSE_RIGHTDOWN:	break;
 			
-			case VirtualCtrl::LEFTDOUBLE:	break;
-			case VirtualCtrl::MIDDLEDOUBLE:	break;
-			case VirtualCtrl::RIGHTDOUBLE:	break;
+			case MOUSE_LEFTDOUBLE:	break;
+			case MOUSE_MIDDLEDOUBLE:	break;
+			case MOUSE_RIGHTDOUBLE:	break;
 			
-			case VirtualCtrl::LEFTTRIPLE:	break;
-			case VirtualCtrl::MIDDLETRIPLE:	break;
-			case VirtualCtrl::RIGHTTRIPLE:	break;
+			case MOUSE_LEFTTRIPLE:	break;
+			case MOUSE_MIDDLETRIPLE:	break;
+			case MOUSE_RIGHTTRIPLE:	break;
 			
-			case VirtualCtrl::LEFTUP:		LeftUp(e.pt, e.value); break;
-			case VirtualCtrl::MIDDLEUP:		break;
-			case VirtualCtrl::RIGHTUP:		break;
+			case MOUSE_LEFTUP:		LeftUp(e.pt, e.value); break;
+			case MOUSE_MIDDLEUP:		break;
+			case MOUSE_RIGHTUP:		break;
 		}
 	}
 	else if (e.type == EVENT_WINDOW_RESIZE) {
@@ -655,6 +659,14 @@ bool EventStateBase::Key(dword key, int count) {
 	return true;
 }
 
+
+void EventStateBase::AddBinder(BinderIfaceEvents* iface) {
+	VectorFindAdd(binders, iface);
+}
+                                      
+void EventStateBase::RemoveBinder(BinderIfaceEvents* iface) {
+	VectorRemoveKey(binders, iface);
+}
 #endif
 
 

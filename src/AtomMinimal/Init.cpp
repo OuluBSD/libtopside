@@ -47,6 +47,9 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboProg>();
 	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlSwFboProg>();
+	#endif
 	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglFboProg>();
 	#endif
@@ -65,6 +68,9 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboAtomPipe>();
 	#endif
+	#if defined flagSDL2
+	Factory::RegisterAtom<SdlSwFboAtomPipe>();
+	#endif
 	#if (defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglFboAtomPipe>();
 	#endif
@@ -79,6 +85,9 @@ INITBLOCK_(AtomMinimal) {
 	#endif
 	#if (defined flagPOSIX && defined flagSCREEN)
 	Factory::RegisterAtom<X11EventAtomPipe>();
+	#endif
+	#if (defined flagPOSIX && defined flagSCREEN)
+	Factory::RegisterAtom<X11SwEventAtomPipe>();
 	#endif
 	Factory::RegisterAtom<OglCustomer>();
 	#if defined flagSDL2

@@ -1,0 +1,34 @@
+machine sdl.app:
+	
+	driver context:
+		x11.sw.context
+	
+	chain program:
+		state event.register
+		
+		loop video:
+			center.customer
+			x11.sw.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.name =	"obj_view"
+				shader.default.vtx.name =	"obj_view"
+			
+			x11.sw.video.pipe:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+				program =		"obj_view"
+				recv.data =      true
+
+
+world ecs.dummy:
+    system rendering
+    system entity.store
+    system component.store
+    system events
+    system physics:
+        //log: debug
+    
+    pool world:
+        entity ground:

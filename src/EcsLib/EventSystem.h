@@ -17,6 +17,7 @@ protected:
     void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
+    void Dispatch(const CtrlEvent& state) override {TODO}
     
 public:
 	using Base = System<EventSystem>;

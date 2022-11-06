@@ -34,6 +34,7 @@ INITBLOCK_(AtomVR)
 #endif
 #if HAVE_WINDOWSYSTEM
 INITBLOCK_(EcsVirtualGui)
+INITBLOCK_(VirtualGui)
 #endif
 
 void RunInitBlocksManually() {
@@ -49,6 +50,7 @@ void RunInitBlocksManually() {
 	#endif
 	#if HAVE_WINDOWSYSTEM
 	INITBLOCK_(EcsVirtualGui)
+	INITBLOCK_(VirtualGui)
 	#endif
 }
 

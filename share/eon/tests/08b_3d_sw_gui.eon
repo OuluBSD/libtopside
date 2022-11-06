@@ -1,0 +1,42 @@
+machine sdl.app:
+	
+	driver context:
+		x11.sw.context
+    
+	chain program:
+		state event.register
+		
+		loop center.events:
+			center.customer
+			x11.sw.event.pipe
+			state.event.pipe: target = event.register
+		
+		loop center.fbo:
+			center.customer
+			x11.sw.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.name =	"obj_view"
+				shader.default.vtx.name =	"obj_view"
+			x11.sw.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+
+
+world ecs.dummy:
+    //system registry
+    //system interaction: env = event.register
+    //system rendering
+    //system entity.store
+    //system component.store
+    //system events
+    //system windows
+    system physics: rm.outsiders = true, rm.area.size = 20
+    system player
+    system paintstroke
+    system toolbox: test.tool.changer = true
+    system painting
+    system shooting
+    system throwing
+    

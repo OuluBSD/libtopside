@@ -55,7 +55,7 @@ static void OglVideoSinkDevice_Destroy(One<NativeOglVideoSinkDevice>& dev);
 static bool OglVideoSinkDevice_Initialize(NativeOglVideoSinkDevice&, AtomBase&, const Script::WorldState&);
 static bool OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice&, AtomBase&);
 static bool OglVideoSinkDevice_Start(NativeOglVideoSinkDevice&, AtomBase&);
-static void OglVideoSinkDevice_Stop(NativeOglVideoSinkD evice&, AtomBase&);
+static void OglVideoSinkDevice_Stop(NativeOglVideoSinkDevice&, AtomBase&);
 static void OglVideoSinkDevice_Uninitialize(NativeOglVideoSinkDevice&, AtomBase&);
 static bool OglVideoSinkDevice_Send(NativeOglVideoSinkDevice&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 static void OglVideoSinkDevice_Visit(NativeOglVideoSinkDevice&, AtomBase&, RuntimeVisitor& vis);

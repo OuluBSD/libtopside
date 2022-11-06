@@ -47,7 +47,7 @@ bool EcsEventsBase::PostInitialize() {
 }
 
 void EcsEventsBase::Uninitialize() {
-	last_packet.Clear();
+	
 }
 
 bool EcsEventsBase::IsReady(PacketIO& io) {
@@ -63,19 +63,15 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 }
 
 bool EcsEventsBase::Recv(int sink_ch, const Packet& in) {
-	last_packet = in;
+	return true;
+}
+
+void EcsEventsBase::Finalize(RealtimeSourceConfig& cfg) {
+	
 }
 
 bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	TODO
-}
-
-void EcsEventsBase::AddBinder(BinderIfaceEvents* iface) {
-	TODO
-}
-
-void EcsEventsBase::RemoveBinder(BinderIfaceEvents* iface) {
-	VectorRemoveKey(binders, iface);
+	return true;
 }
 
 

@@ -15,8 +15,8 @@ AtomTypeCls EcsProgEvents::GetAtomType() {
 	AtomTypeCls t;
 	t.sub = SubAtomCls::ECS_PROG_EVENTS;
 	t.role = AtomRole::PIPE;
-	t.AddIn(VD(CENTER,EVENT),0);
-	t.AddOut(VD(CENTER,EVENT),0);
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
 	return t;
 }
 

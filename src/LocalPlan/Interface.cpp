@@ -481,6 +481,9 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				String k = pkg.ifaces.GetKey(i);
 				String v = pkg.ifaces[i];
 				
+				if (v.GetCount())
+					s << "#if " << GetMacroConditionals(v) << "\n";
+				
 				String nat_this_ = "Native" + k + "&, ";
 				
 				s	<< "static bool " << k << "_Create(One<Native" + k + ">& dev);\n"
@@ -515,7 +518,11 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					s	<< "static void " << k << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
 				}
 				
+				if (v.GetCount())
+					s << "#endif\n";
+				
 				s << "\n";
+				
 			}
 			
 			//LOG(s);

@@ -692,6 +692,14 @@ bool HalSdl::CenterFboSinkDevice_IsReady(NativeCenterFboSinkDevice& dev, AtomBas
 	return true;
 }
 
+bool HalSdl::CenterFboSinkDevice_AttachContext(NativeCenterFboSinkDevice& dev, AtomBase& a, AtomBase& other) {
+	return true;
+}
+
+void HalSdl::CenterFboSinkDevice_DetachContext(NativeCenterFboSinkDevice& dev, AtomBase& a, AtomBase& other) {
+	
+}
+
 
 
 
@@ -1136,49 +1144,37 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			if (event.button.state == SDL_PRESSED) {
 				if (event.button.clicks == 1) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = VirtualCtrl::LEFTDOWN;
-						//mouse_code = MOUSE_LEFTDOWN;
+						mouse_code = MOUSE_LEFTDOWN;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = VirtualCtrl::MIDDLEDOWN;
-						//mouse_code = MOUSE_MIDDLEDOWN;
+						mouse_code = MOUSE_MIDDLEDOWN;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = VirtualCtrl::RIGHTDOWN;
-						//mouse_code = MOUSE_RIGHTDOWN;
+						mouse_code = MOUSE_RIGHTDOWN;
 				}
 				else if (event.button.clicks == 2) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = VirtualCtrl::LEFTDOUBLE;
-						//mouse_code = MOUSE_LEFTDOUBLE;
+						mouse_code = MOUSE_LEFTDOUBLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = VirtualCtrl::MIDDLEDOUBLE;
-						//mouse_code = MOUSE_MIDDLEDOUBLE;
+						mouse_code = MOUSE_MIDDLEDOUBLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = VirtualCtrl::RIGHTDOUBLE;
-						//mouse_code = MOUSE_RIGHTDOUBLE;
+						mouse_code = MOUSE_RIGHTDOUBLE;
 				}
 				else {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = VirtualCtrl::LEFTTRIPLE;
-						//mouse_code = MOUSE_LEFTTRIPLE;
+						mouse_code = MOUSE_LEFTTRIPLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = VirtualCtrl::MIDDLETRIPLE;
-						//mouse_code = MOUSE_MIDDLETRIPLE;
+						mouse_code = MOUSE_MIDDLETRIPLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = VirtualCtrl::RIGHTTRIPLE;
-						//mouse_code = MOUSE_RIGHTTRIPLE;
+						mouse_code = MOUSE_RIGHTTRIPLE;
 				}
 				
 			}
 			else if (event.button.state == SDL_RELEASED) {
 				if (event.button.button == SDL_BUTTON_LEFT)
-					mouse_code = VirtualCtrl::LEFTUP;
-					//mouse_code = MOUSE_LEFTUP;
+					mouse_code = MOUSE_LEFTUP;
 				else if (event.button.button == SDL_BUTTON_MIDDLE)
-					mouse_code = VirtualCtrl::MIDDLEUP;
-					//mouse_code = MOUSE_MIDDLEUP;
+					mouse_code = MOUSE_MIDDLEUP;
 				else if (event.button.button == SDL_BUTTON_RIGHT)
-					mouse_code = VirtualCtrl::RIGHTUP;
-					//mouse_code = MOUSE_RIGHTUP;
+					mouse_code = MOUSE_RIGHTUP;
 			}
 			
 			if (mouse_code) {

@@ -5,8 +5,9 @@ uses
 	EcsMinimal,
 	IMidiHw,
 	IMidiFile,
-	EcsVirtualGui,
 	EcsAudioCore;
+
+uses(GUI) EcsVirtualGui;
 
 uses(GUI) EcsCtrl;
 

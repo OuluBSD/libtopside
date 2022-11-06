@@ -15,12 +15,12 @@ bool ExtScriptEcsLoader::Load(ScriptWorldLoader& l) {
 		
 		Ref<Ecs::SystemBase> sys = eng.GetAdd(id, false); // skip startup
 		if (sys.IsEmpty()) {
-			l.SetError("could not find ecs system with id '" + id + "'");
+			SetError("could not find ecs system with id '" + id + "'");
 			return false;
 		}
 		
 		if (!Load(loader, *sys)) {
-			l.SetError(l.def.id.ToString() + ": " + loader.GetErrorString());
+			SetError(l.def.id.ToString() + ": " + loader.GetErrorString());
 			return false;
 		}
 	}
@@ -33,7 +33,7 @@ bool ExtScriptEcsLoader::Load(ScriptWorldLoader& l) {
 		PoolRef pool0 = pool->GetAddPool(name);
 		ASSERT(pool0);
 		if (!Load(loader, *pool0)) {
-			l.SetError(l.def.id.ToString() + ": " + loader.GetErrorString());
+			SetError(l.def.id.ToString() + ": " + loader.GetErrorString());
 			return false;
 		}
 	}

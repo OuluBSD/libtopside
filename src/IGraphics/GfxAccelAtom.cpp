@@ -26,16 +26,6 @@ bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 
 template <>
 bool GfxAccelAtom<SdlSwGfx>::GfxRenderer() {
-	ASSERT(fb);
-	
-	NativeColorBufferRef clr;
-	TODO
-	//rend.output.Init(*fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
-	rend.output.SetWindowFbo();
-	
-	//buf.fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
-	//TODO
-	
 	return true;
 }
 
@@ -141,6 +131,7 @@ bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 		}
 	}
 	else {
+		LOG(link->GetDynamicName());
 		TODO // check if ok
 	}
 	

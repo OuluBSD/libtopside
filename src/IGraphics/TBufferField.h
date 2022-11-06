@@ -7,7 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Gfx>
 class GfxBufferFieldT : RTTIBase {
 	
-protected:
+public:
 	using Buffer = BufferT<Gfx>;
 	using DataState = DataStateT<Gfx>;
 	using NativeFrameBufferRef = typename Gfx::NativeFrameBufferRef;
@@ -35,6 +35,9 @@ public:
 	void Update(double dt) {buf.Update(dt);}
 	
 	bool IsAudio() const {return buf.IsAudio();}
+	
+	NativeFrameBufferRef GetFrame() const {return fb;}
+	NativeColorBufferRef GetColor() const {return clr;}
 	
 };
 

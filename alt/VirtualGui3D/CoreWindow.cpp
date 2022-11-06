@@ -459,7 +459,7 @@ void CoreWindow::ChildGotFocus() {
 
 void CoreWindow::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags) {
 	
-	if (event == LEFTDOWN) {
+	if (event == MOUSE_LEFTDOWN) {
 		FocusEvent();
 	}
 	

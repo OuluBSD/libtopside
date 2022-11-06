@@ -25,6 +25,7 @@ typedef void			Void;
 typedef float			TimeSpan;
 
 class RuntimeVisitor;
+class EnvState;
 
 
 class BinderIfaceEvents : RTTIBase {
@@ -33,6 +34,7 @@ public:
 	RTTI_DECL0(BinderIfaceEvents);
 	virtual ~BinderIfaceEvents() {}
 	
+	virtual void Dispatch(const CtrlEvent& state) = 0;
 	
 };
 

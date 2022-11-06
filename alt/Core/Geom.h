@@ -20,6 +20,10 @@ struct Point_ : Moveable<Point_<T>> {
 	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
 	static const char* GetTypeName() {return "Point_<T>";}
 	
+	bool IsEqual(const Point_& p) const {return x == p.x && y == p.y;}
+	bool operator!=(const Point_& p) const {return !IsEqual(p);}
+	bool operator==(const Point_& p) const {return IsEqual(p);}
+	
 	double Length() { return sqrt(x * x + y * y); }
 	double Slope() { return y / x; }
 

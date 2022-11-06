@@ -5,6 +5,10 @@
 NAMESPACE_ECS_BEGIN
 
 
+WindowSystem::WindowSystem(Engine& m) : SP(m) {
+	
+}
+
 bool WindowSystem::Initialize() {
 	WindowSystemScreen& win = wm.AddScreen<WindowSystemScreen>();
 	win.sys = this;
@@ -20,19 +24,19 @@ bool WindowSystem::Initialize() {
 }
 
 void WindowSystem::Start() {
-	
+
 	ents = GetEngine().Get<EntityStore>();
 	ASSERT(ents);
 	
 }
 
 void WindowSystem::Update(double dt) {
-	Ecs::EventStateBase* ev = Ecs::EventStateBase::Latest();
+	/*Ecs::EventStateBase* ev = Ecs::EventStateBase::Latest();
 	if (ev) {
 		EnvState& state = ev->GetState();
 		
-		//TODO
-	}
+		TODO
+	}*/
 	
 	wm.Update(dt);
 	
@@ -43,7 +47,7 @@ void WindowSystem::Stop() {
 }
 
 void WindowSystem::Uninitialize() {
-	
+
 }
 
 void WindowSystem::Invalidate() {

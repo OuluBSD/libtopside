@@ -43,7 +43,7 @@ public:
 	
 	
 	
-	enum {
+	/*enum {
 		UNKNOWN,
 		LEFT_DOWN,
 		LEFT_DOUBLE,
@@ -71,7 +71,7 @@ public:
 	enum {
 		EVENT_INVALID,
 		EVENT_SHUTDOWN,
-	};
+	};*/
 
 };
 

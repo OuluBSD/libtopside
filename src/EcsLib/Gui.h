@@ -7,12 +7,16 @@ NAMESPACE_ECS_BEGIN
 #ifdef flagGUI
 struct DefaultGuiAppComponent :
 	public Component<DefaultGuiAppComponent>,
-	public BinderIfaceVideo
+	public BinderIfaceVideo,
+	public BinderIfaceEvents
 {
 	RTTI_DECL2(DefaultGuiAppComponent, ComponentT, BinderIfaceVideo)
 	
 	WindowSystemRef wins;
-	
+	Point prev_mouse;
+	CoreWindowRef cw;
+	TransformRef trans;
+	Transform2DRef trans2;
 	
 	DefaultGuiAppComponent();
 	void operator=(const DefaultGuiAppComponent& t) {Panic("Can't copy DefaultGuiAppComponent");}
@@ -21,6 +25,7 @@ struct DefaultGuiAppComponent :
 	void Uninitialize() override;
 	void Update(double dt) override;
 	bool Render(Draw& d) override;
+	void Dispatch(const CtrlEvent& state) override;
 	bool Arg(const String& key, const String& value) override;
 	
 	void DrawObj(GfxStateDraw& fb, bool use_texture);

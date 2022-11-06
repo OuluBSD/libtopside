@@ -177,7 +177,7 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("EcsProgEvents", "EcsEventsBase", "pipe")
-		.In("CenterEvent").Out("CenterEvent")
+		.In("CenterReceipt").Out("CenterReceipt")
 		.Action("center.events.prog.ecs")
 		.Arg("HINT_PKG", "AtomEcs")
 		.Link("PIPE", "PROCESS")
@@ -207,6 +207,16 @@ void InterfaceBuilder::Headers() {
 		.Link("PIPE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 		//.Arg("reqdef_flagOGL", "1")
+	;
+	
+	AddHeader("SdlSwFboProg", "SdlCenterFboSinkDevice", "pipe")
+		.In("CenterOrder").Out("CenterFbo")
+		.Action("sdl.sw.fbo.program")
+		//.Arg("reqdef_flagSCREEN", "1")
+		//.Arg("reqdef_flagOGL", "1")
+		//.Arg("reqdef_flagSDL2", "1")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
 	AddHeader("SdlOglFboProg", "SdlOglFboBase", "pipe")
@@ -293,6 +303,16 @@ void InterfaceBuilder::Headers() {
 		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
+	AddHeader("SdlSwFboAtomPipe", "SdlCenterFboSinkDevice", "pipe")
+		.In("CenterFbo").Out("CenterReceipt")
+		.Action("sdl.sw.fbo.sink")
+		//.Arg("reqdef_flagSCREEN", "1")
+		//.Arg("reqdef_flagOGL", "1")
+		//.Arg("reqdef_flagSDL2", "1")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
 	AddHeader("SdlOglFboAtomPipe", "SdlOglVideoSinkDevice", "pipe")
 		.In("OglFbo").Out("OglReceipt")
 		.Action("sdl.ogl.fbo.sink")
@@ -330,6 +350,14 @@ void InterfaceBuilder::Headers() {
 	AddHeader("X11EventAtomPipe", "X11EventsBase", "pipe")
 		.In("CenterOrder").Out("CenterEvent")
 		.Action("x11.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("X11SwEventAtomPipe", "X11SwEventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("x11.sw.event.pipe")
 		.Arg("HINT_PKG", "AtomMinimal")
 		//.Arg("reqdef_flagSCREEN", "1")
 		.Link("POLLER_PIPE", "PROCESS")

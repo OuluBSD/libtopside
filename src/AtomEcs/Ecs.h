@@ -8,12 +8,10 @@ NAMESPACE_PARALLEL_BEGIN
 class EcsEventsBase :
 	public Atom
 {
-	Vector<BinderIfaceEvents*>	binders;
 	String						target;
 	EnvStateRef					state;
 	int							prev_iter = -1;
 	static EcsEventsBase*		latest;
-	Packet						last_packet;
 	
 public:
 	RTTI_DECL1(EcsEventsBase, Atom);
@@ -26,10 +24,9 @@ public:
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
+	void			Finalize(RealtimeSourceConfig& cfg) override;
 	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this); vis & state;}
 	
-	void AddBinder(BinderIfaceEvents* iface);
-	void RemoveBinder(BinderIfaceEvents* iface);
 	
 	static Callback1<EcsEventsBase*>	WhenInitialize;
 	static EcsEventsBase* Latest() {return latest;}

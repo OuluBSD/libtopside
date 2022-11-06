@@ -124,6 +124,7 @@ public:
 class EventStateBase :
 	public Atom
 {
+	static Vector<BinderIfaceEvents*>	binders;
 	String			target;
 	EnvStateRef		state;
 	bool			dbg_print = false;
@@ -160,6 +161,9 @@ public:
 	EnvState&		GetState() const;
 	
 	static EventStateBase* Latest() {return latest;}
+	
+	static void AddBinder(BinderIfaceEvents* iface);
+	static void RemoveBinder(BinderIfaceEvents* iface);
 	
 };
 #endif

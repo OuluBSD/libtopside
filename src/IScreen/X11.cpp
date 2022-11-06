@@ -13,6 +13,8 @@ struct ScrX11::NativeContext {
     ::XVisualInfo* visual_info;
     ::Atom  atomWmDeleteWindow;
     ::XSetWindowAttributes attr;
+    bool running = false;
+    ::Atom wmDeleteMessage;
 };
 
 struct ScrX11::NativeSinkDevice {
@@ -115,6 +117,9 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 		// Enable input
 		XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 		//ctx.xkb = XkbGetMap(display, XkbAllClientInfoMask, XkbUseCoreKbd);
+		
+		dev.ctx->wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+		XSetWMProtocols(display, win, &dev.ctx->wmDeleteMessage, 1);
 		
 		// make the window actually appear on the screen.
 		XMapWindow(display, win);
@@ -267,6 +272,7 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 }
 
 void ScrX11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+	
 	
 }
 
@@ -504,20 +510,20 @@ bool X11Events__Poll(ScrX11::NativeEventsBase& dev, AtomBase& a) {
 				// single click only
 				if (1) {
 					if (dev.xev.xbutton.button == Button1)
-						mouse_code = VirtualCtrl::LEFTDOWN;
+						mouse_code = MOUSE_LEFTDOWN;
 					else if (dev.xev.xbutton.button == Button2)
-						mouse_code = VirtualCtrl::MIDDLEDOWN;
+						mouse_code = MOUSE_MIDDLEDOWN;
 					else if (dev.xev.xbutton.button == Button3)
-						mouse_code = VirtualCtrl::RIGHTDOWN;
+						mouse_code = MOUSE_RIGHTDOWN;
 				}
 			}
 			else {
 				if (dev.xev.xbutton.button == Button1)
-					mouse_code = VirtualCtrl::LEFTUP;
+					mouse_code = MOUSE_LEFTUP;
 				else if (dev.xev.xbutton.button == Button2)
-					mouse_code = VirtualCtrl::MIDDLEUP;
+					mouse_code = MOUSE_MIDDLEUP;
 				else if (dev.xev.xbutton.button == Button3)
-					mouse_code = VirtualCtrl::RIGHTUP;
+					mouse_code = MOUSE_RIGHTUP;
 			}
 		
 			
@@ -534,6 +540,14 @@ bool X11Events__Poll(ScrX11::NativeEventsBase& dev, AtomBase& a) {
 				return true;
 			}
 			break;
+			
+        case ClientMessage:
+            if (dev.xev.xclient.data.l[0] == dev.ctx->wmDeleteMessage) {
+                dev.ctx->running = false;
+                a.GetMachine().SetNotRunning();
+                GetActiveMachine().SetNotRunning();
+                XDestroyWindow(dev.ctx->display, dev.ctx->win);
+            }
 		}
 	}
 	

@@ -9,7 +9,7 @@ bool EventSystem::Initialize() {
 
 void EventSystem::Attach(Serial::EcsEventsBase* b) {
 	ASSERT(b);
-	b->AddBinder(this);
+	EventStateBase::AddBinder(this);
 	serial = b;
 }
 
@@ -26,10 +26,7 @@ void EventSystem::Stop() {
 }
 
 void EventSystem::Uninitialize() {
-	if (serial) {
-		serial->RemoveBinder(this);
-		serial = 0;
-	}
+	EventStateBase::RemoveBinder(this);
 }
 
 

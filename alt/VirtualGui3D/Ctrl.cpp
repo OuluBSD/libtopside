@@ -14,7 +14,8 @@ TS::Ecs::CoreWindow* Ctrl::GetWindow() {
 
 
 Image Ctrl::OverrideCursor(const Image& m) {
-	TODO
+	LOG("TODO Ctrl::OverrideCursor");
+	return Image();
 }
 
 void Ctrl::CloseTopCtrls() {
