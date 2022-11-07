@@ -13,7 +13,7 @@ void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>
 		
 		RealtimeSourceConfig* cfg = c->GetConfig();
 		if (!cfg) {
-			ASSERT(0); // this is not fatal necessarily. Probably some of atom is stuck and won't send packets
+			ASSERT(0); // this is not fatal necessarily. Probably some atom is stuck and won't send packets
 			RTLOG("LinkSystem::ForwardLinks: warning: GetConfig returns NULL");
 			continue;
 		}

@@ -27,6 +27,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("SdlOglFboReaderBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("SdlOglKeyboardBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("SdlOglAudioBase", "SCREEN&SDL2&OGL");
+	AddCustomBase("X11SwFboProgBase", "SCREEN");
 	AddCustomBase("MidiFileReaderAtom");
 	AddCustomBase("MidiNullAtom");
 	AddCustomBase("AudioMixerBase");
@@ -193,7 +194,9 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("X11SwFboProg", "X11SwFboBase", "pipe")
-		.In("CenterOrder").Out("CenterFbo")
+		.In("CenterOrder")
+		.InOpt("CenterFbo")
+		.Out("CenterFbo")
 		.Action("x11.sw.fbo.program")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("PIPE", "PROCESS")
@@ -201,7 +204,9 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("X11OglFboProg", "X11OglFboBase", "pipe")
-		.In("OglOrder").Out("OglFbo")
+		.In("OglOrder")
+		.InOpt("OglFbo")
+		.Out("OglFbo")
 		.Action("x11.ogl.fbo.program")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("PIPE", "PROCESS")
@@ -210,7 +215,9 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("SdlSwFboProg", "SdlCenterFboSinkDevice", "pipe")
-		.In("CenterOrder").Out("CenterFbo")
+		.In("CenterOrder")
+		.InOpt("CenterFbo")
+		.Out("CenterFbo")
 		.Action("sdl.sw.fbo.program")
 		//.Arg("reqdef_flagSCREEN", "1")
 		//.Arg("reqdef_flagOGL", "1")
@@ -220,7 +227,9 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("SdlOglFboProg", "SdlOglFboBase", "pipe")
-		.In("OglOrder").Out("OglFbo")
+		.In("OglOrder")
+		.InOpt("OglFbo")
+		.Out("OglFbo")
 		.Action("sdl.ogl.fbo.program")
 		//.Arg("reqdef_flagSCREEN", "1")
 		//.Arg("reqdef_flagOGL", "1")
@@ -230,7 +239,8 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("OpenHMDPipe", "OpenHMDSinkDevice", "pipe")
-		.In("CenterOrder").Out("CenterEvent")
+		.In("CenterOrder")
+		.Out("CenterEvent")
 		.Action("x11.ogl.ohmd.events")
 		.Arg("HINT_PKG", "AtomVR")
 		.Link("PIPE", "PROCESS")
@@ -495,6 +505,15 @@ void InterfaceBuilder::Headers() {
 		//.Arg("reqdef_flagSDL2", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("X11SwFboGuiProg", "X11SwFboProgBase", "pipe")
+		.In("CenterProg")
+		.Out("CenterReceipt")
+		.Out("CenterFbo")
+		.Action("x11.sw.prog")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("PIPE_OPTSIDE", "PROCESS")
 	;
 	
 	AddHeader("SdlVideoAtom", "SdlCenterVideoSinkDevice", "pipe")

@@ -559,6 +559,7 @@ AtomTypeCls X11SwFboProg::GetAtomType() {
 	t.sub = SubAtomCls::X11_SW_FBO_PROG;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,FBO),1);
 	t.AddOut(VD(CENTER,FBO),0);
 	return t;
 }
@@ -587,6 +588,7 @@ AtomTypeCls X11OglFboProg::GetAtomType() {
 	t.sub = SubAtomCls::X11_OGL_FBO_PROG;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
 	t.AddOut(VD(OGL,FBO),0);
 	return t;
 }
@@ -615,6 +617,7 @@ AtomTypeCls SdlSwFboProg::GetAtomType() {
 	t.sub = SubAtomCls::SDL_SW_FBO_PROG;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddIn(VD(CENTER,FBO),1);
 	t.AddOut(VD(CENTER,FBO),0);
 	return t;
 }
@@ -643,6 +646,7 @@ AtomTypeCls SdlOglFboProg::GetAtomType() {
 	t.sub = SubAtomCls::SDL_OGL_FBO_PROG;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(OGL,ORDER),0);
+	t.AddIn(VD(OGL,FBO),1);
 	t.AddOut(VD(OGL,FBO),0);
 	return t;
 }
@@ -1444,6 +1448,35 @@ void SdlProgAtomPipe::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls SdlProgAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSCREEN
+String X11SwFboGuiProg::GetAction() {
+	return "x11.sw.prog";
+}
+
+AtomTypeCls X11SwFboGuiProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_SW_FBO_GUI_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11SwFboGuiProg::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void X11SwFboGuiProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11SwFboProgBase>(this);
+}
+
+AtomTypeCls X11SwFboGuiProg::GetType() const {
 	return GetAtomType();
 }
 #endif

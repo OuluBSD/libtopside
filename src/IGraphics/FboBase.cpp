@@ -193,6 +193,11 @@ void FboAtomT<Gfx>::RemoveBinder(BinderIfaceVideo* iface) {
 }
 
 template <class Gfx>
+bool FboAtomT<Gfx>::Recv(int sink_ch, const Packet& in) {
+	return true;
+}
+
+template <class Gfx>
 void FboAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	last_cfg = &cfg;
 }

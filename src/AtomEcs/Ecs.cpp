@@ -124,12 +124,16 @@ bool EcsVideoBase::PostInitialize() {
 	return true;
 }
 
-void EcsVideoBase::Uninitialize() {
+void EcsVideoBase::Stop() {
 	state.Clear();
 	ents.Clear();
 	#ifdef flagGUI
 	wins.Clear();
 	#endif
+}
+
+void EcsVideoBase::Uninitialize() {
+	
 }
 
 void EcsVideoBase::Visit(RuntimeVisitor& vis) {
@@ -224,6 +228,7 @@ void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 }
 
 #endif
+
 
 
 

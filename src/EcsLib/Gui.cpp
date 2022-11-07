@@ -14,7 +14,8 @@ DefaultGuiAppComponent::DefaultGuiAppComponent() {
 
 void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
 	/*if (test) vis % *test;*/
-	vis & wins & cw;
+	vis & wins;
+	vis & cw;
 }
 
 void DefaultGuiAppComponent::Initialize() {
@@ -30,6 +31,8 @@ void DefaultGuiAppComponent::Uninitialize() {
 	RemoveFromUpdateList();
 	Serial::EcsVideoBase::RemoveBinder(this);
 	Serial::EventStateBase::RemoveBinder(this);
+	wins.Clear();
+	cw.Clear();
 }
 
 void DefaultGuiAppComponent::Update(double dt) {

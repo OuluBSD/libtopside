@@ -61,6 +61,7 @@ public:
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	bool			PostInitialize() override;
+	void			Stop() override;
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;

@@ -631,7 +631,7 @@ bool ScrX11Sw::EventsBase_NegotiateSinkFormat(NativeEventsBase& ev, AtomBase& a,
 static const struct {
     int keycode;
     int scancode;
-} KeySymToTSScancode[] = {
+} KeySymToTSScancodeSW[] = {
     { XK_Return, '\r' },
     { XK_Escape, '\x1B' },
     { XK_BackSpace, '\b' },
@@ -744,9 +744,9 @@ static const struct {
 
 int ConvertX11Keycode(ScrX11Sw::NativeEventsBase& dev, int keycode)
 {
-    for (int i = 0; i < TS_arraysize(KeySymToTSScancode); ++i) {
-        if (keycode == KeySymToTSScancode[i].keycode) {
-            return KeySymToTSScancode[i].scancode;
+    for (int i = 0; i < TS_arraysize(KeySymToTSScancodeSW); ++i) {
+        if (keycode == KeySymToTSScancodeSW[i].keycode) {
+            return KeySymToTSScancodeSW[i].scancode;
         }
     }
     return keycode;

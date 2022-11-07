@@ -64,6 +64,7 @@ namespace Parallel {
 	ATOM_TYPE(SDL_OGL_FBO_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_PROG_ATOM_PIPE) \
+	ATOM_TYPE(X11_SW_FBO_GUI_PROG) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
 	ATOM_TYPE(SDL_OGL_SHADER_ATOM) \
@@ -148,6 +149,7 @@ namespace Parallel {
 	ATOM_CLASS(SdlOglFboAtom) \
 	ATOM_CLASS(SdlVideoAtomPipe) \
 	ATOM_CLASS(SdlProgAtomPipe) \
+	ATOM_CLASS(X11SwFboGuiProg) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
 	ATOM_CLASS(SdlOglShaderAtom) \

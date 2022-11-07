@@ -744,6 +744,21 @@ public:
 };
 #endif
 
+#if defined flagSCREEN
+class X11SwFboGuiProg : public X11SwFboProgBase {
+
+public:
+	RTTI_DECL1(X11SwFboGuiProg, X11SwFboProgBase)
+	COPY_PANIC(X11SwFboGuiProg)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 #if defined flagSDL2
 class SdlVideoAtom : public SdlCenterVideoSinkDevice {
 
