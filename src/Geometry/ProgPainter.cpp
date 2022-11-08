@@ -12,6 +12,13 @@ ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawComman
 	end.next = next;
 	prev->next = &begin;
 	next->prev = &end;
+	
+}
+
+ProgPainter::ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
+	sz(sz), prev(&prev), begin(&begin), end(&end), next(&next)
+{
+	
 }
 
 Size ProgPainter::GetPageSize() const {
@@ -58,6 +65,15 @@ DrawCommand& ProgPainter::GetNext() {
 	if (!cur_begin)
 		cur_begin = cur;
 	return *cur;
+}
+
+void ProgPainter::SetSize(Size sz) {
+	this->sz = sz;
+	
+	DrawCommand& cmd = GetNext();
+	cmd.type = DRAW_META_SIZE;
+	cmd.i[0] = sz.cx;
+	cmd.i[1] = sz.cy;
 }
 
 void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c) {
@@ -306,8 +322,9 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		cur_begin = 0;
 		return;
 	}
+	
 	if (cur) {
-		TODO
+		ASSERT_(0, "TODO this doesn't seem to make sense... workaround: remove added commands before this attach");
 	}
 	else {
 		ASSERT(this->begin && this->end);
@@ -317,7 +334,13 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		this->end->prev = &end;
 		cur = &end;
 		cur_begin = &begin;
+		
+		PushMetaInformation();
 	}
+}
+
+void ProgPainter::PushMetaInformation() {
+	SetSize(sz);
 }
 
 void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {

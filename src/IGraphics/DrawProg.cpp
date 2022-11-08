@@ -25,7 +25,7 @@ void DrawProg::Process(const DrawCommand* ptr) {
 	
 	const DrawCommand* cmd = ptr;
 	while (cmd) {
-		if (cmd->type > DRAW_NULL && cmd->type < DRAW_CMD_COUNT)
+		if (cmd->type >= DRAW_BEGIN && cmd->type < DRAW_CMD_COUNT)
 			(*this.*ptrs[cmd->type])(*cmd);
 		
 		ASSERT(cmd->next != cmd);

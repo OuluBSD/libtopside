@@ -565,7 +565,7 @@ AtomTypeCls X11SwFboProg::GetAtomType() {
 }
 
 LinkTypeCls X11SwFboProg::GetLinkType() {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void X11SwFboProg::Visit(RuntimeVisitor& vis) {

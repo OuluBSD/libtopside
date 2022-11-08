@@ -16,16 +16,9 @@ DevCls GetCenterDevCls() {
 
 String ValCls::GetName(Type t) {
 	switch (t) {
-		case AUDIO:			return "audio";
-		case VIDEO:			return "video";
-		case VOLUME:		return "volume";
-		case MIDI:			return "midi";
-		case EVENT:			return "event";
-		case DATA:			return "data";
-		case ORDER:			return "order";
-		case RECEIPT:		return "receipt";
-		case FBO:			return "fbo";
-		case INVALID:
+		#define IFACE(x) case x: return ToLower(String(#x));
+		IFACE_LIST
+		#undef IFACE
 		default: return "invalid";
 	}
 }

@@ -47,11 +47,13 @@ public:
 	void Create(Size sz);
 	void Create(Size sz, int stride);
 	void Finish();
+	Size GetSize() const {return sz;}
 	int GetWidth() const {return sz.cx;}
 	int GetHeight() const {return sz.cy;}
 	int GetPitch() const {return pitch;}
 	int GetStride() const {return stride;}
 	
+	void SetSize(Size sz) override;
 	Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
@@ -66,6 +68,7 @@ public:
 	void DrawTriangle(Point a, Point b, Point c, RGBA clr) override;
 	
 	Vector<byte>& Data() {return pixels;}
+	const Vector<byte>& GetData() const{return pixels;}
 	
 	byte* GetIterator(int x, int y);
 	void Zero();

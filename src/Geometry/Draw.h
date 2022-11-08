@@ -53,12 +53,13 @@ class ProgPainter : public Draw {
 	
 	
 public:
-	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : sz(sz), prev(&prev), begin(&begin), end(&end), next(&next) {}
+	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
 	ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
 	~ProgPainter() {/*Clear();*/}
 	
 	void Clear();
 	
+	void SetSize(Size sz) override;
 	Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
@@ -93,6 +94,7 @@ public:
 	//void Attach(Ctrl& c);
 	void Attach(DrawCommand& begin, DrawCommand& end);
 	void AppendPick(DrawCommand* begin, DrawCommand* end);
+	void PushMetaInformation();
 	
 };
 

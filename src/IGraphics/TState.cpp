@@ -56,7 +56,7 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 		Gfx::GenVertexBuffer(vbo);
 		Gfx::GenElementBuffer(ebo);
 	}
-
+	
 	if (!m.vertices.IsEmpty() &&
 		!m.indices.IsEmpty()) {
 		

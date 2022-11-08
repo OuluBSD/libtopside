@@ -125,6 +125,7 @@ struct DataStateT : GfxDataState {
 	ArrayMap<int, ModelState> models;
 	ArrayMap<int, PipelineState> pipelines;
 	Index<String> dictionary;
+	Vector<Base*> linked;
 	
 	DataStateT();
 	~DataStateT();

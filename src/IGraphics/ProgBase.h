@@ -10,6 +10,8 @@ class FboProgAtomT :
 {
 	using DataState = DataStateT<Gfx>;
 	using ModelState = ModelStateT<Gfx>;
+	using Material = MaterialT<Gfx>;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	
     FramebufferT<Gfx> fb;
     One<ImageDraw> id;
@@ -17,6 +19,7 @@ class FboProgAtomT :
     ProgImage pi;
     Image img;
 	DataState data;
+	NativeColorBufferRef tex;
 	
 public:
 	using BufferBase = BufferBaseT<Gfx>;

@@ -38,20 +38,31 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 	Format fmt = p->GetFormat();
 	
 	if (fmt.IsProg()) {
-		TODO // sz
+		InternalPacketData& data = p->GetData<InternalPacketData>();
+		DrawCommand* cmd_screen_begin = (DrawCommand*)data.ptr;
+		
+		// Get ctrl size from draw command queue
+		Size sz(0,0);
+		{
+			DrawCommand* iter = cmd_screen_begin;
+			while (iter) {
+				if (iter->type == DRAW_META_SIZE) {
+					sz.cx = iter->i[0];
+					sz.cy = iter->i[1];
+					break;
+				}
+				iter = iter->next;
+			}
+		}
+		ASSERT(!sz.IsEmpty());
+		if (sz.IsEmpty()) sz = Size(320,240);
+		
 		
 		if (id.IsEmpty())
 			id.Create(sz, 3);
 		
-		//Size sz = fb.GetSize();
-		//int channels = fb.GetChannels();
-		InternalPacketData& data = p->GetData<InternalPacketData>();
-		DrawCommand* cmd_screen_begin = (DrawCommand*)data.ptr;
-		
 		//pi.Create(sz, channels);
 		pi.Paint(*cmd_screen_begin, id);
-		
-		img = id->GetImage();
 		
 		return true;
 	}
@@ -66,10 +77,34 @@ bool FboProgAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int sr
 	
 	Format fmt = out.GetFormat();
 	if (fmt.IsFbo()) {
+		ASSERT(!id.IsEmpty());
+		
 		if (data.GetModelCount() == 0) {
-			ModelState& mdl = this->data.AddModelT();
+			ModelState& mdl_state = this->data.AddModelT();
 			
-			TODO
+			float multiplier = 0.001;
+			Size sz = id->GetSize();
+			vec2 sz_vec(sz.cx * multiplier, sz.cy * multiplier);
+			
+			ModelBuilder mb;
+			Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec);
+			Model& src_mdl = mb;
+			
+			Image img = id->GetImage();
+			src_mdl.SetTexture(plane_mesh, TEXTYPE_DIFFUSE, img, "" );
+			
+			if (!mdl_state.LoadModel(src_mdl)) {
+				LOG("FboProgAtomT<Gfx>::Send: error: could not load model");
+				return false;
+			}
+			
+			auto& mtl = src_mdl.materials.Get(plane_mesh.material);
+			int tex_id = mtl.tex_id[TEXTYPE_DIFFUSE];
+			this->tex = mdl_state.textures.Get(tex_id);
+			
+		}
+		else {
+			//TODO
 		}
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();

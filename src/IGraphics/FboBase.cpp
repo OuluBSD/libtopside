@@ -142,7 +142,7 @@ template <class Gfx>
 bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	bool b =
-		io.active_sink_mask == iface_sink_mask &&
+		(io.active_sink_mask & 0x1) &&
 		io.full_src_mask == 0 &&
 		binders.GetCount() > 0;
 	RTLOG("FboAtomT::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
@@ -164,6 +164,7 @@ bool FboAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 		
 		data.ptr = &(GfxDataState&)this->data;
 		data.SetText("gfxstate");
+		ASSERT(data.ptr);
 	}
 	else {
 		ASSERT_(0, "TODO");
@@ -194,6 +195,17 @@ void FboAtomT<Gfx>::RemoveBinder(BinderIfaceVideo* iface) {
 
 template <class Gfx>
 bool FboAtomT<Gfx>::Recv(int sink_ch, const Packet& in) {
+	if (sink_ch > 0) {
+		const InternalPacketData& data = in->GetData<InternalPacketData>();
+		ASSERT(data.ptr);
+		const GfxDataState& gfx_state = *(GfxDataState*)data.ptr;
+		DataState* state = CastPtr<DataState>(&gfx_state);
+		ASSERT(state);
+		if (state) {
+			VectorFindAdd(this->data.linked, state);
+		}
+	}
+	
 	return true;
 }
 

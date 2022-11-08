@@ -141,9 +141,8 @@ void GuiProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	DataState& state = fb.GetState();
 	
-	TODO
+	#if 1
 	
-	#if 0
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
 	float aspect = (float)sz.cx / (float)sz.cy;

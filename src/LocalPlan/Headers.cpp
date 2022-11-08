@@ -199,7 +199,7 @@ void InterfaceBuilder::Headers() {
 		.Out("CenterFbo")
 		.Action("x11.sw.fbo.program")
 		.Arg("HINT_PKG", "AtomMinimal")
-		.Link("PIPE", "PROCESS")
+		.Link("PIPE_OPTSIDE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 	;
 	

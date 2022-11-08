@@ -83,6 +83,11 @@ void Draw::DrawEllipse(int x, int y, int cx, int cy, Color color, int pen, Color
 
 
 
+void DrawProxy::SetSize(Size sz) {
+	if (ptr)
+		return ptr->SetSize(sz);
+}
+
 Size DrawProxy::GetPageSize() const {
 	return ptr->GetPageSize();
 }

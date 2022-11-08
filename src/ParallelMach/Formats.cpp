@@ -257,6 +257,7 @@ String Format::ToString() const {
 	if (IsMidi())  return "MidiFormat(" + vd.ToString() + ", " + mid.ToString() + ")";
 	if (IsEvent()) return "EventFormat(" + vd.ToString() + ", " + ev.ToString() + ")";
 	if (IsFbo())   return "FboFormat(" + vd.ToString() + ", " + fbo.ToString() + ")";
+	if (IsProg())   return "ProgFormat(" + vd.ToString() + ", " + prog.ToString() + ")";
 	if (vd.val.type == ValCls::ORDER) return "OrderFormat";
 	if (vd.val.type == ValCls::RECEIPT) return "ReceiptFormat";
 	return "Invalid Format";

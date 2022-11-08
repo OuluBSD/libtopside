@@ -80,6 +80,10 @@ ProgDraw::operator Image() const {
 	TODO
 }
 
+void ProgDraw::SetSize(Size sz) {
+	d->SetSize(sz);
+}
+
 void ProgDraw::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
 	ASSERT(d);
 	d->DrawLine(x1, y1, x2, y2, width, color);

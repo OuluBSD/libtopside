@@ -37,6 +37,10 @@ void SImageDraw::Finish() {
 	
 }
 
+void SImageDraw::SetSize(Size sz) {
+	this->sz = sz;
+}
+
 Size SImageDraw::GetPageSize() const {
 	return sz;
 }
@@ -430,7 +434,15 @@ bool SImageDraw::DoOps(Rect& r) {
 }
 
 Image SImageDraw::GetImage() {
-	TODO
+	RawSysImage* img = new RawSysImage();
+	
+	img->data <<= pixels;
+	img->w = sz.cx;
+	img->h = sz.cy;
+	img->ch = stride;
+	img->pitch = pitch;
+	
+	return img;
 }
 
 

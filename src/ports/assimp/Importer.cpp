@@ -646,7 +646,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
                 }
             }
             // Put a proper error message if no suitable importer was found
-            if( !imp)   {
+            if (!imp)   {
                 pimpl->mErrorString = "No suitable reader found for the file format of file \"" + pFile + "\".";
                 DefaultLogger::get()->error(pimpl->mErrorString);
                 return NULL;

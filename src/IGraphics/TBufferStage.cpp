@@ -386,8 +386,10 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	// render VBA from state
 	Gfx::BeginRender();
 	
+	DataState* data = this->data;
+	int data_i = 0;
 	//if (ctx.frames > 0)
-	{
+	while (data) {
 		ASSERT(program_str.GetCount());
 		ProgramState* prev_prog = 0;
 		for (ModelState& m : data->models.GetValues()) {
@@ -434,6 +436,13 @@ void BufferStageT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 				Gfx::EndRenderObject();
 			}
 		}
+		
+		if (data_i < this->data->linked.GetCount())
+			data = this->data->linked[data_i];
+		else
+			data = 0;
+			
+		data_i++;
 	}
 	
 	Gfx::EndRender();

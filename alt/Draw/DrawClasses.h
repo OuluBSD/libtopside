@@ -54,7 +54,8 @@ public:
 	                 int pen = Null, Color pencolor = DefaultInk());
 	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
 		             int pen = Null, Color pencolor = DefaultInk());
-
+	
+	virtual void SetSize(Size sz) = 0;
 	virtual Size GetPageSize() const = 0;
 	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) = 0;
 	virtual	void DrawRectOp(int x, int y, int cx, int cy, Color color) = 0;
@@ -84,6 +85,7 @@ struct DrawProxy : Draw {
 	
 	void SetTarget(Draw& d) {ptr = &d;}
 	
+	void SetSize(Size sz) override;
 	Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
