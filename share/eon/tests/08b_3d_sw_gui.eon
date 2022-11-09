@@ -2,7 +2,7 @@ machine sdl.app:
 	
 	driver context:
 		x11.sw.context
-    
+	
 	chain program:
 		state event.register
 		
@@ -43,4 +43,4 @@ world ecs.dummy:
     system painting
     system shooting
     system throwing
-    
+    system desktop: program = "guitester"

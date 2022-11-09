@@ -43,6 +43,7 @@ class BinderIfaceVideo : RTTIBase {
 	
 public:
 	RTTI_DECL0(BinderIfaceVideo);
+	BinderIfaceVideo();
 	virtual ~BinderIfaceVideo() {}
 	
 	virtual bool Render(Draw& d) = 0;

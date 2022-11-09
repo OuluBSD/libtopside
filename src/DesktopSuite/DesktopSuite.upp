@@ -1,0 +1,15 @@
+description "\377B84,84,84";
+
+uses
+	EcsCtrl;
+
+file
+	DesktopSuite.h,
+	Init.cpp,
+	System.h,
+	System.cpp,
+	Factory.h,
+	Factory.cpp,
+	Tester.h,
+	Tester.cpp;
+

@@ -58,8 +58,10 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		if (sz.IsEmpty()) sz = Size(320,240);
 		
 		
-		if (id.IsEmpty())
+		if (id.IsEmpty()) {
 			id.Create(sz, 3);
+			id->DrawRect(sz, GrayColor());
+		}
 		
 		//pi.Create(sz, channels);
 		pi.Paint(*cmd_screen_begin, id);
@@ -90,7 +92,15 @@ bool FboProgAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int sr
 			Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec);
 			Model& src_mdl = mb;
 			
+			plane_mesh.CenterAnchor();
+			plane_mesh.TransformVertices(AxesMat(0,M_PI/2,0));
+			
 			Image img = id->GetImage();
+			if (0) {
+				ImageDraw id(sz);
+				id.DrawRect(sz, White());
+				img = id;
+			}
 			src_mdl.SetTexture(plane_mesh, TEXTYPE_DIFFUSE, img, "" );
 			
 			if (!mdl_state.LoadModel(src_mdl)) {

@@ -8,6 +8,8 @@ uses
 	AtomLocal,
 	AudioHost;
 
+uses(GUI) DesktopSuite;
+
 uses(NEVER) Physics;
 
 file

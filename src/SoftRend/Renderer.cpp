@@ -235,7 +235,11 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 	while (iter_in != iter_in_end) {
 		vtx_args.v = *iter_in++;
 		
+		//LOG(vtx_args.v.position.ToString());
+		
 		vs.Process(vtx_args);
+		
+		//LOG("\t\t\t\t\t" << vtx_args.v.position.ToString());
 		
 		auto& pos = vtx_args.v.position;
 		pos[0] = (int)((pos[0] + 1.0) * width  / 2.0);

@@ -13,6 +13,7 @@ void DrawProg::Process(const DrawCommand* ptr) {
 	static FnPtr ptrs[DRAW_CMD_COUNT];
 	static bool has_ptrs;
 	if (!has_ptrs) {
+		memset(ptrs, 0, sizeof(ptrs));
 		ptrs[DRAW_LINE] = &DrawProg::DrawLine;
 		ptrs[DRAW_IMAGE] = &DrawProg::DrawImage;
 		ptrs[DRAW_RECT] = &DrawProg::DrawRect;

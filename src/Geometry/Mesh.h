@@ -78,8 +78,8 @@ public:
     
     void UpdateBoundingBox();
     void UpdateNormalsAndTangents();
-    void CenterAxis(BoundingBox::Align align = BoundingBox::ALIGN_CENTER);
-    void SetAxis(vec3 axis);
+    void CenterAnchor(BoundingBox::Align align = BoundingBox::ALIGN_CENTER);
+    void SetAnchor(vec3 pos);
     void TransformVertices(mat4 transform);
     void Dump(int indent=0);
     

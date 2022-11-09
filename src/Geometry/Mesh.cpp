@@ -80,35 +80,27 @@ void Mesh::UpdateNormalsAndTangents() {
     }
 }
 
-/*void Mesh::CenterAxis(BoundingBox::Align align) {
+void Mesh::CenterAnchor(BoundingBox::Align align) {
 	UpdateBoundingBox();
-    SetAxis(TS::vec3(TS::vec4(GetCenter(align), 1)));
+    SetAnchor(GetCenter(align));
 }
 
-void Mesh::SetAxis(TS::vec3 axis)
+void Mesh::SetAnchor(vec3 pos)
 {
-	TS::vec4 v(axis, 1);
-	quat q;
-	q[0] = v[0];
-	q[1] = v[1];
-	q[2] = v[2];
-	q.w = v.w;
-    TS::vec3 local_axis = TS::vec3(TS::inverse(q));
-    TransformVertices(TS::Translate(TS::mat4(1), -local_axis));
-    m_origin = in_parent_system(axis);
-    mark_dirty_transform();
+    TransformVertices(Translate(Identity<mat4>(), -pos));
 }
 
 void Mesh::TransformVertices(TS::mat4 transform)
 {
-    TS::mat4 normal_transform = TS::transpose(TS::inverse(transform));
-    for(int i = 0; i < static_cast<int>(m_num_vertex); i++) {
-        SetVertCoord(i,   TS::vec3(transform        * TS::vec4(get_vert_coord(i),   1)));
-        SetVertNormal(i,  TS::vec3(normal_transform * TS::vec4(get_vert_normal(i),  1)));
-        SetVertTangent(i, TS::vec3(normal_transform * TS::vec4(get_vert_tangent(i), 1)));
+	int m_num_vertex = vertices.GetCount();
+    TS::mat4 normal_transform = Transpose(Inverse(transform));
+    for (Vertex& v : vertices) {
+        v.position		=  transform        * v.position;
+        v.normal		= (normal_transform * v.normal.Embed()).Splice();
+        v.tangent		=  normal_transform * v.tangent;
     }
     UpdateBoundingBox();
-}*/
+}
 
 
 

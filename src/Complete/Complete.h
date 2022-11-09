@@ -10,6 +10,10 @@
 	#include <EcsCtrl/EcsCtrl.h>
 #endif
 
+#ifdef flagGUI
+	#include <DesktopSuite/DesktopSuite.h>
+#endif
+
 #include "Prefabs.h"
 
 
