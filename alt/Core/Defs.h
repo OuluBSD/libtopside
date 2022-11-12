@@ -202,7 +202,7 @@ typedef uint64			qword;
 
 typedef unsigned long	DWORD;
 
-typedef unsigned int	hash_t;
+typedef size_t			hash_t;
 
 
 typedef const char*		CString;

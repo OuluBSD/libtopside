@@ -179,6 +179,7 @@ public:
 	bool IsPendingPartialRedraw() const {return pending_partial_redraw;}
 	void Wait();
 	
+	bool IsCtrlDrawBegin() override;
 	void SetFrameRect(const Rect& r) override;
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;

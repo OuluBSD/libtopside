@@ -5,7 +5,7 @@
 NAMESPACE_UPP
 
 
-DrawCommand& DrawCommandCache::Get() {
+DrawCommand& DrawCommandCache::CreateCommand() {
 	if (unused.IsEmpty()) {
 		DrawCommand& cmd = owned.Add();
 		cmd.type = 0;
@@ -39,15 +39,18 @@ String DrawCommand::GetTypeString() const {
 String DrawCommand::ToString() const {
 	String s;
 	switch (type) {
-		case DRAW_NULL:			s << "null"; break;
-		case DRAW_META_SIZE:	s << "meta-size([" << i[0] << "," << i[1] << "])";
-		case DRAW_LINE:			s << "line([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "])"; break;
-		case DRAW_IMAGE:		s << "image([" << i[0] << "," << i[1] << "], " << img.ToString() << ")"; break;
-		case DRAW_RECT:			s << "rect(pt[" << i[0] << "," << i[1] << "], sz[" << i[2]-i[0] << "," << i[3]-i[1] << "])"; break;
-		case DRAW_TRIANGLES:	s << "triangles(" << (int)clr.r << ", " << (int)clr.g << ", " << (int)clr.b << ", " << (int)clr.a << ")"; break;
-		case DRAW_POLYLINE:		s << "polyline(width=" << i[0] << ", pts-count=" << pts.GetCount() << ")"; break;
-		case DRAW_OFFSET:		s << "offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
-		case DRAW_END:			s << "end()"; break;
+		case DRAW_NULL:				s << "-"; break;
+		case DRAW_META_SIZE:		s << "meta-size([" << i[0] << "," << i[1] << "])"; break;
+		case DRAW_BEGIN:			s << "-"; break;
+		case DRAW_BIND_WINDOW:		s << "bind-window(" << HexStr(hash) << ")"; break;
+		case DRAW_UNBIND_WINDOW:	s << "unbind-window()"; break;
+		case DRAW_LINE:				s << "line([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "])"; break;
+		case DRAW_IMAGE:			s << "image([" << i[0] << "," << i[1] << "], " << img.ToString() << ")"; break;
+		case DRAW_RECT:				s << "rect(pt[" << i[0] << "," << i[1] << "], sz[" << i[2]-i[0] << "," << i[3]-i[1] << "])"; break;
+		case DRAW_TRIANGLES:		s << "triangles(" << (int)clr.r << ", " << (int)clr.g << ", " << (int)clr.b << ", " << (int)clr.a << ")"; break;
+		case DRAW_POLYLINE:			s << "polyline(width=" << i[0] << ", pts-count=" << pts.GetCount() << ")"; break;
+		case DRAW_OFFSET:			s << "offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
+		case DRAW_END:				s << "end()"; break;
 		default:
 			if ((int)type >= 0 && (int)type < (int)DRAW_CMD_COUNT)
 				s << "<TODO>";

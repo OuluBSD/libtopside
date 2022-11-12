@@ -56,8 +56,10 @@ class DrawProg : public DrawProxy {
 public:
 	RTTI_DECL1(DrawProg, DrawProxy)
 	DrawProg();
-	void Process(const DrawCommand* ptr);
+	void Process(const DrawCommand* begin, const DrawCommand* end);
 	
+	void BindWindow(const DrawCommand& cmd);
+	void UnbindWindow(const DrawCommand& cmd);
 	void DrawLine(const DrawCommand& cmd);
 	void DrawImage(const DrawCommand& cmd);
 	void DrawRect(const DrawCommand& cmd);
@@ -75,7 +77,7 @@ class ProgImage {
 	
 public:
 	ProgImage();
-	void Paint(DrawCommand& c, ImageDraw& id);
+	void Paint(const DrawCommand* begin, const DrawCommand* end, ImageDraw& id);
 	
 };
 

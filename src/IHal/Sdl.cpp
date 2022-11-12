@@ -469,15 +469,20 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		if (dev.id.IsEmpty())
 			dev.id.Create(dev.sz, 3);
 		
-		//Size sz = fb.GetSize();
-		//int channels = fb.GetChannels();
 		InternalPacketData& data = p->GetData<InternalPacketData>();
-		DrawCommand* cmd_screen_begin = (DrawCommand*)data.ptr;
+		DrawCommand* begin = (DrawCommand*)data.ptr;
+		ASSERT(begin->type == DRAW_BIND_WINDOW);
 		
-		//pi.Create(sz, channels);
-		dev.pi.Paint(*cmd_screen_begin, dev.id);
+		DrawCommand* end = begin;
+		while (end) {
+			if (end->type == DRAW_UNBIND_WINDOW) {
+				end = end->next;
+				break;
+			}
+			end = end->next;
+		}
+		dev.pi.Paint(begin, end, dev.id);
 		
-		//dev.render_src = RENDSRC_IMAGEDRAW;
 		{
 			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
 			

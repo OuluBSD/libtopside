@@ -55,6 +55,9 @@ public:
 	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
 		             int pen = Null, Color pencolor = DefaultInk());
 	
+	virtual void CtrlDrawBegin(hash_t) {}
+	virtual void CtrlDrawEnd() {}
+	
 	virtual void SetSize(Size sz) = 0;
 	virtual Size GetPageSize() const = 0;
 	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) = 0;

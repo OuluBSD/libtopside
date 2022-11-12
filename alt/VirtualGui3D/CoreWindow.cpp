@@ -318,6 +318,7 @@ void CoreWindow::Restore()  {if (wins) {wins->RestoreWindow(id); wins->FocusWind
 void CoreWindow::Minimize() {if (wins) {wins->MinimizeWindow(id); wins->FocusWindow(id);}}
 void CoreWindow::Close() {wins->QueueCloseWindow(id);}
 void CoreWindow::FocusEvent() {wins->FocusWindow(id); tw->FocusEvent();}
+bool CoreWindow::IsCtrlDrawBegin() {return true;}
 
 void CoreWindow::SetFrameRect(const Rect& r) {
 	Ctrl::SetFrameRect(r);
@@ -337,114 +338,6 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 
 bool CoreWindow::Redraw(bool only_pending) {
 	return Ctrl::Redraw(only_pending);
-	
-	#if 0
-	if (!Ctrl::Redraw(only_pending))
-		return false;
-	
-	Rect r = GetFrameRect();
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	int width_2 = width * 0.5;
-	int height_2 = height * 0.5;
-	if (!fb.Create(sz.cx, sz.cy))
-		return false;
-	
-    Rect win_r = GetStoredRect();
-    Size win_sz = win_r.GetSize();
-	#if HAVE_SDL2
-	glViewport(0, 0, win_sz.cx, win_sz.cy);
-	#else
-	#error "Unimplemented"
-	#endif
-	
-	fb.Bind();
-	
-	typedef void (CoreWindow::*FnPtr)(DrawCommand&);
-	
-	/*static FnPtr ptrs[DRAW_CMD_COUNT];
-	static bool has_ptrs;
-	if (!has_ptrs) {
-		ptrs[DRAW_LINE] = &CoreWindow::DrawLine;
-		ptrs[DRAW_IMAGE] = &CoreWindow::DrawImage;
-		ptrs[DRAW_RECT] = &CoreWindow::DrawRect;
-		ptrs[DRAW_TRIANGLES] = &CoreWindow::DrawTriangles;
-		ptrs[DRAW_POLYLINE] = &CoreWindow::DrawPolyline;
-		ptrs[DRAW_OFFSET] = &CoreWindow::DrawOffset;
-		ptrs[DRAW_END] = &CoreWindow::DrawEnd;
-		has_ptrs = true;
-	}*/
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(0, 0, sz.cx, sz.cy);
-	
-    /* Clear The Screen And The Depth Buffer */
-    glClearColor(0.25, 0.25, 0.25, 1.0);
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	shader->Use();
-    shader->SetInt("texture1", 0);
-    shader->SetInt("texture2", 1);
-	
-	
-	mat4 projection = GetViewport(-width_2, width_2, -height_2, height_2, 1024);
-    shader->SetMat4("projection", projection);
-    
-    mat4 view = LookAt(vec3(0., 0., -1.), vec3(0.,0.,0.), vec3(0.0f, 1.0f, 0.0f));
-	shader->SetMat4("view", view);
-    
-    double x_ratio = (double)win_sz.cx / sz.cx;
-	double y_ratio = (double)win_sz.cy / sz.cy;
-	mat4 scale =
-		Translate(
-			TS::scale(Identity<mat4>(), vec3(1.0 / x_ratio, 1.0 / y_ratio, 1.0)),
-			vec3(
-				(r.left + (win_sz.cx - r.right)) * 0.5,
-				(-r.top - (win_sz.cy - r.bottom)) * 0.5,
-				0));
-	shader->SetMat4("scale", scale);
-	
-    
-	DrawCommand start, stop;
-	DrawCommand *begin_prev, *end_next;
-	
-	start.next = &cmd_begin;
-	begin_prev = &start;
-	Swap(begin_prev, cmd_begin.prev);
-	
-	end_next = &stop;
-	Swap(cmd_end.next, end_next);
-	stop.prev = &cmd_end;
-	
-	offset.SetCount(0);
-	offset.Add(Translate(Identity<mat4>(), vec3(-r.left, -r.top, 0)));
-	
-	
-	/*DrawCommand* cmd = &start;
-	while (cmd) {
-		if (cmd->type != 0)
-			(*this.*ptrs[cmd->type])(*cmd);
-		
-		cmd = cmd->next;
-	}*/
-	TODO
-	
-	Swap(begin_prev, cmd_begin.prev);
-	Swap(cmd_end.next, end_next);
-	
-	//glPopMatrix();
-	glDisable(GL_SCISSOR_TEST);
-	glDisable(GL_BLEND);
-	
-    glClearColor(0, 0, 0, 1.0);
-    
-	return true;
-    
-    #endif
 }
 
 void CoreWindow::LeftDown(Point p, dword keyflags) {

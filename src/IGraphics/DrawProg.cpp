@@ -8,12 +8,14 @@ DrawProg::DrawProg() {
 	
 }
 
-void DrawProg::Process(const DrawCommand* ptr) {
+void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 	typedef void (DrawProg::*FnPtr)(const DrawCommand&);
 	static FnPtr ptrs[DRAW_CMD_COUNT];
 	static bool has_ptrs;
 	if (!has_ptrs) {
 		memset(ptrs, 0, sizeof(ptrs));
+		ptrs[DRAW_BIND_WINDOW] = &DrawProg::BindWindow;
+		ptrs[DRAW_UNBIND_WINDOW] = &DrawProg::UnbindWindow;
 		ptrs[DRAW_LINE] = &DrawProg::DrawLine;
 		ptrs[DRAW_IMAGE] = &DrawProg::DrawImage;
 		ptrs[DRAW_RECT] = &DrawProg::DrawRect;
@@ -24,16 +26,28 @@ void DrawProg::Process(const DrawCommand* ptr) {
 		has_ptrs = true;
 	}
 	
-	const DrawCommand* cmd = ptr;
+	const DrawCommand* cmd = begin;
 	while (cmd) {
 		if (cmd->type >= DRAW_BEGIN && cmd->type < DRAW_CMD_COUNT)
 			(*this.*ptrs[cmd->type])(*cmd);
 		
 		ASSERT(cmd->next != cmd);
 		cmd = cmd->next;
-		if (cmd && cmd->next && cmd->next->prev != cmd)
+		if (cmd == end || !cmd)
+			break;
+		if (cmd && cmd->next && cmd->next->prev != cmd) {
+			LOG("DrawProg::Process: error: command chain duplex breakage");
 			break; // failsafe break
+		}
 	}
+}
+
+void DrawProg::BindWindow(const DrawCommand& cmd) {
+	// pass
+}
+
+void DrawProg::UnbindWindow(const DrawCommand& cmd) {
+	// pass
 }
 
 void DrawProg::DrawLine(const DrawCommand& cmd) {

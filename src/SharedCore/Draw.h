@@ -8,6 +8,9 @@ NAMESPACE_UPP
 	DRAWCMD(NULL) \
 	DRAWCMD(META_SIZE) \
 	\
+	DRAWCMD(BEGIN) /* dummy */ \
+	DRAWCMD(BIND_WINDOW) \
+	DRAWCMD(UNBIND_WINDOW) \
 	DRAWCMD(LINE) \
 	DRAWCMD(IMAGE) \
 	DRAWCMD(RECT) \
@@ -23,14 +26,13 @@ enum {
 	#undef DRAWCMD
 	
 	DRAW_CMD_COUNT,
-	
-	DRAW_BEGIN = DRAW_LINE
 };
 
 struct DrawCommand {
 	DrawCommand *prev = NULL, *next = NULL;
 	Byte type = 0;
 	int i[5];
+	hash_t hash;
 	RGBA clr;
 	Image img;
 	Vector<float> triangles;
@@ -50,7 +52,7 @@ class DrawCommandCache {
 	Vector<DrawCommand*> unused;
 	
 public:
-	DrawCommand& Get();
+	DrawCommand& CreateCommand();
 	void Return(DrawCommand* cmd);
 	void Clear() {unused.Clear(); owned.Clear();}
 	

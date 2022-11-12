@@ -643,18 +643,18 @@ public:
 
 template <class K>
 class Index : Moveable<Index<K>> {
-	Vector<uint32> hashes;
+	Vector<hash_t> hashes;
 	Vector<K> values;
 	
 	static const bool chk_duplicates = false;
 	
 public:
-	typedef uint32* HashPtr;
+	typedef hash_t* HashPtr;
 	typedef K* ObjectPtr;
 	
 	template <class P, class V, int I>
 	struct Iterator0 {
-		typedef PtrPair<uint32,K> ElPtr;
+		typedef PtrPair<hash_t,K> ElPtr;
 		P hit;
 		V kit;
 		Iterator0() {}
@@ -676,8 +676,8 @@ public:
 		const K& operator*() const {return *Get();}
 		operator const K*() const {return Get();}
 	};
-	typedef typename Vector<uint32>::Iterator HashIterator;
-	typedef typename Vector<uint32>::ConstIterator HashConstIterator;
+	typedef typename Vector<hash_t>::Iterator HashIterator;
+	typedef typename Vector<hash_t>::ConstIterator HashConstIterator;
 	typedef typename Vector<K>::Iterator KeyIterator;
 	typedef typename Vector<K>::ConstIterator KeyConstIterator;
 	

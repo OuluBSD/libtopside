@@ -5,14 +5,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
-	: sz(sz), begin(&begin), end(&end) {
+	: sz(sz), begin(&begin), end(&end)
+{
 	prev = p.cur ? p.cur : p.begin;
 	next = p.end;
 	begin.prev = prev;
 	end.next = next;
 	prev->next = &begin;
 	next->prev = &end;
-	
 }
 
 ProgPainter::ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
@@ -56,8 +56,8 @@ void ProgPainter::EndOp() {
 
 
 
-DrawCommand& ProgPainter::GetNext() {
-	DrawCommand* cmd = &DrawCommandCache::Local().Get();
+DrawCommand& ProgPainter::CreateCommand() {
+	DrawCommand* cmd = &DrawCommandCache::Local().CreateCommand();
 	cmd->prev = cur;
 	if (cur)
 		cur->next = cmd;
@@ -70,17 +70,37 @@ DrawCommand& ProgPainter::GetNext() {
 void ProgPainter::SetSize(Size sz) {
 	this->sz = sz;
 	
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_META_SIZE;
 	cmd.i[0] = sz.cx;
 	cmd.i[1] = sz.cy;
+}
+
+void ProgPainter::CtrlDrawBegin(hash_t h) {
+	BindWindow(h);
+	SetSize(sz);
+}
+
+void ProgPainter::CtrlDrawEnd() {
+	UnbindWindow();
+}
+
+void ProgPainter::BindWindow(hash_t h) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_BIND_WINDOW;
+	cmd.hash = h;
+}
+
+void ProgPainter::UnbindWindow() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_UNBIND_WINDOW;
 }
 
 void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c) {
 	if (line_width <= 0) return;
 	
 	if (line_width == 1) {
-		DrawCommand& cmd = GetNext();
+		DrawCommand& cmd = CreateCommand();
 		cmd.type = DRAW_LINE;
 		cmd.i[0] = x0;
 		cmd.i[1] = y0;
@@ -96,7 +116,7 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 		Point p0b(a.x + off.x, a.y + off.y);
         Point p1b(b.x + off.x, b.y + off.y);
         
-		DrawCommand& cmd = GetNext();
+		DrawCommand& cmd = CreateCommand();
 		cmd.type = DRAW_TRIANGLES;
 		cmd.triangles.SetCount(2);
 		cmd.clr = c;
@@ -116,7 +136,7 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 }
 
 void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_IMAGE;
 	cmd.i[0] = x;
 	cmd.i[1] = y;
@@ -130,7 +150,7 @@ void ProgPainter::DrawRect(Rect r, RGBA clr) {
 }
 
 void ProgPainter::DrawRect(int x, int y, int w, int h, RGBA clr) {
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_RECT;
 	cmd.i[0] = x;
 	cmd.i[1] = y;
@@ -161,7 +181,7 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 		return;
 	}
 	
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_IMAGE;
 	cmd.i[0] = x;
 	cmd.i[1] = y;
@@ -173,7 +193,7 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 
 void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c) {
 	ASSERT(pt_count >= 3);
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.clr = c;
 	
 	static thread_local Vector<vec2> tmp1; // can't inherit Geometry to headers
@@ -294,7 +314,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 }
 
 void ProgPainter::DrawPolygon(const Vector<Point>& pts, RGBA c) {
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_TRIANGLES;
 	cmd.clr = c;
 	
@@ -302,7 +322,7 @@ void ProgPainter::DrawPolygon(const Vector<Point>& pts, RGBA c) {
 }
 
 void ProgPainter::Offset(const Rect& r) {
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_OFFSET;
 	cmd.i[0] = r.left;
 	cmd.i[1] = r.top;
@@ -311,7 +331,7 @@ void ProgPainter::Offset(const Rect& r) {
 }
 
 void ProgPainter::End() {
-	DrawCommand& cmd = GetNext();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_END;
 }
 
@@ -334,13 +354,7 @@ void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
 		this->end->prev = &end;
 		cur = &end;
 		cur_begin = &begin;
-		
-		PushMetaInformation();
 	}
-}
-
-void ProgPainter::PushMetaInformation() {
-	SetSize(sz);
 }
 
 void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {

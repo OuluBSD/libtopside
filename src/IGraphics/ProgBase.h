@@ -14,12 +14,22 @@ class FboProgAtomT :
 	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	
     FramebufferT<Gfx> fb;
-    One<ImageDraw> id;
     Size sz;
-    ProgImage pi;
-    Image img;
 	DataState data;
-	NativeColorBufferRef tex;
+	
+	struct Window : Moveable<Window> {
+		ProgImage pi;
+		One<ImageDraw> id;
+		NativeColorBufferRef tex;
+		Image img;
+		Size sz;
+		int tex_id;
+		bool inited = false;
+	};
+	VectorMap<hash_t, Window> windows;
+	
+	DrawCommand* ProcessWindow(DrawCommand* cmd);
+	void ProcessWindowCommands(DrawCommand* begin, DrawCommand* end);
 	
 public:
 	using BufferBase = BufferBaseT<Gfx>;

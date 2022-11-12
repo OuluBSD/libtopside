@@ -300,6 +300,7 @@ public:
 	Ctrl& LeftPos(int i, int size);
 	Ctrl& RightPos(int i, int size);
 	
+	virtual bool IsCtrlDrawBegin() {return false;}
 	virtual void Activate() {}
 	virtual void Deactivate() {}
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags) {return DefaultImages::Arrow;}

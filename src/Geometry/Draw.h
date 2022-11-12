@@ -49,7 +49,7 @@ class ProgPainter : public Draw {
 	Vector<double> angles;
 	Size sz;
 	
-	DrawCommand& GetNext();
+	DrawCommand& CreateCommand();
 	
 	
 public:
@@ -59,6 +59,8 @@ public:
 	
 	void Clear();
 	
+	void CtrlDrawBegin(hash_t h) override;
+	void CtrlDrawEnd() override;
 	void SetSize(Size sz) override;
 	Size GetPageSize() const override;
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
@@ -72,6 +74,8 @@ public:
 	void EndOp() override;
 	
 	
+	void BindWindow(hash_t h);
+	void UnbindWindow();
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
 	#ifdef UPP_VERSION
 	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override {TODO};
@@ -94,7 +98,6 @@ public:
 	//void Attach(Ctrl& c);
 	void Attach(DrawCommand& begin, DrawCommand& end);
 	void AppendPick(DrawCommand* begin, DrawCommand* end);
-	void PushMetaInformation();
 	
 };
 
