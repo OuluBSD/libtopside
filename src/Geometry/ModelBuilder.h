@@ -29,6 +29,21 @@ public:
                                    float        width            = 1,
                                    float        length           = 1,
                                    float        tex_width_scale  = 1,
+                                   float        tex_length_scale = 1,
+                                   bool			use_quad         = false);
+    static void CreateGridQuad(Mesh& mesh,
+                                   int          cols             = 1,
+                                   int          rows             = 1,
+                                   float        width            = 1,
+                                   float        length           = 1,
+                                   float        tex_width_scale  = 1,
+                                   float        tex_length_scale = 1);
+    static void CreateGridTriangles(Mesh& mesh,
+                                   int          cols             = 1,
+                                   int          rows             = 1,
+                                   float        width            = 1,
+                                   float        length           = 1,
+                                   float        tex_width_scale  = 1,
                                    float        tex_length_scale = 1);
     static void CreateSphere(Mesh& mesh,
                                      int          slices = DEFAULT_SLICES,

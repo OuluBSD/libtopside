@@ -17,12 +17,11 @@ public:
 	Model* owner = 0;
     Vector<Vertex> vertices;
     Vector<uint32> indices;
-    //Vector<vec2> tex_coords;
     VectorMap<String, NodeIndex> named_vertices;
 	int material = -1;
 	bool disable_textures = false;
 	bool wireframe_only = false;
-	//GfxMesh* accel = 0;
+	bool use_quad = false;
 	
 	
 public:
@@ -42,19 +41,38 @@ public:
         material = src.material;
         disable_textures = src.disable_textures;
         wireframe_only = src.wireframe_only;
+        use_quad = src.use_quad;
     }
     
     
     void SetMaterial(Material& m) {ASSERT(m.owner == owner && m.id >= 0); material = m.id;}
-    void SetCount(int vertex_count, int triangle_count) {
+    void SetCountTriangles(int vertex_count, int triangle_count) {
+        use_quad = false;
         vertices.SetCount(vertex_count);
         indices.SetCount(3 * triangle_count);
+    }
+    void SetCountQuads(int vertex_count, int quad_count) {
+        use_quad = true;
+        vertices.SetCount(vertex_count);
+        indices.SetCount(4 * quad_count);
     }
     void SetVertCoord(int i, vec3 v) {vertices[i].position = v.Embed();}
     void SetVertNormal(int i, vec3 v) {vertices[i].normal = v;}
     void SetVertTangent(int i, vec3 v) {vertices[i].tangent = v.Embed();}
     void SetTexCoord(int i, vec2 v) {vertices[i].tex_coord = v;}
+    void SetQuadIndices(int i, const ivec4& v) {
+        ASSERT(use_quad);
+        ASSERT(v[0] >= 0 && v[0] < vertices.GetCount());
+        ASSERT(v[1] >= 0 && v[1] < vertices.GetCount());
+        ASSERT(v[2] >= 0 && v[2] < vertices.GetCount());
+        ASSERT(v[3] >= 0 && v[3] < vertices.GetCount());
+        indices[4 * i + 0] = v[0];
+        indices[4 * i + 1] = v[1];
+        indices[4 * i + 2] = v[2];
+        indices[4 * i + 3] = v[3];
+    }
     void SetTriangleIndices(int i, const ivec3& v) {
+        ASSERT(!use_quad);
         ASSERT(v[0] >= 0 && v[0] < vertices.GetCount());
         ASSERT(v[1] >= 0 && v[1] < vertices.GetCount());
         ASSERT(v[2] >= 0 && v[2] < vertices.GetCount());
@@ -65,14 +83,25 @@ public:
     void SetNodeIndex(int i, NodeIndex idx) {vertices[i].mdl_transform_idx = idx;}
     
     int GetTriangleCount() const {return indices.GetCount() / 3;}
+    int GetQuadCount() const {return indices.GetCount() / 4;}
     vec3 GetVertCoord(int i) const {return vertices[i].position.Splice();}
     vec3 GetVertNormal(int i) const {return vertices[i].normal;}
     vec2 GetTexCoord(int i) const {return vertices[i].tex_coord;}
     ivec3 GetTriangleIndices(int i) const {
+        ASSERT(!use_quad);
         ivec3 v;
         v[0] = indices[i * 3 + 0];
         v[1] = indices[i * 3 + 1];
         v[2] = indices[i * 3 + 2];
+        return v;
+    }
+    ivec4 GetQuadIndices(int i) const {
+        ASSERT(use_quad);
+        ivec4 v;
+        v[0] = indices[i * 4 + 0];
+        v[1] = indices[i * 4 + 1];
+        v[2] = indices[i * 4 + 2];
+        v[3] = indices[i * 4 + 2];
         return v;
     }
     

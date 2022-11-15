@@ -146,6 +146,10 @@ void ProgImage::Paint(const DrawCommand* begin, const DrawCommand* end, ImageDra
 	draw.Process(begin, end);
 }
 
+void ProgImage::SkipWindowCommands(bool b) {
+	draw.SkipWindowCommands(b);
+}
+
 
 //SDLCPU_EXCPLICIT_INITIALIZE_CLASS(ProgImage)
 

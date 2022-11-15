@@ -2080,4 +2080,23 @@ void MakeSpecBRDF(FloatImage& img, int side_len) {
 }
 #endif
 
+
+vec3 CrossArea3(vec3 a, vec3 b) {
+	return vec3(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]);
+}
+
+float CrossArea2(vec2 a, vec2 b) {
+	return (a[0] * b[1]) - (a[1] * b[0]);
+}
+
+float Area3(const vec3& a, const vec3& b, const vec3& c) {
+	vec3 v = CrossArea3(b-a, c-b);
+	return v[2] > 0? v.GetLength() : -v.GetLength();
+}
+
+float Area2(const vec2& a, const vec2& b, const vec2& c) {
+	return CrossArea2(b-a, c-b);
+}
+
+
 NAMESPACE_TOPSIDE_END

@@ -49,6 +49,7 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	model = ident;
 	proj_override = ident;
 	view_override = ident;
+	use_quad = m.use_quad;
 	
 	// Create objects
 	if (!vbo) {
@@ -127,7 +128,7 @@ void DataObjectT<Gfx>::Paint(ModelState& state) {
 	Gfx::ActivateVertexStructure();
 	
 	// draw 6 faces using offset of index array
-	Gfx::DrawVertexElements(element_count);
+	Gfx::DrawVertexElements(element_count, use_quad);
 	
 	Gfx::DeactivateVertexStructure();
 	

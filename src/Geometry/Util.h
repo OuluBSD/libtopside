@@ -162,9 +162,21 @@ mat4 GetViewport(const ViewportParams& vp);
 mat4 GetViewport(float x, float y, float w, float h, float depth);
 bool Decompose(const mat4& model_mat, vec3& scale, quat& orientation, vec3& translation, vec3& skew, vec4& perspective);
 mat4 Recompose(const vec3& scale, const quat& orientation, const vec3& translation, const vec3& skew, const vec4& perspective);
+float Area3(const vec3& a, const vec3& b, const vec3& c);
+float Area2(const vec2& a, const vec2& b, const vec2& c);
+vec3 CrossArea3(vec3 a, vec3 b);
+float CrossArea2(vec2 a, vec2 b);
+
+template <class T> T Sign(T v) {
+	if (v < 0)
+		return -1;
+	else
+		return +1;
+}
+
 
 template<class T, class K>
-Vec<T,3> GetBarycentric(const Vec<T,3>* pts, const Vec<K,2>& P) {
+Vec<T,3> GetBarycentricTriangle(const Vec<T,3>* pts, const Vec<K,2>& P) {
 	typedef Vec<T,3> vec3;
 	typedef Vec<float,3> fvec3;
 	fvec3 u = Cross(
@@ -184,6 +196,49 @@ Vec<T,3> GetBarycentric(const Vec<T,3>* pts, const Vec<K,2>& P) {
 		              u[1]  / u[2],
 		              u[0]  / u[2]);
 }
+
+template<class T, class K>
+Vec<T, 4> GetBarycentricQuad(const Vec<T, 4>* pts, const Vec<K, 2>& p) {
+	typedef Vec<T,2> vec2;
+	typedef Vec<T,3> vec3;
+	typedef Vec<T,4> vec4;
+	
+	//https://jcgt.org/published/0011/03/04/paper.pdf
+	
+	// From pseudocode in [Hormann and Tarini 2004]
+	T w[4] = {
+		pts[0][3],
+		pts[1][3],
+		pts[2][3],
+		pts[3][3]
+	};
+	T r[4], t[4], u[4];
+	vec2 v[4] = {
+		pts[0].template Splice<0,2>() / w[0],
+		pts[1].template Splice<0,2>() / w[1],
+		pts[2].template Splice<0,2>() / w[2],
+		pts[3].template Splice<0,2>() / w[3]
+	};
+	vec2 s[4];
+	
+	for (int i = 0; i < 4; i++) {
+		s[i] = v[i] - p;
+		r[i] = s[i].GetLength() * Sign(w[i]);
+	}
+	
+	for (int i = 0; i < 4; i++) {
+		T A = CrossArea2(s[i], s[(i+1)%4]);
+		T D = Dot(s[i], s[(i+1)%4]);
+		t[i] = (r[i] * r[(i+1)%4] - D) / A;
+	}
+	
+	for (int i = 0; i < 4; i++)
+		u[i] = (t[(i+3)%4] + t[i]) / r[i];
+		
+	return
+		vec4((float)u[0], (float)u[1], (float)u[2], (float)u[3]) / (u[0] + u[1] + u[2] + u[3]);
+}
+
 
 
 void ColorCopy(const RGBA& src, vec3& dst);
@@ -308,6 +363,7 @@ mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b);
 
 
 void MakeSpecBRDF(FloatImage& img, int sz);
+
 
 
 NAMESPACE_TOPSIDE_END

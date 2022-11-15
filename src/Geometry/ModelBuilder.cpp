@@ -14,7 +14,7 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
 	Model& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	MeshFactory::CreateGrid(m, 1, 1, size[0], size[1]);
+	MeshFactory::CreateGridQuad(m, 1, 1, size[0], size[1]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;
@@ -147,11 +147,85 @@ void MeshFactory::CreateGrid(Mesh& mesh,
                                           float        width,
                                           float        length,
                                           float        tex_width_scale,
+                                          float        tex_length_scale,
+                                          bool         use_quad) {
+	if (!use_quad)
+		CreateGridTriangles(mesh, cols, rows, width, length, tex_width_scale, tex_length_scale);
+	else
+		CreateGridQuad(mesh, cols, rows, width, length, tex_width_scale, tex_length_scale);
+}
+
+void MeshFactory::CreateGridQuad(Mesh& mesh,
+                                          int          cols,
+                                          int          rows,
+                                          float        width,
+                                          float        length,
+                                          float        tex_width_scale,
+                                          float        tex_length_scale) {
+    int       num_vertex = (rows + 1) * (cols + 1);
+    int       num_quad    = rows * cols * 2;
+    mesh.SetCountQuads(num_vertex, num_quad);
+	
+    // ==============================
+    // init mesh vertex/normal coords
+    // ==============================
+
+    int vert_index = 0;
+    for(int row = 0; row <= rows; row++) {
+        for(int col = 0; col <= cols; col++) {
+            mesh.SetVertCoord( vert_index, vec3(
+                    width * (static_cast<float>(col) / cols),
+                    0,
+                    length * (1 - static_cast<float>(row) / rows)));
+            mesh.SetVertNormal( vert_index, vec3(0, 1, 0));
+            mesh.SetVertTangent(vert_index, vec3(1, 0, 0));
+            vert_index++;
+        }
+    }
+	
+    // ========================
+    // init mesh texture coords
+    // ========================
+	
+    int tex_vert_index = 0;
+    for(int row = 0; row <= rows; row++) {
+        for(int col = 0; col <= cols; col++) {
+            mesh.SetTexCoord(tex_vert_index++,
+                vec2(
+                    static_cast<float>(col) / cols / tex_width_scale,
+                    1 - static_cast<float>(row) / rows / tex_length_scale));
+        }
+    }
+
+    // ==========================
+    // init mesh triangle indices
+    // ==========================
+
+    int quad_index = 0;
+    for(int row = 0; row < rows; row++) {
+        for(int col = 0; col < cols; col++) {
+            int lower_left  = row * (cols + 1) + col;
+            int lower_right = lower_left + 1;
+            int upper_left  = (row + 1) * (cols + 1) + col;
+            int upper_right = upper_left + 1;
+            mesh.SetQuadIndices(quad_index++, ivec4(lower_left, lower_right, upper_right, upper_left));
+        }
+    }
+
+    mesh.UpdateBoundingBox();
+}
+
+void MeshFactory::CreateGridTriangles(Mesh& mesh,
+                                          int          cols,
+                                          int          rows,
+                                          float        width,
+                                          float        length,
+                                          float        tex_width_scale,
                                           float        tex_length_scale)
 {
     int       num_vertex = (rows + 1) * (cols + 1);
     int       num_tri    = rows * cols * 2;
-    mesh.SetCount(num_vertex, num_tri);
+    mesh.SetCountTriangles(num_vertex, num_tri);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -461,7 +535,7 @@ void MeshFactory::CreateBox(Mesh& mesh,
                             float        length,
                             bool skybox)
 {
-    mesh.SetCount(24, 12);
+    mesh.SetCountTriangles(24, 12);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -684,7 +758,7 @@ void MeshFactory::CreateTetrahedron(Mesh& mesh,
                                                  float        height,
                                                  float        length)
 {
-    mesh.SetCount(12, 4);
+    mesh.SetCountTriangles(12, 4);
 
     // triangle opposite to origin
     mesh.SetVertCoord(0, vec3(1, 0, 0));
@@ -754,7 +828,7 @@ void MeshFactory::CreateDiamondBrilliantCut(Mesh& mesh,
 
     int       num_vertex = 336;
     int       num_tri    = 112;
-    mesh.SetCount(num_vertex, num_tri);
+    mesh.SetCountTriangles(num_vertex, num_tri);
 
     float crown_height   = height * crown_height_to_total_height_ratio;
     float pavilion_depth = height - crown_height;

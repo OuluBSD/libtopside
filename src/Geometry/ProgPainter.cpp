@@ -330,9 +330,23 @@ void ProgPainter::Offset(const Rect& r) {
 	cmd.i[3] = r.bottom;
 }
 
+void ProgPainter::WindowOffset(const Rect& r) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_WINDOW_OFFSET;
+	cmd.i[0] = r.left;
+	cmd.i[1] = r.top;
+	cmd.i[2] = r.right;
+	cmd.i[3] = r.bottom;
+}
+
 void ProgPainter::End() {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_END;
+}
+
+void ProgPainter::WindowEnd() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_WINDOW_END;
 }
 
 

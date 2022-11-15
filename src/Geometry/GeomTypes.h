@@ -25,9 +25,10 @@ struct Vertex : Moveable<Vertex> {
 
 struct DepthImage {
 	struct Info : Moveable<Info> {
-		uint32 triangle_i;
-		vec3 bc_screen;
+		uint32 idx;
+		vec4 bc_screen;
 		uint16 src_id;
+		bool use_quad;
 	};
 	
 	

@@ -16,6 +16,9 @@ class FboProgAtomT :
     FramebufferT<Gfx> fb;
     Size sz;
 	DataState data;
+	bool dbg_info = 1;
+	int dbg_win_id;
+	double resize_multiplier = 0.01;
 	
 	struct Window : Moveable<Window> {
 		ProgImage pi;

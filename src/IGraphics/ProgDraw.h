@@ -52,11 +52,14 @@ public:
 
 
 class DrawProg : public DrawProxy {
+	int bind_win_count = 0;
+	bool skip_window_commands = false;
 	
 public:
 	RTTI_DECL1(DrawProg, DrawProxy)
 	DrawProg();
 	void Process(const DrawCommand* begin, const DrawCommand* end);
+	void SkipWindowCommands(bool b=true);
 	
 	void BindWindow(const DrawCommand& cmd);
 	void UnbindWindow(const DrawCommand& cmd);
@@ -68,6 +71,8 @@ public:
 	void DrawPolygon(const DrawCommand& cmd);
 	void DrawOffset(const DrawCommand& cmd);
 	void DrawEnd(const DrawCommand& cmd);
+	void DrawWindowOffset(const DrawCommand& cmd);
+	void DrawWindowEnd(const DrawCommand& cmd);
 	
 	
 };
@@ -79,6 +84,7 @@ public:
 	ProgImage();
 	void Paint(const DrawCommand* begin, const DrawCommand* end, ImageDraw& id);
 	
+	void SkipWindowCommands(bool b=true);
 };
 
 

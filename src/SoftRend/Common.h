@@ -134,9 +134,10 @@ struct FragmentShaderArgs : GfxFragmentShaderArgs {
 	
 	vec3 normal;
 	vec2 tex_coord;
-	vec3 bc_screen;
+	vec4 bc_screen;
 	vec2 frag_coord;
 	vec4 frag_color_out;
+	bool use_quad;
 	
 	
 	FragmentShaderArgs() {

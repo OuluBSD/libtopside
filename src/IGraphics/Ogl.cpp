@@ -862,8 +862,11 @@ template <class Gfx> void OglGfxT<Gfx>::DeactivateVertexStructure() {
 	glDisableVertexAttribArray(tex);         // deactivate texture coords
 }
 
-template <class Gfx> void OglGfxT<Gfx>::DrawVertexElements(int element_limit) {
-	glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
+template <class Gfx> void OglGfxT<Gfx>::DrawVertexElements(int element_limit, bool use_quad) {
+	if (!use_quad)
+		glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
+	else
+		glDrawElements(GL_QUADS, element_limit, GL_UNSIGNED_INT, 0);
 }
 
 template <class Gfx> void OglGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {

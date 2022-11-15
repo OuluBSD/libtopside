@@ -10,6 +10,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 bool FboProgAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
+	dbg_info = 0;
+	
+	resize_multiplier = ws.GetDouble(".resize.multiplier", 0.004);
 	
 	return true;
 }
@@ -49,26 +52,16 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		while (cmd->type != DRAW_BIND_WINDOW && cmd)
 			cmd = cmd->next;
 		
-		bool dbg_info = 0;
-		int win_id = 0;
+		dbg_win_id = 0;
 		while (cmd) {
 			prev = cmd;
 			cmd = ProcessWindow(cmd);
-			
-			if (dbg_info) {
-				int i = 0;
-				DrawCommand* it = prev;
-				LOG("Window " << win_id);
-				while (it != cmd && it) {
-					LOG("\t" << i++ << ": " << it->ToString());
-					it = it->next;
-				}
-			}
-			
-			win_id++;
+			dbg_win_id++;
 		}
+		
 		if (dbg_info)
 			Panic("stop flood");
+		
 		return true;
 	}
 	else return false;
@@ -107,6 +100,17 @@ DrawCommand* FboProgAtomT<Gfx>::ProcessWindow(DrawCommand* begin) {
 			break;
 		}
 		end = end->next;
+	}
+	
+	
+	if (dbg_info) {
+		int i = 0;
+		DrawCommand* it = begin;
+		LOG("Window " << dbg_win_id);
+		while (it != end && it) {
+			LOG("\t" << i++ << ": " << it->ToString());
+			it = it->next;
+		}
 	}
 	
 	ProcessWindowCommands(begin, end);
@@ -153,13 +157,13 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 	
 	win.id->DrawRect(sz, GrayColor());
 	
+	win.pi.SkipWindowCommands();
 	win.pi.Paint(begin, end, win.id);
 	
 	if (!win.inited) {
 		ModelState& mdl_state = this->data.AddModelT();
 		
-		float multiplier = 0.001;
-		vec2 sz_vec(sz.cx * multiplier, sz.cy * multiplier);
+		vec2 sz_vec(sz.cx * resize_multiplier, sz.cy * resize_multiplier);
 		
 		ModelBuilder mb;
 		Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec);

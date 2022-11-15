@@ -91,6 +91,8 @@ public:
 	
 	void Offset(const Rect& r);
 	void End();
+	void WindowOffset(const Rect& r);
+	void WindowEnd();
 	
 	
 	void Link();

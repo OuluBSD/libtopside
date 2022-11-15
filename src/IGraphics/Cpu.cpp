@@ -452,7 +452,7 @@ void SwGfxT<Gfx>::UnbindElementBuffer() {
 }
 
 template <class Gfx>
-void SwGfxT<Gfx>::DrawVertexElements(int element_limit) {
+void SwGfxT<Gfx>::DrawVertexElements(int element_limit, bool use_quad) {
 	auto& l = Local();
 	ASSERT(l.vao);
 	ASSERT(l.vao->vbo);
@@ -465,7 +465,7 @@ void SwGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	//for(int i = 0; i < TEXTYPE_COUNT; i++)
 	//	l.rend.BindTexture(i, l.texture[i].GetReadTexture());
 	
-	l.rend.Render(*l.prog, *l.vao);
+	l.rend.Render(*l.prog, *l.vao, use_quad);
 }
 
 template <class Gfx>

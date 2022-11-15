@@ -28,6 +28,7 @@ struct GfxDataObject : GfxMesh {
     mat4 model;
     vec4 color;
     int id = -1;
+    bool use_quad = false;
     
 	
 	void Set(const mat4& model, const mat4& scale) {this->model = model; this->scale = scale;}

@@ -311,7 +311,7 @@ bool Ctrl::Redraw(bool only_pending) {
 			draw_begin = true;
 		}
 		
-		fx.Offset(frame_r);
+		fx.WindowOffset(frame_r);
 		
 		fx.Link();
 		
@@ -328,7 +328,10 @@ bool Ctrl::Redraw(bool only_pending) {
 		ProgPainter pre(sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
 		
 		bool frame = IsCtrlDrawBegin();
-		if (frame) pre.CtrlDrawBegin((hash_t)this);
+		if (frame && !draw_begin) {
+			pre.CtrlDrawBegin((hash_t)this);
+			draw_begin = true;
+		}
 		
 		for(int i = 0; i < frames.GetCount(); i++) {
 			CtrlFrame& f = *frames[i];
@@ -352,7 +355,8 @@ bool Ctrl::Redraw(bool only_pending) {
 			}
 		}
 		
-		if (frame) pre.CtrlDrawEnd();
+		if (draw_begin && !pending_redraw)
+			pre.CtrlDrawEnd();
 		
 		pre.Link();
 		
@@ -375,7 +379,7 @@ bool Ctrl::Redraw(bool only_pending) {
 		if (frames.GetCount())
 			post.End();
 		
-		post.End();
+		post.WindowEnd();
 		
 		if (draw_begin) post.CtrlDrawEnd();
 		

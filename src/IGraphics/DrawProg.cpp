@@ -8,6 +8,10 @@ DrawProg::DrawProg() {
 	
 }
 
+void DrawProg::SkipWindowCommands(bool b) {
+	skip_window_commands = b;
+}
+
 void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 	typedef void (DrawProg::*FnPtr)(const DrawCommand&);
 	static FnPtr ptrs[DRAW_CMD_COUNT];
@@ -23,13 +27,17 @@ void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 		ptrs[DRAW_POLYLINE] = &DrawProg::DrawPolyline;
 		ptrs[DRAW_OFFSET] = &DrawProg::DrawOffset;
 		ptrs[DRAW_END] = &DrawProg::DrawEnd;
+		ptrs[DRAW_WINDOW_OFFSET] = &DrawProg::DrawWindowOffset;
+		ptrs[DRAW_WINDOW_END] = &DrawProg::DrawWindowEnd;
 		has_ptrs = true;
 	}
 	
 	const DrawCommand* cmd = begin;
 	while (cmd) {
-		if (cmd->type >= DRAW_BEGIN && cmd->type < DRAW_CMD_COUNT)
+		if (cmd->type >= DRAW_BEGIN && cmd->type < DRAW_CMD_COUNT) {
+			ASSERT(ptrs[cmd->type]);
 			(*this.*ptrs[cmd->type])(*cmd);
+		}
 		
 		ASSERT(cmd->next != cmd);
 		cmd = cmd->next;
@@ -43,11 +51,12 @@ void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 }
 
 void DrawProg::BindWindow(const DrawCommand& cmd) {
-	// pass
+	ASSERT_(bind_win_count == 0, "Window have been bound already. DrawCommand program is invalid.");
+	bind_win_count++;
 }
 
 void DrawProg::UnbindWindow(const DrawCommand& cmd) {
-	// pass
+	bind_win_count--;
 }
 
 void DrawProg::DrawLine(const DrawCommand& cmd) {
@@ -106,7 +115,19 @@ void DrawProg::DrawOffset(const DrawCommand& cmd) {
 	((Draw*)this)->ClipOp(r);
 }
 
+void DrawProg::DrawWindowOffset(const DrawCommand& cmd) {
+	if (skip_window_commands)
+		return;
+	DrawOffset(cmd);
+}
+
 void DrawProg::DrawEnd(const DrawCommand& cmd) {
+	((Draw*)this)->EndOp();
+}
+
+void DrawProg::DrawWindowEnd(const DrawCommand& cmd) {
+	if (skip_window_commands)
+		return;
 	((Draw*)this)->EndOp();
 }
 

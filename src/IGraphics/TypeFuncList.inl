@@ -63,7 +63,7 @@ static void UnbindElementBuffer();
 static void UnbindFramebuffer();
 static void ActivateVertexStructure();
 static void DeactivateVertexStructure();
-static void DrawVertexElements(int element_limit);
+static void DrawVertexElements(int element_limit, bool use_quad);
 static void TexImage2D(ByteImage& tex);
 static void TexImage2D(FloatImage& tex);
 static void DeleteTexture(NativeColorBufferRef& b);

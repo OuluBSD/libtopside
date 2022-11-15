@@ -234,6 +234,10 @@ typedef Vec<float, 1> vec1;
 typedef Vec<float, 2> vec2;
 typedef Vec<float, 3> vec3;
 typedef Vec<float, 4> vec4;
+typedef Vec<double, 1> dvec1;
+typedef Vec<double, 2> dvec2;
+typedef Vec<double, 3> dvec3;
+typedef Vec<double, 4> dvec4;
 typedef Vec<float, 2> axes2;
 typedef Vec<float, 3> axes3;
 typedef Vec<float, 3> axes2s; // stereo angle [left yaw, right yaw, pitch]

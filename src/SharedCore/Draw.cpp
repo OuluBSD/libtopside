@@ -51,6 +51,8 @@ String DrawCommand::ToString() const {
 		case DRAW_POLYLINE:			s << "polyline(width=" << i[0] << ", pts-count=" << pts.GetCount() << ")"; break;
 		case DRAW_OFFSET:			s << "offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
 		case DRAW_END:				s << "end()"; break;
+		case DRAW_WINDOW_OFFSET:	s << "window-offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
+		case DRAW_WINDOW_END:		s << "window-end()"; break;
 		default:
 			if ((int)type >= 0 && (int)type < (int)DRAW_CMD_COUNT)
 				s << "<TODO>";
