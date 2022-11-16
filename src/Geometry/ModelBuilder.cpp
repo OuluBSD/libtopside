@@ -10,11 +10,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 bool mb_disable_textures = false;
 
-Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
+Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size, int grid_steps) {
 	this->model.Create();
 	Model& model = *this->model;
 	Mesh& m = model.meshes.Add();
-	MeshFactory::CreateGridQuad(m, 1, 1, size[0], size[1]);
+	MeshFactory::CreateGrid(m, grid_steps, grid_steps, size[0], size[1]);
 	
 	for(Vertex& v : m.vertices) {
 		v.position += pos;

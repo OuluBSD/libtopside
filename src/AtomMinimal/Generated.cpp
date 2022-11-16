@@ -594,7 +594,7 @@ AtomTypeCls X11OglFboProg::GetAtomType() {
 }
 
 LinkTypeCls X11OglFboProg::GetLinkType() {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void X11OglFboProg::Visit(RuntimeVisitor& vis) {
@@ -996,6 +996,34 @@ void X11SwEventAtomPipe::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls X11SwEventAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+String X11OglEventAtomPipe::GetAction() {
+	return "x11.ogl.event.pipe";
+}
+
+AtomTypeCls X11OglEventAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_EVENT_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,EVENT),0);
+	return t;
+}
+
+LinkTypeCls X11OglEventAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11OglEventAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11OglEventsBase>(this);
+}
+
+AtomTypeCls X11OglEventAtomPipe::GetType() const {
 	return GetAtomType();
 }
 #endif
@@ -1477,6 +1505,35 @@ void X11SwFboGuiProg::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls X11SwFboGuiProg::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagSCREEN && defined flagOGL)
+String X11OglFboGuiProg::GetAction() {
+	return "x11.ogl.prog";
+}
+
+AtomTypeCls X11OglFboGuiProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_OGL_FBO_GUI_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls X11OglFboGuiProg::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void X11OglFboGuiProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11OglFboProgBase>(this);
+}
+
+AtomTypeCls X11OglFboGuiProg::GetType() const {
 	return GetAtomType();
 }
 #endif

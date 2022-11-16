@@ -510,6 +510,21 @@ public:
 };
 #endif
 
+#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+class X11OglEventAtomPipe : public X11OglEventsBase {
+
+public:
+	RTTI_DECL1(X11OglEventAtomPipe, X11OglEventsBase)
+	COPY_PANIC(X11OglEventAtomPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 class OglCustomer : public CustomerBase {
 
 public:
@@ -750,6 +765,21 @@ class X11SwFboGuiProg : public X11SwFboProgBase {
 public:
 	RTTI_DECL1(X11SwFboGuiProg, X11SwFboProgBase)
 	COPY_PANIC(X11SwFboGuiProg)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagSCREEN && defined flagOGL)
+class X11OglFboGuiProg : public X11OglFboProgBase {
+
+public:
+	RTTI_DECL1(X11OglFboGuiProg, X11OglFboProgBase)
+	COPY_PANIC(X11OglFboGuiProg)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

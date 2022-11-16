@@ -1,14 +1,11 @@
 description "\377B198,127,200";
 
-uses
-	ParallelLib,
-	IGraphics;
+	uses ParallelLib;
+	uses IGraphics;
 
-library(SDL2) SDL2;
-
-library(SDL2) SDL2_ttf;
-
-library(SDL2) SDL2_image;
+	library(SDL2) "SDL2";
+	library(SDL2) "SDL2_ttf";
+	library(SDL2) "SDL2_image";
 
 file
 	IHal.h,
@@ -16,5 +13,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

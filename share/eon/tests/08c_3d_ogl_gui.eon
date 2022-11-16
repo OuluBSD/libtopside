@@ -1,0 +1,46 @@
+machine x11.app:
+	
+	driver context:
+		x11.ogl.context
+	
+	chain program:
+		state event.register
+		
+		loop center.events:
+			center.customer
+			x11.ogl.event.pipe
+			state.event.pipe: target = event.register
+		
+		loop ogl.fbo:
+			ogl.customer
+			x11.ogl.fbo.program[loop == video]:
+				drawmem =					"false"
+				program =					"gui"
+				shader.default.frag.path =	"shaders/tests/07d_fragment.glsl"
+				shader.default.vtx.path =	"shaders/tests/07d_vertex.glsl"
+			x11.ogl.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register
+		
+		loop video:
+			center.customer
+			center.video.prog.ecs
+			x11.ogl.prog[][loop == ogl.fbo]
+
+world ecs.dummy:
+    //system registry
+    //system interaction: env = event.register
+    //system rendering
+    //system entity.store
+    //system component.store
+    //system events
+    //system windows
+    system physics: rm.outsiders = true, rm.area.size = 20
+    system player
+    system paintstroke
+    system toolbox: test.tool.changer = true
+    system painting
+    system shooting
+    system throwing
+    system desktop: program = "guitester"

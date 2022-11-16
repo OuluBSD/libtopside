@@ -800,7 +800,7 @@ bool ScriptLoader::LoadChain(Script::ChainDefinition& chain, AstNode* n) {
 				}
 				
 				if (!connected && !src_is_opt) {
-					AddError(src_atom.loc, "could not connect source to any sink");
+					AddError(src_atom.loc, "could not connect source to any sink. Loop '" + src_loop.id.ToString() + "', atom '" + src_atom.id.ToString() + "'");
 					return false;
 				}
 			}

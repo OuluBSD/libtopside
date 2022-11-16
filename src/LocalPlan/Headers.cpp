@@ -28,6 +28,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("SdlOglKeyboardBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("SdlOglAudioBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("X11SwFboProgBase", "SCREEN");
+	AddCustomBase("X11OglFboProgBase", "SCREEN&OGL");
 	AddCustomBase("MidiFileReaderAtom");
 	AddCustomBase("MidiNullAtom");
 	AddCustomBase("AudioMixerBase");
@@ -209,7 +210,7 @@ void InterfaceBuilder::Headers() {
 		.Out("OglFbo")
 		.Action("x11.ogl.fbo.program")
 		.Arg("HINT_PKG", "AtomMinimal")
-		.Link("PIPE", "PROCESS")
+		.Link("PIPE_OPTSIDE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 		//.Arg("reqdef_flagOGL", "1")
 	;
@@ -373,6 +374,14 @@ void InterfaceBuilder::Headers() {
 		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
+	AddHeader("X11OglEventAtomPipe", "X11OglEventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("x11.ogl.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
 	AddHeader("OglCustomer", "CustomerBase", "customer")
 		.In("OglReceipt").Out("OglOrder")
 		.Action("ogl.customer")
@@ -512,6 +521,15 @@ void InterfaceBuilder::Headers() {
 		.Out("CenterReceipt")
 		.Out("CenterFbo")
 		.Action("x11.sw.prog")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("X11OglFboGuiProg", "X11OglFboProgBase", "pipe")
+		.In("CenterProg")
+		.Out("CenterReceipt")
+		.Out("OglFbo")
+		.Action("x11.ogl.prog")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

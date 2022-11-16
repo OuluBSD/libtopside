@@ -166,7 +166,7 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 		vec2 sz_vec(sz.cx * resize_multiplier, sz.cy * resize_multiplier);
 		
 		ModelBuilder mb;
-		Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec);
+		Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec, 16);
 		Model& src_mdl = mb;
 		
 		plane_mesh.CenterAnchor();

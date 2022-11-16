@@ -866,7 +866,7 @@ template <class Gfx> void OglGfxT<Gfx>::DrawVertexElements(int element_limit, bo
 	if (!use_quad)
 		glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
 	else
-		glDrawElements(GL_QUADS, element_limit, GL_UNSIGNED_INT, 0);
+		Panic("quads not supported in opengl");
 }
 
 template <class Gfx> void OglGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
