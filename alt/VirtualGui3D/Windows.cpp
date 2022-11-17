@@ -190,7 +190,11 @@ void Windows::FocusWindowPos(int win_pos) {
 void Windows::CloseWindow(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow& cw = *wins.Get(win_id);
+	CoreWindow* ptr = wins.Get(win_id);
+	ASSERT(ptr);
+	if (!ptr) return;
+	
+	CoreWindow& cw = *ptr;
 	if (cw.HasMouseDeep())
 		cw.DeepMouseLeave();
 	if (cw.HasFocusDeep())

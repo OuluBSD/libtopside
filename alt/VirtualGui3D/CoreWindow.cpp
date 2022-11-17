@@ -9,6 +9,11 @@ NAMESPACE_ECS_BEGIN
 //Shader CoreWindow::window_shader;
 
 
+void CoreWindow::Uninitialize() {
+	transform.Clear();
+	transform2d.Clear();
+	
+}
 
 Point CoreWindow::GetGlobalMouse() {
 	/*if (!is_global_mouse_override)

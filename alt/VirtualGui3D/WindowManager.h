@@ -19,7 +19,7 @@ protected:
 	
 public:
 	WindowManager();
-	~WindowManager() {Close();}
+	~WindowManager() {ASSERT(screens.IsEmpty());}
 	
 	void Close();
 	
@@ -38,7 +38,7 @@ public:
 	
 	
 	void CloseWindow(TopWindow* tw);
-	void Shutdown();
+	void Uninitialize();
 	
 	void Run();
 	void Update(double dt);

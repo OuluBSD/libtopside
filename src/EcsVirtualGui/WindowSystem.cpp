@@ -47,7 +47,7 @@ void WindowSystem::Stop() {
 }
 
 void WindowSystem::Uninitialize() {
-
+	wm.Uninitialize();
 }
 
 void WindowSystem::Invalidate() {

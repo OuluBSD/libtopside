@@ -150,7 +150,7 @@ public:
 		return *(T*)b;
 	}
 	
-	template <class T> bool IsData() {return custom_data == AsTypeCls<T>();}
+	template <class T> bool IsData() const {return custom_data == AsTypeCls<T>();}
 	bool IsCustomData() const {return custom_data != AsVoidTypeCls();}
 	
 	template <class T> T& GetData() {

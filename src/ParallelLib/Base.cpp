@@ -439,11 +439,23 @@ bool EventStateBase::Recv(int sink_ch, const Packet& p) {
 	
 	Format fmt = in.GetFormat();
 	if (fmt.vd.val == ValCls::EVENT) {
-		const CtrlEvent& ev = in.GetData<CtrlEvent>();
-		Event(ev);
-		
-		for (BinderIfaceEvents* e : binders)
-			e->Dispatch(ev);
+		if (in.IsData<CtrlEvent>()) {
+			const CtrlEvent& ev = in.GetData<CtrlEvent>();
+			Event(ev);
+			
+			for (BinderIfaceEvents* e : binders)
+				e->Dispatch(ev);
+		}
+		else if (in.IsData<CtrlEventContainer>()) {
+			const CtrlEventContainer& evec = in.GetData<CtrlEventContainer>();
+			for (const CtrlEvent& ev : evec) {
+				Event(ev);
+				
+				for (BinderIfaceEvents* e : binders)
+					e->Dispatch(ev);
+			}
+		}
+		else TODO
 	}
 	else TODO
 	

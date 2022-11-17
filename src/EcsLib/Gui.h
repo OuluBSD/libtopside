@@ -12,8 +12,9 @@ struct DefaultGuiAppComponent :
 {
 	RTTI_DECL2(DefaultGuiAppComponent, ComponentT, BinderIfaceVideo)
 	
-	WindowSystemRef wins;
 	Point prev_mouse;
+	
+	WindowSystemRef wins;
 	CoreWindowRef cw;
 	TransformRef trans;
 	Transform2DRef trans2;

@@ -29,6 +29,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("SdlOglAudioBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("X11SwFboProgBase", "SCREEN");
 	AddCustomBase("X11OglFboProgBase", "SCREEN&OGL");
+	AddCustomBase("SdlOglFboProgBase", "SCREEN&SDL2&OGL");
 	AddCustomBase("MidiFileReaderAtom");
 	AddCustomBase("MidiNullAtom");
 	AddCustomBase("AudioMixerBase");
@@ -236,7 +237,7 @@ void InterfaceBuilder::Headers() {
 		//.Arg("reqdef_flagOGL", "1")
 		//.Arg("reqdef_flagSDL2", "1")
 		.Arg("HINT_PKG", "AtomMinimal")
-		.Link("PIPE", "PROCESS")
+		.Link("PIPE_OPTSIDE", "PROCESS")
 	;
 	
 	AddHeader("OpenHMDPipe", "OpenHMDSinkDevice", "pipe")
@@ -530,6 +531,15 @@ void InterfaceBuilder::Headers() {
 		.Out("CenterReceipt")
 		.Out("OglFbo")
 		.Action("x11.ogl.prog")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("PIPE_OPTSIDE", "PROCESS")
+	;
+	
+	AddHeader("SdlOglFboGuiProg", "SdlOglFboProgBase", "pipe")
+		.In("CenterProg")
+		.Out("CenterReceipt")
+		.Out("OglFbo")
+		.Action("sdl.ogl.prog")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 	;

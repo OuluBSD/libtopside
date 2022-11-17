@@ -140,6 +140,9 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboGuiProg>();
 	#endif
+	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+	Factory::RegisterAtom<SdlOglFboGuiProg>();
+	#endif
 	#if defined flagSDL2
 	Factory::RegisterAtom<SdlVideoAtom>();
 	#endif

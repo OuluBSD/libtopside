@@ -652,7 +652,7 @@ AtomTypeCls SdlOglFboProg::GetAtomType() {
 }
 
 LinkTypeCls SdlOglFboProg::GetLinkType() {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
 void SdlOglFboProg::Visit(RuntimeVisitor& vis) {
@@ -1534,6 +1534,35 @@ void X11OglFboGuiProg::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls X11OglFboGuiProg::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+String SdlOglFboGuiProg::GetAction() {
+	return "sdl.ogl.prog";
+}
+
+AtomTypeCls SdlOglFboGuiProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_FBO_GUI_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(OGL,FBO),0);
+	return t;
+}
+
+LinkTypeCls SdlOglFboGuiProg::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void SdlOglFboGuiProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlOglFboProgBase>(this);
+}
+
+AtomTypeCls SdlOglFboGuiProg::GetType() const {
 	return GetAtomType();
 }
 #endif

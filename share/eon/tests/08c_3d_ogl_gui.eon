@@ -1,24 +1,24 @@
-machine x11.app:
+machine sdl.app:
 	
 	driver context:
-		x11.ogl.context
+		sdl.context
 	
 	chain program:
 		state event.register
 		
 		loop center.events:
 			center.customer
-			x11.ogl.event.pipe
+			sdl.event.pipe
 			state.event.pipe: target = event.register
 		
 		loop ogl.fbo:
 			ogl.customer
-			x11.ogl.fbo.program[loop == video]:
+			sdl.ogl.fbo.program[loop == video]:
 				drawmem =					"false"
 				program =					"gui"
 				shader.default.frag.path =	"shaders/tests/07d_fragment.glsl"
 				shader.default.vtx.path =	"shaders/tests/07d_vertex.glsl"
-			x11.ogl.fbo.sink:
+			sdl.ogl.fbo.sink:
 				close_machine =	true
 				sizeable =		true
 				env =			event.register
@@ -26,21 +26,81 @@ machine x11.app:
 		loop video:
 			center.customer
 			center.video.prog.ecs
-			x11.ogl.prog[][loop == ogl.fbo]
+			sdl.ogl.prog[][loop == ogl.fbo]
 
 world ecs.dummy:
-    //system registry
-    //system interaction: env = event.register
-    //system rendering
-    //system entity.store
-    //system component.store
-    //system events
-    //system windows
-    system physics: rm.outsiders = true, rm.area.size = 20
-    system player
-    system paintstroke
-    system toolbox: test.tool.changer = true
-    system painting
-    system shooting
-    system throwing
-    system desktop: program = "guitester"
+	//system registry
+	//system rendering
+	//system entity.store
+	//system component.store
+	//system events
+	//system windows
+	system interaction: env = event.register
+	system physics: rm.outsiders = true, rm.area.size = 20
+	system player
+	system paintstroke
+	system toolbox: test.tool.changer = true
+	system painting
+	system shooting
+	system throwing
+	system desktop: program = "guitester"
+	
+	pool world:
+		entity ground:
+			comp transform3
+			comp model:
+				builtin = plane
+			comp physics:
+				bind = physics
+				test.fn = fixed
+		
+		entity player.body:
+			comp transform3:
+				x = 0
+				y = 0
+				z = 6
+			comp physics:
+				bind = physics
+			comp player.body:
+				height = 1.74
+		
+		entity player.head:
+			comp transform3
+			comp viewable
+			comp viewport:
+				fov = 90
+			comp camera.chase
+			comp player.head:
+				body = world.player.body
+		
+		entity player.hand.left:
+			comp transform3
+			comp body
+			comp model:
+				builtin = "cylinder,0.02,0.2"
+				yaw = +90
+			comp player.hand:
+				hand = left
+				body = world.player.body
+				simulated = true
+		
+		entity player.hand.right:
+			comp transform3
+			comp body
+			comp model:
+				builtin = "cylinder,0.02,0.2"
+				yaw = +90
+			comp player.hand:
+				hand = right
+				body = world.player.body
+				simulated = true
+		
+		entity tool:
+			comp transform3
+			comp tool:
+				hand = world.player.hand.right
+			comp model:
+				always.enabled = true
+			comp paint
+			comp shoot
+			comp throw

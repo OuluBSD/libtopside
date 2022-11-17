@@ -46,7 +46,7 @@ void DesktopSuiteSystem::Stop() {
 }
 
 void DesktopSuiteSystem::Uninitialize() {
-	
+	apps.Clear();
 }
 
 

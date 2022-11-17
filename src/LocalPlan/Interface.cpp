@@ -174,6 +174,8 @@ void InterfaceBuilder::Generate(bool write_actually) {
 		LOG("\tHeader file: " << h_file);
 		String iface_file = AppendFileName(dir, "IfaceFuncs.inl");
 		LOG("\tIface file: " << iface_file);
+		String impl_inl_file = AppendFileName(dir, "Impl.inl");
+		LOG("\tImpl file: " << impl_inl_file);
 		
 		String cabbr = ToUpper(pkg.abbr);
 		
@@ -216,6 +218,10 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			for(int i = 0; i < pkg.vendors.GetCount(); i++) {
 				String k = pkg.vendors.GetKey(i);
 				s << "\t" << k << ".cpp,\n";
+			}
+			
+			if (FileExists(impl_inl_file)) {
+				s << "\tImpl.inl highlight cpp,\n";
 			}
 			
 			s	<< "\tIfaceFuncs.inl highlight cpp;\n"
@@ -691,6 +697,17 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 				for(int j = 0; j < ai.GetCount(); j++) {
 					const Header& h = headers[ai[j]];
+					
+					// Some error handling (possibly in bad place)
+					if (h.link_type == "PIPE") {
+						for(int i = 0; i < h.ins.GetCount(); i++) {
+							ASSERT(!h.ins[i]);
+						}
+						for(int i = 0; i < h.outs.GetCount(); i++) {
+							ASSERT(!h.outs[i]);
+						}
+					}
+					
 					
 					String cond = GetBaseConds(h.base);
 					

@@ -13,9 +13,12 @@ DefaultGuiAppComponent::DefaultGuiAppComponent() {
 }
 
 void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<ComponentT>(this);
 	/*if (test) vis % *test;*/
 	vis & wins;
 	vis & cw;
+	vis & trans;
+	vis & trans2;
 }
 
 void DefaultGuiAppComponent::Initialize() {
@@ -28,11 +31,14 @@ void DefaultGuiAppComponent::Initialize() {
 }
 
 void DefaultGuiAppComponent::Uninitialize() {
+	wins.Clear();
+	cw.Clear();
+	trans.Clear();
+	trans2.Clear();
+	
 	RemoveFromUpdateList();
 	Serial::EcsVideoBase::RemoveBinder(this);
 	Serial::EventStateBase::RemoveBinder(this);
-	wins.Clear();
-	cw.Clear();
 }
 
 void DefaultGuiAppComponent::Update(double dt) {

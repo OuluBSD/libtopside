@@ -66,7 +66,7 @@ void WindowManager::CloseWindow(TopWindow* tw) {
 	lock.Leave();
 }
 
-void WindowManager::Shutdown() {
+void WindowManager::Uninitialize() {
 	for (Windows& w : screens) {
 		w.CloseAll();
 	}

@@ -194,12 +194,17 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	}
 };
 
+struct CtrlEventContainer : Vector<CtrlEvent>, RTTIBase {
+	RTTI_DECL0(CtrlEventContainer)
+	
+};
+
 void RandomizeEvent(CtrlEvent& ev);
 
 class EventFrame {
 	
 public:
-	Vector<CtrlEvent> ctrl;
+	CtrlEventContainer ctrl;
 	
 	void Reset() {ctrl.SetCount(0);}
 };

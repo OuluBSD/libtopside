@@ -789,6 +789,21 @@ public:
 };
 #endif
 
+#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
+class SdlOglFboGuiProg : public SdlOglFboProgBase {
+
+public:
+	RTTI_DECL1(SdlOglFboGuiProg, SdlOglFboProgBase)
+	COPY_PANIC(SdlOglFboGuiProg)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 #if defined flagSDL2
 class SdlVideoAtom : public SdlCenterVideoSinkDevice {
 
