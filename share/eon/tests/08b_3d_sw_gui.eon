@@ -25,7 +25,7 @@ machine sdl.app:
 		
 		loop video:
 			center.customer
-			center.video.prog.ecs
+			center.video.prog.pipe
 			x11.sw.prog[][loop == center.fbo]
 
 world ecs.dummy:

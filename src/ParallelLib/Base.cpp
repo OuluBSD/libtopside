@@ -446,8 +446,8 @@ bool EventStateBase::Recv(int sink_ch, const Packet& p) {
 			for (BinderIfaceEvents* e : binders)
 				e->Dispatch(ev);
 		}
-		else if (in.IsData<CtrlEventContainer>()) {
-			const CtrlEventContainer& evec = in.GetData<CtrlEventContainer>();
+		else if (in.IsData<CtrlEventCollection>()) {
+			const CtrlEventCollection& evec = in.GetData<CtrlEventCollection>();
 			for (const CtrlEvent& ev : evec) {
 				Event(ev);
 				

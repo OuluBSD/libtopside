@@ -23,6 +23,21 @@ public:
 #endif
 
 #if defined flagSCREEN
+class PipeProgVideo : public EcsVideoBase {
+
+public:
+	RTTI_DECL1(PipeProgVideo, EcsVideoBase)
+	COPY_PANIC(PipeProgVideo)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if defined flagSCREEN
 class EcsProgVideo : public EcsVideoBase {
 
 public:

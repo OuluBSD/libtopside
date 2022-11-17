@@ -47,6 +47,7 @@ public:
 };
 
 
+struct LinkedCoreWindow;
 
 class CoreWindow :
 	public Ctrl,
@@ -90,6 +91,7 @@ class CoreWindow :
 	TopWindow* tw = 0;
 	void (CoreWindow::*reset_fn)();
 	Windows* wins = NULL;
+	LinkedCoreWindow* linked = NULL;
 	
 	ResizeFrame resize_frame;
 	WindowDecoration decor;
@@ -189,33 +191,28 @@ public:
 	virtual void ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags);
 };
 
+using CoreWindowRef = Ref<CoreWindow>;
 
 
-
-#ifdef flagOPENVR
-template <class T>
-struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-		
-		//components.Get<CoreWindow>()->renderable = components.GetRef<Renderable>();
-		components.Get<CoreWindow>()->transform = components.GetRef<Transform>();
-		
-		components.Get<Transform>().position = vec3(0, 0, -1);
-		components.Get<Transform>().size = vec3(320, 240, 0);
-		
-        //components.Get<Renderable>()->ResetModel(KnownModelNames::UnitQuad);
-        //components.Get<Renderable>()->color = Rgba(1.0, 1.0, 1.0, 1.0);
-		
-		components.Get<CoreWindow>()->Create<T>();
-		
-		TODO // renderable
-		
-        return components;
-    }
+struct LinkedCoreWindow : public Component<LinkedCoreWindow> {
+	RTTI_COMP1(LinkedCoreWindow, ComponentT)
+	COPY_PANIC(LinkedCoreWindow)
+	COMP_DEF_VISIT
+	
+	
+	CoreWindow* linked = 0;
+	
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	
+	void Link(CoreWindow* cw);
+	void Unlink(CoreWindow* cw);
+	void Unlink();
+	
 };
-#endif
+
+using LinkedCoreWindowRef = Ref<LinkedCoreWindow>;
 
 
 struct Window2D :
@@ -228,16 +225,34 @@ struct Window2D :
     {
         auto components = EntityPrefab::Make(e);
 		
-		//components.Get<CoreWindow>()->renderable2d = components.GetRef<Renderable2D>();
 		components.Get<CoreWindowRef>()->transform2d = components.Get<Transform2DRef>();
 		
-		components.Get<Transform2DRef>()->position = vec2(0, 0);
+		components.Get<Transform2DRef>()->position = vec2(0, 1);
 		components.Get<Transform2DRef>()->size = vec2(320, 240);
 		
-		/*T& t = components.Get<CoreWindowRef>()->Create<T>();
-		ASSERT(&t);
+        return components;
+    }
+};
+
+
+// Window3D needs to be linked to Window2D
+struct Window3D :
+	EntityPrefab<
+		LinkedCoreWindow,
+		Transform,
+		ModelComponent
+	> {
+    static Components Make(Entity& e)
+    {
+        auto components = EntityPrefab::Make(e);
 		
-		TODO // renderable*/
+		LinkedCoreWindowRef win = components.Get<LinkedCoreWindowRef>();
+		
+		ModelComponentRef mdl = components.Get<ModelComponentRef>();
+		mdl->Arg("builtin", "box");
+		
+		TransformRef trans = components.Get<TransformRef>();
+		trans->data.position = vec3(0, 2, 0);
 		
         return components;
     }

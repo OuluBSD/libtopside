@@ -9,10 +9,11 @@ NAMESPACE_PARALLEL_BEGIN
 
 Callback1<EcsEventsBase*> EcsEventsBase::WhenInitialize;
 
-EcsEventsBase* EcsEventsBase::latest;
+EcsEventsBase* EcsEventsBase::active;
 
 EcsEventsBase::EcsEventsBase() {
-	latest = this;
+	if (!active)
+		active = this;
 }
 
 bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
@@ -82,10 +83,24 @@ bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 
 #if defined flagSCREEN
 
-Vector<BinderIfaceVideo*> EcsVideoBase::binders;
+struct EcsVideoBase::Binder : RTTIBase {
+	RTTI_DECL0(Binder);
+	
+	BinderIfaceVideo* iface = 0;
+	Ecs::Entity* win3d = 0; // Ref overly complicates ecs/mach relationship
+	
+	void Visit(RuntimeVisitor& vis) {
+		//vis & win3d;
+	}
+};
+
+
+Array<EcsVideoBase::Binder> EcsVideoBase::binders;
+EcsVideoBase* EcsVideoBase::active;
 
 EcsVideoBase::EcsVideoBase() {
-	
+	if (!active)
+		active = this;
 }
 
 bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
@@ -95,6 +110,10 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	src_type = val.GetFormat().vd;
 	
 	draw_mem = ws.Get(".drawmem") == "true";
+	
+	add_ecs = ws.GetBool(".add.ecs", false);
+	if (GetSourceValue(0).GetFormat().IsReceipt())
+		add_ecs = true;
 	
 	#ifdef flagGUI
 	ents = GetMachine().Get<EntitySystem>();
@@ -130,14 +149,21 @@ void EcsVideoBase::Stop() {
 	#ifdef flagGUI
 	wins.Clear();
 	#endif
+	if (active == this)
+		binders.Clear();
 }
 
 void EcsVideoBase::Uninitialize() {
-	
+	if (active == this) {
+		binders.Clear();
+		active = 0;
+	}
 }
 
 void EcsVideoBase::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<Atom>(this);
+	if (active == this)
+		vis | binders;
 	vis & state & ents;
 	#ifdef flagGUI
 	vis & wins;
@@ -204,13 +230,16 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
 		
-		for (BinderIfaceVideo* b : binders)
-			b->Render(pd);
+		for (Binder& b : binders)
+			b.iface->Render(pd);
 		
 		pd.cmd_screen_begin.Check();
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		data.ptr = &pd.cmd_screen_begin;
+	}
+	else if (fmt.IsReceipt()){
+		// pass
 	}
 	else {
 		TODO
@@ -220,11 +249,60 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 }
 
 void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
-	VectorFindAdd(binders, iface);
+	Binder& b = binders.Add();
+	b.iface = iface;
+	
+	if (active) {
+		Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(iface);
+		if (gui) {
+			Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
+			if (cw)
+				active->AddWindow3D(b, *cw);
+		}
+	}
 }
 
 void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
-	VectorRemoveKey(binders, iface);
+	int pos = -1, i = 0;
+	for (Binder& b0 : binders) {
+		if (b0.iface == iface) {
+			pos = i;
+			break;
+		}
+		i++;
+	}
+	ASSERT(pos >= 0);
+	if (pos < 0) return;
+	
+	Binder& b = binders[pos];
+	if (active) {
+		Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(iface);
+		if (gui) {
+			Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
+			if (cw)
+				active->RemoveWindow3D(b, *cw);
+		}
+	}
+}
+
+void EcsVideoBase::AddWindow3D(Binder& b, Ecs::CoreWindow& cw) {
+	ASSERT(!b.win3d);
+	
+	Ecs::PoolRef pool = ents->GetEngine().Get<Ecs::EntityStore>()->GetRoot();
+	b.win3d = &*pool->Create<Ecs::Window3D>();
+	
+	Ecs::LinkedCoreWindowRef linked_win = b.win3d->Get<Ecs::LinkedCoreWindow>();
+	linked_win->Link(&cw);
+}
+
+void EcsVideoBase::RemoveWindow3D(Binder& b, Ecs::CoreWindow& cw) {
+	if (b.win3d) {
+		Ecs::LinkedCoreWindowRef linked_win = b.win3d->Find<Ecs::LinkedCoreWindow>();
+		if (linked_win) {
+			linked_win->Unlink(&cw);
+			b.win3d->Destroy();
+		}
+	}
 }
 
 #endif

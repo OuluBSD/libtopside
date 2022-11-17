@@ -11,7 +11,7 @@ class EcsEventsBase :
 	String						target;
 	EnvStateRef					state;
 	int							prev_iter = -1;
-	static EcsEventsBase*		latest;
+	static EcsEventsBase*		active;
 	
 public:
 	RTTI_DECL1(EcsEventsBase, Atom);
@@ -29,7 +29,7 @@ public:
 	
 	
 	static Callback1<EcsEventsBase*>	WhenInitialize;
-	static EcsEventsBase* Latest() {return latest;}
+	static EcsEventsBase* Active() {return active;}
 	
 	EnvStateRef& State() {return state;}
 	
@@ -40,7 +40,11 @@ public:
 class EcsVideoBase :
 	public Atom
 {
-	static Vector<BinderIfaceVideo*> binders;
+	struct Binder;
+	
+	static Array<Binder> binders;
+	static EcsVideoBase* active;
+	
 	String					target;
 	EnvStateRef				state;
 	int						prev_iter = -1;
@@ -48,6 +52,7 @@ class EcsVideoBase :
 	ProgDraw				pd;
 	
 	bool					draw_mem = false;
+	bool					add_ecs = false;
 	EntitySystemRef			ents;
 	#ifdef flagGUI
 	Ecs::WindowSystemRef	wins;
@@ -67,6 +72,9 @@ public:
 	bool			Recv(int sink_ch, const Packet& in) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override;
+	
+	void			AddWindow3D(Binder&, Ecs::CoreWindow&);
+	void			RemoveWindow3D(Binder&, Ecs::CoreWindow&);
 	
 	static void AddBinder(BinderIfaceVideo* iface);
 	static void RemoveBinder(BinderIfaceVideo* iface);

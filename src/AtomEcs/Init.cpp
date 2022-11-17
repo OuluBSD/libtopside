@@ -10,6 +10,9 @@ INITBLOCK_(AtomEcs) {
 	Factory::RegisterAtom<EcsProgEvents>();
 	#endif
 	#if defined flagSCREEN
+	Factory::RegisterAtom<PipeProgVideo>();
+	#endif
+	#if defined flagSCREEN
 	Factory::RegisterAtom<EcsProgVideo>();
 	#endif
 }

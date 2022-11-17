@@ -19,6 +19,7 @@ class FboProgAtomT :
 	bool dbg_info = 1;
 	int dbg_win_id;
 	double resize_multiplier = 0.01;
+	bool write_ecs = false;
 	
 	struct Window : Moveable<Window> {
 		ProgImage pi;
@@ -42,6 +43,7 @@ public:
 	bool PostInitialize() override;
 	void Uninitialize() override;
 	bool IsReady(PacketIO& io) override;
+	void Finalize(RealtimeSourceConfig& cfg) override;
 	bool Recv(int sink_ch, const Packet& in) override;
 	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void Visit(RuntimeVisitor& vis) override {}

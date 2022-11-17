@@ -27,6 +27,7 @@ namespace Parallel {
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
 	ATOM_TYPE(EVENT_STATE_PIPE) \
 	ATOM_TYPE(ECS_PROG_EVENTS) \
+	ATOM_TYPE(PIPE_PROG_VIDEO) \
 	ATOM_TYPE(ECS_PROG_VIDEO) \
 	ATOM_TYPE(X11_SW_FBO_PROG) \
 	ATOM_TYPE(X11_OGL_FBO_PROG) \
@@ -115,6 +116,7 @@ namespace Parallel {
 	ATOM_CLASS(VideoLoaderAtom) \
 	ATOM_CLASS(EventStatePipe) \
 	ATOM_CLASS(EcsProgEvents) \
+	ATOM_CLASS(PipeProgVideo) \
 	ATOM_CLASS(EcsProgVideo) \
 	ATOM_CLASS(X11SwFboProg) \
 	ATOM_CLASS(X11OglFboProg) \

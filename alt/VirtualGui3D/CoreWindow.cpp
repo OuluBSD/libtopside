@@ -13,6 +13,7 @@ void CoreWindow::Uninitialize() {
 	transform.Clear();
 	transform2d.Clear();
 	
+	if (linked) linked->Unlink(this);
 }
 
 Point CoreWindow::GetGlobalMouse() {
@@ -368,6 +369,53 @@ void CoreWindow::Wait() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+void LinkedCoreWindow::Initialize() {
+	
+}
+
+void LinkedCoreWindow::Uninitialize() {
+	if (linked) Unlink(linked);
+	
+}
+
+void LinkedCoreWindow::Link(CoreWindow* cw) {
+	ASSERT(!linked);
+	if (linked) Unlink(linked);
+	
+	cw->linked = this;
+	linked = cw;
+}
+
+void LinkedCoreWindow::Unlink() {
+	if (linked) Unlink(linked);
+}
+
+void LinkedCoreWindow::Unlink(CoreWindow* cw) {
+	ASSERT(!linked || linked == cw);
+	if (linked == cw) {
+		linked = 0;
+		cw->linked = 0;
+		
+		EntityRef e = ComponentBase::GetEntity();
+		e->Destroy();
+	}
+}
+
+	
+	
 
 
 

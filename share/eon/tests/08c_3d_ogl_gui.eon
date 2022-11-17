@@ -13,7 +13,7 @@ machine sdl.app:
 		
 		loop ogl.fbo:
 			ogl.customer
-			sdl.ogl.fbo.program[loop == video]:
+			sdl.ogl.fbo.program:
 				drawmem =					"false"
 				program =					"gui"
 				shader.default.frag.path =	"shaders/tests/07d_fragment.glsl"
@@ -26,7 +26,6 @@ machine sdl.app:
 		loop video:
 			center.customer
 			center.video.prog.ecs
-			sdl.ogl.prog[][loop == ogl.fbo]
 
 world ecs.dummy:
 	//system registry

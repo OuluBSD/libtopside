@@ -1492,7 +1492,7 @@ AtomTypeCls X11SwFboGuiProg::GetAtomType() {
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,PROG),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
-	t.AddOut(VD(CENTER,FBO),0);
+	t.AddOut(VD(CENTER,FBO),1);
 	return t;
 }
 
@@ -1521,7 +1521,7 @@ AtomTypeCls X11OglFboGuiProg::GetAtomType() {
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,PROG),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
-	t.AddOut(VD(OGL,FBO),0);
+	t.AddOut(VD(OGL,FBO),1);
 	return t;
 }
 
@@ -1550,7 +1550,7 @@ AtomTypeCls SdlOglFboGuiProg::GetAtomType() {
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,PROG),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
-	t.AddOut(VD(OGL,FBO),0);
+	t.AddOut(VD(OGL,FBO),1);
 	return t;
 }
 

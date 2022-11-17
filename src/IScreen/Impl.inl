@@ -59,7 +59,7 @@ bool CLASSNAME::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, RealtimeSour
 	
 	if (fmt.IsEvent()) {
 		out.seq = dev.seq++;
-		CtrlEventContainer& dst = out.SetData<CtrlEventContainer>();
+		CtrlEventCollection& dst = out.SetData<CtrlEventCollection>();
 		dst <<= dev.ev;
 		dev.ev_sendable = false;
 	}

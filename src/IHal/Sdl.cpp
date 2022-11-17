@@ -48,7 +48,7 @@ struct HalSdl::NativeOglVideoSinkDevice {
 struct HalSdl::NativeEventsBase {
     int time;
     dword seq;
-    UPP::CtrlEvent ev;
+    CtrlEventCollection ev;
     Size sz;
     bool ev_sendable;
     bool is_lalt;
@@ -58,6 +58,15 @@ struct HalSdl::NativeEventsBase {
     bool is_lctrl;
     bool is_rctrl;
     Point prev_mouse_pt;
+    Vector<int> invalids;
+    
+    void Clear() {
+        time = 0;
+        seq = 0;
+        ev_sendable = 0;
+        sz.Clear();
+        prev_mouse_pt = Point(0,0);
+    }
 };
 
 struct HalSdl::NativeAudioSinkDevice {
@@ -928,7 +937,7 @@ void HalSdl::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisitor& 
 }
 
 bool HalSdl::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
-	memset(&dev, 0, sizeof(NativeEventsBase));
+	dev.Clear();
 	
 	
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
@@ -989,8 +998,8 @@ bool HalSdl::EventsBase_Send(NativeEventsBase& dev, AtomBase& a, RealtimeSourceC
 	
 	if (fmt.IsEvent()) {
 		out.seq = dev.seq++;
-		UPP::CtrlEvent& dst = out.SetData<UPP::CtrlEvent>();
-		dst = dev.ev;
+		CtrlEventCollection& dst = out.SetData<CtrlEventCollection>();
+		dst <<= dev.ev;
 		dev.ev_sendable = false;
 	}
 	
@@ -1018,7 +1027,7 @@ void Events__PutKeyFlags(HalSdl::NativeEventsBase& dev, dword& key) {
 #endif
 
 bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
-	UPP::CtrlEvent& e = dev.ev;
+	dev.ev.SetCount(0);
 	
 	SDL_Event event;
 	Size screen_sz;
@@ -1038,8 +1047,11 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	dword key;
 	int mouse_code;
 	
+	bool succ = true;
+	
 	// Process the events
 	while (SDL_PollEvent(&event)) {
+		UPP::CtrlEvent& e = dev.ev.Add();
 		e.Clear();
 		
 		switch (event.type) {
@@ -1050,7 +1062,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			
 			if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
 				e.type = EVENT_SHUTDOWN;
-				return true;
+				continue;
 			}
 			else if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
 				screen_sz.cx = event.window.data1;
@@ -1058,7 +1070,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				dev.sz = screen_sz;
 				e.type = EVENT_WINDOW_RESIZE;
 				e.sz = screen_sz;
-				return true;
+				continue;
 			}
 			break;
 		
@@ -1092,7 +1104,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			e.n = 1;
 			e.pt = Point(0,0);
 			
-			return true;
+			continue;
 			
 		case SDL_KEYUP:
 		
@@ -1122,7 +1134,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			e.n = 1;
 			e.pt = Point(0,0);
 			
-			return true;
+			continue;
 			
 		case SDL_MOUSEMOTION:
 			mouse_pt = Point(event.motion.x, event.motion.y);
@@ -1134,7 +1146,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			e.pt = mouse_pt;
 			
 			dev.prev_mouse_pt = mouse_pt;
-			return true;
+			continue;
 		
 		case SDL_MOUSEWHEEL:
 			key = 0;
@@ -1144,7 +1156,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			e.value = key;
 			e.pt = mouse_pt;
 			
-			return true;
+			continue;
 			
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
@@ -1198,7 +1210,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				e.n = mouse_code;
 				
 				dev.prev_mouse_pt = mouse_pt;
-				return true;
+				continue;
 			}
 			
 #endif
@@ -1208,16 +1220,29 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 		}
 	}
 	
+	dev.invalids.SetCount(0);
+	int i = 0;
+	for (auto& ev : dev.ev) {
+		if (ev.type == EVENT_INVALID)
+			dev.invalids.Add(i);
+		i++;
+	}
+	dev.ev.Remove(dev.invalids);
 	
-	return false;
+	if (dev.ev.IsEmpty())
+		return false;
+	
+	return true;
 }
 
 bool HalSdl::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& io) {
 	bool b = io.full_src_mask == 0;
 	if (b) {
 		if (dev.seq == 0) {
+			UPP::CtrlEvent& e = dev.ev.Add();
+			
 			auto s = a.GetSpace();
-			dev.ev.type = EVENT_WINDOW_RESIZE;
+			e.type = EVENT_WINDOW_RESIZE;
 			auto v_sink   = s->template FindNearestAtomCast<SdlCenterVideoSinkDevice>(2);
 			auto sw_sink  = s->template FindNearestAtomCast<SdlCenterFboSinkDevice>(2);
 			#ifdef flagOGL

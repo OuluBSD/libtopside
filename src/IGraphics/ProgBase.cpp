@@ -14,6 +14,13 @@ bool FboProgAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	resize_multiplier = ws.GetDouble(".resize.multiplier", 0.004);
 	
+	write_ecs = ws.GetBool(".write.ecs", false);
+	
+	// Write to ecs, when no side-connections is added
+	Serial::Link* link = this->GetLink();
+	if (link->SideSinks().IsEmpty())
+		write_ecs = true;
+	
 	return true;
 }
 
@@ -65,6 +72,16 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		return true;
 	}
 	else return false;
+}
+
+template <class Gfx>
+void FboProgAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
+	
+	//Ecs::Engine& eng = GetActiveEngine();
+	
+	
+	
+	//TODO
 }
 
 template <class Gfx>

@@ -35,6 +35,34 @@ AtomTypeCls EcsProgEvents::GetType() const {
 
 
 #if defined flagSCREEN
+String PipeProgVideo::GetAction() {
+	return "center.video.prog.pipe";
+}
+
+AtomTypeCls PipeProgVideo::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::PIPE_PROG_VIDEO;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,PROG),0);
+	return t;
+}
+
+LinkTypeCls PipeProgVideo::GetLinkType() {
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void PipeProgVideo::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<EcsVideoBase>(this);
+}
+
+AtomTypeCls PipeProgVideo::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSCREEN
 String EcsProgVideo::GetAction() {
 	return "center.video.prog.ecs";
 }
@@ -44,7 +72,7 @@ AtomTypeCls EcsProgVideo::GetAtomType() {
 	t.sub = SubAtomCls::ECS_PROG_VIDEO;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,ORDER),0);
-	t.AddOut(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
 	return t;
 }
 
