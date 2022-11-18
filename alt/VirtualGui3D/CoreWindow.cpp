@@ -382,16 +382,16 @@ void CoreWindow::Wait() {
 
 
 
-void LinkedCoreWindow::Initialize() {
+void CoreWindowLink::Initialize() {
 	
 }
 
-void LinkedCoreWindow::Uninitialize() {
+void CoreWindowLink::Uninitialize() {
 	if (linked) Unlink(linked);
 	
 }
 
-void LinkedCoreWindow::Link(CoreWindow* cw) {
+void CoreWindowLink::Link(CoreWindow* cw) {
 	ASSERT(!linked);
 	if (linked) Unlink(linked);
 	
@@ -399,11 +399,11 @@ void LinkedCoreWindow::Link(CoreWindow* cw) {
 	linked = cw;
 }
 
-void LinkedCoreWindow::Unlink() {
+void CoreWindowLink::Unlink() {
 	if (linked) Unlink(linked);
 }
 
-void LinkedCoreWindow::Unlink(CoreWindow* cw) {
+void CoreWindowLink::Unlink(CoreWindow* cw) {
 	ASSERT(!linked || linked == cw);
 	if (linked == cw) {
 		linked = 0;
@@ -412,6 +412,11 @@ void LinkedCoreWindow::Unlink(CoreWindow* cw) {
 		EntityRef e = ComponentBase::GetEntity();
 		e->Destroy();
 	}
+}
+
+CoreWindow& CoreWindowLink::GetWindow() const {
+	ASSERT(linked);
+	return *linked;
 }
 
 	

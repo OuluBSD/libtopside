@@ -47,7 +47,7 @@ public:
 };
 
 
-struct LinkedCoreWindow;
+struct CoreWindowLink;
 
 class CoreWindow :
 	public Ctrl,
@@ -91,7 +91,7 @@ class CoreWindow :
 	TopWindow* tw = 0;
 	void (CoreWindow::*reset_fn)();
 	Windows* wins = NULL;
-	LinkedCoreWindow* linked = NULL;
+	CoreWindowLink* linked = NULL;
 	
 	ResizeFrame resize_frame;
 	WindowDecoration decor;
@@ -194,9 +194,9 @@ public:
 using CoreWindowRef = Ref<CoreWindow>;
 
 
-struct LinkedCoreWindow : public Component<LinkedCoreWindow> {
-	RTTI_COMP1(LinkedCoreWindow, ComponentT)
-	COPY_PANIC(LinkedCoreWindow)
+struct CoreWindowLink : public Component<CoreWindowLink> {
+	RTTI_COMP1(CoreWindowLink, ComponentT)
+	COPY_PANIC(CoreWindowLink)
 	COMP_DEF_VISIT
 	
 	
@@ -209,10 +209,11 @@ struct LinkedCoreWindow : public Component<LinkedCoreWindow> {
 	void Link(CoreWindow* cw);
 	void Unlink(CoreWindow* cw);
 	void Unlink();
+	CoreWindow& GetWindow() const;
 	
 };
 
-using LinkedCoreWindowRef = Ref<LinkedCoreWindow>;
+using CoreWindowLinkRef = Ref<CoreWindowLink>;
 
 
 struct Window2D :
@@ -238,7 +239,7 @@ struct Window2D :
 // Window3D needs to be linked to Window2D
 struct Window3D :
 	EntityPrefab<
-		LinkedCoreWindow,
+		CoreWindowLink,
 		Transform,
 		ModelComponent
 	> {
@@ -246,10 +247,12 @@ struct Window3D :
     {
         auto components = EntityPrefab::Make(e);
 		
-		LinkedCoreWindowRef win = components.Get<LinkedCoreWindowRef>();
+		CoreWindowLinkRef win = components.Get<CoreWindowLinkRef>();
 		
+		#if 0
 		ModelComponentRef mdl = components.Get<ModelComponentRef>();
 		mdl->Arg("builtin", "box");
+		#endif
 		
 		TransformRef trans = components.Get<TransformRef>();
 		trans->data.position = vec3(0, 2, 0);

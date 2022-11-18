@@ -53,11 +53,19 @@ class EcsVideoBase :
 	
 	bool					draw_mem = false;
 	bool					add_ecs = false;
+	bool					dbg_info = false;
+	int						dbg_win_id = 0;
 	EntitySystemRef			ents;
 	#ifdef flagGUI
 	Ecs::WindowSystemRef	wins;
 	#endif
 	int						screen_id = 0;
+	
+	
+	DrawCommand* ProcessWindow(Binder& b, DrawCommand* begin);
+	void ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end);
+	
+	void			RedrawScreen();
 	
 public:
 	RTTI_DECL1(EcsVideoBase, Atom);
@@ -70,18 +78,19 @@ public:
 	void			Uninitialize() override;
 	bool			IsReady(PacketIO& io) override;
 	bool			Recv(int sink_ch, const Packet& in) override;
+	void			Finalize(RealtimeSourceConfig& cfg) override;
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override;
 	
 	void			AddWindow3D(Binder&, Ecs::CoreWindow&);
 	void			RemoveWindow3D(Binder&, Ecs::CoreWindow&);
+	bool			IsActive() const;
 	
 	static void AddBinder(BinderIfaceVideo* iface);
 	static void RemoveBinder(BinderIfaceVideo* iface);
 	
 	static Callback1<EcsVideoBase*>	WhenInitialize;
 	
-	ProgDraw& GetProgDraw() {return pd;}
 	
 };
 #endif

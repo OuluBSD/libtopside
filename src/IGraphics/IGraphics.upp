@@ -69,6 +69,7 @@ file
 	ProgDraw.h,
 	ProgDraw.cpp,
 	DrawProg.cpp,
+	ProgRenderer.cpp,
 	GfxAccelAtom.h,
 	GfxAccelAtom.cpp;
 

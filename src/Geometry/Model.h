@@ -159,7 +159,8 @@ public:
     void Visit(RuntimeVisitor& vis);
 	bool LoadModel(String path);
 	
-	void Create();
+	Model& Create();
+	Model& Realize();
 	Ref<Model> GetModel();
 	
 	

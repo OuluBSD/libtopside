@@ -80,15 +80,16 @@ void DefaultGuiAppComponent::Dispatch(const CtrlEvent& e) {
 }
 
 bool DefaultGuiAppComponent::Render(Draw& d) {
+	ASSERT_(0, "DefaultGuiAppComponent cannot be used with draw (yet)");
+	return false;
+}
+
+bool DefaultGuiAppComponent::RenderProg(DrawCommand*& begin, DrawCommand*& end) {
 	
-	ProgDraw* pd = CastPtr<ProgDraw>(&d);
-	ASSERT(pd);
-	if (!pd) {
-		return false;
-	}
+	begin = &cw->GetCommandBegin();
+	end = &cw->GetCommandEnd();
 	
-	return true;
-	
+	return begin != NULL;
 }
 
 void DefaultGuiAppComponent::DrawObj(GfxStateDraw& fb, bool use_texture) {

@@ -30,11 +30,12 @@ public:
 	
 	Image() {}
 	Image(const Image& img) {*this = img;}
-	Image(Image&& img) {data = img.data; img.data = NULL;}
+	Image(Image&& img) {data = img.data; Chk(); img.data = NULL;}
 	Image(ImageDataRef* data) : data(data) {data->Inc();}
 	Image(RawSysImage* raw) {if (raw) {data = new ImageDataRef(raw);}}
 	~Image() {Clear();}
-	void operator=(const Image& img) {Clear(); data = img.data; if (data) data->Inc();}
+	void Chk();
+	void operator=(const Image& img) {Clear(); data = img.data; Chk(); if (data) data->Inc();}
 	void Clear() {if (data) data->Dec(); data = NULL;}
 	bool IsEmpty() const {return data == NULL;}
 	void SetHotSpot(Point pt) {if (data) data->hotspot = pt;}

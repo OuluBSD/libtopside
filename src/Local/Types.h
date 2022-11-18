@@ -49,6 +49,7 @@ public:
 	virtual bool Render(Draw& d) = 0;
 	virtual bool Arg(const String& key, const String& value) = 0;
 	
+	virtual bool RenderProg(DrawCommand*& begin, DrawCommand*& end) {return false;}
 	virtual void Initialize() {}
 	virtual void Uninitialize() {}
 	virtual void Visit(RuntimeVisitor& vis) {}

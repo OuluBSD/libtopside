@@ -7,7 +7,6 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-
 template <class Gfx>
 bool FboProgAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	dbg_info = 0;
@@ -56,8 +55,7 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 			return false;
 		}
 		
-		while (cmd->type != DRAW_BIND_WINDOW && cmd)
-			cmd = cmd->next;
+		DrawCommandImageRenderer::FindBegin(cmd);
 		
 		dbg_win_id = 0;
 		while (cmd) {
@@ -77,11 +75,6 @@ bool FboProgAtomT<Gfx>::Recv(int sink_ch, const Packet& p) {
 template <class Gfx>
 void FboProgAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	
-	//Ecs::Engine& eng = GetActiveEngine();
-	
-	
-	
-	//TODO
 }
 
 template <class Gfx>
@@ -101,24 +94,13 @@ bool FboProgAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int sr
 	return true;
 }
 
+
 template <class Gfx>
 DrawCommand* FboProgAtomT<Gfx>::ProcessWindow(DrawCommand* begin) {
-	while (begin && begin->type == 0)
-		begin = begin->next;
-	if (!begin)
+	if (!DrawCommandImageRenderer::TrimBegin(begin))
 		return 0;
 	
-	ASSERT(begin->type == DRAW_BIND_WINDOW);
-	
-	DrawCommand* end = begin;
-	while (end) {
-		if (end->type == DRAW_UNBIND_WINDOW) {
-			end = end->next;
-			break;
-		}
-		end = end->next;
-	}
-	
+	DrawCommand* end = DrawCommandImageRenderer::FindEnd(begin);
 	
 	if (dbg_info) {
 		int i = 0;
@@ -133,11 +115,7 @@ DrawCommand* FboProgAtomT<Gfx>::ProcessWindow(DrawCommand* begin) {
 	ProcessWindowCommands(begin, end);
 	
 	// Move to the beginning of the next window
-	DrawCommand* next = end->next;
-	while (next && next->type != DRAW_BIND_WINDOW)
-		next = next->next;
-	
-	return next;
+	return DrawCommandImageRenderer::MoveEnd(end->next);
 }
 
 template <class Gfx>
@@ -149,33 +127,7 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 	
 	Window& win = windows.GetAdd(hash);
 	
-	
-	// Get ctrl size from draw command queue
-	Size sz(0,0);
-	{
-		DrawCommand* iter = begin;
-		while (iter) {
-			if (iter->type == DRAW_META_SIZE) {
-				sz.cx = iter->i[0];
-				sz.cy = iter->i[1];
-				break;
-			}
-			iter = iter->next;
-		}
-	}
-	ASSERT(!sz.IsEmpty());
-	if (sz.IsEmpty()) sz = Size(320,240);
-	win.sz = sz;
-	
-	
-	if (win.id.IsEmpty() || win.id->GetSize() != sz) {
-		win.id.Create(sz, 3);
-	}
-	
-	win.id->DrawRect(sz, GrayColor());
-	
-	win.pi.SkipWindowCommands();
-	win.pi.Paint(begin, end, win.id);
+	win.rend.ProcessWindowCommands(begin, end);
 	
 	if (!win.inited) {
 		ModelState& mdl_state = this->data.AddModelT();
@@ -189,12 +141,7 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 		plane_mesh.CenterAnchor();
 		plane_mesh.TransformVertices(AxesMat(0,M_PI/2,0));
 		
-		Image img = win.id->GetImage();
-		if (0) {
-			ImageDraw id(sz);
-			id.DrawRect(sz, White());
-			win.img = id;
-		}
+		Image img = win.rend.GetImage();
 		src_mdl.SetTexture(plane_mesh, TEXTYPE_DIFFUSE, img, "" );
 		
 		if (!mdl_state.LoadModel(src_mdl)) {
@@ -209,7 +156,7 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 		win.inited = true;
 	}
 	else {
-		
+		// TODO window resize etc.
 	}
 	
 }

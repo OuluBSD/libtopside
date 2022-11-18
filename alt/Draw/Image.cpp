@@ -20,6 +20,9 @@ String Image::ToString() const {
 	return s;
 }
 
+void Image::Chk() {
+	
+}
 
 
 

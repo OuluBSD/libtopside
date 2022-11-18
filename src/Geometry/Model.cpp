@@ -258,9 +258,17 @@ void ModelLoader::Visit(RuntimeVisitor& vis) {
 		vis % *model;
 }
 
-void ModelLoader::Create() {
+Model& ModelLoader::Create() {
 	model.Create();
 	model->SetParent(this);
+	return *model;
+}
+
+Model& ModelLoader::Realize() {
+	if (!model.IsEmpty())
+		return *model;
+	else
+		return Create();
 }
 
 Ref<Model> ModelLoader::GetModel() {

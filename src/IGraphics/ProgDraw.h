@@ -87,6 +87,28 @@ public:
 	void SkipWindowCommands(bool b=true);
 };
 
+class DrawCommandImageRenderer {
+	ProgImage pi;
+	One<ImageDraw> id;
+	Image img;
+	Size sz;
+	
+	
+public:
+	typedef DrawCommandImageRenderer CLASSNAME;
+	DrawCommandImageRenderer();
+	
+	void ProcessWindowCommands(DrawCommand* begin, DrawCommand* end);
+	Image GetImage();
+	
+	static bool TrimBegin(DrawCommand*& begin);
+	static void FindBegin(DrawCommand*& begin);
+	static DrawCommand* FindEnd(DrawCommand* begin);
+	static DrawCommand* MoveEnd(DrawCommand* end);
+	
+};
+
+
 
 NAMESPACE_PARALLEL_END
 

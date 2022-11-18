@@ -22,11 +22,8 @@ class FboProgAtomT :
 	bool write_ecs = false;
 	
 	struct Window : Moveable<Window> {
-		ProgImage pi;
-		One<ImageDraw> id;
+		DrawCommandImageRenderer rend;
 		NativeColorBufferRef tex;
-		Image img;
-		Size sz;
 		int tex_id;
 		bool inited = false;
 	};
