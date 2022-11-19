@@ -4,7 +4,7 @@
 	//static bool           invalid;
 	//static uint32 prev_ticks;
 	
-	//static void TimerProc(dword time);
+	static void TimerProc(double dt);
 	//static void GuiSleep(int ms);
 	//static void DoPaint();
 	//static void PaintScene(SystemDraw& draw);

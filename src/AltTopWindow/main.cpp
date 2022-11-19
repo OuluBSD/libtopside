@@ -1,8 +1,8 @@
-#include "AltTopWindow.h"
-
+#include <Complete/Complete.h>
+#include <DesktopSuite/DesktopSuite.h>
 using namespace UPP;
 
 
 GUI_APP_MAIN {
-	ExampleApp().Run();
+	GuiTesterApp().Run();
 }

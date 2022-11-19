@@ -309,8 +309,12 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 			data.ptr = begin;
 			#endif
 		}
-		else {
+		else if (binders.GetCount() > 1) {
 			TODO // join multiple draw command vectors from binders to one
+		}
+		else {
+			ASSERT_(0, "no binders");
+			return false;
 		}
 	}
 	else if (fmt.IsReceipt()){

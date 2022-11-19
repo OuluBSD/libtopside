@@ -2,12 +2,11 @@ description "Example TopWindow usage, which is similar to U++ CtrlLib TopWindow 
 
 uses
 	EcsMinimal,
-	Complete;
+	Complete,
+	DesktopSuite;
 
 file
-	main.cpp,
-	AltTopWindow.h,
-	AltTopWindow.cpp;
+	main.cpp;
 
 mainconfig
 	"" = "GUI SCREEN SDL2",

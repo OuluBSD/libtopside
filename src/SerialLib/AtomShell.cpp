@@ -126,6 +126,14 @@ void DebugMainLoop(Parallel::Machine& mach) {
     int fast_iter = 0;
     while (mach.IsRunning()) {
         double dt = ResetSeconds(t);
+        
+        #ifdef flagGUI
+        bool quit = false;
+        Ctrl::EventLoopIteration(dt, &quit);
+        if (quit)
+            mach.SetNotRunning();
+        #endif
+        
         mach.Update(dt);
         
         if (dt < sleep_dt_limit && fast_iter > 5) {

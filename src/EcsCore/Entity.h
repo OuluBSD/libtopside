@@ -158,7 +158,7 @@ public:
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
 		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> {{
-				Add0<ComponentTs>()
+				Add0<ComponentTs>(false)
 			}
 			...
 		};
@@ -178,7 +178,7 @@ private:
 	
 	
 	template<typename T> void Remove0();
-	template<typename T> RefT_Entity<T> Add0();
+	template<typename T> RefT_Entity<T> Add0(bool initialize);
 	
 	
 	ComponentBaseRef AddPtr(ComponentBase* comp);

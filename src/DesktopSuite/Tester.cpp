@@ -9,6 +9,17 @@ GuiTesterApp::GuiTesterApp() {
 		<< Point(30, 50)
 		<< Point(200, 10)
 		;
+	
+	test_rect_tl = Point(100,100);
+	
+	tc.Set(-1000, THISBACK(TimedToggle));
+}
+
+void GuiTesterApp::TimedToggle() {
+	test_rect_tl.x = (test_rect_tl.x + 100) % 200;
+	test_rect_tl.y = (test_rect_tl.y + 30) % 200;
+	
+	Refresh();
 }
 
 void GuiTesterApp::Paint(Draw& d) {
@@ -20,7 +31,7 @@ void GuiTesterApp::Paint(Draw& d) {
 	d.DrawPolyline(v, 15, Color(128, 128, 255));
 	
 	
-	d.DrawRect(100, 100, 100, 100, c);
+	d.DrawRect(test_rect_tl.x, test_rect_tl.y, 100, 100, c);
 	
 	d.DrawLine(r.left, r.top, r.right, r.bottom, 1, Black());
 }

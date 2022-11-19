@@ -91,11 +91,16 @@ void Entity::Remove0() {
 }
 
 template<typename T>
-RefT_Entity<T> Entity::Add0() {
+RefT_Entity<T> Entity::Add0(bool initialize) {
 	T* comp = GetEngine().Get<ComponentStore>()->CreateComponent<T>();
 	ASSERT(comp);
 	comps.Add(comp);
-	InitializeComponent(*comp);
+	if (initialize) {
+		InitializeComponent(*comp);
+	}
+	else {
+		comp->SetParent(this);
+	}
 	ASSERT(comp->GetEntity());
 	return comp->AsRefT();
 }

@@ -4,6 +4,43 @@
 
 NAMESPACE_UPP
 
+void Ctrl::EventLoopIteration(double dt, bool* quit) {
+	ProcessEvents(dt, quit);
+}
+
+bool Ctrl::ProcessEvents(double dt, bool *quit) {
+	bool ret = ProcessEvent(quit);
+	while(ProcessEvent(quit))
+		;
+	TimerProc(dt);
+	return ret;
+}
+
+bool Ctrl::ProcessEvent(bool *quit) {
+	LLOG("@ ProcessEvent");
+	ASSERT(IsMainThread());
+	//if(!GetMouseLeft() && !GetMouseRight() && !GetMouseMiddle())
+	//	ReleaseCtrlCapture();
+	
+	bool ret = false;
+	//ret = VirtualGui3DPtr->ProcessEvent(quit);
+	
+	//DefferedFocusSync();
+	//SyncCaret();
+	//SyncTopWindows();
+	return ret;
+}
+
+void Ctrl::TimerProc(double dt) {
+	static double total_dt;
+	total_dt += dt;
+	uint32 diff = total_dt * 1000UL;
+	if (diff > 0) {
+		AddGlobalTicks(diff);
+		total_dt = 0;
+	}
+}
+
 #if 0
 
 void Ctrl::SetDesktopSize(Size sz) {
@@ -33,37 +70,6 @@ void Ctrl::GuiSleep(int ms) {
 	VirtualGui3DPtr->WaitEvent(ms);
 	EnterGuiMutex(level);
 }
-
-bool Ctrl::ProcessEvents(bool *quit) {
-	bool ret = ProcessEvent(quit);
-	while(ProcessEvent(quit))
-		;
-	TimerProc(VirtualGui3DPtr->GetTickCount());
-	//SweepMkImageCache();
-	DoPaint();
-	return ret;
-}
-
-bool Ctrl::ProcessEvent(bool *quit) {
-	LLOG("@ ProcessEvent");
-	ASSERT(IsMainThread());
-	//if(!GetMouseLeft() && !GetMouseRight() && !GetMouseMiddle())
-	//	ReleaseCtrlCapture();
-	bool ret = VirtualGui3DPtr->ProcessEvent(quit);
-	//DefferedFocusSync();
-	//SyncCaret();
-	//SyncTopWindows();
-	return ret;
-}
-
-/*void Ctrl::TimerProc(dword time) {
-	uint32 ticks = SDL_GetTicks();
-	uint32 diff = ticks - prev_ticks;
-	if (diff > 0) {
-		AddGlobalTicks(diff);
-		prev_ticks = ticks;
-	}
-}*/
 
 void Ctrl::DoPaint() {
 	SystemDraw& draw = VirtualGui3DPtr->BeginDraw();

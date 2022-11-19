@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;
 
 
+#if 0
 
 class IScreen {
 	
@@ -75,6 +76,7 @@ public:
 
 };
 
+#endif
 
 
 NAMESPACE_TOPSIDE_END

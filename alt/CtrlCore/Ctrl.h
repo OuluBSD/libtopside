@@ -230,13 +230,14 @@ public:
 	static void SetDebugDraw(bool b=true) {do_debug_draw = b;}
 	static void CloseTopCtrls();
 	static bool ProcessEvent(bool *quit = NULL);
-	static bool ProcessEvents(bool *quit = NULL);
+	static bool ProcessEvents(double dt, bool *quit = NULL);
 	static bool  ReleaseCtrlCapture();
 	static Ctrl *GetCaptureCtrl();
 	static Image OverrideCursor(const Image& m);
 	static Image DefaultCursor();
 	
-	//void EventLoop(Ctrl *ctrl);
+	//vstatic oid EventLoop(Ctrl *ctrl);
+	static void EventLoopIteration(double dt, bool* quit);
 	
 	DrawCommand& GetCommandBegin() {return cmd_begin;}
 	DrawCommand& GetCommandEnd() {return cmd_end;}
