@@ -495,6 +495,8 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			}
 			end = end->next;
 		}
+		
+		dev.id->DrawRect(dev.sz, Black());
 		dev.pi.Paint(begin, end, dev.id);
 		
 		{

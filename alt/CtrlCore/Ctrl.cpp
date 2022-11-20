@@ -156,6 +156,11 @@ bool Ctrl::IsShown() const {
 	return !hidden;
 }
 
+void Ctrl::SetRect(const Rect& r) {
+	SetFrameRect(r);
+	SetPendingRedrawDeep();
+}
+
 void Ctrl::SetFrameRect(const Rect& r) {
 	this->frame_r = r;
 	/*SetPendingEffectRedraw();

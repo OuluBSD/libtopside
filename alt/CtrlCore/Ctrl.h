@@ -273,7 +273,7 @@ public:
 	
 	virtual void SetFrameRect(const Rect& r);
 	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
-	void SetRect(const Rect& r) {SetFrameRect(r);}
+	void SetRect(const Rect& r);
 	void SetContentRect(const Rect& r) {content_r = r;}
 	void SetPendingLayout() {pending_layout = true;}
 	void SetPendingRedraw() {pending_redraw = true;}

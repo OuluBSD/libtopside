@@ -29,16 +29,40 @@ void GuiTesterApp::Paint(Draw& d) {
 		d.DrawRect(r, Color(128, 255, 128));
 	
 	d.DrawPolyline(v, 15, Color(128, 128, 255));
-	
-	
 	d.DrawRect(test_rect_tl.x, test_rect_tl.y, 100, 100, c);
-	
 	d.DrawLine(r.left, r.top, r.right, r.bottom, 1, Black());
 }
 
 void GuiTesterApp::LeftDown(Point p, dword keyflags) {
 	c = RandomColor(0, 256);
 	Refresh();
+}
+
+void GuiTesterApp::RightDown(Point p, dword keyflags) {
+	#if 0
+	Size base(320,240);
+	Size cur = GetSize();
+	cur -= base;
+	cur.cx = (cur.cx + 30) % 120;
+	cur.cy = (cur.cy + 30) % 120;
+	cur += base;
+	
+	Rect r = GetRect();
+	r.right = r.left + cur.cx;
+	r.bottom = r.top + cur.cy;
+	
+	#else
+	Rect r = GetRect();
+	Size sz = r.GetSize();
+	Point pt = r.TopLeft();
+	pt.x += Random(21) - 10;
+	pt.y += Random(21) - 10;
+	sz.cx += Random(21) - 10;
+	sz.cy += Random(21) - 10;
+	r = RectC(pt.x, pt.y, sz.cx, sz.cy);
+	#endif
+	
+	SetRect(r);
 }
 
 bool GuiTesterApp::Key(dword key, int count) {

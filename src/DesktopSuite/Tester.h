@@ -23,6 +23,7 @@ public:
 	virtual void MouseWheel(Point p, int zdelta, dword keyflags);
 	virtual void MouseLeave() {Refresh();}
 	virtual void LeftDown(Point p, dword keyflags);
+	virtual void RightDown(Point p, dword keyflags);
 
 };
 
