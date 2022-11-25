@@ -16,6 +16,86 @@ void CoreWindow::Uninitialize() {
 	if (linked) linked->Unlink(this);
 }
 
+void CoreWindow::operator=(const CoreWindow& cw) {
+	Clear();
+	reset_fn = cw.reset_fn;
+	SetFrameRect(cw.frame_r);
+	if (reset_fn)
+		(*this.*reset_fn)();
+}
+
+void CoreWindow::DeepLayout() {
+	TODO // from Ctrl::DeepLayout
+}
+
+void CoreWindow::Clear() {
+	if (!aw) return;
+	//if (tw->IsEmpty()) return;
+	//RemoveChild(tw->Get());
+	RemoveChild(aw);
+	aw = 0;
+	owned_aw.Clear();
+}
+
+void CoreWindow::Title(String label) {
+	decor.SetLabel(label);
+}
+
+void CoreWindow::StoreRect() {
+	stored_rect = GetFrameRect();
+}
+
+void CoreWindow::LoadRect() {
+	ASSERT(stored_rect.bottom && stored_rect.right);
+	SetFrameRect(stored_rect);
+}
+
+void CoreWindow::SetStoredRect(Rect r) {
+	stored_rect = r;
+}
+
+void CoreWindow::SetPendingPartialRedraw(bool b) {
+	pending_partial_redraw = b;
+}
+
+int CoreWindow::GetId() const {
+	return id;
+}
+
+Rect CoreWindow::GetStoredRect() const {
+	return stored_rect;
+}
+
+String CoreWindow::GetTitle() const {
+	return decor.GetLabel();
+}
+
+AbsoluteWindowInterface* CoreWindow::GetAbsoluteWindow() {
+	return aw;
+}
+
+void CoreWindow::SetFrameRect(const Rect& r) {
+	Ctrl* c = GetWindowCtrl();
+	if (c)
+		c->SetFrameRect(r);
+	cw->SetFrameRect(r);
+}
+
+bool CoreWindow::IsMaximized() const {
+	return maximized;
+}
+
+void CoreWindow::ToggleMaximized() {
+	if (IsMaximized())
+		Restore();
+	else
+		Maximize();
+}
+
+bool CoreWindow::IsPendingPartialRedraw() const {
+	return pending_partial_redraw;
+}
+
 Point CoreWindow::GetGlobalMouse() {
 	/*if (!is_global_mouse_override)
 		return SDL2::GetGlobalMouse();
@@ -195,7 +275,7 @@ void CoreWindow::ResizeFrame::DoResize() {
 
 void CoreWindow::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
 	if (is_resizing) {
-		CoreWindow* cw = ctrl->GetTopWindow()->GetWindow();
+		CoreWindow* cw = ctrl->GetTopWindow()->GetAbsoluteWindow()->GetWindow();
 		if (used_momentum) {
 			resize_start_pt = cw->GetGlobalMouse();
 			used_momentum = false;
@@ -253,16 +333,9 @@ void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
 
 
 CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
-	tw = 0;
+	aw = 0;
 	resize_frame.win = this;
 	SetMaximized(false);
-	
-	
-	/*cmd_screen_begin.next = &cmd_begin;
-	cmd_begin.prev = &cmd_screen_begin;
-	
-	cmd_end.next = &cmd_screen_end;
-	cmd_screen_end.prev = &cmd_end;*/
 	
 	
 	AddFrame(resize_frame);
@@ -305,10 +378,10 @@ void CoreWindow::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
-	if (tw) {
-		Add(tw->VSizePos(24, 1).HSizePos(1, 1));
+	if (aw) {
+		Add(aw->VSizePos(24, 1).HSizePos(1, 1));
 	
-		tw->SetFocus();
+		aw->SetFocus();
 	}
 	
 	if (maximized) {
@@ -323,8 +396,8 @@ void CoreWindow::Maximize() {if (wins) {wins->MaximizeWindow(id); wins->FocusWin
 void CoreWindow::Restore()  {if (wins) {wins->RestoreWindow(id); wins->FocusWindow(id);} maximized = false;}
 void CoreWindow::Minimize() {if (wins) {wins->MinimizeWindow(id); wins->FocusWindow(id);}}
 void CoreWindow::Close() {wins->QueueCloseWindow(id);}
-void CoreWindow::FocusEvent() {wins->FocusWindow(id); tw->FocusEvent();}
-bool CoreWindow::IsCtrlDrawBegin() {return true;}
+void CoreWindow::FocusEvent() {wins->FocusWindow(id); aw->FocusEvent();}
+bool CoreWindow::IsGeomDrawBegin() {return true;}
 
 void CoreWindow::SetFrameRect(const Rect& r) {
 	Ctrl::SetFrameRect(r);

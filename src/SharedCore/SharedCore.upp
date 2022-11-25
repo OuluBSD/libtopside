@@ -17,5 +17,7 @@ file
 	String.h,
 	String.cpp,
 	Draw.h,
-	Draw.cpp;
+	Draw.cpp,
+	Ctrl.h,
+	Ctrl.cpp;
 

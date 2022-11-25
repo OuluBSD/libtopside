@@ -1,10 +1,12 @@
-#ifndef _VirtualGuiAlt_VirtualGuiAlt_h_
-#define _VirtualGuiAlt_VirtualGuiAlt_h_
+#ifndef _VirtualGui3D_VirtualGui3D_h_
+#define _VirtualGui3D_VirtualGui3D_h_
 
 #include <Draw/Draw.h>
 #include <StaticInterface/Screen.h>
 
+
 NAMESPACE_UPP
+
 
 struct VirtualGui3D;
 
@@ -178,20 +180,17 @@ struct VirtualCtrl : RTTIBase {
 
 #define GUIPLATFORM_CTRL_TOP_DECLS   Ctrl *owner_window;
 
-#define GUIPLATFORM_CTRL_DECLS_INCLUDE <VirtualGui3D/Ctrl.h>
+
 
 #define GUIPLATFORM_PASTECLIP_DECLS \
 	bool dnd; \
 	friend struct DnDLoop; \
 
-#define GUIPLATFORM_TOPWINDOW_DECLS_INCLUDE <VirtualGui3D/Top.h>
-
 #define GUIPLATFORM_INCLUDE_AFTER <VirtualGui3D/After.h>
 #define GUIPLATFORM_INCLUDE_AFTER_ECSLIB <VirtualGui3D/AfterEcsLib.h>
 
+
 END_UPP_NAMESPACE
-
-
 
 
 #endif

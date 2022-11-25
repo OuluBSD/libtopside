@@ -13,12 +13,9 @@ bool WindowSystem::Initialize() {
 	WindowSystemScreen& win = wm.AddScreen<WindowSystemScreen>();
 	win.sys = this;
 	
-	Ctrl::SetWindows(&win);
-	
 	Size sz = VirtualGui3DPtr->GetSize();
 	
 	win.SetFrameRect0(RectC(0, 0, sz.cx, sz.cy));
-	win.Ctrl::SetContentRect(RectC(0, 0, sz.cx, sz.cy));
 	
 	return true;
 }

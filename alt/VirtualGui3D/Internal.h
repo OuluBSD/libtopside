@@ -7,6 +7,8 @@
 #include <EcsVirtualGui/EcsVirtualGui.h>
 #include <CtrlCore/CtrlCore.h>
 
+#include "Window.h"
+
 #ifndef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#error GUIPLATFORM_INCLUDE_AFTER_ECSLIB is not defined
 #endif

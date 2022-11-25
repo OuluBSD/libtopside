@@ -25,8 +25,8 @@ public:
 	void MouseEnter(Point p, dword keyflags) override {Refresh();}
 	void MouseLeave() override {is_pressed = false; Refresh();}
 	
-	void PostRefresh() {PostCallback(THISBACK(Refresh));}
-	void Refresh() {Ctrl::Refresh();}
+	void Refresh() override {Ctrl::Refresh();}
+	
 };
 
 

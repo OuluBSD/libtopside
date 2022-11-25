@@ -77,6 +77,8 @@ file
 	Url.cpp,
 	Debugging.h,
 	Debugging.cpp,
+	GeomInteraction.h,
+	GeomInteraction.cpp,
 	Ctrl.h,
 	Ctrl.inl highlight cpp,
 	Graphics.cpp,

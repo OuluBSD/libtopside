@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
+# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -18,6 +18,11 @@ endif()
 
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
+# uses(GUI) DesktopSuite;
+if ((DEFINED flagGUI))
+  list ( APPEND Complete_DEPEND_LIST DesktopSuite-lib )
+endif()
 
 # uses(NEVER) Physics;
 if ((DEFINED flagNEVER))

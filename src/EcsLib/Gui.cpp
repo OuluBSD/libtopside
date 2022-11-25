@@ -56,22 +56,23 @@ void DefaultGuiAppComponent::StateStartup(GfxDataState& state) {
 
 void DefaultGuiAppComponent::Dispatch(const CtrlEvent& e) {
 	if (cw && trans2) {
+		Ctrl* ctrl = cw->aw->GetWindowCtrl();
 		Point cw_pos(trans2->position[0], trans2->position[1]);
 		Point win_pt = e.pt - cw_pos;
 		if (e.type == EVENT_WINDOW_RESIZE) {
 			
 		}
 		else if (e.type == EVENT_MOUSEMOVE) {
-			cw->DeepMouseMove(e.pt, e.value);
+			ctrl->DeepMouseMove(e.pt, e.value);
 		}
 		else if (e.type == EVENT_MOUSEWHEEL) {
-			cw->DeepMouseWheel(e.pt, e.n, e.value);
+			ctrl->DeepMouseWheel(e.pt, e.n, e.value);
 		}
 		else if (e.type == EVENT_KEYDOWN || e.type == EVENT_KEYUP) {
-			cw->DeepKey(e.value, e.n);
+			ctrl->DeepKey(e.value, e.n);
 		}
 		else if (e.type == EVENT_MOUSE_EVENT) {
-			cw->DeepMouse(e.n, e.pt, e.value);
+			ctrl->DeepMouse(e.n, e.pt, e.value);
 		}
 		else {
 			LOG("TODO DefaultGuiAppComponent::Dispatch " << e.ToString());
@@ -85,9 +86,9 @@ bool DefaultGuiAppComponent::Render(Draw& d) {
 }
 
 bool DefaultGuiAppComponent::RenderProg(DrawCommand*& begin, DrawCommand*& end) {
-	
-	begin = &cw->GetCommandBegin();
-	end = &cw->GetCommandEnd();
+	Ctrl* ctrl = cw->aw->GetWindowCtrl();
+	begin = &ctrl->GetCommandBegin();
+	end = &ctrl->GetCommandEnd();
 	
 	return begin != NULL;
 }

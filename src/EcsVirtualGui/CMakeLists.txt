@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
+# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,11 +29,14 @@ list ( APPEND HEADER_LIST
 
 list ( APPEND SOURCE_LIST_CPP
       EcsVirtualGui.cpp
-      EcsVirtualGuiInit.cpp
       Render.cpp
       System.cpp
       WindowSystem.cpp
       DrawBackend.cpp
+)
+
+list ( APPEND SOURCE_LIST_ICPP
+      Init.icpp
 )
 
 list ( APPEND EcsVirtualGui_DEPEND_LIST

@@ -1,9 +1,7 @@
 #ifndef _CtrlCoreAlt_CtrlCore_h_
 #define _CtrlCoreAlt_CtrlCore_h_
 
-
 #include "Defs.h"
-
 
 NAMESPACE_UPP
 

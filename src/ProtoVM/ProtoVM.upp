@@ -6,6 +6,7 @@ file
 	ProtoVM.cpp,
 	UK101.cpp,
 	Interak.cpp,
+	MiniMax8085.cpp,
 	Generic.h,
 	Generic.cpp,
 	Machine.h,

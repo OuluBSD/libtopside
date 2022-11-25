@@ -251,12 +251,14 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 				Size& sz = b.sz;
 				Ecs::CoreWindowLinkRef cw_link = b.win3d->Find<Ecs::CoreWindowLink>();
 				Ecs::CoreWindow& cw = cw_link->GetWindow();
+				Ctrl* ctrl = cw.GetWindowCtrl();
+				ASSERT(!ctrl);
 				Rect cw_rect = cw.GetStoredRect();
 				sz = cw_rect.GetSize();
 				
 				// CoreWindow might not have calculated frame yet
 				if (sz.IsEmpty()) {
-					TopWindow* tw = cw.GetTopWindow();
+					TopWindow* tw = ctrl->GetTopWindow();
 					if (!tw)
 						continue;
 					sz = tw->GetSize();

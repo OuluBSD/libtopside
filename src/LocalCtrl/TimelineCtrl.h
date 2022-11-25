@@ -71,7 +71,6 @@ public:
 	void RightDown(Point p, dword keyflags) override;
 	void MouseWheel(Point p, int zdelta, dword keyflags) override;
 	void Layout() override;
-	void Refresh() {Ctrl::Refresh();}
 	
 	Callback1<int> WhenCursor;
 	

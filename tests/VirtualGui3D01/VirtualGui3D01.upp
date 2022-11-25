@@ -1,0 +1,10 @@
+uses
+	Complete;
+
+file
+	VirtualGui3D01.h,
+	VirtualGui3D01.cpp;
+
+mainconfig
+	"" = "GUI SDL2";
+

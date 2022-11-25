@@ -39,8 +39,8 @@ public:
 	void LocalMenu(Bar& bar);
 };
 
-class Windows : public TS::Screen {
-	RTTI_DECL1(Windows, Screen)
+class Windows : public TS::Screen2D {
+	RTTI_DECL1(Windows, Screen2D)
 	virtual void Visit(RuntimeVisitor& vis) {}
 	
 protected:
@@ -70,7 +70,7 @@ protected:
 protected:
 	typedef Windows CLASSNAME;
 	
-	friend class UPP::TopWindow;
+	friend class UPP::AbsoluteWindow;
 	friend class CoreWindow;
 	friend class SubMenuFrame;
 	//friend class Core;
@@ -113,6 +113,7 @@ public:
 	void AddWindow(CoreWindow&) override;
 	bool ProcessCloseQueue() override;
 	
+	WindowManager* GetWindowManager() const {return wm;}
 	CoreWindow& GetWindow(TopWindow& ctrl);
 	CoreWindow* GetActiveWindow() {int i = wins.Find(active_id); return i >= 0 ? wins[i] : NULL;}
 	int GetActiveWindowPos() {return active_pos;}

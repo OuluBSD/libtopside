@@ -6,5 +6,6 @@
 #include "Object.h"
 #include "CtrlEvent.h"
 #include "Container.h"
+#include "Ctrl.h"
 
 #endif

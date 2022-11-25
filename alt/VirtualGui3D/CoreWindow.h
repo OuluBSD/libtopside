@@ -50,10 +50,11 @@ public:
 struct CoreWindowLink;
 
 class CoreWindow :
-	public Ctrl,
+	public GeomInteraction2D,
+	public AbsoluteWindow,
 	public Component<CoreWindow>
 {
-	RTTI_COMP1(CoreWindow, Ctrl)
+	RTTI_COMP2(CoreWindow, GeomInteraction2D, AbsoluteWindow)
 	
 	
 	struct ResizeFrame : public CtrlFrame {
@@ -87,9 +88,9 @@ class CoreWindow :
 	};
 	
 	
-	One<TopWindow> owned_tw;
-	TopWindow* tw = 0;
-	void (CoreWindow::*reset_fn)();
+	One<AbsoluteWindowInterface> owned_aw;
+	AbsoluteWindowInterface* aw = 0;
+	void (CoreWindow::*reset_fn)() = 0;
 	Windows* wins = NULL;
 	CoreWindowLink* linked = NULL;
 	
@@ -104,11 +105,9 @@ protected:
 	friend class Windows;
 	friend class SDL2;
 	
-	
-	void SetContent(Windows* wins, int id);
-	
 	bool maximized;
 	
+	void SetContent(Windows* wins, int id);
 	void SetMaximized(bool b=true);
 	
 	
@@ -121,68 +120,56 @@ public:
 	CoreWindow();
 	CoreWindow(const CoreWindow& cw) : stored_rect(0,0,0,0), decor(this) {*this = cw;}
 	
-	void operator=(const CoreWindow& cw) {
-		Clear();
-		reset_fn = cw.reset_fn;
-		SetFrameRect(cw.frame_r);
-		if (reset_fn)
-			(*this.*reset_fn)();
-	}
+	void operator=(const CoreWindow& cw);
 	
 	template <class T>
 	void ResetTopWindow() {
 		Clear();
 		T* t = new T();
-		tw = static_cast<TopWindow*>(t);
+		aw = static_cast<AbsoluteWindowInterface*>(t);
 	}
 	template <class T>
 	T& Create() {
 		Clear();
 		T* t = new T();
-		owned_tw = static_cast<TopWindow*>(t);
-		tw = &*owned_tw;
+		owned_aw = static_cast<AbsoluteWindowInterface*>(t);
+		aw = &*owned_aw;
 		reset_fn = &CoreWindow::ResetTopWindow<T>;
 		return *t;
 	}
 	
-	void Clear() {
-		if (!tw) return;
-		//if (tw->IsEmpty()) return;
-		//RemoveChild(tw->Get());
-		RemoveChild(tw);
-		tw = 0;
-		owned_tw.Clear();
-	}
-	
+	void Clear();
+	void DeepLayout();
 	Point GetGlobalMouse();
 	//bool IsGlobalMouseOverridden() const {return pending_partial_redraw;}
 	//void SetGlobalMouse(Point pt) {is_global_mouse_override = true; global_mouse = pt;}
-	void Title(String label) {decor.SetLabel(label);}
-	void StoreRect() {stored_rect = GetFrameRect();}
-	void LoadRect() {ASSERT(stored_rect.bottom && stored_rect.right); SetFrameRect(stored_rect);}
-	void SetStoredRect(Rect r) {stored_rect = r;}
-	void SetPendingPartialRedraw(bool b=true) {pending_partial_redraw = b;}
+	void Title(String label);
+	void StoreRect();
+	void LoadRect();
+	void SetStoredRect(Rect r);
+	void SetPendingPartialRedraw(bool b=true);
 	
 	//GLuint GetTexture() {return fb.GetTexture();}
 	//const Framebuffer& GetFramebuffer() const {return fb;}
-	int GetId() const {return id;}
-	Rect GetStoredRect() const {return stored_rect;}
-	String GetTitle() const {return decor.GetLabel();}
-	TopWindow* GetTopWindow() {return tw;}
-	bool IsMaximized() const {return maximized;}
+	int GetId() const;
+	Rect GetStoredRect() const;
+	String GetTitle() const;
+	AbsoluteWindowInterface* GetAbsoluteWindow();
+	bool IsMaximized() const;
 	bool IsActive() const;
 	void MoveWindow(Point pt);
 	void Maximize();
 	void Restore();
 	void Minimize();
 	void Close();
-	void FocusEvent();
-	void ToggleMaximized() {if (IsMaximized()) Restore(); else Maximize();}
-	bool IsPendingPartialRedraw() const {return pending_partial_redraw;}
+	void FocusEvent() override;
+	void ToggleMaximized();
+	bool IsPendingPartialRedraw() const;
 	void Wait();
+	Windows* GetWindows() const {return wins;}
 	
 	void Uninitialize() override;
-	bool IsCtrlDrawBegin() override;
+	bool IsGeomDrawBegin() override;
 	void SetFrameRect(const Rect& r) override;
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;

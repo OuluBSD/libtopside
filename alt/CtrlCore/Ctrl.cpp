@@ -303,7 +303,7 @@ bool Ctrl::Redraw(bool only_pending) {
 	bool did_draw = false;
 	
 	bool was_pending_fx_redraw = pending_fx_redraw;
-	bool frame = IsCtrlDrawBegin();
+	bool frame = IsGeomDrawBegin();
 	bool draw_begin = false;
 	
 	if (pending_fx_redraw) {
@@ -332,7 +332,7 @@ bool Ctrl::Redraw(bool only_pending) {
 		ASSERT(cmd_pre.next);
 		ProgPainter pre(sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
 		
-		bool frame = IsCtrlDrawBegin();
+		bool frame = IsGeomDrawBegin();
 		if (frame && !draw_begin) {
 			pre.CtrlDrawBegin((hash_t)this);
 			draw_begin = true;

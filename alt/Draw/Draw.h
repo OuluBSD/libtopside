@@ -2,6 +2,7 @@
 #define _DrawAlt_Draw_h_
 
 #include <Core/Core.h>
+#include <SharedCore/Ctrl.h>
 #include <guiplatform.h>
 
 #ifdef GUIPLATFORM_BACKEND_INCLUDE

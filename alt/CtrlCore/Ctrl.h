@@ -1,6 +1,12 @@
 #ifndef _CtrlCoreAlt_Ctrl_h_
 #define _CtrlCoreAlt_Ctrl_h_
 
+
+NAMESPACE_UPP
+class AbsoluteWindow;
+END_UPP_NAMESPACE
+
+
 namespace TS { namespace Ecs {
 
 class Windows;
@@ -151,25 +157,19 @@ struct LogPos {
 };
 
 class TopWindow;
-//class CoreWindow;
 
 class Ctrl :
 	public Pte<Ctrl>,
-	public VirtualCtrl
+	public GeomInteraction2D
 {
 	
 public:
-	RTTI_DECL1(Ctrl, VirtualCtrl)
+	RTTI_DECL1(Ctrl, GeomInteraction2D)
 	
 protected:
-	
-	
-	
-	
 	static  int       LoopLevel;
 	static  Ctrl     *LoopCtrl;
 	static  int64     EventLoopNo;
-	static  bool      do_debug_draw;
 	
 	Ctrl* GetCaptured();
 	Ctrl* GetWithMouse();
@@ -181,7 +181,6 @@ protected:
 	void SetFrameWithMouse(CtrlFrame* c);
 	
 	
-	
 	bool         inloop:1;
 	bool         ignore_mouse:1;
 	bool         hidden:1;
@@ -190,19 +189,16 @@ protected:
 	bool         has_focus_deep:1;
 	bool         has_mouse:1;
 	bool         has_mouse_deep:1;
-	bool         pending_fx_redraw:1;
-	bool         pending_redraw:1;
-	bool         pending_layout:1;
 	bool         modify:1;
 	
 	Ctrl* parent = NULL;
 	Vector<Ctrl*> children;
 	Vector<CtrlFrame*> frames;
 	LogPos pos;
-	Rect frame_r, content_r;
-	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
+	Rect content_r;
 	
-	virtual bool Redraw(bool only_pending);
+	bool Redraw(bool only_pending) override;
+	
 	void DeepMouseLeave();
 	void Refresh0() {Refresh();}
 	void Layout0() {Layout();}
@@ -220,7 +216,6 @@ protected:
 	friend class TS::Ecs::WindowSystem;
 	friend class TopWindow;
 	
-	void SetFrameRect0(const Rect& r) {this->frame_r = r;}
 	
 public:
 	typedef Ctrl CLASSNAME;
@@ -231,16 +226,13 @@ public:
 	static void CloseTopCtrls();
 	static bool ProcessEvent(bool *quit = NULL);
 	static bool ProcessEvents(double dt, bool *quit = NULL);
-	static bool  ReleaseCtrlCapture();
+	static bool ReleaseCtrlCapture();
 	static Ctrl *GetCaptureCtrl();
 	static Image OverrideCursor(const Image& m);
 	static Image DefaultCursor();
 	
 	//vstatic oid EventLoop(Ctrl *ctrl);
 	static void EventLoopIteration(double dt, bool* quit);
-	
-	DrawCommand& GetCommandBegin() {return cmd_begin;}
-	DrawCommand& GetCommandEnd() {return cmd_end;}
 	
 	void Add(Ctrl& c);
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
@@ -256,36 +248,31 @@ public:
 	int GetCount() const {return children.GetCount();}
 	Ctrl* operator[](int i) {return children[i];}
 	
-	Rect GetFrameRect() const {return frame_r;}
 	Rect GetContentRect() const {return content_r;}
 	Rect GetRect() const {return GetFrameRect();}
 	Rect GetWorkArea() const;
-	Size GetFrameSize() const {return frame_r.GetSize();}
 	Size GetContentSize() const {return content_r.GetSize();}
 	bool IsShown() const;
 	bool HasFocus() const {return has_focus;}
 	bool HasFocusDeep() const {return has_focus_deep;}
 	bool HasMouse() const {return has_mouse;}
 	bool HasMouseDeep() const {return has_mouse_deep;}
-	bool IsPendingLayout() const {return pending_layout;}
 	const LogPos& GetLogPos() const {return pos;}
 	Size GetSize() const {return GetContentSize();}
 	
-	virtual void SetFrameRect(const Rect& r);
-	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
+	void SetFrameRect(const Rect& r) override;
+	
 	void SetRect(const Rect& r);
 	void SetContentRect(const Rect& r) {content_r = r;}
-	void SetPendingLayout() {pending_layout = true;}
-	void SetPendingRedraw() {pending_redraw = true;}
 	void SetPendingRedrawDeep();
-	void SetPendingEffectRedraw() {pending_fx_redraw = true;}
 	void SetFocus();
 	void WantFocus(bool b=true) {want_focus = b;}
 	void IgnoreMouse(bool b=true) {ignore_mouse = b;}
 	
+	void Refresh() override;
+	
 	void Show(bool b=true);
 	void Hide() {Show(false);}
-	void Refresh();
 	void PostCallback(Callback cb);
 	void PostRefresh();
 	void PostLayoutCallback();
@@ -301,76 +288,34 @@ public:
 	Ctrl& LeftPos(int i, int size);
 	Ctrl& RightPos(int i, int size);
 	
-	virtual bool IsCtrlDrawBegin() {return false;}
-	virtual void Activate() {}
-	virtual void Deactivate() {}
-	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags) {return DefaultImages::Arrow;}
-	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags) {return DefaultImages::Arrow;}
-	virtual void MouseEnter(Point frame_p, dword keyflags) {if (do_debug_draw) Refresh();}
-	virtual void MouseMove(Point content_p, dword keyflags) {}
-	virtual void LeftDown(Point p, dword keyflags) {}
-	virtual void LeftDouble(Point p, dword keyflags) {}
-	virtual void LeftTriple(Point p, dword keyflags) {}
-	virtual void LeftDrag(Point p, dword keyflags) {}
-	virtual void LeftHold(Point p, dword keyflags) {}
-	virtual void LeftRepeat(Point p, dword keyflags) {}
-	virtual void LeftUp(Point p, dword keyflags) {}
-	virtual void RightDown(Point p, dword keyflags) {}
-	virtual void RightDouble(Point p, dword keyflags) {}
-	virtual void RightTriple(Point p, dword keyflags) {}
-	virtual void RightDrag(Point p, dword keyflags) {}
-	virtual void RightHold(Point p, dword keyflags) {}
-	virtual void RightRepeat(Point p, dword keyflags) {}
-	virtual void RightUp(Point p, dword keyflags) {}
-	virtual void MiddleDown(Point p, dword keyflags) {}
-	virtual void MiddleDouble(Point p, dword keyflags) {}
-	virtual void MiddleTriple(Point p, dword keyflags) {}
-	virtual void MiddleDrag(Point p, dword keyflags) {}
-	virtual void MiddleHold(Point p, dword keyflags) {}
-	virtual void MiddleRepeat(Point p, dword keyflags) {}
-	virtual void MiddleUp(Point p, dword keyflags) {}
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}
-	virtual void MouseLeave() {if (do_debug_draw) Refresh();}
-	virtual void PadTouch(int controller, Pointf p) {}
-	virtual void PadUntouch(int controller) {}
-	virtual Image CursorImage(Point p, dword keyflags) {return DefaultImages::Arrow;}
-	virtual bool Key(dword key, int count) {return false;}
-	virtual void Paint(Draw& d) {}
-	virtual void Layout() {}
-	virtual void PostLayout() {}
-	virtual void GotFocus() {}
-	virtual void LostFocus() {}
-	virtual void ChildGotFocus() {}
-	virtual void ChildLostFocus() {}
-	virtual void Updated() {}
-	virtual bool IsModified() const;
-	virtual void SetModify();
-	virtual void ClearModify();
 	void    Update();
 	
-	virtual Size   GetMinSize() const {return Size(0,0);}
-	virtual String GetDesc() const {return String();}
-	virtual void   FrameLayout(Rect& r) {}
-	virtual void   FrameAddSize(Size& sz) {}
-	virtual bool   HotKey(dword key) {return false;}
 	virtual int    OverPaint() const {return 0;}
 	
 	Callback WhenAction;
 	
 	
-	
 	Ctrl& operator <<= (Callback cb) {WhenAction = cb; return *this;}
 	
 	
+public:
+	AbsoluteWindow* aw = 0;
 	
+	//static bool           invalid;
+	//static uint32 prev_ticks;
 	
+	static void TimerProc(double dt);
+	//static void GuiSleep(int ms);
+	//static void DoPaint();
+	//static void PaintScene(SystemDraw& draw);
 	
+public:
+	//static void InitFB();
+	//static void ExitFB();
+	//static void SetDesktopSize(Size sz);
+	static void Invalidate();
 	
-	
-	
-	
-	#include GUIPLATFORM_CTRL_DECLS_INCLUDE
-	
+	AbsoluteWindow* GetAbsoluteWindow();
 	
 	
 	
@@ -384,12 +329,12 @@ class EmptySpaceCtrl : public Ctrl {
 
 
 
-class Screen : public Ctrl {
+class Screen2D : public GeomInteraction2D {
 	
 	
 public:
-	RTTI_DECL1(Screen, Ctrl)
-	virtual ~Screen() {}
+	RTTI_DECL1(Screen2D, GeomInteraction2D)
+	virtual ~Screen2D() {}
 	
 	virtual bool Init() = 0;
 	virtual void AddWindow(Ecs::CoreWindow&) = 0;

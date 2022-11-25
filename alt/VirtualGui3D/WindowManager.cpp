@@ -26,7 +26,7 @@ void WindowManager::Update(double dt) {
 	bool closed = false;
 	
 	for(int i = 0; i < screens.GetCount(); i++) {
-		Screen& s = screens[i];
+		Screen2D& s = screens[i];
 		
 		CtrlEvent e;
 		while (s.Poll(e)) {

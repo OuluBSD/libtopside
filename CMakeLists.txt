@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
+# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -716,12 +716,13 @@ add_subdirectory ( ./src/Shadertoy ${CMAKE_CURRENT_BINARY_DIR}/Shadertoy )
 add_subdirectory ( ./src/EcsMinimal ${CMAKE_CURRENT_BINARY_DIR}/EcsMinimal )
 add_subdirectory ( ./src/AtomLocal ${CMAKE_CURRENT_BINARY_DIR}/AtomLocal )
 add_subdirectory ( ./src/AudioHost ${CMAKE_CURRENT_BINARY_DIR}/AudioHost )
+add_subdirectory ( ./src/DesktopSuite ${CMAKE_CURRENT_BINARY_DIR}/DesktopSuite )
 add_subdirectory ( ./src/Physics ${CMAKE_CURRENT_BINARY_DIR}/Physics )
 add_subdirectory ( ./src/EcsLocal ${CMAKE_CURRENT_BINARY_DIR}/EcsLocal )
 add_subdirectory ( ./src/IMidiHw ${CMAKE_CURRENT_BINARY_DIR}/IMidiHw )
 add_subdirectory ( ./src/IMidiFile ${CMAKE_CURRENT_BINARY_DIR}/IMidiFile )
-add_subdirectory ( ./src/EcsVirtualGui ${CMAKE_CURRENT_BINARY_DIR}/EcsVirtualGui )
 add_subdirectory ( ./src/EcsAudioCore ${CMAKE_CURRENT_BINARY_DIR}/EcsAudioCore )
+add_subdirectory ( ./src/EcsVirtualGui ${CMAKE_CURRENT_BINARY_DIR}/EcsVirtualGui )
 add_subdirectory ( ./src/EcsCtrl ${CMAKE_CURRENT_BINARY_DIR}/EcsCtrl )
 add_subdirectory ( ./src/EcsVR ${CMAKE_CURRENT_BINARY_DIR}/EcsVR )
 add_subdirectory ( ./src/Local ${CMAKE_CURRENT_BINARY_DIR}/Local )
@@ -900,7 +901,7 @@ else()
 endif()
 
 # Main program dependecies
-set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomEcs-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVirtualGui-lib;EcsVR-lib;Geometry-lib;GraphLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;plugin_z-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_mikktspace-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui3D-lib;" )
+set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomEcs-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;DesktopSuite-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVirtualGui-lib;EcsVR-lib;Geometry-lib;GraphLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;plugin_z-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_mikktspace-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui3D-lib;" )
 
 add_dependencies ( Shell-bin ${Shell_DEPEND_LIST} )
 if ( DEFINED MAIN_TARGET_LINK_FLAGS )

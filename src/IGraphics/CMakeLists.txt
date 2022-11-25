@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Nov  4 01:12:22 EET 2022
+# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -51,7 +51,9 @@ list ( APPEND HEADER_LIST
       Base.h
       FboBase.h
       ImageBase.h
+      ProgBase.h
       ObjViewProg.h
+      GuiProg.h
       TState.h
       TFramebuffer.h
       TPipeline.h
@@ -75,7 +77,9 @@ list ( APPEND SOURCE_LIST_CPP
       Base.cpp
       FboBase.cpp
       ImageBase.cpp
+      ProgBase.cpp
       ObjViewProg.cpp
+      GuiProg.cpp
       TState.cpp
       TFramebuffer.cpp
       TPipeline.cpp
@@ -87,6 +91,7 @@ list ( APPEND SOURCE_LIST_CPP
       TBufferField.cpp
       ProgDraw.cpp
       DrawProg.cpp
+      ProgRenderer.cpp
       GfxAccelAtom.cpp
 )
 
