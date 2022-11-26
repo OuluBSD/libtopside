@@ -129,24 +129,15 @@ Image AbsoluteWindow::OverrideCursor(const Image& m) {
 	return Image();
 }
 
-void AbsoluteWindow::CloseTopCtrls() {
-	LOG("TODO AbsoluteWindow::CloseTopCtrls");
-}
-
 Ecs::CoreWindow* AbsoluteWindow::GetWindow() {
-	Ctrl* c = this;
+	AbsoluteWindow* c = this;
 	while (c) {
 		Ecs::CoreWindow* cw = CastPtr<Ecs::CoreWindow>(c);
 		if (cw)
 			return cw;
-		c = c->GetParent();
+		c = c->GetOwner();
 	}
 	return NULL;
-}
-
-TS::Ecs::Windows* AbsoluteWindow::GetWindows() {
-	ASSERT(wm);
-	return wm;
 }
 
 

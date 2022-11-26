@@ -50,15 +50,12 @@ void CtrlFrame::SetWithMouse(CtrlFrame* c) {
 
 int       Ctrl::LoopLevel;
 Ctrl     *Ctrl::LoopCtrl;
-bool      Ctrl::do_debug_draw;
 int64     Ctrl::EventLoopNo;
 
 
 
 Ctrl::Ctrl() {
 	inloop = false;
-	ignore_mouse = false;
-	hidden = false;
 	want_focus = false;
 	has_focus = false;
 	has_focus_deep = false;
@@ -69,74 +66,46 @@ Ctrl::Ctrl() {
 	pending_layout = true;
 	modify = false;
 	
-	cmd_begin.next = &cmd_frame;
-	cmd_frame.prev = &cmd_begin;
-	cmd_frame.next = &cmd_pre;
-	cmd_pre.prev = &cmd_frame;
-	cmd_pre.next = &cmd_post;
-	cmd_post.prev = &cmd_pre;
-	cmd_post.next = &cmd_end;
-	cmd_end.prev = &cmd_post;
 }
 
 void Ctrl::Add(Ctrl& c) {
-	for(int i = 0; i < children.GetCount(); i++)
-		if (children[i] == &c)
-			return;
-	cmd_post.prev = &c.cmd_end;
-	c.cmd_end.next = &cmd_post;
-	if (children.GetCount()) {
-		Ctrl& top = *children.Top();
-		c.cmd_begin.prev = &top.cmd_end;
-		top.cmd_end.next = &c.cmd_begin;
-	}
-	else {
-		c.cmd_begin.prev = &cmd_pre;
-		cmd_pre.next = &c.cmd_begin;
-	}
-	children.Add(&c);
-	c.parent = this;
-	c.Activate();
+	GeomInteraction2D::Add(c);
 }
 
 void Ctrl::AddChild(Ctrl* c) {
-	if (!c) return;
-	Add(*c);
+	GeomInteraction2D::AddSub(c);
 }
 
 Ctrl* Ctrl::GetLastChild() {
-	return children.Top();
+	return CastPtr<Ctrl>(sub.Top());
 }
 
 void Ctrl::RemoveChild(Ctrl* c) {
-	for(int i = 0; i < children.GetCount(); i++) {
-		if (children[i] == c) {
-			/*DrawCommand* prev;
-			if (i > 0)
-				prev = &children[i-1]->cmd_end;
-			else
-				prev = &cmd_pre;
-			
-			DrawCommand* next;
-			if (i < children.GetCount()-1)
-				next = &children[i+1]->cmd_begin;
-			else
-				next = &cmd_post;*/
-			
-			c->cmd_end.next->prev = c->cmd_begin.prev;
-			c->cmd_begin.prev->next = c->cmd_end.next;
-			c->cmd_end.next = NULL;
-			c->cmd_begin.prev = NULL;
-			
-			c->Deactivate();
-			c->parent = NULL;
-			children.Remove(i--);
-		}
-	}
+	GeomInteraction2D::RemoveSub(c);
 }
 
 Ctrl* Ctrl::GetParent() {
-	return parent;
+	return CastPtr<Ctrl>(owner);
+}
+
+Ctrl* Ctrl::GetTopCtrl() {
+	Ctrl* c = this;
+	while (c) {
+		Ctrl* p = c->GetParent();
+		if (p)
+			c = p;
+		else
+			break;
+	}
+	return c;
+}
+
+Ctrl* Ctrl::GetIndexChild(int i) {
+	return CastPtr<Ctrl>(sub[i]);
+}
+
+int Ctrl::GetChildCount() const {
+	return sub.GetCount();
 }
 
 TopWindow* Ctrl::GetTopWindow() {
@@ -150,10 +119,6 @@ TopWindow* Ctrl::GetTopWindow() {
 		c = par;
 	}
 	return 0;
-}
-
-bool Ctrl::IsShown() const {
-	return !hidden;
 }
 
 void Ctrl::SetRect(const Rect& r) {
@@ -172,43 +137,47 @@ void Ctrl::SetFrameRect(const Rect& r) {
 	}*/
 }
 
+void Ctrl::MouseLeaveFrame() {
+	CtrlFrame* frame_with_mouse = GetFrameWithMouse();
+	if (frame_with_mouse) {
+		frame_with_mouse->has_mouse = false;
+		frame_with_mouse->MouseLeave();
+		SetFrameWithMouse(NULL);
+	}
+}
+
 void Ctrl::SetFocus() {
-	Ecs::CoreWindow* w = GetWindow();
-	if (w) w->DeepUnfocus();
+	Ctrl* tw = GetTopCtrl();
+	if (tw) tw->DeepUnfocus();
 	
 	has_focus = true;
 	has_focus_deep = true;
 	GotFocus();
 	
-	Ctrl* wc = w;
-	Ctrl* c = parent;
+	Ctrl* c = GetParent();
 	while (c) {
 		c->has_focus_deep = true;
 		c->ChildGotFocus();
-		if (c == w)
-			break;
 		c = c->GetParent();
 	}
 }
 
 
-void Ctrl::Show(bool b) {
-	hidden = !b;
-}
-
 void Ctrl::SetPendingRedrawDeep() {
 	SetPendingEffectRedraw();
 	SetPendingRedraw();
-	for(int i = 0; i < children.GetCount(); i++) {
-		children[i]->SetPendingRedrawDeep();
+	int c = GetChildCount();
+	for(int i = 0; i < c; i++) {
+		GetIndexChild(i)->SetPendingRedrawDeep();
 	}
 }
 
 void Ctrl::Refresh() {
 	SetPendingRedrawDeep();
-	Ecs::CoreWindow* win = GetWindow();
-	if (win)
-		win->SetPendingPartialRedraw();
+	
+	AbsoluteWindow* aw = GetAbsoluteWindow()
+	if (aw)
+		aw->SetPendingPartialRedraw();
 }
 
 void Ctrl::PostCallback(Callback cb) {
@@ -243,8 +212,9 @@ void Ctrl::DeepUnfocus() {
 		has_focus_deep = false;
 		ChildLostFocus();
 		
-		for(int i = 0; i < children.GetCount(); i++) {
-			Ctrl* c = children[i];
+		int c = GetChildCount();
+		for(int i = 0; i < c; i++) {
+			Ctrl* c = GetIndexChild(i);
 			if (c->HasFocusDeep()) {
 				c->DeepUnfocus();
 				break;
@@ -931,33 +901,6 @@ bool Ctrl::DeepMouseWheel(const Point& pt, int zdelta, dword keyflags) {
 			return true;
 		}
 		return false;
-	}
-}
-
-void Ctrl::DeepMouseLeave() {
-	if (GetCaptured()) {
-		
-	}
-	else {
-		has_mouse_deep = false;
-		if (has_mouse) {
-			MouseLeave();
-			SetWithMouse(NULL);
-			has_mouse = false;
-			
-			CtrlFrame* frame_with_mouse = GetFrameWithMouse();
-			if (frame_with_mouse) {
-				frame_with_mouse->has_mouse = false;
-				frame_with_mouse->MouseLeave();
-				SetFrameWithMouse(NULL);
-			}
-		}
-		for(int i = 0; i < children.GetCount(); i++) {
-			Ctrl* c = children[i];
-			if (c->has_mouse_deep) {
-				c->DeepMouseLeave();
-			}
-		}
 	}
 }
 

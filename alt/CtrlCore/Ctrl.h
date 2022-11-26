@@ -24,7 +24,7 @@ NAMESPACE_UPP
 class Ctrl;
 
 class CtrlFrame :
-	RTTIBase
+	public GeomInteraction2D
 {
 	
 protected:
@@ -39,7 +39,7 @@ protected:
 	void SetWithMouse(CtrlFrame* c);
 	
 public:
-	RTTI_DECL0(CtrlFrame)
+	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
 	
 	virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
@@ -182,24 +182,13 @@ protected:
 	
 	
 	bool         inloop:1;
-	bool         ignore_mouse:1;
-	bool         hidden:1;
-	bool         want_focus:1;
-	bool         has_focus:1;
-	bool         has_focus_deep:1;
-	bool         has_mouse:1;
-	bool         has_mouse_deep:1;
-	bool         modify:1;
 	
-	Ctrl* parent = NULL;
-	Vector<Ctrl*> children;
 	Vector<CtrlFrame*> frames;
 	LogPos pos;
 	Rect content_r;
 	
 	bool Redraw(bool only_pending) override;
 	
-	void DeepMouseLeave();
 	void Refresh0() {Refresh();}
 	void Layout0() {Layout();}
 	
@@ -223,13 +212,10 @@ public:
 	virtual ~Ctrl() {}
 	
 	static void SetDebugDraw(bool b=true) {do_debug_draw = b;}
-	static void CloseTopCtrls();
 	static bool ProcessEvent(bool *quit = NULL);
 	static bool ProcessEvents(double dt, bool *quit = NULL);
 	static bool ReleaseCtrlCapture();
 	static Ctrl *GetCaptureCtrl();
-	static Image OverrideCursor(const Image& m);
-	static Image DefaultCursor();
 	
 	//vstatic oid EventLoop(Ctrl *ctrl);
 	static void EventLoopIteration(double dt, bool* quit);
@@ -238,47 +224,30 @@ public:
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Ctrl* c);
 	Ctrl* GetLastChild();
-	Ctrl* GetIndexChild(int i) {return children[i];}
+	Ctrl* GetIndexChild(int i);
 	void RemoveChild(Ctrl* c);
 	void DeepLayout();
-	int GetChildCount() const {return children.GetCount();}
+	int GetChildCount() const;
 	
 	Ctrl* GetParent();
+	Ctrl* GetTopCtrl();
 	TopWindow* GetTopWindow();
-	int GetCount() const {return children.GetCount();}
-	Ctrl* operator[](int i) {return children[i];}
 	
 	Rect GetContentRect() const {return content_r;}
 	Rect GetRect() const {return GetFrameRect();}
 	Rect GetWorkArea() const;
 	Size GetContentSize() const {return content_r.GetSize();}
-	bool IsShown() const;
-	bool HasFocus() const {return has_focus;}
-	bool HasFocusDeep() const {return has_focus_deep;}
-	bool HasMouse() const {return has_mouse;}
-	bool HasMouseDeep() const {return has_mouse_deep;}
 	const LogPos& GetLogPos() const {return pos;}
 	Size GetSize() const {return GetContentSize();}
 	
 	void SetFrameRect(const Rect& r) override;
+	void MouseLeaveFrame() override;
 	
 	void SetRect(const Rect& r);
 	void SetContentRect(const Rect& r) {content_r = r;}
 	void SetPendingRedrawDeep();
-	void SetFocus();
-	void WantFocus(bool b=true) {want_focus = b;}
-	void IgnoreMouse(bool b=true) {ignore_mouse = b;}
 	
 	void Refresh() override;
-	
-	void Show(bool b=true);
-	void Hide() {Show(false);}
-	void PostCallback(Callback cb);
-	void PostRefresh();
-	void PostLayoutCallback();
-	void SetCapture();
-	void ReleaseCapture();
-	void DeepUnfocus();
 	
 	Ctrl& SizePos() {return HSizePos().VSizePos();}
 	Ctrl& HSizePos(int l=0, int r=0);

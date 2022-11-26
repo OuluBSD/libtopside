@@ -54,8 +54,8 @@ void CoreWindow::SetStoredRect(Rect r) {
 	stored_rect = r;
 }
 
-void CoreWindow::SetPendingPartialRedraw(bool b) {
-	pending_partial_redraw = b;
+void CoreWindow::SetPendingPartialRedraw() {
+	pending_partial_redraw = true;
 }
 
 int CoreWindow::GetId() const {
@@ -439,6 +439,10 @@ void CoreWindow::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dw
 
 void CoreWindow::Wait() {
 	TODO
+}
+
+TopWindow* CoreWindow::GetTopWindow() const {
+	return CastPtr<TopWindow>(aw);
 }
 
 

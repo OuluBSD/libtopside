@@ -30,6 +30,7 @@ public:
 	
 	
 	void Invalidate();
+	void CloseAllWindows();
 	
 	void SetDesktopSize(Size sz);
 	
@@ -39,7 +40,7 @@ public:
 protected:
 	friend class Font;
 	friend class CoreWindow;
-	
+		
     bool Initialize() override;
     void Start() override;
     void Update(double dt) override;

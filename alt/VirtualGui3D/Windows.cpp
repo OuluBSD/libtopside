@@ -100,10 +100,14 @@ void Windows::AddWindow(CoreWindow& sw) {
 	active_id = id;
 	if (wins.Find(prev_active_id) != -1)
 		wins.Get(prev_active_id)->Refresh();
-	sw.tw->TopWindow::Init(&sw, id);
-	WhenActiveWindowChanges();
-	String title = sw.tw->GetTitle();
-	sw.Title(title.GetCount() ? title : "Unnamed");
+	
+	if (TopWindow* tw = CastPtr<TopWindow>(sw.GetAbsoluteWindow())) {
+		WhenActiveWindowChanges();
+		String title = tw->GetTitle();
+		sw.Title(title.GetCount() ? title : "Unnamed");
+	}
+	else TODO
+		
 	Refresh();
 	sw.Refresh();
 }
@@ -157,8 +161,8 @@ void Windows::FocusWindowPos(int win_pos) {
 	if (win_pos < 0 || win_pos >= wins.GetCount()) return;
 	CoreWindow& sw = *wins[win_pos];
 	sw.Show();
-	Ctrl* c = &sw;
-	if (GetLastChild() == c) {
+	GeomInteraction2D* c = &sw;
+	if (GetLastSub() == c) {
 		int prev_active_id = active_id;
 		active_pos = win_pos;
 		active_id = wins.GetKey(win_pos);
@@ -175,8 +179,8 @@ void Windows::FocusWindowPos(int win_pos) {
 		sw.SetFrameRect(RectC(0, 0, sz.cx, sz.cy));
 	}
 	sw.GetTopWindow()->FocusEvent();
-	RemoveChild(&sw);
-	AddChild(&sw);
+	RemoveSub(&sw);
+	AddSub(&sw);
 	int prev_active_id = active_id;
 	active_pos = win_pos;
 	active_id = wins.GetKey(win_pos);
@@ -199,17 +203,21 @@ void Windows::CloseWindow(int win_id) {
 		cw.DeepMouseLeave();
 	if (cw.HasFocusDeep())
 		cw.DeepUnfocus();
-	RemoveChild(&cw);
+	RemoveSub(&cw);
 	TopWindow* tw = cw.GetTopWindow();
 	wins.Remove(win_pos);
 	Refresh();
 	if (tw) {
 		bool found = false;
 		for(int i = 0; i < wins.GetCount(); i++) {
-			if (wins[i]->tw == tw) {
-				wins.Remove(i);
-				tw->CloseWindow();
+			CoreWindow& cw = *wins[i];
+			if (&cw == ptr) {
+				TopWindow* tw = cw.GetTopWindow();
+				if (tw) {
+					tw->CloseWindow();
+				}
 				found = true;
+				wins.Remove(i);
 				break;
 			}
 		}
@@ -373,10 +381,10 @@ void Windows::PostLayout() {
 
 
 TopWindow* Windows::GetVisibleTopWindow() {
-	Ctrl* last = GetLastChild();
+	GeomInteraction2D* last = GetLastSub();
 	for(int i = 0; i < wins.GetCount(); i++) {
 		CoreWindow* swc = wins[i];
-		Ctrl* ptr = swc;
+		GeomInteraction2D* ptr = swc;
 		if (ptr == last) {
 			return swc->GetTopWindow();
 		}
@@ -481,8 +489,8 @@ bool Windows::CheckRender() {
 		SetPendingEffectRedraw();
 	}
 	
-	for(int i = 0; i < GetCount(); i++) {
-		Ctrl* c = Ctrl::operator[](i);
+	for(int i = 0; i < GetSubCount(); i++) {
+		GeomInteraction2D* c = GeomInteraction2D::operator[](i);
 		
 		if (c->IsPendingLayout()) {
 			c->DeepLayout();
@@ -490,7 +498,7 @@ bool Windows::CheckRender() {
 		}
 	}
 	
-	do_render = Ctrl::Redraw(true) || do_render;
+	do_render = GeomInteraction2D::Redraw(true) || do_render;
 	
 	return do_render;
 }

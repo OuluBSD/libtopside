@@ -30,8 +30,10 @@ public:
 	
 	
 	TS::Ecs::CoreWindow* GetWindow();
-	static TS::Ecs::Windows* GetWindows();
+	TS::Ecs::Windows* GetWindows();
 	
+	static Image OverrideCursor(const Image& m);
+	static Image DefaultCursor();
 	
 private:
 	TS::Ecs::CoreWindow* cw = NULL;

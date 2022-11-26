@@ -147,7 +147,7 @@ public:
 	void StoreRect();
 	void LoadRect();
 	void SetStoredRect(Rect r);
-	void SetPendingPartialRedraw(bool b=true);
+	void SetPendingPartialRedraw() override;
 	
 	//GLuint GetTexture() {return fb.GetTexture();}
 	//const Framebuffer& GetFramebuffer() const {return fb;}
@@ -167,6 +167,7 @@ public:
 	bool IsPendingPartialRedraw() const;
 	void Wait();
 	Windows* GetWindows() const {return wins;}
+	TopWindow* GetTopWindow() const;
 	
 	void Uninitialize() override;
 	bool IsGeomDrawBegin() override;

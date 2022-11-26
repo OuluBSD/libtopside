@@ -26,6 +26,7 @@ public:
 	virtual AbsoluteWindowInterface&		MaximizeBox(bool b=true) = 0;
 	virtual AbsoluteWindowInterface&		MinimizeBox(bool b=true) = 0;
 	virtual int								Run(bool appmodal=false) = 0;
+	virtual void							SetPendingPartialRedraw() = 0;
 	
 	virtual Ctrl*							GetWindowCtrl();
 	
@@ -49,18 +50,19 @@ public:
 	
 	void SetTarget(AbsoluteWindowInterface&);
 	
-	virtual void							Title(const String& title) override {o->Title(title);}
-	virtual AbsoluteWindowInterface&		Sizeable(bool b=true) override {o->Sizeable(b); return *this;}
-	virtual AbsoluteWindowInterface&		MaximizeBox(bool b=true) override {o->MaximizeBox(b); return *this;}
-	virtual AbsoluteWindowInterface&		MinimizeBox(bool b=true) override {o->MinimizeBox(b); return *this;}
-	virtual int								Run(bool appmodal=false) override {return o->Run(appmodal);}
+	void							Title(const String& title) override {o->Title(title);}
+	AbsoluteWindowInterface&		Sizeable(bool b=true) override {o->Sizeable(b); return *this;}
+	AbsoluteWindowInterface&		MaximizeBox(bool b=true) override {o->MaximizeBox(b); return *this;}
+	AbsoluteWindowInterface&		MinimizeBox(bool b=true) override {o->MinimizeBox(b); return *this;}
+	int								Run(bool appmodal=false) override {return o->Run(appmodal);}
+	void							SetPendingPartialRedraw() override {o->SetPendingPartialRedraw();}
 	
-	virtual String			GetTitle() override {return o->GetTitle();}
+	String			GetTitle() override {return o->GetTitle();}
 	
-	virtual void			Start() override {o->Start();}
-	virtual void			CloseWindow() override {o->CloseWindow();}
-	virtual void			RefreshData() override {o->RefreshData();};
-	virtual void			FocusEvent() override {o->FocusEvent();}
+	void			Start() override {o->Start();}
+	void			CloseWindow() override {o->CloseWindow();}
+	void			RefreshData() override {o->RefreshData();};
+	void			FocusEvent() override {o->FocusEvent();}
 	
 	
 };

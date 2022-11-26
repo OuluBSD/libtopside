@@ -40,7 +40,11 @@ void WindowSystem::Update(double dt) {
 }
 
 void WindowSystem::Stop() {
-	::UPP::Ctrl::CloseTopCtrls();
+	CloseAllWindows();
+}
+
+void WindowSystem::CloseAllWindows() {
+	TODO
 }
 
 void WindowSystem::Uninitialize() {
