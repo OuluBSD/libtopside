@@ -4,6 +4,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class GeomInteraction2D;
+class GeomInteraction3D;
+
 class GeomInteraction : RTTIBase {
 	
 public:
@@ -32,6 +35,15 @@ public:
 	typedef GeomInteraction CLASSNAME;
 	GeomInteraction();
 	
+	int GetSubCount() const;
+	GeomInteraction* GetOwner() const;
+	void Add(GeomInteraction& c);
+	void AddSub(GeomInteraction* c);
+	GeomInteraction* GetLastSub();
+	GeomInteraction* GetIndexSub(int i);
+	void RemoveSub(GeomInteraction* c);
+	void ClearSub();
+	
 	void Show(bool b=true);
 	void Hide() {Show(false);}
 	bool IsShown() const;
@@ -39,7 +51,6 @@ public:
 	bool HasFocusDeep() const {return has_focus_deep;}
 	bool HasMouse() const {return has_mouse;}
 	bool HasMouseDeep() const {return has_mouse_deep;}
-	void SetFocus();
 	void WantFocus(bool b=true) {want_focus = b;}
 	void IgnoreMouse(bool b=true) {ignore_mouse = b;}
 	DrawCommand& GetCommandBegin() {return cmd_begin;}
@@ -56,8 +67,13 @@ public:
 	void PostLayoutCallback();
 	void SetCapture();
 	void ReleaseCapture();
-	void DeepUnfocus();
+	bool DeepKey(dword key, int count);
+	void Layout0();
+	void Refresh0();
 	
+	virtual bool Redraw(bool only_pending) = 0;
+	virtual void SetFocus();
+	virtual void DeepUnfocus();
 	virtual void Refresh() {}
 	virtual void Activate() {}
 	virtual void Deactivate() {}
@@ -75,9 +91,17 @@ public:
 	virtual String GetDesc() const;
 	virtual bool IsGeomDrawBegin();
 	virtual void MouseLeave();
+	virtual void PaintPreFrame(ProgPainter& pp) {}
+	virtual void PaintPostFrame(ProgPainter& pp) {}
+	virtual void PaintDebug(ProgPainter& pp) {}
 	
 	virtual bool Key(dword key, int count);
 	virtual bool HotKey(dword key);
+	virtual bool Is2D() const;
+	virtual bool Is3D() const;
+	virtual GeomInteraction2D* Get2D();
+	virtual GeomInteraction3D* Get3D();
+	
 	
 	GeomInteraction* GetCaptured();
 	GeomInteraction* GetWithMouse();
@@ -97,32 +121,34 @@ public:
 	typedef GeomInteraction2D CLASSNAME;
 	GeomInteraction2D();
 	
-	void Add(GeomInteraction2D& c);
-	void AddSub(GeomInteraction2D* c);
-	GeomInteraction2D* GetLastSub();
-	GeomInteraction2D* GetIndexSub(int i);
-	void RemoveSub(GeomInteraction2D* c);
 	void DeepLayout();
-	int GetSubCount() const;
-	GeomInteraction2D* GetOwner() const;
 	int GetCount() const;
 	GeomInteraction2D* operator[](int i);
-	
 	Rect GetFrameRect() const {return frame_r;}
 	Size GetFrameSize() const {return frame_r.GetSize();}
+	Rect GetRect() const {return GetFrameRect();}
 	
 	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
-	void SetFrameRect0(const Rect& r) {this->frame_r = r;}
+	
+	bool DeepMouseMove(const Point& pt, dword keyflags);
+	bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
+	bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
 	
 	virtual void SetFrameRect(const Rect& r) {}
 	virtual void FrameLayout(Rect& r) {}
 	virtual void FrameAddSize(Size& sz) {}
 	virtual void Paint(Draw& d) {}
-	virtual bool Redraw(bool only_pending) {return false;}
 	
+	virtual void SetGeomRect(const Rect& r) {this->frame_r = r;}
 	virtual Size GetMinSize() const {return Size(0,0);}
+	virtual Point GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags);
+	virtual void DeepMouseMoveInFrame(Point pt, dword keyflags);
+	virtual bool MouseMoveInFrame(Point pt, dword keyflags);
+	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseWheelInFrame(Point p, int zdelta, dword keyflags);
 	virtual void MouseEnter(Point frame_p, dword keyflags);
 	virtual void MouseMove(Point content_p, dword keyflags) {}
 	virtual void LeftDown(Point p, dword keyflags) {}
@@ -151,6 +177,10 @@ public:
 	virtual void PadTouch(int controller, Pointf p) {}
 	virtual void PadUntouch(int controller) {}
 	
+	bool Redraw(bool only_pending) override;
+	bool Is2D() const override;
+	GeomInteraction2D* Get2D() override;
+	
 };
 
 
@@ -162,8 +192,9 @@ public:
 	typedef GeomInteraction3D CLASSNAME;
 	GeomInteraction3D();
 	
-	
-	
+	bool Is3D() const override;
+	GeomInteraction3D* Get3D() override;
+	bool Redraw(bool only_pending) override;
 };
 
 

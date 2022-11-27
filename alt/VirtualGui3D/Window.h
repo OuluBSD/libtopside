@@ -35,7 +35,7 @@ public:
 	static Image OverrideCursor(const Image& m);
 	static Image DefaultCursor();
 	
-private:
+protected:
 	TS::Ecs::CoreWindow* cw = NULL;
 	int id;
 	

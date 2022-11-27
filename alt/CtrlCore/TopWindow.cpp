@@ -4,7 +4,7 @@
 NAMESPACE_UPP
 
 
-Ctrl* TopWindow::GetWindowCtrl() override {
+Ctrl* TopWindow::GetWindowCtrl() {
 	return this;
 }
 

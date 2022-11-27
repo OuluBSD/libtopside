@@ -52,6 +52,7 @@
 #include "Html.h"
 #include "Url.h"
 #include "Debugging.h"
+#include "ProgPainter.h"
 #include "GeomInteraction.h"
 #include "Ctrl.h"
 #include "GEnums.h"

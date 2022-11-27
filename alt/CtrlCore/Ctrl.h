@@ -41,7 +41,7 @@ protected:
 public:
 	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
 	
-	virtual void FrameLayout(Rect& r) = 0;
+	/*virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
 	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAdd(Ctrl& parent);
@@ -71,7 +71,7 @@ public:
 	virtual void MiddleHold(Point p, dword keyflags) {}
 	virtual void MiddleRepeat(Point p, dword keyflags) {}
 	virtual void MiddleUp(Point p, dword keyflags) {}
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}
+	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}*/
 	virtual void ContinueGlobalMouseMomentum() {}
 	void SetCapture();
 	void ReleaseCapture();
@@ -187,7 +187,6 @@ protected:
 	LogPos pos;
 	Rect content_r;
 	
-	bool Redraw(bool only_pending) override;
 	
 	void Refresh0() {Refresh();}
 	void Layout0() {Layout();}
@@ -195,10 +194,6 @@ protected:
 public:
 	friend class TS::Ecs::DefaultGuiAppComponent;
 	
-	bool DeepKey(dword key, int count);
-	bool DeepMouseMove(const Point& pt, dword keyflags);
-	bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
-	bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
 	
 protected:
 	friend class TS::Ecs::VirtualGui;
@@ -220,6 +215,10 @@ public:
 	//vstatic oid EventLoop(Ctrl *ctrl);
 	static void EventLoopIteration(double dt, bool* quit);
 	
+	Rect GetContentRect() const {return content_r;}
+	Size GetContentSize() const {return content_r.GetSize();}
+	void SetContentRect(const Rect& r) {content_r = r;}
+	
 	void Add(Ctrl& c);
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Ctrl* c);
@@ -233,18 +232,25 @@ public:
 	Ctrl* GetTopCtrl();
 	TopWindow* GetTopWindow();
 	
-	Rect GetContentRect() const {return content_r;}
-	Rect GetRect() const {return GetFrameRect();}
 	Rect GetWorkArea() const;
-	Size GetContentSize() const {return content_r.GetSize();}
 	const LogPos& GetLogPos() const {return pos;}
 	Size GetSize() const {return GetContentSize();}
 	
 	void SetFrameRect(const Rect& r) override;
+	void DeepMouseMoveInFrame(Point pt, dword keyflags) override;
+	bool MouseMoveInFrame(Point pt, dword keyflags) override;
+	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
+	bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) override;
 	void MouseLeaveFrame() override;
+	Point GetContentPoint(const Point& pt) override;
+	bool MouseWheelInFrame(Point p, int zdelta, dword keyflags) override;
+	void SetFocus() override;
+	void DeepUnfocus() override;
+	void PaintPreFrame(ProgPainter& pp) override;
+	void PaintPostFrame(ProgPainter& pp) override;
+	void PaintDebug(ProgPainter& pp) override;
 	
 	void SetRect(const Rect& r);
-	void SetContentRect(const Rect& r) {content_r = r;}
 	void SetPendingRedrawDeep();
 	
 	void Refresh() override;

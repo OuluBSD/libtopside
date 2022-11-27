@@ -31,7 +31,7 @@ void VirtualGui::Render(bool do_render) {
 			r.top = t_pos.y;
 			r.right = r.left + t_size.cx;
 			r.bottom = r.top + t_size.cy;
-			cw.SetFrameRect0(r);
+			cw.SetGeomRect(r);
 		}
 		
 		if (cw.IsPendingLayout()) {

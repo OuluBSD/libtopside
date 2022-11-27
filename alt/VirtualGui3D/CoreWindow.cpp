@@ -30,9 +30,7 @@ void CoreWindow::DeepLayout() {
 
 void CoreWindow::Clear() {
 	if (!aw) return;
-	//if (tw->IsEmpty()) return;
-	//RemoveChild(tw->Get());
-	RemoveChild(aw);
+	ClearSub();
 	aw = 0;
 	owned_aw.Clear();
 }
@@ -74,13 +72,6 @@ AbsoluteWindowInterface* CoreWindow::GetAbsoluteWindow() {
 	return aw;
 }
 
-void CoreWindow::SetFrameRect(const Rect& r) {
-	Ctrl* c = GetWindowCtrl();
-	if (c)
-		c->SetFrameRect(r);
-	cw->SetFrameRect(r);
-}
-
 bool CoreWindow::IsMaximized() const {
 	return maximized;
 }
@@ -103,6 +94,8 @@ Point CoreWindow::GetGlobalMouse() {
 		return global_mouse;*/
 	TODO
 }
+
+#if 0
 
 void CoreWindow::ResizeFrame::FrameLayout(Rect& r) {
 	sz = r.GetSize();
@@ -291,19 +284,19 @@ void CoreWindow::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
 				break;
 			case TL:
 			case BR:
-				Ctrl::OverrideCursor(WindowsImg::nwse());
+				AbsoluteWindow::OverrideCursor(WindowsImg::nwse());
 				break;
 			case TR:
 			case BL:
-				Ctrl::OverrideCursor(WindowsImg::nesw());
+				AbsoluteWindow::OverrideCursor(WindowsImg::nesw());
 				break;
 			case TOP:
 			case BOTTOM:
-				Ctrl::OverrideCursor(WindowsImg::ns());
+				AbsoluteWindow::OverrideCursor(WindowsImg::ns());
 				break;
 			case LEFT:
 			case RIGHT:
-				Ctrl::OverrideCursor(WindowsImg::ew());
+				AbsoluteWindow::OverrideCursor(WindowsImg::ew());
 				break;
 		}
 	}
@@ -312,7 +305,7 @@ void CoreWindow::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
 void CoreWindow::ResizeFrame::MouseLeave() {
 	if (is_resizing) ReleaseCapture();
 	is_resizing = false;
-	Ctrl::DefaultCursor();
+	AbsoluteWindow::DefaultCursor();
 }
 
 void CoreWindow::ResizeFrame::LeftDown(Point p, dword keyflags) {
@@ -328,17 +321,18 @@ void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
 	ReleaseCapture();
 }
 
+#endif
 
 
 
 
 CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 	aw = 0;
-	resize_frame.win = this;
+	//resize_frame.win = this;
 	SetMaximized(false);
 	
 	
-	AddFrame(resize_frame);
+	//AddFrame(resize_frame);
 	Add(decor.SizePos());
 	SetFrameRect(RectC(0, 0, 320, 240));
 	
@@ -371,18 +365,20 @@ CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
 
 void CoreWindow::SetMaximized(bool b) {
 	maximized = b;
-	resize_frame.SetActive(!b);
+	//resize_frame.SetActive(!b);
 }
 
 void CoreWindow::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
+	TODO
+	#if 0
 	if (aw) {
 		Add(aw->VSizePos(24, 1).HSizePos(1, 1));
-	
 		aw->SetFocus();
 	}
+	#endif
 	
 	if (maximized) {
 		maximized = false;
@@ -399,8 +395,17 @@ void CoreWindow::Close() {wins->QueueCloseWindow(id);}
 void CoreWindow::FocusEvent() {wins->FocusWindow(id); aw->FocusEvent();}
 bool CoreWindow::IsGeomDrawBegin() {return true;}
 
+#if 0
 void CoreWindow::SetFrameRect(const Rect& r) {
-	Ctrl::SetFrameRect(r);
+	Ctrl* c = GetWindowCtrl();
+	if (c)
+		c->SetFrameRect(r);
+	cw->SetFrameRect(r);
+}
+#endif
+
+void CoreWindow::SetFrameRect(const Rect& r) {
+	GeomInteraction2D::SetFrameRect(r);
 	if (!transform2d.IsEmpty()) {
 		transform2d->position[0] = r.left;
 		transform2d->position[1] = r.top;
@@ -416,7 +421,7 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 }
 
 bool CoreWindow::Redraw(bool only_pending) {
-	return Ctrl::Redraw(only_pending);
+	return GeomInteraction2D::Redraw(only_pending);
 }
 
 void CoreWindow::LeftDown(Point p, dword keyflags) {

@@ -381,10 +381,10 @@ void Windows::PostLayout() {
 
 
 TopWindow* Windows::GetVisibleTopWindow() {
-	GeomInteraction2D* last = GetLastSub();
+	GeomInteraction* last = GetLastSub();
 	for(int i = 0; i < wins.GetCount(); i++) {
 		CoreWindow* swc = wins[i];
-		GeomInteraction2D* ptr = swc;
+		GeomInteraction* ptr = swc;
 		if (ptr == last) {
 			return swc->GetTopWindow();
 		}
@@ -504,10 +504,9 @@ bool Windows::CheckRender() {
 }
 
 bool Windows::DeepKey(dword key, int count) {
-	if (wins.GetCount()) {
-		CoreWindow& win = *wins.Top();
-		return win.DeepKey(key, count);
-	}
+	CoreWindow* active = GetActiveWindow();
+	if (active)
+		return active->DeepKey(key, count);
 	return false;
 }
 

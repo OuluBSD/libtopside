@@ -56,7 +56,7 @@ class CoreWindow :
 {
 	RTTI_COMP2(CoreWindow, GeomInteraction2D, AbsoluteWindow)
 	
-	
+	#if 0
 	struct ResizeFrame : public CtrlFrame {
 		RTTI_DECL1(ResizeFrame, CtrlFrame)
 	
@@ -86,7 +86,7 @@ class CoreWindow :
 		virtual void ContinueGlobalMouseMomentum() override;
 		void DoResize();
 	};
-	
+	#endif
 	
 	One<AbsoluteWindowInterface> owned_aw;
 	AbsoluteWindowInterface* aw = 0;
@@ -94,7 +94,7 @@ class CoreWindow :
 	Windows* wins = NULL;
 	CoreWindowLink* linked = NULL;
 	
-	ResizeFrame resize_frame;
+	//ResizeFrame resize_frame;
 	WindowDecoration decor;
 	Button minimize, maximize, close;
 	Rect stored_rect;
@@ -175,7 +175,9 @@ public:
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;
 	void ChildGotFocus() override;
+	
 	COMP_DEF_VISIT
+	
 	virtual void ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags);
 };
 

@@ -60,7 +60,7 @@ void AbsoluteWindow::UpdateFromTransform2D() {
 		r.top = t_pos.y;
 		r.right = r.left + t_size.cx;
 		r.bottom = r.top + t_size.cy;
-		cw.SetFrameRect0(r);
+		cw.SetGeomRect(r);
 	}
 	
 	if (cw.IsPendingLayout()) {
@@ -124,21 +124,20 @@ TS::Ecs::Windows* AbsoluteWindow::GetWindows() {
 	return cw ? cw->GetWindows() : 0;
 }
 
+Image AbsoluteWindow::DefaultCursor() {
+	LOG("TODO AbsoluteWindow::DefaultCursor");
+	return Image();
+}
+
 Image AbsoluteWindow::OverrideCursor(const Image& m) {
 	LOG("TODO AbsoluteWindow::OverrideCursor");
 	return Image();
 }
 
 Ecs::CoreWindow* AbsoluteWindow::GetWindow() {
-	AbsoluteWindow* c = this;
-	while (c) {
-		Ecs::CoreWindow* cw = CastPtr<Ecs::CoreWindow>(c);
-		if (cw)
-			return cw;
-		c = c->GetOwner();
-	}
-	return NULL;
+	return cw;
 }
+
 
 
 END_UPP_NAMESPACE

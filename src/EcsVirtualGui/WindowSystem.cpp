@@ -15,7 +15,7 @@ bool WindowSystem::Initialize() {
 	
 	Size sz = VirtualGui3DPtr->GetSize();
 	
-	win.SetFrameRect0(RectC(0, 0, sz.cx, sz.cy));
+	win.SetGeomRect(RectC(0, 0, sz.cx, sz.cy));
 	
 	return true;
 }

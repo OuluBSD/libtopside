@@ -1,4 +1,4 @@
-#include "Geometry.h"
+#include "Local.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -110,7 +110,7 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 	}
 	else {
 		Point a(x0, y0), b(x1, y1);
-		Point off = GetOffsets(a, b, line_width);
+		Point off = GetPointOffsets(a, b, line_width);
 		Point p0a(a.x - off.x, a.y - off.y);
 		Point p1a(b.x - off.x, b.y - off.y);
 		Point p0b(a.x + off.x, a.y + off.y);
@@ -196,7 +196,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 	DrawCommand& cmd = CreateCommand();
 	cmd.clr = c;
 	
-	static thread_local Vector<vec2> tmp1; // can't inherit Geometry to headers
+	static thread_local Vector<Pointf> tmp1; // can't inherit Geometry to headers
 	
 	if (line_width == 1) {
 		cmd.type = DRAW_POLYLINE;
@@ -214,7 +214,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 		for(int i = 0; i < pt_count-1; i++) {
 			a = b;
 			b = &pts[i+1];
-			tmp0[i] = GetOffsets(*a, *b, line_width);
+			tmp0[i] = GetPointOffsets(*a, *b, line_width);
 			
 			double dx = b->x - a->x;
 			double dy = b->y - a->y;
@@ -241,10 +241,10 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 			o0 = o1;
 			o1 = &tmp0[i+1];
 			
-			vec2 al	(a->x - o0->x, a->y - o0->y);
-			vec2 b0l(b->x - o0->x, b->y - o0->y);
-			vec2 b1l(b->x - o1->x, b->y - o1->y);
-			vec2 cl	(c->x - o1->x, c->y - o1->y);
+			Pointf al	(a->x - o0->x, a->y - o0->y);
+			Pointf b0l(b->x - o0->x, b->y - o0->y);
+			Pointf b1l(b->x - o1->x, b->y - o1->y);
+			Pointf cl	(c->x - o1->x, c->y - o1->y);
 			
 			if (!i)
 				tmp1.Add(al);
@@ -253,7 +253,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 				tmp1.Add(b0l);
 			}
 			else if (diff > 0) {
-				vec2 is = Intersect(al, b0l, b1l, cl);
+				Pointf is = Intersect(al, b0l, b1l, cl);
 				tmp1.Add(is);
 			}
 			else {
@@ -281,10 +281,10 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 			o1 = o0;
 			o0 = &tmp0[i];
 			
-			vec2 ar	(a->x + o0->x, a->y + o0->y);
-			vec2 b0r	(b->x + o0->x, b->y + o0->y);
-			vec2 b1r	(b->x + o1->x, b->y + o1->y);
-			vec2 cr	(c->x + o1->x, c->y + o1->y);
+			Pointf ar	(a->x + o0->x, a->y + o0->y);
+			Pointf b0r	(b->x + o0->x, b->y + o0->y);
+			Pointf b1r	(b->x + o1->x, b->y + o1->y);
+			Pointf cr	(c->x + o1->x, c->y + o1->y);
 			
 			if (i == angles.GetCount()-2)
 				tmp1.Add(cr);
@@ -293,7 +293,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 				tmp1.Add(b0r);
 			}
 			else if (diff < 0) {
-				vec2 is = Intersect(ar, b0r, b1r, cr);
+				Pointf is = Intersect(ar, b0r, b1r, cr);
 				tmp1.Add(is);
 			}
 			else {
@@ -306,7 +306,7 @@ void ProgPainter::DrawPolyline(const Point* pts, int pt_count, int line_width, R
 		}
 		
 		cmd.type = DRAW_TRIANGLES;
-		Triangulate::Process(tmp1, cmd.triangles);
+		TriangulatePointf::Process(tmp1, cmd.triangles);
 		
 		//cmd.type = DRAW_POLYLINE;
 		//cmd.pts <<= tmp1;
@@ -445,6 +445,181 @@ void ProgPainter::Clear() {
 		begin->next = 0;
 		end->prev = 0;
 	}
+}
+
+
+
+
+
+
+double TriangulatePointf::Area(const Vector<Pointf> &contour) {
+	int n = contour.GetCount();
+	
+	double A=0.0f;
+	
+	for (int p=n-1,q=0; q<n; p=q++) {
+		A+= contour[p].x * contour[q].y - contour[q].x * contour[p].y;
+	}
+	
+	return A*0.5f;
+}
+
+/*
+  InsideTriangle decides if a point P is Inside of the triangle
+  defined by A, B, C.
+*/
+bool TriangulatePointf::InsideTriangle(double Ax, double Ay,
+		double Bx, double By,
+		double Cx, double Cy,
+		double Px, double Py)
+        
+{
+	double ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
+	double cCROSSap, bCROSScp, aCROSSbp;
+	
+	ax = Cx - Bx;
+	ay = Cy - By;
+	bx = Ax - Cx;
+	by = Ay - Cy;
+	cx = Bx - Ax;
+	cy = By - Ay;
+	apx= Px - Ax;
+	apy= Py - Ay;
+	bpx= Px - Bx;
+	bpy= Py - By;
+	cpx= Px - Cx;
+	cpy= Py - Cy;
+	
+	aCROSSbp = ax*bpy - ay*bpx;
+	cCROSSap = cx*apy - cy*apx;
+	bCROSScp = bx*cpy - by*cpx;
+	
+	return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
+};
+
+bool TriangulatePointf::Snip(const Vector<Pointf> &contour,int u,int v,int w,int n,int *V) {
+	int p;
+	double Ax, Ay, Bx, By, Cx, Cy, Px, Py;
+	
+	Ax = contour[V[u]].x;
+	Ay = contour[V[u]].y;
+	
+	Bx = contour[V[v]].x;
+	By = contour[V[v]].y;
+	
+	Cx = contour[V[w]].x;
+	Cy = contour[V[w]].y;
+	
+	if (EPSILON > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))))
+		return false;
+		
+	for (p=0;p<n;p++) {
+		if ((p == u) || (p == v) || (p == w))
+			continue;
+			
+		Px = contour[V[p]].x;
+		
+		Py = contour[V[p]].y;
+		
+		if (InsideTriangle(Ax,Ay,Bx,By,Cx,Cy,Px,Py))
+			return false;
+	}
+	
+	return true;
+}
+
+bool TriangulatePointf::Process(const Vector<Pointf> &contour, Vector<float> &result) {
+	/* allocate and initialize list of Vertices in polygon */
+	result.SetCount(0);
+	
+	int n = contour.GetCount();
+	
+	if (n < 3)
+		return false;
+		
+	Vector<int> V;
+	V.SetCount(n);
+	
+	/* we want a counter-clockwise polygon in V */
+	
+	if (0.0f < Area(contour))
+		for (int v=0; v<n; v++)
+			V[v] = v;
+	else
+		for (int v=0; v<n; v++)
+			V[v] = (n-1)-v;
+			
+	int nv = n;
+	
+	/*  remove nv-2 Vertices, creating 1 triangle every time */
+	int count = 2*nv;   /* error detection */
+	
+	for (int m=0, v=nv-1; nv>2;) {
+		/* if we loop, it is probably a non-simple polygon */
+		if (0 >= (count--)) {
+			//** TriangulatePointf: ERROR - probable bad polygon!
+			return false;
+		}
+		
+		/* three consecutive vertices in current polygon, <u,v,w> */
+		int u = v  ;
+		
+		if (nv <= u)
+			u = 0;     /* previous */
+			
+		v = u+1;
+		
+		if (nv <= v)
+			v = 0;     /* new v    */
+			
+		int w = v+1;
+		
+		if (nv <= w)
+			w = 0;     /* next     */
+			
+		if (Snip(contour,u,v,w,nv,V.Begin())) {
+			int a,b,c,s,t;
+			
+			/* true names of the vertices */
+			a = V[u];
+			b = V[v];
+			c = V[w];
+			
+			/* output Triangle */
+			#if 0
+			tri2& tri = result.Add();
+			tri.a = contour[a];
+			tri.b = contour[b];
+			tri.c = contour[c];
+			#else
+			const auto& aa = contour[a];
+			const auto& bb = contour[b];
+			const auto& cc = contour[c];
+			result.Add(aa.x);
+			result.Add(aa.y);
+			result.Add(bb.x);
+			result.Add(bb.y);
+			result.Add(cc.x);
+			result.Add(cc.y);
+			#endif
+			
+			m++;
+			
+			/* remove v from remaining polygon */
+			
+			for (s=v,t=v+1;t<nv;s++,t++)
+				V[s] = V[t];
+				
+			nv--;
+			
+			/* resest error detection counter */
+			count = 2*nv;
+		}
+	}
+	
+	
+	
+	return true;
 }
 
 
