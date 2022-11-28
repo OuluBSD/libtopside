@@ -41,9 +41,9 @@ protected:
 public:
 	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
 	
+	virtual void FramePaint(Draw& w, const Rect& r) {}
 	/*virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
-	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAdd(Ctrl& parent);
 	virtual void FrameRemove();
 	virtual int  OverPaint() const;
@@ -249,6 +249,7 @@ public:
 	void PaintPreFrame(ProgPainter& pp) override;
 	void PaintPostFrame(ProgPainter& pp) override;
 	void PaintDebug(ProgPainter& pp) override;
+	bool IsCtrl() const override;
 	
 	void SetRect(const Rect& r);
 	void SetPendingRedrawDeep();

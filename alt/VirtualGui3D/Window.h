@@ -26,7 +26,7 @@ public:
 	AbsoluteWindowInterface&	MaximizeBox(bool b=true) override;
 	AbsoluteWindowInterface&	MinimizeBox(bool b=true) override;
 	int							Run(bool appmodal=false) override;
-	String						GetTitle() override;
+	String						GetTitle() const override;
 	
 	
 	TS::Ecs::CoreWindow* GetWindow();

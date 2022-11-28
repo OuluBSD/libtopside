@@ -120,6 +120,10 @@ AbsoluteWindowInterface& AbsoluteWindow::MinimizeBox(bool b) {
 	TODO
 }
 
+String AbsoluteWindow::GetTitle() const {
+	TODO
+}
+
 TS::Ecs::Windows* AbsoluteWindow::GetWindows() {
 	return cw ? cw->GetWindows() : 0;
 }
@@ -137,7 +141,6 @@ Image AbsoluteWindow::OverrideCursor(const Image& m) {
 Ecs::CoreWindow* AbsoluteWindow::GetWindow() {
 	return cw;
 }
-
 
 
 END_UPP_NAMESPACE

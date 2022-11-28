@@ -5,6 +5,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 bool GeomInteraction::do_debug_draw;
 
+
+GeomInteraction::GeomInteraction() {
+	
+}
+
 String GeomInteraction::GetDesc() const {
 	return String();
 }
@@ -15,6 +20,18 @@ bool GeomInteraction::IsGeomDrawBegin() {
 
 bool GeomInteraction::Key(dword key, int count) {
 	return false;
+}
+
+bool GeomInteraction::IsCaptureRoot() const {
+	return false;
+}
+
+GeomInteraction* GeomInteraction::GetCaptured() const {
+	return 0;
+}
+
+GeomInteraction* GeomInteraction::GetWithMouse() const {
+	return 0;
 }
 
 bool GeomInteraction::HotKey(dword key) {
@@ -29,12 +46,46 @@ bool GeomInteraction::Is3D() const {
 	return false;
 }
 
+bool GeomInteraction::IsCtrl() const {
+	return false;
+}
+
+GeomInteraction2D* GeomInteraction::Get2D() {
+	return 0;
+}
+
+GeomInteraction3D* GeomInteraction::Get3D() {
+	return 0;
+}
+
+Ctrl* GeomInteraction::GetCtrl() {
+	return 0;
+}
+
 int GeomInteraction::GetSubCount() const {
 	return sub.GetCount();
 }
 
 void GeomInteraction::ClearSub() {
 	sub.Clear();
+}
+
+bool GeomInteraction::IsModified() const {
+	TODO
+	/*GuiLock __;
+	return modify;*/
+}
+
+void GeomInteraction::SetModify() {
+	TODO
+	/*GuiLock __;
+	modify = true;*/
+}
+
+void GeomInteraction::ClearModify() {
+	TODO
+	/*GuiLock __;
+	modify = false;*/
 }
 
 void GeomInteraction::SetFocus() {
@@ -171,6 +222,14 @@ void GeomInteraction::SetCapture() {
 void GeomInteraction::ReleaseCapture() {
 	//SDL_CaptureMouse(SDL_FALSE);
 	SetCaptured(NULL);
+}
+
+void GeomInteraction::SetCaptured(GeomInteraction* c) {
+	TODO
+}
+
+void GeomInteraction::SetWithMouse(GeomInteraction* c) {
+	TODO
 }
 
 

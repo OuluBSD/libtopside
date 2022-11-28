@@ -61,8 +61,8 @@ protected:
 	bool maximize_all;
 	int active_pos, active_id;
 	Array<TopWindow> created_wins;
-	Ctrl* captured = NULL;
-	Ctrl* with_mouse = NULL;
+	GeomInteraction2D* captured = NULL;
+	GeomInteraction2D* with_mouse = NULL;
 	CtrlFrame* frame_with_mouse = NULL;
 	CtrlFrame* frame_captured = NULL;
 	EmptySpaceCtrl* esc = NULL;
@@ -95,8 +95,6 @@ protected:
 	void LoadRectAll();
 	void SetMaximizeAll(bool b=true) {maximize_all = b;}
 	
-	Ctrl* GetCaptured() {return captured;}
-	Ctrl* GetWithMouse() {return with_mouse;}
 	void SetCaptured(Ctrl* c) {captured = c;}
 	void SetWithMouse(Ctrl* c) {with_mouse = c;}
 	CtrlFrame* GetFrameCaptured() {return frame_captured;}
@@ -131,6 +129,10 @@ public:
 	virtual bool CheckRender();
 	virtual bool DeepKey(dword key, int count);
 	virtual void CloseWindow(CoreWindow& cw) = 0;
+	
+	bool IsCaptureRoot() const override;
+	GeomInteraction2D* GetCaptured() const override {return captured;}
+	GeomInteraction2D* GetWithMouse() const override {return with_mouse;}
 	bool Key(dword key, int count) override;
 	void LeftDown(Point p, dword keyflags) override;
 	void Layout() override;

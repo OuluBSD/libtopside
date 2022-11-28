@@ -18,7 +18,7 @@ protected:
 public:
 	RTTI_DECL0(AbsoluteWindowInterface)
 	typedef AbsoluteWindowInterface CLASSNAME;
-	AbsoluteWindowInterface();
+	AbsoluteWindowInterface() {}
 	virtual ~AbsoluteWindowInterface() {}
 	
 	virtual void							Title(const String& title) = 0;
@@ -27,10 +27,10 @@ public:
 	virtual AbsoluteWindowInterface&		MinimizeBox(bool b=true) = 0;
 	virtual int								Run(bool appmodal=false) = 0;
 	virtual void							SetPendingPartialRedraw() = 0;
+	virtual String							GetTitle() const = 0;
 	
 	virtual Ctrl*							GetWindowCtrl();
 	
-	virtual String			GetTitle();
 	
 	virtual void			Start() {}
 	virtual void			CloseWindow() {}
@@ -46,23 +46,23 @@ class AbsoluteWindowProxy : public AbsoluteWindowInterface {
 public:
 	RTTI_DECL1(AbsoluteWindowProxy, AbsoluteWindowInterface)
 	typedef AbsoluteWindowProxy CLASSNAME;
-	AbsoluteWindowProxy();
+	AbsoluteWindowProxy() {}
 	
 	void SetTarget(AbsoluteWindowInterface&);
 	
-	void							Title(const String& title) override {o->Title(title);}
-	AbsoluteWindowInterface&		Sizeable(bool b=true) override {o->Sizeable(b); return *this;}
-	AbsoluteWindowInterface&		MaximizeBox(bool b=true) override {o->MaximizeBox(b); return *this;}
-	AbsoluteWindowInterface&		MinimizeBox(bool b=true) override {o->MinimizeBox(b); return *this;}
-	int								Run(bool appmodal=false) override {return o->Run(appmodal);}
-	void							SetPendingPartialRedraw() override {o->SetPendingPartialRedraw();}
+	void							Title(const String& title) override {ASSERT(o); o->Title(title);}
+	AbsoluteWindowInterface&		Sizeable(bool b=true) override {ASSERT(o); o->Sizeable(b); return *this;}
+	AbsoluteWindowInterface&		MaximizeBox(bool b=true) override {ASSERT(o); o->MaximizeBox(b); return *this;}
+	AbsoluteWindowInterface&		MinimizeBox(bool b=true) override {ASSERT(o); o->MinimizeBox(b); return *this;}
+	int								Run(bool appmodal=false) override {ASSERT(o); return o->Run(appmodal);}
+	void							SetPendingPartialRedraw() override {ASSERT(o); o->SetPendingPartialRedraw();}
 	
-	String			GetTitle() override {return o->GetTitle();}
+	String			GetTitle() const override {ASSERT(o); return o->GetTitle();}
 	
-	void			Start() override {o->Start();}
-	void			CloseWindow() override {o->CloseWindow();}
-	void			RefreshData() override {o->RefreshData();};
-	void			FocusEvent() override {o->FocusEvent();}
+	void			Start() override {ASSERT(o); o->Start();}
+	void			CloseWindow() override {ASSERT(o); o->CloseWindow();}
+	void			RefreshData() override {ASSERT(o); o->RefreshData();};
+	void			FocusEvent() override {ASSERT(o); o->FocusEvent();}
 	
 	
 };

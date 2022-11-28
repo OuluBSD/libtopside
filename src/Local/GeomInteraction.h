@@ -95,16 +95,20 @@ public:
 	virtual void PaintPostFrame(ProgPainter& pp) {}
 	virtual void PaintDebug(ProgPainter& pp) {}
 	
+	virtual bool IsCaptureRoot() const;
+	virtual GeomInteraction* GetCaptured() const;
+	virtual GeomInteraction* GetWithMouse() const;
+	
 	virtual bool Key(dword key, int count);
 	virtual bool HotKey(dword key);
 	virtual bool Is2D() const;
 	virtual bool Is3D() const;
+	virtual bool IsCtrl() const;
 	virtual GeomInteraction2D* Get2D();
 	virtual GeomInteraction3D* Get3D();
+	virtual Ctrl* GetCtrl();
 	
 	
-	GeomInteraction* GetCaptured();
-	GeomInteraction* GetWithMouse();
 	void SetCaptured(GeomInteraction* c);
 	void SetWithMouse(GeomInteraction* c);
 	

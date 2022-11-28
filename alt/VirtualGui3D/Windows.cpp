@@ -510,6 +510,10 @@ bool Windows::DeepKey(dword key, int count) {
 	return false;
 }
 
+bool Windows::IsCaptureRoot() const {
+	return true;
+}
+
 /*void Windows::Redraw(ProgDraw& pd, bool only_pending) {
 	for(int i = 0; i < GetCount(); i++) {
 		Redraw(pd, i, only_pending);

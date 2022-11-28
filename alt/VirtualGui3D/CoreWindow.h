@@ -153,7 +153,6 @@ public:
 	//const Framebuffer& GetFramebuffer() const {return fb;}
 	int GetId() const;
 	Rect GetStoredRect() const;
-	String GetTitle() const;
 	AbsoluteWindowInterface* GetAbsoluteWindow();
 	bool IsMaximized() const;
 	bool IsActive() const;
@@ -169,6 +168,7 @@ public:
 	Windows* GetWindows() const {return wins;}
 	TopWindow* GetTopWindow() const;
 	
+	String GetTitle() const override;
 	void Uninitialize() override;
 	bool IsGeomDrawBegin() override;
 	void SetFrameRect(const Rect& r) override;

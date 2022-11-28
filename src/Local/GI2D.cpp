@@ -271,4 +271,17 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	return did_draw;
 }
 
+bool GeomInteraction2D::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) {
+	TODO
+}
+
+bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
+	TODO
+}
+
+void GeomInteraction2D::DeepLayout() {
+	TODO
+}
+
+
 NAMESPACE_TOPSIDE_END

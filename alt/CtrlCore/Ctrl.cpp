@@ -101,8 +101,11 @@ Ctrl* Ctrl::GetTopCtrl() {
 	Ctrl* c = this;
 	while (c) {
 		Ctrl* p = c->GetParent();
-		if (p)
+		if (p) {
 			c = p;
+			if (p->IsCaptureRoot())
+				break;
+		}
 		else
 			break;
 	}
@@ -611,35 +614,61 @@ Ctrl& Ctrl::RightPos(int i, int size) {
 
 
 
+bool Ctrl::IsCtrl() const {
+	return true;
+}
 
 Ctrl* Ctrl::GetCaptured() {
-	return GetWindows()->GetCaptured();
+	Ctrl* top = GetTopCtrl();
+	if (top && top->IsCaptureRoot()) {
+		GeomInteraction* gi = top->GetCaptured();
+		return gi ? gi->GetCtrl() : 0;
+	}
+	return 0;
 }
+
 Ctrl* Ctrl::GetWithMouse() {
-	return GetWindows()->GetWithMouse();
+	Ctrl* top = GetTopCtrl();
+	if (top && top->IsCaptureRoot()) {
+		GeomInteraction* gi = top->GetWithMouse();
+		return gi ? gi->GetCtrl() : 0;
+	}
+	return 0;
 }
+
 void Ctrl::SetCaptured(Ctrl* c) {
-	GetWindows()->SetCaptured(c);
+	Ctrl* top = GetTopCtrl();
+	if (top)
+		top->SetCaptured(c);
 }
+
 void Ctrl::SetWithMouse(Ctrl* c) {
-	GetWindows()->SetWithMouse(c);
+	Ctrl* top = GetTopCtrl();
+	if (top)
+		top->SetWithMouse(c);
 }
+
 CtrlFrame* Ctrl::GetFrameCaptured() {
-	return GetWindows()->GetFrameCaptured();
+	TODO //return GetWindows()->GetFrameCaptured();
 }
+
 CtrlFrame* Ctrl::GetFrameWithMouse() {
-	return GetWindows()->GetFrameWithMouse();
+	TODO //return GetWindows()->GetFrameWithMouse();
 }
+
 void Ctrl::SetFrameCaptured(CtrlFrame* c) {
-	GetWindows()->SetFrameCaptured(c);
+	TODO //GetWindows()->SetFrameCaptured(c);
 }
+
 void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
-	GetWindows()->SetFrameWithMouse(c);
+	TODO //GetWindows()->SetFrameWithMouse(c);
 }
 
 
 
 void Ctrl::DeepLayout() {
+	TODO
+	#if 0
 	Rect prev_frame_r = frame_r;
 	
 	const LogPos& lp = GetLogPos();
@@ -686,6 +715,7 @@ void Ctrl::DeepLayout() {
 	
 	
 	PostLayout();
+	#endif
 }
 
 
@@ -720,21 +750,6 @@ void Ctrl::Update() {
 	Updated();
 }
 
-bool Ctrl::IsModified() const {
-	GuiLock __;
-	return modify;
-}
-
-void Ctrl::SetModify() {
-	GuiLock __;
-	modify = true;
-}
-
-void Ctrl::ClearModify() {
-	GuiLock __;
-	modify = false;
-}
-
 void Ctrl::PaintPreFrame(ProgPainter& pp) {
 	Size sz = GetFrameSize();
 	Rect new_content_r(sz);
@@ -754,17 +769,23 @@ void Ctrl::PaintPostFrame(ProgPainter& pp) {
 }
 
 void Ctrl::PaintDebug(ProgPainter& pp) {
+	Size sz = GetFrameSize();
+	Rect new_content_r(sz);
 	if (do_debug_draw) {
 		if (has_mouse) {
 			RGBA c{255, 0, 0, 125};
-			pre.DrawRect(new_content_r.GetSize(), c);
+			pp.DrawRect(new_content_r.GetSize(), c);
 		}
 		else {
 			RGBA c(RandomColor(64, 128));
 			c.a = 127;
-			pre.DrawRect(new_content_r.GetSize(), c);
+			pp.DrawRect(new_content_r.GetSize(), c);
 		}
 	}
+}
+
+AbsoluteWindow* Ctrl::GetAbsoluteWindow() {
+	TODO
 }
 
 
