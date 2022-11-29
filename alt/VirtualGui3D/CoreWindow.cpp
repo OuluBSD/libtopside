@@ -29,10 +29,10 @@ void CoreWindow::DeepLayout() {
 }
 
 void CoreWindow::Clear() {
-	if (!aw) return;
+	//if (!aw) return;
 	ClearSub();
-	aw = 0;
-	owned_aw.Clear();
+	//aw = 0;
+	//owned_aw.Clear();
 }
 
 void CoreWindow::Title(String label) {
@@ -69,7 +69,7 @@ String CoreWindow::GetTitle() const {
 }
 
 AbsoluteWindowInterface* CoreWindow::GetAbsoluteWindow() {
-	return aw;
+	return this;
 }
 
 bool CoreWindow::IsMaximized() const {
@@ -327,7 +327,7 @@ void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
 
 
 CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
-	aw = 0;
+	//aw = 0;
 	//resize_frame.win = this;
 	SetMaximized(false);
 	
@@ -372,11 +372,10 @@ void CoreWindow::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
-	TODO
 	#if 0
-	if (aw) {
-		Add(aw->VSizePos(24, 1).HSizePos(1, 1));
-		aw->SetFocus();
+	if (proxy) {
+		Add(proxy->VSizePos(24, 1).HSizePos(1, 1));
+		proxy->SetFocus();
 	}
 	#endif
 	
@@ -392,7 +391,7 @@ void CoreWindow::Maximize() {if (wins) {wins->MaximizeWindow(id); wins->FocusWin
 void CoreWindow::Restore()  {if (wins) {wins->RestoreWindow(id); wins->FocusWindow(id);} maximized = false;}
 void CoreWindow::Minimize() {if (wins) {wins->MinimizeWindow(id); wins->FocusWindow(id);}}
 void CoreWindow::Close() {wins->QueueCloseWindow(id);}
-void CoreWindow::FocusEvent() {wins->FocusWindow(id); aw->FocusEvent();}
+void CoreWindow::FocusEvent() {wins->FocusWindow(id); this->FocusEvent();}
 bool CoreWindow::IsGeomDrawBegin() {return true;}
 
 #if 0
@@ -447,7 +446,7 @@ void CoreWindow::Wait() {
 }
 
 TopWindow* CoreWindow::GetTopWindow() const {
-	return CastPtr<TopWindow>(aw);
+	return CastPtr<TopWindow>(proxy);
 }
 
 

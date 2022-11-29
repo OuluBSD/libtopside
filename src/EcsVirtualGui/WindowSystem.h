@@ -13,6 +13,7 @@ class WindowSystem :
 	Size vdesktop_sz;
 	EnvStateRef env;
 	WindowManager wm;
+	WindowSystemScreen* active_screen = 0;
 	
 	void Visit(RuntimeVisitor& vis) override {
 		vis.VisitThis<System<WindowSystem>>(this);
@@ -36,6 +37,7 @@ public:
 	
 	int GetScreenCount() const {return wm.GetScreenCount();}
 	Windows& GetScreen(int i) {return wm.GetScreen(i);}
+	WindowSystemScreen* GetActiveScreen() const {return active_screen;}
 	
 protected:
 	friend class Font;

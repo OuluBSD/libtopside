@@ -88,8 +88,8 @@ class CoreWindow :
 	};
 	#endif
 	
-	One<AbsoluteWindowInterface> owned_aw;
-	AbsoluteWindowInterface* aw = 0;
+	//One<AbsoluteWindowInterface> owned_aw;
+	//AbsoluteWindowInterface* aw = 0;
 	void (CoreWindow::*reset_fn)() = 0;
 	Windows* wins = NULL;
 	CoreWindowLink* linked = NULL;
@@ -122,6 +122,7 @@ public:
 	
 	void operator=(const CoreWindow& cw);
 	
+	#if 0
 	template <class T>
 	void ResetTopWindow() {
 		Clear();
@@ -137,6 +138,7 @@ public:
 		reset_fn = &CoreWindow::ResetTopWindow<T>;
 		return *t;
 	}
+	#endif
 	
 	void Clear();
 	void DeepLayout();

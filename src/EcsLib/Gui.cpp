@@ -56,7 +56,7 @@ void DefaultGuiAppComponent::StateStartup(GfxDataState& state) {
 
 void DefaultGuiAppComponent::Dispatch(const CtrlEvent& e) {
 	if (cw && trans2) {
-		Ctrl* ctrl = cw->aw->GetWindowCtrl();
+		Ctrl* ctrl = cw->GetWindowCtrl();
 		Point cw_pos(trans2->position[0], trans2->position[1]);
 		Point win_pt = e.pt - cw_pos;
 		if (e.type == EVENT_WINDOW_RESIZE) {
@@ -86,7 +86,7 @@ bool DefaultGuiAppComponent::Render(Draw& d) {
 }
 
 bool DefaultGuiAppComponent::RenderProg(DrawCommand*& begin, DrawCommand*& end) {
-	Ctrl* ctrl = cw->aw->GetWindowCtrl();
+	Ctrl* ctrl = cw->GetWindowCtrl();
 	begin = &ctrl->GetCommandBegin();
 	end = &ctrl->GetCommandEnd();
 	

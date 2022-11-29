@@ -101,7 +101,7 @@ void Windows::AddWindow(CoreWindow& sw) {
 	if (wins.Find(prev_active_id) != -1)
 		wins.Get(prev_active_id)->Refresh();
 	
-	if (TopWindow* tw = CastPtr<TopWindow>(sw.GetAbsoluteWindow())) {
+	if (TopWindow* tw = sw.GetTopWindow()) {
 		WhenActiveWindowChanges();
 		String title = tw->GetTitle();
 		sw.Title(title.GetCount() ? title : "Unnamed");

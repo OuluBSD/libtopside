@@ -17,6 +17,8 @@ bool WindowSystem::Initialize() {
 	
 	win.SetGeomRect(RectC(0, 0, sz.cx, sz.cy));
 	
+	active_screen = &win;
+	
 	return true;
 }
 
@@ -48,6 +50,8 @@ void WindowSystem::CloseAllWindows() {
 }
 
 void WindowSystem::Uninitialize() {
+	active_screen = 0;
+	
 	wm.Uninitialize();
 }
 

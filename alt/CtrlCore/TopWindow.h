@@ -15,8 +15,9 @@ public:
 	RTTI_DECL1(TopWindow, Ctrl)
 	TopWindow();
 	virtual ~TopWindow() {}
-	//void Init(SysWindow* sw, int id);
 	
+	void CreateCoreWindow();
+	void UpdateFromTransform2D();
 	
 	void SetFrameRect(const Rect& r) override;
 	Ctrl* GetWindowCtrl() override;
