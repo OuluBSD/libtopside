@@ -49,6 +49,7 @@ public:
 	AbsoluteWindowProxy() {}
 	
 	void SetTarget(AbsoluteWindowInterface&);
+	AbsoluteWindowInterface* GetTarget() const {return o;}
 	
 	void							Title(const String& title) override {ASSERT(o); o->Title(title);}
 	AbsoluteWindowInterface&		Sizeable(bool b=true) override {ASSERT(o); o->Sizeable(b); return *this;}

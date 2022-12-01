@@ -101,6 +101,10 @@ bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
 	return false;
 }
 
+Rect GeomInteraction2D::GetContentRect() const {
+	return frame_r;
+}
+
 Point GeomInteraction2D::GetContentPoint(const Point& pt) {
 	Point ctl = frame_r.TopLeft();
 	return pt - ctl;
@@ -221,8 +225,6 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	}
 	
 	
-	
-	
 	if (pending_redraw) {
 		ASSERT(cmd_frame.prev);
 		ASSERT(cmd_pre.next);
@@ -280,7 +282,93 @@ bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword
 }
 
 void GeomInteraction2D::DeepLayout() {
-	TODO
+	Rect prev_frame_r = frame_r;
+	
+	DeepFrameLayout();
+	
+	Layout();
+	pending_layout = false;
+	
+	if (!(prev_frame_r == frame_r)) {
+		SetPendingEffectRedraw();
+		if (!(prev_frame_r.GetSize() == this->frame_r.GetSize()))
+			SetPendingRedraw();
+	}
+	
+	Rect r = GetContentRect();
+	
+	for(GeomInteraction* c : sub) {
+		GeomInteraction2D* c2 = c->Get2D();
+		if (!c2)
+			continue;
+		
+		Rect cr = r;
+	
+		const LogPos& lp = c2->GetLogPos();
+		if (lp.htype || lp.vtype) {
+			switch (lp.htype) {
+				case LogPos::NO_HORZ:	break;
+				case LogPos::LEFT:		cr.left = r.left + lp.l;		cr.right = cr.left + lp.w;		break;
+				case LogPos::RIGHT:		cr.right = r.right - lp.r;		cr.left = cr.right - lp.w;		break;
+				case LogPos::HORZ:		cr.left = r.left + lp.l;		cr.right = r.right - lp.r;		break;
+			}
+			switch (lp.vtype) {
+				case LogPos::NO_VERT:	break;
+				case LogPos::TOP:		cr.top = r.top + lp.t;			cr.bottom = cr.top + lp.h;		break;
+				case LogPos::BOTTOM:	cr.bottom = r.bottom - lp.b;	cr.top = cr.bottom - lp.h;		break;
+				case LogPos::VERT:		cr.top = r.top + lp.t;			cr.bottom = r.bottom - lp.b;	break;
+			}
+			c2->SetFrameRect(cr);
+		}
+	}
+	
+	for(GeomInteraction* c : sub) {
+		c->DeepLayout();
+	}
+	
+	PostLayout();
+}
+
+GeomInteraction2D& GeomInteraction2D::HSizePos(int l, int r) {
+	pos.htype = LogPos::HORZ;
+	pos.l = l;
+	pos.r = r;
+	return *this;
+}
+
+GeomInteraction2D& GeomInteraction2D::VSizePos(int t, int b) {
+	pos.vtype = LogPos::VERT;
+	pos.t = t;
+	pos.b = b;
+	return *this;
+}
+
+GeomInteraction2D& GeomInteraction2D::BottomPos(int i, int size) {
+	pos.vtype = LogPos::BOTTOM;
+	pos.b = i;
+	pos.h = size;
+	return *this;
+}
+
+GeomInteraction2D& GeomInteraction2D::TopPos(int i, int size) {
+	pos.vtype = LogPos::TOP;
+	pos.t = i;
+	pos.h = size;
+	return *this;
+}
+
+GeomInteraction2D& GeomInteraction2D::LeftPos(int i, int size) {
+	pos.htype = LogPos::LEFT;
+	pos.l = i;
+	pos.w = size;
+	return *this;
+}
+
+GeomInteraction2D& GeomInteraction2D::RightPos(int i, int size) {
+	pos.htype = LogPos::RIGHT;
+	pos.r = i;
+	pos.w = size;
+	return *this;
 }
 
 

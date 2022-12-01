@@ -7,6 +7,17 @@ bool GeomInteraction::do_debug_draw;
 
 
 GeomInteraction::GeomInteraction() {
+	ignore_mouse = false;
+	hidden = false;
+	pending_fx_redraw = true;
+	pending_redraw = true;
+	pending_layout = true;
+	want_focus = false;
+	has_focus = false;
+	has_focus_deep = false;
+	has_mouse = false;
+	has_mouse_deep = false;
+	modify = true;
 	
 }
 
@@ -230,6 +241,14 @@ void GeomInteraction::SetCaptured(GeomInteraction* c) {
 
 void GeomInteraction::SetWithMouse(GeomInteraction* c) {
 	TODO
+}
+
+void GeomInteraction::DeepLayout() {
+	TODO
+}
+
+void GeomInteraction::DeepFrameLayout() {
+	// pass
 }
 
 

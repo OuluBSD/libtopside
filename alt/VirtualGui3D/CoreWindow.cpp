@@ -8,6 +8,39 @@ NAMESPACE_ECS_BEGIN
 
 //Shader CoreWindow::window_shader;
 
+CoreWindow::CoreWindow() :
+	decor(this),
+	stored_rect(0,0,0,0)
+{
+	//aw = 0;
+	//resize_frame.win = this;
+	SetMaximized(false);
+	
+	
+	//AddFrame(resize_frame);
+	Add(decor);
+	SetFrameRect(RectC(0, 0, 320, 240));
+	
+	close.SetImage(WindowsImg::close());
+	maximize.SetImage(WindowsImg::maximize());
+	minimize.SetImage(WindowsImg::minimize());
+	
+	Add(close.TopPos(3, 19).RightPos(3, 19));
+	Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
+	Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
+	
+	/*decor.WhenWindowMove = Proxy(WhenWindowMove);
+	decor.WhenFocus = THISBACK(FocusEvent);
+	decor.WhenMaximize = THISBACK(Maximize);
+	decor.WhenMinimize = Proxy(WhenMinimize);
+	decor.WhenClose = Proxy(WhenClose);
+	*/
+	
+	close.WhenAction = THISBACK(Close);
+	maximize.WhenAction = THISBACK(ToggleMaximized);
+	minimize.WhenAction = THISBACK(Minimize);
+	
+}
 
 void CoreWindow::Uninitialize() {
 	transform.Clear();
@@ -22,10 +55,6 @@ void CoreWindow::operator=(const CoreWindow& cw) {
 	SetFrameRect(cw.frame_r);
 	if (reset_fn)
 		(*this.*reset_fn)();
-}
-
-void CoreWindow::DeepLayout() {
-	TODO // from Ctrl::DeepLayout
 }
 
 void CoreWindow::Clear() {
@@ -66,6 +95,14 @@ Rect CoreWindow::GetStoredRect() const {
 
 String CoreWindow::GetTitle() const {
 	return decor.GetLabel();
+}
+
+void CoreWindow::Layout() {
+	Size sz = frame_r.GetSize();
+	ASSERT(!sz.IsEmpty());
+	Rect decor_r = RectC(0,0, sz.cx, 20);
+	decor.SetFrameRect(decor_r);
+	
 }
 
 AbsoluteWindowInterface* CoreWindow::GetAbsoluteWindow() {
@@ -326,43 +363,6 @@ void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
 
 
 
-CoreWindow::CoreWindow() : stored_rect(0,0,0,0), decor(this) {
-	//aw = 0;
-	//resize_frame.win = this;
-	SetMaximized(false);
-	
-	
-	//AddFrame(resize_frame);
-	Add(decor.SizePos());
-	SetFrameRect(RectC(0, 0, 320, 240));
-	
-	close.SetImage(WindowsImg::close());
-	maximize.SetImage(WindowsImg::maximize());
-	minimize.SetImage(WindowsImg::minimize());
-	
-	Add(close.TopPos(3, 19).RightPos(3, 19));
-	Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
-	Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
-	
-	/*decor.WhenWindowMove = Proxy(WhenWindowMove);
-	decor.WhenFocus = THISBACK(FocusEvent);
-	decor.WhenMaximize = THISBACK(Maximize);
-	decor.WhenMinimize = Proxy(WhenMinimize);
-	decor.WhenClose = Proxy(WhenClose);
-	*/
-	close.WhenAction = THISBACK(Close);
-	maximize.WhenAction = THISBACK(ToggleMaximized);
-	minimize.WhenAction = THISBACK(Minimize);
-	
-	
-	/*shader = Shader::NewDefault();
-	if (!shader->IsLoaded()) {
-		shader->Load(
-			FindLocalFile("shaders" DIR_SEPS "shader->vs"),
-			FindLocalFile("shaders" DIR_SEPS "shader->fs"));
-	}*/
-}
-
 void CoreWindow::SetMaximized(bool b) {
 	maximized = b;
 	//resize_frame.SetActive(!b);
@@ -524,6 +524,8 @@ void WindowDecoration::Paint(Draw& id) {
 	Color border_br = GrayColor(128);
 	
 	Size sz(GetFrameSize());
+	ASSERT(!sz.IsEmpty());
+	
 	id.DrawRect(sz, White());
 	id.DrawLine(0,0, 0, sz.cy-1, 1, border_tl);
 	id.DrawLine(0,0, sz.cx-1, 0, 1, border_tl);
@@ -531,7 +533,10 @@ void WindowDecoration::Paint(Draw& id) {
 	id.DrawLine(0,sz.cy-1, sz.cx-1, sz.cy-1, 1, border_br);
 	
 	Color left, right;
-	if (CastPtr<CoreWindow>(GetParent())->IsActive()) {
+	CoreWindow* cw = CastPtr<CoreWindow>(GetOwner());
+	ASSERT(cw);
+	if (!cw) return;
+	if (cw->IsActive()) {
 		left = Color(0, 64, 128);
 		right = Color(57, 141, 195);
 	} else {

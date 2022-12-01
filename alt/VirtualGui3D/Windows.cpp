@@ -80,6 +80,8 @@ Windows::Windows() {
 	active_pos = -1;
 	active_id = -1;
 	
+	SetPendingLayout();
+	SetPendingRedraw();
 }
 
 Windows::~Windows() {
@@ -361,6 +363,18 @@ void Windows::LeftDown(Point p, dword keyflags) {
 }
 
 void Windows::Layout() {
+	for (GeomInteraction* c : sub) {
+		GeomInteraction2D* c2 = c->Get2D();
+		if (c2) {
+			Rect r = c2->GetFrameRect();
+			if (r.IsEmpty()) {
+				// Set default window rect (could be smarter)
+				r = RectC(10, 10, 320, 240);
+				c2->SetFrameRect(r);
+			}
+		}
+	}
+	
 	// Resize active Window if it is maximised and Windows area size changes (TopWindow area changes usually)
 	if (maximize_all) {
 		if (active_pos < 0 || active_pos >= wins.GetCount())

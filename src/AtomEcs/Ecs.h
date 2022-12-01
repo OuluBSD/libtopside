@@ -60,7 +60,7 @@ class EcsVideoBase :
 	Ecs::WindowSystemRef	wins;
 	#endif
 	int						screen_id = 0;
-	
+	int						add_count = 0;
 	
 	DrawCommand* ProcessWindow(Binder& b, DrawCommand* begin);
 	void ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end);
@@ -85,6 +85,9 @@ public:
 	void			AddWindow3D(Binder&, Ecs::CoreWindow&);
 	void			RemoveWindow3D(Binder&, Ecs::CoreWindow&);
 	bool			IsActive() const;
+	
+	void AddBinders();
+	void AddBinderActive(Binder& b);
 	
 	static void AddBinder(BinderIfaceVideo* iface);
 	static void RemoveBinder(BinderIfaceVideo* iface);

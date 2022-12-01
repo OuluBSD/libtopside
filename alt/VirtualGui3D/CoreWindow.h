@@ -18,14 +18,14 @@ struct WindowsImg {
 
 class Windows;
 
-class WindowDecoration : public Ctrl {
+class WindowDecoration : public GeomInteraction2D {
 	CoreWindow* win = NULL;
 	String label;
 	bool left_down;
 	Point left_down_pt;
 	
 public:
-	RTTI_DECL1(WindowDecoration, Ctrl)
+	RTTI_DECL1(WindowDecoration, GeomInteraction2D)
 	typedef WindowDecoration CLASSNAME;
 	WindowDecoration(CoreWindow*);
 	
@@ -141,7 +141,7 @@ public:
 	#endif
 	
 	void Clear();
-	void DeepLayout();
+	//void DeepLayout();
 	Point GetGlobalMouse();
 	//bool IsGlobalMouseOverridden() const {return pending_partial_redraw;}
 	//void SetGlobalMouse(Point pt) {is_global_mouse_override = true; global_mouse = pt;}
@@ -171,6 +171,7 @@ public:
 	TopWindow* GetTopWindow() const;
 	
 	String GetTitle() const override;
+	void Layout() override;
 	void Uninitialize() override;
 	bool IsGeomDrawBegin() override;
 	void SetFrameRect(const Rect& r) override;

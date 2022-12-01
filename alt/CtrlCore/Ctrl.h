@@ -140,22 +140,6 @@ public:
 };
 
 
-struct LogPos {
-	
-	enum {
-		NO_HORZ = 0,
-		LEFT,
-		RIGHT,
-		HORZ,
-		NO_VERT = 0,
-		TOP,
-		BOTTOM,
-		VERT
-	};
-	int l = 0, r = 0, t = 0, b = 0, w = 0, h = 0;
-	Byte vtype = 0, htype = 0;
-};
-
 class TopWindow;
 
 class Ctrl :
@@ -184,7 +168,6 @@ protected:
 	bool         inloop:1;
 	
 	Vector<CtrlFrame*> frames;
-	LogPos pos;
 	Rect content_r;
 	
 	
@@ -215,17 +198,16 @@ public:
 	//vstatic oid EventLoop(Ctrl *ctrl);
 	static void EventLoopIteration(double dt, bool* quit);
 	
-	Rect GetContentRect() const {return content_r;}
-	Size GetContentSize() const {return content_r.GetSize();}
-	void SetContentRect(const Rect& r) {content_r = r;}
+	Size GetContentSize() const;
+	void SetContentRect(const Rect& r);
 	
+	void Add(GeomInteraction2D& c);
 	void Add(Ctrl& c);
 	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Ctrl* c);
 	Ctrl* GetLastChild();
 	Ctrl* GetIndexChild(int i);
 	void RemoveChild(Ctrl* c);
-	void DeepLayout();
 	int GetChildCount() const;
 	
 	Ctrl* GetParent();
@@ -233,15 +215,16 @@ public:
 	TopWindow* GetTopWindow();
 	
 	Rect GetWorkArea() const;
-	const LogPos& GetLogPos() const {return pos;}
-	Size GetSize() const {return GetContentSize();}
+	Size GetSize() const {return GetFrameSize();}
 	
+	void DeepFrameLayout() override;
 	void SetFrameRect(const Rect& r) override;
 	void DeepMouseMoveInFrame(Point pt, dword keyflags) override;
 	bool MouseMoveInFrame(Point pt, dword keyflags) override;
 	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
 	bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) override;
 	void MouseLeaveFrame() override;
+	Rect GetContentRect() const override;
 	Point GetContentPoint(const Point& pt) override;
 	bool MouseWheelInFrame(Point p, int zdelta, dword keyflags) override;
 	void SetFocus() override;
@@ -250,21 +233,11 @@ public:
 	void PaintPostFrame(ProgPainter& pp) override;
 	void PaintDebug(ProgPainter& pp) override;
 	bool IsCtrl() const override;
+	void Refresh() override;
 	
 	void SetRect(const Rect& r);
 	void SetPendingRedrawDeep();
-	
-	void Refresh() override;
-	
-	Ctrl& SizePos() {return HSizePos().VSizePos();}
-	Ctrl& HSizePos(int l=0, int r=0);
-	Ctrl& VSizePos(int t=0, int b=0);
-	Ctrl& BottomPos(int i, int size);
-	Ctrl& TopPos(int i, int size);
-	Ctrl& LeftPos(int i, int size);
-	Ctrl& RightPos(int i, int size);
-	
-	void    Update();
+	void Update();
 	
 	virtual int    OverPaint() const {return 0;}
 	

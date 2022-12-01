@@ -7,12 +7,14 @@ NAMESPACE_UPP
 
 
 TopWindow::TopWindow() {
+	SetFrameRect(RectC(0,0,320,240));
 	CreateCoreWindow();
 	
 }
 
 void TopWindow::SetFrameRect(const Rect& r) {
-	TODO
+	LOG("TODO calculate core-window position by adding decoration to r?");
+	GeomInteraction2D::SetFrameRect(r);
 }
 
 Ctrl* TopWindow::GetWindowCtrl() {

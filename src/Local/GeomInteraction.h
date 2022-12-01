@@ -4,8 +4,29 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct LogPos {
+	
+	enum {
+		NO_HORZ = 0,
+		LEFT,
+		RIGHT,
+		HORZ,
+		NO_VERT = 0,
+		TOP,
+		BOTTOM,
+		VERT
+	};
+	int l = 0, r = 0, t = 0, b = 0, w = 0, h = 0, f = 0, n = 0;
+	Byte vtype = 0, htype = 0;
+};
+
+
+class GeomInteraction;
 class GeomInteraction2D;
 class GeomInteraction3D;
+typedef GeomInteraction Gi;
+typedef GeomInteraction2D Gi2;
+typedef GeomInteraction3D Gi3;
 
 class GeomInteraction : RTTIBase {
 	
@@ -13,6 +34,7 @@ public:
 	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	GeomInteraction* owner = NULL;
 	Vector<GeomInteraction*> sub;
+	LogPos pos;
 	
 public:
 	static  bool do_debug_draw;
@@ -43,6 +65,7 @@ public:
 	GeomInteraction* GetIndexSub(int i);
 	void RemoveSub(GeomInteraction* c);
 	void ClearSub();
+	const LogPos& GetLogPos() const {return pos;}
 	
 	void Show(bool b=true);
 	void Hide() {Show(false);}
@@ -94,6 +117,8 @@ public:
 	virtual void PaintPreFrame(ProgPainter& pp) {}
 	virtual void PaintPostFrame(ProgPainter& pp) {}
 	virtual void PaintDebug(ProgPainter& pp) {}
+	virtual void DeepLayout();
+	virtual void DeepFrameLayout();
 	
 	virtual bool IsCaptureRoot() const;
 	virtual GeomInteraction* GetCaptured() const;
@@ -125,7 +150,6 @@ public:
 	typedef GeomInteraction2D CLASSNAME;
 	GeomInteraction2D();
 	
-	void DeepLayout();
 	int GetCount() const;
 	GeomInteraction2D* operator[](int i);
 	Rect GetFrameRect() const {return frame_r;}
@@ -138,13 +162,21 @@ public:
 	bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
 	bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
 	
-	virtual void SetFrameRect(const Rect& r) {}
+	GeomInteraction2D& SizePos() {return HSizePos().VSizePos();}
+	GeomInteraction2D& HSizePos(int l=0, int r=0);
+	GeomInteraction2D& VSizePos(int t=0, int b=0);
+	GeomInteraction2D& BottomPos(int i, int size);
+	GeomInteraction2D& TopPos(int i, int size);
+	GeomInteraction2D& LeftPos(int i, int size);
+	GeomInteraction2D& RightPos(int i, int size);
+	
+	virtual void SetFrameRect(const Rect& r) {this->frame_r = r;}
 	virtual void FrameLayout(Rect& r) {}
 	virtual void FrameAddSize(Size& sz) {}
 	virtual void Paint(Draw& d) {}
 	
-	virtual void SetGeomRect(const Rect& r) {this->frame_r = r;}
 	virtual Size GetMinSize() const {return Size(0,0);}
+	virtual Rect GetContentRect() const;
 	virtual Point GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags);
@@ -184,6 +216,7 @@ public:
 	bool Redraw(bool only_pending) override;
 	bool Is2D() const override;
 	GeomInteraction2D* Get2D() override;
+	void DeepLayout() override;
 	
 };
 

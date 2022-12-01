@@ -77,6 +77,10 @@ Ctrl::Ctrl() {
 	
 }
 
+void Ctrl::Add(GeomInteraction2D& c) {
+	GeomInteraction2D::Add(c);
+}
+
 void Ctrl::Add(Ctrl& c) {
 	GeomInteraction2D::Add(c);
 }
@@ -94,6 +98,8 @@ void Ctrl::RemoveChild(Ctrl* c) {
 }
 
 Ctrl* Ctrl::GetParent() {
+	if (!owner)
+		return 0;
 	return CastPtr<Ctrl>(owner);
 }
 
@@ -147,6 +153,19 @@ void Ctrl::SetFrameRect(const Rect& r) {
 		if (w)
 			w->SetPendingLayout();
 	}*/
+}
+
+Size Ctrl::GetContentSize() const {
+	return content_r.GetSize();
+}
+
+void Ctrl::SetContentRect(const Rect& r) {
+	content_r = r;
+}
+
+Rect Ctrl::GetContentRect() const {
+	ASSERT(frame_r.Contains(content_r));
+	return content_r;
 }
 
 Point Ctrl::GetContentPoint(const Point& pt) {
@@ -570,48 +589,6 @@ void Ctrl::DeepUnfocus() {
 	}
 }
 
-Ctrl& Ctrl::HSizePos(int l, int r) {
-	pos.htype = LogPos::HORZ;
-	pos.l = l;
-	pos.r = r;
-	return *this;
-}
-
-Ctrl& Ctrl::VSizePos(int t, int b) {
-	pos.vtype = LogPos::VERT;
-	pos.t = t;
-	pos.b = b;
-	return *this;
-}
-
-Ctrl& Ctrl::BottomPos(int i, int size) {
-	pos.vtype = LogPos::BOTTOM;
-	pos.b = i;
-	pos.h = size;
-	return *this;
-}
-
-Ctrl& Ctrl::TopPos(int i, int size) {
-	pos.vtype = LogPos::TOP;
-	pos.t = i;
-	pos.h = size;
-	return *this;
-}
-
-Ctrl& Ctrl::LeftPos(int i, int size) {
-	pos.htype = LogPos::LEFT;
-	pos.l = i;
-	pos.w = size;
-	return *this;
-}
-
-Ctrl& Ctrl::RightPos(int i, int size) {
-	pos.htype = LogPos::RIGHT;
-	pos.r = i;
-	pos.w = size;
-	return *this;
-}
-
 
 
 bool Ctrl::IsCtrl() const {
@@ -666,30 +643,7 @@ void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
 
 
 
-void Ctrl::DeepLayout() {
-	TODO
-	#if 0
-	Rect prev_frame_r = frame_r;
-	
-	const LogPos& lp = GetLogPos();
-	if ((lp.htype || lp.vtype) && parent) {
-		Rect cr = frame_r;
-		Rect r(parent->content_r.GetSize());
-		switch (lp.htype) {
-			case LogPos::NO_HORZ:	break;
-			case LogPos::LEFT:		cr.left = r.left + lp.l;		cr.right = cr.left + lp.w;		break;
-			case LogPos::RIGHT:		cr.right = r.right - lp.r;		cr.left = cr.right - lp.w;		break;
-			case LogPos::HORZ:		cr.left = r.left + lp.l;		cr.right = r.right - lp.r;		break;
-		}
-		switch (lp.vtype) {
-			case LogPos::NO_VERT:	break;
-			case LogPos::TOP:		cr.top = r.top + lp.t;			cr.bottom = cr.top + lp.h;		break;
-			case LogPos::BOTTOM:	cr.bottom = r.bottom - lp.b;	cr.top = cr.bottom - lp.h;		break;
-			case LogPos::VERT:		cr.top = r.top + lp.t;			cr.bottom = r.bottom - lp.b;	break;
-		}
-		SetGeomRect(cr);
-	}
-	
+void Ctrl::DeepFrameLayout() {
 	Size sz(frame_r.GetSize());
 	Rect new_content_r(sz);
 	for(int i = 0; i < frames.GetCount(); i++) {
@@ -697,25 +651,6 @@ void Ctrl::DeepLayout() {
 		f.FrameLayout(new_content_r);
 	}
 	content_r = new_content_r;
-	
-	Layout();
-	pending_layout = false;
-	
-	if (!(prev_frame_r == frame_r)) {
-		SetPendingEffectRedraw();
-		if (!(prev_frame_r.GetSize() == this->frame_r.GetSize()))
-			SetPendingRedraw();
-	}
-	
-
-	for(int i = 0; i < children.GetCount(); i++) {
-		Ctrl& c = *children[i];
-		c.DeepLayout();
-	}
-	
-	
-	PostLayout();
-	#endif
 }
 
 
@@ -752,6 +687,7 @@ void Ctrl::Update() {
 
 void Ctrl::PaintPreFrame(ProgPainter& pp) {
 	Size sz = GetFrameSize();
+	ASSERT(!sz.IsEmpty());
 	Rect new_content_r(sz);
 	for(int i = 0; i < frames.GetCount(); i++) {
 		CtrlFrame& f = *frames[i];
@@ -785,7 +721,12 @@ void Ctrl::PaintDebug(ProgPainter& pp) {
 }
 
 AbsoluteWindow* Ctrl::GetAbsoluteWindow() {
-	TODO
+	TopWindow* tw = GetTopWindow();
+	if (!tw)
+		return 0;
+	AbsoluteWindowInterface* iface = tw->GetTarget();
+	AbsoluteWindow* win = CastPtr<AbsoluteWindow>(iface);
+	return win;
 }
 
 

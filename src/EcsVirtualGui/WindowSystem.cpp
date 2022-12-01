@@ -15,7 +15,7 @@ bool WindowSystem::Initialize() {
 	
 	Size sz = VirtualGui3DPtr->GetSize();
 	
-	win.SetGeomRect(RectC(0, 0, sz.cx, sz.cy));
+	win.SetFrameRect(RectC(0, 0, sz.cx, sz.cy));
 	
 	active_screen = &win;
 	

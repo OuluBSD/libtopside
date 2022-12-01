@@ -87,7 +87,7 @@ struct EcsVideoBase::Binder : RTTIBase {
 	RTTI_DECL0(Binder);
 	
 	BinderIfaceVideo* iface = 0;
-	Ecs::Entity* win3d = 0; // Ref overly complicates ecs/mach relationship
+	Ecs::Entity* win_entity = 0; // Ref overly complicates ecs/mach relationship
 	DrawCommandImageRenderer rend;
 	bool win_inited = false;
 	Size sz;
@@ -104,8 +104,9 @@ Array<EcsVideoBase::Binder> EcsVideoBase::binders;
 EcsVideoBase* EcsVideoBase::active;
 
 EcsVideoBase::EcsVideoBase() {
-	if (!active)
+	if (!active) {
 		active = this;
+	}
 }
 
 bool EcsVideoBase::IsActive() const {
@@ -148,6 +149,9 @@ bool EcsVideoBase::PostInitialize() {
 		if (!link->NegotiateSourceFormat(src_ch, fmt))
 			return false;
 	}
+	
+	if (active == this)
+		AddBinders();
 	
 	return true;
 }
@@ -220,7 +224,7 @@ void EcsVideoBase::RedrawScreen() {
 		pd.cmd_screen_begin.Check();
 		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
 		pd.cmd_screen_begin.Check();
-		render_win = w.CheckRender();
+		render_win = w.CheckRender(); // <--- render
 		pd.cmd_screen_begin.Check();
 		
 		render_win = true;
@@ -247,12 +251,12 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 		RedrawScreen();
 		
 		for (Binder& b : binders) {
-			if (b.win3d) {
+			if (b.win_entity) {
 				Size& sz = b.sz;
-				Ecs::CoreWindowLinkRef cw_link = b.win3d->Find<Ecs::CoreWindowLink>();
+				Ecs::CoreWindowLinkRef cw_link = b.win_entity->Find<Ecs::CoreWindowLink>();
 				Ecs::CoreWindow& cw = cw_link->GetWindow();
 				Ctrl* ctrl = cw.GetWindowCtrl();
-				ASSERT(!ctrl);
+				ASSERT(ctrl);
 				Rect cw_rect = cw.GetStoredRect();
 				sz = cw_rect.GetSize();
 				
@@ -273,6 +277,19 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 					ASSERT(0);
 					continue;
 				}
+				
+				#if 1
+				DrawCommand* it = begin;
+				int i = 0;
+				bool has_cmd = false;
+				while (it) {
+					LOG(i++ << ": " << it->ToString());
+					if (!has_cmd && it->type != 0)
+						has_cmd = true;
+					it = it->next;
+				}
+				ASSERT(has_cmd);
+				#endif
 				
 				DrawCommandImageRenderer::FindBegin(begin);
 		
@@ -301,15 +318,8 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 			DrawCommand *begin = 0, *end = 0;
 			b.iface->RenderProg(begin, end);
 			
-			#if 0
-			b.pd.cmd_screen_begin.Check();
-			
-			InternalPacketData& data = out.SetData<InternalPacketData>();
-			data.ptr = &b.pd.cmd_screen_begin;
-			#else
 			InternalPacketData& data = out.SetData<InternalPacketData>();
 			data.ptr = begin;
-			#endif
 		}
 		else if (binders.GetCount() > 1) {
 			TODO // join multiple draw command vectors from binders to one
@@ -329,18 +339,27 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	return true;
 }
 
+void EcsVideoBase::AddBinders() {
+	for (Binder& b : binders)
+		if (!b.win_entity)
+			AddBinderActive(b);
+}
+
+void EcsVideoBase::AddBinderActive(Binder& b) {
+	Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(b.iface);
+	if (gui) {
+		Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
+		if (cw)
+			AddWindow3D(b, *cw);
+	}
+}
+
 void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
 	Binder& b = binders.Add();
 	b.iface = iface;
 	
-	if (active) {
-		Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(iface);
-		if (gui) {
-			Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
-			if (cw)
-				active->AddWindow3D(b, *cw);
-		}
-	}
+	if (active)
+		active->AddBinderActive(b);
 }
 
 void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
@@ -367,21 +386,21 @@ void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 }
 
 void EcsVideoBase::AddWindow3D(Binder& b, Ecs::CoreWindow& cw) {
-	ASSERT(!b.win3d);
+	ASSERT(!b.win_entity);
 	
 	Ecs::PoolRef pool = ents->GetEngine().Get<Ecs::EntityStore>()->GetRoot();
-	b.win3d = &*pool->Create<Ecs::Window3D>();
+	b.win_entity = &*pool->Create<Ecs::Window3D>();
 	
-	Ecs::CoreWindowLinkRef linked_win = b.win3d->Get<Ecs::CoreWindowLink>();
+	Ecs::CoreWindowLinkRef linked_win = b.win_entity->Get<Ecs::CoreWindowLink>();
 	linked_win->Link(&cw);
 }
 
 void EcsVideoBase::RemoveWindow3D(Binder& b, Ecs::CoreWindow& cw) {
-	if (b.win3d) {
-		Ecs::CoreWindowLinkRef linked_win = b.win3d->Find<Ecs::CoreWindowLink>();
+	if (b.win_entity) {
+		Ecs::CoreWindowLinkRef linked_win = b.win_entity->Find<Ecs::CoreWindowLink>();
 		if (linked_win) {
 			linked_win->Unlink(&cw);
-			b.win3d->Destroy();
+			b.win_entity->Destroy();
 		}
 	}
 }
@@ -426,7 +445,7 @@ void EcsVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawComm
 	b.rend.ProcessWindowCommands(begin, end);
 	
 	if (!b.win_inited) {
-		Ecs::ModelComponentRef mdl = b.win3d->Find<Ecs::ModelComponent>();
+		Ecs::ModelComponentRef mdl = b.win_entity->Find<Ecs::ModelComponent>();
 		ASSERT(mdl);
 		if (!mdl) return;
 		
