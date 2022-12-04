@@ -393,6 +393,30 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 	}
 }
 
+DrawCommand* ProgPainter::GetBegin() const {
+	return begin;
+}
+
+DrawCommand* ProgPainter::GetEnd() const {
+	return end;
+}
+
+void ProgPainter::Dump() {
+	if (!begin) {
+		LOG("<no draw commands>");
+	}
+	else {
+		DrawCommand* it = begin;
+		int i = 0;
+		while (it) {
+			LOG(i++ << ": " << it->ToString());
+			if (it == end)
+				break;
+			it = it->next;
+		}
+	}
+}
+
 void ProgPainter::Link() {
 	ASSERT(prev != begin && next != end);
 	DrawCommand* free_begin = NULL;

@@ -1481,6 +1481,34 @@ AtomTypeCls SdlProgAtomPipe::GetType() const {
 #endif
 
 
+#if (defined flagPOSIX && defined flagSCREEN)
+String X11ProgAtomPipe::GetAction() {
+	return "x11.prog.pipe";
+}
+
+AtomTypeCls X11ProgAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::X11_PROG_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,PROG),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls X11ProgAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11ProgAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<X11SinkDevice>(this);
+}
+
+AtomTypeCls X11ProgAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 #if defined flagSCREEN
 String X11SwFboGuiProg::GetAction() {
 	return "x11.sw.prog";

@@ -119,6 +119,7 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	Value& val = src->GetSourceValue(src_count-1);
 	src_type = val.GetFormat().vd;
 	
+	screen_id = ws.GetInt(".screen.id", -1);
 	draw_mem = ws.Get(".drawmem") == "true";
 	
 	add_ecs = ws.GetBool(".add.ecs", false);
@@ -222,10 +223,16 @@ void EcsVideoBase::RedrawScreen() {
 		Ecs::Windows& w = wins->GetScreen(screen_id);
 		
 		pd.cmd_screen_begin.Check();
-		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd());
+		
+		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd()); // <-- attach window to this
+		
 		pd.cmd_screen_begin.Check();
+		
 		render_win = w.CheckRender(); // <--- render
+		
 		pd.cmd_screen_begin.Check();
+		
+		//pp.Dump();
 		
 		render_win = true;
 		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
@@ -247,8 +254,10 @@ bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
 }
 
 void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
-	if (IsActive()) {
+	if (IsScreenMode()) {
 		RedrawScreen();
+	}
+	else if (IsActive()) {
 		
 		for (Binder& b : binders) {
 			if (b.win_entity) {
@@ -308,25 +317,36 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 }
 
 bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
-		
-		if (binders.GetCount() == 1) {
-			Binder& b = binders.Top();
-			
-			DrawCommand *begin = 0, *end = 0;
-			b.iface->RenderProg(begin, end);
-			
-			InternalPacketData& data = out.SetData<InternalPacketData>();
-			data.ptr = begin;
-		}
-		else if (binders.GetCount() > 1) {
-			TODO // join multiple draw command vectors from binders to one
+		if (IsScreenMode()) {
+			if (wins && screen_id < wins->GetScreenCount()) {
+				ProgPainter& pp = pd.GetProgPainter();
+				InternalPacketData& data = out.SetData<InternalPacketData>();
+				data.ptr = pp.GetBegin();
+			}
+			else {
+				ASSERT_(0, "no screen");
+				return false;
+			}
 		}
 		else {
-			ASSERT_(0, "no binders");
-			return false;
+			if (binders.GetCount() == 1) {
+				Binder& b = binders.Top();
+				
+				DrawCommand *begin = 0, *end = 0;
+				b.iface->RenderProg(begin, end);
+				
+				InternalPacketData& data = out.SetData<InternalPacketData>();
+				data.ptr = begin;
+			}
+			else if (binders.GetCount() > 1) {
+				TODO // join multiple draw command vectors from binders to one
+			}
+			else {
+				ASSERT_(0, "no binders");
+				return false;
+			}
 		}
 	}
 	else if (fmt.IsReceipt()){

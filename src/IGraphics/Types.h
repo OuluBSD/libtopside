@@ -34,6 +34,10 @@ NAMESPACE_PARALLEL_BEGIN
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(SdlSw) \
 	
+#elif defined flagPOSIX
+#define GFX_RENDSYS_LIST \
+	GFX_RSYS(X11Sw) \
+
 #else
 	#define GFX_RENDSYS_LIST
 	#warning no render system in IGraphics

@@ -512,7 +512,11 @@ bool Windows::CheckRender() {
 		}
 	}
 	
+	//DumpDrawCommands();
+	
 	do_render = GeomInteraction2D::Redraw(true) || do_render;
+	
+	//DumpDrawCommands();
 	
 	return do_render;
 }

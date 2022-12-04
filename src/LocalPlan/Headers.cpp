@@ -519,10 +519,19 @@ void InterfaceBuilder::Headers() {
 	;
 	
 	AddHeader("SdlProgAtomPipe", "SdlCenterVideoSinkDevice", "pipe")
-		.In("CenterProg").Out("CenterReceipt")
+		.In("CenterProg")
+		.Out("CenterReceipt")
 		.Action("sdl.prog.pipe")
 		//.Arg("reqdef_flagSCREEN", "1")
 		//.Arg("reqdef_flagSDL2", "1")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("X11ProgAtomPipe", "X11SinkDevice", "pipe")
+		.In("CenterProg")
+		.Out("CenterReceipt")
+		.Action("x11.prog.pipe")
 		.Arg("HINT_PKG", "AtomMinimal")
 		.Link("POLLER_PIPE", "PROCESS")
 	;

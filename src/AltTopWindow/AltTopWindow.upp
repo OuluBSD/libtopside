@@ -9,6 +9,7 @@ file
 	main.cpp;
 
 mainconfig
+	"" = "GUI SCREEN ",
 	"" = "GUI SCREEN SDL2",
 	"" = "GUI VIRTUALGUI3DALT SDL2GUI3DALT",
 	"" = "GUI VIRTUALGUI3D SDL2GUI3D",

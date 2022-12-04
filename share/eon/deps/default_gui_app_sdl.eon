@@ -15,7 +15,8 @@ machine sdl.app:
 		
 		loop video:
 			center.customer
-			center.video.prog.pipe
+			center.video.prog.pipe:
+				screen.id = 0
 			sdl.prog.pipe:
 				sizeable =		true
 				env =			event.register

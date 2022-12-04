@@ -59,7 +59,7 @@ class EcsVideoBase :
 	#ifdef flagGUI
 	Ecs::WindowSystemRef	wins;
 	#endif
-	int						screen_id = 0;
+	int						screen_id = -1;
 	int						add_count = 0;
 	
 	DrawCommand* ProcessWindow(Binder& b, DrawCommand* begin);
@@ -71,6 +71,8 @@ public:
 	RTTI_DECL1(EcsVideoBase, Atom);
 	
 	EcsVideoBase();
+	
+	bool			IsScreenMode() const {return screen_id >= 0;}
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	bool			PostInitialize() override;

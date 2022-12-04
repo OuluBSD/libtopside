@@ -49,6 +49,8 @@ public:
 	~ProgPainter() {/*Clear();*/}
 	
 	void Clear();
+	DrawCommand* GetBegin() const;
+	DrawCommand* GetEnd() const;
 	
 	void CtrlDrawBegin(hash_t h) override;
 	void CtrlDrawEnd() override;
@@ -87,6 +89,7 @@ public:
 	
 	
 	void Link();
+	void Dump();
 	
 	//void Attach(Ctrl& c);
 	void Attach(DrawCommand& begin, DrawCommand& end);

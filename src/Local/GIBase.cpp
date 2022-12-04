@@ -251,5 +251,20 @@ void GeomInteraction::DeepFrameLayout() {
 	// pass
 }
 
+String GeomInteraction::GetDrawCommandString() const {
+	const DrawCommand* it = &cmd_begin;
+	int i = 0;
+	String s;
+	while (it) {
+		s << i++ << ": " << it->ToString() << "\n";
+		it = it->next;
+	}
+	return s;
+}
+
+void GeomInteraction::DumpDrawCommands() const {
+	LOG(GetDrawCommandString());
+}
+
 
 NAMESPACE_TOPSIDE_END

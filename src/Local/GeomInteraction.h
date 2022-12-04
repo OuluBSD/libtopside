@@ -67,6 +67,8 @@ public:
 	void ClearSub();
 	const LogPos& GetLogPos() const {return pos;}
 	
+	void DumpDrawCommands() const;
+	String GetDrawCommandString() const;
 	void Show(bool b=true);
 	void Hide() {Show(false);}
 	bool IsShown() const;

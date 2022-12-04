@@ -1,0 +1,22 @@
+machine x11.app:
+	
+	driver context:
+		x11.context
+	
+	chain program:
+		
+		state event.register
+		
+		loop center.events:
+			center.customer
+			x11.event.pipe
+			state.event.pipe:
+				target = event.register
+		
+		loop video:
+			center.customer
+			center.video.prog.pipe:
+				screen.id = 0
+			x11.prog.pipe:
+				sizeable =		true
+				env =			event.register

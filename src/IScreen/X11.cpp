@@ -19,6 +19,8 @@ struct ScrX11::NativeContext {
 
 struct ScrX11::NativeSinkDevice {
     NativeContext* ctx;
+    ProgImage pi;
+    One<ImageDraw> id;
 };
 
 struct ScrX11::NativeEventsBase {
@@ -266,6 +268,85 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		//XSync(dev.display, False);
 		
 		ctx.fb->data = 0;
+	}
+	else if (fmt.IsProg()) {
+		Size sz(ctx.fb->width, ctx.fb->height);
+		ASSERT(!sz.IsEmpty());
+		if (dev.id.IsEmpty())
+			dev.id.Create(sz, 4);
+		
+		InternalPacketData& data = in->GetData<InternalPacketData>();
+		DrawCommand* begin = (DrawCommand*)data.ptr;
+		
+		#if 1
+		{
+			DrawCommand* it = begin;
+			int i = 0;
+			while (it) {
+				LOG(i++ << " " << it->ToString());
+				it = it->next;
+			}
+		}
+		#endif
+		
+		while (begin && begin->type != DRAW_BIND_WINDOW) begin = begin->next;
+		if (!begin) {
+			LOG("HalSdl::CenterVideoSinkDevice_Recv: error: no ptr");
+			return false;
+		}
+		ASSERT(begin->type == DRAW_BIND_WINDOW);
+		
+		DrawCommand* end = begin;
+		while (end) {
+			if (end->type == DRAW_UNBIND_WINDOW) {
+				end = end->next;
+				break;
+			}
+			end = end->next;
+		}
+		
+		dev.id->DrawRect(sz, Black());
+		dev.pi.Paint(begin, end, dev.id);
+		
+		ASSERT(ctx.fb);
+		ASSERT(!ctx.fb->data);
+		int bpp = dev.id->GetStride();
+		int id_len = dev.id->Data().GetCount();
+	    ctx.fb->data = (char*)(const unsigned char*)dev.id->Data().Begin();
+	    ctx.fb->bytes_per_line = sz.cx * bpp;
+	    
+	    int scr_bpp = ctx.fb->bits_per_pixel / 8;
+	    int img_bpp = bpp;
+	    //ASSERT(scr_bpp == img_bpp);
+	    
+	    ASSERT(sz.cx == ctx.fb->width);
+	    ASSERT(sz.cy == ctx.fb->height);
+	    if (sz.cx != ctx.fb->width || sz.cy != ctx.fb->height) {
+	        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
+	        return false;
+	    }
+	    
+	    int rc = XPutImage(	ctx.display,
+							ctx.win,
+							ctx.gc,
+							ctx.fb,
+							0,0,
+							0,0,
+							sz.cx,
+							sz.cy);
+	    
+	    if (rc == BadMatch) {
+	        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
+	        ctx.fb->data = 0;
+	        return false;
+	    }
+	    
+		XFlush(ctx.display);
+		//XSync(dev.display, False);
+		
+		ctx.fb->data = 0;
+		
+		return true;
 	}
 	
 	return true;

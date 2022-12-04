@@ -203,8 +203,10 @@ bool X11Events__Poll(CLASSNAME::NativeEventsBase& dev, AtomBase& a) {
                 XDestroyWindow(dev.ctx->display, dev.ctx->win);
             }
 			return true;
+			
+		default:
+			evec.Pop();
 		}
-		
 	}
 	
 	return false;
