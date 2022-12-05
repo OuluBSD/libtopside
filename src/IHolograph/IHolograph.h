@@ -6,7 +6,9 @@
 
 #include <ParallelLib/ParallelLib.h>
 #include <IMedia/IMedia.h>
-#include <ports/hcidump/hcidump.h>
+#ifdef flagLINUX
+	#include <ports/hcidump/hcidump.h>
+#endif
 #include <LocalHMD/LocalHMD.h>
 
 NAMESPACE_PARALLEL_BEGIN
