@@ -446,11 +446,18 @@ void CoreWindow::Wait() {
 }
 
 TopWindow* CoreWindow::GetTopWindow() const {
+	if (!proxy)
+		return 0;
 	return CastPtr<TopWindow>(proxy);
 }
 
-
-
+void CoreWindow::Paint(Draw& id) {
+	Size sz(GetFrameSize());
+	ASSERT(!sz.IsEmpty());
+	
+	id.DrawRect(sz, GrayColor(128));
+	
+}
 
 
 
@@ -533,7 +540,8 @@ void WindowDecoration::Paint(Draw& id) {
 	id.DrawLine(0,sz.cy-1, sz.cx-1, sz.cy-1, 1, border_br);
 	
 	Color left, right;
-	CoreWindow* cw = CastPtr<CoreWindow>(GetOwner());
+	GeomInteraction* owner = GetOwner();
+	CoreWindow* cw = CastPtr<CoreWindow>(owner);
 	ASSERT(cw);
 	if (!cw) return;
 	if (cw->IsActive()) {

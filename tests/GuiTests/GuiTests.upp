@@ -1,0 +1,11 @@
+uses
+	Complete,
+	DesktopSuite;
+
+file
+	GuiTests.h,
+	GuiTests.cpp;
+
+mainconfig
+	"" = "GUI SCREEN ";
+

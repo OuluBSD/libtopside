@@ -6,7 +6,8 @@ NAMESPACE_UPP
 
 
 Ctrl* AbsoluteWindowInterface::GetWindowCtrl() {
-	ASSERT(proxy);
+	if (!proxy)
+		return 0;
 	return proxy->GetWindowCtrl();
 }
 

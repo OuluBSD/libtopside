@@ -102,7 +102,7 @@ bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
 }
 
 Rect GeomInteraction2D::GetContentRect() const {
-	return frame_r;
+	return frame_r.GetSize();
 }
 
 Point GeomInteraction2D::GetContentPoint(const Point& pt) {

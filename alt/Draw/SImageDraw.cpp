@@ -229,6 +229,19 @@ void SImageDraw::Zero() {
 	memset(pixels.Begin(), 0, pixels.GetCount());
 }
 
+void SImageDraw::SwapRG() {
+	int pixels = this->pixels.GetCount() / stride;
+	byte* it = this->pixels.Begin();
+	byte* end = it + pixels;
+	int s = stride;
+	while (it != end) {
+		byte b = it[0];
+		it[0] = it[2];
+		it[2] = b;
+		it += s;
+	}
+}
+
 void SImageDraw::DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color) {
 	ASSERT(data);
 	data += x * stride + y * pitch;

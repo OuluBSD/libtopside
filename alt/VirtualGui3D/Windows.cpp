@@ -108,8 +108,7 @@ void Windows::AddWindow(CoreWindow& sw) {
 		String title = tw->GetTitle();
 		sw.Title(title.GetCount() ? title : "Unnamed");
 	}
-	else TODO
-		
+	
 	Refresh();
 	sw.Refresh();
 }

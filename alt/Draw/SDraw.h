@@ -72,6 +72,7 @@ public:
 	
 	byte* GetIterator(int x, int y);
 	void Zero();
+	void SwapRG();
 	
 	void DrawPixel(int x, int y, RGBA color);
 	void DrawPixel(int x, int y, Color color);

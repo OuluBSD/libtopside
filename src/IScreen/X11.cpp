@@ -308,6 +308,8 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		dev.id->DrawRect(sz, Black());
 		dev.pi.Paint(begin, end, dev.id);
 		
+		dev.id->SwapRG();
+		
 		ASSERT(ctx.fb);
 		ASSERT(!ctx.fb->data);
 		int bpp = dev.id->GetStride();
