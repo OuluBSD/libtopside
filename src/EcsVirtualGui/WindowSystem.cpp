@@ -1,3 +1,5 @@
+#if 0
+
 #include "EcsVirtualGui.h"
 
 #if HAVE_WINDOWSYSTEM
@@ -89,4 +91,5 @@ bool WindowSystemScreen::Poll(CtrlEvent& e) {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

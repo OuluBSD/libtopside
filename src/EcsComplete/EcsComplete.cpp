@@ -36,7 +36,7 @@ void EngineEcsInit() {
 	
 	#if HAVE_WINDOWSYSTEM
 	eng.GetAdd<Ecs::VirtualGuiSystem>();
-	eng.GetAdd<Ecs::WindowSystem>();
+	TODO //eng.GetAdd<Ecs::WindowSystem>();
 	#endif
 	
 	//DefaultSerialInitializerInternalEon();

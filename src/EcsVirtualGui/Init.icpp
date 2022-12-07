@@ -4,7 +4,9 @@ NAMESPACE_UPP
 
 
 INITBLOCK_(EcsVirtualGui) {
+	#if 0
 	Ecs::Engine::Register<Ecs::WindowSystem>("windows");
+	#endif
 }
 
 

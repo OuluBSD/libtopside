@@ -24,6 +24,8 @@ Ctrl* TopWindow::GetWindowCtrl() {
 void TopWindow::CreateCoreWindow() {
 	using namespace Ecs;
 	
+	TODO
+	#if 0
 	RTLOG("TopWindow::CreateCoreWindow");
 	Ecs::Engine& eng = GetActiveEngine();
 	WindowSystemRef wins = eng.Get<WindowSystem>();
@@ -37,7 +39,7 @@ void TopWindow::CreateCoreWindow() {
 	active_screen->AddWindow(*cw);
 	
 	//UpdateFromTransform2D();
-	
+	#endif
 }
 
 #if 0

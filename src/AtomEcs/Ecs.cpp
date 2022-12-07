@@ -3,6 +3,8 @@
 #include <EcsLocal/EcsLocal.h>
 #include <EcsVirtualGui/EcsVirtualGui.h>
 
+#if 0
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -126,11 +128,14 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	if (GetSourceValue(0).GetFormat().IsReceipt())
 		add_ecs = true;
 	
+	TODO
+	#if 0
 	#ifdef flagGUI
 	ents = GetMachine().Get<EntitySystem>();
 	if (ents) {
 		wins = ents->GetEngine().Get<Ecs::WindowSystem>();
 	}
+	#endif
 	#endif
 	
 	return true;
@@ -160,8 +165,11 @@ bool EcsVideoBase::PostInitialize() {
 void EcsVideoBase::Stop() {
 	state.Clear();
 	ents.Clear();
+	TODO
+	#if 0
 	#ifdef flagGUI
 	wins.Clear();
+	#endif
 	#endif
 	if (IsActive())
 		binders.Clear();
@@ -179,8 +187,12 @@ void EcsVideoBase::Visit(RuntimeVisitor& vis) {
 	if (IsActive())
 		vis | binders;
 	vis & state & ents;
+	
+	TODO
+	#if 0
 	#ifdef flagGUI
 	vis & wins;
+	#endif
 	#endif
 }
 
@@ -189,6 +201,8 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 	
 	bool render_win = false;
 	
+	TODO
+	#if 0
 	#ifdef flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		render_win = true;
@@ -203,9 +217,12 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	
 	return b;
+	#endif
 }
 
 void EcsVideoBase::RedrawScreen() {
+	TODO
+	#if 0
 	#ifdef flagGUI
 	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 	#else
@@ -238,7 +255,7 @@ void EcsVideoBase::RedrawScreen() {
 		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
 	#endif
-	
+	#endif
 }
 
 bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
@@ -254,6 +271,8 @@ bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
 }
 
 void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
+	TODO
+	#if 0
 	if (IsScreenMode()) {
 		RedrawScreen();
 	}
@@ -314,9 +333,12 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 			}
 		}
 	}
+	#endif
 }
 
 bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	TODO
+	#if 0
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
@@ -355,6 +377,7 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	else {
 		TODO
 	}
+	#endif
 	
 	return true;
 }
@@ -569,3 +592,5 @@ void EcsOglBase::RemoveBinder(BinderIfaceOgl* iface) {
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

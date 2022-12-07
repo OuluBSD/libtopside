@@ -1,6 +1,5 @@
-#ifndef _CtrlCoreAlt_Ctrl_h_
-#define _CtrlCoreAlt_Ctrl_h_
-
+#ifndef _GuboCore_Gubo_h_
+#define _GuboCore_Gubo_h_
 
 NAMESPACE_UPP
 class AbsoluteWindow;
@@ -9,11 +8,7 @@ END_UPP_NAMESPACE
 
 namespace TS { namespace Ecs {
 
-class Windows;
-class WindowManager;
-class CoreWindow;
-class VirtualGui;
-//class WindowSystem;
+class GuiSystem;
 class DefaultGuiAppComponent;
 
 }}
@@ -21,30 +16,30 @@ class DefaultGuiAppComponent;
 
 NAMESPACE_UPP
 
-class Ctrl;
+class Gubo;
 
-class CtrlFrame :
-	public GeomInteraction2D
+class GuboFrame :
+	public GeomInteraction3D
 {
 	
 protected:
-	friend class Ctrl;
+	friend class Gubo;
 	
-	Ctrl* ctrl = NULL;
+	Gubo* ctrl = NULL;
 	bool has_mouse = false;
 	
-	CtrlFrame* GetCaptured();
-	CtrlFrame* GetWithMouse();
-	void SetCaptured(CtrlFrame* c);
-	void SetWithMouse(CtrlFrame* c);
+	GuboFrame* GetCaptured();
+	GuboFrame* GetWithMouse();
+	void SetCaptured(GuboFrame* c);
+	void SetWithMouse(GuboFrame* c);
 	
 public:
-	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
+	RTTI_DECL1(GuboFrame, GeomInteraction3D)
 	
 	virtual void FramePaint(Draw& w, const Rect& r) {}
 	/*virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
-	virtual void FrameAdd(Ctrl& parent);
+	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 	virtual int  OverPaint() const;
 	virtual void MouseEnter(Point frame_p, dword keyflags) {}
@@ -76,12 +71,12 @@ public:
 	void SetCapture();
 	void ReleaseCapture();
 
-	CtrlFrame() {}
-	virtual ~CtrlFrame() {}
+	GuboFrame() {}
+	virtual ~GuboFrame() {}
 
 private:
-	CtrlFrame(const CtrlFrame&);
-	void operator=(const CtrlFrame&);
+	GuboFrame(const GuboFrame&);
+	void operator=(const GuboFrame&);
 };
 
 
@@ -142,33 +137,35 @@ public:
 
 class TopWindow;
 
-class Ctrl :
-	public Pte<Ctrl>,
-	public GeomInteraction2D
+
+// Gui Cuboid --> Gubo (based on Ctrl class, which is a gui class)
+class Gubo :
+	public Pte<Gubo>,
+	public GeomInteraction3D
 {
 	
 public:
-	RTTI_DECL1(Ctrl, GeomInteraction2D)
+	RTTI_DECL1(Gubo, GeomInteraction3D)
 	
 protected:
 	static  int       LoopLevel;
-	static  Ctrl     *LoopCtrl;
+	static  Gubo   *LoopGubo;
 	static  int64     EventLoopNo;
 	
-	Ctrl* GetCaptured();
-	Ctrl* GetWithMouse();
-	void SetCaptured(Ctrl* c);
-	void SetWithMouse(Ctrl* c);
-	CtrlFrame* GetFrameCaptured();
-	CtrlFrame* GetFrameWithMouse();
-	void SetFrameCaptured(CtrlFrame* c);
-	void SetFrameWithMouse(CtrlFrame* c);
+	Gubo* GetCaptured();
+	Gubo* GetWithMouse();
+	void SetCaptured(Gubo* c);
+	void SetWithMouse(Gubo* c);
+	GuboFrame* GetFrameCaptured();
+	GuboFrame* GetFrameWithMouse();
+	void SetFrameCaptured(GuboFrame* c);
+	void SetFrameWithMouse(GuboFrame* c);
 	
 	
 	bool         inloop:1;
 	
-	Vector<CtrlFrame*> frames;
-	Rect content_r;
+	Vector<GuboFrame*> frames;
+	Vol content_r;
 	
 	
 	void Refresh0() {Refresh();}
@@ -179,41 +176,40 @@ public:
 	
 	
 protected:
-	friend class TS::Ecs::VirtualGui;
-	//friend class TS::Ecs::WindowSystem;
 	friend class TopWindow;
 	
 	
 public:
-	typedef Ctrl CLASSNAME;
-	Ctrl();
-	virtual ~Ctrl() {}
+	typedef Gubo CLASSNAME;
+	Gubo();
+	virtual ~Gubo() {}
 	
 	static void SetDebugDraw(bool b=true) {do_debug_draw = b;}
 	static bool ProcessEvent(bool *quit = NULL);
 	static bool ProcessEvents(double dt, bool *quit = NULL);
-	static bool ReleaseCtrlCapture();
-	static Ctrl *GetCaptureCtrl();
+	static bool ReleaseGuboCapture();
+	static Gubo *GetCaptureGubo();
 	
-	//vstatic oid EventLoop(Ctrl *ctrl);
+	//vstatic oid EventLoop(Gubo *ctrl);
 	static void EventLoopIteration(double dt, bool* quit);
 	
 	Size GetContentSize() const;
 	void SetContentRect(const Rect& r);
 	
-	void Add(GeomInteraction2D& c);
-	void Add(Ctrl& c);
-	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
-	void AddChild(Ctrl* c);
-	Ctrl* GetLastChild();
-	Ctrl* GetIndexChild(int i);
-	void RemoveChild(Ctrl* c);
+	void Add(GeomInteraction3D& c);
+	void Add(Gubo& c);
+	void AddFrame(GuboFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
+	void AddChild(Gubo* c);
+	Gubo* GetLastChild();
+	Gubo* GetIndexChild(int i);
+	void RemoveChild(Gubo* c);
 	int GetChildCount() const;
 	
-	Ctrl* GetParent();
-	Ctrl* GetTopCtrl();
+	Gubo* GetParent();
+	Gubo* GetTopGubo();
 	TopWindow* GetTopWindow();
 	
+	/*
 	Rect GetWorkArea() const;
 	Size GetSize() const {return GetFrameSize();}
 	
@@ -232,7 +228,7 @@ public:
 	void PaintPreFrame(ProgPainter& pp) override;
 	void PaintPostFrame(ProgPainter& pp) override;
 	void PaintDebug(ProgPainter& pp) override;
-	bool IsCtrl() const override;
+	bool IsGubo() const override;
 	void Refresh() override;
 	
 	void SetRect(const Rect& r);
@@ -240,11 +236,12 @@ public:
 	void Update();
 	
 	virtual int    OverPaint() const {return 0;}
+	*/
 	
 	Callback WhenAction;
 	
 	
-	Ctrl& operator <<= (Callback cb) {WhenAction = cb; return *this;}
+	Gubo& operator <<= (Callback cb) {WhenAction = cb; return *this;}
 	
 	
 public:
@@ -270,24 +267,24 @@ public:
 	
 };
 
-class EmptySpaceCtrl : public Ctrl {
-	RTTI_DECL1(EmptySpaceCtrl, Ctrl)
+class EmptySpaceGubo : public Gubo {
+	RTTI_DECL1(EmptySpaceGubo, Gubo)
 	
 };
 
 
 
 
-class Workspace2D : public GeomInteraction2D {
+class Workspace3D : public GeomInteraction3D {
 	
 	
 public:
-	RTTI_DECL1(Workspace2D, GeomInteraction2D)
-	virtual ~Workspace2D() {}
+	RTTI_DECL1(Workspace3D, GeomInteraction3D)
+	virtual ~Workspace3D() {}
 	
 	virtual bool Init() = 0;
 	virtual void AddWindow(Ecs::CoreWindow&) = 0;
-	virtual bool Poll(CtrlEvent& e) = 0;
+	virtual bool Poll(GuboEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;
 	virtual bool ProcessCloseQueue() = 0;
@@ -295,10 +292,10 @@ public:
 };
 
 
-class ParentCtrl : public Ctrl {
+class ParentGubo : public Gubo {
 	
 public:
-	RTTI_DECL1(ParentCtrl, Ctrl)
+	RTTI_DECL1(ParentGubo, Gubo)
 	
 	
 	

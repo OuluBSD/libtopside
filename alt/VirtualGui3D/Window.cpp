@@ -1,3 +1,4 @@
+#if 0
 #include "Internal.h"
 
 
@@ -84,3 +85,4 @@ Ecs::CoreWindow* AbsoluteWindow::GetWindow() {
 
 END_UPP_NAMESPACE
 
+#endif

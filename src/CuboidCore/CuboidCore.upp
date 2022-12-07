@@ -1,0 +1,9 @@
+description "\377B28,127,255";
+
+file
+	CuboidCore.h,
+	Defs.h,
+	Gubo.h,
+	TopGubo.h,
+	TopGubo.cpp;
+

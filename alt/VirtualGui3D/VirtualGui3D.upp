@@ -8,18 +8,19 @@ file
 	Keys.h,
 	After.h,
 	Wnd.cpp,
-	Window.h,
-	Window.cpp,
 	"Direct Rendering" readonly separator,
 	AfterEcsLib.h,
 	Direct.h,
 	Direct.cpp,
 	ECS readonly separator,
+	Trash readonly separator,
 	Windows.h,
 	Windows.cpp,
 	CoreWindow.h,
 	CoreWindow.cpp,
 	WindowManager.h,
 	WindowFrame.cpp,
-	WindowManager.cpp;
+	WindowManager.cpp,
+	Window.h,
+	Window.cpp;
 

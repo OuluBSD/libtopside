@@ -1,3 +1,4 @@
+#if 0
 #include "Internal.h"
 
 #if HAVE_WINDOWSYSTEM
@@ -611,4 +612,5 @@ void WindowDecoration::LocalMenu(Bar& bar) {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

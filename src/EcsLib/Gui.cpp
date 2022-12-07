@@ -2,6 +2,8 @@
 #include <EcsLocal/EcsLocal.h>
 #include <EcsVirtualGui/EcsVirtualGui.h>
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -15,8 +17,10 @@ DefaultGuiAppComponent::DefaultGuiAppComponent() {
 void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<ComponentT>(this);
 	/*if (test) vis % *test;*/
-	vis & wins;
-	vis & cw;
+	
+	//vis & wins;
+	//vis & cw;
+	
 	vis & trans;
 	vis & trans2;
 }
@@ -31,7 +35,7 @@ void DefaultGuiAppComponent::Initialize() {
 }
 
 void DefaultGuiAppComponent::Uninitialize() {
-	wins.Clear();
+	//wins.Clear();
 	cw.Clear();
 	trans.Clear();
 	trans2.Clear();
@@ -55,6 +59,8 @@ void DefaultGuiAppComponent::StateStartup(GfxDataState& state) {
 }
 
 void DefaultGuiAppComponent::Dispatch(const CtrlEvent& e) {
+	TODO
+	#if 0
 	if (cw && trans2) {
 		Ctrl* ctrl = cw->GetWindowCtrl();
 		if (!ctrl)
@@ -80,6 +86,7 @@ void DefaultGuiAppComponent::Dispatch(const CtrlEvent& e) {
 			LOG("TODO DefaultGuiAppComponent::Dispatch " << e.ToString());
 		}
 	}
+	#endif
 }
 
 bool DefaultGuiAppComponent::Render(Draw& d) {
@@ -88,11 +95,14 @@ bool DefaultGuiAppComponent::Render(Draw& d) {
 }
 
 bool DefaultGuiAppComponent::RenderProg(DrawCommand*& begin, DrawCommand*& end) {
+	TODO
+	#if 0
 	Ctrl* ctrl = cw->GetWindowCtrl();
 	begin = &ctrl->GetCommandBegin();
 	end = &ctrl->GetCommandEnd();
 	
 	return begin != NULL;
+	#endif
 }
 
 void DefaultGuiAppComponent::DrawObj(GfxStateDraw& fb, bool use_texture) {
@@ -109,3 +119,5 @@ bool DefaultGuiAppComponent::Arg(const String& key, const String& value) {
 
 
 NAMESPACE_ECS_END
+
+#endif

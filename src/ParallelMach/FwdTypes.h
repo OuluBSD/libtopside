@@ -102,8 +102,8 @@ using EntitySystemRef		= Ref<EntitySystem, ParallelSystemParent>;
 
 namespace Ecs {
 class Engine;
-class WindowSystem;
-using WindowSystemRef = Ref<WindowSystem, RefParent1<Engine>>;
+//class WindowSystem;
+//using WindowSystemRef = Ref<WindowSystem, RefParent1<Engine>>;
 }
 
 

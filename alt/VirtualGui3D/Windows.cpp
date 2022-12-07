@@ -1,3 +1,4 @@
+#if 0
 #include "Internal.h"
 
 #if HAVE_WINDOWSYSTEM
@@ -569,4 +570,5 @@ void Windows::Redraw(ProgDraw& pd, int child_id, bool only_pending) {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

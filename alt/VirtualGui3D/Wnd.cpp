@@ -86,6 +86,8 @@ void Ctrl::PaintScene(SystemDraw& draw) {
 #endif
 
 void Ctrl::Invalidate() {
+	TODO
+	#if 0
 	using namespace TS;
 	static Ref<Ecs::WindowSystem> win;
 	if (!win) {
@@ -96,6 +98,7 @@ void Ctrl::Invalidate() {
 	}
 	else
 		win->Invalidate();
+	#endif
 }
 
 END_UPP_NAMESPACE

@@ -1,0 +1,9 @@
+description "\377B28,127,255";
+
+uses
+	CuboidCore;
+
+file
+	CuboidLib.h,
+	CuboidLib.cpp;
+

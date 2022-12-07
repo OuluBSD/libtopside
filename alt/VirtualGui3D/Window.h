@@ -1,6 +1,7 @@
 #ifndef _VirtualGui3D_Window_h_
 #define _VirtualGui3D_Window_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 namespace Ecs {
@@ -52,4 +53,5 @@ public:
 END_UPP_NAMESPACE
 
 
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if 0
 #ifndef _VirtualGui3D_CoreWindow_h_
 #define _VirtualGui3D_CoreWindow_h_
 
@@ -258,5 +259,6 @@ struct Window3D :
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

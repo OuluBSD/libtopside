@@ -1,3 +1,4 @@
+#if 0
 #include "Internal.h"
 
 #if HAVE_WINDOWSYSTEM
@@ -26,7 +27,7 @@ void WindowManager::Update(double dt) {
 	bool closed = false;
 	
 	for(int i = 0; i < screens.GetCount(); i++) {
-		Screen2D& s = screens[i];
+		Workspace2D& s = screens[i];
 		
 		CtrlEvent e;
 		while (s.Poll(e)) {
@@ -80,4 +81,5 @@ void WindowManager::Uninitialize() {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

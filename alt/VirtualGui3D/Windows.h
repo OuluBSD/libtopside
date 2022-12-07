@@ -1,6 +1,8 @@
 #ifndef _VirtualGui3D_Windows_h_
 #define _VirtualGui3D_Windows_h_
 
+#if 0
+
 #ifdef flagGUI
 
 NAMESPACE_ECS_BEGIN
@@ -39,8 +41,8 @@ public:
 	void LocalMenu(Bar& bar);
 };
 
-class Windows : public TS::Screen2D {
-	RTTI_DECL1(Windows, Screen2D)
+class Windows : public TS::Workspace2D {
+	RTTI_DECL1(Windows, Workspace2D)
 	virtual void Visit(RuntimeVisitor& vis) {}
 	
 protected:
@@ -171,5 +173,6 @@ public:
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

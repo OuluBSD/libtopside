@@ -14,7 +14,7 @@ struct DefaultGuiAppComponent :
 	
 	Point prev_mouse;
 	
-	WindowSystemRef wins;
+	//WindowSystemRef wins;
 	CoreWindowRef cw;
 	TransformRef trans;
 	Transform2DRef trans2;

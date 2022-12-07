@@ -1,6 +1,8 @@
 #ifndef _EcsLocal_WindowSystem_h_
 #define _EcsLocal_WindowSystem_h_
 
+#if 0
+
 #if HAVE_WINDOWSYSTEM
 
 NAMESPACE_ECS_BEGIN
@@ -58,5 +60,6 @@ using WindowSystemRef = Ref<WindowSystem>;
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

@@ -1,3 +1,4 @@
+#if 0
 #ifndef _VirtualGui3D_WindowManager_h_
 #define _VirtualGui3D_WindowManager_h_
 
@@ -56,5 +57,6 @@ public:
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

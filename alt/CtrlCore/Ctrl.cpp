@@ -563,9 +563,12 @@ void Ctrl::SetPendingRedrawDeep() {
 void Ctrl::Refresh() {
 	SetPendingRedrawDeep();
 	
+	TODO
+	#if 0
 	AbsoluteWindow* aw = GetAbsoluteWindow();
 	if (aw)
 		aw->SetPendingPartialRedraw();
+	#endif
 }
 
 void Ctrl::DeepUnfocus() {
@@ -725,8 +728,12 @@ AbsoluteWindow* Ctrl::GetAbsoluteWindow() {
 	if (!tw)
 		return 0;
 	AbsoluteWindowInterface* iface = tw->GetTarget();
+	
+	TODO
+	#if 0
 	AbsoluteWindow* win = CastPtr<AbsoluteWindow>(iface);
 	return win;
+	#endif
 }
 
 

@@ -6,7 +6,7 @@
 #include <Local/Local.h>
 
 #ifndef GUIPLATFORM_INCLUDE
-	#error Build flags prevents CtrlCore usage. Probably CTRL flag is not set and CtrlCore.h is included indirectly.
+	#error Build flags prevents CtrlCore usage. Probably GUI flag is not set and CtrlCore.h is included indirectly.
 #else
 	#include GUIPLATFORM_INCLUDE
 #endif

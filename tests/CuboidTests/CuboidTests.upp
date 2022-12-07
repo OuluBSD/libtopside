@@ -1,0 +1,11 @@
+uses
+	Complete,
+	CuboidLib;
+
+file
+	CuboidTests.h,
+	CuboidTests.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2 OGL VR";
+

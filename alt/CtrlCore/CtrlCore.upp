@@ -5,7 +5,6 @@ uses
 	Local;
 
 file
-	Copying,
 	CtrlCore.h,
 	Defs.h,
 	Util.h,

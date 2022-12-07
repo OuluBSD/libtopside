@@ -57,7 +57,7 @@ class EcsVideoBase :
 	int						dbg_win_id = 0;
 	EntitySystemRef			ents;
 	#ifdef flagGUI
-	Ecs::WindowSystemRef	wins;
+	//Ecs::WindowSystemRef	wins;
 	#endif
 	int						screen_id = -1;
 	int						add_count = 0;

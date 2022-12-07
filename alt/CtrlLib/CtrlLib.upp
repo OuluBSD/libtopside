@@ -4,7 +4,6 @@ uses
 	CtrlCore;
 
 file
-	Copying,
 	CtrlLib.h,
 	Button.h,
 	Button.cpp,

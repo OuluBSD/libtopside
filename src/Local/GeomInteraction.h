@@ -224,16 +224,22 @@ public:
 
 
 class GeomInteraction3D : public GeomInteraction {
-	
+	Cubf frame;
 	
 public:
 	RTTI_DECL1(GeomInteraction3D, GeomInteraction);
 	typedef GeomInteraction3D CLASSNAME;
 	GeomInteraction3D();
 	
+	Cubf GetCub() const {return frame;}
+	Volf GetFrameSize() const {return frame.GetSize();}
+	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
+	
+	virtual void Paint(Draw3D& d) {}
+	
 };
 
 
