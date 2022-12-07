@@ -7,63 +7,6 @@
 NAMESPACE_ECS_BEGIN
 
 
-Image& WindowsImg::close() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "close.png"));
-	return img;
-}
-
-Image& WindowsImg::maximize() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "maximize.png"));
-	return img;
-}
-
-Image& WindowsImg::minimize() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "minimize.png"));
-	return img;
-}
-
-Image& WindowsImg::nwse() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::nesw() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::ns() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::ew() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
 
 
 
@@ -89,7 +32,7 @@ Windows::~Windows() {
 	
 }
 
-void Windows::AddWindow(CoreWindow& sw) {
+void Windows::AddWindow(Geom2DComponent& sw) {
 	int id = win_counter++;
 	int pos = wins.GetCount();
 	wins.Add(id, &sw);
@@ -125,7 +68,7 @@ bool Windows::ProcessCloseQueue() {
 	return ret;
 }
 
-CoreWindow& Windows::GetWindow(TopWindow& tw) {
+Geom2DComponent& Windows::GetWindow(TopWindow& tw) {
 	for(int i = 0; i < wins.GetCount(); i++) {
 		TopWindow* ptr = wins[i]->GetTopWindow();
 		if (ptr == &tw) {
@@ -147,7 +90,7 @@ void Windows::FocusWindow(TopWindow* tw) {
 
 void Windows::MoveWindow(Point pt, int win_id) {
 	if (maximize_all) return;
-	CoreWindow& sw = *wins.Get(win_id);
+	Geom2DComponent& sw = *wins.Get(win_id);
 	Size sz(sw.GetFrameSize());
 	Point tl = sw.GetFrameRect().TopLeft();
 	sw.SetFrameRect(RectC(tl.x + pt.x, tl.y + pt.y, sz.cx, sz.cy));
@@ -161,7 +104,7 @@ void Windows::FocusWindow(int win_id) {
 
 void Windows::FocusWindowPos(int win_pos) {
 	if (win_pos < 0 || win_pos >= wins.GetCount()) return;
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	sw.Show();
 	GeomInteraction2D* c = &sw;
 	if (GetLastSub() == c) {
@@ -177,7 +120,7 @@ void Windows::FocusWindowPos(int win_pos) {
 		if (maximize_all) MaximizeWindow(wins.GetKey(win_pos));
 	} else {
 		Size sz(GetFrameSize());
-		CoreWindow& sw = *wins[win_pos];
+		Geom2DComponent& sw = *wins[win_pos];
 		sw.SetFrameRect(RectC(0, 0, sz.cx, sz.cy));
 	}
 	sw.GetTopWindow()->FocusEvent();
@@ -196,11 +139,11 @@ void Windows::FocusWindowPos(int win_pos) {
 void Windows::CloseWindow(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow* ptr = wins.Get(win_id);
+	Geom2DComponent* ptr = wins.Get(win_id);
 	ASSERT(ptr);
 	if (!ptr) return;
 	
-	CoreWindow& cw = *ptr;
+	Geom2DComponent& cw = *ptr;
 	if (cw.HasMouseDeep())
 		cw.DeepMouseLeave();
 	if (cw.HasFocusDeep())
@@ -212,7 +155,7 @@ void Windows::CloseWindow(int win_id) {
 	if (tw) {
 		bool found = false;
 		for(int i = 0; i < wins.GetCount(); i++) {
-			CoreWindow& cw = *wins[i];
+			Geom2DComponent& cw = *wins[i];
 			if (&cw == ptr) {
 				TopWindow* tw = cw.GetTopWindow();
 				if (tw) {
@@ -235,18 +178,18 @@ void Windows::CloseWindow(int win_id) {
 void Windows::MaximizeWindow(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	SetWindowMaximized(sw, 1);
 }
 
 void Windows::RestoreWindow(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	SetWindowMaximized(sw, 0);
 }
 
-void Windows::SetWindowMaximized(CoreWindow& sw, bool b) {
+void Windows::SetWindowMaximized(Geom2DComponent& sw, bool b) {
 	Size sz(GetFrameSize());
 	if (b) {
 		if (!sw.IsMaximized()) {
@@ -271,7 +214,7 @@ void Windows::SetWindowMaximized(CoreWindow& sw, bool b) {
 
 void Windows::LoadRectAll() {
 	for(int i = 0; i < wins.GetCount(); i++) {
-		CoreWindow& sw = *wins[i];
+		Geom2DComponent& sw = *wins[i];
 		if (sw.IsMaximized()) {
 			sw.LoadRect();
 			sw.SetMaximized(false);
@@ -282,7 +225,7 @@ void Windows::LoadRectAll() {
 void Windows::MinimizeWindow(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	sw.Hide();
 	FocusPrevious();
 }
@@ -294,7 +237,7 @@ void Windows::FocusPrevious() {
 	while (win_pos >= count) win_pos--;
 	for(int i = 0; i < count; i++) {
 		if (win_pos <= -1) win_pos = count - 1;
-		CoreWindow& sw2 = *wins[win_pos];
+		Geom2DComponent& sw2 = *wins[win_pos];
 		//if (!maximize_all && !sw2.IsShown()) {
 		if (!sw2.IsShown()) {
 			win_pos--;
@@ -310,7 +253,7 @@ void Windows::FocusPrevious() {
 void Windows::SetTitle(int win_id, const String& title) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return;
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	sw.Title(title);
 	PostRefresh();
 }
@@ -318,7 +261,7 @@ void Windows::SetTitle(int win_id, const String& title) {
 String Windows::GetTitle(int win_id) {
 	int win_pos = wins.Find(win_id);
 	if (win_pos == -1) return "";
-	CoreWindow& sw = *wins[win_pos];
+	Geom2DComponent& sw = *wins[win_pos];
 	return sw.GetTitle();
 }
 
@@ -380,13 +323,13 @@ void Windows::Layout() {
 		if (active_pos < 0 || active_pos >= wins.GetCount())
 			return;
 		Size sz(GetFrameSize());
-		CoreWindow& sw = *wins[active_pos];
+		Geom2DComponent& sw = *wins[active_pos];
 		sw.SetFrameRect(RectC(0, 0, sz.cx, sz.cy));
 	}
 }
 
 void Windows::PostLayout() {
-	CoreWindow* win = GetActiveWindow();
+	Geom2DComponent* win = GetActiveWindow();
 	if (win && win->IsMaximized())
 		SetWindowMaximized(*win, true);
 }
@@ -397,7 +340,7 @@ void Windows::PostLayout() {
 TopWindow* Windows::GetVisibleTopWindow() {
 	GeomInteraction* last = GetLastSub();
 	for(int i = 0; i < wins.GetCount(); i++) {
-		CoreWindow* swc = wins[i];
+		Geom2DComponent* swc = wins[i];
 		GeomInteraction* ptr = swc;
 		if (ptr == last) {
 			return swc->GetTopWindow();
@@ -470,7 +413,7 @@ void Windows::OrderTileWindows() {
 		}
 		for(int j = 0; j < rows_i; j++) {
 			int y = j * yi_step;
-			CoreWindow& sw = *wins[pos];
+			Geom2DComponent& sw = *wins[pos];
 			sw.SetFrameRect(RectC(x, y, x_step, yi_step));
 			sw.SetMaximized(false);
 			pos++;
@@ -489,7 +432,7 @@ void Windows::OrderTileWindowsVert() {
 	maximize_all = false;
 	
 	for(int i = 0; i < wins.GetCount(); i++) {
-		CoreWindow& sw = *wins[i];
+		Geom2DComponent& sw = *wins[i];
 		sw.SetFrameRect(RectC(0, i * y_step, sz.cx, y_step));
 		sw.SetMaximized(false);
 	}
@@ -522,7 +465,7 @@ bool Windows::CheckRender() {
 }
 
 bool Windows::DeepKey(dword key, int count) {
-	CoreWindow* active = GetActiveWindow();
+	Geom2DComponent* active = GetActiveWindow();
 	if (active)
 		return active->DeepKey(key, count);
 	return false;

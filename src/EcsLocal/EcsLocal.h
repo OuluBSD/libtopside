@@ -18,6 +18,7 @@
 #include "ShootingSystem.h"
 #include "ThrowingSystem.h"
 #include "Prefabs.h"
+#include "DesktopSystem.h"
 
 
 NAMESPACE_ECS_BEGIN

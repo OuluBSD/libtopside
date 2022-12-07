@@ -234,6 +234,8 @@ public:
 	Cubf GetCub() const {return frame;}
 	Volf GetFrameSize() const {return frame.GetSize();}
 	
+	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
+	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;

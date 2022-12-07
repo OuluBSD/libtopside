@@ -5,6 +5,10 @@
 #include <AtomEcs/AtomEcs.h>
 #include <SerialLib/SerialLib.h>
 
+#ifdef flagNO_ECS
+	#error EcsMach is included while NO_ECS flag is defined.
+#endif
+
 #define NAMESPACE_ECS_NAME		Ecs
 #define ECS						Ecs
 #define NAMESPACE_ECS_BEGIN	namespace  TS { namespace  NAMESPACE_ECS_NAME {

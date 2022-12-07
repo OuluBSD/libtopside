@@ -1,5 +1,5 @@
-#if 0
-#include "Internal.h"
+#include "EcsLib.h"
+
 
 #if HAVE_WINDOWSYSTEM
 
@@ -7,9 +7,70 @@ NAMESPACE_ECS_BEGIN
 
 
 
-//Shader CoreWindow::window_shader;
+Image& WindowsImg::close() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "close.png"));
+	return img;
+}
 
-CoreWindow::CoreWindow() :
+Image& WindowsImg::maximize() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "maximize.png"));
+	return img;
+}
+
+Image& WindowsImg::minimize() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "minimize.png"));
+	return img;
+}
+
+Image& WindowsImg::nwse() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::nesw() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::ns() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::ew() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+
+
+
+
+//Shader Geom2DComponent::window_shader;
+
+Geom2DComponent::Geom2DComponent() :
 	decor(this),
 	stored_rect(0,0,0,0)
 {
@@ -43,14 +104,14 @@ CoreWindow::CoreWindow() :
 	
 }
 
-void CoreWindow::Uninitialize() {
+void Geom2DComponent::Uninitialize() {
 	transform.Clear();
 	transform2d.Clear();
 	
 	if (linked) linked->Unlink(this);
 }
 
-void CoreWindow::operator=(const CoreWindow& cw) {
+void Geom2DComponent::operator=(const Geom2DComponent& cw) {
 	Clear();
 	reset_fn = cw.reset_fn;
 	SetFrameRect(cw.frame_r);
@@ -58,47 +119,47 @@ void CoreWindow::operator=(const CoreWindow& cw) {
 		(*this.*reset_fn)();
 }
 
-void CoreWindow::Clear() {
+void Geom2DComponent::Clear() {
 	//if (!aw) return;
 	ClearSub();
 	//aw = 0;
 	//owned_aw.Clear();
 }
 
-void CoreWindow::Title(String label) {
+void Geom2DComponent::Title(String label) {
 	decor.SetLabel(label);
 }
 
-void CoreWindow::StoreRect() {
+void Geom2DComponent::StoreRect() {
 	stored_rect = GetFrameRect();
 }
 
-void CoreWindow::LoadRect() {
+void Geom2DComponent::LoadRect() {
 	ASSERT(stored_rect.bottom && stored_rect.right);
 	SetFrameRect(stored_rect);
 }
 
-void CoreWindow::SetStoredRect(Rect r) {
+void Geom2DComponent::SetStoredRect(Rect r) {
 	stored_rect = r;
 }
 
-void CoreWindow::SetPendingPartialRedraw() {
+void Geom2DComponent::SetPendingPartialRedraw() {
 	pending_partial_redraw = true;
 }
 
-int CoreWindow::GetId() const {
+int Geom2DComponent::GetId() const {
 	return id;
 }
 
-Rect CoreWindow::GetStoredRect() const {
+Rect Geom2DComponent::GetStoredRect() const {
 	return stored_rect;
 }
 
-String CoreWindow::GetTitle() const {
+String Geom2DComponent::GetTitle() const {
 	return decor.GetLabel();
 }
 
-void CoreWindow::Layout() {
+void Geom2DComponent::Layout() {
 	Size sz = frame_r.GetSize();
 	ASSERT(!sz.IsEmpty());
 	Rect decor_r = RectC(0,0, sz.cx, 20);
@@ -106,26 +167,26 @@ void CoreWindow::Layout() {
 	
 }
 
-AbsoluteWindowInterface* CoreWindow::GetAbsoluteWindow() {
+Absolute2DInterface* Geom2DComponent::GetAbsolute2D() {
 	return this;
 }
 
-bool CoreWindow::IsMaximized() const {
+bool Geom2DComponent::IsMaximized() const {
 	return maximized;
 }
 
-void CoreWindow::ToggleMaximized() {
+void Geom2DComponent::ToggleMaximized() {
 	if (IsMaximized())
 		Restore();
 	else
 		Maximize();
 }
 
-bool CoreWindow::IsPendingPartialRedraw() const {
+bool Geom2DComponent::IsPendingPartialRedraw() const {
 	return pending_partial_redraw;
 }
 
-Point CoreWindow::GetGlobalMouse() {
+Point Geom2DComponent::GetGlobalMouse() {
 	/*if (!is_global_mouse_override)
 		return SDL2::GetGlobalMouse();
 	else
@@ -135,13 +196,13 @@ Point CoreWindow::GetGlobalMouse() {
 
 #if 0
 
-void CoreWindow::ResizeFrame::FrameLayout(Rect& r) {
+void Geom2DComponent::ResizeFrame::FrameLayout(Rect& r) {
 	sz = r.GetSize();
 	r.left += frame_width;		r.right -= frame_width;
 	r.top += frame_width;		r.bottom -= frame_width;
 }
 
-void CoreWindow::ResizeFrame::FramePaint(Draw& w, const Rect& r) {
+void Geom2DComponent::ResizeFrame::FramePaint(Draw& w, const Rect& r) {
 	Size sz(r.GetSize());
 	Color c = !is_active ? Color(255, 64, 64) : Color(0, 0, 255);
 	w.DrawRect(r.left, r.top, frame_width, sz.cy, c);
@@ -150,11 +211,11 @@ void CoreWindow::ResizeFrame::FramePaint(Draw& w, const Rect& r) {
 	w.DrawRect(r.left, r.bottom - frame_width, sz.cx, frame_width, c);
 }
 
-void CoreWindow::ResizeFrame::FrameAddSize(Size& sz) {
+void Geom2DComponent::ResizeFrame::FrameAddSize(Size& sz) {
 
 }
 
-int CoreWindow::ResizeFrame::GetArea(Point pt) {
+int Geom2DComponent::ResizeFrame::GetArea(Point pt) {
 	if (pt.x < frame_width) {
 		if (pt.y < corner_width)
 			return TL;
@@ -181,11 +242,11 @@ int CoreWindow::ResizeFrame::GetArea(Point pt) {
 	}
 }
 
-void CoreWindow::ResizeFrame::MouseEnter(Point frame_p, dword keyflags) {
+void Geom2DComponent::ResizeFrame::MouseEnter(Point frame_p, dword keyflags) {
 
 }
 
-void CoreWindow::ResizeFrame::ContinueGlobalMouseMomentum() {
+void Geom2DComponent::ResizeFrame::ContinueGlobalMouseMomentum() {
 	if (is_resizing) {
 		/*switch (resize_area) {
 			case CENTER:
@@ -261,7 +322,7 @@ void CoreWindow::ResizeFrame::ContinueGlobalMouseMomentum() {
 	}
 }
 
-void CoreWindow::ResizeFrame::DoResize() {
+void Geom2DComponent::ResizeFrame::DoResize() {
 	Rect new_frame_r = resize_start_r;
 	switch (resize_area) {
 		case CENTER:
@@ -304,9 +365,9 @@ void CoreWindow::ResizeFrame::DoResize() {
 	win->SetPendingRedraw();
 }
 
-void CoreWindow::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
+void Geom2DComponent::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
 	if (is_resizing) {
-		CoreWindow* cw = ctrl->GetTopWindow()->GetAbsoluteWindow()->GetWindow();
+		Geom2DComponent* cw = ctrl->GetTopWindow()->GetAbsolute2D()->GetWindow();
 		if (used_momentum) {
 			resize_start_pt = cw->GetGlobalMouse();
 			used_momentum = false;
@@ -322,31 +383,31 @@ void CoreWindow::ResizeFrame::MouseMove(Point frame_p, dword keyflags) {
 				break;
 			case TL:
 			case BR:
-				AbsoluteWindow::OverrideCursor(WindowsImg::nwse());
+				Absolute2D::OverrideCursor(WindowsImg::nwse());
 				break;
 			case TR:
 			case BL:
-				AbsoluteWindow::OverrideCursor(WindowsImg::nesw());
+				Absolute2D::OverrideCursor(WindowsImg::nesw());
 				break;
 			case TOP:
 			case BOTTOM:
-				AbsoluteWindow::OverrideCursor(WindowsImg::ns());
+				Absolute2D::OverrideCursor(WindowsImg::ns());
 				break;
 			case LEFT:
 			case RIGHT:
-				AbsoluteWindow::OverrideCursor(WindowsImg::ew());
+				Absolute2D::OverrideCursor(WindowsImg::ew());
 				break;
 		}
 	}
 }
 
-void CoreWindow::ResizeFrame::MouseLeave() {
+void Geom2DComponent::ResizeFrame::MouseLeave() {
 	if (is_resizing) ReleaseCapture();
 	is_resizing = false;
-	AbsoluteWindow::DefaultCursor();
+	Absolute2D::DefaultCursor();
 }
 
-void CoreWindow::ResizeFrame::LeftDown(Point p, dword keyflags) {
+void Geom2DComponent::ResizeFrame::LeftDown(Point p, dword keyflags) {
 	is_resizing = true;
 	resize_start_pt = ctrl->GetWindow()->GetGlobalMouse();
 	resize_area = GetArea(p);
@@ -354,7 +415,7 @@ void CoreWindow::ResizeFrame::LeftDown(Point p, dword keyflags) {
 	SetCapture();
 }
 
-void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
+void Geom2DComponent::ResizeFrame::LeftUp(Point p, dword keyflags) {
 	is_resizing = false;
 	ReleaseCapture();
 }
@@ -364,12 +425,12 @@ void CoreWindow::ResizeFrame::LeftUp(Point p, dword keyflags) {
 
 
 
-void CoreWindow::SetMaximized(bool b) {
+void Geom2DComponent::SetMaximized(bool b) {
 	maximized = b;
 	//resize_frame.SetActive(!b);
 }
 
-void CoreWindow::SetContent(Windows* wins, int id) {
+void Geom2DComponent::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
@@ -386,17 +447,90 @@ void CoreWindow::SetContent(Windows* wins, int id) {
 	}
 }
 
-bool CoreWindow::IsActive() const {bool b = false; wins->IsActiveWindow(&b, id); return b;}
-void CoreWindow::MoveWindow(Point pt) {wins->MoveWindow(pt, id);}
-void CoreWindow::Maximize() {if (wins) {wins->MaximizeWindow(id); wins->FocusWindow(id);} maximized = true;}
-void CoreWindow::Restore()  {if (wins) {wins->RestoreWindow(id); wins->FocusWindow(id);} maximized = false;}
-void CoreWindow::Minimize() {if (wins) {wins->MinimizeWindow(id); wins->FocusWindow(id);}}
-void CoreWindow::Close() {wins->QueueCloseWindow(id);}
-void CoreWindow::FocusEvent() {wins->FocusWindow(id); this->FocusEvent();}
-bool CoreWindow::IsGeomDrawBegin() {return true;}
+
+bool Geom2DComponent::IsActive() const
+{
+	TODO
+	#if 0
+	bool b = false;
+	wins->IsActiveWindow ( &b, id );
+	return b;
+	#endif
+}
+
+void Geom2DComponent::MoveWindow ( Point pt )
+{
+	TODO
+	#if 0
+	wins->MoveWindow ( pt, id );
+	#endif
+}
+
+void Geom2DComponent::Maximize()
+{
+	TODO
+	#if 0
+	if ( wins )
+	{
+		wins->MaximizeWindow ( id );
+		wins->FocusWindow ( id );
+	}
+
+	maximized = true;
+	#endif
+}
+
+void Geom2DComponent::Restore()
+{
+	TODO
+	#if 0
+	if ( wins )
+	{
+		wins->RestoreWindow ( id );
+		wins->FocusWindow ( id );
+	}
+
+	maximized = false;
+	#endif
+}
+
+void Geom2DComponent::Minimize()
+{
+	TODO
+	#if 0
+	if ( wins )
+	{
+		wins->MinimizeWindow ( id );
+		wins->FocusWindow ( id );
+	}
+	#endif
+}
+
+/*void Geom2DComponent::Close()
+{
+	TODO
+	#if 0
+	wins->QueueCloseWindow ( id );
+	#endif
+}*/
+
+void Geom2DComponent::FocusEvent()
+{
+	TODO
+	#if 0
+	wins->FocusWindow ( id );
+	this->FocusEvent();
+	#endif
+}
+
+bool Geom2DComponent::IsGeomDrawBegin()
+{
+	return true;
+}
+
 
 #if 0
-void CoreWindow::SetFrameRect(const Rect& r) {
+void Geom2DComponent::SetFrameRect(const Rect& r) {
 	Ctrl* c = GetWindowCtrl();
 	if (c)
 		c->SetFrameRect(r);
@@ -404,7 +538,7 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 }
 #endif
 
-void CoreWindow::SetFrameRect(const Rect& r) {
+void Geom2DComponent::SetFrameRect(const Rect& r) {
 	GeomInteraction2D::SetFrameRect(r);
 	if (!transform2d.IsEmpty()) {
 		transform2d->position[0] = r.left;
@@ -420,21 +554,21 @@ void CoreWindow::SetFrameRect(const Rect& r) {
 	}
 }
 
-bool CoreWindow::Redraw(bool only_pending) {
+bool Geom2DComponent::Redraw(bool only_pending) {
 	return GeomInteraction2D::Redraw(only_pending);
 }
 
-void CoreWindow::LeftDown(Point p, dword keyflags) {
+void Geom2DComponent::LeftDown(Point p, dword keyflags) {
 	FocusEvent();
 	
 }
 
-void CoreWindow::ChildGotFocus() {
+void Geom2DComponent::ChildGotFocus() {
 	FocusEvent();
 	
 }
 
-void CoreWindow::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags) {
+void Geom2DComponent::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags) {
 	
 	if (event == MOUSE_LEFTDOWN) {
 		FocusEvent();
@@ -442,17 +576,17 @@ void CoreWindow::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dw
 	
 }
 
-void CoreWindow::Wait() {
+void Geom2DComponent::Wait() {
 	TODO
 }
 
-TopWindow* CoreWindow::GetTopWindow() const {
+TopWindow* Geom2DComponent::GetTopWindow() const {
 	if (!proxy)
 		return 0;
 	return CastPtr<TopWindow>(proxy);
 }
 
-void CoreWindow::Paint(Draw& id) {
+void Geom2DComponent::Paint(Draw& id) {
 	Size sz(GetFrameSize());
 	ASSERT(!sz.IsEmpty());
 	
@@ -471,16 +605,16 @@ void CoreWindow::Paint(Draw& id) {
 
 
 
-void CoreWindowLink::Initialize() {
+void Geom2DComponentLink::Initialize() {
 	
 }
 
-void CoreWindowLink::Uninitialize() {
+void Geom2DComponentLink::Uninitialize() {
 	if (linked) Unlink(linked);
 	
 }
 
-void CoreWindowLink::Link(CoreWindow* cw) {
+void Geom2DComponentLink::Link(Geom2DComponent* cw) {
 	ASSERT(!linked);
 	if (linked) Unlink(linked);
 	
@@ -488,11 +622,11 @@ void CoreWindowLink::Link(CoreWindow* cw) {
 	linked = cw;
 }
 
-void CoreWindowLink::Unlink() {
+void Geom2DComponentLink::Unlink() {
 	if (linked) Unlink(linked);
 }
 
-void CoreWindowLink::Unlink(CoreWindow* cw) {
+void Geom2DComponentLink::Unlink(Geom2DComponent* cw) {
 	ASSERT(!linked || linked == cw);
 	if (linked == cw) {
 		linked = 0;
@@ -503,7 +637,7 @@ void CoreWindowLink::Unlink(CoreWindow* cw) {
 	}
 }
 
-CoreWindow& CoreWindowLink::GetWindow() const {
+Geom2DComponent& Geom2DComponentLink::GetWindow() const {
 	ASSERT(linked);
 	return *linked;
 }
@@ -522,7 +656,7 @@ CoreWindow& CoreWindowLink::GetWindow() const {
 
 
 
-WindowDecoration::WindowDecoration(CoreWindow* win) : win(win) {
+WindowDecoration::WindowDecoration(Geom2DComponent* win) : win(win) {
 	left_down = false;
 	
 }
@@ -542,7 +676,7 @@ void WindowDecoration::Paint(Draw& id) {
 	
 	Color left, right;
 	GeomInteraction* owner = GetOwner();
-	CoreWindow* cw = CastPtr<CoreWindow>(owner);
+	Geom2DComponent* cw = CastPtr<Geom2DComponent>(owner);
 	ASSERT(cw);
 	if (!cw) return;
 	if (cw->IsActive()) {
@@ -603,14 +737,13 @@ void WindowDecoration::RightDown(Point p, dword keyflags) {
 }
 
 void WindowDecoration::LocalMenu(Bar& bar) {
-	bar.Add("Maximize / Restore", callback(win, &CoreWindow::Maximize));
-	bar.Add("Minimize", callback(win, &CoreWindow::Minimize));
+	bar.Add("Maximize / Restore", callback(win, &Geom2DComponent::Maximize));
+	bar.Add("Minimize", callback(win, &Geom2DComponent::Minimize));
 	bar.Separator();
-	bar.Add("Close", callback(win, &CoreWindow::Close));
+	TODO //bar.Add("Close", callback(win, &Geom2DComponent::Close));
 }
 
 
 NAMESPACE_ECS_END
 
-#endif
 #endif

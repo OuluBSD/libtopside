@@ -3,7 +3,6 @@
 #include <EcsLocal/EcsLocal.h>
 #include <EcsVirtualGui/EcsVirtualGui.h>
 
-#if 0
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -281,14 +280,14 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 		for (Binder& b : binders) {
 			if (b.win_entity) {
 				Size& sz = b.sz;
-				Ecs::CoreWindowLinkRef cw_link = b.win_entity->Find<Ecs::CoreWindowLink>();
-				Ecs::CoreWindow& cw = cw_link->GetWindow();
+				Ecs::Geom2DComponentLinkRef cw_link = b.win_entity->Find<Ecs::Geom2DComponentLink>();
+				Ecs::Geom2DComponent& cw = cw_link->GetWindow();
 				Ctrl* ctrl = cw.GetWindowCtrl();
 				ASSERT(ctrl);
 				Rect cw_rect = cw.GetStoredRect();
 				sz = cw_rect.GetSize();
 				
-				// CoreWindow might not have calculated frame yet
+				// Geom2DComponent might not have calculated frame yet
 				if (sz.IsEmpty()) {
 					TopWindow* tw = ctrl->GetTopWindow();
 					if (!tw)
@@ -391,7 +390,7 @@ void EcsVideoBase::AddBinders() {
 void EcsVideoBase::AddBinderActive(Binder& b) {
 	Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(b.iface);
 	if (gui) {
-		Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
+		Ecs::Geom2DComponentRef cw = gui->GetEntity()->Find<Ecs::Geom2DComponent>();
 		if (cw)
 			AddWindow3D(b, *cw);
 	}
@@ -421,26 +420,26 @@ void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 	if (active) {
 		Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(iface);
 		if (gui) {
-			Ecs::CoreWindowRef cw = gui->GetEntity()->Find<Ecs::CoreWindow>();
+			Ecs::Geom2DComponentRef cw = gui->GetEntity()->Find<Ecs::Geom2DComponent>();
 			if (cw)
 				active->RemoveWindow3D(b, *cw);
 		}
 	}
 }
 
-void EcsVideoBase::AddWindow3D(Binder& b, Ecs::CoreWindow& cw) {
+void EcsVideoBase::AddWindow3D(Binder& b, Ecs::Geom2DComponent& cw) {
 	ASSERT(!b.win_entity);
 	
 	Ecs::PoolRef pool = ents->GetEngine().Get<Ecs::EntityStore>()->GetRoot();
 	b.win_entity = &*pool->Create<Ecs::Window3D>();
 	
-	Ecs::CoreWindowLinkRef linked_win = b.win_entity->Get<Ecs::CoreWindowLink>();
+	Ecs::Geom2DComponentLinkRef linked_win = b.win_entity->Get<Ecs::Geom2DComponentLink>();
 	linked_win->Link(&cw);
 }
 
-void EcsVideoBase::RemoveWindow3D(Binder& b, Ecs::CoreWindow& cw) {
+void EcsVideoBase::RemoveWindow3D(Binder& b, Ecs::Geom2DComponent& cw) {
 	if (b.win_entity) {
-		Ecs::CoreWindowLinkRef linked_win = b.win_entity->Find<Ecs::CoreWindowLink>();
+		Ecs::Geom2DComponentLinkRef linked_win = b.win_entity->Find<Ecs::Geom2DComponentLink>();
 		if (linked_win) {
 			linked_win->Unlink(&cw);
 			b.win_entity->Destroy();
@@ -593,4 +592,3 @@ void EcsOglBase::RemoveBinder(BinderIfaceOgl* iface) {
 
 NAMESPACE_PARALLEL_END
 
-#endif

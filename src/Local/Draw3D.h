@@ -22,15 +22,17 @@ public:
 	virtual void GuboDrawBegin(hash_t) {}
 	virtual void GuboDrawEnd() {}
 	
-	virtual void SetSize(Vol v) = 0;
-	virtual Vol GetPageSize() const = 0;
+	virtual void SetSize(Volf v) = 0;
+	virtual Volf GetPageSize() const = 0;
 	
-	virtual void DrawModel(const Point3& pos, const Model& mdl) = 0;
-	virtual void DrawCuboid(const Point3& pos, const Volf& sz, float yaw, float pitch, Color c) = 0;
-	virtual void DrawSphere(const Point3& pos, float radius, Color c) = 0;
-	virtual void DrawLine(const Point3& a, const Point3& b, float line_width, Color c) = 0;
+	virtual void DrawCuboid(const Point3f& pos, const Volf& sz, Color c) {DrawCuboid(pos, sz, 0, 0, c);}
 	
-	virtual bool ClipOp(const Cub& r) = 0;
+	virtual void DrawModel(const Point3f& pos, const Model& mdl) = 0;
+	virtual void DrawCuboid(const Point3f& pos, const Volf& sz, float yaw, float pitch, Color c) = 0;
+	virtual void DrawSphere(const Point3f& pos, float radius, Color c) = 0;
+	virtual void DrawLine(const Point3f& a, const Point3f& b, float line_width, Color c) = 0;
+	
+	virtual bool ClipOp(const Cubf& r) = 0;
 	virtual void EndOp() = 0;
 	
 	

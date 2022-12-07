@@ -3,10 +3,12 @@ description "\377B0,131,159";
 uses
 	AudioCore,
 	Shadertoy,
-	EcsComplete,
-	EcsMinimal,
 	AtomLocal,
-	AudioHost;
+	AudioHost,
+	CuboidLib,
+	IMidiFile,
+	IMidiHw,
+	SerialLib;
 
 uses(GUI) DesktopSuite;
 

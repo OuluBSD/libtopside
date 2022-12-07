@@ -5,7 +5,7 @@ NAMESPACE_UPP
 
 class TopGubo :
 	public Gubo,
-	public AbsoluteWindowProxy
+	public Absolute3DProxy
 {
 	
 public:
@@ -13,11 +13,11 @@ public:
 	TopGubo();
 	virtual ~TopGubo() {}
 	
-	void CreateCoreWindow();
+	void CreateGeom2DComponent();
 	void UpdateFromTransform3D();
 	
-	void SetFrameRect(const Rect& r) override;
-	Gubo* GetWindowGubo() override;
+	void SetFrameCubf(const Cubf& r) override;
+	Gubo* GetGubo() override;
 	
 	
 };

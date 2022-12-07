@@ -3,7 +3,7 @@
 
 
 NAMESPACE_UPP
-class AbsoluteWindow;
+class Absolute2D;
 END_UPP_NAMESPACE
 
 
@@ -11,7 +11,7 @@ namespace TS { namespace Ecs {
 
 class Windows;
 class WindowManager;
-class CoreWindow;
+class Geom2DComponent;
 class VirtualGui;
 //class WindowSystem;
 class DefaultGuiAppComponent;
@@ -248,7 +248,7 @@ public:
 	
 	
 public:
-	AbsoluteWindow* aw = 0;
+	Absolute2D* aw = 0;
 	
 	//static bool           invalid;
 	//static uint32 prev_ticks;
@@ -264,7 +264,7 @@ public:
 	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
 	
-	AbsoluteWindow* GetAbsoluteWindow();
+	Absolute2D* GetAbsolute2D();
 	
 	
 	
@@ -286,7 +286,7 @@ public:
 	virtual ~Workspace2D() {}
 	
 	virtual bool Init() = 0;
-	virtual void AddWindow(Ecs::CoreWindow&) = 0;
+	virtual void AddWindow(Ecs::Geom2DComponent&) = 0;
 	virtual bool Poll(CtrlEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;

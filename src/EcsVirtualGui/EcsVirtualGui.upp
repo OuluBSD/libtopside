@@ -8,7 +8,7 @@ uses
 file
 	EcsVirtualGui.h,
 	EcsVirtualGui.cpp,
-	Init.icpp,
+	Init.cpp,
 	After.h,
 	Render.cpp,
 	System.h,

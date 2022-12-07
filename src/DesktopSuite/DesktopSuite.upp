@@ -1,13 +1,11 @@
 description "\377B84,84,84";
 
 uses
-	EcsCtrl;
+	CtrlLib;
 
 file
 	DesktopSuite.h,
 	Init.cpp,
-	System.h,
-	System.cpp,
 	Factory.h,
 	Factory.cpp,
 	Tester.h,

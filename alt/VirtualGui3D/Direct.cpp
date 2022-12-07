@@ -1,5 +1,7 @@
 #include "Internal.h"
 
+#if 0
+
 #if HAVE_WINDOWSYSTEM
 
 NAMESPACE_ECS_BEGIN
@@ -34,4 +36,5 @@ void DirectWindow::Uninitialize() {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

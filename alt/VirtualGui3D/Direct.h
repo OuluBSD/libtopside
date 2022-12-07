@@ -1,6 +1,7 @@
 #ifndef _VirtualGui3D_Direct_h_
 #define _VirtualGui3D_Direct_h_
 
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -30,4 +31,5 @@ public:
 NAMESPACE_ECS_END
 
 
+#endif
 #endif

@@ -3,6 +3,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+GeomInteraction3D::GeomInteraction3D() {
+	
+}
+
 bool GeomInteraction3D::Is3D() const {
 	return true;
 }

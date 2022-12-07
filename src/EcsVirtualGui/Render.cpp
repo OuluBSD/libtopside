@@ -10,12 +10,12 @@ void VirtualGui::Render(bool do_render) {
 		ents = rend->GetEngine().Get<EntityStore>();
 	
 	PoolRef root = ents->GetRoot();
-	Vector<RTuple<EntityRef, Transform2DRef, CoreWindowRef>> wins = root->GetComponentsWithEntity<Transform2D, CoreWindow>();
+	Vector<RTuple<EntityRef, Transform2DRef, Geom2DComponentRef>> wins = root->GetComponentsWithEntity<Transform2D, Geom2DComponent>();
 	
 	for(int i = 0; i < wins.GetCount(); i++) {
-		RTuple<EntityRef, Transform2DRef, CoreWindowRef>& tuple = wins[i];
+		RTuple<EntityRef, Transform2DRef, Geom2DComponentRef>& tuple = wins[i];
 		Transform2D& t = *tuple.b.a;
-		CoreWindow& cw = *tuple.b.b.a;
+		Geom2DComponent& cw = *tuple.b.b.a;
 		
 		if (cw.GetId() < 0)
 			windows->AddWindow(cw);

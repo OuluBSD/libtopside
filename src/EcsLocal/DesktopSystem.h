@@ -1,5 +1,5 @@
-#ifndef _DesktopSuite_System_h_
-#define _DesktopSuite_System_h_
+#ifndef _EcsLocal_DesktopSystem_h_
+#define _EcsLocal_DesktopSystem_h_
 
 NAMESPACE_ECS_BEGIN
 

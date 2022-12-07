@@ -1,0 +1,10 @@
+uses
+	Complete;
+
+file
+	GuboTests.h,
+	GuboTests.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2 OGL VR NO_ECS";
+

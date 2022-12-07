@@ -4,6 +4,7 @@ file
 	CuboidCore.h,
 	Defs.h,
 	Gubo.h,
+	Gubo.cpp,
 	TopGubo.h,
 	TopGubo.cpp;
 

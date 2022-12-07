@@ -41,7 +41,8 @@ typedef enum {
 	EVENT_HOLO_UPDATED,
 	
 	EVENT_TYPE_COUNT
-} CtrlEventType;
+} GeomEventType;
+
 
 inline String GetEventTypeString(int event) {
 	switch (event) {
@@ -142,8 +143,8 @@ struct ControllerMatrix;
 	
 
 
-struct CtrlEvent : Moveable<CtrlEvent> {
-	CtrlEventType type = EVENT_INVALID;
+struct GeomEvent : Moveable<GeomEvent> {
+	GeomEventType type = EVENT_INVALID;
 	union {
 		dword value = 0;
 		float fvalue;
@@ -163,7 +164,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	const ControllerState& GetState() const {ASSERT(state); return *state;}
 	const ControllerMatrix& GetControllerMatrix() const {ASSERT(ctrl); return *ctrl;}
 	
-	void operator=(const CtrlEvent& e) {
+	void operator=(const GeomEvent& e) {
 		type = e.type;
 		value = e.value;
 		n = e.n;
@@ -194,22 +195,25 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	}
 };
 
-struct CtrlEventCollection : Vector<CtrlEvent>, RTTIBase {
-	RTTI_DECL0(CtrlEventCollection)
+struct GeomEventCollection : Vector<GeomEvent>, RTTIBase {
+	RTTI_DECL0(GeomEventCollection)
 	
 };
 
-void RandomizeEvent(CtrlEvent& ev);
+void RandomizeEvent(GeomEvent& ev);
 
 class EventFrame {
 	
 public:
-	CtrlEventCollection ctrl;
+	GeomEventCollection ctrl;
 	
 	void Reset() {ctrl.SetCount(0);}
 };
 
 
+typedef GeomEventType CtrlEventType;
+typedef GeomEvent CtrlEvent;
+typedef GeomEventCollection CtrlEventCollection;
 
 
 

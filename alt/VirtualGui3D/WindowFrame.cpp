@@ -46,7 +46,7 @@ void SubMenuFrame::Paint(Draw& id) {
 			id.DrawLine(x, 3, x, height-2, 1, GrayColor());
 			x += 5;
 		}
-		CoreWindow& sub = (*wins)[i];
+		Geom2DComponent& sub = (*wins)[i];
 		
 		String title = sub.GetTitle();
 		bool active = active_pos == i;

@@ -79,7 +79,7 @@ void WindowSystemScreen::Shutdown() {
 	CloseAll();
 }
 
-void WindowSystemScreen::CloseWindow(CoreWindow& cw) {
+void WindowSystemScreen::CloseWindow(Geom2DComponent& cw) {
 	TODO
 }
 

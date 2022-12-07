@@ -57,7 +57,7 @@ protected:
 	
 	WindowManager* wm = NULL;
 	int win_counter = 0;
-	ArrayMap<int, CoreWindow*> wins;
+	ArrayMap<int, Geom2DComponent*> wins;
 	//SubMenuFrame menu;
 	//Ctrl sub_area;
 	bool maximize_all;
@@ -72,8 +72,8 @@ protected:
 protected:
 	typedef Windows CLASSNAME;
 	
-	friend class UPP::AbsoluteWindow;
-	friend class CoreWindow;
+	friend class UPP::Absolute2D;
+	friend class Geom2DComponent;
 	friend class SubMenuFrame;
 	//friend class Core;
 	friend class UPP::CtrlFrame;
@@ -87,7 +87,7 @@ protected:
 	void MinimizeWindow(int win_id);
 	void RestoreWindow(int win_id);
 	void IsActiveWindow(bool* result, int win_id) {*result = win_id == active_id;}
-	void SetWindowMaximized(CoreWindow& sw, bool b);
+	void SetWindowMaximized(Geom2DComponent& sw, bool b);
 	
 	void FocusPrevious();
 	void SetTitle(int win_id, const String& title);
@@ -110,12 +110,12 @@ public:
 	
 	hash_t GetHashValue() const {return (hash_t)(size_t)this;}
 	
-	void AddWindow(CoreWindow&) override;
+	void AddWindow(Geom2DComponent&) override;
 	bool ProcessCloseQueue() override;
 	
 	WindowManager* GetWindowManager() const {return wm;}
-	CoreWindow& GetWindow(TopWindow& ctrl);
-	CoreWindow* GetActiveWindow() {int i = wins.Find(active_id); return i >= 0 ? wins[i] : NULL;}
+	Geom2DComponent& GetWindow(TopWindow& ctrl);
+	Geom2DComponent* GetActiveWindow() {int i = wins.Find(active_id); return i >= 0 ? wins[i] : NULL;}
 	int GetActiveWindowPos() {return active_pos;}
 	int GetActiveWindowId()  {return active_id;}
 	int GetPosId(int win_pos) {if (win_pos >= 0 && win_pos < wins.GetCount()) return wins.GetKey(win_pos); return -1;}
@@ -130,7 +130,7 @@ public:
 	
 	virtual bool CheckRender();
 	virtual bool DeepKey(dword key, int count);
-	virtual void CloseWindow(CoreWindow& cw) = 0;
+	virtual void CloseWindow(Geom2DComponent& cw) = 0;
 	
 	bool IsCaptureRoot() const override;
 	GeomInteraction2D* GetCaptured() const override {return captured;}
@@ -141,8 +141,8 @@ public:
 	void PostLayout() override;
 	
 	int GetCount() const {return wins.GetCount();}
-	CoreWindow& operator[] (int i) {return *wins[i];}
-	CoreWindow& Get(int i) {return *wins[i];}
+	Geom2DComponent& operator[] (int i) {return *wins[i];}
+	Geom2DComponent& Get(int i) {return *wins[i];}
 	
 	TopWindow* GetVisibleTopWindow();
 	TopWindow& GetVisibleTopWindowRef() {return *GetVisibleTopWindow();}
@@ -162,7 +162,7 @@ public:
 		vis.VisitThis<Windows>(this);
 	}
 	
-    void CloseWindow(CoreWindow& cw) override;
+    void CloseWindow(Geom2DComponent& cw) override;
     bool Init() override;
 	void Render() override;
 	void Shutdown()override;

@@ -8,7 +8,7 @@ NAMESPACE_UPP
 
 class TopWindow :
 	public Ctrl,
-	public AbsoluteWindowProxy
+	public Absolute2DProxy
 {
 	
 public:
@@ -16,11 +16,11 @@ public:
 	TopWindow();
 	virtual ~TopWindow() {}
 	
-	void CreateCoreWindow();
+	void CreateGeom2DComponent();
 	void UpdateFromTransform2D();
 	
 	void SetFrameRect(const Rect& r) override;
-	Ctrl* GetWindowCtrl() override;
+	Ctrl* GetCtrl() override;
 	
 	
 };

@@ -3,9 +3,8 @@ description "\377B0,131,159";
 uses
 	EcsLocal,
 	EcsMinimal,
-	IMidiHw,
-	IMidiFile,
-	EcsAudioCore;
+	EcsAudioCore,
+	Complete;
 
 uses(GUI) EcsVirtualGui;
 

@@ -84,8 +84,8 @@ public:
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override;
 	
-	void			AddWindow3D(Binder&, Ecs::CoreWindow&);
-	void			RemoveWindow3D(Binder&, Ecs::CoreWindow&);
+	void			AddWindow3D(Binder&, Ecs::Geom2DComponent&);
+	void			RemoveWindow3D(Binder&, Ecs::Geom2DComponent&);
 	bool			IsActive() const;
 	
 	void AddBinders();

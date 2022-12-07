@@ -1,5 +1,5 @@
 #include "SerialLib.h"
-#include <EcsMach/EcsMach.h>
+//#include <EcsMach/EcsMach.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -239,7 +239,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 		        if (main_loop)
 					DebugMainLoop();
 		        else
-		            Ecs::Engine::WhenGuiProgram();
+		            Serial::Machine::WhenUserProgram();
 		    }
 		#ifdef flagSTDEXC
 	    }

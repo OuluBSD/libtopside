@@ -184,7 +184,7 @@ bool TextCtrl::Key(dword key, int count) {
 	else if (key == K_DOWN)
 		dy += 10;
 	
-	CoreWindow* win = GetWindow();
+	Geom2DComponent* win = GetWindow();
 	Rect r(win->GetFrameRect());
 	
 	r.left += dx;
@@ -220,7 +220,7 @@ void TextCtrl::MouseWheel(Point p, int zdelta, dword keyflags) {
 	
 	Rect ownr = GetFrameRect();
 	
-	CoreWindow* win = GetWindow();
+	Geom2DComponent* win = GetWindow();
 	Rect r(win->GetFrameRect());
 	
 	r.top += dy;

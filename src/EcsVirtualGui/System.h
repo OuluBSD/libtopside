@@ -17,7 +17,7 @@ public:
 	
 protected:
 	friend class Font;
-	friend class CoreWindow;
+	friend class Geom2DComponent;
 	
     bool Initialize() override;
     void Start() override;

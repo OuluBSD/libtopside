@@ -1,6 +1,4 @@
 #include "CtrlCore.h"
-#include <EcsLib/EcsLib.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
 
 
 NAMESPACE_UPP
@@ -8,7 +6,7 @@ NAMESPACE_UPP
 
 TopWindow::TopWindow() {
 	SetFrameRect(RectC(0,0,320,240));
-	CreateCoreWindow();
+	CreateGeom2DComponent();
 	
 }
 
@@ -17,21 +15,21 @@ void TopWindow::SetFrameRect(const Rect& r) {
 	GeomInteraction2D::SetFrameRect(r);
 }
 
-Ctrl* TopWindow::GetWindowCtrl() {
+Ctrl* TopWindow::GetCtrl() {
 	return this;
 }
 
-void TopWindow::CreateCoreWindow() {
+void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	
 	TODO
 	#if 0
-	RTLOG("TopWindow::CreateCoreWindow");
+	RTLOG("TopWindow::CreateGeom2DComponent");
 	Ecs::Engine& eng = GetActiveEngine();
 	WindowSystemRef wins = eng.Get<WindowSystem>();
 	EntityStoreRef ents = eng.Get<EntityStore>();
 	EntityRef e = ents->GetRoot()->Create<Window2D>();
-	Ref<CoreWindow> cw = e->Get<CoreWindow>();
+	Ref<Geom2DComponent> cw = e->Get<Geom2DComponent>();
 	ASSERT(cw);
 	SetTarget(*cw);
 	
@@ -54,7 +52,7 @@ void TopWindow::UpdateFromTransform2D() {
 	if (!tr) return;
 	
 	Transform2D& t = *tr;
-	CoreWindow& cw = *this->cw;
+	Geom2DComponent& cw = *this->cw;
 	
 	Rect r = cw.GetFrameRect();
 	Size t_size = ToSize(t.size);

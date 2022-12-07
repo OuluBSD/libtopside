@@ -3,9 +3,6 @@
 
 #include <AudioCore/AudioCore.h>
 
-#include <EcsLib/EcsLib.h>
-#include <EcsAudioCore/EcsAudioCore.h>
-
 #ifdef flagCTRL
 	#include <EcsCtrl/EcsCtrl.h>
 #endif
@@ -13,6 +10,10 @@
 #ifdef flagGUI
 	#include <DesktopSuite/DesktopSuite.h>
 #endif
+
+#include <CuboidLib/CuboidLib.h>
+#include <SerialLib/SerialLib.h>
+
 
 #include "Prefabs.h"
 

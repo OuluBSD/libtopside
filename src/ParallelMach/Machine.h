@@ -153,6 +153,7 @@ public:
 	Callback WhenLeaveSystemUpdate;
 	
 	static Callback WhenInitialize;
+	static Callback WhenUserProgram;
 	static Callback WhenPostInitialize;
 	static Callback WhenPreFirstUpdate;
 	

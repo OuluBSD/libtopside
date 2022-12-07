@@ -1,5 +1,4 @@
 #include "CtrlCore.h"
-#include <EcsLib/EcsLib.h>
 
 NAMESPACE_UPP
 
@@ -149,7 +148,7 @@ void Ctrl::SetFrameRect(const Rect& r) {
 	/*SetPendingEffectRedraw();
 	if (parent) {
 		parent->SetPendingLayout();
-		CoreWindow* w = GetWindow();
+		Geom2DComponent* w = GetWindow();
 		if (w)
 			w->SetPendingLayout();
 	}*/
@@ -565,7 +564,7 @@ void Ctrl::Refresh() {
 	
 	TODO
 	#if 0
-	AbsoluteWindow* aw = GetAbsoluteWindow();
+	Absolute2D* aw = GetAbsolute2D();
 	if (aw)
 		aw->SetPendingPartialRedraw();
 	#endif
@@ -723,15 +722,15 @@ void Ctrl::PaintDebug(ProgPainter& pp) {
 	}
 }
 
-AbsoluteWindow* Ctrl::GetAbsoluteWindow() {
+Absolute2D* Ctrl::GetAbsolute2D() {
 	TopWindow* tw = GetTopWindow();
 	if (!tw)
 		return 0;
-	AbsoluteWindowInterface* iface = tw->GetTarget();
+	Absolute2DInterface* iface = tw->GetTarget();
 	
 	TODO
 	#if 0
-	AbsoluteWindow* win = CastPtr<AbsoluteWindow>(iface);
+	Absolute2D* win = CastPtr<Absolute2D>(iface);
 	return win;
 	#endif
 }

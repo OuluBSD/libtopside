@@ -311,9 +311,8 @@ struct Point3_ : Moveable<Point3_<T>> {
 	T x = 0, y = 0, z = 0;
 
 	Point3_() {}
-
+	Point3_(T v) : x(v), y(v), z(v) {}
 	Point3_(T x, T y, T z) : x(x), y(y), z(z) {}
-
 	Point3_(const Point3_& pt) : x(pt.x), y(pt.y), z(pt.z) {}
 
 
@@ -563,6 +562,9 @@ struct Cub_ : Moveable<Cub_<T>> {
 	
 	hash_t	GetHashValue() const {CombineHash c; c.Put(UPP::GetHashValue(left)); c.Put(UPP::GetHashValue(top)); c.Put(UPP::GetHashValue(near)); c.Put(UPP::GetHashValue(right)); c.Put(UPP::GetHashValue(bottom)); c.Put(UPP::GetHashValue(far)); return c;}
 	String	ToString() const {String s; s << "[" << left << ", " << top << ", " << near << ", " << right << ", " << bottom << ", " << far << "](" << Width() << ", " << Height() << ", " << Depth() << ")"; return s;}
+	
+	
+	operator Vol_<T>() const {return Vol(Width(), Height(), Depth());}
 	
 };
 

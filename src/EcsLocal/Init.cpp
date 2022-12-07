@@ -18,6 +18,7 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<ThrowingInteractionSystemBase>("throwing");
 	Engine::Register<PlayerBodySystem>("player");
 	Engine::Register<InteractionSystem>("interaction");
+	Engine::Register<Ecs::DesktopSuiteSystem>("desktop");
 	
 	
 	// Component
@@ -36,6 +37,11 @@ INITBLOCK_(EcsLocal) {
 #ifdef flagGUI
 	ComponentFactory::Register<DefaultGuiAppComponent>("");
 #endif
+	
+	
+	
+	DesktopFactory::Register<GuiTesterApp>("guitester");
+	
 	
 	
 }

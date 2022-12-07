@@ -12,6 +12,7 @@ SystemBase::~SystemBase() {
 }
 
 
+Callback Machine::WhenUserProgram;
 Callback Machine::WhenInitialize;
 Callback Machine::WhenPostInitialize;
 Callback Machine::WhenPreFirstUpdate;

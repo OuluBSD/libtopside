@@ -1,9 +1,8 @@
-#ifndef _CuboidTests_CuboidTests_h_
-#define _CuboidTests_CuboidTests_h_
+#ifndef _GuboTests_GuboTests_h_
+#define _GuboTests_GuboTests_h_
 
 #include <Complete/Complete.h>
 #include <DesktopSuite/DesktopSuite.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
 using namespace UPP;
 
 
@@ -16,7 +15,7 @@ public:
 	GuboTester();
 	
 	
-	void Paint(Draw& d) override;
+	void Paint(Draw3D& d) override;
 	
 	
 };

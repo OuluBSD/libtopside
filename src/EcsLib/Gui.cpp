@@ -2,7 +2,6 @@
 #include <EcsLocal/EcsLocal.h>
 #include <EcsVirtualGui/EcsVirtualGui.h>
 
-#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -30,7 +29,7 @@ void DefaultGuiAppComponent::Initialize() {
 	Serial::EcsVideoBase::AddBinder(this);
 	Serial::EventStateBase::AddBinder(this);
 	
-	cw = GetEntity()->Find<CoreWindow>();
+	cw = GetEntity()->Find<Geom2DComponent>();
 	trans2 = GetEntity()->Find<Transform2D>();
 }
 
@@ -119,5 +118,3 @@ bool DefaultGuiAppComponent::Arg(const String& key, const String& value) {
 
 
 NAMESPACE_ECS_END
-
-#endif

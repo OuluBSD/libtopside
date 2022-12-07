@@ -4,18 +4,18 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-CoreWindowTesterApp::CoreWindowTesterApp(int test_idx) : test_idx(test_idx) {
+Geom2DComponentTesterApp::Geom2DComponentTesterApp(int test_idx) : test_idx(test_idx) {
 	
 }
 
-void CoreWindowTesterApp::Run() {
+void Geom2DComponentTesterApp::Run() {
 	switch (test_idx) {
 		case 0: Test_WindowOpenClose(); break;
 		default: ASSERT_(0, "invalid test index");
 	}
 }
 
-void CoreWindowTesterApp::Test_WindowOpenClose() {
+void Geom2DComponentTesterApp::Test_WindowOpenClose() {
 	
 }
 
@@ -71,5 +71,5 @@ GUI_APP_MAIN {
 	if (!cmd.IsEmpty())
 		idx = ScanInt(cmd[0]);
 	
-	CoreWindowTesterApp(0).Run();
+	Geom2DComponentTesterApp(0).Run();
 }

@@ -1,6 +1,5 @@
-#if 0
-#ifndef _VirtualGui3D_CoreWindow_h_
-#define _VirtualGui3D_CoreWindow_h_
+#ifndef _EcsLib_Geom2DComponent_h_
+#define _EcsLib_Geom2DComponent_h_
 
 #ifdef flagGUI
 
@@ -20,7 +19,7 @@ struct WindowsImg {
 class Windows;
 
 class WindowDecoration : public GeomInteraction2D {
-	CoreWindow* win = NULL;
+	Geom2DComponent* win = NULL;
 	String label;
 	bool left_down;
 	Point left_down_pt;
@@ -28,7 +27,7 @@ class WindowDecoration : public GeomInteraction2D {
 public:
 	RTTI_DECL1(WindowDecoration, GeomInteraction2D)
 	typedef WindowDecoration CLASSNAME;
-	WindowDecoration(CoreWindow*);
+	WindowDecoration(Geom2DComponent*);
 	
 	virtual void Paint(Draw& draw) override;
 	
@@ -48,20 +47,20 @@ public:
 };
 
 
-struct CoreWindowLink;
+struct Geom2DComponentLink;
 
-class CoreWindow :
+class Geom2DComponent :
 	public GeomInteraction2D,
-	public AbsoluteWindow,
-	public Component<CoreWindow>
+	public Absolute2D,
+	public Component<Geom2DComponent>
 {
-	RTTI_COMP2(CoreWindow, GeomInteraction2D, AbsoluteWindow)
+	RTTI_COMP2(Geom2DComponent, GeomInteraction2D, Absolute2D)
 	
 	#if 0
 	struct ResizeFrame : public CtrlFrame {
 		RTTI_DECL1(ResizeFrame, CtrlFrame)
 	
-		CoreWindow* win = NULL;
+		Geom2DComponent* win = NULL;
 		Size sz;
 		int frame_width = 8;
 		int corner_width = 24;
@@ -89,11 +88,11 @@ class CoreWindow :
 	};
 	#endif
 	
-	//One<AbsoluteWindowInterface> owned_aw;
-	//AbsoluteWindowInterface* aw = 0;
-	void (CoreWindow::*reset_fn)() = 0;
+	//One<Absolute2DInterface> owned_aw;
+	//Absolute2DInterface* aw = 0;
+	void (Geom2DComponent::*reset_fn)() = 0;
 	Windows* wins = NULL;
-	CoreWindowLink* linked = NULL;
+	Geom2DComponentLink* linked = NULL;
 	
 	//ResizeFrame resize_frame;
 	WindowDecoration decor;
@@ -117,26 +116,26 @@ public:
 	Transform2DRef  transform2d;
 	
 public:
-	typedef CoreWindow CLASSNAME;
-	CoreWindow();
-	CoreWindow(const CoreWindow& cw) : stored_rect(0,0,0,0), decor(this) {*this = cw;}
+	typedef Geom2DComponent CLASSNAME;
+	Geom2DComponent();
+	Geom2DComponent(const Geom2DComponent& cw) : stored_rect(0,0,0,0), decor(this) {*this = cw;}
 	
-	void operator=(const CoreWindow& cw);
+	void operator=(const Geom2DComponent& cw);
 	
 	#if 0
 	template <class T>
 	void ResetTopWindow() {
 		Clear();
 		T* t = new T();
-		aw = static_cast<AbsoluteWindowInterface*>(t);
+		aw = static_cast<Absolute2DInterface*>(t);
 	}
 	template <class T>
 	T& Create() {
 		Clear();
 		T* t = new T();
-		owned_aw = static_cast<AbsoluteWindowInterface*>(t);
+		owned_aw = static_cast<Absolute2DInterface*>(t);
 		aw = &*owned_aw;
-		reset_fn = &CoreWindow::ResetTopWindow<T>;
+		reset_fn = &Geom2DComponent::ResetTopWindow<T>;
 		return *t;
 	}
 	#endif
@@ -156,14 +155,14 @@ public:
 	//const Framebuffer& GetFramebuffer() const {return fb;}
 	int GetId() const;
 	Rect GetStoredRect() const;
-	AbsoluteWindowInterface* GetAbsoluteWindow();
+	Absolute2DInterface* GetAbsolute2D();
 	bool IsMaximized() const;
 	bool IsActive() const;
 	void MoveWindow(Point pt);
 	void Maximize();
 	void Restore();
 	void Minimize();
-	void Close();
+	//void Close() override;
 	void FocusEvent() override;
 	void ToggleMaximized();
 	bool IsPendingPartialRedraw() const;
@@ -186,34 +185,34 @@ public:
 	virtual void ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags);
 };
 
-using CoreWindowRef = Ref<CoreWindow>;
+using Geom2DComponentRef = Ref<Geom2DComponent>;
 
 
-struct CoreWindowLink : public Component<CoreWindowLink> {
-	RTTI_COMP1(CoreWindowLink, ComponentT)
-	COPY_PANIC(CoreWindowLink)
+struct Geom2DComponentLink : public Component<Geom2DComponentLink> {
+	RTTI_COMP1(Geom2DComponentLink, ComponentT)
+	COPY_PANIC(Geom2DComponentLink)
 	COMP_DEF_VISIT
 	
 	
-	CoreWindow* linked = 0;
+	Geom2DComponent* linked = 0;
 	
 	
 	void Initialize() override;
 	void Uninitialize() override;
 	
-	void Link(CoreWindow* cw);
-	void Unlink(CoreWindow* cw);
+	void Link(Geom2DComponent* cw);
+	void Unlink(Geom2DComponent* cw);
 	void Unlink();
-	CoreWindow& GetWindow() const;
+	Geom2DComponent& GetWindow() const;
 	
 };
 
-using CoreWindowLinkRef = Ref<CoreWindowLink>;
+using Geom2DComponentLinkRef = Ref<Geom2DComponentLink>;
 
 
 struct Window2D :
 	EntityPrefab<
-		CoreWindow,
+		Geom2DComponent,
 		Transform2D,
 		DefaultGuiAppComponent
 	> {
@@ -221,7 +220,7 @@ struct Window2D :
     {
         auto components = EntityPrefab::Make(e);
 		
-		components.Get<CoreWindowRef>()->transform2d = components.Get<Transform2DRef>();
+		components.Get<Geom2DComponentRef>()->transform2d = components.Get<Transform2DRef>();
 		
 		components.Get<Transform2DRef>()->position = vec2(0, 1);
 		components.Get<Transform2DRef>()->size = vec2(320, 240);
@@ -234,7 +233,7 @@ struct Window2D :
 // Window3D needs to be linked to Window2D
 struct Window3D :
 	EntityPrefab<
-		CoreWindowLink,
+		Geom2DComponentLink,
 		Transform,
 		ModelComponent
 	> {
@@ -242,7 +241,7 @@ struct Window3D :
     {
         auto components = EntityPrefab::Make(e);
 		
-		CoreWindowLinkRef win = components.Get<CoreWindowLinkRef>();
+		Geom2DComponentLinkRef win = components.Get<Geom2DComponentLinkRef>();
 		
 		#if 0
 		ModelComponentRef mdl = components.Get<ModelComponentRef>();
@@ -259,6 +258,5 @@ struct Window3D :
 
 NAMESPACE_ECS_END
 
-#endif
 #endif
 #endif

@@ -6,12 +6,12 @@ using namespace UPP;
 
 NAMESPACE_TOPSIDE_BEGIN
 
-class CoreWindowTesterApp {
+class Geom2DComponentTesterApp {
 	
 	
 public:
-	typedef CoreWindowTesterApp CLASSNAME;
-	CoreWindowTesterApp(int test_idx);
+	typedef Geom2DComponentTesterApp CLASSNAME;
+	Geom2DComponentTesterApp(int test_idx);
 	
 	void Run();
 	void Test_WindowOpenClose();

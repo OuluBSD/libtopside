@@ -35,5 +35,7 @@ file
 	ShootingSystem.cpp,
 	ThrowingSystem.h,
 	ThrowingSystem.cpp,
+	DesktopSystem.h,
+	DesktopSystem.cpp,
 	_ readonly separator;
 

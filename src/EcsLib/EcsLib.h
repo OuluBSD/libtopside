@@ -12,11 +12,6 @@
 	#include <IHolograph/IHolograph.h>
 #endif
 
-#if defined LIBTOPSIDE && defined flagGUI
-	#define HAVE_WINDOWSYSTEM 1
-	#include <VirtualGui3D/VirtualGui3D.h>
-#endif
-
 #if !defined flagGUI
 	#error GUI not defined
 #endif
@@ -38,6 +33,8 @@
 #include "EonLoader.h"
 #include "WorldLogic.h"
 #include "Gui.h"
+#include "Absolute2D.h"
+#include "Geom2DComponent.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
