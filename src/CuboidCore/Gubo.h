@@ -230,7 +230,7 @@ public:
 	virtual ~Workspace3D() {}
 	
 	virtual bool Init() = 0;
-	virtual void AddWindow(Ecs::Geom2DComponent&) = 0;
+	virtual void AddInterface(Absolute3DProxy&) = 0;
 	virtual bool Poll(GeomEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;

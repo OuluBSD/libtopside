@@ -1,18 +1,42 @@
-#include <Complete/Complete.h>
-#include <DesktopSuite/DesktopSuite.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
-using namespace UPP;
+#include "GuiTests.h"
 
-void CreateGeom2DComponent() {
+GuiTester::GuiTester() {
 	
 	
 	
 }
 
+void GuiTester::Paint(Draw& d) {
+	
+	TODO
+	
+}
 
+
+
+#if 1
+void UserGuiMainFn() {
+	GuiTester().Run();
+}
+
+CONSOLE_APP_MAIN {
+	TS::Serial::Machine::WhenInitialize << callback(TS::DefaultSerialInitializer);
+	TS::Serial::Machine::WhenPreFirstUpdate << callback(TS::DefaultStartup);
+	TS::Serial::Machine::WhenUserProgram << callback(UserGuiMainFn);
+	
+	TS::SingleMachine mach;
+	if (mach.Start()) {
+		TS::DefaultRunner(0, "Gui App", GUI_EON);
+		
+		mach.Stop();
+	}
+}
+	
+
+#else
 GUI_APP_MAIN {
 	using namespace Ecs;
-	RTLOG("CreateGeom2DComponent");
+	RTLOG("GUI_APP_MAIN");
 	Ecs::Engine& eng = GetActiveEngine();
 	WindowSystemRef wins = eng.Get<WindowSystem>();
 	EntityStoreRef ents = eng.Get<EntityStore>();
@@ -25,3 +49,5 @@ GUI_APP_MAIN {
 	
 	DebugMainLoop();
 }
+
+#endif

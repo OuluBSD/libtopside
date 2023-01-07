@@ -14,5 +14,14 @@ file
 	BaseVideo.h,
 	BaseVideo.cpp,
 	RegistrySystem.h,
-	RegistrySystem.cpp;
+	RegistrySystem.cpp,
+	AbsHandles readonly separator,
+	HandleTypes.h,
+	HandleSystemT.h,
+	HandleSystemT.cpp,
+	ScopeT.h,
+	ScopeT.cpp,
+	HandleT.h,
+	HandleT.cpp,
+	_ readonly separator;
 

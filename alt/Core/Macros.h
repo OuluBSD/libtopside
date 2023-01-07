@@ -99,19 +99,19 @@ LOG("}"); \
 }
 
 
-#ifndef flagGUI
-	#define CONSOLE_APP_MAIN \
-	void AppMain(); \
-	\
-	extern "C" int main(int argc, const char** argv) {\
-		::UPP::AppInit__(argc, (const char **)argv); \
-		AppMain(); \
-		::UPP::AppExit__(); \
-		return 0; \
-	} \
-	\
-	void AppMain()
-#endif
+//#ifndef flagGUI
+#define CONSOLE_APP_MAIN \
+void AppMain(); \
+\
+extern "C" int main(int argc, const char** argv) {\
+	::UPP::AppInit__(argc, (const char **)argv); \
+	AppMain(); \
+	::UPP::AppExit__(); \
+	return 0; \
+} \
+\
+void AppMain()
+//#endif
 
 
 

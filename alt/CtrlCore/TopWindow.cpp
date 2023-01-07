@@ -1,4 +1,5 @@
 #include "CtrlCore.h"
+#include <ParallelLib/ParallelLib.h>
 
 
 NAMESPACE_UPP
@@ -21,8 +22,8 @@ Ctrl* TopWindow::GetCtrl() {
 
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
+	using namespace Parallel;
 	
-	TODO
 	#if 0
 	RTLOG("TopWindow::CreateGeom2DComponent");
 	Ecs::Engine& eng = GetActiveEngine();
@@ -37,6 +38,14 @@ void TopWindow::CreateGeom2DComponent() {
 	active_screen->AddWindow(*cw);
 	
 	//UpdateFromTransform2D();
+	
+	#else
+	
+	Machine& mach = GetActiveMachine();
+	WindowSystemRef wins = mach.Get<WindowSystem>();
+	WindowManager& mgr = wins->GetActiveScope();
+	mgr.AddInterface(*this);
+	
 	#endif
 }
 

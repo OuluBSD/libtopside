@@ -21,6 +21,8 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	mach.Add<LinkSystem>();
 	
     mach.Add<ScriptLoader>();
+    mach.Add<GuboSystem>();
+    mach.Add<WindowSystem>();
     
 	
     reg->SetAppName("Non-screen machine");

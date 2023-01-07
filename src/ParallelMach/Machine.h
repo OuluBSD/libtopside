@@ -207,6 +207,8 @@ public:
 	
 	void Run(void(*fn)(), void(*arg_fn)());
 	
+	bool Start() {return Open(0);}
+	void Stop() {Close();}
 };
 
 

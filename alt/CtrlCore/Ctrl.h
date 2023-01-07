@@ -10,7 +10,7 @@ END_UPP_NAMESPACE
 namespace TS { namespace Ecs {
 
 class Windows;
-class WindowManager;
+//class WindowManager;
 class Geom2DComponent;
 class VirtualGui;
 //class WindowSystem;
@@ -286,7 +286,7 @@ public:
 	virtual ~Workspace2D() {}
 	
 	virtual bool Init() = 0;
-	virtual void AddWindow(Ecs::Geom2DComponent&) = 0;
+	virtual void AddInterface(Absolute2DProxy&) = 0;
 	virtual bool Poll(CtrlEvent& e) = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;

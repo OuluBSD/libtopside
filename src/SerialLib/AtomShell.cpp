@@ -183,6 +183,8 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 					AtomStoreRef as			= mach.FindAdd<AtomStore>();
 				    AtomSystemRef asys		= mach.FindAdd<AtomSystem>();
 				    ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
+				    GuboSystemRef gubo		= mach.FindAdd<GuboSystem>();
+				    WindowSystemRef win		= mach.FindAdd<WindowSystem>();
 				    
 				    mach.FindAdd<PacketTracker>();
 				}
