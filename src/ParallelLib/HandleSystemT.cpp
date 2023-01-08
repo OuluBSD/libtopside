@@ -22,7 +22,7 @@ void HandleSystemT<Dim>::Start() {
 
 template <class Dim>
 void HandleSystemT<Dim>::Update(double dt) {
-	TODO
+	
 }
 
 template <class Dim>

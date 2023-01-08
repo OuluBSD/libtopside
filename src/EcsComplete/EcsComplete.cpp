@@ -34,9 +34,15 @@ void EngineEcsInit() {
 	eng.GetAdd<Ecs::ComponentStore>();
 	eng.GetAdd<Ecs::EventSystem>();
 	
+	#ifdef flagDEBUG
+	LOG("warning: TODO ecs window system");
+	#endif
+	
+	#if 0
 	#if HAVE_WINDOWSYSTEM
 	eng.GetAdd<Ecs::VirtualGuiSystem>();
-	TODO //eng.GetAdd<Ecs::WindowSystem>();
+	eng.GetAdd<Ecs::WindowSystem>();
+	#endif
 	#endif
 	
 	//DefaultSerialInitializerInternalEon();

@@ -540,11 +540,13 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 	
 	int frame_sz = frame->nb_samples * frame->channels * var_size;
 	
+	buf.EnterWrite();
 	auto& p = buf.Add();
 	off32 offset = gen.Create();
 	p = CreatePacket(offset);
 	RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString() << ", " << time_pos);
 	p->Set(fmt, time_pos);
+	buf.LeaveWrite();
 	
 	Backend::CopyFramePixels(fmt, *frame, p->Data());
 }
