@@ -1,22 +1,22 @@
-#ifndef _AtomEcs_Ecs_h_
-#define _AtomEcs_Ecs_h_
+#ifndef _AtomHandle_Handle_h_
+#define _AtomHandle_Handle_h_
 
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-class EcsEventsBase :
+class HandleEventsBase :
 	public Atom
 {
 	String						target;
 	EnvStateRef					state;
 	int							prev_iter = -1;
-	static EcsEventsBase*		active;
+	static HandleEventsBase*	active;
 	
 public:
-	RTTI_DECL1(EcsEventsBase, Atom);
+	RTTI_DECL1(HandleEventsBase, Atom);
 	
-	EcsEventsBase();
+	HandleEventsBase();
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	bool			PostInitialize() override;
@@ -28,8 +28,8 @@ public:
 	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this); vis & state;}
 	
 	
-	static Callback1<EcsEventsBase*>	WhenInitialize;
-	static EcsEventsBase* Active() {return active;}
+	static Callback1<HandleEventsBase*>	WhenInitialize;
+	static HandleEventsBase* Active() {return active;}
 	
 	EnvStateRef& State() {return state;}
 	
@@ -37,13 +37,13 @@ public:
 
 
 #if defined flagSCREEN
-class EcsVideoBase :
+class HandleVideoBase :
 	public Atom
 {
 	struct Binder;
 	
 	static Array<Binder> binders;
-	static EcsVideoBase* active;
+	static HandleVideoBase* active;
 	
 	String					target;
 	EnvStateRef				state;
@@ -55,9 +55,9 @@ class EcsVideoBase :
 	bool					add_ecs = false;
 	bool					dbg_info = false;
 	int						dbg_win_id = 0;
-	EntitySystemRef			ents;
 	#ifdef flagGUI
-	//Ecs::WindowSystemRef	wins;
+	WindowSystemRef			wins;
+	GuboSystemRef			gubos;
 	#endif
 	int						screen_id = -1;
 	int						add_count = 0;
@@ -68,9 +68,9 @@ class EcsVideoBase :
 	void			RedrawScreen();
 	
 public:
-	RTTI_DECL1(EcsVideoBase, Atom);
+	RTTI_DECL1(HandleVideoBase, Atom);
 	
-	EcsVideoBase();
+	HandleVideoBase();
 	
 	bool			IsScreenMode() const {return screen_id >= 0;}
 	
@@ -84,8 +84,8 @@ public:
 	bool			Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override;
 	void			Visit(RuntimeVisitor& vis) override;
 	
-	void			AddWindow3D(Binder&, Ecs::Geom2DComponent&);
-	void			RemoveWindow3D(Binder&, Ecs::Geom2DComponent&);
+	//void			AddWindow3D(Binder&, Geom2DComponent&);
+	//void			RemoveWindow3D(Binder&, Handle::Geom2DComponent&);
 	bool			IsActive() const;
 	
 	void AddBinders();
@@ -94,7 +94,7 @@ public:
 	static void AddBinder(BinderIfaceVideo* iface);
 	static void RemoveBinder(BinderIfaceVideo* iface);
 	
-	static Callback1<EcsVideoBase*>	WhenInitialize;
+	static Callback1<HandleVideoBase*>	WhenInitialize;
 	
 	
 };
@@ -102,15 +102,15 @@ public:
 
 
 #if 0
-class EcsOglBase :
+class HandleOglBase :
 	public OglBufferBase
 {
 	Vector<BinderIfaceOgl*> binders;
 	
 public:
-	RTTI_DECL1(EcsOglBase, OglBufferBase);
+	RTTI_DECL1(HandleOglBase, OglBufferBase);
 	
-	EcsOglBase();
+	HandleOglBase();
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	bool			PostInitialize() override;
@@ -123,7 +123,7 @@ public:
 	void AddBinder(BinderIfaceOgl* iface);
 	void RemoveBinder(BinderIfaceOgl* iface);
 	
-	static Callback1<EcsOglBase*>	WhenInitialize;
+	static Callback1<HandleOglBase*>	WhenInitialize;
 	
 };
 #endif

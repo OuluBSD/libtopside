@@ -182,7 +182,7 @@ void InterfaceBuilder::Headers() {
 	AddHeader("EcsProgEvents", "EcsEventsBase", "pipe")
 		.In("CenterReceipt").Out("CenterReceipt")
 		.Action("center.events.prog.ecs")
-		.Arg("HINT_PKG", "AtomEcs")
+		.Arg("HINT_PKG", "AtomHandle")
 		.Link("PIPE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 	;
@@ -191,7 +191,7 @@ void InterfaceBuilder::Headers() {
 		.In("CenterOrder")
 		.Out("CenterProg")
 		.Action("center.video.prog.pipe")
-		.Arg("HINT_PKG", "AtomEcs")
+		.Arg("HINT_PKG", "AtomHandle")
 		.Link("PIPE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 	;
@@ -200,7 +200,7 @@ void InterfaceBuilder::Headers() {
 		.In("CenterOrder")
 		.Out("CenterReceipt")
 		.Action("center.video.prog.ecs")
-		.Arg("HINT_PKG", "AtomEcs")
+		.Arg("HINT_PKG", "AtomHandle")
 		.Link("PIPE", "PROCESS")
 		//.Arg("reqdef_flagSCREEN", "1")
 	;

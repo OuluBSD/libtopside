@@ -33,6 +33,9 @@ public:
 	void RealizeScope();
 	Scope& GetActiveScope();
 	
+	int GetScopeCount() const {return scopes.GetCount();}
+	int GetScreenCount() const {return GetScopeCount();}
+	
 };
 
 using GuboSystem = HandleSystemT<Ctx3D>;

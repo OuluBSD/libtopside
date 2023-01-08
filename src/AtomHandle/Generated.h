@@ -1,5 +1,5 @@
-#ifndef _AtomEcs_Generated_h_
-#define _AtomEcs_Generated_h_
+#ifndef _AtomHandle_Generated_h_
+#define _AtomHandle_Generated_h_
 
 // This file is generated. Do not modify this file.
 
@@ -8,11 +8,11 @@ namespace TS {
 namespace Parallel {
 
 #if defined flagSCREEN
-class EcsProgEvents : public EcsEventsBase {
+class HandleProgEvents : public HandleEventsBase {
 
 public:
-	RTTI_DECL1(EcsProgEvents, EcsEventsBase)
-	COPY_PANIC(EcsProgEvents)
+	RTTI_DECL1(HandleProgEvents, HandleEventsBase)
+	COPY_PANIC(HandleProgEvents)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -23,10 +23,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class PipeProgVideo : public EcsVideoBase {
+class PipeProgVideo : public HandleVideoBase {
 
 public:
-	RTTI_DECL1(PipeProgVideo, EcsVideoBase)
+	RTTI_DECL1(PipeProgVideo, HandleVideoBase)
 	COPY_PANIC(PipeProgVideo)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
@@ -38,11 +38,11 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsProgVideo : public EcsVideoBase {
+class HandleProgVideo : public HandleVideoBase {
 
 public:
-	RTTI_DECL1(EcsProgVideo, EcsVideoBase)
-	COPY_PANIC(EcsProgVideo)
+	RTTI_DECL1(HandleProgVideo, HandleVideoBase)
+	COPY_PANIC(HandleProgVideo)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

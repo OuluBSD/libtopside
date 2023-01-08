@@ -1,4 +1,4 @@
-#include "AtomEcs.h"
+#include "AtomHandle.h"
 
 // This file is generated. Do not modify this file.
 
@@ -7,11 +7,11 @@ namespace TS {
 namespace Parallel {
 
 #if defined flagSCREEN
-String EcsProgEvents::GetAction() {
+String HandleProgEvents::GetAction() {
 	return "center.events.prog.ecs";
 }
 
-AtomTypeCls EcsProgEvents::GetAtomType() {
+AtomTypeCls HandleProgEvents::GetAtomType() {
 	AtomTypeCls t;
 	t.sub = SubAtomCls::ECS_PROG_EVENTS;
 	t.role = AtomRole::PIPE;
@@ -20,15 +20,15 @@ AtomTypeCls EcsProgEvents::GetAtomType() {
 	return t;
 }
 
-LinkTypeCls EcsProgEvents::GetLinkType() {
+LinkTypeCls HandleProgEvents::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void EcsProgEvents::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<EcsEventsBase>(this);
+void HandleProgEvents::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<HandleEventsBase>(this);
 }
 
-AtomTypeCls EcsProgEvents::GetType() const {
+AtomTypeCls HandleProgEvents::GetType() const {
 	return GetAtomType();
 }
 #endif
@@ -53,7 +53,7 @@ LinkTypeCls PipeProgVideo::GetLinkType() {
 }
 
 void PipeProgVideo::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<EcsVideoBase>(this);
+	vis.VisitThis<HandleVideoBase>(this);
 }
 
 AtomTypeCls PipeProgVideo::GetType() const {
@@ -63,11 +63,11 @@ AtomTypeCls PipeProgVideo::GetType() const {
 
 
 #if defined flagSCREEN
-String EcsProgVideo::GetAction() {
+String HandleProgVideo::GetAction() {
 	return "center.video.prog.ecs";
 }
 
-AtomTypeCls EcsProgVideo::GetAtomType() {
+AtomTypeCls HandleProgVideo::GetAtomType() {
 	AtomTypeCls t;
 	t.sub = SubAtomCls::ECS_PROG_VIDEO;
 	t.role = AtomRole::PIPE;
@@ -76,15 +76,15 @@ AtomTypeCls EcsProgVideo::GetAtomType() {
 	return t;
 }
 
-LinkTypeCls EcsProgVideo::GetLinkType() {
+LinkTypeCls HandleProgVideo::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void EcsProgVideo::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<EcsVideoBase>(this);
+void HandleProgVideo::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<HandleVideoBase>(this);
 }
 
-AtomTypeCls EcsProgVideo::GetType() const {
+AtomTypeCls HandleProgVideo::GetType() const {
 	return GetAtomType();
 }
 #endif

@@ -2,7 +2,7 @@
 #define _EcsMach_EcsMach_h_
 
 #include <AtomMinimal/AtomMinimal.h>
-#include <AtomEcs/AtomEcs.h>
+#include <AtomHandle/AtomHandle.h>
 #include <SerialLib/SerialLib.h>
 
 #ifdef flagNO_ECS

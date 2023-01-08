@@ -4,11 +4,11 @@ uses
 	AtomAudio;
 
 file
-	AtomEcs.h,
-	AtomEcs.cpp,
+	AtomHandle.h,
+	AtomHandle.cpp,
 	Init.cpp,
 	Generated.h,
 	Generated.cpp,
-	Ecs.h,
-	Ecs.cpp;
+	Handle.h,
+	Handle.cpp;
 

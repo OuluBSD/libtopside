@@ -3,7 +3,7 @@ description "\377B128,0,0";
 uses
 	AtomMinimal,
 	SerialLib,
-	AtomEcs;
+	AtomHandle;
 
 file
 	EcsMach.h,

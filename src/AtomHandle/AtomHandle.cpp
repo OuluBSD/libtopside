@@ -1,15 +1,15 @@
-#include "AtomEcs.h"
+#include "AtomHandle.h"
 
 NAMESPACE_UPP_BEGIN
 
 
-INITBLOCK_(AtomEcs) {
+INITBLOCK_(AtomHandle) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
 	
 	#ifdef flagSCREEN
-	Factory::RegisterAtom<EcsProgVideo>();
+	Factory::RegisterAtom<HandleProgVideo>();
 	#endif
 	
 }

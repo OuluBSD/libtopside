@@ -1,40 +1,38 @@
-#include "AtomEcs.h"
+#include "AtomHandle.h"
 #include <SerialLib/SerialLib.h>
-#include <EcsLocal/EcsLocal.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
 
 
 NAMESPACE_PARALLEL_BEGIN
 
 
 
-Callback1<EcsEventsBase*> EcsEventsBase::WhenInitialize;
+Callback1<HandleEventsBase*> HandleEventsBase::WhenInitialize;
 
-EcsEventsBase* EcsEventsBase::active;
+HandleEventsBase* HandleEventsBase::active;
 
-EcsEventsBase::EcsEventsBase() {
+HandleEventsBase::HandleEventsBase() {
 	if (!active)
 		active = this;
 }
 
-bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
+bool HandleEventsBase::Initialize(const Script::WorldState& ws) {
 	
 	target = ws.Get(".target");
 	if (target.IsEmpty()) {
-		LOG("EcsEventsBase::Initialize: error: target state argument is required");
+		LOG("HandleEventsBase::Initialize: error: target state argument is required");
 		return false;
 	}
 	
 	Space& space = GetParent();
 	state = space.FindNearestState(target);
 	if (!state) {
-		LOG("EcsEventsBase::Initialize: error: state '" << target << "' not found in parent space: " << space.GetDeepName());
+		LOG("HandleEventsBase::Initialize: error: state '" << target << "' not found in parent space: " << space.GetDeepName());
 		return false;
 	}
 	
 	#if 0
 	if (!WhenInitialize) {
-		LOG("EcsEventsBase::Initialize: internal error: expected ecs system to prepare this");
+		LOG("HandleEventsBase::Initialize: internal error: expected ecs system to prepare this");
 		return false;
 	}
 	
@@ -44,15 +42,15 @@ bool EcsEventsBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool EcsEventsBase::PostInitialize() {
+bool HandleEventsBase::PostInitialize() {
 	return true;
 }
 
-void EcsEventsBase::Uninitialize() {
+void HandleEventsBase::Uninitialize() {
 	
 }
 
-bool EcsEventsBase::IsReady(PacketIO& io) {
+bool HandleEventsBase::IsReady(PacketIO& io) {
 	if (!state) return false;
 	int keyboard_iter = state->GetInt(KEYBOARD_STATE_ITER);
 	dword iface_sink_mask = iface.GetSinkMask();
@@ -60,19 +58,19 @@ bool EcsEventsBase::IsReady(PacketIO& io) {
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0 &&
 		keyboard_iter != prev_iter;
-	RTLOG("EcsEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("HandleEventsBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
-bool EcsEventsBase::Recv(int sink_ch, const Packet& in) {
+bool HandleEventsBase::Recv(int sink_ch, const Packet& in) {
 	return true;
 }
 
-void EcsEventsBase::Finalize(RealtimeSourceConfig& cfg) {
+void HandleEventsBase::Finalize(RealtimeSourceConfig& cfg) {
 	
 }
 
-bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HandleEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
@@ -84,11 +82,11 @@ bool EcsEventsBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 
 #if defined flagSCREEN
 
-struct EcsVideoBase::Binder : RTTIBase {
+struct HandleVideoBase::Binder : RTTIBase {
 	RTTI_DECL0(Binder);
 	
 	BinderIfaceVideo* iface = 0;
-	Ecs::Entity* win_entity = 0; // Ref overly complicates ecs/mach relationship
+	AbsoluteInterface* abs_iface = 0;
 	DrawCommandImageRenderer rend;
 	bool win_inited = false;
 	Size sz;
@@ -101,20 +99,20 @@ struct EcsVideoBase::Binder : RTTIBase {
 };
 
 
-Array<EcsVideoBase::Binder> EcsVideoBase::binders;
-EcsVideoBase* EcsVideoBase::active;
+Array<HandleVideoBase::Binder> HandleVideoBase::binders;
+HandleVideoBase* HandleVideoBase::active;
 
-EcsVideoBase::EcsVideoBase() {
+HandleVideoBase::HandleVideoBase() {
 	if (!active) {
 		active = this;
 	}
 }
 
-bool EcsVideoBase::IsActive() const {
+bool HandleVideoBase::IsActive() const {
 	return active == this;
 }
 
-bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
+bool HandleVideoBase::Initialize(const Script::WorldState& ws) {
 	ISourceRef src = this->GetSource();
 	int src_count = src->GetSourceCount();
 	Value& val = src->GetSourceValue(src_count-1);
@@ -127,20 +125,15 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	if (GetSourceValue(0).GetFormat().IsReceipt())
 		add_ecs = true;
 	
-	TODO
-	#if 0
 	#ifdef flagGUI
-	ents = GetMachine().Get<EntitySystem>();
-	if (ents) {
-		wins = ents->GetEngine().Get<Ecs::WindowSystem>();
-	}
-	#endif
+	wins = GetMachine().Get<WindowSystem>();
+	gubos = GetMachine().Get<GuboSystem>();
 	#endif
 	
 	return true;
 }
 
-bool EcsVideoBase::PostInitialize() {
+bool HandleVideoBase::PostInitialize() {
 	
 	// Remove alpha channel
 	if (src_type == VD(CENTER, VIDEO)) {
@@ -161,47 +154,39 @@ bool EcsVideoBase::PostInitialize() {
 	return true;
 }
 
-void EcsVideoBase::Stop() {
+void HandleVideoBase::Stop() {
 	state.Clear();
-	ents.Clear();
-	TODO
-	#if 0
 	#ifdef flagGUI
 	wins.Clear();
-	#endif
+	gubos.Clear();
 	#endif
 	if (IsActive())
 		binders.Clear();
 }
 
-void EcsVideoBase::Uninitialize() {
+void HandleVideoBase::Uninitialize() {
 	if (IsActive()) {
 		binders.Clear();
 		active = 0;
 	}
 }
 
-void EcsVideoBase::Visit(RuntimeVisitor& vis) {
+void HandleVideoBase::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<Atom>(this);
 	if (IsActive())
 		vis | binders;
-	vis & state & ents;
+	vis & state;
 	
-	TODO
-	#if 0
 	#ifdef flagGUI
-	vis & wins;
-	#endif
+	vis & wins & gubos;
 	#endif
 }
 
-bool EcsVideoBase::IsReady(PacketIO& io) {
+bool HandleVideoBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	
 	bool render_win = false;
 	
-	TODO
-	#if 0
 	#ifdef flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		render_win = true;
@@ -213,15 +198,12 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 	bool b =	io.active_sink_mask == iface_sink_mask &&
 				io.full_src_mask == 0 &&
 				(binders.GetCount() > 0 || render_win);
-	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("HandleVideoBase::IsReady: " << (b ? "true" : "false") << " (binders " << binders.GetCount() << ", " << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	
 	return b;
-	#endif
 }
 
-void EcsVideoBase::RedrawScreen() {
-	TODO
-	#if 0
+void HandleVideoBase::RedrawScreen() {
 	#ifdef flagGUI
 	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 	#else
@@ -236,7 +218,10 @@ void EcsVideoBase::RedrawScreen() {
 	if (wins && screen_id < wins->GetScreenCount()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		ProgPainter& pp = pd.GetProgPainter();
-		Ecs::Windows& w = wins->GetScreen(screen_id);
+		
+		TODO // move Windows contents to ScopeT
+		#if 0
+		Handle::Windows& w = wins->GetScreen(screen_id);
 		
 		pd.cmd_screen_begin.Check();
 		
@@ -251,13 +236,13 @@ void EcsVideoBase::RedrawScreen() {
 		//pp.Dump();
 		
 		render_win = true;
-		//LOG("EcsVideoBase::IsReady: prog:"); LOG(pd.Dump());
+		//LOG("HandleVideoBase::IsReady: prog:"); LOG(pd.Dump());
+		#endif
 	}
-	#endif
 	#endif
 }
 
-bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
+bool HandleVideoBase::Recv(int sink_ch, const Packet& in) {
 	
 	Format fmt = in->GetFormat();
 	if (fmt.IsOrder()) {
@@ -269,21 +254,24 @@ bool EcsVideoBase::Recv(int sink_ch, const Packet& in) {
 	return false;
 }
 
-void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
-	TODO
-	#if 0
+void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 	if (IsScreenMode()) {
 		RedrawScreen();
 	}
 	else if (IsActive()) {
 		
 		for (Binder& b : binders) {
-			if (b.win_entity) {
+			Absolute2DInterface* abs2d_iface = CastPtr<Absolute2DInterface>(b.abs_iface);
+			
+			if (abs2d_iface) {
 				Size& sz = b.sz;
-				Ecs::Geom2DComponentLinkRef cw_link = b.win_entity->Find<Ecs::Geom2DComponentLink>();
-				Ecs::Geom2DComponent& cw = cw_link->GetWindow();
-				Ctrl* ctrl = cw.GetWindowCtrl();
+				//Handle::Geom2DComponentLinkRef cw_link = b.win_entity->Find<Handle::Geom2DComponentLink>();
+				//Handle::Geom2DComponent& cw = cw_link->GetWindow();
+				Ctrl* ctrl = abs2d_iface->GetCtrl();
 				ASSERT(ctrl);
+				
+				TODO // Move Geom2DComponent content to ParallelLib
+				#if 0
 				Rect cw_rect = cw.GetStoredRect();
 				sz = cw_rect.GetSize();
 				
@@ -329,13 +317,13 @@ void EcsVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 				if (dbg_info)
 					Panic("stop flood");
 				
+				#endif
 			}
 		}
 	}
-	#endif
 }
 
-bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 	#if 0
 	Format fmt = out.GetFormat();
@@ -381,22 +369,25 @@ bool EcsVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 	return true;
 }
 
-void EcsVideoBase::AddBinders() {
+void HandleVideoBase::AddBinders() {
 	for (Binder& b : binders)
-		if (!b.win_entity)
+		if (!b.abs_iface)
 			AddBinderActive(b);
 }
 
-void EcsVideoBase::AddBinderActive(Binder& b) {
-	Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(b.iface);
+void HandleVideoBase::AddBinderActive(Binder& b) {
+	TODO
+	#if 0
+	Handle::DefaultGuiAppComponent* gui = CastPtr<Handle::DefaultGuiAppComponent>(b.iface);
 	if (gui) {
-		Ecs::Geom2DComponentRef cw = gui->GetEntity()->Find<Ecs::Geom2DComponent>();
+		Handle::Geom2DComponentRef cw = gui->GetEntity()->Find<Handle::Geom2DComponent>();
 		if (cw)
 			AddWindow3D(b, *cw);
 	}
+	#endif
 }
 
-void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
+void HandleVideoBase::AddBinder(BinderIfaceVideo* iface) {
 	Binder& b = binders.Add();
 	b.iface = iface;
 	
@@ -404,7 +395,7 @@ void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
 		active->AddBinderActive(b);
 }
 
-void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
+void HandleVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 	int pos = -1, i = 0;
 	for (Binder& b0 : binders) {
 		if (b0.iface == iface) {
@@ -417,37 +408,43 @@ void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
 	if (pos < 0) return;
 	
 	Binder& b = binders[pos];
+	
+	TODO
+	#if 0
 	if (active) {
-		Ecs::DefaultGuiAppComponent* gui = CastPtr<Ecs::DefaultGuiAppComponent>(iface);
+		Handle::DefaultGuiAppComponent* gui = CastPtr<Handle::DefaultGuiAppComponent>(iface);
 		if (gui) {
-			Ecs::Geom2DComponentRef cw = gui->GetEntity()->Find<Ecs::Geom2DComponent>();
+			Handle::Geom2DComponentRef cw = gui->GetEntity()->Find<Handle::Geom2DComponent>();
 			if (cw)
 				active->RemoveWindow3D(b, *cw);
 		}
 	}
+	#endif
 }
 
-void EcsVideoBase::AddWindow3D(Binder& b, Ecs::Geom2DComponent& cw) {
+#if 0
+void HandleVideoBase::AddWindow3D(Binder& b, Handle::Geom2DComponent& cw) {
 	ASSERT(!b.win_entity);
 	
-	Ecs::PoolRef pool = ents->GetEngine().Get<Ecs::EntityStore>()->GetRoot();
-	b.win_entity = &*pool->Create<Ecs::Window3D>();
+	Handle::PoolRef pool = ents->GetEngine().Get<Handle::EntityStore>()->GetRoot();
+	b.win_entity = &*pool->Create<Handle::Window3D>();
 	
-	Ecs::Geom2DComponentLinkRef linked_win = b.win_entity->Get<Ecs::Geom2DComponentLink>();
+	Handle::Geom2DComponentLinkRef linked_win = b.win_entity->Get<Handle::Geom2DComponentLink>();
 	linked_win->Link(&cw);
 }
 
-void EcsVideoBase::RemoveWindow3D(Binder& b, Ecs::Geom2DComponent& cw) {
+void HandleVideoBase::RemoveWindow3D(Binder& b, Handle::Geom2DComponent& cw) {
 	if (b.win_entity) {
-		Ecs::Geom2DComponentLinkRef linked_win = b.win_entity->Find<Ecs::Geom2DComponentLink>();
+		Handle::Geom2DComponentLinkRef linked_win = b.win_entity->Find<Handle::Geom2DComponentLink>();
 		if (linked_win) {
 			linked_win->Unlink(&cw);
 			b.win_entity->Destroy();
 		}
 	}
 }
+#endif
 
-DrawCommand* EcsVideoBase::ProcessWindow(Binder& b, DrawCommand* begin) {
+DrawCommand* HandleVideoBase::ProcessWindow(Binder& b, DrawCommand* begin) {
 	if (!DrawCommandImageRenderer::TrimBegin(begin))
 		return 0;
 	
@@ -469,7 +466,7 @@ DrawCommand* EcsVideoBase::ProcessWindow(Binder& b, DrawCommand* begin) {
 	return DrawCommandImageRenderer::MoveEnd(end->next);
 }
 
-void EcsVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end) {
+void HandleVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end) {
 	ASSERT(begin->type == DRAW_BIND_WINDOW);
 	
 	hash_t hash = begin->hash;
@@ -486,8 +483,10 @@ void EcsVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawComm
 	
 	b.rend.ProcessWindowCommands(begin, end);
 	
+	TODO
+	#if 0
 	if (!b.win_inited) {
-		Ecs::ModelComponentRef mdl = b.win_entity->Find<Ecs::ModelComponent>();
+		Handle::ModelComponentRef mdl = b.win_entity->Find<Handle::ModelComponent>();
 		ASSERT(mdl);
 		if (!mdl) return;
 		
@@ -531,22 +530,22 @@ void EcsVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawComm
 	#endif
 }
 
-
+#endif
 
 
 
 #if 0
-Callback1<EcsOglBase*> EcsOglBase::WhenInitialize;
+Callback1<HandleOglBase*> HandleOglBase::WhenInitialize;
 
 
-EcsOglBase::EcsOglBase() {
+HandleOglBase::HandleOglBase() {
 	
 }
 
-bool EcsOglBase::Initialize(const Script::WorldState& ws) {
+bool HandleOglBase::Initialize(const Script::WorldState& ws) {
 	
 	if (!WhenInitialize) {
-		LOG("EcsOglBase::Initialize: internal error: expected ecs system to prepare this");
+		LOG("HandleOglBase::Initialize: internal error: expected ecs system to prepare this");
 		return false;
 	}
 	
@@ -555,36 +554,36 @@ bool EcsOglBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool EcsOglBase::PostInitialize() {
+bool HandleOglBase::PostInitialize() {
 	return true;
 }
 
-void EcsOglBase::Uninitialize() {
+void HandleOglBase::Uninitialize() {
 	
 }
 
-bool EcsOglBase::IsReady(PacketIO& io) {
+bool HandleOglBase::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	bool b =
 		io.active_sink_mask == iface_sink_mask &&
 		io.full_src_mask == 0;
-	RTLOG("EcsOglBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	RTLOG("HandleOglBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 
-bool EcsOglBase::Recv(int sink_ch, const Packet& in) {
+bool HandleOglBase::Recv(int sink_ch, const Packet& in) {
 	TODO
 }
 
-bool EcsOglBase::end(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool HandleOglBase::end(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	TODO
 }
 
-void EcsOglBase::AddBinder(BinderIfaceOgl* iface) {
+void HandleOglBase::AddBinder(BinderIfaceOgl* iface) {
 	VectorFindAdd(binders, iface);
 }
 
-void EcsOglBase::RemoveBinder(BinderIfaceOgl* iface) {
+void HandleOglBase::RemoveBinder(BinderIfaceOgl* iface) {
 	VectorRemoveKey(binders, iface);
 }
 #endif

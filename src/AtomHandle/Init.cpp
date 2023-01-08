@@ -1,19 +1,19 @@
-#include "AtomEcs.h"
+#include "AtomHandle.h"
 
 // This file is generated. Do not modify this file.
 
-INITBLOCK_(AtomEcs) {
+INITBLOCK_(AtomHandle) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
 	#if defined flagSCREEN
-	Factory::RegisterAtom<EcsProgEvents>();
+	Factory::RegisterAtom<HandleProgEvents>();
 	#endif
 	#if defined flagSCREEN
 	Factory::RegisterAtom<PipeProgVideo>();
 	#endif
 	#if defined flagSCREEN
-	Factory::RegisterAtom<EcsProgVideo>();
+	Factory::RegisterAtom<HandleProgVideo>();
 	#endif
 }
 
