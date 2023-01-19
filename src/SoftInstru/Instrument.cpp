@@ -189,7 +189,7 @@ int Instrument::NoteOn(int preset_index, int key, float vel)
 	if (vel <= 0.0f) { NoteOff(preset_index, key); return 1; }
 
 	// Play all matching regions.
-	voice_play_idx = voice_play_idx++;
+	voice_play_idx++;
 	Preset& preset = presets[preset_index];
 	for (Region& region : preset.regions)
 	{

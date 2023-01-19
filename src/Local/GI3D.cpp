@@ -19,5 +19,9 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	TODO
 }
 
+GeomInteraction3D* GeomInteraction3D::At(int i) {
+	TODO
+}
+
 
 NAMESPACE_TOPSIDE_END

@@ -47,6 +47,8 @@ public:
 	
 	virtual Ctrl*					GetCtrl();
 	
+	Absolute2DProxy*				GetLinkedProxy() const {return proxy;}
+	
 };
 
 
@@ -64,6 +66,8 @@ public:
 	virtual ~Absolute3DInterface() {}
 	
 	virtual Gubo*					GetGubo();
+	
+	Absolute3DProxy*				GetLinkedProxy() const {return proxy;}
 	
 };
 

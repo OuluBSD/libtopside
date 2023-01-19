@@ -219,9 +219,7 @@ void HandleVideoBase::RedrawScreen() {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		ProgPainter& pp = pd.GetProgPainter();
 		
-		TODO // move Windows contents to ScopeT
-		#if 0
-		Handle::Windows& w = wins->GetScreen(screen_id);
+		WindowManager& w = wins->GetScope(screen_id);
 		
 		pd.cmd_screen_begin.Check();
 		
@@ -233,11 +231,10 @@ void HandleVideoBase::RedrawScreen() {
 		
 		pd.cmd_screen_begin.Check();
 		
-		//pp.Dump();
+		pp.Dump(); TODO
 		
 		render_win = true;
 		//LOG("HandleVideoBase::IsReady: prog:"); LOG(pd.Dump());
-		#endif
 	}
 	#endif
 }
@@ -324,8 +321,6 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 }
 
 bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
-	TODO
-	#if 0
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
@@ -364,7 +359,6 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	else {
 		TODO
 	}
-	#endif
 	
 	return true;
 }

@@ -153,10 +153,13 @@ public:
 	GeomInteraction2D();
 	
 	int GetCount() const;
-	GeomInteraction2D* operator[](int i);
-	Rect GetFrameRect() const {return frame_r;}
+	GeomInteraction2D* operator[](int i) {return At(i);}
+	GeomInteraction2D* At(int i);
+	Rect GetFrameBox() const {return frame_r;}
 	Size GetFrameSize() const {return frame_r.GetSize();}
 	Rect GetRect() const {return GetFrameRect();}
+	
+	void SetDimensions(const Rect& r) {SetFrameRect(r);}
 	
 	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
 	
@@ -231,10 +234,13 @@ public:
 	typedef GeomInteraction3D CLASSNAME;
 	GeomInteraction3D();
 	
-	Cubf GetCub() const {return frame;}
+	Cubf GetFrameBox() const {return frame;}
 	Volf GetFrameSize() const {return frame.GetSize();}
+	GeomInteraction3D* At(int i);
 	
 	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
+	
+	void SetDimensions(const Cubf& c) {SetFrameCubf(c);}
 	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;

@@ -14,12 +14,19 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
 HandleT<Dim>::HandleT () {
+	this->SetDimensions(Dim::GetDefaultHandleDimensions());
 	
+}
+
+template <class Dim>
+typename Dim::TopContainer* HandleT<Dim>::GetTopContainer() {
+	TODO
 }
 
 template <class Dim>
 void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
 	iface.SetTarget(*this);
+	// --> GetLinkedProxy()
 }
 
 template <class Dim>

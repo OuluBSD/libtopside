@@ -47,7 +47,7 @@ int GeomInteraction2D::GetCount() const {
 	return sub.GetCount();
 }
 
-GeomInteraction2D* GeomInteraction2D::operator[](int i) {
+GeomInteraction2D* GeomInteraction2D::At(int i) {
 	return CastPtr<GeomInteraction2D>(sub[i]);
 }
 
@@ -296,6 +296,7 @@ void GeomInteraction2D::DeepLayout() {
 	}
 	
 	Rect r = GetContentRect();
+	ASSERT(!r.IsEmpty());
 	
 	for(GeomInteraction* c : sub) {
 		GeomInteraction2D* c2 = c->Get2D();
