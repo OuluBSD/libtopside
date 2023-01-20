@@ -134,6 +134,7 @@ public:
 	virtual GeomInteraction2D* Get2D();
 	virtual GeomInteraction3D* Get3D();
 	virtual Ctrl* GetCtrl();
+	virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	
 	
 	void SetCaptured(GeomInteraction* c);
@@ -152,15 +153,17 @@ public:
 	typedef GeomInteraction2D CLASSNAME;
 	GeomInteraction2D();
 	
+	
+	// Common interface for template usage
 	int GetCount() const;
 	GeomInteraction2D* operator[](int i) {return At(i);}
 	GeomInteraction2D* At(int i);
 	Rect GetFrameBox() const {return frame_r;}
+	void SetFrameBox(const Rect& r) {SetFrameRect(r);}
+	
+	
 	Size GetFrameSize() const {return frame_r.GetSize();}
-	Rect GetRect() const {return GetFrameRect();}
-	
-	void SetDimensions(const Rect& r) {SetFrameRect(r);}
-	
+	Rect GetRect() const {return frame_r;}
 	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
 	
 	bool DeepMouseMove(const Point& pt, dword keyflags);
@@ -234,13 +237,15 @@ public:
 	typedef GeomInteraction3D CLASSNAME;
 	GeomInteraction3D();
 	
+	
+	// Common interface for template usage
 	Cubf GetFrameBox() const {return frame;}
 	Volf GetFrameSize() const {return frame.GetSize();}
 	GeomInteraction3D* At(int i);
+	void SetFrameBox(const Cubf& c) {SetFrameCubf(c);}
 	
 	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
 	
-	void SetDimensions(const Cubf& c) {SetFrameCubf(c);}
 	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;

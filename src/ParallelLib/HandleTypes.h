@@ -26,6 +26,7 @@ struct Ctx2D {
 	using Interaction = GeomInteraction2D;
 	using TopContainer = TopWindow;
 	using Sz = Size;
+	using Pt = Point;
 	using Box = Rect;
 	
 	inline static Rect GetDefaultScopeDimensions() {return Rect(0,0,1280,720);}
@@ -44,6 +45,7 @@ struct Ctx3D {
 	using Interaction = GeomInteraction3D;
 	using TopContainer = TopGubo;
 	using Sz = Volf;
+	using Pt = Point3f;
 	using Box = Cubf;
 	
 	inline static Cubf GetDefaultScopeDimensions() {return Cubf(0,0,0,1024,1024,1024);}

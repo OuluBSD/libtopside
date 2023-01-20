@@ -247,10 +247,16 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	}
 	
 	
-	for(int i = 0; i < sub.GetCount(); i++) {
-		GeomInteraction* c = sub[i];
-		ASSERT(c);
-		did_draw = c->Redraw(only_pending) || did_draw;
+	GeomInteraction* linked = GetDynamicallyLinked();
+	if (linked) {
+		TODO
+	}
+	else {
+		for(int i = 0; i < sub.GetCount(); i++) {
+			GeomInteraction* c = sub[i];
+			ASSERT(c);
+			did_draw = c->Redraw(only_pending) || did_draw;
+		}
 	}
 	
 	

@@ -5,7 +5,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Dim>
-class HandleSystemT : public Parallel::System<HandleSystemT<Dim>> {
+class HandleSystemT :
+	public Parallel::System<HandleSystemT<Dim>> {
 	
 public:
 	using Base = HandleSystemT<Dim>;

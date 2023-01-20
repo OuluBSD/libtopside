@@ -1,4 +1,5 @@
 #include <CtrlCore/CtrlCore.h>
+#include <CuboidCore/CuboidCore.h>
 #include <Local/Local.h>
 
 
@@ -10,6 +11,8 @@ Ctrl* Absolute2DInterface::GetCtrl() {
 		return 0;
 	return proxy->GetCtrl();
 }
+
+GeomInteraction2D* Absolute2DInterface::GetInteraction() {return GetCtrl();}
 
 void Absolute2DProxy::SetTarget(Absolute2DInterface& iface) {
 	if (o) {
@@ -28,6 +31,8 @@ Gubo* Absolute3DInterface::GetGubo() {
 		return 0;
 	return proxy->GetGubo();
 }
+
+GeomInteraction3D* Absolute3DInterface::GetInteraction() {return GetGubo();}
 
 void Absolute3DProxy::SetTarget(Absolute3DInterface& iface) {
 	if (o) {

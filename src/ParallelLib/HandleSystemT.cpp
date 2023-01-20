@@ -60,7 +60,7 @@ typename HandleSystemT<Dim>::Scope& HandleSystemT<Dim>::AddScope() {
 	ASSERT_(scopes.IsEmpty(), "only 1 screen support is implemented for now: see static Ctrl::SetWindows");
 	lock.Enter();
 	Scope& s = scopes.Add();
-	s.SetParent(this);
+	s.SetParent(RefParent1<HandleSystemT<Dim>>(this));
 	lock.Leave();
 	s.Init();
 	return s;

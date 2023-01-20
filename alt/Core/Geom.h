@@ -10,13 +10,11 @@ struct Point_ : Moveable<Point_<T>> {
 	T x = 0, y = 0;
 
 	Point_() {}
-
+	Point_(T v) : x(v), y(v) {}
 	Point_(T x, T y) : x(x), y(y) {}
-
 	Point_(const Point_& pt) : x(pt.x), y(pt.y) {}
-
-
-
+	
+	
 	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
 	static const char* GetTypeName() {return "Point_<T>";}
 	
@@ -115,6 +113,7 @@ struct Size_ : Moveable<Size_<T>> {
 
 	Size_() {}
 	Size_(const Size_& sz) { *this = sz; }
+	Size_(T v) : cx(v), cy(v) {}
 	Size_(T cx, T cy) : cx(cx), cy(cy) {}
 	
 	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
@@ -140,6 +139,8 @@ struct Size_ : Moveable<Size_<T>> {
 		cy = sz.cy;
 	}
 
+	Size_ operator+(Size_ p) const {p.cx = cx + p.cx; p.cy = cy + p.cy; return *this; }
+	Size_ operator-(Size_ p) const {p.cx = cx - p.cx; p.cy = cy - p.cy; return *this; }
 	Size_& operator+=(Size_ p)  { cx +=  p.cx; cy +=  p.cy; return *this; }
 	Size_& operator+=(double t) { cx +=  t;    cy +=  t;    return *this; }
 	Size_& operator-=(Size_ p)  { cx -=  p.cx; cy -=  p.cy; return *this; }
@@ -202,6 +203,7 @@ struct Rect_ : Moveable<Rect_<T>> {
 	}
 	//bool operator!=(const Rect_& src) { return !(*this == src); }
 
+	Point FirstCorner() const { return Point(left, top); }
 	Point TopLeft() const { return Point(left, top); }
 	Point TopRight() const { return Point(right, top); }
 	Point BottomRight() const { return Point(right, bottom); }
@@ -412,6 +414,7 @@ struct Vol_ : Moveable<Vol_<T>> {
 
 	Vol_() {}
 	Vol_(const Vol_& sz) { *this = sz; }
+	Vol_(T v) : cx(v), cy(v), cz(v) {}
 	Vol_(T cx, T cy, T cz) : cx(cx), cy(cy), cz(cz) {}
 	
 	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
@@ -438,6 +441,8 @@ struct Vol_ : Moveable<Vol_<T>> {
 		cz = sz.cz;
 	}
 
+	Vol_ operator+(const Vol_& v) const {Vol_ o(*this); o += v; return o;}
+	Vol_ operator-(const Vol_& v) const {Vol_ o(*this); o -= v; return o;}
 	Vol_& operator+=(Vol_ p)   { cx +=  p.cx; cy +=  p.cy; cz += p.cz;	return *this; }
 	Vol_& operator+=(double t) { cx +=  t;    cy +=  t;    cz += t;		return *this; }
 	Vol_& operator-=(Vol_ p)   { cx -=  p.cx; cy -=  p.cy; cz -= p.cz;	return *this; }
@@ -489,6 +494,7 @@ struct Cub_ : Moveable<Cub_<T>> {
 	Cub_() {}
 	Cub_(const Cub_& r) { *this = r; }
 	Cub_(const Size_<T>& sz) { right = sz.cx; bottom = sz.cy; }
+	Cub_(T l, T t, T r, T b) : top(t), left(l), near(0), bottom(b), right(r), far(1) {}
 	Cub_(T l, T t, T n, T r, T b, T f) : top(t), left(l), near(n), bottom(b), right(r), far(f) {}
 
 	bool IsEqual(const Cub_& r) const {return top == r.top && left == r.left && near == r.near && bottom == r.bottom && right == r.right && far == r.far;}
@@ -505,6 +511,7 @@ struct Cub_ : Moveable<Cub_<T>> {
 		far = src.far;
 	}
 
+	Pt FirstCorner() const { return Pt(left, top, near); }
 	Pt2 TopLeft() const { return Point(left, top); }
 	Pt2 TopRight() const { return Point(right, top); }
 	Pt2 BottomRight() const { return Point(right, bottom); }
@@ -586,6 +593,13 @@ typedef Cub_<double> Cubf;
 inline Cub CubC(int x, int y, int z, int w, int h, int d) { return Cub(x, y, z, x + w, y + h, z + d); }
 
 
+
+
+
+template <class Box=Rect> inline Box BoxC(int x, int y, int w, int h) { return Box(x, y, x + w, y + h); }
+template <class Box=Rect> inline Box BoxC(const Point& tl, const Size& sz) { return Box(tl.x, tl.y, tl.x + sz.cx, tl.y + sz.cy); }
+template <class Box=Cubf> inline Box BoxC(float x, float y, float z, float w, float h, float d) { return Box(x, y, z, x + w, y + h, z + d); }
+template <class Box=Cubf> inline Box BoxC(const Point3f& tl, const Volf& sz) { return Box(tl.x, tl.y, tl.z, tl.x + sz.cx, tl.y + sz.cy, tl.z + sz.cz); }
 
 
 

@@ -6,6 +6,8 @@ NAMESPACE_UPP
 
 
 class Ctrl;
+class GeomInteraction2D;
+class GeomInteraction3D;
 class Gubo;
 class Absolute2DProxy;
 class Absolute3DProxy;
@@ -47,6 +49,7 @@ public:
 	
 	virtual Ctrl*					GetCtrl();
 	
+	GeomInteraction2D*				GetInteraction();
 	Absolute2DProxy*				GetLinkedProxy() const {return proxy;}
 	
 };
@@ -67,6 +70,7 @@ public:
 	
 	virtual Gubo*					GetGubo();
 	
+	GeomInteraction3D*				GetInteraction();
 	Absolute3DProxy*				GetLinkedProxy() const {return proxy;}
 	
 };
