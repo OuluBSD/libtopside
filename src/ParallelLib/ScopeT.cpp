@@ -32,22 +32,27 @@ bool ScopeT<Dim>::Poll(typename Dim::Event& e)
 template <class Dim>
 void ScopeT<Dim>::Render()
 {
-	TODO
+	Box b = this->GetFrameBox();
+	Sz sz = b.GetSize();
 	
-	/*if (pd.GetPageSize() != sz)
+	if (pd.GetPageSize() != sz)
 		pd.Create(sz);
-
+	
+	CmdPainter& pp = pd.GetPainter();
+	
 	pd.cmd_screen_begin.Check();
 	
-	pp.Attach(GetCommandBegin(), GetCommandEnd()); // <-- attach window to this
+	pp.Attach(this->GetCommandBegin(), this->GetCommandEnd()); // <-- attach window to this
 	
-	pd.cmd_screen_begin.Check();*/
+	pd.cmd_screen_begin.Check();
+
 	
 	CheckRender();
 	
-	/*pd.cmd_screen_begin.Check();
+	pd.cmd_screen_begin.Check();
 	
-	pp.Dump(); TODO*/
+	pp.Dump();
+	
 }
 
 template <class Dim>

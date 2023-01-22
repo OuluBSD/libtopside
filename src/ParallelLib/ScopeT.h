@@ -20,9 +20,11 @@ public:
 	using Sz = typename Dim::Sz;
 	using Pt = typename Dim::Pt;
 	using Box = typename Dim::Box;
+	using CmdDraw = typename Dim::CmdDraw;
+	using CmdPainter = typename Dim::CmdPainter;
 
 private:
-	ProgDraw pd;
+	CmdDraw pd;
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;
 

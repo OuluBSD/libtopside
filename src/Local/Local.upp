@@ -84,6 +84,8 @@ file
 	GI3D.cpp,
 	ProgPainter.h,
 	ProgPainter.cpp,
+	ProgDraw.h,
+	ProgDraw.cpp,
 	Ctrl.h,
 	Ctrl.inl highlight cpp,
 	Graphics.cpp,

@@ -65,6 +65,8 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "ModelBuilder.h"
+#include "ModelPainter.h"
+#include "ModelDraw.h"
 #include "Draw.h"
 #include "Frustum.h"
 #include "Compare.h"

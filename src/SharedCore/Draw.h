@@ -7,6 +7,7 @@ NAMESPACE_UPP
 #define DRAWCMD_LIST \
 	DRAWCMD(NULL) \
 	DRAWCMD(META_SIZE) \
+	DRAWCMD(META_SIZE3) \
 	\
 	DRAWCMD(BEGIN) /* dummy */ \
 	DRAWCMD(BIND_WINDOW) \
@@ -20,6 +21,8 @@ NAMESPACE_UPP
 	DRAWCMD(END) \
 	DRAWCMD(WINDOW_OFFSET) \
 	DRAWCMD(WINDOW_END) \
+	DRAWCMD(CUBF) \
+	
 
 
 enum {
@@ -33,7 +36,7 @@ enum {
 struct DrawCommand {
 	DrawCommand *prev = NULL, *next = NULL;
 	Byte type = 0;
-	int i[5];
+	int i[6];
 	hash_t hash;
 	RGBA clr;
 	Image img;

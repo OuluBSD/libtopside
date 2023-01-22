@@ -217,7 +217,7 @@ void HandleVideoBase::RedrawScreen() {
 	#ifdef flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		ProgPainter& pp = pd.GetProgPainter();
+		ProgPainter& pp = pd.GetPainter();
 		
 		WindowManager& w = wins->GetScope(screen_id);
 		
@@ -325,7 +325,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
 			if (wins && screen_id < wins->GetScreenCount()) {
-				ProgPainter& pp = pd.GetProgPainter();
+				ProgPainter& pp = pd.GetPainter();
 				InternalPacketData& data = out.SetData<InternalPacketData>();
 				data.ptr = pp.GetBegin();
 			}

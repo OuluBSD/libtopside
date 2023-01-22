@@ -12,6 +12,7 @@
 #include "Image.h"
 #include "Font.h"
 #include "DrawClasses.h"
+#include "Draw3Classes.h"
 #include "SDraw.h"
 #include "Chameleon.h"
 
