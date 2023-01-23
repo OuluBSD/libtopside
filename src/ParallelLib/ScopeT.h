@@ -35,7 +35,8 @@ private:
 	Interaction* with_mouse = NULL;
 	ContainerFrame* frame_with_mouse = NULL;
 	ContainerFrame* frame_captured = NULL;
-
+	bool do_render = false;
+	
 public:
 	void QueueCloseHandle(int handle_id) { close_handle_queue.Add(handle_id); }
 	void MoveHandle(Point pt, int handle_id);
@@ -75,9 +76,11 @@ public:
 	void Render() override;
 	void Shutdown() override;
 	bool ProcessCloseQueue() override;
-
+	bool IsGeomDrawBegin() override;
+	
 	bool CheckRender();
-
+	bool IsRender() const {return do_render;}
+	
 	hash_t GetHashValue() const { return (hash_t)(size_t)this; }
 	HandleSystem* GetManager() const { return this->GetParentUnsafe().Get(); }
 	Handle* GetHandle(TopContainer& ctrl);
@@ -111,7 +114,9 @@ public:
 	Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();
 	TopContainer& GetVisibleTopContainerRef() { return *GetVisibleTopContainer(); }
-
+	
+	CmdDraw& GetDraw() {return pd;}
+	
 	Callback WhenActiveHandleChanges, WhenHandleClose;
 };
 

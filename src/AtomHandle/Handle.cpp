@@ -203,25 +203,31 @@ bool HandleVideoBase::IsReady(PacketIO& io) {
 	return b;
 }
 
+#if 0
 void HandleVideoBase::RedrawScreen() {
-	#ifdef flagGUI
+	/*#ifdef flagGUI
 	Size sz = VirtualGui3DPtr ? VirtualGui3DPtr->GetSize() : Size(800, 600);
 	#else
 	Size sz = Size(800, 600);
 	#endif
 	
 	if (pd.GetPageSize() != sz)
-		pd.Create(sz);
+		pd.Create(sz);*/
 	
 	bool render_win = false;
 	#ifdef flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
-		ASSERT(sz.cx > 0 && sz.cy > 0);
+		/*ASSERT(sz.cx > 0 && sz.cy > 0);
 		ProgPainter& pp = pd.GetPainter();
+		pp.Dump();*/
 		
 		WindowManager& w = wins->GetScope(screen_id);
 		
-		pd.cmd_screen_begin.Check();
+		w.Render();
+		
+		render_win = w.IsRender();
+		
+		/*pd.cmd_screen_begin.Check();
 		
 		pp.Attach(w.GetCommandBegin(), w.GetCommandEnd()); // <-- attach window to this
 		
@@ -233,11 +239,12 @@ void HandleVideoBase::RedrawScreen() {
 		
 		pp.Dump(); TODO
 		
-		render_win = true;
+		render_win = true;*/
 		//LOG("HandleVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
 	#endif
 }
+#endif
 
 bool HandleVideoBase::Recv(int sink_ch, const Packet& in) {
 	
@@ -252,10 +259,11 @@ bool HandleVideoBase::Recv(int sink_ch, const Packet& in) {
 }
 
 void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
-	if (IsScreenMode()) {
+	/*if (IsScreenMode()) {
 		RedrawScreen();
 	}
-	else if (IsActive()) {
+	else*/
+	if (IsActive()) {
 		
 		for (Binder& b : binders) {
 			Absolute2DInterface* abs2d_iface = CastPtr<Absolute2DInterface>(b.abs_iface);
@@ -290,7 +298,7 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 					continue;
 				}
 				
-				#if 1
+				#if 
 				DrawCommand* it = begin;
 				int i = 0;
 				bool has_cmd = false;
@@ -325,7 +333,8 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
 			if (wins && screen_id < wins->GetScreenCount()) {
-				ProgPainter& pp = pd.GetPainter();
+				WindowManager& w = wins->GetScope(screen_id);
+				ProgPainter& pp = w.GetDraw().GetPainter();
 				InternalPacketData& data = out.SetData<InternalPacketData>();
 				data.ptr = pp.GetBegin();
 			}

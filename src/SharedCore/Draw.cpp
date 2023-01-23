@@ -41,6 +41,7 @@ String DrawCommand::ToString() const {
 	switch (type) {
 		case DRAW_NULL:				s << "-"; break;
 		case DRAW_META_SIZE:		s << "meta-size([" << i[0] << "," << i[1] << "])"; break;
+		case DRAW_META_SIZE3:		s << "meta-size3([" << i[0] << "," << i[1] << "," << i[2] << "])"; break;
 		case DRAW_BEGIN:			s << "-"; break;
 		case DRAW_BIND_WINDOW:		s << "bind-window(" << HexStr(hash) << ")"; break;
 		case DRAW_UNBIND_WINDOW:	s << "unbind-window()"; break;
@@ -53,6 +54,7 @@ String DrawCommand::ToString() const {
 		case DRAW_END:				s << "end()"; break;
 		case DRAW_WINDOW_OFFSET:	s << "window-offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
 		case DRAW_WINDOW_END:		s << "window-end()"; break;
+		case DRAW_CUBF:				s << "rect(pt[" << i[0] << "," << i[1] << "," << i[2] << "], sz[" << i[3]-i[0] << "," << i[4]-i[1] << "," << i[5]-i[2] << "])"; break;
 		default:
 			if ((int)type >= 0 && (int)type < (int)DRAW_CMD_COUNT)
 				s << "<TODO>";

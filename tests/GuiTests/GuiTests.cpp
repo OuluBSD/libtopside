@@ -7,8 +7,9 @@ GuiTester::GuiTester() {
 }
 
 void GuiTester::Paint(Draw& d) {
+	Size sz = GetSize();
 	
-	TODO
+	d.DrawRect(sz, White());
 	
 }
 

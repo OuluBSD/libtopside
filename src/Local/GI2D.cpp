@@ -7,6 +7,9 @@ NAMESPACE_TOPSIDE_BEGIN
 GeomInteraction2D::GeomInteraction2D() {
 	ignore_mouse = false;
 	hidden = false;
+	pending_redraw = true;
+	pending_layout = true;
+	pending_fx_redraw = true;
 	
 	cmd_begin.next = &cmd_frame;
 	cmd_frame.prev = &cmd_begin;
@@ -200,6 +203,13 @@ bool GeomInteraction2D::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) 
 
 
 bool GeomInteraction2D::Redraw(bool only_pending) {
+	GeomInteraction2D* content = this;
+	GeomInteraction2D* linked = CastPtr<GeomInteraction2D>(GetDynamicallyLinked());
+	if (linked) {
+		content = linked;
+	}
+	
+	
 	bool did_draw = false;
 	bool was_pending_fx_redraw = pending_fx_redraw;
 	bool frame = IsGeomDrawBegin();
@@ -236,9 +246,9 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 			draw_begin = true;
 		}
 		
-		PaintPreFrame(pre);
-		Paint(pre);
-		PaintDebug(pre);
+		content->PaintPreFrame(pre);
+		content->Paint(pre);
+		content->PaintDebug(pre);
 		
 		if (draw_begin && !pending_redraw)
 			pre.CtrlDrawEnd();
@@ -247,16 +257,10 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	}
 	
 	
-	GeomInteraction* linked = GetDynamicallyLinked();
-	if (linked) {
-		TODO
-	}
-	else {
-		for(int i = 0; i < sub.GetCount(); i++) {
-			GeomInteraction* c = sub[i];
-			ASSERT(c);
-			did_draw = c->Redraw(only_pending) || did_draw;
-		}
+	for(int i = 0; i < content->sub.GetCount(); i++) {
+		GeomInteraction* c = content->sub[i];
+		ASSERT(c);
+		did_draw = c->Redraw(only_pending) || did_draw;
 	}
 	
 	
@@ -265,7 +269,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		ASSERT(cmd_end.next);
 		ProgPainter post(sz, *cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
 		
-		PaintPostFrame(post);
+		content->PaintPostFrame(post);
 		post.WindowEnd();
 		
 		if (draw_begin) post.CtrlDrawEnd();

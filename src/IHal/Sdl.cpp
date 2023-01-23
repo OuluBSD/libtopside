@@ -480,7 +480,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		
 		InternalPacketData& data = p->GetData<InternalPacketData>();
 		DrawCommand* begin = (DrawCommand*)data.ptr;
-		#if 1
+		#if 0
 		{
 			DrawCommand* it = begin;
 			int i = 0;
@@ -493,6 +493,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		while (begin && begin->type != DRAW_BIND_WINDOW) begin = begin->next;
 		if (!begin) {
 			LOG("HalSdl::CenterVideoSinkDevice_Recv: error: no ptr");
+			ASSERT(0);
 			return false;
 		}
 		ASSERT(begin->type == DRAW_BIND_WINDOW);

@@ -49,7 +49,7 @@ class HandleVideoBase :
 	EnvStateRef				state;
 	int						prev_iter = -1;
 	ValDevCls				src_type;
-	ProgDraw				pd;
+	//ProgDraw				pd;
 	
 	bool					draw_mem = false;
 	bool					add_ecs = false;
@@ -65,7 +65,7 @@ class HandleVideoBase :
 	DrawCommand* ProcessWindow(Binder& b, DrawCommand* begin);
 	void ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end);
 	
-	void			RedrawScreen();
+	//void			RedrawScreen();
 	
 public:
 	RTTI_DECL1(HandleVideoBase, Atom);

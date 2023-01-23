@@ -4,6 +4,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 GeomInteraction3D::GeomInteraction3D() {
+	ignore_mouse = false;
+	hidden = false;
+	pending_redraw = true;
+	pending_layout = true;
+	pending_fx_redraw = true;
 	
 }
 

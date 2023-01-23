@@ -19,7 +19,15 @@ ScopeT<Dim>::ScopeT()
 template <class Dim>
 bool ScopeT<Dim>::Init()
 {
+	this->SetPendingLayout();
+	this->SetPendingRedraw();
+	this->SetPendingEffectRedraw();
+	
+	return true;
+}
 
+template <class Dim>
+bool ScopeT<Dim>::IsGeomDrawBegin() {
 	return true;
 }
 
@@ -46,12 +54,11 @@ void ScopeT<Dim>::Render()
 	
 	pd.cmd_screen_begin.Check();
 
-	
-	CheckRender();
+	do_render = CheckRender();
 	
 	pd.cmd_screen_begin.Check();
 	
-	pp.Dump();
+	//pp.Dump();
 	
 }
 
