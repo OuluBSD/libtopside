@@ -24,6 +24,8 @@ Image StreamRaster::LoadFileAny(String path) {
 
 Font Font::LoadFont(String dir, String name, int ptsize, int weight, bool italic) {
 	String ext = GetFileExt(name).Mid(1);
+	if (ext.IsEmpty())
+		ext = "ttf";
 	TS::StaticIfaceBackend* e = TS::StaticIfaceFactory::GetReader(ext);
 	if (e)
 		return e->LoadFont(dir, name, ptsize, weight, italic);
@@ -45,11 +47,6 @@ void SysFont::Clear() {
 		delete raw;
 	}
 	raw = 0;
-}
-
-RawSysImage* SysFont::RenderTextBlended(const char* s, SysColor c) {
-	TODO
-	return 0;
 }
 
 void SysImage::Clear() {

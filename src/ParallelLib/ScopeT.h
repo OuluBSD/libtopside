@@ -4,7 +4,10 @@
 NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
-class ScopeT : public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>, public Dim::Space {
+class ScopeT :
+	public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>,
+	public Dim::Space
+{
 
 public:
 	using Base = ScopeT<Dim>;

@@ -17,6 +17,9 @@ struct Sdl2FileBackend : StaticIfaceBackend {
 	Font LoadFont(String dir, String name, int ptsize, int weight, bool italic) override;
 	Size GetTextSize(const SysFont& fnt, const String& s) override;
 	void ClearFont(SysFont& fnt) override;
+	Image RenderTextBlended(const SysFont& fnt, const char* s, SysColor c) override;
+	
+	Image ImageFromSDLSurface(void* surf);
 	
 };
 

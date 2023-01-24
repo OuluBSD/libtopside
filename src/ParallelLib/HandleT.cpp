@@ -13,9 +13,13 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Dim>
-HandleT<Dim>::HandleT () {
+HandleT<Dim>::HandleT() :
+	decor(this)
+{
 	maximized = false;
 	id = -1;
+	
+	this->Add(decor);
 	
 	this->SetFrameBox(Dim::GetDefaultHandleDimensions());
 	
@@ -33,6 +37,11 @@ template <class Dim>
 void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
 	iface.SetTarget(*this);
 	// --> GetLinkedProxy()
+}
+
+template <class Dim>
+void HandleT<Dim>::Layout() {
+	TODO
 }
 
 template <class Dim>
@@ -154,6 +163,62 @@ bool HandleT<Dim>::IsPendingPartialRedraw() const {
 	return pending_partial_redraw;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <class Dim>
+GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::Paint(DrawT& draw) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::LeftDown(Pt p, dword keyflags) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::LeftDouble(Pt p, dword keyflags) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::LeftUp(Pt p, dword keyflags) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::MouseMove(Pt p, dword keyflags) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::RightDown(Pt p, dword keyflags) {
+	TODO
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::LocalMenu(Bar& bar) {
+	TODO
+}
+
+
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleT)
+HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(GeomDecorationT)
 
 NAMESPACE_PARALLEL_END

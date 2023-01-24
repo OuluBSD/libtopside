@@ -58,8 +58,8 @@ struct SysFont {
 	bool IsEmpty() const {return raw == 0;}
 	
 	RawSysFont* GetRaw() const {return raw;}
-	RawSysImage* RenderTextBlended(const char* s, SysColor c);
 };
+
 
 struct SysImage {
 	RawSysImage* raw = 0;

@@ -89,19 +89,19 @@ Size GetTextSize(WString s, Font fnt) {
 }
 
 Font Arial(int size) {
-	TODO
+	return Font::LoadFont(TS::ShareDirFile("fonts"), "Roboto-Regular.ttf", size);
 }
 
 Font Monospace(int size) {
-	TODO
+	return Font::LoadFont(TS::ShareDirFile("fonts"), "Inconsolata-Regular.ttf", size);
 }
 
 Font Serif(int size) {
-	TODO
+	return Font::LoadFont(TS::ShareDirFile("fonts"), "PlayfairDisplay-Regular.ttf", size);
 }
 
 Font SansSerif(int size) {
-	TODO
+	return Font::LoadFont(TS::ShareDirFile("fonts"), "LiberationSans-Regular.ttf", size);
 }
 
 

@@ -49,4 +49,18 @@ StaticIfaceBackend* StaticIfaceFactory::GetWriter(String ext) {
 }
 
 
+
+
+Image RenderTextBlended(Font fnt, const char* s, SysColor c) {
+	SysFont* raw = fnt.GetSysFont();
+	if (!raw)
+		return Image();
+	auto r = TS::StaticIfaceFactory::GetReader(raw->raw->backend);
+	if (r)
+		return r->RenderTextBlended(*raw, s, c);
+	return Image();
+}
+
+
+
 NAMESPACE_TOPSIDE_END

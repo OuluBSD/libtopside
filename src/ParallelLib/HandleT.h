@@ -6,6 +6,57 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim> class HandleSystemT;
 template <class Dim> class ScopeT;
+template <class Dim> class HandleT;
+
+
+template <class Dim>
+class GeomDecorationT : public Dim::Interaction {
+public:
+	using Base = GeomDecorationT<Dim>;
+	using Handle = HandleT<Dim>;
+	using HandleSystem = HandleSystemT<Dim>;
+	using DrawT = typename Dim::DrawT;
+	using Space = typename Dim::Space;
+	using Interface = typename Dim::Interface;
+	using InterfaceProxy = typename Dim::InterfaceProxy;
+	using Interaction = typename Dim::Interaction;
+	using Container = typename Dim::Container;
+	using ContainerFrame = typename Dim::ContainerFrame;
+	using TopContainer = typename Dim::TopContainer;
+	using Sz = typename Dim::Sz;
+	using Pt = typename Dim::Pt;
+	using Box = typename Dim::Box;
+	using CmdDraw = typename Dim::CmdDraw;
+	using CmdPainter = typename Dim::CmdPainter;
+	
+protected:
+	Handle* handle = NULL;
+	String label;
+	bool left_down;
+	Point left_down_pt;
+	
+public:
+	RTTI_DECL1(Base, Interaction)
+	typedef GeomDecorationT CLASSNAME;
+	GeomDecorationT(Handle* h);
+	
+	virtual void Paint(DrawT& draw) override;
+	
+	void SetLabel(String str) {label = str;}
+	
+	String GetLabel() const {return label;}
+	
+	virtual void LeftDown(Pt p, dword keyflags) override;
+	virtual void LeftDouble(Pt p, dword keyflags) override;
+	virtual void LeftUp(Pt p, dword keyflags) override;
+	virtual void MouseMove(Pt p, dword keyflags) override;
+	virtual void RightDown(Pt p, dword keyflags) override;
+	
+	void LocalMenu(Bar& bar);
+	
+	
+};
+
 
 template <class Dim>
 class HandleT :
@@ -19,6 +70,7 @@ public:
 	using Handle = HandleT<Dim>;
 	using Scope = ScopeT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
+	using GeomDecoration = GeomDecorationT<Dim>;
 	using Space = typename Dim::Space;
 	using Interface = typename Dim::Interface;
 	using InterfaceProxy = typename Dim::InterfaceProxy;
@@ -32,6 +84,7 @@ public:
 	
 	
 protected:
+	GeomDecoration decor;
 	String title;
 	Box stored_box;
 	bool maximized;
@@ -54,6 +107,7 @@ public:
 	String						GetTitle() const override;
 	void						SetPendingPartialRedraw() override;
 	GeomInteraction*			GetDynamicallyLinked() const override;
+	void						Layout() override;
 	
 	TopContainer*				GetTopContainer();
 	

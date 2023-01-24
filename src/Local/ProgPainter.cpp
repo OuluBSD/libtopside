@@ -1,4 +1,5 @@
 #include "Local.h"
+#include <StaticInterface/StaticInterface.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -118,20 +119,39 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
         
 		DrawCommand& cmd = CreateCommand();
 		cmd.type = DRAW_TRIANGLES;
-		cmd.triangles.SetCount(2);
+		cmd.triangles.SetCount(2*2*3);
 		cmd.clr = c;
 		
-		TODO
-		/*
+		
 		double signed_area = GetSignedArea(p0a, p1a, p0b);
 		if (signed_area >= 0) {
-			cmd.triangles[0].Set(p0a, p1a, p0b);
-			cmd.triangles[1].Set(p0b, p1a, p1b);
+			cmd.triangles[(0 + 0)*2 + 0] = p0a.x;
+			cmd.triangles[(0 + 0)*2 + 1] = p0a.y;
+			cmd.triangles[(0 + 1)*2 + 0] = p1a.x;
+			cmd.triangles[(0 + 1)*2 + 1] = p1a.y;
+			cmd.triangles[(0 + 2)*2 + 0] = p0b.x;
+			cmd.triangles[(0 + 2)*2 + 1] = p0b.y;
+			cmd.triangles[(3 + 0)*2 + 0] = p0b.x;
+			cmd.triangles[(3 + 0)*2 + 1] = p0b.y;
+			cmd.triangles[(3 + 1)*2 + 0] = p1a.x;
+			cmd.triangles[(3 + 1)*2 + 1] = p1a.y;
+			cmd.triangles[(3 + 2)*2 + 0] = p1b.x;
+			cmd.triangles[(3 + 2)*2 + 1] = p1b.y;
 		}
 		else {
-			cmd.triangles[0].Set(p0a, p0b, p1a);
-			cmd.triangles[1].Set(p0b, p1b, p1a);
-		}*/
+			cmd.triangles[(0 + 0)*2 + 0] = p0a.x;
+			cmd.triangles[(0 + 0)*2 + 1] = p0a.y;
+			cmd.triangles[(0 + 1)*2 + 0] = p0b.x;
+			cmd.triangles[(0 + 1)*2 + 1] = p0b.y;
+			cmd.triangles[(0 + 2)*2 + 0] = p1a.x;
+			cmd.triangles[(0 + 2)*2 + 1] = p1a.y;
+			cmd.triangles[(3 + 0)*2 + 0] = p0b.x;
+			cmd.triangles[(3 + 0)*2 + 1] = p0b.y;
+			cmd.triangles[(3 + 1)*2 + 0] = p1b.x;
+			cmd.triangles[(3 + 1)*2 + 1] = p1b.y;
+			cmd.triangles[(3 + 2)*2 + 0] = p1a.x;
+			cmd.triangles[(3 + 2)*2 + 1] = p1a.y;
+		}
 	}
 }
 
@@ -171,13 +191,9 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 	c.g = (byte)(clr.g * 255.0);
 	c.b = (byte)(clr.b * 255.0);
 	c.a = 255;
-	RawSysImage* surf = fnt.GetSysFont()->RenderTextBlended(txt.Begin(), c);
-	if (!surf) {
-		#if HAVE_SDL2
-		DLOG("Couldn't render text: " << SDL_GetError());
-		#else
+	Image img = RenderTextBlended(fnt, txt.Begin(), c);
+	if (img.IsEmpty()) {
 		DLOG("Couldn't render text");
-		#endif
 		return;
 	}
 	
@@ -185,8 +201,7 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 	cmd.type = DRAW_IMAGE;
 	cmd.i[0] = x;
 	cmd.i[1] = y;
-	cmd.img = Image(surf);
-	//cmd.img.MakeSysAccel();
+	cmd.img = img;
 	cmd.clr.a = clr.a;
 	#endif
 }

@@ -287,9 +287,15 @@ bool HalSdl::ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase& a) {
 	
 	if (SDL_Init(sdl_flags) < 0) {
 		String last_error = SDL_GetError();
-		LOG("SDL2::Context: error : " << last_error);
+		LOG("SDL2::Context: error: " << last_error);
 		return false;
 	}
+	
+	if (TTF_Init() < 0) {
+		String last_error = TTF_GetError();
+		LOG("SDL2::Context: TTF init failed. error: " << last_error);
+	}
+	
 	
 	return true;
 }
@@ -304,6 +310,7 @@ void HalSdl::ContextBase_Stop(NativeContextBase& ctx, AtomBase& a) {
 
 void HalSdl::ContextBase_Uninitialize(NativeContextBase& ctx, AtomBase& a) {
 	RTLOG("HalSdl::ContextBase_Uninitialize");
+	TTF_Quit();
 	SDL_Quit();
 }
 

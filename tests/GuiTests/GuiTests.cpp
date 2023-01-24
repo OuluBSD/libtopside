@@ -10,6 +10,9 @@ void GuiTester::Paint(Draw& d) {
 	Size sz = GetSize();
 	
 	d.DrawRect(sz, White());
+	d.DrawRect(30, 30, 30,30, Yellow());
+	d.DrawText(30,30, "GuiTester", SansSerif(), Black());
+	d.DrawLine(0,0, 200, 400, 3, LtGreen());
 	
 }
 

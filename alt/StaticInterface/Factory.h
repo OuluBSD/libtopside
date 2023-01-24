@@ -17,6 +17,7 @@ struct StaticIfaceBackend : RTTIBase {
 	virtual Font LoadFont(String dir, String name, int ptsize, int weight, bool italic) {Panic("internal error: unimplemented"); return Font();}
 	virtual Size GetTextSize(const SysFont& fnt, const String& s) {Panic("internal error: unimplemented"); return Size();}
 	virtual void ClearFont(SysFont& fnt) {Panic("internal error: unimplemented");}
+	virtual Image RenderTextBlended(const SysFont& fnt, const char* s, SysColor c) {Panic("internal error: unimplemented"); return Image();}
 	
 };
 
@@ -54,6 +55,8 @@ struct StaticIfaceFactory {
 	
 };
 
+
+Image RenderTextBlended(Font fnt, const char* s, SysColor c);
 
 
 NAMESPACE_TOPSIDE_END

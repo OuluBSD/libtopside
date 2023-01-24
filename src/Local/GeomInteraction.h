@@ -245,11 +245,47 @@ public:
 	void SetFrameBox(const Cubf& c) {SetFrameCubf(c);}
 	
 	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
+	virtual void Paint(Draw3& d) {}
 	
 	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
+	
+	virtual Point3f GetContentPoint(const Point& pt);
+	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);
+	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
+	virtual void DeepMouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool MouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseWheelInFrame(Point3f p, int zdelta, dword keyflags);
+	virtual void MouseEnter(Point3f frame_p, dword keyflags);
+	virtual void MouseMove(Point3f content_p, dword keyflags) {}
+	virtual void LeftDown(Point3f p, dword keyflags) {}
+	virtual void LeftDouble(Point3f p, dword keyflags) {}
+	virtual void LeftTriple(Point3f p, dword keyflags) {}
+	virtual void LeftDrag(Point3f p, dword keyflags) {}
+	virtual void LeftHold(Point3f p, dword keyflags) {}
+	virtual void LeftRepeat(Point3f p, dword keyflags) {}
+	virtual void LeftUp(Point3f p, dword keyflags) {}
+	virtual void RightDown(Point3f p, dword keyflags) {}
+	virtual void RightDouble(Point3f p, dword keyflags) {}
+	virtual void RightTriple(Point3f p, dword keyflags) {}
+	virtual void RightDrag(Point3f p, dword keyflags) {}
+	virtual void RightHold(Point3f p, dword keyflags) {}
+	virtual void RightRepeat(Point3f p, dword keyflags) {}
+	virtual void RightUp(Point3f p, dword keyflags) {}
+	virtual void MiddleDown(Point3f p, dword keyflags) {}
+	virtual void MiddleDouble(Point3f p, dword keyflags) {}
+	virtual void MiddleTriple(Point3f p, dword keyflags) {}
+	virtual void MiddleDrag(Point3f p, dword keyflags) {}
+	virtual void MiddleHold(Point3f p, dword keyflags) {}
+	virtual void MiddleRepeat(Point3f p, dword keyflags) {}
+	virtual void MiddleUp(Point3f p, dword keyflags) {}
+	virtual void MouseWheel(Point3f p, int zdelta, dword keyflags) {}
+	virtual Image CursorImage(Point3f p, dword keyflags);
+	virtual void PadTouch(int controller, Point3f p) {}
 	
 	virtual void Paint(Draw3D& d) {}
 	
