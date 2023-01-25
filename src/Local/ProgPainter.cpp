@@ -187,10 +187,14 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 	TODO
 	#else
 	SysColor c;
+	#if 0
 	c.r = (byte)(clr.r * 255.0);
 	c.g = (byte)(clr.g * 255.0);
 	c.b = (byte)(clr.b * 255.0);
 	c.a = 255;
+	#else
+	c = clr;
+	#endif
 	Image img = RenderTextBlended(fnt, txt.Begin(), c);
 	if (img.IsEmpty()) {
 		DLOG("Couldn't render text");

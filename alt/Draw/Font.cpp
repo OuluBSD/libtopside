@@ -67,7 +67,7 @@ Size GetStdFontSize() {
 Font GetStdFont(int size) {
 	size = size < 0 ? GetStdFontSize().cy : size;
 	if (__std_font.IsEmpty()) {
-		__std_font = Font(Font::LoadFont(TS::ShareDirFile("fonts"), "Roboto", size));
+		__std_font = Font(Font::LoadFont(TS::ShareDirFile("fonts"), "Roboto-Regular.ttf", size));
 	}
 	return __std_font;
 }
@@ -104,6 +104,9 @@ Font SansSerif(int size) {
 	return Font::LoadFont(TS::ShareDirFile("fonts"), "LiberationSans-Regular.ttf", size);
 }
 
+Font StdFont(int size) {
+	return SansSerif(size);
+}
 
 
 

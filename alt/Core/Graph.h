@@ -118,7 +118,7 @@ public:
 	bool operator==(const ColorT& c) {return IsEqual(c);}
 	bool operator!=(const ColorT& c) {return !IsEqual(c);}
 	
-	operator RGBA() const {RGBA c; c.r = r; c.g = g; c.b = b; c.a = 0; return c;}
+	operator RGBA() const {RGBA c; c.r = r; c.g = g; c.b = b; c.a = 255; return c;}
 	
 	void Mul(double d) {r *= d; g *= d; b *= d;}
 	void Div(double d) {r /= d; g /= d; b /= d;}

@@ -60,7 +60,7 @@ Font Monospace(int size=-1);
 Font Serif(int size=-1);
 Font SansSerif(int size=-1);
 
-inline Font StdFont(int size=-1) {return GetStdFont();}
+Font StdFont(int size=-1);
 
 Size GetTextSize(String s, Font fnt);
 Size GetTextSize(WString ws, Font fnt);

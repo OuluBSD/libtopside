@@ -40,7 +40,7 @@ public:
 	typedef GeomDecorationT CLASSNAME;
 	GeomDecorationT(Handle* h);
 	
-	virtual void Paint(DrawT& draw) override;
+	void Paint(DrawT& draw) override;
 	
 	void SetLabel(String str) {label = str;}
 	
@@ -71,6 +71,7 @@ public:
 	using Scope = ScopeT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
 	using GeomDecoration = GeomDecorationT<Dim>;
+	using DrawT = typename Dim::DrawT;
 	using Space = typename Dim::Space;
 	using Interface = typename Dim::Interface;
 	using InterfaceProxy = typename Dim::InterfaceProxy;
@@ -79,13 +80,14 @@ public:
 	using ContainerFrame = typename Dim::ContainerFrame;
 	using TopContainer = typename Dim::TopContainer;
 	using Box = typename Dim::Box;
+	using Sz = typename Dim::Sz;
+	using Pt = typename Dim::Pt;
 	
 public:
 	
 	
 protected:
 	GeomDecoration decor;
-	String title;
 	Box stored_box;
 	bool maximized;
 	bool pending_partial_redraw;
@@ -108,6 +110,7 @@ public:
 	void						SetPendingPartialRedraw() override;
 	GeomInteraction*			GetDynamicallyLinked() const override;
 	void						Layout() override;
+	void						Paint(DrawT& draw) override;
 	
 	TopContainer*				GetTopContainer();
 	
@@ -121,7 +124,7 @@ public:
 	//Rect GetStoredRect() const;
 	//Interface* GetAbsolute();
 	bool IsMaximized() const;
-	//bool IsActive() const;
+	bool IsActive() const;
 	//void MoveWindow(Point pt);
 	void Close() override;
 	void Maximize();

@@ -20,7 +20,8 @@ void GuiTester::Paint(Draw& d) {
 
 #if 1
 void UserGuiMainFn() {
-	GuiTester().Run();
+	//GuiTester().Run();
+	GuiTesterApp().Run();
 }
 
 CONSOLE_APP_MAIN {

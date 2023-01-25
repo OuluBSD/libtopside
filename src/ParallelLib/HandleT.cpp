@@ -21,7 +21,8 @@ HandleT<Dim>::HandleT() :
 	
 	this->Add(decor);
 	
-	this->SetFrameBox(Dim::GetDefaultHandleDimensions());
+	Box box = Dim::GetDefaultHandleDimensions(40);
+	this->SetFrameBox(box);
 	
 }
 
@@ -35,18 +36,57 @@ typename Dim::TopContainer* HandleT<Dim>::GetTopContainer() {
 
 template <class Dim>
 void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
+	if (this->GetLinkedProxy()) {
+		TODO // clear old
+	}
+	
 	iface.SetTarget(*this);
+	
+	typename Dim::Interaction* iact = CastPtr<typename Dim::Interaction>(&iface);
+	if (iact)
+		Dim::Interaction::Add(*iact);
 	// --> GetLinkedProxy()
 }
 
 template <class Dim>
+void HandleT<Dim>::Paint(DrawT& draw) {
+	TODO // permanent
+}
+
+template <>
+void HandleT<Ctx2D>::Paint(DrawT& draw) {
+	Color bg = GrayColor(128+64);
+	Sz handle_sz(this->GetFrameBox().GetSize());
+	draw.DrawRect(handle_sz, bg);
+}
+
+template <class Dim>
 void HandleT<Dim>::Layout() {
-	TODO
+	int title_h = 28;
+	Box handle_box(this->GetFrameBox().GetSize());
+	Sz handle_sz = handle_box.GetSize();
+	ASSERT(!handle_sz.IsEmpty());
+	Box decor_box = handle_box;
+	decor_box.bottom = decor_box.top + title_h;
+	decor.SetFrameBox(decor_box);
+	
+	typename Dim::Interaction* iact = CastPtr<typename Dim::Interaction>(this->GetLinkedProxy());
+	if (iact) {
+		Box content_box = handle_box;
+		content_box.top = content_box.top + title_h;
+		#if 0
+		content_box.top += 5;
+		content_box.bottom -= 5;
+		content_box.left += 5;
+		content_box.right -= 5;
+		#endif
+		iact->SetFrameBox(content_box);
+	}
 }
 
 template <class Dim>
 void HandleT<Dim>::Title(const String& title) {
-	LOG("TODO");
+	decor.SetLabel(title);
 }
 
 template <class Dim>
@@ -72,7 +112,7 @@ int HandleT<Dim>::Run(bool appmodal) {
 
 template <class Dim>
 String HandleT<Dim>::GetTitle() const {
-	return title;
+	return decor.GetLabel();
 }
 
 template <class Dim>
@@ -141,6 +181,12 @@ bool HandleT<Dim>::IsMaximized() const {
 }
 
 template <class Dim>
+bool HandleT<Dim>::IsActive() const {
+	Scope& scope = this->GetScope();
+	return scope.IsActiveHandle(id);
+}
+
+template <class Dim>
 void HandleT<Dim>::StoreRect() {
 	stored_box = this->GetFrameBox();
 }
@@ -153,9 +199,13 @@ void HandleT<Dim>::LoadRect() {
 
 template <class Dim>
 void HandleT<Dim>::SetFrameBox(const Box& b) {
+	#if 0
 	TopContainer* tc = GetTopContainer();
 	if (tc)
 		tc->SetFrameBox(b);
+	#else
+	Dim::Interaction::SetFrameBox(b);
+	#endif
 }
 
 template <class Dim>
@@ -179,12 +229,51 @@ bool HandleT<Dim>::IsPendingPartialRedraw() const {
 
 template <class Dim>
 GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
-	TODO
+	handle = h;
+	
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::Paint(DrawT& draw) {
-	TODO
+	TODO // permanent
+}
+
+template <>
+void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
+	Color border_tl = GrayColor(128+64);
+	Color border_br = GrayColor(128);
+	
+	Size sz(GetFrameSize());
+	ASSERT(!sz.IsEmpty());
+	
+	id.DrawRect(sz, White());
+	id.DrawLine(0,0, 0, sz.cy-1, 1, border_tl);
+	id.DrawLine(0,0, sz.cx-1, 0, 1, border_tl);
+	id.DrawLine(sz.cx-1,0, sz.cx-1, sz.cy-1, 1, border_br);
+	id.DrawLine(0,sz.cy-1, sz.cx-1, sz.cy-1, 1, border_br);
+	
+	Color left, right;
+	ASSERT(handle);
+	if (!handle) return;
+	if (handle->IsActive()) {
+		left = Color(0, 64, 128);
+		right = Color(57, 141, 195);
+	} else {
+		left = GrayColor();
+		right = GrayColor(195);
+	}
+	id.DrawRect(0, 0, sz.cx, sz.cy, left);
+	id.DrawText(7, 4, label, StdFont(15), Black());
+	id.DrawText(6, 3, label, StdFont(15), White());
+	
+	Color tl = GrayColor(128+64+32);
+	Color br = GrayColor(128-64-32);
+	
+	id.DrawLine(0,0, sz.cx-1, 0, 1, tl);
+	id.DrawLine(0,0, 0, sz.cy-1, 1, tl);
+	id.DrawLine(sz.cx-1, sz.cy-1, sz.cx-1, 0, 1, br);
+	id.DrawLine(sz.cx-1, sz.cy-1, 0, sz.cy-1, 1, br);
+	
 }
 
 template <class Dim>

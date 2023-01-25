@@ -15,6 +15,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 Image Sdl2FileBackend::ImageFromSDLSurface(void* surf_) {
+	if (!surf_)
+		return Image();
 	SDL_Surface* surf = (SDL_Surface*)surf_;
 	
 	RawSysImage* img = new RawSysImage();

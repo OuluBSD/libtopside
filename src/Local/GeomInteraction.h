@@ -162,6 +162,7 @@ public:
 	void SetFrameBox(const Rect& r) {SetFrameRect(r);}
 	
 	
+	Size GetSize() const {return frame_r.GetSize();}
 	Size GetFrameSize() const {return frame_r.GetSize();}
 	Rect GetRect() const {return frame_r;}
 	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
@@ -178,7 +179,7 @@ public:
 	GeomInteraction2D& LeftPos(int i, int size);
 	GeomInteraction2D& RightPos(int i, int size);
 	
-	virtual void SetFrameRect(const Rect& r) {this->frame_r = r;}
+	virtual void SetFrameRect(const Rect& r);
 	virtual void FrameLayout(Rect& r) {}
 	virtual void FrameAddSize(Size& sz) {}
 	virtual void Paint(Draw& d) {}
@@ -225,6 +226,7 @@ public:
 	bool Is2D() const override;
 	GeomInteraction2D* Get2D() override;
 	void DeepLayout() override;
+	
 	
 };
 

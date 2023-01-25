@@ -562,12 +562,9 @@ void Ctrl::SetPendingRedrawDeep() {
 void Ctrl::Refresh() {
 	SetPendingRedrawDeep();
 	
-	TODO
-	#if 0
-	Absolute2D* aw = GetAbsolute2D();
+	Absolute2DInterface* aw = GetAbsolute2D();
 	if (aw)
 		aw->SetPendingPartialRedraw();
-	#endif
 }
 
 void Ctrl::DeepUnfocus() {
@@ -722,17 +719,12 @@ void Ctrl::PaintDebug(ProgPainter& pp) {
 	}
 }
 
-Absolute2D* Ctrl::GetAbsolute2D() {
+Absolute2DInterface* Ctrl::GetAbsolute2D() {
 	TopWindow* tw = GetTopWindow();
 	if (!tw)
 		return 0;
 	Absolute2DInterface* iface = tw->GetTarget();
-	
-	TODO
-	#if 0
-	Absolute2D* win = CastPtr<Absolute2D>(iface);
-	return win;
-	#endif
+	return iface;
 }
 
 

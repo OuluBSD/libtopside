@@ -201,13 +201,25 @@ bool GeomInteraction2D::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) 
 	return true;
 }
 
+void GeomInteraction2D::SetFrameRect(const Rect& r) {
+	#if 0
+	GeomInteraction* gi = GetOwner();
+	if (gi) {
+		GeomInteraction2D* gi2 = CastPtr<GeomInteraction2D>(gi);
+		Rect parent_rect = gi2->GetRect();
+		int parent_width = parent_rect.Width();
+		ASSERT(r.right <= parent_width);
+	}
+	#endif
+	this->frame_r = r;
+}
 
 bool GeomInteraction2D::Redraw(bool only_pending) {
 	GeomInteraction2D* content = this;
-	GeomInteraction2D* linked = CastPtr<GeomInteraction2D>(GetDynamicallyLinked());
-	if (linked) {
+	//GeomInteraction2D* linked = CastPtr<GeomInteraction2D>(GetDynamicallyLinked());
+	/*if (linked) {
 		content = linked;
-	}
+	}*/
 	
 	
 	bool did_draw = false;
@@ -280,6 +292,9 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		pending_redraw = false;
 	}
 	
+	//if (linked)
+	//	did_draw = linked->Redraw(only_pending) || did_draw;
+	
 	return did_draw;
 }
 
@@ -292,6 +307,7 @@ bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword
 }
 
 void GeomInteraction2D::DeepLayout() {
+	//GeomInteraction2D* linked = CastPtr<GeomInteraction2D>(GetDynamicallyLinked());
 	Rect prev_frame_r = frame_r;
 	
 	DeepFrameLayout();
@@ -336,6 +352,9 @@ void GeomInteraction2D::DeepLayout() {
 	for(GeomInteraction* c : sub) {
 		c->DeepLayout();
 	}
+	
+	//if (linked)
+	//	linked->DeepLayoutSub(r);
 	
 	PostLayout();
 }

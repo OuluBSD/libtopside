@@ -264,7 +264,7 @@ public:
 	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
 	
-	Absolute2D* GetAbsolute2D();
+	Absolute2DInterface* GetAbsolute2D();
 	
 	
 	

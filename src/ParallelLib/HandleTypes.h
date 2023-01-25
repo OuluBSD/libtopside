@@ -32,8 +32,8 @@ struct Ctx2D {
 	using CmdDraw = ProgDraw;
 	using CmdPainter = ProgPainter;
 	
-	inline static Rect GetDefaultScopeDimensions() {return Rect(0,0,1280,720);}
-	inline static Rect GetDefaultHandleDimensions(int o=0) {return Rect(o,o,320+o,240+o);}
+	inline static Rect GetDefaultScopeDimensions() {return RectC(0,0,1280,720);}
+	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,320,240);}
 	
 };
 
@@ -54,8 +54,8 @@ struct Ctx3D {
 	using CmdDraw = ModelDraw;
 	using CmdPainter = ModelPainter;
 	
-	inline static Cubf GetDefaultScopeDimensions() {return Cubf(0,0,0,1024,1024,1024);}
-	inline static Cubf GetDefaultHandleDimensions(int o=0) {return Cubf(o,o,o,256+o,256+o,256+o);}
+	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
+	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubC(o,o,o,256,256,256);}
 	
 };
 

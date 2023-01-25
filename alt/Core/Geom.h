@@ -493,7 +493,7 @@ struct Cub_ : Moveable<Cub_<T>> {
 	
 	Cub_() {}
 	Cub_(const Cub_& r) { *this = r; }
-	Cub_(const Size_<T>& sz) { right = sz.cx; bottom = sz.cy; }
+	Cub_(const Vol_<T>& sz) { right = sz.cx; bottom = sz.cy; far = sz.cz; }
 	Cub_(T l, T t, T r, T b) : top(t), left(l), near(0), bottom(b), right(r), far(1) {}
 	Cub_(T l, T t, T n, T r, T b, T f) : top(t), left(l), near(n), bottom(b), right(r), far(f) {}
 

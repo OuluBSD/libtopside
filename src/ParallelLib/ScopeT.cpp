@@ -38,6 +38,18 @@ bool ScopeT<Dim>::Poll(typename Dim::Event& e)
 }
 
 template <class Dim>
+void ScopeT<Dim>::Paint(DrawT& draw) {
+	TODO // persistent
+}
+
+template <>
+void ScopeT<Ctx2D>::Paint(DrawT& draw) {
+	Color bg = Color(28, 127, 150);
+	Sz handle_sz(this->GetFrameBox().GetSize());
+	draw.DrawRect(handle_sz, bg);
+}
+
+template <class Dim>
 void ScopeT<Dim>::Render()
 {
 	Box b = this->GetFrameBox();
@@ -71,6 +83,7 @@ void ScopeT<Dim>::Shutdown()
 template <class Dim>
 void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 {
+	ASSERT(this->GetFrameBox().Width() > 0);
 	int id = handle_counter++;
 	int pos = handles.GetCount();
 
@@ -101,6 +114,7 @@ void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 	h.Title(title.GetCount() ? title : "Unnamed");
 
 	this->Refresh();
+	h.Layout();
 	h.Refresh();
 }
 
@@ -442,7 +456,7 @@ void ScopeT<Dim>::Layout()
 			Box r = c2->GetFrameBox();
 			if(r.IsEmpty()) {
 				// Set default handle rect (could be smarter)
-				r = Dim::GetDefaultHandleDimensions(10);
+				r = Dim::GetDefaultHandleDimensions(30);
 				c2->SetFrameBox(r);
 			}
 		}

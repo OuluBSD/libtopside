@@ -25,6 +25,7 @@ public:
 	using Box = typename Dim::Box;
 	using CmdDraw = typename Dim::CmdDraw;
 	using CmdPainter = typename Dim::CmdPainter;
+	using DrawT = typename Dim::DrawT;
 
 private:
 	CmdDraw pd;
@@ -48,7 +49,8 @@ public:
 	void MaximizeHandle(int handle_id);
 	void MinimizeHandle(int handle_id);
 	void RestoreHandle(int handle_id);
-	void IsActiveHandle(bool* result, int handle_id) { *result = handle_id == active_id; }
+	void IsActiveHandle_(bool* result, int handle_id) { *result = handle_id == active_id; }
+	bool IsActiveHandle(int handle_id) { return handle_id == active_id; }
 	void SetHandleMaximized(Handle& h, bool b);
 	void CloseHandle(int handle_id);
 	void CloseHandle(Handle& handle);
@@ -80,6 +82,7 @@ public:
 	void Shutdown() override;
 	bool ProcessCloseQueue() override;
 	bool IsGeomDrawBegin() override;
+	void Paint(DrawT& draw) override;
 	
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
