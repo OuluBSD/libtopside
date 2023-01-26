@@ -7,63 +7,6 @@ NAMESPACE_ECS_BEGIN
 
 
 
-Image& WindowsImg::close() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "close.png"));
-	return img;
-}
-
-Image& WindowsImg::maximize() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "maximize.png"));
-	return img;
-}
-
-Image& WindowsImg::minimize() {
-	static Image img;
-	if (img.IsEmpty())
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "minimize.png"));
-	return img;
-}
-
-Image& WindowsImg::nwse() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::nesw() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::ns() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
-Image& WindowsImg::ew() {
-	static Image img;
-	if (img.IsEmpty()) {
-		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
-		img.CenterHotSpot();
-	}
-	return img;
-}
-
 
 
 

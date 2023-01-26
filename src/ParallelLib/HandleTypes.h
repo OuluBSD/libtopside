@@ -23,6 +23,7 @@ struct Ctx2D {
 	using Container = Ctrl;
 	using ContainerFrame = CtrlFrame;
 	using Event = CtrlEvent;
+	using EventCollection = CtrlEventCollection;
 	using Interaction = GeomInteraction2D;
 	using TopContainer = TopWindow;
 	using Sz = Size;
@@ -45,6 +46,7 @@ struct Ctx3D {
 	using Container = Gubo;
 	using ContainerFrame = GuboFrame;
 	using Event = GeomEvent;
+	using EventCollection = GeomEventCollection;
 	using Interaction = GeomInteraction3D;
 	using TopContainer = TopGubo;
 	using Sz = Volf;

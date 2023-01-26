@@ -90,6 +90,14 @@ ScopeT<Dim>& HandleSystemT<Dim>::GetScope(int idx) {
 	return scopes[idx];
 }
 
+template <class Dim>
+void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
+	Scope& scope = GetActiveScope();
+	
+	for (const Event& e : ev) {
+		scope.Dispatch(e);
+	}
+}
 
 template <class Dim>
 void HandleSystemT<Dim>::Close() {

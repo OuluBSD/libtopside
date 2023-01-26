@@ -490,7 +490,7 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		switch (e.n) {
 			case MOUSE_LEFTDOWN:		LeftDown(e.pt, e.value);break;
 			case MOUSE_MIDDLEDOWN:	break;
-			case MOUSE_RIGHTDOWN:	break;
+			case MOUSE_RIGHTDOWN:	TODO break;
 			
 			case MOUSE_LEFTDOUBLE:	break;
 			case MOUSE_MIDDLEDOUBLE:	break;

@@ -6,16 +6,6 @@
 NAMESPACE_ECS_BEGIN
 
 
-struct WindowsImg {
-	static Image& close();
-	static Image& maximize();
-	static Image& minimize();
-	static Image& nwse();
-	static Image& nesw();
-	static Image& ns();
-	static Image& ew();
-};
-
 class Windows;
 
 class WindowDecoration : public GeomInteraction2D {

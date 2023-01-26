@@ -267,7 +267,6 @@ public:
 	Absolute2DInterface* GetAbsolute2D();
 	
 	
-	
 };
 
 class EmptySpaceCtrl : public Ctrl {

@@ -12,6 +12,64 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_PARALLEL_BEGIN
 
 
+Image& WindowsImg::close() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "close.png"));
+	return img;
+}
+
+Image& WindowsImg::maximize() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "maximize.png"));
+	return img;
+}
+
+Image& WindowsImg::minimize() {
+	static Image img;
+	if (img.IsEmpty())
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "minimize.png"));
+	return img;
+}
+
+Image& WindowsImg::nwse() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::nesw() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::ns() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+Image& WindowsImg::ew() {
+	static Image img;
+	if (img.IsEmpty()) {
+		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
+		img.CenterHotSpot();
+	}
+	return img;
+}
+
+
 template <class Dim>
 HandleT<Dim>::HandleT() :
 	decor(this)
@@ -62,7 +120,7 @@ void HandleT<Ctx2D>::Paint(DrawT& draw) {
 
 template <class Dim>
 void HandleT<Dim>::Layout() {
-	int title_h = 28;
+	int title_h = 25;
 	Box handle_box(this->GetFrameBox().GetSize());
 	Sz handle_sz = handle_box.GetSize();
 	ASSERT(!handle_sz.IsEmpty());
@@ -209,8 +267,26 @@ void HandleT<Dim>::SetFrameBox(const Box& b) {
 }
 
 template <class Dim>
+void HandleT<Dim>::ToggleMaximized() {
+	if (IsMaximized())
+		Restore();
+	else
+		Maximize();
+}
+
+template <class Dim>
 bool HandleT<Dim>::IsPendingPartialRedraw() const {
 	return pending_partial_redraw;
+}
+
+template <class Dim>
+void HandleT<Dim>::Restore()
+{
+	Scope& scope = GetScope();
+	scope.RestoreHandle(id);
+	scope.FocusHandle(id);
+	
+	maximized = false;
 }
 
 
@@ -230,6 +306,18 @@ bool HandleT<Dim>::IsPendingPartialRedraw() const {
 template <class Dim>
 GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
 	handle = h;
+	
+	close.SetImage(WindowsImg::close());
+	maximize.SetImage(WindowsImg::maximize());
+	minimize.SetImage(WindowsImg::minimize());
+	
+	this->Add(close.TopPos(3, 19).RightPos(3, 19));
+	this->Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
+	this->Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
+	
+	close.WhenAction = callback(h, &Handle::Close);
+	maximize.WhenAction = callback(h, &Handle::ToggleMaximized);
+	minimize.WhenAction = callback(h, &Handle::Minimize);
 	
 }
 

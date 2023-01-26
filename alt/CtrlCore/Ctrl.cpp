@@ -1,4 +1,5 @@
 #include "CtrlCore.h"
+#include <ParallelLib/ParallelLib.h>
 
 NAMESPACE_UPP
 
@@ -619,26 +620,39 @@ void Ctrl::SetCaptured(Ctrl* c) {
 }
 
 void Ctrl::SetWithMouse(Ctrl* c) {
-	Ctrl* top = GetTopCtrl();
-	if (top)
-		top->SetWithMouse(c);
+	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	if (wm)
+		wm->SetWithMouse(c);
 }
 
 CtrlFrame* Ctrl::GetFrameCaptured() {
-	TODO //return GetWindows()->GetFrameCaptured();
+	CtrlFrame* f = 0;
+	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	if (wm)
+		f = CastPtr<CtrlFrame>(wm->GetFrameCaptured());
+	return f;
 }
 
 CtrlFrame* Ctrl::GetFrameWithMouse() {
-	TODO //return GetWindows()->GetFrameWithMouse();
+	CtrlFrame* f = 0;
+	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	if (wm)
+		f = CastPtr<CtrlFrame>(wm->GetFrameWithMouse());
+	return f;
 }
 
 void Ctrl::SetFrameCaptured(CtrlFrame* c) {
-	TODO //GetWindows()->SetFrameCaptured(c);
+	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	if (wm)
+		wm->SetFrameCaptured(c);
 }
 
 void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
-	TODO //GetWindows()->SetFrameWithMouse(c);
+	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	if (wm)
+		wm->SetFrameWithMouse(c);
 }
+
 
 
 

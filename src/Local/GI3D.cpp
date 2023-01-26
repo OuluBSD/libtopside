@@ -68,5 +68,10 @@ Image GeomInteraction3D::CursorImage(Point3f p, dword keyflags) {
 	TODO
 }
 
+bool GeomInteraction3D::Dispatch(const CtrlEvent& e) {
+	GeomInteraction::Dispatch(e);
+	TODO
+}
+
 
 NAMESPACE_TOPSIDE_END

@@ -11,6 +11,7 @@ class ScopeT :
 
 public:
 	using Base = ScopeT<Dim>;
+	using Scope = ScopeT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
 	using Space = typename Dim::Space;
@@ -63,6 +64,8 @@ public:
 	void LoadDimsAll();
 	void SetMaximizeAll(bool b = true) { maximize_all = b; }
 
+	void SetCaptured(GeomInteraction* c) override;
+	void SetWithMouse(GeomInteraction* c) override;
 	void SetCaptured(Container* c) { captured = c; }
 	void SetWithMouse(Container* c) { with_mouse = c; }
 	ContainerFrame* GetFrameCaptured() { return frame_captured; }
@@ -71,7 +74,7 @@ public:
 	void SetFrameWithMouse(ContainerFrame* c) { frame_with_mouse = c; }
 
 public:
-	RTTI_DECL_R1(Base, Space)
+	RTTI_DECL_R1(Scope, Space)
 	typedef ScopeT<Dim> CLASSNAME;
 	ScopeT();
 

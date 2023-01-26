@@ -21,6 +21,7 @@ public:
 	using ContainerFrame = typename Dim::ContainerFrame;
 	using TopContainer = typename Dim::TopContainer;
 	using Event = typename Dim::Event;
+	using EventCollection = typename Dim::EventCollection;
 	
 private:
 	Array<Scope> scopes;
@@ -53,6 +54,7 @@ public:
 	void RealizeScope();
 	Scope& GetActiveScope();
 	Scope& GetScope(int i);
+	void DoEvents(const EventCollection& ev);
 	
 	int GetScopeCount() const {return scopes.GetCount();}
 	int GetScreenCount() const {return GetScopeCount();}

@@ -126,6 +126,7 @@ public:
 	virtual GeomInteraction* GetCaptured() const;
 	virtual GeomInteraction* GetWithMouse() const;
 	
+	virtual bool Dispatch(const CtrlEvent& e);
 	virtual bool Key(dword key, int count);
 	virtual bool HotKey(dword key);
 	virtual bool Is2D() const;
@@ -137,8 +138,10 @@ public:
 	virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	
 	
-	void SetCaptured(GeomInteraction* c);
-	void SetWithMouse(GeomInteraction* c);
+	GeomInteraction* GetGeomDrawBegin();
+	
+	virtual void SetCaptured(GeomInteraction* c);
+	virtual void SetWithMouse(GeomInteraction* c);
 	
 };
 
@@ -226,6 +229,7 @@ public:
 	bool Is2D() const override;
 	GeomInteraction2D* Get2D() override;
 	void DeepLayout() override;
+	bool Dispatch(const CtrlEvent& e) override;
 	
 	
 };
@@ -249,10 +253,10 @@ public:
 	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
 	virtual void Paint(Draw3& d) {}
 	
-	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
+	bool Dispatch(const CtrlEvent& e) override;
 	
 	virtual Point3f GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);

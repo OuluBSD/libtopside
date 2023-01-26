@@ -55,8 +55,69 @@ GeomInteraction2D* GeomInteraction2D::At(int i) {
 }
 
 bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
-	MouseMove(pt, keyflags);
-	return true;
+	LOG(GetDynamicName());
+	if (GetCaptured()) {
+		ASSERT(this == GetCaptured());
+		Point cpt = GetContentPoint(pt);
+		MouseMove(cpt, keyflags);
+		return true;
+	}
+	else {
+		Rect content_r(frame_r.GetSize());
+		
+		if (frame_r.Contains(pt)) {
+			has_mouse_deep = true;
+			
+			Point ftl = frame_r.TopLeft();
+			Point fpt = pt - ftl;
+			Point ctl = content_r.TopLeft();
+			Point cpt = fpt - ctl;
+			
+			if (content_r.Contains(fpt)) {
+				bool found = false;
+				for(int i = sub.GetCount()-1; i >= 0; i--) {
+					GeomInteraction* c = sub[i];
+					GeomInteraction2D* c2 = c->Get2D();
+					if (found) {
+						if (c->has_mouse_deep) {
+							c->DeepMouseLeave();
+							break;
+						}
+					}
+					else if (c2 && c2->DeepMouseMove(cpt, keyflags)) {
+						found = true;
+					}
+				}
+				
+				if (!found) {
+					if (!has_mouse) {
+						if (GetCaptured()) {ASSERT(GetCaptured() == this);}
+						
+						GeomInteraction* with_mouse = GetWithMouse();
+						if (with_mouse) {
+							with_mouse->has_mouse = false;
+							with_mouse->MouseLeave();
+						}
+						has_mouse = true;
+						
+						SetWithMouse(this);
+						
+						MouseEnter(fpt, keyflags);
+					}
+					MouseMove(cpt, keyflags);
+				}
+			}
+			
+			return true;
+		}
+		else if (has_mouse_deep) {
+			DeepMouseLeave();
+		}
+		else {
+			ASSERT(!has_mouse);
+		}
+	}
+	return false;
 }
 
 void GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
@@ -99,7 +160,8 @@ bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
 		return false;
 	}
 	else {
-		return MouseMoveInFrame(pt, keyflags);
+		MouseMoveInFrame(pt, keyflags);
+		return true;
 	}
 	return false;
 }
@@ -303,6 +365,7 @@ bool GeomInteraction2D::MouseEventInFrameCaptured(int mouse_code, const Point& p
 }
 
 bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
+	LOG(GetDynamicName());
 	TODO
 }
 
@@ -399,6 +462,35 @@ GeomInteraction2D& GeomInteraction2D::RightPos(int i, int size) {
 	pos.r = i;
 	pos.w = size;
 	return *this;
+}
+
+bool GeomInteraction2D::Dispatch(const CtrlEvent& e) {
+	if (GeomInteraction::Dispatch(e))
+		return true;
+	
+	switch (e.type) {
+		case EVENT_SHUTDOWN:
+		case EVENT_WINDOW_RESIZE:
+			break;
+		
+		case EVENT_MOUSEMOVE:
+			DeepMouseMove(e.pt, e.value);
+			return true;
+		
+		case EVENT_MOUSEWHEEL:
+			DeepMouseWheel(e.pt, e.n, e.value);
+			return true;
+		
+		case EVENT_MOUSE_EVENT:
+			DeepMouse(e.n, e.pt, e.value);
+			return true;
+		
+		default:
+			TODO
+			break;
+	}
+	
+	return false;
 }
 
 

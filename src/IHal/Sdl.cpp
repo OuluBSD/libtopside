@@ -59,13 +59,17 @@ struct HalSdl::NativeEventsBase {
     bool is_rctrl;
     Point prev_mouse_pt;
     Vector<int> invalids;
+    Ref<WindowSystem> wins;
+    Ref<GuboSystem> gubos;
     
     void Clear() {
         time = 0;
         seq = 0;
         ev_sendable = 0;
-        sz.Clear();
         prev_mouse_pt = Point(0,0);
+        sz.Clear();
+        wins.Clear();
+        gubos.Clear();
     }
 };
 
@@ -990,6 +994,13 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 	
 	a.AddAtomToUpdateList();
 	
+	
+	{
+		Machine& m = a.GetMachine();
+		dev.wins = m.Get<WindowSystem>();
+		dev.gubos = m.Get<GuboSystem>();
+	}
+	
 	return true;
 }
 
@@ -1003,6 +1014,8 @@ void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
 }
 
 void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
+	dev.wins.Clear();
+	dev.gubos.Clear();
 	
 	a.RemoveAtomFromUpdateList();
 }
@@ -1174,7 +1187,8 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 			
 			e.type = EVENT_MOUSEWHEEL;
 			e.value = key;
-			e.pt = mouse_pt;
+			e.pt = dev.prev_mouse_pt;
+			e.n = event.wheel.y;
 			
 			continue;
 			
@@ -1251,6 +1265,13 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	
 	if (dev.ev.IsEmpty())
 		return false;
+	
+	if (dev.wins) {
+		dev.wins->DoEvents(dev.ev);
+	}
+	if (dev.gubos) {
+		// copy dev.wins
+	}
 	
 	return true;
 }

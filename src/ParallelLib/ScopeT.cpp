@@ -624,6 +624,19 @@ bool ScopeT<Dim>::IsCaptureRoot() const
 	return true;
 }
 
+template <class Dim>
+void ScopeT<Dim>::SetCaptured(GeomInteraction* c) {
+	captured = CastPtr<Interaction>(c);
+	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
+	with_mouse = CastPtr<Interaction>(c);
+	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 
 NAMESPACE_PARALLEL_END

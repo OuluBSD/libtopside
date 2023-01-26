@@ -236,11 +236,15 @@ void GeomInteraction::ReleaseCapture() {
 }
 
 void GeomInteraction::SetCaptured(GeomInteraction* c) {
-	TODO
+	GeomInteraction* draw_begin = GetGeomDrawBegin();
+	if (draw_begin != this)
+		draw_begin->SetCaptured(c);
 }
 
 void GeomInteraction::SetWithMouse(GeomInteraction* c) {
-	TODO
+	GeomInteraction* draw_begin = GetGeomDrawBegin();
+	if (draw_begin != this)
+		draw_begin->SetWithMouse(c);
 }
 
 void GeomInteraction::DeepLayout() {
@@ -264,6 +268,31 @@ String GeomInteraction::GetDrawCommandString() const {
 
 void GeomInteraction::DumpDrawCommands() const {
 	LOG(GetDrawCommandString());
+}
+
+bool GeomInteraction::Dispatch(const CtrlEvent& e) {
+	switch (e.type) {
+		case EVENT_KEYDOWN:
+			DeepKey(e.value, e.n);
+			return true;
+			
+		case EVENT_KEYUP:
+			DeepKey(e.value | K_KEYUP, e.n);
+			return true;
+		
+		default:
+			return false;
+	}
+}
+
+GeomInteraction* GeomInteraction::GetGeomDrawBegin() {
+	GeomInteraction* gi = this;
+	while (gi) {
+		if (gi->IsGeomDrawBegin())
+			return gi;
+		gi = gi->GetOwner();
+	}
+	return 0;
 }
 
 

@@ -4,6 +4,16 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+struct WindowsImg {
+	static Image& close();
+	static Image& maximize();
+	static Image& minimize();
+	static Image& nwse();
+	static Image& nesw();
+	static Image& ns();
+	static Image& ew();
+};
+
 template <class Dim> class HandleSystemT;
 template <class Dim> class ScopeT;
 template <class Dim> class HandleT;
@@ -13,6 +23,7 @@ template <class Dim>
 class GeomDecorationT : public Dim::Interaction {
 public:
 	using Base = GeomDecorationT<Dim>;
+	using GeomDecoration = GeomDecorationT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
 	using DrawT = typename Dim::DrawT;
@@ -31,12 +42,13 @@ public:
 	
 protected:
 	Handle* handle = NULL;
+	Button minimize, maximize, close;
 	String label;
 	bool left_down;
 	Point left_down_pt;
 	
 public:
-	RTTI_DECL1(Base, Interaction)
+	RTTI_DECL1(GeomDecoration, Interaction)
 	typedef GeomDecorationT CLASSNAME;
 	GeomDecorationT(Handle* h);
 	
@@ -94,7 +106,7 @@ protected:
 	int id;
 	
 public:
-	RTTI_DECL2(Base, Interface, Interaction)
+	RTTI_DECL2(Handle, Interface, Interaction)
 	typedef HandleT<Dim> CLASSNAME;
 	HandleT();
 	
@@ -132,7 +144,7 @@ public:
 	void Minimize();
 	void CloseOthers();
 	//void FocusEvent() override;
-	//void ToggleMaximized();
+	void ToggleMaximized();
 	bool IsPendingPartialRedraw() const;
 	//void Wait();
 	Scope& GetScope() const;
