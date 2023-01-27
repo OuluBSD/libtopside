@@ -492,7 +492,9 @@ typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetActiveHandle()
 template <class Dim>
 typename Dim::Interaction* ScopeT<Dim>::GetLastSub()
 {
-	Interaction* last = CastPtr<Interaction>(this->GetLastSub());
+	if (this->sub.IsEmpty())
+		return 0;
+	Interaction* last = CastPtr<Interaction>(this->sub.Top());
 	return last;
 }
 

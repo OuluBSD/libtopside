@@ -488,21 +488,21 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	}
 	else if (e.type == EVENT_MOUSE_EVENT) {
 		switch (e.n) {
-			case MOUSE_LEFTDOWN:		LeftDown(e.pt, e.value);break;
-			case MOUSE_MIDDLEDOWN:	break;
-			case MOUSE_RIGHTDOWN:	TODO break;
+			case MOUSE_LEFTDOWN:		LeftDown(e.pt, e.value); break;
+			/*case MOUSE_MIDDLEDOWN:		MiddleDown(e.pt, e.value); break;
+			case MOUSE_RIGHTDOWN:		RightDown(e.pt, e.value);  break;
 			
-			case MOUSE_LEFTDOUBLE:	break;
-			case MOUSE_MIDDLEDOUBLE:	break;
-			case MOUSE_RIGHTDOUBLE:	break;
+			case MOUSE_LEFTDOUBLE:		LeftDouble(e.pt, e.value); break;
+			case MOUSE_MIDDLEDOUBLE:	MiddleDouble(e.pt, e.value); break;
+			case MOUSE_RIGHTDOUBLE:		RightDouble(e.pt, e.value); break;
 			
-			case MOUSE_LEFTTRIPLE:	break;
-			case MOUSE_MIDDLETRIPLE:	break;
-			case MOUSE_RIGHTTRIPLE:	break;
+			case MOUSE_LEFTTRIPLE:		LeftTriple(e.pt, e.value); break;
+			case MOUSE_MIDDLETRIPLE:	MiddleTriple(e.pt, e.value); break;
+			case MOUSE_RIGHTTRIPLE:		RightTriple(e.pt, e.value); break;*/
 			
-			case MOUSE_LEFTUP:		LeftUp(e.pt, e.value); break;
-			case MOUSE_MIDDLEUP:		break;
-			case MOUSE_RIGHTUP:		break;
+			case MOUSE_LEFTUP:			LeftUp(e.pt, e.value); break;
+			/*case MOUSE_MIDDLEUP:		MiddleUp(e.pt, e.value); break;
+			case MOUSE_RIGHTUP:			RightUp(e.pt, e.value); break;*/
 		}
 	}
 	else if (e.type == EVENT_WINDOW_RESIZE) {

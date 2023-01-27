@@ -219,14 +219,14 @@ public:
 	
 	void DeepFrameLayout() override;
 	void SetFrameRect(const Rect& r) override;
-	void DeepMouseMoveInFrame(Point pt, dword keyflags) override;
-	bool MouseMoveInFrame(Point pt, dword keyflags) override;
+	void DeepMouseMoveInFrameContent(Point pt, dword keyflags) override;
+	void MouseMoveInFrameContent(Point pt, dword keyflags) override;
 	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
-	bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) override;
+	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) override;
 	void MouseLeaveFrame() override;
 	Rect GetContentRect() const override;
 	Point GetContentPoint(const Point& pt) override;
-	bool MouseWheelInFrame(Point p, int zdelta, dword keyflags) override;
+	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags) override;
 	void SetFocus() override;
 	void DeepUnfocus() override;
 	void PaintPreFrame(ProgPainter& pp) override;

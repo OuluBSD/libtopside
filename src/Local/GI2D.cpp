@@ -55,7 +55,6 @@ GeomInteraction2D* GeomInteraction2D::At(int i) {
 }
 
 bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
-	LOG(GetDynamicName());
 	if (GetCaptured()) {
 		ASSERT(this == GetCaptured());
 		Point cpt = GetContentPoint(pt);
@@ -63,11 +62,11 @@ bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
 		return true;
 	}
 	else {
-		Rect content_r(frame_r.GetSize());
 		
 		if (frame_r.Contains(pt)) {
 			has_mouse_deep = true;
 			
+			Rect content_r = GetContentRect();
 			Point ftl = frame_r.TopLeft();
 			Point fpt = pt - ftl;
 			Point ctl = content_r.TopLeft();
@@ -107,6 +106,9 @@ bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
 					MouseMove(cpt, keyflags);
 				}
 			}
+			else {
+				MouseMoveInFrameContent(pt, keyflags);
+			}
 			
 			return true;
 		}
@@ -120,7 +122,27 @@ bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
 	return false;
 }
 
+void GeomInteraction2D::DeepMouseMoveInFrameContent(Point pt, dword keyflags) {
+	
+}
+
+void GeomInteraction2D::MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) {
+	
+}
+
+bool GeomInteraction2D::MouseWheelInFrameContent(Point p, int zdelta, dword keyflags) {
+	return false;
+}
+
 void GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
+	Rect content_r = GetContentRect();
+	Point ftl = frame_r.TopLeft();
+	Point ctl = content_r.TopLeft();
+	Point fpt = pt - ftl;
+	Point cpt = fpt - ctl;
+	
+	DeepMouseMoveInFrameContent(pt, keyflags);
+	
 	for(int i = sub.GetCount()-1; i >= 0; i--) {
 		GeomInteraction2D* c = sub[i]->Get2D();
 		if (!c) continue;
@@ -128,7 +150,7 @@ void GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
 		if (c->has_mouse_deep) {
 			Point p0(	pt.x - frame_r.left,
 						pt.y - frame_r.top);
-			c->DeepMouseMove(p0, keyflags);
+			c->DeepMouseMove(cpt, keyflags);
 		}
 	}
 }
@@ -251,16 +273,27 @@ bool GeomInteraction2D::DeepMouseWheel(const Point& pt, int zdelta, dword keyfla
 }
 
 bool GeomInteraction2D::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) {
-	Point cpt = GetContentPoint(pt);
-	if (!frame_r.Contains(cpt))
-		return false;
-	for(int i = sub.GetCount()-1; i >= 0; i--) {
-		GeomInteraction2D* c = sub[i]->Get2D();
-		if (c && c->DeepMouseWheel(cpt, zdelta, keyflags))
-			return true;
+	if (frame_r.Contains(pt)) {
+		Rect content_r = GetContentRect();
+		Point ftl = frame_r.TopLeft();
+		Point ctl = content_r.TopLeft();
+		Point fpt = pt - ftl;
+		Point cpt = fpt - ctl;
+		
+		if (content_r.Contains(fpt)) {
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				GeomInteraction2D* c = sub[i]->Get2D();
+				if (c->DeepMouseWheel(cpt, zdelta, keyflags))
+					return true;
+			}
+			MouseWheel(cpt, zdelta, keyflags);
+		}
+		else {
+			MouseWheelInFrameContent(pt, zdelta, keyflags);
+		}
+		return true;
 	}
-	MouseWheel(cpt, zdelta, keyflags);
-	return true;
+	return false;
 }
 
 void GeomInteraction2D::SetFrameRect(const Rect& r) {
@@ -365,8 +398,49 @@ bool GeomInteraction2D::MouseEventInFrameCaptured(int mouse_code, const Point& p
 }
 
 bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
-	LOG(GetDynamicName());
-	TODO
+	if (frame_r.Contains(pt)) {
+		Rect content_r = GetContentRect();
+		Point ftl = frame_r.TopLeft();
+		Point ctl = content_r.TopLeft();
+		Point fpt = pt - ftl;
+		Point cpt = fpt - ctl;
+		
+		if (content_r.Contains(fpt)) {
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				GeomInteraction2D* c = sub[i]->Get2D();
+				if (c && c->DeepMouse(mouse_code, cpt, keyflags))
+					return true;
+			}
+			switch (mouse_code) {
+				case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+				case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+				case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+				case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+				case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+				case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+				case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+				case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+				case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+				case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+				case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+				case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+				case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+				case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+				case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+				case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+				case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+				case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+				case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
+			}
+		}
+		else {
+			MouseEventInFrameContent(mouse_code, pt, keyflags);
+		}
+		return true;
+	}
+	return false;
 }
 
 void GeomInteraction2D::DeepLayout() {

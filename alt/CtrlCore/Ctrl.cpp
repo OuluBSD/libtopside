@@ -176,116 +176,48 @@ Point Ctrl::GetContentPoint(const Point& pt) {
 	return cpt;
 }
 
-bool Ctrl::MouseMoveInFrame(Point pt, dword keyflags) {
-	if (GetCaptured()) {
-		ASSERT(this == GetCaptured());
-		Point cpt = GetContentPoint(pt);
-		MouseMove(cpt, keyflags);
-		return true;
+void Ctrl::MouseMoveInFrameContent(Point pt, dword keyflags) {
+	Point ftl = frame_r.TopLeft();
+	Point fpt = pt - ftl;
+	Rect r(frame_r.GetSize());
+	CtrlFrame* last_fitting = NULL;
+	Rect fitting_rect;
+	for(int i = 0; i < frames.GetCount(); i++) {
+		CtrlFrame* f = frames[i];
+		if (r.Contains(fpt)) {
+			last_fitting = f;
+			fitting_rect = r;
+		}
+		f->FrameLayout(r);
 	}
-	else {
-		if (frame_r.Contains(pt)) {
-			has_mouse_deep = true;
-			
-			Point ftl = frame_r.TopLeft();
-			Point fpt = pt - ftl;
-			Point ctl = content_r.TopLeft();
-			Point cpt = fpt - ctl;
-			
-			if (content_r.Contains(fpt)) {
-				bool found = false;
-				for(int i = sub.GetCount()-1; i >= 0; i--) {
-					GeomInteraction* c = sub[i];
-					GeomInteraction2D* c2 = c->Get2D();
-					if (found) {
-						if (c->has_mouse_deep) {
-							c->DeepMouseLeave();
-							break;
-						}
-					}
-					else if (c2 && c2->DeepMouseMove(cpt, keyflags)) {
-						found = true;
-					}
-				}
-				
-				if (!found) {
-					CtrlFrame* frame_with_mouse = GetFrameWithMouse();
-					if (frame_with_mouse) {
-						frame_with_mouse->has_mouse = false;
-						frame_with_mouse->MouseLeave();
-						SetFrameWithMouse(NULL);
-					}
-					
-					if (!has_mouse) {
-						if (GetCaptured()) {ASSERT(GetCaptured() == this);}
-						
-						Ctrl* with_mouse = GetWithMouse();
-						if (with_mouse) {
-							with_mouse->has_mouse = false;
-							with_mouse->MouseLeave();
-						}
-						has_mouse = true;
-						
-						SetWithMouse(this);
-						
-						MouseEnter(fpt, keyflags);
-					}
-					MouseMove(cpt, keyflags);
-				}
+	if (last_fitting) {
+		Ctrl* with_mouse = GetWithMouse();
+		if (with_mouse) {
+			with_mouse->has_mouse = false;
+			with_mouse->MouseLeave();
+			SetWithMouse(NULL);
+		}
+		CtrlFrame* f = last_fitting;
+		Point fitting_pt = fpt - fitting_rect.TopLeft();
+		if (!f->has_mouse) {
+			CtrlFrame* frame_with_mouse = GetFrameWithMouse();
+			if (frame_with_mouse) {
+				frame_with_mouse->has_mouse = false;
+				frame_with_mouse->MouseLeave();
 			}
-			else {
-				Rect r(frame_r.GetSize());
-				CtrlFrame* last_fitting = NULL;
-				Rect fitting_rect;
-				for(int i = 0; i < frames.GetCount(); i++) {
-					CtrlFrame* f = frames[i];
-					if (r.Contains(fpt)) {
-						last_fitting = f;
-						fitting_rect = r;
-					}
-					f->FrameLayout(r);
-				}
-				if (last_fitting) {
-					Ctrl* with_mouse = GetWithMouse();
-					if (with_mouse) {
-						with_mouse->has_mouse = false;
-						with_mouse->MouseLeave();
-						SetWithMouse(NULL);
-					}
-					CtrlFrame* f = last_fitting;
-					Point fitting_pt = fpt - fitting_rect.TopLeft();
-					if (!f->has_mouse) {
-						CtrlFrame* frame_with_mouse = GetFrameWithMouse();
-						if (frame_with_mouse) {
-							frame_with_mouse->has_mouse = false;
-							frame_with_mouse->MouseLeave();
-						}
-						f->has_mouse = true;
-						SetFrameWithMouse(f);
-						
-						f->MouseEnter(fitting_pt, keyflags);
-					}
-					f->MouseMove(fitting_pt, keyflags);
-				}
-			}
+			f->has_mouse = true;
+			SetFrameWithMouse(f);
 			
-			return true;
+			f->MouseEnter(fitting_pt, keyflags);
 		}
-		else if (has_mouse_deep) {
-			DeepMouseLeave();
-		}
-		else {
-			ASSERT(!has_mouse);
-		}
+		f->MouseMove(fitting_pt, keyflags);
 	}
-	return false;
 }
 
-void Ctrl::DeepMouseMoveInFrame(Point pt, dword keyflags) {
+void Ctrl::DeepMouseMoveInFrameContent(Point pt, dword keyflags) {
 	Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
 	Point fpt = pt - ftl;
-	Point cpt = fpt - ctl;
 	
 	if (GetFrameCaptured()) {
 		Rect r(frame_r.GetSize());
@@ -306,14 +238,6 @@ void Ctrl::DeepMouseMoveInFrame(Point pt, dword keyflags) {
 			f->MouseMove(fitting_pt, keyflags);
 			return;
 		}
-	}
-	
-	for(int i = sub.GetCount()-1; i >= 0; i--) {
-		GeomInteraction2D* c = sub[i]->Get2D();
-		if (!c) continue;
-		
-		if (c->has_mouse_deep)
-			c->DeepMouseMove(cpt, keyflags);
 	}
 }
 
@@ -370,101 +294,61 @@ bool Ctrl::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyf
 	return false;
 }
 
-bool Ctrl::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
-	if (frame_r.Contains(pt)) {
-		Point ftl = frame_r.TopLeft();
-		Point ctl = content_r.TopLeft();
-		Point fpt = pt - ftl;
-		Point cpt = fpt - ctl;
-		
-		if (content_r.Contains(fpt)) {
-			for(int i = sub.GetCount()-1; i >= 0; i--) {
-				GeomInteraction2D* c = sub[i]->Get2D();
-				if (c && c->DeepMouse(mouse_code, cpt, keyflags))
-					return true;
-			}
-			switch (mouse_code) {
-				case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
-				case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
-				case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
-				case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
-				case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
-				case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
-				case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
-				case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
-				case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
-				case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
-				case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
-				case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
-				case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
-				case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
-				case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
-				case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
-				case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
-				case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
-				case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
-				case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
-				case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
-			}
+void Ctrl::MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) {
+	Point ftl = frame_r.TopLeft();
+	Point fpt = pt - ftl;
+	Rect r(frame_r.GetSize());
+	CtrlFrame* last_fitting = NULL;
+	Rect fitting_rect;
+	for(int i = 0; i < frames.GetCount(); i++) {
+		CtrlFrame* f = frames[i];
+		if (r.Contains(fpt)) {
+			last_fitting = f;
+			fitting_rect = r;
 		}
-		else {
-			Rect r(frame_r.GetSize());
-			CtrlFrame* last_fitting = NULL;
-			Rect fitting_rect;
-			for(int i = 0; i < frames.GetCount(); i++) {
-				CtrlFrame* f = frames[i];
-				if (r.Contains(fpt)) {
-					last_fitting = f;
-					fitting_rect = r;
-				}
-				f->FrameLayout(r);
-			}
-			if (last_fitting) {
-				Ctrl* with_mouse = GetWithMouse();
-				if (with_mouse) {
-					with_mouse->has_mouse = false;
-					with_mouse->MouseLeave();
-					with_mouse = NULL;
-					SetWithMouse(NULL);
-				}
-				CtrlFrame* f = last_fitting;
-				Point fitting_pt = fpt - fitting_rect.TopLeft();
-				if (!f->has_mouse) {
-					ASSERT(!with_mouse);
-					f->has_mouse = true;
-					SetFrameWithMouse(f);
-					
-					f->MouseEnter(fitting_pt, keyflags);
-				}
-				switch (mouse_code) {
-					case MOUSE_LEFTDOWN: f->LeftDown(fitting_pt, keyflags); break;
-					case MOUSE_LEFTDOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
-					case MOUSE_LEFTTRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
-					case MOUSE_LEFTDRAG: f->LeftDrag(fitting_pt, keyflags); break;
-					case MOUSE_LEFTHOLD: f->LeftHold(fitting_pt, keyflags); break;
-					case MOUSE_LEFTREPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
-					case MOUSE_LEFTUP: f->LeftUp(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTDOWN: f->RightDown(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTDOUBLE: f->RightDouble(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTTRIPLE: f->RightTriple(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTDRAG: f->RightDrag(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTHOLD: f->RightHold(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTREPEAT: f->RightRepeat(fitting_pt, keyflags); break;
-					case MOUSE_RIGHTUP: f->RightUp(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEDOWN: f->MiddleDown(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEDOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLETRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEDRAG: f->MiddleDrag(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEHOLD: f->MiddleHold(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEREPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
-					case MOUSE_MIDDLEUP: f->MiddleUp(fitting_pt, keyflags); break;
-				}
-			}
-		}
-		
-		return true;
+		f->FrameLayout(r);
 	}
-	return false;
+	if (last_fitting) {
+		Ctrl* with_mouse = GetWithMouse();
+		if (with_mouse) {
+			with_mouse->has_mouse = false;
+			with_mouse->MouseLeave();
+			with_mouse = NULL;
+			SetWithMouse(NULL);
+		}
+		CtrlFrame* f = last_fitting;
+		Point fitting_pt = fpt - fitting_rect.TopLeft();
+		if (!f->has_mouse) {
+			ASSERT(!with_mouse);
+			f->has_mouse = true;
+			SetFrameWithMouse(f);
+			
+			f->MouseEnter(fitting_pt, keyflags);
+		}
+		switch (mouse_code) {
+			case MOUSE_LEFTDOWN: f->LeftDown(fitting_pt, keyflags); break;
+			case MOUSE_LEFTDOUBLE: f->LeftDouble(fitting_pt, keyflags); break;
+			case MOUSE_LEFTTRIPLE: f->LeftTriple(fitting_pt, keyflags); break;
+			case MOUSE_LEFTDRAG: f->LeftDrag(fitting_pt, keyflags); break;
+			case MOUSE_LEFTHOLD: f->LeftHold(fitting_pt, keyflags); break;
+			case MOUSE_LEFTREPEAT: f->LeftRepeat(fitting_pt, keyflags); break;
+			case MOUSE_LEFTUP: f->LeftUp(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTDOWN: f->RightDown(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTDOUBLE: f->RightDouble(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTTRIPLE: f->RightTriple(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTDRAG: f->RightDrag(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTHOLD: f->RightHold(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTREPEAT: f->RightRepeat(fitting_pt, keyflags); break;
+			case MOUSE_RIGHTUP: f->RightUp(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEDOWN: f->MiddleDown(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEDOUBLE: f->MiddleDouble(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLETRIPLE: f->MiddleTriple(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEDRAG: f->MiddleDrag(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEHOLD: f->MiddleHold(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEREPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
+			case MOUSE_MIDDLEUP: f->MiddleUp(fitting_pt, keyflags); break;
+		}
+	}
 }
 
 void Ctrl::MouseLeaveFrame() {
@@ -476,58 +360,55 @@ void Ctrl::MouseLeaveFrame() {
 	}
 }
 
-bool Ctrl::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) {
-	if (frame_r.Contains(pt)) {
-		Point ftl = frame_r.TopLeft();
-		Point ctl = content_r.TopLeft();
-		Point fpt = pt - ftl;
-		Point cpt = fpt - ctl;
-		
-		if (content_r.Contains(fpt)) {
-			for(int i = sub.GetCount()-1; i >= 0; i--) {
-				GeomInteraction2D* c = sub[i]->Get2D();
-				if (c->DeepMouseWheel(cpt, zdelta, keyflags))
-					return true;
-			}
-			MouseWheel(cpt, zdelta, keyflags);
+bool Ctrl::MouseWheelInFrameContent(Point pt, int zdelta, dword keyflags) {
+	Point ftl = frame_r.TopLeft();
+	Point ctl = content_r.TopLeft();
+	Point fpt = pt - ftl;
+	Point cpt = fpt - ctl;
+	
+	if (content_r.Contains(fpt)) {
+		for(int i = sub.GetCount()-1; i >= 0; i--) {
+			GeomInteraction2D* c = sub[i]->Get2D();
+			if (c->DeepMouseWheel(cpt, zdelta, keyflags))
+				return true;
 		}
-		else {
-			Rect r(frame_r.GetSize());
-			CtrlFrame* last_fitting = NULL;
-			Rect fitting_rect;
-			for(int i = 0; i < frames.GetCount(); i++) {
-				CtrlFrame* f = frames[i];
-				if (r.Contains(fpt)) {
-					last_fitting = f;
-					fitting_rect = r;
-				}
-				f->FrameLayout(r);
+		MouseWheel(cpt, zdelta, keyflags);
+	}
+	else {
+		Rect r(frame_r.GetSize());
+		CtrlFrame* last_fitting = NULL;
+		Rect fitting_rect;
+		for(int i = 0; i < frames.GetCount(); i++) {
+			CtrlFrame* f = frames[i];
+			if (r.Contains(fpt)) {
+				last_fitting = f;
+				fitting_rect = r;
 			}
-			if (last_fitting) {
-				Ctrl* with_mouse = GetWithMouse();
-				if (with_mouse) {
-					with_mouse->has_mouse = false;
-					with_mouse->MouseLeave();
-					with_mouse = NULL;
-					SetWithMouse(NULL);
-				}
-				CtrlFrame* f = last_fitting;
-				Point fitting_pt = fpt - fitting_rect.TopLeft();
-				if (!f->has_mouse) {
-					CtrlFrame* frame_with_mouse = GetFrameWithMouse();
-					if (frame_with_mouse) {
-						frame_with_mouse->has_mouse = false;
-						frame_with_mouse->MouseLeave();
-					}
-					f->has_mouse = true;
-					SetFrameWithMouse(f);
-					
-					f->MouseEnter(fitting_pt, keyflags);
-				}
-				f->MouseWheel(fitting_pt, zdelta, keyflags);
-			}
+			f->FrameLayout(r);
 		}
-		return true;
+		if (last_fitting) {
+			Ctrl* with_mouse = GetWithMouse();
+			if (with_mouse) {
+				with_mouse->has_mouse = false;
+				with_mouse->MouseLeave();
+				with_mouse = NULL;
+				SetWithMouse(NULL);
+			}
+			CtrlFrame* f = last_fitting;
+			Point fitting_pt = fpt - fitting_rect.TopLeft();
+			if (!f->has_mouse) {
+				CtrlFrame* frame_with_mouse = GetFrameWithMouse();
+				if (frame_with_mouse) {
+					frame_with_mouse->has_mouse = false;
+					frame_with_mouse->MouseLeave();
+				}
+				f->has_mouse = true;
+				SetFrameWithMouse(f);
+				
+				f->MouseEnter(fitting_pt, keyflags);
+			}
+			f->MouseWheel(fitting_pt, zdelta, keyflags);
+		}
 	}
 	return false;
 }

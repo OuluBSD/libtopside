@@ -193,12 +193,16 @@ public:
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual void DeepMouseMoveInFrame(Point pt, dword keyflags);
+	virtual void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
 	virtual bool MouseMoveInFrame(Point pt, dword keyflags);
 	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
 	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);
+	virtual void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags);
 	virtual bool MouseWheelInFrame(Point p, int zdelta, dword keyflags);
+	virtual bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags);
 	virtual void MouseEnter(Point frame_p, dword keyflags);
 	virtual void MouseMove(Point content_p, dword keyflags) {}
+	virtual void MouseMoveInFrameContent(Point p, dword keyflags) {}
 	virtual void LeftDown(Point p, dword keyflags) {}
 	virtual void LeftDouble(Point p, dword keyflags) {}
 	virtual void LeftTriple(Point p, dword keyflags) {}
