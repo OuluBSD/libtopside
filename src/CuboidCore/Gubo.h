@@ -162,7 +162,7 @@ public:
 	
 	void DeepFrameLayout() override;
 	void SetFrameRect(const Rect& r) override;
-	void DeepMouseMoveInFrame(Point pt, dword keyflags) override;
+	bool DeepMouseMoveInFrame(Point pt, dword keyflags) override;
 	bool MouseMoveInFrame(Point pt, dword keyflags) override;
 	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
 	bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) override;

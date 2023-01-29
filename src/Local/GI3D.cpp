@@ -40,7 +40,11 @@ Image GeomInteraction3D::MouseEvent(int event, Point3f p, int zdelta, dword keyf
 	TODO
 }
 
-void GeomInteraction3D::DeepMouseMoveInFrame(Point3f pt, dword keyflags) {
+bool GeomInteraction3D::DeepMouseMoveInFrame(Point3f pt, dword keyflags) {
+	TODO
+}
+
+bool GeomInteraction3D::DeepMouseMove(const Point3f& pt, dword keyflags) {
 	TODO
 }
 
@@ -70,6 +74,14 @@ Image GeomInteraction3D::CursorImage(Point3f p, dword keyflags) {
 
 bool GeomInteraction3D::Dispatch(const CtrlEvent& e) {
 	GeomInteraction::Dispatch(e);
+	TODO
+}
+
+void GeomInteraction3D::SetFrameBox(const Cubf& c) {
+	this->frame = c;
+}
+
+void GeomInteraction3D::Refresh() {
 	TODO
 }
 

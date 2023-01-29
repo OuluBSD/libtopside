@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool GeomInteraction::do_debug_draw;
+bool GeomInteraction::do_debug_draw = true;
 
 
 GeomInteraction::GeomInteraction() {
@@ -23,6 +23,10 @@ GeomInteraction::GeomInteraction() {
 
 String GeomInteraction::GetDesc() const {
 	return String();
+}
+
+bool GeomInteraction::IsCaptured() const {
+	return GetCaptured() == this;
 }
 
 bool GeomInteraction::IsGeomDrawBegin() {
@@ -290,6 +294,31 @@ GeomInteraction* GeomInteraction::GetGeomDrawBegin() {
 	while (gi) {
 		if (gi->IsGeomDrawBegin())
 			return gi;
+		gi = gi->GetOwner();
+	}
+	return 0;
+}
+
+void GeomInteraction::Refresh() {
+	SetPendingRedrawDeep();
+	
+}
+
+void GeomInteraction::SetPendingRedrawDeep() {
+	SetPendingEffectRedraw();
+	SetPendingRedraw();
+	int c = sub.GetCount();
+	for(int i = 0; i < c; i++) {
+		sub[i]->SetPendingRedrawDeep();
+	}
+}
+
+GeomInteraction* GeomInteraction::FindProxy() {
+	GeomInteraction* gi = this;
+	while (gi) {
+		GeomInteraction* linked = GetProxy();
+		if (linked)
+			return linked;
 		gi = gi->GetOwner();
 	}
 	return 0;

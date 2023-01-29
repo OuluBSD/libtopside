@@ -9,7 +9,20 @@ GuiTester::GuiTester() {
 void GuiTester::Paint(Draw& d) {
 	Size sz = GetSize();
 	
-	d.DrawRect(sz, White());
+	if (do_debug_draw) {
+		if (has_mouse) {
+			RGBA c{255, 0, 0, 125};
+			d.DrawRect(sz, c);
+		}
+		else {
+			RGBA c(RandomColor(64, 128));
+			c.a = 127;
+			d.DrawRect(sz, c);
+		}
+	}
+	else
+		d.DrawRect(sz, White());
+	
 	d.DrawRect(30, 30, 30,30, Yellow());
 	d.DrawText(30,30, "GuiTester", SansSerif(), Black());
 	d.DrawLine(0,0, 200, 400, 3, LtGreen());

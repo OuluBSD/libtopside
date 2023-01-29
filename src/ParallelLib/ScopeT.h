@@ -44,7 +44,7 @@ private:
 	
 public:
 	void QueueCloseHandle(int handle_id) { close_handle_queue.Add(handle_id); }
-	void MoveHandle(Point pt, int handle_id);
+	void MoveHandle(Pt pt, int handle_id);
 	void FocusHandle(int handle_id);
 	void FocusHandlePos(int win_pos);
 	void MaximizeHandle(int handle_id);
@@ -66,6 +66,7 @@ public:
 
 	void SetCaptured(GeomInteraction* c) override;
 	void SetWithMouse(GeomInteraction* c) override;
+	
 	void SetCaptured(Container* c) { captured = c; }
 	void SetWithMouse(Container* c) { with_mouse = c; }
 	ContainerFrame* GetFrameCaptured() { return frame_captured; }
@@ -86,6 +87,7 @@ public:
 	bool ProcessCloseQueue() override;
 	bool IsGeomDrawBegin() override;
 	void Paint(DrawT& draw) override;
+	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	
 	bool CheckRender();
 	bool IsRender() const {return do_render;}

@@ -6,6 +6,7 @@ NAMESPACE_UPP
 
 
 class Ctrl;
+class GeomInteraction;
 class GeomInteraction2D;
 class GeomInteraction3D;
 class Gubo;
@@ -30,6 +31,7 @@ public:
 	virtual void					Close() {}
 	virtual void					RefreshData() {}
 	virtual void					FocusEvent() {}
+	virtual GeomInteraction*		GetProxy() const;
 	
 	
 };

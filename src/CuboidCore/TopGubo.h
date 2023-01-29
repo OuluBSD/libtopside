@@ -9,14 +9,13 @@ class TopGubo :
 {
 	
 public:
-	RTTI_DECL1(TopGubo, Gubo)
+	RTTI_DECL2(TopGubo, Gubo, Absolute3DProxy)
 	TopGubo();
 	virtual ~TopGubo() {}
 	
 	void CreateGeom2DComponent();
 	void UpdateFromTransform3D();
 	
-	void SetFrameCubf(const Cubf& r) override;
 	Gubo* GetGubo() override;
 	
 	

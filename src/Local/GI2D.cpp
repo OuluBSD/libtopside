@@ -55,8 +55,9 @@ GeomInteraction2D* GeomInteraction2D::At(int i) {
 }
 
 bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
-	if (GetCaptured()) {
-		ASSERT(this == GetCaptured());
+	if (IsCaptured()) {
+		//GeomInteraction* cap = CastPtr<GeomInteraction2D>(GetCaptured());
+		//ASSERT(this == cap);
 		Point cpt = GetContentPoint(pt);
 		MouseMove(cpt, keyflags);
 		return true;
@@ -134,7 +135,7 @@ bool GeomInteraction2D::MouseWheelInFrameContent(Point p, int zdelta, dword keyf
 	return false;
 }
 
-void GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
+bool GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
 	Rect content_r = GetContentRect();
 	Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
@@ -150,9 +151,11 @@ void GeomInteraction2D::DeepMouseMoveInFrame(Point pt, dword keyflags) {
 		if (c->has_mouse_deep) {
 			Point p0(	pt.x - frame_r.left,
 						pt.y - frame_r.top);
-			c->DeepMouseMove(cpt, keyflags);
+			if (c->DeepMouseMove(cpt, keyflags))
+				return true;
 		}
 	}
+	return false;
 }
 
 bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
@@ -172,18 +175,15 @@ bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
 	
 	if (GetCaptured()) {
 		if (has_mouse) {
-			MouseMoveInFrame(pt, keyflags);
-			return true;
+			return MouseMoveInFrame(pt, keyflags);
 		}
 		else if (has_mouse_deep) {
-			DeepMouseMoveInFrame(pt, keyflags);
-			return true;
+			return DeepMouseMoveInFrame(pt, keyflags);
 		}
 		return false;
 	}
 	else {
-		MouseMoveInFrame(pt, keyflags);
-		return true;
+		return MouseMoveInFrame(pt, keyflags);
 	}
 	return false;
 }
@@ -200,6 +200,7 @@ Point GeomInteraction2D::GetContentPoint(const Point& pt) {
 bool GeomInteraction2D::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 	if (GetCaptured()) {
 		if (has_mouse) {
+		//if (IsCaptured()) {
 			Point cpt = GetContentPoint(pt);
 			
 			switch (mouse_code) {
@@ -296,7 +297,7 @@ bool GeomInteraction2D::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) 
 	return false;
 }
 
-void GeomInteraction2D::SetFrameRect(const Rect& r) {
+void GeomInteraction2D::SetFrameBox(const Rect& r) {
 	#if 0
 	GeomInteraction* gi = GetOwner();
 	if (gi) {
@@ -307,6 +308,7 @@ void GeomInteraction2D::SetFrameRect(const Rect& r) {
 	}
 	#endif
 	this->frame_r = r;
+	this->SetPendingLayout();
 }
 
 bool GeomInteraction2D::Redraw(bool only_pending) {
@@ -394,7 +396,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 }
 
 bool GeomInteraction2D::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) {
-	TODO
+	return false;
 }
 
 bool GeomInteraction2D::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
@@ -566,6 +568,25 @@ bool GeomInteraction2D::Dispatch(const CtrlEvent& e) {
 	
 	return false;
 }
+
+GeomInteraction2D* GeomInteraction2D::GetAbsoluteDrawBegin() {
+	GeomInteraction* proxy = FindProxy();
+	if (proxy)
+		return CastPtr<GeomInteraction2D>(proxy);
+	return 0;
+}
+
+void GeomInteraction2D::Refresh() {
+	GeomInteraction::Refresh();
+	
+	GeomInteraction2D* proxy = GetAbsoluteDrawBegin();
+	if (proxy) {
+		AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
+		if (aiface)
+			aiface->SetPendingPartialRedraw();
+	}
+}
+
 
 
 NAMESPACE_TOPSIDE_END

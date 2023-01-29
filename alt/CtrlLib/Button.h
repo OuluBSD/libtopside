@@ -20,10 +20,11 @@ public:
 	void SetImage(Image& img);
 	
 	void Paint(Draw& d) override;
-	void LeftDown(Point p, dword keyflags) override {is_pressed = true; Refresh();}
-	void LeftUp(Point p, dword keyflags) override {WhenAction(); is_pressed = false; Refresh();}
-	void MouseEnter(Point p, dword keyflags) override {Refresh();}
-	void MouseLeave() override {is_pressed = false; Refresh();}
+	void LeftDown(Point p, dword keyflags) override;
+	void LeftUp(Point p, dword keyflags) override;
+	void MouseEnter(Point p, dword keyflags) override;
+	void MouseLeave() override;
+	void MouseMove(Point content_p, dword keyflags) override;
 	
 	void Refresh() override {Ctrl::Refresh();}
 	

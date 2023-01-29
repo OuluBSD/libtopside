@@ -218,7 +218,7 @@ public:
 	Size GetSize() const {return GetFrameSize();}
 	
 	void DeepFrameLayout() override;
-	void SetFrameRect(const Rect& r) override;
+	void SetFrameBox(const Rect& r) override;
 	void DeepMouseMoveInFrameContent(Point pt, dword keyflags) override;
 	void MouseMoveInFrameContent(Point pt, dword keyflags) override;
 	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
@@ -236,7 +236,6 @@ public:
 	void Refresh() override;
 	
 	void SetRect(const Rect& r);
-	void SetPendingRedrawDeep();
 	void Update();
 	
 	virtual int    OverPaint() const {return 0;}

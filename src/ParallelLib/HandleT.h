@@ -45,7 +45,7 @@ protected:
 	Button minimize, maximize, close;
 	String label;
 	bool left_down;
-	Point left_down_pt;
+	Pt left_down_pt;
 	
 public:
 	RTTI_DECL1(GeomDecoration, Interaction)
@@ -58,11 +58,13 @@ public:
 	
 	String GetLabel() const {return label;}
 	
-	virtual void LeftDown(Pt p, dword keyflags) override;
-	virtual void LeftDouble(Pt p, dword keyflags) override;
-	virtual void LeftUp(Pt p, dword keyflags) override;
-	virtual void MouseMove(Pt p, dword keyflags) override;
-	virtual void RightDown(Pt p, dword keyflags) override;
+	void LeftDown(Pt p, dword keyflags) override;
+	void LeftDouble(Pt p, dword keyflags) override;
+	void LeftUp(Pt p, dword keyflags) override;
+	void MouseMove(Pt p, dword keyflags) override;
+	void RightDown(Pt p, dword keyflags) override;
+	void MouseEnter(Pt frame_p, dword keyflags) override;
+	void MouseLeave() override;
 	
 	void LocalMenu(Bar& bar);
 	
@@ -123,6 +125,9 @@ public:
 	GeomInteraction*			GetDynamicallyLinked() const override;
 	void						Layout() override;
 	void						Paint(DrawT& draw) override;
+	void						SetFrameBox(const Box& r) override;
+	bool						DeepMouseMove(const Pt& pt, dword keyflags) override;
+	GeomInteraction*			GetProxy() const override;
 	
 	TopContainer*				GetTopContainer();
 	
@@ -137,7 +142,7 @@ public:
 	//Interface* GetAbsolute();
 	bool IsMaximized() const;
 	bool IsActive() const;
-	//void MoveWindow(Point pt);
+	void MoveHandle(Pt pt);
 	void Close() override;
 	void Maximize();
 	void Restore();
@@ -149,7 +154,6 @@ public:
 	//void Wait();
 	Scope& GetScope() const;
 	HandleSystem& GetHandleSystem() const;
-	void SetFrameBox(const Box& r);
 	
 };
 

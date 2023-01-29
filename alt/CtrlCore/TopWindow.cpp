@@ -11,11 +11,6 @@ TopWindow::TopWindow() {
 	
 }
 
-void TopWindow::SetFrameRect(const Rect& r) {
-	LOG("TODO calculate core-window position by adding decoration to r?");
-	GeomInteraction2D::SetFrameRect(r);
-}
-
 Ctrl* TopWindow::GetCtrl() {
 	return this;
 }

@@ -12,14 +12,13 @@ class TopWindow :
 {
 	
 public:
-	RTTI_DECL1(TopWindow, Ctrl)
+	RTTI_DECL2(TopWindow, Ctrl, Absolute2DProxy)
 	TopWindow();
 	virtual ~TopWindow() {}
 	
 	void CreateGeom2DComponent();
 	void UpdateFromTransform2D();
 	
-	void SetFrameRect(const Rect& r) override;
 	Ctrl* GetCtrl() override;
 	
 	

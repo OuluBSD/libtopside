@@ -144,7 +144,7 @@ void Ctrl::SetRect(const Rect& r) {
 	SetPendingRedrawDeep();
 }
 
-void Ctrl::SetFrameRect(const Rect& r) {
+void Ctrl::SetFrameBox(const Rect& r) {
 	this->frame_r = r;
 	/*SetPendingEffectRedraw();
 	if (parent) {
@@ -431,22 +431,8 @@ void Ctrl::SetFocus() {
 	GeomInteraction::SetFocus();
 }
 
-
-void Ctrl::SetPendingRedrawDeep() {
-	SetPendingEffectRedraw();
-	SetPendingRedraw();
-	int c = GetChildCount();
-	for(int i = 0; i < c; i++) {
-		GetIndexChild(i)->SetPendingRedrawDeep();
-	}
-}
-
 void Ctrl::Refresh() {
-	SetPendingRedrawDeep();
-	
-	Absolute2DInterface* aw = GetAbsolute2D();
-	if (aw)
-		aw->SetPendingPartialRedraw();
+	GeomInteraction2D::Refresh();
 }
 
 void Ctrl::DeepUnfocus() {

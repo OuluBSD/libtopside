@@ -181,13 +181,14 @@ void ScopeT<Dim>::FocusHandle(TopContainer* tw)
 }
 
 template <class Dim>
-void ScopeT<Dim>::MoveHandle(Point pt, int handle_id)
+void ScopeT<Dim>::MoveHandle(Pt pt, int handle_id)
 {
 	if(maximize_all)
 		return;
 	Handle& h = handles.Get(handle_id);
 	Sz sz(h.GetFrameSize());
 	Pt tl = h.GetFrameBox().FirstCorner();
+	tl += pt;
 	h.SetFrameBox(BoxC(tl, sz));
 }
 
@@ -327,6 +328,7 @@ void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
 			h.SetFrameBox(BoxC(Pt(10), sz - Sz(20)));
 		}
 	}
+	this->SetPendingLayout();
 }
 
 template <class Dim>
@@ -374,6 +376,7 @@ void ScopeT<Dim>::FocusPrevious()
 	}
 	active_id = -1;
 	active_pos = -1;
+	this->SetPendingLayout();
 }
 
 template <class Dim>
@@ -384,7 +387,8 @@ void ScopeT<Dim>::SetTitle(int handle_id, String title)
 		return;
 	Handle& h = handles[handle_pos];
 	h.Title(title);
-
+	
+	this->SetPendingEffectRedraw();
 	this->PostRefresh();
 }
 
@@ -404,6 +408,7 @@ void ScopeT<Dim>::CloseAll()
 	for(int i = 0; i < handles.GetCount(); i++) {
 		QueueCloseHandle(handles.GetKey(i));
 	}
+	this->SetPendingLayout();
 }
 
 template <class Dim>
@@ -590,6 +595,7 @@ void ScopeT<Dim>::OrderTileHandles()
 			pos++;
 		}
 	}
+	this->SetPendingLayout();
 }
 
 template <class Dim>
@@ -638,6 +644,10 @@ void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
 	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
 }
 
+template <class Dim>
+bool ScopeT<Dim>::MouseMoveInFrame(Pt pt, dword keyflags) {
+	return Dim::Interaction::MouseMoveInFrame(pt, keyflags);
+}
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 

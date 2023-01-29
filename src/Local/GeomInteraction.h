@@ -86,6 +86,7 @@ public:
 	void SetPendingLayout() {pending_layout = true;}
 	void SetPendingRedraw() {pending_redraw = true;}
 	void SetPendingEffectRedraw() {pending_fx_redraw = true;}
+	void SetPendingAll() {pending_layout = true; pending_redraw = true; pending_fx_redraw = true;}
 	
 	void PostCallback(Callback cb);
 	void PostRefresh();
@@ -99,7 +100,7 @@ public:
 	virtual bool Redraw(bool only_pending) = 0;
 	virtual void SetFocus();
 	virtual void DeepUnfocus();
-	virtual void Refresh() {}
+	virtual void Refresh();
 	virtual void Activate() {}
 	virtual void Deactivate() {}
 	virtual void Layout() {}
@@ -136,9 +137,13 @@ public:
 	virtual GeomInteraction3D* Get3D();
 	virtual Ctrl* GetCtrl();
 	virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
+	virtual GeomInteraction* GetProxy() const {return 0;}
 	
 	
+	bool IsCaptured() const;
 	GeomInteraction* GetGeomDrawBegin();
+	GeomInteraction* FindProxy();
+	void SetPendingRedrawDeep();
 	
 	virtual void SetCaptured(GeomInteraction* c);
 	virtual void SetWithMouse(GeomInteraction* c);
@@ -162,17 +167,15 @@ public:
 	GeomInteraction2D* operator[](int i) {return At(i);}
 	GeomInteraction2D* At(int i);
 	Rect GetFrameBox() const {return frame_r;}
-	void SetFrameBox(const Rect& r) {SetFrameRect(r);}
+	GeomInteraction2D* GetAbsoluteDrawBegin();
 	
 	
 	Size GetSize() const {return frame_r.GetSize();}
 	Size GetFrameSize() const {return frame_r.GetSize();}
 	Rect GetRect() const {return frame_r;}
-	void SetFrameRect(int x, int y, int w, int h) {SetFrameRect(Rect(x, y, x+w, y+h));}
+	void SetFrameRect(int x, int y, int w, int h) {SetFrameBox(Rect(x, y, x+w, y+h));}
+	void SetFrameRect(const Rect& r) {SetFrameBox(r);}
 	
-	bool DeepMouseMove(const Point& pt, dword keyflags);
-	bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
-	bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
 	
 	GeomInteraction2D& SizePos() {return HSizePos().VSizePos();}
 	GeomInteraction2D& HSizePos(int l=0, int r=0);
@@ -182,7 +185,7 @@ public:
 	GeomInteraction2D& LeftPos(int i, int size);
 	GeomInteraction2D& RightPos(int i, int size);
 	
-	virtual void SetFrameRect(const Rect& r);
+	virtual void SetFrameBox(const Rect& r);
 	virtual void FrameLayout(Rect& r) {}
 	virtual void FrameAddSize(Size& sz) {}
 	virtual void Paint(Draw& d) {}
@@ -192,7 +195,10 @@ public:
 	virtual Point GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags);
-	virtual void DeepMouseMoveInFrame(Point pt, dword keyflags);
+	virtual bool DeepMouseMove(const Point& pt, dword keyflags);
+	virtual bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
+	virtual bool DeepMouseMoveInFrame(Point pt, dword keyflags);
 	virtual void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
 	virtual bool MouseMoveInFrame(Point pt, dword keyflags);
 	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
@@ -234,7 +240,7 @@ public:
 	GeomInteraction2D* Get2D() override;
 	void DeepLayout() override;
 	bool Dispatch(const CtrlEvent& e) override;
-	
+	void Refresh() override;
 	
 };
 
@@ -252,20 +258,21 @@ public:
 	Cubf GetFrameBox() const {return frame;}
 	Volf GetFrameSize() const {return frame.GetSize();}
 	GeomInteraction3D* At(int i);
-	void SetFrameBox(const Cubf& c) {SetFrameCubf(c);}
-	
-	virtual void SetFrameCubf(const Cubf& c) {this->frame = c;}
-	virtual void Paint(Draw3& d) {}
+	void SetFrameCubf(const Cubf& c) {SetFrameBox(c);}
 	
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
 	bool Dispatch(const CtrlEvent& e) override;
+	void Refresh() override;
 	
+	virtual void Paint(Draw3& d) {}
+	virtual void SetFrameBox(const Cubf& c);
 	virtual Point3f GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
-	virtual void DeepMouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool DeepMouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool DeepMouseMove(const Point3f& pt, dword keyflags);
 	virtual bool MouseMoveInFrame(Point3f pt, dword keyflags);
 	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
 	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);

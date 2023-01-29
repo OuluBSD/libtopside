@@ -20,10 +20,6 @@ void TopGubo::UpdateFromTransform3D() {
 	
 }
 
-void TopGubo::SetFrameCubf(const Cubf& r) {
-	TODO
-}
-
 Gubo* TopGubo::GetGubo() {
 	TODO
 }

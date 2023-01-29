@@ -256,17 +256,6 @@ void HandleT<Dim>::LoadRect() {
 }
 
 template <class Dim>
-void HandleT<Dim>::SetFrameBox(const Box& b) {
-	#if 0
-	TopContainer* tc = GetTopContainer();
-	if (tc)
-		tc->SetFrameBox(b);
-	#else
-	Dim::Interaction::SetFrameBox(b);
-	#endif
-}
-
-template <class Dim>
 void HandleT<Dim>::ToggleMaximized() {
 	if (IsMaximized())
 		Restore();
@@ -288,6 +277,30 @@ void HandleT<Dim>::Restore()
 	
 	maximized = false;
 }
+
+template <class Dim>
+void HandleT<Dim>::SetFrameBox(const Box& b) {
+	// this method override is for debugging
+	Dim::Interaction::SetFrameBox(b);
+}
+
+template <class Dim>
+void HandleT<Dim>::MoveHandle(Pt pt) {
+	Scope& scope = GetScope();
+	scope.MoveHandle( pt, id );
+}
+
+template <class Dim>
+bool HandleT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
+	return Interaction::DeepMouseMove(pt, keyflags);
+}
+
+template <class Dim>
+GeomInteraction* HandleT<Dim>::GetProxy() const {
+	auto proxy = this->GetLinkedProxy();
+	return CastPtr<GeomInteraction>(proxy);
+}
+
 
 
 
@@ -328,17 +341,8 @@ void GeomDecorationT<Dim>::Paint(DrawT& draw) {
 
 template <>
 void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
-	Color border_tl = GrayColor(128+64);
-	Color border_br = GrayColor(128);
-	
 	Size sz(GetFrameSize());
 	ASSERT(!sz.IsEmpty());
-	
-	id.DrawRect(sz, White());
-	id.DrawLine(0,0, 0, sz.cy-1, 1, border_tl);
-	id.DrawLine(0,0, sz.cx-1, 0, 1, border_tl);
-	id.DrawLine(sz.cx-1,0, sz.cx-1, sz.cy-1, 1, border_br);
-	id.DrawLine(0,sz.cy-1, sz.cx-1, sz.cy-1, 1, border_br);
 	
 	Color left, right;
 	ASSERT(handle);
@@ -350,7 +354,21 @@ void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
 		left = GrayColor();
 		right = GrayColor(195);
 	}
-	id.DrawRect(0, 0, sz.cx, sz.cy, left);
+	
+	if (this->do_debug_draw) {
+		if (has_mouse) {
+			RGBA c{255, 0, 0, 125};
+			id.DrawRect(sz, c);
+		}
+		else {
+			RGBA c(RandomColor(64, 128));
+			c.a = 127;
+			id.DrawRect(sz, c);
+		}
+	}
+	else
+		id.DrawRect(0, 0, sz.cx, sz.cy, left);
+	
 	id.DrawText(7, 4, label, StdFont(15), Black());
 	id.DrawText(6, 3, label, StdFont(15), White());
 	
@@ -366,32 +384,59 @@ void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
 
 template <class Dim>
 void GeomDecorationT<Dim>::LeftDown(Pt p, dword keyflags) {
-	TODO
+	left_down = true;
+	left_down_pt = p;
+	this->SetCapture();
+	
+	handle->FocusEvent();
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::LeftDouble(Pt p, dword keyflags) {
-	TODO
+	handle->ToggleMaximized();
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::LeftUp(Pt p, dword keyflags) {
-	TODO
+	left_down = false;
+	this->ReleaseCapture();
+	
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::MouseMove(Pt p, dword keyflags) {
-	TODO
+	ASSERT(this->has_mouse);
+	if (left_down) {
+		handle->MoveHandle(p - left_down_pt);
+	}
+	#if 0
+	if (this->do_debug_draw) {
+		this->Refresh();
+	}
+	#endif
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::MouseEnter(Pt frame_p, dword keyflags) {
+	LOG("GeomDecorationT<Dim>::MouseEnter");
+}
+
+template <class Dim>
+void GeomDecorationT<Dim>::MouseLeave() {
+	LOG("GeomDecorationT<Dim>::MouseLeave");
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::RightDown(Pt p, dword keyflags) {
-	TODO
+	MenuBar::Execute(THISBACK(LocalMenu));
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::LocalMenu(Bar& bar) {
-	TODO
+	bar.Add("Maximize / Restore", callback(handle, &HandleT<Dim>::Maximize));
+	bar.Add("Minimize", callback(handle, &HandleT<Dim>::Minimize));
+	bar.Separator();
+	bar.Add("Close", callback(handle, &HandleT<Dim>::Close));
 }
 
 
