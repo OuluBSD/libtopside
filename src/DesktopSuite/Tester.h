@@ -2,8 +2,8 @@
 #define _DesktopSuite_Tester_h_
 
 
-
 NAMESPACE_TOPSIDE_BEGIN
+
 
 class GuiTesterApp : public TopWindow {
 	EditString edit;
@@ -28,8 +28,8 @@ public:
 
 };
 
-NAMESPACE_TOPSIDE_END
 
+NAMESPACE_TOPSIDE_END
 
 
 #endif

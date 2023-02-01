@@ -5,5 +5,8 @@
 
 #include "Factory.h"
 #include "Tester.h"
+#include "TaskBar.h"
+#include "Explorer.h"
+#include "ControlPanel.h"
 
 #endif

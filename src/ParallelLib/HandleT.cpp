@@ -419,11 +419,13 @@ void GeomDecorationT<Dim>::MouseMove(Pt p, dword keyflags) {
 template <class Dim>
 void GeomDecorationT<Dim>::MouseEnter(Pt frame_p, dword keyflags) {
 	LOG("GeomDecorationT<Dim>::MouseEnter");
+	this->Refresh();
 }
 
 template <class Dim>
 void GeomDecorationT<Dim>::MouseLeave() {
 	LOG("GeomDecorationT<Dim>::MouseLeave");
+	this->Refresh();
 }
 
 template <class Dim>

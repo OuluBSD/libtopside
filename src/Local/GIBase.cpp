@@ -29,7 +29,7 @@ bool GeomInteraction::IsCaptured() const {
 	return GetCaptured() == this;
 }
 
-bool GeomInteraction::IsGeomDrawBegin() {
+bool GeomInteraction::IsGeomDrawBegin() const {
 	return false;
 }
 
@@ -42,6 +42,9 @@ bool GeomInteraction::IsCaptureRoot() const {
 }
 
 GeomInteraction* GeomInteraction::GetCaptured() const {
+	const GeomInteraction* db = GetGeomDrawBegin();
+	if (db)
+		return db->GetCaptured();
 	return 0;
 }
 
@@ -291,6 +294,16 @@ bool GeomInteraction::Dispatch(const CtrlEvent& e) {
 
 GeomInteraction* GeomInteraction::GetGeomDrawBegin() {
 	GeomInteraction* gi = this;
+	while (gi) {
+		if (gi->IsGeomDrawBegin())
+			return gi;
+		gi = gi->GetOwner();
+	}
+	return 0;
+}
+
+const GeomInteraction* GeomInteraction::GetGeomDrawBegin() const {
+	const GeomInteraction* gi = this;
 	while (gi) {
 		if (gi->IsGeomDrawBegin())
 			return gi;

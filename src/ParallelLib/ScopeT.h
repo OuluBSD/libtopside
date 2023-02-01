@@ -54,7 +54,6 @@ public:
 	bool IsActiveHandle(int handle_id) { return handle_id == active_id; }
 	void SetHandleMaximized(Handle& h, bool b);
 	void CloseHandle(int handle_id);
-	void CloseHandle(Handle& handle);
 
 	void FocusPrevious();
 	void SetTitle(int handle_id, String title);
@@ -85,7 +84,7 @@ public:
 	void Render() override;
 	void Shutdown() override;
 	bool ProcessCloseQueue() override;
-	bool IsGeomDrawBegin() override;
+	bool IsGeomDrawBegin() const override;
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	

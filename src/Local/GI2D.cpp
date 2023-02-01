@@ -173,13 +173,28 @@ bool GeomInteraction2D::DeepMouseMove(const Point& pt, dword keyflags) {
 	}
 	ASSERT(deep_count <= 1);
 	
-	if (GetCaptured()) {
-		if (has_mouse) {
-			return MouseMoveInFrame(pt, keyflags);
+	GeomInteraction* captured = GetCaptured();
+	if (captured) {
+		GeomInteraction2D* cap2 = CastPtr<GeomInteraction2D>(captured);
+		if (cap2) {
+			#if 0
+			// This is probably not correct, because "has_mouse" must be updated
+			ASSERT(cap2->IsCaptured());
+			Point cpt = GetFramePointBetween(this, cap2, pt);
+			return cap2->MouseMoveInFrame(cpt, keyflags);
+			#else
+			if (has_mouse) {
+				return MouseMoveInFrame(pt, keyflags);
+			}
+			else if (has_mouse_deep) {
+				return DeepMouseMoveInFrame(pt, keyflags);
+			}
+			#endif
 		}
-		else if (has_mouse_deep) {
-			return DeepMouseMoveInFrame(pt, keyflags);
+		else {
+			TODO // what is this problem?
 		}
+		
 		return false;
 	}
 	else {
@@ -197,10 +212,50 @@ Point GeomInteraction2D::GetContentPoint(const Point& pt) {
 	return pt - ctl;
 }
 
+bool GeomInteraction2D::DeepMouseDispatch(int mouse_code, const Point& cpt, dword keyflags) {
+	switch (mouse_code) {
+		case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+		case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+		case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+		case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+		case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+		case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+		case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+		case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+		case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+		case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+		case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+		case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+		case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+		case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+		case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+		case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+		case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+		case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+		case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+		case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+		case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
+	}
+	
+	return true;
+}
+
 bool GeomInteraction2D::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
 	if (GetCaptured()) {
-		if (has_mouse) {
-		//if (IsCaptured()) {
+		#if 1
+		GeomInteraction2D* c2 = GetCaptured()->Get2D();
+		if (!c2)
+			return false;
+		Point cpt = GetFramePointBetween(*this, *c2, pt);
+		return c2->DeepMouseDispatch(mouse_code, cpt, keyflags);
+		#else
+		
+		// THIS ALL IS INCORRECT!!!!! DON'T USE!!!!
+		
+		// ...it won't ever seek towards captured
+		
+		// It's not the one "with mouse" if (has_mouse) {
+		if (IsCaptured()) {
 			Point cpt = GetContentPoint(pt);
 			
 			switch (mouse_code) {
@@ -241,6 +296,7 @@ bool GeomInteraction2D::DeepMouse(int mouse_code, const Point& pt, dword keyflag
 			return true;
 		}
 		return false;
+		#endif
 	}
 	else {
 		return MouseEventInFrame(mouse_code, pt, keyflags);
@@ -318,12 +374,19 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		content = linked;
 	}*/
 	
-	
 	bool did_draw = false;
 	bool was_pending_fx_redraw = pending_fx_redraw;
 	bool frame = IsGeomDrawBegin();
 	bool draw_begin = false;
 	Size sz = GetFrameSize();
+	
+	if (!IsShown()) {
+		ProgPainter fast_exit(sz, *cmd_begin.prev, cmd_begin, cmd_end, *cmd_end.next);
+		fast_exit.Link();
+		pending_fx_redraw = false;
+		pending_redraw = false;
+		return true;
+	}
 	
 	if (pending_fx_redraw) {
 		ASSERT(cmd_begin.prev);
@@ -587,6 +650,30 @@ void GeomInteraction2D::Refresh() {
 	}
 }
 
+Point GeomInteraction2D::GetFramePointBetween(GeomInteraction2D& top_owner, GeomInteraction2D& deep_sub, const Point& pt) {
+	Point tl_sum(0,0);
+	
+	// The "deep_sub" node is not counted in, so we consider it's owner only
+	GeomInteraction* ds_owner = deep_sub.GetOwner();
+	ASSERT(ds_owner); if (!ds_owner) return Point(0,0);
+	
+	GeomInteraction2D* iter = ds_owner->Get2D();
+	ASSERT(iter) if (!iter) return Point(0,0);
+	
+	while (iter) {
+		if (iter == &top_owner) {
+			Point diff = pt - tl_sum;
+			return diff;
+		}
+		Rect frame = iter->GetFrameBox();
+		Point frame_tl = frame.FirstCorner();
+		tl_sum += frame_tl;
+		GeomInteraction* o = iter->GetOwner();
+		iter = o ? o->Get2D() : 0;
+	}
+	ASSERT_(0, "owner is not connected to given object");
+	return Point(0,0);
+}
 
 
 NAMESPACE_TOPSIDE_END

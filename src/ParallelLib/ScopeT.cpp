@@ -27,7 +27,7 @@ bool ScopeT<Dim>::Init()
 }
 
 template <class Dim>
-bool ScopeT<Dim>::IsGeomDrawBegin() {
+bool ScopeT<Dim>::IsGeomDrawBegin() const {
 	return true;
 }
 
@@ -256,33 +256,8 @@ void ScopeT<Dim>::CloseHandle(int handle_id)
 	TopContainer* tw = h0.GetTopContainer();
 	handles.Remove(handle_pos);
 	this->Refresh();
-	if(tw) {
-		bool found = false;
-		for(int i = 0; i < handles.GetCount(); i++) {
-			Handle& h1 = handles[i];
-			if(&h1 == &h0) {
-				TopContainer* tw = h1.GetTopContainer();
-				if(tw) {
-					tw->Close();
-				}
-				found = true;
-				handles.Remove(i);
-				break;
-			}
-		}
-		if(!found)
-			tw->Close();
-	}
-
-	CloseHandle(h0);
 	FocusPrevious();
 	WhenHandleClose();
-}
-
-template <class Dim>
-void ScopeT<Dim>::CloseHandle(Handle& handle)
-{
-	TODO
 }
 
 template <class Dim>
@@ -357,6 +332,7 @@ void ScopeT<Dim>::MinimizeHandle(int handle_id)
 template <class Dim>
 void ScopeT<Dim>::FocusPrevious()
 {
+	this->SetPendingLayout();
 	int handle_pos = active_pos;
 	// Focus previous
 	int count = handles.GetCount();
@@ -376,7 +352,6 @@ void ScopeT<Dim>::FocusPrevious()
 	}
 	active_id = -1;
 	active_pos = -1;
-	this->SetPendingLayout();
 }
 
 template <class Dim>

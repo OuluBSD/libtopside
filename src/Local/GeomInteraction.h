@@ -115,7 +115,7 @@ public:
 	virtual void SetModify();
 	virtual void ClearModify();
 	virtual String GetDesc() const;
-	virtual bool IsGeomDrawBegin();
+	virtual bool IsGeomDrawBegin() const;
 	virtual void MouseLeave();
 	virtual void PaintPreFrame(ProgPainter& pp) {}
 	virtual void PaintPostFrame(ProgPainter& pp) {}
@@ -142,6 +142,7 @@ public:
 	
 	bool IsCaptured() const;
 	GeomInteraction* GetGeomDrawBegin();
+	const GeomInteraction* GetGeomDrawBegin() const;
 	GeomInteraction* FindProxy();
 	void SetPendingRedrawDeep();
 	
@@ -197,6 +198,7 @@ public:
 	virtual Image MouseEvent(int event, Point p, int zdelta, dword keyflags);
 	virtual bool DeepMouseMove(const Point& pt, dword keyflags);
 	virtual bool DeepMouse(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool DeepMouseDispatch(int mouse_code, const Point& pt, dword keyflags);
 	virtual bool DeepMouseWheel(const Point& pt, int zdelta, dword keyflags);
 	virtual bool DeepMouseMoveInFrame(Point pt, dword keyflags);
 	virtual void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
@@ -241,6 +243,8 @@ public:
 	void DeepLayout() override;
 	bool Dispatch(const CtrlEvent& e) override;
 	void Refresh() override;
+	
+	static Point GetFramePointBetween(GeomInteraction2D& top_owner, GeomInteraction2D& deep_sub, const Point& pt);
 	
 };
 

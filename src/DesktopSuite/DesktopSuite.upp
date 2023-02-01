@@ -8,6 +8,12 @@ file
 	Init.cpp,
 	Factory.h,
 	Factory.cpp,
+	TaskBar.h,
+	TaskBar.cpp,
+	Explorer.h,
+	Explorer.cpp,
+	ControlPanel.h,
+	ControlPanel.cpp,
 	Tester.h,
 	Tester.cpp;
 
