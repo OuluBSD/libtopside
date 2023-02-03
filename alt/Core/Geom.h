@@ -35,6 +35,12 @@ struct Point_ : Moveable<Point_<T>> {
 	Point_ operator/(const Point_& b) const { return Point_(x / b.x, y / b.y); }
 
 
+	Point_& operator=(const Nuller& n) {
+		x = n;
+		y = n;
+		return *this;
+	}
+	
 	template <class V>
 	Point_& operator=(const V& b) {
 		x = (T)b.x;
@@ -138,7 +144,13 @@ struct Size_ : Moveable<Size_<T>> {
 		cx = sz.cx;
 		cy = sz.cy;
 	}
-
+	
+	Size_& operator=(const Nuller& n) {
+		cx = n;
+		cy = n;
+		return *this;
+	}
+	
 	Size_ operator+(Size_ p) const {p.cx = cx + p.cx; p.cy = cy + p.cy; return *this; }
 	Size_ operator-(Size_ p) const {p.cx = cx - p.cx; p.cy = cy - p.cy; return *this; }
 	Size_& operator+=(Size_ p)  { cx +=  p.cx; cy +=  p.cy; return *this; }
@@ -201,6 +213,14 @@ struct Rect_ : Moveable<Rect_<T>> {
 		bottom = src.bottom;
 		right = src.right;
 	}
+	Rect_& operator=(const Nuller& n) {
+		top = n;
+		left = n;
+		bottom = n;
+		right = n;
+		return *this;
+	}
+	
 	//bool operator!=(const Rect_& src) { return !(*this == src); }
 
 	Point FirstCorner() const { return Point(left, top); }
@@ -286,6 +306,13 @@ struct Tri_ : Moveable<Tri_<T>> {
 		b = t.b;
 		c = t.c;
 	}
+	Tri_& operator=(const Nuller& n) {
+		a = n;
+		b = n;
+		c = n;
+		return *this;
+	}
+	
 	void Set(const Pt& a, const Pt& b, const Pt& c) {
 		this->a = a;
 		this->b = b;
@@ -339,6 +366,13 @@ struct Point3_ : Moveable<Point3_<T>> {
 	Point3_ operator/(const Point3_& b) const { return Point3_(x / b.x, y / b.y, z / b.y); }
 
 
+	Point3_& operator=(const Nuller& n) {
+		x = n;
+		y = n;
+		z = n;
+		return *this;
+	}
+	
 	template <class V>
 	Point3_& operator=(const V& b) {
 		x = (T)b.x;
@@ -440,6 +474,12 @@ struct Vol_ : Moveable<Vol_<T>> {
 		cy = sz.cy;
 		cz = sz.cz;
 	}
+	Vol_& operator=(const Nuller& n) {
+		cx = n;
+		cy = n;
+		cz = n;
+		return *this;
+	}
 
 	Vol_ operator+(const Vol_& v) const {Vol_ o(*this); o += v; return o;}
 	Vol_ operator-(const Vol_& v) const {Vol_ o(*this); o -= v; return o;}
@@ -509,6 +549,15 @@ struct Cub_ : Moveable<Cub_<T>> {
 		bottom = src.bottom;
 		right = src.right;
 		far = src.far;
+	}
+	Cub_& operator=(const Nuller& n) {
+		top = n;
+		left = n;
+		near = n;
+		bottom = n;
+		right = n;
+		far = n;
+		return *this;
 	}
 
 	Pt FirstCorner() const { return Pt(left, top, near); }

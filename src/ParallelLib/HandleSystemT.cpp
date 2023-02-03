@@ -95,7 +95,10 @@ void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
 	Scope& scope = GetActiveScope();
 	
 	for (const Event& e : ev) {
-		scope.Dispatch(e);
+		if (e.type == EVENT_SHUTDOWN)
+			this->GetMachine().SetNotRunning();
+		else
+			scope.Dispatch(e);
 	}
 }
 
@@ -121,6 +124,18 @@ void HandleSystemT<Dim>::CloseContainer(TopContainer* tc) {
 		}
 	}
 	lock.Leave();
+}
+
+template <class Dim>
+void HandleSystemT<Dim>::Set_SetMouseCursor(void (*fn)(void*,const Image&), void* arg) {
+	set_mouse_cursor = fn;
+	set_mouse_cursor_arg = arg;
+}
+
+template <class Dim>
+void HandleSystemT<Dim>::Set_GetMouseCursor(Image (*fn)(void*), void* arg) {
+	get_mouse_cursor = fn;
+	get_mouse_cursor_arg = arg;
 }
 
 

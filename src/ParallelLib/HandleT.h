@@ -98,14 +98,22 @@ public:
 	using Pt = typename Dim::Pt;
 	
 public:
-	
+	enum {CENTER, TL, TR, BL, BR, TOP, BOTTOM, LEFT, RIGHT};
 	
 protected:
 	GeomDecoration decor;
 	Box stored_box;
 	bool maximized;
 	bool pending_partial_redraw;
+	bool cursor_overriden = false;
+	bool is_resizing = false;
+	bool used_momentum = false;
+	int override_area = -1;
 	int id;
+	int resize_area = 0;
+	Pt resize_start_pt;
+	Pt resize_diff;
+	Box resize_start_r;
 	
 public:
 	RTTI_DECL2(Handle, Interface, Interaction)
@@ -128,12 +136,21 @@ public:
 	void						SetFrameBox(const Box& r) override;
 	bool						DeepMouseMove(const Pt& pt, dword keyflags) override;
 	GeomInteraction*			GetProxy() const override;
+	void						MouseMove(Pt p, dword keyflags) override;
+	void						MouseLeave() override;
+	Image						OverrideCursor(const Image& m) override;
+	Image						DefaultCursor() override;
+	void						DeepMouseLeave() override;
+	void						LeftDown(Pt p, dword keyflags) override;
+	void						LeftUp(Pt p, dword keyflags) override;
 	
+	
+	void						CheckMouseBorder(const Pt& pt);
 	TopContainer*				GetTopContainer();
+	int							GetArea(const Pt& pt);
 	
 	void SetMaximized(bool b=true);
 	//void Clear();
-	//Point GetGlobalMouse();
 	void StoreRect();
 	void LoadRect();
 	//void SetStoredRect(Rect r);
@@ -148,12 +165,20 @@ public:
 	void Restore();
 	void Minimize();
 	void CloseOthers();
+	void CaptureResize(const Pt& p);
+	void ReleaseResize();
 	//void FocusEvent() override;
 	void ToggleMaximized();
+	void ContinueGlobalMouseMomentum();
+	void DoResize();
 	bool IsPendingPartialRedraw() const;
 	//void Wait();
+	int GetFrameWidth() const;
+	int GetCornerWidth() const;
 	Scope& GetScope() const;
 	HandleSystem& GetHandleSystem() const;
+	
+	Pt GetGlobalMouse() const;
 	
 };
 

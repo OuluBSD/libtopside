@@ -23,6 +23,11 @@ public:
 	using Event = typename Dim::Event;
 	using EventCollection = typename Dim::EventCollection;
 	
+	void (*set_mouse_cursor)(void*,const Image&);
+	Image (*get_mouse_cursor)(void*);
+	void* set_mouse_cursor_arg;
+	void* get_mouse_cursor_arg;
+	
 private:
 	Array<Scope> scopes;
 	int active_pos = -1;
@@ -50,6 +55,8 @@ public:
 	void Close();
 	void CloseContainer(TopContainer* tc);
 	void SetCloseMachineWhenEmpty(bool b=true) {close_machine_when_empty = b;}
+	void Set_SetMouseCursor(void (*fn)(void*,const Image&), void* arg);
+	void Set_GetMouseCursor(Image (*fn)(void*), void* arg);
 	
 	void RealizeScope();
 	Scope& GetActiveScope();

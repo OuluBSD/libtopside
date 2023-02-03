@@ -41,6 +41,9 @@ private:
 	ContainerFrame* frame_with_mouse = NULL;
 	ContainerFrame* frame_captured = NULL;
 	bool do_render = false;
+	int frame_width = 3;
+	int corner_width = 10;
+	Pt global_mouse;
 	
 public:
 	void QueueCloseHandle(int handle_id) { close_handle_queue.Add(handle_id); }
@@ -87,6 +90,7 @@ public:
 	bool IsGeomDrawBegin() const override;
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
+	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
 	
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
@@ -103,6 +107,9 @@ public:
 			return handles.GetKey(handle_pos);
 		return -1;
 	}
+	int GetFrameWidth() const {return frame_width;}
+	int GetCornerWidth() const {return corner_width;}
+	Pt GetGlobalMouse() const {return global_mouse;}
 
 	void FocusHandle(TopContainer* tc);
 	void OrderTileHandles();
@@ -134,6 +141,7 @@ using GuboManager = ScopeT<Ctx3D>;
 using WindowManager = ScopeT<Ctx2D>;
 using GuboManagerRef = Ref<GuboManager>;
 using WindowManagerRef = Ref<WindowManager>;
+
 
 NAMESPACE_PARALLEL_END
 

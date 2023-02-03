@@ -81,7 +81,6 @@ public:
 	DrawCommand& GetCommandBegin() {return cmd_begin;}
 	DrawCommand& GetCommandEnd() {return cmd_end;}
 	bool IsPendingLayout() const {return pending_layout;}
-	void DeepMouseLeave();
 	
 	void SetPendingLayout() {pending_layout = true;}
 	void SetPendingRedraw() {pending_redraw = true;}
@@ -122,6 +121,7 @@ public:
 	virtual void PaintDebug(ProgPainter& pp) {}
 	virtual void DeepLayout();
 	virtual void DeepFrameLayout();
+	virtual void DeepMouseLeave();
 	
 	virtual bool IsCaptureRoot() const;
 	virtual GeomInteraction* GetCaptured() const;

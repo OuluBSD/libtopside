@@ -946,6 +946,61 @@ void HalSdl::OglVideoSinkDevice_DetachContext(NativeOglVideoSinkDevice&, AtomBas
 
 
 
+Image HalSdl__GetMouseCursor(void* ptr) {
+	SDL_Cursor* cursor = SDL_GetCursor();
+	if (!cursor)
+		return Image();
+	Image img;
+	img.Set(cursor, Image::SDL_CURSOR, 0);
+	return img;
+}
+
+void HalSdl__SetMouseCursor(void* ptr, const Image& image)
+{
+	GuiLock __;
+	static Image fbCursorImage;
+	static Point fbCursorPos;
+	static SDL_Cursor  *sdl_default_cursor;
+	static SDL_Cursor  *sdl_cursor;
+	static SDL_Surface *sdl_cursor_surface;
+	static Buffer<RGBA> data;
+	if (!sdl_default_cursor)
+		sdl_default_cursor = SDL_GetCursor();
+	if (image.IsEmpty()) {
+		if (sdl_default_cursor)
+			SDL_SetCursor(sdl_default_cursor);
+		fbCursorImage.Clear();
+	}
+	else if (image.GetSerialId() != fbCursorImage.GetSerialId()) {
+		fbCursorImage = image;
+		fbCursorPos = Null;
+		SDL_ShowCursor(true);
+		if(sdl_cursor)
+			SDL_FreeCursor(sdl_cursor);
+		if(sdl_cursor_surface)
+			SDL_FreeSurface(sdl_cursor_surface);
+		int64 a = image.GetAuxData();
+		if(a)
+			sdl_cursor = SDL_CreateSystemCursor(SDL_SystemCursor(a - 1));
+		else {
+			sdl_cursor = NULL;
+			data.Alloc(image.GetLength());
+			MemoryCopy(data.begin(), image.Begin(), image.GetLength());
+			sdl_cursor_surface = SDL_CreateRGBSurfaceFrom(~data, image.GetWidth(), image.GetHeight(),
+			                                              32, sizeof(RGBA) * image.GetWidth(),
+			                                              0xff0000, 0xff00, 0xff, 0xff000000);
+			Point h = image.GetHotSpot();
+			if(sdl_cursor_surface)
+				sdl_cursor = SDL_CreateColorCursor(sdl_cursor_surface, h.x, h.y);
+		}
+		if(sdl_cursor)
+			SDL_SetCursor(sdl_cursor);
+	}
+}
+
+
+
+
 
 bool HalSdl::EventsBase_Create(One<NativeEventsBase>& dev) {
 	dev.Create();
@@ -999,6 +1054,11 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 		Machine& m = a.GetMachine();
 		dev.wins = m.Get<WindowSystem>();
 		dev.gubos = m.Get<GuboSystem>();
+		
+		if (dev.wins) {
+			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
+			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
+		}
 	}
 	
 	return true;

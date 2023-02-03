@@ -33,6 +33,17 @@ void Absolute2DProxy::SetTarget(Absolute2DInterface& iface) {
 	iface.proxy = this;
 }
 
+Image Absolute2DProxy::OverrideCursor(const Image& m) {
+	ASSERT(o);
+	return o->OverrideCursor(m);
+}
+
+Image Absolute2DProxy::DefaultCursor() {
+	ASSERT(o);
+	return o->DefaultCursor();
+}
+
+
 
 
 
@@ -47,6 +58,7 @@ GeomInteraction3D* Absolute3DInterface::GetInteraction() {return GetGubo();}
 
 
 
+
 void Absolute3DProxy::SetTarget(Absolute3DInterface& iface) {
 	if (o) {
 		o->proxy = 0;
@@ -55,6 +67,16 @@ void Absolute3DProxy::SetTarget(Absolute3DInterface& iface) {
 	ASSERT(!iface.proxy);
 	o = &iface;
 	iface.proxy = this;
+}
+
+Image Absolute3DProxy::OverrideCursor(const Image& m) {
+	ASSERT(o);
+	return o->OverrideCursor(m);
+}
+
+Image Absolute3DProxy::DefaultCursor() {
+	ASSERT(o);
+	return o->DefaultCursor();
 }
 
 

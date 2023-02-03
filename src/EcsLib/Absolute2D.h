@@ -32,8 +32,6 @@ public:
 	TS::Ecs::Geom2DComponent* GetWindow();
 	TS::Ecs::Windows* GetWindows();
 	
-	static Image OverrideCursor(const Image& m);
-	static Image DefaultCursor();
 	
 protected:
 	TS::Ecs::Geom2DComponent* cw = NULL;

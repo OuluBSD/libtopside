@@ -12,6 +12,7 @@ class GeomInteraction3D;
 class Gubo;
 class Absolute2DProxy;
 class Absolute3DProxy;
+class Image;
 
 
 class AbsoluteInterface : RTTIBase {
@@ -33,6 +34,8 @@ public:
 	virtual void					FocusEvent() {}
 	virtual GeomInteraction*		GetProxy() const;
 	
+	virtual Image OverrideCursor(const Image& m) = 0;
+	virtual Image DefaultCursor() = 0;
 	
 };
 
@@ -49,7 +52,7 @@ public:
 	Absolute2DInterface() {}
 	virtual ~Absolute2DInterface() {}
 	
-	virtual Ctrl*					GetCtrl();
+	virtual Ctrl* GetCtrl();
 	
 	GeomInteraction2D*				GetInteraction();
 	Absolute2DProxy*				GetLinkedProxy() const {return proxy;}
@@ -94,6 +97,8 @@ public:
 	Absolute2DInterface&		MinimizeBox(bool b=true) override {ASSERT(o); o->MinimizeBox(b); return *this;}
 	int							Run(bool appmodal=false) override {ASSERT(o); return o->Run(appmodal);}
 	void						SetPendingPartialRedraw() override {ASSERT(o); o->SetPendingPartialRedraw();}
+	Image						OverrideCursor(const Image& m) override;
+	Image						DefaultCursor() override;
 	
 	String			GetTitle() const override {ASSERT(o); return o->GetTitle();}
 	
@@ -122,6 +127,8 @@ public:
 	Absolute3DInterface&		MinimizeBox(bool b=true) override {ASSERT(o); o->MinimizeBox(b); return *this;}
 	int							Run(bool appmodal=false) override {ASSERT(o); return o->Run(appmodal);}
 	void						SetPendingPartialRedraw() override {ASSERT(o); o->SetPendingPartialRedraw();}
+	Image						OverrideCursor(const Image& m) override;
+	Image						DefaultCursor() override;
 	
 	String			GetTitle() const override {ASSERT(o); return o->GetTitle();}
 	

@@ -624,6 +624,14 @@ bool ScopeT<Dim>::MouseMoveInFrame(Pt pt, dword keyflags) {
 	return Dim::Interaction::MouseMoveInFrame(pt, keyflags);
 }
 
+template <class Dim>
+bool ScopeT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
+	global_mouse = pt;
+	
+	return Dim::Interaction::DeepMouseMove(pt, keyflags);
+}
+
+
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 
 NAMESPACE_PARALLEL_END

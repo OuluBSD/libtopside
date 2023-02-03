@@ -114,14 +114,40 @@ void HandleT<Dim>::Paint(DrawT& draw) {
 template <>
 void HandleT<Ctx2D>::Paint(DrawT& draw) {
 	Color bg = GrayColor(128+64);
-	Sz handle_sz(this->GetFrameBox().GetSize());
-	draw.DrawRect(handle_sz, bg);
+	Sz sz(this->GetFrameBox().GetSize());
+	draw.DrawRect(sz, bg);
+	
+	if (!maximized) {
+		Color hi = White();
+		Color lo = Black();
+		draw.DrawLine(0,0,sz.cx-1,0, 1, hi);
+		draw.DrawLine(0,0,0,sz.cy-1, 1, hi);
+		draw.DrawLine(0,sz.cy-1,sz.cx-1,sz.cy-1, 1, lo);
+		draw.DrawLine(sz.cx-1,0,sz.cx-1,sz.cy-1, 1, lo);
+	}
+}
+
+template <class Dim>
+int HandleT<Dim>::GetFrameWidth() const {
+	int frame_width = GetScope().GetFrameWidth();
+	return maximized ? 0 : frame_width;
+}
+
+template <class Dim>
+int HandleT<Dim>::GetCornerWidth() const {
+	int corner_width = GetScope().GetCornerWidth();
+	return maximized ? 0 : corner_width;
 }
 
 template <class Dim>
 void HandleT<Dim>::Layout() {
 	int title_h = 25;
+	int border = GetFrameWidth();
 	Box handle_box(this->GetFrameBox().GetSize());
+	handle_box.left += border;
+	handle_box.top += border;
+	handle_box.right -= border;
+	handle_box.bottom -= border;
 	Sz handle_sz = handle_box.GetSize();
 	ASSERT(!handle_sz.IsEmpty());
 	Box decor_box = handle_box;
@@ -140,6 +166,67 @@ void HandleT<Dim>::Layout() {
 		#endif
 		iact->SetFrameBox(content_box);
 	}
+}
+
+template <class Dim>
+int HandleT<Dim>::GetArea(const Pt& pt) {
+	int frame_width = GetFrameWidth();
+	int corner_width = GetCornerWidth();
+	Sz sz = this->GetFrameBox().GetSize();
+	
+	if (pt.x < frame_width) {
+		if (pt.y < corner_width)
+			return TL;
+		else if (pt.y >= sz.cy - corner_width)
+			return BL;
+		else
+			return LEFT;
+	}
+	else if (pt.x >= sz.cx - frame_width) {
+		if (pt.y < corner_width)
+			return TR;
+		else if (pt.y >= sz.cy - corner_width)
+			return BR;
+		else
+			return RIGHT;
+	}
+	else {
+		if (pt.y < frame_width)
+			return TOP;
+		else if (pt.y >= sz.cy - frame_width)
+			return BOTTOM;
+		else
+			return CENTER;
+	}
+}
+
+template <class Dim>
+Image HandleT<Dim>::OverrideCursor(const Image& m) {
+	HandleSystem& sys = GetHandleSystem();
+	Image cursor;
+	if (sys.get_mouse_cursor) {
+		cursor = sys.get_mouse_cursor(sys.get_mouse_cursor_arg);
+	}
+	if (sys.set_mouse_cursor) {
+		sys.set_mouse_cursor(sys.set_mouse_cursor_arg, m);
+	}
+	cursor_overriden = true;
+	return cursor;
+}
+
+template <class Dim>
+Image HandleT<Dim>::DefaultCursor() {
+	HandleSystem& sys = GetHandleSystem();
+	Image cursor;
+	if (sys.get_mouse_cursor) {
+		cursor = sys.get_mouse_cursor(sys.get_mouse_cursor_arg);
+	}
+	if (sys.set_mouse_cursor) {
+		sys.set_mouse_cursor(sys.set_mouse_cursor_arg, Image());
+	}
+	override_area = -1;
+	cursor_overriden = false;
+	return cursor;
 }
 
 template <class Dim>
@@ -291,14 +378,213 @@ void HandleT<Dim>::MoveHandle(Pt pt) {
 }
 
 template <class Dim>
+void HandleT<Dim>::CheckMouseBorder(const Pt& pt) {
+	int area = GetArea(pt);
+	
+	switch (area) {
+	case TL:
+	case BR:
+		if (area != override_area) {
+			override_area = area;
+			this->OverrideCursor(WindowsImg::nwse());
+		}
+		break;
+	case TR:
+	case BL:
+		if (area != override_area) {
+			override_area = area;
+			this->OverrideCursor(WindowsImg::nesw());
+		}
+		break;
+	case TOP:
+	case BOTTOM:
+		if (area != override_area) {
+			override_area = area;
+			this->OverrideCursor(WindowsImg::ns());
+		}
+		break;
+	case LEFT:
+	case RIGHT:
+		if (area != override_area) {
+			override_area = area;
+			this->OverrideCursor(WindowsImg::ew());
+		}
+		break;
+	case CENTER:
+	default:
+		if (cursor_overriden)
+			DefaultCursor();
+	}
+}
+
+template <class Dim>
 bool HandleT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
+	Box frame_r = this->GetFrameBox();
+	if (frame_r.Contains(pt)) {
+		//Box content_r = this->GetContentRect();
+		Pt ftl = frame_r.FirstCorner();
+		Pt fpt = pt - ftl;
+		//Point ctl = content_r.TopLeft();
+		//Point cpt = fpt - ctl;
+		CheckMouseBorder(fpt);
+	}
+	
 	return Interaction::DeepMouseMove(pt, keyflags);
+}
+
+template <class Dim>
+void HandleT<Dim>::MouseMove(Pt pt, dword keyflags) {
+	if (is_resizing) {
+		if (used_momentum) {
+			resize_start_pt = GetGlobalMouse();
+			used_momentum = false;
+		}
+		resize_diff = GetGlobalMouse() - resize_start_pt;
+		DoResize();
+	}
+	CheckMouseBorder(pt);
 }
 
 template <class Dim>
 GeomInteraction* HandleT<Dim>::GetProxy() const {
 	auto proxy = this->GetLinkedProxy();
 	return CastPtr<GeomInteraction>(proxy);
+}
+
+template <class Dim>
+void HandleT<Dim>::MouseLeave() {
+	ReleaseResize();
+	
+	if (cursor_overriden)
+		DefaultCursor();
+}
+
+template <class Dim>
+void HandleT<Dim>::DeepMouseLeave() {
+	if (cursor_overriden)
+		DefaultCursor();
+}
+
+template <class Dim>
+typename Dim::Pt HandleT<Dim>::GetGlobalMouse() const {
+	return GetScope().GetGlobalMouse();
+}
+
+template <class Dim>
+void HandleT<Dim>::CaptureResize(const Pt& p) {
+	int area = GetArea(p);
+	if (area != CENTER) {
+		is_resizing = true;
+		resize_start_pt = GetGlobalMouse();
+		resize_area = GetArea(p);
+		resize_start_r = this->GetFrameBox();
+		this->SetCapture();
+	}
+}
+
+template <class Dim>
+void HandleT<Dim>::ReleaseResize() {
+	if (is_resizing) {
+		this->ReleaseCapture();
+		is_resizing = false;
+	}
+}
+
+template <class Dim>
+void HandleT<Dim>::LeftDown(Pt p, dword keyflags) {
+	CaptureResize(p);
+	
+}
+
+template <class Dim>
+void HandleT<Dim>::LeftUp(Pt p, dword keyflags) {
+	ReleaseResize();
+	
+}
+
+template <class Dim>
+void HandleT<Dim>::ContinueGlobalMouseMomentum() {
+	if (is_resizing) {
+		int c = 1;
+		switch (resize_area) {
+			case CENTER:
+				break;
+			case TL:
+				resize_diff.x = -c;
+				resize_diff.y = -c;
+				break;
+			case TR:
+				resize_diff.x = +c;
+				resize_diff.y = -c;
+				break;
+			case BL:
+				resize_diff.x = -c;
+				resize_diff.y = +c;
+				break;
+			case BR:
+				resize_diff.x = +c;
+				resize_diff.y = +c;
+				break;
+			case TOP:
+				resize_diff.y = -c;
+				break;
+			case BOTTOM:
+				resize_diff.y = +c;
+				break;
+			case LEFT:
+				resize_diff.x = -c;
+				break;
+			case RIGHT:
+				resize_diff.x = +c;
+				break;
+		}
+		resize_start_pt += resize_diff;
+		resize_start_r = this->GetFrameBox();
+		DoResize();
+		used_momentum = true;
+	}
+}
+
+template <class Dim>
+void HandleT<Dim>::DoResize() {
+	Box new_frame_r = resize_start_r;
+	switch (resize_area) {
+		case CENTER:
+			break;
+		case TL:
+			new_frame_r.left += resize_diff.x;
+			new_frame_r.top += resize_diff.y;
+			break;
+		case TR:
+			new_frame_r.right += resize_diff.x;
+			new_frame_r.top += resize_diff.y;
+			break;
+		case BL:
+			new_frame_r.left += resize_diff.x;
+			new_frame_r.bottom += resize_diff.y;
+			break;
+		case BR:
+			new_frame_r.right += resize_diff.x;
+			new_frame_r.bottom += resize_diff.y;
+			break;
+		case TOP:
+			new_frame_r.top += resize_diff.y;
+			break;
+		case BOTTOM:
+			new_frame_r.bottom += resize_diff.y;
+			break;
+		case LEFT:
+			new_frame_r.left += resize_diff.x;
+			break;
+		case RIGHT:
+			new_frame_r.right += resize_diff.x;
+			break;
+	}
+	if (new_frame_r.Width() < 100) new_frame_r.right = new_frame_r.left + 100;
+	if (new_frame_r.Height() < 60) new_frame_r.bottom = new_frame_r.top + 60;
+	
+	this->SetFrameBox(new_frame_r);
+	this->Refresh();
 }
 
 

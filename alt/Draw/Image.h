@@ -5,6 +5,7 @@
 NAMESPACE_UPP
 
 
+#if 0
 typedef enum {
 	IMGDATA_NULL,
 	IMGDATA_RAW,
@@ -13,10 +14,18 @@ typedef enum {
 	IMGDATA_SDL2_SURFACE,
 	#endif
 } ImgDataType;
+#endif
+
 
 class Image : Moveable<Image> {
 	
 public:
+	typedef enum {
+		NO_DATA,
+		IMAGE_DATA_REF,
+		SDL_CURSOR,
+	} DataType;
+	
 	struct ImageDataRef {
 		SysImage img;
 		SysAccelImage accel;
@@ -28,36 +37,50 @@ public:
 		void Dec() {refs--; if (refs <= 0) delete this;}
 	};
 	
-	Image() {}
-	Image(const Image& img) {*this = img;}
-	Image(Image&& img) {data = img.data; Chk(); img.data = NULL;}
-	Image(ImageDataRef* data) : data(data) {data->Inc();}
-	Image(RawSysImage* raw) {if (raw) {data = new ImageDataRef(raw);}}
-	~Image() {Clear();}
-	void Chk();
-	void operator=(const Image& img) {Clear(); data = img.data; Chk(); if (data) data->Inc();}
-	void Clear() {if (data) data->Dec(); data = NULL;}
-	bool IsEmpty() const {return data == NULL;}
-	void SetHotSpot(Point pt) {if (data) data->hotspot = pt;}
-	Point GetHotSpot() const {if (data) return data->hotspot; return Point(0,0);}
-	void CenterHotSpot() {if (data) data->hotspot = Point(GetWidth()/2, GetHeight()/2);}
-	ImageDataRef* GetData() const {return data;}
-	int GetWidth() const {if (!data) return 0; return data->img.GetWidth();}
-	int GetHeight() const {if (!data) return 0; return data->img.GetHeight();}
-	Size GetSize() const {if (!data) return Size(0,0); return Size(data->img.GetWidth(), data->img.GetHeight());}
-	Size GetResolution() const {if (!data) return Size(0,0); return Size(data->img.GetWidth(), data->img.GetHeight());}
-	int GetStride() const {if (!data) return 0; return data->img.GetStride();}
-	int GetPitch() const {if (!data) return 0; return data->img.GetPitch();}
-	const byte* GetIter(int x, int y) const;
-	const byte* Begin() const {return GetIter(0,0);}
-	const byte* End() const {Size sz = GetSize(); return GetIter(0, sz.cy);}
-	void Serialize(Stream& s);
-	operator bool() const {return data;}
+	Image();
+	Image(const Image& img);
+	Image(Image&& img);
+	Image(ImageDataRef* data);
+	Image(RawSysImage* raw);
+	~Image();
 	
+	void operator=(const Image& img);
+	void Clear();
+	void SetHotSpot(Point pt);
+	void SetAuxData(int64 d);
+	void Set(void* data, DataType dt, int64 aux_data=0);
+	
+	bool IsEmpty() const;
+	Point GetHotSpot() const;
+	void CenterHotSpot();
+	ImageDataRef* GetData() const;
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetLength() const;
+	Size GetSize() const;
+	Size GetResolution() const;
+	int GetStride() const;
+	int GetPitch() const;
+	const byte* GetIter(int x, int y) const;
+	const byte* Begin() const;
+	const byte* End() const;
+	bool IsImageDataRef() const;
+	operator bool() const;
+	
+	void Chk();
+	void Serialize(Stream& s);
 	String ToString() const;
 	
+	int32 GetSerialId() const;
+	int64 GetAuxData() const;
+	
 private:
-	ImageDataRef* data = NULL;
+	DataType data_type = NO_DATA;
+	void* data = NULL;
+	int64 aux_data = 0;
+	int32 serial_id = 0;
+	
+	static Atomic serial_counter;
 	
 };
 
