@@ -3,7 +3,7 @@
 #include <Local/Local.h>
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 GeomInteraction* AbsoluteInterface::GetProxy() const {
@@ -12,13 +12,13 @@ GeomInteraction* AbsoluteInterface::GetProxy() const {
 
 
 
-Ctrl* Absolute2DInterface::GetCtrl() {
+/*Ctrl* Absolute2DInterface::GetCtrl() {
 	if (!proxy)
 		return 0;
 	return proxy->GetCtrl();
-}
+}*/
 
-GeomInteraction2D* Absolute2DInterface::GetInteraction() {return GetCtrl();}
+//GeomInteraction2D* Absolute2DInterface::GetInteraction() {return GetCtrl();}
 
 
 
@@ -53,7 +53,7 @@ Gubo* Absolute3DInterface::GetGubo() {
 	return proxy->GetGubo();
 }
 
-GeomInteraction3D* Absolute3DInterface::GetInteraction() {return GetGubo();}
+//GeomInteraction3D* Absolute3DInterface::GetInteraction() {return GetGubo();}
 
 
 
@@ -80,7 +80,5 @@ Image Absolute3DProxy::DefaultCursor() {
 }
 
 
-
-
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
 

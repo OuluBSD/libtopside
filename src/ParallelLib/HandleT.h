@@ -42,7 +42,7 @@ public:
 	
 protected:
 	Handle* handle = NULL;
-	Button minimize, maximize, close;
+	CG<Button> minimize, maximize, close;
 	String label;
 	bool left_down;
 	Pt left_down_pt;
@@ -130,7 +130,7 @@ public:
 	int							Run(bool appmodal=false) override;
 	String						GetTitle() const override;
 	void						SetPendingPartialRedraw() override;
-	GeomInteraction*			GetDynamicallyLinked() const override;
+	//GeomInteraction*			GetDynamicallyLinked() const override;
 	void						Layout() override;
 	void						Paint(DrawT& draw) override;
 	void						SetFrameBox(const Box& r) override;

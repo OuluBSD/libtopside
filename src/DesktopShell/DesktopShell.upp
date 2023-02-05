@@ -1,0 +1,11 @@
+uses
+	Complete,
+	DesktopSuite;
+
+file
+	DesktopShell.h,
+	DesktopShell.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2";
+

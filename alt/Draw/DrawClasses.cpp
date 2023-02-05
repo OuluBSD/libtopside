@@ -125,5 +125,61 @@ void DrawProxy::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
 	ptr->DrawTriangle(a, b, c, clr);
 }
 
+bool DrawProxy::ClipoffOp(const Rect& r) {
+	return ptr->ClipoffOp(r);
+}
+
+dword DrawProxy::GetInfo() const {
+	return ptr->GetInfo();
+}
+
+void DrawProxy::BeginOp() {
+	ptr->BeginOp();
+}
+
+void DrawProxy::OffsetOp(Point p) {
+	ptr->OffsetOp(p);
+}
+
+bool DrawProxy::ExcludeClipOp(const Rect& r) {
+	return ExcludeClipOp(r);
+}
+
+bool DrawProxy::IntersectClipOp(const Rect& r) {
+	return IntersectClipOp(r);
+}
+
+bool DrawProxy::IsPaintingOp(const Rect& r) const {
+	return IsPaintingOp(r);
+}
+
+void DrawProxy::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+                                   const int *subpolygon_counts, int scc,
+                                   const int *disjunct_polygon_counts, int dpcc,
+                                   Color color, int width, Color outline,
+                                   uint64 pattern, Color doxor) {
+	DrawPolyPolyPolygonOp(
+		vertices,
+		vertex_count,
+		subpolygon_counts,
+		scc,
+		disjunct_polygon_counts,
+		dpcc,
+		color,
+		width,
+		outline,
+		pattern,
+		doxor);
+}
+
+void DrawProxy::DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) {
+	DrawArcOp(rc, start, end, width, color);
+}
+
+void DrawProxy::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) {
+	DrawEllipseOp(r, color, pen, pencolor);
+}
+
+
 
 END_UPP_NAMESPACE

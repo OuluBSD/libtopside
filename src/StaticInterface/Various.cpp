@@ -22,7 +22,7 @@ Image TgaReaderBackend::LoadFileAny(String path) {
 	RawSysImage* img = new RawSysImage();
 	img->data.SetCount(len);
 	memcpy(img->data.Begin(), src, len);
-	img->backend = TypeIdClass();
+	img->backend = GetTypeIdClass<CLASSNAME>();
 	img->w = w;
 	img->h = h;
 	img->ch = bpp;
@@ -142,7 +142,7 @@ Image LibPngBackend::LoadFileAny(String path) {
 	int len = width * height * bpp;
 	RawSysImage* img = new RawSysImage();
 	img->data.SetCount(len);
-	img->backend = TypeIdClass();
+	img->backend = GetTypeIdClass<CLASSNAME>();
 	img->w = width;
 	img->h = height;
 	img->ch = bpp;

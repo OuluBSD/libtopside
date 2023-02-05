@@ -11,9 +11,9 @@ TopWindow::TopWindow() {
 	
 }
 
-Ctrl* TopWindow::GetCtrl() {
+/*Ctrl* TopWindow::GetCtrl() {
 	return this;
-}
+}*/
 
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
@@ -27,7 +27,7 @@ void TopWindow::CreateGeom2DComponent() {
 	EntityRef e = ents->GetRoot()->Create<Window2D>();
 	Ref<Geom2DComponent> cw = e->Get<Geom2DComponent>();
 	ASSERT(cw);
-	SetTarget(*cw);
+	SetTarget(cw);
 	
 	WindowSystemScreen* active_screen = wins->GetActiveScreen();
 	active_screen->AddWindow(*cw);

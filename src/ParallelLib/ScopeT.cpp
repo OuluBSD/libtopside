@@ -1,5 +1,10 @@
 #include "ParallelLib.h"
 
+#ifdef UPP_VERSION
+// TopWindow
+#include <CtrlLib/CtrlLib.h>
+#endif
+
 NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
@@ -187,7 +192,7 @@ void ScopeT<Dim>::MoveHandle(Pt pt, int handle_id)
 		return;
 	Handle& h = handles.Get(handle_id);
 	Sz sz(h.GetFrameSize());
-	Pt tl = h.GetFrameBox().FirstCorner();
+	Pt tl = FirstCorner(h.GetFrameBox());
 	tl += pt;
 	h.SetFrameBox(BoxC(tl, sz));
 }
@@ -449,7 +454,7 @@ void ScopeT<Dim>::Layout()
 			return;
 		Sz sz(this->GetFrameSize());
 		Handle& h = handles[active_pos];
-		h.SetFrameBox(BoxC(0, sz));
+		h.SetFrameBox(BoxC(Pt(Null), sz));
 	}
 }
 
@@ -608,18 +613,6 @@ bool ScopeT<Dim>::IsCaptureRoot() const
 }
 
 template <class Dim>
-void ScopeT<Dim>::SetCaptured(GeomInteraction* c) {
-	captured = CastPtr<Interaction>(c);
-	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
-
-template <class Dim>
-void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
-	with_mouse = CastPtr<Interaction>(c);
-	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
-
-template <class Dim>
 bool ScopeT<Dim>::MouseMoveInFrame(Pt pt, dword keyflags) {
 	return Dim::Interaction::MouseMoveInFrame(pt, keyflags);
 }
@@ -631,6 +624,81 @@ bool ScopeT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
 	return Dim::Interaction::DeepMouseMove(pt, keyflags);
 }
 
+
+
+template <class Dim>
+void ScopeT<Dim>::SetCaptured(GeomInteraction* c) {
+	captured = CastPtr<Interaction>(c);
+	captured_ctrl = CastPtr<Container>(c);
+	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
+	with_mouse = CastPtr<Interaction>(c);
+	with_mouse_ctrl = CastPtr<Container>(c);
+	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetCaptured(Container* c) {
+	captured = c;
+	captured_ctrl = c;
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetWithMouse(Container* c) {
+	with_mouse = c;
+	with_mouse_ctrl = c;
+}
+
+#ifdef UPP_VERSION
+
+template <>
+void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
+	captured = CastPtr<Interaction>(c);
+	#ifdef UPP_VERSION
+	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
+	captured_ctrl = cgb ? cgb->GetCtrl() : 0;
+	#else
+	captured_ctrl = CastPtr<Container>(c);
+	#endif
+	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <>
+void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
+	with_mouse = CastPtr<Interaction>(c);
+	#ifdef UPP_VERSION
+	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
+	with_mouse_ctrl = cgb ? cgb->GetCtrl() : 0;
+	#else
+	with_mouse_ctrl = CastPtr<Container>(c);
+	#endif
+	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <>
+void ScopeT<Ctx2D>::SetCaptured(Container* c) {
+	#ifdef UPP_VERSION
+	TODO // get GeomInteraction2D from Ctrl
+	#else
+	captured = c;
+	#endif
+	captured_ctrl = c;
+}
+
+template <>
+void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
+	#ifdef UPP_VERSION
+	TODO // get GeomInteraction2D from Ctrl
+	#else
+	with_mouse = c;
+	#endif
+	with_mouse_ctrl = c;
+}
+
+#endif
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 

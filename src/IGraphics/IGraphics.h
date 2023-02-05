@@ -44,6 +44,8 @@
 	#endif
 	#undef Time
 	#undef Font
+	#undef Complex
+	#undef CurrentTime
 #endif
 
 

@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ProgDraw : public Draw {
+class ProgDraw : public Draw2 {
 	One<ProgPainter> d;
 	
 	Size GetFrameSize() const;
@@ -45,6 +45,22 @@ public:
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
+	
+	bool ClipoffOp(const Rect& r) override;
+	dword GetInfo() const override;
+	void BeginOp() override;
+	void OffsetOp(Point p) override;
+	bool ExcludeClipOp(const Rect& r) override;
+	bool IntersectClipOp(const Rect& r) override;
+	bool IsPaintingOp(const Rect& r) const override;
+	void DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+	                                   const int *subpolygon_counts, int scc,
+	                                   const int *disjunct_polygon_counts, int dpcc,
+	                                   Color color, int width, Color outline,
+	                                   uint64 pattern, Color doxor) override;
+	void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) override;
+	void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) override;
+	
 	Draw& Alpha();
 	
 	ProgPainter& GetPainter();

@@ -11,8 +11,6 @@ file
 	Font.cpp,
 	DrawClasses.h,
 	DrawClasses.cpp,
-	Draw3Classes.h,
-	Draw3Classes.cpp,
 	iml_header.h,
 	iml_source.h,
 	SDraw.h,

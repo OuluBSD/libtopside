@@ -309,7 +309,7 @@ public:
 
 
 
-struct GfxStateDraw : Draw {
+struct GfxStateDraw : Draw2 {
 	RTTI_DECL1(GfxStateDraw, Draw)
 	
 	virtual GfxDataState& GetGfxState() = 0;

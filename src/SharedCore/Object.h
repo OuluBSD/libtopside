@@ -4,6 +4,46 @@
 
 NAMESPACE_UPP
 
+#ifdef UPP_VERSION
+inline WString ToWString(String s) {return s.ToWString();}
+inline WString ToWString(const wchar_t* chr) {return std::wstring(chr);}
+template <class T> inline String ToString(const T& o) {return AsString(o);}
+
+template <class T> inline int64 ToInt(const T& o) {return 0;}
+template<> inline int64 ToInt(const bool& o) {return (int64)o;}
+template<> inline int64 ToInt(const int& o) {return (int64)o;}
+//template<> inline int64 ToInt(const int32& o) {return (int64)o;}
+template<> inline int64 ToInt(const int64& o) {return (int64)o;}
+template<> inline int64 ToInt(const byte& o) {return (int64)o;}
+template<> inline int64 ToInt(const char& o) {return (int64)o;}
+template<> inline int64 ToInt(const float& o) {return (int64)o;}
+template<> inline int64 ToInt(const double& o) {return (int64)o;}
+template<> inline int64 ToInt(const String& o) {return StrInt(o);}
+template<> inline int64 ToInt(const WString& o) {return StrInt(o.ToString());}
+template<> inline int64 ToInt(const Value& o) {return (int64)o;}
+template<> inline int64 ToInt(const Date& o) {return (int64)o.Get();}
+template<> inline int64 ToInt(const Time& o) {return (int64)o.Get();}
+
+template <class T> inline double ToDouble(const T& o) {return 0;}
+template<> inline double ToDouble(const bool& o) {return (double)o;}
+template<> inline double ToDouble(const int& o) {return (double)o;}
+//template<> inline double ToDouble(const int32& o) {return (double)o;}
+template<> inline double ToDouble(const int64& o) {return (double)o;}
+template<> inline double ToDouble(const byte& o) {return (double)o;}
+template<> inline double ToDouble(const char& o) {return (double)o;}
+template<> inline double ToDouble(const float& o) {return (double)o;}
+template<> inline double ToDouble(const double& o) {return (double)o;}
+template<> inline double ToDouble(const String& o) {return StrDbl(o);}
+template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));}
+template<> inline double ToDouble(const Date& o) {return (double)o.Get();}
+template<> inline double ToDouble(const Time& o) {return (double)o.Get();}
+
+#if __MINGW32__
+template<> inline int64 ToInt(const long& o) {return (int64)o;}
+template<> inline double ToDouble(const long& o) {return (double)o;}
+#endif
+
+#endif
 
 const dword VALUE_ARRAY_AND_MAP_V   = 13;
 
@@ -232,6 +272,7 @@ public:
 	String ToString() const {String s; s << "ObjectArray(" << values.GetCount() << ")"; return s;}
 	int64 ToInt() const {return values.GetCount();}
 	double ToDouble() const {return values.GetCount();}
+	operator double() const {return values.GetCount();}
 	
 	A::Iterator begin() {return values.begin();}
 	A::Iterator end() {return values.end();}
@@ -279,6 +320,7 @@ public:
 	String			ToString() const {String s; s << "ObjectMap(" << keys.GetCount() << ")"; return s;}
 	int64			ToInt() const {return keys.GetCount();}
 	double			ToDouble() const {return keys.GetCount();}
+	operator double() const {return keys.GetCount();}
 };
 
 struct ObjectArrayMapComb {
@@ -296,6 +338,7 @@ struct ObjectArrayMapComb {
 	String ToString() const {String s; s << "ObjectArrayMapComb(" << arr.GetCount() << ", " << map.GetCount() << ")"; return s;}
 	int64 ToInt() const {return GetTotal();}
 	double ToDouble() const {return GetTotal();}
+	operator double() const {return GetTotal();}
 	hash_t GetHashValue() const;
 };
 

@@ -138,5 +138,52 @@ void ProgDraw::DetachTo(ProgPainter& pp) {
 		pp.AppendPick(cmd_screen_begin.next, cmd_screen_end.prev);
 }
 
+bool ProgDraw::ClipoffOp(const Rect& r) {
+	TODO
+}
+
+dword ProgDraw::GetInfo() const {
+	TODO
+}
+
+void ProgDraw::BeginOp() {
+	TODO
+}
+
+void ProgDraw::OffsetOp(Point p) {
+	TODO
+}
+
+bool ProgDraw::ExcludeClipOp(const Rect& r) {
+	TODO
+}
+
+bool ProgDraw::IntersectClipOp(const Rect& r) {
+	TODO
+}
+
+bool ProgDraw::IsPaintingOp(const Rect& r) const {
+	TODO
+}
+
+void ProgDraw::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+                                   const int *subpolygon_counts, int scc,
+                                   const int *disjunct_polygon_counts, int dpcc,
+                                   Color color, int width, Color outline,
+                                   uint64 pattern, Color doxor) {
+	TODO
+}
+
+void ProgDraw::DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) {
+	TODO
+}
+
+void ProgDraw::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) {
+	TODO
+}
+
+
+
+
 
 NAMESPACE_TOPSIDE_END

@@ -367,5 +367,14 @@ RGBA InvertRGBA_GrayOnly(const RGBA& c, int gray_range) {
 		return c;
 }
 
+RGBA RGBAC(byte r, byte g, byte b, byte a) {
+	RGBA o;
+	o.r = r;
+	o.g = g;
+	o.b = b;
+	o.a = a;
+	return o;
+}
+
 
 NAMESPACE_TOPSIDE_END

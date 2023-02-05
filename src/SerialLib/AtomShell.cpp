@@ -129,7 +129,7 @@ void DebugMainLoop(Parallel::Machine& mach) {
         
         #ifdef flagGUI
         bool quit = false;
-        Ctrl::EventLoopIteration(dt, &quit);
+        EventLoopIteration(dt, &quit);
         if (quit)
             mach.SetNotRunning();
         #endif

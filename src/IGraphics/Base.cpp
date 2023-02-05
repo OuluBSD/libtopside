@@ -150,7 +150,7 @@ bool TextureBaseT<Gfx>::IsReady(PacketIO& io) {
 template <class Gfx>
 bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 	PacketValue& in = *p;
-	const Vector<byte> in_data = in.GetData();
+	const Vector<byte>& in_data = in.GetData();
 	
 	Format in_fmt = in.GetFormat();
 	if (in_fmt.IsOrder())
@@ -194,7 +194,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		auto& fb = stage.fb;
 		fb.is_win_fbo = false;
-		fb.size = sz;
+		fb.size = sz.GetSize2();
 		fb.depth = sz.cz;
 		fb.channels = channels;
 		fb.sample = GVar::SAMPLE_FLOAT;
@@ -239,7 +239,7 @@ bool TextureBaseT<Gfx>::Recv(int sink_ch, const Packet& p) {
 		if (sz.cz == 0) {
 			const Vector<byte>& data = in.GetData();
 			stage.ReadTexture(
-				(Size)sz,
+				sz.GetSize2(),
 				channels,
 				GVar::SAMPLE_U8,
 				data.Begin(), data.GetCount());

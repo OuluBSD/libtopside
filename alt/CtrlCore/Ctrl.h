@@ -195,8 +195,7 @@ public:
 	static bool ReleaseCtrlCapture();
 	static Ctrl *GetCaptureCtrl();
 	
-	//vstatic oid EventLoop(Ctrl *ctrl);
-	static void EventLoopIteration(double dt, bool* quit);
+	//static oid EventLoop(Ctrl *ctrl);
 	
 	Size GetContentSize() const;
 	void SetContentRect(const Rect& r);
@@ -273,24 +272,6 @@ class EmptySpaceCtrl : public Ctrl {
 	
 };
 
-
-
-
-class Workspace2D : public GeomInteraction2D {
-	
-	
-public:
-	RTTI_DECL1(Workspace2D, GeomInteraction2D)
-	virtual ~Workspace2D() {}
-	
-	virtual bool Init() = 0;
-	virtual void AddInterface(Absolute2DProxy&) = 0;
-	virtual bool Poll(CtrlEvent& e) = 0;
-	virtual void Render() = 0;
-	virtual void Shutdown() = 0;
-	virtual bool ProcessCloseQueue() = 0;
-	
-};
 
 
 class ParentCtrl : public Ctrl {

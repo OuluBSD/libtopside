@@ -198,8 +198,8 @@ bool FboAtomT<Gfx>::Recv(int sink_ch, const Packet& in) {
 	if (sink_ch > 0) {
 		const InternalPacketData& data = in->GetData<InternalPacketData>();
 		ASSERT(data.ptr);
-		const GfxDataState& gfx_state = *(GfxDataState*)data.ptr;
-		DataState* state = CastPtr<DataState>(&gfx_state);
+		GfxDataState* gfx_state = (GfxDataState*)data.ptr;
+		DataState* state = CastPtr<DataState>(gfx_state);
 		ASSERT(state);
 		if (state) {
 			VectorFindAdd(this->data.linked, state);

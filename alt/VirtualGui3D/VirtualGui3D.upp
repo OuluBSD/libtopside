@@ -10,7 +10,6 @@ file
 	Wnd.cpp,
 	"Direct Rendering" readonly separator,
 	AfterEcsLib.h,
-	ECS readonly separator,
 	Trash readonly separator,
 	Windows.h,
 	Windows.cpp,

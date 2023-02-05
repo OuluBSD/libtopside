@@ -10,6 +10,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct TgaReaderBackend : StaticIfaceBackend {
+	typedef TgaReaderBackend CLASSNAME;
 	RTTI_DECL1(TgaReaderBackend, StaticIfaceBackend)
 	
 	
@@ -22,6 +23,7 @@ struct TgaReaderBackend : StaticIfaceBackend {
 
 #if HAVE_LIBPNG
 struct LibPngBackend : StaticIfaceBackend {
+	typedef LibPngBackend CLASSNAME;
 	RTTI_DECL1(LibPngBackend, StaticIfaceBackend)
 	
 	

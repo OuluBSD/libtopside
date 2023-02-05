@@ -47,8 +47,7 @@ public:
 	void UnbindWindow();
 	void DrawLine(float x0, float y0, float z0, float x1, float y1, float z1, float line_width, RGBA c);
 	#ifdef UPP_VERSION
-	void DrawImageOp(float x1, float y1, float z1, float x2, float y2, float z2, const Image& img, const Rect& src, Color color) override {TODO};
-	void DrawImage(float x, float y, float z, Image img, byte alpha=255);
+	void DrawImage(float x, float y, float z, Image img, byte alpha=255) override;
 	#else
 	void DrawImage(float x, float y, float z, Image img, byte alpha=255) override;
 	#endif

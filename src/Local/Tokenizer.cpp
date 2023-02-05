@@ -128,7 +128,7 @@ bool Tokenizer::Process(String str, String path) {
 				Add(TK_INDENT);
 			}
 			else {
-				AddError(loc, Format("Too many indentation levels: " + IntStr(line_indent - indent)));
+				AddError(loc, "Too many indentation levels: " + IntStr(line_indent - indent));
 				fail = true;
 				break;
 			}

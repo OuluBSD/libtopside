@@ -376,7 +376,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 }
 
 template <class Gfx>
-SystemDraw& GfxAccelAtom<Gfx>::BeginDraw() {
+Draw& GfxAccelAtom<Gfx>::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	if (is_opengl || is_sw) {
 	    rend.display = display;
@@ -384,7 +384,7 @@ SystemDraw& GfxAccelAtom<Gfx>::BeginDraw() {
 	    rend.rend = nat_rend;
 		rend.SetSize(screen_sz);
 	    draw.SetFormat(rend.GetFramebuffer());
-	    sysdraw.ptr = &draw;
+	    sysdraw.SetTarget(&draw);
 	    
 	    rend.PreFrame();
 	}

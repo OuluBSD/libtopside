@@ -33,8 +33,9 @@ void GuiTester::Paint(Draw& d) {
 
 #if 1
 void UserGuiMainFn() {
-	//GuiTester().Run();
-	GuiTesterApp().Run();
+	//GeomInteraction::do_debug_draw = true;
+	GuiTester().Run();
+	//GuiTesterApp().Run();
 }
 
 CONSOLE_APP_MAIN {

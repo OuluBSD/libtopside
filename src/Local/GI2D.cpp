@@ -658,7 +658,7 @@ Point GeomInteraction2D::GetFramePointBetween(GeomInteraction2D& top_owner, Geom
 	ASSERT(ds_owner); if (!ds_owner) return Point(0,0);
 	
 	GeomInteraction2D* iter = ds_owner->Get2D();
-	ASSERT(iter) if (!iter) return Point(0,0);
+	ASSERT(iter); if (!iter) return Point(0,0);
 	
 	while (iter) {
 		if (iter == &top_owner) {
@@ -666,7 +666,7 @@ Point GeomInteraction2D::GetFramePointBetween(GeomInteraction2D& top_owner, Geom
 			return diff;
 		}
 		Rect frame = iter->GetFrameBox();
-		Point frame_tl = frame.FirstCorner();
+		Point frame_tl = frame.TopLeft();
 		tl_sum += frame_tl;
 		GeomInteraction* o = iter->GetOwner();
 		iter = o ? o->Get2D() : 0;

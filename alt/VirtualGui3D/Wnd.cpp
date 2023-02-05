@@ -4,10 +4,6 @@
 
 NAMESPACE_UPP
 
-void Ctrl::EventLoopIteration(double dt, bool* quit) {
-	ProcessEvents(dt, quit);
-}
-
 bool Ctrl::ProcessEvents(double dt, bool *quit) {
 	bool ret = ProcessEvent(quit);
 	while(ProcessEvent(quit))

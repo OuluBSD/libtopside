@@ -2,6 +2,7 @@ description "\377B128,0,0";
 
 file
 	SharedCore.h,
+	SharedDefs.h,
 	Policies.h,
 	RTTIDummy.h,
 	Shared.h,
@@ -18,6 +19,7 @@ file
 	String.cpp,
 	Draw.h,
 	Draw.cpp,
+	Random.h,
 	Ctrl.h,
 	Ctrl.cpp;
 

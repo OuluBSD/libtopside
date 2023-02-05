@@ -1,5 +1,4 @@
 #include "Local.h"
-#include <StaticInterface/StaticInterface.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -490,6 +489,20 @@ void ProgPainter::Clear() {
 	}
 }
 
+bool ProgPainter::ClipoffOp(const Rect& r) {TODO}
+dword ProgPainter::GetInfo() const {TODO}
+void ProgPainter::BeginOp() {TODO}
+void ProgPainter::OffsetOp(Point p) {TODO}
+bool ProgPainter::ExcludeClipOp(const Rect& r) {TODO}
+bool ProgPainter::IntersectClipOp(const Rect& r) {TODO}
+bool ProgPainter::IsPaintingOp(const Rect& r) const {TODO}
+void ProgPainter::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+                                   const int *subpolygon_counts, int scc,
+                                   const int *disjunct_polygon_counts, int dpcc,
+                                   Color color, int width, Color outline,
+                                   uint64 pattern, Color doxor) {TODO}
+void ProgPainter::DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) {TODO}
+void ProgPainter::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) {TODO}
 
 
 

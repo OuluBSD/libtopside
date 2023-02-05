@@ -7,6 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Sdl2FileBackend : StaticIfaceBackend {
+	typedef Sdl2FileBackend CLASSNAME;
 	RTTI_DECL1(Sdl2FileBackend, StaticIfaceBackend)
 	
 	

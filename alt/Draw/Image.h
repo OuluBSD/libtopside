@@ -90,10 +90,6 @@ void FreeImageData_SDL2_Surface(void* v);
 #endif
 
 
-struct DefaultImages {
-	static Image Arrow;
-};
-
 class ImageBuffer : Moveable<ImageBuffer> {
 	Vector<RGBA> buf;
 	Size sz;

@@ -64,6 +64,7 @@ public:
 	void SetLength(int i);
 	void SetKeypointColumnWidth(int i);
 	void SetSelectedColumn(int i) {selected_col = i;}
+	void OnScroll();
 	
 	void Paint(Draw& d) override;
 	bool Key(dword key, int) override;

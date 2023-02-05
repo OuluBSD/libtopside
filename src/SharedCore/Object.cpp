@@ -204,16 +204,16 @@ Object Object::operator ==(const Object& o) const {
 Object Object::operator &&(const Object& o) const {
 	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() && o.ToInt();
 	if (IsNumber() && o.IsNumber()) return ToDouble() && o.ToDouble();
-	if (IsString() && o.IsString()) return ToString() && o.ToString();
-	if (IsWString() && o.IsWString()) return ToWString() && o.ToWString();
+	if (IsString() && o.IsString()) return !ToString().IsEmpty() && !o.ToString().IsEmpty();
+	if (IsWString() && o.IsWString()) return !ToWString().IsEmpty() && !o.ToWString().IsEmpty();
 	return Object(false);
 }
 
 Object Object::operator ||(const Object& o) const {
 	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() || o.ToInt();
 	if (IsNumber() && o.IsNumber()) return ToDouble() || o.ToDouble();
-	if (IsString() && o.IsString()) return ToString() || o.ToString();
-	if (IsWString() && o.IsWString()) return ToWString() || o.ToWString();
+	if (IsString() && o.IsString()) return !ToString().IsEmpty() || !o.ToString().IsEmpty();
+	if (IsWString() && o.IsWString()) return !ToWString().IsEmpty() || !o.ToWString().IsEmpty();
 	return Object(false);
 }
 
@@ -228,7 +228,6 @@ Object Object::operator +(const Object& o) const {
 Object Object::operator -(const Object& o) const {
 	if ((IsInt() || IsInt64()) && (o.IsInt() || o.IsInt64())) return ToInt() - o.ToInt();
 	if (IsNumber() && o.IsNumber()) return ToDouble() - o.ToDouble();
-	if (IsString() && o.IsString()) return ToString() - o.ToString();
 	return Object(false);
 }
 

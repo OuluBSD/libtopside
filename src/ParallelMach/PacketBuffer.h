@@ -140,7 +140,7 @@ public:
 	String					ToString() const;
 	String					ToStringWithHash() const;
 	
-	void					ClearDataType() {custom_data = 0;}
+	void					ClearDataType() {custom_data = Null;}
 	
 	template <class T> T& SetData() {
 		custom_data = AsTypeCls<T>();

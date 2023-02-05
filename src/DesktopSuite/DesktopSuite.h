@@ -1,6 +1,7 @@
 #ifndef _DesktopSuite_DesktopSuite_h_
 #define _DesktopSuite_DesktopSuite_h_
 
+#include <Local/Local.h>
 #include <CtrlLib/CtrlLib.h>
 
 #include "Factory.h"

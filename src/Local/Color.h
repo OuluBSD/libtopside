@@ -50,6 +50,7 @@ inline byte AtRGBA(RGBA rgba, int i) {
 	return 0;
 }
 
+RGBA RGBAC(byte r, byte g, byte b, byte a);
 RGBA TransformHue(const RGBA& in, float angle);
 RGBA InvertRGBA(const RGBA& c);
 RGBA InvertRGBA_InvertHue(const RGBA& c);

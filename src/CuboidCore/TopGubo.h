@@ -1,7 +1,9 @@
 #ifndef _GuboCore_TopGubo_h_
 #define _GuboCore_TopGubo_h_
 
-NAMESPACE_UPP
+
+NAMESPACE_TOPSIDE_BEGIN
+
 
 class TopGubo :
 	public Gubo,
@@ -21,6 +23,8 @@ public:
 	
 };
 
-END_UPP_NAMESPACE
+
+NAMESPACE_TOPSIDE_END
+
 
 #endif

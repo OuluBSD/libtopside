@@ -7,7 +7,7 @@ template <class Gfx>
 void RendererT<Gfx>::DefaultPreFrame() {
 	//ASSERT(rend);
 	Gfx::BindFramebufferDefault();
-	Gfx::SetClearValue(RGBA(0,0,0,255), 255);
+	Gfx::SetClearValue(RGBAC(0,0,0,255), 255);
 	Gfx::ClearBuffers();
 	Gfx::SetSmoothShading();
 	Gfx::SetDepthTest(1);

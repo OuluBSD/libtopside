@@ -120,70 +120,70 @@ void SwGfxT<Gfx>::HotfixShaderCode(String& s) {}
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform1i(int idx, int i) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, i);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform2i(int idx, int i0, int i1) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, i0, i1);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform3i(int idx, int i0, int i1, int i2) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, i0, i1, i2);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform1f(int idx, float f) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, f);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform2f(int idx, float f0, float f1) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, f0, f1);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform3f(int idx, float f0, float f1, float f2) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, f0, f1, f2);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, f0, f1, f2, f3);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform1fv(int idx, int count, float* f) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVarArray(idx, 1, count, f);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform3fv(int idx, int count, float* f) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVarArray(idx, 3, count, f);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform4fv(int idx, int count, float* f) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVarArray(idx, 4, count, f);
 }
 
@@ -195,7 +195,7 @@ void SwGfxT<Gfx>::ProgramUniform3f(NativeProgram& prog, int idx, float f0, float
 template <class Gfx>
 void SwGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
 	auto& prog = Local().prog;
-	ASSERT(prog)
+	ASSERT(prog);
 	if (prog) prog->SetVar(idx, mat);
 }
 

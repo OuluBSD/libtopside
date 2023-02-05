@@ -56,6 +56,7 @@ public:
 	RTTI_DECL0(GeomInteraction);
 	typedef GeomInteraction CLASSNAME;
 	GeomInteraction();
+	virtual ~GeomInteraction() {}
 	
 	int GetSubCount() const;
 	GeomInteraction* GetOwner() const;
@@ -135,8 +136,8 @@ public:
 	virtual bool IsCtrl() const;
 	virtual GeomInteraction2D* Get2D();
 	virtual GeomInteraction3D* Get3D();
-	virtual Ctrl* GetCtrl();
-	virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
+	//virtual Ctrl* GetCtrl();
+	//virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	virtual GeomInteraction* GetProxy() const {return 0;}
 	
 	
@@ -308,7 +309,6 @@ public:
 	virtual Image CursorImage(Point3f p, dword keyflags);
 	virtual void PadTouch(int controller, Point3f p) {}
 	
-	virtual void Paint(Draw3D& d) {}
 	
 };
 

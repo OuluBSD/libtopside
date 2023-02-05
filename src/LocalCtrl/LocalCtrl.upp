@@ -21,6 +21,8 @@ file
 	CtrlUtils.cpp,
 	Defs.h,
 	Compat.h,
+	Util.h,
+	Util.cpp,
 	PathCtrl.h,
 	PathCtrl.cpp,
 	Container.h,

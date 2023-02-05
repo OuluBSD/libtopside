@@ -28,7 +28,7 @@ public:
 		ValDevCls vd(dev,val);
 		IfaceData& d = IfaceLinkDataMap().GetAdd(vd);
 		d.cls = AsTypeCls<T>();
-		d.name = T::GetTypeName();
+		d.name = GetTypeNameT<T>();
 		d.vd.dev = dev;
 		d.vd.val = val;
 		MetaSpaceBase::RegisterExchangePoint<T>();
@@ -64,7 +64,7 @@ public:
 		AtomData& d = AtomDataMap().GetAdd(cls);
 		d.rtti_cls = AsTypeCls<T>();
 		d.cls = cls;
-		d.name = T::GetTypeName();
+		d.name = GetTypeNameT<T>();
 		d.new_fn = &CreateAtom<T>;
 		d.link_type = T::GetLinkType();
 		d.actions.Add(T::GetAction());

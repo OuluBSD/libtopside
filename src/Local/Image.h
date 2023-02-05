@@ -11,7 +11,11 @@ enum {
 
 Image GetDefaultImage(int code);
 Image RealizeImage(Image& img, String path);
+void SetCenterHotSpot(Image& img);
 
+struct DefaultImages {
+	static Image Arrow;
+};
 
 
 struct FloatImage {

@@ -1,6 +1,8 @@
 #include "CuboidCore.h"
 
-NAMESPACE_UPP
+
+NAMESPACE_TOPSIDE_BEGIN
+
 
 TopGubo::TopGubo() {
 	
@@ -25,4 +27,5 @@ Gubo* TopGubo::GetGubo() {
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
+

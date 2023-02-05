@@ -93,9 +93,9 @@ public:
 	virtual void			Finalize(RealtimeSourceConfig& cfg) {}
 	// internal format should be sink:0
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
-	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
+	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER(); return false;}
 	virtual void			ForwardPacket(PacketValue& in, PacketValue& out) {Panic("Unimplemented"); NEVER();}
-	virtual bool			AttachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
+	virtual bool			AttachContext(AtomBase& a) {Panic("Unimplemented"); NEVER(); return false;}
 	virtual void			DetachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual RealtimeSourceConfig* GetConfig() {return 0;}
 	virtual bool			NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {return false;}
@@ -249,7 +249,7 @@ public:
 		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
-			THROW(Exc("Could not find atom " + AsTypeString<AtomT>()));
+			THROW(Exc("Could not find atom " + (String)AsTypeName<AtomT>()));
 		
 		return it->AsRef<AtomT>();
 	}

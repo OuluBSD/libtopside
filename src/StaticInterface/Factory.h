@@ -42,7 +42,7 @@ struct StaticIfaceFactory {
 	static void AddFileFormat(String ext, bool read, bool write) {
 		Vector<Backend>& fns = new_fns.GetAdd(ext);
 		Backend& b = fns.Add();
-		b.type = T::TypeIdClass();
+		b.type = GetTypeIdClass<T>();
 		b.new_fn = &New<T>;
 		b.read = read;
 		b.write = write;

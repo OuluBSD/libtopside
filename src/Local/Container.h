@@ -98,6 +98,8 @@ struct FixedArray : RTTIBase {
 	String ToString() const {return "FixedArray";}
 	int ToInt() const {return I;}
 	double ToDouble() const {return I;}
+	operator double() const {return I;}
+	
 	hash_t GetHashValue() const {CombineHash c; for(int i = 0; i < I; i++) c.Put(UPP::GetHashValue<T>(vector[i])); return c;}
 	T* Get() {return vector;}
 	

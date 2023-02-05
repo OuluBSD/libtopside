@@ -1,9 +1,13 @@
 #include "Local.h"
 
+#ifdef UPP_VERSION
+#include <CtrlCore/CtrlCore.h>
+#endif
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool GeomInteraction::do_debug_draw = true;
+bool GeomInteraction::do_debug_draw = false;
 
 
 GeomInteraction::GeomInteraction() {
@@ -76,9 +80,9 @@ GeomInteraction3D* GeomInteraction::Get3D() {
 	return 0;
 }
 
-Ctrl* GeomInteraction::GetCtrl() {
+/*Ctrl* GeomInteraction::GetCtrl() {
 	return 0;
-}
+}*/
 
 int GeomInteraction::GetSubCount() const {
 	return sub.GetCount();
@@ -213,7 +217,7 @@ bool GeomInteraction::DeepKey(dword key, int count) {
 }
 
 void GeomInteraction::PostCallback(Callback cb) {
-	SetTimeCallback(1, cb, this);
+	::UPP::SetTimeCallback(1, cb, this);
 }
 
 void GeomInteraction::PostRefresh() {

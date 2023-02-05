@@ -1,23 +1,22 @@
 #ifndef _GuboCore_Gubo_h_
 #define _GuboCore_Gubo_h_
 
-NAMESPACE_UPP
+
+NAMESPACE_TOPSIDE_BEGIN
+
+
 class Absolute2D;
-END_UPP_NAMESPACE
+class Gubo;
 
 
-namespace TS { namespace Ecs {
+namespace Ecs {
 
 class GuiSystem;
 class DefaultGuiAppComponent;
 class Geom2DComponent;
 
-}}
+}
 
-
-NAMESPACE_UPP
-
-class Gubo;
 
 class GuboFrame :
 	public GeomInteraction3D
@@ -82,7 +81,7 @@ private:
 
 
 
-class TopWindow;
+class TopGubo;
 
 
 // Gui Cuboid --> Gubo (based on Ctrl class, which is a gui class)
@@ -154,7 +153,6 @@ public:
 	
 	Gubo* GetParent();
 	Gubo* GetTopGubo();
-	TopWindow* GetTopWindow();
 	
 	/*
 	Rect GetWorkArea() const;
@@ -221,24 +219,6 @@ class EmptySpaceGubo : public Gubo {
 
 
 
-
-class Workspace3D : public GeomInteraction3D {
-	
-	
-public:
-	RTTI_DECL1(Workspace3D, GeomInteraction3D)
-	virtual ~Workspace3D() {}
-	
-	virtual bool Init() = 0;
-	virtual void AddInterface(Absolute3DProxy&) = 0;
-	virtual bool Poll(GeomEvent& e) = 0;
-	virtual void Render() = 0;
-	virtual void Shutdown() = 0;
-	virtual bool ProcessCloseQueue() = 0;
-	
-};
-
-
 class ParentGubo : public Gubo {
 	
 public:
@@ -250,10 +230,7 @@ public:
 };
 
 
+NAMESPACE_TOPSIDE_END
 
-
-
-
-END_UPP_NAMESPACE
 
 #endif

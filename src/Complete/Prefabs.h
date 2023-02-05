@@ -1,6 +1,10 @@
 #ifndef _Complete_Prefabs_h_
 #define _Complete_Prefabs_h_
 
+#ifdef UPP_VERSION
+	#warning TODO
+#else
+
 #if defined flagSDL2
 	#define GUI_EON "deps/default_gui_app_sdl.eon"
 	#define GUBO_EON "deps/default_gubo_app_sdl.eon"
@@ -30,5 +34,7 @@ RENDER_APP_MAIN { \
 	TS::DefaultRunner(0, "Gui App", GUBO_EON);} \
 \
 void UserGuiMainFn_()
+
+#endif
 
 #endif

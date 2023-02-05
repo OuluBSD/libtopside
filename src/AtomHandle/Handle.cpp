@@ -272,11 +272,12 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 				Size& sz = b.sz;
 				//Handle::Geom2DComponentLinkRef cw_link = b.win_entity->Find<Handle::Geom2DComponentLink>();
 				//Handle::Geom2DComponent& cw = cw_link->GetWindow();
-				Ctrl* ctrl = abs2d_iface->GetCtrl();
-				ASSERT(ctrl);
 				
 				TODO // Move Geom2DComponent content to ParallelLib
 				#if 0
+				Ctrl* ctrl = abs2d_iface->GetCtrl();
+				ASSERT(ctrl);
+				
 				Rect cw_rect = cw.GetStoredRect();
 				sz = cw_rect.GetSize();
 				

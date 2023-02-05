@@ -30,6 +30,7 @@ bool AudioGenBase::Initialize(const Script::WorldState& ws) {
 void AudioGenBase::Uninitialize() {
 	
 }
+
 bool AudioGenBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	const int sink_ch = 0;
 	

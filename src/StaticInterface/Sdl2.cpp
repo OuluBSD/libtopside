@@ -24,7 +24,7 @@ Image Sdl2FileBackend::ImageFromSDLSurface(void* surf_) {
 	int len = surf->h * surf->pitch;
 	img->data.SetCount(len);
 	memcpy(img->data.Begin(), src, len);
-	img->backend = TypeIdClass();
+	img->backend = GetTypeIdClass<CLASSNAME>();
 	img->w = surf->w;
 	img->h = surf->h;
 	img->ch = surf->format->BytesPerPixel;
@@ -97,7 +97,7 @@ Font Sdl2FileBackend::LoadFont(String dir, String name, int ptsize, int weight, 
 	RawSysFont* fnt = new RawSysFont();
 	
 	DLOG("Opening font " << path);
-	fnt->backend = TypeIdClass();
+	fnt->backend = GetTypeIdClass<CLASSNAME>();
 	fnt->native = TTF_OpenFont(path.Begin(), ptsize);
 	fnt->dir = dir;
 	fnt->name = name;

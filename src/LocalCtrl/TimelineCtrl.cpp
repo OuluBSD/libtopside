@@ -131,10 +131,14 @@ TimelineCtrl::TimelineCtrl() {
 	AddFrame(vsb);
 	AddFrame(hsb.Horz());
 	
-	vsb.WhenScroll = THISBACK(Refresh);
+	vsb.WhenScroll = THISBACK(OnScroll);
 	vsb.SetLine(GetLineHeight());
-	hsb.WhenScroll = THISBACK(Refresh);
+	hsb.WhenScroll = THISBACK(OnScroll);
 	hsb.SetLine(GetColumnWidth());
+}
+
+void TimelineCtrl::OnScroll() {
+	Refresh();
 }
 
 void TimelineCtrl::Paint(Draw& d) {

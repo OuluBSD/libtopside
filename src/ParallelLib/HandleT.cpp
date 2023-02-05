@@ -37,7 +37,7 @@ Image& WindowsImg::nwse() {
 	static Image img;
 	if (img.IsEmpty()) {
 		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nwse.png"));
-		img.CenterHotSpot();
+		SetCenterHotSpot(img);
 	}
 	return img;
 }
@@ -46,7 +46,7 @@ Image& WindowsImg::nesw() {
 	static Image img;
 	if (img.IsEmpty()) {
 		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "nesw.png"));
-		img.CenterHotSpot();
+		SetCenterHotSpot(img);
 	}
 	return img;
 }
@@ -55,7 +55,7 @@ Image& WindowsImg::ns() {
 	static Image img;
 	if (img.IsEmpty()) {
 		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ns.png"));
-		img.CenterHotSpot();
+		SetCenterHotSpot(img);
 	}
 	return img;
 }
@@ -64,7 +64,7 @@ Image& WindowsImg::ew() {
 	static Image img;
 	if (img.IsEmpty()) {
 		img = StreamRaster::LoadFileAny(RealizeShareFile("imgs" DIR_SEPS "ew.png"));
-		img.CenterHotSpot();
+		SetCenterHotSpot(img);
 	}
 	return img;
 }
@@ -265,13 +265,13 @@ void HandleT<Dim>::SetPendingPartialRedraw() {
 	pending_partial_redraw = true;
 }
 
-template <class Dim>
+/*template <class Dim>
 GeomInteraction* HandleT<Dim>::GetDynamicallyLinked() const {
 	auto* abs_proxy = this->GetLinkedProxy();
 	if (abs_proxy)
 		return abs_proxy->GetInteraction();
 	return 0;
-}
+}*/
 
 template <class Dim>
 ScopeT<Dim>& HandleT<Dim>::GetScope() const {
@@ -422,7 +422,7 @@ bool HandleT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
 	Box frame_r = this->GetFrameBox();
 	if (frame_r.Contains(pt)) {
 		//Box content_r = this->GetContentRect();
-		Pt ftl = frame_r.FirstCorner();
+		Pt ftl = FirstCorner(frame_r);
 		Pt fpt = pt - ftl;
 		//Point ctl = content_r.TopLeft();
 		//Point cpt = fpt - ctl;
@@ -606,17 +606,17 @@ template <class Dim>
 GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
 	handle = h;
 	
-	close.SetImage(WindowsImg::close());
-	maximize.SetImage(WindowsImg::maximize());
-	minimize.SetImage(WindowsImg::minimize());
+	close->SetImage(WindowsImg::close());
+	maximize->SetImage(WindowsImg::maximize());
+	minimize->SetImage(WindowsImg::minimize());
 	
 	this->Add(close.TopPos(3, 19).RightPos(3, 19));
 	this->Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
 	this->Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
 	
-	close.WhenAction = callback(h, &Handle::Close);
-	maximize.WhenAction = callback(h, &Handle::ToggleMaximized);
-	minimize.WhenAction = callback(h, &Handle::Minimize);
+	close->WhenAction = callback(h, &Handle::Close);
+	maximize->WhenAction = callback(h, &Handle::ToggleMaximized);
+	minimize->WhenAction = callback(h, &Handle::Minimize);
 	
 }
 
@@ -643,7 +643,7 @@ void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
 	
 	if (this->do_debug_draw) {
 		if (has_mouse) {
-			RGBA c{255, 0, 0, 125};
+			RGBA c = RGBAC(255, 0, 0, 125);
 			id.DrawRect(sz, c);
 		}
 		else {

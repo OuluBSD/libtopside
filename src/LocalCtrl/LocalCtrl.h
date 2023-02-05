@@ -9,6 +9,7 @@
 #endif
 
 #include "Compat.h"
+#include "Util.h"
 #include "Image.h"
 #include "BlueBar.h"
 #include "GrayBar.h"

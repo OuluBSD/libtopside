@@ -7,30 +7,7 @@
 	#error Cannot compile Topside Core with UPP flag set
 #endif
 
-
-#ifdef flagDEBUG
-	#define HAVE_SHORT_NAMESPACE 1
-#else
-	#define HAVE_SHORT_NAMESPACE 0
-#endif
-
-
-#if HAVE_SHORT_NAMESPACE
-	#define NAMESPACE_UPP namespace  ts {
-	#define END_UPP_NAMESPACE }
-	#define NAMESPACE_UPP_BEGIN namespace  ts {
-	#define NAMESPACE_UPP_END }
-	#define UPP ts
-#else
-	#define NAMESPACE_UPP namespace  Topside {
-	#define END_UPP_NAMESPACE }
-	#define NAMESPACE_UPP_BEGIN namespace  Topside {
-	#define NAMESPACE_UPP_END }
-	#define UPP Topside
-#endif
-
-
-
+#include <SharedCore/SharedDefs.h>
 #include <SharedCore/Policies.h>
 
 #include "config.h"
@@ -41,6 +18,7 @@
 #include "Topt.h"
 #include "Ops.h"
 #include "Hash.h"
+#include <SharedCore/Random.h>
 #include "Algo.h"
 #include "String_.h"
 #include <SharedCore/String.h>

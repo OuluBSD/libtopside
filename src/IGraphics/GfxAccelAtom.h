@@ -60,7 +60,7 @@ protected:
 	GLContext				glcontext = NULL;
 	Renderer				rend;
 	StateDraw				draw;
-	SystemDraw				sysdraw;
+	DrawProxy				sysdraw;
 	bool is_open = false;
 	bool is_opengl = false;
 	bool is_sw = false;
@@ -110,7 +110,7 @@ public:
 	void SetRect(Rect r);
 	void Render(const RealtimeSourceConfig& cfg);
 	bool Recv(int ch_i, const Packet& p);
-	SystemDraw& BeginDraw();
+	Draw& BeginDraw();
 	void CommitDraw();
 	void FrameCopy(const ValFormat& vfmt, const byte* data, int len) {}
 	

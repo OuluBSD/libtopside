@@ -20,24 +20,7 @@
 #include <Core/Core.h>
 #include <Draw/Draw.h>
 
-#if HAVE_SHORT_NAMESPACE
-	#define NAMESPACE_TOPSIDE_NAME ts
-	#define NAMESPACE_TOPSIDE_BEGIN \
-		/*static_assert(is_in_topside == false, "already in topside namespace");*/ \
-		namespace NAMESPACE_TOPSIDE_NAME {
-	#define NAMESPACE_TOPSIDE_END }
-	#define TS ts
-#else
-	#define NAMESPACE_TOPSIDE_NAME Topside
-	#define NAMESPACE_TOPSIDE_BEGIN \
-		/*static_assert(is_in_topside == false, "already in topside namespace");*/ \
-		namespace NAMESPACE_TOPSIDE_NAME {
-	#define NAMESPACE_TOPSIDE_END }
-	#define TS Topside
-	namespace UPP {}
-	namespace TS {using namespace UPP;}
-#endif
-
+#include <SharedCore/SharedDefs.h>
 
 static constexpr bool is_in_topside = false;
 static constexpr bool is_in_parallel = false;
@@ -55,6 +38,7 @@ static constexpr bool is_in_parallel = true;
 	#define UPP_OLD_VERSION 1
 #endif
 
+// Using original Ultimate++ Core
 #ifdef UPP_VERSION
 	#define flagSTDRTTI
 	#ifndef flagSTDEXC

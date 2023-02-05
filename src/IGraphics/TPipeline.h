@@ -63,7 +63,7 @@ struct ShaderStateT : GfxShaderState {
 	NativeShaderRef native;
 	
 	ShaderStateT() {
-		native = Null;
+		native = NULL;
 	}
 	
 };

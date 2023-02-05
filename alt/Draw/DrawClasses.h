@@ -55,10 +55,7 @@ public:
 	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
 		             int pen = Null, Color pencolor = DefaultInk());
 	
-	virtual void CtrlDrawBegin(hash_t) {}
-	virtual void CtrlDrawEnd() {}
 	
-	virtual void SetSize(Size sz) = 0;
 	virtual Size GetPageSize() const = 0;
 	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) = 0;
 	virtual	void DrawRectOp(int x, int y, int cx, int cy, Color color) = 0;
@@ -69,9 +66,27 @@ public:
 	                                int width, Color color, Color doxor) = 0;
 	virtual bool ClipOp(const Rect& r) = 0;
 	virtual void EndOp() = 0;
-	virtual void DrawImage(int x, int y, Image img, byte alpha) = 0;
+	virtual dword GetInfo() const = 0;
+	virtual bool ClipoffOp(const Rect& r) = 0;
+	virtual void BeginOp() = 0;
+	virtual void OffsetOp(Point p) = 0;
+	virtual bool ExcludeClipOp(const Rect& r) = 0;
+	virtual bool IntersectClipOp(const Rect& r) = 0;
+	virtual bool IsPaintingOp(const Rect& r) const = 0;
+	virtual void DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+	                                   const int *subpolygon_counts, int scc,
+	                                   const int *disjunct_polygon_counts, int dpcc,
+	                                   Color color, int width, Color outline,
+	                                   uint64 pattern, Color doxor) = 0;
+	virtual void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) = 0;
+	virtual void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) = 0;
 	
 	virtual void DrawTriangle(Point a, Point b, Point c, RGBA clr) {Panic("unimplemented");}
+	
+	
+	// Not upp-compatible
+	virtual void SetSize(Size sz) = 0;
+	virtual void DrawImage(int x, int y, Image img, byte alpha) = 0;
 	
 };
 
@@ -80,13 +95,12 @@ public:
 struct DrawProxy : Draw {
 	Draw *ptr = 0;
 	
-	void SetTarget(Draw *w) { ptr = w; }
 	
 	
 	DrawProxy() {}
 	DrawProxy(Draw& d) : ptr(&d) {}
 	
-	void SetTarget(Draw& d) {ptr = &d;}
+	void SetTarget(Draw* d) {ptr = d;}
 	
 	void SetSize(Size sz) override;
 	Size GetPageSize() const override;
@@ -100,8 +114,22 @@ struct DrawProxy : Draw {
 	
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
-	void DrawImage(int x, int y, Image img, byte alpha=255) override;
+	void DrawImage(int x, int y, Image img, byte alpha) override;
 	void DrawTriangle(Point a, Point b, Point c, RGBA clr) override;
+	bool ClipoffOp(const Rect& r) override;
+	dword GetInfo() const override;
+	void BeginOp() override;
+	void OffsetOp(Point p) override;
+	bool ExcludeClipOp(const Rect& r) override;
+	bool IntersectClipOp(const Rect& r) override;
+	bool IsPaintingOp(const Rect& r) const override;
+	void DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+	                                   const int *subpolygon_counts, int scc,
+	                                   const int *disjunct_polygon_counts, int dpcc,
+	                                   Color color, int width, Color outline,
+	                                   uint64 pattern, Color doxor) override;
+	void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) override;
+	void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) override;
 	
 };
 

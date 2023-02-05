@@ -3,7 +3,6 @@
 
 NAMESPACE_UPP_BEGIN
 
-Image DefaultImages::Arrow;
 Atomic Image::serial_counter;
 
 

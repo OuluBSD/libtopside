@@ -28,7 +28,7 @@ private:
 Pointf GetPointOffsets(const Pointf& a, const Pointf& b, double width);
 
 
-class ProgPainter : public Draw {
+class ProgPainter : public Draw2 {
 	DrawCommand *prev;
 	DrawCommand *next;
 	DrawCommand *begin;
@@ -72,10 +72,26 @@ public:
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
 	#ifdef UPP_VERSION
 	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override {TODO};
-	void DrawImage(int x, int y, Image img, byte alpha=255);
+	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	#else
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	#endif
+	bool ClipoffOp(const Rect& r) override;
+	dword GetInfo() const override;
+	void BeginOp() override;
+	void OffsetOp(Point p) override;
+	bool ExcludeClipOp(const Rect& r) override;
+	bool IntersectClipOp(const Rect& r) override;
+	bool IsPaintingOp(const Rect& r) const override;
+	void DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+	                                   const int *subpolygon_counts, int scc,
+	                                   const int *disjunct_polygon_counts, int dpcc,
+	                                   Color color, int width, Color outline,
+	                                   uint64 pattern, Color doxor) override;
+	void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) override;
+	void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) override;
+	
+	
 	void DrawRect(Rect r, RGBA clr);
 	void DrawRect(int x, int y, int w, int h, RGBA clr);
 	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);

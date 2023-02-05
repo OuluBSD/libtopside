@@ -19,7 +19,7 @@ public:
 	void CreateGeom2DComponent();
 	void UpdateFromTransform2D();
 	
-	Ctrl* GetCtrl() override;
+	//Ctrl* GetCtrl() override;
 	
 	
 };

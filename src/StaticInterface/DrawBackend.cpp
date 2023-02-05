@@ -1,5 +1,6 @@
 #include "StaticInterface.h"
 
+#ifndef UPP_VERSION
 
 NAMESPACE_UPP
 
@@ -9,6 +10,7 @@ int SysImage::GetHeight() const {return raw ? raw->h : 0;}
 int SysImage::GetStride() const {return raw ? raw->ch : 0;}
 int SysImage::GetPitch() const {return raw ? raw->pitch : 0;}
 const unsigned char* SysImage::GetData() const {return raw ? (byte*)raw->data.Begin() : 0;}
+
 
 Image StreamRaster::LoadStringAny(String content) {
 	TODO // try all readers
@@ -77,3 +79,5 @@ Image ImageBuffer::GetImage() {
 
 
 END_UPP_NAMESPACE
+
+#endif

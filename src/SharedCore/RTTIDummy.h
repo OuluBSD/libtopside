@@ -6,6 +6,7 @@ NAMESPACE_UPP
 
 #ifdef flagSTDRTTI
 struct RTTI;
+class Nuller;
 
 struct TypeCls : std::reference_wrapper<const std::type_info> {
 	using ti = std::reference_wrapper<const std::type_info>;
@@ -13,6 +14,7 @@ struct TypeCls : std::reference_wrapper<const std::type_info> {
 	TypeCls(const TypeCls& t) : ti(t) {}
 	TypeCls(const ti& t) : ti(t) {}
 	TypeCls(const std::type_info& t) : ti(t) {}
+	void operator=(const Nuller&) {ti::operator=(typeid(void));}
 	void operator=(const TypeCls& t) {ti::operator=(t);}
 	void operator=(const RTTI& t);
 	hash_t GetHashValue() const {return ti::get().hash_code();}

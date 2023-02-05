@@ -306,6 +306,7 @@ public:
 		l.count = 0;
 	}
 	
+	void operator=(LinkedList&& l) {Swap(first,l.first); Swap(last,l.last); Swap(count,l.count);}
 	void operator<<=(const LinkedList& l) {Clear(); Append(l);}
 	
 	

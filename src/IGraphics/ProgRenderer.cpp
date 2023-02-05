@@ -27,21 +27,20 @@ void DrawCommandImageRenderer::ProcessWindowCommands(DrawCommand* begin, DrawCom
 	if (sz.IsEmpty()) sz = Size(320,240);
 	this->sz = sz;
 	
-	
-	if (id.IsEmpty() || id->GetSize() != sz) {
-		id.Create(sz, 3);
+	if (id.IsEmpty() || id->GetPageSize() != sz) {
+		id->Create(sz, 3);
 	}
 	
 	id->DrawRect(sz, GrayColor());
 	
 	pi.SkipWindowCommands();
-	pi.Paint(begin, end, id);
+	pi.Paint(begin, end, *id);
 	
 	
 }
 
 Image DrawCommandImageRenderer::GetImage() {
-	return id->GetImage();
+	return *id;
 }
 
 bool DrawCommandImageRenderer::TrimBegin(DrawCommand*& begin) {

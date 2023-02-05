@@ -1,24 +1,30 @@
 #ifndef _SharedCore_Ctrl_h_
 #define _SharedCore_Ctrl_h_
 
-
 NAMESPACE_UPP
 
+using namespace TS;
 
 class Ctrl;
+class Image;
+
+END_UPP_NAMESPACE
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
 class GeomInteraction;
 class GeomInteraction2D;
 class GeomInteraction3D;
 class Gubo;
 class Absolute2DProxy;
 class Absolute3DProxy;
-class Image;
 
 
 class AbsoluteInterface : RTTIBase {
 	
 public:
-	RTTI_DECL0(AbsoluteInterface)
+	RTTI_DECL0(AbsoluteInterface);
 	
 	virtual void					Title(const String& title) = 0;
 	virtual AbsoluteInterface&		Sizeable(bool b=true) = 0;
@@ -52,9 +58,9 @@ public:
 	Absolute2DInterface() {}
 	virtual ~Absolute2DInterface() {}
 	
-	virtual Ctrl* GetCtrl();
+	//virtual Ctrl* GetCtrl();
 	
-	GeomInteraction2D*				GetInteraction();
+	//GeomInteraction2D*				GetInteraction();
 	Absolute2DProxy*				GetLinkedProxy() const {return proxy;}
 	
 };
@@ -75,7 +81,7 @@ public:
 	
 	virtual Gubo*					GetGubo();
 	
-	GeomInteraction3D*				GetInteraction();
+	//GeomInteraction3D*				GetInteraction();
 	Absolute3DProxy*				GetLinkedProxy() const {return proxy;}
 	
 };
@@ -141,7 +147,7 @@ public:
 };
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
 
 
 #endif

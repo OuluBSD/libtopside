@@ -466,7 +466,8 @@ Ctrl* Ctrl::GetCaptured() {
 	Ctrl* top = GetTopCtrl();
 	if (top && top->IsCaptureRoot()) {
 		GeomInteraction* gi = top->GetCaptured();
-		return gi ? gi->GetCtrl() : 0;
+		Ctrl* c = CastPtr<Ctrl>(gi);
+		return c;
 	}
 	return 0;
 }
@@ -475,7 +476,8 @@ Ctrl* Ctrl::GetWithMouse() {
 	Ctrl* top = GetTopCtrl();
 	if (top && top->IsCaptureRoot()) {
 		GeomInteraction* gi = top->GetWithMouse();
-		return gi ? gi->GetCtrl() : 0;
+		Ctrl* c = CastPtr<Ctrl>(gi);
+		return c;
 	}
 	return 0;
 }

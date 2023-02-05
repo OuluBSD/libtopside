@@ -74,6 +74,7 @@ bool SdlGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& 
 	Panic("deprecated");
 	NEVER();
 	//return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &rend) >= 0;
+	return false;
 }
 
 void SdlGfx::SetTitle(NativeDisplay&, NativeWindow& win, String title) {

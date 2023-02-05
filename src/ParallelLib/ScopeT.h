@@ -38,6 +38,8 @@ private:
 	int active_pos, active_id;
 	Interaction* captured = NULL;
 	Interaction* with_mouse = NULL;
+	Container* captured_ctrl = NULL;
+	Container* with_mouse_ctrl = NULL;
 	ContainerFrame* frame_with_mouse = NULL;
 	ContainerFrame* frame_captured = NULL;
 	bool do_render = false;
@@ -69,8 +71,8 @@ public:
 	void SetCaptured(GeomInteraction* c) override;
 	void SetWithMouse(GeomInteraction* c) override;
 	
-	void SetCaptured(Container* c) { captured = c; }
-	void SetWithMouse(Container* c) { with_mouse = c; }
+	void SetCaptured(Container* c);
+	void SetWithMouse(Container* c);
 	ContainerFrame* GetFrameCaptured() { return frame_captured; }
 	ContainerFrame* GetFrameWithMouse() { return frame_with_mouse; }
 	void SetFrameCaptured(ContainerFrame* c) { frame_captured = c; }
