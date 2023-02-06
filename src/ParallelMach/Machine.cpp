@@ -34,7 +34,7 @@ Machine::~Machine() {
 bool Machine::Start() {
 	ASSERT_(!is_initialized && !is_started, "Shouldn't call Start if we already started");
 	
-	Cout() << "Machine::Start " << IntStr(WhenInitialize.ToInt()) << "\n";
+	Cout() << "Machine::Start " << ((bool)WhenInitialize ? "with" : "without") << " initializer callback\n";
 	WhenInitialize();
 	
 	is_started = true;

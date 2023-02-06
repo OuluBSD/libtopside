@@ -171,6 +171,7 @@ typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetHandle(TopContainer& tw)
 		}
 	}
 	NEVER();
+	return 0;
 }
 
 template <class Dim>

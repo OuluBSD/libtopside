@@ -208,7 +208,7 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom) {
 		}
 		
 		TypeCls expt_type = src_d.cls;
-		ASSERT(expt_type);
+		ASSERT(expt_type != GetTypeIdClass<void>());
 		
 		ExchangePointRef ep = space->MetaSpaceBase::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));

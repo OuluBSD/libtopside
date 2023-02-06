@@ -44,7 +44,6 @@ file
 	Cpu.cpp,
 	Hash.h,
 	Algo.h,
-	Algo.cpp,
 	String_.h,
 	StringInline.cpp highlight cpp,
 	StringTmpl.cpp highlight cpp,

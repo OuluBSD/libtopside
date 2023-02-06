@@ -158,7 +158,7 @@ void HiCompiler::Term()
 		Emit1(IR_ASSIGN_R, ReadDouble());
 		return;
 	}
-	if(IsOctal()) {
+	if(IsChar('0')) {
 		Emit1(IR_ASSIGN_R, IsNumber() ? ReadNumber64(8) : 0);
 		return;
 	}

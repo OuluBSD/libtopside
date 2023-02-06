@@ -58,7 +58,9 @@ public:
 template <class T> TypeCls GetTypeIdClass() {return T::TypeIdClass();}
 template <class T> const char* GetTypeNameT() {return T::GetTypeName();}
 
-
+#ifndef UPP_VERSION
+template<> inline TypeCls GetTypeIdClass<void>() {static int d = 0; return (size_t) &d;}
+#endif
 
 class RTTIWrapper {
 	const RTTI* rtti;

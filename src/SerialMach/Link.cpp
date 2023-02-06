@@ -274,7 +274,7 @@ String LinkBase::Exchange::ToString() const {
 
 
 bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size) {
-	ASSERT(l)
+	ASSERT(l);
 	return l ? l->ForwardAsyncMem(data, size) : 0;
 }
 

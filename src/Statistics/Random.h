@@ -27,7 +27,9 @@ class RandomNumberGenerator : Moveable<RandomNumberGenerator> {
 		return result_starstar;
 	}
 	
-	void sSeed(uint64 *s) {
+public:
+	
+	static void sSeed(uint64 *s) {
 		for(int pass = 0; pass < 4; pass++) {
 			for(int i = 0; i < 4; i++) {
 				int64 a;
@@ -46,7 +48,6 @@ class RandomNumberGenerator : Moveable<RandomNumberGenerator> {
 		}
 	}
 	
-public:
 	RandomNumberGenerator() {Seed();}
 	float  Randomf() {return (sNext(state) >> 11) * (1.f / (UINT64_C(1) << 53));}
 	double Randomd() {return (sNext(state) >> 11) * (1.  / (UINT64_C(1) << 53));}

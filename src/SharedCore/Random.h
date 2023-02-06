@@ -30,7 +30,9 @@ class RNG : Moveable<RNG> {
 		return result_starstar;
 	}
 	
-	void sSeed(uint64 *s) {
+public:
+	
+	static void sSeed(uint64 *s) {
 		for(int pass = 0; pass < 4; pass++) {
 			for(int i = 0; i < 4; i++) {
 				int64 a;

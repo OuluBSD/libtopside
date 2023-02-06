@@ -111,12 +111,12 @@ bool ToyLoader::Load(Object& o) {
 				continue;
 			
 			TOY_ASSERT(in_map.Find("type") >= 0);
-			to_in.id		= in_map.Get("id");
-			to_in.type		= in_map.Get("type");
-			if (in_map.Find("filter") >= 0)		to_in.filter	= in_map.Get("filter");
-			if (in_map.Find("wrap") >= 0)		to_in.wrap		= in_map.Get("wrap");
-			if (in_map.Find("vflip") >= 0)		to_in.vflip		= in_map.Get("vflip");
-			if (in_map.Find("filename") >= 0)	to_in.filename	= in_map.Get("filename");
+			to_in.id		= in_map.Get("id").ToString();
+			to_in.type		= in_map.Get("type").ToString();
+			if (in_map.Find("filter") >= 0)		to_in.filter	= in_map.Get("filter").ToString();
+			if (in_map.Find("wrap") >= 0)		to_in.wrap		= in_map.Get("wrap").ToString();
+			if (in_map.Find("vflip") >= 0)		to_in.vflip		= in_map.Get("vflip").ToString();
+			if (in_map.Find("filename") >= 0)	to_in.filename	= in_map.Get("filename").ToString();
 		}
 		
 	}

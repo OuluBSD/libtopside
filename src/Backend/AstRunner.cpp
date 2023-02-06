@@ -15,7 +15,7 @@ bool AstRunner::Execute(const AstNode& n) {
 	
 	AstNode& root = GetRoot();
 	
-	for (AstNode& s : n.sub) {
+	for (const AstNode& s : n.sub) {
 		if (s.src == SEMT_BUILTIN || s.src == SEMT_META_BUILTIN) {
 			AstNode* local = root.Find(s.name, s.src);
 			if (local)
@@ -78,10 +78,10 @@ AstNode* AstRunner::Merge(const AstNode& n) {
 AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 	ASSERT(n.src == SEMT_STATEMENT && n.stmt == STMT_META_FOR);
 	
-	AstNode* block = 0;
-	AstNode* for_cond = 0;
-	AstNode* for_post = 0;
-	AstNode* for_range = 0;
+	const AstNode* block = 0;
+	const AstNode* for_cond = 0;
+	const AstNode* for_post = 0;
+	const AstNode* for_range = 0;
 	
 	AstNode* closest_type = GetClosestType();
 	
@@ -90,7 +90,7 @@ AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 	
 	PushScope(*d, true);
 	
-	for (AstNode& s : n.sub) {
+	for (const AstNode& s : n.sub) {
 		if (s.src == SEMT_STATEMENT && s.stmt == STMT_META_FOR_COND) {
 			for_cond = &s;
 		}
@@ -146,7 +146,7 @@ AstNode* AstRunner::VisitMetaFor(const AstNode& n) {
 			PushScope(*dup_block);
 			dup_block->i64 = 1; // skip indent
 			
-			for (AstNode& s : block->sub) {
+			for (const AstNode& s : block->sub) {
 				if (!Visit(s))
 					return 0;
 				if (IsRvalReturn(s.src))
@@ -307,7 +307,7 @@ AstNode* AstRunner::MergeStatement(const AstNode& n) {
 		d->CopyFrom(this, n);
 		if (n.sub.GetCount()) {
 			PushScope(*d);
-			for (AstNode& s : n.sub) {
+			for (const AstNode& s : n.sub) {
 				if (!Visit(s))
 					return 0;
 				if (IsRvalReturn(s.src))
@@ -383,7 +383,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		d = &GetRoot();
 		d->src = SEMT_ROOT;
 		PushScope(*d);
-		for (AstNode& s : n.sub) {
+		for (const AstNode& s : n.sub) {
 			if (s.src == SEMT_RVAL)
 				continue;
 			sd = Visit(s);
@@ -407,7 +407,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	case SEMT_STATE:
 		d = Merge(n);
 		PushScope(*d);
-		for (AstNode& s : n.sub) {
+		for (const AstNode& s : n.sub) {
 			sd = Visit(s);
 			if (!sd)
 				return 0;
@@ -422,7 +422,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	case SEMT_COMPONENT:
 		d = AddDuplicate(n);
 		PushScope(*d);
-		for (AstNode& s : n.sub) {
+		for (const AstNode& s : n.sub) {
 			sd = Visit(s);
 			if (!sd)
 				return 0;
@@ -461,7 +461,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			return 0;
 		if (!n.sub.IsEmpty()) {
 			PushScope(*d);
-			for (AstNode& s : n.sub) {
+			for (const AstNode& s : n.sub) {
 				if (s.src == SEMT_RVAL)
 					continue;
 				sd = Visit(s);
@@ -482,7 +482,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			return 0;
 		if (!n.sub.IsEmpty()) {
 			PushScope(*d);
-			for (AstNode& s : n.sub) {
+			for (const AstNode& s : n.sub) {
 				if (s.src == SEMT_RVAL)
 					continue;
 				sd = Visit(s);
@@ -516,7 +516,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 		if (!d)
 			d = AddDuplicate(n);
 		PushScope(*d);
-		for (AstNode& s : n.sub) {
+		for (const AstNode& s : n.sub) {
 			if (!Visit(s))
 				return 0;
 		}
@@ -563,7 +563,7 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 			
 			CHECK_SPATH_BEGIN
 			
-			for (AstNode& s : n.sub) {
+			for (const AstNode& s : n.sub) {
 				if (s.src == SEMT_ARGUMENT || s.IsPartially(SEMT_META_ANY)) {
 					sd = Visit(s);
 					if (!sd)
@@ -776,8 +776,8 @@ AstNode* AstRunner::VisitMetaCtor(const AstNode& n) {
 	}
 	
 	int arg_count = 0;
-	AstNode* arg = 0;
-	for (AstNode& s : args->sub) {
+	const AstNode* arg = 0;
+	for (const AstNode& s : args->sub) {
 		if (s.src == SEMT_ARGUMENT) {
 			arg = &s;
 			arg_count++;
@@ -848,7 +848,7 @@ bool AstRunner::VisitStatementBlock(const AstNode& n, bool req_rval) {
 	
 	if (!n.sub.IsEmpty()) {
 		int dbg_i = 0;
-		for (AstNode& s : n.sub) {
+		for (const AstNode& s : n.sub) {
 			if (s.src == SEMT_STATEMENT && (s.stmt == STMT_ELSE || s.stmt == STMT_META_ELSE))
 				continue;
 			
@@ -921,7 +921,7 @@ AstNode* AstRunner::VisitReturn(const AstNode& n) {
 }
 
 AstNode* AstRunner::VisitMetaResolve(const AstNode& n) {
-	ASSERT(n.src == SEMT_META_RESOLVE)
+	ASSERT(n.src == SEMT_META_RESOLVE);
 	
 	if (n.id.part_count == 0) {
 		AddError(n.loc, "internal error: empty id");
@@ -1177,7 +1177,6 @@ AstNode* AstRunner::Evaluate(const AstNode& n) {
 			case OP_SUB:		o = a[0] - a[1]; break;
 			case OP_MUL:		o = a[0] * a[1]; break;
 			case OP_DIV:		o = a[0] / a[1]; break;
-			case OP_MOD:		o = a[0] % a[1]; break;
 			case OP_LSH:		o = a[0] << a[1]; break;
 			case OP_RSH:		o = a[0] >> a[1]; break;
 			case OP_EQ:			o = a[0] == a[1]; break;
@@ -1187,6 +1186,7 @@ AstNode* AstRunner::Evaluate(const AstNode& n) {
 			case OP_GREQ:		o = a[0] >= a[1]; break;
 			case OP_LSEQ:		o = a[0] <= a[1]; break;
 			
+			case OP_MOD:
 			case OP_NULL:
 			case OP_INC:
 			case OP_DEC:

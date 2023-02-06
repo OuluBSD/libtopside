@@ -1,8 +1,11 @@
-#include "Core.h"
+#include <Local/Local.h>
 
 
 NAMESPACE_UPP_BEGIN
 
+void sSeed(uint64 *s) {
+	RNG::sSeed(s);
+}
 
 RNG::RNG() {
 	Seed();

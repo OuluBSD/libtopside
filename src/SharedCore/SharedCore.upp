@@ -20,6 +20,7 @@ file
 	Draw.h,
 	Draw.cpp,
 	Random.h,
+	Random.cpp,
 	Ctrl.h,
 	Ctrl.cpp;
 

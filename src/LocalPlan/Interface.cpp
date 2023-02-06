@@ -966,6 +966,7 @@ String InterfaceBuilder::GetBaseConds(String s) const {
 	
 	NEVER();
 	Panic("error");
+	return String();
 }
 
 NAMESPACE_TOPSIDE_END

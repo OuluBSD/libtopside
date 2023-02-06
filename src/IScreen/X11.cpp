@@ -272,8 +272,13 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	else if (fmt.IsProg()) {
 		Size sz(ctx.fb->width, ctx.fb->height);
 		ASSERT(!sz.IsEmpty());
-		if (dev.id.IsEmpty())
+		if (dev.id.IsEmpty()) {
+			#ifdef UPP_VERSION
+			dev.id = new ImageDraw(sz);
+			#else
 			dev.id.Create(sz, 4);
+			#endif
+		}
 		
 		InternalPacketData& data = in->GetData<InternalPacketData>();
 		DrawCommand* begin = (DrawCommand*)data.ptr;
@@ -306,8 +311,11 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		}
 		
 		dev.id->DrawRect(sz, Black());
-		dev.pi.Paint(begin, end, dev.id);
+		dev.pi.Paint(begin, end, *dev.id);
 		
+		#ifdef UPP_VERSION
+		TODO
+		#else
 		dev.id->SwapRG();
 		
 		ASSERT(ctx.fb);
@@ -342,6 +350,7 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	        ctx.fb->data = 0;
 	        return false;
 	    }
+	    #endif
 	    
 		XFlush(ctx.display);
 		//XSync(dev.display, False);

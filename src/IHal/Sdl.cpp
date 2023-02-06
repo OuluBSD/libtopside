@@ -486,8 +486,13 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		return true;
 	}
 	else if (fmt.IsProg()) {
-		if (dev.id.IsEmpty())
+		if (dev.id.IsEmpty()) {
+			#ifdef UPP_VERSION
+			dev.id = new ImageDraw(dev.sz);
+			#else
 			dev.id.Create(dev.sz, 3);
+			#endif
+		}
 		
 		InternalPacketData& data = p->GetData<InternalPacketData>();
 		DrawCommand* begin = (DrawCommand*)data.ptr;
@@ -519,8 +524,11 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		}
 		
 		dev.id->DrawRect(dev.sz, Black());
-		dev.pi.Paint(begin, end, dev.id);
+		dev.pi.Paint(begin, end, *dev.id);
 		
+		#ifdef UPP_VERSION
+		TODO
+		#else
 		{
 			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
 			
@@ -558,6 +566,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			//memset(pixels, Random(0x100), len);
 			SDL_UnlockTexture(fb);
 		}
+		#endif
 		
 		return true;
 	}
@@ -951,7 +960,9 @@ Image HalSdl__GetMouseCursor(void* ptr) {
 	if (!cursor)
 		return Image();
 	Image img;
+	#ifndef UPP_VERSION
 	img.Set(cursor, Image::SDL_CURSOR, 0);
+	#endif
 	return img;
 }
 
