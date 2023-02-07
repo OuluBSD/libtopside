@@ -425,9 +425,14 @@ bool HalSdl::CenterVideoSinkDevice_PostInitialize(NativeCenterVideoSinkDevice& d
     
     
     // Renderer
+    #if IS_UPP_CORE
+    int fb_stride = 4;
+    SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
+	#else
     int fb_stride = 3;
+    SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
+	#endif
 
-	SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
 	if (!fb) {
 		LOG("error: couldn't create framebuffer texture");
 		return false;
@@ -487,7 +492,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 	}
 	else if (fmt.IsProg()) {
 		if (dev.id.IsEmpty()) {
-			#ifdef UPP_VERSION
+			#if IS_UPP_CORE
 			dev.id = new ImageDraw(dev.sz);
 			#else
 			dev.id.Create(dev.sz, 3);
@@ -526,9 +531,6 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		dev.id->DrawRect(dev.sz, Black());
 		dev.pi.Paint(begin, end, *dev.id);
 		
-		#ifdef UPP_VERSION
-		TODO
-		#else
 		{
 			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
 			
@@ -546,15 +548,39 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			int pitch = surf->pitch;
 			byte* pixels = (byte*)surf->pixels;
 			int len = h * pitch;
+			#if IS_UPP_CORE
+			Image img = *dev.id;
+			const RGBA* begin = img.Begin();
+			int id_len = img.GetLength() * 4;
+			int id_h = img.GetHeight();
+			#else
 			int id_len = dev.id->Data().GetCount();
+			int id_h = dev.id->GetHeight();
+			#endif
 			ASSERT(len == id_len);
 			if (len == id_len) {
-				// optional vertical invert
-				#if 1
-				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
+				#if IS_UPP_CORE
+				memcpy(pixels, (byte*)begin, len);
 				#else
+				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
+				#endif
+			}
+			#if 0
+			else if (id_h == h) {
 				byte* to = pixels;
+				#if IS_UPP_CORE
+				byte* from = (byte*)begin;
+				#else
 				byte* from = dev.id->Data().Begin();
+				#endif
+				// optional vertical invert (1 is on)
+				#if 0
+				for (int y = 0; y < h; y++) {
+					memcpy(to, from, pitch);
+					to += pitch;
+					from += pitch;
+				}
+				#else
 				from += (h - 1) * pitch;
 				for (int y = 0; y < h; y++) {
 					memcpy(to, from, pitch);
@@ -563,10 +589,10 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				}
 				#endif
 			}
+			#endif
 			//memset(pixels, Random(0x100), len);
 			SDL_UnlockTexture(fb);
 		}
-		#endif
 		
 		return true;
 	}
@@ -960,7 +986,7 @@ Image HalSdl__GetMouseCursor(void* ptr) {
 	if (!cursor)
 		return Image();
 	Image img;
-	#ifndef UPP_VERSION
+	#if IS_TS_CORE
 	img.Set(cursor, Image::SDL_CURSOR, 0);
 	#endif
 	return img;
@@ -1052,7 +1078,7 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 		return false;
 	}
 	
-	if (!dep->IsRunning()) {
+	if (!dep->IsInitialized()) {
 		LOG("HalSdl::EventsBase_PostInitialize: context is not running");
 	}
 	

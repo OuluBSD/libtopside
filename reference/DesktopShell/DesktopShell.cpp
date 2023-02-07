@@ -8,7 +8,7 @@ void DesktopMain() {
 	using namespace Parallel;
 	
 	//GeomInteraction::do_debug_draw = true;
-	#ifdef UPP_VERSION
+	#if 0
 	SDL2GUI gui;
 	gui.Create(RectC(100, 100, 1024, 768), "SDL2GL Virtual Gui Test");
 
@@ -22,7 +22,7 @@ void DesktopMain() {
 		Ctrl::EventLoop();
 	});
 	#else
-	GuiTesterApp().Run();
+	GuiTesterApp().RunInMachine();
 	#endif
 	
 	Machine& mach = GetActiveMachine();

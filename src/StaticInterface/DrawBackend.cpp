@@ -1,6 +1,6 @@
 #include "StaticInterface.h"
 
-#ifndef UPP_VERSION
+#if IS_TS_CORE
 
 NAMESPACE_UPP
 

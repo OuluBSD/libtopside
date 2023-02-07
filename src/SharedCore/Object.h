@@ -4,7 +4,7 @@
 
 NAMESPACE_UPP
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 inline WString ToWString(String s) {return s.ToWString();}
 inline WString ToWString(const wchar_t* chr) {return std::wstring(chr);}
 template <class T> inline String ToString(const T& o) {return AsString(o);}
@@ -51,7 +51,7 @@ const dword VALUE_ARRAY_AND_MAP_V   = 13;
 class Object;
 
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 Object ObjectFromValue(const Value& v);
 #endif
 
@@ -139,7 +139,7 @@ public:
 	Object(const Nuller&) {}
 	template <class T> Object(const T& o) {obj.WrapObject(new ObjectTemplate<T>(o));}
 	
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	Object(const Value& v) {*this = ObjectFromValue(v);}
 	#endif
 	

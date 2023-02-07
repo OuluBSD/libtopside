@@ -58,7 +58,7 @@ public:
 template <class T> TypeCls GetTypeIdClass() {return T::TypeIdClass();}
 template <class T> const char* GetTypeNameT() {return T::GetTypeName();}
 
-#ifndef UPP_VERSION
+#if IS_TS_CORE
 template<> inline TypeCls GetTypeIdClass<void>() {static int d = 0; return (size_t) &d;}
 #endif
 

@@ -11,7 +11,12 @@ HandleSystemT<Dim>::HandleSystemT(Machine& m) :
 
 template <class Dim>
 bool HandleSystemT<Dim>::Initialize() {
-	
+	return true;
+}
+
+template <>
+bool HandleSystemT<Ctx2D>::Initialize() {
+	RealizeScope();
 	return true;
 }
 

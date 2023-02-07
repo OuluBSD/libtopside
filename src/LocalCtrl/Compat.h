@@ -34,7 +34,7 @@ public:
 	}
 	
 	void Paint(Draw& d) override {
-		#if UPP_VERSION
+		#if IS_UPP_CORE
 		TODO
 		#else
 		c.Paint(d);

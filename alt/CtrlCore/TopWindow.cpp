@@ -15,6 +15,10 @@ TopWindow::TopWindow() {
 	return this;
 }*/
 
+void TopWindow::RunInMachine() {
+	Run();
+}
+
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	using namespace Parallel;

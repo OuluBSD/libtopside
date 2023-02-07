@@ -1,6 +1,6 @@
 #include "LocalCtrl.h"
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 
 NAMESPACE_TOPSIDE_BEGIN
 

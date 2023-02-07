@@ -9,6 +9,7 @@ class Draw2 : public Draw {
 	
 	
 public:
+	RTTI_DECL1_(Draw2, Draw);
 	virtual void CtrlDrawBegin(hash_t) {}
 	virtual void CtrlDrawEnd() {}
 	virtual void SetSize(Size sz) = 0;

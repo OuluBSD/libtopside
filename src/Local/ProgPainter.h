@@ -44,6 +44,7 @@ class ProgPainter : public Draw2 {
 	
 	
 public:
+	RTTI_DECL1(ProgPainter, Draw2);
 	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
 	ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
 	~ProgPainter() {/*Clear();*/}
@@ -70,7 +71,7 @@ public:
 	void BindWindow(hash_t h);
 	void UnbindWindow();
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override {TODO};
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	#else

@@ -30,6 +30,7 @@ file
 	Container.h,
 	Container.cpp,
 	RTuple.h,
+	StringUtil.h,
 	Util.h,
 	Util.cpp,
 	Process.h,

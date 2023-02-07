@@ -9,7 +9,7 @@ class ToolBackground : public Ctrl {
 	String label;
 	
 public:
-	RTTI_DECL1(ToolBackground, Ctrl)
+	RTTI_DECL1_(ToolBackground, Ctrl)
 	ToolBackground();
 	
 	virtual void Paint(Draw& d) override;
@@ -28,7 +28,7 @@ class ToolGrid : public ParentCtrl {
 	int cursor;
 	
 public:
-	RTTI_DECL1(ToolGrid, ParentCtrl)
+	RTTI_DECL1_(ToolGrid, ParentCtrl)
 	typedef ToolGrid CLASSNAME;
 	ToolGrid();
 	
@@ -54,7 +54,7 @@ class ToolList : public ParentCtrl {
 	Array<ToolGrid> grids;
 	
 public:
-	RTTI_DECL1(ToolList, ParentCtrl)
+	RTTI_DECL1_(ToolList, ParentCtrl)
 	ToolList();
 	
 	ToolGrid& AddGrid(String name);

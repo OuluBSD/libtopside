@@ -51,6 +51,8 @@ public:
 	static void DoMouseFB(int event, Point p, int zdelta = 0);
 	static bool DoKeyFB(dword key, int cnt);
 
+	static void EventLoopOnce();
+	
 	static void InitFB();
 	static void ExitFB();
 	static void EndSession();

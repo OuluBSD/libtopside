@@ -173,7 +173,7 @@ void ModelPainter::DrawText(float x, float y, float z, String txt, Font fnt, RGB
 	if (txt.GetCount() == 0 || fnt.IsNullInstance())
 		return;
 	
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	TODO
 	#else
 	SysColor c;

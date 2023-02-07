@@ -25,7 +25,7 @@ void SetCenterHotSpot(Image& img) {
 	Size sz = img.GetSize();
 	if (!sz.IsEmpty()) {
 		Point hs(sz.cx / 2, sz.cy / 2);
-		#ifdef UPP_VERSION
+		#if IS_UPP_CORE
 		ImageBuffer ib(img);
 		ib.SetHotSpot(hs);
 		img = ib;
@@ -384,7 +384,7 @@ const byte* ByteImage::GetIter(int x, int y) const {
 
 
 void DataFromImage(const Image& img, Vector<byte>& out) {
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	
 	TODO
 	
@@ -440,7 +440,7 @@ void DataFromImage(const Image& img, Vector<byte>& out) {
 }
 
 Image MirrorVertical(const Image& img) {
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	
 	TODO
 	

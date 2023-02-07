@@ -13,7 +13,7 @@ void BufferT<Gfx>::Update(double dt) {
 	if (ctx.time_us >= 1.0) {
 		ctx.time_us = fmod(ctx.time_us, 1.0);
 		ctx.time = GetSysTime();
-		RTLOG("Update: " << dt << ", time=" << ctx.time.ToString());
+		RTLOG("Update: " << dt << ", time=" << AsString(ctx.time));
 	}
 }
 

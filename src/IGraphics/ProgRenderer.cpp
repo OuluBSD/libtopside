@@ -28,7 +28,7 @@ void DrawCommandImageRenderer::ProcessWindowCommands(DrawCommand* begin, DrawCom
 	this->sz = sz;
 	
 	if (id.IsEmpty() || id->GetPageSize() != sz) {
-		#ifdef UPP_VERSION
+		#if IS_UPP_CORE
 		id = new ImageDraw(sz.cx, sz.cy);
 		#else
 		id->Create(sz, 3);

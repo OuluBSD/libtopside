@@ -104,7 +104,7 @@ public:
 	
     static const char* GetTypeName() {static auto s = "Ref<" + String(T::GetTypeName()) + ">" ; return s;}
     
-    #ifdef UPP_VERSION
+    #if IS_UPP_CORE
     static TypeCls TypeIdClass() {return typeid(Ref);}
     #else
     static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}

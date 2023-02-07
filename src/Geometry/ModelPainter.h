@@ -46,7 +46,7 @@ public:
 	void BindWindow(hash_t h);
 	void UnbindWindow();
 	void DrawLine(float x0, float y0, float z0, float x1, float y1, float z1, float line_width, RGBA c);
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	void DrawImage(float x, float y, float z, Image img, byte alpha=255) override;
 	#else
 	void DrawImage(float x, float y, float z, Image img, byte alpha=255) override;

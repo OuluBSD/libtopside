@@ -25,7 +25,7 @@ class DrawGeometry : public DrawProxy {
 	
 	
 public:
-	RTTI_DECL1(DrawGeometry, DrawProxy)
+	RTTI_DECL1_(DrawGeometry, DrawProxy)
 	DrawGeometry(Draw& d) {SetTarget(&d);}
 	
 	void DrawLine(const vec2& a, const vec2& b, int line_width, Color c);

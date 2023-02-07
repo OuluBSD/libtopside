@@ -1,10 +1,13 @@
 #include "Local.h"
+#include <SerialLib/SerialLib.h>
 
 #ifdef VIRTUALGUI
 
 NAMESPACE_UPP
 
 #define LLOG(x)  // LOG(x)
+
+void GatherWindowTree(Ctrl *w, const Vector<Ctrl *>& ws, Vector<Ctrl *>& es);
 
 void TopWindow::SyncFrameRect(const Rect& r)
 {
@@ -151,6 +154,54 @@ void TopWindow::SerializePlacement(Stream& s, bool reminimize)
 
 void TopWindow::FocusEvent() {
 	Panic("TODO");
+}
+
+void TopWindow::RunInMachine(bool appmodal) {
+	GuiLock __;
+	LLOG("TopWindow::RunInMachine() <- " << typeid(*this).name());
+	LLOG("Focus = " << UPP::Name(GetFocusCtrl()));
+	if(!IsOpen())
+		Open();
+	if(!IsVisible()) Show();
+	bool pinloop = inloop;
+	int  pexitcode = exitcode;
+	exitcode = Null;
+	Vector<Ctrl *> es;
+	if(appmodal)
+		es = GetTopCtrls();
+	else {
+		Vector<Ctrl *> ws = GetTopCtrls();
+		for(int i = 0; i < ws.GetCount(); i++)
+			if(ws[i]->InLoop())
+				es.Add(ws[i]);
+		Ctrl *mw = GetMainWindow();
+		if(mw) GatherWindowTree(mw, ws, es);
+	}
+	Vector< Ptr<Ctrl> > disabled = DisableCtrls(es, this);
+#ifdef _DEBUG
+	for(int d = 0; d < disabled.GetCount(); d++)
+		LLOG("DisableCtrls[" << d << "] = " << UPP::Name(disabled[d]));
+	LLOG("Running EventLoop in " << UPP::Name(this));
+#endif
+	TS::DebugMainLoop();
+#ifdef _DEBUG
+	LLOG("Finished EventLoop in " << UPP::Name(this));
+	for(int e = 0; e < disabled.GetCount(); e++)
+		LLOG("EnableCtrls[" << e << "] = " << UPP::Name(disabled[e]));
+#endif
+	EnableCtrls(disabled);
+	if(IsNull(exitcode)) {
+		WhenClose();
+		if(IsNull(exitcode))
+			DefaultBreak();
+	}
+	int q = exitcode;
+	inloop = pinloop;
+	exitcode = pexitcode;
+	LLOG("TopWindow::Run() = " << q << " -> " << typeid(*this).name());
+#ifdef GUI_WIN
+	LLOG("Focus = " << UPP::Name(GetFocusCtrl()) << ", raw " << (void *)::GetFocus());
+#endif
 }
 
 END_UPP_NAMESPACE

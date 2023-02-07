@@ -11,7 +11,7 @@
 	#error No eon file for GUI app on this platform.
 #endif
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 	#warning TODO
 #else
 

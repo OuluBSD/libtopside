@@ -11,7 +11,7 @@ class DrawProg : public DrawProxy {
 	bool skip_window_commands = false;
 	
 public:
-	RTTI_DECL1(DrawProg, DrawProxy)
+	RTTI_DECL1_(DrawProg, DrawProxy)
 	DrawProg();
 	void Process(const DrawCommand* begin, const DrawCommand* end);
 	void SkipWindowCommands(bool b=true);

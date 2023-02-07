@@ -273,7 +273,7 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		Size sz(ctx.fb->width, ctx.fb->height);
 		ASSERT(!sz.IsEmpty());
 		if (dev.id.IsEmpty()) {
-			#ifdef UPP_VERSION
+			#if IS_UPP_CORE
 			dev.id = new ImageDraw(sz);
 			#else
 			dev.id.Create(sz, 4);
@@ -313,7 +313,7 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 		dev.id->DrawRect(sz, Black());
 		dev.pi.Paint(begin, end, *dev.id);
 		
-		#ifdef UPP_VERSION
+		#if IS_UPP_CORE
 		TODO
 		#else
 		dev.id->SwapRG();

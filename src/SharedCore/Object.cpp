@@ -416,7 +416,7 @@ String GetObjectTreeString(const Object& v, String key, int indent) {
 
 
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 Object ObjectFromValue(const Value& v) {
 	#define SIMPLE(x) else if (type == GetValueTypeNo<x>()) return v.Get<x>();
 	dword type = v.GetType();

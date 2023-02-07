@@ -39,7 +39,7 @@ static constexpr bool is_in_parallel = true;
 #endif
 
 // Using original Ultimate++ Core
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 	#define flagSTDRTTI
 	#ifndef flagSTDEXC
 		#define flagSTDEXC
@@ -69,7 +69,7 @@ static constexpr bool is_in_parallel = true;
 #if defined flagOPENCV && (defined flagPOSIX || defined HAVE_MINGW)
 	#define HAVE_V4L2_DEVMGR	1
 	//#define HAVE_V4L2_CAP		1
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 		//#define V4L2_SLOW		1
 	#endif
 #elif defined flagOPENCV && (defined flagWIN32 && defined flagMSC)

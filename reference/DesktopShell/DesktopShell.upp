@@ -1,0 +1,13 @@
+uses
+	Complete,
+	DesktopSuite;
+
+file
+	DesktopShell.h,
+	DesktopShell.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2",
+	"" = "GUI SCREEN SDL2 DEBUG_RT",
+	"" = "GUI SCREEN SDL2 USEMALLOC";
+

@@ -1,6 +1,6 @@
 #include "ParallelLib.h"
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 // TopWindow
 #include <CtrlLib/CtrlLib.h>
 #endif
@@ -653,12 +653,12 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 
 template <>
 void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
 	captured = CastPtr<Interaction>(c);
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
 	captured_ctrl = cgb ? cgb->GetCtrl() : 0;
 	#else
@@ -670,7 +670,7 @@ void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
 template <>
 void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
 	with_mouse = CastPtr<Interaction>(c);
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
 	with_mouse_ctrl = cgb ? cgb->GetCtrl() : 0;
 	#else
@@ -681,7 +681,7 @@ void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
 
 template <>
 void ScopeT<Ctx2D>::SetCaptured(Container* c) {
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	TODO // get GeomInteraction2D from Ctrl
 	#else
 	captured = c;
@@ -691,7 +691,7 @@ void ScopeT<Ctx2D>::SetCaptured(Container* c) {
 
 template <>
 void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	TODO // get GeomInteraction2D from Ctrl
 	#else
 	with_mouse = c;

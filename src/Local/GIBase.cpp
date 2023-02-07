@@ -1,6 +1,6 @@
 #include "Local.h"
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 #include <CtrlCore/CtrlCore.h>
 #endif
 

@@ -24,7 +24,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 	#ifndef flagGUI
 		#define flagGUI
 	#endif

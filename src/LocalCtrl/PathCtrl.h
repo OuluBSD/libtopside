@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class ToolBarBg : public Ctrl {
 	
 public:
-	RTTI_DECL1(ToolBarBg, Ctrl)
+	RTTI_DECL1_(ToolBarBg, Ctrl)
 	ToolBarBg();
 	
 	virtual void Paint(Draw& d) override;
@@ -24,7 +24,7 @@ class PathCtrl : public ParentCtrl {
 	void RefreshEdit();
 	
 public:
-	RTTI_DECL1(PathCtrl, ParentCtrl)
+	RTTI_DECL1_(PathCtrl, ParentCtrl)
 	typedef PathCtrl CLASSNAME;
 	PathCtrl();
 	

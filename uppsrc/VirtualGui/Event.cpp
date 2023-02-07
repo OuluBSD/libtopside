@@ -138,6 +138,11 @@ bool Ctrl::ProcessEvents(bool *quit)
 	return ret;
 }
 
+void Ctrl::EventLoopOnce() {
+	EndSessionLoopNo = EventLoopNo + 1;
+	EventLoop(0);
+}
+
 void Ctrl::EventLoop(Ctrl *ctrl)
 {
 	GuiLock __;

@@ -9,7 +9,7 @@ class TaskBar : public Ctrl {
 	
 	
 public:
-	RTTI_DECL1(TaskBar, Ctrl);
+	RTTI_DECL1_(TaskBar, Ctrl);
 	TaskBar();
 	
 	

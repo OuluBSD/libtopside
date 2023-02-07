@@ -52,7 +52,7 @@ StaticIfaceBackend* StaticIfaceFactory::GetWriter(String ext) {
 
 
 Image RenderTextBlended(Font fnt, const char* s, SysColor c) {
-#ifdef UPP_VERSION
+#if IS_UPP_CORE
 	TODO
 #else
 	SysFont* raw = fnt.GetSysFont();

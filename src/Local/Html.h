@@ -218,7 +218,7 @@ public:
 	}
 	void Serialize(Stream& s) {s % sub % attr % type % text % int_value;}
 	
-	#ifdef UPP_VERSION
+	#if IS_UPP_CORE
 	void Jsonize(JsonIO& json) {
 		json
 			("type", type)

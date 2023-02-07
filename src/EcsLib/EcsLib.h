@@ -4,7 +4,7 @@
 #include <Core/Core.h>
 #include <EcsCore/EcsCore.h>
 
-#if defined UPP_VERSION || (defined flagSTDEXC)
+#if IS_UPP_CORE || (defined flagSTDEXC)
 	#include <Esc/Esc.h>
 #endif
 

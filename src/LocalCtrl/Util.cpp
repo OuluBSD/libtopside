@@ -4,8 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void EventLoopIteration(double dt, bool* quit) {
-	#ifdef UPP_VERSION
-	TODO
+	#if IS_UPP_CORE
+	Ctrl::EventLoopOnce();
 	#else
 	Ctrl::ProcessEvents(dt, quit);
 	#endif

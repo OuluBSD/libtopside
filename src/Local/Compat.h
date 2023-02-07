@@ -17,7 +17,6 @@ extern char **environ;
 
 #ifdef UPP_VERSION
 
-
 #if __GNUC__
 	#define UNREACHABLE __builtin_unreachable()
 #endif

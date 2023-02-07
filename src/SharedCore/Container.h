@@ -35,7 +35,7 @@ struct ManagedStatic {
 	ManagedStatic(const char* f, int l);
 	template <class Arg> ManagedStatic(const char* f, int l, const Arg& value);
 	~ManagedStatic() {
-		#ifndef UPP_VERSION
+		#if IS_TS_CORE
 		ASSERT(destructed);
 		#endif
 		Destruct();
