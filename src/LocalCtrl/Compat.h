@@ -35,7 +35,20 @@ public:
 	
 	void Paint(Draw& d) override {
 		#if IS_UPP_CORE
-		TODO
+		
+		#if 1
+		Rect r = GetFrameBox();
+		d.Clipoff(r);
+		c.Paint(d);
+		d.End();
+		#else
+		Size sz = GetFrameSize();
+		ImageDraw id(sz);
+		c.Paint(id);
+		Image img = id;
+		d.DrawImage(0,0,img);
+		#endif
+		
 		#else
 		c.Paint(d);
 		#endif
@@ -48,6 +61,22 @@ public:
 };
 
 template <class T> using CG = CtrlGeom<T>;
+
+template<class T>
+class CtrlInterfaceGeom :
+	public CtrlGeomBase,
+	public Absolute2DProxy {
+	T* p = 0;
+	
+public:
+	RTTI_DECL2(CtrlInterfaceGeom, CtrlGeomBase, Absolute2DProxy);
+	CtrlInterfaceGeom() {}
+	
+	void SetTarget(T& o) {p = &o;}
+	
+	Ctrl* GetCtrl() override {return p;}
+	
+};
 
 
 NAMESPACE_TOPSIDE_END

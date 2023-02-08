@@ -1,5 +1,4 @@
-#include <Draw/Draw.h>
-#include "Draw.h"
+#include <Local/Local.h>
 
 
 NAMESPACE_UPP
@@ -46,10 +45,13 @@ String DrawCommand::ToString() const {
 		case DRAW_BIND_WINDOW:		s << "bind-window(" << HexStr(hash) << ")"; break;
 		case DRAW_UNBIND_WINDOW:	s << "unbind-window()"; break;
 		case DRAW_LINE:				s << "line([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "])"; break;
+		case DRAW_TEXT:				s << "text([" << i[0] << "," << i[1] << "], " << txt << ")"; break;
 		case DRAW_IMAGE:			s << "image([" << i[0] << "," << i[1] << "], " << img.ToString() << ")"; break;
+		case DRAW_IMAGE_SIZED:		s << "image-sized([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "], " << img.ToString() << ")"; break;
 		case DRAW_RECT:				s << "rect(pt[" << i[0] << "," << i[1] << "], sz[" << i[2]-i[0] << "," << i[3]-i[1] << "])"; break;
 		case DRAW_TRIANGLES:		s << "triangles(" << (int)clr.r << ", " << (int)clr.g << ", " << (int)clr.b << ", " << (int)clr.a << ")"; break;
 		case DRAW_POLYLINE:			s << "polyline(width=" << i[0] << ", pts-count=" << pts.GetCount() << ")"; break;
+		case DRAW_CLIPOFF:			s << "clipoff(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
 		case DRAW_OFFSET:			s << "offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;
 		case DRAW_END:				s << "end()"; break;
 		case DRAW_WINDOW_OFFSET:	s << "window-offset(" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << ")"; break;

@@ -13,10 +13,13 @@ NAMESPACE_UPP
 	DRAWCMD(BIND_WINDOW) \
 	DRAWCMD(UNBIND_WINDOW) \
 	DRAWCMD(LINE) \
+	DRAWCMD(TEXT) \
 	DRAWCMD(IMAGE) \
+	DRAWCMD(IMAGE_SIZED) \
 	DRAWCMD(RECT) \
 	DRAWCMD(TRIANGLES) \
 	DRAWCMD(POLYLINE) \
+	DRAWCMD(CLIPOFF) \
 	DRAWCMD(OFFSET) \
 	DRAWCMD(END) \
 	DRAWCMD(WINDOW_OFFSET) \
@@ -40,6 +43,9 @@ struct DrawCommand {
 	hash_t hash;
 	RGBA clr;
 	Image img;
+	Rect crop;
+	Font fnt;
+	String txt;
 	Vector<float> triangles;
 	Vector<Point> pts;
 	bool is_cached = false;

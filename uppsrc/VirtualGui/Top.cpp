@@ -140,6 +140,7 @@ bool TopWindow::IsTopMost() const
 void TopWindow::GuiPlatformConstruct()
 {
 	frame = new TopWindowFrame;
+	CreateGeom2DComponent();
 }
 
 void TopWindow::GuiPlatformDestruct()
@@ -204,6 +205,15 @@ void TopWindow::RunInMachine(bool appmodal) {
 #endif
 }
 
+void TopWindow::CreateGeom2DComponent() {
+	using namespace Ecs;
+	using namespace Parallel;
+	
+	Machine& mach = GetActiveMachine();
+	WindowSystemRef wins = mach.Get<WindowSystem>();
+	WindowManager& mgr = wins->GetActiveScope();
+	mgr.AddInterface(*this);
+}
 END_UPP_NAMESPACE
 
 #endif

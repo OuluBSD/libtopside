@@ -699,6 +699,13 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
+template <>
+void ScopeT<Ctx2D>::AddInterface(UPP::TopWindow& tw) {
+	UppTopWindow& utw = tws.Add();
+	utw.SetTarget(tw);
+	AddInterface((Absolute2DProxy&)utw);
+}
+	
 #endif
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)

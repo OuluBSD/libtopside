@@ -394,6 +394,13 @@ public:
 #define RTTI_DECL4(Type, ParentType0, ParentType1, ParentType2, ParentType3) RTTI_DECL_4(Type, ParentType0, ParentType1, ParentType2, ParentType3, #Type)
 #define RTTI_DECL5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) RTTI_DECL_5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4, #Type)
 
+#define RTTI_DECL0_(Type) RTTI_DECL0(Type)
+#define RTTI_DECL1_(Type, ParentType) RTTI_DECL1(Type, ParentType)
+#define RTTI_DECL2_(Type, ParentType0, ParentType1) RTTI_DECL2(Type, ParentType0, ParentType1)
+#define RTTI_DECL3_(Type, ParentType0, ParentType1, ParentType2) RTTI_DECL3(Type, ParentType0, ParentType1, ParentType2)
+#define RTTI_DECL4_(Type, ParentType0, ParentType1, ParentType2, ParentType3) RTTI_DECL4(Type, ParentType0, ParentType1, ParentType2, ParentType3)
+#define RTTI_DECL5_(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) RTTI_DECL5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4)
+
 #define RTTI_DECL_T0(Type) RTTI_DECL_0(Type, TypeStringT(#Type))
 #define RTTI_DECL_T1(Type, ParentType) RTTI_DECL_1(Type, ParentType, TypeStringT(#Type))
 #define RTTI_DECL_T2(Type, ParentType0, ParentType1) RTTI_DECL_2(Type, ParentType0, ParentType1, TypeStringT(#Type))

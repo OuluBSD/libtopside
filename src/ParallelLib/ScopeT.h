@@ -27,12 +27,20 @@ public:
 	using CmdDraw = typename Dim::CmdDraw;
 	using CmdPainter = typename Dim::CmdPainter;
 	using DrawT = typename Dim::DrawT;
-
+	
+	#if IS_UPP_CORE
+	using UppTopWindow = CtrlInterfaceGeom<UPP::TopWindow>;
+	#endif
+	
 private:
 	CmdDraw pd;
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;
-
+	
+	#if IS_UPP_CORE
+	Array<UppTopWindow> tws;
+	#endif
+	
 	int handle_counter = 0;
 	bool maximize_all;
 	int active_pos, active_id;
@@ -93,6 +101,10 @@ public:
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
+	
+	#if IS_UPP_CORE
+	void AddInterface(UPP::TopWindow&);
+	#endif
 	
 	bool CheckRender();
 	bool IsRender() const {return do_render;}

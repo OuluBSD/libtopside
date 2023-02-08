@@ -72,7 +72,7 @@ public:
 	void UnbindWindow();
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
 	#if IS_UPP_CORE
-	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override {TODO};
+	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override;
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;
 	#else
 	void DrawImage(int x, int y, Image img, byte alpha=255) override;

@@ -164,6 +164,24 @@ void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
 	cmd.clr.a = (byte)(alpha / 255.0);
 }
 
+#if IS_UPP_CORE
+void ProgPainter::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_IMAGE_SIZED;
+	cmd.i[0] = x;
+	cmd.i[1] = y;
+	cmd.i[2] = cx;
+	cmd.i[3] = cy;
+	cmd.crop = src;
+	cmd.img = img;
+	//cmd.img.MakeSysAccel();
+	cmd.clr.r = color.GetR();
+	cmd.clr.g = color.GetG();
+	cmd.clr.b = color.GetB();
+	cmd.clr.a = 255;
+}
+#endif
+
 void ProgPainter::DrawRect(Rect r, RGBA clr) {
 	DrawRect(r.left, r.top, r.Width(), r.Height(), clr);
 }
@@ -183,7 +201,13 @@ void ProgPainter::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 		return;
 	
 	#if IS_UPP_CORE
-	TODO
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_TEXT;
+	cmd.i[0] = x;
+	cmd.i[1] = y;
+	cmd.clr = clr;
+	cmd.fnt = fnt;
+	cmd.txt = txt;
 	#else
 	SysColor c;
 	#if 0
@@ -489,8 +513,17 @@ void ProgPainter::Clear() {
 	}
 }
 
-bool ProgPainter::ClipoffOp(const Rect& r) {TODO}
-dword ProgPainter::GetInfo() const {TODO}
+bool ProgPainter::ClipoffOp(const Rect& r) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_CLIPOFF;
+	cmd.i[0] = r.left;
+	cmd.i[1] = r.top;
+	cmd.i[2] = r.right;
+	cmd.i[3] = r.bottom;
+	return true;
+}
+
+dword ProgPainter::GetInfo() const {return 0;}
 void ProgPainter::BeginOp() {TODO}
 void ProgPainter::OffsetOp(Point p) {TODO}
 bool ProgPainter::ExcludeClipOp(const Rect& r) {TODO}

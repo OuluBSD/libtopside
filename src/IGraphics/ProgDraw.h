@@ -20,14 +20,17 @@ public:
 	void UnbindWindow(const DrawCommand& cmd);
 	void DrawLine(const DrawCommand& cmd);
 	void DrawImage(const DrawCommand& cmd);
+	void DrawImageOp(const DrawCommand& cmd);
 	void DrawRect(const DrawCommand& cmd);
 	void DrawTriangles(const DrawCommand& cmd);
 	void DrawPolyline(const DrawCommand& cmd);
 	void DrawPolygon(const DrawCommand& cmd);
+	void Clipoff(const DrawCommand& cmd);
 	void DrawOffset(const DrawCommand& cmd);
 	void DrawEnd(const DrawCommand& cmd);
 	void DrawWindowOffset(const DrawCommand& cmd);
 	void DrawWindowEnd(const DrawCommand& cmd);
+	void DrawText(const DrawCommand& cmd);
 	
 	
 };

@@ -510,6 +510,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				it = it->next;
 			}
 		}
+		ASSERT(0);
 		#endif
 		while (begin && begin->type != DRAW_BIND_WINDOW) begin = begin->next;
 		if (!begin) {

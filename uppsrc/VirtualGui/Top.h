@@ -18,5 +18,6 @@ public:
 	// libtopside additions
 	void FocusEvent();
 	void RunInMachine(bool appmodal=false);
+	void CreateGeom2DComponent();
 	
 //$ };
