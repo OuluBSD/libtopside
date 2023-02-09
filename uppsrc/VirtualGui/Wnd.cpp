@@ -380,6 +380,9 @@ void Ctrl::WndInvalidateRect(const Rect&)
 {
 	GuiLock __;
 	Invalidate();
+	TopWindow* tw = GetTopWindow();
+	if (tw)
+		tw->WhenInvalidate();
 }
 
 void Ctrl::WndSetPos(const Rect& rect)

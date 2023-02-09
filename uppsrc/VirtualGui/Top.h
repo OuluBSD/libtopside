@@ -20,4 +20,8 @@ public:
 	void RunInMachine(bool appmodal=false);
 	void CreateGeom2DComponent();
 	
+	
+	
+	Event<> WhenInvalidate;
+	
 //$ };

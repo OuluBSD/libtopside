@@ -157,7 +157,11 @@ void DrawProg::DrawOffset(const DrawCommand& cmd) {
 void DrawProg::DrawWindowOffset(const DrawCommand& cmd) {
 	if (skip_window_commands)
 		return;
+	#if IS_UPP_CORE
+	Clipoff(cmd);
+	#else
 	DrawOffset(cmd);
+	#endif
 }
 
 void DrawProg::DrawEnd(const DrawCommand& cmd) {

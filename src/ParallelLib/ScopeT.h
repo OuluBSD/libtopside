@@ -29,7 +29,7 @@ public:
 	using DrawT = typename Dim::DrawT;
 	
 	#if IS_UPP_CORE
-	using UppTopWindow = CtrlInterfaceGeom<UPP::TopWindow>;
+	using UppTopWindowWrap = CtrlInterfaceGeom<UPP::TopWindow>;
 	#endif
 	
 private:
@@ -38,7 +38,7 @@ private:
 	ArrayMap<int, Handle> handles;
 	
 	#if IS_UPP_CORE
-	Array<UppTopWindow> tws;
+	Array<UppTopWindowWrap> tws;
 	#endif
 	
 	int handle_counter = 0;

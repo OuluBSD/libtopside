@@ -44,7 +44,7 @@ protected:
 	Handle* handle = NULL;
 	CG<Button> minimize, maximize, close;
 	String label;
-	bool left_down;
+	bool left_down = false;
 	Pt left_down_pt;
 	
 public:

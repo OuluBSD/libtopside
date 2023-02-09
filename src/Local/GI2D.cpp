@@ -418,6 +418,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 			draw_begin = true;
 		}
 		
+		const char* dbg_class_name = GetDynamicName();
 		content->PaintPreFrame(pre);
 		content->Paint(pre);
 		content->PaintDebug(pre);

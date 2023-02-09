@@ -411,6 +411,7 @@ GVar::Sample GetGVarSampleFromBinarySample(BinarySample::Type t) {
 	}
 	Panic("GetGvarSampleFromBinarySample: conversion failed");
 	NEVER();
+	return GVar::SAMPLE_FLOAT;
 }
 
 NAMESPACE_PARALLEL_END

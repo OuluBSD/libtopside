@@ -63,7 +63,7 @@ public:
 	static Ctrl *GetDesktop()                  { return desktop; }
 	static void  SetDesktopSize(Size sz);
 	
-	static void Invalidate()                   { invalid = true; }
+	static void Invalidate();
 
 	void DragRectDraw(const Rect& rect1, const Rect& rect2, const Rect& clip, int n,
 	                  Color color, int type, int animation);
@@ -75,4 +75,8 @@ public:
 	
 	enum { DRAWDRAGRECT_SCREEN = 0x8000 };
 
+	static bool DispatchKeyPub(dword key, int count) {return DispatchKey(key, count);}
+	
+	void DispatchMousePub(int e, const Point& pt, int zd) {DispatchMouse(e, pt, zd);}
+	
 //$ };

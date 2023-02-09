@@ -701,8 +701,9 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 
 template <>
 void ScopeT<Ctx2D>::AddInterface(UPP::TopWindow& tw) {
-	UppTopWindow& utw = tws.Add();
-	utw.SetTarget(tw);
+	UppTopWindowWrap& utw = tws.Add();
+	utw.SetTargetCtrl(tw);
+	utw.LinkInvalidate(tw);
 	AddInterface((Absolute2DProxy&)utw);
 }
 	

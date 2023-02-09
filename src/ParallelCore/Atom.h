@@ -18,7 +18,7 @@ using namespace Serial;
 
 class AtomBase;
 
-template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
+template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER(); return SIDE_NOT_ACCEPTED;}
 template <class T> inline RefT_Atom<T> AtomBase_Static_As(AtomBase*) {return RefT_Atom<T>();}
 
 class AtomBase :

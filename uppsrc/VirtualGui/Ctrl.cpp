@@ -8,6 +8,7 @@ NAMESPACE_UPP
 
 void Ctrl::GuiPlatformConstruct()
 {
+	fullrefresh = false;
 }
 
 void Ctrl::GuiPlatformRemove()
@@ -25,7 +26,7 @@ bool Ctrl::GuiPlatformRefreshFrameSpecial(const Rect& r)
 
 bool Ctrl::GuiPlatformSetFullRefreshSpecial()
 {
-	return false;
+	return true;
 }
 
 String GuiPlatformGetKeyDesc(dword key)
@@ -79,6 +80,10 @@ void  Ctrl::SetMouseCursor(const Image& image)
 	fbCursorImage = image;
 	if(VirtualGuiPtr->GetOptions() & GUI_SETMOUSECURSOR)
 		VirtualGuiPtr->SetMouseCursor(image);
+}
+
+void Ctrl::Invalidate() {
+	invalid = true;
 }
 
 dword VirtualGui::GetOptions()
