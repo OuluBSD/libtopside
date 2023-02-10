@@ -14,6 +14,9 @@ file
 	Explorer.cpp,
 	ControlPanel.h,
 	ControlPanel.cpp,
+	Debug readonly separator,
+	Events.h,
+	Events.cpp,
 	Tester.h,
 	Tester.cpp;
 

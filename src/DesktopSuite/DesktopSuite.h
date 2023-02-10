@@ -9,5 +9,6 @@
 #include "TaskBar.h"
 #include "Explorer.h"
 #include "ControlPanel.h"
+#include "Events.h"
 
 #endif

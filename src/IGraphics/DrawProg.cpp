@@ -103,6 +103,18 @@ void DrawProg::DrawImageOp(const DrawCommand& cmd) {
 		cmd.img,
 		cmd.crop,
 		cmd.clr);
+	
+	#if 0
+	// Dump images
+	hash_t h = cmd.img.GetHashValue();
+	String out = ConfigFile(IntStr64(h) + ".png");
+	if (!FileExists(out)) {
+		PNGEncoder png;
+		png.SaveFile(out, cmd.img);
+		LOG("Saved file: " << out);
+	}
+	#endif
+	
 	#else
 	TODO
 	#endif

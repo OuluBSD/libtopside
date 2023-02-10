@@ -159,6 +159,30 @@ void TopWindow::FocusEvent() {
 
 void TopWindow::RunInMachine(bool appmodal) {
 	GuiLock __;
+	
+	// See Ctrl::InitX11 for example code
+	
+	//VirtualGuiPtr = &gui;
+	//Ctrl::InitFB();
+	
+	//Ctrl::GlobalBackBuffer();
+	Ctrl::InitTimer();
+
+	//SetStdFont(ScreenSans(12));
+	//ChStdSkin();
+	
+	//Ctrl::SetDesktopSize(gui.GetSize());
+	Font::SetDefaultFont(Arial(12));
+
+	ReSkin();
+
+	GUI_GlobalStyle_Write(GUISTYLE_XP);
+	GUI_DragFullWindow_Write(1);
+	GUI_PopUpEffect_Write(GUIEFFECT_NONE);
+	GUI_DropShadows_Write(0);
+	GUI_AltAccessKeys_Write(1);
+	GUI_AKD_Conservative_Write(0);
+
 	LLOG("TopWindow::RunInMachine() <- " << typeid(*this).name());
 	LLOG("Focus = " << UPP::Name(GetFocusCtrl()));
 	if(!IsOpen())
@@ -203,6 +227,7 @@ void TopWindow::RunInMachine(bool appmodal) {
 #ifdef GUI_WIN
 	LLOG("Focus = " << UPP::Name(GetFocusCtrl()) << ", raw " << (void *)::GetFocus());
 #endif
+	Ctrl::ExitFB();
 }
 
 void TopWindow::CreateGeom2DComponent() {

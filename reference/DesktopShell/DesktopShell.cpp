@@ -15,7 +15,9 @@ void DesktopMain() {
 	RunVirtualGui(gui, [] {
 		SetLanguage(LNG_ENGLISH);
 		SetDefaultCharset(CHARSET_UTF8);
-	
+		
+		//ChClassicSkin();
+		
 		GuiTesterApp app;
 		app.OpenMain();
 		app.SetRect(RectC(10,10,320,240));
@@ -23,6 +25,7 @@ void DesktopMain() {
 	});
 	#else
 	GuiTesterApp().RunInMachine();
+	//EventsTester().RunInMachine();
 	#endif
 	
 	Machine& mach = GetActiveMachine();

@@ -75,12 +75,16 @@ public:
 	#if IS_UPP_CORE
 	
 	bool DeepMouseMove(const Point& pt, dword keyflags) override {
-		if (p) {
-			p->DispatchMousePub(UPP::Ctrl::MOUSEMOVE, pt, 0);
+		Rect r = GetContentRect();
+		Point cpt = GetContentPoint(pt);
+		if (r.Contains(cpt)) {
+			p->DispatchMousePub(UPP::Ctrl::MOUSEMOVE, cpt, 0);
 			has_mouse = p->HasMouse();
 			has_mouse_deep = p->HasMouseDeep();
 			return has_mouse_deep;
 		}
+		has_mouse = false;
+		has_mouse_deep = false;
 		return false;
 	}
 	
@@ -101,6 +105,8 @@ public:
 	
 	void MouseLeave() override {
 		// pass
+		has_mouse = false;
+		has_mouse_deep = false;
 	}
 	
 	void LeftDown(Point pt, dword keyflags) override {
