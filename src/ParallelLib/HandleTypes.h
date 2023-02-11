@@ -34,7 +34,7 @@ struct Ctx2D {
 	using CmdPainter = ProgPainter;
 	
 	inline static Rect GetDefaultScopeDimensions() {return RectC(0,0,1280,720);}
-	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,320,240);}
+	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,640,480);}
 	
 };
 

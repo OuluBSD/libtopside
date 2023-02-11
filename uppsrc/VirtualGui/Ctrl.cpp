@@ -86,6 +86,94 @@ void Ctrl::Invalidate() {
 	invalid = true;
 }
 
+void Ctrl::PubCtrlPaint(Draw& w, const Rect& clip) {
+	GuiLock __;
+	//LEVELCHECK(w, this);
+	//LTIMING("CtrlPaint");
+	LLOG("=== CtrlPaint " << UPP::Name(this) << ", clip: " << clip << ", rect: " << GetRect() << ", view: " << GetView());
+	Rect rect = GetRect().GetSize();
+	Rect orect = rect.Inflated(overpaint);
+	if(!IsShown() || orect.IsEmpty() || clip.IsEmpty() || !clip.Intersects(orect))
+		return;
+	Rect view = rect;
+	int n = GetFrameCount();
+	for(int i = 0; i < n; i++) {
+		//LEVELCHECK(w, NULL);
+		Frame& f = GetFrame0(i);
+		f.frame->FramePaint(w, view);
+		view = f.GetView();
+	}
+	Rect oview = view.Inflated(overpaint);
+	bool hasviewctrls = false;
+	bool viewexcluded = false;
+	bool hiddenbychild = false;
+	for(Ctrl& q : *this)
+		if(q.IsShown()) {
+			if(q.GetRect().Contains(orect) && !q.IsTransparent())
+				hiddenbychild = true;
+			if(q.InFrame()) {
+				if(!viewexcluded && IsTransparent() && q.GetRect().Intersects(view)) {
+					w.Begin();
+					w.ExcludeClip(view);
+					viewexcluded = true;
+				}
+				//LEVELCHECK(w, &q);
+				Point off = q.GetRect().TopLeft();
+				w.Offset(off);
+				q.PubCtrlPaint(w, clip - off);
+				w.End();
+			}
+			else
+				hasviewctrls = true;
+		}
+	if(viewexcluded)
+		w.End();
+	//DOLEVELCHECK;
+	if(!hiddenbychild && !oview.IsEmpty() && oview.Intersects(clip) && w.IsPainting(oview)) {
+		//LEVELCHECK(w, this);
+		if(overpaint) {
+			w.Clip(oview);
+			w.Offset(view.left, view.top);
+			Paint(w);
+			PubPaintCaret(w);
+			w.End();
+			w.End();
+		}
+		else {
+			w.Clipoff(view);
+			Paint(w);
+			PubPaintCaret(w);
+			w.End();
+		}
+	}
+	if(hasviewctrls && !view.IsEmpty()) {
+		Rect cl = clip & view;
+		w.Clip(cl);
+		for(Ctrl& q : *this)
+			if(q.IsShown() && q.InView()) {
+				//LEVELCHECK(w, &q);
+				Rect qr = q.GetRect();
+				Point off = qr.TopLeft() + view.TopLeft();
+				Rect ocl = cl - off;
+				if(ocl.Intersects(Rect(qr.GetSize()).Inflated(overpaint))) {
+					w.Offset(off);
+					q.PubCtrlPaint(w, ocl);
+					w.End();
+				}
+			}
+		w.End();
+	}
+	//DOLEVELCHECK;
+}
+
+void Ctrl::PubPaintCaret(Draw& w)
+{
+	GuiLock __;
+	// LLOG("PaintCaret " << Name() << ", caretCtrl: " << caretCtrl << ", WndCaretVisible: " << WndCaretVisible);
+	if(this == caretCtrl && WndCaretVisible)
+		w.DrawRect(GetCaret(), InvertColor);
+}
+
 dword VirtualGui::GetOptions()
 {
 	return 0;

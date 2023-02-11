@@ -5,6 +5,26 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class CtrlTester_Ctrl : public Ctrl {
+	Color clr;
+	String txt;
+public:
+	void Paint(Draw& d) override;
+	void MouseMove(Point p, dword keyflags) override;
+	void SetLabel(String s) {txt = s;}
+};
+
+class CtrlTesterApp : public TopWindow {
+	CtrlTester_Ctrl b;
+	
+	CtrlTester_Ctrl c0;
+	DocEdit c1;
+	
+public:
+	CtrlTesterApp();
+	
+};
+
 class GuiTesterApp : public TopWindow {
 	EditString edit;
 	TimeCallback tc;

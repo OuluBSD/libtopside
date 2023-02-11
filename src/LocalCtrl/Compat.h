@@ -55,6 +55,12 @@ public:
 		#if IS_UPP_CORE
 		
 		#if 1
+		Rect rect = p->GetRect().GetSize();
+		Rect orect = rect.Inflated(p->GetOverpaint());
+		//d.Clipoff(rz);
+		p->PubCtrlPaint(d, orect);
+		//d.End();
+		#elif 1
 		Size sz = GetFrameSize();
 		d.Clipoff(sz);
 		p->Paint(d);

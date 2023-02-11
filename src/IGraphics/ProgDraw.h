@@ -27,6 +27,7 @@ public:
 	void DrawPolygon(const DrawCommand& cmd);
 	void Clipoff(const DrawCommand& cmd);
 	void DrawOffset(const DrawCommand& cmd);
+	void DrawOffsetPoint(const DrawCommand& cmd);
 	void DrawEnd(const DrawCommand& cmd);
 	void DrawWindowOffset(const DrawCommand& cmd);
 	void DrawWindowEnd(const DrawCommand& cmd);

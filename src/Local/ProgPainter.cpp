@@ -525,10 +525,26 @@ bool ProgPainter::ClipoffOp(const Rect& r) {
 
 dword ProgPainter::GetInfo() const {return 0;}
 void ProgPainter::BeginOp() {TODO}
-void ProgPainter::OffsetOp(Point p) {TODO}
+
+void ProgPainter::OffsetOp(Point p) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_OFFSET_POINT;
+	cmd.i[0] = p.x;
+	cmd.i[1] = p.y;
+}
+
 bool ProgPainter::ExcludeClipOp(const Rect& r) {TODO}
 bool ProgPainter::IntersectClipOp(const Rect& r) {TODO}
-bool ProgPainter::IsPaintingOp(const Rect& r) const {TODO}
+bool ProgPainter::IsPaintingOp(const Rect& r) const {
+	// In very optimized system: test if rect is visible at all
+	// e.g. wim32 return ::RectVisible(handle, r);
+	// Or check for list of invalidated rects
+	// e.g. gtk
+	// Here nothing is actually drawn to memory until the program is executed,
+	// so we paint (= make the program) every time.
+	// Also, the libtopside routines avoids calling this, and it's U++ feature.
+	return true;
+}
 void ProgPainter::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
                                    const int *subpolygon_counts, int scc,
                                    const int *disjunct_polygon_counts, int dpcc,

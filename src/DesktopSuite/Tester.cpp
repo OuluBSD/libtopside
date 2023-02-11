@@ -2,6 +2,29 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+void CtrlTester_Ctrl::Paint(Draw& d) {
+	clr = RandomColor(128, 128+32);
+	Size sz(GetSize());
+	d.DrawRect(sz, clr);
+	if (txt.GetCount())
+		d.DrawText(3,3,txt,SansSerif(12), Black());
+}
+
+void CtrlTester_Ctrl::MouseMove(Point p, dword keyflags) {
+	Refresh();
+}
+
+
+
+CtrlTesterApp::CtrlTesterApp() {
+	Add(b.LeftPos(30, 100).TopPos(30,30));
+	b.SetLabel("Hello!");
+	Add(c0.LeftPos(100, 300).TopPos(100,300));
+	c0.Add(c1.LeftPos(10,200).TopPos(10,200));
+}
+
+
+
 
 GuiTesterApp::GuiTesterApp() {
 	v	<< Point(10, 10)

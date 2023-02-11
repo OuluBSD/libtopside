@@ -16,16 +16,17 @@ void DesktopMain() {
 		SetLanguage(LNG_ENGLISH);
 		SetDefaultCharset(CHARSET_UTF8);
 		
-		//ChClassicSkin();
+		ChClassicSkin();
 		
 		GuiTesterApp app;
 		app.OpenMain();
-		app.SetRect(RectC(10,10,320,240));
+		//app.SetRect(RectC(10,10,640,480));
 		Ctrl::EventLoop();
 	});
 	#else
-	GuiTesterApp().RunInMachine();
-	//EventsTester().RunInMachine();
+	//GuiTesterApp().RunInMachine();
+	//CtrlTesterApp().RunInMachine();
+	EventsTester().RunInMachine();
 	#endif
 	
 	Machine& mach = GetActiveMachine();

@@ -78,5 +78,7 @@ public:
 	static bool DispatchKeyPub(dword key, int count) {return DispatchKey(key, count);}
 	
 	void DispatchMousePub(int e, const Point& pt, int zd) {DispatchMouse(e, pt, zd);}
-	
+	void PubCtrlPaint(Draw& w, const Rect& clip);
+	void PubPaintCaret(Draw& w);
+	byte GetOverpaint() const {return overpaint;}
 //$ };

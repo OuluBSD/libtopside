@@ -29,6 +29,7 @@ void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 		ptrs[DRAW_POLYLINE] = &DrawProg::DrawPolyline;
 		ptrs[DRAW_CLIPOFF] = &DrawProg::Clipoff;
 		ptrs[DRAW_OFFSET] = &DrawProg::DrawOffset;
+		ptrs[DRAW_OFFSET_POINT] = &DrawProg::DrawOffsetPoint;
 		ptrs[DRAW_END] = &DrawProg::DrawEnd;
 		ptrs[DRAW_WINDOW_OFFSET] = &DrawProg::DrawWindowOffset;
 		ptrs[DRAW_WINDOW_END] = &DrawProg::DrawWindowEnd;
@@ -164,6 +165,11 @@ void DrawProg::Clipoff(const DrawCommand& cmd) {
 void DrawProg::DrawOffset(const DrawCommand& cmd) {
 	Rect r {cmd.i[0], cmd.i[1], cmd.i[2], cmd.i[3]};
 	((Draw*)this)->ClipOp(r);
+}
+
+void DrawProg::DrawOffsetPoint(const DrawCommand& cmd) {
+	Point pt {cmd.i[0], cmd.i[1]};
+	((Draw*)this)->OffsetOp(pt);
 }
 
 void DrawProg::DrawWindowOffset(const DrawCommand& cmd) {
