@@ -86,6 +86,7 @@ void Ctrl::Invalidate() {
 	invalid = true;
 }
 
+#if 0
 void Ctrl::PubCtrlPaint(Draw& w, const Rect& clip) {
 	GuiLock __;
 	//LEVELCHECK(w, this);
@@ -173,6 +174,8 @@ void Ctrl::PubPaintCaret(Draw& w)
 	if(this == caretCtrl && WndCaretVisible)
 		w.DrawRect(GetCaret(), InvertColor);
 }
+#endif
+
 
 dword VirtualGui::GetOptions()
 {

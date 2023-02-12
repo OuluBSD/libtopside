@@ -98,6 +98,7 @@ public:
 	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);
 	void DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c);
 	void DrawPolygon(const Vector<Point>& pts, RGBA c);
+	void DrawBuffer(const Rect& r, ImageBuffer& ib);
 	
 	void Offset(const Rect& r);
 	void End();

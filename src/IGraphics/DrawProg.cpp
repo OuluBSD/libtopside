@@ -24,6 +24,7 @@ void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 		ptrs[DRAW_TEXT] = &DrawProg::DrawText;
 		ptrs[DRAW_IMAGE] = &DrawProg::DrawImage;
 		ptrs[DRAW_IMAGE_SIZED] = &DrawProg::DrawImageOp;
+		ptrs[DRAW_IMAGEBUFFER] = &DrawProg::DrawImageBuffer;
 		ptrs[DRAW_RECT] = &DrawProg::DrawRect;
 		ptrs[DRAW_TRIANGLES] = &DrawProg::DrawTriangles;
 		ptrs[DRAW_POLYLINE] = &DrawProg::DrawPolyline;
@@ -98,12 +99,13 @@ void DrawProg::DrawImageOp(const DrawCommand& cmd) {
 	int y = cmd.i[1];
 	int cx = cmd.i[2];
 	int cy = cmd.i[3];
+	Color clr = cmd.clr.a == 0 ? Color(Null) : Color(cmd.clr);
 	((Draw*)this)->DrawImageOp(
 		x, y,
 		cx, cy,
 		cmd.img,
 		cmd.crop,
-		cmd.clr);
+		clr);
 	
 	#if 0
 	// Dump images
@@ -119,6 +121,13 @@ void DrawProg::DrawImageOp(const DrawCommand& cmd) {
 	#else
 	TODO
 	#endif
+}
+
+void DrawProg::DrawImageBuffer(const DrawCommand& cmd) {
+	Rect r(cmd.i[0], cmd.i[1], cmd.i[2], cmd.i[3]);
+	ImageBuffer* ib = (ImageBuffer*)cmd.ptr;
+	ASSERT(ib);
+	TODO // dead end
 }
 
 void DrawProg::DrawRect(const DrawCommand& cmd) {

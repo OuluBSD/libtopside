@@ -16,6 +16,7 @@ NAMESPACE_UPP
 	DRAWCMD(TEXT) \
 	DRAWCMD(IMAGE) \
 	DRAWCMD(IMAGE_SIZED) \
+	DRAWCMD(IMAGEBUFFER) \
 	DRAWCMD(RECT) \
 	DRAWCMD(TRIANGLES) \
 	DRAWCMD(POLYLINE) \
@@ -47,6 +48,7 @@ struct DrawCommand {
 	Rect crop;
 	Font fnt;
 	String txt;
+	void* ptr;
 	Vector<float> triangles;
 	Vector<Point> pts;
 	bool is_cached = false;

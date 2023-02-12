@@ -56,6 +56,7 @@ void ProgPainter::EndOp() {
 
 
 
+
 DrawCommand& ProgPainter::CreateCommand() {
 	DrawCommand* cmd = &DrawCommandCache::Local().CreateCommand();
 	cmd->prev = cur;
@@ -154,6 +155,16 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 	}
 }
 
+void ProgPainter::DrawBuffer(const Rect& r, ImageBuffer& ib) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_IMAGEBUFFER;
+	cmd.i[0] = r.left;
+	cmd.i[1] = r.top;
+	cmd.i[2] = r.right;
+	cmd.i[3] = r.bottom;
+	cmd.ptr = &ib;
+}
+
 void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_IMAGE;
@@ -178,7 +189,7 @@ void ProgPainter::DrawImageOp(int x, int y, int cx, int cy, const Image& img, co
 	cmd.clr.r = color.GetR();
 	cmd.clr.g = color.GetG();
 	cmd.clr.b = color.GetB();
-	cmd.clr.a = 255;
+	cmd.clr.a = IsNull(color) ? 0 : 255;
 }
 #endif
 

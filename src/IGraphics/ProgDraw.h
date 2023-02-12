@@ -21,6 +21,7 @@ public:
 	void DrawLine(const DrawCommand& cmd);
 	void DrawImage(const DrawCommand& cmd);
 	void DrawImageOp(const DrawCommand& cmd);
+	void DrawImageBuffer(const DrawCommand& cmd);
 	void DrawRect(const DrawCommand& cmd);
 	void DrawTriangles(const DrawCommand& cmd);
 	void DrawPolyline(const DrawCommand& cmd);

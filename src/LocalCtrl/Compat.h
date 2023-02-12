@@ -17,6 +17,7 @@ public:
 template<class T>
 class CtrlGeomProxy : public CtrlGeomBase {
 	T* p = 0;
+	Image img;
 	
 public:
 	typedef CtrlGeomProxy CLASSNAME;
@@ -55,6 +56,17 @@ public:
 		#if IS_UPP_CORE
 		
 		#if 1
+		Size sz = p->GetRect().GetSize();
+		Rect rect = sz;
+		Rect orect = rect.Inflated(p->GetOverpaint());
+		ImageDraw id(sz);
+		id.DrawImage(0,0,img);
+		SystemDraw sd;
+		sd.SetTarget(&id);
+		p->PubCtrlPaint(sd, orect);
+		img = id;
+		d.DrawImage(0,0,img);
+		#elif 1
 		Rect rect = p->GetRect().GetSize();
 		Rect orect = rect.Inflated(p->GetOverpaint());
 		//d.Clipoff(rz);

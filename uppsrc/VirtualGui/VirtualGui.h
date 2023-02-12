@@ -129,6 +129,7 @@ public:
 	~PrinterJob()                                       {}
 };
 
+
 }
 
 #define GUIPLATFORM_INCLUDE_AFTER <VirtualGui/After.h>

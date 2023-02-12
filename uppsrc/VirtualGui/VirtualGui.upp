@@ -24,5 +24,7 @@ file
 	Clip.cpp,
 	DnD.cpp,
 	ChSysInit.cpp,
+	SystemDraw.h,
+	SystemDraw.cpp,
 	src.tpp;
 
