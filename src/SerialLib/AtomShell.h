@@ -12,7 +12,7 @@ void DefaultSerialInitializer();
 void DefaultSerialInitializer0(bool skip_eon_file=false);
 void DefaultSerialInitializerInternalEon();
 void DebugMainLoop();
-void DebugMainLoop(Serial::Machine& mach);
+void DebugMainLoop(Serial::Machine& mach, bool (*fn)(void*)=0, void* arg=0);
 
 struct SerialLoaderBase {
 	

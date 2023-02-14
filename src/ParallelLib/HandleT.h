@@ -14,63 +14,6 @@ struct WindowsImg {
 	static Image& ew();
 };
 
-template <class Dim> class HandleSystemT;
-template <class Dim> class ScopeT;
-template <class Dim> class HandleT;
-
-
-template <class Dim>
-class GeomDecorationT : public Dim::Interaction {
-public:
-	using Base = GeomDecorationT<Dim>;
-	using GeomDecoration = GeomDecorationT<Dim>;
-	using Handle = HandleT<Dim>;
-	using HandleSystem = HandleSystemT<Dim>;
-	using DrawT = typename Dim::DrawT;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
-	using Interaction = typename Dim::Interaction;
-	using Container = typename Dim::Container;
-	using ContainerFrame = typename Dim::ContainerFrame;
-	using TopContainer = typename Dim::TopContainer;
-	using Sz = typename Dim::Sz;
-	using Pt = typename Dim::Pt;
-	using Box = typename Dim::Box;
-	using CmdDraw = typename Dim::CmdDraw;
-	using CmdPainter = typename Dim::CmdPainter;
-	
-protected:
-	Handle* handle = NULL;
-	CG<Button> minimize, maximize, close;
-	String label;
-	bool left_down = false;
-	Pt left_down_pt;
-	
-public:
-	RTTI_DECL1(GeomDecoration, Interaction)
-	typedef GeomDecorationT CLASSNAME;
-	GeomDecorationT(Handle* h);
-	
-	void Paint(DrawT& draw) override;
-	
-	void SetLabel(String str) {label = str;}
-	
-	String GetLabel() const {return label;}
-	
-	void LeftDown(Pt p, dword keyflags) override;
-	void LeftDouble(Pt p, dword keyflags) override;
-	void LeftUp(Pt p, dword keyflags) override;
-	void MouseMove(Pt p, dword keyflags) override;
-	void RightDown(Pt p, dword keyflags) override;
-	void MouseEnter(Pt frame_p, dword keyflags) override;
-	void MouseLeave() override;
-	
-	void LocalMenu(Bar& bar);
-	
-	
-};
-
 
 template <class Dim>
 class HandleT :
@@ -84,7 +27,7 @@ public:
 	using Handle = HandleT<Dim>;
 	using Scope = ScopeT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using GeomDecoration = GeomDecorationT<Dim>;
+	using Frame = FrameT<Dim>;
 	using DrawT = typename Dim::DrawT;
 	using Space = typename Dim::Space;
 	using Interface = typename Dim::Interface;
@@ -101,16 +44,16 @@ public:
 	enum {CENTER, TL, TR, BL, BR, TOP, BOTTOM, LEFT, RIGHT};
 	
 protected:
-	GeomDecoration decor;
+	Frame decor;
 	Box stored_box;
 	bool maximized;
 	bool pending_partial_redraw;
-	bool cursor_overriden = false;
 	bool is_resizing = false;
 	bool used_momentum = false;
-	int override_area = -1;
+	bool cursor_overriden = false;
 	int id;
 	int resize_area = 0;
+	int override_area = -1;
 	Pt resize_start_pt;
 	Pt resize_diff;
 	Box resize_start_r;
@@ -178,8 +121,15 @@ public:
 	Scope& GetScope() const;
 	HandleSystem& GetHandleSystem() const;
 	
-	Pt GetGlobalMouse() const;
+	Pt GetMousePos() const;
 	
+	
+	template <class T>
+	void SetActions(T& o) {
+		o.close->WhenPush = THISBACK(Close);
+		o.maximize->WhenPush = THISBACK(ToggleMaximized);
+		o.minimize->WhenPush = THISBACK(Minimize);
+	}
 };
 
 

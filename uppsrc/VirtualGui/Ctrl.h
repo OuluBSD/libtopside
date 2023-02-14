@@ -34,7 +34,6 @@ private:
 	static void DragRectDraw0(const Vector<Rect>& clip, const Rect& rect, int n,
 	                          const byte *pattern, int animation);
 
-	friend class TopWindowFrame;
 	friend class SystemDraw;
 	friend struct DnDLoop;
 
@@ -50,8 +49,6 @@ protected:
 public:
 	static void DoMouseFB(int event, Point p, int zdelta = 0);
 	static bool DoKeyFB(dword key, int cnt);
-
-	static void EventLoopOnce();
 	
 	static void InitFB();
 	static void ExitFB();
@@ -76,6 +73,8 @@ public:
 	enum { DRAWDRAGRECT_SCREEN = 0x8000 };
 
 	static bool DispatchKeyPub(dword key, int count) {return DispatchKey(key, count);}
+	
+	static bool EventLoopIteration(void* p);
 	
 	void DispatchMousePub(int e, const Point& pt, int zd) {DispatchMouse(e, pt, zd);}
 	#if 1

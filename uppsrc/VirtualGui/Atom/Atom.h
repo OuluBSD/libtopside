@@ -1,18 +1,14 @@
-#ifndef _SDL2GUI_SDL2GUI_h
-#define _SDL2GUI_SDL2GUI_h
+#ifndef _AtomVirtualGui_AtomVirtualGui_h
+#define _AtomVirtualGui_AtomVirtualGui_h
 
 #include <CtrlLib/CtrlLib.h>
-#include <GLDraw/GLDraw.h>
-
-#ifdef PLATFORM_POSIX
-#include <SDL2/SDL.h>
-#else
-#include <SDL.h>
-#endif
+#include <SerialLib/SerialLib.h>
 
 namespace Upp {
+using namespace TS;
+using namespace TS::Serial;
 	
-struct SDL2GUI : VirtualGui {
+struct AtomVirtualGui : VirtualGui {
 	virtual dword       GetOptions();
 	virtual Size        GetSize();
 	virtual dword       GetMouseButtons();
@@ -27,22 +23,22 @@ struct SDL2GUI : VirtualGui {
 	virtual void        CommitDraw();
 
 	virtual void        Quit();
-	virtual void        HandleSDLEvent(SDL_Event* event);
-
-	SDL_Window   *win;
-	SDL_GLContext glcontext;
-	int64         serial;
-	GLDraw        gldraw;
-	SystemDraw    sysdraw;
-
-	void Attach(SDL_Window *win, SDL_GLContext glcontext);
-	void Detach();
+	//virtual void        HandleSDLEvent(SDL_Event* event);
+	
+	One<ImageDraw>      idraw;
+	SystemDraw          sysdraw;
+	
+	WindowSystemRef		wins;
+	WindowManagerRef	mgr;
+	
+	//void Attach(SDL_Window *win, SDL_GLContext glcontext);
+	//void Detach();
 
 	bool Create(const Rect& rect, const char *title);
 	void Destroy();
 	
-	SDL2GUI();
-	~SDL2GUI();
+	AtomVirtualGui();
+	~AtomVirtualGui();
 };
 
 };

@@ -143,6 +143,30 @@ void HandleSystemT<Dim>::Set_GetMouseCursor(Image (*fn)(void*), void* arg) {
 	get_mouse_cursor_arg = arg;
 }
 
+template <class Dim>
+Image HandleSystemT<Dim>::OverrideCursor(const Image& m) {
+	Image cursor;
+	if (get_mouse_cursor) {
+		cursor = get_mouse_cursor(get_mouse_cursor_arg);
+	}
+	if (set_mouse_cursor) {
+		set_mouse_cursor(set_mouse_cursor_arg, m);
+	}
+	return cursor;
+}
+
+template <class Dim>
+Image HandleSystemT<Dim>::DefaultCursor() {
+	Image cursor;
+	if (get_mouse_cursor) {
+		cursor = get_mouse_cursor(get_mouse_cursor_arg);
+	}
+	if (set_mouse_cursor) {
+		set_mouse_cursor(set_mouse_cursor_arg, Image());
+	}
+	return cursor;
+}
+
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleSystemT)
 

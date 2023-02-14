@@ -4,8 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void EventLoopIteration(double dt, bool* quit);
-
 
 NAMESPACE_TOPSIDE_END
 

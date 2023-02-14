@@ -157,85 +157,12 @@ void TopWindow::FocusEvent() {
 	Panic("TODO");
 }
 
-void TopWindow::RunInMachine(bool appmodal) {
-	GuiLock __;
-	
-	// See Ctrl::InitX11 for example code
-	
-	//VirtualGuiPtr = &gui;
-	//Ctrl::InitFB();
-	
-	//Ctrl::GlobalBackBuffer();
-	Ctrl::InitTimer();
-
-	//SetStdFont(ScreenSans(12));
-	//ChStdSkin();
-	
-	//Ctrl::SetDesktopSize(gui.GetSize());
-	Font::SetDefaultFont(Arial(12));
-
-	ReSkin();
-
-	GUI_GlobalStyle_Write(GUISTYLE_XP);
-	GUI_DragFullWindow_Write(1);
-	GUI_PopUpEffect_Write(GUIEFFECT_NONE);
-	GUI_DropShadows_Write(0);
-	GUI_AltAccessKeys_Write(1);
-	GUI_AKD_Conservative_Write(0);
-
-	LLOG("TopWindow::RunInMachine() <- " << typeid(*this).name());
-	LLOG("Focus = " << UPP::Name(GetFocusCtrl()));
-	if(!IsOpen())
-		Open();
-	if(!IsVisible()) Show();
-	bool pinloop = inloop;
-	int  pexitcode = exitcode;
-	exitcode = Null;
-	Vector<Ctrl *> es;
-	if(appmodal)
-		es = GetTopCtrls();
-	else {
-		Vector<Ctrl *> ws = GetTopCtrls();
-		for(int i = 0; i < ws.GetCount(); i++)
-			if(ws[i]->InLoop())
-				es.Add(ws[i]);
-		Ctrl *mw = GetMainWindow();
-		if(mw) GatherWindowTree(mw, ws, es);
-	}
-	Vector< Ptr<Ctrl> > disabled = DisableCtrls(es, this);
-#ifdef _DEBUG
-	for(int d = 0; d < disabled.GetCount(); d++)
-		LLOG("DisableCtrls[" << d << "] = " << UPP::Name(disabled[d]));
-	LLOG("Running EventLoop in " << UPP::Name(this));
-#endif
-	TS::DebugMainLoop();
-#ifdef _DEBUG
-	LLOG("Finished EventLoop in " << UPP::Name(this));
-	for(int e = 0; e < disabled.GetCount(); e++)
-		LLOG("EnableCtrls[" << e << "] = " << UPP::Name(disabled[e]));
-#endif
-	EnableCtrls(disabled);
-	if(IsNull(exitcode)) {
-		WhenClose();
-		if(IsNull(exitcode))
-			DefaultBreak();
-	}
-	int q = exitcode;
-	inloop = pinloop;
-	exitcode = pexitcode;
-	LLOG("TopWindow::Run() = " << q << " -> " << typeid(*this).name());
-#ifdef GUI_WIN
-	LLOG("Focus = " << UPP::Name(GetFocusCtrl()) << ", raw " << (void *)::GetFocus());
-#endif
-	Ctrl::ExitFB();
-}
-
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	using namespace Parallel;
 	
 	Machine& mach = GetActiveMachine();
-	WindowSystemRef wins = mach.Get<WindowSystem>();
+	WindowSystemRef wins = mach.Get<TS::Parallel::WindowSystem>();
 	WindowManager& mgr = wins->GetActiveScope();
 	mgr.AddInterface(*this);
 }

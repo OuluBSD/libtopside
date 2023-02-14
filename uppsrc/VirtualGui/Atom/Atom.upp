@@ -14,7 +14,7 @@ pkg_config
 	sdl2;
 
 file
-	SDL2GL.h,
+	Atom.h,
 	Window.cpp,
 	Draw.cpp,
 	Keys.cpp,

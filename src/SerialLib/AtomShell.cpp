@@ -117,7 +117,7 @@ void DebugMainLoop() {
 	DebugMainLoop(Parallel::GetActiveMachine());
 }
 
-void DebugMainLoop(Parallel::Machine& mach) {
+void DebugMainLoop(Parallel::Machine& mach, bool (*fn)(void*), void* arg) {
 	using namespace Parallel;
 	
 	int iter = 0;
@@ -127,14 +127,10 @@ void DebugMainLoop(Parallel::Machine& mach) {
     while (mach.IsRunning()) {
         double dt = ResetSeconds(t);
         
-        #ifdef flagGUI
-        bool quit = false;
-        EventLoopIteration(dt, &quit);
-        if (quit)
-            mach.SetNotRunning();
-        #endif
-        
         mach.Update(dt);
+        
+        if (fn)
+            fn(arg);
         
         if (dt < sleep_dt_limit && fast_iter > 5) {
 			Sleep(1);

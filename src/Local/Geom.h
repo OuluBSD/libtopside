@@ -352,6 +352,12 @@ struct Cub_ : Moveable<Cub_<T>> {
 	void   Deflate(T l, T t, T n, T r, T b, T f) { Inflate(-l, -t, -n, -r, -b, -f); }
 	void   Deflate(const Cub_& r) { Deflate(r.left, r.top, r.near, r.right, r.bottom, r.far); }
 
+	void   OffsetHorz(T dx)                     { left += dx; right += dx; }
+	void   OffsetVert(T dy)                     { top += dy; bottom += dy; }
+	void   OffsetDepth(T dz)                    { near += dz; far += dz; }
+	void   Offset(T dx, T dy, T dz)             { OffsetHorz(dx); OffsetVert(dy); OffsetDepth(dz); }
+	void   Offset(Pt p)                         { Offset(p.x, p.y, p.z); }
+	
 	operator Cub_<int>() const {return Cub_<int>(left,top,near,right,bottom,far);}
 	operator Cub_<double>() const {return Cub_<double>(left,top,near,right,bottom,far);}
 	

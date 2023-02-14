@@ -2,7 +2,23 @@
 #include <CtrlCore/stdids.h>
 #endif
 
+#include <SharedCore/SharedDefs.h>
+
+NAMESPACE_TOPSIDE_BEGIN
+namespace Parallel {
+struct Ctx2D;
+struct Ctx3D;
+template <class Dim> class HandleSystemT;
+template <class Dim> class ScopeT;
+template <class Dim> class HandleT;
+template <class Dim> class FrameT;
+	
+}
+NAMESPACE_TOPSIDE_END
+
 namespace Upp {
+
+using TopWindowFrame = TS::Parallel::FrameT<TS::Parallel::Ctx2D>;
 
 #define IMAGECLASS FBImg
 #define IMAGEFILE <VirtualGui/FB.iml>
@@ -94,7 +110,6 @@ public:
 void DrawDragRect(SystemDraw& w, const Rect& rect1, const Rect& rect2, const Rect& clip, int n,
                   Color color, uint64 pattern);
 
-class TopWindowFrame;
 
 #define GUIPLATFORM_CTRL_TOP_DECLS   Ctrl *owner_window;
 

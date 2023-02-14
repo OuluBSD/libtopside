@@ -62,6 +62,8 @@ public:
 	Scope& GetActiveScope();
 	Scope& GetScope(int i);
 	void DoEvents(const EventCollection& ev);
+	Image OverrideCursor(const Image& m);
+	Image DefaultCursor();
 	
 	int GetScopeCount() const {return scopes.GetCount();}
 	int GetScreenCount() const {return GetScopeCount();}

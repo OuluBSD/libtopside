@@ -139,9 +139,10 @@ public:
 	//virtual Ctrl* GetCtrl();
 	//virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	virtual GeomInteraction* GetProxy() const {return 0;}
+	virtual void CancelMode() {}
 	
 	
-	bool IsCaptured() const;
+	bool HasCapture() const;
 	GeomInteraction* GetGeomDrawBegin();
 	const GeomInteraction* GetGeomDrawBegin() const;
 	GeomInteraction* FindProxy();

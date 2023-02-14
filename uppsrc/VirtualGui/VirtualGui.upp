@@ -19,12 +19,9 @@ file
 	Wnd.cpp,
 	Event.cpp,
 	Top.h,
-	TopFrame.cpp,
 	Top.cpp,
 	Clip.cpp,
 	DnD.cpp,
 	ChSysInit.cpp,
-	SystemDraw.h,
-	SystemDraw.cpp,
 	src.tpp;
 

@@ -123,8 +123,9 @@ public:
 	}
 	int GetFrameWidth() const {return frame_width;}
 	int GetCornerWidth() const {return corner_width;}
-	Pt GetGlobalMouse() const {return global_mouse;}
-
+	Pt GetMousePos() const {return global_mouse;}
+	bool IsForeground() const;
+	
 	void FocusHandle(TopContainer* tc);
 	void OrderTileHandles();
 	void OrderTileHandlesVert();
@@ -141,7 +142,8 @@ public:
 	int GetCount() const { return handles.GetCount(); }
 	Handle& operator[](int i) { return handles[i]; }
 	Handle& Get(int i) { return handles[i]; }
-
+	Sz GetSize() const {return this->GetFrameSize();}
+	
 	Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();
 	TopContainer& GetVisibleTopContainerRef() { return *GetVisibleTopContainer(); }

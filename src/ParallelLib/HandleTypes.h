@@ -35,6 +35,8 @@ struct Ctx2D {
 	
 	inline static Rect GetDefaultScopeDimensions() {return RectC(0,0,1280,720);}
 	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,640,480);}
+	inline static Rect EmptyBox() {return Rect(0,0,0,0);}
+	inline static Pt UnitPoint() {return Pt(1,1);}
 	
 };
 
@@ -58,6 +60,8 @@ struct Ctx3D {
 	
 	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
 	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubC(o,o,o,256,256,256);}
+	inline static Cubf EmptyBox() {return Cubf(0,0,0,0,0,0);}
+	inline static Pt UnitPoint() {return Pt(1,1,1);}
 	
 };
 

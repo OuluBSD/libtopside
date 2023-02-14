@@ -1,4 +1,4 @@
-#include "SDL2GL.h"
+#include "Atom.h"
 
 #define LLOG(x)
 
@@ -13,22 +13,23 @@ dword mouseb;
 dword modkeys;
 bool  sdlMouseIsIn;
 
-bool SDL2GUI::IsMouseIn()
+bool AtomVirtualGui::IsMouseIn()
 {
 	return sdlMouseIsIn;
 }
 
-dword SDL2GUI::GetMouseButtons()
+dword AtomVirtualGui::GetMouseButtons()
 {
 	return mouseb;
 }
 
-dword SDL2GUI::GetModKeys()
+dword AtomVirtualGui::GetModKeys()
 {
 	return modkeys;
 }
 
-void SDL2GUI::HandleSDLEvent(SDL_Event* event)
+#if 0
+void AtomVirtualGui::HandleSDLEvent(SDL_Event* event)
 {
 	LLOG("HandleSDLEvent " << event->type);
 	SDL_Event next_event;
@@ -187,46 +188,46 @@ void SDL2GUI::HandleSDLEvent(SDL_Event* event)
 		break;
 	}
 }
+#endif
 
-bool SDL2GUI::ProcessEvent(bool *quit)
+bool AtomVirtualGui::ProcessEvent(bool *quit)
 {
-	bool ret = false;
-	SDL_Event event;
-	if(SDL_PollEvent(&event)) {
-		if(event.type == SDL_QUIT && quit)
-			*quit = true;
-		HandleSDLEvent(&event);
-		ret = true;
-	}
-	return ret;
+	if (quit)
+		*quit = !Serial::GetActiveMachine().IsRunning();
+	return false;
 }
 
 
-void SDL2GUI::WaitEvent(int ms)
+void AtomVirtualGui::WaitEvent(int ms)
 {
-	SDL_WaitEventTimeout(NULL, ms);
+	Panic("not supported");
+	//SDL_WaitEventTimeout(NULL, ms);
 }
 
-bool SDL2GUI::IsWaitingEvent()
+bool AtomVirtualGui::IsWaitingEvent()
 {
-	SDL_PumpEvents();
+	Panic("TODO");
+	return false;
+	/*SDL_PumpEvents();
 	SDL_Event events;
-	return SDL_PeepEvents(&events, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) > 0;
+	return SDL_PeepEvents(&events, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) > 0;*/
 }
 
-SDL_TimerID waketimer_id = 0;
-Uint32 WakeCb(Uint32 interval, void *param)
+//SDL_TimerID waketimer_id = 0;
+
+/*Uint32 WakeCb(Uint32 interval, void *param)
 {
 	//wake up message que, FIXME maybe it can be done better?
 	SDL_Event event;
 	event.type=SDL_USEREVENT;
 	SDL_PushEvent(&event);
 	return 0;
-}
+}*/
 
-void SDL2GUI::WakeUpGuiThread()
+void AtomVirtualGui::WakeUpGuiThread()
 {
-	waketimer_id = SDL_AddTimer(20, WakeCb, NULL);
+	Panic("TODO");
+	//waketimer_id = SDL_AddTimer(20, WakeCb, NULL);
 }
 
 }

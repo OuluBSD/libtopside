@@ -8,7 +8,7 @@ uses
 	ParallelLib,
 	ports/MingwDx,
 	SoftRend,
-	VirtualGui/SDL2GLAtom;
+	VirtualGui/Atom;
 
 uses(WIN32&MSC&NEVER) ports/glew;
 

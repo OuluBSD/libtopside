@@ -55,7 +55,7 @@ GeomInteraction2D* GeomInteraction2D::At(int i) {
 }
 
 bool GeomInteraction2D::MouseMoveInFrame(Point pt, dword keyflags) {
-	if (IsCaptured()) {
+	if (HasCapture()) {
 		//GeomInteraction* cap = CastPtr<GeomInteraction2D>(GetCaptured());
 		//ASSERT(this == cap);
 		Point cpt = GetContentPoint(pt);

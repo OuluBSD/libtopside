@@ -7,10 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 void DesktopMain() {
 	using namespace Parallel;
 	
-	//GeomInteraction::do_debug_draw = true;
-	#if 0
-	SDL2GUI gui;
-	gui.Create(RectC(100, 100, 1024, 768), "SDL2GL Virtual Gui Test");
+	GeomInteraction::do_debug_draw = true;
+	
+	AtomVirtualGui gui;
+	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
 
 	RunVirtualGui(gui, [] {
 		SetLanguage(LNG_ENGLISH);
@@ -18,25 +18,14 @@ void DesktopMain() {
 		
 		ChClassicSkin();
 		
-		GuiTesterApp app;
+		EventsTester app;
+		//GuiTesterApp app;
+		//CtrlTesterApp app;
 		app.OpenMain();
 		//app.SetRect(RectC(10,10,640,480));
 		Ctrl::EventLoop();
 	});
-	#else
-	//GuiTesterApp().RunInMachine();
-	//CtrlTesterApp().RunInMachine();
-	EventsTester().RunInMachine();
-	#endif
 	
-	Machine& mach = GetActiveMachine();
-	
-	WindowSystemRef wins = mach.Get<WindowSystem>();
-	
-	if (wins) {
-		
-		
-	}
 }
 
 

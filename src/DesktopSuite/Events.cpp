@@ -20,6 +20,7 @@ EventsTester::EventsTester()
 	AddFrame(InsetFrame());
 	log.AddColumn("");
 	log.NoHeader();
+	log.SetLineCy(20);
 	Add(log.HSizePos().BottomPosZ(0, 200));
 }
 

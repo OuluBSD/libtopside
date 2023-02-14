@@ -34,6 +34,7 @@ GuiTesterApp::GuiTesterApp() {
 		;
 	
 	test_rect_tl = Point(100,100);
+	c = RandomColor(0, 256);
 	
 	tc.Set(-1000, THISBACK(TimedToggle));
 }
@@ -48,8 +49,12 @@ void GuiTesterApp::TimedToggle() {
 void GuiTesterApp::Paint(Draw& d) {
 	Rect r = GetSize();
 	
-	if (HasMouse())
+	if (GeomInteraction::do_debug_draw)
+		d.DrawRect(r, RandomColor(128,128+32));
+	else if (HasMouse())
 		d.DrawRect(r, Color(128, 255, 128));
+	else
+		d.DrawRect(r, GrayColor(128+64));
 	
 	d.DrawPolyline(v, 15, Color(128, 128, 255));
 	d.DrawRect(test_rect_tl.x, test_rect_tl.y, 100, 100, c);

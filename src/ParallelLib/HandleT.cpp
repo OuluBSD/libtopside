@@ -71,13 +71,13 @@ Image& WindowsImg::ew() {
 
 
 template <class Dim>
-HandleT<Dim>::HandleT() :
-	decor(this)
+HandleT<Dim>::HandleT()
 {
+	decor.handle = this;
 	maximized = false;
 	id = -1;
 	
-	this->Add(decor);
+	TODO // ctrl proxy from CG: this->Add(decor);
 	
 	Box box = Dim::GetDefaultHandleDimensions(40);
 	this->SetFrameBox(box);
@@ -203,35 +203,21 @@ int HandleT<Dim>::GetArea(const Pt& pt) {
 template <class Dim>
 Image HandleT<Dim>::OverrideCursor(const Image& m) {
 	HandleSystem& sys = GetHandleSystem();
-	Image cursor;
-	if (sys.get_mouse_cursor) {
-		cursor = sys.get_mouse_cursor(sys.get_mouse_cursor_arg);
-	}
-	if (sys.set_mouse_cursor) {
-		sys.set_mouse_cursor(sys.set_mouse_cursor_arg, m);
-	}
 	cursor_overriden = true;
-	return cursor;
+	return sys.OverrideCursor(m);
 }
 
 template <class Dim>
 Image HandleT<Dim>::DefaultCursor() {
 	HandleSystem& sys = GetHandleSystem();
-	Image cursor;
-	if (sys.get_mouse_cursor) {
-		cursor = sys.get_mouse_cursor(sys.get_mouse_cursor_arg);
-	}
-	if (sys.set_mouse_cursor) {
-		sys.set_mouse_cursor(sys.set_mouse_cursor_arg, Image());
-	}
 	override_area = -1;
 	cursor_overriden = false;
-	return cursor;
+	return sys.DefaultCursor();
 }
 
 template <class Dim>
 void HandleT<Dim>::Title(const String& title) {
-	decor.SetLabel(title);
+	decor.SetTitle(title);
 }
 
 template <class Dim>
@@ -257,7 +243,7 @@ int HandleT<Dim>::Run(bool appmodal) {
 
 template <class Dim>
 String HandleT<Dim>::GetTitle() const {
-	return decor.GetLabel();
+	return decor.GetTitle();
 }
 
 template <class Dim>
@@ -436,10 +422,10 @@ template <class Dim>
 void HandleT<Dim>::MouseMove(Pt pt, dword keyflags) {
 	if (is_resizing) {
 		if (used_momentum) {
-			resize_start_pt = GetGlobalMouse();
+			resize_start_pt = GetMousePos();
 			used_momentum = false;
 		}
-		resize_diff = GetGlobalMouse() - resize_start_pt;
+		resize_diff = GetMousePos() - resize_start_pt;
 		DoResize();
 	}
 	CheckMouseBorder(pt);
@@ -466,8 +452,8 @@ void HandleT<Dim>::DeepMouseLeave() {
 }
 
 template <class Dim>
-typename Dim::Pt HandleT<Dim>::GetGlobalMouse() const {
-	return GetScope().GetGlobalMouse();
+typename Dim::Pt HandleT<Dim>::GetMousePos() const {
+	return GetScope().GetMousePos();
 }
 
 template <class Dim>
@@ -475,7 +461,7 @@ void HandleT<Dim>::CaptureResize(const Pt& p) {
 	int area = GetArea(p);
 	if (area != CENTER) {
 		is_resizing = true;
-		resize_start_pt = GetGlobalMouse();
+		resize_start_pt = GetMousePos();
 		resize_area = GetArea(p);
 		resize_start_r = this->GetFrameBox();
 		this->SetCapture();
@@ -588,147 +574,7 @@ void HandleT<Dim>::DoResize() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-template <class Dim>
-GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
-	handle = h;
-	
-	close->SetImage(WindowsImg::close());
-	maximize->SetImage(WindowsImg::maximize());
-	minimize->SetImage(WindowsImg::minimize());
-	
-	this->Add(close.TopPos(3, 19).RightPos(3, 19));
-	this->Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
-	this->Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
-	
-	close->WhenAction = callback(h, &Handle::Close);
-	maximize->WhenAction = callback(h, &Handle::ToggleMaximized);
-	minimize->WhenAction = callback(h, &Handle::Minimize);
-	
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::Paint(DrawT& draw) {
-	TODO // permanent
-}
-
-template <>
-void GeomDecorationT<Ctx2D>::Paint(DrawT& id) {
-	Size sz(GetFrameSize());
-	ASSERT(!sz.IsEmpty());
-	
-	Color left, right;
-	ASSERT(handle);
-	if (!handle) return;
-	if (handle->IsActive()) {
-		left = Color(0, 64, 128);
-		right = Color(57, 141, 195);
-	} else {
-		left = GrayColor();
-		right = GrayColor(195);
-	}
-	
-	if (this->do_debug_draw) {
-		if (has_mouse) {
-			RGBA c = RGBAC(255, 0, 0, 125);
-			id.DrawRect(sz, c);
-		}
-		else {
-			RGBA c(RandomColor(64, 128));
-			c.a = 127;
-			id.DrawRect(sz, c);
-		}
-	}
-	else
-		id.DrawRect(0, 0, sz.cx, sz.cy, left);
-	
-	id.DrawText(7, 4, label, StdFont(15), Black());
-	id.DrawText(6, 3, label, StdFont(15), White());
-	
-	Color tl = GrayColor(128+64+32);
-	Color br = GrayColor(128-64-32);
-	
-	id.DrawLine(0,0, sz.cx-1, 0, 1, tl);
-	id.DrawLine(0,0, 0, sz.cy-1, 1, tl);
-	id.DrawLine(sz.cx-1, sz.cy-1, sz.cx-1, 0, 1, br);
-	id.DrawLine(sz.cx-1, sz.cy-1, 0, sz.cy-1, 1, br);
-	
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::LeftDown(Pt p, dword keyflags) {
-	left_down = true;
-	left_down_pt = p;
-	this->SetCapture();
-	
-	handle->FocusEvent();
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::LeftDouble(Pt p, dword keyflags) {
-	handle->ToggleMaximized();
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::LeftUp(Pt p, dword keyflags) {
-	left_down = false;
-	this->ReleaseCapture();
-	
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::MouseMove(Pt p, dword keyflags) {
-	ASSERT(this->has_mouse);
-	if (left_down) {
-		handle->MoveHandle(p - left_down_pt);
-	}
-	#if 0
-	if (this->do_debug_draw) {
-		this->Refresh();
-	}
-	#endif
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::MouseEnter(Pt frame_p, dword keyflags) {
-	LOG("GeomDecorationT<Dim>::MouseEnter");
-	this->Refresh();
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::MouseLeave() {
-	LOG("GeomDecorationT<Dim>::MouseLeave");
-	this->Refresh();
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::RightDown(Pt p, dword keyflags) {
-	MenuBar::Execute(THISBACK(LocalMenu));
-}
-
-template <class Dim>
-void GeomDecorationT<Dim>::LocalMenu(Bar& bar) {
-	bar.Add("Maximize / Restore", callback(handle, &HandleT<Dim>::Maximize));
-	bar.Add("Minimize", callback(handle, &HandleT<Dim>::Minimize));
-	bar.Separator();
-	bar.Add("Close", callback(handle, &HandleT<Dim>::Close));
-}
-
-
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleT)
-HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(GeomDecorationT)
+
 
 NAMESPACE_PARALLEL_END

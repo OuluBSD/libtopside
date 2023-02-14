@@ -23,5 +23,7 @@ file
 	ScopeT.cpp,
 	HandleT.h,
 	HandleT.cpp,
+	FrameT.h,
+	FrameT.cpp,
 	_ readonly separator;
 

@@ -29,7 +29,7 @@ String GeomInteraction::GetDesc() const {
 	return String();
 }
 
-bool GeomInteraction::IsCaptured() const {
+bool GeomInteraction::HasCapture() const {
 	return GetCaptured() == this;
 }
 

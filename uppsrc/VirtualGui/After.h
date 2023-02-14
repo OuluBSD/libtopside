@@ -6,4 +6,3 @@ public:
 
 class DHCtrl : Ctrl {};
 
-#include "SystemDraw.h"

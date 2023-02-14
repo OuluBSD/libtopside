@@ -25,7 +25,9 @@ public:
 	CtrlGeomProxy() {}
 	CtrlGeomProxy(T& o) : p(&o) {}
 	
-	void SetTargetCtrl(T& o) {p = &o;}
+	void SetTargetCtrl(T& o) {
+		p = &o;
+	}
 	
 	template <class K> void LinkInvalidate(K& k) {
 		k.WhenInvalidate << THISBACK(OnInvalidate);
@@ -146,6 +148,7 @@ public:
 	#endif
 	
 	T* operator->() {return p;}
+	T& operator*() {ASSERT(p); return *p;}
 	
 	Ctrl* GetCtrl() override {return p;}
 	

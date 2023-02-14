@@ -1,4 +1,6 @@
-#include "SDL2GL.h"
+#include "Atom.h"
+
+#if 0
 
 namespace Upp {
 
@@ -142,3 +144,5 @@ dword fbKEYtoK(dword chr)
 }
 
 }
+
+#endif

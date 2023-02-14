@@ -1,4 +1,5 @@
 #include "Local.h"
+#include <SerialLib/SerialLib.h>
 
 #ifdef VIRTUALGUI
 
@@ -30,9 +31,9 @@ void Ctrl::MouseEventFB(Ptr<Ctrl> t, int event, Point p, int zdelta)
 	Rect rr = t->GetRect();
 	if((event & Ctrl::ACTION) == DOWN) {
 		Ptr<Ctrl> q = t;
-		TopWindowFrame *wf = dynamic_cast<TopWindowFrame *>(~t);
+		/*TopWindowFrame *wf = dynamic_cast<TopWindowFrame *>(~t);
 		if(wf)
-			q = wf->window;
+			q = wf->window;*/
 		if(q) q->ClickActivateWnd();
 		if(q) q->SetForeground();
 		if(ignoreclick)
@@ -138,9 +139,25 @@ bool Ctrl::ProcessEvents(bool *quit)
 	return ret;
 }
 
-void Ctrl::EventLoopOnce() {
-	EndSessionLoopNo = EventLoopNo + 1;
-	EventLoop(0);
+bool Ctrl::EventLoopIteration(void* p) {
+	Ctrl *ctrl = (Ctrl*)p;
+	bool quit = false;
+	static int64 loopno;
+	
+	loopno = ++EventLoopNo;
+	
+//	LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / GuiSleep");
+	SyncCaret();
+	//GuiSleep(20);
+//	LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / ProcessEvents");
+	ProcessEvents(&quit);
+//	LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / after ProcessEvents");
+	LDUMP(loopno);
+	LDUMP(fbEndSessionLoop);
+	
+	return	(EndSessionLoopNo > 0 && loopno > EndSessionLoopNo) &&
+			!quit && (ctrl ? ctrl->IsOpen() &&
+			ctrl->InLoop() : GetTopCtrls().GetCount());
 }
 
 void Ctrl::EventLoop(Ctrl *ctrl)
@@ -158,19 +175,9 @@ void Ctrl::EventLoop(Ctrl *ctrl)
 	}
 
 	bool quit = false;
-	int64 loopno = ++EventLoopNo;
 	ProcessEvents(&quit);
-	while(loopno > EndSessionLoopNo && !quit && (ctrl ? ctrl->IsOpen() && ctrl->InLoop() : GetTopCtrls().GetCount()))
-	{
-//		LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / GuiSleep");
-		SyncCaret();
-		GuiSleep(20);
-//		LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / ProcessEvents");
-		ProcessEvents(&quit);
-//		LLOG(GetSysTime() << " % " << (unsigned)msecs() % 10000 << ": EventLoop / after ProcessEvents");
-		LDUMP(loopno);
-		LDUMP(fbEndSessionLoop);
-	}
+	
+	TS::DebugMainLoop(Parallel::GetActiveMachine(), &Ctrl::EventLoopIteration, ctrl);
 
 	if(ctrl)
 		LoopCtrl = ploop;
