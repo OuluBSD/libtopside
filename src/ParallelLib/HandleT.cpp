@@ -77,19 +77,28 @@ HandleT<Dim>::HandleT()
 	maximized = false;
 	id = -1;
 	
-	TODO // ctrl proxy from CG: this->Add(decor);
+	this->Add(decor.GetInteraction());
 	
 	Box box = Dim::GetDefaultHandleDimensions(40);
 	this->SetFrameBox(box);
-	
 }
 
 template <class Dim>
 typename Dim::TopContainer* HandleT<Dim>::GetTopContainer() {
+	TODO
+	#if 0
 	auto* proxy = this->GetLinkedProxy();
 	if (!proxy)
 		return 0;
 	return CastPtr<typename Dim::TopContainer>(proxy);
+	#endif
+}
+
+#if 0
+template <class Dim>
+void HandleT<Dim>::SetTopContainer(TopContainer* tc) {
+	ASSERT(!this->GetLinkedProxy());
+	this->SetTarget(tc);
 }
 
 template <class Dim>
@@ -128,18 +137,6 @@ void HandleT<Ctx2D>::Paint(DrawT& draw) {
 }
 
 template <class Dim>
-int HandleT<Dim>::GetFrameWidth() const {
-	int frame_width = GetScope().GetFrameWidth();
-	return maximized ? 0 : frame_width;
-}
-
-template <class Dim>
-int HandleT<Dim>::GetCornerWidth() const {
-	int corner_width = GetScope().GetCornerWidth();
-	return maximized ? 0 : corner_width;
-}
-
-template <class Dim>
 void HandleT<Dim>::Layout() {
 	int title_h = 25;
 	int border = GetFrameWidth();
@@ -165,38 +162,6 @@ void HandleT<Dim>::Layout() {
 		content_box.right -= 5;
 		#endif
 		iact->SetFrameBox(content_box);
-	}
-}
-
-template <class Dim>
-int HandleT<Dim>::GetArea(const Pt& pt) {
-	int frame_width = GetFrameWidth();
-	int corner_width = GetCornerWidth();
-	Sz sz = this->GetFrameBox().GetSize();
-	
-	if (pt.x < frame_width) {
-		if (pt.y < corner_width)
-			return TL;
-		else if (pt.y >= sz.cy - corner_width)
-			return BL;
-		else
-			return LEFT;
-	}
-	else if (pt.x >= sz.cx - frame_width) {
-		if (pt.y < corner_width)
-			return TR;
-		else if (pt.y >= sz.cy - corner_width)
-			return BR;
-		else
-			return RIGHT;
-	}
-	else {
-		if (pt.y < frame_width)
-			return TOP;
-		else if (pt.y >= sz.cy - frame_width)
-			return BOTTOM;
-		else
-			return CENTER;
 	}
 }
 
@@ -249,6 +214,64 @@ String HandleT<Dim>::GetTitle() const {
 template <class Dim>
 void HandleT<Dim>::SetPendingPartialRedraw() {
 	pending_partial_redraw = true;
+}
+
+template <class Dim>
+void HandleT<Dim>::LoadRect() {
+	ASSERT(stored_box.bottom && stored_box.right);
+	SetFrameBox(stored_box);
+}
+
+template <class Dim>
+void HandleT<Dim>::SetFrameBox(const Box& b) {
+	// this method override is for debugging
+	Dim::Interaction::SetFrameBox(b);
+}
+
+#endif
+
+template <class Dim>
+int HandleT<Dim>::GetFrameWidth() const {
+	int frame_width = GetScope().GetFrameWidth();
+	return maximized ? 0 : frame_width;
+}
+
+template <class Dim>
+int HandleT<Dim>::GetCornerWidth() const {
+	int corner_width = GetScope().GetCornerWidth();
+	return maximized ? 0 : corner_width;
+}
+
+template <class Dim>
+int HandleT<Dim>::GetArea(const Pt& pt) {
+	int frame_width = GetFrameWidth();
+	int corner_width = GetCornerWidth();
+	Sz sz = this->GetFrameBox().GetSize();
+	
+	if (pt.x < frame_width) {
+		if (pt.y < corner_width)
+			return TL;
+		else if (pt.y >= sz.cy - corner_width)
+			return BL;
+		else
+			return LEFT;
+	}
+	else if (pt.x >= sz.cx - frame_width) {
+		if (pt.y < corner_width)
+			return TR;
+		else if (pt.y >= sz.cy - corner_width)
+			return BR;
+		else
+			return RIGHT;
+	}
+	else {
+		if (pt.y < frame_width)
+			return TOP;
+		else if (pt.y >= sz.cy - frame_width)
+			return BOTTOM;
+		else
+			return CENTER;
+	}
 }
 
 /*template <class Dim>
@@ -323,12 +346,6 @@ void HandleT<Dim>::StoreRect() {
 }
 
 template <class Dim>
-void HandleT<Dim>::LoadRect() {
-	ASSERT(stored_box.bottom && stored_box.right);
-	SetFrameBox(stored_box);
-}
-
-template <class Dim>
 void HandleT<Dim>::ToggleMaximized() {
 	if (IsMaximized())
 		Restore();
@@ -352,16 +369,12 @@ void HandleT<Dim>::Restore()
 }
 
 template <class Dim>
-void HandleT<Dim>::SetFrameBox(const Box& b) {
-	// this method override is for debugging
-	Dim::Interaction::SetFrameBox(b);
-}
-
-template <class Dim>
 void HandleT<Dim>::MoveHandle(Pt pt) {
 	Scope& scope = GetScope();
 	scope.MoveHandle( pt, id );
 }
+
+#if 0
 
 template <class Dim>
 void HandleT<Dim>::CheckMouseBorder(const Pt& pt) {
@@ -452,6 +465,20 @@ void HandleT<Dim>::DeepMouseLeave() {
 }
 
 template <class Dim>
+void HandleT<Dim>::LeftDown(Pt p, dword keyflags) {
+	CaptureResize(p);
+	
+}
+
+template <class Dim>
+void HandleT<Dim>::LeftUp(Pt p, dword keyflags) {
+	ReleaseResize();
+	
+}
+
+#endif
+
+template <class Dim>
 typename Dim::Pt HandleT<Dim>::GetMousePos() const {
 	return GetScope().GetMousePos();
 }
@@ -474,18 +501,6 @@ void HandleT<Dim>::ReleaseResize() {
 		this->ReleaseCapture();
 		is_resizing = false;
 	}
-}
-
-template <class Dim>
-void HandleT<Dim>::LeftDown(Pt p, dword keyflags) {
-	CaptureResize(p);
-	
-}
-
-template <class Dim>
-void HandleT<Dim>::LeftUp(Pt p, dword keyflags) {
-	ReleaseResize();
-	
 }
 
 template <class Dim>

@@ -31,9 +31,9 @@ void Ctrl::MouseEventFB(Ptr<Ctrl> t, int event, Point p, int zdelta)
 	Rect rr = t->GetRect();
 	if((event & Ctrl::ACTION) == DOWN) {
 		Ptr<Ctrl> q = t;
-		/*TopWindowFrame *wf = dynamic_cast<TopWindowFrame *>(~t);
+		TopWindowFrame *wf = dynamic_cast<TopWindowFrame *>(~t);
 		if(wf)
-			q = wf->window;*/
+			q = wf->GetTopContainer();
 		if(q) q->ClickActivateWnd();
 		if(q) q->SetForeground();
 		if(ignoreclick)

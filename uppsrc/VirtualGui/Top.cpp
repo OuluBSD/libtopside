@@ -57,7 +57,7 @@ void TopWindow::State(int reason)
 
 void TopWindow::SyncRect()
 {
-	frame->SyncRect();
+	frame->SyncBox();
 	Rect r = frame->GetClient();
 	if(r != GetRect())
 		SetRect(r);
@@ -65,6 +65,8 @@ void TopWindow::SyncRect()
 
 void TopWindow::Open(Ctrl *owner)
 {
+	TODO
+	#if 0
 	GuiLock __;
 	LLOG("Open " << Upp::Name(owner));
 	Rect r = GetRect();
@@ -79,7 +81,10 @@ void TopWindow::Open(Ctrl *owner)
 			SetRect(GetWorkArea().CenterRect(r.GetSize()));
 	}
 	frame->SetClient(GetRect());
-	frame->window = this;
+	//frame->window = this;
+	TopWindow* twp = frame->GetHandle().GetScope().SetTopContainer();
+	TopWindow* twp = frame->GetTopContainer();
+	ASSERT(twp == this);
 	frame->PopUp(owner, false, true);
 	PopUp(frame, false, true);
 	popup = false;
@@ -90,6 +95,7 @@ void TopWindow::Open(Ctrl *owner)
 	SyncCaption();
 	if(state == MAXIMIZED)
 		frame->Maximize();
+	#endif
 }
 
 void TopWindow::Open()
@@ -139,7 +145,6 @@ bool TopWindow::IsTopMost() const
 
 void TopWindow::GuiPlatformConstruct()
 {
-	frame = new TopWindowFrame;
 	CreateGeom2DComponent();
 }
 

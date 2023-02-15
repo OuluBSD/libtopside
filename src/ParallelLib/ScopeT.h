@@ -5,8 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
 class ScopeT :
-	public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>,
-	public Dim::Space
+	public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>
 {
 
 public:
@@ -14,9 +13,6 @@ public:
 	using Scope = ScopeT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
@@ -27,20 +23,15 @@ public:
 	using CmdDraw = typename Dim::CmdDraw;
 	using CmdPainter = typename Dim::CmdPainter;
 	using DrawT = typename Dim::DrawT;
-	
-	#if IS_UPP_CORE
-	using UppTopWindowWrap = CtrlInterfaceGeom<UPP::TopWindow>;
-	#endif
+	using Desktop = typename Dim::Desktop;
 	
 private:
 	CmdDraw pd;
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;
 	
-	#if IS_UPP_CORE
-	Array<UppTopWindowWrap> tws;
-	#endif
-	
+	//Array<UppTopWindowWrap> tws;
+	Desktop desktop;
 	int handle_counter = 0;
 	bool maximize_all;
 	int active_pos, active_id;
@@ -76,8 +67,8 @@ public:
 	void LoadDimsAll();
 	void SetMaximizeAll(bool b = true) { maximize_all = b; }
 
-	void SetCaptured(GeomInteraction* c) override;
-	void SetWithMouse(GeomInteraction* c) override;
+	//void SetCaptured(GeomInteraction* c) override;
+	//void SetWithMouse(GeomInteraction* c) override;
 	
 	void SetCaptured(Container* c);
 	void SetWithMouse(Container* c);
@@ -91,7 +82,7 @@ public:
 	typedef ScopeT<Dim> CLASSNAME;
 	ScopeT();
 
-	bool Init() override;
+	/*bool Init() override;
 	void AddInterface(InterfaceProxy&) override;
 	bool Poll(typename Dim::Event& e) override;
 	void Render() override;
@@ -101,6 +92,13 @@ public:
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
+	bool IsCaptureRoot() const override;
+	Interaction* GetCaptured() const override { return captured; }
+	Interaction* GetWithMouse() const override { return with_mouse; }
+	bool Key(dword key, int count) override;
+	// void LeftDown(Point p, dword keyflags) override;
+	void Layout() override;
+	void PostLayout() override;*/
 	
 	#if IS_UPP_CORE
 	void AddInterface(UPP::TopWindow&);
@@ -131,24 +129,20 @@ public:
 	void OrderTileHandlesVert();
 	void CloseAll();
 
-	bool IsCaptureRoot() const override;
-	Interaction* GetCaptured() const override { return captured; }
-	Interaction* GetWithMouse() const override { return with_mouse; }
-	bool Key(dword key, int count) override;
-	// void LeftDown(Point p, dword keyflags) override;
-	void Layout() override;
-	void PostLayout() override;
 
 	int GetCount() const { return handles.GetCount(); }
 	Handle& operator[](int i) { return handles[i]; }
 	Handle& Get(int i) { return handles[i]; }
-	Sz GetSize() const {return this->GetFrameSize();}
+	//Sz GetSize() const {return this->GetFrameSize();}
 	
 	Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();
 	TopContainer& GetVisibleTopContainerRef() { return *GetVisibleTopContainer(); }
 	
 	CmdDraw& GetDraw() {return pd;}
+	
+	Desktop& GetCtrl() {return desktop;}
+	const Desktop& GetCtrl() const {return desktop;}
 	
 	Callback WhenActiveHandleChanges, WhenHandleClose;
 };

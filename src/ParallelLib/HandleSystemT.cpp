@@ -32,6 +32,8 @@ void HandleSystemT<Dim>::Update(double dt) {
 	for(int i = 0; i < scopes.GetCount(); i++) {
 		Scope& s = scopes[i];
 		
+		TODO
+		#if 0
 		Event e;
 		while (s.Poll(e)) {
 			
@@ -44,6 +46,7 @@ void HandleSystemT<Dim>::Update(double dt) {
 		closed = s.ProcessCloseQueue() || closed;
 		
 		s.Render();
+		#endif
 	}
 }
 
@@ -67,7 +70,10 @@ typename HandleSystemT<Dim>::Scope& HandleSystemT<Dim>::AddScope() {
 	Scope& s = scopes.Add();
 	s.SetParent(RefParent1<HandleSystemT<Dim>>(this));
 	lock.Leave();
+	TODO
+	#if 0
 	s.Init();
+	#endif
 	return s;
 }
 
@@ -97,6 +103,8 @@ ScopeT<Dim>& HandleSystemT<Dim>::GetScope(int idx) {
 
 template <class Dim>
 void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
+	TODO
+	#if 0
 	Scope& scope = GetActiveScope();
 	
 	for (const Event& e : ev) {
@@ -105,10 +113,13 @@ void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
 		else
 			scope.Dispatch(e);
 	}
+	#endif
 }
 
 template <class Dim>
 void HandleSystemT<Dim>::Close() {
+	TODO
+	#if 0
 	for(Scope& s : scopes) {
 		s.CloseAll();
 		s.ProcessCloseQueue();
@@ -118,6 +129,7 @@ void HandleSystemT<Dim>::Close() {
 	for(int i = scopes.GetCount()-1; i >= 0; i--)
 		scopes[i].Shutdown();
 	scopes.Clear();
+	#endif
 }
 
 template <class Dim>

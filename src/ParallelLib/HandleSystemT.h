@@ -13,9 +13,6 @@ public:
 	using Scope = ScopeT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;

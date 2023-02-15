@@ -19,14 +19,19 @@ dword AtomVirtualGui::GetOptions()
 
 Size AtomVirtualGui::GetSize()
 {
+	TODO
+	#if 0
 	ASSERT(mgr);
 	if (mgr)
 		return mgr->GetSize();
 	return Size(0,0);
+	#endif
 }
 
 bool AtomVirtualGui::Create(const Rect& rect, const char *title)
 {
+	TODO
+	#if 0
 	Machine& mach = TS::Serial::GetActiveMachine();
 	wins = mach.Get<WindowSystem>();
 	if (!wins)
@@ -40,6 +45,7 @@ bool AtomVirtualGui::Create(const Rect& rect, const char *title)
 	mgr->SetFrameRect(mgr_rect);
 	
 	return true;
+	#endif
 }
 
 //extern SDL_TimerID waketimer_id;

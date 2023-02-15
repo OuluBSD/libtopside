@@ -3,5 +3,6 @@
 
 #include <CuboidCore/CuboidCore.h>
 
+#include "StaticGubo.h"
 
 #endif

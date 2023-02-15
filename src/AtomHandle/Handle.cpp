@@ -86,7 +86,7 @@ struct HandleVideoBase::Binder : RTTIBase {
 	RTTI_DECL0(Binder);
 	
 	BinderIfaceVideo* iface = 0;
-	AbsoluteInterface* abs_iface = 0;
+	//AbsoluteInterface* abs_iface = 0;
 	DrawCommandImageRenderer rend;
 	bool win_inited = false;
 	Size sz;
@@ -266,6 +266,8 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 	if (IsActive()) {
 		
 		for (Binder& b : binders) {
+			TODO
+			#if 0
 			Absolute2DInterface* abs2d_iface = CastPtr<Absolute2DInterface>(b.abs_iface);
 			
 			if (abs2d_iface) {
@@ -325,6 +327,7 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 				
 				#endif
 			}
+			#endif
 		}
 	}
 }
@@ -374,9 +377,12 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 }
 
 void HandleVideoBase::AddBinders() {
+	TODO
+	#if 0
 	for (Binder& b : binders)
 		if (!b.abs_iface)
 			AddBinderActive(b);
+	#endif
 }
 
 void HandleVideoBase::AddBinderActive(Binder& b) {

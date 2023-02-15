@@ -5,5 +5,7 @@ uses
 
 file
 	CuboidLib.h,
-	CuboidLib.cpp;
+	CuboidLib.cpp,
+	StaticGubo.h,
+	StaticGubo.cpp;
 

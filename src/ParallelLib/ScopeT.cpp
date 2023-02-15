@@ -10,6 +10,8 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Dim>
 ScopeT<Dim>::ScopeT()
 {
+	TODO
+	#if 0
 	this->SetFrameBox(Dim::GetDefaultScopeDimensions());
 
 	handle_counter = 0;
@@ -19,8 +21,10 @@ ScopeT<Dim>::ScopeT()
 
 	this->SetPendingLayout();
 	this->SetPendingRedraw();
+	#endif
 }
 
+#if 0
 template <class Dim>
 bool ScopeT<Dim>::Init()
 {
@@ -124,31 +128,6 @@ void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 }
 
 template <class Dim>
-bool ScopeT<Dim>::CheckRender()
-{
-	bool do_render = false;
-
-	if(this->IsPendingLayout()) {
-		this->DeepLayout();
-		this->SetPendingEffectRedraw();
-	}
-
-	int sc = this->GetSubCount();
-	for(int i = 0; i < sc; i++) {
-		typename Dim::Interaction* c = this->At(i);
-
-		if(c->IsPendingLayout()) {
-			c->DeepLayout();
-			c->SetPendingEffectRedraw();
-		}
-	}
-
-	do_render = this->Redraw(true) || do_render;
-
-	return do_render;
-}
-
-template <class Dim>
 bool ScopeT<Dim>::ProcessCloseQueue()
 {
 	bool ret = close_handle_queue.GetCount();
@@ -159,248 +138,6 @@ bool ScopeT<Dim>::ProcessCloseQueue()
 	close_handle_queue.Clear();
 
 	return ret;
-}
-
-template <class Dim>
-typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetHandle(TopContainer& tw)
-{
-	for(int i = 0; i < handles.GetCount(); i++) {
-		TopContainer* ptr = handles[i].GetTopContainer();
-		if(ptr == &tw) {
-			return &handles[i];
-		}
-	}
-	NEVER();
-	return 0;
-}
-
-template <class Dim>
-void ScopeT<Dim>::FocusHandle(TopContainer* tw)
-{
-	for(int i = 0; i < handles.GetCount(); i++) {
-		TopContainer* ptr = handles[i].GetTopContainer();
-		if(ptr == tw) {
-			FocusHandle(i);
-			return;
-		}
-	}
-}
-
-template <class Dim>
-void ScopeT<Dim>::MoveHandle(Pt pt, int handle_id)
-{
-	if(maximize_all)
-		return;
-	Handle& h = handles.Get(handle_id);
-	Sz sz(h.GetFrameSize());
-	Pt tl = FirstCorner(h.GetFrameBox());
-	tl += pt;
-	h.SetFrameBox(BoxC(tl, sz));
-}
-
-template <class Dim>
-void ScopeT<Dim>::FocusHandle(int handle_id)
-{
-	int i = handles.Find(handle_id);
-	if(i >= 0)
-		FocusHandlePos(i);
-}
-
-template <class Dim>
-void ScopeT<Dim>::FocusHandlePos(int handle_pos)
-{
-	if(handle_pos < 0 || handle_pos >= handles.GetCount())
-		return;
-	Handle& h = handles[handle_pos];
-	h.Show();
-	Interaction* c = &h;
-	if(GetLastSub() == c) {
-		int prev_active_id = active_id;
-		active_pos = handle_pos;
-		active_id = handles.GetKey(handle_pos);
-		if(handles.Find(prev_active_id) != -1)
-			handles.Get(prev_active_id).Refresh();
-		this->Refresh();
-		return;
-	}
-
-	if(!h.IsMaximized()) {
-		if(maximize_all)
-			MaximizeHandle(handles.GetKey(handle_pos));
-	}
-	else {
-		Sz sz(this->GetFrameSize());
-		Handle& h = handles[handle_pos];
-		h.SetFrameBox(BoxC(Pt(), sz));
-	}
-	h.GetTopContainer()->FocusEvent();
-	this->RemoveSub(&h);
-	this->AddSub(&h);
-	int prev_active_id = active_id;
-	active_pos = handle_pos;
-	active_id = handles.GetKey(handle_pos);
-	if(handles.Find(prev_active_id) != -1)
-		handles.Get(prev_active_id).Refresh();
-	h.Refresh();
-	this->Refresh();
-	WhenActiveHandleChanges();
-}
-
-template <class Dim>
-void ScopeT<Dim>::CloseHandle(int handle_id)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return;
-	Handle& h0 = handles[handle_pos];
-
-	if(h0.HasMouseDeep())
-		h0.DeepMouseLeave();
-	if(h0.HasFocusDeep())
-		h0.DeepUnfocus();
-	this->RemoveSub(&h0);
-	TopContainer* tw = h0.GetTopContainer();
-	handles.Remove(handle_pos);
-	this->Refresh();
-	FocusPrevious();
-	WhenHandleClose();
-}
-
-template <class Dim>
-void ScopeT<Dim>::MaximizeHandle(int handle_id)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return;
-	Handle& h = handles[handle_pos];
-	SetHandleMaximized(h, 1);
-}
-
-template <class Dim>
-void ScopeT<Dim>::RestoreHandle(int handle_id)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return;
-	Handle& h = handles[handle_pos];
-	SetHandleMaximized(h, 0);
-}
-
-template <class Dim>
-void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
-{
-	Sz sz(this->GetFrameSize());
-	if(b) {
-		if(!h.IsMaximized()) {
-			h.StoreRect();
-			h.SetMaximized(true);
-		}
-		h.SetFrameBox(BoxC(Pt(), sz));
-		maximize_all = true;
-	}
-	else {
-		h.LoadRect();
-		h.SetMaximized(false);
-		maximize_all = false;
-		LoadDimsAll();
-
-		Sz h_size = h.GetFrameSize();
-		if(h_size.cx > sz.cx || h_size.cy > sz.cy) {
-			h.SetFrameBox(BoxC(Pt(10), sz - Sz(20)));
-		}
-	}
-	this->SetPendingLayout();
-}
-
-template <class Dim>
-void ScopeT<Dim>::LoadDimsAll()
-{
-	for(int i = 0; i < handles.GetCount(); i++) {
-		Handle& h = handles[i];
-		if(h.IsMaximized()) {
-			h.LoadRect();
-			h.SetMaximized(false);
-		}
-	}
-}
-
-template <class Dim>
-void ScopeT<Dim>::MinimizeHandle(int handle_id)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return;
-	Handle& h = handles[handle_pos];
-	h.Hide();
-	FocusPrevious();
-}
-
-template <class Dim>
-void ScopeT<Dim>::FocusPrevious()
-{
-	this->SetPendingLayout();
-	int handle_pos = active_pos;
-	// Focus previous
-	int count = handles.GetCount();
-	while(handle_pos >= count)
-		handle_pos--;
-	for(int i = 0; i < count; i++) {
-		if(handle_pos <= -1)
-			handle_pos = count - 1;
-		Handle& h2 = handles[handle_pos];
-		// if (!maximize_all && !h2.IsShown()) {
-		if(!h2.IsShown()) {
-			handle_pos--;
-			continue;
-		}
-		FocusHandlePos(handle_pos);
-		return;
-	}
-	active_id = -1;
-	active_pos = -1;
-}
-
-template <class Dim>
-void ScopeT<Dim>::SetTitle(int handle_id, String title)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return;
-	Handle& h = handles[handle_pos];
-	h.Title(title);
-	
-	this->SetPendingEffectRedraw();
-	this->PostRefresh();
-}
-
-template <class Dim>
-String ScopeT<Dim>::GetTitle(int handle_id)
-{
-	int handle_pos = handles.Find(handle_id);
-	if(handle_pos == -1)
-		return "";
-	Handle& h = handles[handle_pos];
-	return h.GetTitle();
-}
-
-template <class Dim>
-void ScopeT<Dim>::CloseAll()
-{
-	for(int i = 0; i < handles.GetCount(); i++) {
-		QueueCloseHandle(handles.GetKey(i));
-	}
-	this->SetPendingLayout();
-}
-
-template <class Dim>
-void ScopeT<Dim>::CloseOthers(int handle_id)
-{
-	for(int i = 0; i < handles.GetCount(); i++) {
-		if(handles.GetKey(i) == handle_id)
-			;
-		else
-			QueueCloseHandle(handles.GetKey(i));
-	}
 }
 
 template <class Dim>
@@ -468,25 +205,375 @@ void ScopeT<Dim>::PostLayout()
 }
 
 template <class Dim>
+bool ScopeT<Dim>::IsCaptureRoot() const
+{
+	return true;
+}
+
+template <class Dim>
+bool ScopeT<Dim>::MouseMoveInFrame(Pt pt, dword keyflags) {
+	return Dim::Interaction::MouseMoveInFrame(pt, keyflags);
+}
+
+template <class Dim>
+bool ScopeT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
+	global_mouse = pt;
+	
+	return Dim::Interaction::DeepMouseMove(pt, keyflags);
+}
+
+
+
+template <class Dim>
+void ScopeT<Dim>::SetCaptured(GeomInteraction* c) {
+	captured = CastPtr<Interaction>(c);
+	captured_ctrl = CastPtr<Container>(c);
+	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
+	with_mouse = CastPtr<Interaction>(c);
+	with_mouse_ctrl = CastPtr<Container>(c);
+	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
+}
+
+#endif
+
+template <class Dim>
+bool ScopeT<Dim>::CheckRender()
+{
+	TODO
+	#if 0
+	bool do_render = false;
+
+	if(this->IsPendingLayout()) {
+		this->DeepLayout();
+		this->SetPendingEffectRedraw();
+	}
+
+	int sc = this->GetSubCount();
+	for(int i = 0; i < sc; i++) {
+		typename Dim::Interaction* c = this->At(i);
+
+		if(c->IsPendingLayout()) {
+			c->DeepLayout();
+			c->SetPendingEffectRedraw();
+		}
+	}
+
+	do_render = this->Redraw(true) || do_render;
+
+	return do_render;
+	#endif
+}
+
+template <class Dim>
+typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetHandle(TopContainer& tw)
+{
+	TODO
+	#if 0
+	for(int i = 0; i < handles.GetCount(); i++) {
+		TopContainer* ptr = handles[i].GetTopContainer();
+		if(ptr == &tw) {
+			return &handles[i];
+		}
+	}
+	NEVER();
+	return 0;
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::FocusHandle(TopContainer* tw)
+{
+	TODO
+	#if 0
+	for(int i = 0; i < handles.GetCount(); i++) {
+		TopContainer* ptr = handles[i].GetTopContainer();
+		if(ptr == tw) {
+			FocusHandle(i);
+			return;
+		}
+	}
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::MoveHandle(Pt pt, int handle_id)
+{
+	TODO
+	#if 0
+	if(maximize_all)
+		return;
+	Handle& h = handles.Get(handle_id);
+	Sz sz(h.GetFrameSize());
+	Pt tl = FirstCorner(h.GetFrameBox());
+	tl += pt;
+	h.SetFrameBox(BoxC(tl, sz));
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::FocusHandle(int handle_id)
+{
+	int i = handles.Find(handle_id);
+	if(i >= 0)
+		FocusHandlePos(i);
+}
+
+template <class Dim>
+void ScopeT<Dim>::FocusHandlePos(int handle_pos)
+{
+	TODO
+	#if 0
+	if(handle_pos < 0 || handle_pos >= handles.GetCount())
+		return;
+	Handle& h = handles[handle_pos];
+	h.Show();
+	Interaction* c = &h;
+	if(GetLastSub() == c) {
+		int prev_active_id = active_id;
+		active_pos = handle_pos;
+		active_id = handles.GetKey(handle_pos);
+		if(handles.Find(prev_active_id) != -1)
+			handles.Get(prev_active_id).Refresh();
+		this->Refresh();
+		return;
+	}
+
+	if(!h.IsMaximized()) {
+		if(maximize_all)
+			MaximizeHandle(handles.GetKey(handle_pos));
+	}
+	else {
+		Sz sz(this->GetFrameSize());
+		Handle& h = handles[handle_pos];
+		h.SetFrameBox(BoxC(Pt(), sz));
+	}
+	h.GetTopContainer()->FocusEvent();
+	this->RemoveSub(&h);
+	this->AddSub(&h);
+	int prev_active_id = active_id;
+	active_pos = handle_pos;
+	active_id = handles.GetKey(handle_pos);
+	if(handles.Find(prev_active_id) != -1)
+		handles.Get(prev_active_id).Refresh();
+	h.Refresh();
+	this->Refresh();
+	WhenActiveHandleChanges();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::CloseHandle(int handle_id)
+{
+	TODO
+	#if 0
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return;
+	Handle& h0 = handles[handle_pos];
+
+	if(h0.HasMouseDeep())
+		h0.DeepMouseLeave();
+	if(h0.HasFocusDeep())
+		h0.DeepUnfocus();
+	this->RemoveSub(&h0);
+	TopContainer* tw = h0.GetTopContainer();
+	handles.Remove(handle_pos);
+	this->Refresh();
+	FocusPrevious();
+	WhenHandleClose();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::MaximizeHandle(int handle_id)
+{
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return;
+	Handle& h = handles[handle_pos];
+	SetHandleMaximized(h, 1);
+}
+
+template <class Dim>
+void ScopeT<Dim>::RestoreHandle(int handle_id)
+{
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return;
+	Handle& h = handles[handle_pos];
+	SetHandleMaximized(h, 0);
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
+{
+	TODO
+	#if 0
+	Sz sz(this->GetFrameSize());
+	if(b) {
+		if(!h.IsMaximized()) {
+			h.StoreRect();
+			h.SetMaximized(true);
+		}
+		h.SetFrameBox(BoxC(Pt(), sz));
+		maximize_all = true;
+	}
+	else {
+		h.LoadRect();
+		h.SetMaximized(false);
+		maximize_all = false;
+		LoadDimsAll();
+
+		Sz h_size = h.GetFrameSize();
+		if(h_size.cx > sz.cx || h_size.cy > sz.cy) {
+			h.SetFrameBox(BoxC(Pt(10), sz - Sz(20)));
+		}
+	}
+	this->SetPendingLayout();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::LoadDimsAll()
+{
+	TODO
+	#if 0
+	for(int i = 0; i < handles.GetCount(); i++) {
+		Handle& h = handles[i];
+		if(h.IsMaximized()) {
+			h.LoadRect();
+			h.SetMaximized(false);
+		}
+	}
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::MinimizeHandle(int handle_id)
+{
+	TODO
+	#if 0
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return;
+	Handle& h = handles[handle_pos];
+	h.Hide();
+	FocusPrevious();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::FocusPrevious()
+{
+	TODO
+	#if 0
+	this->SetPendingLayout();
+	int handle_pos = active_pos;
+	// Focus previous
+	int count = handles.GetCount();
+	while(handle_pos >= count)
+		handle_pos--;
+	for(int i = 0; i < count; i++) {
+		if(handle_pos <= -1)
+			handle_pos = count - 1;
+		Handle& h2 = handles[handle_pos];
+		// if (!maximize_all && !h2.IsShown()) {
+		if(!h2.IsShown()) {
+			handle_pos--;
+			continue;
+		}
+		FocusHandlePos(handle_pos);
+		return;
+	}
+	active_id = -1;
+	active_pos = -1;
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::SetTitle(int handle_id, String title)
+{
+	TODO
+	#if 0
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return;
+	Handle& h = handles[handle_pos];
+	h.Title(title);
+	
+	this->SetPendingEffectRedraw();
+	this->PostRefresh();
+	#endif
+}
+
+template <class Dim>
+String ScopeT<Dim>::GetTitle(int handle_id)
+{
+	TODO
+	#if 0
+	int handle_pos = handles.Find(handle_id);
+	if(handle_pos == -1)
+		return "";
+	Handle& h = handles[handle_pos];
+	return h.GetTitle();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::CloseAll()
+{
+	TODO
+	#if 0
+	for(int i = 0; i < handles.GetCount(); i++) {
+		QueueCloseHandle(handles.GetKey(i));
+	}
+	this->SetPendingLayout();
+	#endif
+}
+
+template <class Dim>
+void ScopeT<Dim>::CloseOthers(int handle_id)
+{
+	for(int i = 0; i < handles.GetCount(); i++) {
+		if(handles.GetKey(i) == handle_id)
+			;
+		else
+			QueueCloseHandle(handles.GetKey(i));
+	}
+}
+
+template <class Dim>
 typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetActiveHandle()
 {
+	TODO
+	#if 0
 	if(active_pos >= 0 && active_pos < handles.GetCount())
 		return &handles[active_pos];
 	return 0;
+	#endif
 }
 
 template <class Dim>
 typename Dim::Interaction* ScopeT<Dim>::GetLastSub()
 {
+	TODO
+	#if 0
 	if (this->sub.IsEmpty())
 		return 0;
 	Interaction* last = CastPtr<Interaction>(this->sub.Top());
 	return last;
+	#endif
 }
 
 template <class Dim>
 typename Dim::TopContainer* ScopeT<Dim>::GetVisibleTopContainer()
 {
+	TODO
+	#if 0
 	Interaction* last = GetLastSub();
 	for(int i = 0; i < handles.GetCount(); i++) {
 		Handle& h = handles[i];
@@ -496,11 +583,14 @@ typename Dim::TopContainer* ScopeT<Dim>::GetVisibleTopContainer()
 		}
 	}
 	return 0;
+	#endif
 }
 
 template <class Dim>
 void ScopeT<Dim>::OrderTileHandles()
 {
+	TODO
+	#if 0
 	int count = handles.GetCount();
 	if(maximize_all && count == 1)
 		return;
@@ -577,11 +667,14 @@ void ScopeT<Dim>::OrderTileHandles()
 		}
 	}
 	this->SetPendingLayout();
+	#endif
 }
 
 template <class Dim>
 void ScopeT<Dim>::OrderTileHandlesVert()
 {
+	TODO
+	#if 0
 	int count = handles.GetCount();
 	if(maximize_all && count == 1)
 		return;
@@ -597,6 +690,7 @@ void ScopeT<Dim>::OrderTileHandlesVert()
 		h.SetFrameBox(BoxC<Box>(0, i * y_step, sz.cx, y_step));
 		h.SetMaximized(false);
 	}
+	#endif
 }
 
 /*template <class Dim>
@@ -606,40 +700,6 @@ bool ScopeT<Dim>::DeepKey(dword key, int count) {
         return active->DeepKey(key, count);
     return false;
 }*/
-
-template <class Dim>
-bool ScopeT<Dim>::IsCaptureRoot() const
-{
-	return true;
-}
-
-template <class Dim>
-bool ScopeT<Dim>::MouseMoveInFrame(Pt pt, dword keyflags) {
-	return Dim::Interaction::MouseMoveInFrame(pt, keyflags);
-}
-
-template <class Dim>
-bool ScopeT<Dim>::DeepMouseMove(const Pt& pt, dword keyflags) {
-	global_mouse = pt;
-	
-	return Dim::Interaction::DeepMouseMove(pt, keyflags);
-}
-
-
-
-template <class Dim>
-void ScopeT<Dim>::SetCaptured(GeomInteraction* c) {
-	captured = CastPtr<Interaction>(c);
-	captured_ctrl = CastPtr<Container>(c);
-	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
-
-template <class Dim>
-void ScopeT<Dim>::SetWithMouse(GeomInteraction* c) {
-	with_mouse = CastPtr<Interaction>(c);
-	with_mouse_ctrl = CastPtr<Container>(c);
-	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
 
 template <class Dim>
 void ScopeT<Dim>::SetCaptured(Container* c) {
@@ -655,6 +715,7 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 
 #if IS_UPP_CORE
 
+#if 0
 template <>
 void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
 	captured = CastPtr<Interaction>(c);
@@ -678,6 +739,7 @@ void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
 	#endif
 	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
 }
+#endif
 
 template <>
 void ScopeT<Ctx2D>::SetCaptured(Container* c) {
@@ -701,10 +763,17 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 
 template <>
 void ScopeT<Ctx2D>::AddInterface(UPP::TopWindow& tw) {
+	TODO
+	#if 0
 	UppTopWindowWrap& utw = tws.Add();
 	utw.SetTargetCtrl(tw);
 	utw.LinkInvalidate(tw);
 	AddInterface((Absolute2DProxy&)utw);
+	
+	Handle* h = CastPtr<Handle>(utw.GetTarget());
+	ASSERT(h);
+	tw.SetTopWindowFrame(h->GetFrame());
+	#endif
 }
 	
 #endif

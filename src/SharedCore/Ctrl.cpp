@@ -1,3 +1,5 @@
+#if 0
+
 #include <CtrlCore/CtrlCore.h>
 #include <CuboidCore/CuboidCore.h>
 #include <Local/Local.h>
@@ -82,3 +84,4 @@ Image Absolute3DProxy::DefaultCursor() {
 
 NAMESPACE_TOPSIDE_END
 
+#endif

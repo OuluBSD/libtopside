@@ -8,22 +8,67 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
 FrameT<Dim>::FrameT() {
+	TODO
+}
+
+template <>
+FrameT<Ctx2D>::FrameT() {
+	geom.SetTargetCtrl(*this);
+	
 	close.SetImage(FBImg::close());
 	close.EdgeStyle();
-	this->Add((GeomInteraction2D&)close);
+	Add(close);
 	maximize.SetImage(FBImg::maximize());
 	maximize.EdgeStyle();
-	GeomInteraction::Add(maximize);
-	*maximize <<= THISBACK(ToggleMaximize);
+	Add(maximize);
+	maximize <<= THISBACK(ToggleMaximize);
 	maximized = false;
 	sizeable = false;
 	holding = false;
 }
 
 template <class Dim>
+typename Dim::TopContainer* FrameT<Dim>::GetTopContainer() {
+	ASSERT(handle);
+	return handle->GetTopContainer();
+}
+
+template <class Dim>
+typename Dim::Sz FrameT<Dim>::GetFrameSize() const {
+	return Dim::Container::GetFrameSize();
+}
+
+template <class Dim>
+typename Dim::Box FrameT<Dim>::GetFrameBox() const {
+	return Dim::Container::GetFrameBox();
+}
+
+template <class Dim>
+void FrameT<Dim>::SetFrameBox(Box b) {
+	Dim::Container::SetFrameBox(b);
+}
+
+template <>
+Size FrameT<Ctx2D>::GetFrameSize() const {
+	return Ctrl::GetSize();
+}
+
+template <>
+Rect FrameT<Ctx2D>::GetFrameBox() const {
+	return Ctrl::GetRect();
+}
+
+template <>
+void FrameT<Ctx2D>::SetFrameBox(Box b) {
+	Ctrl::SetRect(b);
+}
+
+template <class Dim>
 void FrameT<Dim>::SetHandle(Handle* h) {
 	handle = h;
-	h->SetActions(*this);
+	close.WhenPush = callback(h, &HandleT<Dim>::Close);
+	maximize.WhenPush = callback(h, &HandleT<Dim>::ToggleMaximized);
+	minimize.WhenPush = callback(h, &HandleT<Dim>::Minimize);
 }
 
 template <class Dim>
@@ -34,22 +79,28 @@ ScopeT<Dim>& FrameT<Dim>::GetWorkArea() {
 template <class Dim>
 void FrameT<Dim>::SyncBox()
 {
+	TODO
+	#if 0
 	if(maximized) {
 		Sz sz = GetWorkArea().GetSize();
 		if(this->GetFrameBox().GetSize() != sz)
 			this->SetFrameBox(sz);
 	}
+	#endif
 }
 
 template <class Dim>
 void FrameT<Dim>::Maximize()
 {
+	TODO
+	#if 0
 	if(!maximized && maximize.IsShown()) {
 		maximized = true;
 		overlapped = this->GetFrameBox();
 		this->SetFrameBox(GetWorkArea().GetSize());
 		maximize.SetImage(FBImg::overlap());
 	}
+	#endif
 }
 
 template <class Dim>
@@ -91,8 +142,10 @@ void FrameT<Dim>::Paint(DrawT& draw) {
 template <>
 void FrameT<Ctx2D>::Paint(DrawT& w) {
 	#if 1
-	const Scope& window = handle->GetScope();
-	Size sz = GetSize();
+	const Ctrl& window = handle->GetScope().GetCtrl();
+	Size sz = Ctrl::GetSize();
+	Size sz2 = geom.GetSize();
+	ASSERT(sz == sz2);
 	Box m = Margins();
 	int c = GetStdFontCy() + 4;
 	ChPaintEdge(w, sz, FBImg::border());
@@ -157,10 +210,10 @@ void FrameT<Dim>::Layout() {
 	Box m = Margins();
 	int c = GetStdFontCy() + 4;
 	int x = sz.cx - m.right;
-	if(close->IsShown())
-		close->SetRect(x -= c, m.top, c, c);
-	if(maximize->IsShown())
-		maximize->SetRect(x -= c, m.top, c, c);
+	if(close.IsShown())
+		close.SetRect(x -= c, m.top, c, c);
+	if(maximize.IsShown())
+		maximize.SetRect(x -= c, m.top, c, c);
 }
 
 template <class Dim>
@@ -229,7 +282,7 @@ void FrameT<Ctx2D>::StartDrag()
 		return;
 	if(!sizeable && (dir.x || dir.y))
 		return;
-	this->SetCapture();
+	this->Ctrl::SetCapture();
 	startrect = this->GetFrameBox();
 	startpos = GetMousePos();
 	LLOG("START DRAG ---------------");
@@ -274,7 +327,7 @@ void FrameT<Dim>::LeftUp(Pt p, dword keyflags) {
 template <class Dim>
 void FrameT<Dim>::Hold()
 {
-	if(this->HasCapture()) {
+	if(this->Container::HasCapture()) {
 		if(this->HasMouse() && GetMouseLeft() && holding)
 			StartDrag();
 		this->ReleaseCapture();
@@ -379,6 +432,16 @@ void FrameT<Dim>::LocalMenu(Bar& bar) {
 	bar.Add("Minimize", callback(handle, &HandleT<Dim>::Minimize));
 	bar.Separator();
 	bar.Add("Close", callback(handle, &HandleT<Dim>::Close));
+}
+
+template <>
+typename Ctx2D::Interaction& FrameT<Ctx2D>::GetInteraction() {
+	return geom;
+}
+
+template <>
+typename Ctx3D::Interaction& FrameT<Ctx3D>::GetInteraction() {
+	return *this;
 }
 
 

@@ -6,19 +6,16 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class TopGubo :
-	public Gubo,
-	public Absolute3DProxy
+	public Gubo
 {
 	
 public:
-	RTTI_DECL2(TopGubo, Gubo, Absolute3DProxy)
+	RTTI_DECL1(TopGubo, Gubo)
 	TopGubo();
 	virtual ~TopGubo() {}
 	
 	void CreateGeom2DComponent();
 	void UpdateFromTransform3D();
-	
-	Gubo* GetGubo() override;
 	
 	
 };

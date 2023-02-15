@@ -71,7 +71,9 @@ public:
 	static void PaintCaretCursor(SystemDraw& draw);
 	
 	enum { DRAWDRAGRECT_SCREEN = 0x8000 };
-
+	
+	
+	
 	static bool DispatchKeyPub(dword key, int count) {return DispatchKey(key, count);}
 	
 	static bool EventLoopIteration(void* p);

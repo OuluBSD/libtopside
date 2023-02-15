@@ -1,4 +1,6 @@
 #include "Local.h"
+#include <ParallelLib/ParallelLib.h>
+
 
 #ifdef VIRTUALGUI
 
@@ -496,10 +498,19 @@ void Ctrl::InitFB()
 
 	SetStdFont(ScreenSans(12));
 	ChStdSkin();
-
-	static StaticRect x;
-	x.Color(Cyan());
-	SetDesktop(x);
+	
+	using namespace TS;
+	using namespace TS::Parallel;
+	
+	Machine& mach = GetActiveMachine();
+	WindowSystemRef wins = mach.Get<WindowSystem>();
+	ASSERT(wins);
+	if (wins) {
+		WindowManager& mgr = wins->GetActiveScope();
+		StaticRect& x = mgr.GetCtrl();
+		x.Color(Cyan());
+		SetDesktop(x);
+	}
 }
 
 void Ctrl::EndSession()

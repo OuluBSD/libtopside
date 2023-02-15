@@ -10,7 +10,10 @@ template <class Dim> class HandleT;
 
 
 template <class Dim>
-class FrameT : public Dim::Container, RTTIBase {
+class FrameT :
+	public Dim::Container,
+	RTTIBase
+{
 public:
 	using Base = FrameT<Dim>;
 	using Scope = ScopeT<Dim>;
@@ -18,12 +21,10 @@ public:
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
 	using DrawT = typename Dim::DrawT;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
+	using ContainerGeom = typename Dim::ContainerGeom;
 	using TopContainer = typename Dim::TopContainer;
 	using Sz = typename Dim::Sz;
 	using Pt = typename Dim::Pt;
@@ -33,6 +34,7 @@ public:
 	
 protected:
 	friend class HandleT<Dim>;
+	friend class ::UPP::TopWindow;
 	
 	String  title;
 	Button  minimize, maximize, close;
@@ -48,6 +50,8 @@ protected:
 	Pt      startpos;
 	Box     startrect;
 	
+	ContainerGeom geom;
+	
 	// deprecated
 	#if 0
 	bool left_down = false;
@@ -58,7 +62,7 @@ public:
 	#if IS_UPP_CORE
 	RTTI_DECL0(GeomDecoration)
 	#else
-	RTTI_DECL1(GeomDecoration, Interaction)
+	RTTI_DECL1(GeomDecoration, Container)
 	#endif
 	
 	typedef FrameT CLASSNAME;
@@ -99,6 +103,13 @@ public:
 	Box ComputeClient(Box r);
 	Pt GetDragMode(Pt p);
 	Image GetDragImage(Pt dir);
+	
+	Sz GetFrameSize() const;
+	Box GetFrameBox() const;
+	void SetFrameBox(Box b);
+	TopContainer* GetTopContainer();
+	Interaction& GetInteraction();
+	Handle& GetHandle() const {return *handle;}
 	
 };
 

@@ -18,7 +18,6 @@ struct WindowsImg {
 template <class Dim>
 class HandleT :
 	public RefScopeEnabler<HandleT<Dim>, ScopeT<Dim>>,
-	public Dim::Interface,
 	public Dim::Interaction
 {
 	
@@ -29,9 +28,6 @@ public:
 	using HandleSystem = HandleSystemT<Dim>;
 	using Frame = FrameT<Dim>;
 	using DrawT = typename Dim::DrawT;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
@@ -64,12 +60,12 @@ public:
 	HandleT();
 	
 	void SetId(int id) {this->id = id;}
-	void SetInterface(typename Dim::InterfaceProxy& iface);
+	//void SetInterface(typename Dim::InterfaceProxy& iface);
 	
-	void						Title(const String& title) override;
-	Interface&					Sizeable(bool b=true) override;
-	Interface&					MaximizeBox(bool b=true) override;
-	Interface&					MinimizeBox(bool b=true) override;
+	/*void						Title(const String& title) override;
+	Interaction&				Sizeable(bool b=true) override;
+	Interaction&				MaximizeBox(bool b=true) override;
+	Interaction&				MinimizeBox(bool b=true) override;
 	int							Run(bool appmodal=false) override;
 	String						GetTitle() const override;
 	void						SetPendingPartialRedraw() override;
@@ -86,11 +82,14 @@ public:
 	void						DeepMouseLeave() override;
 	void						LeftDown(Pt p, dword keyflags) override;
 	void						LeftUp(Pt p, dword keyflags) override;
+	*/
 	
 	
+	void						Close(); // override;
 	void						CheckMouseBorder(const Pt& pt);
 	TopContainer*				GetTopContainer();
 	int							GetArea(const Pt& pt);
+	void						SetTopContainer(TopContainer* tc);
 	
 	void SetMaximized(bool b=true);
 	//void Clear();
@@ -103,7 +102,6 @@ public:
 	bool IsMaximized() const;
 	bool IsActive() const;
 	void MoveHandle(Pt pt);
-	void Close() override;
 	void Maximize();
 	void Restore();
 	void Minimize();
@@ -120,16 +118,11 @@ public:
 	int GetCornerWidth() const;
 	Scope& GetScope() const;
 	HandleSystem& GetHandleSystem() const;
+	Frame& GetFrame() {return decor;}
 	
 	Pt GetMousePos() const;
 	
 	
-	template <class T>
-	void SetActions(T& o) {
-		o.close->WhenPush = THISBACK(Close);
-		o.maximize->WhenPush = THISBACK(ToggleMaximized);
-		o.minimize->WhenPush = THISBACK(Minimize);
-	}
 };
 
 

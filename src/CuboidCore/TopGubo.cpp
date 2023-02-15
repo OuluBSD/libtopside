@@ -22,10 +22,6 @@ void TopGubo::UpdateFromTransform3D() {
 	
 }
 
-Gubo* TopGubo::GetGubo() {
-	TODO
-}
-
 
 NAMESPACE_TOPSIDE_END
 

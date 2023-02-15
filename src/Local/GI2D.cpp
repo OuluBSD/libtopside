@@ -645,9 +645,10 @@ void GeomInteraction2D::Refresh() {
 	
 	GeomInteraction2D* proxy = GetAbsoluteDrawBegin();
 	if (proxy) {
-		AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
+		TODO
+		/*AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
 		if (aiface)
-			aiface->SetPendingPartialRedraw();
+			aiface->SetPendingPartialRedraw();*/
 	}
 }
 

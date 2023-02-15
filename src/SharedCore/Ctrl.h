@@ -1,6 +1,8 @@
 #ifndef _SharedCore_Ctrl_h_
 #define _SharedCore_Ctrl_h_
 
+#if 0
+
 NAMESPACE_UPP
 
 using namespace TS;
@@ -150,4 +152,5 @@ public:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif
