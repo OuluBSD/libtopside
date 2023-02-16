@@ -1,5 +1,6 @@
 #include "ParallelLib.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -299,32 +300,6 @@ HandleSystemT<Dim>& HandleT<Dim>::GetHandleSystem() const {
 }
 
 template <class Dim>
-void HandleT<Dim>::Close() {
-	Scope& scope = GetScope();
-	scope.QueueCloseHandle(id);
-}
-
-template <class Dim>
-void HandleT<Dim>::Maximize() {
-	Scope& scope = GetScope();
-	scope.FocusHandlePos(id);
-	scope.MaximizeHandle(id);
-	maximized = true;
-}
-
-template <class Dim>
-void HandleT<Dim>::Minimize() {
-	Scope& scope = GetScope();
-	scope.MinimizeHandle(id);
-}
-
-template <class Dim>
-void HandleT<Dim>::CloseOthers() {
-	Scope& scope = GetScope();
-	scope.CloseOthers(id);
-}
-
-template <class Dim>
 void HandleT<Dim>::SetMaximized(bool b) {
 	maximized = b;
 }
@@ -356,16 +331,6 @@ void HandleT<Dim>::ToggleMaximized() {
 template <class Dim>
 bool HandleT<Dim>::IsPendingPartialRedraw() const {
 	return pending_partial_redraw;
-}
-
-template <class Dim>
-void HandleT<Dim>::Restore()
-{
-	Scope& scope = GetScope();
-	scope.RestoreHandle(id);
-	scope.FocusHandle(id);
-	
-	maximized = false;
 }
 
 template <class Dim>
@@ -593,3 +558,5 @@ HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleT)
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

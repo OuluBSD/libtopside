@@ -32,7 +32,6 @@ void HandleSystemT<Dim>::Update(double dt) {
 	for(int i = 0; i < scopes.GetCount(); i++) {
 		Scope& s = scopes[i];
 		
-		TODO
 		#if 0
 		Event e;
 		while (s.Poll(e)) {
@@ -47,6 +46,11 @@ void HandleSystemT<Dim>::Update(double dt) {
 		
 		s.Render();
 		#endif
+		
+		// TODO multi AtomVirtualGui support and update VirtualGuiPtr here
+		//      also, put Ctrl::desktop etc to own class and instance
+		ASSERT(scopes.GetCount() == 1);
+		Ctrl::PaintAll();
 	}
 }
 
@@ -70,10 +74,9 @@ typename HandleSystemT<Dim>::Scope& HandleSystemT<Dim>::AddScope() {
 	Scope& s = scopes.Add();
 	s.SetParent(RefParent1<HandleSystemT<Dim>>(this));
 	lock.Leave();
-	TODO
-	#if 0
-	s.Init();
-	#endif
+	
+	//s.Init();
+	
 	return s;
 }
 

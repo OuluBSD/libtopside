@@ -5,17 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class Absolute2D;
 class Gubo;
-
-
-namespace Ecs {
-
-class GuiSystem;
-class DefaultGuiAppComponent;
-class Geom2DComponent;
-
-}
 
 
 class GuboFrame :
@@ -108,6 +98,7 @@ protected:
 	void SetFrameWithMouse(GuboFrame* c);
 	
 	
+	void* frame = 0;
 	bool         inloop:1;
 	
 	Vector<GuboFrame*> frames;
@@ -116,9 +107,6 @@ protected:
 	
 	void Refresh0() {Refresh();}
 	void Layout0() {Layout();}
-	
-public:
-	friend class TS::Ecs::DefaultGuiAppComponent;
 	
 	
 protected:
@@ -141,6 +129,7 @@ public:
 	
 	Size GetContentSize() const;
 	void SetContentRect(const Rect& r);
+	template<class T> void SetTopFrame(T& tgf) {frame = &tgf;}
 	
 	void Add(GeomInteraction3D& c);
 	void Add(Gubo& c);
@@ -190,7 +179,6 @@ public:
 	
 	
 public:
-	Absolute2D* aw = 0;
 	
 	//static bool           invalid;
 	//static uint32 prev_ticks;
@@ -205,9 +193,6 @@ public:
 	//static void ExitFB();
 	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
-	
-	Absolute2D* GetAbsolute2D();
-	
 	
 	
 };

@@ -10,7 +10,6 @@ struct Ctx2D;
 struct Ctx3D;
 template <class Dim> class HandleSystemT;
 template <class Dim> class ScopeT;
-template <class Dim> class HandleT;
 template <class Dim> class FrameT;
 	
 }

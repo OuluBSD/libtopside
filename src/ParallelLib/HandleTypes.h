@@ -22,10 +22,10 @@ struct Ctx2D {
 	//using InterfaceProxy = Absolute2DProxy;
 	using Container = Ctrl;
 	using ContainerFrame = CtrlFrame;
-	using ContainerGeom = CtrlGeomProxy;
+	//using ContainerGeom = CtrlGeomProxy;
 	using Event = CtrlEvent;
 	using EventCollection = CtrlEventCollection;
-	using Interaction = GeomInteraction2D;
+	//using Interaction = GeomInteraction2D;
 	using TopContainer = TopWindow;
 	using Sz = Size;
 	using Pt = Point;
@@ -49,10 +49,10 @@ struct Ctx3D {
 	//using InterfaceProxy = Absolute3DProxy;
 	using Container = Gubo;
 	using ContainerFrame = GuboFrame;
-	using ContainerGeom = EmptyClass;
+	//using ContainerGeom = EmptyClass;
 	using Event = GeomEvent;
 	using EventCollection = GeomEventCollection;
-	using Interaction = GeomInteraction3D;
+	//using Interaction = GeomInteraction3D;
 	using TopContainer = TopGubo;
 	using Sz = Volf;
 	using Pt = Point3f;

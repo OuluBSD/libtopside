@@ -507,7 +507,7 @@ void Ctrl::InitFB()
 	ASSERT(wins);
 	if (wins) {
 		WindowManager& mgr = wins->GetActiveScope();
-		StaticRect& x = mgr.GetCtrl();
+		StaticRect& x = mgr.GetDesktop();
 		x.Color(Cyan());
 		SetDesktop(x);
 	}

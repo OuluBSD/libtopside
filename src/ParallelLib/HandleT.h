@@ -1,6 +1,8 @@
 #ifndef _ParallelLib_HandleT_h_
 #define _ParallelLib_HandleT_h_
 
+#if 0
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -17,8 +19,7 @@ struct WindowsImg {
 
 template <class Dim>
 class HandleT :
-	public RefScopeEnabler<HandleT<Dim>, ScopeT<Dim>>,
-	public Dim::Interaction
+	public RefScopeEnabler<HandleT<Dim>, ScopeT<Dim>>
 {
 	
 public:
@@ -55,7 +56,7 @@ protected:
 	Box resize_start_r;
 	
 public:
-	RTTI_DECL2(Handle, Interface, Interaction)
+	RTTI_DECL1(Handle, Interface)
 	typedef HandleT<Dim> CLASSNAME;
 	HandleT();
 	
@@ -102,9 +103,6 @@ public:
 	bool IsMaximized() const;
 	bool IsActive() const;
 	void MoveHandle(Pt pt);
-	void Maximize();
-	void Restore();
-	void Minimize();
 	void CloseOthers();
 	void CaptureResize(const Pt& p);
 	void ReleaseResize();
@@ -128,4 +126,5 @@ public:
 
 NAMESPACE_PARALLEL_END
 
+#endif
 #endif

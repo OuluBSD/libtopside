@@ -11,9 +11,9 @@ class HandleSystemT :
 public:
 	using Base = HandleSystemT<Dim>;
 	using Scope = ScopeT<Dim>;
-	using Handle = HandleT<Dim>;
+	//using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Interaction = typename Dim::Interaction;
+	//using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
 	using TopContainer = typename Dim::TopContainer;

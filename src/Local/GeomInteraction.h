@@ -141,6 +141,7 @@ public:
 	virtual GeomInteraction* GetProxy() const {return 0;}
 	virtual void CancelMode() {}
 	
+	virtual void Close() {}
 	
 	bool HasCapture() const;
 	GeomInteraction* GetGeomDrawBegin();
@@ -152,6 +153,7 @@ public:
 	virtual void SetWithMouse(GeomInteraction* c);
 	
 };
+
 
 
 class GeomInteraction2D : public GeomInteraction {

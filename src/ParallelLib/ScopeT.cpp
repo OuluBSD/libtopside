@@ -10,18 +10,20 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Dim>
 ScopeT<Dim>::ScopeT()
 {
-	TODO
-	#if 0
-	this->SetFrameBox(Dim::GetDefaultScopeDimensions());
+	SetFrameBox(Dim::GetDefaultScopeDimensions());
 
 	handle_counter = 0;
 	maximize_all = false;
 	active_pos = -1;
 	active_id = -1;
-
+	
+	#if 0
 	this->SetPendingLayout();
 	this->SetPendingRedraw();
+	#else
+	//desktop.Invalidate(); // not needed
 	#endif
+	
 }
 
 #if 0
@@ -87,44 +89,6 @@ template <class Dim>
 void ScopeT<Dim>::Shutdown()
 {
 	TODO
-}
-
-template <class Dim>
-void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
-{
-	ASSERT(this->GetFrameBox().Width() > 0);
-	int id = handle_counter++;
-	int pos = handles.GetCount();
-
-	Handle& h = handles.Add(id);
-	h.SetParent(this);
-	h.SetId(id);
-	h.SetInterface(iface);
-	GeomInteraction::Add(h); // Add to Interaction (e.g. GeomInteraction2D)
-
-	// Default initial position
-	int i = handles.GetCount();
-	int offset = i * 30;
-	h.SetFrameBox(Dim::GetDefaultHandleDimensions(offset));
-
-	if(maximize_all)
-		this->MaximizeHandle(id);
-
-	int prev_active_id = active_id;
-	active_pos = pos;
-	active_id = id;
-	int prev_active_pos = handles.Find(prev_active_id);
-	if(prev_active_pos >= 0)
-		handles[prev_active_pos].Refresh();
-
-	WhenActiveHandleChanges();
-
-	String title = h.GetTitle();
-	h.Title(title.GetCount() ? title : "Unnamed");
-
-	this->Refresh();
-	h.Layout();
-	h.Refresh();
 }
 
 template <class Dim>
@@ -269,7 +233,7 @@ bool ScopeT<Dim>::CheckRender()
 }
 
 template <class Dim>
-typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetHandle(TopContainer& tw)
+typename ScopeT<Dim>::Frame* ScopeT<Dim>::GetFrame(TopContainer& tw)
 {
 	TODO
 	#if 0
@@ -394,7 +358,7 @@ void ScopeT<Dim>::MaximizeHandle(int handle_id)
 	int handle_pos = handles.Find(handle_id);
 	if(handle_pos == -1)
 		return;
-	Handle& h = handles[handle_pos];
+	Frame& h = handles[handle_pos];
 	SetHandleMaximized(h, 1);
 }
 
@@ -404,12 +368,12 @@ void ScopeT<Dim>::RestoreHandle(int handle_id)
 	int handle_pos = handles.Find(handle_id);
 	if(handle_pos == -1)
 		return;
-	Handle& h = handles[handle_pos];
+	Frame& h = handles[handle_pos];
 	SetHandleMaximized(h, 0);
 }
 
 template <class Dim>
-void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
+void ScopeT<Dim>::SetHandleMaximized(Frame& h, bool b)
 {
 	TODO
 	#if 0
@@ -547,7 +511,7 @@ void ScopeT<Dim>::CloseOthers(int handle_id)
 }
 
 template <class Dim>
-typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetActiveHandle()
+typename ScopeT<Dim>::Frame* ScopeT<Dim>::GetActiveHandle()
 {
 	TODO
 	#if 0
@@ -557,17 +521,16 @@ typename ScopeT<Dim>::Handle* ScopeT<Dim>::GetActiveHandle()
 	#endif
 }
 
+#if 0
 template <class Dim>
 typename Dim::Interaction* ScopeT<Dim>::GetLastSub()
 {
-	TODO
-	#if 0
 	if (this->sub.IsEmpty())
 		return 0;
 	Interaction* last = CastPtr<Interaction>(this->sub.Top());
 	return last;
-	#endif
 }
+#endif
 
 template <class Dim>
 typename Dim::TopContainer* ScopeT<Dim>::GetVisibleTopContainer()
@@ -701,7 +664,7 @@ bool ScopeT<Dim>::DeepKey(dword key, int count) {
     return false;
 }*/
 
-template <class Dim>
+/*template <class Dim>
 void ScopeT<Dim>::SetCaptured(Container* c) {
 	captured = c;
 	captured_ctrl = c;
@@ -711,7 +674,7 @@ template <class Dim>
 void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse = c;
 	with_mouse_ctrl = c;
-}
+}*/
 
 #if IS_UPP_CORE
 
@@ -739,7 +702,6 @@ void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
 	#endif
 	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
 }
-#endif
 
 template <>
 void ScopeT<Ctx2D>::SetCaptured(Container* c) {
@@ -760,23 +722,51 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 	#endif
 	with_mouse_ctrl = c;
 }
-
-template <>
-void ScopeT<Ctx2D>::AddInterface(UPP::TopWindow& tw) {
-	TODO
-	#if 0
-	UppTopWindowWrap& utw = tws.Add();
-	utw.SetTargetCtrl(tw);
-	utw.LinkInvalidate(tw);
-	AddInterface((Absolute2DProxy&)utw);
-	
-	Handle* h = CastPtr<Handle>(utw.GetTarget());
-	ASSERT(h);
-	tw.SetTopWindowFrame(h->GetFrame());
-	#endif
-}
+#endif
 	
 #endif
+
+template <class Dim>
+void ScopeT<Dim>::AddInterface(TopContainer& tw)
+{
+	Box b = ::TS::GetFrameBox<Container,Box>(desktop);
+	ASSERT(b.Width() > 0);
+	int id = handle_counter++;
+	int pos = handles.GetCount();
+
+	Frame& h = handles.Add(id);
+	h.RefScopeParent<RefParent1<ScopeT<Dim>>>::SetParent(this);
+	h.SetId(id);
+	
+	//GeomInteraction::Add(h); // Add to Interaction (e.g. GeomInteraction2D)
+
+	// Default initial position
+	int i = handles.GetCount();
+	int offset = i * 30;
+	h.SetFrameBox(Dim::GetDefaultHandleDimensions(offset));
+
+	if(maximize_all)
+		this->MaximizeHandle(id);
+
+	int prev_active_id = active_id;
+	active_pos = pos;
+	active_id = id;
+	int prev_active_pos = handles.Find(prev_active_id);
+	if(prev_active_pos >= 0)
+		handles[prev_active_pos].Refresh();
+
+	WhenActiveHandleChanges();
+
+	String title = h.GetTitle();
+	h.SetTitle(title.GetCount() ? title : "Unnamed");
+	
+	desktop.Refresh();
+	
+	h.Layout();
+	h.Refresh();
+	
+	tw.SetTopFrame(h);
+}
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 

@@ -6,14 +6,9 @@ NAMESPACE_PARALLEL_BEGIN
 #define LDUMP(x) //DDUMP(x)
 
 
-template <class Dim>
-FrameT<Dim>::FrameT() {
-	TODO
-}
-
 template <>
 FrameT<Ctx2D>::FrameT() {
-	geom.SetTargetCtrl(*this);
+	//geom.SetTargetCtrl(*this);
 	
 	close.SetImage(FBImg::close());
 	close.EdgeStyle();
@@ -29,8 +24,8 @@ FrameT<Ctx2D>::FrameT() {
 
 template <class Dim>
 typename Dim::TopContainer* FrameT<Dim>::GetTopContainer() {
-	ASSERT(handle);
-	return handle->GetTopContainer();
+	ASSERT(scope);
+	TODO //return scope->GetTopContainer();
 }
 
 template <class Dim>
@@ -64,29 +59,26 @@ void FrameT<Ctx2D>::SetFrameBox(Box b) {
 }
 
 template <class Dim>
-void FrameT<Dim>::SetHandle(Handle* h) {
-	handle = h;
-	close.WhenPush = callback(h, &HandleT<Dim>::Close);
-	maximize.WhenPush = callback(h, &HandleT<Dim>::ToggleMaximized);
-	minimize.WhenPush = callback(h, &HandleT<Dim>::Minimize);
+void FrameT<Dim>::SetScope(Scope* s) {
+	scope = s;
+	close.WhenPush = THISBACK(Close);
+	maximize.WhenPush = THISBACK(ToggleMaximized);
+	minimize.WhenPush = THISBACK(Minimize);
 }
 
 template <class Dim>
 ScopeT<Dim>& FrameT<Dim>::GetWorkArea() {
-	return handle->GetScope();
+	return *scope;
 }
 
 template <class Dim>
 void FrameT<Dim>::SyncBox()
 {
-	TODO
-	#if 0
 	if(maximized) {
 		Sz sz = GetWorkArea().GetSize();
 		if(this->GetFrameBox().GetSize() != sz)
 			this->SetFrameBox(sz);
 	}
-	#endif
 }
 
 template <class Dim>
@@ -142,15 +134,13 @@ void FrameT<Dim>::Paint(DrawT& draw) {
 template <>
 void FrameT<Ctx2D>::Paint(DrawT& w) {
 	#if 1
-	const Ctrl& window = handle->GetScope().GetCtrl();
+	//const Ctrl& window = frame->GetScope().GetCtrl();
 	Size sz = Ctrl::GetSize();
-	Size sz2 = geom.GetSize();
-	ASSERT(sz == sz2);
 	Box m = Margins();
 	int c = GetStdFontCy() + 4;
 	ChPaintEdge(w, sz, FBImg::border());
 	ChPaint(w, m.left, m.top, sz.cx - m.left - m.right, GetStdFontCy() + 4,
-	        window.IsForeground() ? FBImg::title() : FBImg::bgtitle());
+	        window->IsForeground() ? FBImg::title() : FBImg::bgtitle());
 	int tx = m.left + 2;
 	int tcx = sz.cx - m.left - m.right - 4 - c * (close.IsShown() + maximize.IsShown());
 	if(!IsNull(icon)) {
@@ -363,7 +353,7 @@ void FrameT<Dim>::MouseMove(Pt, dword keyflags) {
 	if(!this->HasCapture() || holding)
 		return;
 	Sz msz = ComputeClient(minsize).GetSize();
-	Pt p = handle->GetScope().GetMousePos() - startpos;
+	Pt p = scope->GetMousePos() - startpos;
 	Box r = startrect;
 	if(dir.x == -1)
 		r.left = min(r.left + p.x, startrect.right - msz.cx);
@@ -428,10 +418,15 @@ void FrameT<Dim>::RightDown(Pt p, dword keyflags) {
 
 template <class Dim>
 void FrameT<Dim>::LocalMenu(Bar& bar) {
-	bar.Add("Maximize / Restore", callback(handle, &HandleT<Dim>::Maximize));
-	bar.Add("Minimize", callback(handle, &HandleT<Dim>::Minimize));
+	bar.Add("Maximize / Restore", THISBACK(Maximize));
+	bar.Add("Minimize", THISBACK(Minimize));
 	bar.Separator();
-	bar.Add("Close", callback(handle, &HandleT<Dim>::Close));
+	bar.Add("Close", THISBACK(Close));
+}
+
+/*template <class Dim>
+typename Dim::Interaction& FrameT<Dim>::GetInteraction() {
+	TODO
 }
 
 template <>
@@ -442,8 +437,60 @@ typename Ctx2D::Interaction& FrameT<Ctx2D>::GetInteraction() {
 template <>
 typename Ctx3D::Interaction& FrameT<Ctx3D>::GetInteraction() {
 	return *this;
+}*/
+
+template <class Dim>
+void FrameT<Dim>::ToggleMaximized() {
+	if (IsMaximized())
+		Restore();
+	else
+		Maximize();
 }
 
+template <class Dim>
+void FrameT<Dim>::Minimize() {
+	Scope& scope = GetScope();
+	scope.MinimizeHandle(id);
+}
+
+template <class Dim>
+void FrameT<Dim>::Restore()
+{
+	Scope& scope = GetScope();
+	scope.RestoreHandle(id);
+	scope.FocusHandle(id);
+	
+	maximized = false;
+}
+
+template <class Dim>
+void FrameT<Dim>::Close() {
+	Scope& scope = GetScope();
+	scope.QueueCloseHandle(id);
+}
+
+#if 0
+template <class Dim>
+void FrameT<Dim>::Maximize() {
+	Scope& scope = GetScope();
+	scope.FocusHandlePos(id);
+	scope.MaximizeHandle(id);
+	maximized = true;
+}
+
+template <class Dim>
+void FrameT<Dim>::Minimize() {
+	Scope& scope = GetScope();
+	scope.MinimizeHandle(id);
+}
+
+template <class Dim>
+void FrameT<Dim>::CloseOthers() {
+	Scope& scope = GetScope();
+	scope.CloseOthers(id);
+}
+
+#endif
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(FrameT)
 

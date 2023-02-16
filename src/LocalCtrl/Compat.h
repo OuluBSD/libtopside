@@ -115,6 +115,42 @@ public:
 #endif
 
 
+
+
+template <class T, class B=decltype(T::GetFrameSize)>
+inline B GetFrameSize(const T& o) {
+	return o.GetFrameSize();
+}
+
+template <>
+inline Size GetFrameSize<Ctrl,Size>(const Ctrl& c) {
+	return c.GetSize();
+}
+
+
+template <class T, class B>
+inline void SetFrameBox(T& o, const B& v) {
+	o.SetFrameBox(v);
+}
+
+template <>
+inline void SetFrameBox(Ctrl& o, const Rect& v) {
+	o.SetRect(v);
+}
+
+
+
+template <class T, class B=decltype(T::GetFrameBox)>
+inline B GetFrameBox(const T& o) {
+	return o.GetFrameBox();
+}
+
+template <>
+inline Rect GetFrameBox<Ctrl,Rect>(const Ctrl& c) {
+	return c.GetRect();
+}
+
+
 NAMESPACE_TOPSIDE_END
 
 

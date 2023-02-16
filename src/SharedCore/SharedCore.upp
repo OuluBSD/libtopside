@@ -21,6 +21,7 @@ file
 	Draw.cpp,
 	Random.h,
 	Random.cpp,
+	Trash readonly separator,
 	Ctrl.h,
 	Ctrl.cpp;
 

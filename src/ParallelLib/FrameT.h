@@ -6,25 +6,24 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim> class HandleSystemT;
 template <class Dim> class ScopeT;
-template <class Dim> class HandleT;
 
 
 template <class Dim>
 class FrameT :
 	public Dim::Container,
-	RTTIBase
+	public RefScopeEnabler<FrameT<Dim>, ScopeT<Dim>>
 {
 public:
 	using Base = FrameT<Dim>;
 	using Scope = ScopeT<Dim>;
-	using GeomDecoration = FrameT<Dim>;
-	using Handle = HandleT<Dim>;
+	using Frame = FrameT<Dim>;
+	//using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
 	using DrawT = typename Dim::DrawT;
-	using Interaction = typename Dim::Interaction;
+	//using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
-	using ContainerGeom = typename Dim::ContainerGeom;
+	//using ContainerGeom = typename Dim::ContainerGeom;
 	using TopContainer = typename Dim::TopContainer;
 	using Sz = typename Dim::Sz;
 	using Pt = typename Dim::Pt;
@@ -33,15 +32,16 @@ public:
 	using CmdPainter = typename Dim::CmdPainter;
 	
 protected:
-	friend class HandleT<Dim>;
+	friend class FrameT<Dim>;
 	friend class ::UPP::TopWindow;
 	
+	Scope*  scope = NULL;
+	TopContainer* window = NULL;
 	String  title;
 	Button  minimize, maximize, close;
 	Image   icon;
 	Sz      minsize;
 	bool    sizeable;
-	Handle* handle = NULL;
 	bool    maximized;
 	Box     overlapped;
 	bool    holding;
@@ -49,8 +49,7 @@ protected:
 	Pt      dir;
 	Pt      startpos;
 	Box     startrect;
-	
-	ContainerGeom geom;
+	int id;
 	
 	// deprecated
 	#if 0
@@ -60,15 +59,16 @@ protected:
 	
 public:
 	#if IS_UPP_CORE
-	RTTI_DECL0(GeomDecoration)
+	RTTI_DECL_R0(FrameT)
 	#else
-	RTTI_DECL1(GeomDecoration, Container)
+	RTTI_DECL_R1(FrameT, Container)
 	#endif
 	
 	typedef FrameT CLASSNAME;
-	FrameT();
+	FrameT() {TODO}
 	
-	void SetHandle(Handle* h);
+	void SetScope(Scope* h);
+	void SetId(int id) {this->id = id;}
 	void SetTitle(String str) {title = str;}
 	void SetClient(Box r);
 	
@@ -82,8 +82,13 @@ public:
 	void SyncBox();
 	void StartDrag();
 	void Hold();
+	void ToggleMaximized();
+	void Minimize();
+	void Restore();
 	
 	bool IsMaximized() const                 { return maximized; }
+	
+	void Close() override;
 	void Paint(DrawT& draw) override;
 	void LeftDown(Pt p, dword keyflags) override;
 	void LeftDouble(Pt p, dword keyflags) override;
@@ -108,10 +113,13 @@ public:
 	Box GetFrameBox() const;
 	void SetFrameBox(Box b);
 	TopContainer* GetTopContainer();
-	Interaction& GetInteraction();
-	Handle& GetHandle() const {return *handle;}
+	//Interaction& GetInteraction();
+	Scope& GetScope() const {return *scope;}
 	
 };
+
+
+using TopGuboFrame = FrameT<Ctx2D>;
 
 
 NAMESPACE_PARALLEL_END

@@ -11,9 +11,10 @@ class ScopeT :
 public:
 	using Base = ScopeT<Dim>;
 	using Scope = ScopeT<Dim>;
-	using Handle = HandleT<Dim>;
+	using Frame = FrameT<Dim>;
+	//using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Interaction = typename Dim::Interaction;
+	//using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
 	using TopContainer = typename Dim::TopContainer;
@@ -28,15 +29,15 @@ public:
 private:
 	CmdDraw pd;
 	Vector<int> close_handle_queue;
-	ArrayMap<int, Handle> handles;
+	ArrayMap<int, Frame> handles;
 	
 	//Array<UppTopWindowWrap> tws;
 	Desktop desktop;
 	int handle_counter = 0;
 	bool maximize_all;
 	int active_pos, active_id;
-	Interaction* captured = NULL;
-	Interaction* with_mouse = NULL;
+	//Interaction* captured = NULL;
+	//Interaction* with_mouse = NULL;
 	Container* captured_ctrl = NULL;
 	Container* with_mouse_ctrl = NULL;
 	ContainerFrame* frame_with_mouse = NULL;
@@ -56,7 +57,7 @@ public:
 	void RestoreHandle(int handle_id);
 	void IsActiveHandle_(bool* result, int handle_id) { *result = handle_id == active_id; }
 	bool IsActiveHandle(int handle_id) { return handle_id == active_id; }
-	void SetHandleMaximized(Handle& h, bool b);
+	void SetHandleMaximized(Frame& h, bool b);
 	void CloseHandle(int handle_id);
 
 	void FocusPrevious();
@@ -70,13 +71,14 @@ public:
 	//void SetCaptured(GeomInteraction* c) override;
 	//void SetWithMouse(GeomInteraction* c) override;
 	
-	void SetCaptured(Container* c);
-	void SetWithMouse(Container* c);
+	//void SetCaptured(Container* c);
+	//void SetWithMouse(Container* c);
 	ContainerFrame* GetFrameCaptured() { return frame_captured; }
 	ContainerFrame* GetFrameWithMouse() { return frame_with_mouse; }
 	void SetFrameCaptured(ContainerFrame* c) { frame_captured = c; }
 	void SetFrameWithMouse(ContainerFrame* c) { frame_with_mouse = c; }
-
+	void SetFrameBox(const Box& b) {::TS::SetFrameBox<Container>(desktop, b);}
+	
 public:
 	RTTI_DECL_R1(Scope, Space)
 	typedef ScopeT<Dim> CLASSNAME;
@@ -100,17 +102,14 @@ public:
 	void Layout() override;
 	void PostLayout() override;*/
 	
-	#if IS_UPP_CORE
-	void AddInterface(UPP::TopWindow&);
-	#endif
-	
+	void AddInterface(TopContainer&);
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
 	
 	hash_t GetHashValue() const { return (hash_t)(size_t)this; }
 	HandleSystem* GetManager() const { return this->GetParentUnsafe().Get(); }
-	Handle* GetHandle(TopContainer& ctrl);
-	Handle* GetActiveHandle();
+	Frame* GetFrame(TopContainer& ctrl);
+	Frame* GetActiveHandle();
 	int GetActiveHandlePos() { return active_pos; }
 	int GetActiveHandleId() { return active_id; }
 	int GetPosId(int handle_pos)
@@ -131,18 +130,17 @@ public:
 
 
 	int GetCount() const { return handles.GetCount(); }
-	Handle& operator[](int i) { return handles[i]; }
-	Handle& Get(int i) { return handles[i]; }
-	//Sz GetSize() const {return this->GetFrameSize();}
+	Frame& operator[](int i) { return handles[i]; }
+	Frame& Get(int i) { return handles[i]; }
+	Sz GetSize() const {return ::TS::GetFrameSize<Container,Sz>(desktop);}
 	
-	Interaction* GetLastSub();
+	//Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();
 	TopContainer& GetVisibleTopContainerRef() { return *GetVisibleTopContainer(); }
 	
 	CmdDraw& GetDraw() {return pd;}
-	
-	Desktop& GetCtrl() {return desktop;}
-	const Desktop& GetCtrl() const {return desktop;}
+	Desktop& GetDesktop() {return desktop;}
+	const Desktop& GetDesktop() const {return desktop;}
 	
 	Callback WhenActiveHandleChanges, WhenHandleClose;
 };

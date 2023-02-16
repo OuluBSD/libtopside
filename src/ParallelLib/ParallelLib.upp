@@ -1,5 +1,7 @@
 description "\377B41,32,114";
 
+noblitz;
+
 uses
 	ParallelCore;
 
@@ -21,9 +23,10 @@ file
 	HandleSystemT.cpp,
 	ScopeT.h,
 	ScopeT.cpp,
-	HandleT.h,
-	HandleT.cpp,
 	FrameT.h,
 	FrameT.cpp,
+	Trash readonly separator,
+	HandleT.h,
+	HandleT.cpp,
 	_ readonly separator;
 

@@ -377,7 +377,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 }
 
 void HandleVideoBase::AddBinders() {
-	TODO
+	ASSERT(binders.IsEmpty());
 	#if 0
 	for (Binder& b : binders)
 		if (!b.abs_iface)

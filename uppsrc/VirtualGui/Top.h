@@ -18,7 +18,7 @@ public:
 	// libtopside additions
 	void FocusEvent();
 	void CreateGeom2DComponent();
-	void SetTopWindowFrame(TopWindowFrame& twf) {frame = &twf;}
+	void SetTopFrame(TopWindowFrame& twf) {frame = &twf;}
 	
 	
 	Event<> WhenInvalidate;
