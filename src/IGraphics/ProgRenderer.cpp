@@ -9,7 +9,8 @@ DrawCommandImageRenderer::DrawCommandImageRenderer() {
 }
 
 void DrawCommandImageRenderer::ProcessWindowCommands(DrawCommand* begin, DrawCommand* end) {
-	
+	TODO
+	#if 0
 	// Get ctrl size from draw command queue
 	Size sz(0,0);
 	{
@@ -40,7 +41,7 @@ void DrawCommandImageRenderer::ProcessWindowCommands(DrawCommand* begin, DrawCom
 	pi.SkipWindowCommands();
 	pi.Paint(begin, end, *id);
 	
-	
+	#endif
 }
 
 Image DrawCommandImageRenderer::GetImage() {

@@ -29,6 +29,7 @@ template <class Dim>
 void HandleSystemT<Dim>::Update(double dt) {
 	bool closed = false;
 	
+	#if 0
 	for(int i = 0; i < scopes.GetCount(); i++) {
 		Scope& s = scopes[i];
 		
@@ -52,6 +53,7 @@ void HandleSystemT<Dim>::Update(double dt) {
 		ASSERT(scopes.GetCount() == 1);
 		Ctrl::PaintAll();
 	}
+	#endif
 }
 
 template <class Dim>
@@ -106,17 +108,39 @@ ScopeT<Dim>& HandleSystemT<Dim>::GetScope(int idx) {
 
 template <class Dim>
 void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
-	TODO
-	#if 0
 	Scope& scope = GetActiveScope();
+	Desktop& d = scope.GetDesktop();
 	
 	for (const Event& e : ev) {
-		if (e.type == EVENT_SHUTDOWN)
+		switch (e.type) {
+		case EVENT_SHUTDOWN:
 			this->GetMachine().SetNotRunning();
-		else
-			scope.Dispatch(e);
+			break;
+		
+		case EVENT_KEYDOWN:
+			Ctrl::DoKeyFB(e.value, e.n);
+			break;
+			
+		case EVENT_KEYUP:
+			Ctrl::DoKeyFB(e.value | K_KEYUP, e.n);
+			break;
+		
+		case EVENT_MOUSEMOVE:
+			Ctrl::DoMouseFB(Ctrl::MOUSEMOVE, e.pt);
+			break;
+		
+		case EVENT_MOUSEWHEEL:
+			Ctrl::DoMouseFB(Ctrl::MOUSEWHEEL, e.pt, e.value * 120);
+			break;
+		
+		case EVENT_MOUSE_EVENT:
+			Ctrl::DoMouseFB(e.n, e.pt, e.value);
+			break;
+		
+		default:
+			TODO
+		}
 	}
-	#endif
 }
 
 template <class Dim>

@@ -1,6 +1,11 @@
 #include "AtomHandle.h"
 #include <SerialLib/SerialLib.h>
 
+#if IS_UPP_CORE
+#include <VirtualGui/Local.h>
+#include <VirtualGui/Atom/Atom.h>
+#endif
+
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -266,7 +271,20 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 	if (IsActive()) {
 		
 		for (Binder& b : binders) {
-			TODO
+			
+			if (wins) {
+				int scope_count = wins->GetScopeCount();
+				ASSERT(scope_count);
+				if (screen_id >= 0 && screen_id < scope_count) {
+					// TODO multi AtomVirtualGui support and update VirtualGuiPtr here
+					//      also, put Ctrl::desktop etc to own class and instance
+					ASSERT(scope_count == 1);
+					
+					Ctrl::EventLoopIteration(NULL);
+					//Ctrl::PaintAll(); // -> public Ctrl::DoPaint();
+				}
+			}
+			
 			#if 0
 			Absolute2DInterface* abs2d_iface = CastPtr<Absolute2DInterface>(b.abs_iface);
 			
@@ -336,11 +354,40 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
-			if (wins && screen_id < wins->GetScreenCount()) {
+			if (wins && screen_id >= 0 && screen_id < wins->GetScreenCount()) {
 				WindowManager& w = wins->GetScope(screen_id);
-				ProgPainter& pp = w.GetDraw().GetPainter();
+				ProgDraw& pd = w.GetDraw();
+				ProgPainter& pp = pd.GetPainter();
 				InternalPacketData& data = out.SetData<InternalPacketData>();
-				data.ptr = pp.GetBegin();
+				
+				pd.Realize(w.GetSize());
+				
+				UPP::AtomVirtualGui* vgui = CastPtr<AtomVirtualGui>(VirtualGuiPtr);
+				ASSERT(VirtualGuiPtr && vgui);
+				vgui->SetTarget(pd);
+				
+				Ctrl::EventLoopIteration(NULL);
+				
+				// h4x
+				if (!pp.GetCurrentBegin()) {
+					Ctrl::PaintAll(true);
+				}
+				
+				data.ptr = pp.GetCurrentBegin();
+				ASSERT(data.ptr);
+				
+				#if 0
+				{
+					DrawCommand* begin = pp.GetCurrentBegin();
+					DrawCommand* it = begin;
+					int i = 0;
+					while (it) {
+						LOG(i++ << " " << it->ToString());
+						it = it->next;
+					}
+				}
+				ASSERT(0);
+				#endif
 			}
 			else {
 				ASSERT_(0, "no screen");
@@ -477,6 +524,8 @@ DrawCommand* HandleVideoBase::ProcessWindow(Binder& b, DrawCommand* begin) {
 }
 
 void HandleVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawCommand* end) {
+	TODO
+	#if 0
 	ASSERT(begin->type == DRAW_BIND_WINDOW);
 	
 	hash_t hash = begin->hash;
@@ -537,6 +586,7 @@ void HandleVideoBase::ProcessWindowCommands(Binder& b, DrawCommand* begin, DrawC
 		// call Model::SetModelChanged()
 		
 	}
+	#endif
 	#endif
 }
 

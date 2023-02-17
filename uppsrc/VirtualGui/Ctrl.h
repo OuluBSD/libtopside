@@ -18,7 +18,7 @@ private:
 	
 	int FindTopCtrl() const;
 	static Rect GetClipBound(const Vector<Rect>& inv, const Rect& r);
-	static void DoPaint();
+	static void DoPaint(bool force=false);
 	static void SyncTopWindows();
 
 //	static void AddInvalid(const Rect& rect);
@@ -41,7 +41,7 @@ private:
 
 	static void DeleteDesktopTop();
 
-	static int    GetCaretBlinkTime()               { return 500; }
+	static int    GetCaretBlinkTime()          { return 500; }
 	
 protected:
 	static int PaintLock;
@@ -54,7 +54,7 @@ public:
 	static void ExitFB();
 	static void EndSession();
 	
-	static void PaintAll()                     { DoPaint(); }
+	static void PaintAll(bool force=false)     { DoPaint(force); }
 
 	static void  SetDesktop(Ctrl& q);
 	static Ctrl *GetDesktop()                  { return desktop; }

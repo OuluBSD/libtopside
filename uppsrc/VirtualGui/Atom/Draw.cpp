@@ -2,11 +2,16 @@
 
 namespace Upp {
 
+void AtomVirtualGui::SetTarget(Draw& d) {
+	sysdraw.SetTarget(&d);
+}
+
 SystemDraw& AtomVirtualGui::BeginDraw()
 {
-	idraw.Clear();
-	idraw = new ImageDraw(GetSize());
-	sysdraw.SetTarget(&*idraw);
+	#if 0
+	gldraw.Init(GetSize(), (uint64)glcontext);
+	sysdraw.SetTarget(&gldraw);
+	#endif
 	return sysdraw;
 }
 

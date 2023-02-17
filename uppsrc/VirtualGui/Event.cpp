@@ -174,10 +174,12 @@ void Ctrl::EventLoop(Ctrl *ctrl)
 		ctrl->inloop = true;
 	}
 
-	bool quit = false;
-	ProcessEvents(&quit);
+	//bool quit = false;
+	//ProcessEvents(&quit);
 	
-	TS::DebugMainLoop(Parallel::GetActiveMachine(), &Ctrl::EventLoopIteration, ctrl);
+	ASSERT(!ctrl);
+	TS::DebugMainLoop(Parallel::GetActiveMachine());
+	//TS::DebugMainLoop(Parallel::GetActiveMachine(), &Ctrl::EventLoopIteration, ctrl);
 
 	if(ctrl)
 		LoopCtrl = ploop;

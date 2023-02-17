@@ -380,6 +380,8 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	bool draw_begin = false;
 	Size sz = GetFrameSize();
 	
+	TODO
+	#if 0
 	if (!IsShown()) {
 		ProgPainter fast_exit(sz, *cmd_begin.prev, cmd_begin, cmd_end, *cmd_end.next);
 		fast_exit.Link();
@@ -455,6 +457,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 	
 	//if (linked)
 	//	did_draw = linked->Redraw(only_pending) || did_draw;
+	#endif
 	
 	return did_draw;
 }

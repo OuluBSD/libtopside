@@ -4,6 +4,7 @@
 
 NAMESPACE_UPP
 
+#if 0
 #define DRAWCMD_LIST \
 	DRAWCMD(NULL) \
 	DRAWCMD(META_SIZE) \
@@ -28,6 +29,43 @@ NAMESPACE_UPP
 	DRAWCMD(WINDOW_END) \
 	DRAWCMD(CUBF) \
 	
+#endif
+
+#define DRAWCMD_LIST \
+	DRAWCMD(NULL) \
+	/*DRAWCMD(GET_INFO)*/ \
+	/*DRAWCMD(GET_PAGE_SIZE)*/ \
+	DRAWCMD(START_PAGE) \
+	DRAWCMD(END_PAGE) \
+	DRAWCMD(BEGIN_OP) \
+	DRAWCMD(END_OP) \
+	DRAWCMD(OFFSET_OP) \
+	DRAWCMD(CLIP_OP) \
+	DRAWCMD(CLIPOFF_OP) \
+	DRAWCMD(EXCLUDE_CLIP_OP) \
+	DRAWCMD(INTERSECT_CLIP_OP) \
+	/*DRAWCMD(IS_PAINTING_OP)*/ \
+	/*DRAWCMD(GET_PAINT_RECT)*/ \
+	DRAWCMD(RECT_OP) \
+	DRAWCMD(SYSDRAW_IMAGE_OP) \
+	DRAWCMD(IMAGE_OP) \
+	DRAWCMD(DATA_OP) \
+	DRAWCMD(LINE_OP) \
+	DRAWCMD(POLY_POLYLINE_OP) \
+	DRAWCMD(POLY_POLY_POLYGON_OP) \
+	DRAWCMD(ARC_OP) \
+	DRAWCMD(ELLIPSE_OP) \
+	DRAWCMD(TEXT_OP) \
+	DRAWCMD(DRAWING_OP) \
+	DRAWCMD(PAINTING_OP) \
+	/*DRAWCMD(GET_NATIVE_DPI)*/ \
+	DRAWCMD(BEGIN_NATIVE) \
+	DRAWCMD(END_NATIVE) \
+	/*DRAWCMD(GET_CLOFF_LEVEL)*/ \
+	DRAWCMD(ESCAPE) \
+	DRAWCMD(BIND_WINDOW) \
+	DRAWCMD(UNBIND_WINDOW) \
+	
 
 
 enum {
@@ -41,24 +79,30 @@ enum {
 struct DrawCommand {
 	DrawCommand *prev = NULL, *next = NULL;
 	Byte type = 0;
-	int i[6];
+	Point pt, pt2;
+	Size sz;
+	Rect r, crop;
 	hash_t hash;
-	RGBA clr;
+	uint64 pattern;
+	RGBA rgba;
+	Color color, outline, doxor;
 	Image img;
-	Rect crop;
 	Font fnt;
-	String txt;
+	String txt, id;
 	void* ptr;
-	Vector<float> triangles;
-	Vector<Point> pts;
+	int width, angle;
+	Vector<Point> points;
+	Vector<int> ints, subpolygon_counts, disjunct_polygon_counts;
+	Value value;
 	bool is_cached = false;
 	
 	String GetTypeString() const;
 	String ToString() const;
 	String GetQueueString() const;
+	String ColorString() const;
 	void Check() const;
 	
-	~DrawCommand() {img.Clear(); triangles.Clear(); pts.Clear();}
+	~DrawCommand() {prev = 0; next = 0; img.Clear(); txt.Clear(); points.Clear(); ints.Clear(); subpolygon_counts.Clear(); disjunct_polygon_counts.Clear(); value = Value();}
 };
 
 class DrawCommandCache {

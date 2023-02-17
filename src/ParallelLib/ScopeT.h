@@ -102,6 +102,7 @@ public:
 	void Layout() override;
 	void PostLayout() override;*/
 	
+	Draw& BeginDraw();
 	void AddInterface(TopContainer&);
 	bool CheckRender();
 	bool IsRender() const {return do_render;}

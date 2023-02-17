@@ -42,7 +42,7 @@ struct StateDrawT : GfxStateDraw {
 	GfxDataState& GetGfxState() override {return *state;}
 	Size GetPageSize() const override {return size;}
 	
-	void SetSize(Size sz) override {TODO}
+	//void SetSize(Size sz) override {TODO}
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override {TODO}
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override {TODO}
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
@@ -52,7 +52,7 @@ struct StateDrawT : GfxStateDraw {
 	                        int width, Color color, Color doxor) override {TODO}
 	bool ClipOp(const Rect& r) override {TODO}
 	void EndOp() override {TODO}
-	void DrawImage(int x, int y, Image img, byte alpha=255) override {TODO}
+	//void DrawImage(int x, int y, Image img, byte alpha=255) override {TODO}
 	dword GetInfo() const override {TODO}
 	void BeginOp() override {TODO}
 	void OffsetOp(Point p) override {TODO}

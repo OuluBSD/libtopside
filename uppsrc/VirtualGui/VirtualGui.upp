@@ -7,6 +7,7 @@ uses
 
 file
 	VirtualGui.h,
+	SystemDraw.cpp,
 	main.conf,
 	Local.h,
 	Keys.h,

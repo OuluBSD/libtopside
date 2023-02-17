@@ -10,6 +10,7 @@
 
 #include "Compat.h"
 #include "Util.h"
+#include "ProgDraw.h"
 #include "Image.h"
 #include "BlueBar.h"
 #include "GrayBar.h"

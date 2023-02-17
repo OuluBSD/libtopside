@@ -1,11 +1,12 @@
 #include "Local.h"
+#include <CtrlCore/CtrlCore.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
-	: sz(sz), begin(&begin), end(&end)
+	: size(sz), begin(&begin), end(&end)
 {
 	prev = p.cur ? p.cur : p.begin;
 	next = p.end;
@@ -16,46 +17,33 @@ ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawComman
 }
 
 ProgPainter::ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
-	sz(sz), prev(&prev), begin(&begin), end(&end), next(&next)
+	size(sz), prev(&prev), begin(&begin), end(&end), next(&next)
 {
 	
 }
 
-Size ProgPainter::GetPageSize() const {
-	return sz;
+void ProgPainter::Clear() {
+	DrawCommand* free_begin = NULL;
+	DrawCommand* free_end = NULL;
+	if (begin->next != end) {
+		free_begin = begin->next;
+		free_end = end->prev;
+	}
+	
+	if (free_begin) {
+		DrawCommand* free = free_begin;
+		while (free && free != free_end) {
+			if (free->is_cached)
+				DrawCommandCache::Local().Return(free);
+			free = free->next;
+		}
+		begin->next = 0;
+		end->prev = 0;
+	}
+	
+	cur = 0;
+	cur_begin = 0;
 }
-
-void ProgPainter::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
-	DrawLine(x1,y1,x2,y2,width,RGBA(color));
-}
-
-void ProgPainter::DrawRectOp(int x, int y, int cx, int cy, Color color) {
-	DrawRect(x,y,cx,cy,RGBA(color));
-}
-
-void ProgPainter::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-	                    Color ink, int n, const int *dx) {
-	DrawText(x, y, WString(text).ToString(), font, RGBA(ink));
-}
-
-void ProgPainter::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
-                                const int *counts, int count_count,
-                                int width, Color color, Color doxor) {
-	DrawPolyline(vertices, vertex_count, width, color);
-}
-
-bool ProgPainter::ClipOp(const Rect& r) {
-	Offset(r);
-	return true;
-}
-
-void ProgPainter::EndOp() {
-	End();
-}
-
-
-
-
 
 DrawCommand& ProgPainter::CreateCommand() {
 	DrawCommand* cmd = &DrawCommandCache::Local().CreateCommand();
@@ -68,13 +56,125 @@ DrawCommand& ProgPainter::CreateCommand() {
 	return *cur;
 }
 
-void ProgPainter::SetSize(Size sz) {
+DrawCommand* ProgPainter::GetCurrentBegin() const {
+	return cur_begin;
+}
+
+DrawCommand* ProgPainter::GetBegin() const {
+	return begin;
+}
+
+DrawCommand* ProgPainter::GetEnd() const {
+	return end;
+}
+
+void ProgPainter::Link() {
+	ASSERT(prev != begin && next != end);
+	DrawCommand* free_begin = NULL;
+	DrawCommand* free_end = NULL;
+	if (begin->next != end) {
+		free_begin = begin->next;
+		free_end = end->prev;
+	}
+	if (!cur) {
+		end->prev = begin;
+		begin->next = end;
+	}
+	else {
+		end->prev = cur;
+		cur->next = end;
+		cur_begin->prev = begin;
+		begin->next = cur_begin;
+	}
+	end->next = next;
+	begin->prev = prev;
+	next->prev = end;
+	prev->next = begin;
+	if (free_begin) {
+		DrawCommand* free = free_begin;
+		while (free && free != free_end) {
+			if (free->is_cached)
+				DrawCommandCache::Local().Return(free);
+			free = free->next;
+		}
+	}
+	
+	ASSERT(begin->next != begin);
+}
+
+void ProgPainter::Dump() {
+	if (!begin) {
+		LOG("<no draw commands>");
+	}
+	else {
+		DrawCommand* it = begin;
+		int i = 0;
+		while (it) {
+			LOG(i++ << ": " << it->ToString());
+			if (it == end)
+				break;
+			it = it->next;
+		}
+	}
+}
+
+void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
+	if (this->begin->next == &begin && this->end->prev == &end) {
+		cur = 0;
+		cur_begin = 0;
+		return;
+	}
+	
+	if (cur) {
+		ASSERT_(0, "TODO this doesn't seem to make sense... workaround: remove added commands before this attach");
+	}
+	else {
+		ASSERT(this->begin && this->end);
+		begin.prev = this->begin;
+		this->begin->next = &begin;
+		end.next = this->end;
+		this->end->prev = &end;
+		cur = &end;
+		cur_begin = &begin;
+	}
+}
+
+void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
+	ASSERT(begin && end);
+	
+	if (cur) {
+		end->next = cur->next;
+		ASSERT(end->next);
+		end->next->prev = end;
+		cur->next = begin;
+		begin->prev = cur;
+		cur = end;
+	}
+	else {
+		ASSERT(this->begin && this->end);
+		begin->prev = this->begin;
+		this->begin->next = begin;
+		end->next = this->end;
+		this->end->prev = end;
+		cur = end;
+		cur_begin = begin;
+	}
+}
+
+
+
+
+
+
+
+
+
+/*void ProgPainter::SetSize(Size sz) {
 	this->sz = sz;
 	
 	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_META_SIZE;
-	cmd.i[0] = sz.cx;
-	cmd.i[1] = sz.cy;
+	cmd.type = DRAW_SET_SIZE;
+	cmd.sz = sz;
 }
 
 void ProgPainter::CtrlDrawBegin(hash_t h) {
@@ -84,7 +184,287 @@ void ProgPainter::CtrlDrawBegin(hash_t h) {
 
 void ProgPainter::CtrlDrawEnd() {
 	UnbindWindow();
+}*/
+
+dword ProgPainter::GetInfo() const {
+	return SDraw::GetInfo();
 }
+
+Size ProgPainter::GetPageSize() const {
+	ASSERT(!size.IsEmpty());
+	return size;
+}
+
+void ProgPainter::StartPage() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_START_PAGE;
+}
+
+void ProgPainter::EndPage() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_END_PAGE;
+}
+
+void ProgPainter::BeginOp() {
+	SDraw::BeginOp();
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_BEGIN_OP;
+}
+
+void ProgPainter::EndOp() {
+	SDraw::EndOp();
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_END_OP;
+}
+
+void ProgPainter::OffsetOp(Point p) {
+	SDraw::OffsetOp(p);
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_OFFSET_OP;
+	cmd.pt = p;
+}
+
+bool ProgPainter::ClipOp(const Rect& r) {
+	SDraw::ClipOp(r);
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_CLIP_OP;
+	cmd.r = r;
+	return true;
+}
+
+bool ProgPainter::ClipoffOp(const Rect& r) {
+	SDraw::ClipoffOp(r);
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_CLIPOFF_OP;
+	cmd.r = r;
+	return true;
+}
+
+bool ProgPainter::ExcludeClipOp(const Rect& r) {
+	SDraw::ExcludeClipOp(r);
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_EXCLUDE_CLIP_OP;
+	cmd.r = r;
+	return true;
+}
+
+bool ProgPainter::IntersectClipOp(const Rect& r) {
+	SDraw::IntersectClipOp(r);
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_INTERSECT_CLIP_OP;
+	cmd.r = r;
+	return true;
+}
+
+bool ProgPainter::IsPaintingOp(const Rect& r) const {
+	// In very optimized system: test if rect is visible at all
+	// e.g. wim32 return ::RectVisible(handle, r);
+	// Or check for list of invalidated rects
+	// e.g. gtk
+	// Here nothing is actually drawn to memory until the program is executed,
+	// so we paint (= make the program) every time.
+	// Also, the libtopside routines avoids calling this, and it's U++ feature.
+	return SDraw::IsPaintingOp(r); // is return true
+}
+
+Rect ProgPainter::GetPaintRect() const {
+	return Rect(size);
+}
+
+void ProgPainter::DrawRectOp(int x, int y, int cx, int cy, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_RECT_OP;
+	cmd.pt.x = x;
+	cmd.pt.y = y;
+	cmd.sz.cx = cx;
+	cmd.sz.cy = cy;
+	cmd.color = color;
+}
+
+void ProgPainter::SysDrawImageOp(int x, int y, const Image& img, Color color) {
+	SysDrawImageOp(x, y, img, img.GetSize(), color);
+}
+
+void ProgPainter::SysDrawImageOp(int x, int y, const Image& img, const Rect& src, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_SYSDRAW_IMAGE_OP;
+	cmd.pt = Point(x,y);
+	cmd.img = img;
+	cmd.r = src;
+	cmd.color = color;
+}
+
+void ProgPainter::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_IMAGE_OP;
+	cmd.pt = Point(x,y);
+	cmd.sz = Size(cx,cy);
+	cmd.img = img;
+	cmd.r = src;
+	cmd.color = color;
+}
+
+void ProgPainter::DrawDataOp(int x, int y, int cx, int cy, const String& data, const char *id) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_DATA_OP;
+	cmd.pt = Point(x,y);
+	cmd.sz = Size(cx,cy);
+	cmd.txt = data;
+	cmd.id = id;
+}
+
+void ProgPainter::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_LINE_OP;
+	cmd.pt = Point(x1,y1);
+	cmd.pt2 = Point(x2,y2);
+	cmd.width = width;
+	cmd.color = color;
+}
+
+void ProgPainter::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+                                const int *counts, int count_count,
+                                int width, Color color, Color doxor) {
+	if (vertex_count <= 0 || count_count <= 0)
+		return;
+	
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_POLY_POLYLINE_OP;
+	cmd.points.SetCount(vertex_count);
+	cmd.ints.SetCount(count_count);
+	memcpy(cmd.points.Begin(), vertices, sizeof(Point) * vertex_count);
+	memcpy(cmd.ints.Begin(), counts, sizeof(int) * count_count);
+	cmd.width = width;
+	cmd.color = color;
+	cmd.doxor = doxor;
+}
+
+void ProgPainter::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
+                                   const int *subpolygon_counts, int scc,
+                                   const int *disjunct_polygon_counts, int dpcc,
+                                   Color color, int width, Color outline,
+                                   uint64 pattern, Color doxor) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_POLY_POLY_POLYGON_OP;
+	cmd.points.SetCount(vertex_count);
+	cmd.subpolygon_counts.SetCount(scc);
+	cmd.disjunct_polygon_counts.SetCount(dpcc);
+	memcpy(cmd.points.Begin(), vertices, sizeof(Point) * vertex_count);
+	memcpy(cmd.subpolygon_counts.Begin(), subpolygon_counts, sizeof(int) * scc);
+	memcpy(cmd.disjunct_polygon_counts.Begin(), disjunct_polygon_counts, sizeof(int) * dpcc);
+	cmd.color = color;
+	cmd.width = width;
+	cmd.outline = outline;
+	cmd.pattern = pattern;
+	cmd.doxor = doxor;
+}
+
+void ProgPainter::DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_ARC_OP;
+	cmd.r = rc;
+	cmd.pt = start;
+	cmd.pt2 = end;
+	cmd.width = width;
+	cmd.color = color;
+}
+
+void ProgPainter::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_ELLIPSE_OP;
+	cmd.r = r;
+	cmd.color = color;
+	cmd.width = pen;
+	cmd.outline = pencolor;
+}
+
+void ProgPainter::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+	                    Color ink, int n, const int *dx) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_TEXT_OP;
+	cmd.pt = Point(x,y);
+	cmd.angle = angle;
+	cmd.txt = WString(text).ToString();
+	cmd.fnt = font;
+	cmd.color = ink;
+	cmd.ints.SetCount(n);
+	if (dx) {
+		TODO
+		/// not right... what dx is? //memcpy(cmd.ints.Begin(), dx, sizeof(int) * n);
+	}
+}
+
+void ProgPainter::DrawDrawingOp(const Rect& target, const Drawing& w) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_DRAWING_OP;
+	cmd.r = target;
+	cmd.value = w;
+}
+
+void ProgPainter::DrawPaintingOp(const Rect& target, const Painting& w) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_PAINTING_OP;
+	cmd.r = target;
+	cmd.value = w;
+}
+
+Size ProgPainter::GetNativeDpi() const {
+	return Size(96,96);
+}
+
+void ProgPainter::BeginNative() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_BEGIN_NATIVE;
+}
+
+void ProgPainter::EndNative() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_END_NATIVE;
+}
+
+int ProgPainter::GetCloffLevel() const {
+	return 0;
+}
+
+void ProgPainter::Escape(const String& data) {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_ESCAPE;
+	cmd.txt = data;
+}
+
+Color ProgPainter::GetDefaultInk() const {
+	return Draw::GetDefaultInk();
+}
+
+void ProgPainter::PutImage(Point p, const Image& img, const Rect& src) {
+	Panic("ProgPainter::PutImage shouldn't be needed");
+}
+
+void ProgPainter::PutRect(const Rect& r, Color color) {
+	Panic("ProgPainter::PutRect shouldn't be needed");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 
 void ProgPainter::BindWindow(hash_t h) {
 	DrawCommand& cmd = CreateCommand();
@@ -96,6 +476,8 @@ void ProgPainter::UnbindWindow() {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_UNBIND_WINDOW;
 }
+
+#if 0
 
 void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c) {
 	if (line_width <= 0) return;
@@ -165,6 +547,8 @@ void ProgPainter::DrawBuffer(const Rect& r, ImageBuffer& ib) {
 	cmd.ptr = &ib;
 }
 
+#endif
+
 void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_IMAGE;
@@ -175,23 +559,8 @@ void ProgPainter::DrawImage(int x, int y, Image img, byte alpha) {
 	cmd.clr.a = (byte)(alpha / 255.0);
 }
 
-#if IS_UPP_CORE
-void ProgPainter::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) {
-	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_IMAGE_SIZED;
-	cmd.i[0] = x;
-	cmd.i[1] = y;
-	cmd.i[2] = cx;
-	cmd.i[3] = cy;
-	cmd.crop = src;
-	cmd.img = img;
-	//cmd.img.MakeSysAccel();
-	cmd.clr.r = color.GetR();
-	cmd.clr.g = color.GetG();
-	cmd.clr.b = color.GetB();
-	cmd.clr.a = IsNull(color) ? 0 : 255;
-}
-#endif
+
+#if 0
 
 void ProgPainter::DrawRect(Rect r, RGBA clr) {
 	DrawRect(r.left, r.top, r.Width(), r.Height(), clr);
@@ -383,6 +752,13 @@ void ProgPainter::Offset(const Rect& r) {
 	cmd.i[3] = r.bottom;
 }
 
+void ProgPainter::End() {
+	DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_END;
+}
+
+#endif
+
 void ProgPainter::WindowOffset(const Rect& r) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_WINDOW_OFFSET;
@@ -392,177 +768,31 @@ void ProgPainter::WindowOffset(const Rect& r) {
 	cmd.i[3] = r.bottom;
 }
 
-void ProgPainter::End() {
-	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_END;
-}
-
 void ProgPainter::WindowEnd() {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_WINDOW_END;
 }
 
+#endif
 
-void ProgPainter::Attach(DrawCommand& begin, DrawCommand& end) {
-	if (this->begin->next == &begin && this->end->prev == &end) {
-		cur = 0;
-		cur_begin = 0;
-		return;
-	}
-	
-	if (cur) {
-		ASSERT_(0, "TODO this doesn't seem to make sense... workaround: remove added commands before this attach");
-	}
-	else {
-		ASSERT(this->begin && this->end);
-		begin.prev = this->begin;
-		this->begin->next = &begin;
-		end.next = this->end;
-		this->end->prev = &end;
-		cur = &end;
-		cur_begin = &begin;
-	}
-}
 
-void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
-	ASSERT(begin && end);
-	
-	if (cur) {
-		end->next = cur->next;
-		ASSERT(end->next);
-		end->next->prev = end;
-		cur->next = begin;
-		begin->prev = cur;
-		cur = end;
-	}
-	else {
-		ASSERT(this->begin && this->end);
-		begin->prev = this->begin;
-		this->begin->next = begin;
-		end->next = this->end;
-		this->end->prev = end;
-		cur = end;
-		cur_begin = begin;
-	}
-}
 
-DrawCommand* ProgPainter::GetBegin() const {
-	return begin;
-}
 
-DrawCommand* ProgPainter::GetEnd() const {
-	return end;
-}
 
-void ProgPainter::Dump() {
-	if (!begin) {
-		LOG("<no draw commands>");
-	}
-	else {
-		DrawCommand* it = begin;
-		int i = 0;
-		while (it) {
-			LOG(i++ << ": " << it->ToString());
-			if (it == end)
-				break;
-			it = it->next;
-		}
-	}
-}
 
-void ProgPainter::Link() {
-	ASSERT(prev != begin && next != end);
-	DrawCommand* free_begin = NULL;
-	DrawCommand* free_end = NULL;
-	if (begin->next != end) {
-		free_begin = begin->next;
-		free_end = end->prev;
-	}
-	if (!cur) {
-		end->prev = begin;
-		begin->next = end;
-	}
-	else {
-		end->prev = cur;
-		cur->next = end;
-		cur_begin->prev = begin;
-		begin->next = cur_begin;
-	}
-	end->next = next;
-	begin->prev = prev;
-	next->prev = end;
-	prev->next = begin;
-	if (free_begin) {
-		DrawCommand* free = free_begin;
-		while (free && free != free_end) {
-			if (free->is_cached)
-				DrawCommandCache::Local().Return(free);
-			free = free->next;
-		}
-	}
-	
-	ASSERT(begin->next != begin);
-}
 
-void ProgPainter::Clear() {
-	DrawCommand* free_begin = NULL;
-	DrawCommand* free_end = NULL;
-	if (begin->next != end) {
-		free_begin = begin->next;
-		free_end = end->prev;
-	}
-	
-	if (free_begin) {
-		DrawCommand* free = free_begin;
-		while (free && free != free_end) {
-			if (free->is_cached)
-				DrawCommandCache::Local().Return(free);
-			free = free->next;
-		}
-		begin->next = 0;
-		end->prev = 0;
-	}
-}
 
-bool ProgPainter::ClipoffOp(const Rect& r) {
-	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_CLIPOFF;
-	cmd.i[0] = r.left;
-	cmd.i[1] = r.top;
-	cmd.i[2] = r.right;
-	cmd.i[3] = r.bottom;
-	return true;
-}
 
-dword ProgPainter::GetInfo() const {return 0;}
-void ProgPainter::BeginOp() {TODO}
 
-void ProgPainter::OffsetOp(Point p) {
-	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_OFFSET_POINT;
-	cmd.i[0] = p.x;
-	cmd.i[1] = p.y;
-}
 
-bool ProgPainter::ExcludeClipOp(const Rect& r) {TODO}
-bool ProgPainter::IntersectClipOp(const Rect& r) {TODO}
-bool ProgPainter::IsPaintingOp(const Rect& r) const {
-	// In very optimized system: test if rect is visible at all
-	// e.g. wim32 return ::RectVisible(handle, r);
-	// Or check for list of invalidated rects
-	// e.g. gtk
-	// Here nothing is actually drawn to memory until the program is executed,
-	// so we paint (= make the program) every time.
-	// Also, the libtopside routines avoids calling this, and it's U++ feature.
-	return true;
-}
-void ProgPainter::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
-                                   const int *subpolygon_counts, int scc,
-                                   const int *disjunct_polygon_counts, int dpcc,
-                                   Color color, int width, Color outline,
-                                   uint64 pattern, Color doxor) {TODO}
-void ProgPainter::DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) {TODO}
-void ProgPainter::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) {TODO}
+
+
+
+
+
+
+
+
 
 
 

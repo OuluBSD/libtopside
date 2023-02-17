@@ -25,12 +25,12 @@ struct AtomVirtualGui : VirtualGui {
 	virtual void        Quit();
 	//virtual void        HandleSDLEvent(SDL_Event* event);
 	
-	One<ImageDraw>      idraw;
 	SystemDraw          sysdraw;
 	
 	WindowSystemRef		wins;
 	WindowManagerRef	mgr;
 	
+	void SetTarget(Draw& d);
 	//void Attach(SDL_Window *win, SDL_GLContext glcontext);
 	//void Detach();
 

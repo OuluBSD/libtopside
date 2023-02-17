@@ -24,6 +24,8 @@ file
 	Compat.cpp,
 	Util.h,
 	Util.cpp,
+	ProgDraw.h,
+	ProgDraw.cpp,
 	PathCtrl.h,
 	PathCtrl.cpp,
 	Container.h,

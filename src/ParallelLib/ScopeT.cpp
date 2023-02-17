@@ -26,6 +26,19 @@ ScopeT<Dim>::ScopeT()
 	
 }
 
+template <class Dim>
+Draw& ScopeT<Dim>::BeginDraw() {
+	#if IS_TS_CORE
+	Box b = this->GetFrameBox();
+	Sz sz = b.GetSize();
+	
+	if (pd.GetPageSize() != sz)
+		pd.Create(sz);
+	#else
+	TODO
+	#endif
+}
+
 #if 0
 template <class Dim>
 bool ScopeT<Dim>::Init()
@@ -490,11 +503,10 @@ String ScopeT<Dim>::GetTitle(int handle_id)
 template <class Dim>
 void ScopeT<Dim>::CloseAll()
 {
-	TODO
-	#if 0
 	for(int i = 0; i < handles.GetCount(); i++) {
 		QueueCloseHandle(handles.GetKey(i));
 	}
+	#if 0
 	this->SetPendingLayout();
 	#endif
 }

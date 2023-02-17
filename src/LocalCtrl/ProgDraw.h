@@ -1,10 +1,12 @@
-#ifndef _Local_ProgDraw_h_
-#define _Local_ProgDraw_h_
+#ifndef _LocalCtrl_ProgDraw_h_
+#define _LocalCtrl_ProgDraw_h_
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ProgDraw : public Draw2 {
+class ProgDraw : public SystemDraw
+{
 	One<ProgPainter> d;
 	
 	Size GetFrameSize() const;
@@ -16,11 +18,14 @@ public:
 	
 	void LinkRender();
 public:
+	#if IS_TS_CORE
 	RTTI_DECL1(ProgDraw, Draw)
+	#endif
 	ProgDraw();
 	ProgDraw(Size sz);
 	ProgDraw(int w, int h);
 	
+	void Realize(Size sz);
 	void Create(Size sz);
 	void Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end);
 	void Clear();
@@ -29,7 +34,12 @@ public:
 	
 	operator Image() const;
 	
+	ProgPainter& GetPainter();
 	
+	String Dump() const;
+	
+	
+	#if 0
 	void SetDimensions(const Size& sz);
 	Size GetPageDimensions();
 	
@@ -63,9 +73,8 @@ public:
 	
 	Draw& Alpha();
 	
-	ProgPainter& GetPainter();
+	#endif
 	
-	String Dump() const;
 };
 
 

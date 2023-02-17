@@ -168,10 +168,10 @@ void Ctrl::PaintCaretCursor(SystemDraw& draw)
 		draw.DrawImage(fbCursorPos.x, fbCursorPos.y, fbCursorImage);
 }
 
-void Ctrl::DoPaint()
+void Ctrl::DoPaint(bool force)
 {
 	if(!PaintLock) {
-		if(invalid && desktop) {
+		if((force || invalid) && desktop) {
 			invalid = false;
 			SystemDraw& draw = VirtualGuiPtr->BeginDraw();
 			PaintScene(draw);

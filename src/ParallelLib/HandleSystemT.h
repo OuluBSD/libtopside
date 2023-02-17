@@ -19,6 +19,7 @@ public:
 	using TopContainer = typename Dim::TopContainer;
 	using Event = typename Dim::Event;
 	using EventCollection = typename Dim::EventCollection;
+	using Desktop = typename Dim::Desktop;
 	
 	void (*set_mouse_cursor)(void*,const Image&);
 	Image (*get_mouse_cursor)(void*);

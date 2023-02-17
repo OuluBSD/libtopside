@@ -512,6 +512,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		}
 		ASSERT(0);
 		#endif
+		#if 0
 		while (begin && begin->type != DRAW_BIND_WINDOW) begin = begin->next;
 		if (!begin) {
 			LOG("HalSdl::CenterVideoSinkDevice_Recv: error: no ptr");
@@ -528,9 +529,22 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			}
 			end = end->next;
 		}
+		#else
+		DrawCommand* end = begin;
+		while (end->next) {
+			end = end->next;
+		}
+		#endif
 		
 		dev.id->DrawRect(dev.sz, Black());
 		dev.pi.Paint(begin, end, *dev.id);
+		Image img = *dev.id;
+		
+		if (1) {
+			String path = GetHomeDirFile("debug.png");
+			PNGEncoder enc;
+			enc.SaveFile(path, img);
+		}
 		
 		{
 			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
@@ -550,7 +564,6 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			byte* pixels = (byte*)surf->pixels;
 			int len = h * pitch;
 			#if IS_UPP_CORE
-			Image img = *dev.id;
 			const RGBA* begin = img.Begin();
 			int id_len = img.GetLength() * 4;
 			int id_h = img.GetHeight();

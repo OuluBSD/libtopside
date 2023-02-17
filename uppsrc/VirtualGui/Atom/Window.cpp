@@ -46,7 +46,6 @@ bool AtomVirtualGui::Create(const Rect& rect, const char *title)
 
 void AtomVirtualGui::Destroy()
 {
-	idraw.Clear();
 	mgr.Clear();
 	wins.Clear();
 }

@@ -1,10 +1,10 @@
-#include "Local.h"
+#include "LocalCtrl.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgDraw::ProgDraw() /*: fb(state), shader(state)*/ {
-	
+	Create(Size(16,16));
 }
 
 ProgDraw::ProgDraw(Size sz) /*: fb(state), shader(state)*/ {
@@ -20,14 +20,11 @@ Size ProgDraw::GetFrameSize() const {
 	//return state.size;
 }
 
-Size ProgDraw::GetPageSize() const {
-	if (!d.IsEmpty())
-		return d->GetPageSize();
-	return Size(0,0);
-}
-
-Size ProgDraw::GetPageDimensions() {
-	return GetPageSize(); // call virtual
+void ProgDraw::Realize(Size sz){
+	if (d.IsEmpty() || d->GetPageSize() != sz)
+		Create(sz);
+	
+	d->Clear();
 }
 
 void ProgDraw::Create(Size sz){
@@ -37,6 +34,10 @@ void ProgDraw::Create(Size sz){
 	LinkRender();
 	
 	d = new ProgPainter(sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
+	
+	d->Init(sz);
+	
+	DrawProxy::SetTarget(&*d);
 }
 
 void ProgDraw::Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
@@ -51,6 +52,7 @@ void ProgDraw::Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
 	cmd_screen_end.prev = &sub_end;
 	
 	d = new ProgPainter(sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
+	
 }
 
 void ProgDraw::LinkRender() {
@@ -79,6 +81,28 @@ void ProgDraw::Finish() {
 
 ProgDraw::operator Image() const {
 	TODO
+}
+
+ProgPainter& ProgDraw::GetPainter() {
+	ASSERT(d);
+	return *d;
+}
+
+void ProgDraw::DetachTo(ProgPainter& pp) {
+	if (cmd_screen_begin.next)
+		pp.AppendPick(cmd_screen_begin.next, cmd_screen_end.prev);
+}
+
+#if 0
+
+Size ProgDraw::GetPageSize() const {
+	if (!d.IsEmpty())
+		return d->GetPageSize();
+	return Size(0,0);
+}
+
+Size ProgDraw::GetPageDimensions() {
+	return GetPageSize(); // call virtual
 }
 
 void ProgDraw::SetDimensions(const Size& sz) {
@@ -128,16 +152,6 @@ Draw& ProgDraw::Alpha() {
 	TODO
 }
 
-ProgPainter& ProgDraw::GetPainter() {
-	ASSERT(d);
-	return *d;
-}
-
-void ProgDraw::DetachTo(ProgPainter& pp) {
-	if (cmd_screen_begin.next)
-		pp.AppendPick(cmd_screen_begin.next, cmd_screen_end.prev);
-}
-
 bool ProgDraw::ClipoffOp(const Rect& r) {
 	TODO
 }
@@ -182,7 +196,7 @@ void ProgDraw::DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor
 	TODO
 }
 
-
+#endif
 
 
 

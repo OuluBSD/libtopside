@@ -23,11 +23,14 @@ ModelPainter::ModelPainter(Volf sz, DrawCommand& prev, DrawCommand& begin, DrawC
 void ModelPainter::SetSize(Volf v) {
 	this->sz = v;
 	
+	TODO
+	/*
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_META_SIZE3;
 	cmd.i[0] = v.cx;
 	cmd.i[1] = v.cy;
 	cmd.i[2] = v.cz;
+	*/
 }
 
 Volf ModelPainter::GetPageSize() const {
@@ -156,6 +159,8 @@ void ModelPainter::DrawCuboid(Cubf r, RGBA clr) {
 }
 
 void ModelPainter::DrawCuboid(float x, float y, float z, float w, float h, float d, RGBA clr) {
+	TODO
+	#if 0
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_CUBF;
 	cmd.i[0] = x;
@@ -165,6 +170,7 @@ void ModelPainter::DrawCuboid(float x, float y, float z, float w, float h, float
 	cmd.i[4] = y+h;
 	cmd.i[5] = z+d;
 	cmd.clr = clr;
+	#endif
 }
 
 void ModelPainter::DrawText(float x, float y, float z, String txt, Font fnt, RGBA clr) {
@@ -328,11 +334,14 @@ void ModelPainter::DrawPolyline(const vec3* pts, int pt_count, float line_width,
 }
 
 void ModelPainter::DrawPolygon(const Vector<vec3>& pts, RGBA c) {
+	TODO
+	#if 0
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_TRIANGLES;
 	cmd.clr = c;
 	
 	TODO //Triangulate::Process(pts, cmd.triangles);
+	#endif
 }
 
 void ModelPainter::Offset(const Cubf& r) {
@@ -360,13 +369,19 @@ void ModelPainter::WindowOffset(const Cubf& r) {
 }
 
 void ModelPainter::End() {
+	TODO
+	#if 0
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_END;
+	#endif
 }
 
 void ModelPainter::WindowEnd() {
+	TODO
+	#if 0
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_WINDOW_END;
+	#endif
 }
 
 
