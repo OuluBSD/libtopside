@@ -200,9 +200,7 @@ int EventFormat::GetFrameSize() const {
 
 
 String ProgFormat::ToString() const {
-	return		SampleBase<BinarySample>::ToString() + ", " +
-				DimBase<1>::ToString() + ", " +
-				SparseTimeSeriesBase::ToString();
+	return		DimBase<1>::ToString();
 }
 
 bool ProgFormat::IsValid() const {

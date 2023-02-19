@@ -25,6 +25,7 @@ public:
 	void Begin();
 	void Use(SoftProgram& prog, uint32 bmask);
 	
+	void operator=(int i) {if (i == 0) Clear();}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
 	

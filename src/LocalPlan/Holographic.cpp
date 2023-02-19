@@ -8,7 +8,7 @@ void InterfaceBuilder::AddHolographic() {
 	SetColor(85, 42, 150);
 	Dependency("ParallelLib");
 	Dependency("IMedia");
-	Dependency("ports/hcidump", "LINUX");
+	Dependency("ports/hcidump", "LINUX", false);
 	Dependency("LocalHMD", "LOCALHMD");
 	Library("openhmd hidapi-libusb", "LINUX & OPENHMD");
 	HaveRecvFinalize();

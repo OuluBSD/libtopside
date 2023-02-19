@@ -23,11 +23,26 @@ public:
 #endif
 
 #if defined flagSCREEN
-class PipeProgVideo : public HandleVideoBase {
+class CenterProgPipe : public HandleVideoBase {
 
 public:
-	RTTI_DECL1(PipeProgVideo, HandleVideoBase)
-	COPY_PANIC(PipeProgVideo)
+	RTTI_DECL1(CenterProgPipe, HandleVideoBase)
+	COPY_PANIC(CenterProgPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if defined flagSCREEN
+class OglProgPipe : public HandleVideoBase {
+
+public:
+	RTTI_DECL1(OglProgPipe, HandleVideoBase)
+	COPY_PANIC(OglProgPipe)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

@@ -24,8 +24,7 @@ FrameT<Ctx2D>::FrameT() {
 
 template <class Dim>
 typename Dim::TopContainer* FrameT<Dim>::GetTopContainer() {
-	ASSERT(scope);
-	TODO //return scope->GetTopContainer();
+	return window;
 }
 
 template <class Dim>
@@ -84,15 +83,12 @@ void FrameT<Dim>::SyncBox()
 template <class Dim>
 void FrameT<Dim>::Maximize()
 {
-	TODO
-	#if 0
 	if(!maximized && maximize.IsShown()) {
 		maximized = true;
 		overlapped = this->GetFrameBox();
 		this->SetFrameBox(GetWorkArea().GetSize());
 		maximize.SetImage(FBImg::overlap());
 	}
-	#endif
 }
 
 template <class Dim>

@@ -1,8 +1,5 @@
 #include "Local.h"
 
-#if IS_UPP_CORE
-#include <CtrlCore/CtrlCore.h>
-#endif
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -217,7 +214,10 @@ bool GeomInteraction::DeepKey(dword key, int count) {
 }
 
 void GeomInteraction::PostCallback(Callback cb) {
+	TODO
+	#if 0
 	::UPP::SetTimeCallback(1, cb, this);
+	#endif
 }
 
 void GeomInteraction::PostRefresh() {
@@ -282,14 +282,25 @@ void GeomInteraction::DumpDrawCommands() const {
 }
 
 bool GeomInteraction::Dispatch(const CtrlEvent& e) {
+	TODO
+	/*
+	Difficult circular dependency problem:
+		- TS/UPP: GeomInteraction -> Gubo
+		- TS/UPP: CtrlCore -> Gubo
+		- UPP: CtrlCore -> GeomInteraction
+		- TS: GeomInteraction -> CtrlCore
+		? GeomCore ? SharedCore ?
+	*/
 	switch (e.type) {
 		case EVENT_KEYDOWN:
 			DeepKey(e.value, e.n);
 			return true;
 			
+		/*
 		case EVENT_KEYUP:
 			DeepKey(e.value | K_KEYUP, e.n);
 			return true;
+		*/
 		
 		default:
 			return false;

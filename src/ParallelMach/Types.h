@@ -96,6 +96,7 @@ struct ValCls : Moveable<ValCls> {
 		Order = ORDER,
 		Receipt = RECEIPT,
 		Fbo = FBO,
+		Prog = PROG,
 	} Type;
 	
 	Type type = INVALID;

@@ -28,9 +28,9 @@ struct FramebufferT : Gfx::FramebufferBase {
 	
 	FramebufferT() {
 		for(int i = 0; i < 2; i++) {
-			color_buf[i] = NULL;
-			depth_buf[i] = NULL;
-			frame_buf[i] = NULL;
+			color_buf[i] = 0;
+			depth_buf[i] = 0;
+			frame_buf[i] = 0;
 		}
 	}
 	

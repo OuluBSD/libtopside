@@ -2,6 +2,15 @@
 
 #if defined flagSDL2
 
+//#if IS_UPP_CORE
+#include <CtrlCore/CtrlCore.h>
+#include <GLDraw/GLDraw.h>
+//#endif
+
+NAMESPACE_UPP
+extern VirtualGui *VirtualGuiPtr;
+END_UPP_NAMESPACE
+
 #ifdef flagMSC
 	#include <SDL.h>
 	#include <SDL_ttf.h>
@@ -15,6 +24,9 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+SDL_TimerID waketimer_id;
+
+
  struct HalSdl::NativeCenterVideoSinkDevice {
     void* display;
     SDL_Window* win;
@@ -26,27 +38,45 @@ NAMESPACE_PARALLEL_BEGIN
 };
 
 struct HalSdl::NativeCenterFboSinkDevice {
-    void* display;
     SDL_Window* win;
     SDL_Renderer* rend;
+    ::SDL_RendererInfo rend_info;
+    void* display;
     SDL_Texture* fb;
     GfxAccelAtom<SdlSwGfx> accel;
 };
 
 #if defined flagOGL
-struct HalSdl::NativeOglVideoSinkDevice {
-    void* display;
+struct HalSdl_CommonOgl {
     ::SDL_Window* win;
     ::SDL_Renderer* rend;
-    uint32 fb;
-    GfxAccelAtom<SdlOglGfx> accel;
     ::SDL_RendererInfo rend_info;
     ::SDL_GLContext gl_ctx;
+    Size screen_sz;
+    bool is_fullscreen;
+    bool is_sizeable;
+    bool is_maximized;
+	
 };
+
+struct HalSdl::NativeOglVideoSinkDevice : HalSdl_CommonOgl {
+    void* display;
+    uint32 fb;
+    GfxAccelAtom<SdlOglGfx> accel;
+};
+
+struct HalSdl::NativeUppOglDevice : HalSdl_CommonOgl {
+	GLDraw gldraw;
+	Size sz;
+	static NativeUppOglDevice* last;
+};
+
+HalSdl::NativeUppOglDevice* HalSdl::NativeUppOglDevice::last;
+
 #endif
 
 struct HalSdl::NativeEventsBase {
-    int time;
+    double time;
     dword seq;
     CtrlEventCollection ev;
     Size sz;
@@ -79,6 +109,28 @@ struct HalSdl::NativeAudioSinkDevice {
 
 struct HalSdl::NativeContextBase {
 	void* p;
+};
+
+struct HalSdl::NativeUppEventsBase {
+    Ref<WindowSystem> wins;
+    Ref<GuboSystem> gubos;
+    double time;
+    dword seq;
+    
+	dword lastbdowntime[8] = {0};
+	dword isdblclick[8] = {0};
+	
+	dword mouseb;
+	dword modkeys;
+	bool  sdlMouseIsIn;
+
+    
+    void Clear() {
+        time = 0;
+        seq = 0;
+        wins.Clear();
+        gubos.Clear();
+    }
 };
 
 
@@ -852,16 +904,17 @@ bool HalSdl::OglVideoSinkDevice_Initialize(NativeOglVideoSinkDevice& dev, AtomBa
 	return true;
 }
 
-bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, AtomBase& a) {
+template <class T>
+bool HalSdl_Ogl_PostInitialize(T& dev, AtomBase& a) {
 	AppFlags& app_flags = GetAppFlags();
 	dev.win = 0;
 	dev.rend = 0;
 	
 	HiValue& data = a.UserData();
-	Size screen_sz(data["cx"], data["cy"]);
-	int is_fullscreen = data["fullscreen"];
-	int is_sizeable = data["sizeable"];
-	int is_maximized = data["maximized"];
+	dev.screen_sz = Size(data["cx"], data["cy"]);
+	dev.is_fullscreen = (int)data["fullscreen"];
+	dev.is_sizeable = (int)data["sizeable"];
+	dev.is_maximized = (int)data["maximized"];
 	String title = data["title"];
 	
 	// Window
@@ -869,11 +922,11 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 	
 	flags |= SDL_WINDOW_OPENGL;
 	
-	if (is_fullscreen)	flags |= SDL_WINDOW_FULLSCREEN;
-	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
-	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
+	if (dev.is_fullscreen)	flags |= SDL_WINDOW_FULLSCREEN;
+	if (dev.is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
+	if (dev.is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
 	
-	if (SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &dev.win, &dev.rend) == -1) {
+	if (SDL_CreateWindowAndRenderer(dev.screen_sz.cx, dev.screen_sz.cy, flags, &dev.win, &dev.rend) == -1) {
 		LOG("HalSdl::OglVideoSinkDevice_PostInitialize: error: could not create window and renderer");
         return false;
 	}
@@ -896,8 +949,11 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	
+	MemoryIgnoreLeaksBegin();
 	dev.gl_ctx = SDL_GL_CreateContext(dev.win);
 	GetAppFlags().SetOpenGLContextOpen();
+	MemoryIgnoreLeaksEnd();
 	
 	if (!dev.gl_ctx) {
 		LOG("Could not open opengl context: " << SDL_GetError());
@@ -911,11 +967,17 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 		return false;
 	}
     
+    return true;
+}
+
+bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, AtomBase& a) {
+	if (!HalSdl_Ogl_PostInitialize(dev, a))
+		return false;
 	
 	dev.accel.SetNative(dev.display, dev.win, &dev.rend, 0);
 	
     int fb_stride = 3;
-	if (!dev.accel.Open(screen_sz, fb_stride)) {
+	if (!dev.accel.Open(dev.screen_sz, fb_stride)) {
 		LOG("HalSdl::OglVideoSinkDevice_PostInitialize: error: could not open opengl atom");
 		return false;
 	}
@@ -923,7 +985,7 @@ bool HalSdl::OglVideoSinkDevice_PostInitialize(NativeOglVideoSinkDevice& dev, At
 	if (!dev.accel.PostInitialize())
 		return false;
 	
-	if (is_fullscreen)
+	if (dev.is_fullscreen)
 		SDL_SetWindowFullscreen(dev.win, SDL_WINDOW_FULLSCREEN);
 	
 	return true;
@@ -1052,6 +1114,7 @@ void HalSdl__SetMouseCursor(void* ptr, const Image& image)
 
 
 
+void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event);
 
 bool HalSdl::EventsBase_Create(One<NativeEventsBase>& dev) {
 	dev.Create();
@@ -1214,6 +1277,8 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				dev.sz = screen_sz;
 				e.type = EVENT_WINDOW_RESIZE;
 				e.sz = screen_sz;
+				if (HalSdl::NativeUppOglDevice::last)
+					HalSdl::NativeUppOglDevice::last->sz = screen_sz;
 				continue;
 			}
 			break;
@@ -1443,6 +1508,557 @@ void HalSdl::EventsBase_DetachContext(NativeEventsBase&, AtomBase& a, AtomBase& 
 	
 }
 
+
+
+
+
+extern SDL_TimerID waketimer_id;
+
+bool HalSdl::UppEventsBase_Create(One<NativeUppEventsBase>& dev) {
+	dev.Create();
+	return true;
+}
+
+void HalSdl::UppEventsBase_Destroy(One<NativeUppEventsBase>& dev) {
+	dev.Clear();
+}
+
+bool HalSdl::UppEventsBase_Initialize(NativeUppEventsBase& dev, AtomBase& a, const Script::WorldState&) {
+	dev.Clear();
+	
+	
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
+	ASSERT(ev_ctx);
+	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
+	
+	if (!ev_ctx->AttachContext(a))
+		return false;
+	
+	// Set init flag
+	dword sdl_flag = SDL_INIT_EVENTS;
+	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
+	
+	
+	return true;
+}
+
+bool HalSdl::UppEventsBase_PostInitialize(NativeUppEventsBase& dev, AtomBase& a) {
+	AtomBase* dep = a.GetDependency();
+	if (!dep) {
+		LOG("HalSdl::EventsBase_PostInitialize: expected dependency atom but got null");
+		return false;
+	}
+	
+	if (!dep->IsInitialized()) {
+		LOG("HalSdl::EventsBase_PostInitialize: context is not running");
+	}
+	
+	RTLOG("HalSdl::EventsBase_PostInitialize");
+	
+	a.AddAtomToUpdateList();
+	
+	
+	{
+		Machine& m = a.GetMachine();
+		dev.wins = m.Get<WindowSystem>();
+		dev.gubos = m.Get<GuboSystem>();
+		
+		if (dev.wins) {
+			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
+			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
+		}
+	}
+	
+	return true;
+}
+
+bool HalSdl::UppEventsBase_Start(NativeUppEventsBase&, AtomBase&) {
+	// pass
+	return true;
+}
+
+void HalSdl::UppEventsBase_Stop(NativeUppEventsBase&, AtomBase& a) {
+	a.ClearDependency();
+}
+
+void HalSdl::UppEventsBase_Uninitialize(NativeUppEventsBase& dev, AtomBase& a) {
+	dev.wins.Clear();
+	dev.gubos.Clear();
+	
+	a.RemoveAtomFromUpdateList();
+}
+
+bool HalSdl::UppEventsBase_Send(NativeUppEventsBase& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	ASSERT(out.GetFormat().IsReceipt());
+	return true;
+}
+
+void HalSdl::UppEventsBase_Visit(NativeUppEventsBase&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
+bool HalSdl::UppEventsBase_Recv(NativeUppEventsBase&, AtomBase&, int, const Packet&) {
+	return true;
+}
+
+void HalSdl::UppEventsBase_Finalize(NativeUppEventsBase&, AtomBase&, RealtimeSourceConfig&) {
+	
+}
+
+void HalSdl::UppEventsBase_Update(NativeUppEventsBase& dev, AtomBase&, double dt) {
+	dev.time += dt;
+}
+
+bool HalSdl::UppEventsBase_IsReady(NativeUppEventsBase& dev, AtomBase&, PacketIO& io) {
+	bool ret = false;
+	SDL_Event event;
+	if(SDL_PollEvent(&event)) {
+		//if(event.type == SDL_QUIT && quit)
+		//	*quit = true;
+		HalSdl__HandleSDLEvent(dev, &event);
+		ret = true;
+	}
+	return ret;
+}
+
+bool HalSdl::UppEventsBase_AttachContext(NativeUppEventsBase&, AtomBase& a, AtomBase& other) {
+	return true;
+}
+
+void HalSdl::UppEventsBase_DetachContext(NativeUppEventsBase&, AtomBase& a, AtomBase& other) {
+	
+}
+
+
+#if defined flagOGL
+bool HalSdl::UppOglDevice_Create(One<NativeUppOglDevice>& dev) {
+	dev.Create();
+	NativeUppOglDevice::last = &*dev;
+	return true;
+}
+
+void HalSdl::UppOglDevice_Destroy(One<NativeUppOglDevice>& dev) {
+	dev.Clear();
+}
+
+bool HalSdl::UppOglDevice_Initialize(NativeUppOglDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
+	ASSERT(ev_ctx);
+	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
+	
+	if (!ev_ctx->AttachContext(a))
+		return false;
+	
+	String title = ws.GetString(".title", "SDL2 Window");
+	dev.sz = ws.GetSize(".cx", ".cy", Size(1280,720));
+	bool fullscreen = ws.GetBool(".fullscreen", false);
+	bool sizeable = ws.GetBool(".sizeable", false);
+	bool maximized = ws.GetBool(".maximized", false);
+	
+	HiValue& data = a.UserData();
+	data.Set("cx", dev.sz.cx);
+	data.Set("cy", dev.sz.cy);
+	data.Set("fullscreen", fullscreen);
+	data.Set("sizeable", sizeable);
+	data.Set("maximized", maximized);
+	data.Set("title", title);
+	
+	
+	// Set init flag
+	dword sdl_flag = SDL_INIT_VIDEO | SDL_WINDOW_OPENGL;
+	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
+	
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	
+	return true;
+}
+
+bool HalSdl::UppOglDevice_PostInitialize(NativeUppOglDevice& dev, AtomBase& a) {
+	if (!HalSdl_Ogl_PostInitialize(dev, a))
+		return false;
+	
+	
+	return true;
+}
+
+bool HalSdl::UppOglDevice_Start(NativeUppOglDevice&, AtomBase&) {
+	
+	return true;
+}
+
+void HalSdl::UppOglDevice_Stop(NativeUppOglDevice&, AtomBase& a) {
+	a.ClearDependency();
+}
+
+void HalSdl::UppOglDevice_Uninitialize(NativeUppOglDevice& dev, AtomBase& a) {
+	if(dev.gl_ctx) {
+		SDL_GL_DeleteContext(dev.gl_ctx);
+		dev.gl_ctx = NULL;
+		GLDraw::ResetCache();
+	}
+	if(dev.win) {
+		SDL_RemoveTimer(waketimer_id);
+		SDL_DestroyWindow(dev.win);
+		dev.win = NULL;
+	}
+}
+
+bool HalSdl::UppOglDevice_Send(NativeUppOglDevice&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	return true;
+}
+
+void HalSdl::UppOglDevice_Visit(NativeUppOglDevice&, AtomBase&, RuntimeVisitor& vis) {
+	
+}
+
+bool HalSdl::UppOglDevice_Recv(NativeUppOglDevice&, AtomBase&, int, const Packet&) {
+	return true;
+}
+
+void HalSdl::UppOglDevice_Finalize(NativeUppOglDevice& dev, AtomBase& a, RealtimeSourceConfig&) {
+	ASSERT(!dev.sz.IsEmpty());
+	dev.gldraw.Init(dev.sz, (uint64)dev.gl_ctx);
+	SystemDraw& sysdraw = UPP::VirtualGuiPtr->BeginDraw();
+	sysdraw.SetTarget(&dev.gldraw);
+	
+	Ctrl::PaintAll();
+	
+	dev.gldraw.Finish();
+	SDL_GL_SwapWindow(dev.win);
+}
+
+void HalSdl::UppOglDevice_Update(NativeUppOglDevice&, AtomBase&, double dt) {
+	TODO
+}
+
+bool HalSdl::UppOglDevice_IsReady(NativeUppOglDevice&, AtomBase&, PacketIO& io) {
+	return true;
+}
+
+bool HalSdl::UppOglDevice_AttachContext(NativeUppOglDevice& dev, AtomBase& a, AtomBase& other) {
+	return true;
+}
+
+void HalSdl::UppOglDevice_DetachContext(NativeUppOglDevice& dev, AtomBase& a, AtomBase& other) {
+	
+}
+
+#endif
+
+
+
+
+
+
+
+#define LLOG(x)
+
+const static VectorMap<dword, dword> SDL_key_map = {
+//	{ SDLK_BACKSPACE, K_BACK        },
+	{ SDLK_BACKSPACE, K_BACKSPACE   },
+	{ SDLK_TAB,       K_TAB         },
+	{ SDLK_SPACE,     K_SPACE       },
+	{ SDLK_RETURN,    K_RETURN      },
+
+	{ SDLK_LSHIFT,   K_SHIFT_KEY    },
+	{ SDLK_LCTRL,    K_CTRL_KEY     },
+	{ SDLK_LALT,     K_ALT_KEY      },
+	{ SDLK_CAPSLOCK, K_CAPSLOCK     },
+	{ SDLK_ESCAPE,   K_ESCAPE       },
+	{ SDLK_PAGEUP,   K_PAGEUP       },
+	{ SDLK_PAGEDOWN, K_PAGEDOWN     },
+	{ SDLK_END,      K_END          },
+	{ SDLK_HOME,     K_HOME         },
+	{ SDLK_LEFT,     K_LEFT         },
+	{ SDLK_UP,       K_UP           },
+	{ SDLK_RIGHT,    K_RIGHT        },
+	{ SDLK_DOWN,     K_DOWN         },
+	{ SDLK_INSERT,   K_INSERT       },
+	{ SDLK_DELETE,   K_DELETE       },
+
+	{ SDLK_KP_0, K_NUMPAD0 },
+	{ SDLK_KP_1, K_NUMPAD1 },
+	{ SDLK_KP_2, K_NUMPAD2 },
+	{ SDLK_KP_3, K_NUMPAD3 },
+	{ SDLK_KP_4, K_NUMPAD4 },
+	{ SDLK_KP_5, K_NUMPAD5 },
+	{ SDLK_KP_6, K_NUMPAD6 },
+	{ SDLK_KP_7, K_NUMPAD7 },
+	{ SDLK_KP_8, K_NUMPAD8 },
+	{ SDLK_KP_9, K_NUMPAD9 },
+	{ SDLK_KP_MULTIPLY, K_MULTIPLY  },
+	{ SDLK_KP_PLUS,     K_ADD       },
+	{ SDLK_KP_PERIOD,   K_SEPARATOR },
+	{ SDLK_KP_MINUS,    K_SUBTRACT  },
+	{ SDLK_KP_PERIOD,   K_DECIMAL   },
+	{ SDLK_KP_DIVIDE,   K_DIVIDE    },
+	{ SDLK_SCROLLLOCK,  K_SCROLL    },
+	{ SDLK_KP_ENTER,    K_ENTER     },
+	
+	{ SDLK_F1,  K_F1  },
+	{ SDLK_F2,  K_F2  },
+	{ SDLK_F3,  K_F3  },
+	{ SDLK_F4,  K_F4  },
+	{ SDLK_F5,  K_F5  },
+	{ SDLK_F6,  K_F6  },
+	{ SDLK_F7,  K_F7  },
+	{ SDLK_F8,  K_F8  },
+	{ SDLK_F9,  K_F9  },
+	{ SDLK_F10, K_F10 },
+	{ SDLK_F11, K_F11 },
+	{ SDLK_F12, K_F12 },
+
+	{ SDLK_a, K_A },
+	{ SDLK_b, K_B },
+	{ SDLK_c, K_C },
+	{ SDLK_d, K_D },
+	{ SDLK_e, K_E },
+	{ SDLK_f, K_F },
+	{ SDLK_g, K_G },
+	{ SDLK_h, K_H },
+	{ SDLK_i, K_I },
+	{ SDLK_j, K_J },
+	{ SDLK_k, K_K },
+	{ SDLK_l, K_L },
+	{ SDLK_m, K_M },
+	{ SDLK_n, K_N },
+	{ SDLK_o, K_O },
+	{ SDLK_p, K_P },
+	{ SDLK_q, K_Q },
+	{ SDLK_r, K_R },
+	{ SDLK_s, K_S },
+	{ SDLK_t, K_T },
+	{ SDLK_u, K_U },
+	{ SDLK_v, K_V },
+	{ SDLK_w, K_W },
+	{ SDLK_x, K_X },
+	{ SDLK_y, K_Y },
+	{ SDLK_z, K_Z },
+	{ SDLK_0, K_0 },
+	{ SDLK_1, K_1 },
+	{ SDLK_2, K_2 },
+	{ SDLK_3, K_3 },
+	{ SDLK_4, K_4 },
+	{ SDLK_5, K_5 },
+	{ SDLK_6, K_6 },
+	{ SDLK_7, K_7 },
+	{ SDLK_8, K_8 },
+	{ SDLK_9, K_9 },
+
+	{ K_CTRL|219,  K_CTRL_LBRACKET   },
+	{ K_CTRL|221,  K_CTRL_RBRACKET   },
+	{ K_CTRL|0xbd, K_CTRL_MINUS      },
+	{ K_CTRL|0xc0, K_CTRL_GRAVE      },
+	{ K_CTRL|0xbf, K_CTRL_SLASH      },
+	{ K_CTRL|0xdc, K_CTRL_BACKSLASH  },
+	{ K_CTRL|0xbc, K_CTRL_COMMA      },
+	{ K_CTRL|0xbe, K_CTRL_PERIOD     },
+	{ K_CTRL|0xbe, K_CTRL_SEMICOLON  },
+	{ K_CTRL|0xbb, K_CTRL_EQUAL      },
+	{ K_CTRL|0xde, K_CTRL_APOSTROPHE },
+
+	{ SDLK_PAUSE, K_BREAK }, // Is it really?
+
+	{ SDLK_PLUS,      K_PLUS      },
+	{ SDLK_MINUS,     K_MINUS     },
+	{ SDLK_COMMA,     K_COMMA     },
+	{ SDLK_PERIOD,    K_PERIOD    },
+	{ SDLK_SEMICOLON, K_SEMICOLON },
+
+	{ SDLK_SLASH,        K_SLASH     },
+	{ SDLK_CARET,        K_GRAVE     },
+	{ SDLK_LEFTBRACKET,  K_LBRACKET  },
+	{ SDLK_BACKSLASH,    K_BACKSLASH },
+	{ SDLK_RIGHTBRACKET, K_RBRACKET  },
+	{ SDLK_QUOTEDBL,     K_QUOTEDBL  }
+};
+
+dword fbKEYtoK(dword chr)
+{
+	int i = SDL_key_map.Find(chr);
+
+	if(i >= 0) {
+		chr = SDL_key_map[i];
+		if(findarg(chr, K_ALT_KEY, K_CTRL_KEY, K_SHIFT_KEY) >= 0)
+			return chr;
+	}
+	else
+		chr |= K_DELTA;
+
+	if(GetCtrl())  chr |= K_CTRL;
+	if(GetAlt())   chr |= K_ALT;
+	if(GetShift()) chr |= K_SHIFT;
+
+	return chr;
+}
+
+
+void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
+{
+	dword& mouseb = dev.mouseb;
+	dword& modkeys = dev.modkeys;
+	bool&  sdlMouseIsIn = dev.sdlMouseIsIn;
+	auto& isdblclick = dev.isdblclick;
+	auto& lastbdowntime = dev.lastbdowntime;
+	
+	LLOG("HandleSDLEvent " << event->type);
+	SDL_Event next_event;
+	dword keycode;
+	switch(event->type) {
+//		case SDL_ACTIVEEVENT: //SDL_ActiveEvent
+//			break;
+	case SDL_TEXTINPUT: {
+			//send respective keyup things as char events as well
+		WString text = event->text.text;
+		for(int i = 0; i < text.GetCount(); i++) {
+			int c = text[i];
+			if(c != 127)
+				Ctrl::DoKeyFB(c, 1);
+		}
+		break;
+	}
+	case SDL_KEYDOWN:
+		switch(event->key.keysym.sym) {
+			case SDLK_LSHIFT: modkeys |= KM_LSHIFT; break;
+			case SDLK_RSHIFT: modkeys |= KM_RSHIFT; break;
+			case SDLK_LCTRL: modkeys |= KM_LCTRL; break;
+			case SDLK_RCTRL: modkeys |= KM_RCTRL; break;
+			case SDLK_LALT: modkeys |= KM_LALT; break;
+			case SDLK_RALT: modkeys |= KM_RALT; break;
+		}
+		
+		keycode = fbKEYtoK((dword)event->key.keysym.sym);
+		
+		if(keycode != K_SPACE) { //dont send space on keydown
+			static int repeat_count;
+			SDL_PumpEvents();
+			if(SDL_PeepEvents(&next_event, 1, SDL_PEEKEVENT, SDL_KEYDOWN, SDL_KEYDOWN) &&
+			   next_event.key.keysym.sym == event->key.keysym.sym) {
+				repeat_count++; // Keyboard repeat compression
+				break;
+			}
+			Ctrl::DoKeyFB(keycode, 1 + repeat_count);
+			repeat_count = 0;
+		}
+		break;
+	case SDL_KEYUP: //SDL_KeyboardEvent
+		switch(event->key.keysym.sym) {
+			case SDLK_LSHIFT: modkeys &= ~KM_LSHIFT; break;
+			case SDLK_RSHIFT: modkeys &= ~KM_RSHIFT; break;
+			case SDLK_LCTRL: modkeys &= ~KM_LCTRL; break;
+			case SDLK_RCTRL: modkeys &= ~KM_RCTRL; break;
+			case SDLK_LALT: modkeys &= ~KM_LALT; break;
+			case SDLK_RALT: modkeys &= ~KM_RALT; break;
+		}
+
+		Ctrl::DoKeyFB(fbKEYtoK((dword)event->key.keysym.sym) | K_KEYUP, 1);
+		break;
+	case SDL_MOUSEMOTION:
+		SDL_PumpEvents();
+		if(SDL_PeepEvents(&next_event, 1, SDL_PEEKEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION) > 0)
+			break; // MouseMove compression
+		Ctrl::DoMouseFB(Ctrl::MOUSEMOVE, Point(event->motion.x, event->motion.y));
+		break;
+	case SDL_MOUSEWHEEL:
+		Ctrl::DoMouseFB(Ctrl::MOUSEWHEEL, GetMousePos(), sgn(event->wheel.y) * 120);
+		break;
+	case SDL_MOUSEBUTTONDOWN: {
+			Point p(event->button.x, event->button.y);
+			int bi = event->button.button;
+			dword ct = SDL_GetTicks();
+			if(isdblclick[bi] && (abs(int(ct) - int(lastbdowntime[bi])) < 400))
+			{
+				switch(bi)
+				{
+					case SDL_BUTTON_LEFT: Ctrl::DoMouseFB(Ctrl::LEFTDOUBLE, p); break;
+					case SDL_BUTTON_RIGHT: Ctrl::DoMouseFB(Ctrl::RIGHTDOUBLE, p); break;
+					case SDL_BUTTON_MIDDLE: Ctrl::DoMouseFB(Ctrl::MIDDLEDOUBLE, p); break;
+				}
+				isdblclick[bi] = 0; //reset, to go ahead sending repeats
+			}
+			else
+			{
+				lastbdowntime[bi] = ct;
+				isdblclick[bi] = 0; //prepare for repeat
+				switch(bi)
+				{
+					case SDL_BUTTON_LEFT: mouseb |= (1<<0); Ctrl::DoMouseFB(Ctrl::LEFTDOWN, p); break;
+					case SDL_BUTTON_RIGHT: mouseb |= (1<<1); Ctrl::DoMouseFB(Ctrl::RIGHTDOWN, p); break;
+					case SDL_BUTTON_MIDDLE: mouseb |= (1<<2); Ctrl::DoMouseFB(Ctrl::MIDDLEDOWN, p); break;
+				}
+			}
+		}
+		break;
+	case SDL_MOUSEBUTTONUP: {
+			int bi = event->button.button;
+			isdblclick[bi] = 1; //indicate maybe a dblclick
+	
+			Point p(event->button.x, event->button.y);
+			switch(bi)
+			{
+				case SDL_BUTTON_LEFT: mouseb &= ~(1<<0); Ctrl::DoMouseFB(Ctrl::LEFTUP, p); break;
+				case SDL_BUTTON_RIGHT: mouseb &= ~(1<<1); Ctrl::DoMouseFB(Ctrl::RIGHTUP, p); break;
+				case SDL_BUTTON_MIDDLE: mouseb &= ~(1<<2); Ctrl::DoMouseFB(Ctrl::MIDDLEUP, p); break;
+			}
+		}
+		break;
+/*		case SDL_VIDEORESIZE: //SDL_ResizeEvent
+		{
+			width = event->resize.w;
+			height = event->resize.h;
+	
+			SDL_FreeSurface(screen);
+			screen = CreateScreen(width, height, bpp, videoflags);
+			ASSERT(screen);
+			Ctrl::SetFramebufferSize(Size(width, height));
+		}
+			break;
+		case SDL_VIDEOEXPOSE: //SDL_ExposeEvent
+			break;*/
+	case SDL_WINDOWEVENT:
+        switch (event->window.event) {
+        case SDL_WINDOWEVENT_SHOWN:
+            break;
+        case SDL_WINDOWEVENT_HIDDEN:
+            break;
+        case SDL_WINDOWEVENT_EXPOSED:
+            break;
+        case SDL_WINDOWEVENT_MOVED:
+            break;
+//		case SDL_WINDOWEVENT_SIZE_CHANGED:
+//			SDLwidth = event->window.data1;
+//			SDLheight = event->window.data2;
+//      	break;
+        case SDL_WINDOWEVENT_RESIZED:
+            break;
+        case SDL_WINDOWEVENT_MINIMIZED:
+            break;
+        case SDL_WINDOWEVENT_MAXIMIZED:
+            break;
+        case SDL_WINDOWEVENT_RESTORED:
+            break;
+        case SDL_WINDOWEVENT_ENTER:
+			sdlMouseIsIn = true;
+			Ctrl::PaintAll();
+            break;
+        case SDL_WINDOWEVENT_LEAVE:
+			sdlMouseIsIn = false;
+			Ctrl::PaintAll();
+            break;
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+            break;
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+            break;
+        case SDL_WINDOWEVENT_CLOSE:
+            break;
+        }
+		break;
+	case SDL_QUIT: //SDL_QuitEvent
+		Ctrl::EndSession();
+		break;
+	}
+}
 
 
 NAMESPACE_PARALLEL_END

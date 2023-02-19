@@ -365,6 +365,14 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 	else if (fmt.IsOrder() && AcceptsOrder()) {
 		// pass
 	}
+	else if (fmt.vd == VD(Ogl, Prog)) {
+		TODO
+		/*
+		Don't use GLDraw here!
+		Render DrawCommand queue in IGraphics package!
+		Take a hint from GLDraw package and class
+		*/
+	}
 	else {
 		DUMP(fmt);
 		//RTLOG("GfxAccelAtom::Render: error: unexpected packet: " << last_packet->ToString());

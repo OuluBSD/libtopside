@@ -85,8 +85,6 @@ file
 	GI2D.cpp,
 	GI3D.cpp,
 	Workspace.h,
-	ProgPainter.h,
-	ProgPainter.cpp,
 	Ctrl.h,
 	Ctrl.inl highlight cpp,
 	Graphics.cpp,

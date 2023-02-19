@@ -17,9 +17,9 @@ MaterialT<Gfx>::MaterialT() {
 
 template <class Gfx>
 DataObjectT<Gfx>::DataObjectT() {
-	vao = Null;
-	vbo = Null;
-	ebo = Null;
+	vao = 0;
+	vbo = 0;
+	ebo = 0;
 }
 
 template <class Gfx>
@@ -33,9 +33,9 @@ void DataObjectT<Gfx>::Free() {
 		Gfx::DeleteVertexBuffer(vbo);
 		Gfx::DeleteElementBuffer(ebo);
 		Gfx::DeleteVertexArray(vao);
-		vbo = Null;
-		ebo = Null;
-		vao = Null;
+		vbo = 0;
+		ebo = 0;
+		vao = 0;
 	}
 }
 

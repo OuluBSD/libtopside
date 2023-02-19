@@ -99,3 +99,37 @@ static bool EventsBase_IsReady(NativeEventsBase&, AtomBase&, PacketIO& io);
 static bool EventsBase_AttachContext(NativeEventsBase&, AtomBase& a, AtomBase& other);
 static void EventsBase_DetachContext(NativeEventsBase&, AtomBase& a, AtomBase& other);
 
+static bool UppEventsBase_Create(One<NativeUppEventsBase>& dev);
+static void UppEventsBase_Destroy(One<NativeUppEventsBase>& dev);
+static bool UppEventsBase_Initialize(NativeUppEventsBase&, AtomBase&, const Script::WorldState&);
+static bool UppEventsBase_PostInitialize(NativeUppEventsBase&, AtomBase&);
+static bool UppEventsBase_Start(NativeUppEventsBase&, AtomBase&);
+static void UppEventsBase_Stop(NativeUppEventsBase&, AtomBase&);
+static void UppEventsBase_Uninitialize(NativeUppEventsBase&, AtomBase&);
+static bool UppEventsBase_Send(NativeUppEventsBase&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
+static void UppEventsBase_Visit(NativeUppEventsBase&, AtomBase&, RuntimeVisitor& vis);
+static bool UppEventsBase_Recv(NativeUppEventsBase&, AtomBase&, int, const Packet&);
+static void UppEventsBase_Finalize(NativeUppEventsBase&, AtomBase&, RealtimeSourceConfig&);
+static void UppEventsBase_Update(NativeUppEventsBase&, AtomBase&, double dt);
+static bool UppEventsBase_IsReady(NativeUppEventsBase&, AtomBase&, PacketIO& io);
+static bool UppEventsBase_AttachContext(NativeUppEventsBase&, AtomBase& a, AtomBase& other);
+static void UppEventsBase_DetachContext(NativeUppEventsBase&, AtomBase& a, AtomBase& other);
+
+#if defined flagOGL
+static bool UppOglDevice_Create(One<NativeUppOglDevice>& dev);
+static void UppOglDevice_Destroy(One<NativeUppOglDevice>& dev);
+static bool UppOglDevice_Initialize(NativeUppOglDevice&, AtomBase&, const Script::WorldState&);
+static bool UppOglDevice_PostInitialize(NativeUppOglDevice&, AtomBase&);
+static bool UppOglDevice_Start(NativeUppOglDevice&, AtomBase&);
+static void UppOglDevice_Stop(NativeUppOglDevice&, AtomBase&);
+static void UppOglDevice_Uninitialize(NativeUppOglDevice&, AtomBase&);
+static bool UppOglDevice_Send(NativeUppOglDevice&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
+static void UppOglDevice_Visit(NativeUppOglDevice&, AtomBase&, RuntimeVisitor& vis);
+static bool UppOglDevice_Recv(NativeUppOglDevice&, AtomBase&, int, const Packet&);
+static void UppOglDevice_Finalize(NativeUppOglDevice&, AtomBase&, RealtimeSourceConfig&);
+static void UppOglDevice_Update(NativeUppOglDevice&, AtomBase&, double dt);
+static bool UppOglDevice_IsReady(NativeUppOglDevice&, AtomBase&, PacketIO& io);
+static bool UppOglDevice_AttachContext(NativeUppOglDevice&, AtomBase& a, AtomBase& other);
+static void UppOglDevice_DetachContext(NativeUppOglDevice&, AtomBase& a, AtomBase& other);
+#endif
+

@@ -669,15 +669,15 @@ void BufferStageT<Gfx>::ClearTex() {
 		
 		if (color_buf != 0) {
 			Gfx::DeleteTexture(color_buf);
-			color_buf = nullptr;
+			color_buf = 0;
 		}
 		if (depth_buf != 0) {
 			Gfx::DeleteRenderbuffer(depth_buf);
-			depth_buf = nullptr;
+			depth_buf = 0;
 		}
 		if (frame_buf != 0) {
 			Gfx::DeleteFramebuffer(frame_buf);
-			frame_buf = nullptr;
+			frame_buf = 0;
 		}
 	}
 }

@@ -88,7 +88,7 @@ bool LinkerT<Gfx>::Link(ProgramState& ps) {
 		
 		Gfx::AttachShader(ps.native, shd_state.native);
 		Gfx::DeleteShader(shd_state.native);
-		shd_state.native = NULL;
+		shd_state.native = 0;
 	}
 	EnableGfxAccelDebugMessages(0);
 	CHKLOGRET0(complied_count, "Linker::Link: error: no compiled shaders found");

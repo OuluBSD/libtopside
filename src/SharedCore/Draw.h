@@ -89,6 +89,7 @@ struct DrawCommand {
 	Image img;
 	Font fnt;
 	String txt, id;
+	WString wtxt;
 	void* ptr;
 	int width, angle;
 	Vector<Point> points;
@@ -102,7 +103,7 @@ struct DrawCommand {
 	String ColorString() const;
 	void Check() const;
 	
-	~DrawCommand() {prev = 0; next = 0; img.Clear(); txt.Clear(); points.Clear(); ints.Clear(); subpolygon_counts.Clear(); disjunct_polygon_counts.Clear(); value = Value();}
+	~DrawCommand() {prev = 0; next = 0; img.Clear(); txt.Clear(); wtxt.Clear(); points.Clear(); ints.Clear(); subpolygon_counts.Clear(); disjunct_polygon_counts.Clear(); value = Value();}
 };
 
 class DrawCommandCache {

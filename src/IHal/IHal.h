@@ -16,6 +16,8 @@ NAMESPACE_PARALLEL_BEGIN
 	HAL_CLS(OglVideoSinkDevice, x) \
 	HAL_CLS(ContextBase, x) \
 	HAL_CLS(EventsBase, x) \
+	HAL_CLS(UppEventsBase, x) \
+	HAL_CLS(UppOglDevice, x) \
 
 #define HAL_VNDR_LIST \
 	HAL_VNDR(HalSdl) \
@@ -36,6 +38,10 @@ struct HalSdl {
 	#endif
 	struct NativeContextBase;
 	struct NativeEventsBase;
+	struct NativeUppEventsBase;
+	#if defined flagOGL
+	struct NativeUppOglDevice;
+	#endif
 	
 	struct Thread {
 		
@@ -91,6 +97,22 @@ struct HalEventsBase : public Atom {
 	
 	virtual ~HalEventsBase() {}
 };
+
+struct HalUppEventsBase : public Atom {
+	RTTI_DECL1(HalUppEventsBase, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~HalUppEventsBase() {}
+};
+
+#if defined flagOGL
+struct HalUppOglDevice : public Atom {
+	RTTI_DECL1(HalUppOglDevice, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	
+	virtual ~HalUppOglDevice() {}
+};
+#endif
 
 
 template <class Hal> struct HalAudioSinkDeviceT : HalAudioSinkDevice {
@@ -425,6 +447,118 @@ template <class Hal> struct HalEventsBaseT : HalEventsBase {
 		Hal::EventsBase_DetachContext(*dev, *this, a);
 	}
 };
+template <class Hal> struct HalUppEventsBaseT : HalUppEventsBase {
+	using CLASSNAME = HalUppEventsBaseT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalUppEventsBase)
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::UppEventsBase_Visit(*dev, *this, vis);
+		vis.VisitThis<HalUppEventsBase>(this);
+	}
+	One<typename Hal::NativeUppEventsBase> dev;
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::UppEventsBase_Create(dev))
+			return false;
+		if (!Hal::UppEventsBase_Initialize(*dev, *this, ws))
+			return false;
+		return true;
+	}
+	bool PostInitialize() override {
+		if (!Hal::UppEventsBase_PostInitialize(*dev, *this))
+			return false;
+		return true;
+	}
+	bool Start() override {
+		return Hal::UppEventsBase_Start(*dev, *this);
+	}
+	void Stop() override {
+		Hal::UppEventsBase_Stop(*dev, *this);
+	}
+	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
+		Hal::UppEventsBase_Uninitialize(*dev, *this);
+		Hal::UppEventsBase_Destroy(dev);
+	}
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::UppEventsBase_Send(*dev, *this, cfg, out, src_ch))
+			return false;
+		return true;
+	}
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::UppEventsBase_Recv(*dev, *this, sink_ch, in);
+	}
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::UppEventsBase_Finalize(*dev, *this, cfg);
+	}
+	void Update(double dt) override {
+		return Hal::UppEventsBase_Update(*dev, *this, dt);
+	}
+	bool IsReady(PacketIO& io) override {
+		return Hal::UppEventsBase_IsReady(*dev, *this, io);
+	}
+	bool AttachContext(AtomBase& a) override {
+		return Hal::UppEventsBase_AttachContext(*dev, *this, a);
+	}
+	void DetachContext(AtomBase& a) override {
+		Hal::UppEventsBase_DetachContext(*dev, *this, a);
+	}
+};
+#if defined flagOGL
+template <class Hal> struct HalUppOglDeviceT : HalUppOglDevice {
+	using CLASSNAME = HalUppOglDeviceT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalUppOglDevice)
+	void Visit(RuntimeVisitor& vis) override {
+		if (dev) Hal::UppOglDevice_Visit(*dev, *this, vis);
+		vis.VisitThis<HalUppOglDevice>(this);
+	}
+	One<typename Hal::NativeUppOglDevice> dev;
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::UppOglDevice_Create(dev))
+			return false;
+		if (!Hal::UppOglDevice_Initialize(*dev, *this, ws))
+			return false;
+		return true;
+	}
+	bool PostInitialize() override {
+		if (!Hal::UppOglDevice_PostInitialize(*dev, *this))
+			return false;
+		return true;
+	}
+	bool Start() override {
+		return Hal::UppOglDevice_Start(*dev, *this);
+	}
+	void Stop() override {
+		Hal::UppOglDevice_Stop(*dev, *this);
+	}
+	void Uninitialize() override {
+		ASSERT(this->GetDependencyCount() == 0);
+		Hal::UppOglDevice_Uninitialize(*dev, *this);
+		Hal::UppOglDevice_Destroy(dev);
+	}
+	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) override {
+		if (!Hal::UppOglDevice_Send(*dev, *this, cfg, out, src_ch))
+			return false;
+		return true;
+	}
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::UppOglDevice_Recv(*dev, *this, sink_ch, in);
+	}
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::UppOglDevice_Finalize(*dev, *this, cfg);
+	}
+	void Update(double dt) override {
+		return Hal::UppOglDevice_Update(*dev, *this, dt);
+	}
+	bool IsReady(PacketIO& io) override {
+		return Hal::UppOglDevice_IsReady(*dev, *this, io);
+	}
+	bool AttachContext(AtomBase& a) override {
+		return Hal::UppOglDevice_AttachContext(*dev, *this, a);
+	}
+	void DetachContext(AtomBase& a) override {
+		Hal::UppOglDevice_DetachContext(*dev, *this, a);
+	}
+};
+#endif
 
 #if defined flagSDL2
 using SdlAudioSinkDevice = HalAudioSinkDeviceT<HalSdl>;
@@ -435,6 +569,10 @@ using SdlOglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl>;
 #endif
 using SdlContextBase = HalContextBaseT<HalSdl>;
 using SdlEventsBase = HalEventsBaseT<HalSdl>;
+using SdlUppEventsBase = HalUppEventsBaseT<HalSdl>;
+#if defined flagOGL
+using SdlUppOglDevice = HalUppOglDeviceT<HalSdl>;
+#endif
 #endif
 
 NAMESPACE_PARALLEL_END

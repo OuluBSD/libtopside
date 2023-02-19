@@ -13,10 +13,10 @@ machine sdl.app:
 			state.event.pipe:
 				target = event.register
 		
-		loop video:
-			center.customer
+		loop ogl.fbo:
+			ogl.customer
 			ogl.prog.pipe:
 				screen.id = 0
-			sdl.prog.pipe:
+			sdl.ogl.prog.pipe:
 				sizeable =		true
 				env =			event.register

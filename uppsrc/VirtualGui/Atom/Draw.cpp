@@ -8,10 +8,6 @@ void AtomVirtualGui::SetTarget(Draw& d) {
 
 SystemDraw& AtomVirtualGui::BeginDraw()
 {
-	#if 0
-	gldraw.Init(GetSize(), (uint64)glcontext);
-	sysdraw.SetTarget(&gldraw);
-	#endif
 	return sysdraw;
 }
 

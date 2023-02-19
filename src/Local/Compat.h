@@ -190,8 +190,9 @@ public:
 	Size GetPageSize() const {return Size(0,0);}
 };
 
+#if UPP_OLD_VERSION
 template<> inline hash_t GetHashValue(const float& a)         { return memhash(&a, sizeof(a)); }
-
+#endif
 
 
 

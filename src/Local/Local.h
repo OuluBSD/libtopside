@@ -55,7 +55,6 @@
 #include "Debugging.h"
 #include "Draw2D.h"
 #include "Draw3D.h"
-#include "ProgPainter.h"
 #include "GeomInteraction.h"
 #include "Workspace.h"
 #include "Ctrl.h"

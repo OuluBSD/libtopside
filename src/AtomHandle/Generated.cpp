@@ -13,7 +13,7 @@ String HandleProgEvents::GetAction() {
 
 AtomTypeCls HandleProgEvents::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::ECS_PROG_EVENTS;
+	t.sub = SubAtomCls::HANDLE_PROG_EVENTS;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,RECEIPT),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
@@ -35,28 +35,56 @@ AtomTypeCls HandleProgEvents::GetType() const {
 
 
 #if defined flagSCREEN
-String PipeProgVideo::GetAction() {
+String CenterProgPipe::GetAction() {
 	return "center.video.prog.pipe";
 }
 
-AtomTypeCls PipeProgVideo::GetAtomType() {
+AtomTypeCls CenterProgPipe::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::PIPE_PROG_VIDEO;
+	t.sub = SubAtomCls::CENTER_PROG_PIPE;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,ORDER),0);
 	t.AddOut(VD(CENTER,PROG),0);
 	return t;
 }
 
-LinkTypeCls PipeProgVideo::GetLinkType() {
+LinkTypeCls CenterProgPipe::GetLinkType() {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void PipeProgVideo::Visit(RuntimeVisitor& vis) {
+void CenterProgPipe::Visit(RuntimeVisitor& vis) {
 	vis.VisitThis<HandleVideoBase>(this);
 }
 
-AtomTypeCls PipeProgVideo::GetType() const {
+AtomTypeCls CenterProgPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSCREEN
+String OglProgPipe::GetAction() {
+	return "ogl.prog.pipe";
+}
+
+AtomTypeCls OglProgPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::OGL_PROG_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,PROG),0);
+	return t;
+}
+
+LinkTypeCls OglProgPipe::GetLinkType() {
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void OglProgPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<HandleVideoBase>(this);
+}
+
+AtomTypeCls OglProgPipe::GetType() const {
 	return GetAtomType();
 }
 #endif
@@ -69,7 +97,7 @@ String HandleProgVideo::GetAction() {
 
 AtomTypeCls HandleProgVideo::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::ECS_PROG_VIDEO;
+	t.sub = SubAtomCls::HANDLE_PROG_VIDEO;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(CENTER,ORDER),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);

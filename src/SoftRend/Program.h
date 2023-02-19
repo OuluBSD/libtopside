@@ -42,6 +42,7 @@ public:
 	void Attach(SoftShader& s);
 	
 	void operator=(const Nuller&) {Clear();}
+	void operator=(int i) {if (!i) Clear();}
 	operator bool() const {return inited;}
 	String GetLastError() const {return err;}
 	int GetParamInt(GVar::ProgParamType type);

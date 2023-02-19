@@ -1,0 +1,15 @@
+machine sdl.app:
+	
+	driver context:
+		sdl.context
+	
+	chain program:
+		
+		loop ogl.events:
+			center.customer
+			uppsdl.event.pipe
+		
+		loop ogl.fbo:
+			ogl.customer
+			uppsdl.ogl.standalone:
+				sizeable = true

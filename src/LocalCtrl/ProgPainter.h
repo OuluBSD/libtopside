@@ -1,5 +1,5 @@
-#ifndef _Local_ProgPainter_h_
-#define _Local_ProgPainter_h_
+#ifndef _LocalCtrl_ProgPainter_h_
+#define _LocalCtrl_ProgPainter_h_
 
 
 NAMESPACE_TOPSIDE_BEGIN

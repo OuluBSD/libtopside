@@ -4,6 +4,7 @@ uses
 	CtrlLib;
 
 file
+	Notes.txt,
 	DesktopSuite.h,
 	Init.cpp,
 	Factory.h,

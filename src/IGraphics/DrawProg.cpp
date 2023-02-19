@@ -238,10 +238,11 @@ void DrawProg::TextOp(const DrawCommand& cmd) {
 	((Draw*)this)->DrawTextOp(
 		cmd.pt.x, cmd.pt.y,
 		cmd.angle,
-		cmd.txt.ToWString(),
+		cmd.wtxt,
 		cmd.fnt,
 		cmd.color,
-		cmd.ints.GetCount(), cmd.ints.Begin());
+		cmd.ints.GetCount(),
+		0);
 }
 
 void DrawProg::DrawingOp(const DrawCommand& cmd) {

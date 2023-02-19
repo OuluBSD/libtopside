@@ -63,7 +63,7 @@ struct ShaderStateT : GfxShaderState {
 	NativeShaderRef native;
 	
 	ShaderStateT() {
-		native = NULL;
+		native = 0;
 	}
 	
 };
@@ -130,7 +130,7 @@ struct ProgramStateT : GfxProgramState {
 	
 	
 	ProgramStateT() {
-		native = Null;
+		native = 0;
 		memset(&var_idx, 0, sizeof(var_idx));
 	}
 	
@@ -192,7 +192,7 @@ struct PipelineStateT : GfxPipelineState {
 	
 	
 	PipelineStateT() {
-		native = Null;
+		native = 0;
 	}
 	ProgramState& GetAddProgram(String name);
 	ProgramState* FindProgram(String name);

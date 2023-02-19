@@ -861,6 +861,34 @@ AtomTypeCls SdlOglFboAtomPipe::GetType() const {
 #endif
 
 
+#if (defined flagSDL2 && defined flagOGL)
+String SdlOglProgAtomPipe::GetAction() {
+	return "sdl.ogl.prog.pipe";
+}
+
+AtomTypeCls SdlOglProgAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_OGL_PROG_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,PROG),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlOglProgAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlOglProgAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlOglVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlOglProgAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 #if (defined flagPOSIX && defined flagSCREEN)
 String X11ContextAtom::GetAction() {
 	return "x11.context";
@@ -1362,6 +1390,34 @@ AtomTypeCls SdlOglFboAtomSA::GetType() const {
 
 
 #if (defined flagSDL2 && defined flagOGL)
+String SdlUppOglDeviceSA::GetAction() {
+	return "uppsdl.ogl.standalone";
+}
+
+AtomTypeCls SdlUppOglDeviceSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_UPP_OGL_DEVICE_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(OGL,ORDER),0);
+	t.AddOut(VD(OGL,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlUppOglDeviceSA::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlUppOglDeviceSA::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlUppOglDevice>(this);
+}
+
+AtomTypeCls SdlUppOglDeviceSA::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagSDL2 && defined flagOGL)
 String SdlOglFboPipe::GetAction() {
 	return "sdl.fbo.sink";
 }
@@ -1420,6 +1476,34 @@ void SdlOglFboAtom::Visit(RuntimeVisitor& vis) {
 }
 
 AtomTypeCls SdlOglFboAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if defined flagSDL2
+String SdlUppEventsBasePipe::GetAction() {
+	return "uppsdl.event.pipe";
+}
+
+AtomTypeCls SdlUppEventsBasePipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::SDL_UPP_EVENTS_BASE_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,ORDER),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls SdlUppEventsBasePipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlUppEventsBasePipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<SdlUppEventsBase>(this);
+}
+
+AtomTypeCls SdlUppEventsBasePipe::GetType() const {
 	return GetAtomType();
 }
 #endif

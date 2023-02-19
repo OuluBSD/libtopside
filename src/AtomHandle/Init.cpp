@@ -10,7 +10,10 @@ INITBLOCK_(AtomHandle) {
 	Factory::RegisterAtom<HandleProgEvents>();
 	#endif
 	#if defined flagSCREEN
-	Factory::RegisterAtom<PipeProgVideo>();
+	Factory::RegisterAtom<CenterProgPipe>();
+	#endif
+	#if defined flagSCREEN
+	Factory::RegisterAtom<OglProgPipe>();
 	#endif
 	#if defined flagSCREEN
 	Factory::RegisterAtom<HandleProgVideo>();

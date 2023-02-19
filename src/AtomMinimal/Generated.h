@@ -435,6 +435,21 @@ public:
 };
 #endif
 
+#if (defined flagSDL2 && defined flagOGL)
+class SdlOglProgAtomPipe : public SdlOglVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlOglProgAtomPipe, SdlOglVideoSinkDevice)
+	COPY_PANIC(SdlOglProgAtomPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 #if (defined flagPOSIX && defined flagSCREEN)
 class X11ContextAtom : public X11Context {
 
@@ -700,6 +715,21 @@ public:
 #endif
 
 #if (defined flagSDL2 && defined flagOGL)
+class SdlUppOglDeviceSA : public SdlUppOglDevice {
+
+public:
+	RTTI_DECL1(SdlUppOglDeviceSA, SdlUppOglDevice)
+	COPY_PANIC(SdlUppOglDeviceSA)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagSDL2 && defined flagOGL)
 class SdlOglFboPipe : public SdlOglVideoSinkDevice {
 
 public:
@@ -720,6 +750,21 @@ class SdlOglFboAtom : public SdlOglVideoSinkDevice {
 public:
 	RTTI_DECL1(SdlOglFboAtom, SdlOglVideoSinkDevice)
 	COPY_PANIC(SdlOglFboAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if defined flagSDL2
+class SdlUppEventsBasePipe : public SdlUppEventsBase {
+
+public:
+	RTTI_DECL1(SdlUppEventsBasePipe, SdlUppEventsBase)
+	COPY_PANIC(SdlUppEventsBasePipe)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

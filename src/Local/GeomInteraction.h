@@ -21,6 +21,7 @@ struct LogPos {
 };
 
 
+class ProgPainter;
 class GeomInteraction;
 class GeomInteraction2D;
 class GeomInteraction3D;

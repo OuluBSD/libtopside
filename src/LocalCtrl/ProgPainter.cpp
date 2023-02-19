@@ -1,5 +1,4 @@
-#include "Local.h"
-#include <CtrlCore/CtrlCore.h>
+#include "LocalCtrl.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -391,7 +390,7 @@ void ProgPainter::DrawTextOp(int x, int y, int angle, const wchar *text, Font fo
 	cmd.type = DRAW_TEXT_OP;
 	cmd.pt = Point(x,y);
 	cmd.angle = angle;
-	cmd.txt = WString(text).ToString();
+	cmd.wtxt = WString(text);
 	cmd.fnt = font;
 	cmd.color = ink;
 	cmd.ints.SetCount(n);

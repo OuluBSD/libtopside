@@ -11,19 +11,22 @@ struct SoftInited {
 	void Create() {inited = 1;}
 	
 	SoftInited() {}
-	SoftInited(const Nuller& n) {}
+	SoftInited(const Nuller&) {}
+	SoftInited(int) {}
 };
 
 struct SoftVertexBuffer : SoftInited {
 	using SoftInited::SoftInited;
 	Vector<Vertex> vertices;
 	
+	SoftVertexBuffer(int) {}
 };
 
 struct SoftElementBuffer : SoftInited {
 	using SoftInited::SoftInited;
 	Vector<uint32> indices;
 	
+	SoftElementBuffer(int) {}
 };
 
 struct SoftVertexArray : SoftInited {
@@ -31,6 +34,7 @@ struct SoftVertexArray : SoftInited {
 	SoftVertexBuffer* vbo = 0;
 	SoftElementBuffer* ebo = 0;
 	
+	SoftVertexArray(int) {}
 };
 
 
