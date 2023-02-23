@@ -315,6 +315,16 @@ using WString = StringT<wchar_t>;
 
 
 
+struct Exc : public String {
+	Exc() {}
+	Exc(const String& s) : String(s) {}
+};
+typedef Exc MemoryLimitExc;
+typedef Exc NeverExc;
+typedef Exc TodoExc;
+typedef Exc SystemExc;
+
+
 NAMESPACE_UPP_END
 
 #endif

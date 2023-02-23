@@ -446,6 +446,19 @@ template <class T> ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const c
 template <class T> template <class Arg>
 ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {AddThreadShutdownCallback(THISBACK(Destruct));}
 
+
+
+
+
+
+
+template <class... T> struct Event;
+template <> struct Event<> : Callback {};
+template <class T> struct Event<T> : Callback1<T> {};
+
+
+
+
 NAMESPACE_UPP_END
 
 #endif

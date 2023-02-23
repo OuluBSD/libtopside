@@ -3,71 +3,17 @@
 NAMESPACE_UPP_BEGIN
 
 
-const NullOpt null_opt;
-
-
-
-
-
-
-
-
-
-
-
-
-
-Huge::Huge()
-{
-	size = 0;
-}
-
-byte *Huge::AddChunk()
-{
-	size += CHUNK;
-	return data.Add().data;
-}
-
-void Huge::Finish(int last_chunk_size)
-{
-	size = size - CHUNK + last_chunk_size;
-}
-
-void Huge::Get(void *t_, size_t pos, size_t sz) const
-{
-	ASSERT(pos + sz <= size);
-	int blki = int(pos / CHUNK);
-	size_t blkpos = pos & (CHUNK - 1);
-	byte *t = (byte *)t_;
-	
-	while(sz > 0) {
-		size_t m = min(sz, CHUNK - blkpos);
-		memcpy(t, data[blki].data + blkpos, m);
-		t += m;
-		sz -= m;
-		blkpos = 0;
-		blki++;
+String Join(const Vector<String>& v, String join_str, bool ignore_empty) {
+	String out;
+	for (const String& s : v) {
+		if (s.IsEmpty() && ignore_empty)
+			continue;
+		if (!out.IsEmpty())
+			out << join_str;
+		out << s;
 	}
+	return out;
 }
-
-String Huge::Get() const
-{
-	if(size >= INT_MAX)
-		Panic("String is too big!");
-	String s;
-	void* mem = s.GetWritableData(0xFF, size);
-	Get(mem, 0, size);
-	return s;
-}
-
-
-
-
-
-
-
-
-
 
 Vector<String> Split(String to_split, String split_str, bool ignore_empty) {
 	Vector<String> v;
@@ -144,5 +90,6 @@ Vector<WString> Split(WString to_split, WString split_str, bool ignore_empty) {
 	
 	return v;
 }
+
 
 NAMESPACE_UPP_END

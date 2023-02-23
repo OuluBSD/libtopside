@@ -5,12 +5,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef flagPOSIX
-#include <dirent.h>
-#include <fcntl.h>
-#include <unistd.h>
-#endif
-
 #include <openssl/md5.h>
 #include <ports/bz2lib/bz2lib.h>
 
@@ -116,8 +110,10 @@ void Exit(int i) {::exit(i);}
 #endif
 
 
-String sDataPath;
-String config_path;
+
+extern String sDataPath;
+extern String config_path;
+
 
 void SetCoreArg(const String& key, const String& value) {
 	if (key.IsEmpty())
@@ -180,67 +176,9 @@ void ReadCoreCmdlineArgs() {
 
 
 
-void SetDataPath(String path) {
-	sDataPath = path;
-}
-
-String GetDataDirectory() {
-	if(sDataPath.GetCount())
-		return sDataPath;
-	return GetEnv("UPP_MAIN__");
-}
-
-String GetDataFile(String filename) {
-	if(sDataPath.GetCount())
-		return AppendFileName(sDataPath, filename);
-	String s = GetEnv("UPP_MAIN__");
-	return s.GetCount() ? AppendFileName(s, filename) : GetExeDirFile(filename);
-}
-
-bool FileExists(String path) {
-	#ifdef flagWIN32
-	#ifndef flagUWP
-	return PathFileExistsA(path.Begin());
-	#else
-	struct stat stat_info;
-	if (stat(path.Begin(), &stat_info) != 0)
-		return false;
-	return true;
-	#endif
-	#else
-	return access( path.Begin(), F_OK ) != -1;
-	#endif
-}
-
-bool DirectoryExists(String path) {
-	#ifdef flagWIN32
-	#ifndef flagUWP
-	DWORD dwAttrib = GetFileAttributes(path.Begin());
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-         (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-	#else
-	ASSERT(0, "Directories are not supported in UWP");
-	return false;
-	#endif
-	#else
-	DIR* dir = opendir(path.Begin());
-	if (dir) {
-	    closedir(dir);
-	    return true;
-	}
-	return false;
-	#endif
-}
-
 bool __is_verbose;
 bool IsVerbose() {return __is_verbose;}
 void SetVerbose(bool b) {__is_verbose = b;}
-
-
-
-
-
-
 
 
 
@@ -258,108 +196,6 @@ HINSTANCE GetWin32Instance() {return __hinst_cur;}
 HINSTANCE GetWin32PrevInstance() {return __hinst_prev;}
 bool GetWin32CmdShow() {return __nCmdShow;}
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-FindFile::FindFile() {
-	
-}
-
-void FindFile::UpdateFiles() {
-	files.SetCount(0);
-	DIR *d;
-	struct dirent *dir;
-	d = opendir(dir_path.Begin());
-	if (d) {
-		while ((dir = readdir(d)) != NULL) {
-			if (strncmp(dir->d_name, ".", 2) == 0 || strncmp(dir->d_name, "..", 3) == 0)
-				continue;
-			files.Add(dir->d_name);
-		}
-		closedir(d);
-	}
-}
-
-bool FindFile::Search(String path) {
-	dir_path = GetFileDirectory(path);
-	UpdateFiles();
-	
-	String fname = GetFileName(path);
-	ASSERT(!fname.IsEmpty());
-	if (fname.IsEmpty())
-		return false;
-	
-	Vector<String> parts = Split(fname, "*", false);
-	ASSERT_(parts.GetCount() <= 2, "regex pattern matching not implemented yet");
-	
-	pre = parts[0];
-	post = parts.GetCount() >= 2 ? parts[1] : String();
-	i = -1;
-	return Next();
-}
-
-
-bool FindFile::Next() {
-	while (++i < files.GetCount()) {
-		const String& f = files[i];
-		if (f.Left(pre.GetCount()) == pre && f.Right(post.GetCount()) == post)
-			break;
-	}
-	return i < files.GetCount();
-}
-
-bool FindFile::IsDirectory() const {
-	const String& f = files[i];
-	return DirectoryExists(f);
-}
-
-String FindFile::GetPath() const {
-	return AppendFileName(dir_path, files[i]);
-}
-
-String FindFile::GetName() const {
-	return files[i];
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

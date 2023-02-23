@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_Vector_h_
-#define _CoreAlt_Vector_h_
+#ifndef _CoreAlt_Vcont_h_
+#define _CoreAlt_Vcont_h_
 
 NAMESPACE_UPP_BEGIN
 
@@ -962,9 +962,6 @@ template <class K, class V> using VectorMap			= Map<K, V, Vector>;
 template <class K, class V> using ArrayMap			= Map<K, V, Array>;
 template <class K, class V> using ArrayMapOrdered	= ArrayMap<K, V>;
 
-Vector<String> Split(String to_split, String split_str, bool ignore_empty=true);
-Vector<WString> Split(WString to_split, WString split_str, bool ignore_empty=true);
-String Join(const Vector<String>& v, String join_str, bool ignore_empty=true);
 
 
 template<class InputIterator, class UnaryPredicate>

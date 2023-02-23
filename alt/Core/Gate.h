@@ -158,6 +158,7 @@ public:
 	Gate0(const Gate0& cb) { *this = cb; }
 	Gate0(GateBase* cb) { ASSERT(cb); calls.Add(cb); }
 	Gate0(bool (*fn)()) {calls.Add(new StaticGateCaller(fn));}
+	Gate0(const Nuller&) {}
 	~Gate0() { Clear(); }
 	void operator=(const Gate0& cb) {
 		Clear();
@@ -196,6 +197,7 @@ public:
 	Gate1() {}
 	Gate1(const Gate1& cb) { *this = cb; }
 	Gate1(GateBase1<A0>* cb) { ASSERT(cb); calls.Add(cb); }
+	Gate1(const Nuller&) {}
 	~Gate1() { Clear(); }
 	void operator=(const Gate1& cb) {
 		Clear();
@@ -234,6 +236,7 @@ public:
 	Gate2() {}
 	Gate2(const Gate2& cb) { *this = cb; }
 	Gate2(GateBase2<A0, A1>* cb) { ASSERT(cb); calls.Add(cb); }
+	Gate2(const Nuller&) {}
 	~Gate2() { Clear(); }
 	void operator=(const Gate2& cb) {
 		Clear();
@@ -353,6 +356,18 @@ inline Gate1<A2> callback2(T* obj, bool (T::* fn)(A2, A0, A1), A0 a0, A1 a1) {
 }
 
 #endif
+
+
+#define __GATE_FUNCS \
+	Gate() = default; \
+	Gate(const Nuller&) {} \
+	Gate(const Gate& g) : Base(g) {};
+
+template <class... T> struct Gate;
+template <> struct Gate<> : Gate0 {using Base = Gate0; __GATE_FUNCS};
+template <class T0> struct Gate<T0> : Gate1<T0> {using Base = Gate1<T0>; __GATE_FUNCS};
+template <class T0, class T1> struct Gate<T0,T1> : Gate2<T0,T1> {using Base = Gate2<T0,T1>; __GATE_FUNCS};
+
 
 
 NAMESPACE_UPP_END

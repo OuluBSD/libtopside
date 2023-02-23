@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_Thread_h_
-#define _CoreAlt_Thread_h_
+#ifndef _CoreAlt_Mt_h_
+#define _CoreAlt_Mt_h_
 
 NAMESPACE_UPP_BEGIN
 
@@ -167,6 +167,51 @@ public:
 	bool TryEnter()            { return Get().TryEnter();}
 	void Enter()               { Get().Enter();}
 	void Leave()               { Get().Leave(); }
+};
+
+class SpinLock {
+    std::atomic_flag locked = ATOMIC_FLAG_INIT;
+public:
+    void Enter() {
+        while (locked.test_and_set(std::memory_order_acquire)) { ; }
+    }
+    void Leave() {
+        locked.clear(std::memory_order_release);
+    }
+    bool TryEnter() {
+        return !locked.test_and_set(std::memory_order_acquire);
+    }
+};
+
+
+
+
+struct FakeAtomicInt : Moveable<FakeAtomicInt> {
+	SpinLock lock;
+	int value;
+	FakeAtomicInt() : value(0) {}
+	FakeAtomicInt(int i) : value(i) {}
+	FakeAtomicInt(const AtomicInt& ai) : value(ai) {}
+	operator int() {return value;}
+	int operator = (int i) {
+		lock.Enter();
+		value = i;
+		lock.Leave();
+		return i;
+	}
+	int operator++(int) {
+		lock.Enter();
+		int i = value++;
+		lock.Leave();
+		return i;
+	}
+	int operator--(int) {
+		lock.Enter();
+		int i = value--;
+		lock.Leave();
+		return i;
+	}
+	int Get() const {return value;}
 };
 
 NAMESPACE_UPP_END

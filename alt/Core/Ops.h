@@ -132,6 +132,15 @@ void EndianSwap(int64 *v, size_t count);
 void EndianSwap(uint64 *v, size_t count);
 
 
+template <class T>
+void Swap(T& a, T& b) {
+	uint8 tmp[sizeof(T)];
+	MemoryCopy((void*)tmp, (void*)&a, sizeof(T));
+	MemoryCopy((void*)&a, (void*)&b, sizeof(T));
+	MemoryCopy((void*)&b, (void*)tmp, sizeof(T));
+}
+
+
 NAMESPACE_UPP_END
 
 #endif

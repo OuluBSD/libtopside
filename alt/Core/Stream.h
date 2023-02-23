@@ -602,6 +602,17 @@ public:
 	
 };
 
+
+MultiStream& LogMulti();
+Stream& VppLog();
+Stream& LogFile();
+Stream& Cout();
+Stream& Cerr();
+Stream& Cin();
+
+inline String ReadStdIn() {return Cin().GetLine();}
+
+
 NAMESPACE_UPP_END
 
 #endif

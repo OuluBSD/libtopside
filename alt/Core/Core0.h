@@ -14,13 +14,24 @@
 #include "Defs.h"
 #include <SharedCore/RTTIDummy.h>
 #include "Macros.h"
+#include "Atomic.h"
 #include "Fn.h"
 #include "Topt.h"
+#include "Atomic.h"
 #include "Ops.h"
-#include "Hash.h"
+#include "Heap.h"
 #include <SharedCore/Random.h>
 #include "Algo.h"
 #include "String_.h"
 #include <SharedCore/String.h>
+#include "Hash.h"
+#include "App.h"
+#include "Heap.h"
+#include "Uuid.h"
+#include <SharedCore/Container.h>
+#include "Tuple.h"
+#include "Vcont.h"
+#include "SplitMerge.h"
+#include "Path.h"
 
 #endif

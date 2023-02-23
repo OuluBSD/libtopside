@@ -1,7 +1,8 @@
-#ifndef _CoreAlt_Math_h_
-#define _CoreAlt_Math_h_
+#ifndef _Core_Complex_h_
+#define _Core_Complex_h_
 
 NAMESPACE_UPP_BEGIN
+
 
 #undef Complex
 
@@ -18,19 +19,10 @@ struct Complex : public std::complex<double>, Moveable<Complex> {
 	
 };
 
-
-template <class T>
-int NumberCompare__(const T& a, const T& b)
-{
-	if(a < b) return -1;
-	if(a > b) return 1;
-	return 0;
-}
-
-inline int SgnCompare(const int& a, const int& b)                         { return NumberCompare__(a, b); }
-inline int SgnCompare(const int64& a, const int64& b)                     { return NumberCompare__(a, b); }
-inline int SgnCompare(const double& a, const double& b)                   { return NumberCompare__(a, b); }
-
+inline bool IsFin(float f)	{return ::isfinite(f);}
+inline bool IsNaN(double d)	{return std::isnan(d);}
+inline bool IsInf(double d)	{return std::isinf(d);}
+inline bool IsFin(double d)	{return !IsNaN(d) && !IsInf(d);}
 
 NAMESPACE_UPP_END
 

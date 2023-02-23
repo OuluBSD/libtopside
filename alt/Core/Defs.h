@@ -227,6 +227,36 @@ inline TypeCls AsVoidTypeCls() {return GetTypenameRTTI<void>().GetTypeId();}
 #endif
 
 
+class NoCopy {
+private:
+	NoCopy(const NoCopy&);
+	void operator=(const NoCopy&);
+public:
+	NoCopy() {}
+};
+
+class Nuller {
+public:
+
+	Nuller() {}
+	operator int8() const     { return 0; }
+	operator uint8() const    { return 0; }
+	operator int16() const    { return 0; }
+	operator uint16() const   { return 0; }
+	operator int32() const    { return 0; }
+	operator uint32() const   { return 0; }
+	operator int64() const    { return 0; }
+	operator uint64() const   { return 0; }
+	operator double() const   { return 0; }
+	operator bool() const     { return false; }
+	
+	template <class T> operator T*() const    { return 0; }
+	
+};
+
+extern const Nuller Null;
+
+
 NAMESPACE_UPP_END
 
 
@@ -244,7 +274,6 @@ errno_t getenv_s(
 }
 
 #endif
-
 
 
 #endif

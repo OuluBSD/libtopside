@@ -4,17 +4,13 @@
 NAMESPACE_UPP_BEGIN
 
 
-inline void* MemoryAlloc(size_t size) {return malloc(size);}
-inline void MemoryFree(void* ptr) {free(ptr);}
 
 
-template <class T>
-void Swap(T& a, T& b) {
-	uint8 tmp[sizeof(T)];
-	MemoryCopy((void*)tmp, (void*)&a, sizeof(T));
-	MemoryCopy((void*)&a, (void*)&b, sizeof(T));
-	MemoryCopy((void*)&b, (void*)tmp, sizeof(T));
-}
+#undef min
+#undef max
+template <class T> const T& min(const T& a, const T& b) { return a < b ? a : b; }
+template <class T> const T& max(const T& a, const T& b) { return a > b ? a : b; }
+
 
 
 template <class T, class K>
@@ -39,27 +35,6 @@ const signed int   INT32_NULL   =    INT_MIN;
 const int64  INT64_NULL         =    INT64_MIN;
 const double DOUBLE_NULL        =    -1.0E+308;
 const double DOUBLE_NULL_LIM    =    -1.0E+307;
-
-class Nuller {
-public:
-
-	Nuller() {}
-	operator int8() const     { return INT8_NULL; }
-	operator uint8() const    { return 0; }
-	operator int16() const    { return INT16_NULL; }
-	operator uint16() const   { return 0; }
-	operator int32() const    { return INT32_NULL; }
-	operator uint32() const   { return 0; }
-	operator int64() const    { return INT64_NULL; }
-	operator uint64() const   { return 0; }
-	operator double() const   { return DOUBLE_NULL; }
-	operator bool() const     { return false; }
-	
-	template <class T> operator T*() const    { return 0; }
-	
-};
-
-extern const Nuller Null;
 
 template <class T> void SetNull(T& x) { x = Null; }
 template <class T> inline bool IsNull(const T& o) {return o.IsNullInstance();}

@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_Graph_h_
-#define _CoreAlt_Graph_h_
+#ifndef _CoreAlt_Color_h_
+#define _CoreAlt_Color_h_
 
 NAMESPACE_UPP_BEGIN
 
@@ -97,6 +97,7 @@ public:
 	template <class K> ColorT(const ColorT<K>& c) {*this = c;}
 	
 	bool IsEqual(const ColorT& c) {return r == c.r && g == c.g && b == c.b;}
+	bool IsNullInstance() const {return r == 0 && g == 0 && b == 0;}
 	
 	void operator=(const ColorT& c) {
 		r = c.r;
@@ -176,6 +177,8 @@ inline Color LtMagenta() { return Color(255, 0, 255); }
 inline Color LtCyan()    { return Color(0, 255, 255); }
 
 
+bool IsDark(Color c);
+bool IsLight(Color c);
 
 
 
@@ -224,19 +227,8 @@ inline double GetBrightnessf(const RGBA& i) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+Color DarkTheme(Color color);
+Color DarkThemeCached(Color c);
 
 
 Color Rainbow(float progress);

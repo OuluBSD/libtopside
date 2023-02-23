@@ -3,37 +3,6 @@
 
 NAMESPACE_UPP_BEGIN
 
-#if defined flagWIN32
-
-typedef struct DIR DIR;
-
-struct dirent
-{
-    char *d_name;
-};
-
-#ifdef flagMSC
-typedef ::_finddata64i32_t _finddata_t;
-#endif
-
-DIR           *opendir(const char *);
-int           closedir(DIR *);
-struct dirent *readdir(DIR *);
-void          rewinddir(DIR *);
-
-typedef ptrdiff_t handle_type; /* C99's intptr_t not sufficiently portable */
-
-struct DIR
-{
-    handle_type         handle; /* -1 for failed rewind */
-    _finddata_t         info;
-    struct dirent       result; /* d_name null iff first time */
-    String              name;  /* null-terminated char string */
-};
-
-
-#endif
-
 
 void Panic(String s);
 void Assert(bool b, String s="Assertion failed");
@@ -48,32 +17,6 @@ T& PtrRef(T* o, String throw_msg) {
 	return *o;
 }
 
-MultiStream& LogMulti();
-Stream& VppLog();
-Stream& LogFile();
-Stream& Cout();
-Stream& Cerr();
-Stream& Cin();
-
-inline String ReadStdIn() {return Cin().GetLine();}
-
-void SetExeFilePath(String s);
-String GetExeFilePath();
-String GetHomeDirectory();
-String ConfigFile(String file_name);
-String GetFileName(String path);
-String GetFileTitle(String path);
-String GetFileDirectory(String path);
-String AppendFileName(String a, String b);
-String GetParentDirectory(String path, int steps=1);
-String GetFileExt(String path);
-void RealizeDirectory(String dir);
-void DeleteFile(String path);
-
-inline bool IsFin(float f)	{return ::isfinite(f);}
-inline bool IsNaN(double d)	{return std::isnan(d);}
-inline bool IsInf(double d)	{return std::isinf(d);}
-inline bool IsFin(double d)	{return !IsNaN(d) && !IsInf(d);}
 
 
 
@@ -86,14 +29,8 @@ void SetExitCode(int i);
 void Exit();
 void Exit(int i);
 void SetCoreArg(const String& key, const String& value);
-String GetExeDirFile(String filename);
 String GetEnv(String id);
 void ReadCoreCmdlineArgs();
-void SetDataPath(String path);
-String GetDataDirectory();
-String GetDataFile(String filename);
-bool FileExists(String path);
-bool DirectoryExists(String path);
 bool IsVerbose();
 void SetVerbose(bool b=true);
 
@@ -117,43 +54,6 @@ int msecs(int prev = 0);
 
 
 
-struct Uuid {
-	uint64 v[2];
-
-	Uuid() {}
-
-	hash_t GetHashValue() const { CombineHash ch; ch.Put64(v[0]); ch.Put64(v[1]); return ch;}
-
-	void     New();
-	
-	String ToString() const;
-	static Uuid Create() { Uuid uuid; uuid.New(); return uuid; }
-};
-
-
-
-
-class FindFile {
-	Vector<String> files;
-	String dir_path, pre, post;
-	int i = 0;
-	
-	void UpdateFiles();
-	
-public:
-	typedef FindFile CLASSNAME;
-	FindFile();
-	
-	bool Search(String path);
-	bool Next();
-	
-	bool IsDirectory() const;
-	String GetPath() const;
-	String GetName() const;
-};
-
-
-
 
 void BZ2Decompress(Stream& out, Stream& in);
 void BZ2Compress(Stream& out, Stream& in);
@@ -164,21 +64,6 @@ String BZ2Decompress(const void *data, int64 len);
 String BZ2Compress(const String& data);
 String BZ2Decompress(const String& data);
 
-String MD5String(String s);
-String HexEncode(String s);
-
-
-
-
-class NoCopy {
-private:
-	NoCopy(const NoCopy&);
-	void operator=(const NoCopy&);
-public:
-	NoCopy() {}
-};
-
-
 
 bool Load(Callback1<Stream&> x, Stream& s);
 void Store(Callback1<Stream&> x, Stream& s);
@@ -188,8 +73,6 @@ bool LoadFromGlobal(Callback1<Stream&> x, const char *name);
 void StoreToGlobal(Callback1<Stream&> x, const char *name);
 
 
-String GetHomeDirectory();
-String GetHomeDirFile(const char *fp);
 
 void AppInit__(int argc, const char** argv);
 void AppExit__();
@@ -201,6 +84,15 @@ void Zero(T& obj) {
 }
 
 
+
+inline dword Random() {return (dword)RNG::Local().Random(UINT32_MAX);}
+inline void Random64(uint64* t, int n) {return RNG::Local().GetN(t, n);}
+inline dword Random(dword n) {return (dword)RNG::Local().Random(n);}
+inline uint64 Random64() {return RNG::Local().Get64();}
+inline uint64 Random64(uint64 n) {return RNG::Local().Random64(n);}
+inline double Randomf() {return RNG::Local().Randomf();}
+inline void SeedRandom() {return RNG::Local().Seed();}
+inline void SeedRandom(dword seed) {return RNG::Local().Seed(seed);}
 
 
 NAMESPACE_UPP_END

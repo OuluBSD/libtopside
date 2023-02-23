@@ -3,6 +3,9 @@
 NAMESPACE_UPP
 
 
+const Nuller Null;
+
+
 Value::Value(bool b) {
 	Push(BOOL_V, b);
 }

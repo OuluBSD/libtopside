@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_Chrono_h_
-#define _CoreAlt_Chrono_h_
+#ifndef _CoreAlt_TimeDate_h_
+#define _CoreAlt_TimeDate_h_
 
 NAMESPACE_UPP_BEGIN
 

@@ -1,5 +1,5 @@
-#ifndef _CoreAlt_Geom_h_
-#define _CoreAlt_Geom_h_
+#ifndef _CoreAlt_Gtypes_h_
+#define _CoreAlt_Gtypes_h_
 
 NAMESPACE_UPP_BEGIN
 
