@@ -453,8 +453,16 @@ ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, cons
 
 
 template <class... T> struct Event;
-template <> struct Event<> : Callback {};
-template <class T> struct Event<T> : Callback1<T> {};
+template <> struct Event<> : Callback {
+	Event() {}
+	Event(const Callback& cb) : Callback(cb) {}
+	void operator=(const Callback& cb) {Callback::operator=(cb);}
+};
+template <class T> struct Event<T> : Callback1<T> {
+	Event() {}
+	Event(const Callback1<T>& cb) : Callback(cb) {}
+	void operator=(const Callback1<T>& cb) {Callback1<T>::operator=(cb);}
+};
 
 
 

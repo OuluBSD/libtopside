@@ -32,6 +32,86 @@ typedef GeomInteraction3D Gi3;
 class GeomInteraction : RTTIBase {
 	
 public:
+	enum PlacementConstants {
+		CENTER   = 0,
+		MIDDLE   = 0,
+		LEFT     = 1,
+		RIGHT    = 2,
+		TOP      = 1,
+		BOTTOM   = 2,
+		SIZE     = 3,
+		
+		MINSIZE  = -16380,
+		MAXSIZE  = -16381,
+		STDSIZE  = -16382,
+	};
+	
+	enum StateReason {
+		FOCUS      = 10,
+		ACTIVATE   = 11,
+		DEACTIVATE = 12,
+		SHOW       = 13,
+		ENABLE     = 14,
+		EDITABLE   = 15,
+		OPEN       = 16,
+		CLOSE      = 17,
+		POSITION   = 100,
+		LAYOUTPOS  = 101,
+	};
+	
+	enum MouseEvents {
+		BUTTON        = 0x0F,
+		ACTION        = 0xFF0,
+
+		MOUSEENTER    = 0x10,
+		MOUSEMOVE     = 0x20,
+		MOUSELEAVE    = 0x30,
+		CURSORIMAGE   = 0x40,
+		MOUSEWHEEL    = 0x50,
+
+		DOWN          = 0x80,
+		UP            = 0x90,
+		DOUBLE        = 0xa0,
+		REPEAT        = 0xb0,
+		DRAG          = 0xc0,
+		HOLD          = 0xd0,
+		TRIPLE        = 0xe0,
+		PEN           = 0xf0,
+		PENLEAVE      = 0x100,
+
+		LEFTDOWN      = LEFT|DOWN,
+		LEFTDOUBLE    = LEFT|DOUBLE,
+		LEFTREPEAT    = LEFT|REPEAT,
+		LEFTUP        = LEFT|UP,
+		LEFTDRAG      = LEFT|DRAG,
+		LEFTHOLD      = LEFT|HOLD,
+		LEFTTRIPLE    = LEFT|TRIPLE,
+
+		RIGHTDOWN     = RIGHT|DOWN,
+		RIGHTDOUBLE   = RIGHT|DOUBLE,
+		RIGHTREPEAT   = RIGHT|REPEAT,
+		RIGHTUP       = RIGHT|UP,
+		RIGHTDRAG     = RIGHT|DRAG,
+		RIGHTHOLD     = RIGHT|HOLD,
+		RIGHTTRIPLE   = RIGHT|TRIPLE,
+
+		MIDDLEDOWN     = MIDDLE|DOWN,
+		MIDDLEDOUBLE   = MIDDLE|DOUBLE,
+		MIDDLEREPEAT   = MIDDLE|REPEAT,
+		MIDDLEUP       = MIDDLE|UP,
+		MIDDLEDRAG     = MIDDLE|DRAG,
+		MIDDLEHOLD     = MIDDLE|HOLD,
+		MIDDLETRIPLE   = MIDDLE|TRIPLE
+	};
+	
+	enum {
+		NOBACKPAINT,
+		FULLBACKPAINT,
+		TRANSPARENTBACKPAINT,
+		EXCLUDEPAINT,
+	};
+	
+public:
 	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	GeomInteraction* owner = NULL;
 	Vector<GeomInteraction*> sub;
@@ -52,6 +132,7 @@ public:
 	bool         has_mouse:1;
 	bool         has_mouse_deep:1;
 	bool         modify:1;
+	bool         destroying:1;
 	
 public:
 	RTTI_DECL0(GeomInteraction);
@@ -83,11 +164,15 @@ public:
 	DrawCommand& GetCommandBegin() {return cmd_begin;}
 	DrawCommand& GetCommandEnd() {return cmd_end;}
 	bool IsPendingLayout() const {return pending_layout;}
+	bool IsShutdown() const {return destroying;}
+	bool IsForeground() const;
 	
 	void SetPendingLayout() {pending_layout = true;}
 	void SetPendingRedraw() {pending_redraw = true;}
 	void SetPendingEffectRedraw() {pending_fx_redraw = true;}
 	void SetPendingAll() {pending_layout = true; pending_redraw = true; pending_fx_redraw = true;}
+	void Shutdown() {destroying = true;}
+	void SetForeground();
 	
 	void PostCallback(Callback cb);
 	void PostRefresh();
@@ -184,6 +269,7 @@ public:
 	
 	
 	GeomInteraction2D& SizePos() {return HSizePos().VSizePos();}
+	GeomInteraction2D& BottomPosZ(int i, int size = STDSIZE);
 	GeomInteraction2D& HSizePos(int l=0, int r=0);
 	GeomInteraction2D& VSizePos(int t=0, int b=0);
 	GeomInteraction2D& BottomPos(int i, int size);

@@ -24,6 +24,7 @@ public:
 	
 	operator T*() const {return o;}
 	T* operator->() {return o;}
+	T* operator~() {return o;}
 	const T* operator->() const {return o;}
 	
 };

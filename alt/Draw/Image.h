@@ -42,6 +42,8 @@ public:
 	Image(Image&& img);
 	Image(ImageDataRef* data);
 	Image(RawSysImage* raw);
+	Image(Image (*fn)());
+	Image(const Image& (*fn)());
 	~Image();
 	
 	void operator=(const Image& img);
@@ -66,6 +68,7 @@ public:
 	const byte* End() const;
 	bool IsImageDataRef() const;
 	operator bool() const;
+	bool IsNullInstance() const;
 	
 	void Chk();
 	void Serialize(Stream& s);
@@ -74,6 +77,26 @@ public:
 	int32 GetSerialId() const;
 	int64 GetAuxData() const;
 	
+	operator Value() const;
+	
+	#define STD_CURSOR(x) static Image x();
+	STD_CURSOR(Arrow)
+	STD_CURSOR(Wait)
+	STD_CURSOR(IBeam)
+	STD_CURSOR(No)
+	STD_CURSOR(SizeAll)
+	STD_CURSOR(SizeHorz)
+	STD_CURSOR(SizeVert)
+	STD_CURSOR(SizeTopLeft)
+	STD_CURSOR(SizeTop)
+	STD_CURSOR(SizeTopRight)
+	STD_CURSOR(SizeLeft)
+	STD_CURSOR(SizeRight)
+	STD_CURSOR(SizeBottomLeft)
+	STD_CURSOR(SizeBottom)
+	STD_CURSOR(SizeBottomRight)
+	STD_CURSOR(Hand)
+	#undef STD_CURSOR
 private:
 	DataType data_type = NO_DATA;
 	void* data = NULL;
@@ -123,6 +146,7 @@ public:
 	static Image LoadFileAny(String path);
 	static Image LoadStringAny(String data);
 	
+	
 };
 
 
@@ -145,6 +169,13 @@ enum {
 Image RescaleFilter(const Image& img, int cx, int cy, int filter);
 Image RescaleFilter(const Image& img, Size sz, Rect r, int filter);
 Image CachedRescale(const Image& img, Size sz);
+
+
+
+struct Iml {
+	inline static void ResetAll() {TODO}
+	
+};
 
 
 END_UPP_NAMESPACE

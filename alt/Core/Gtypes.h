@@ -13,7 +13,7 @@ struct Point_ : Moveable<Point_<T>> {
 	Point_(T v) : x(v), y(v) {}
 	Point_(T x, T y) : x(x), y(y) {}
 	Point_(const Point_& pt) : x(pt.x), y(pt.y) {}
-	
+	Point_(const Nuller& n) : x(n), y(n) {}
 	
 	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
 	static const char* GetTypeName() {return "Point_<T>";}
@@ -128,8 +128,6 @@ struct Size_ : Moveable<Size_<T>> {
 	T&       operator[](int i)       {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
 	const T& operator[](int i) const {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
 	
-	bool operator==(const Size_& sz) const {return IsEqual(sz);}
-	bool operator!=(const Size_& sz) const {return !IsEqual(sz);}
 	void operator=(const Size_& sz) {
 		cx = sz.cx;
 		cy = sz.cy;
@@ -141,21 +139,40 @@ struct Size_ : Moveable<Size_<T>> {
 		return *this;
 	}
 	
-	Size_ operator+(Size_ p) const {p.cx = cx + p.cx; p.cy = cy + p.cy; return *this; }
-	Size_ operator-(Size_ p) const {p.cx = cx - p.cx; p.cy = cy - p.cy; return *this; }
-	Size_& operator+=(Size_ p)  { cx +=  p.cx; cy +=  p.cy; return *this; }
-	Size_& operator+=(double t) { cx +=  t;    cy +=  t;    return *this; }
-	Size_& operator-=(Size_ p)  { cx -=  p.cx; cy -=  p.cy; return *this; }
-	Size_& operator-=(double t) { cx -=  t;    cy -=  t;    return *this; }
-	Size_& operator*=(Size_ p)  { cx *=  p.cx; cy *=  p.cy; return *this; }
-	Size_& operator*=(double t) { cx *=  t;    cy *=  t;    return *this; }
-	Size_& operator/=(Size_ p)  { cx /=  p.cx; cy /=  p.cy; return *this; }
-	Size_& operator/=(double t) { cx /=  t;    cy /=  t;    return *this; }
-	Size_& operator<<=(int sh)  { cx <<= sh;   cy <<= sh;   return *this; }
-	Size_& operator>>=(int sh)  { cx >>= sh;   cy >>= sh;   return *this; }
-	
-	Size_ operator*(double v) {return Size_(cx * v, cy * v);}
-	Size_ operator/(double v) {return Size_(cx * v, cy * v);}
+	Size_&        operator+=(Size_ p)          { cx  += p.cx; cy  += p.cy; return *this; }
+	Size_&        operator+=(T t)              { cx  += t;    cy  += t;    return *this; }
+	Size_&        operator-=(Size_ p)          { cx  -= p.cx; cy  -= p.cy; return *this; }
+	Size_&        operator-=(T t)              { cx  -= t;    cy  -= t;    return *this; }
+	Size_&        operator*=(Size_ p)          { cx  *= p.cx; cy  *= p.cy; return *this; }
+	Size_&        operator*=(T t)              { cx  *= t;    cy  *= t;    return *this; }
+	Size_&        operator/=(Size_ p)          { cx  /= p.cx; cy  /= p.cy; return *this; }
+	Size_&        operator/=(T t)              { cx  /= t;    cy  /= t;    return *this; }
+	Size_&        operator<<=(int sh)          { cx <<= sh;   cy <<= sh;   return *this; }
+	Size_&        operator>>=(int sh)          { cx >>= sh;   cy >>= sh;   return *this; }
+
+	Size_&        operator++()                 { ++cx; ++cy; return *this; }
+	Size_&        operator--()                 { --cx; --cy; return *this; }
+
+	friend Size_  operator+(Size_ s)           { return s; }
+	friend Size_  operator-(Size_ s)           { return Size_(-s.cx, -s.cy); }
+
+	friend Size_  operator+(Size_ a, Size_ b)  { return a += b; }
+	friend Size_  operator+(Size_ a, T t)      { return a += t; }
+	friend Size_  operator+(T t, Size_ b)      { return b += t; }
+	friend Size_  operator-(Size_ a, Size_ b)  { return a -= b; }
+	friend Size_  operator-(Size_ a, T t)      { return a -= t; }
+	friend Size_  operator-(T t, Size_ b)      { b = -b; return b += t; }
+	friend Size_  operator*(Size_ a, Size_ b)  { return a *= b; }
+	friend Size_  operator*(Size_ a, T b)      { return a *= b; }
+	friend Size_  operator*(T a, Size_ b)      { return b *= a; }
+	friend Size_  operator/(Size_ a, Size_ b)  { return a /= b; }
+	friend Size_  operator/(Size_ a, T b)      { return a /= b; }
+	friend Size_  operator<<(Size_ a, int sh)  { return a <<= sh; }
+	friend Size_  operator>>(Size_ a, int sh)  { return a >>= sh; }
+
+	friend bool   operator==(Size_ a, Size_ b) { return a.cx == b.cx && a.cy == b.cy; }
+	friend bool   operator!=(Size_ a, Size_ b) { return !(a == b); }
+
 	String ToString() const {return "Size(" + IntStr(cx) + ", " + IntStr(cy) + ")";}
 	
 	operator Size_<int>() const {return Size_<int>(cx,cy);}
@@ -191,7 +208,8 @@ struct Rect_ : Moveable<Rect_<T>> {
 	Rect_(const Rect_& r) { *this = r; }
 	Rect_(const Size_<T>& sz) { right = sz.cx; bottom = sz.cy; }
 	Rect_(T l, T t, T r, T b) : top(t), left(l), bottom(b), right(r) {}
-
+	Rect_(const Nuller& n) : left(n), top(n), right(n), bottom(n) {}
+	Rect_(const Pt& pt, const Sz& sz) : left(pt.x), top(pt.y), right(pt.x + sz.cx), bottom(pt.y + sz.cy) {}
 	bool IsEqual(const Rect_& r) const {return top == r.top && left == r.left && bottom == r.bottom && right == r.right;}
 	bool IsEmpty() const {return left == right && top == bottom;}
 	
@@ -233,6 +251,11 @@ struct Rect_ : Moveable<Rect_<T>> {
 	Point_<T> CenterPoint() const {return Point_<T>((right+left)/(T)2, (top+bottom)/(T)2);}
 	int ToInt() const {return top * left * bottom * right;}
 	
+	Pt     CenterPos(T cx, T cy) const;
+	Pt     CenterPos(Sz sz) const           { return CenterPos(sz.cx, sz.cy); }
+	Rect_  CenterRect(Sz sz) const          { return Rect_(CenterPos(sz), sz); }
+	Rect_  CenterRect(T cx, T cy) const     { return CenterRect(Sz(cx, cy)); }
+
 	void   InflateHorz(T dx) { left -= dx; right += dx; }
 	void   InflateVert(T dy) { top -= dy; bottom += dy; }
 	void   Inflate(T dx, T dy) { InflateHorz(dx); InflateVert(dy); }
@@ -248,11 +271,56 @@ struct Rect_ : Moveable<Rect_<T>> {
 	void   Deflate(T dxy) { Inflate(-dxy); }
 	void   Deflate(T l, T t, T r, T b) { Inflate(-l, -t, -r, -b); }
 	void   Deflate(const Rect_& r) { Deflate(r.left, r.top, r.right, r.bottom); }
+	
+	void   OffsetHorz(T dx)                     { left += dx; right += dx; }
+	void   OffsetVert(T dy)                     { top += dy; bottom += dy; }
+	void   Offset(T dx, T dy)                   { OffsetHorz(dx); OffsetVert(dy); }
+	void   Offset(Sz sz)                        { Offset(sz.cx, sz.cy); }
+	void   Offset(Pt p)                         { Offset(p.x, p.y); }
+	
+	Rect_  OffsetedHorz(T dx) const             { Rect_ r = *this; r.OffsetHorz(dx); return r; }
+	Rect_  OffsetedVert(T dy) const             { Rect_ r = *this; r.OffsetVert(dy); return r; }
+	Rect_  Offseted(T dx, T dy) const           { Rect_ r = *this; r.Offset(dx, dy); return r; }
+	Rect_  Offseted(Sz sz) const                { Rect_ r = *this; r.Offset(sz); return r; }
+	Rect_  Offseted(Pt p) const                 { Rect_ r = *this; r.Offset(p); return r; }
+	
+	void   Union(Pt p);
+	void   Union(const Rect_& rc);
+	void   Intersect(const Rect_& rc);
+	
+	Rect_& operator+=(Sz sz)                                { Offset(sz); return *this; }
+	Rect_& operator+=(Pt p)                                 { Offset(p); return *this; }
+	Rect_& operator+=(const Rect_& b);
+	Rect_& operator-=(Sz sz)                                { Offset(-sz); return *this; }
+	Rect_& operator-=(Pt p)                                 { Offset(-p); return *this; }
+	Rect_& operator-=(const Rect_& b);
+	Rect_& operator*=(T t)                                  { left *= t; right *= t; top *= t; bottom *= t; return *this; }
+	Rect_& operator/=(T t)                                  { left /= t; right /= t; top /= t; bottom /= t; return *this; }
+	
+	friend Rect_ operator+(Rect_ a, Sz b)                   { return a += b; }
+	friend Rect_ operator+(Sz a, Rect_ b)                   { return b += a; }
+	friend Rect_ operator+(Rect_ a, Pt b)                   { return a += b; }
+	friend Rect_ operator+(Pt a, Rect_ b)                   { return b += a; }
+	friend Rect_ operator+(Rect_ a, const Rect_& b)         { return a += b; }
+	friend Rect_ operator-(Rect_ a, Sz b)                   { return a -= b; }
+	friend Rect_ operator-(Rect_ a, Pt b)                   { return a -= b; }
+	friend Rect_ operator-(Rect_ a, const Rect_& b)         { return a -= b; }
+	friend Rect_ operator*(Rect_ a, T t)                    { return a *= t; }
+	friend Rect_ operator*(T t, Rect_ a)                    { return a *= t; }
+	friend Rect_ operator/(Rect_ a, T t)                    { return a /= t; }
+	friend Rect_ operator&(Rect_ a, Rect_ b)                { a.Intersect(b); return a; }
+	friend Rect_ operator|(Rect_ a, Rect_ b)                { a.Union(b); return a; }
+	friend bool  operator&&(const Rect_& a, const Rect_& b) { return a.Intersects(b); }
+	friend bool  operator>=(const Rect_& a, Pt b)           { return a.Contains(b); }
+	friend bool  operator<=(Pt a, const Rect_& b)           { return b.Contains(a); }
+	friend bool  operator<=(const Rect_& a, const Rect_& b) { return b.Contains(a); }
+	friend bool  operator>=(const Rect_& b, const Rect_& a) { return a.Contains(b); }
 
 	operator Rect_<int>() const {return Rect_<int>(left,top,right,bottom);}
 	operator Rect_<double>() const {return Rect_<double>(left,top,right,bottom);}
 	
 	bool	IsNull() const {return ::UPP::IsNull(left) || ::UPP::IsNull(top) || ::UPP::IsNull(right) || ::UPP::IsNull(bottom);}
+	bool	IsNullInstance() const {return ::UPP::IsNull(left) || ::UPP::IsNull(top) || ::UPP::IsNull(right) || ::UPP::IsNull(bottom);}
 	void	SetNull() const {::UPP::SetNull(left); ::UPP::SetNull(top); ::UPP::SetNull(right); ::UPP::SetNull(bottom);}
 	
 	
@@ -282,6 +350,8 @@ inline Rect RectC(int x, int y, int w, int h) { return Rect(x, y, x + w, y + h);
 
 
 
+Size        GetFitSize(Size objsize, int cx, int cy);
+inline Size GetFitSize(Size objsize, Size intosize) { return GetFitSize(objsize, intosize.cx, intosize.cy); }
 
 
 

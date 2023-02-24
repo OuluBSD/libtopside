@@ -10,10 +10,12 @@
 #endif
 
 #include "Image.h"
+#include "ImageOp.h"
 #include "Font.h"
 #include "DrawClasses.h"
+#include "Display.h"
+#include "Cham.h"
 #include "SDraw.h"
-#include "Chameleon.h"
 
 #include <SharedCore/Draw.h>
 

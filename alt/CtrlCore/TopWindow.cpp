@@ -19,6 +19,10 @@ void TopWindow::RunInMachine() {
 	Run();
 }
 
+int TopWindow::Run() {
+	TODO
+}
+
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	using namespace Parallel;
@@ -40,10 +44,12 @@ void TopWindow::CreateGeom2DComponent() {
 	
 	#else
 	
-	Machine& mach = GetActiveMachine();
+	TODO // follow upp TopWindow better
+	
+	/*Machine& mach = GetActiveMachine();
 	WindowSystemRef wins = mach.Get<WindowSystem>();
 	WindowManager& mgr = wins->GetActiveScope();
-	mgr.AddInterface(*this);
+	mgr.AddInterface(*this);*/
 	
 	#endif
 }

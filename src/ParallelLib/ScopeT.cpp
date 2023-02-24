@@ -26,7 +26,7 @@ ScopeT<Dim>::ScopeT()
 	
 }
 
-template <class Dim>
+/*template <class Dim>
 Draw& ScopeT<Dim>::BeginDraw() {
 	#if IS_TS_CORE
 	Box b = this->GetFrameBox();
@@ -37,7 +37,7 @@ Draw& ScopeT<Dim>::BeginDraw() {
 	#else
 	TODO
 	#endif
-}
+}*/
 
 #if 0
 template <class Dim>
@@ -738,6 +738,7 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 	
 #endif
 
+
 template <class Dim>
 void ScopeT<Dim>::AddInterface(TopContainer& tw)
 {
@@ -747,6 +748,7 @@ void ScopeT<Dim>::AddInterface(TopContainer& tw)
 	int pos = handles.GetCount();
 
 	Frame& h = handles.Add(id);
+	h.SetScope(this);
 	h.RefScopeParent<RefParent1<ScopeT<Dim>>>::SetParent(this);
 	h.SetId(id);
 	
@@ -778,6 +780,16 @@ void ScopeT<Dim>::AddInterface(TopContainer& tw)
 	h.Refresh();
 	
 	tw.SetTopFrame(h);
+}
+
+template <class Dim>
+typename Dim::Pt ScopeT<Dim>::GetMousePos() const {
+	TODO
+}
+
+template<>
+Point ScopeT<Ctx2D>::GetMousePos() const {
+	return ::UPP::GetMousePos();
 }
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)

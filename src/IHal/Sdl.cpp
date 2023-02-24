@@ -2,13 +2,21 @@
 
 #if defined flagSDL2
 
-//#if IS_UPP_CORE
 #include <CtrlCore/CtrlCore.h>
+#if IS_UPP_CORE
 #include <GLDraw/GLDraw.h>
-//#endif
+#endif
 
 NAMESPACE_UPP
 extern VirtualGui *VirtualGuiPtr;
+extern dword lastbdowntime[8];
+extern dword isdblclick[8];
+extern dword mouseb;
+extern dword modkeys;
+extern bool sdlMouseIsIn;
+bool GetCtrl();
+bool GetAlt();
+bool GetShift();
 END_UPP_NAMESPACE
 
 #ifdef flagMSC
@@ -117,12 +125,14 @@ struct HalSdl::NativeUppEventsBase {
     double time;
     dword seq;
     
+    // use directly values in VirtualGui/Atom
+    #if 0
 	dword lastbdowntime[8] = {0};
 	dword isdblclick[8] = {0};
-	
 	dword mouseb;
 	dword modkeys;
 	bool  sdlMouseIsIn;
+	#endif
 
     
     void Clear() {
@@ -592,11 +602,13 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		dev.pi.Paint(begin, end, *dev.id);
 		Image img = *dev.id;
 		
-		if (1) {
+		#if 0
+		if (0) {
 			String path = GetHomeDirFile("debug.png");
 			PNGEncoder enc;
 			enc.SaveFile(path, img);
 		}
+		#endif
 		
 		{
 			RTLOG("HalSdl::CenterVideoSinkDevice_Recv: warning: slow screen buffer copy");
@@ -1277,8 +1289,10 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				dev.sz = screen_sz;
 				e.type = EVENT_WINDOW_RESIZE;
 				e.sz = screen_sz;
+				#ifdef flagOGL
 				if (HalSdl::NativeUppOglDevice::last)
 					HalSdl::NativeUppOglDevice::last->sz = screen_sz;
+				#endif
 				continue;
 			}
 			break;
@@ -1722,7 +1736,8 @@ void HalSdl::UppOglDevice_Finalize(NativeUppOglDevice& dev, AtomBase& a, Realtim
 	SystemDraw& sysdraw = UPP::VirtualGuiPtr->BeginDraw();
 	sysdraw.SetTarget(&dev.gldraw);
 	
-	Ctrl::PaintAll();
+	//Ctrl::PaintAll();
+	Ctrl::EventLoopIteration(NULL);
 	
 	dev.gldraw.Finish();
 	SDL_GL_SwapWindow(dev.win);
@@ -1886,9 +1901,9 @@ dword fbKEYtoK(dword chr)
 	else
 		chr |= K_DELTA;
 
-	if(GetCtrl())  chr |= K_CTRL;
-	if(GetAlt())   chr |= K_ALT;
-	if(GetShift()) chr |= K_SHIFT;
+	if(UPP::GetCtrl())  chr |= K_CTRL;
+	if(UPP::GetAlt())   chr |= K_ALT;
+	if(UPP::GetShift()) chr |= K_SHIFT;
 
 	return chr;
 }
@@ -1896,11 +1911,19 @@ dword fbKEYtoK(dword chr)
 
 void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 {
+	#if 1
+	dword& mouseb = ::UPP::mouseb;
+	dword& modkeys = ::UPP::modkeys;
+	bool&  sdlMouseIsIn = ::UPP::sdlMouseIsIn;
+	auto& isdblclick = ::UPP::isdblclick;
+	auto& lastbdowntime = ::UPP::lastbdowntime;
+	#else
 	dword& mouseb = dev.mouseb;
 	dword& modkeys = dev.modkeys;
 	bool&  sdlMouseIsIn = dev.sdlMouseIsIn;
 	auto& isdblclick = dev.isdblclick;
 	auto& lastbdowntime = dev.lastbdowntime;
+	#endif
 	
 	LLOG("HandleSDLEvent " << event->type);
 	SDL_Event next_event;
@@ -1910,7 +1933,7 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 //			break;
 	case SDL_TEXTINPUT: {
 			//send respective keyup things as char events as well
-		WString text = event->text.text;
+		WString text = String(event->text.text).ToWString();
 		for(int i = 0; i < text.GetCount(); i++) {
 			int c = text[i];
 			if(c != 127)
@@ -2058,6 +2081,9 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 		Ctrl::EndSession();
 		break;
 	}
+	
+	
+	
 }
 
 

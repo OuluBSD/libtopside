@@ -32,8 +32,8 @@ public:
 	using CmdPainter = typename Dim::CmdPainter;
 	
 protected:
-	friend class FrameT<Dim>;
 	friend class ::UPP::TopWindow;
+	friend class TopWindow;
 	
 	Scope*  scope = NULL;
 	TopContainer* window = NULL;

@@ -45,7 +45,7 @@ private:
 	bool do_render = false;
 	int frame_width = 3;
 	int corner_width = 10;
-	Pt global_mouse;
+	//Pt global_mouse;
 	
 public:
 	void QueueCloseHandle(int handle_id) { close_handle_queue.Add(handle_id); }
@@ -80,7 +80,7 @@ public:
 	void SetFrameBox(const Box& b) {::TS::SetFrameBox<Container>(desktop, b);}
 	
 public:
-	RTTI_DECL_R1(Scope, Space)
+	RTTI_DECL_R0(Scope)
 	typedef ScopeT<Dim> CLASSNAME;
 	ScopeT();
 
@@ -102,7 +102,7 @@ public:
 	void Layout() override;
 	void PostLayout() override;*/
 	
-	Draw& BeginDraw();
+	//Draw& BeginDraw();
 	void AddInterface(TopContainer&);
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
@@ -121,7 +121,7 @@ public:
 	}
 	int GetFrameWidth() const {return frame_width;}
 	int GetCornerWidth() const {return corner_width;}
-	Pt GetMousePos() const {return global_mouse;}
+	Pt GetMousePos() const;
 	bool IsForeground() const;
 	
 	void FocusHandle(TopContainer* tc);

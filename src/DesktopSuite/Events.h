@@ -2,9 +2,8 @@
 #define _DesktopSuite_Events_h_
 
 NAMESPACE_TOPSIDE_BEGIN
+using namespace UPP;
 
-
-using namespace Upp;
 
 String GetKeyDescEx(int key);
 

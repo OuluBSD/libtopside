@@ -5,15 +5,22 @@ uses
 
 file
 	Draw.h,
-	Image.h,
-	Image.cpp,
-	Font.h,
-	Font.cpp,
 	DrawClasses.h,
 	DrawClasses.cpp,
+	Display.h,
+	Font readonly separator,
+	Font.h,
+	Font.cpp,
+	Image readonly separator,
+	Image.h,
+	Image.cpp,
+	ImageOp.h,
 	iml_header.h,
 	iml_source.h,
+	SDraw readonly separator,
 	SDraw.h,
 	SImageDraw.cpp,
-	Chameleon.h;
+	Chameleon readonly separator,
+	Cham.h,
+	SColors.cpp;
 

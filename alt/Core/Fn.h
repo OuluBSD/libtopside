@@ -10,6 +10,8 @@ NAMESPACE_UPP_BEGIN
 #undef max
 template <class T> const T& min(const T& a, const T& b) { return a < b ? a : b; }
 template <class T> const T& max(const T& a, const T& b) { return a > b ? a : b; }
+template <class T> inline T minmax(T x, T _min, T _max) { return min(max(x, _min), _max); }
+template <class T> inline T clamp(const T& x, const T& _min, const T& _max) { return min(max(x, _min), _max); }
 
 
 

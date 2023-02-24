@@ -16,11 +16,11 @@
 #include "Sort.h"
 #include "TimeDate.h"
 #include "Gtypes.h"
+#include "Value.h"
 #include "Color.h"
 #include "Mt.h"
 #include "Inet.h"
 #include "Ptr.h"
-#include "Value.h"
 #include <SharedCore/Object.h>
 #include <SharedCore/TokenParser.h>
 #include "Parser.h"

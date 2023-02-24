@@ -54,9 +54,9 @@ Value::Value(const ValueMap& m) {
 	TODO
 }
 
-Value::Value(Color m) {
+/*Value::Value(Color m) {
 	Push(COLOR_V, m);
-}
+}*/
 
 Value& Value::operator=(const Value& v) {
 	data = v.data;

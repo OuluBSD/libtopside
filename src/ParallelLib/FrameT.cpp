@@ -343,13 +343,19 @@ void FrameT<Dim>::LeftDouble(Pt p, dword keyflags) {
 
 template <class Dim>
 void FrameT<Dim>::MouseMove(Pt, dword keyflags) {
+	TODO
+}
+
+template <>
+void FrameT<Ctx2D>::MouseMove(Pt, dword keyflags) {
 	#if 1
 	LDUMP(HasWndCapture());
 	LDUMP(HasCapture());
 	if(!this->HasCapture() || holding)
 		return;
+	ASSERT(scope);
 	Sz msz = ComputeClient(minsize).GetSize();
-	Pt p = scope->GetMousePos() - startpos;
+	Pt p = GetMousePos() - startpos;
 	Box r = startrect;
 	if(dir.x == -1)
 		r.left = min(r.left + p.x, startrect.right - msz.cx);
@@ -379,8 +385,8 @@ template <class Dim>
 Image FrameT<Dim>::GetDragImage(Pt dir)
 {
 	static Image (*im[9])() = {
-		Image::SizeTopLeft, Image::SizeLeft, Image::SizeBottomLeft,
-		Image::SizeTop, Image::Arrow, Image::SizeBottom,
+		Image::SizeTopLeft,  Image::SizeLeft,  Image::SizeBottomLeft,
+		Image::SizeTop,      Image::Arrow,     Image::SizeBottom,
 		Image::SizeTopRight, Image::SizeRight, Image::SizeBottomRight,
 	};
 	int pos = (dir.x + 1) * 3 + (dir.y + 1);

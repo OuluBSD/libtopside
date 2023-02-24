@@ -9,7 +9,11 @@ class CtrlImg {
 	
 public:
 	
-	static Image Dir();
+	#define CTRLIMG(x) static const Image& x();
+	CTRLIMG(Network)
+	CTRLIMG(Dir)
+	CTRLIMG(swap_color_cursor)
+	#undef CTRLIMG
 	
 };
 

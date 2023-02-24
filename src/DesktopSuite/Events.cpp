@@ -14,6 +14,8 @@ String GetKeyDescEx(int key)
 
 EventsTester::EventsTester()
 {
+	Title("Events Tester");
+	Icon(CtrlImg::Network);
 	SetFrame(InsetFrame());
 	AddFrame(InsetFrame());
 	AddFrame(InsetFrame());

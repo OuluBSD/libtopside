@@ -1,6 +1,11 @@
 #ifndef _SharedCore_RTTIDummy_h_
 #define _SharedCore_RTTIDummy_h_
 
+#ifdef UPP_VERSION
+#define flagSTDRTTI
+#define flagSTDEXC
+#endif
+
 NAMESPACE_UPP
 
 

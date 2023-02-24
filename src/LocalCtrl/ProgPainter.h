@@ -45,7 +45,12 @@ class ProgPainter : public SDraw {
 	
 	
 public:
+	#if IS_UPP_CORE
 	RTTI_DECL0_(ProgPainter);
+	#else
+	RTTI_DECL1(ProgPainter, SDraw);
+	#endif
+	
 	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
 	ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
 	~ProgPainter() {/*Clear();*/}
@@ -116,27 +121,9 @@ public:
 	int  GetCloffLevel() const override;
 	void Escape(const String& data) override;
 	Color GetDefaultInk() const override;
+	void PutImage(Point p, const Image& img, const Rect& src) override;
+	void PutRect(const Rect& r, Color color) override;
 	
-	
-	// Dummy SDraw override
-	void  PutImage(Point p, const Image& img, const Rect& src) override;
-	void  PutRect(const Rect& r, Color color) override;
-	
-	
-	#if 0
-	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
-	void DrawImage(int x, int y, Image img, byte alpha=255) override;
-	
-	void DrawRect(Rect r, RGBA clr);
-	void DrawRect(int x, int y, int w, int h, RGBA clr);
-	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);
-	void DrawPolyline(const Point* pts, int pt_count, int line_width, RGBA c);
-	void DrawPolygon(const Vector<Point>& pts, RGBA c);
-	void DrawBuffer(const Rect& r, ImageBuffer& ib);
-	
-	void Offset(const Rect& r);
-	void End();
-	#endif
 	
 	
 };

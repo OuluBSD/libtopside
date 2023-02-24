@@ -4,9 +4,8 @@
 
 #include <CtrlCore/CtrlCore.h>
 
-#include "Button.h"
-#include "EditString.h"
-#include "Keys.h"
+#include "PushCtrl.h"
+#include "TextEdit.h"
 #include "StaticCtrl.h"
 #include "FileSel.h"
 #include "Bar.h"
@@ -15,6 +14,7 @@
 #include "TreeCtrl.h"
 #include "Splitter.h"
 #include "ScrollBar.h"
+#include "Ch.h"
 
 NAMESPACE_UPP
 

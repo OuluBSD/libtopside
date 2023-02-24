@@ -26,6 +26,10 @@ public:
 	~GuiUnlock() { EnterGuiMutex(n); }
 };
 
+
+String FromSystemCharset(const String& src);
+
+
 END_UPP_NAMESPACE
 
 #endif

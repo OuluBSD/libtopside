@@ -1,10 +1,7 @@
 #include "AtomHandle.h"
 #include <SerialLib/SerialLib.h>
-
-#if IS_UPP_CORE
 #include <VirtualGui/Local.h>
 #include <VirtualGui/Atom/Atom.h>
-#endif
 
 
 NAMESPACE_PARALLEL_BEGIN

@@ -1,0 +1,26 @@
+description "Abstract GUI implementation, with window manager, with minimal implemenation requirements\377";
+
+uses
+	CtrlLib;
+
+file
+	VirtualGui.h,
+	main.conf,
+	Local.h,
+	Keys.h,
+	After.h,
+	Image.h,
+	Image.cpp,
+	FB.iml,
+	Ctrl.h,
+	DrawDragRect.cpp,
+	Ctrl.cpp,
+	Wnd.cpp,
+	Event.cpp,
+	Top.h,
+	Top.cpp,
+	Clip.cpp,
+	DnD.cpp,
+	ChSysInit.cpp,
+	src.tpp;
+

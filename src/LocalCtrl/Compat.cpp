@@ -31,6 +31,8 @@ void CtrlGeomProxy::Layout() {
 
 void CtrlGeomProxy::Paint(Draw& d) {
 	if (!p) return;
+	TODO // deprecated after upp virtual gui integration?
+	#if 0
 	#if IS_UPP_CORE
 	
 	#if 1
@@ -65,6 +67,7 @@ void CtrlGeomProxy::Paint(Draw& d) {
 	
 	#else
 	c.Paint(d);
+	#endif
 	#endif
 }
 

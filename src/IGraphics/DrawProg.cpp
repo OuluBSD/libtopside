@@ -246,13 +246,21 @@ void DrawProg::TextOp(const DrawCommand& cmd) {
 }
 
 void DrawProg::DrawingOp(const DrawCommand& cmd) {
+	#if IS_UPP_CORE
 	((Draw*)this)->DrawDrawingOp(
 		cmd.r, cmd.value);
+	#else
+	TODO
+	#endif
 }
 
 void DrawProg::PaintingOp(const DrawCommand& cmd) {
+	#if IS_UPP_CORE
 	((Draw*)this)->DrawPaintingOp(
 		cmd.r, cmd.value);
+	#else
+	TODO
+	#endif
 }
 
 void DrawProg::BeginNative(const DrawCommand& cmd) {

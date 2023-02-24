@@ -404,14 +404,22 @@ void ProgPainter::DrawDrawingOp(const Rect& target, const Drawing& w) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_DRAWING_OP;
 	cmd.r = target;
+	#if IS_UPP_CORE
 	cmd.value = w;
+	#else
+	TODO
+	#endif
 }
 
 void ProgPainter::DrawPaintingOp(const Rect& target, const Painting& w) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_PAINTING_OP;
 	cmd.r = target;
+	#if IS_UPP_CORE
 	cmd.value = w;
+	#else
+	TODO
+	#endif
 }
 
 Size ProgPainter::GetNativeDpi() const {
@@ -449,7 +457,6 @@ void ProgPainter::PutImage(Point p, const Image& img, const Rect& src) {
 void ProgPainter::PutRect(const Rect& r, Color color) {
 	Panic("ProgPainter::PutRect shouldn't be needed");
 }
-
 
 
 

@@ -78,12 +78,71 @@ typedef RGBA1T<double>	RGBA1f;
 
 
 
+#ifndef PLATFORM_WIN32
+inline int        GetRValue(dword c)             { return (byte)(c >> 0); }
+inline int        GetGValue(dword c)             { return (byte)(c >> 8); }
+inline int        GetBValue(dword c)             { return (byte)(c >> 16); }
+inline dword      RGB(byte r, byte g, byte b)    { return r | (g << 8) | (b << 16); }
+#endif
 
 
 
 
 
+class Color : public ValueType<Color, COLOR_V, Moveable<Color> > {
+protected:
+	dword    color;
 
+	dword Get() const;
+
+public:
+	dword    GetRaw() const            { return color; }
+
+	int      GetR() const              { return GetRValue(Get()); }
+	int      GetG() const              { return GetGValue(Get()); }
+	int      GetB() const              { return GetBValue(Get()); }
+
+	void     SetNull()                 { color = 0xffffffff; }
+	bool     IsNullInstance() const    { return color == 0xffffffff; }
+	hash_t   GetHashValue() const      { return color; }
+	bool     operator==(Color c) const { return color == c.color; }
+	bool     operator==(const RGBA& c) const { return c == operator RGBA(); }
+	bool     operator!=(Color c) const { return color != c.color; }
+
+	void     Serialize(Stream& s)      { s % color; }
+	void     Jsonize(JsonIO& jio);
+	void     Xmlize(XmlIO& xio);
+
+	Color()                            { SetNull(); }
+	Color(int r, int g, int b)         { color = RGB(r, g, b); }
+
+	Color(const Nuller&)               { SetNull(); }
+
+	operator Value() const             { return SvoToValue(*this); }
+	Color(const Value& q)              { color = q.Get<Color>().color; }
+
+	operator RGBA() const;
+	Color(RGBA rgba);
+
+	Color(Color (*fn)())               { color = (*fn)().color; }
+
+	static Color FromRaw(dword co)     { Color c; c.color = co; return c; }
+	static Color Special(int n)        { Color c; c.color = 0x80000000 | n; return c; }
+	
+	int  GetSpecial() const            { return color & 0x80000000 ? color & 0x7fffffff : -1; }
+
+#ifdef PLATFORM_WIN32
+	operator COLORREF() const          { return (COLORREF) Get(); }
+	static  Color FromCR(COLORREF cr)  { Color c; c.color = (dword)cr; return c; }
+#else
+	operator dword() const             { return Get(); }
+#endif
+
+private:
+	Color(int);
+};
+
+#if 0
 template <class T>
 class ColorT : Moveable<ColorT<T>> {
 	T r, g, b;
@@ -94,6 +153,7 @@ public:
 	ColorT(T r, T g, T b) : r(r), g(g), b(b) {}
 	ColorT(const Nuller&) : r(0), g(0), b(0) {}
 	ColorT(const RGBA& c) : r(c.r), g(c.g), b(c.b) {}
+	ColorT(ColorT(*fn)()) {if (fn) *this = fn();}
 	template <class K> ColorT(const ColorT<K>& c) {*this = c;}
 	
 	bool IsEqual(const ColorT& c) {return r == c.r && g == c.g && b == c.b;}
@@ -133,6 +193,7 @@ public:
 using Color		= ColorT<byte>;
 using Colorf32	= ColorT<float>;
 using Colorf	= ColorT<double>;
+#endif
 
 enum {
 	SPCLR_DEFAULT_INK = 254,
@@ -142,7 +203,7 @@ Color SpecialColor(int code);
 
 inline Color GrayColor(byte gray = 128) {return Color(gray, gray, gray);}
 
-inline Color Blend(Color a_, Color b_, double blend) {
+inline Color Blend(Color a_, Color b_, double blend=0.5) {
 	RGBA a = a_;
 	RGBA b = b_;
 	RGBA out;

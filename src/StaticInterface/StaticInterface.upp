@@ -1,7 +1,5 @@
 description "\3770,128,128";
 
-uses(GUI) VirtualGui3D;
-
 library(POSIX) png;
 
 file

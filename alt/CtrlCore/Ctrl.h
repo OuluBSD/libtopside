@@ -21,6 +21,63 @@ class DefaultGuiAppComponent;
 
 NAMESPACE_UPP
 
+
+struct ClipData : Moveable<ClipData> {
+	Value  data;
+	String (*render)(const Value& data);
+
+	String  Render() const                   { return render ? (*render)(data) : ~data; }
+
+	ClipData(const Value& data, String (*render)(const Value& data));
+	ClipData(const String& data);
+	ClipData();
+};
+
+
+class PasteClip {
+	friend struct UDropTarget;
+	friend class  Ctrl;
+	friend PasteClip sMakeDropClip(bool paste);
+
+	GUIPLATFORM_PASTECLIP_DECLS
+
+	byte         action;
+	byte         allowed;
+	bool         paste;
+	bool         accepted;
+	String       fmt;
+	String       data;
+
+	void GuiPlatformConstruct();
+
+public:
+	bool   IsAvailable(const char *fmt) const;
+	String Get(const char *fmt) const;
+
+	bool   Accept();
+
+	bool   Accept(const char *fmt);
+	String GetFormat()                  { return fmt; }
+	String Get() const                  { return data; }
+	operator String() const             { return Get(); }
+	String operator ~() const           { return Get(); }
+
+	void   Reject()                     { accepted = false; }
+
+	int    GetAction() const            { return action; }
+	int    GetAllowedActions() const    { return allowed; }
+	void   SetAction(int x)             { action = x; }
+
+	bool   IsAccepted() const           { return accepted; }
+
+	bool   IsQuery() const              { return !paste; }
+	bool   IsPaste() const              { return paste; }
+
+	PasteClip();
+};
+
+
+
 class Ctrl;
 
 class CtrlFrame :
@@ -36,7 +93,7 @@ protected:
 	CtrlFrame* GetCaptured();
 	CtrlFrame* GetWithMouse();
 	void SetCaptured(CtrlFrame* c);
-	void SetWithMouse(CtrlFrame* c);
+	//void SetWithMouse(CtrlFrame* c);
 	
 public:
 	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
@@ -150,6 +207,31 @@ class Ctrl :
 public:
 	RTTI_DECL1(Ctrl, GeomInteraction2D)
 	
+	struct Scroll : Moveable<Scroll> {
+		Rect rect;
+		int  dx;
+		int  dy;
+	};
+	
+	struct MoveCtrl : Moveable<MoveCtrl> {
+		Ptr<Ctrl>  ctrl;
+		Rect       from;
+		Rect       to;
+	};
+	
+	struct Top {
+		GUIPLATFORM_CTRL_TOP_DECLS
+		Vector<Scroll> scroll;
+		VectorMap<Ctrl *, MoveCtrl> move;
+		VectorMap<Ctrl *, MoveCtrl> scroll_move;
+		Ptr<Ctrl>      owner;
+	};
+	
+	union {
+		Ctrl *uparent;
+		Top  *utop;
+	};
+	
 protected:
 	static  int       LoopLevel;
 	static  Ctrl     *LoopCtrl;
@@ -165,8 +247,34 @@ protected:
 	void SetFrameWithMouse(CtrlFrame* c);
 	
 	
+	byte         overpaint;
+
+	bool         unicode:1;
+
+	bool         fullrefresh:1;
+
+	bool         transparent:1;
+	bool         visible:1;
+	bool         enabled:1;
+	bool         wantfocus:1;
+	bool         initfocus:1;
+	bool         activepopup:1;
+	bool         editable:1;
+	bool         modify:1;
+	bool         ignoremouse:1;
+	bool         inframe:1;
 	bool         inloop:1;
-	
+	bool         isopen:1;
+	bool         popup:1;
+	bool         popupgrab:1;
+	byte         backpaint:2;//2
+
+	bool         akv:1;
+	bool         destroying:1;
+	bool         layout_id_literal:1; // info_ptr points to layout char * literal, no heap involved
+	bool         multi_frame:1; // there is more than single frame, they are stored in heap
+	bool         top:1;
+
 	Vector<CtrlFrame*> frames;
 	Rect content_r;
 	
@@ -175,8 +283,15 @@ protected:
 	void Layout0() {Layout();}
 	
 public:
-	friend class TS::Ecs::DefaultGuiAppComponent;
+	Top         *GetTop()               { return top ? utop : NULL; }
+	const Top   *GetTop() const         { return top ? utop : NULL; }
+	void         DeleteTop();
+	void SetTop(Top *t)                 { utop = t; top = true; }
 	
+	Ctrl            *GetParent() const;
+	bool             IsChild() const    { return GetParent(); }
+	
+	static Ctrl *GetFocusCtrl();//                { return FocusCtrl(); }
 	
 protected:
 	friend class TS::Ecs::VirtualGui;
@@ -188,6 +303,12 @@ public:
 	typedef Ctrl CLASSNAME;
 	Ctrl();
 	virtual ~Ctrl() {}
+	
+#ifdef GUIPLATFORM_CTRL_DECLS_INCLUDE
+	#include GUIPLATFORM_CTRL_DECLS_INCLUDE
+#else
+	GUIPLATFORM_CTRL_DECLS
+#endif
 	
 	static void SetDebugDraw(bool b=true) {do_debug_draw = b;}
 	static bool ProcessEvent(bool *quit = NULL);
@@ -208,13 +329,18 @@ public:
 	Ctrl* GetIndexChild(int i);
 	void RemoveChild(Ctrl* c);
 	int GetChildCount() const;
+	void SetFrame(CtrlFrame&);
+	void UpdateArea(SystemDraw& draw, const Rect& clip);
 	
 	Ctrl* GetParent();
 	Ctrl* GetTopCtrl();
 	TopWindow* GetTopWindow();
+	const Ctrl* GetOwner() const;
+	Ctrl* GetOwner();
+	static Ctrl* GetActiveCtrl();
 	
-	Rect GetWorkArea() const;
 	Size GetSize() const {return GetFrameSize();}
+	String Name() const;
 	
 	void DeepFrameLayout() override;
 	void SetFrameBox(const Rect& r) override;
@@ -235,9 +361,10 @@ public:
 	void Refresh() override;
 	
 	void SetRect(const Rect& r);
+	void SetRect(int x, int y, int cx, int cy);
 	void Update();
 	
-	virtual int    OverPaint() const {return 0;}
+	virtual int OverPaint() const {return 0;}
 	
 	Callback WhenAction;
 	
@@ -255,15 +382,101 @@ public:
 	//static void GuiSleep(int ms);
 	//static void DoPaint();
 	//static void PaintScene(SystemDraw& draw);
+	static void SetMouseCursor(const Image& m);
+	static bool IsAlphaSupported();
+	static bool IsCompositedGui();
+	static Vector<Ctrl*> GetTopCtrls();
+	static int RegisterSystemHotKey(dword key, Callback cb);
+	static void UnregisterSystemHotKey(int id);
+	static bool IsWaitingEvent();
+	static void   GetWorkArea(Array<Rect>& rc);
+	static Rect   GetVirtualWorkArea();
+	static Rect   GetVirtualScreenArea();
+	static Rect   GetPrimaryWorkArea();
+	static Rect   GetPrimaryScreenArea();
+	static Rect   GetDefaultWindowRect();
+	static int    GetKbdDelay();
+	static int    GetKbdSpeed();
+	static void InstallPanicBox();
+	static void   GlobalBackBuffer(bool b = true);
+	static void InitTimer();
+	static void   CloseTopCtrls();
+	static void  EndIgnore();
+	static bool  DispatchKey(dword keycode, int count);
+	static void      SyncCaret();
+	static void  DefferedFocusSync();
+	static bool ProcessEvents(bool *quit = NULL);
+	static void      AnimateCaret();
+	static void  EventLoop(Ctrl *loopctrl = NULL);
+	static void GuiSleep(int ms);
+	
+	static Ptr<Ctrl> focusCtrl;
+	static Ptr<Ctrl> captureCtrl;
+	static int64     EndSessionLoopNo;
+	static bool      ignoreclick;
 	
 public:
 	//static void InitFB();
 	//static void ExitFB();
 	//static void SetDesktopSize(Size sz);
-	static void Invalidate();
+	//static void Invalidate();
 	
-	Absolute2DInterface* GetAbsolute2D();
+
+	void        GuiPlatformConstruct();
+	void        GuiPlatformDestruct();
+	void        GuiPlatformRemove();
+	void        GuiPlatformGetTopRect(Rect& r) const;
+	bool        GuiPlatformRefreshFrameSpecial(const Rect& r);
+	bool        GuiPlatformSetFullRefreshSpecial();
+	static void GuiPlatformSelection(PasteClip& d);
 	
+	Rect        GetScreenView() const;
+	Rect        GetWorkArea() const;
+	
+	virtual void   PostInput();
+	
+	void WndDestroy();
+	void WndUpdate();
+	void WndUpdate(const Rect& r);
+	void WndShow(bool b);
+	void WndSetPos(const Rect& rect);
+	void WndScrollView(const Rect& r, int dx, int dy);
+	Rect GetWndScreenRect() const;
+	bool IsWndOpen() const;
+	void SetWndForeground();
+	bool IsWndForeground() const;
+	void ActivateWnd();
+	void WndEnable(bool b);
+	bool SetWndFocus();
+	bool HasWndFocus() const;
+	bool SetWndCapture();
+	bool HasWndCapture() const;
+	bool ReleaseWndCapture();
+	void WndInvalidateRect(const Rect& r);
+	void SetWndRect(const Rect& r);
+	void SetAlpha(byte alpha);
+	bool IsOpen() const;
+	void SysEndLoop();
+	void SetFocusWnd();
+	void ClickActivateWnd();
+	bool IsForeground() const;
+	void SetForeground();
+	Image   DispatchMouse(int e, Point p, int zd = 0);
+	bool   InLoop() const;
+	
+	void    Enable(bool enable = true);
+	void    Disable()                          { Enable(false); }
+	bool    IsEnabled() const                  { return enabled; }
+	
+	void    SyncLayout(int force = 0);
+	void        RefreshLayout()                          { SyncLayout(1); }
+	void        RefreshLayoutDeep()                      { SyncLayout(2); }
+	
+	void   PopUp(Ctrl *owner = NULL, bool savebits = true, bool activate = true, bool dropshadow = false,
+	             bool topmost = false);
+
+	Event<int>  WhenOpen;
+	Event<int>  WhenClose;
 	
 };
 
@@ -284,6 +497,17 @@ public:
 	
 };
 
+
+
+
+
+
+CtrlFrame& InsetFrame();
+
+
+String GetKeyDesc(dword key);
+
+Point GetMousePos();
 
 
 

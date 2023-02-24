@@ -40,6 +40,16 @@ Image::Image(RawSysImage* raw) {
 	}
 }
 
+Image::Image(Image (*fn)()) {
+	if (fn)
+		*this = fn();
+}
+
+Image::Image(const Image& (*fn)()) {
+	if (fn)
+		*this = fn();
+}
+
 Image::~Image() {
 	Clear();
 }
@@ -193,6 +203,10 @@ const byte* Image::End() const {
 
 Image::operator bool() const {
 	return data_type != NO_DATA;
+}
+
+bool Image::IsNullInstance() const {
+	return data_type == NO_DATA;
 }
 
 int32 Image::GetSerialId() const {

@@ -10,10 +10,16 @@ NAMESPACE_UPP
 
 
 
-class SDraw {
+class SDraw : public Draw {
 	
 public:
+	RTTI_DECL1(SDraw, Draw)
 	virtual ~SDraw() {}
+	
+	void Init(const Rect& r);
+	
+	virtual void PutImage(Point p, const Image& img, const Rect& src) = 0;
+	virtual void PutRect(const Rect& r, Color color) = 0;
 	
 };
 
@@ -52,33 +58,45 @@ public:
 	int GetPitch() const {return pitch;}
 	int GetStride() const {return stride;}
 	
-	void SetSize(Size sz) override;
+	dword GetInfo() const override;
 	Size GetPageSize() const override;
-	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void StartPage() override;
+	void EndPage() override;
+	void BeginOp() override;
+	void EndOp() override;
+	void OffsetOp(Point p) override;
+	bool ClipOp(const Rect& r) override;
+	bool ClipoffOp(const Rect& r) override;
+	bool ExcludeClipOp(const Rect& r) override;
+	bool IntersectClipOp(const Rect& r) override;
+	bool IsPaintingOp(const Rect& r) const override;
+	Rect GetPaintRect() const override;
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
-	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		            Color ink, int n, const int *dx) override;
+	void SysDrawImageOp(int x, int y, const Image& img, Color color) override;
+	void SysDrawImageOp(int x, int y, const Image& img, const Rect& src, Color color) override;
+	void DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) override;
+	void DrawDataOp(int x, int y, int cx, int cy, const String& data, const char *id) override;
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
 	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                        const int *counts, int count_count,
 	                        int width, Color color, Color doxor) override;
-	bool ClipOp(const Rect& r) override;
-	void EndOp() override;
-	void DrawImage(int x, int y, Image img, byte alpha) override;
-	void DrawTriangle(Point a, Point b, Point c, RGBA clr) override;
-	dword GetInfo() const override {TODO}
-	void BeginOp() override {TODO}
-	void OffsetOp(Point p) override {TODO}
-	bool ExcludeClipOp(const Rect& r) override {TODO}
-	bool IntersectClipOp(const Rect& r) override {TODO}
-	bool IsPaintingOp(const Rect& r) const override {TODO}
 	void DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
-	                                   const int *subpolygon_counts, int scc,
-	                                   const int *disjunct_polygon_counts, int dpcc,
-	                                   Color color, int width, Color outline,
-	                                   uint64 pattern, Color doxor) override {TODO}
-	void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) override {TODO}
-	void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) override {TODO}
-	bool ClipoffOp(const Rect& r) override {TODO}
+	                           const int *subpolygon_counts, int scc,
+	                           const int *disjunct_polygon_counts, int dpcc,
+	                           Color color, int width, Color outline,
+	                           uint64 pattern, Color doxor) override;
+	void DrawArcOp(const Rect& rc, Point start, Point end, int width, Color color) override;
+	void DrawEllipseOp(const Rect& r, Color color, int pen, Color pencolor) override;
+	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+		            Color ink, int n, const int *dx) override;
+	void DrawDrawingOp(const Rect& target, const Drawing& w) override;
+	void DrawPaintingOp(const Rect& target, const Painting& w) override;
+	Size GetNativeDpi() const override;
+	void BeginNative() override;
+	void EndNative() override;
+	int  GetCloffLevel() const override;
+	void Escape(const String& data) override;
+	Color GetDefaultInk() const override;
 	
 	Vector<byte>& Data() {return pixels;}
 	const Vector<byte>& GetData() const{return pixels;}

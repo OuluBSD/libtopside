@@ -49,12 +49,13 @@ void CtrlFrame::SetCaptured(CtrlFrame* c) {
 	ctrl->GetWindows()->SetFrameCaptured(c);*/
 }
 
+#if 0
 void CtrlFrame::SetWithMouse(CtrlFrame* c) {
 	TODO
 	/*
 	ctrl->GetWindows()->SetFrameWithMouse(c);*/
 }
-
+#endif
 
 
 int       Ctrl::LoopLevel;
@@ -142,6 +143,10 @@ TopWindow* Ctrl::GetTopWindow() {
 void Ctrl::SetRect(const Rect& r) {
 	SetFrameRect(r);
 	SetPendingRedrawDeep();
+}
+
+void Ctrl::SetRect(int x, int y, int cx, int cy) {
+	SetRect(RectC(x,y,cx,cy));
 }
 
 void Ctrl::SetFrameBox(const Rect& r) {
@@ -488,11 +493,13 @@ void Ctrl::SetCaptured(Ctrl* c) {
 		top->SetCaptured(c);
 }
 
+#if 0
 void Ctrl::SetWithMouse(Ctrl* c) {
 	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
 	if (wm)
 		wm->SetWithMouse(c);
 }
+#endif
 
 CtrlFrame* Ctrl::GetFrameCaptured() {
 	CtrlFrame* f = 0;
@@ -577,7 +584,7 @@ void Ctrl::PaintPreFrame(ProgPainter& pp) {
 		f.FrameLayout(new_content_r);
 	}
 	if (frames.GetCount())
-		pp.Offset(new_content_r);
+		pp.Clipoff(new_content_r);
 	content_r = new_content_r;
 }
 
@@ -602,6 +609,7 @@ void Ctrl::PaintDebug(ProgPainter& pp) {
 	}
 }
 
+#if 0
 Absolute2DInterface* Ctrl::GetAbsolute2D() {
 	TopWindow* tw = GetTopWindow();
 	if (!tw)
@@ -609,6 +617,7 @@ Absolute2DInterface* Ctrl::GetAbsolute2D() {
 	Absolute2DInterface* iface = tw->GetTarget();
 	return iface;
 }
+#endif
 
 
 

@@ -1,0 +1,22 @@
+description "Libtopside VirtualGui implementation for SDL2/OpenGL\377";
+
+uses
+	VirtualGui;
+
+library(POSIX) "SDL2 SDL2main GL";
+
+library(WIN32 MSC) "SDL2.lib SDL2main.lib OpenGL32.lib";
+
+library(WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
+
+pkg_config
+	sdl2;
+
+file
+	Atom.h,
+	Window.cpp,
+	Draw.cpp,
+	Keys.cpp,
+	Event.cpp,
+	Cursor.cpp;
+

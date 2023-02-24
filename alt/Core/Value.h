@@ -199,11 +199,15 @@ public:
 	Value(Nuller);
 	Value(const ValueArray& a);
 	Value(const ValueMap& m);
-	Value(Color m);
+	//Value(Color m);
 	Value(const Value& v) {*this = v;}
 	
 	Value& operator=(const Value& v);
 	
+	enum VSMALL { SMALL };
+	
+	template <class T>
+	Value(const T& value, VSMALL) {TODO}
 	
 	hash_t GetHashValue() const;
 	
@@ -241,6 +245,9 @@ public:
 	operator int() const             { return Is(INT_V) ? GetSmallRaw<int>() : GetOtherInt(); }
 	operator int64() const           { return Is(INT64_V) ? GetSmallRaw<int64>() : GetOtherInt64(); }
 	operator bool() const            { return Is(BOOL_V) ? GetSmallRaw<bool>() : GetOtherBool(); }
+	
+	
+	String operator~() const {TODO}
 	
 };
 
@@ -446,6 +453,7 @@ public:
 
 String Format(String pattern, Value v0=Value(), Value v1=Value(), Value v2=Value(), Value v3=Value(), Value v4=Value(), Value v5=Value(), Value v6=Value(), Value v7=Value());
 
+template <class T> Value SvoToValue(const T& x) { return Value(x, Value::SMALL); }
 
 NAMESPACE_UPP_END
 

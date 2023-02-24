@@ -16,5 +16,6 @@ file
 	TopWindow.h,
 	TopWindow.cpp,
 	Images.h,
-	Images.cpp;
+	Images.cpp,
+	stdids.h;
 

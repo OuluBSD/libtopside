@@ -5,6 +5,9 @@
 
 NAMESPACE_UPP_BEGIN
 
+template <class T>
+inline int sgn(T a) { return a > 0 ? 1 : a < 0 ? -1 : 0; }
+
 template <class I, class T>
 I FindIf(I begin, I end, std::function<T> fn) {
 	while (begin != end) {

@@ -37,9 +37,9 @@ void SImageDraw::Finish() {
 	
 }
 
-void SImageDraw::SetSize(Size sz) {
+/*void SImageDraw::SetSize(Size sz) {
 	this->sz = sz;
-}
+}*/
 
 Size SImageDraw::GetPageSize() const {
 	return sz;
@@ -127,6 +127,7 @@ void SImageDraw::EndOp() {
 	ops.SetCount(ops.GetCount()-1);
 }
 
+#if 0
 void SImageDraw::DrawImage(int x, int y, Image img, byte alpha) {
 	Size sz = img.GetSize();
 	Rect r = RectC(x, y, sz.cx, sz.cy);
@@ -219,6 +220,7 @@ void SImageDraw::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
 		}
 	}
 }
+#endif
 
 byte* SImageDraw::GetIterator(int x, int y) {
 	ASSERT(!pixels.IsEmpty());
