@@ -23,6 +23,7 @@ int TopWindow::Run() {
 	TODO
 }
 
+#if 0
 void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	using namespace Parallel;
@@ -53,7 +54,7 @@ void TopWindow::CreateGeom2DComponent() {
 	
 	#endif
 }
-
+#endif
 #if 0
 void TopWindow::UpdateFromTransform2D() {
 	using namespace Ecs;
@@ -88,6 +89,29 @@ void TopWindow::UpdateFromTransform2D() {
 	}
 }
 #endif
+
+TopWindow& TopWindow::Title(const WString& _title)
+{
+	if(title != _title) {
+		title = _title;
+		SyncTitle();
+	}
+	return *this;
+}
+
+TopWindow& TopWindow::Title(const char *s)
+{
+	return Title(String(s).ToWString());
+}
+
+TopWindow& TopWindow::Icon(const Image& m)
+{
+	if(!icon.IsSame(m)) {
+		icon = m;
+		SyncCaption();
+	}
+	return *this;
+}
 
 
 END_UPP_NAMESPACE

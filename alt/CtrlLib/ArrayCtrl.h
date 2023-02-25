@@ -5,6 +5,7 @@ NAMESPACE_UPP
 
 
 class ArrayCtrl : public Ctrl {
+	HeaderCtrl                 header;
 	
 	
 public:
@@ -18,9 +19,11 @@ public:
 	void	Set(int row, int col, Value o);
 	void	SetCount(int c);
 	void	SetCursor(int row);
-	void	SetLineCy(int cy);
-	void	NoHeader();
 	void	GoEnd();
+	
+	ArrayCtrl& Header(bool b = true)                   { header.Invisible(!b); return *this; }
+	ArrayCtrl& NoHeader()                              { return Header(false); }
+	ArrayCtrl& SetLineCy(int cy);
 	
 	bool	IsCursor() const;
 	int		GetCursor() const;

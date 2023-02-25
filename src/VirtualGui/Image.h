@@ -32,7 +32,7 @@ struct FBImg {
 	FBIMG(SizeBottom)
 	FBIMG(SizeBottomRight)
 	FBIMG(Hand)
-	
+	#undef FBIMG
 };
 
 

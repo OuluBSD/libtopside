@@ -565,6 +565,13 @@ void GeomInteraction2D::DeepLayout() {
 	PostLayout();
 }
 
+GeomInteraction2D& GeomInteraction2D::BottomPosZ(int i, int size) {
+	pos.htype = LogPos::BOTTOM;
+	pos.b = i;
+	pos.h = size;
+	return *this;
+}
+
 GeomInteraction2D& GeomInteraction2D::HSizePos(int l, int r) {
 	pos.htype = LogPos::HORZ;
 	pos.l = l;

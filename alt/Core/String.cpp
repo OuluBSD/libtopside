@@ -7,6 +7,23 @@ template<> StringT<wchar_t>	StringT<char>::ToWString() const {return FromUtf8(Be
 template<> StringT<char>	StringT<wchar_t>::ToString() const {return ToUtf8(Begin(), GetCount());}
 template<> StringT<wchar_t>	StringT<wchar_t>::ToWString() const {return *this;}
 
+#if 0
+template <> StringT<char>::StringT(const char* c) {
+	Zero(); *this = c;
+}
+
+template <> StringT<wchar_t>::StringT(const char* c) {
+	*this = String(c).ToWString();
+}
+
+template <> StringT<wchar_t>::StringT(const wchar_t* c) {
+	Zero(); *this = c;
+}
+
+template <> StringT<char>::StringT(const wchar_t* c) {
+	*this = WString(c).ToString();
+}
+#endif
 
 void DebugStringLog(void* addr, const char* msg, int refs, int event) {
 	LOG("String0: " << HexStr(addr) << ": debug(" << event << "): " << (String)msg << ": " << refs);

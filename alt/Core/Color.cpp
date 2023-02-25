@@ -101,4 +101,32 @@ Color DarkThemeCached(Color c)
 	return c;
 }
 
+Color::Color(RGBA rgba)
+{
+	if(rgba.a == 0)
+		color = 0xffffffff;
+	else {
+		if(rgba.a == 255)
+			color = RGB(rgba.r, rgba.g, rgba.b);
+		else {
+			int alpha = 65536 / rgba.a;
+			color = RGB((alpha * rgba.r) >> 8, (alpha * rgba.g) >> 8, (alpha * rgba.b) >> 8);
+		}
+	}
+}
+
+Color::operator RGBA() const
+{
+	RGBA color;
+	if(IsNullInstance())
+		Zero(color);
+	else {
+		color.r = GetR();
+		color.g = GetG();
+		color.b = GetB();
+		color.a = 255;
+	}
+	return color;
+}
+
 NAMESPACE_UPP_END

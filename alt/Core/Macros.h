@@ -9,7 +9,6 @@ NAMESPACE_UPP_BEGIN
 #endif
 
 
-#define t_(x) x
 
 #if !defined SCHAR_MIN
 #  define SCHAR_MIN		(-128)
@@ -129,7 +128,13 @@ void AppMain()
 
 #define COMBINE2(a, b) a##b
 #define COMBINE3(a, b, c) a##b##c
+#define COMBINE4__(a, b, c, d)     a##b##c##d
+#define COMBINE4(a, b, c, d)       COMBINE4__(a, b, c, d)
+#define COMBINE5__(a, b, c, d, e)  a##b##c##d##e
+#define COMBINE5(a, b, c, d, e)    COMBINE5__(a, b, c, d, e)
+
 #define COMBINE(a, b) COMBINE2(a, b)
+
 
 #define MK_str(x)		#x
 #define __LINESTR__		MK_str(__LINE__)

@@ -217,6 +217,35 @@ int64 Image::GetAuxData() const {
 	return aux_data;
 }
 
+bool Image::IsSame(const Image& i) const {
+	if (IsImageDataRef() && i.IsImageDataRef()) {
+		ImageDataRef* data0 = GetData();
+		ImageDataRef* data1 = i.GetData();
+		if (data0 == data1)
+			return true;
+	}
+	hash_t h0 = GetHashValue();
+	hash_t h1 = i.GetHashValue();
+	return h0 == h1;
+}
+
+hash_t Image::GetHashValue() const {
+	const byte* it = Begin();
+	const byte* end = End();
+	if (it && end) {
+		CombineHash c;
+		while (it != end) {
+			c.Put(*it++);
+		}
+		return c.Get();
+	}
+	return 0;
+}
+
+Image::operator Value() const {
+	TODO
+}
+
 
 
 

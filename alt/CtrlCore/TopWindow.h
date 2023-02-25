@@ -84,8 +84,9 @@ public:
 	void        GuiPlatformDestruct();
 	void       SerializePlacement(Stream& s, bool reminimize = false);
 	
-	TopWindow& Title(String title);
-	TopWindow& Icon(Image img);
+	TopWindow& Title(const WString& title);
+	TopWindow& Title(const char* title);
+	TopWindow& Icon(const Image& m);
 	
 };
 

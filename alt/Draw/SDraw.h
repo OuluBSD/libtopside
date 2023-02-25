@@ -58,7 +58,7 @@ public:
 	int GetPitch() const {return pitch;}
 	int GetStride() const {return stride;}
 	
-	dword GetInfo() const override;
+	/*dword GetInfo() const override;
 	Size GetPageSize() const override;
 	void StartPage() override;
 	void EndPage() override;
@@ -97,7 +97,7 @@ public:
 	int  GetCloffLevel() const override;
 	void Escape(const String& data) override;
 	Color GetDefaultInk() const override;
-	
+	*/
 	Vector<byte>& Data() {return pixels;}
 	const Vector<byte>& GetData() const{return pixels;}
 	

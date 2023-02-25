@@ -7,6 +7,10 @@ NAMESPACE_UPP_BEGIN
 String ToUtf8(const wchar_t* s, int len);
 WString FromUtf8(const char* s, int len);
 
+inline String ToUtf8(wchar code) { return ToUtf8(&code, 1); }
+
+extern Tuple<dword, const char *> KeyNames__[];
+
 #if !defined flagMSC
 typedef std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> UnicodeConverter;
 inline UnicodeConverter& GetUnicodeConverter() {static UnicodeConverter conv; return conv;}

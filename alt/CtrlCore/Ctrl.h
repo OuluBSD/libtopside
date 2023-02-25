@@ -329,7 +329,8 @@ public:
 	Ctrl* GetIndexChild(int i);
 	void RemoveChild(Ctrl* c);
 	int GetChildCount() const;
-	void SetFrame(CtrlFrame&);
+	Ctrl& SetFrame(CtrlFrame&);
+	Ctrl& SetFrame(int i, CtrlFrame& fr);
 	void UpdateArea(SystemDraw& draw, const Rect& clip);
 	
 	Ctrl* GetParent();
@@ -463,10 +464,13 @@ public:
 	void SetForeground();
 	Image   DispatchMouse(int e, Point p, int zd = 0);
 	bool   InLoop() const;
+	int GetFrameCount() const;
+	void        RefreshParentLayout();
 	
 	void    Enable(bool enable = true);
 	void    Disable()                          { Enable(false); }
 	bool    IsEnabled() const                  { return enabled; }
+	bool        InFrame() const                          { return inframe; }
 	
 	void    SyncLayout(int force = 0);
 	void        RefreshLayout()                          { SyncLayout(1); }
@@ -500,10 +504,22 @@ public:
 
 
 
+class BorderFrame : public CtrlFrame {
+public:
+	virtual void FrameLayout(Rect& r);
+	virtual void FramePaint(Draw& w, const Rect& r);
+	virtual void FrameAddSize(Size& sz);
+
+protected:
+	const ColorF *border;
+
+public:
+	BorderFrame(const ColorF *border) : border(border) {}
+};
+
 
 
 CtrlFrame& InsetFrame();
-
 
 String GetKeyDesc(dword key);
 

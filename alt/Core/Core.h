@@ -29,6 +29,8 @@
 #include <SharedCore/CtrlEvent.h>
 #include "Http.h"
 #include "Gtypes.h"
+#include "t_.h"
+#include "i18n.h"
 
 
 

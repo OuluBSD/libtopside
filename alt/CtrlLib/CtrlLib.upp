@@ -6,6 +6,8 @@ uses
 file
 	CtrlLib.h,
 	CtrlLib readonly separator,
+	LabelBase.h,
+	LabelBase.cpp,
 	PushCtrl.h,
 	PushCtrl.cpp,
 	TextEdit.h,
@@ -14,6 +16,8 @@ file
 	FileSel.cpp,
 	TabCtrl.h,
 	TabCtrl.cpp,
+	HeaderCtrl.h,
+	HeaderCtrl.cpp,
 	ArrayCtrl.h,
 	ArrayCtrl.cpp,
 	ScrollBar.h,

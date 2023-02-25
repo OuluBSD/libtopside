@@ -6,11 +6,6 @@ NAMESPACE_UPP
 
 
 class Button : public Ctrl {
-	Image img;
-	String label;
-	bool is_pressed = false;
-	
-	TimeCallback tc;
 	
 public:
 	struct Style : ChStyle<Style> {
@@ -24,6 +19,14 @@ public:
 		bool  transparent;
 		bool  focus_use_ok;
 	};
+	
+private:
+	const Style *style;
+	Image img;
+	String label;
+	bool is_pressed = false;
+	
+	TimeCallback tc;
 	
 public:
 	RTTI_DECL1(Button, Ctrl)
@@ -44,6 +47,7 @@ public:
 	
 	Button&  EdgeStyle() {return SetStyle(StyleEdge());}
 	
+	static const Style& StyleNormal();
 	static const Style& StyleEdge();
 	
 	

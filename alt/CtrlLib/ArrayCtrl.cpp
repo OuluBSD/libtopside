@@ -3,11 +3,20 @@
 NAMESPACE_UPP
 
 
+
 ArrayCtrl::ArrayCtrl() {
 	
 }
 
+void ArrayCtrl::Add(Value v) {
+	TODO
+}
+
 void ArrayCtrl::AddIndex() {
+	TODO
+}
+
+void ArrayCtrl::GoEnd() {
 	TODO
 }
 
@@ -45,6 +54,15 @@ Value ArrayCtrl::Get(int row, int col) const {
 
 void ArrayCtrl::Clear() {
 	TODO
+}
+
+ArrayCtrl& ArrayCtrl::SetLineCy(int cy)
+{
+	TODO/*linecy = cy;
+	Reline(0, 0);
+	sb.SetLine(cy);
+	Refresh();
+	return *this;*/
 }
 
 

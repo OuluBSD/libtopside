@@ -5,7 +5,19 @@ NAMESPACE_UPP
 
 
 
+Draw::~Draw() {
+	
+}
 
+Color Draw::GetDefaultInk() const
+{
+	dword w = GetInfo();
+	if(w & DRAWING)
+		return DefaultInk();
+	if(w & DOTS)
+		return Black();
+	return SColorText();
+}
 
 
 #if 0
@@ -33,6 +45,10 @@ void Draw::DrawRect(int x, int y, int cx, int cy, Color color) {
 
 void Draw::DrawRect(const Rect& rect, Color color) {
 	DrawRectOp(rect.top, rect.top, rect.Width(), rect.Height(), color);
+}
+
+void Draw::DrawRect(ts::Rect_<int> const&, ts::Color) {
+	TODO
 }
 
 void Draw::DrawPolyline(const Point *vertices, int count, int width, Color color, Color doxor) {
@@ -78,8 +94,158 @@ void Draw::DrawEllipse(int x, int y, int cx, int cy, Color color, int pen, Color
 #endif
 
 
+void Draw::DrawText(int x, int y, const wchar *text, Font font,
+                    Color ink, int n, const int *dx)
+{
+	DrawText(x, y, 0, text, font, ink, n, dx);
+}
 
+// ---------------------------
 
+void Draw::DrawText(int x, int y, int angle, const WString& text, Font font,
+                    Color ink, const int *dx)
+{
+	DrawText(x, y, angle, ~text, font, ink, text.GetLength(), dx);
+}
+
+void Draw::DrawText(int x, int y, const WString& text, Font font, Color ink, const int *dx)
+{
+	DrawText(x, y, 0, text, font, ink, dx);
+}
+
+// ---------------------------
+
+void Draw::DrawText(int x, int y, int angle, const char *text, byte charset, Font font,
+                    Color ink, int n, const int *dx)
+{
+	TODO //DrawText(x, y, angle, TextUnicode(text, n, charset, font), font, ink, dx);
+}
+
+void Draw::DrawText(int x, int y, const char *text, byte charset, Font font,
+                    Color ink, int n, const int *dx)
+{
+	DrawText(x, y, 0, text, charset, font, ink, n, dx);
+}
+
+// ---------------------------
+
+void Draw::DrawText(int x, int y, int angle, const char *text,
+                    Font font, Color ink, int n, const int *dx)
+{
+	TODO //DrawText(x, y, angle, text, CHARSET_DEFAULT, font, ink, n, dx);
+}
+
+void Draw::DrawText(int x, int y, const char *text, Font font,
+                    Color ink, int n, const int *dx)
+{
+	TODO //DrawText(x, y, text, CHARSET_DEFAULT, font, ink, n, dx);
+}
+
+// ---------------------------
+
+void Draw::DrawText(int x, int y, int angle, const String& text, Font font,
+                    Color ink, const int *dx)
+{
+	DrawText(x, y, angle, text, font, ink, text.GetLength(), dx);
+}
+
+void Draw::DrawText(int x, int y, const String& text, Font font, Color ink, const int *dx)
+{
+	TODO //WString h = TextUnicode(text, text.GetLength(), CHARSET_DEFAULT, font);
+	//DrawText(x, y, h, font, ink, h.GetLength(), dx);
+}
+
+void Draw::DrawPolyline(const Point *vertices, int count,
+                        int width, Color color, Color doxor)
+{
+	DrawPolyPolyline(vertices, count, &count, 1, width, color, doxor);
+}
+
+void Draw::DrawPolyline(const Vector<Point>& vertices,
+                        int width, Color color, Color doxor)
+{
+	DrawPolyline(vertices.Begin(), vertices.GetCount(), width, color, doxor);
+}
+
+void Draw::DrawRect(const Rect& rect, Color color)
+{
+	DrawRect(rect.left, rect.top, rect.GetWidth(), rect.GetHeight(), color);
+}
+
+void Draw::DrawRect(int x, int y, int cx, int cy, Color color)
+{
+	DrawRectOp(x, y, cx, cy, color);
+}
+
+void Draw::DrawLine(Point p1, Point p2, int width, Color color)
+{
+	DrawLine(p1.x, p1.y, p2.x, p2.y, width, color);
+}
+
+void Draw::DrawLine(int x1, int y1, int x2, int y2, int width, Color color)
+{
+	DrawLineOp(x1, y1, x2, y2, width, ResolveInk(color));
+}
+
+Size Draw::GetPageSize() const
+{
+	return Size(INT_MAX / 2, INT_MAX / 2);
+}
+
+void Draw::StartPage() {}
+void Draw::EndPage() {}
+
+Rect Draw::GetPaintRect() const
+{
+	return Rect(-(INT_MAX / 2), -(INT_MAX / 2), INT_MAX / 2, INT_MAX / 2);
+}
+
+void Draw::SysDrawImageOp(int x, int y, const Image& img, Color color)
+{
+	NEVER();
+}
+
+void Draw::SysDrawImageOp(int x, int y, const Image& img, const Rect& src, Color color)
+{
+	if(src == Rect(img.GetSize()))
+		SysDrawImageOp(x, y, img, color);
+	else {
+		Clipoff(x, y, src.GetWidth(), src.GetHeight());
+		SysDrawImageOp(-src.left, -src.top, img, color);
+		End();
+	}
+}
+
+void Draw::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color)
+{
+	TODO
+}
+
+void Draw::DrawDataOp(int x, int y, int cx, int cy, const String& data, const char *id)
+{
+	TODO
+}
+
+void Draw::DrawDrawingOp(const Rect& target, const Drawing& w) {
+	TODO
+}
+
+void Draw::DrawPaintingOp(const Rect& target, const Painting& pw) {
+	TODO
+}
+
+Size Draw::GetNativeDpi() const { return Size(96, 96); }
+
+void Draw::BeginNative() {}
+void Draw::EndNative() {}
+int Draw::GetCloffLevel() const { return 0; }
+void Draw::Escape(const String& data) {}
+
+void Draw::DrawImage(int x, int y, const Image& img)
+{
+	Size sz = img.GetSize();
+	DrawImageOp(x, y, sz.cx, sz.cy, img, img.GetSize(), Null);
+}
 
 
 
@@ -274,6 +440,20 @@ void NilDraw::DrawDrawingOp(const Rect& target, const Drawing& w) {}
 void NilDraw::DrawPaintingOp(const Rect& target, const Painting& w) {}
 
 
+
+
+
+void DrawTextEllipsis(Draw& w, int x, int y, int cx, const wchar *text, const char *ellipsis,
+				      Font font, Color ink, int n)
+{
+	TODO
+}
+
+void DrawTextEllipsis(Draw& w, int x, int y, int cx, const char *text, const char *ellipsis,
+				      Font font, Color ink, int n)
+{
+	return DrawTextEllipsis(w, x, y, cx, String(text).ToWString(), ellipsis, font, ink, n);
+}
 
 
 END_UPP_NAMESPACE

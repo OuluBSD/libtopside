@@ -45,6 +45,33 @@ STD_CURSOR(Hand)
 #undef STD_CURSOR
 
 
+#if IS_TS_CORE
+#define FBIMG(x) Image& FBImg::x() {TODO}
+FBIMG(close)
+FBIMG(maximize)
+FBIMG(overlap)
+FBIMG(border)
+FBIMG(title)
+FBIMG(bgtitle)
+FBIMG(Arrow)
+FBIMG(Wait)
+FBIMG(IBeam)
+FBIMG(No)
+FBIMG(SizeAll)
+FBIMG(SizeHorz)
+FBIMG(SizeVert)
+FBIMG(SizeTopLeft)
+FBIMG(SizeTop)
+FBIMG(SizeTopRight)
+FBIMG(SizeLeft)
+FBIMG(SizeRight)
+FBIMG(SizeBottomLeft)
+FBIMG(SizeBottom)
+FBIMG(SizeBottomRight)
+FBIMG(Hand)
+#undef FBIMG
+#endif
+
 END_UPP_NAMESPACE
 
 #endif

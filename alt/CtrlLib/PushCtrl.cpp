@@ -53,6 +53,37 @@ void Button::MouseMove(Point content_p, dword keyflags) {
 	Refresh();
 }
 
+CH_STYLE(Button, Style, StyleNormal)
+{
+	CtrlsImageLook(look, CtrlsImg::I_B);
+	monocolor[0] = monocolor[1] = monocolor[2] = monocolor[3] =
+		Blend(Blend(SColorHighlight, SColorShadow), SColorLabel, 80);
+	textcolor[0] = textcolor[1] = textcolor[2] = SColorLabel();
+	textcolor[3] = SColorDisabled();
+	font = StdFont();
+	pressoffset = Point(0, 0);
+	focusmargin = 3;
+	overpaint = 0;
+	transparent = true;
+	focus_use_ok = true;
+}
+
+CH_STYLE(Button, Style, StyleEdge)
+{
+	Assign(Button::StyleNormal());
+	CtrlsImageLook(look, CtrlsImg::I_EB);
+}
+
+Button& Button::SetStyle(const Button::Style& s)
+{
+	if(style != &s) {
+		style = &s;
+		RefreshLayout();
+		Refresh();
+	}
+	return *this;
+}
+
 
 
 

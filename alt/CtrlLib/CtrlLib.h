@@ -4,12 +4,14 @@
 
 #include <CtrlCore/CtrlCore.h>
 
+#include "LabelBase.h"
 #include "PushCtrl.h"
 #include "TextEdit.h"
 #include "StaticCtrl.h"
 #include "FileSel.h"
 #include "Bar.h"
 #include "TabCtrl.h"
+#include "HeaderCtrl.h"
 #include "ArrayCtrl.h"
 #include "TreeCtrl.h"
 #include "Splitter.h"

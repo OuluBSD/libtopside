@@ -52,6 +52,7 @@ public:
 	void SetAuxData(int64 d);
 	void Set(void* data, DataType dt, int64 aux_data=0);
 	
+	bool IsSame(const Image& i) const;
 	bool IsEmpty() const;
 	Point GetHotSpot() const;
 	void CenterHotSpot();
@@ -69,6 +70,7 @@ public:
 	bool IsImageDataRef() const;
 	operator bool() const;
 	bool IsNullInstance() const;
+	hash_t GetHashValue() const;
 	
 	void Chk();
 	void Serialize(Stream& s);

@@ -202,7 +202,8 @@ public:
 	bool  IsPainting(const Rect& r) const               { return IsPaintingOp(r); }
 	bool  IsPainting(int x, int y, int cx, int cy) const;
 
-public:
+protected:
+	Color ResolveInk(Color c) const                     { return c == DefaultInk() ? GetDefaultInk() : c; }
 	
 };
 
@@ -256,7 +257,6 @@ struct DrawProxy : Draw {
 	void EndNative() override;
 	int  GetCloffLevel() const override;
 	void Escape(const String& data) override;
-	Color GetDefaultInk() const override;
 	
 };
 

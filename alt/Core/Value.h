@@ -188,7 +188,7 @@ protected:
 	}
 public:
 	Value();
-	Value(bool b);
+	/*Value(bool b);
 	Value(int i);
 	Value(int64 i);
 	Value(double d);
@@ -198,10 +198,10 @@ public:
 	Value(Time d);
 	Value(Nuller);
 	Value(const ValueArray& a);
-	Value(const ValueMap& m);
+	Value(const ValueMap& m);*/
 	//Value(Color m);
 	Value(const Value& v) {*this = v;}
-	
+	template <class T> Value(const T& o);
 	Value& operator=(const Value& v);
 	
 	enum VSMALL { SMALL };
@@ -215,6 +215,7 @@ public:
 	bool     IsError() const         { return GetType() == ERROR_V; }
 	bool     IsVoid() const          { return Is(VOIDV) || IsError(); }
 	bool     IsNull() const;
+	bool     IsNullInstance() const;
 
 	template <class T>	bool     Is() const;
 	template <class T>	const T& To() const;
@@ -237,7 +238,7 @@ public:
 	String   GetOtherString() const;
 	hash_t   GetOtherHashValue() const;
 	
-	operator String() const          { return IsString() ? data : GetOtherString(); }
+	/*operator String() const          { return IsString() ? data : GetOtherString(); }
 	operator WString() const;
 	operator Date() const            { return Is(DATE_V) ? GetSmallRaw<Date>() : GetOtherDate(); }
 	operator Time() const            { return Is(TIME_V) ? GetSmallRaw<Time>() : GetOtherTime(); }
@@ -245,12 +246,16 @@ public:
 	operator int() const             { return Is(INT_V) ? GetSmallRaw<int>() : GetOtherInt(); }
 	operator int64() const           { return Is(INT64_V) ? GetSmallRaw<int64>() : GetOtherInt64(); }
 	operator bool() const            { return Is(BOOL_V) ? GetSmallRaw<bool>() : GetOtherBool(); }
-	
+	*/
+	template <class T> operator T() const;
 	
 	String operator~() const {TODO}
 	
 };
 
+
+template <class T> Value::Value(const T& o) {TODO_}
+template <class T> Value::operator T() const {TODO_}
 
 template <class T>
 Value RawToValue(const T& o) {TODO_}

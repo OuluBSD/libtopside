@@ -17,6 +17,17 @@ public:
 	
 };
 
+class CtrlsImg {
+	
+public:
+	
+	#define CTRLIMG(x) static const Image& x();
+	CTRLIMG(I_B)
+	CTRLIMG(I_EB)
+	#undef CTRLIMG
+	
+};
+
 
 END_UPP_NAMESPACE
 

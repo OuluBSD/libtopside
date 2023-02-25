@@ -6,6 +6,11 @@ NAMESPACE_UPP
 const Nuller Null;
 
 
+Value::Value() {
+	
+}
+
+#if 0
 Value::Value(bool b) {
 	Push(BOOL_V, b);
 }
@@ -53,6 +58,7 @@ Value::Value(const ValueArray& a) {
 Value::Value(const ValueMap& m) {
 	TODO
 }
+#endif
 
 /*Value::Value(Color m) {
 	Push(COLOR_V, m);
@@ -71,6 +77,10 @@ dword Value::GetType() const {
 }
 
 bool Value::IsNull() const {
+	return GetType() == VOID_V;
+}
+
+bool Value::IsNullInstance() const {
 	return GetType() == VOID_V;
 }
 

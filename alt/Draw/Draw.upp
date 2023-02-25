@@ -15,6 +15,7 @@ file
 	Image.h,
 	Image.cpp,
 	ImageOp.h,
+	ImageOp.cpp,
 	iml_header.h,
 	iml_source.h,
 	SDraw readonly separator,
@@ -22,5 +23,6 @@ file
 	SImageDraw.cpp,
 	Chameleon readonly separator,
 	Cham.h,
+	Cham.cpp,
 	SColors.cpp;
 

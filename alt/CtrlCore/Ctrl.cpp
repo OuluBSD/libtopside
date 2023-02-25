@@ -542,12 +542,6 @@ void Ctrl::DeepFrameLayout() {
 	content_r = new_content_r;
 }
 
-
-Rect Ctrl::GetWorkArea() const {
-	TODO
-}
-
-
 bool Ctrl::ReleaseCtrlCapture() {
 	TODO
 	/*GuiLock __;
@@ -627,6 +621,7 @@ Absolute2DInterface* Ctrl::GetAbsolute2D() {
 
 
 
+
 Bar::Item::Item() {
 	
 }
@@ -697,6 +692,92 @@ Bar::Item& Bar::Item::RightLabel(const char *text) {
 
 Bar::Item& Bar::Item::Key(KeyInfo& (*key)()) {
 	TODO
+}
+
+
+
+
+
+
+
+Tuple<dword, const char *> KeyNames__[ ] = {
+	{ K_A, tt_("key\vA") }, { K_B, tt_("key\vB") }, { K_C, tt_("key\vC") }, { K_D, tt_("key\vD") },
+	{ K_E, tt_("key\vE") }, { K_F, tt_("key\vF") }, { K_G, tt_("key\vG") }, { K_H, tt_("key\vH") },
+	{ K_I, tt_("key\vI") }, { K_J, tt_("key\vJ") }, { K_K, tt_("key\vK") }, { K_L, tt_("key\vL") },
+	{ K_M, tt_("key\vM") }, { K_N, tt_("key\vN") }, { K_O, tt_("key\vO") }, { K_P, tt_("key\vP") },
+	{ K_Q, tt_("key\vQ") }, { K_R, tt_("key\vR") }, { K_S, tt_("key\vS") }, { K_T, tt_("key\vT") },
+	{ K_U, tt_("key\vU") }, { K_V, tt_("key\vV") }, { K_W, tt_("key\vW") }, { K_X, tt_("key\vX") },
+	{ K_Y, tt_("key\vY") }, { K_Z, tt_("key\vZ") }, { K_0, tt_("key\v0") }, { K_1, tt_("key\v1") },
+	{ K_2, tt_("key\v2") }, { K_3, tt_("key\v3") }, { K_4, tt_("key\v4") }, { K_5, tt_("key\v5") },
+	{ K_6, tt_("key\v6") }, { K_7, tt_("key\v7") }, { K_8, tt_("key\v8") }, { K_9, tt_("key\v9") },
+	{ K_F1, tt_("key\vF1") }, { K_F2, tt_("key\vF2") }, { K_F3, tt_("key\vF3") }, { K_F4, tt_("key\vF4") },
+	{ K_F5, tt_("key\vF5") }, { K_F6, tt_("key\vF6") }, { K_F7, tt_("key\vF7") }, { K_F8, tt_("key\vF8") },
+	{ K_F9, tt_("key\vF9") }, { K_F10, tt_("key\vF10") }, { K_F11, tt_("key\vF11") }, { K_F12, tt_("key\vF12") },
+	{ K_TAB, tt_("key\vTab") }, { K_SPACE, tt_("key\vSpace") },
+	{ K_RETURN, tt_("key\vEnter") }, { K_BACKSPACE, tt_("key\vBackspace") },
+	{ K_CAPSLOCK, tt_("key\vCaps Lock") }, { K_ESCAPE, tt_("key\vEsc") },
+	{ K_PAGEUP, tt_("key\vPage Up") }, { K_PAGEDOWN, tt_("key\vPage Down") },
+	{ K_END, tt_("key\vEnd") }, { K_HOME, tt_("key\vHome") },
+	{ K_LEFT, tt_("key\vLeft") }, { K_UP, tt_("key\vUp") },
+	{ K_RIGHT, tt_("key\vRight") }, { K_DOWN, tt_("key\vDown") },
+	{ K_INSERT, tt_("key\vInsert") }, { K_DELETE, tt_("key\vDelete") },{ K_BREAK, tt_("key\vBreak") },
+	{ K_MULTIPLY, tt_("key\vNum[*]") }, { K_ADD, tt_("key\vNum[+]") }, { K_SUBTRACT, tt_("key\vNum[-]") }, { K_DIVIDE, tt_("key\vNum[/]") },
+	{ K_ALT_KEY, tt_("key\vAlt") }, { K_SHIFT_KEY, tt_("key\vShift") }, { K_CTRL_KEY, tt_("key\vCtrl") },
+	{ K_PLUS, tt_("key\v[+]") }, { K_MINUS, tt_("key\v[-]") }, { K_COMMA, tt_("key\v[,]") }, { K_PERIOD, tt_("key\v[.]") },
+	{ K_SEMICOLON, tt_("key\v[;]") }, { K_SLASH, tt_("key\v[/]") }, { K_GRAVE, tt_("key\v[`]") }, { K_LBRACKET, tt_("key\v[[]") },
+	{ K_BACKSLASH, tt_("key\v[\\]") }, { K_RBRACKET, tt_("key\v[]]") }, { K_QUOTEDBL, tt_("key\v[']") },
+#ifdef GUI_COCOA
+	{ K_OPTION_KEY, tt_("key\vOption") },
+#endif
+	{ IK_DBL_CLICK, tt_("key\v[double-click]") },
+	{ (dword)K_MOUSE_FORWARD, tt_("key\v[Forward]") },
+	{ (dword)K_MOUSE_BACKWARD, tt_("key\v[Backward]") },
+	{ 0, NULL }
+};
+
+
+int Ctrl::GetFrameCount() const {
+	TODO //return multi_frame ? frame.multi.count : frame.frame ? 1 : 0;
+}
+
+Ctrl& Ctrl::SetFrame(int i, CtrlFrame& fr) {
+	TODO
+	/*GuiLock __;
+	LLOG("SetFrame " << typeid(fr).name());
+	while(GetFrameCount() <= i)
+		AddFrame(NullFrame());
+	Frame& f = GetFrame0(i);
+	f.frame->FrameRemove();
+	f.frame = &fr;
+	fr.FrameAdd(*this);
+	SyncLayout();
+	RefreshFrame();
+	return *this;*/
+}
+
+Ctrl& Ctrl::SetFrame(CtrlFrame& frm) {
+	return SetFrame(0, frm);
+}
+
+void Ctrl::PostInput()
+{
+	GuiLock __;
+	Ctrl *parent = GetParent();
+	if(parent)
+		parent->PostInput();
+}
+
+void Ctrl::RefreshParentLayout()
+{
+	Ctrl *parent = GetParent();
+	if(parent)
+		parent->RefreshLayout();
+}
+
+bool Ctrl::IsForeground() const
+{
+	GuiLock __;
+	TODO //return GetTopCtrl()->IsWndForeground();
 }
 
 
