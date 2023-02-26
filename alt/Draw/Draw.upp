@@ -20,6 +20,7 @@ file
 	iml_source.h,
 	SDraw readonly separator,
 	SDraw.h,
+	SDraw.cpp,
 	SImageDraw.cpp,
 	Chameleon readonly separator,
 	Cham.h,

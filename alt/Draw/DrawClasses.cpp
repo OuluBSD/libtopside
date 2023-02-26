@@ -19,6 +19,10 @@ Color Draw::GetDefaultInk() const
 	return SColorText();
 }
 
+void Draw::DrawEllipse(int x, int y, int cx, int cy, Color color,
+		             int pen, Color pencolor) {
+	TODO
+}
 
 #if 0
 
@@ -111,6 +115,11 @@ void Draw::DrawText(int x, int y, int angle, const WString& text, Font font,
 void Draw::DrawText(int x, int y, const WString& text, Font font, Color ink, const int *dx)
 {
 	DrawText(x, y, 0, text, font, ink, dx);
+}
+
+void Draw::DrawText(int x, int y, int angle, const wchar_t *text, Font font,
+		          Color ink, int n, const int *dx) {
+	TODO
 }
 
 // ---------------------------
@@ -247,6 +256,15 @@ void Draw::DrawImage(int x, int y, const Image& img)
 	DrawImageOp(x, y, sz.cx, sz.cy, img, img.GetSize(), Null);
 }
 
+bool Draw::Clipoff(int x, int y, int cx, int cy) {
+	return Clipoff(RectC(x,y,cx,cy));
+}
+
+bool Draw::Clip(int x, int y, int cx, int cy) {
+	return Clip(RectC(x,y,cx,cy));
+}
+
+
 
 
 dword DrawProxy::GetInfo() const
@@ -350,6 +368,11 @@ void DrawProxy::DrawPolyPolylineOp(const Point *vertices, int vertex_count, cons
 	ptr->DrawPolyPolylineOp(vertices, vertex_count, counts, count_count, width, color, doxor);
 }
 
+void DrawPolyPolyline(const Vector<Point>& vertices, const Vector<int>& counts,
+		                  int width, Color color, Color doxor) {
+	TODO
+}
+	
 void DrawProxy::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count, const int *subpolygon_counts,
                                       int scc, const int *disjunct_polygon_counts, int dpcc, Color color,
                                       int width, Color outline, uint64 pattern, Color doxor)
@@ -453,6 +476,17 @@ void DrawTextEllipsis(Draw& w, int x, int y, int cx, const char *text, const cha
 				      Font font, Color ink, int n)
 {
 	return DrawTextEllipsis(w, x, y, cx, String(text).ToWString(), ellipsis, font, ink, n);
+}
+
+
+void SweepMkImageCache()
+{
+	TODO //AdjustValueCache();
+}
+
+void Subtract(Vector<Rect>& rr, const Rect& sub)
+{
+	TODO
 }
 
 

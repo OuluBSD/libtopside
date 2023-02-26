@@ -42,5 +42,8 @@ void ChPaint(Draw& w, int x, int y, int cx, int cy, const Value& look, Color ink
 	sChOp(w, RectC(x, y, cx, cy), look, LOOK_PAINT, ink);
 }
 
+void ChRegisterStyle__(byte& state, byte& registered, void (*init)()) {
+	TODO
+}
 
 NAMESPACE_UPP_END

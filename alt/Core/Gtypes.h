@@ -330,6 +330,18 @@ struct Rect_ : Moveable<Rect_<T>> {
 };
 
 template <class T>
+void Rect_<T>::Intersect(const Rect_<T>& r) {
+	if(r.left > left) left = r.left;
+	if(r.top > top) top = r.top;
+	if(right < left) right = left;
+	if(r.right < right) right = r.right;
+	if(r.bottom < bottom) bottom = r.bottom;
+	if(bottom < top) bottom = top;
+}
+
+
+
+template <class T>
 bool operator==(const Rect_<T>& a, const Rect_<T>& b) {
 	return
 		a.top    == b.top &&

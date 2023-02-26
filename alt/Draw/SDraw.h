@@ -12,29 +12,11 @@ NAMESPACE_UPP
 
 class SDraw : public Draw {
 	
-public:
-	RTTI_DECL1(SDraw, Draw)
-	virtual ~SDraw() {}
-	
-	void Init(const Rect& r);
-	
-	virtual void PutImage(Point p, const Image& img, const Rect& src) = 0;
-	virtual void PutRect(const Rect& r, Color color) = 0;
-	
-};
-
-struct SImageDraw : Draw {
-	Size sz;
-	int pitch = 0;
-	int stride = 0;
-	Vector<byte> pixels;
-	
 	struct Op : Moveable<Op> {
 		Rect cur_area;
 	};
 	Vector<Op> ops;
 		
-	Rect cur_area;
 	
 	byte AtRGBA(RGBA rgba, int i);
 	void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color);
@@ -44,21 +26,44 @@ struct SImageDraw : Draw {
 	bool DoOpsHorz(int& x0, int& x1);
 	bool DoOps(Rect& r);
 	
-public:
-	SImageDraw() {}
-	SImageDraw(Size sz) : sz(0,0) {Create(sz);}
-	SImageDraw(Size sz, int stride) : sz(0,0) {Create(sz, stride);}
-	SImageDraw(int cx, int cy) : sz(0,0) {Create(Size(cx,cy));}
 	
-	void Create(Size sz);
-	void Create(Size sz, int stride);
+protected:
+	Size sz;
+	byte* pixels = 0;
+	int pitch = 0;
+	int stride = 0;
+	
+	Rect cur_area;
+	
+public:
+	RTTI_DECL1(SDraw, Draw)
+	virtual ~SDraw() {}
+	
+	void Init(const Rect& r);
+	
 	void Finish();
 	int GetWidth() const {return sz.cx;}
 	int GetHeight() const {return sz.cy;}
 	int GetPitch() const {return pitch;}
 	int GetStride() const {return stride;}
+	int GetLength() const {return sz.cy * pitch;}
 	
-	/*dword GetInfo() const override;
+	byte* GetIterator(int x, int y);
+	void Zero();
+	void SwapRG();
+	
+	void DrawPixel(int x, int y, RGBA color);
+	void DrawPixel(int x, int y, Color color);
+	void DrawHLine(int x0, int x1, int y, Color color);
+	void DrawLine(int x0, int y0, int x1, int y1, Color color);
+	
+	operator Image() {return GetImage();}
+	Image GetImage();
+	
+	virtual void PutImage(Point p, const Image& img, const Rect& src) = 0;
+	virtual void PutRect(const Rect& r, Color color) = 0;
+	
+	dword GetInfo() const override;
 	Size GetPageSize() const override;
 	void StartPage() override;
 	void EndPage() override;
@@ -97,22 +102,27 @@ public:
 	int  GetCloffLevel() const override;
 	void Escape(const String& data) override;
 	Color GetDefaultInk() const override;
-	*/
-	Vector<byte>& Data() {return pixels;}
-	const Vector<byte>& GetData() const{return pixels;}
 	
-	byte* GetIterator(int x, int y);
-	void Zero();
-	void SwapRG();
+};
+
+class SImageDraw : public SDraw {
+	Vector<byte> data;
 	
-	void DrawPixel(int x, int y, RGBA color);
-	void DrawPixel(int x, int y, Color color);
-	void DrawHLine(int x0, int x1, int y, Color color);
-	void DrawLine(int x0, int y0, int x1, int y1, Color color);
+public:
+	RTTI_DECL1(SImageDraw, SDraw)
+	SImageDraw() {}
+	SImageDraw(Size sz) {Create(sz);}
+	SImageDraw(Size sz, int stride) {Create(sz, stride);}
+	SImageDraw(int cx, int cy) {Create(Size(cx,cy));}
 	
+	void Create(Size sz);
+	void Create(Size sz, int stride);
 	
-	operator Image() {return GetImage();}
-	Image GetImage();
+	Vector<byte>& Data() {return data;}
+	const Vector<byte>& GetData() const{return data;}
+	
+	void PutImage(Point p, const Image& img, const Rect& src) override {TODO}
+	void PutRect(const Rect& r, Color color) override {TODO}
 	
 };
 

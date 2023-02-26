@@ -238,6 +238,7 @@ inline Color LtMagenta() { return Color(255, 0, 255); }
 inline Color LtCyan()    { return Color(0, 255, 255); }
 
 
+int  Grayscale(const Color& c);
 bool IsDark(Color c);
 bool IsLight(Color c);
 

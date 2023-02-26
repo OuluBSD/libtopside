@@ -129,4 +129,26 @@ Color::operator RGBA() const
 	return color;
 }
 
+dword Color::Get() const
+{
+	if(IsNullInstance()) return 0;
+	dword c = color;
+	return c & 0xffffff;
+}
+
+int  Grayscale(const Color& c)
+{
+	return (77 * c.GetR() + 151 * c.GetG() + 28 * c.GetB()) >> 8;
+}
+
+bool IsDark(Color c)
+{
+	return Grayscale(c) < 80;
+}
+
+bool IsLight(Color c)
+{
+	return Grayscale(c) > 255 - 80;
+}
+
 NAMESPACE_UPP_END

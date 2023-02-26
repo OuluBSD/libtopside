@@ -3,6 +3,11 @@
 
 NAMESPACE_UPP
 
+Ptr<Ctrl> Ctrl::focusCtrl;
+Ptr<Ctrl> Ctrl::captureCtrl;
+int64     Ctrl::EndSessionLoopNo;
+bool      Ctrl::ignoreclick;
+
 
 #if 0
 void CtrlFrame::FramePaint(Draw& draw, const Rect& r) {}
@@ -488,10 +493,47 @@ Ctrl* Ctrl::GetWithMouse() {
 }
 
 void Ctrl::SetCaptured(Ctrl* c) {
-	Ctrl* top = GetTopCtrl();
+	TODO // deprecated
+	/*Ctrl* top = GetTopCtrl();
 	if (top)
-		top->SetCaptured(c);
+		top->SetCaptured(c);*/
 }
+
+void Ctrl::SetWithMouse(Ctrl* c) {
+	TODO // deprecated
+}
+
+void Ctrl::SyncLayout(int force) {
+	TODO // deep layout and layout
+}
+
+Rect Ctrl::GetScreenView() const {
+	Rect r = GetScreenRect();
+	return GetView() + r.TopLeft();
+}
+
+Rect  Ctrl::GetScreenRect() const
+{
+	GuiLock __;
+	Rect r = GetRect();
+	Ctrl *parent = GetParent();
+	if(parent) {
+		Rect pr = inframe ? parent->GetScreenRect() : parent->GetScreenView();
+		r = r + pr.TopLeft();
+	}
+	else
+		GuiPlatformGetTopRect(r);
+	return r;
+}
+
+Rect Ctrl::GetView() const
+{
+	TODO
+	/*GuiLock __;
+	int n = GetFrameCount();
+	return n == 0 ? Rect(Size(rect.Size())) : Rect(GetFrame0(n - 1).GetView());*/
+}
+
 
 #if 0
 void Ctrl::SetWithMouse(Ctrl* c) {
@@ -780,5 +822,96 @@ bool Ctrl::IsForeground() const
 	TODO //return GetTopCtrl()->IsWndForeground();
 }
 
+Ctrl* Ctrl::GetFocusCtrl() { return FocusCtrl(); }
+
+Ctrl* Ctrl::GetParent() const {
+	TODO
+}
+
+bool Ctrl::IsOpen() const
+{
+	GuiLock __;
+	const Ctrl *q = GetTopCtrl();
+	return q->isopen && q->IsWndOpen();
+}
+
+const Ctrl *Ctrl::GetTopCtrl() const      { return const_cast<Ctrl *>(this)->GetTopCtrl(); }
+
+void Ctrl::Enable(bool aenable) {
+	TODO
+	/*GuiLock __;
+	if(enabled != aenable) {
+		enabled = aenable;
+		if(top) WndEnable(enabled);
+		if(!enabled && GetParent() && HasFocusDeep())
+			IterateFocusForward(this, GetTopCtrl());
+		RefreshFrame();
+		StateH(ENABLE);
+		SyncCaret();
+	}*/
+}
+
+void Ctrl::ClickActivateWnd()
+{
+	TODO
+	/*GuiLock __;
+	LLOG("Ctrl::ClickActivateWnd " << Name(this));
+	if(this == ~focusCtrlWnd && focusCtrl && focusCtrl->GetTopCtrl() != this) {
+		LLOG("Ctrl::ClickActivateWnd -> ActivateWnd");
+		ActivateWnd();
+	}*/
+}
+
+
+void Ctrl::SetForeground()
+{
+	TODO
+	/*GuiLock __;
+	GetTopCtrl()->SetWndForeground();*/
+}
+
+Image Ctrl::DispatchMouse(int e, Point p, int zd) {
+	TODO
+}
+
+void Ctrl::EndIgnore()
+{
+	TODO
+}
+
+bool Ctrl::DispatchKey(dword keycode, int count)
+{
+	TODO
+}
+
+void Ctrl::SyncCaret() {
+	TODO
+}
+
+void Ctrl::DefferedFocusSync()
+{
+	TODO
+}
+
+bool   Ctrl::InLoop() const
+{
+	GuiLock __;
+	return inloop;
+}
+
+void Ctrl::TimerProc(double dt)
+{
+	TODO
+}
+
+void  Ctrl::AnimateCaret()
+{
+	TODO
+}
+
+void Ctrl::UpdateArea(SystemDraw& draw, const Rect& clip)
+{
+	TODO
+}
 
 END_UPP_NAMESPACE

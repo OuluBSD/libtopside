@@ -9,4 +9,9 @@ CTRLIMG(Dir)
 CTRLIMG(swap_color_cursor)
 #undef CTRLIMG
 
+#define CTRLIMG(x) const Image& CtrlsImg::x() {TODO}
+CTRLIMG(I_B)
+CTRLIMG(I_EB)
+#undef CTRLIMG
+
 END_UPP_NAMESPACE

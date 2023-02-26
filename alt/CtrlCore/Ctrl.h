@@ -411,6 +411,9 @@ public:
 	static void  EventLoop(Ctrl *loopctrl = NULL);
 	static void GuiSleep(int ms);
 	
+	static Ptr<Ctrl> FocusCtrl() { return focusCtrl; }
+	static void      FocusCtrl(Ptr<Ctrl> fc) { focusCtrl = fc; }
+	
 	static Ptr<Ctrl> focusCtrl;
 	static Ptr<Ctrl> captureCtrl;
 	static int64     EndSessionLoopNo;
@@ -433,6 +436,10 @@ public:
 	
 	Rect        GetScreenView() const;
 	Rect        GetWorkArea() const;
+	Rect        GetView() const;
+	Rect        GetScreenRect() const;
+	
+	const Ctrl      *GetTopCtrl() const;
 	
 	virtual void   PostInput();
 	
