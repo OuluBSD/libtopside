@@ -31,8 +31,9 @@ void StaticRect::Paint(Draw& w) {
 	TODO
 }
 
-StaticRect& StaticRect::Background(const Value& chvalue) {
-	TODO
+StaticRect& StaticRect::Background(const Color& chvalue) {
+	clr = chvalue;
+	return *this;
 }
 
 

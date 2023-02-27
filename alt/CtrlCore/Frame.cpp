@@ -19,4 +19,9 @@ const ColorF *InsetBorder()
 CtrlFrame& InsetFrame() { static BorderFrame h(InsetBorder()); return h; }
 
 
+void BorderFrame::FrameLayout(Rect& r) {TODO}
+void BorderFrame::FramePaint(Draw& w, const Rect& r) {TODO}
+void BorderFrame::FrameAddSize(Size& sz) {TODO}
+
+
 NAMESPACE_UPP_END

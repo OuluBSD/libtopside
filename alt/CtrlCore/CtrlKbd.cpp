@@ -44,5 +44,17 @@ String GetKeyDesc(dword key)
 	return desc;
 }
 
+void Ctrl::SetFocusWnd()
+{
+	TODO
+	/*GuiLock __;
+	// notification, don't set host platform focus here
+	LLOG("Ctrl::SetFocusWnd");
+	if(focusCtrlWnd != this) {
+		LLOG("Ctrl::SetFocusWnd->ActivateWnd");
+		ActivateWnd();
+	}*/
+}
+
 
 NAMESPACE_UPP_END

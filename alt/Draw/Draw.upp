@@ -11,6 +11,7 @@ file
 	Font readonly separator,
 	Font.h,
 	Font.cpp,
+	Draw.cpp,
 	Image readonly separator,
 	Image.h,
 	Image.cpp,

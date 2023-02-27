@@ -914,4 +914,66 @@ void Ctrl::UpdateArea(SystemDraw& draw, const Rect& clip)
 	TODO
 }
 
+void Ctrl::DeleteTop()
+{
+	if(top && utop) {
+		delete utop;
+		utop = nullptr;
+		top = false;
+	}
+}
+
+void Ctrl::ActivateWnd()
+{
+	TODO
+	/*GuiLock __;
+	// notification, don't set physical focus here
+	LLOG("ActivateWnd " << Name());
+	Ptr<Ctrl> nfocusCtrl = this;
+	Ptr<Ctrl> pfocusCtrl = focusCtrl;
+	LLOG("About to set focus: " << UPP::Name(nfocusCtrl));
+	DoDeactivate(pfocusCtrl, nfocusCtrl);
+	focusCtrl = nfocusCtrl;
+	focusCtrlWnd = this;
+	DoKillFocus(pfocusCtrl, nfocusCtrl);
+	DoSetFocus(pfocusCtrl, nfocusCtrl, true);
+	LLOG("Focus: " << UPP::Name(focusCtrl) << " FocusWnd:" << UPP::Name(focusCtrlWnd));*/
+}
+
+void  Ctrl::SetWndRect(const Rect& r)
+{
+	TODO
+	//LLOG("SetWndRect " << Name() << " rect: " << r << " (Ctrl::GetRect = " << GetRect() << ")");
+	//SetPos0(LogPos(PosLeft(r.left, r.Width()), PosTop(r.top, r.Height())), false);
+}
+
+String FromSystemCharset(const String& src)
+{
+	TODO //return FromWin32Charset(src, CP_ACP);
+}
+
+void Ctrl::GlobalBackBuffer(bool b)
+{
+	LOG("Ctrl::GlobalBackBuffer: skipping");
+	//GuiLock __;
+	//globalbackbuffer = b;
+}
+
+void  Ctrl::InitTimer()
+{
+	LOG("Ctrl::InitTimer: skipping");
+	/*Mutex::Lock __(sTimerLock);
+	tevents();*/
+}
+
+void Ctrl::CloseTopCtrls()
+{
+	TODO
+	/*GuiLock __;
+	Vector<Ctrl *> tc = Ctrl::GetTopCtrls();
+	for(int i = 0; i < tc.GetCount(); i++)
+		tc[i]->Close();*/
+}
+
+
 END_UPP_NAMESPACE

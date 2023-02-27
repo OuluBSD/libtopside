@@ -263,6 +263,13 @@ bool Draw::Clipoff(int x, int y, int cx, int cy) {
 bool Draw::Clip(int x, int y, int cx, int cy) {
 	return Clip(RectC(x,y,cx,cy));
 }
+void Draw::DrawPolyPolyline(const Point *vertices, int vertex_count,
+                            const int *counts, int count_count,
+                            int width, Color color, Color doxor)
+{
+	DrawPolyPolylineOp(vertices, vertex_count, counts, count_count, width,
+	                   ResolveInk(color), doxor);
+}
 
 
 

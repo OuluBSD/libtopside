@@ -113,5 +113,27 @@ TopWindow& TopWindow::Icon(const Image& m)
 	return *this;
 }
 
+void TopWindow::ShutdownWindows()
+{
+	bool again = true;
+	while(again) {
+		Vector<Ctrl *> tc = GetTopCtrls();
+		again = false;
+		for(int i = 0; i < tc.GetCount(); i++) {
+			TopWindow* w = CastPtr<TopWindow>(tc[i]);
+			if(w && w->IsOpen() && w->IsEnabled()) {
+				again = true;
+				w->SetForeground();
+				TODO
+				/*w->ShutdownWindow();
+				if(w && w->IsOpen())
+					w->WhenClose();
+				if(!w || !w->IsOpen())
+					break;*/
+			}
+		}
+	}
+}
+
 
 END_UPP_NAMESPACE

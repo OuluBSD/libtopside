@@ -1,7 +1,8 @@
 description "Abstract GUI implementation, with window manager, with minimal implemenation requirements\377";
 
 uses
-	CtrlLib;
+	CtrlLib,
+	GLDraw;
 
 file
 	VirtualGui.h,

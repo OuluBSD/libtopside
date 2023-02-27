@@ -55,7 +55,11 @@ void TopWindow::SyncCaption()
 }
 
 void TopWindow::OnClose() {
+	#if IS_TS_CORE
 	WhenClose(0);
+	#else
+	WhenClose();
+	#endif
 }
 
 void TopWindow::State(int reason)

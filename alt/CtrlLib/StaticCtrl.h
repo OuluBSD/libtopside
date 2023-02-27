@@ -30,7 +30,7 @@ public:
 	Size GetMinSize() const override;
 	void Paint(Draw& w) override;
 	
-	StaticRect& Background(const Value& chvalue);
+	StaticRect& Background(const Color& chvalue);
 	StaticRect& SetColor(class Color c)                { Background(c); return *this; }
 	
 	struct Style : ChStyle<Style> {

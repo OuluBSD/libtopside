@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgDraw::ProgDraw() /*: fb(state), shader(state)*/ {
-	Create(Size(16,16));
+	//Create(Size(16,16));
 }
 
 ProgDraw::ProgDraw(Size sz) /*: fb(state), shader(state)*/ {

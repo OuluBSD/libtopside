@@ -230,7 +230,9 @@ struct Rect_ : Moveable<Rect_<T>> {
 	}
 	
 	//bool operator!=(const Rect_& src) { return !(*this == src); }
-
+	void Set(T l, T t, T r, T b) { left = l; top = t; right = r; bottom = b; }
+	void Set(const Rect_& r) { Set(r.left, r.top, r.right, r.bottom); }
+	
 	Point FirstCorner() const { return Point(left, top); }
 	Point TopLeft() const { return Point(left, top); }
 	Point TopRight() const { return Point(right, top); }
@@ -323,11 +325,20 @@ struct Rect_ : Moveable<Rect_<T>> {
 	bool	IsNullInstance() const {return ::UPP::IsNull(left) || ::UPP::IsNull(top) || ::UPP::IsNull(right) || ::UPP::IsNull(bottom);}
 	void	SetNull() const {::UPP::SetNull(left); ::UPP::SetNull(top); ::UPP::SetNull(right); ::UPP::SetNull(bottom);}
 	
-	
 	hash_t	GetHashValue() const {CombineHash c; c.Put(UPP::GetHashValue(left));  c.Put(UPP::GetHashValue(top));  c.Put(UPP::GetHashValue(right));  c.Put(UPP::GetHashValue(bottom)); return c;}
 	String	ToString() const {String s; s << "[" << left << ", " << top << ", " << right << ", " << bottom << "](" << Width() << ", " << Height() << ")"; return s;}
 	
+	static bool	IsNull(const Rect_& r) {return r.IsNull();}
+	
 };
+
+template <class T>
+T GHalf_(T t) { return t >> 1; }
+
+template <class T>
+Point_<T> Rect_<T>::CenterPos(T cx, T cy) const {
+	return Point_<T>(left + GHalf_(Width() - cx), top + GHalf_(Height() - cy));
+}
 
 template <class T>
 void Rect_<T>::Intersect(const Rect_<T>& r) {
@@ -337,6 +348,19 @@ void Rect_<T>::Intersect(const Rect_<T>& r) {
 	if(r.right < right) right = r.right;
 	if(r.bottom < bottom) bottom = r.bottom;
 	if(bottom < top) bottom = top;
+}
+
+template <class T>
+void Rect_<T>::Union(const Rect_<T>& r) {
+	if(IsNull(r)) return;
+	if(IsNullInstance()) {
+		Set(r);
+		return;
+	}
+	if(r.left < left) left = r.left;
+	if(r.top < top) top = r.top;
+	if(r.right > right) right = r.right;
+	if(r.bottom > bottom) bottom = r.bottom;
 }
 
 

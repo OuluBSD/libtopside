@@ -86,9 +86,9 @@ Font SansSerif(int size=-1);
 
 Font StdFont(int size=-1);
 
-inline Font ScreenSerif(int n = -32000) { return Font(Font::SCREEN_SERIF, n); } // deprecated
-inline Font ScreenSans(int n = -32000) { return Font(Font::SCREEN_SANS, n); } // deprecated
-inline Font ScreenFixed(int n = -32000) { return Font(Font::SCREEN_FIXED, n); } // deprecated
+Font ScreenSerif(int n = -32000);
+Font ScreenSans(int n = -32000);
+Font ScreenFixed(int n = -32000);
 
 Size GetTextSize(String s, Font fnt);
 Size GetTextSize(WString ws, Font fnt);

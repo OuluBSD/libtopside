@@ -33,5 +33,6 @@ file
 	TreeCtrl.h,
 	TreeCtrl.cpp,
 	Chameleon readonly separator,
+	Ch.cpp,
 	Ch.h;
 

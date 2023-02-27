@@ -108,6 +108,9 @@ Font StdFont(int size) {
 	return SansSerif(size);
 }
 
+Font ScreenSerif(int n) {return Serif(n > 0 ? n : 12);}
+Font ScreenSans(int n) { return SansSerif(n > 0 ? n : 12); }
+Font ScreenFixed(int n) { return Monospace(n > 0 ? n : 12); }
 
 
 END_UPP_NAMESPACE
