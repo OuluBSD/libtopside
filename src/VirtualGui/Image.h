@@ -9,7 +9,7 @@ NAMESPACE_UPP_BEGIN
 struct FBImg {
 	
 	
-	#define FBIMG(x) static Image& x();
+	#define FBIMG(x) static const Image& x();
 	FBIMG(close)
 	FBIMG(maximize)
 	FBIMG(overlap)

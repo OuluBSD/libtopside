@@ -384,7 +384,7 @@ void FrameT<Ctx2D>::MouseMove(Pt, dword keyflags) {
 template <class Dim>
 Image FrameT<Dim>::GetDragImage(Pt dir)
 {
-	static Image (*im[9])() = {
+	static const Image& (*im[9])() = {
 		Image::SizeTopLeft,  Image::SizeLeft,  Image::SizeBottomLeft,
 		Image::SizeTop,      Image::Arrow,     Image::SizeBottom,
 		Image::SizeTopRight, Image::SizeRight, Image::SizeBottomRight,

@@ -33,7 +33,7 @@ public:
 	typedef Button CLASSNAME;
 	Button();
 	
-	void SetImage(Image& img);
+	void SetImage(const Image& img);
 	
 	void Paint(Draw& d) override;
 	void LeftDown(Point p, dword keyflags) override;

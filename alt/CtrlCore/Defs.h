@@ -26,5 +26,7 @@
 
 
 
+#define LTIMING(x)
+
 
 #endif

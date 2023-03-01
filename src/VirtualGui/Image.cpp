@@ -23,7 +23,7 @@ void SetSurface(SystemDraw& w, const Rect& dest, const RGBA *pixels, Size psz, P
 #include <Draw/iml_source.h>
 
 #define STD_CURSOR(name) \
-Image Image::name() { static Image img; ONCELOCK { img = FBImg::name(); } return img; }
+const Image& Image::name() { return FBImg::name(); }
 
 STD_CURSOR(Arrow)
 STD_CURSOR(Wait)
@@ -46,7 +46,12 @@ STD_CURSOR(Hand)
 
 
 #if IS_TS_CORE
-#define FBIMG(x) Image& FBImg::x() {TODO}
+#define FBIMG(x) const Image& FBImg::x() {\
+	static Image img;\
+	if (img.IsEmpty())\
+		img = StreamRaster::LoadFileAny(TS::ShareDirFile("imgs" DIR_SEPS "icons" DIR_SEPS #x ".png")); \
+	return img;\
+}
 FBIMG(close)
 FBIMG(maximize)
 FBIMG(overlap)

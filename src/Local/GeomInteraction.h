@@ -133,6 +133,7 @@ public:
 	bool         has_mouse_deep:1;
 	bool         modify:1;
 	bool         destroying:1;
+	bool         visible:1;
 	
 public:
 	RTTI_DECL0(GeomInteraction);
@@ -166,6 +167,7 @@ public:
 	bool IsPendingLayout() const {return pending_layout;}
 	bool IsShutdown() const {return destroying;}
 	bool IsForeground() const;
+	bool IsVisible() const;
 	
 	void SetPendingLayout() {pending_layout = true;}
 	void SetPendingRedraw() {pending_redraw = true;}
@@ -187,6 +189,7 @@ public:
 	virtual void SetFocus();
 	virtual void DeepUnfocus();
 	virtual void Refresh();
+	virtual void RefreshFrame() {}
 	virtual void Activate() {}
 	virtual void Deactivate() {}
 	virtual void Layout() {}

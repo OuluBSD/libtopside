@@ -17,7 +17,7 @@ void CtrlsImageLook(Value *look, int i, const Image& image, int n)
 }
 
 void CtrlsImageLook(Value *look, const Image& img) {
-	TODO
+	LOG("CtrlsImageLook: skipping");
 }
 
 

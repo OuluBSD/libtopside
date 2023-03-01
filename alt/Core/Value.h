@@ -4,6 +4,8 @@
 
 NAMESPACE_UPP_BEGIN
 
+class Color;
+class Image;
 
 int RegisterTypeNo__(const char *type);
 
@@ -24,8 +26,6 @@ const dword TIME_V    = 5;
 
 const dword ERROR_V   = 6;
 
-const dword VALUE_V   = 7;
-
 const dword WSTRING_V = 8;
 
 const dword VALUEARRAY_V = 9;
@@ -34,8 +34,9 @@ const dword INT64_V  = 10;
 const dword BOOL_V   = 11;
 
 const dword VALUEMAP_V   = 12;
-
 const dword COLOR_V   = 13;
+const dword IMAGE_V   = 14;
+const dword RECT_V   = 15;
 
 
 const dword UNKNOWN_V = (dword)0xffffffff;
@@ -43,9 +44,7 @@ const dword UNKNOWN_V = (dword)0xffffffff;
 
 inline int RegisterTypeNo__(const char *type) {
 	MAKE_STATIC(Index<String>, idx);
-	int i = idx.FindAdd(type);
-	ASSERT(i <= 255);
-	return i;
+	return idx.FindAdd(type);
 }
 
 
@@ -66,7 +65,6 @@ template<> inline dword ValueTypeNo<String>(const String*)  { return STRING_V; }
 template<> inline dword ValueTypeNo(const WString*) { return WSTRING_V; }
 template<> inline dword ValueTypeNo(const Date*)    { return DATE_V; }
 template<> inline dword ValueTypeNo(const Time*)    { return TIME_V; }
-template<> inline dword ValueTypeNo(const Value*)   { return VALUE_V; }
 
 
 template <class T, dword type = UNKNOWN_V, class B = EmptyClass>
@@ -91,9 +89,13 @@ public:
 
 class ValueInstance {
 protected:
+	friend class Value;
+	
 	dword type = VOID_V;
+	Atomic refs;
 	
 public:
+	ValueInstance() {refs = 0;}
 	virtual ~ValueInstance() = default;
 	virtual void* Get() {return 0;}
 	virtual String ToString() const {return "VOID";}
@@ -102,6 +104,9 @@ public:
 	virtual hash_t GetHashValue() const {return 0;}
 	//virtual void Visit(RuntimeVisitor& vis) {}
 	dword GetType() const {return type;}
+	
+	void IncRef() {++refs;}
+	void DecRef() {--refs; if (refs < 0) delete this;}
 };
 
 template <class T>
@@ -115,80 +120,50 @@ public:
 	ValueTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ValueTypeNo<T>(0);}
 	~ValueTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_V;}}
 	void* Get() override {return ptr;}
-	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
-	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
-	double ToDouble() const override {if (ptr) return ::UPP::ToDouble(*ptr); return 0;}
+	String ToString() const override;
+	int64 ToInt() const override;
+	double ToDouble() const override;
 	hash_t GetHashValue() const override {if (ptr) return ::UPP::GetHashValue(*ptr); return 0;}
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 
+template <class T> String ValueTemplate<T>::ToString() const {return "";}
+template <class T> int64 ValueTemplate<T>::ToInt() const {return 0;}
+template <class T> double ValueTemplate<T>::ToDouble() const {return 0;}
+
+template <> inline String ValueTemplate<int>::ToString() const    {return ptr ? IntStr(*ptr) : "";}
+template <> inline int64  ValueTemplate<int>::ToInt() const       {return ptr ? *ptr : 0;}
+template <> inline double ValueTemplate<int>::ToDouble() const    {return ptr ? *ptr : 0;}
+template <> inline String ValueTemplate<double>::ToString() const {return ptr ? DblStr(*ptr) : "";}
+template <> inline int64  ValueTemplate<double>::ToInt() const    {return ptr ? *ptr : 0;}
+template <> inline double ValueTemplate<double>::ToDouble() const {return ptr ? *ptr : 0;}
+template <> inline String ValueTemplate<String>::ToString() const {return ptr ? *ptr : "";}
+template <> inline String ValueTemplate<Date>::ToString() const   {return ptr ? ptr->ToString() : "";}
+template <> inline int64  ValueTemplate<Date>::ToInt() const      {return ptr ? ptr->Get() : 0;}
+template <> inline double ValueTemplate<Date>::ToDouble() const   {return ptr ? ptr->Get() : 0;}
+template <> inline String ValueTemplate<Time>::ToString() const   {return ptr ? ptr->ToString() : "";}
+template <> inline int64  ValueTemplate<Time>::ToInt() const      {return ptr ? ptr->Get() : 0;}
+template <> inline double ValueTemplate<Time>::ToDouble() const   {return ptr ? ptr->Get() : 0;}
+template <> inline String ValueTemplate<Exc>::ToString() const    {return ptr ? *ptr : "";}
+template <> inline String ValueTemplate<int64>::ToString() const  {return ptr ? IntStr64(*ptr) : "";}
+template <> inline int64  ValueTemplate<int64>::ToInt() const     {return ptr ? *ptr : 0;}
+template <> inline double ValueTemplate<int64>::ToDouble() const  {return ptr ? *ptr : 0;}
+template <> inline String ValueTemplate<bool>::ToString() const   {return ptr ? (*ptr ? "true" : "false") : "";}
+template <> inline int64  ValueTemplate<bool>::ToInt() const      {return ptr ? *ptr : 0;}
+template <> inline double ValueTemplate<bool>::ToDouble() const   {return ptr ? *ptr : 0;}
 
 
 class Value : RTTIBase {
 	RTTI_DECL0(Value)
 	
-public:
-	
-	class Void {
-	protected:
-		Atomic  refcount;
-
-	public:
-		void               Retain()                    { AtomicInc(refcount); }
-		void               Release()                   { if(AtomicDec(refcount) == 0) delete this; }
-		int                GetRefCount() const         { return refcount; }
-
-		virtual bool       IsNull() const              { return true; }
-		virtual void       Serialize(Stream& s)        {}
-		virtual void       Xmlize(XmlIO& xio)          {}
-		virtual void       Jsonize(JsonIO& jio)        {}
-		virtual hash_t     GetHashValue() const        { return 0; }
-		virtual bool       IsEqual(const Void *p)      { return false; }
-		virtual bool       IsPolyEqual(const Value& v) { return false; }
-		virtual String     AsString() const            { return ""; }
-		virtual int        Compare(const Void *p)      { return 0; }
-		virtual int        PolyCompare(const Value& p) { return 0; }
-
-		Void()                                         { refcount = 1; }
-		virtual ~Void()                                {}
-
-		friend class Value;
-	};
-
-	struct Sval {
-		bool       (*IsNull)(const void *p);
-		void       (*Serialize)(void *p, Stream& s);
-		void       (*Xmlize)(void *p, XmlIO& xio);
-		void       (*Jsonize)(void *p, JsonIO& jio);
-		hash_t     (*GetHashValue)(const void *p);
-		bool       (*IsEqual)(const void *p1, const void *p2);
-		bool       (*IsPolyEqual)(const void *p, const Value& v);
-		String     (*AsString)(const void *p);
-		int        (*Compare)(const void *p1, const void *p2);
-		int        (*PolyCompare)(const void *p1, const Value& p2);
-	};
-	
-private:
-	String   data;
-	
 	
 protected:
-	enum { STRING = 0, REF = 255, VOIDV = 3 };
+	ValueInstance* data = 0;
+	bool ref = false;
 	
-	
-	void ClearSetDataType(byte type);
-	template <class T> void Push(byte special, const T& o) {
-		memcpy(data.GetWritableData(special, sizeof(o)), &o, sizeof(o));
-	}
-	template <class T> T Pop() const {
-		T o;
-		if (data.GetCount() >= sizeof(o))
-			memcpy(&o, data.Begin(), sizeof(o));
-		return o;
-	}
 public:
 	Value();
-	/*Value(bool b);
+	Value(bool b);
 	Value(int i);
 	Value(int64 i);
 	Value(double d);
@@ -198,47 +173,60 @@ public:
 	Value(Time d);
 	Value(Nuller);
 	Value(const ValueArray& a);
-	Value(const ValueMap& m);*/
-	//Value(Color m);
+	Value(const ValueMap& m);
+	Value(const Color& m);
+	Value(const Image& m);
+	Value(const Rect& r);
 	Value(const Value& v) {*this = v;}
-	template <class T> Value(const T& o);
+	~Value() {Clear();}
+	
 	Value& operator=(const Value& v);
 	
-	enum VSMALL { SMALL };
-	
 	template <class T>
-	Value(const T& value, VSMALL) {TODO}
+	Value& Push(byte kind, const T& val) {
+		Clear();
+		data = new ValueTemplate<T>(val);
+		data->IncRef();
+		return *this;
+	}
+	
+	void Clear() {
+		if (data) {
+			data->DecRef();
+			data = 0;
+		}
+	}
 	
 	hash_t GetHashValue() const;
 	
 	dword    GetType() const;
 	bool     IsError() const         { return GetType() == ERROR_V; }
-	bool     IsVoid() const          { return Is(VOIDV) || IsError(); }
+	bool     IsVoid() const          { return data == 0; }
 	bool     IsNull() const;
-	bool     IsNullInstance() const;
+	bool     IsNullInstance() const  {return IsNull();}
 
 	template <class T>	bool     Is() const;
 	template <class T>	const T& To() const;
 	template <class T>	const T& Get() const;
 
-	bool     IsString() const          { return !data.IsSpecial(); }
-	bool     Is(byte d) const          { return GetType() == d; }
-	bool     IsRef() const             { return Is(REF); }
+	bool     IsString() const          { return data && data->type == STRING_V; }
+	bool     Is(byte v) const          { return data && data->type == v; }
+	bool     IsRef() const             { return data && ref; }
 	
 	template <class T>	void     InitSmall(const T& init);
 	template <class T>	T&       GetSmallRaw() const {TODO_}
 	template <class T>	T&       GetSmall() const;
 	
-	int      GetOtherInt() const;
-	int64    GetOtherInt64() const;
-	double   GetOtherDouble() const;
-	bool     GetOtherBool() const;
-	Date     GetOtherDate() const;
-	Time     GetOtherTime() const;
-	String   GetOtherString() const;
-	hash_t   GetOtherHashValue() const;
+	int      GetOtherInt() const {TODO_}
+	int64    GetOtherInt64() const {TODO_}
+	double   GetOtherDouble() const {TODO_}
+	bool     GetOtherBool() const {TODO_}
+	Date     GetOtherDate() const {TODO_}
+	Time     GetOtherTime() const {TODO_}
+	String   GetOtherString() const {TODO_}
+	hash_t   GetOtherHashValue() const {TODO_}
 	
-	/*operator String() const          { return IsString() ? data : GetOtherString(); }
+	operator String() const          { return IsString() ? data->ToString() : GetOtherString(); }
 	operator WString() const;
 	operator Date() const            { return Is(DATE_V) ? GetSmallRaw<Date>() : GetOtherDate(); }
 	operator Time() const            { return Is(TIME_V) ? GetSmallRaw<Time>() : GetOtherTime(); }
@@ -246,16 +234,16 @@ public:
 	operator int() const             { return Is(INT_V) ? GetSmallRaw<int>() : GetOtherInt(); }
 	operator int64() const           { return Is(INT64_V) ? GetSmallRaw<int64>() : GetOtherInt64(); }
 	operator bool() const            { return Is(BOOL_V) ? GetSmallRaw<bool>() : GetOtherBool(); }
-	*/
-	template <class T> operator T() const;
 	
-	String operator~() const {TODO}
+	String operator ~() const {return operator String();}
+	
+	template <class T>
+	operator T() {if (data && ValueTypeNo<T>(0) == data->GetType()) return *(T*)data->Get(); return T();}
 	
 };
 
 
-template <class T> Value::Value(const T& o) {TODO_}
-template <class T> Value::operator T() const {TODO_}
+template<> inline dword ValueTypeNo(const Value* v)   { return v->GetType(); }
 
 template <class T>
 Value RawToValue(const T& o) {TODO_}
@@ -294,25 +282,6 @@ public:
 
 
 class ValueArray : public ValueType<ValueArray, VALUEARRAY_V, Moveable<ValueArray> > {
-	struct Data : Value::Void {
-		virtual bool         IsNull() const;
-		virtual void         Serialize(Stream& s);
-		virtual void         Xmlize(XmlIO& xio);
-		virtual void         Jsonize(JsonIO& jio);
-		virtual hash_t       GetHashValue() const;
-		virtual bool         IsEqual(const Value::Void *p);
-		virtual String       AsString() const;
-		virtual int          Compare(const Value::Void *p);
-
-		int GetRefCount() const;//     { return refcount; }
-		Vector<Value>& Clone();
-
-		Vector<Value> data;
-	};
-	struct NullData : Data {};
-	Data *data;
-	
-	static Vector<Value> VoidData;
 	
 public:
 	
@@ -342,53 +311,8 @@ public:
 };
 
 class ValueMap : public ValueType<ValueMap, VALUEMAP_V, Moveable<ValueMap> >{
-	struct Data : Value::Void {
-		virtual bool       IsNull() const;
-		virtual void       Serialize(Stream& s);
-		virtual void       Xmlize(XmlIO& xio);
-		virtual void       Jsonize(JsonIO& jio);
-		virtual hash_t     GetHashValue() const;
-		virtual bool       IsEqual(const Value::Void *p);
-		virtual String     AsString() const;
-		virtual int        Compare(const Value::Void *p);
-
-		const Value& Get(const Value& k);/* const {
-			int q = key.Find(k);
-			return q >= 0 ? value[q] : ErrorValue();
-		}*/
-		Value& GetAdd(const Value& k);/* {
-			int i = key.Find(k);
-			if(i < 0) {
-				i = value.GetCount();
-				key.Add(k);
-			}
-			return value.At(i);
-		}*/
-		Value& At(int i);/* {
-			ASSERT(i < value.GetCount());
-			return value.At(i);
-		}*/
-
-		Index<Value> key;
-		ValueArray   value;
-	};
-
-	struct NullData : Data {};
-	Data *data;
-
-	Data& Create();
-	static void Clone(Data *&ptr);
-	force_inline
-	static ValueMap::Data& UnShare(ValueMap::Data *&ptr);// { if(ptr->GetRefCount() != 1) Clone(ptr); return *ptr; }
-	Data& UnShare();// { return UnShare(data); }
-	void  Init0();
-	void  FromArray(const ValueArray& va);
-	
 	
 public:
-	
-	
-	
 	void Clear();
 	int  GetCount() const;//                           { return data->value.GetCount(); }
 	bool IsEmpty() const;//                            { return data->value.IsEmpty(); }
@@ -458,7 +382,6 @@ public:
 
 String Format(String pattern, Value v0=Value(), Value v1=Value(), Value v2=Value(), Value v3=Value(), Value v4=Value(), Value v5=Value(), Value v6=Value(), Value v7=Value());
 
-template <class T> Value SvoToValue(const T& x) { return Value(x, Value::SMALL); }
 
 NAMESPACE_UPP_END
 

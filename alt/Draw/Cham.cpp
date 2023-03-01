@@ -43,7 +43,7 @@ void ChPaint(Draw& w, int x, int y, int cx, int cy, const Value& look, Color ink
 }
 
 void ChRegisterStyle__(byte& state, byte& registered, void (*init)()) {
-	TODO
+	LOG("ChRegisterStyle__: skipping");
 }
 
 NAMESPACE_UPP_END

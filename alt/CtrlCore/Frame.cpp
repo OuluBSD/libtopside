@@ -16,6 +16,7 @@ const ColorF *InsetBorder()
 }
 
 
+CtrlFrame& NullFrame() { static CtrlFrame h; return h; }
 CtrlFrame& InsetFrame() { static BorderFrame h(InsetBorder()); return h; }
 
 

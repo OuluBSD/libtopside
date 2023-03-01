@@ -3,6 +3,14 @@
 
 NAMESPACE_UPP_BEGIN
 
+
+
+Value::Value(const Image& m) {
+	Push(IMAGE_V, m);
+}
+
+
+
 Atomic Image::serial_counter;
 
 
@@ -242,9 +250,6 @@ hash_t Image::GetHashValue() const {
 	return 0;
 }
 
-Image::operator Value() const {
-	TODO
-}
 
 
 

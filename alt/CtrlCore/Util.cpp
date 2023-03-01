@@ -67,6 +67,11 @@ int  GetGuiLockLevel()
 	return sGLockLevel;
 }
 
+void sCheckGuiLock()
+{
+	ASSERT_(ThreadHasGuiLock(), "Using GUI in non-main thread without GuiLock");
+}
+
 
 
 NAMESPACE_UPP_END

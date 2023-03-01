@@ -151,7 +151,23 @@ public:
 
 
 template <class T>
+struct StringStd;
+
+template <>
+struct StringStd<char> {
+	using Std = std::string;
+};
+
+template <>
+struct StringStd<wchar_t> {
+	using Std = std::string;
+};
+
+
+template <class T>
 class StringT : Moveable<StringT<T>> {
+	using Std = typename StringStd<T>::Std;
+	
 	typedef String0<T> String0T;
 	static const int buf_size = 8;
 	static const int buf_bytes = buf_size * sizeof(T);
@@ -301,6 +317,7 @@ public:
 	static int Compare(const T* a, const T* b, int len);
 	static void Copy(T* dst, const T* src);
 	
+	Std ToStd();
 	
 };
 
@@ -315,7 +332,8 @@ using WString = StringT<wchar_t>;
 
 
 
-struct Exc : public String {
+class Exc : public String {
+public:
 	Exc() {}
 	Exc(const String& s) : String(s) {}
 };

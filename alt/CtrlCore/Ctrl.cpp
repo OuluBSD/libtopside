@@ -9,17 +9,8 @@ int64     Ctrl::EndSessionLoopNo;
 bool      Ctrl::ignoreclick;
 
 
-#if 0
-void CtrlFrame::FramePaint(Draw& draw, const Rect& r) {}
 
-void CtrlFrame::FrameAdd(Ctrl& ctrl) {}
-
-void CtrlFrame::FrameRemove() {}
-
-int CtrlFrame::OverPaint() const {
-	return 0;
-}
-#endif
+bool ThreadHasGuiLock();
 
 
 void CtrlFrame::SetCapture() {
@@ -445,6 +436,25 @@ void Ctrl::Refresh() {
 	GeomInteraction2D::Refresh();
 }
 
+void Ctrl::RefreshFrame() {
+	RefreshFrame(Rect(GetRect().Size()).Inflated(overpaint));
+}
+
+void Ctrl::RefreshFrame(const Rect& r) {
+	if(!top) {
+		Ctrl *parent = GetParent();
+		if(InFrame())
+			parent->RefreshFrame(r + GetRect().TopLeft());
+		else
+			parent->Refresh();//r + GetRect().TopLeft());
+	}
+	else {
+		LLOG("WndInvalidateRect: " << r << ' ' << Name());
+		LTIMING("RefreshFrame InvalidateRect");
+		WndInvalidateRect(r);
+	}
+}
+
 void Ctrl::DeepUnfocus() {
 	if (has_focus) {
 		has_focus = false;
@@ -504,7 +514,8 @@ void Ctrl::SetWithMouse(Ctrl* c) {
 }
 
 void Ctrl::SyncLayout(int force) {
-	TODO // deep layout and layout
+	if (!GetFrameBox().IsEmpty())
+		DeepLayout();
 }
 
 Rect Ctrl::GetScreenView() const {
@@ -779,12 +790,15 @@ Tuple<dword, const char *> KeyNames__[ ] = {
 
 
 int Ctrl::GetFrameCount() const {
-	TODO //return multi_frame ? frame.multi.count : frame.frame ? 1 : 0;
+	return frames.GetCount();
+}
+
+Ctrl::Frame& Ctrl::GetFrame0(int i) {
+	return frames[i];
 }
 
 Ctrl& Ctrl::SetFrame(int i, CtrlFrame& fr) {
-	TODO
-	/*GuiLock __;
+	GuiLock __;
 	LLOG("SetFrame " << typeid(fr).name());
 	while(GetFrameCount() <= i)
 		AddFrame(NullFrame());
@@ -794,11 +808,25 @@ Ctrl& Ctrl::SetFrame(int i, CtrlFrame& fr) {
 	fr.FrameAdd(*this);
 	SyncLayout();
 	RefreshFrame();
-	return *this;*/
+	SetPendingRedraw();
+	return *this;
 }
 
-Ctrl& Ctrl::SetFrame(CtrlFrame& frm) {
-	return SetFrame(0, frm);
+Ctrl& Ctrl::SetFrame(CtrlFrame& fr) {
+	for (Frame& f : frames)
+		f.frame->FrameRemove();
+	frames.Clear();
+	AddFrame(fr);
+	return *this;
+}
+
+void Ctrl::AddFrame(CtrlFrame& fr) {
+	Frame& f = frames.Add();
+	f.frame = &fr;
+	fr.FrameAdd(*this);
+	SyncLayout();
+	RefreshFrame();
+	SetPendingRedraw();
 }
 
 void Ctrl::PostInput()
@@ -838,7 +866,7 @@ bool Ctrl::IsOpen() const
 const Ctrl *Ctrl::GetTopCtrl() const      { return const_cast<Ctrl *>(this)->GetTopCtrl(); }
 
 void Ctrl::Enable(bool aenable) {
-	TODO
+	LOG("Ctrl::Enable: skipping");
 	/*GuiLock __;
 	if(enabled != aenable) {
 		enabled = aenable;
@@ -853,7 +881,7 @@ void Ctrl::Enable(bool aenable) {
 
 void Ctrl::ClickActivateWnd()
 {
-	TODO
+	LOG("Ctrl::ClickActivateWnd: skipping");
 	/*GuiLock __;
 	LLOG("Ctrl::ClickActivateWnd " << Name(this));
 	if(this == ~focusCtrlWnd && focusCtrl && focusCtrl->GetTopCtrl() != this) {
@@ -865,32 +893,34 @@ void Ctrl::ClickActivateWnd()
 
 void Ctrl::SetForeground()
 {
-	TODO
+	LOG("Ctrl::SetForeground: skipping");
 	/*GuiLock __;
 	GetTopCtrl()->SetWndForeground();*/
 }
 
 Image Ctrl::DispatchMouse(int e, Point p, int zd) {
-	TODO
+	LOG("Ctrl::DispatchMouse: skipping");
+	return Image();
 }
 
 void Ctrl::EndIgnore()
 {
-	TODO
+	LOG("Ctrl::EndIgnore: skipping");
 }
 
 bool Ctrl::DispatchKey(dword keycode, int count)
 {
-	TODO
+	LOG("Ctrl::DispatchKey: skipping");
+	return false;
 }
 
 void Ctrl::SyncCaret() {
-	TODO
+	LOG("Ctrl::SyncCaret: skipping");
 }
 
 void Ctrl::DefferedFocusSync()
 {
-	TODO
+	LOG("Ctrl::DefferedFocusSync: skipping");
 }
 
 bool   Ctrl::InLoop() const
@@ -901,17 +931,17 @@ bool   Ctrl::InLoop() const
 
 void Ctrl::TimerProc(double dt)
 {
-	TODO
+	LOG("Ctrl::TimerProc: skipping");
 }
 
 void  Ctrl::AnimateCaret()
 {
-	TODO
+	LOG("Ctrl::AnimateCaret: skipping");
 }
 
 void Ctrl::UpdateArea(SystemDraw& draw, const Rect& clip)
 {
-	TODO
+	LOG("Ctrl::UpdateArea: skipping");
 }
 
 void Ctrl::DeleteTop()
@@ -925,7 +955,7 @@ void Ctrl::DeleteTop()
 
 void Ctrl::ActivateWnd()
 {
-	TODO
+	LOG("Ctrl::ActivateWnd: skipping");
 	/*GuiLock __;
 	// notification, don't set physical focus here
 	LLOG("ActivateWnd " << Name());

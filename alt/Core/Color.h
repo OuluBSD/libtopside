@@ -96,6 +96,8 @@ protected:
 	dword Get() const;
 
 public:
+	RTTI_SECONDARY(Color)
+	
 	dword    GetRaw() const            { return color; }
 
 	int      GetR() const              { return GetRValue(Get()); }
@@ -118,7 +120,7 @@ public:
 
 	Color(const Nuller&)               { SetNull(); }
 
-	operator Value() const             { return SvoToValue(*this); }
+	operator Value() const             { return Value(*this); }
 	Color(const Value& q)              { color = q.Get<Color>().color; }
 
 	operator RGBA() const;

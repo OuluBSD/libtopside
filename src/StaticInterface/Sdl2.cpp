@@ -107,6 +107,10 @@ Font Sdl2FileBackend::LoadFont(String dir, String name, int ptsize, int weight, 
 	
 	if (!fnt->native) {
 		#ifdef flagSDL2
+		if (String(TTF_GetError()) == "Library not initialized") {
+			TTF_Init();
+			return LoadFont(dir, name, ptsize, weight, italic);
+		}
 		LOG("Opening font failed: " << TTF_GetError());
 		#else
 		DLOG("Opening font failed");

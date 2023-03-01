@@ -19,6 +19,7 @@ GeomInteraction::GeomInteraction() {
 	has_mouse = false;
 	has_mouse_deep = false;
 	modify = true;
+	visible = true;
 	
 }
 
@@ -350,6 +351,17 @@ GeomInteraction* GeomInteraction::FindProxy() {
 		gi = gi->GetOwner();
 	}
 	return 0;
+}
+
+bool GeomInteraction::IsVisible() const {
+	const GeomInteraction *q = this;
+	for(;;) {
+		if(!q->visible) return false;
+		GeomInteraction *p = q->GetOwner();
+		if(!p) break;
+		q = p;
+	}
+	return q->visible;
 }
 
 

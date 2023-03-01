@@ -20,6 +20,8 @@ typedef enum {
 class Image : Moveable<Image> {
 	
 public:
+	RTTI_SECONDARY(Image)
+	
 	typedef enum {
 		NO_DATA,
 		IMAGE_DATA_REF,
@@ -79,9 +81,7 @@ public:
 	int32 GetSerialId() const;
 	int64 GetAuxData() const;
 	
-	operator Value() const;
-	
-	#define STD_CURSOR(x) static Image x();
+	#define STD_CURSOR(x) static const Image& x();
 	STD_CURSOR(Arrow)
 	STD_CURSOR(Wait)
 	STD_CURSOR(IBeam)

@@ -67,7 +67,6 @@ template<> inline dword ObjectTypeNo(const String*)  { return STRING_V; }
 template<> inline dword ObjectTypeNo(const WString*) { return WSTRING_V; }
 template<> inline dword ObjectTypeNo(const Date*)    { return DATE_V; }
 template<> inline dword ObjectTypeNo(const Time*)    { return TIME_V; }
-template<> inline dword ObjectTypeNo(const Object*)  { return VALUE_V; }
 
 
 template <class T, dword type = UNKNOWN_V, class B = EmptyClass>

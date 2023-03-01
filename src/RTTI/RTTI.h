@@ -419,6 +419,10 @@ public:
 #define RTTI_DECL_TR3(Type, ParentType0, ParentType1, ParentType2) RTTI_DECL_4(Type, ParentType0, ParentType1, ParentType2, LockedScopeRefCounter, TypeStringT(#Type))
 #define RTTI_DECL_TR4(Type, ParentType0, ParentType1, ParentType2, ParentType3) RTTI_DECL_4(Type, ParentType0, ParentType1, ParentType2, ParentType3, LockedScopeRefCounter, TypeStringT(#Type))
 
+#define RTTI_SECONDARY(Type) \
+	static const char* GetTypeName() {RTTI_STRING_FN(#Type);} \
+    static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+
 
 class DummyRTTI :
 	RTTIBase

@@ -7,6 +7,8 @@ NAMESPACE_UPP_BEGIN
 
 template <class T>
 struct Point_ : Moveable<Point_<T>> {
+	RTTI_SECONDARY(Point)
+	
 	T x = 0, y = 0;
 
 	Point_() {}
@@ -14,9 +16,6 @@ struct Point_ : Moveable<Point_<T>> {
 	Point_(T x, T y) : x(x), y(y) {}
 	Point_(const Point_& pt) : x(pt.x), y(pt.y) {}
 	Point_(const Nuller& n) : x(n), y(n) {}
-	
-	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
-	static const char* GetTypeName() {return "Point_<T>";}
 	
 	bool IsEqual(const Point_& p) const {return x == p.x && y == p.y;}
 	bool operator!=(const Point_& p) const {return !IsEqual(p);}
@@ -105,15 +104,14 @@ typedef Point_<double> Pointf;
 
 template <class T>
 struct Size_ : Moveable<Size_<T>> {
+	RTTI_SECONDARY(Size)
+	
 	T cx = 0, cy = 0;
 
 	Size_() {}
 	Size_(const Size_& sz) { *this = sz; }
 	Size_(T v) : cx(v), cy(v) {}
 	Size_(T cx, T cy) : cx(cx), cy(cy) {}
-	
-	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
-	static const char* GetTypeName() {return "Size_<T>";}
 	
 	void Clear() {cx = 0; cy = 0;}
 	bool IsEmpty() const {return cx == 0 && cy == 0;}
@@ -196,13 +194,12 @@ typedef Size_<double> Sizef;
 
 template <class T>
 struct Rect_ : Moveable<Rect_<T>> {
+	RTTI_SECONDARY(Rect)
+	
 	T left = 0, top = 0, right = 0, bottom = 0;
 
 	typedef Point_<T>  Pt;
 	typedef Size_<T>   Sz;
-	
-	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
-	static const char* GetTypeName() {return "Rect_<T>";}
 	
 	Rect_() {}
 	Rect_(const Rect_& r) { *this = r; }
@@ -244,6 +241,7 @@ struct Rect_ : Moveable<Rect_<T>> {
 	T Width() const { return right - left; }
 	T Height() const { return bottom - top; }
 	Sz GetSize() const { return Sz(Width(), Height()); }
+	Sz Size() const { return Sz(Width(), Height()); }
 	bool Contains(const Point_<T>& pt) const {return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;}
 	bool Contains(const Rect_<T>& r) const {return Contains(TopLeft()) && Contains(TopRight()) && Contains(BottomRight()) && Contains(BottomLeft());}
 	bool Intersects(const Rect_<T>& r) const {
@@ -265,7 +263,15 @@ struct Rect_ : Moveable<Rect_<T>> {
 	void   Inflate(T dxy) { Inflate(dxy, dxy); }
 	void   Inflate(T l, T t, T r, T b) { left -= l; top -= t; right += r; bottom += b; }
 	void   Inflate(const Rect_& r) { Inflate(r.left, r.top, r.right, r.bottom); }
-
+	
+	Rect_  InflatedHorz(T dx) const             { Rect_ r = *this; r.InflateHorz(dx); return r; }
+	Rect_  InflatedVert(T dy) const             { Rect_ r = *this; r.InflateVert(dy); return r; }
+	Rect_  Inflated(T dx, T dy) const           { Rect_ r = *this; r.Inflate(dx, dy); return r; }
+	Rect_  Inflated(Sz sz) const                { Rect_ r = *this; r.Inflate(sz); return r; }
+	Rect_  Inflated(T dxy) const                { Rect_ r = *this; r.Inflate(dxy); return r; }
+	Rect_  Inflated(T l, T t, T r, T b) const   { Rect_ m = *this; m.Inflate(l, t, r, b); return m; }
+	Rect_  Inflated(const Rect_& q) const       { Rect_ r = *this; r.Inflate(q); return r; }
+	
 	void   DeflateHorz(T dx) { InflateHorz(-dx); }
 	void   DeflateVert(T dy) { InflateVert(-dy); }
 	void   Deflate(T dx, T dy) { Inflate(-dx, -dy); }

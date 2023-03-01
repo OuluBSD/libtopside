@@ -132,10 +132,12 @@ public:
 	virtual void ContinueGlobalMouseMomentum() {}
 	void SetCapture();
 	void ReleaseCapture();
-
+	virtual void FrameRemove() {}
+	virtual void FrameAdd(Ctrl&) {}
+	
 	CtrlFrame() {}
 	virtual ~CtrlFrame() {}
-
+	
 private:
 	CtrlFrame(const CtrlFrame&);
 	void operator=(const CtrlFrame&);
@@ -232,6 +234,15 @@ public:
 		Top  *utop;
 	};
 	
+private:
+	struct Frame : Moveable<Frame> {
+		CtrlFrame* frame;
+		operator CtrlFrame*() const {return frame;}
+	};
+	
+	Vector<Frame> frames;
+	Frame& GetFrame0(int i);
+	
 protected:
 	static  int       LoopLevel;
 	static  Ctrl     *LoopCtrl;
@@ -274,8 +285,7 @@ protected:
 	bool         layout_id_literal:1; // info_ptr points to layout char * literal, no heap involved
 	bool         multi_frame:1; // there is more than single frame, they are stored in heap
 	bool         top:1;
-
-	Vector<CtrlFrame*> frames;
+	
 	Rect content_r;
 	
 	
@@ -323,7 +333,7 @@ public:
 	
 	void Add(GeomInteraction2D& c);
 	void Add(Ctrl& c);
-	void AddFrame(CtrlFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
+	void AddFrame(CtrlFrame& c);
 	void AddChild(Ctrl* c);
 	Ctrl* GetLastChild();
 	Ctrl* GetIndexChild(int i);
@@ -360,6 +370,9 @@ public:
 	void PaintDebug(ProgPainter& pp) override;
 	bool IsCtrl() const override;
 	void Refresh() override;
+	void RefreshFrame() override;
+	
+	void RefreshFrame(const Rect& r);
 	
 	void SetRect(const Rect& r);
 	void SetRect(int x, int y, int cx, int cy);
@@ -526,12 +539,14 @@ public:
 
 
 
+CtrlFrame& NullFrame();
 CtrlFrame& InsetFrame();
 
 String GetKeyDesc(dword key);
 
 Point GetMousePos();
 
+bool ThreadHasGuiLock();
 
 
 

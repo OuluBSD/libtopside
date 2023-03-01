@@ -7,7 +7,7 @@ Button::Button() {
 
 }
 
-void Button::SetImage(Image& img) {
+void Button::SetImage(const Image& img) {
 	this->img = img;
 }
 

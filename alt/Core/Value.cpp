@@ -6,11 +6,6 @@ NAMESPACE_UPP
 const Nuller Null;
 
 
-Value::Value() {
-	
-}
-
-#if 0
 Value::Value(bool b) {
 	Push(BOOL_V, b);
 }
@@ -28,7 +23,7 @@ Value::Value(double d) {
 }
 
 Value::Value(String s) {
-	data = s;
+	Push(STRING_V, s);
 }
 
 Value::Value(WString s) {
@@ -44,11 +39,11 @@ Value::Value(Time d) {
 }
 
 Value::Value() {
-	data.SetSpecial(VOID_V);
+	
 }
 
 Value::Value(Nuller) {
-	data.SetSpecial(VOID_V);
+	
 }
 
 Value::Value(const ValueArray& a) {
@@ -58,7 +53,14 @@ Value::Value(const ValueArray& a) {
 Value::Value(const ValueMap& m) {
 	TODO
 }
-#endif
+
+Value::Value(const Color& m) {
+	Push(COLOR_V, m);
+}
+
+Value::Value(const Rect& r) {
+	Push(RECT_V, r);
+}
 
 /*Value::Value(Color m) {
 	Push(COLOR_V, m);
@@ -70,20 +72,14 @@ Value& Value::operator=(const Value& v) {
 }
 
 dword Value::GetType() const {
-	if (!data.IsSpecial())
-		return STRING_V;
-	else
-		return data.GetSpecial();
+	return data ? data->GetType() : VOID_V;
 }
 
 bool Value::IsNull() const {
-	return GetType() == VOID_V;
+	return !data;
 }
 
-bool Value::IsNullInstance() const {
-	return GetType() == VOID_V;
-}
-
+#if 0
 int Value::GetOtherInt() const {
 	byte t = data.GetSpecial();
 	switch (t) {
@@ -178,7 +174,7 @@ hash_t Value::GetOtherHashValue() const {
 	}
 }
 
-
+#endif
 
 
 
