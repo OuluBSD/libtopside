@@ -10,6 +10,8 @@
 #include <SharedCore/Shared.h>
 #include "Stream.h"
 #include "Complex.h"
+#include "Function.h"
+#include "Ptr.h"
 #include "Callback.h"
 #include "Gate.h"
 #include "Util.h"
@@ -20,7 +22,6 @@
 #include "Color.h"
 #include "Mt.h"
 #include "Inet.h"
-#include "Ptr.h"
 #include <SharedCore/Object.h>
 #include <SharedCore/TokenParser.h>
 #include "Parser.h"

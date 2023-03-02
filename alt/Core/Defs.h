@@ -256,6 +256,10 @@ public:
 
 extern const Nuller Null;
 
+template <typename T>
+auto pick(T&& x) noexcept -> decltype(std::move(x)) { return std::move(x); }
+
+template<class T> class Function;
 
 NAMESPACE_UPP_END
 

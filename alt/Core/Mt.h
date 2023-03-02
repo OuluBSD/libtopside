@@ -4,6 +4,10 @@
 NAMESPACE_UPP_BEGIN
 
 
+template<typename Res, typename... ArgTypes>
+class Function<Res(ArgTypes...)>;
+
+
 inline int CPU_Cores() {return std_thread_hardware_concurrency();}
 
 #define MAIN_THREAD_ID -1

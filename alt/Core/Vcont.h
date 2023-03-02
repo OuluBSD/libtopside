@@ -92,7 +92,7 @@ public:
 	Optional(const Nuller& n) {}
 	Optional(const NullOpt& n) {}
 	Optional(T* obj) : obj(obj) {}
-	Optional(const Pick<T>& n) {*this = n;}
+	Optional(T&& n) {*this = n;}
 	template <class K> Optional(const K& arg) {this->obj = new T(arg);}
 	~Optional() { Clear(); }
 
@@ -101,7 +101,7 @@ public:
 	void operator=(const NullOpt& obj) { Clear();}
 	void operator=(const T& obj) { Clear(); this->obj = new T(obj); }
 	void operator=(const Optional& o) { Clear(); if (!o.IsEmpty()) {this->obj = new T(*o.obj); }}
-	void operator=(const Pick<Optional<T>>& n) { Clear(); if (!n.Get().IsEmpty()) {Pick(n.Get());}}
+	//void operator=(Optional<T>>&& n) { Clear(); if (!n.Get().IsEmpty()) {Pick(n.Get());}}
 	void Pick(Optional& o) {obj = o.obj; o.obj = NULL;}
 	bool IsEmpty() const { return obj == NULL; }
 	T& GetObject() const {return *obj;}
@@ -206,7 +206,6 @@ public:
 	}
 	Vector() {}
 	Vector(Vector&& v) {Pick0(v);}
-	Vector(const Pick<Vector>& pick) {Vector& v = pick.Get(); Swap(data, v.data); Swap(alloc, v.alloc); Swap(count, v.count);}
 	Vector(const Vector& v) {*this <<= v;}
 	Vector(int i) {SetCount(i);}
 	~Vector() {
@@ -216,7 +215,6 @@ public:
 	}
 	
 	void Serialize(Stream& s);
-	void operator=(const Pick<Vector>& pick) {Clear(); Vector& v = pick.Get(); Swap(data, v.data); Swap(alloc, v.alloc); Swap(count, v.count);}
 	void operator=(Vector&& v) {Pick0(v);}
 	
 	
@@ -249,7 +247,7 @@ public:
 		new (&data[count]) K(v);
 		return data[count++];
 	}
-	K& AddPick(const Pick<K>& v) {
+	K& AddPick(K&& v) {
 		if (count + 1 > alloc) IncreaseReserved();
 		if (count >= alloc)
 			THROW(MemoryLimitExc("Vector maximum size exceeded"));
@@ -831,7 +829,6 @@ public:
 	
 	Map() {}
 	Map(Map&& m) : keys(std::move(m.keys)), values(std::move(m.values)) {}
-	Map(const Pick<Map<K, V, Array>>& p) {auto& a = p.Get(); Swap(keys, a.keys); Swap(values, a.values);}
 	Map(const std::initializer_list<std::tuple<K, V>> list) {
 		auto it = list.begin();
 		auto end = list.end();
@@ -983,7 +980,7 @@ T RemoveIf(T first, T last, UnaryPredicate p) {
     if (first != last)
         for(T i = first; ++i != last; )
             if (!p(*i))
-                *first++ = Pick<T>(*i);
+                *first++ = pick(*i);
     return first;
 }
 

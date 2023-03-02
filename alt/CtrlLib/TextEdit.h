@@ -75,7 +75,7 @@ public:
 	void		SetFont(Font fnt);
 	void		LayoutRow(StbTexteditRow* r, int n);
 	float		GetWidth(int n, int i);
-	Value		GetData() const;
+	Value		GetData() const override;
 	
 	static void		LayoutRowStatic(StbTexteditRow* r, TextCtrl* obj, int n) {obj->LayoutRow(r, n);}
 	static float	GetWidthStatic(TextCtrl* obj, int n, int i) {return obj->GetWidth(n, i);}

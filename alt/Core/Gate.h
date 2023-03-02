@@ -4,6 +4,8 @@
 NAMESPACE_UPP_BEGIN
 
 
+#if 0
+
 
 class GateBase : public CallBaseObject {
 public:
@@ -367,7 +369,7 @@ template <class... T> struct Gate;
 template <> struct Gate<> : Gate0 {using Base = Gate0; __GATE_FUNCS};
 template <class T0> struct Gate<T0> : Gate1<T0> {using Base = Gate1<T0>; __GATE_FUNCS};
 template <class T0, class T1> struct Gate<T0,T1> : Gate2<T0,T1> {using Base = Gate2<T0,T1>; __GATE_FUNCS};
-
+#endif
 
 
 NAMESPACE_UPP_END

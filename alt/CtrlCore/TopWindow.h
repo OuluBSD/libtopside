@@ -28,6 +28,8 @@ public:
 	
 	static void ShutdownWindows();
 	
+	Event<>     WhenClose;
+	
 	enum { MINIMIZED, MAXIMIZED, OVERLAPPED };
 	
 private:

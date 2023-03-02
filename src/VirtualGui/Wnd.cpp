@@ -92,11 +92,7 @@ Ctrl *Ctrl::GetActiveCtrl()
 	return focusCtrl ? focusCtrl->GetTopCtrl() : NULL;
 }
 
-#if IS_TS_CORE
-int Ctrl::RegisterSystemHotKey(dword key, Callback cb)
-#else
 int Ctrl::RegisterSystemHotKey(dword key, Function<void ()> cb)
-#endif
 {
 	return -1;
 }

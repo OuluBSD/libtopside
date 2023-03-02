@@ -4,7 +4,7 @@
 NAMESPACE_UPP
 
 
-
+#if 0
 template <class T>
 class Pick {
 	T* var = NULL;
@@ -21,7 +21,7 @@ template <class T> Pick<T> PickFn(T& o) {return Pick<T>(o);}
 #ifdef LIBTOPSIDE
 template <class T> Pick<T> pick(T& o) {return Pick<T>(o);}
 #endif
-
+#endif
 
 
 template <class T>

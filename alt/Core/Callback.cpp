@@ -63,13 +63,13 @@ void RunThreadExitBlocks() {
 
 
 Callinit::Callinit(void (*fn)()) {
-	AddInitBlock(Callback(fn));
+	AddInitBlock(callback(fn));
 }
 
 void Callinit::Clear() {}
 
 Callexit::Callexit(void (*fn)()) {
-	AddExitBlock(Callback(fn));
+	AddExitBlock(callback(fn));
 }
 
 void Callexit::Clear() {}

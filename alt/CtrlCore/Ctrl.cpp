@@ -3,6 +3,8 @@
 
 NAMESPACE_UPP
 
+#if 0
+
 Ptr<Ctrl> Ctrl::focusCtrl;
 Ptr<Ctrl> Ctrl::captureCtrl;
 int64     Ctrl::EndSessionLoopNo;
@@ -100,13 +102,35 @@ TopWindow* Ctrl::GetTopWindow() {
 	return 0;
 }
 
+Ctrl& Ctrl::SetPos(LogPos p, bool _inframe)
+{
+	TODO
+	/*GuiLock __;
+	Ctrl *parent = GetParent();
+	if(p != pos || inframe != _inframe) {
+		if(parent || !IsOpen())
+			SetPos0(p, _inframe);
+		else {
+			Rect wa = GetWorkArea();
+			WndSetPos(CalcRect(p, wa, wa));
+			StateH(POSITION);
+		}
+	}
+	return *this;*/
+}
+
+Ctrl& Ctrl::SetPos(LogPos p)
+{
+	return SetPos(p, false);
+}
+
 void Ctrl::SetRect(const Rect& r) {
-	TODO //SetFrameRect(r);
-	//SetPendingRedrawDeep();
+	SetRect(r.left, r.top, r.Width(), r.Height());
 }
 
 void Ctrl::SetRect(int x, int y, int cx, int cy) {
-	SetRect(RectC(x,y,cx,cy));
+	auto clampc = [](int c) { return clamp(c, -10000, 10000); }; // Logc vals only have 15 bits
+	SetPos(PosLeft(clampc(x), clampc(cx)), PosTop(clampc(y), clampc(cy)));
 }
 
 void Ctrl::SetFrameBox(const Rect& r) {
@@ -1725,6 +1749,7 @@ Point Ctrl::GetFramePointBetween(Ctrl& top_owner, Ctrl& deep_sub, const Point& p
 	return Point(0,0);
 }
 
+#endif
 #endif
 
 END_UPP_NAMESPACE

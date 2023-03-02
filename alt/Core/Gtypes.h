@@ -382,6 +382,7 @@ bool operator==(const Rect_<T>& a, const Rect_<T>& b) {
 
 typedef Rect_<int> Rect;
 typedef Rect_<double> Rectf;
+typedef Rect_<int16> Rect16;
 
 
 inline Rect RectC(int x, int y, int w, int h) { return Rect(x, y, x + w, y + h); }

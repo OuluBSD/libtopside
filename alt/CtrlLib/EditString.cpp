@@ -88,7 +88,7 @@ bool TextCtrl::Intersects(int b0, int e0, int b1, int e1) {
 }
 
 void TextCtrl::Paint(Draw& d) {
-	Rect r = GetContentSize();
+	Rect r = GetSize();
 	
 	Color bg = White();
 	Color fg = Black();

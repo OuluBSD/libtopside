@@ -20,6 +20,18 @@ public:
 };
 
 
+class ParentCtrl : public Ctrl {
+	Size minsize;
+
+public:
+	virtual Rect   GetVoidRect() const;
+	virtual Size   GetStdSize() const;
+	virtual Size   GetMinSize() const;
+	virtual void   SetMinSize(Size sz)         { minsize = sz; }
+
+	ParentCtrl();
+};
+
 class StaticRect : public Ctrl {
 	Color clr;
 	

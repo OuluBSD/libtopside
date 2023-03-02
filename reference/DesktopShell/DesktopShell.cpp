@@ -24,8 +24,8 @@ void VguiMain() {
 void DesktopMain() {
 	using namespace Parallel;
 	
-	Ctrl::do_debug_draw = true;
-	Gubo::do_debug_draw = true;
+	Ctrl::SetDebugDraw(true);
+	Gubo::SetDebugDraw(true);
 	
 	AtomVirtualGui gui;
 	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");

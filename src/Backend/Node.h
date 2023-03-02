@@ -13,7 +13,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class Expression;
 class Statement;
-class Function;
+class FunctionNode;
 class Field;
 class Class;
 class Namespace;

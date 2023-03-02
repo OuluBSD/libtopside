@@ -45,21 +45,13 @@ void TopWindow::SyncCaption()
 	frame->sizeable = sizeable;
 	frame->RefreshLayout();
 	frame->Refresh();
-	#if IS_UPP_CORE
 	frame->close ^= [=] { WhenClose(); };
-	#else
-	frame->close.WhenAction.Add(THISBACK(OnClose));
-	#endif
 	frame->icon = icon;
 	frame->Enable(IsEnabled());
 }
 
 void TopWindow::OnClose() {
-	#if IS_TS_CORE
-	WhenClose(0);
-	#else
 	WhenClose();
-	#endif
 }
 
 void TopWindow::State(int reason)
