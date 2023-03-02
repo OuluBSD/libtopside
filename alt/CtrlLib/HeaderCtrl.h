@@ -13,6 +13,9 @@ public:
 	
 	HeaderCtrl&   Invisible(bool inv);
 	
+	void FrameLayout(Rect& r) override;
+	void FrameAddSize(Size& sz) override;
+	
 };
 
 

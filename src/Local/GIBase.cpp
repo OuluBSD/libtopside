@@ -1,5 +1,6 @@
 #include "Local.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -70,11 +71,11 @@ bool GeomInteraction::IsCtrl() const {
 	return false;
 }
 
-GeomInteraction2D* GeomInteraction::Get2D() {
+UPP::Ctrl* GeomInteraction::Get2D() {
 	return 0;
 }
 
-GeomInteraction3D* GeomInteraction::Get3D() {
+Gubo* GeomInteraction::Get3D() {
 	return 0;
 }
 
@@ -366,3 +367,5 @@ bool GeomInteraction::IsVisible() const {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

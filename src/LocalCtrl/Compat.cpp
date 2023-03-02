@@ -10,7 +10,7 @@ void CtrlGeomProxy::SetTargetCtrl(Ctrl& o) {
 }
 
 void CtrlGeomProxy::OnInvalidate() {
-	SetPendingRedrawDeep();
+	TODO //SetPendingRedrawDeep();
 }
 
 bool CtrlGeomProxy::IsFocusCtrl() const {
@@ -23,10 +23,12 @@ bool CtrlGeomProxy::IsFocusCtrl() const {
 	}
 	return false;
 }
+
 void CtrlGeomProxy::Layout() {
-	if (!p) return;
-	Size sz = GetFrameSize();
-	p->SetRect(sz);
+	TODO
+	/*if (!p) return;
+	Size sz = GetSize();
+	p->SetRect(sz);*/
 }
 
 void CtrlGeomProxy::Paint(Draw& d) {

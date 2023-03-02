@@ -5,14 +5,16 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CtrlGeomBase : public GeomInteraction2D {
+class CtrlGeomBase : RTTIBase {
 	
 public:
 	typedef CtrlGeomBase CLASSNAME;
-	RTTI_DECL1(CtrlGeomBase, GeomInteraction2D);
+	RTTI_DECL0(CtrlGeomBase);
 	CtrlGeomBase() {}
 	
 	virtual Ctrl* GetCtrl() = 0;
+	
+	Rect GetFrameSize() const;
 	
 };
 
@@ -33,8 +35,9 @@ public:
 	
 	void OnInvalidate();
 	bool IsFocusCtrl() const;
-	void Layout() override;
-	void Paint(Draw& d) override;
+	void Layout();
+	
+	virtual void Paint(Draw& d);
 	
 	#if IS_UPP_CORE
 	

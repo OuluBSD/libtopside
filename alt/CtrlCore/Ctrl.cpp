@@ -13,47 +13,10 @@ bool      Ctrl::ignoreclick;
 bool ThreadHasGuiLock();
 
 
-void CtrlFrame::SetCapture() {
-	if (!ctrl) return;
-	SetCaptured(this);
-	ctrl->SetCapture();
-}
-
-void CtrlFrame::ReleaseCapture() {
-	if (!ctrl) return;
-	SetCaptured(NULL);
-	ctrl->ReleaseCapture();
-}
-
-CtrlFrame* CtrlFrame::GetCaptured() {
-	TODO
-	/*
-	if (!ctrl) return NULL;
-	return ctrl->GetWindows()->GetFrameCaptured();*/
-}
-
-CtrlFrame* CtrlFrame::GetWithMouse() {
-	TODO
-	/*
-	if (!ctrl) return NULL;
-	return ctrl->GetWindows()->GetFrameWithMouse();*/
-}
-
-void CtrlFrame::SetCaptured(CtrlFrame* c) {
-	TODO
-	/*
-	ctrl->GetWindows()->SetFrameCaptured(c);*/
-}
-
-#if 0
-void CtrlFrame::SetWithMouse(CtrlFrame* c) {
-	TODO
-	/*
-	ctrl->GetWindows()->SetFrameWithMouse(c);*/
-}
-#endif
 
 
+
+bool      Ctrl::do_debug_draw;
 int       Ctrl::LoopLevel;
 Ctrl     *Ctrl::LoopCtrl;
 int64     Ctrl::EventLoopNo;
@@ -62,46 +25,47 @@ int64     Ctrl::EventLoopNo;
 
 Ctrl::Ctrl() {
 	inloop = false;
-	want_focus = false;
-	has_focus = false;
+	wantfocus = false;
+	/*has_focus = false;
 	has_focus_deep = false;
 	has_mouse = false;
 	has_mouse_deep = false;
 	pending_fx_redraw = true;
 	pending_redraw = true;
-	pending_layout = true;
+	pending_layout = true;*/
 	modify = false;
 	
 }
 
-void Ctrl::Add(GeomInteraction2D& c) {
+/*void Ctrl::Add(GeomInteraction2D& c) {
 	GeomInteraction2D::Add(c);
-}
+}*/
 
 void Ctrl::Add(Ctrl& c) {
-	GeomInteraction2D::Add(c);
+	TODO //GeomInteraction::Add(c);
 }
 
 void Ctrl::AddChild(Ctrl* c) {
-	GeomInteraction2D::AddSub(c);
+	TODO //GeomInteraction::AddSub(c);
 }
 
 Ctrl* Ctrl::GetLastChild() {
-	return CastPtr<Ctrl>(sub.Top());
+	TODO //return CastPtr<Ctrl>(sub.Top());
 }
 
 void Ctrl::RemoveChild(Ctrl* c) {
-	GeomInteraction2D::RemoveSub(c);
+	TODO //GeomInteraction2D::RemoveSub(c);
 }
 
 Ctrl* Ctrl::GetParent() {
-	if (!owner)
+	TODO /*if (!owner)
 		return 0;
-	return CastPtr<Ctrl>(owner);
+	return CastPtr<Ctrl>(owner);*/
 }
 
 Ctrl* Ctrl::GetTopCtrl() {
-	Ctrl* c = this;
+	TODO
+	/*Ctrl* c = this;
 	while (c) {
 		Ctrl* p = c->GetParent();
 		if (p) {
@@ -112,15 +76,15 @@ Ctrl* Ctrl::GetTopCtrl() {
 		else
 			break;
 	}
-	return c;
+	return c;*/
 }
 
 Ctrl* Ctrl::GetIndexChild(int i) {
-	return CastPtr<Ctrl>(sub[i]);
+	TODO //return CastPtr<Ctrl>(sub[i]);
 }
 
 int Ctrl::GetChildCount() const {
-	return sub.GetCount();
+	TODO //return sub.GetCount();
 }
 
 TopWindow* Ctrl::GetTopWindow() {
@@ -137,8 +101,8 @@ TopWindow* Ctrl::GetTopWindow() {
 }
 
 void Ctrl::SetRect(const Rect& r) {
-	SetFrameRect(r);
-	SetPendingRedrawDeep();
+	TODO //SetFrameRect(r);
+	//SetPendingRedrawDeep();
 }
 
 void Ctrl::SetRect(int x, int y, int cx, int cy) {
@@ -146,7 +110,7 @@ void Ctrl::SetRect(int x, int y, int cx, int cy) {
 }
 
 void Ctrl::SetFrameBox(const Rect& r) {
-	this->frame_r = r;
+	TODO //this->frame_r = r;
 	/*SetPendingEffectRedraw();
 	if (parent) {
 		parent->SetPendingLayout();
@@ -165,20 +129,23 @@ void Ctrl::SetContentRect(const Rect& r) {
 }
 
 Rect Ctrl::GetContentRect() const {
-	ASSERT(frame_r.Contains(content_r));
-	return content_r;
+	TODO //
+	/*ASSERT(frame_r.Contains(content_r));
+	return content_r;*/
 }
 
 Point Ctrl::GetContentPoint(const Point& pt) {
-	Point ftl = frame_r.TopLeft();
+	TODO
+	/*Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
 	Point fpt = pt - ftl;
 	Point cpt = fpt - ctl;
-	return cpt;
+	return cpt;*/
 }
 
 void Ctrl::MouseMoveInFrameContent(Point pt, dword keyflags) {
-	Point ftl = frame_r.TopLeft();
+	TODO
+	/*Point ftl = frame_r.TopLeft();
 	Point fpt = pt - ftl;
 	Rect r(frame_r.GetSize());
 	CtrlFrame* last_fitting = NULL;
@@ -212,11 +179,12 @@ void Ctrl::MouseMoveInFrameContent(Point pt, dword keyflags) {
 			f->MouseEnter(fitting_pt, keyflags);
 		}
 		f->MouseMove(fitting_pt, keyflags);
-	}
+	}*/
 }
 
 void Ctrl::DeepMouseMoveInFrameContent(Point pt, dword keyflags) {
-	Point ftl = frame_r.TopLeft();
+	TODO
+	/*Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
 	Point fpt = pt - ftl;
 	
@@ -239,11 +207,12 @@ void Ctrl::DeepMouseMoveInFrameContent(Point pt, dword keyflags) {
 			f->MouseMove(fitting_pt, keyflags);
 			return;
 		}
-	}
+	}*/
 }
 
 bool Ctrl::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) {
-	Point ftl = frame_r.TopLeft();
+	TODO
+	/*Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
 	Point fpt = pt - ftl;
 	Point cpt = fpt - ctl;
@@ -292,11 +261,12 @@ bool Ctrl::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyf
 		}
 	}
 	
-	return false;
+	return false;*/
 }
 
 void Ctrl::MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) {
-	Point ftl = frame_r.TopLeft();
+	TODO //
+	/*Point ftl = frame_r.TopLeft();
 	Point fpt = pt - ftl;
 	Rect r(frame_r.GetSize());
 	CtrlFrame* last_fitting = NULL;
@@ -349,20 +319,22 @@ void Ctrl::MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyfl
 			case MOUSE_MIDDLEREPEAT: f->MiddleRepeat(fitting_pt, keyflags); break;
 			case MOUSE_MIDDLEUP: f->MiddleUp(fitting_pt, keyflags); break;
 		}
-	}
+	}*/
 }
 
 void Ctrl::MouseLeaveFrame() {
-	CtrlFrame* frame_with_mouse = GetFrameWithMouse();
+	TODO //
+	/*CtrlFrame* frame_with_mouse = GetFrameWithMouse();
 	if (frame_with_mouse) {
 		frame_with_mouse->has_mouse = false;
 		frame_with_mouse->MouseLeave();
 		SetFrameWithMouse(NULL);
-	}
+	}*/
 }
 
 bool Ctrl::MouseWheelInFrameContent(Point pt, int zdelta, dword keyflags) {
-	Point ftl = frame_r.TopLeft();
+	TODO //
+	/*Point ftl = frame_r.TopLeft();
 	Point ctl = content_r.TopLeft();
 	Point fpt = pt - ftl;
 	Point cpt = fpt - ctl;
@@ -411,11 +383,12 @@ bool Ctrl::MouseWheelInFrameContent(Point pt, int zdelta, dword keyflags) {
 			f->MouseWheel(fitting_pt, zdelta, keyflags);
 		}
 	}
-	return false;
+	return false;*/
 }
 
 void Ctrl::SetFocus() {
-	Ctrl* tw = GetTopCtrl();
+	TODO //
+	/*Ctrl* tw = GetTopCtrl();
 	if (tw) tw->DeepUnfocus();
 	
 	has_focus = true;
@@ -429,19 +402,20 @@ void Ctrl::SetFocus() {
 		c = c->GetParent();
 	}
 	
-	GeomInteraction::SetFocus();
+	GeomInteraction::SetFocus();*/
 }
 
 void Ctrl::Refresh() {
-	GeomInteraction2D::Refresh();
+	TODO //GeomInteraction2D::Refresh();
 }
 
 void Ctrl::RefreshFrame() {
-	RefreshFrame(Rect(GetRect().Size()).Inflated(overpaint));
+	TODO //RefreshFrame(Rect(GetRect().Size()).Inflated(overpaint));
 }
 
 void Ctrl::RefreshFrame(const Rect& r) {
-	if(!top) {
+	TODO //
+	/*if(!top) {
 		Ctrl *parent = GetParent();
 		if(InFrame())
 			parent->RefreshFrame(r + GetRect().TopLeft());
@@ -452,11 +426,12 @@ void Ctrl::RefreshFrame(const Rect& r) {
 		LLOG("WndInvalidateRect: " << r << ' ' << Name());
 		LTIMING("RefreshFrame InvalidateRect");
 		WndInvalidateRect(r);
-	}
+	}*/
 }
 
 void Ctrl::DeepUnfocus() {
-	if (has_focus) {
+	TODO //
+	/*if (has_focus) {
 		has_focus = false;
 		has_focus_deep = false;
 		LostFocus();
@@ -473,7 +448,7 @@ void Ctrl::DeepUnfocus() {
 				break;
 			}
 		}
-	}
+	}*/
 }
 
 
@@ -483,23 +458,25 @@ bool Ctrl::IsCtrl() const {
 }
 
 Ctrl* Ctrl::GetCaptured() {
-	Ctrl* top = GetTopCtrl();
+	TODO //
+	/*Ctrl* top = GetTopCtrl();
 	if (top && top->IsCaptureRoot()) {
 		GeomInteraction* gi = top->GetCaptured();
 		Ctrl* c = CastPtr<Ctrl>(gi);
 		return c;
 	}
-	return 0;
+	return 0;*/
 }
 
 Ctrl* Ctrl::GetWithMouse() {
-	Ctrl* top = GetTopCtrl();
+	TODO //
+	/*Ctrl* top = GetTopCtrl();
 	if (top && top->IsCaptureRoot()) {
 		GeomInteraction* gi = top->GetWithMouse();
 		Ctrl* c = CastPtr<Ctrl>(gi);
 		return c;
 	}
-	return 0;
+	return 0;*/
 }
 
 void Ctrl::SetCaptured(Ctrl* c) {
@@ -514,8 +491,8 @@ void Ctrl::SetWithMouse(Ctrl* c) {
 }
 
 void Ctrl::SyncLayout(int force) {
-	if (!GetFrameBox().IsEmpty())
-		DeepLayout();
+	TODO //if (!GetFrameBox().IsEmpty())
+	//	DeepLayout();
 }
 
 Rect Ctrl::GetScreenView() const {
@@ -555,44 +532,49 @@ void Ctrl::SetWithMouse(Ctrl* c) {
 #endif
 
 CtrlFrame* Ctrl::GetFrameCaptured() {
-	CtrlFrame* f = 0;
+	TODO //
+	/*CtrlFrame* f = 0;
 	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
 	if (wm)
 		f = CastPtr<CtrlFrame>(wm->GetFrameCaptured());
-	return f;
+	return f;*/
 }
 
 CtrlFrame* Ctrl::GetFrameWithMouse() {
-	CtrlFrame* f = 0;
+	TODO //
+	/*CtrlFrame* f = 0;
 	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
 	if (wm)
 		f = CastPtr<CtrlFrame>(wm->GetFrameWithMouse());
-	return f;
+	return f;*/
 }
 
 void Ctrl::SetFrameCaptured(CtrlFrame* c) {
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	TODO //
+	/*Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
 	if (wm)
-		wm->SetFrameCaptured(c);
+		wm->SetFrameCaptured(c);*/
 }
 
 void Ctrl::SetFrameWithMouse(CtrlFrame* c) {
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	TODO //
+	/*Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
 	if (wm)
-		wm->SetFrameWithMouse(c);
+		wm->SetFrameWithMouse(c);*/
 }
 
 
 
 
 void Ctrl::DeepFrameLayout() {
-	Size sz(frame_r.GetSize());
+	TODO //
+	/*Size sz(frame_r.GetSize());
 	Rect new_content_r(sz);
 	for(int i = 0; i < frames.GetCount(); i++) {
 		CtrlFrame& f = *frames[i];
 		f.FrameLayout(new_content_r);
 	}
-	content_r = new_content_r;
+	content_r = new_content_r;*/
 }
 
 bool Ctrl::ReleaseCtrlCapture() {
@@ -617,12 +599,14 @@ Ctrl* Ctrl::GetCaptureCtrl() {
 }
 
 void Ctrl::Update() {
-	SetModify();
-	Updated();
+	TODO //
+	/*SetModify();
+	Updated();*/
 }
 
 void Ctrl::PaintPreFrame(ProgPainter& pp) {
-	Size sz = GetFrameSize();
+	TODO //
+	/*Size sz = GetFrameSize();
 	ASSERT(!sz.IsEmpty());
 	Rect new_content_r(sz);
 	for(int i = 0; i < frames.GetCount(); i++) {
@@ -632,7 +616,7 @@ void Ctrl::PaintPreFrame(ProgPainter& pp) {
 	}
 	if (frames.GetCount())
 		pp.Clipoff(new_content_r);
-	content_r = new_content_r;
+	content_r = new_content_r;*/
 }
 
 void Ctrl::PaintPostFrame(ProgPainter& pp) {
@@ -641,7 +625,8 @@ void Ctrl::PaintPostFrame(ProgPainter& pp) {
 }
 
 void Ctrl::PaintDebug(ProgPainter& pp) {
-	Size sz = GetFrameSize();
+	TODO //
+	/*Size sz = GetFrameSize();
 	Rect new_content_r(sz);
 	if (do_debug_draw) {
 		if (has_mouse) {
@@ -653,7 +638,7 @@ void Ctrl::PaintDebug(ProgPainter& pp) {
 			c.a = 127;
 			pp.DrawRect(new_content_r.GetSize(), c);
 		}
-	}
+	}*/
 }
 
 #if 0
@@ -808,7 +793,7 @@ Ctrl& Ctrl::SetFrame(int i, CtrlFrame& fr) {
 	fr.FrameAdd(*this);
 	SyncLayout();
 	RefreshFrame();
-	SetPendingRedraw();
+	TODO //SetPendingRedraw();
 	return *this;
 }
 
@@ -826,7 +811,7 @@ void Ctrl::AddFrame(CtrlFrame& fr) {
 	fr.FrameAdd(*this);
 	SyncLayout();
 	RefreshFrame();
-	SetPendingRedraw();
+	TODO //SetPendingRedraw();
 }
 
 void Ctrl::PostInput()
@@ -1005,5 +990,741 @@ void Ctrl::CloseTopCtrls()
 		tc[i]->Close();*/
 }
 
+Ctrl& Ctrl::BottomPosZ(int i, int size) {
+	pos.htype = LogPos::BOTTOM;
+	pos.b = i;
+	pos.h = size;
+	return *this;
+}
+
+Ctrl& Ctrl::HSizePos(int l, int r) {
+	pos.htype = LogPos::HORZ;
+	pos.l = l;
+	pos.r = r;
+	return *this;
+}
+
+Ctrl& Ctrl::VSizePos(int t, int b) {
+	pos.vtype = LogPos::VERT;
+	pos.t = t;
+	pos.b = b;
+	return *this;
+}
+
+Ctrl& Ctrl::BottomPos(int i, int size) {
+	pos.vtype = LogPos::BOTTOM;
+	pos.b = i;
+	pos.h = size;
+	return *this;
+}
+
+Ctrl& Ctrl::TopPos(int i, int size) {
+	pos.vtype = LogPos::TOP;
+	pos.t = i;
+	pos.h = size;
+	return *this;
+}
+
+Ctrl& Ctrl::LeftPos(int i, int size) {
+	pos.htype = LogPos::LEFT;
+	pos.l = i;
+	pos.w = size;
+	return *this;
+}
+
+Ctrl& Ctrl::RightPos(int i, int size) {
+	pos.htype = LogPos::RIGHT;
+	pos.r = i;
+	pos.w = size;
+	return *this;
+}
+
+bool Ctrl::Is2D() const {
+	return true;
+}
+
+Ctrl* Ctrl::Get2D() {
+	return this;
+}
+
+Image Ctrl::FrameMouseEvent(int event, Point p, int zdelta, dword keyflags) {
+	return DefaultImages::Arrow;
+}
+
+Image Ctrl::MouseEvent(int event, Point p, int zdelta, dword keyflags) {
+	return DefaultImages::Arrow;
+}
+
+void Ctrl::MouseEnter(Point frame_p, dword keyflags) {
+	if (do_debug_draw)
+		Refresh();
+}
+
+Image Ctrl::CursorImage(Point p, dword keyflags) {
+	return DefaultImages::Arrow;
+}
+
+Rect Ctrl::GetRect() const {
+	TODO
+}
+
+Size Ctrl::GetSize() const {
+	TODO
+}
+
+bool Ctrl::HasMouse() const {
+	TODO
+}
+
+String Ctrl::GetDesc() const {
+	TODO
+}
+
+void Ctrl::Updated() {
+	TODO
+}
+
+void Ctrl::Layout() {
+	TODO
+}
+
+void Ctrl::LostFocus() {
+	TODO
+}
+
+void Ctrl::CancelMode() {
+	TODO
+}
+
+void Ctrl::Close() {
+	TODO
+}
+
+void Ctrl::GotFocus() {
+	TODO
+}
+
+void Ctrl::MouseLeave() {
+	TODO
+}
+
+bool Ctrl::SetCapture() {
+	TODO
+}
+
+bool Ctrl::ReleaseCapture() {
+	TODO
+}
+
+void Ctrl::Show(bool b) {
+	TODO
+}
+
+bool Ctrl::HasCapture() const {
+	TODO
+}
+
+bool Ctrl::HotKey(dword key) {
+	TODO
+}
+
+bool Ctrl::Key(dword key, int count) {
+	TODO
+}
+
+#if 0
+int Ctrl::GetCount() const {
+	return sub.GetCount();
+}
+
+Ctrl* Ctrl::At(int i) {
+	return CastPtr<Ctrl>(sub[i]);
+}
+
+bool Ctrl::MouseMoveInFrame(Point pt, dword keyflags) {
+	if (HasCapture()) {
+		//GeomInteraction* cap = CastPtr<Ctrl>(GetCaptured());
+		//ASSERT(this == cap);
+		Point cpt = GetContentPoint(pt);
+		MouseMove(cpt, keyflags);
+		return true;
+	}
+	else {
+		
+		if (frame_r.Contains(pt)) {
+			has_mouse_deep = true;
+			
+			Rect content_r = GetContentRect();
+			Point ftl = frame_r.TopLeft();
+			Point fpt = pt - ftl;
+			Point ctl = content_r.TopLeft();
+			Point cpt = fpt - ctl;
+			
+			if (content_r.Contains(fpt)) {
+				bool found = false;
+				for(int i = sub.GetCount()-1; i >= 0; i--) {
+					GeomInteraction* c = sub[i];
+					Ctrl* c2 = c->Get2D();
+					if (found) {
+						if (c->has_mouse_deep) {
+							c->DeepMouseLeave();
+							break;
+						}
+					}
+					else if (c2 && c2->DeepMouseMove(cpt, keyflags)) {
+						found = true;
+					}
+				}
+				
+				if (!found) {
+					if (!has_mouse) {
+						if (GetCaptured()) {ASSERT(GetCaptured() == this);}
+						
+						GeomInteraction* with_mouse = GetWithMouse();
+						if (with_mouse) {
+							with_mouse->has_mouse = false;
+							with_mouse->MouseLeave();
+						}
+						has_mouse = true;
+						
+						SetWithMouse(this);
+						
+						MouseEnter(fpt, keyflags);
+					}
+					MouseMove(cpt, keyflags);
+				}
+			}
+			else {
+				MouseMoveInFrameContent(pt, keyflags);
+			}
+			
+			return true;
+		}
+		else if (has_mouse_deep) {
+			DeepMouseLeave();
+		}
+		else {
+			ASSERT(!has_mouse);
+		}
+	}
+	return false;
+}
+
+void Ctrl::DeepMouseMoveInFrameContent(Point pt, dword keyflags) {
+	
+}
+
+void Ctrl::MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) {
+	
+}
+
+bool Ctrl::MouseWheelInFrameContent(Point p, int zdelta, dword keyflags) {
+	return false;
+}
+
+bool Ctrl::DeepMouseMoveInFrame(Point pt, dword keyflags) {
+	Rect content_r = GetContentRect();
+	Point ftl = frame_r.TopLeft();
+	Point ctl = content_r.TopLeft();
+	Point fpt = pt - ftl;
+	Point cpt = fpt - ctl;
+	
+	DeepMouseMoveInFrameContent(pt, keyflags);
+	
+	for(int i = sub.GetCount()-1; i >= 0; i--) {
+		Ctrl* c = sub[i]->Get2D();
+		if (!c) continue;
+		
+		if (c->has_mouse_deep) {
+			Point p0(	pt.x - frame_r.left,
+						pt.y - frame_r.top);
+			if (c->DeepMouseMove(cpt, keyflags))
+				return true;
+		}
+	}
+	return false;
+}
+
+bool Ctrl::DeepMouseMove(const Point& pt, dword keyflags) {
+	int deep_count = 0;
+	for(int i = sub.GetCount()-1; i >= 0; i--) {
+		Ctrl* c = sub[i]->Get2D();
+		if (!c) continue;
+		
+		if (c->HasMouseDeep()) {
+			if (deep_count)
+				c->DeepMouseLeave();
+			else
+				deep_count++;
+		}
+	}
+	ASSERT(deep_count <= 1);
+	
+	GeomInteraction* captured = GetCaptured();
+	if (captured) {
+		Ctrl* cap2 = CastPtr<Ctrl>(captured);
+		if (cap2) {
+			#if 0
+			// This is probably not correct, because "has_mouse" must be updated
+			ASSERT(cap2->IsCaptured());
+			Point cpt = GetFramePointBetween(this, cap2, pt);
+			return cap2->MouseMoveInFrame(cpt, keyflags);
+			#else
+			if (has_mouse) {
+				return MouseMoveInFrame(pt, keyflags);
+			}
+			else if (has_mouse_deep) {
+				return DeepMouseMoveInFrame(pt, keyflags);
+			}
+			#endif
+		}
+		else {
+			TODO // what is this problem?
+		}
+		
+		return false;
+	}
+	else {
+		return MouseMoveInFrame(pt, keyflags);
+	}
+	return false;
+}
+
+Rect Ctrl::GetContentRect() const {
+	return frame_r.GetSize();
+}
+
+Point Ctrl::GetContentPoint(const Point& pt) {
+	Point ctl = frame_r.TopLeft();
+	return pt - ctl;
+}
+
+bool Ctrl::DeepMouseDispatch(int mouse_code, const Point& cpt, dword keyflags) {
+	switch (mouse_code) {
+		case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+		case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+		case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+		case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+		case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+		case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+		case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+		case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+		case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+		case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+		case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+		case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+		case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+		case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+		case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+		case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+		case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+		case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+		case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+		case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+		case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
+	}
+	
+	return true;
+}
+
+bool Ctrl::DeepMouse(int mouse_code, const Point& pt, dword keyflags) {
+	if (GetCaptured()) {
+		#if 1
+		Ctrl* c2 = GetCaptured()->Get2D();
+		if (!c2)
+			return false;
+		Point cpt = GetFramePointBetween(*this, *c2, pt);
+		return c2->DeepMouseDispatch(mouse_code, cpt, keyflags);
+		#else
+		
+		// THIS ALL IS INCORRECT!!!!! DON'T USE!!!!
+		
+		// ...it won't ever seek towards captured
+		
+		// It's not the one "with mouse" if (has_mouse) {
+		if (IsCaptured()) {
+			Point cpt = GetContentPoint(pt);
+			
+			switch (mouse_code) {
+				case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+				case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+				case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+				case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+				case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+				case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+				case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+				case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+				case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+				case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+				case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+				case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+				case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+				case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+				case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+				case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+				case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+				case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+				case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
+			}
+			return true;
+		}
+		else if (has_mouse_deep) {
+			if (MouseEventInFrameCaptured(mouse_code, pt, keyflags))
+				return true;
+			
+			Point cpt = GetContentPoint(pt);
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				Ctrl* c = sub[i]->Get2D();
+				if (c->has_mouse_deep)
+					c->DeepMouse(mouse_code, cpt, keyflags);
+			}
+			return true;
+		}
+		return false;
+		#endif
+	}
+	else {
+		return MouseEventInFrame(mouse_code, pt, keyflags);
+	}
+}
+
+bool Ctrl::DeepMouseWheel(const Point& pt, int zdelta, dword keyflags) {
+	if (GetCaptured()) {
+		if (has_mouse) {
+			ASSERT(this == GetCaptured());
+			Point cpt = GetContentPoint(pt);
+			MouseWheel(cpt, zdelta, keyflags);
+			return true;
+		}
+		else if (has_mouse_deep) {
+			Point cpt = GetContentPoint(pt);
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				Ctrl* c = sub[i]->Get2D();
+				if (c->has_mouse_deep)
+					c->DeepMouseWheel(cpt, zdelta, keyflags);
+			}
+			
+			return true;
+		}
+		return false;
+	}
+	else {
+		MouseWheelInFrame(pt, zdelta, keyflags);
+		return true;
+	}
+}
+
+bool Ctrl::MouseWheelInFrame(Point pt, int zdelta, dword keyflags) {
+	if (frame_r.Contains(pt)) {
+		Rect content_r = GetContentRect();
+		Point ftl = frame_r.TopLeft();
+		Point ctl = content_r.TopLeft();
+		Point fpt = pt - ftl;
+		Point cpt = fpt - ctl;
+		
+		if (content_r.Contains(fpt)) {
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				Ctrl* c = sub[i]->Get2D();
+				if (c->DeepMouseWheel(cpt, zdelta, keyflags))
+					return true;
+			}
+			MouseWheel(cpt, zdelta, keyflags);
+		}
+		else {
+			MouseWheelInFrameContent(pt, zdelta, keyflags);
+		}
+		return true;
+	}
+	return false;
+}
+
+void Ctrl::SetFrameBox(const Rect& r) {
+	#if 0
+	GeomInteraction* gi = GetOwner();
+	if (gi) {
+		Ctrl* gi2 = CastPtr<Ctrl>(gi);
+		Rect parent_rect = gi2->GetRect();
+		int parent_width = parent_rect.Width();
+		ASSERT(r.right <= parent_width);
+	}
+	#endif
+	this->frame_r = r;
+	this->SetPendingLayout();
+}
+
+bool Ctrl::Redraw(bool only_pending) {
+	Ctrl* content = this;
+	//Ctrl* linked = CastPtr<Ctrl>(GetDynamicallyLinked());
+	/*if (linked) {
+		content = linked;
+	}*/
+	
+	bool did_draw = false;
+	bool was_pending_fx_redraw = pending_fx_redraw;
+	bool frame = IsGeomDrawBegin();
+	bool draw_begin = false;
+	Size sz = GetFrameSize();
+	
+	TODO
+	#if 0
+	if (!IsShown()) {
+		ProgPainter fast_exit(sz, *cmd_begin.prev, cmd_begin, cmd_end, *cmd_end.next);
+		fast_exit.Link();
+		pending_fx_redraw = false;
+		pending_redraw = false;
+		return true;
+	}
+	
+	if (pending_fx_redraw) {
+		ASSERT(cmd_begin.prev);
+		ASSERT(cmd_frame.next);
+		ProgPainter fx(sz, *cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
+		
+		if (frame) {
+			fx.CtrlDrawBegin((hash_t)this);
+			draw_begin = true;
+		}
+		
+		fx.WindowOffset(frame_r);
+		
+		fx.Link();
+		
+		pending_fx_redraw = false;
+		did_draw = true;
+	}
+	
+	
+	if (pending_redraw) {
+		ASSERT(cmd_frame.prev);
+		ASSERT(cmd_pre.next);
+		ProgPainter pre(sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
+		
+		bool frame = IsGeomDrawBegin();
+		if (frame && !draw_begin) {
+			pre.CtrlDrawBegin((hash_t)this);
+			draw_begin = true;
+		}
+		
+		const char* dbg_class_name = GetDynamicName();
+		content->PaintPreFrame(pre);
+		content->Paint(pre);
+		content->PaintDebug(pre);
+		
+		if (draw_begin && !pending_redraw)
+			pre.CtrlDrawEnd();
+		
+		pre.Link();
+	}
+	
+	
+	for(int i = 0; i < content->sub.GetCount(); i++) {
+		GeomInteraction* c = content->sub[i];
+		ASSERT(c);
+		did_draw = c->Redraw(only_pending) || did_draw;
+	}
+	
+	
+	if (pending_redraw) {
+		ASSERT(cmd_post.prev);
+		ASSERT(cmd_end.next);
+		ProgPainter post(sz, *cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
+		
+		content->PaintPostFrame(post);
+		post.WindowEnd();
+		
+		if (draw_begin) post.CtrlDrawEnd();
+		
+		post.Link();
+		
+		did_draw = true;
+		pending_redraw = false;
+	}
+	
+	//if (linked)
+	//	did_draw = linked->Redraw(only_pending) || did_draw;
+	#endif
+	
+	return did_draw;
+}
+
+bool Ctrl::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) {
+	return false;
+}
+
+bool Ctrl::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
+	if (frame_r.Contains(pt)) {
+		Rect content_r = GetContentRect();
+		Point ftl = frame_r.TopLeft();
+		Point ctl = content_r.TopLeft();
+		Point fpt = pt - ftl;
+		Point cpt = fpt - ctl;
+		
+		if (content_r.Contains(fpt)) {
+			for(int i = sub.GetCount()-1; i >= 0; i--) {
+				Ctrl* c = sub[i]->Get2D();
+				if (c && c->DeepMouse(mouse_code, cpt, keyflags))
+					return true;
+			}
+			switch (mouse_code) {
+				case MOUSE_LEFTDOWN: LeftDown(cpt, keyflags); break;
+				case MOUSE_LEFTDOUBLE: LeftDouble(cpt, keyflags); break;
+				case MOUSE_LEFTTRIPLE: LeftTriple(cpt, keyflags); break;
+				case MOUSE_LEFTDRAG: LeftDrag(cpt, keyflags); break;
+				case MOUSE_LEFTHOLD: LeftHold(cpt, keyflags); break;
+				case MOUSE_LEFTREPEAT: LeftRepeat(cpt, keyflags); break;
+				case MOUSE_LEFTUP: LeftUp(cpt, keyflags); break;
+				case MOUSE_RIGHTDOWN: RightDown(cpt, keyflags); break;
+				case MOUSE_RIGHTDOUBLE: RightDouble(cpt, keyflags); break;
+				case MOUSE_RIGHTTRIPLE: RightTriple(cpt, keyflags); break;
+				case MOUSE_RIGHTDRAG: RightDrag(cpt, keyflags); break;
+				case MOUSE_RIGHTHOLD: RightHold(cpt, keyflags); break;
+				case MOUSE_RIGHTREPEAT: RightRepeat(cpt, keyflags); break;
+				case MOUSE_RIGHTUP: RightUp(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOWN: MiddleDown(cpt, keyflags); break;
+				case MOUSE_MIDDLEDOUBLE: MiddleDouble(cpt, keyflags); break;
+				case MOUSE_MIDDLETRIPLE: MiddleTriple(cpt, keyflags); break;
+				case MOUSE_MIDDLEDRAG: MiddleDrag(cpt, keyflags); break;
+				case MOUSE_MIDDLEHOLD: MiddleHold(cpt, keyflags); break;
+				case MOUSE_MIDDLEREPEAT: MiddleRepeat(cpt, keyflags); break;
+				case MOUSE_MIDDLEUP: MiddleUp(cpt, keyflags); break;
+			}
+		}
+		else {
+			MouseEventInFrameContent(mouse_code, pt, keyflags);
+		}
+		return true;
+	}
+	return false;
+}
+
+void Ctrl::DeepLayout() {
+	//Ctrl* linked = CastPtr<Ctrl>(GetDynamicallyLinked());
+	Rect prev_frame_r = frame_r;
+	
+	DeepFrameLayout();
+	
+	Layout();
+	pending_layout = false;
+	
+	if (!(prev_frame_r == frame_r)) {
+		SetPendingEffectRedraw();
+		if (!(prev_frame_r.GetSize() == this->frame_r.GetSize()))
+			SetPendingRedraw();
+	}
+	
+	Rect r = GetContentRect();
+	ASSERT(!r.IsEmpty());
+	
+	for(GeomInteraction* c : sub) {
+		Ctrl* c2 = c->Get2D();
+		if (!c2)
+			continue;
+		
+		Rect cr = r;
+	
+		const LogPos& lp = c2->GetLogPos();
+		if (lp.htype || lp.vtype) {
+			switch (lp.htype) {
+				case LogPos::NO_HORZ:	break;
+				case LogPos::LEFT:		cr.left = r.left + lp.l;		cr.right = cr.left + lp.w;		break;
+				case LogPos::RIGHT:		cr.right = r.right - lp.r;		cr.left = cr.right - lp.w;		break;
+				case LogPos::HORZ:		cr.left = r.left + lp.l;		cr.right = r.right - lp.r;		break;
+			}
+			switch (lp.vtype) {
+				case LogPos::NO_VERT:	break;
+				case LogPos::TOP:		cr.top = r.top + lp.t;			cr.bottom = cr.top + lp.h;		break;
+				case LogPos::BOTTOM:	cr.bottom = r.bottom - lp.b;	cr.top = cr.bottom - lp.h;		break;
+				case LogPos::VERT:		cr.top = r.top + lp.t;			cr.bottom = r.bottom - lp.b;	break;
+			}
+			c2->SetFrameRect(cr);
+		}
+	}
+	
+	for(GeomInteraction* c : sub) {
+		c->DeepLayout();
+	}
+	
+	//if (linked)
+	//	linked->DeepLayoutSub(r);
+	
+	PostLayout();
+}
+
+bool Ctrl::Dispatch(const CtrlEvent& e) {
+	if (GeomInteraction::Dispatch(e))
+		return true;
+	
+	switch (e.type) {
+		case EVENT_SHUTDOWN:
+		case EVENT_WINDOW_RESIZE:
+			break;
+		
+		case EVENT_MOUSEMOVE:
+			DeepMouseMove(e.pt, e.value);
+			return true;
+		
+		case EVENT_MOUSEWHEEL:
+			DeepMouseWheel(e.pt, e.n, e.value);
+			return true;
+		
+		case EVENT_MOUSE_EVENT:
+			DeepMouse(e.n, e.pt, e.value);
+			return true;
+		
+		default:
+			TODO
+			break;
+	}
+	
+	return false;
+}
+
+Ctrl* Ctrl::GetAbsoluteDrawBegin() {
+	GeomInteraction* proxy = FindProxy();
+	if (proxy)
+		return CastPtr<Ctrl>(proxy);
+	return 0;
+}
+
+void Ctrl::Refresh() {
+	GeomInteraction::Refresh();
+	
+	Ctrl* proxy = GetAbsoluteDrawBegin();
+	if (proxy) {
+		TODO
+		/*AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
+		if (aiface)
+			aiface->SetPendingPartialRedraw();*/
+	}
+}
+
+Point Ctrl::GetFramePointBetween(Ctrl& top_owner, Ctrl& deep_sub, const Point& pt) {
+	Point tl_sum(0,0);
+	
+	// The "deep_sub" node is not counted in, so we consider it's owner only
+	GeomInteraction* ds_owner = deep_sub.GetOwner();
+	ASSERT(ds_owner); if (!ds_owner) return Point(0,0);
+	
+	Ctrl* iter = ds_owner->Get2D();
+	ASSERT(iter); if (!iter) return Point(0,0);
+	
+	while (iter) {
+		if (iter == &top_owner) {
+			Point diff = pt - tl_sum;
+			return diff;
+		}
+		Rect frame = iter->GetFrameBox();
+		Point frame_tl = frame.TopLeft();
+		tl_sum += frame_tl;
+		GeomInteraction* o = iter->GetOwner();
+		iter = o ? o->Get2D() : 0;
+	}
+	ASSERT_(0, "owner is not connected to given object");
+	return Point(0,0);
+}
+
+#endif
 
 END_UPP_NAMESPACE

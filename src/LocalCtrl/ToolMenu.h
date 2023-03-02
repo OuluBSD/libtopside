@@ -32,7 +32,7 @@ public:
 	typedef ToolGrid CLASSNAME;
 	ToolGrid();
 	
-	virtual void Layout() override;
+	void Layout() override;
 	void Select(int id);
 	
 	ButtonOption& AddButton(const Image& img, String text="");

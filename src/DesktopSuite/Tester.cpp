@@ -49,7 +49,7 @@ void GuiTesterApp::TimedToggle() {
 void GuiTesterApp::Paint(Draw& d) {
 	Rect r = GetSize();
 	
-	if (GeomInteraction::do_debug_draw)
+	if (do_debug_draw)
 		d.DrawRect(r, RandomColor(128,128+32));
 	else if (HasMouse())
 		d.DrawRect(r, Color(128, 255, 128));

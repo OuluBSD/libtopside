@@ -9,57 +9,17 @@ class Gubo;
 
 
 class GuboFrame :
-	public GeomInteraction3D
+	RTTIBase
 {
-	
-protected:
-	friend class Gubo;
-	
-	Gubo* ctrl = NULL;
-	bool has_mouse = false;
-	
-	GuboFrame* GetCaptured();
-	GuboFrame* GetWithMouse();
-	void SetCaptured(GuboFrame* c);
-	void SetWithMouse(GuboFrame* c);
-	
 public:
-	RTTI_DECL1(GuboFrame, GeomInteraction3D)
+	RTTI_DECL0(GuboFrame)
 	
-	virtual void FramePaint(Draw& w, const Rect& r) {}
-	/*virtual void FrameLayout(Rect& r) = 0;
+	virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
+	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 	virtual int  OverPaint() const;
-	virtual void MouseEnter(Point frame_p, dword keyflags) {}
-	virtual void MouseMove(Point frame_p, dword keyflags) {}
-	virtual void MouseLeave() {}
-	virtual void LeftDown(Point p, dword keyflags) {}
-	virtual void LeftDouble(Point p, dword keyflags) {}
-	virtual void LeftTriple(Point p, dword keyflags) {}
-	virtual void LeftDrag(Point p, dword keyflags) {}
-	virtual void LeftHold(Point p, dword keyflags) {}
-	virtual void LeftRepeat(Point p, dword keyflags) {}
-	virtual void LeftUp(Point p, dword keyflags) {}
-	virtual void RightDown(Point p, dword keyflags) {}
-	virtual void RightDouble(Point p, dword keyflags) {}
-	virtual void RightTriple(Point p, dword keyflags) {}
-	virtual void RightDrag(Point p, dword keyflags) {}
-	virtual void RightHold(Point p, dword keyflags) {}
-	virtual void RightRepeat(Point p, dword keyflags) {}
-	virtual void RightUp(Point p, dword keyflags) {}
-	virtual void MiddleDown(Point p, dword keyflags) {}
-	virtual void MiddleDouble(Point p, dword keyflags) {}
-	virtual void MiddleTriple(Point p, dword keyflags) {}
-	virtual void MiddleDrag(Point p, dword keyflags) {}
-	virtual void MiddleHold(Point p, dword keyflags) {}
-	virtual void MiddleRepeat(Point p, dword keyflags) {}
-	virtual void MiddleUp(Point p, dword keyflags) {}
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}*/
-	virtual void ContinueGlobalMouseMomentum() {}
-	void SetCapture();
-	void ReleaseCapture();
 
 	GuboFrame() {}
 	virtual ~GuboFrame() {}
@@ -71,17 +31,20 @@ private:
 
 
 
+
 class TopGubo;
 
 
 // Gui Cuboid --> Gubo (based on Ctrl class, which is a gui class)
 class Gubo :
 	public Pte<Gubo>,
-	public GeomInteraction3D
+	RTTIBase
 {
 	
 public:
-	RTTI_DECL1(Gubo, GeomInteraction3D)
+	RTTI_DECL0(Gubo)
+	
+	static  bool do_debug_draw;
 	
 protected:
 	static  int       LoopLevel;
@@ -105,8 +68,8 @@ protected:
 	Vol content_r;
 	
 	
-	void Refresh0() {Refresh();}
-	void Layout0() {Layout();}
+	void Refresh0() {TODO}
+	void Layout0() {TODO}
 	
 	
 protected:
@@ -131,9 +94,9 @@ public:
 	void SetContentRect(const Rect& r);
 	template<class T> void SetTopFrame(T& tgf) {frame = &tgf;}
 	
-	void Add(GeomInteraction3D& c);
+	//void Add(GeomInteraction3D& c);
 	void Add(Gubo& c);
-	void AddFrame(GuboFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
+	void AddFrame(GuboFrame& c);// {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Gubo* c);
 	Gubo* GetLastChild();
 	Gubo* GetIndexChild(int i);
@@ -194,6 +157,67 @@ public:
 	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
 	
+	
+	Gubo* At(int i);
+	
+	bool Is3D() const;
+	Gubo* Get3D();
+	bool Redraw(bool only_pending);
+	bool Dispatch(const CtrlEvent& e);
+	void Refresh();
+	
+	virtual void Paint(Draw3& d) {}
+	virtual void SetFrameBox(const Cubf& c);
+	virtual Point3f GetContentPoint(const Point& pt);
+	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);
+	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
+	virtual bool DeepMouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool DeepMouseMove(const Point3f& pt, dword keyflags);
+	virtual bool MouseMoveInFrame(Point3f pt, dword keyflags);
+	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseWheelInFrame(Point3f p, int zdelta, dword keyflags);
+	virtual void MouseEnter(Point3f frame_p, dword keyflags);
+	virtual void MouseMove(Point3f content_p, dword keyflags) {}
+	virtual void LeftDown(Point3f p, dword keyflags) {}
+	virtual void LeftDouble(Point3f p, dword keyflags) {}
+	virtual void LeftTriple(Point3f p, dword keyflags) {}
+	virtual void LeftDrag(Point3f p, dword keyflags) {}
+	virtual void LeftHold(Point3f p, dword keyflags) {}
+	virtual void LeftRepeat(Point3f p, dword keyflags) {}
+	virtual void LeftUp(Point3f p, dword keyflags) {}
+	virtual void RightDown(Point3f p, dword keyflags) {}
+	virtual void RightDouble(Point3f p, dword keyflags) {}
+	virtual void RightTriple(Point3f p, dword keyflags) {}
+	virtual void RightDrag(Point3f p, dword keyflags) {}
+	virtual void RightHold(Point3f p, dword keyflags) {}
+	virtual void RightRepeat(Point3f p, dword keyflags) {}
+	virtual void RightUp(Point3f p, dword keyflags) {}
+	virtual void MiddleDown(Point3f p, dword keyflags) {}
+	virtual void MiddleDouble(Point3f p, dword keyflags) {}
+	virtual void MiddleTriple(Point3f p, dword keyflags) {}
+	virtual void MiddleDrag(Point3f p, dword keyflags) {}
+	virtual void MiddleHold(Point3f p, dword keyflags) {}
+	virtual void MiddleRepeat(Point3f p, dword keyflags) {}
+	virtual void MiddleUp(Point3f p, dword keyflags) {}
+	virtual void MouseWheel(Point3f p, int zdelta, dword keyflags) {}
+	virtual Image CursorImage(Point3f p, dword keyflags);
+	virtual void PadTouch(int controller, Point3f p) {}
+	
+	virtual void   Close();
+	virtual void   MouseLeave();
+	virtual void   Layout();
+	virtual void   CancelMode();
+	
+	bool    HasCapture() const;
+	bool    HasMouse() const;
+	
+	Volf GetFrameSize() const;
+	Cubf GetFrameBox() const;
+	
+	void StartDrag();
+	
+	bool ReleaseCapture();
 	
 };
 

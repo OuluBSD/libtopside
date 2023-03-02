@@ -6,7 +6,7 @@ NAMESPACE_UPP
 
 
 TopWindow::TopWindow() {
-	SetFrameRect(RectC(0,0,320,240));
+	SetRect(RectC(0,0,320,240));
 	CreateGeom2DComponent();
 	
 }

@@ -23,5 +23,13 @@ HeaderCtrl& HeaderCtrl::Invisible(bool inv)
 	return *this;
 }
 
+void HeaderCtrl::FrameLayout(Rect& r) {
+	TODO
+}
+
+void HeaderCtrl::FrameAddSize(Size& sz) {
+	TODO
+}
+
 
 NAMESPACE_UPP_END

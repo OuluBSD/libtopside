@@ -1,121 +1,32 @@
 #ifndef _Local_GeomInteraction_h_
 #define _Local_GeomInteraction_h_
 
+#if 0
+
+NAMESPACE_UPP_BEGIN
+
+class Ctrl;
+
+NAMESPACE_UPP_END
+
 NAMESPACE_TOPSIDE_BEGIN
 
-
-struct LogPos {
-	
-	enum {
-		NO_HORZ = 0,
-		LEFT,
-		RIGHT,
-		HORZ,
-		NO_VERT = 0,
-		TOP,
-		BOTTOM,
-		VERT
-	};
-	int l = 0, r = 0, t = 0, b = 0, w = 0, h = 0, f = 0, n = 0;
-	Byte vtype = 0, htype = 0;
-};
+class Gubo;
 
 
-class ProgPainter;
 class GeomInteraction;
-class GeomInteraction2D;
-class GeomInteraction3D;
+//class GeomInteraction2D;
+//class GeomInteraction3D;
 typedef GeomInteraction Gi;
-typedef GeomInteraction2D Gi2;
-typedef GeomInteraction3D Gi3;
+//typedef GeomInteraction2D Gi2;
+//typedef GeomInteraction3D Gi3;
 
 class GeomInteraction : RTTIBase {
-	
-public:
-	enum PlacementConstants {
-		CENTER   = 0,
-		MIDDLE   = 0,
-		LEFT     = 1,
-		RIGHT    = 2,
-		TOP      = 1,
-		BOTTOM   = 2,
-		SIZE     = 3,
-		
-		MINSIZE  = -16380,
-		MAXSIZE  = -16381,
-		STDSIZE  = -16382,
-	};
-	
-	enum StateReason {
-		FOCUS      = 10,
-		ACTIVATE   = 11,
-		DEACTIVATE = 12,
-		SHOW       = 13,
-		ENABLE     = 14,
-		EDITABLE   = 15,
-		OPEN       = 16,
-		CLOSE      = 17,
-		POSITION   = 100,
-		LAYOUTPOS  = 101,
-	};
-	
-	enum MouseEvents {
-		BUTTON        = 0x0F,
-		ACTION        = 0xFF0,
-
-		MOUSEENTER    = 0x10,
-		MOUSEMOVE     = 0x20,
-		MOUSELEAVE    = 0x30,
-		CURSORIMAGE   = 0x40,
-		MOUSEWHEEL    = 0x50,
-
-		DOWN          = 0x80,
-		UP            = 0x90,
-		DOUBLE        = 0xa0,
-		REPEAT        = 0xb0,
-		DRAG          = 0xc0,
-		HOLD          = 0xd0,
-		TRIPLE        = 0xe0,
-		PEN           = 0xf0,
-		PENLEAVE      = 0x100,
-
-		LEFTDOWN      = LEFT|DOWN,
-		LEFTDOUBLE    = LEFT|DOUBLE,
-		LEFTREPEAT    = LEFT|REPEAT,
-		LEFTUP        = LEFT|UP,
-		LEFTDRAG      = LEFT|DRAG,
-		LEFTHOLD      = LEFT|HOLD,
-		LEFTTRIPLE    = LEFT|TRIPLE,
-
-		RIGHTDOWN     = RIGHT|DOWN,
-		RIGHTDOUBLE   = RIGHT|DOUBLE,
-		RIGHTREPEAT   = RIGHT|REPEAT,
-		RIGHTUP       = RIGHT|UP,
-		RIGHTDRAG     = RIGHT|DRAG,
-		RIGHTHOLD     = RIGHT|HOLD,
-		RIGHTTRIPLE   = RIGHT|TRIPLE,
-
-		MIDDLEDOWN     = MIDDLE|DOWN,
-		MIDDLEDOUBLE   = MIDDLE|DOUBLE,
-		MIDDLEREPEAT   = MIDDLE|REPEAT,
-		MIDDLEUP       = MIDDLE|UP,
-		MIDDLEDRAG     = MIDDLE|DRAG,
-		MIDDLEHOLD     = MIDDLE|HOLD,
-		MIDDLETRIPLE   = MIDDLE|TRIPLE
-	};
-	
-	enum {
-		NOBACKPAINT,
-		FULLBACKPAINT,
-		TRANSPARENTBACKPAINT,
-		EXCLUDEPAINT,
-	};
 	
 public:
 	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	GeomInteraction* owner = NULL;
 	Vector<GeomInteraction*> sub;
-	LogPos pos;
 	
 public:
 	static  bool do_debug_draw;
@@ -223,8 +134,8 @@ public:
 	virtual bool Is2D() const;
 	virtual bool Is3D() const;
 	virtual bool IsCtrl() const;
-	virtual GeomInteraction2D* Get2D();
-	virtual GeomInteraction3D* Get3D();
+	virtual UPP::Ctrl* Get2D();
+	virtual Gubo* Get3D();
 	//virtual Ctrl* GetCtrl();
 	//virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	virtual GeomInteraction* GetProxy() const {return 0;}
@@ -244,7 +155,7 @@ public:
 };
 
 
-
+#if 0
 class GeomInteraction2D : public GeomInteraction {
 	
 protected:
@@ -271,21 +182,8 @@ public:
 	void SetFrameRect(const Rect& r) {SetFrameBox(r);}
 	
 	
-	GeomInteraction2D& SizePos() {return HSizePos().VSizePos();}
-	GeomInteraction2D& BottomPosZ(int i, int size = STDSIZE);
-	GeomInteraction2D& HSizePos(int l=0, int r=0);
-	GeomInteraction2D& VSizePos(int t=0, int b=0);
-	GeomInteraction2D& BottomPos(int i, int size);
-	GeomInteraction2D& TopPos(int i, int size);
-	GeomInteraction2D& LeftPos(int i, int size);
-	GeomInteraction2D& RightPos(int i, int size);
-	
 	virtual void SetFrameBox(const Rect& r);
-	virtual void FrameLayout(Rect& r) {}
-	virtual void FrameAddSize(Size& sz) {}
-	virtual void Paint(Draw& d) {}
 	
-	virtual Size GetMinSize() const {return Size(0,0);}
 	virtual Rect GetContentRect() const;
 	virtual Point GetContentPoint(const Point& pt);
 	virtual Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
@@ -302,34 +200,6 @@ public:
 	virtual void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags);
 	virtual bool MouseWheelInFrame(Point p, int zdelta, dword keyflags);
 	virtual bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags);
-	virtual void MouseEnter(Point frame_p, dword keyflags);
-	virtual void MouseMove(Point content_p, dword keyflags) {}
-	virtual void MouseMoveInFrameContent(Point p, dword keyflags) {}
-	virtual void LeftDown(Point p, dword keyflags) {}
-	virtual void LeftDouble(Point p, dword keyflags) {}
-	virtual void LeftTriple(Point p, dword keyflags) {}
-	virtual void LeftDrag(Point p, dword keyflags) {}
-	virtual void LeftHold(Point p, dword keyflags) {}
-	virtual void LeftRepeat(Point p, dword keyflags) {}
-	virtual void LeftUp(Point p, dword keyflags) {}
-	virtual void RightDown(Point p, dword keyflags) {}
-	virtual void RightDouble(Point p, dword keyflags) {}
-	virtual void RightTriple(Point p, dword keyflags) {}
-	virtual void RightDrag(Point p, dword keyflags) {}
-	virtual void RightHold(Point p, dword keyflags) {}
-	virtual void RightRepeat(Point p, dword keyflags) {}
-	virtual void RightUp(Point p, dword keyflags) {}
-	virtual void MiddleDown(Point p, dword keyflags) {}
-	virtual void MiddleDouble(Point p, dword keyflags) {}
-	virtual void MiddleTriple(Point p, dword keyflags) {}
-	virtual void MiddleDrag(Point p, dword keyflags) {}
-	virtual void MiddleHold(Point p, dword keyflags) {}
-	virtual void MiddleRepeat(Point p, dword keyflags) {}
-	virtual void MiddleUp(Point p, dword keyflags) {}
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}
-	virtual Image CursorImage(Point p, dword keyflags);
-	virtual void PadTouch(int controller, Pointf p) {}
-	virtual void PadUntouch(int controller) {}
 	
 	bool Redraw(bool only_pending) override;
 	bool Is2D() const override;
@@ -404,8 +274,9 @@ public:
 	
 	
 };
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

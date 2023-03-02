@@ -22,66 +22,30 @@ class DefaultGuiAppComponent;
 NAMESPACE_UPP
 
 
-struct ClipData : Moveable<ClipData> {
-	Value  data;
-	String (*render)(const Value& data);
-
-	String  Render() const                   { return render ? (*render)(data) : ~data; }
-
-	ClipData(const Value& data, String (*render)(const Value& data));
-	ClipData(const String& data);
-	ClipData();
-};
+class ProgPainter;
 
 
-class PasteClip {
-	friend struct UDropTarget;
-	friend class  Ctrl;
-	friend PasteClip sMakeDropClip(bool paste);
-
-	GUIPLATFORM_PASTECLIP_DECLS
-
-	byte         action;
-	byte         allowed;
-	bool         paste;
-	bool         accepted;
-	String       fmt;
-	String       data;
-
-	void GuiPlatformConstruct();
-
-public:
-	bool   IsAvailable(const char *fmt) const;
-	String Get(const char *fmt) const;
-
-	bool   Accept();
-
-	bool   Accept(const char *fmt);
-	String GetFormat()                  { return fmt; }
-	String Get() const                  { return data; }
-	operator String() const             { return Get(); }
-	String operator ~() const           { return Get(); }
-
-	void   Reject()                     { accepted = false; }
-
-	int    GetAction() const            { return action; }
-	int    GetAllowedActions() const    { return allowed; }
-	void   SetAction(int x)             { action = x; }
-
-	bool   IsAccepted() const           { return accepted; }
-
-	bool   IsQuery() const              { return !paste; }
-	bool   IsPaste() const              { return paste; }
-
-	PasteClip();
+struct LogPos {
+	
+	enum {
+		NO_HORZ = 0,
+		LEFT,
+		RIGHT,
+		HORZ,
+		NO_VERT = 0,
+		TOP,
+		BOTTOM,
+		VERT
+	};
+	int l = 0, r = 0, t = 0, b = 0, w = 0, h = 0, f = 0, n = 0;
+	Byte vtype = 0, htype = 0;
 };
 
 
 
-class Ctrl;
-
+#if 0
 class CtrlFrame :
-	public GeomInteraction2D
+	RTTIBase
 {
 	
 protected:
@@ -96,39 +60,9 @@ protected:
 	//void SetWithMouse(CtrlFrame* c);
 	
 public:
-	RTTI_DECL1(CtrlFrame, GeomInteraction2D)
+	RTTI_DECL0(CtrlFrame)
 	
 	virtual void FramePaint(Draw& w, const Rect& r) {}
-	/*virtual void FrameLayout(Rect& r) = 0;
-	virtual void FrameAddSize(Size& sz) = 0;
-	virtual void FrameAdd(Ctrl& parent);
-	virtual void FrameRemove();
-	virtual int  OverPaint() const;
-	virtual void MouseEnter(Point frame_p, dword keyflags) {}
-	virtual void MouseMove(Point frame_p, dword keyflags) {}
-	virtual void MouseLeave() {}
-	virtual void LeftDown(Point p, dword keyflags) {}
-	virtual void LeftDouble(Point p, dword keyflags) {}
-	virtual void LeftTriple(Point p, dword keyflags) {}
-	virtual void LeftDrag(Point p, dword keyflags) {}
-	virtual void LeftHold(Point p, dword keyflags) {}
-	virtual void LeftRepeat(Point p, dword keyflags) {}
-	virtual void LeftUp(Point p, dword keyflags) {}
-	virtual void RightDown(Point p, dword keyflags) {}
-	virtual void RightDouble(Point p, dword keyflags) {}
-	virtual void RightTriple(Point p, dword keyflags) {}
-	virtual void RightDrag(Point p, dword keyflags) {}
-	virtual void RightHold(Point p, dword keyflags) {}
-	virtual void RightRepeat(Point p, dword keyflags) {}
-	virtual void RightUp(Point p, dword keyflags) {}
-	virtual void MiddleDown(Point p, dword keyflags) {}
-	virtual void MiddleDouble(Point p, dword keyflags) {}
-	virtual void MiddleTriple(Point p, dword keyflags) {}
-	virtual void MiddleDrag(Point p, dword keyflags) {}
-	virtual void MiddleHold(Point p, dword keyflags) {}
-	virtual void MiddleRepeat(Point p, dword keyflags) {}
-	virtual void MiddleUp(Point p, dword keyflags) {}
-	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}*/
 	virtual void ContinueGlobalMouseMomentum() {}
 	void SetCapture();
 	void ReleaseCapture();
@@ -142,6 +76,8 @@ private:
 	CtrlFrame(const CtrlFrame&);
 	void operator=(const CtrlFrame&);
 };
+#endif
+
 
 
 struct KeyInfo {
@@ -203,11 +139,94 @@ class TopWindow;
 
 class Ctrl :
 	public Pte<Ctrl>,
-	public GeomInteraction2D
+	RTTIBase
 {
 	
 public:
-	RTTI_DECL1(Ctrl, GeomInteraction2D)
+	enum PlacementConstants {
+		CENTER   = 0,
+		MIDDLE   = 0,
+		LEFT     = 1,
+		RIGHT    = 2,
+		TOP      = 1,
+		BOTTOM   = 2,
+		SIZE     = 3,
+		
+		MINSIZE  = -16380,
+		MAXSIZE  = -16381,
+		STDSIZE  = -16382,
+	};
+	
+	enum StateReason {
+		FOCUS      = 10,
+		ACTIVATE   = 11,
+		DEACTIVATE = 12,
+		SHOW       = 13,
+		ENABLE     = 14,
+		EDITABLE   = 15,
+		OPEN       = 16,
+		CLOSE      = 17,
+		POSITION   = 100,
+		LAYOUTPOS  = 101,
+	};
+	
+	enum MouseEvents {
+		BUTTON        = 0x0F,
+		ACTION        = 0xFF0,
+
+		MOUSEENTER    = 0x10,
+		MOUSEMOVE     = 0x20,
+		MOUSELEAVE    = 0x30,
+		CURSORIMAGE   = 0x40,
+		MOUSEWHEEL    = 0x50,
+
+		DOWN          = 0x80,
+		UP            = 0x90,
+		DOUBLE        = 0xa0,
+		REPEAT        = 0xb0,
+		DRAG          = 0xc0,
+		HOLD          = 0xd0,
+		TRIPLE        = 0xe0,
+		PEN           = 0xf0,
+		PENLEAVE      = 0x100,
+
+		LEFTDOWN      = LEFT|DOWN,
+		LEFTDOUBLE    = LEFT|DOUBLE,
+		LEFTREPEAT    = LEFT|REPEAT,
+		LEFTUP        = LEFT|UP,
+		LEFTDRAG      = LEFT|DRAG,
+		LEFTHOLD      = LEFT|HOLD,
+		LEFTTRIPLE    = LEFT|TRIPLE,
+
+		RIGHTDOWN     = RIGHT|DOWN,
+		RIGHTDOUBLE   = RIGHT|DOUBLE,
+		RIGHTREPEAT   = RIGHT|REPEAT,
+		RIGHTUP       = RIGHT|UP,
+		RIGHTDRAG     = RIGHT|DRAG,
+		RIGHTHOLD     = RIGHT|HOLD,
+		RIGHTTRIPLE   = RIGHT|TRIPLE,
+
+		MIDDLEDOWN     = MIDDLE|DOWN,
+		MIDDLEDOUBLE   = MIDDLE|DOUBLE,
+		MIDDLEREPEAT   = MIDDLE|REPEAT,
+		MIDDLEUP       = MIDDLE|UP,
+		MIDDLEDRAG     = MIDDLE|DRAG,
+		MIDDLEHOLD     = MIDDLE|HOLD,
+		MIDDLETRIPLE   = MIDDLE|TRIPLE
+	};
+	
+	enum {
+		NOBACKPAINT,
+		FULLBACKPAINT,
+		TRANSPARENTBACKPAINT,
+		EXCLUDEPAINT,
+	};
+	
+public:
+	static  bool do_debug_draw;
+	
+public:
+	RTTI_DECL0(Ctrl)
 	
 	struct Scroll : Moveable<Scroll> {
 		Rect rect;
@@ -258,6 +277,7 @@ protected:
 	void SetFrameWithMouse(CtrlFrame* c);
 	
 	
+	LogPos pos;
 	byte         overpaint;
 
 	bool         unicode:1;
@@ -289,8 +309,8 @@ protected:
 	Rect content_r;
 	
 	
-	void Refresh0() {Refresh();}
-	void Layout0() {Layout();}
+	void Refresh0();// {Refresh();}
+	void Layout0();// {Layout();}
 	
 public:
 	Top         *GetTop()               { return top ? utop : NULL; }
@@ -328,10 +348,11 @@ public:
 	
 	//static oid EventLoop(Ctrl *ctrl);
 	
+	Rect GetRect() const;
 	Size GetContentSize() const;
 	void SetContentRect(const Rect& r);
 	
-	void Add(GeomInteraction2D& c);
+	//void Add(GeomInteraction2D& c);
 	void Add(Ctrl& c);
 	void AddFrame(CtrlFrame& c);
 	void AddChild(Ctrl* c);
@@ -350,34 +371,103 @@ public:
 	Ctrl* GetOwner();
 	static Ctrl* GetActiveCtrl();
 	
-	Size GetSize() const {return GetFrameSize();}
+	Size GetSize() const;// {return GetFrameSize();}
 	String Name() const;
 	
-	void DeepFrameLayout() override;
-	void SetFrameBox(const Rect& r) override;
-	void DeepMouseMoveInFrameContent(Point pt, dword keyflags) override;
-	void MouseMoveInFrameContent(Point pt, dword keyflags) override;
-	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
-	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) override;
-	void MouseLeaveFrame() override;
-	Rect GetContentRect() const override;
-	Point GetContentPoint(const Point& pt) override;
-	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags) override;
-	void SetFocus() override;
-	void DeepUnfocus() override;
-	void PaintPreFrame(ProgPainter& pp) override;
-	void PaintPostFrame(ProgPainter& pp) override;
-	void PaintDebug(ProgPainter& pp) override;
-	bool IsCtrl() const override;
-	void Refresh() override;
-	void RefreshFrame() override;
+	void SetFrameBox(const Rect& r);
+	void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
+	void MouseMoveInFrameContent(Point pt, dword keyflags);
+	Rect GetContentRect() const;
+	Point GetContentPoint(const Point& pt);
+	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags);
+	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
+	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags);
 	
+	virtual bool Key(dword key, int count);
+	virtual Size GetMinSize() const {return Size(0,0);}
+	virtual void FrameLayout(Rect& r) {}
+	virtual void FrameAddSize(Size& sz) {}
+	virtual void Paint(Draw& d) {}
+	virtual void MouseEnter(Point frame_p, dword keyflags);
+	virtual void MouseMove(Point content_p, dword keyflags) {}
+	virtual void LeftDown(Point p, dword keyflags) {}
+	virtual void LeftDouble(Point p, dword keyflags) {}
+	virtual void LeftTriple(Point p, dword keyflags) {}
+	virtual void LeftDrag(Point p, dword keyflags) {}
+	virtual void LeftHold(Point p, dword keyflags) {}
+	virtual void LeftRepeat(Point p, dword keyflags) {}
+	virtual void LeftUp(Point p, dword keyflags) {}
+	virtual void RightDown(Point p, dword keyflags) {}
+	virtual void RightDouble(Point p, dword keyflags) {}
+	virtual void RightTriple(Point p, dword keyflags) {}
+	virtual void RightDrag(Point p, dword keyflags) {}
+	virtual void RightHold(Point p, dword keyflags) {}
+	virtual void RightRepeat(Point p, dword keyflags) {}
+	virtual void RightUp(Point p, dword keyflags) {}
+	virtual void MiddleDown(Point p, dword keyflags) {}
+	virtual void MiddleDouble(Point p, dword keyflags) {}
+	virtual void MiddleTriple(Point p, dword keyflags) {}
+	virtual void MiddleDrag(Point p, dword keyflags) {}
+	virtual void MiddleHold(Point p, dword keyflags) {}
+	virtual void MiddleRepeat(Point p, dword keyflags) {}
+	virtual void MiddleUp(Point p, dword keyflags) {}
+	virtual void MouseWheel(Point p, int zdelta, dword keyflags) {}
+	virtual Image CursorImage(Point p, dword keyflags);
+	virtual void PadTouch(int controller, Pointf p) {}
+	virtual void PadUntouch(int controller) {}
+	virtual Image  FrameMouseEvent(int event, Point p, int zdelta, dword keyflags);
+	virtual Image  MouseEvent(int event, Point p, int zdelta, dword keyflags);
+	virtual void   MouseLeave();
+	virtual bool   HotKey(dword key);
+	virtual String GetDesc() const;
+	virtual void   Layout();
+	virtual void   Updated();
+	virtual void   Close();
+	virtual void   GotFocus();
+	virtual void   LostFocus();
+	virtual void   CancelMode();
+	
+	Ctrl& SizePos() {return HSizePos().VSizePos();}
+	Ctrl& BottomPosZ(int i, int size = STDSIZE);
+	Ctrl& HSizePos(int l=0, int r=0);
+	Ctrl& VSizePos(int t=0, int b=0);
+	Ctrl& BottomPos(int i, int size);
+	Ctrl& TopPos(int i, int size);
+	Ctrl& LeftPos(int i, int size);
+	Ctrl& RightPos(int i, int size);
+	
+	bool Redraw(bool only_pending);
+	bool Is2D() const;
+	Ctrl* Get2D();
+	void DeepLayout();
+	bool Dispatch(const CtrlEvent& e);
+	void DeepFrameLayout();
+	void MouseLeaveFrame();
+	void SetFocus();
+	bool    HasFocus() const                   { return FocusCtrl() == this; }
+	bool    HasFocusDeep() const;
+	Ctrl&   WantFocus(bool ft = true)          { wantfocus = ft; return *this; }
+	Ctrl&   NoWantFocus()                      { return WantFocus(false); }
+	bool	IsWantFocus() const                { return wantfocus; }
+	void DeepUnfocus();
+	void PaintPreFrame(ProgPainter& pp);
+	void PaintPostFrame(ProgPainter& pp);
+	void PaintDebug(ProgPainter& pp);
+	bool IsCtrl() const;
+	void Refresh();
+	void RefreshFrame();
+	bool    HasMouse() const;
+	bool    HasMouseDeep() const;
 	void RefreshFrame(const Rect& r);
 	
+	Ctrl&       SetPos(LogPos p);
 	void SetRect(const Rect& r);
 	void SetRect(int x, int y, int cx, int cy);
 	void Update();
 	
+	void        Shutdown()                               { destroying = true; }
+	bool        IsShutdown() const                       { return destroying; }
+
 	virtual int OverPaint() const {return 0;}
 	
 	Callback WhenAction;
@@ -456,6 +546,14 @@ public:
 	
 	virtual void   PostInput();
 	
+	bool    SetCapture();
+	bool    ReleaseCapture();
+	bool    HasCapture() const;
+	
+	void    Show(bool show = true);
+	void    Hide()                             { Show(false); }
+	bool    IsShown() const                    { return visible; }
+	
 	void WndDestroy();
 	void WndUpdate();
 	void WndUpdate(const Rect& r);
@@ -524,23 +622,8 @@ public:
 
 
 
-class BorderFrame : public CtrlFrame {
-public:
-	virtual void FrameLayout(Rect& r);
-	virtual void FramePaint(Draw& w, const Rect& r);
-	virtual void FrameAddSize(Size& sz);
-
-protected:
-	const ColorF *border;
-
-public:
-	BorderFrame(const ColorF *border) : border(border) {}
-};
 
 
-
-CtrlFrame& NullFrame();
-CtrlFrame& InsetFrame();
 
 String GetKeyDesc(dword key);
 

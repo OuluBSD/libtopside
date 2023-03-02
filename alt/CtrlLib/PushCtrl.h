@@ -41,7 +41,7 @@ public:
 	void MouseEnter(Point p, dword keyflags) override;
 	void MouseLeave() override;
 	void MouseMove(Point content_p, dword keyflags) override;
-	void Refresh() override {Ctrl::Refresh();}
+	void Refresh() {Ctrl::Refresh();}
 	
 	Button&  SetStyle(const Style& s);
 	
