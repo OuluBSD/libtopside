@@ -40,6 +40,7 @@ public:
 	};
 	
 	Image();
+	Image(const Nuller&);
 	Image(const Image& img);
 	Image(Image&& img);
 	Image(ImageDataRef* data);

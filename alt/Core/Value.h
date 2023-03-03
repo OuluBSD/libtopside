@@ -258,6 +258,7 @@ Value        ErrorValue(const char *s);
 Value        ErrorValue(const String& s);
 const Value& ErrorValue();
 
+String GetErrorText(const Value& v);
 
 
 class Id : Moveable<Id> {

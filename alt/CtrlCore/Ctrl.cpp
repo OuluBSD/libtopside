@@ -18,7 +18,6 @@ bool ThreadHasGuiLock();
 
 
 
-bool      Ctrl::do_debug_draw;
 int       Ctrl::LoopLevel;
 Ctrl     *Ctrl::LoopCtrl;
 int64     Ctrl::EventLoopNo;

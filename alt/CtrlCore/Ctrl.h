@@ -25,6 +25,9 @@ NAMESPACE_UPP
 class ProgPainter;
 
 
+bool GetShift();
+bool GetCtrl();
+bool GetAlt();
 
 
 
@@ -270,21 +273,32 @@ private:
 	bool         top:1;
 	
 	static  bool do_debug_draw;
+	static  Ptr<Ctrl> mouseCtrl;
 	static  Ptr<Ctrl> focusCtrl;
 	static  Ptr<Ctrl> captureCtrl;
-	static  int64     EndSessionLoopNo;
 	static  bool      ignoreclick;
+	static  bool      ignoremouseup;
+	static  bool      globalbackpaint;
+	static  bool      globalbackbuffer;
 	static  int       LoopLevel;
 	static  Ctrl     *LoopCtrl;
 	static  int64     EventLoopNo;
+	static  int64     EndSessionLoopNo;
 	
 	static Ptr<Ctrl> FocusCtrl() { return focusCtrl; }
 	static void      FocusCtrl(Ptr<Ctrl> fc) { focusCtrl = fc; }
 	
-	void SetWndRect(const Rect& r);
+	void    UpdateRect0(bool sync = true);
+	void    UpdateRect(bool sync = true);
+	void    SetPos0(LogPos p, bool inframe);
+	void    SetWndRect(const Rect& r);
 	
 	static  void  EndIgnore();
+	static  void  KillRepeat();
+	Image   MouseEvent0(int event, Point p, int zdelta, dword keyflags);
 	Image   DispatchMouse(int e, Point p, int zd = 0);
+	
+	void    StateH(int reason);
 	
 	static  void  DefferedFocusSync();
 	static  bool  DispatchKey(dword keycode, int count);
@@ -298,6 +312,7 @@ private:
 	void    UpdateArea(SystemDraw& draw, const Rect& clip);
 	
 	void    SyncLayout(int force = 0);
+	Ctrl   *GetTopRect(Rect& r, bool inframe, bool clip = true);
 	
 	void WndShow(bool b);
 	void WndSetPos(const Rect& rect);
@@ -339,7 +354,10 @@ private:
 	
 	void SetTop(Top *t)                 { utop = t; top = true; }
 	
-	Frame& GetFrame0(int i);
+	Frame&       GetFrame0(int i)       { ASSERT(i < GetFrameCount()); return multi_frame ? frame.frames[i] : frame; }
+	const Frame& GetFrame0(int i) const { ASSERT(i < GetFrameCount()); return multi_frame ? frame.frames[i] : frame; }
+	void         FreeFrames()           { if(multi_frame) MemoryFree(frame.frames); }
+	Frame        AllocFrames(int alloc);
 	
 	static void InitTimer();
 	
@@ -362,6 +380,13 @@ private:
 #endif
 	
 	static void InstallPanicBox();
+	
+	bool IsDHCtrl() const {return false;}
+	
+	struct EventLevelDo {
+		EventLevelDo() { EventLevel++; };
+		~EventLevelDo() { EventLevel--; };
+	};
 	
 	static void TimerProc(double dt);
 	
@@ -433,6 +458,7 @@ public:
 	};
 	
 	static Vector<Ctrl*> GetTopCtrls();
+	static  Vector<Ctrl *> GetTopWindows();
 	static void   CloseTopCtrls();
 	
 	static  int    RegisterSystemHotKey(dword key, Function<void ()> cb);
@@ -440,9 +466,10 @@ public:
 	
 	virtual void   SetData(const Value& data);
 	virtual Value  GetData() const;
+	virtual bool   IsModified() const;
 	
-	virtual void Paint(Draw& d) {}
-	virtual int OverPaint() const {return 0;}
+	virtual void Paint(Draw& d);
+	virtual int OverPaint() const;
 	
 	virtual void   CancelMode();
 	
@@ -525,6 +552,7 @@ public:
 	Ctrl&            SetFrame(CtrlFrame& frm)            { return SetFrame(0, frm); }
 	Ctrl&            AddFrame(CtrlFrame& frm);
 	int              GetFrameCount() const   { return multi_frame ? frame.multi.count : frame.frame ? 1 : 0; }
+	void             InsertFrame(int i, CtrlFrame& frm);
 	
 	bool        IsOpen() const;
 
@@ -535,7 +563,9 @@ public:
 	
 	Ctrl&       SetPos(LogPos p);
 	Ctrl&       SetPos(Logc x, Logc y)                   { return SetPos(LogPos(x, y)); }
-	
+	Ctrl&       SetPosX(Logc x);
+	Ctrl&       SetPosY(Logc y);
+
 	void        SetRect(const Rect& r);
 	void        SetRect(int x, int y, int cx, int cy);
 	
@@ -580,6 +610,8 @@ public:
 	void        RefreshFrame(const Rect& r);
 	void        RefreshFrame(int x, int y, int cx, int cy);
 	void        RefreshFrame();
+	
+	bool    HasChildDeep(Ctrl *ctrl) const;
 	
 	bool    HasMouse() const;
 	bool    HasMouseDeep() const;
@@ -633,15 +665,22 @@ public:
 	static bool ProcessEvent(bool *quit = NULL);
 	static bool ProcessEvents(bool *quit = NULL);
 	
+	bool   IsPopUp() const          { return popup; }
+	
 	static void  EventLoop(Ctrl *loopctrl = NULL);
 	
 	bool   InLoop() const;
+	
+	static int  HorzLayoutZoom(int cx);
+	static double HorzLayoutZoomf(double cx);
+	static int  VertLayoutZoom(int cy);
 	
 	static Rect   GetVirtualWorkArea();
 	static Rect   GetVirtualScreenArea();
 	static Rect   GetPrimaryWorkArea();
 	static Rect   GetPrimaryScreenArea();
 	static void   GetWorkArea(Array<Rect>& rc);
+	static Rect   GetWorkArea(Point pt);
 	static int    GetKbdDelay();
 	static int    GetKbdSpeed();
 	static bool   IsAlphaSupported();
@@ -652,11 +691,18 @@ public:
 	
 	String        Name() const;
 	
+#ifdef _DEBUG
+	virtual void   Dump() const;
+	virtual void   Dump(Stream& s) const;
+
+	static bool LogMessages;
+#endif
+	
 	static void GuiSleep(int ms);
 	
 	RTTI_DECL0(Ctrl)
 	Ctrl();
-	virtual ~Ctrl() {}
+	virtual ~Ctrl();
 	
 	
 	static void SetDebugDraw(bool b=true) {do_debug_draw = b;}
@@ -696,6 +742,7 @@ public:
 
 
 
+int GUI_DblClickTime();
 
 String GetKeyDesc(dword key);
 

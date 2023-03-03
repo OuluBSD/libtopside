@@ -15,6 +15,10 @@ Atomic Image::serial_counter;
 
 
 
+Image::Image(const Nuller&) {
+	
+}
+
 Image::Image() {
 	
 }

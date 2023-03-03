@@ -48,6 +48,10 @@ void SetExeFilePath(String s) {
 	exe_path = s;
 }
 
+String GetExeTitle() {
+	return GetFileName(exe_path);
+}
+
 String GetExeFilePath() {
 	return exe_path;
 }

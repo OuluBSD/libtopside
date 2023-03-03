@@ -4,8 +4,9 @@
 NAMESPACE_UPP_BEGIN
 
 
-String GetHomeDirectory();
-String GetHomeDirFile(const char *fp);
+String  GetHomeDirectory();
+String  GetHomeDirFile(const char *fp);
+String  GetExeTitle();
 
 
 NAMESPACE_UPP_END

@@ -258,6 +258,9 @@ String Format(String pattern, Value v0, Value v1, Value v2, Value v3, Value v4, 
 	return out;
 }
 
-
+String GetErrorText(const Value& v) {
+	ASSERT(v.Is<Exc>());
+	return v.To<Exc>();
+}
 
 END_UPP_NAMESPACE
