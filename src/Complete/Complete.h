@@ -3,7 +3,7 @@
 
 #include <Local/Local.h>
 #include <AudioCore/AudioCore.h>
-#include <CuboidLib/CuboidLib.h>
+#include <GuboLib/GuboLib.h>
 #include <SerialLib/SerialLib.h>
 
 

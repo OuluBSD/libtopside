@@ -3,7 +3,7 @@
 
 #include <ParallelCore/ParallelCore.h>
 #include <Geometry/Geometry.h>
-#include <CuboidLib/CuboidLib.h>
+#include <GuboLib/GuboLib.h>
 
 #include "Base.h"
 #include "BaseAudio.h"

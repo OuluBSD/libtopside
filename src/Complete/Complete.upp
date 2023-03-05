@@ -5,7 +5,7 @@ uses
 	Shadertoy,
 	AtomLocal,
 	AudioHost,
-	CuboidLib,
+	GuboLib,
 	IMidiFile,
 	IMidiHw,
 	SerialLib,
