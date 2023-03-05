@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ProgDraw : public SystemDraw
+class ProgDraw : public DrawProxy
 {
 	One<ProgPainter> d;
 	

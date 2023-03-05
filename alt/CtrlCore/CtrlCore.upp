@@ -6,24 +6,5 @@ uses
 
 file
 	CtrlCore.h,
-	Defs.h,
-	Util.h,
-	Util.cpp,
-	MKeys.h,
-	Frame.h,
-	Frame.cpp,
-	DnD.h,
-	Ctrl.h,
-	Ctrl.cpp,
-	CtrlLean.cpp,
-	CtrlPos.cpp,
-	CtrlFrame.cpp,
-	CtrlMouse.cpp,
-	CtrlKbd.cpp,
-	Bar.cpp,
-	TopWindow.h,
-	TopWindow.cpp,
-	Images.h,
-	Images.cpp,
-	stdids.h;
+	Ctrl.h;
 

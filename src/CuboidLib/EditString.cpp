@@ -1,3 +1,5 @@
+#if 0
+
 #include "CtrlLib.h"
 
 
@@ -6,7 +8,7 @@
 #include <ports/stb/stb_textedit.h>
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 TextCtrl::TextCtrl(bool multiline) {
@@ -243,4 +245,7 @@ Value TextCtrl::GetData() const {
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
+
+
+#endif

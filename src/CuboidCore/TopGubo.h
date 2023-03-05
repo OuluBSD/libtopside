@@ -14,7 +14,7 @@ public:
 	TopGubo();
 	virtual ~TopGubo() {}
 	
-	void CreateGeom2DComponent();
+	void CreateGeom3DComponent();
 	void UpdateFromTransform3D();
 	
 	

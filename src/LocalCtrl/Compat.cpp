@@ -2,6 +2,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
 CtrlGeomProxy::CtrlGeomProxy() {}
 CtrlGeomProxy::CtrlGeomProxy(Ctrl& o) : p(&o) {}
 
@@ -132,6 +133,6 @@ Ctrl* CtrlGeomProxy::operator->() {return p;}
 Ctrl& CtrlGeomProxy::operator*() {ASSERT(p); return *p;}
 
 Ctrl* CtrlGeomProxy::GetCtrl() {return p;}
-
+#endif
 
 NAMESPACE_TOPSIDE_END

@@ -1,6 +1,7 @@
-#ifndef _CtrlLib_TextEdit_h_
-#define _CtrlLib_TextEdit_h_
+#ifndef _CuboidLib_TextEdit_h_
+#define _CuboidLib_TextEdit_h_
 
+#if 0
 
 
 #define STB_TEXTEDIT_CHARTYPE				wchar_t
@@ -41,7 +42,8 @@
 #include <ports/stb/stb_textedit.h>
 
 
-NAMESPACE_UPP
+
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class TextCtrl : public Ctrl {
@@ -99,7 +101,8 @@ public:
 };
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

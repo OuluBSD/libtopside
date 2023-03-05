@@ -18,9 +18,9 @@
 
 #include <Local/Local.h>
 
-#ifdef flagGUI
+/*#ifdef flagGUI
 	#include <LocalCtrl/LocalCtrl.h>
-#endif
+#endif*/
 
 #undef rad2
 #undef far

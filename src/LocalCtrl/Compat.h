@@ -4,7 +4,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-
+#if 0
 class CtrlGeomBase : RTTIBase {
 	
 public:
@@ -39,9 +39,10 @@ public:
 	
 	virtual void Paint(Draw& d);
 	
-	#if IS_UPP_CORE
-	
+	#if IS_TS_CORE
 	bool DeepMouseMove(const Point& pt, dword keyflags) override;
+	#endif
+	
 	bool Key(dword key, int count) override;
 	void MouseMove(Point pt, dword keyflags) override;
 	void MouseWheel(Point pt, int zdelta, dword keyflags) override;
@@ -51,7 +52,6 @@ public:
 	void RightDown(Point pt, dword keyflags) override;
 	void RightUp(Point pt, dword keyflags) override;
 	
-	#endif
 	
 	Ctrl* operator->();
 	Ctrl& operator*();
@@ -76,6 +76,7 @@ public:
 
 template <class T> using CG = CtrlGeom<T>;
 
+#endif
 #if 0
 class CtrlInterfaceGeom :
 	public CtrlGeomProxy,
@@ -88,7 +89,6 @@ public:
 	
 	
 };
-
 
 
 

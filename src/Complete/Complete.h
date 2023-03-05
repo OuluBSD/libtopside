@@ -3,15 +3,6 @@
 
 #include <Local/Local.h>
 #include <AudioCore/AudioCore.h>
-
-#ifdef flagCTRL
-	#include <EcsCtrl/EcsCtrl.h>
-#endif
-
-#ifdef flagGUI
-	#include <DesktopSuite/DesktopSuite.h>
-#endif
-
 #include <CuboidLib/CuboidLib.h>
 #include <SerialLib/SerialLib.h>
 

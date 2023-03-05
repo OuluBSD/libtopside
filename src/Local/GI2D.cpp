@@ -1,6 +1,5 @@
 #include "Local.h"
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -566,13 +565,6 @@ void GeomInteraction2D::DeepLayout() {
 	PostLayout();
 }
 
-GeomInteraction2D& GeomInteraction2D::BottomPosZ(int i, int size) {
-	pos.htype = LogPos::BOTTOM;
-	pos.b = i;
-	pos.h = size;
-	return *this;
-}
-
 GeomInteraction2D& GeomInteraction2D::HSizePos(int l, int r) {
 	pos.htype = LogPos::HORZ;
 	pos.l = l;
@@ -690,5 +682,3 @@ Point GeomInteraction2D::GetFramePointBetween(GeomInteraction2D& top_owner, Geom
 
 
 NAMESPACE_TOPSIDE_END
-
-#endif

@@ -4,35 +4,5 @@ uses
 	CtrlCore;
 
 file
-	CtrlLib.h,
-	CtrlLib readonly separator,
-	LabelBase.h,
-	LabelBase.cpp,
-	PushCtrl.h,
-	PushCtrl.cpp,
-	TextEdit.h,
-	EditString.cpp,
-	FileSel.h,
-	FileSel.cpp,
-	TabCtrl.h,
-	TabCtrl.cpp,
-	HeaderCtrl.h,
-	HeaderCtrl.cpp,
-	ArrayCtrl.h,
-	ArrayCtrl.cpp,
-	ScrollBar.h,
-	ScrollBar.cpp,
-	StaticCtrl.h,
-	StaticCtrl.cpp,
-	Splitter.h,
-	Splitter.cpp,
-	Bar readonly separator,
-	Bar.h,
-	Bar.cpp,
-	TreeCtrl readonly separator,
-	TreeCtrl.h,
-	TreeCtrl.cpp,
-	Chameleon readonly separator,
-	Ch.cpp,
-	Ch.h;
+	CtrlLib.h;
 

@@ -7,8 +7,6 @@ uses
 
 uses(BUILTIN_ASSIMP | MSC | LINUX) ports/assimp;
 
-uses(GUI) LocalCtrl;
-
 library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
 
 library(!BUILTIN_ASSIMP & WIN32 & (CLANG | GCC)) libassimp.dll.a;

@@ -7,5 +7,7 @@ file
 	CuboidLib.h,
 	CuboidLib.cpp,
 	StaticGubo.h,
-	StaticGubo.cpp;
+	StaticGubo.cpp,
+	TextEdit.h,
+	EditString.cpp;
 

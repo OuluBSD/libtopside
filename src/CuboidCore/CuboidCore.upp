@@ -3,8 +3,14 @@ description "\377B28,127,255";
 file
 	CuboidCore.h,
 	Defs.h,
+	Util.h,
+	Util.cpp,
+	MKeys.h,
+	Frame.h,
 	Gubo.h,
 	Gubo.cpp,
 	TopGubo.h,
-	TopGubo.cpp;
+	TopGubo.cpp,
+	Images.h,
+	Images.cpp;
 

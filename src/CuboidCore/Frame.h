@@ -1,50 +1,50 @@
-#ifndef _CtrlCore_Frame_h_
-#define _CtrlCore_Frame_h_
+#ifndef _CuboidCore_Frame_h_
+#define _CuboidCore_Frame_h_
 
 NAMESPACE_UPP_BEGIN
 
 
-class Ctrl;
+class Gubo;
 
-class CtrlFrame :
+class GuboFrame :
 	RTTIBase
 {
 public:
-	RTTI_DECL0(CtrlFrame)
+	RTTI_DECL0(GuboFrame)
 	
 	virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
 	virtual void FramePaint(Draw& w, const Rect& r);
-	virtual void FrameAdd(Ctrl& parent);
+	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 	virtual int  OverPaint() const;
 
-	CtrlFrame() {}
-	virtual ~CtrlFrame() {}
+	GuboFrame() {}
+	virtual ~GuboFrame() {}
 
 private:
-	CtrlFrame(const CtrlFrame&);
-	void operator=(const CtrlFrame&);
+	GuboFrame(const GuboFrame&);
+	void operator=(const GuboFrame&);
 };
 
-struct NullFrameClass : public CtrlFrame {
+struct NullFrameClass : public GuboFrame {
 	virtual void FrameLayout(Rect& r);
 	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAddSize(Size& sz);
 };
 
-CtrlFrame& NullFrame();
+GuboFrame& NullFrame();
 
-class MarginFrame : public CtrlFrame {
+class MarginFrame : public GuboFrame {
 public:
 	virtual void FrameLayout(Rect& r);
 	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAddSize(Size& sz);
-	virtual void FrameAdd(Ctrl& parent);
+	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 
 private:
-	Ctrl  *owner;
+	Gubo  *owner;
 	Color  color;
 	Rect   margins;
 
@@ -55,7 +55,7 @@ public:
 	MarginFrame();
 };
 
-class BorderFrame : public CtrlFrame {
+class BorderFrame : public GuboFrame {
 public:
 	virtual void FrameLayout(Rect& r);
 	virtual void FramePaint(Draw& w, const Rect& r);
@@ -69,9 +69,8 @@ public:
 };
 
 
-CtrlFrame& NullFrame();
-CtrlFrame& InsetFrame();
-
+GuboFrame& NullFrame();
+GuboFrame& InsetFrame();
 
 NAMESPACE_UPP_END
 

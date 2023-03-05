@@ -16,7 +16,7 @@ struct ListMarker
 
 
 class HtmlRenderer : public Ctrl {
-	RTTI_DECL1(HtmlRenderer, Ctrl)
+	RTTI_DECL1_(HtmlRenderer, Ctrl)
 	
 protected:
 	friend class HtmlCtrl;
@@ -35,7 +35,7 @@ protected:
 };
 
 class HtmlCtrl : public ParentCtrl {
-	RTTI_DECL1(HtmlCtrl, ParentCtrl)
+	RTTI_DECL1_(HtmlCtrl, ParentCtrl)
 	
 private:
 	HtmlRenderer renderer;
@@ -129,7 +129,7 @@ protected:
 };
 
 class BrowserCtrl : public ParentCtrl {
-	RTTI_DECL1(BrowserCtrl, ParentCtrl)
+	RTTI_DECL1_(BrowserCtrl, ParentCtrl)
 	
 private:
 	static const int button_h = 30;

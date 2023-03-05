@@ -11,8 +11,6 @@ uses
 	SerialLib,
 	AtomHandle;
 
-uses(GUI) DesktopSuite;
-
 uses(NEVER) Physics;
 
 file
