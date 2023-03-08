@@ -55,10 +55,10 @@ class HandleVideoBase :
 	bool					add_ecs = false;
 	bool					dbg_info = false;
 	int						dbg_win_id = 0;
-	#ifdef flagGUI
+	#if IS_UPP_CORE && defined flagGUI
 	WindowSystemRef			wins;
-	GuboSystemRef			gubos;
 	#endif
+	Gu::SurfaceSystemRef	surfs;
 	int						screen_id = -1;
 	int						add_count = 0;
 	

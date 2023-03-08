@@ -1,6 +1,8 @@
 #ifndef _Local_GeomInteraction_h_
 #define _Local_GeomInteraction_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -96,6 +98,7 @@ public:
 	bool DeepKey(dword key, int count);
 	void Layout0();
 	void Refresh0();
+	bool HasCapture();
 	
 	virtual bool Redraw(bool only_pending) = 0;
 	virtual void SetFocus();
@@ -315,4 +318,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

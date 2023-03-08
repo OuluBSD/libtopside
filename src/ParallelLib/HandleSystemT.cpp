@@ -14,12 +14,6 @@ bool HandleSystemT<Dim>::Initialize() {
 	return true;
 }
 
-template <>
-bool HandleSystemT<Ctx2D>::Initialize() {
-	RealizeScope();
-	return true;
-}
-
 template <class Dim>
 void HandleSystemT<Dim>::Start() {
 	
@@ -207,7 +201,17 @@ Image HandleSystemT<Dim>::DefaultCursor() {
 }
 
 
-HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleSystemT)
+#if IS_UPP_CORE
+
+template <>
+bool HandleSystemT<CtxUpp2D>::Initialize() {
+	RealizeScope();
+	return true;
+}
+
+#endif
+
+PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(HandleSystemT)
 
 
 NAMESPACE_PARALLEL_END

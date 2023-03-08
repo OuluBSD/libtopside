@@ -1,10 +1,10 @@
-#include "GuboCore.h"
+#include "GuboLib.h"
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 template <class Dim>
-HandleSystemT<Dim>::HandleSystemT(Machine& m) :
+HandleSystemT<Dim>::HandleSystemT(Parallel::Machine& m) :
 	RefScopeEnabler<MetaSystemBase, MetaMachineBase>::SP(m) {
 	
 }
@@ -143,8 +143,13 @@ void HandleSystemT<Dim>::Set_GetMouseCursor(Image (*fn)(void*), void* arg) {
 	get_mouse_cursor_arg = arg;
 }
 
+template <class Dim>
+Image HandleSystemT<Dim>::OverrideCursor(const Image& img) {
+	TODO
+}
+
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleSystemT)
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END

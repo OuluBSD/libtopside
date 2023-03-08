@@ -1,4 +1,4 @@
-#include "Local.h"
+#include "GuboCore.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -394,7 +394,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		ProgPainter fx(sz, *cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
 		
 		if (frame) {
-			fx.SurfaceDrawBegin((hash_t)this);
+			fx.CtrlDrawBegin((hash_t)this);
 			draw_begin = true;
 		}
 		
@@ -414,7 +414,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		
 		bool frame = IsGeomDrawBegin();
 		if (frame && !draw_begin) {
-			pre.SurfaceDrawBegin((hash_t)this);
+			pre.CtrlDrawBegin((hash_t)this);
 			draw_begin = true;
 		}
 		
@@ -423,7 +423,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		content->PaintDebug(pre);
 		
 		if (draw_begin && !pending_redraw)
-			pre.SurfaceDrawEnd();
+			pre.CtrlDrawEnd();
 		
 		pre.Link();
 	}
@@ -444,7 +444,7 @@ bool GeomInteraction2D::Redraw(bool only_pending) {
 		content->PaintPostFrame(post);
 		post.WindowEnd();
 		
-		if (draw_begin) post.SurfaceDrawEnd();
+		if (draw_begin) post.CtrlDrawEnd();
 		
 		post.Link();
 		
@@ -603,7 +603,7 @@ GeomInteraction2D& GeomInteraction2D::RightPos(int i, int size) {
 	return *this;
 }
 
-bool GeomInteraction2D::Dispatch(const SurfaceEvent& e) {
+bool GeomInteraction2D::Dispatch(const CtrlEvent& e) {
 	if (GeomInteraction::Dispatch(e))
 		return true;
 	
@@ -644,9 +644,10 @@ void GeomInteraction2D::Refresh() {
 	
 	GeomInteraction2D* proxy = GetAbsoluteDrawBegin();
 	if (proxy) {
-		AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
+		TODO
+		/*AbsoluteInterface* aiface = CastPtr<AbsoluteInterface>(proxy);
 		if (aiface)
-			aiface->SetPendingPartialRedraw();
+			aiface->SetPendingPartialRedraw();*/
 	}
 }
 

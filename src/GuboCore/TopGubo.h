@@ -16,7 +16,10 @@ public:
 	
 	void CreateGeom3DComponent();
 	void UpdateFromTransform3D();
-	
+	void FocusEvent();
+	void RunInMachine();
+	void OpenMain();
+	int Run();
 	
 };
 

@@ -6,29 +6,19 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 TopGubo::TopGubo() {
-	SetRect(VolfC(0,0,320,240,240));
+	SetFrameBox(CubfC(0,0,0,320,240,240));
 	CreateGeom3DComponent();
 	
 	TODO
 	
 }
 
-void TopGubo::CreateGeom2DComponent() {
+void TopGubo::FocusEvent() {
 	
 	TODO
 	
 }
 
-void TopGubo::UpdateFromTransform3D() {
-	
-	TODO
-	
-}
-
-
-TopGubo::TopGubo() {
-	
-}
 
 /*Surface* TopGubo::GetSurface() {
 	return this;
@@ -43,7 +33,6 @@ int TopGubo::Run() {
 }
 
 void TopGubo::CreateGeom3DComponent() {
-	using namespace Ecs;
 	using namespace Parallel;
 	
 	#if 0
@@ -74,6 +63,8 @@ void TopGubo::CreateGeom3DComponent() {
 }
 
 void TopGubo::UpdateFromTransform3D() {
+	TODO
+	#if 0
 	using namespace Ecs;
 	ASSERT(cw);
 	if (!cw) return;
@@ -104,8 +95,12 @@ void TopGubo::UpdateFromTransform3D() {
 		cw.DeepLayout();
 		cw.SetPendingEffectRedraw();
 	}
+	#endif
 }
 
+void TopGubo::OpenMain() {
+	TODO
+}
 
 NAMESPACE_TOPSIDE_END
 

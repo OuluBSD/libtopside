@@ -1,5 +1,6 @@
 #include "GuboCore.h"
 #include <ParallelLib/ParallelLib.h>
+#include <GuboLib/GuboLib.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -15,8 +16,16 @@ TopSurface::TopSurface() {
 	return this;
 }*/
 
+void TopSurface::Run() {
+	TODO
+}
+
 void TopSurface::RunInMachine() {
 	Run();
+}
+
+void TopSurface::FocusEvent() {
+	TODO
 }
 
 void TopSurface::CreateGeom2DComponent() {
@@ -41,9 +50,9 @@ void TopSurface::CreateGeom2DComponent() {
 	#else
 	
 	Machine& mach = GetActiveMachine();
-	WindowSystemRef wins = mach.Get<WindowSystem>();
-	WindowManager& mgr = wins->GetActiveScope();
-	mgr.AddInterface(*this);
+	Gu::SurfaceSystemRef wins = mach.Get<Gu::SurfaceSystem>();
+	Gu::SurfaceManager& mgr = wins->GetActiveScope();
+	TODO //mgr.AddInterface(*this);
 	
 	#endif
 }

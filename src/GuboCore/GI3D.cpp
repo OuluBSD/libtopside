@@ -1,4 +1,5 @@
-#include "Local.h"
+#include "GuboCore.h"
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -28,7 +29,7 @@ GeomInteraction3D* GeomInteraction3D::At(int i) {
 	TODO
 }
 
-Point3f GeomInteraction3D::GetContentPoint(const Point& pt) {
+Point3f GeomInteraction3D::GetContentPoint(const Point3f& pt) {
 	TODO
 }
 
@@ -72,7 +73,7 @@ Image GeomInteraction3D::CursorImage(Point3f p, dword keyflags) {
 	TODO
 }
 
-bool GeomInteraction3D::Dispatch(const SurfaceEvent& e) {
+bool GeomInteraction3D::Dispatch(const CtrlEvent& e) {
 	GeomInteraction::Dispatch(e);
 	TODO
 }
@@ -83,6 +84,48 @@ void GeomInteraction3D::SetFrameBox(const Cubf& c) {
 
 void GeomInteraction3D::Refresh() {
 	TODO
+}
+
+GeomInteraction3D& GeomInteraction3D::HSizePos(int l, int r) {
+	pos.htype = LogPos::HORZ;
+	pos.l = l;
+	pos.r = r;
+	return *this;
+}
+
+GeomInteraction3D& GeomInteraction3D::VSizePos(int t, int b) {
+	pos.vtype = LogPos::VERT;
+	pos.t = t;
+	pos.b = b;
+	return *this;
+}
+
+GeomInteraction3D& GeomInteraction3D::BottomPos(int i, int size) {
+	pos.vtype = LogPos::BOTTOM;
+	pos.b = i;
+	pos.h = size;
+	return *this;
+}
+
+GeomInteraction3D& GeomInteraction3D::TopPos(int i, int size) {
+	pos.vtype = LogPos::TOP;
+	pos.t = i;
+	pos.h = size;
+	return *this;
+}
+
+GeomInteraction3D& GeomInteraction3D::LeftPos(int i, int size) {
+	pos.htype = LogPos::LEFT;
+	pos.l = i;
+	pos.w = size;
+	return *this;
+}
+
+GeomInteraction3D& GeomInteraction3D::RightPos(int i, int size) {
+	pos.htype = LogPos::RIGHT;
+	pos.r = i;
+	pos.w = size;
+	return *this;
 }
 
 

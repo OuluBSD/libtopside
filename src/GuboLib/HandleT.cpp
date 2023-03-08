@@ -1,15 +1,15 @@
-#include "GuboCore.h"
+#include "GuboLib.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 void DebugMainLoop();
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_GUBO_END
 
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 Image& WindowsImg::close() {
@@ -86,13 +86,14 @@ HandleT<Dim>::HandleT() :
 
 template <class Dim>
 typename Dim::TopContainer* HandleT<Dim>::GetTopContainer() {
-	auto* proxy = this->GetLinkedProxy();
+	TODO
+	/*auto* proxy = this->GetLinkedProxy();
 	if (!proxy)
 		return 0;
-	return CastPtr<typename Dim::TopContainer>(proxy);
+	return CastPtr<typename Dim::TopContainer>(proxy);*/
 }
 
-template <class Dim>
+/*template <class Dim>
 void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
 	if (this->GetLinkedProxy()) {
 		TODO // clear old
@@ -104,7 +105,7 @@ void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
 	if (iact)
 		Dim::Interaction::Add(*iact);
 	// --> GetLinkedProxy()
-}
+}*/
 
 template <class Dim>
 void HandleT<Dim>::Paint(DrawT& draw) {
@@ -112,7 +113,7 @@ void HandleT<Dim>::Paint(DrawT& draw) {
 }
 
 template <>
-void HandleT<Ctx2D>::Paint(DrawT& draw) {
+void HandleT<Ctx2D>::Paint(Draw& draw) {
 	Color bg = GrayColor(128+64);
 	Sz sz(this->GetFrameBox().GetSize());
 	draw.DrawRect(sz, bg);
@@ -154,7 +155,8 @@ void HandleT<Dim>::Layout() {
 	decor_box.bottom = decor_box.top + title_h;
 	decor.SetFrameBox(decor_box);
 	
-	typename Dim::Interaction* iact = CastPtr<typename Dim::Interaction>(this->GetLinkedProxy());
+	TODO
+	/*typename Dim::Interaction* iact = CastPtr<typename Dim::Interaction>(this->GetLinkedProxy());
 	if (iact) {
 		Box content_box = handle_box;
 		content_box.top = content_box.top + title_h;
@@ -165,7 +167,7 @@ void HandleT<Dim>::Layout() {
 		content_box.right -= 5;
 		#endif
 		iact->SetFrameBox(content_box);
-	}
+	}*/
 }
 
 template <class Dim>
@@ -235,17 +237,17 @@ void HandleT<Dim>::Title(const String& title) {
 }
 
 template <class Dim>
-typename Dim::Interface& HandleT<Dim>::Sizeable(bool b) {
+HandleT<Dim>& HandleT<Dim>::Sizeable(bool b) {
 	TODO
 }
 
 template <class Dim>
-typename Dim::Interface& HandleT<Dim>::MaximizeBox(bool b) {
+HandleT<Dim>& HandleT<Dim>::MaximizeBox(bool b) {
 	TODO
 }
 
 template <class Dim>
-typename Dim::Interface& HandleT<Dim>::MinimizeBox(bool b) {
+HandleT<Dim>& HandleT<Dim>::MinimizeBox(bool b) {
 	TODO
 }
 
@@ -284,7 +286,7 @@ template <class Dim>
 HandleSystemT<Dim>& HandleT<Dim>::GetHandleSystem() const {
 	ScopeT<Dim>* owner0 = this->GetParent().Get();
 	ASSERT(owner0);
-	HandleSystemT<Dim>* owner1 = owner0->GetParent().Get();
+	HandleSystemT<Dim>* owner1 = owner0->GetManager();
 	ASSERT(owner1);
 	return *owner1;
 }
@@ -447,8 +449,9 @@ void HandleT<Dim>::MouseMove(Pt pt, dword keyflags) {
 
 template <class Dim>
 GeomInteraction* HandleT<Dim>::GetProxy() const {
-	auto proxy = this->GetLinkedProxy();
-	return CastPtr<GeomInteraction>(proxy);
+	TODO
+	/*auto proxy = this->GetLinkedProxy();
+	return CastPtr<GeomInteraction>(proxy);*/
 }
 
 template <class Dim>
@@ -606,17 +609,17 @@ template <class Dim>
 GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
 	handle = h;
 	
-	close->SetImage(WindowsImg::close());
-	maximize->SetImage(WindowsImg::maximize());
-	minimize->SetImage(WindowsImg::minimize());
+	close.SetImage(WindowsImg::close());
+	maximize.SetImage(WindowsImg::maximize());
+	minimize.SetImage(WindowsImg::minimize());
 	
 	this->Add(close.TopPos(3, 19).RightPos(3, 19));
 	this->Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
 	this->Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
 	
-	close->WhenAction = callback(h, &Handle::Close);
-	maximize->WhenAction = callback(h, &Handle::ToggleMaximized);
-	minimize->WhenAction = callback(h, &Handle::Minimize);
+	close.WhenAction = callback(h, &Handle::Close);
+	maximize.WhenAction = callback(h, &Handle::ToggleMaximized);
+	minimize.WhenAction = callback(h, &Handle::Minimize);
 	
 }
 
@@ -716,7 +719,7 @@ void GeomDecorationT<Dim>::MouseLeave() {
 
 template <class Dim>
 void GeomDecorationT<Dim>::RightDown(Pt p, dword keyflags) {
-	MenuBar::Execute(THISBACK(LocalMenu));
+	// MenuBar::Execute(THISBACK(LocalMenu));
 }
 
 template <class Dim>
@@ -731,4 +734,4 @@ void GeomDecorationT<Dim>::LocalMenu(Bar& bar) {
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(HandleT)
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(GeomDecorationT)
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END

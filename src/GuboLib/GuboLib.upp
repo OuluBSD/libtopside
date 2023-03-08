@@ -1,7 +1,8 @@
 description "\377B28,127,255";
 
 uses
-	GuboCore;
+	GuboCore,
+	Geometry;
 
 file
 	GuboLib.h,
@@ -9,5 +10,22 @@ file
 	StaticGubo.h,
 	StaticGubo.cpp,
 	TextEdit.h,
-	EditString.cpp;
+	EditString.cpp,
+	Push.h,
+	"2D System" readonly separator,
+	HandleTypes.h,
+	HandleSystemT.h,
+	HandleSystemT.cpp,
+	HandleT.h,
+	HandleT.cpp,
+	ScopeT.h,
+	ScopeT.cpp,
+	VirtualGui3D readonly separator,
+	Atom.h,
+	Atom.cpp,
+	Cursor.cpp,
+	Event.cpp,
+	Keys.cpp,
+	Draw.cpp,
+	_ readonly separator;
 

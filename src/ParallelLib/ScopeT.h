@@ -77,7 +77,7 @@ public:
 	ContainerFrame* GetFrameWithMouse() { return frame_with_mouse; }
 	void SetFrameCaptured(ContainerFrame* c) { frame_captured = c; }
 	void SetFrameWithMouse(ContainerFrame* c) { frame_with_mouse = c; }
-	void SetFrameBox(const Box& b) {::TS::SetFrameBox<Container>(desktop, b);}
+	void SetFrameBox(const Box& b);
 	
 public:
 	RTTI_DECL_R0(Scope)
@@ -133,7 +133,7 @@ public:
 	int GetCount() const { return handles.GetCount(); }
 	Frame& operator[](int i) { return handles[i]; }
 	Frame& Get(int i) { return handles[i]; }
-	Sz GetSize() const {return ::TS::GetFrameSize<Container,Sz>(desktop);}
+	Sz GetSize() const {return desktop.GetSize();}
 	
 	//Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();
@@ -146,11 +146,10 @@ public:
 	Callback WhenActiveHandleChanges, WhenHandleClose;
 };
 
-using GuboManager = ScopeT<Ctx3D>;
-using WindowManager = ScopeT<Ctx2D>;
-using GuboManagerRef = Ref<GuboManager>;
+#if IS_UPP_CORE
+using WindowManager = ScopeT<CtxUpp2D>;
 using WindowManagerRef = Ref<WindowManager>;
-
+#endif
 
 NAMESPACE_PARALLEL_END
 

@@ -20,6 +20,7 @@ int GuboFrame::OverPaint() const {
 #endif
 
 
+#if 0
 void GuboFrame::SetCapture() {
 	if (!ctrl) return;
 	SetCaptured(this);
@@ -57,7 +58,7 @@ void GuboFrame::SetWithMouse(GuboFrame* c) {
 	/*
 	ctrl->GetWindows()->SetFrameWithMouse(c);*/
 }
-
+#endif
 
 
 int       Gubo::LoopLevel;
@@ -129,6 +130,7 @@ int Gubo::GetChildCount() const {
 	return sub.GetCount();
 }
 
+#if 0
 TopSurface* Gubo::GetTopSurface() {
 	Gubo* c = this;
 	while (c) {
@@ -626,7 +628,7 @@ Absolute3DInterface* Gubo::GetAbsolute3D() {
 }
 
 
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 

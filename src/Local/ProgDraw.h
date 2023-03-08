@@ -1,5 +1,5 @@
-#ifndef _LocalCtrl_ProgDraw_h_
-#define _LocalCtrl_ProgDraw_h_
+#ifndef _Local_ProgDraw_h_
+#define _Local_ProgDraw_h_
 
 
 NAMESPACE_TOPSIDE_BEGIN

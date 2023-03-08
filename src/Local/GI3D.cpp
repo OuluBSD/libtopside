@@ -1,5 +1,7 @@
 #include "Local.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -87,3 +89,5 @@ void GeomInteraction3D::Refresh() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

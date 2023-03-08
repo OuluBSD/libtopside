@@ -68,10 +68,10 @@ public:
 	
 };
 
-using GuboSystem = HandleSystemT<Ctx3D>;
-using WindowSystem = HandleSystemT<Ctx2D>;
-using GuboSystemRef = Ref<GuboSystem>;
+#if IS_UPP_CORE
+using WindowSystem = HandleSystemT<CtxUpp2D>;
 using WindowSystemRef = Ref<WindowSystem>;
+#endif
 
 NAMESPACE_PARALLEL_END
 

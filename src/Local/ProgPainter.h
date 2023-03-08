@@ -1,5 +1,5 @@
-#ifndef _LocalCtrl_ProgPainter_h_
-#define _LocalCtrl_ProgPainter_h_
+#ifndef _Local_ProgPainter_h_
+#define _Local_ProgPainter_h_
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -77,10 +77,10 @@ public:
 	
 	
 	
-	/*void SetSize(Size sz) override;
-	void DrawImage(int x, int y, Image img, byte alpha=255) override;
-	void CtrlDrawBegin(hash_t h) override;
-	void CtrlDrawEnd() override;*/
+	void SetSize(Size sz);
+	void DrawImage(int x, int y, Image img, byte alpha=255);
+	void CtrlDrawBegin(hash_t h);
+	void CtrlDrawEnd();
 	
 	dword GetInfo() const override;
 	Size GetPageSize() const override;

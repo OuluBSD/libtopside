@@ -1,12 +1,12 @@
 #ifndef _GuboCore_ScopeT_h_
 #define _GuboCore_ScopeT_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 template <class Dim>
 class ScopeT :
 	public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>,
-	public Dim::Space
+	public Dim::Container
 {
 
 public:
@@ -14,9 +14,6 @@ public:
 	using Scope = ScopeT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
@@ -87,16 +84,16 @@ public:
 	void SetFrameWithMouse(ContainerFrame* c) { frame_with_mouse = c; }
 
 public:
-	RTTI_DECL_R1(Scope, Space)
+	RTTI_DECL_R1(Scope, Container)
 	typedef ScopeT<Dim> CLASSNAME;
 	ScopeT();
 
-	bool Init() override;
-	void AddInterface(InterfaceProxy&) override;
-	bool Poll(typename Dim::Event& e) override;
-	void Render() override;
-	void Shutdown() override;
-	bool ProcessCloseQueue() override;
+	bool Init();
+	//void AddInterface(InterfaceProxy&);
+	bool Poll(typename Dim::Event& e);
+	void Render();
+	void Shutdown();
+	bool ProcessCloseQueue();
 	bool IsGeomDrawBegin() const override;
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
@@ -129,6 +126,7 @@ public:
 	void OrderTileHandles();
 	void OrderTileHandlesVert();
 	void CloseAll();
+	void FocusEvent() {TODO}
 
 	bool IsCaptureRoot() const override;
 	Interaction* GetCaptured() const override { return captured; }
@@ -152,11 +150,11 @@ public:
 };
 
 using GuboManager = ScopeT<Ctx3D>;
-using WindowManager = ScopeT<Ctx2D>;
+using SurfaceManager = ScopeT<Ctx2D>;
 using GuboManagerRef = Ref<GuboManager>;
-using WindowManagerRef = Ref<WindowManager>;
+using SurfaceManagerRef = Ref<SurfaceManager>;
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END
 
 #endif

@@ -248,6 +248,10 @@ void GeomInteraction::ReleaseCapture() {
 	SetCaptured(NULL);
 }
 
+bool GeomInteraction::HasCapture() const {
+	TODO
+}
+
 void GeomInteraction::SetCaptured(GeomInteraction* c) {
 	GeomInteraction* draw_begin = GetGeomDrawBegin();
 	if (draw_begin != this)

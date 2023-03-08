@@ -103,7 +103,16 @@ Surface* Surface::GetParent() {
 	return CastPtr<Surface>(owner);
 }
 
-Surface* Surface::GetTopSurface() {
+Surface* Surface::GetIndexChild(int i) {
+	return CastPtr<Surface>(sub[i]);
+}
+
+int Surface::GetChildCount() const {
+	return sub.GetCount();
+}
+
+#if 0
+TopSurface* Surface::GetTopSurface() {
 	Surface* c = this;
 	while (c) {
 		Surface* p = c->GetParent();
@@ -115,17 +124,14 @@ Surface* Surface::GetTopSurface() {
 		else
 			break;
 	}
-	return c;
+	if (c) {
+		TopSurface* tc = CastPtr<TopSurface>(c);
+		ASSERT(tc);
+		return tc;
+	}
+	return 0;
 }
-
-Surface* Surface::GetIndexChild(int i) {
-	return CastPtr<Surface>(sub[i]);
-}
-
-int Surface::GetChildCount() const {
-	return sub.GetCount();
-}
-
+#else
 TopSurface* Surface::GetTopSurface() {
 	Surface* c = this;
 	while (c) {
@@ -138,6 +144,7 @@ TopSurface* Surface::GetTopSurface() {
 	}
 	return 0;
 }
+#endif
 
 void Surface::SetRect(const Rect& r) {
 	SetFrameRect(r);
@@ -489,14 +496,14 @@ void Surface::SetCaptured(Surface* c) {
 }
 
 void Surface::SetWithMouse(Surface* c) {
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	Gu::SurfaceManager* wm = CastPtr<Gu::SurfaceManager>(GetGeomDrawBegin());
 	if (wm)
 		wm->SetWithMouse(c);
 }
 
 SurfaceFrame* Surface::GetFrameCaptured() {
 	SurfaceFrame* f = 0;
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	Gu::SurfaceManager* wm = CastPtr<Gu::SurfaceManager>(GetGeomDrawBegin());
 	if (wm)
 		f = CastPtr<SurfaceFrame>(wm->GetFrameCaptured());
 	return f;
@@ -504,20 +511,20 @@ SurfaceFrame* Surface::GetFrameCaptured() {
 
 SurfaceFrame* Surface::GetFrameWithMouse() {
 	SurfaceFrame* f = 0;
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	Gu::SurfaceManager* wm = CastPtr<Gu::SurfaceManager>(GetGeomDrawBegin());
 	if (wm)
 		f = CastPtr<SurfaceFrame>(wm->GetFrameWithMouse());
 	return f;
 }
 
 void Surface::SetFrameCaptured(SurfaceFrame* c) {
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	Gu::SurfaceManager* wm = CastPtr<Gu::SurfaceManager>(GetGeomDrawBegin());
 	if (wm)
 		wm->SetFrameCaptured(c);
 }
 
 void Surface::SetFrameWithMouse(SurfaceFrame* c) {
-	Parallel::WindowManager* wm = CastPtr<Parallel::WindowManager>(GetGeomDrawBegin());
+	Gu::SurfaceManager* wm = CastPtr<Gu::SurfaceManager>(GetGeomDrawBegin());
 	if (wm)
 		wm->SetFrameWithMouse(c);
 }
@@ -577,7 +584,7 @@ void Surface::PaintPreFrame(ProgPainter& pp) {
 		f.FrameLayout(new_content_r);
 	}
 	if (frames.GetCount())
-		pp.Offset(new_content_r);
+		pp.Clipoff(new_content_r);
 	content_r = new_content_r;
 }
 
@@ -602,93 +609,40 @@ void Surface::PaintDebug(ProgPainter& pp) {
 	}
 }
 
-Absolute2DInterface* Surface::GetAbsolute2D() {
+/*Absolute2DInterface* Surface::GetAbsolute2D() {
 	TopSurface* tw = GetTopSurface();
 	if (!tw)
 		return 0;
 	Absolute2DInterface* iface = tw->GetTarget();
 	return iface;
-}
+}*/
 
-
-
-
-
-
-
-
-
-Bar::Item::Item() {
-	
-}
-
-Bar::Item::~Item() {
-	
-}
-
-Bar::Item& Bar::Item::Text(const char *text) {
+void Surface::EventLoop() {
 	TODO
 }
 
-Bar::Item& Bar::Item::Key(dword key) {
+void Surface::EventLoopIteration(void*) {
 	TODO
 }
 
-Bar::Item& Bar::Item::Repeat(bool repeat) {
+void Surface::PaintAll(bool b) {
 	TODO
 }
 
-Bar::Item& Bar::Item::Image(const class Image& img) {
+
+
+void Surface::InitFB() {
 	TODO
 }
 
-Bar::Item& Bar::Item::Check(bool check) {
+void Surface::ExitFB() {
 	TODO
 }
 
-Bar::Item& Bar::Item::Radio(bool check) {
+void Surface::SetDesktopSize(Size sz) {
 	TODO
 }
 
-Bar::Item& Bar::Item::Enable(bool _enable) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Bold(bool bold) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Tip(const char *tip) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Help(const char *help) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Topic(const char *topic) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Description(const char *desc) {
-	TODO
-}
-
-void Bar::Item::FinalSync() {
-	TODO
-}
-
-Bar::Item& Bar::Item::Label(const char *text) {
-	TODO
-}
-
-Bar::Item& Bar::Item::RightLabel(const char *text) {
-	TODO
-}
-
-Bar::Item& Bar::Item::Key(KeyInfo& (*key)()) {
-	TODO
-}
 
 
 NAMESPACE_TOPSIDE_END

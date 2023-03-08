@@ -14,6 +14,7 @@ public:
 	RTTI_DECL1(Gubo, GeomInteraction3D)
 	
 protected:
+	static  bool      do_debug_draw;
 	static  int       LoopLevel;
 	static  Gubo     *LoopGubo;
 	static  int64     EventLoopNo;
@@ -65,7 +66,7 @@ public:
 	
 	void Add(GeomInteraction3D& c);
 	void Add(Gubo& c);
-	void AddFrame(GuboFrame& c) {c.ctrl = this; frames.Add(&c); SetPendingRedraw();}
+	void AddFrame(GuboFrame& c) {c.gubo = this; frames.Add(&c); SetPendingRedraw();}
 	void AddChild(Gubo* c);
 	Gubo* GetLastChild();
 	Gubo* GetIndexChild(int i);
@@ -77,24 +78,24 @@ public:
 	TopSurface* GetTopSurface();
 	
 	Cubf GetWorkArea() const;
-	Volf GetVolf() const {return GetFrameVolf();}
+	Volf GetSize() const {return GetFrameSize();}
 	
 	void DeepFrameLayout() override;
 	void SetFrameBox(const Cubf& r) override;
-	void DeepMouseMoveInFrameContent(Point pt, dword keyflags) override;
-	void MouseMoveInFrameContent(Point pt, dword keyflags) override;
+	void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
+	void MouseMoveInFrameContent(Point pt, dword keyflags);
 	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
-	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags) override;
+	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags);
 	void MouseLeaveFrame() override;
-	Cubf GetContentCubf() const override;
-	Point GetContentPoint(const Point& pt) override;
-	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags) override;
+	Cubf GetContentCubf() const;
+	Point3f GetContentPoint(const Point3f& pt) override;
+	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags);
 	void SetFocus() override;
 	void DeepUnfocus() override;
 	void PaintPreFrame(ProgPainter& pp) override;
 	void PaintPostFrame(ProgPainter& pp) override;
 	void PaintDebug(ProgPainter& pp) override;
-	bool IsGubo() const override;
+	bool IsGubo() const;
 	void Refresh() override;
 	
 	void SetCubf(const Cubf& r);
@@ -104,29 +105,7 @@ public:
 	
 	Callback WhenAction;
 	
-	
 	Gubo& operator <<= (Callback cb) {WhenAction = cb; return *this;}
-	
-	
-public:
-	Absolute3D* aw = 0;
-	
-	//static bool           invalid;
-	//static uint32 prev_ticks;
-	
-	static void TimerProc(double dt);
-	//static void GuboSleep(int ms);
-	//static void DoPaint();
-	//static void PaintScene(SystemDraw& draw);
-	
-public:
-	//static void InitFB();
-	//static void ExitFB();
-	//static void SetDesktopVolf(Volf sz);
-	static void Invalidate();
-	
-	Absolute3DInterface* GetAbsolute3D();
-	
 	
 };
 

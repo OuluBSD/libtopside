@@ -21,8 +21,11 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	mach.Add<LinkSystem>();
 	
     mach.Add<ScriptLoader>();
-    mach.Add<GuboSystem>();
+    
+    mach.Add<Gu::GuboSystem>();
+    #if IS_UPP_CORE && defined flagGUI
     mach.Add<WindowSystem>();
+    #endif
     
 	
     reg->SetAppName("Non-screen machine");

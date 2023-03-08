@@ -7,18 +7,19 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class TopSurface :
-	public Surface,
-	public Absolute2DProxy
+	public Surface
 {
 	
 public:
-	RTTI_DECL2(TopSurface, Surface, Absolute2DProxy)
+	RTTI_DECL1(TopSurface, Surface)
 	TopSurface();
 	virtual ~TopSurface() {}
 	
 	void CreateGeom2DComponent();
 	void UpdateFromTransform2D();
+	void Run();
 	void RunInMachine();
+	void FocusEvent();
 	
 	//Surface* GetSurface() override;
 	

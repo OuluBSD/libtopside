@@ -245,7 +245,6 @@ typedef Vol_<double> Volf;
 
 
 
-
 template <class T> using Size3_ = Vol_<T>;
 
 typedef Size3_<int> Size3;
@@ -386,6 +385,15 @@ bool operator==(const Cub_<T>& a, const Cub_<T>& b) {
 
 typedef Cub_<int> Cub;
 typedef Cub_<double> Cubf;
+
+
+inline Cubf CubfC(float x, float y, float z, float w, float h, float d) {
+	return Cubf(x, y, z, x + w, y + h, z + d);
+}
+
+inline Cubf CubfC(const Point3f& tl, const Volf& sz) {
+	return Cubf(tl.x, tl.y, tl.z, tl.x + sz.cx, tl.y + sz.cy, tl.z + sz.cz);
+}
 
 
 inline Cub CubC(int x, int y, int z, int w, int h, int d) { return Cub(x, y, z, x + w, y + h, z + d); }

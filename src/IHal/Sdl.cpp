@@ -8,7 +8,10 @@
 #endif
 
 NAMESPACE_UPP
+
+#if IS_UPP_CORE
 extern VirtualGui *VirtualGuiPtr;
+#endif
 extern dword lastbdowntime[8];
 extern dword isdblclick[8];
 extern dword mouseb;
@@ -97,8 +100,11 @@ struct HalSdl::NativeEventsBase {
     bool is_rctrl;
     Point prev_mouse_pt;
     Vector<int> invalids;
+    #if IS_UPP_CORE
     Ref<WindowSystem> wins;
-    Ref<GuboSystem> gubos;
+    #endif
+    Ref<Gu::SurfaceSystem> surfs;
+    Ref<Gu::GuboSystem> gubos;
     
     void Clear() {
         time = 0;
@@ -106,7 +112,10 @@ struct HalSdl::NativeEventsBase {
         ev_sendable = 0;
         prev_mouse_pt = Point(0,0);
         sz.Clear();
+        #if IS_UPP_CORE
         wins.Clear();
+        #endif
+        surfs.Clear();
         gubos.Clear();
     }
 };
@@ -120,8 +129,11 @@ struct HalSdl::NativeContextBase {
 };
 
 struct HalSdl::NativeUppEventsBase {
+	#if IS_UPP_CORE
     Ref<WindowSystem> wins;
-    Ref<GuboSystem> gubos;
+    #endif
+    Ref<Gu::SurfaceSystem> surfs;
+    Ref<Gu::GuboSystem> gubos;
     double time;
     dword seq;
     
@@ -138,7 +150,10 @@ struct HalSdl::NativeUppEventsBase {
     void Clear() {
         time = 0;
         seq = 0;
+        #if IS_UPP_CORE
         wins.Clear();
+        #endif
+        surfs.Clear();
         gubos.Clear();
     }
 };
@@ -1178,13 +1193,22 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 	
 	{
 		Machine& m = a.GetMachine();
-		dev.wins = m.Get<WindowSystem>();
-		dev.gubos = m.Get<GuboSystem>();
+		dev.surfs = m.Get<Gu::SurfaceSystem>();
+		dev.gubos = m.Get<Gu::GuboSystem>();
 		
+		if (dev.surfs) {
+			TODO
+			/*dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
+			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);*/
+		}
+		
+		#if IS_UPP_CORE
+		dev.wins = m.Get<WindowSystem>();
 		if (dev.wins) {
 			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
 			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
+		#endif
 	}
 	
 	return true;
@@ -1200,7 +1224,10 @@ void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
 }
 
 void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
+	#if IS_UPP_CORE
 	dev.wins.Clear();
+	#endif
+	dev.surfs.Clear();
 	dev.gubos.Clear();
 	
 	a.RemoveAtomFromUpdateList();
@@ -1456,8 +1483,13 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	if (dev.ev.IsEmpty())
 		return false;
 	
+	#if IS_UPP_CORE
 	if (dev.wins) {
 		dev.wins->DoEvents(dev.ev);
+	}
+	#endif
+	if (dev.surfs) {
+		dev.surfs->DoEvents(dev.ev);
 	}
 	if (dev.gubos) {
 		// copy dev.wins
@@ -1574,13 +1606,17 @@ bool HalSdl::UppEventsBase_PostInitialize(NativeUppEventsBase& dev, AtomBase& a)
 	
 	{
 		Machine& m = a.GetMachine();
-		dev.wins = m.Get<WindowSystem>();
-		dev.gubos = m.Get<GuboSystem>();
 		
+		dev.surfs = m.Get<Gu::SurfaceSystem>();
+		dev.gubos = m.Get<Gu::GuboSystem>();
+		
+		#if IS_UPP_CORE
+		dev.wins = m.Get<WindowSystem>();
 		if (dev.wins) {
 			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
 			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
+		#endif
 	}
 	
 	return true;
@@ -1596,7 +1632,10 @@ void HalSdl::UppEventsBase_Stop(NativeUppEventsBase&, AtomBase& a) {
 }
 
 void HalSdl::UppEventsBase_Uninitialize(NativeUppEventsBase& dev, AtomBase& a) {
+	#if IS_UPP_CORE
 	dev.wins.Clear();
+	#endif
+	dev.surfs.Clear();
 	dev.gubos.Clear();
 	
 	a.RemoveAtomFromUpdateList();
@@ -1984,7 +2023,7 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 		Ctrl::DoMouseFB(Ctrl::MOUSEMOVE, Point(event->motion.x, event->motion.y));
 		break;
 	case SDL_MOUSEWHEEL:
-		Ctrl::DoMouseFB(Ctrl::MOUSEWHEEL, GetMousePos(), sgn(event->wheel.y) * 120);
+		Ctrl::DoMouseFB(Ctrl::MOUSEWHEEL, GetMousePos(), sgn((int)event->wheel.y) * 120);
 		break;
 	case SDL_MOUSEBUTTONDOWN: {
 			Point p(event->button.x, event->button.y);

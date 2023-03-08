@@ -2,15 +2,22 @@
 #define _GuboCore_Defs_h_
 
 
-#include <Draw/Draw.h>
-#include <Local/Local.h>
+
+
+#define NAMESPACE_GUBO_NAME		Gu
+#define GUBO					Gu
+#define NAMESPACE_GUBO_BEGIN	\
+	static_assert(!is_in_parallel, "already in gubo"); \
+	namespace TS { namespace NAMESPACE_GUBO_NAME {
+#define NAMESPACE_GUBO_END		}}
+
 
 #if IS_TS_CORE
 #define HAVE_VIRTUALGUI 1
 
 #if HAVE_VIRTUALGUI
-	#define GUIPLATFORM_KEYCODES_INCLUDE       <GuboCore/Keys.h>
-	#define GUIPLATFORM_INCLUDE                <GuboCore/VirtualGui3D.h>
+	#define GUIPLATFORM_KEYCODES_INCLUDE       <VirtualGui3D/Keys.h>
+	#define GUIPLATFORM_INCLUDE                <VirtualGui3D/VirtualGui3D.h>
 	#define VIRTUALGUI 1
 #else
 	#define GUIPLATFORM_INCLUDE                <StaticInterface/Screen.h>
@@ -29,7 +36,7 @@
 
 #if defined LIBTOPSIDE && defined flagGUI
 	#define HAVE_WINDOWSYSTEM 1
-	#include <GuboCore/VirtualGui3D.h>
+	#include <VirtualGui3D/VirtualGui3D.h>
 #endif
 
 

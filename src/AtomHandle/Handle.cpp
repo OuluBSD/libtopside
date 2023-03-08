@@ -1,7 +1,10 @@
 #include "AtomHandle.h"
 #include <SerialLib/SerialLib.h>
+#if IS_UPP_CORE
 #include <VirtualGui/Local.h>
 #include <VirtualGui/Atom/Atom.h>
+#endif
+#include <GuboCore/GuboCore.h>
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -127,10 +130,10 @@ bool HandleVideoBase::Initialize(const Script::WorldState& ws) {
 	if (GetSourceValue(0).GetFormat().IsReceipt())
 		add_ecs = true;
 	
-	#ifdef flagGUI
+	#if IS_UPP_CORE && defined flagGUI
 	wins = GetMachine().Get<WindowSystem>();
-	gubos = GetMachine().Get<GuboSystem>();
 	#endif
+	surfs = GetMachine().Get<Gu::SurfaceSystem>();
 	
 	return true;
 }
@@ -158,10 +161,10 @@ bool HandleVideoBase::PostInitialize() {
 
 void HandleVideoBase::Stop() {
 	state.Clear();
-	#ifdef flagGUI
+	#if IS_UPP_CORE && defined flagGUI
 	wins.Clear();
-	gubos.Clear();
 	#endif
+	surfs.Clear();
 	if (IsActive())
 		binders.Clear();
 }
@@ -179,9 +182,10 @@ void HandleVideoBase::Visit(RuntimeVisitor& vis) {
 		vis | binders;
 	vis & state;
 	
-	#ifdef flagGUI
-	vis & wins & gubos;
+	#if IS_UPP_CORE && defined flagGUI
+	vis & wins;
 	#endif
+	vis & surfs;
 }
 
 bool HandleVideoBase::IsReady(PacketIO& io) {
@@ -189,13 +193,16 @@ bool HandleVideoBase::IsReady(PacketIO& io) {
 	
 	bool render_win = false;
 	
-	#ifdef flagGUI
+	#if IS_UPP_CORE && defined flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		render_win = true;
 	}
 	#else
-	ASSERT_(0, "cannot render without GUI compilation flag");
+	if (0) {}
 	#endif
+	else if (surfs && screen_id < surfs->GetScreenCount()) {
+		render_win = true;
+	}
 	
 	bool b =	io.active_sink_mask == iface_sink_mask &&
 				io.full_src_mask == 0 &&
@@ -217,7 +224,7 @@ void HandleVideoBase::RedrawScreen() {
 		pd.Create(sz);*/
 	
 	bool render_win = false;
-	#ifdef flagGUI
+	#if IS_UPP_CORE && defined flagGUI
 	if (wins && screen_id < wins->GetScreenCount()) {
 		/*ASSERT(sz.cx > 0 && sz.cy > 0);
 		ProgPainter& pp = pd.GetPainter();
@@ -244,7 +251,16 @@ void HandleVideoBase::RedrawScreen() {
 		render_win = true;*/
 		//LOG("HandleVideoBase::IsReady: prog:"); LOG(pd.Dump());
 	}
+	#else
+	if (0) {}
 	#endif
+	else if (surfs && screen_id < surfs->GetScreenCount()) {
+		auto& w = surfs->GetScope(screen_id);
+		
+		w.Render();
+		
+		render_win = w.IsRender();
+	}
 }
 #endif
 
@@ -269,6 +285,7 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 		
 		for (Binder& b : binders) {
 			
+			#if IS_UPP_CORE && defined flagGUI
 			if (wins) {
 				int scope_count = wins->GetScopeCount();
 				ASSERT(scope_count);
@@ -279,6 +296,16 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 					
 					Ctrl::EventLoopIteration(NULL);
 					//Ctrl::PaintAll(); // -> public Ctrl::DoPaint();
+				}
+			}
+			#endif
+			
+			if (surfs) {
+				int scope_count = surfs->GetScopeCount();
+				ASSERT(scope_count);
+				if (screen_id >= 0 && screen_id < scope_count) {
+					ASSERT(scope_count == 1);
+					Surface::EventLoopIteration(NULL);
 				}
 			}
 			
@@ -351,6 +378,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 	Format fmt = out.GetFormat();
 	if (fmt.IsProg()) {
 		if (IsScreenMode()) {
+			#if IS_UPP_CORE && defined flagGUI
 			if (wins && screen_id >= 0 && screen_id < wins->GetScreenCount()) {
 				WindowManager& w = wins->GetScope(screen_id);
 				ProgDraw& pd = w.GetDraw();
@@ -368,6 +396,47 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 				// h4x
 				if (!pp.GetCurrentBegin()) {
 					Ctrl::PaintAll(true);
+				}
+				
+				data.ptr = pp.GetCurrentBegin();
+				ASSERT(data.ptr);
+				
+				#if 0
+				{
+					DrawCommand* begin = pp.GetCurrentBegin();
+					DrawCommand* it = begin;
+					int i = 0;
+					while (it) {
+						LOG(i++ << " " << it->ToString());
+						it = it->next;
+					}
+				}
+				ASSERT(0);
+				#endif
+			}
+			#else
+			if (0) {}
+			#endif
+			if (surfs && screen_id >= 0 && screen_id < surfs->GetScreenCount()) {
+				Gu::SurfaceManager& w = surfs->GetScope(screen_id);
+				auto& pd = w.GetDraw();
+				ProgPainter& pp = pd.GetPainter();
+				InternalPacketData& data = out.SetData<InternalPacketData>();
+				
+				pd.Realize(w.GetSize());
+				
+				TODO
+				#if 0
+				UPP::AtomVirtualGui* vgui = CastPtr<AtomVirtualGui>(VirtualGui3DPtr);
+				ASSERT(VirtualGuiPtr && vgui);
+				vgui->SetTarget(pd);
+				#endif
+				
+				Surface::EventLoopIteration(NULL);
+				
+				// h4x
+				if (!pp.GetCurrentBegin()) {
+					Surface::PaintAll(true);
 				}
 				
 				data.ptr = pp.GetCurrentBegin();

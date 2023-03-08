@@ -8,7 +8,7 @@
 #include <ports/stb/stb_textedit.h>
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 TextCtrl::TextCtrl(bool multiline) {
@@ -245,7 +245,7 @@ Value TextCtrl::GetData() const {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_GUBO_END
 
 
 #endif

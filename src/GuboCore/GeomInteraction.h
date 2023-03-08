@@ -21,6 +21,7 @@ struct LogPos {
 };
 
 
+class ProgPainter;
 class GeomInteraction;
 class GeomInteraction2D;
 class GeomInteraction3D;
@@ -128,7 +129,7 @@ public:
 	virtual GeomInteraction* GetCaptured() const;
 	virtual GeomInteraction* GetWithMouse() const;
 	
-	virtual bool Dispatch(const SurfaceEvent& e);
+	virtual bool Dispatch(const CtrlEvent& e);
 	virtual bool Key(dword key, int count);
 	virtual bool HotKey(dword key);
 	virtual bool Is2D() const;
@@ -242,7 +243,7 @@ public:
 	bool Is2D() const override;
 	GeomInteraction2D* Get2D() override;
 	void DeepLayout() override;
-	bool Dispatch(const SurfaceEvent& e) override;
+	bool Dispatch(const CtrlEvent& e) override;
 	void Refresh() override;
 	
 	static Point GetFramePointBetween(GeomInteraction2D& top_owner, GeomInteraction2D& deep_sub, const Point& pt);
@@ -251,6 +252,8 @@ public:
 
 
 class GeomInteraction3D : public GeomInteraction {
+	
+protected:
 	Cubf frame;
 	
 public:
@@ -268,12 +271,12 @@ public:
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
-	bool Dispatch(const SurfaceEvent& e) override;
+	bool Dispatch(const CtrlEvent& e) override;
 	void Refresh() override;
 	
 	virtual void Paint(Draw3& d) {}
 	virtual void SetFrameBox(const Cubf& c);
-	virtual Point3f GetContentPoint(const Point& pt);
+	virtual Point3f GetContentPoint(const Point3f& pt);
 	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
 	virtual bool DeepMouseMoveInFrame(Point3f pt, dword keyflags);
@@ -309,6 +312,14 @@ public:
 	virtual Image CursorImage(Point3f p, dword keyflags);
 	virtual void PadTouch(int controller, Point3f p) {}
 	
+	
+	GeomInteraction3D& SizePos() {return HSizePos().VSizePos();}
+	GeomInteraction3D& HSizePos(int l=0, int r=0);
+	GeomInteraction3D& VSizePos(int t=0, int b=0);
+	GeomInteraction3D& BottomPos(int i, int size);
+	GeomInteraction3D& TopPos(int i, int size);
+	GeomInteraction3D& LeftPos(int i, int size);
+	GeomInteraction3D& RightPos(int i, int size);
 	
 };
 

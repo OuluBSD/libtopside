@@ -1,0 +1,13 @@
+description "\37728,170,255";
+
+uses
+	Local,
+	GuboLib;
+
+file
+	GuboSuite.h,
+	Factory.h,
+	Debug readonly separator,
+	Events.h,
+	Events.cpp;
+

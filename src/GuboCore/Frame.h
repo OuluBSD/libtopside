@@ -9,6 +9,10 @@ class Gubo;
 class GuboFrame :
 	RTTIBase
 {
+protected:
+	friend class Gubo;
+	Gubo* gubo = 0;
+	
 public:
 	RTTI_DECL0(GuboFrame)
 	

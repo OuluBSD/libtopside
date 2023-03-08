@@ -43,7 +43,7 @@
 
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 class TextCtrl : public Ctrl {
@@ -101,7 +101,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_GUBO_END
 
 
 #endif

@@ -1,4 +1,4 @@
-#include "Local.h"
+#include "GuboCore.h"
 
 #if IS_UPP_CORE
 #include <GuboCore/GuboCore.h>
@@ -281,7 +281,7 @@ void GeomInteraction::DumpDrawCommands() const {
 	LOG(GetDrawCommandString());
 }
 
-bool GeomInteraction::Dispatch(const SurfaceEvent& e) {
+bool GeomInteraction::Dispatch(const CtrlEvent& e) {
 	switch (e.type) {
 		case EVENT_KEYDOWN:
 			DeepKey(e.value, e.n);

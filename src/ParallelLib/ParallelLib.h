@@ -11,7 +11,6 @@
 #include "RegistrySystem.h"
 #include "HandleTypes.h"
 #include "FrameT.h"
-#include "HandleT.h"
 #include "ScopeT.h"
 #include "HandleSystemT.h"
 

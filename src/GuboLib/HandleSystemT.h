@@ -1,7 +1,8 @@
 #ifndef _GuboCore_HandleSystemT_h_
 #define _GuboCore_HandleSystemT_h_
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
+
 
 
 template <class Dim>
@@ -9,13 +10,11 @@ class HandleSystemT :
 	public Parallel::System<HandleSystemT<Dim>> {
 	
 public:
+	template <class T> using System = Parallel::System<T>;
 	using Base = HandleSystemT<Dim>;
 	using Scope = ScopeT<Dim>;
 	using Handle = HandleT<Dim>;
 	using HandleSystem = HandleSystemT<Dim>;
-	using Space = typename Dim::Space;
-	using Interface = typename Dim::Interface;
-	using InterfaceProxy = typename Dim::InterfaceProxy;
 	using Interaction = typename Dim::Interaction;
 	using Container = typename Dim::Container;
 	using ContainerFrame = typename Dim::ContainerFrame;
@@ -45,7 +44,7 @@ protected:
     
 public:
     typedef HandleSystemT<Dim> CLASSNAME;
-	HandleSystemT(Machine& m);
+	HandleSystemT(Parallel::Machine& m);
 	
 	SYS_RTTI(HandleSystemT)
 	SYS_DEF_VISIT
@@ -66,13 +65,16 @@ public:
 	int GetScopeCount() const {return scopes.GetCount();}
 	int GetScreenCount() const {return GetScopeCount();}
 	
+	static Image OverrideCursor(const Image& img);
+	
+	
 };
 
 using GuboSystem = HandleSystemT<Ctx3D>;
-using WindowSystem = HandleSystemT<Ctx2D>;
+using SurfaceSystem = HandleSystemT<Ctx2D>;
 using GuboSystemRef = Ref<GuboSystem>;
-using WindowSystemRef = Ref<WindowSystem>;
+using SurfaceSystemRef = Ref<SurfaceSystem>;
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END
 
 #endif

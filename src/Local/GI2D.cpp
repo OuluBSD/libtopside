@@ -1,5 +1,6 @@
 #include "Local.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -682,3 +683,5 @@ Point GeomInteraction2D::GetFramePointBetween(GeomInteraction2D& top_owner, Geom
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

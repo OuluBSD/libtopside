@@ -74,59 +74,11 @@ private:
 };
 
 
-struct KeyInfo {
-	const char *name;
-	dword key[4];
-};
+#if IS_UPP_CORE
+using KeyInfo = ::UPP::KeyInfo;
+#endif
 
 
-class Bar :
-	RTTIBase
-{
-public:
-	struct Item {
-		virtual Item& Text(const char *text);
-		virtual Item& Key(dword key);
-		virtual Item& Repeat(bool repeat = true);
-		virtual Item& Image(const class Image& img);
-		virtual Item& Check(bool check);
-		virtual Item& Radio(bool check);
-		virtual Item& Enable(bool _enable = true);
-		virtual Item& Bold(bool bold = true);
-		virtual Item& Tip(const char *tip);
-		virtual Item& Help(const char *help);
-		virtual Item& Topic(const char *topic);
-		virtual Item& Description(const char *desc);
-		virtual void  FinalSync();
-
-		Item&   Label(const char *text);
-		Item&   RightLabel(const char *text);
-
-		Item& Key(KeyInfo& (*key)());
-
-		Item();
-		virtual ~Item();
-	};
-	
-private:
-	
-	
-	
-public:
-	RTTI_DECL0(Bar)
-	typedef Bar CLASSNAME;
-	Bar();
-	
-	Bar& Add(String title, Callback cb);
-	Bar& Separator();
-	
-	virtual void   Paint(Draw& w) {}
-	virtual int    OverPaint() const {return 0;}
-	virtual bool   HotKey(dword key) {return false;}
-	virtual Bar::Item& AddItem(Callback cb) {NEVER()}
-	virtual Bar::Item& AddSubMenu(Callback1<Bar&> proc) {NEVER()}
-	
-};
 
 
 class TopSurface;
@@ -163,15 +115,6 @@ protected:
 	void Refresh0() {Refresh();}
 	void Layout0() {Layout();}
 	
-public:
-	friend class TS::Ecs::DefaultGuiAppComponent;
-	
-	
-protected:
-	friend class TS::Ecs::VirtualGui;
-	//friend class TS::Ecs::WindowSystem;
-	friend class TopSurface;
-	
 	
 public:
 	typedef Surface CLASSNAME;
@@ -199,7 +142,6 @@ public:
 	int GetChildCount() const;
 	
 	Surface* GetParent();
-	Surface* GetTopSurface();
 	TopSurface* GetTopSurface();
 	
 	Rect GetWorkArea() const;
@@ -235,24 +177,14 @@ public:
 	
 	
 public:
-	Absolute2D* aw = 0;
-	
-	//static bool           invalid;
-	//static uint32 prev_ticks;
-	
+	static void EventLoopIteration(void*);
 	static void TimerProc(double dt);
-	//static void GuiSleep(int ms);
-	//static void DoPaint();
-	//static void PaintScene(SystemDraw& draw);
-	
-public:
-	//static void InitFB();
-	//static void ExitFB();
-	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
-	
-	Absolute2DInterface* GetAbsolute2D();
-	
+	static void EventLoop();
+	static void PaintAll(bool b);
+	static void InitFB();
+	static void ExitFB();
+	static void SetDesktopSize(Size sz);
 	
 };
 

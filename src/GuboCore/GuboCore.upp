@@ -1,19 +1,16 @@
 description "\377B28,127,255";
 
+uses
+	CtrlCore,
+	SerialLib;
+
 file
 	GuboCore.h,
-	VirtualGui3D.h,
 	Generic readonly separator,
 	GeomInteraction.h,
 	GIBase.cpp,
 	GI2D.cpp,
 	GI3D.cpp,
-	After.h,
-	Internal.h,
-	Keys.h,
-	MKeys.h,
-	Local.h,
-	Wnd.cpp,
 	3D readonly separator,
 	Defs.h,
 	Util.h,
@@ -25,17 +22,8 @@ file
 	TopGubo.cpp,
 	Images.h,
 	Images.cpp,
-	"2D System" readonly separator,
-	HandleTypes.h,
-	HandleSystemT.h,
-	HandleSystemT.cpp,
-	ScopeT.cpp,
-	ScopeT.h,
-	HandleT.h,
-	HandleT.cpp,
 	2D readonly separator,
 	CtrlCore.h,
-	Defs.h,
 	Util.h,
 	Util.cpp,
 	Surface.h,
@@ -44,5 +32,8 @@ file
 	TopSurface.cpp,
 	Images.h,
 	Images.cpp,
+	Draw readonly separator,
+	Draw.h,
+	Draw.cpp,
 	_ readonly separator;
 

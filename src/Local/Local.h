@@ -61,6 +61,8 @@
 #include "GEnums.h"
 #include "Daemon.h"
 #include "Network.h"
+#include "ProgPainter.h"
+#include "ProgDraw.h"
 
 
 

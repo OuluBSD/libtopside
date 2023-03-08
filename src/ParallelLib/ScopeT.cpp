@@ -1,9 +1,9 @@
-#include "ParallelLib.h"
-
 #if IS_UPP_CORE
 // TopWindow
 #include <CtrlLib/CtrlLib.h>
 #endif
+
+#include "ParallelLib.h"
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -64,13 +64,6 @@ bool ScopeT<Dim>::Poll(typename Dim::Event& e)
 template <class Dim>
 void ScopeT<Dim>::Paint(DrawT& draw) {
 	TODO // persistent
-}
-
-template <>
-void ScopeT<Ctx2D>::Paint(DrawT& draw) {
-	Color bg = Color(28, 127, 150);
-	Sz handle_sz(this->GetFrameBox().GetSize());
-	draw.DrawRect(handle_sz, bg);
 }
 
 template <class Dim>
@@ -692,7 +685,7 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 
 #if 0
 template <>
-void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
+void ScopeT<CtxUpp2D>::SetCaptured(GeomInteraction* c) {
 	captured = CastPtr<Interaction>(c);
 	#if IS_UPP_CORE
 	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
@@ -704,7 +697,7 @@ void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
 }
 
 template <>
-void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
+void ScopeT<CtxUpp2D>::SetWithMouse(GeomInteraction* c) {
 	with_mouse = CastPtr<Interaction>(c);
 	#if IS_UPP_CORE
 	CtrlGeomBase* cgb = CastPtr<CtrlGeomBase>(c);
@@ -716,7 +709,7 @@ void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
 }
 
 template <>
-void ScopeT<Ctx2D>::SetCaptured(Container* c) {
+void ScopeT<CtxUpp2D>::SetCaptured(Container* c) {
 	#if IS_UPP_CORE
 	TODO // get GeomInteraction2D from Ctrl
 	#else
@@ -726,7 +719,7 @@ void ScopeT<Ctx2D>::SetCaptured(Container* c) {
 }
 
 template <>
-void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
+void ScopeT<CtxUpp2D>::SetWithMouse(Container* c) {
 	#if IS_UPP_CORE
 	TODO // get GeomInteraction2D from Ctrl
 	#else
@@ -742,7 +735,7 @@ void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
 template <class Dim>
 void ScopeT<Dim>::AddInterface(TopContainer& tw)
 {
-	Box b = ::TS::GetFrameBox<Container,Box>(desktop);
+	Box b = this->GetFrameBox();
 	ASSERT(b.Width() > 0);
 	int id = handle_counter++;
 	int pos = handles.GetCount();
@@ -787,11 +780,30 @@ typename Dim::Pt ScopeT<Dim>::GetMousePos() const {
 	TODO
 }
 
+#if IS_UPP_CORE
+
+template <>
+void ScopeT<CtxUpp2D>::Paint(DrawT& draw) {
+	Color bg = Color(28, 127, 150);
+	Sz handle_sz(this->GetFrameBox().GetSize());
+	draw.DrawRect(handle_sz, bg);
+}
+
 template<>
-Point ScopeT<Ctx2D>::GetMousePos() const {
+Point ScopeT<CtxUpp2D>::GetMousePos() const {
 	return ::UPP::GetMousePos();
 }
 
-HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
+template<>
+void ScopeT<CtxUpp2D>::SetFrameBox(const Box& b) {
+	desktop.SetRect(b);
+}
+
+PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
+
+#endif
+
+
+
 
 NAMESPACE_PARALLEL_END

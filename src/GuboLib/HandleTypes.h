@@ -13,17 +13,14 @@
 	CUBOID3D_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 struct Ctx2D {
-	using Space = Workspace2D;
-	using Interface = Absolute2DInterface;
-	using InterfaceProxy = Absolute2DProxy;
 	using Container = Surface;
 	using ContainerFrame = SurfaceFrame;
-	using Event = SurfaceEvent;
-	using EventCollection = SurfaceEventCollection;
+	using Event = CtrlEvent;
+	using EventCollection = CtrlEventCollection;
 	using Interaction = GeomInteraction2D;
 	using TopContainer = TopSurface;
 	using Sz = Size;
@@ -40,9 +37,6 @@ struct Ctx2D {
 
 
 struct Ctx3D {
-	using Space = Workspace3D;
-	using Interface = Absolute3DInterface;
-	using InterfaceProxy = Absolute3DProxy;
 	using Container = Gubo;
 	using ContainerFrame = GuboFrame;
 	using Event = GeomEvent;
@@ -53,7 +47,7 @@ struct Ctx3D {
 	using Pt = Point3f;
 	using Box = Cubf;
 	using DrawT = Draw3;
-	using CmdDraw = ModelDraw;
+	using CmdDraw = ProgDraw3;
 	using CmdPainter = ModelPainter;
 	
 	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
@@ -62,6 +56,6 @@ struct Ctx3D {
 };
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END
 
 #endif

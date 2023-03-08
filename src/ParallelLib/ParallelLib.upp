@@ -17,7 +17,7 @@ file
 	BaseVideo.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
-	AbsHandles readonly separator,
+	"U++ CtrlCore" readonly separator,
 	HandleTypes.h,
 	HandleSystemT.h,
 	HandleSystemT.cpp,
@@ -25,8 +25,5 @@ file
 	ScopeT.cpp,
 	FrameT.h,
 	FrameT.cpp,
-	Trash readonly separator,
-	HandleT.h,
-	HandleT.cpp,
 	_ readonly separator;
 

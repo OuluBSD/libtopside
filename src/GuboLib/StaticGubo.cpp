@@ -1,6 +1,6 @@
 #include "GuboLib.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 
 StaticGubo::StaticGubo() {
@@ -8,4 +8,4 @@ StaticGubo::StaticGubo() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_GUBO_END

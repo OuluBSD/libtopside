@@ -1,11 +1,11 @@
-#include "GuboCore.h"
+#include "GuboLib.h"
 
 #if IS_UPP_CORE
 // TopSurface
 #include <SurfaceLib/SurfaceLib.h>
 #endif
 
-NAMESPACE_PARALLEL_BEGIN
+NAMESPACE_GUBO_BEGIN
 
 template <class Dim>
 ScopeT<Dim>::ScopeT()
@@ -57,6 +57,8 @@ void ScopeT<Ctx2D>::Paint(DrawT& draw) {
 template <class Dim>
 void ScopeT<Dim>::Render()
 {
+	TODO
+	#if 0
 	Box b = this->GetFrameBox();
 	Sz sz = b.GetSize();
 	
@@ -76,7 +78,7 @@ void ScopeT<Dim>::Render()
 	pd.cmd_screen_begin.Check();
 	
 	//pp.Dump();
-	
+	#endif
 }
 
 template <class Dim>
@@ -85,6 +87,7 @@ void ScopeT<Dim>::Shutdown()
 	TODO
 }
 
+#if 0
 template <class Dim>
 void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 {
@@ -122,6 +125,7 @@ void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 	h.Layout();
 	h.Refresh();
 }
+#endif
 
 template <class Dim>
 bool ScopeT<Dim>::CheckRender()
@@ -710,4 +714,4 @@ void ScopeT<Ctx2D>::AddInterface(UPP::TopSurface& tw) {
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_GUBO_END

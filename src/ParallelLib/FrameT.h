@@ -30,6 +30,7 @@ public:
 	using Box = typename Dim::Box;
 	using CmdDraw = typename Dim::CmdDraw;
 	using CmdPainter = typename Dim::CmdPainter;
+	using Button = typename Dim::Button;
 	
 protected:
 	friend class ::UPP::TopWindow;
@@ -117,9 +118,6 @@ public:
 	Scope& GetScope() const {return *scope;}
 	
 };
-
-
-using TopGuboFrame = FrameT<Ctx2D>;
 
 
 NAMESPACE_PARALLEL_END
