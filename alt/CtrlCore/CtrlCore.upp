@@ -6,5 +6,10 @@ uses
 
 file
 	CtrlCore.h,
-	Ctrl.h;
+	Defs.h,
+	VirtualGui.h,
+	MKeys.h,
+	Ctrl.h,
+	Ctrl.cpp,
+	Image.h;
 

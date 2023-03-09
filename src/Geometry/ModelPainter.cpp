@@ -1,5 +1,7 @@
 #include "Geometry.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -511,3 +513,5 @@ void ModelPainter::Clear() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

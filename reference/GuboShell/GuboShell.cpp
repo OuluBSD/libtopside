@@ -1,4 +1,4 @@
-#include "DesktopShell.h"
+#include "GuboShell.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -13,21 +13,21 @@ void VguiMain() {
 	#endif
 	
 	
-	EventsTester app;
+	Gu::EventsTester app;
 	//GuiTesterApp app;
 	//CtrlTesterApp app;
 	app.OpenMain();
 	//app.SetRect(RectC(10,10,640,480));
-	Ctrl::EventLoop();
+	Surface::EventLoop();
 }
 
 void DesktopMain() {
 	using namespace Parallel;
 	
-	Ctrl::SetDebugDraw(true);
+	Surface::SetDebugDraw(true);
 	Gubo::SetDebugDraw(true);
 	
-	AtomVirtualGui gui;
+	AtomVirtualGui3D gui;
 	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
 
 	RunVirtualGui(gui, callback(VguiMain));

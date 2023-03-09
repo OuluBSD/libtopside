@@ -164,6 +164,7 @@ public:
 	void PaintDebug(ProgPainter& pp) override;
 	bool IsSurface() const override;
 	void Refresh() override;
+	Surface* GetSurface() override {return this;}
 	
 	void SetRect(const Rect& r);
 	void Update();

@@ -3,13 +3,10 @@
 
 NAMESPACE_GUBO_BEGIN
 
-void DebugMainLoop();
+void DebugMainLoop() {
+	TODO
+}
 
-NAMESPACE_GUBO_END
-
-
-
-NAMESPACE_GUBO_BEGIN
 
 
 Image& WindowsImg::close() {

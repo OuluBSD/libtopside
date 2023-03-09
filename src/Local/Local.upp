@@ -79,6 +79,7 @@ file
 	Debugging.h,
 	Draw2D.h,
 	Draw3D.h,
+	Draw3D.cpp,
 	Debugging.cpp,
 	GeomInteraction.h,
 	GIBase.cpp,

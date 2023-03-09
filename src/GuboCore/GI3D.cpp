@@ -49,15 +49,19 @@ bool GeomInteraction3D::DeepMouseMove(const Point3f& pt, dword keyflags) {
 	TODO
 }
 
+bool GeomInteraction3D::DeepMouseWheel(const Point3f& pt, int zdelta, dword keyflags) {
+	TODO
+}
+
 bool GeomInteraction3D::MouseMoveInFrame(Point3f pt, dword keyflags) {
 	TODO
 }
 
-bool GeomInteraction3D::MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) {
+bool GeomInteraction3D::MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags) {
 	TODO
 }
 
-bool GeomInteraction3D::MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags) {
+bool GeomInteraction3D::MouseEventInFrame(int mouse_code, const Point3f& pt, dword keyflags) {
 	TODO
 }
 

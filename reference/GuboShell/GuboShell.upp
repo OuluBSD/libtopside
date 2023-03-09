@@ -1,9 +1,10 @@
 uses
-	Complete;
+	Complete,
+	GuboSuite;
 
 file
-	DesktopShell.h,
-	DesktopShell.cpp;
+	GuboShell.h,
+	GuboShell.cpp;
 
 mainconfig
 	"" = "GUI SCREEN SDL2",

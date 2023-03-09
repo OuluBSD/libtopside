@@ -167,13 +167,13 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 
 
 
-
-/*void ProgPainter::SetSize(Size sz) {
+void ProgPainter::SetSize(Size sz) {
 	this->sz = sz;
 	
-	DrawCommand& cmd = CreateCommand();
+	TODO
+	/*DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_SET_SIZE;
-	cmd.sz = sz;
+	cmd.sz = sz;*/
 }
 
 void ProgPainter::CtrlDrawBegin(hash_t h) {
@@ -183,7 +183,7 @@ void ProgPainter::CtrlDrawBegin(hash_t h) {
 
 void ProgPainter::CtrlDrawEnd() {
 	UnbindWindow();
-}*/
+}
 
 dword ProgPainter::GetInfo() const {
 	return SDraw::GetInfo();
@@ -470,8 +470,6 @@ void ProgPainter::PutRect(const Rect& r, Color color) {
 
 
 
-#if 0
-
 void ProgPainter::BindWindow(hash_t h) {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_BIND_WINDOW;
@@ -482,6 +480,8 @@ void ProgPainter::UnbindWindow() {
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_UNBIND_WINDOW;
 }
+
+#if 0
 
 #if 0
 
@@ -765,21 +765,25 @@ void ProgPainter::End() {
 
 #endif
 
+#endif
+
 void ProgPainter::WindowOffset(const Rect& r) {
 	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_WINDOW_OFFSET;
+	TODO
+	/*cmd.type = DRAW_WINDOW_OFFSET;
 	cmd.i[0] = r.left;
 	cmd.i[1] = r.top;
 	cmd.i[2] = r.right;
-	cmd.i[3] = r.bottom;
+	cmd.i[3] = r.bottom;*/
 }
 
 void ProgPainter::WindowEnd() {
+	TODO
+	/*
 	DrawCommand& cmd = CreateCommand();
-	cmd.type = DRAW_WINDOW_END;
+	cmd.type = DRAW_WINDOW_END;*/
 }
 
-#endif
 
 
 

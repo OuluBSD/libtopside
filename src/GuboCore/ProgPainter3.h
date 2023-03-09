@@ -1,12 +1,10 @@
-#ifndef _Geometry_ModelPainter_h_
-#define _Geometry_ModelPainter_h_
-
-#if 0
+#ifndef _GuboCore_ProgPainter3_h_
+#define _GuboCore_ProgPainter3_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ModelPainter : public Draw3 {
+class ProgPainter3 : public Draw3 {
 	DrawCommand *prev;
 	DrawCommand *next;
 	DrawCommand *begin;
@@ -14,21 +12,43 @@ class ModelPainter : public Draw3 {
 	DrawCommand *cur_begin = NULL;
 	DrawCommand *cur = NULL;
 	
-	Vector<vec3> tmp0;
+	Vector<Point3f> tmp0;
 	Vector<double> angles;
-	Volf sz;
+	Volf size;
+	Cubf drawingclip;
 	
 	DrawCommand& CreateCommand();
 	
 	
 public:
-	ModelPainter(Volf sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
-	ModelPainter(Volf sz, ModelPainter& p, DrawCommand& begin, DrawCommand& end);
-	~ModelPainter() {/*Clear();*/}
+	RTTI_DECL1(ProgPainter3, Draw3);
+	
+	ProgPainter3(Volf sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
+	ProgPainter3(Volf sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
+	~ProgPainter3() {/*Clear();*/}
 	
 	void Clear();
+	DrawCommand* GetCurrentBegin() const;
 	DrawCommand* GetBegin() const;
 	DrawCommand* GetEnd() const;
+	
+	void Link();
+	void Dump();
+	
+	void Attach(DrawCommand& begin, DrawCommand& end);
+	void AppendPick(DrawCommand* begin, DrawCommand* end);
+		
+	// libtopside draw functions (could be deprecated probably)
+	void BindWindow(hash_t h);
+	void UnbindWindow();
+	void WindowOffset(const Rect& r);
+	void WindowEnd();
+	
+	void Init(Volf sz);
+	void SetSize(Volf sz);
+	void DrawImage(int x, int y, Image img, byte alpha=255);
+	void CtrlDrawBegin(hash_t h);
+	void CtrlDrawEnd();
 	
 	dword GetInfo() const override;
 	Volf GetPageSize() const override;
@@ -69,29 +89,9 @@ public:
 	int  GetCloffLevel() const override;
 	void Escape(const String& data) override;
 	
-	
-	void BindWindow(hash_t h);
-	void UnbindWindow();
-	
-	void DrawPolyline(const vec3* pts, int pt_count, float line_width, RGBA c);
-	void DrawPolygon(const Vector<vec3>& pts, RGBA c);
-	
-	void Offset(const Cubf& r);
-	void End();
-	void WindowOffset(const Cubf& r);
-	void WindowEnd();
-	
-	
-	void Link();
-	void Dump();
-	
-	//void Attach(Ctrl& c);
-	void Attach(DrawCommand& begin, DrawCommand& end);
-	void AppendPick(DrawCommand* begin, DrawCommand* end);
-	
 };
+
 
 NAMESPACE_TOPSIDE_END
 
-#endif
 #endif

@@ -3,6 +3,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+class Surface;
+class Gubo;
 
 struct LogPos {
 	
@@ -121,6 +123,9 @@ public:
 	virtual void PaintPreFrame(ProgPainter& pp) {}
 	virtual void PaintPostFrame(ProgPainter& pp) {}
 	virtual void PaintDebug(ProgPainter& pp) {}
+	virtual void PaintPreFrame(ProgPainter3& pp) {}
+	virtual void PaintPostFrame(ProgPainter3& pp) {}
+	virtual void PaintDebug(ProgPainter3& pp) {}
 	virtual void DeepLayout();
 	virtual void DeepFrameLayout();
 	virtual void DeepMouseLeave();
@@ -137,7 +142,8 @@ public:
 	virtual bool IsSurface() const;
 	virtual GeomInteraction2D* Get2D();
 	virtual GeomInteraction3D* Get3D();
-	//virtual Surface* GetSurface();
+	virtual Gubo* GetGubo() {return 0;}
+	virtual Surface* GetSurface() {return 0;}
 	//virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	virtual GeomInteraction* GetProxy() const {return 0;}
 	
@@ -146,8 +152,8 @@ public:
 	GeomInteraction* GetGeomDrawBegin();
 	const GeomInteraction* GetGeomDrawBegin() const;
 	GeomInteraction* FindProxy();
-	void SetPendingRedrawDeep();
 	
+	virtual void SetPendingRedrawDeep();
 	virtual void SetCaptured(GeomInteraction* c);
 	virtual void SetWithMouse(GeomInteraction* c);
 	
@@ -281,9 +287,10 @@ public:
 	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
 	virtual bool DeepMouseMoveInFrame(Point3f pt, dword keyflags);
 	virtual bool DeepMouseMove(const Point3f& pt, dword keyflags);
+	virtual bool DeepMouseWheel(const Point3f& pt, int zdelta, dword keyflags);
 	virtual bool MouseMoveInFrame(Point3f pt, dword keyflags);
-	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags);
-	virtual bool MouseEventInFrame(int mouse_code, const Point& pt, dword keyflags);
+	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags);
+	virtual bool MouseEventInFrame(int mouse_code, const Point3f& pt, dword keyflags);
 	virtual bool MouseWheelInFrame(Point3f p, int zdelta, dword keyflags);
 	virtual void MouseEnter(Point3f frame_p, dword keyflags);
 	virtual void MouseMove(Point3f content_p, dword keyflags) {}

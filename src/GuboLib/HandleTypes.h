@@ -48,7 +48,7 @@ struct Ctx3D {
 	using Box = Cubf;
 	using DrawT = Draw3;
 	using CmdDraw = ProgDraw3;
-	using CmdPainter = ModelPainter;
+	using CmdPainter = ProgPainter3;
 	
 	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
 	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubC(o,o,o,256,256,256);}

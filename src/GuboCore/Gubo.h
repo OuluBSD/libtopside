@@ -32,7 +32,7 @@ protected:
 	bool         inloop:1;
 	
 	Vector<GuboFrame*> frames;
-	Cubf content_r;
+	Cubf content;
 	
 	
 	void Refresh0() {Refresh();}
@@ -79,26 +79,30 @@ public:
 	
 	Cubf GetWorkArea() const;
 	Volf GetSize() const {return GetFrameSize();}
+	Volf GetContentSize() const;
 	
 	void DeepFrameLayout() override;
 	void SetFrameBox(const Cubf& r) override;
-	void DeepMouseMoveInFrameContent(Point pt, dword keyflags);
-	void MouseMoveInFrameContent(Point pt, dword keyflags);
-	bool MouseEventInFrameCaptured(int mouse_code, const Point& pt, dword keyflags) override;
-	void MouseEventInFrameContent(int mouse_code, const Point& pt, dword keyflags);
+	void DeepMouseMoveInFrameContent(Point3f pt, dword keyflags);
+	void MouseMoveInFrameContent(Point3f pt, dword keyflags);
+	bool MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags) override;
+	void MouseEventInFrameContent(int mouse_code, const Point3f& pt, dword keyflags);
 	void MouseLeaveFrame() override;
-	Cubf GetContentCubf() const;
+	Cubf GetContentBox() const;
 	Point3f GetContentPoint(const Point3f& pt) override;
-	bool MouseWheelInFrameContent(Point p, int zdelta, dword keyflags);
+	bool MouseWheelInFrameContent(Point3f p, int zdelta, dword keyflags);
 	void SetFocus() override;
 	void DeepUnfocus() override;
-	void PaintPreFrame(ProgPainter& pp) override;
-	void PaintPostFrame(ProgPainter& pp) override;
-	void PaintDebug(ProgPainter& pp) override;
+	void PaintPreFrame(ProgPainter3& pp) override;
+	void PaintPostFrame(ProgPainter3& pp) override;
+	void PaintDebug(ProgPainter3& pp) override;
 	bool IsGubo() const;
 	void Refresh() override;
+	void SetPendingRedrawDeep() override;
+	Gubo* GetGubo() override {return this;}
 	
 	void SetCubf(const Cubf& r);
+	void SetContentBox(const Cubf& r);
 	void Update();
 	
 	virtual int    OverPaint() const {return 0;}

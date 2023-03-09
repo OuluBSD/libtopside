@@ -65,6 +65,7 @@ template<> inline dword ValueTypeNo<String>(const String*)  { return STRING_V; }
 template<> inline dword ValueTypeNo(const WString*) { return WSTRING_V; }
 template<> inline dword ValueTypeNo(const Date*)    { return DATE_V; }
 template<> inline dword ValueTypeNo(const Time*)    { return TIME_V; }
+template<> inline dword ValueTypeNo(const Color*)   { return COLOR_V; }
 
 
 template <class T, dword type = UNKNOWN_V, class B = EmptyClass>
@@ -87,7 +88,7 @@ public:
 };
 
 
-class ValueInstance {
+class ValueInstance : RTTIBase {
 protected:
 	friend class Value;
 	
@@ -95,6 +96,7 @@ protected:
 	Atomic refs;
 	
 public:
+	RTTI_DECL0(ValueInstance)
 	ValueInstance() {refs = 0;}
 	virtual ~ValueInstance() = default;
 	virtual void* Get() {return 0;}
@@ -115,6 +117,7 @@ class ValueTemplate : public ValueInstance {
 	T* ptr = NULL;
 	
 public:
+	RTTI_DECL1(ValueTemplate, ValueInstance)
 	ValueTemplate() {ptr = new T(); is_owned = true; type = ValueTypeNo<T>(0);}
 	ValueTemplate(T* ptr) : ptr(ptr) {type = ValueTypeNo<T>(0);}
 	ValueTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ValueTypeNo<T>(0);}
@@ -205,9 +208,16 @@ public:
 	bool     IsNull() const;
 	bool     IsNullInstance() const  {return IsNull();}
 
-	template <class T>	bool     Is() const;
-	template <class T>	const T& To() const;
-	template <class T>	const T& Get() const;
+	template <class T>	bool     Is() const {return GetType() == ValueTypeNo((T*)0);}
+	template <class T>	const T& To() const {
+		if (Is<T>()) {
+			ValueTemplate<T>* o = CastPtr<ValueTemplate<T>>(data);
+			if (o) return *(T*)o->Get();
+		}
+		Panic("invalid value");
+		NEVER();
+	}
+	template <class T>	const T& Get() const {return To<T>();}
 
 	bool     IsString() const          { return data && data->type == STRING_V; }
 	bool     Is(byte v) const          { return data && data->type == v; }

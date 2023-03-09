@@ -1,13 +1,14 @@
-#ifndef _Geometry_ModelDraw_h_
-#define _Geometry_ModelDraw_h_
-
-#if 0
+#ifndef _GuboCore_Draw_h_
+#define _GuboCore_Draw_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ModelDraw : public DrawProxy3 {
-	One<ModelPainter> d;
+class ProgPainter3;
+
+
+class ProgDraw3 : public DrawProxy3 {
+	One<ProgPainter3> d;
 	
 	Volf GetFrameSize() const;
 	
@@ -18,22 +19,21 @@ public:
 	
 	void LinkRender();
 public:
-	RTTI_DECL1(ModelDraw, Draw3)
-	ModelDraw();
-	ModelDraw(Volf sz);
-	ModelDraw(float w, float h, float z);
+	RTTI_DECL1(ProgDraw3, DrawProxy3)
+	ProgDraw3();
+	ProgDraw3(Volf sz);
+	ProgDraw3(float w, float h, float d);
 	
+	void Realize(Volf sz);
 	void Create(Volf sz);
 	void Create(Volf sz, DrawCommand& sub_begin, DrawCommand& sub_end);
 	void Clear();
 	void Finish();
-	void DetachTo(ModelPainter& pp);
+	void DetachTo(ProgPainter3& pp);
 	
 	operator Image() const;
 	
-	Draw& Alpha();
-	
-	ModelPainter& GetPainter();
+	ProgPainter3& GetPainter();
 	
 	String Dump() const;
 };
@@ -41,5 +41,4 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
-#endif
 #endif

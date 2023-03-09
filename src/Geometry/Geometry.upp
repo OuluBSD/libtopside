@@ -39,10 +39,6 @@ file
 	Model.cpp,
 	ModelBuilder.h,
 	ModelBuilder.cpp,
-	ModelPainter.h,
-	ModelPainter.cpp,
-	ModelDraw.h,
-	ModelDraw.cpp,
 	Draw.h,
 	Draw.cpp,
 	Frustum.h,
@@ -58,5 +54,10 @@ file
 	Uncamera.h,
 	Uncamera.cpp,
 	Vr.h,
-	Vr.cpp;
+	Vr.cpp,
+	Trash readonly separator,
+	ModelPainter.h,
+	ModelPainter.cpp,
+	ModelDraw.h,
+	ModelDraw.cpp;
 

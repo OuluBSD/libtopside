@@ -11,6 +11,11 @@ file
 	GIBase.cpp,
 	GI2D.cpp,
 	GI3D.cpp,
+	Draw readonly separator,
+	ProgPainter3.h,
+	ProgPainter3.cpp,
+	Draw3.h,
+	Draw3.cpp,
 	3D readonly separator,
 	Defs.h,
 	Util.h,
@@ -32,8 +37,5 @@ file
 	TopSurface.cpp,
 	Images.h,
 	Images.cpp,
-	Draw readonly separator,
-	Draw.h,
-	Draw.cpp,
 	_ readonly separator;
 

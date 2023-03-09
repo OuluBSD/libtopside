@@ -7,18 +7,18 @@ NAMESPACE_TOPSIDE_BEGIN
 class Gubo;
 
 class GuboFrame :
-	RTTIBase
+	public GeomInteraction3D
 {
 protected:
 	friend class Gubo;
 	Gubo* gubo = 0;
 	
 public:
-	RTTI_DECL0(GuboFrame)
+	RTTI_DECL1(GuboFrame, GeomInteraction3D)
 	
-	virtual void FrameLayout(Rect& r) = 0;
-	virtual void FrameAddSize(Size& sz) = 0;
-	virtual void FramePaint(Draw& w, const Rect& r);
+	virtual void FrameLayout(Cubf& r) = 0;
+	virtual void FrameAddSize(Volf& sz) = 0;
+	virtual void FramePaint(Draw3& w, const Cubf& r);
 	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 	virtual int  OverPaint() const;
@@ -32,28 +32,28 @@ private:
 };
 
 struct NullFrameClass : public GuboFrame {
-	virtual void FrameLayout(Rect& r);
-	virtual void FramePaint(Draw& w, const Rect& r);
-	virtual void FrameAddSize(Size& sz);
+	virtual void FrameLayout(Cubf& r);
+	virtual void FramePaint(Draw3& w, const Cubf& r);
+	virtual void FrameAddSize(Volf& sz);
 };
 
 GuboFrame& NullFrame();
 
 class MarginFrame : public GuboFrame {
 public:
-	virtual void FrameLayout(Rect& r);
-	virtual void FramePaint(Draw& w, const Rect& r);
-	virtual void FrameAddSize(Size& sz);
+	virtual void FrameLayout(Cubf& r);
+	virtual void FramePaint(Draw3& w, const Cubf& r);
+	virtual void FrameAddSize(Volf& sz);
 	virtual void FrameAdd(Gubo& parent);
 	virtual void FrameRemove();
 
 private:
 	Gubo  *owner;
 	Color  color;
-	Rect   margins;
+	Cubf   margins;
 
 public:
-	void SetMargins(const Rect& r);
+	void SetMargins(const Cubf& r);
 	void SetColor(Color c);
 
 	MarginFrame();
@@ -61,9 +61,9 @@ public:
 
 class BorderFrame : public GuboFrame {
 public:
-	virtual void FrameLayout(Rect& r);
-	virtual void FramePaint(Draw& w, const Rect& r);
-	virtual void FrameAddSize(Size& sz);
+	virtual void FrameLayout(Cubf& r);
+	virtual void FramePaint(Draw3& w, const Cubf& r);
+	virtual void FrameAddSize(Volf& sz);
 
 protected:
 	const ColorF *border;

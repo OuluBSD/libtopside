@@ -1,5 +1,7 @@
 #include "Geometry.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -20,11 +22,11 @@ Volf ModelDraw::GetFrameSize() const {
 	//return state.size;
 }
 
-Volf ModelDraw::GetPageSize() const {
+/*Volf ModelDraw::GetPageSize() const {
 	if (!d.IsEmpty())
 		return d->GetPageSize();
 	return Volf(0);
-}
+}*/
 
 void ModelDraw::Create(Volf sz){
 	Clear();
@@ -50,6 +52,7 @@ void ModelDraw::Create(Volf sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
 }
 
 void ModelDraw::LinkRender() {
+	SetTarget(&*d);
 	cmd_screen_begin.next = &render_begin;
 	render_begin.prev = &cmd_screen_begin;
 	cmd_screen_end.prev = &render_end;
@@ -77,6 +80,7 @@ ModelDraw::operator Image() const {
 	TODO
 }
 
+#if 0
 void ModelDraw::SetSize(Volf sz) {
 	d->SetSize(sz);
 }
@@ -115,6 +119,7 @@ void ModelDraw::EndOp() {
 void ModelDraw::DrawImage(float x, float y, float z, Image img, byte alpha) {
 	TODO
 }
+#endif
 
 Draw& ModelDraw::Alpha() {
 	TODO
@@ -132,3 +137,5 @@ void ModelDraw::DetachTo(ModelPainter& pp) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif
