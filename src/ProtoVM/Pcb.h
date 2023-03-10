@@ -35,6 +35,8 @@ public:
 		return *o;
 	}
 	
+	bool Tick();
+	
 	ENode& AddNode(String name);
 	ElcBase& AddReferenceSingle(ElcBase& n, int pin_i);
 	ElcBase& AddReferenceRange(ElcBase& n, int pin_i, int pin_count);
@@ -47,23 +49,6 @@ public:
 	
 };
 
-
-template <int Width>
-class Bus : public ElcBase {
-	RTTI_DECL1(Bus, ElcBase);
-	
-	
-public:
-	Bus() {
-		for(int i = 0; i < Width; i++)
-			AddBidirectional(IntStr(i)).SetMultiConn();
-	}
-	
-};
-
-
-using Bus8 = Bus<8>;
-using Bus16 = Bus<16>;
 
 
 #endif

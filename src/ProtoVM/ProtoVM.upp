@@ -4,6 +4,7 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
+	Simple.cpp,
 	UK101.cpp,
 	Interak.cpp,
 	MiniMax8085.cpp,

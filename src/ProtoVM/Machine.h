@@ -4,9 +4,12 @@
 struct Machine {
 	Array<Pcb> pcbs;
 	Port power;
+	LinkMap l;
 	
 	bool Init();
-	void Tick();
+	bool Tick();
+	bool RunInitOps();
+	bool RunRtOps();
 	
 	Pcb& AddPcb();
 	Port& GetPower() {return power;}

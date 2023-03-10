@@ -217,6 +217,7 @@ ElectricNodeBase::Connector& ElectricNodeBase::GetTrivialSink() {
 
 ElectricNodeBase::Connector& ElectricNodeBase::AddBidirectional(String name) {
 	Connector& conn = conns.Add();
+	conn.id = conns.GetCount()-1;
 	conn.base = this;
 	conn.name = name;
 	conn.is_sink = conn.is_src = true;
@@ -226,6 +227,7 @@ ElectricNodeBase::Connector& ElectricNodeBase::AddBidirectional(String name) {
 
 ElectricNodeBase::Connector& ElectricNodeBase::AddSource(String name) {
 	Connector& conn = conns.Add();
+	conn.id = conns.GetCount()-1;
 	conn.base = this;
 	conn.name = name;
 	conn.is_src = true;
@@ -235,6 +237,7 @@ ElectricNodeBase::Connector& ElectricNodeBase::AddSource(String name) {
 
 ElectricNodeBase::Connector& ElectricNodeBase::AddSink(String name) {
 	Connector& conn = conns.Add();
+	conn.id = conns.GetCount()-1;
 	conn.base = this;
 	conn.name = name;
 	conn.is_sink = true;

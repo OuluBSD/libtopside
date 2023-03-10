@@ -1,5 +1,15 @@
 #include "ProtoVM.h"
 
+bool Pcb::Tick() {
+	for (ElectricNodeBase& n : nodes) {
+		if (!n.Tick()) {
+			LOG("error: component " << n.GetClassName() << "(" << n.GetName() << ") failed");
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Pcb::IsAllConnected() const {
 	bool r = true;
 	for (ElectricNodeBase& n : nodes) {

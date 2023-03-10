@@ -3,6 +3,16 @@
 
 
 
+typedef enum {
+	INVALID,
+	BIT_READ,
+	BIT_WRITE,
+	BIT_RW,
+	BYTE_READ,
+	BYTE_WRITE,
+	BYTE_RW,
+} ProcessType;
+
 class Pcb;
 struct Link;
 
@@ -25,6 +35,7 @@ public:
 	
 	struct Connector : Moveable<Connector> {
 		String name;
+		uint16 id = 0;
 		bool is_sink = false;
 		bool is_src = false;
 		bool accept_multiconn = false;
@@ -84,10 +95,22 @@ public:
 	Connector& GetTrivialSource();
 	Connector& GetTrivialSink();
 	String GetName() const {return name;}
+	String GetClassName() const {return GetDynamicName();}
 	
 	ElectricNodeBase& operator>>(ElectricNodeBase& b);
 	ElectricNodeBase& operator[](String code);
 	ElectricNodeBase& operator[](int i);
+	
+	virtual int GetMemorySize() const {return 0;}
+	virtual bool Tick() {
+		LOG("error: Tick not implemented in " << GetClassName()); return false;
+	}
+	virtual bool Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
+		LOG("error: Process not implemented in " << GetClassName()); return false;
+	}
+	virtual bool PutRaw(uint16 conn_id, byte* data, int data_sz) {
+		LOG("error: PutRaw not implemented in " << GetClassName()); return false;
+	}
 	
 };
 

@@ -30,13 +30,13 @@ void SetupMiniMax8085(Machine& mach) {
 		cpu["HOLD"] >> pull_down[3];
 		cpu["INTR"] >> pull_down[5];
 		cpu["RST5_5"] >> pull_down[4];
-		cpu["RST6_5"] >> ;
+		TODO/*cpu["RST6_5"] >> ;
 		cpu["RST7_5"] >> pull_down[2];
 		cpu["TRAP"] >> pull_down[1];
 		cpu["~RES_IN"] >> ;
 		cpu[""] >> ;
 		
 		cpu[""] >> pull_up[];
-		cpu[""] >> pull_up[];
+		cpu[""] >> pull_up[];*/
 	}
 }

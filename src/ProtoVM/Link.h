@@ -16,11 +16,27 @@ struct Link {
 	
 };
 
+struct ProcessOp : Moveable<ProcessOp> {
+	
+	ProcessType type = INVALID;
+	Link* link = 0;
+	ElectricNodeBase* processor = 0;
+	ElectricNodeBase* dest = 0;
+	uint16 id = 0;
+	uint16 dest_id = 0;
+	int mem_bits = 0;
+	int mem_bytes = 0;
+	//int mem_id = -1;
+	
+};
+
 struct LinkMap {
 	Array<Link> links;
+	Array<ProcessOp> init_ops, rt_ops;
 	
 	
 	void UpdateLinkLayers();
+	void UpdateProcess();
 	void GetLayerRange(const ElectricNodeBase& n, int& min, int& max);
 	
 };

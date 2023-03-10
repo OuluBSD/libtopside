@@ -12,7 +12,12 @@ bool Link::operator()(const Link& a, const Link& b) const {
 
 String Link::ToString() const {
 	String s;
-	s << "layer: " << layer << ", src: " << HexStr(src) << ", sink: " << HexStr(sink);
+	if (0) {
+		s << "layer: " << layer << ", src: " << HexStr(src) << ", sink: " << HexStr(sink);
+	}
+	else {
+		s << "layer: " << layer << ", src: " << src->base->GetClassName() << ":" << src->name << ", sink: " << sink->base->GetClassName() << ":" << sink->name;
+	}
 	return s;
 }
 
@@ -95,4 +100,106 @@ void LinkMap::GetLayerRange(const ElectricNodeBase& n, int& min, int& max) {
 		min = -1;
 		max = -1;
 	}
+}
+
+void LinkMap::UpdateProcess() {
+	init_ops.SetCount(0);
+	rt_ops.SetCount(0);
+	
+	Vector<ElcBase*> units;
+	
+	for (Link& link : links) {
+		VectorFindAdd(units, link.sink->base);
+		VectorFindAdd(units, link.src->base);
+	}
+	
+	bool verbose = true;
+	
+	if (verbose) {
+		LOG("Units:");
+		for (ElcBase* u : units) {
+			LOG("\t" << u->GetClassName());
+		}
+	}
+	
+	// Reserve memory
+	#if 0
+	int mem_count = 0;
+	for (ElcBase* u : units) {
+		int mem_sz = u->GetMemorySize();
+		if (mem_sz > 0) {
+			if (verbose) {LOG("Reserving memory for " << u->GetClassName() << " " << u->GetName() << ": " << mem_sz << " bytes");}
+			ProcessOp& op = init_ops.Add();
+			op.type = ProcessOp::REALIZE_MEMORY;
+			op.mem_bytes = mem_sz;
+			op.mem_id = mem_count++;
+		}
+	}
+	#endif
+	
+	for(int i = 0; i < links.GetCount(); i++) {
+		Link& link = links[i];
+		
+		// Hack: find byte ranges for speedup
+		bool found_byte_range = false;
+		if ((link.src->name == "0" || link.src->name == "A0" || link.src->name == "D0") &&
+			(link.sink->name == "0" || link.sink->name == "A0" || link.sink->name == "D0")) {
+			String src_prefix = link.src->name.Left(link.src->name.GetCount()-1);
+			String sink_prefix = link.sink->name.Left(link.sink->name.GetCount()-1);
+			int match_count = 1;
+			for(int j = i+1, k = 1; j < links.GetCount(); j++, k++) {
+				Link& link0 = links[j];
+				String chk_src = src_prefix + IntStr(k);
+				String chk_sink = sink_prefix + IntStr(k);
+				
+				if (link0.src->name != chk_src || link0.sink->name != chk_sink)
+					break;
+				
+				match_count++;
+			}
+			
+			// Check if match count aligns byte size
+			if ((match_count % 8) == 0) {
+				found_byte_range = true;
+				int bytes = match_count / 8;
+				if (verbose) {LOG("byte op: " << bytes << " bytes: " << link.ToString());}
+				
+				// Add op
+				ProcessOp& op = rt_ops.Add();
+				if (link.src->is_sink && link.src->is_src)
+					op.type = ProcessType::BYTE_RW;
+				else if (link.src->is_src)
+					op.type = ProcessType::BYTE_WRITE;
+				else
+					TODO; // fail?
+				op.mem_bytes = bytes;
+				op.link = &link;
+				op.processor = link.src->base;
+				op.dest = link.sink->base;
+				op.id = link.src->id;
+				op.dest_id = link.sink->id;
+				
+				i += match_count - 1; // skip bits, which were included in bytes
+			}
+		}
+		if (!found_byte_range) {
+			if (verbose) {LOG("bit op: " << link.ToString());}
+			
+			// Add op
+			ProcessOp& op = rt_ops.Add();
+			if (link.src->is_sink && link.src->is_src)
+				op.type = ProcessType::BIT_RW;
+			else if (link.src->is_src)
+				op.type = ProcessType::BIT_WRITE;
+			else
+				TODO; // fail?
+			op.mem_bits = 1;
+			op.link = &link;
+			op.processor = link.src->base;
+			op.dest = link.sink->base;
+			op.id = link.src->id;
+			op.dest_id = link.sink->id;
+		}
+	}
+	
 }

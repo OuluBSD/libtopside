@@ -107,7 +107,11 @@ IC6850::IC6850() {
 
 
 IC62256::IC62256() {
-	AddBidirectional("D0");
+	memset(data, 0, size);
+	
+	// NOTE: incorrect order for any real package
+	
+	AddBidirectional("D0"); // 0
 	AddBidirectional("D1");
 	AddBidirectional("D2");
 	AddBidirectional("D3");
@@ -115,7 +119,7 @@ IC62256::IC62256() {
 	AddBidirectional("D5");
 	AddBidirectional("D6");
 	AddBidirectional("D7");
-	AddSink("A0");
+	AddSink("A0"); // 8
 	AddSink("A1");
 	AddSink("A2");
 	AddSink("A3");
@@ -131,10 +135,86 @@ IC62256::IC62256() {
 	AddSink("A13");
 	AddSink("A14");
 	AddSink("A15");
-	AddSink("~WR");
+	AddSink("~WR"); // 24
 	AddSink("~OE");
 	AddSink("~CS");
 	
+}
+
+bool IC62256::Tick() {
+	addr = in_addr;
+	writing = in_writing;
+	reading = in_reading;
+	enabled = in_enabled;
+	if (writing && addr < size) {
+		data[addr] = in_data;
+	}
+	return true;
+}
+
+bool IC62256::Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
+	union {
+		byte tmp[2];
+		uint16 tmp16;
+	};
+	if (type == BYTE_WRITE) {
+		switch (conn_id) {
+		case 0:
+			if (reading && enabled) {
+				tmp[0] = this->addr < size ? this->data[this->addr] : 0;
+				return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+			}
+			break;
+		case 8:
+			/*if (reading && enabled) {
+				tmp16 = addr;
+				return dest.PutRaw(dest_conn_id, &tmp[0], 2);
+			}*/
+			break;
+		/*case 24:
+			return dest.PutRaw(dest_conn_id, &writing, 1);
+		case 25:
+			tmp[0] = !writing;
+			return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+		case 26:
+			tmp[0] = false;
+			return dest.PutRaw(dest_conn_id, &tmp[0], 1);*/
+		default:
+			LOG("error: IC62256: unimplemented conn-id");
+			return false;
+		}
+	}
+	else {
+		LOG("error: IC62256: unimplemented ProcessType");
+		return false;
+	}
+	return true;
+}
+
+bool IC62256::PutRaw(uint16 conn_id, byte* data, int data_sz) {
+	switch (conn_id) {
+	case 0: // D0
+		ASSERT(data_sz == 1);
+		in_data = *data;
+		break;
+	case 8: // A0
+		ASSERT(data_sz == 2);
+		in_addr = *(uint16*)data;
+		break;
+	case 24: // ~WR
+		in_writing = !*data;
+		break;
+	case 25: // ~OE
+		in_reading = !*data;
+		break;
+	case 26: // ~CS
+		in_enabled = !*data;
+		break;
+	default:
+		LOG("unimplemented conn-id");
+		return false;
+	}
+	return true;
 }
 
 
@@ -223,6 +303,30 @@ ICMAX232::ICMAX232() {
 
 
 IC74LS245::IC74LS245() {
+	
+}
+
+IC8085::IC8085() {
+	
+}
+
+IC74F573::IC74F573() {
+	
+}
+
+IC27128::IC27128() {
+	
+}
+
+ICDS1210::ICDS1210() {
+	
+}
+
+IC8251A::IC8251A() {
+	
+}
+
+ICGAL16V8::ICGAL16V8() {
 	
 }
 
