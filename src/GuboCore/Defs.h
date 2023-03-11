@@ -25,11 +25,12 @@
 #endif
 
 
-
+#if IS_TS_CORE
 #ifndef GUIPLATFORM_INCLUDE
 	#error Build flags prevents GuboCore usage. Probably GUI flag is not set and GuboCore.h is included indirectly.
 #else
 	#include GUIPLATFORM_INCLUDE
+#endif
 #endif
 
 

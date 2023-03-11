@@ -3,6 +3,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+Color DefaultInk() {
+	struct SpecialColor : Color {
+		SpecialColor(dword d) {color = d;}
+	};
+	return SpecialColor(254);
+}
+
+
 Draw3::~Draw3() {
 	
 }
@@ -107,7 +115,7 @@ void Draw3::DrawText(float x, float y, float z, const wchar *text, Font font,
 void Draw3::DrawText(float x, float y, float z, int angle, const WString& text, Font font,
                     Color ink, const int *dx)
 {
-	DrawText(x, y, z, angle, ~text, font, ink, text.GetLength(), dx);
+	DrawText(x, y, z, angle, text.Begin(), font, ink, text.GetLength(), dx);
 }
 
 void Draw3::DrawText(float x, float y, float z, const WString& text, Font font, Color ink, const int *dx)
@@ -115,7 +123,7 @@ void Draw3::DrawText(float x, float y, float z, const WString& text, Font font, 
 	DrawText(x, y, z, 0, text, font, ink, dx);
 }
 
-void Draw3::DrawText(float x, float y, float z, int angle, const wchar_t *text, Font font,
+void Draw3::DrawText(float x, float y, float z, int angle, const wchar *text, Font font,
 		          Color ink, int n, const int *dx) {
 	TODO
 }

@@ -1607,8 +1607,8 @@ bool HalSdl::UppEventsBase_PostInitialize(NativeUppEventsBase& dev, AtomBase& a)
 	{
 		Machine& m = a.GetMachine();
 		
-		dev.surfs = m.Get<Gu::SurfaceSystem>();
-		dev.gubos = m.Get<Gu::GuboSystem>();
+		dev.surfs = m.Find<Gu::SurfaceSystem>();
+		dev.gubos = m.Find<Gu::GuboSystem>();
 		
 		#if IS_UPP_CORE
 		dev.wins = m.Get<WindowSystem>();

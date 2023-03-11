@@ -25,18 +25,18 @@ public:
 	using CmdPainter = typename Dim::CmdPainter;
 	using DrawT = typename Dim::DrawT;
 	
-	#if IS_UPP_CORE
-	using UppTopSurface = SurfaceInterfaceGeom<UPP::TopSurface>;
-	#endif
+	/*#if IS_UPP_CORE
+	using UppTopSurface = SurfaceInterfaceGeom<UPP::TopWindow>;
+	#endif*/
 	
 private:
 	CmdDraw pd;
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;
 	
-	#if IS_UPP_CORE
+	/*#if IS_UPP_CORE
 	Array<UppTopSurface> tws;
-	#endif
+	#endif*/
 	
 	int handle_counter = 0;
 	bool maximize_all;

@@ -74,9 +74,9 @@ private:
 };
 
 
-#if IS_UPP_CORE
+/*#if IS_UPP_CORE
 using KeyInfo = ::UPP::KeyInfo;
-#endif
+#endif*/
 
 
 

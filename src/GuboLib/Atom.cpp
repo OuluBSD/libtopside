@@ -1,6 +1,6 @@
 #include "GuboLib.h"
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 AtomVirtualGui3D::AtomVirtualGui3D() {
@@ -32,4 +32,4 @@ bool GetShift() {TODO}
 
 #endif
 
-NAMESPACE_UPP_END
+NAMESPACE_TOPSIDE_END

@@ -168,7 +168,7 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 
 
 void ProgPainter::SetSize(Size sz) {
-	this->sz = sz;
+	this->size = sz;
 	
 	TODO
 	/*DrawCommand& cmd = CreateCommand();
@@ -178,7 +178,7 @@ void ProgPainter::SetSize(Size sz) {
 
 void ProgPainter::CtrlDrawBegin(hash_t h) {
 	BindWindow(h);
-	SetSize(sz);
+	SetSize(size);
 }
 
 void ProgPainter::CtrlDrawEnd() {

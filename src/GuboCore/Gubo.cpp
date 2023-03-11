@@ -610,7 +610,7 @@ void Gubo::PaintDebug(ProgPainter3& pp) {
 	Cubf new_content(sz);
 	if (do_debug_draw) {
 		if (has_mouse) {
-			RGBA c{255, 0, 0, 125};
+			RGBA c = RGBAC(255, 0, 0, 125);
 			pp.DrawBox(new_content.GetSize(), c);
 		}
 		else {

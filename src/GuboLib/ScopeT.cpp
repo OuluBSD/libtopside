@@ -1,9 +1,5 @@
 #include "GuboLib.h"
 
-#if IS_UPP_CORE
-// TopSurface
-#include <SurfaceLib/SurfaceLib.h>
-#endif
 
 NAMESPACE_GUBO_BEGIN
 
@@ -657,60 +653,6 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
-#if IS_UPP_CORE
-
-template <>
-void ScopeT<Ctx2D>::SetCaptured(GeomInteraction* c) {
-	captured = CastPtr<Interaction>(c);
-	#if IS_UPP_CORE
-	SurfaceGeomBase* cgb = CastPtr<SurfaceGeomBase>(c);
-	captured_ctrl = cgb ? cgb->GetSurface() : 0;
-	#else
-	captured_ctrl = CastPtr<Container>(c);
-	#endif
-	ASSERT_(captured || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
-
-template <>
-void ScopeT<Ctx2D>::SetWithMouse(GeomInteraction* c) {
-	with_mouse = CastPtr<Interaction>(c);
-	#if IS_UPP_CORE
-	SurfaceGeomBase* cgb = CastPtr<SurfaceGeomBase>(c);
-	with_mouse_ctrl = cgb ? cgb->GetSurface() : 0;
-	#else
-	with_mouse_ctrl = CastPtr<Container>(c);
-	#endif
-	ASSERT_(with_mouse || !c, "expected same Dim::Interaction class"); // might be okay, but don't know yet
-}
-
-template <>
-void ScopeT<Ctx2D>::SetCaptured(Container* c) {
-	#if IS_UPP_CORE
-	TODO // get GeomInteraction2D from Surface
-	#else
-	captured = c;
-	#endif
-	captured_ctrl = c;
-}
-
-template <>
-void ScopeT<Ctx2D>::SetWithMouse(Container* c) {
-	#if IS_UPP_CORE
-	TODO // get GeomInteraction2D from Surface
-	#else
-	with_mouse = c;
-	#endif
-	with_mouse_ctrl = c;
-}
-
-template <>
-void ScopeT<Ctx2D>::AddInterface(UPP::TopSurface& tw) {
-	UppTopSurface& utw = tws.Add();
-	utw.SetTarget(tw);
-	AddInterface((Absolute2DProxy&)utw);
-}
-	
-#endif
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 

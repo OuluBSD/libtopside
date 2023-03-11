@@ -40,7 +40,7 @@ struct AtomVirtualGui3D : VirtualGui3D {
 	~AtomVirtualGui3D();
 };
 
-void RunVirtualGui(VirtualGui3D& gui, Event<> app_main);
+void RunVirtualGui3D(VirtualGui3D& gui, Event<> app_main);
 
 
 NAMESPACE_TOPSIDE_END

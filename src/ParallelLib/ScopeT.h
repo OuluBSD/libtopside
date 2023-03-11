@@ -134,6 +134,7 @@ public:
 	Frame& operator[](int i) { return handles[i]; }
 	Frame& Get(int i) { return handles[i]; }
 	Sz GetSize() const {return desktop.GetSize();}
+	Rect GetFrameBox() const {return desktop.GetRect();}
 	
 	//Interaction* GetLastSub();
 	TopContainer* GetVisibleTopContainer();

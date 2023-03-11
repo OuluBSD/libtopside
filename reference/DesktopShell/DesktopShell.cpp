@@ -13,7 +13,7 @@ void VguiMain() {
 	#endif
 	
 	
-	EventsTester app;
+	TS::EventsTester app;
 	//GuiTesterApp app;
 	//CtrlTesterApp app;
 	app.OpenMain();
@@ -24,10 +24,10 @@ void VguiMain() {
 void DesktopMain() {
 	using namespace Parallel;
 	
-	Ctrl::SetDebugDraw(true);
+	Surface::SetDebugDraw(true);
 	Gubo::SetDebugDraw(true);
 	
-	AtomVirtualGui gui;
+	UPP::AtomVirtualGui gui;
 	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
 
 	RunVirtualGui(gui, callback(VguiMain));

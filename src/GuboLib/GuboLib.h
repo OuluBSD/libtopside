@@ -5,6 +5,14 @@
 #include <Geometry/Geometry.h>
 #include <ParallelLib/ParallelLib.h>
 
+#if IS_UPP_CORE
+NAMESPACE_TOPSIDE_BEGIN
+
+using VirtualGui3D = VirtualGui;
+
+NAMESPACE_TOPSIDE_END
+#endif
+
 #include "StaticGubo.h"
 #include "Push.h"
 

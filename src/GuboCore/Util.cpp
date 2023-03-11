@@ -1,5 +1,6 @@
 #include "GuboCore.h"
 
+#define LLOG(x)
 
 NAMESPACE_TOPSIDE_BEGIN
 

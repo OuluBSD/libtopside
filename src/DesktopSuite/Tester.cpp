@@ -49,9 +49,10 @@ void GuiTesterApp::TimedToggle() {
 void GuiTesterApp::Paint(Draw& d) {
 	Rect r = GetSize();
 	
-	if (IsDebugDraw())
+	/*if (IsDebugDraw())
 		d.DrawRect(r, RandomColor(128,128+32));
-	else if (HasMouse())
+	else*/
+	if (HasMouse())
 		d.DrawRect(r, Color(128, 255, 128));
 	else
 		d.DrawRect(r, GrayColor(128+64));

@@ -12,8 +12,10 @@ dword isdblclick[8] = {0};
 dword mouseb;
 dword modkeys;
 bool  sdlMouseIsIn;
+VirtualGui3D* VirtualGui3DPtr;
 
-void RunVirtualGui(VirtualGui3D& gui, Event<> app_main)
+
+void RunVirtualGui3D(VirtualGui3D& gui, Event<> app_main)
 {
 	VirtualGui3DPtr = &gui;
 	Surface::InitFB();

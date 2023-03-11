@@ -120,6 +120,10 @@ public:
 };
 
 
+#if IS_UPP_CORE
+using TopWindowFrame = FrameT<CtxUpp2D>;
+#endif
+
 NAMESPACE_PARALLEL_END
 
 #endif

@@ -35,7 +35,7 @@ class Painting3 {
 };
 
 
-Color DefaultInk(); // { return SpecialColor(254); }
+Color DefaultInk();
 
 
 class Draw3 :

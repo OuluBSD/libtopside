@@ -7,6 +7,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 namespace Parallel {
+struct CtxUpp2D;
 struct Ctx2D;
 struct Ctx3D;
 template <class Dim> class HandleSystemT;
@@ -18,7 +19,7 @@ NAMESPACE_TOPSIDE_END
 
 namespace UPP {
 
-using TopWindowFrame = TS::Parallel::FrameT<TS::Parallel::Ctx2D>;
+using TopWindowFrame = TS::Parallel::FrameT<TS::Parallel::CtxUpp2D>;
 
 #define IMAGECLASS FBImg
 #define IMAGEFILE <VirtualGui/FB.iml>

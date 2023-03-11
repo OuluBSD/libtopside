@@ -598,7 +598,7 @@ void Surface::PaintDebug(ProgPainter& pp) {
 	Rect new_content_r(sz);
 	if (do_debug_draw) {
 		if (has_mouse) {
-			RGBA c{255, 0, 0, 125};
+			RGBA c = RGBAC(255, 0, 0, 125);
 			pp.DrawRect(new_content_r.GetSize(), c);
 		}
 		else {

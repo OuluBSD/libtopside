@@ -63,7 +63,9 @@ bool ScopeT<Dim>::Poll(typename Dim::Event& e)
 
 template <class Dim>
 void ScopeT<Dim>::Paint(DrawT& draw) {
-	TODO // persistent
+	Color bg = Color(28, 127, 150);
+	Sz handle_sz(this->GetFrameBox().GetSize());
+	draw.DrawRect(handle_sz, bg);
 }
 
 template <class Dim>
@@ -777,31 +779,16 @@ void ScopeT<Dim>::AddInterface(TopContainer& tw)
 
 template <class Dim>
 typename Dim::Pt ScopeT<Dim>::GetMousePos() const {
-	TODO
-}
-
-#if IS_UPP_CORE
-
-template <>
-void ScopeT<CtxUpp2D>::Paint(DrawT& draw) {
-	Color bg = Color(28, 127, 150);
-	Sz handle_sz(this->GetFrameBox().GetSize());
-	draw.DrawRect(handle_sz, bg);
-}
-
-template<>
-Point ScopeT<CtxUpp2D>::GetMousePos() const {
 	return ::UPP::GetMousePos();
 }
 
-template<>
-void ScopeT<CtxUpp2D>::SetFrameBox(const Box& b) {
+template <class Dim>
+void ScopeT<Dim>::SetFrameBox(const Box& b) {
 	desktop.SetRect(b);
 }
 
 PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 
-#endif
 
 
 

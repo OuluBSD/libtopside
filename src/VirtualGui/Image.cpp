@@ -22,8 +22,11 @@ void SetSurface(SystemDraw& w, const Rect& dest, const RGBA *pixels, Size psz, P
 #define IMAGEFILE <VirtualGui/FB.iml>
 #include <Draw/iml_source.h>
 
-#define STD_CURSOR(name) \
-const Image& Image::name() { return FBImg::name(); }
+#if IS_TS_CORE
+#define STD_CURSOR(name) const Image& Image::name() { return FBImg::name(); }
+#else
+#define STD_CURSOR(name) Image Image::name() { return FBImg::name(); }
+#endif
 
 STD_CURSOR(Arrow)
 STD_CURSOR(Wait)
@@ -41,9 +44,7 @@ STD_CURSOR(SizeBottomLeft)
 STD_CURSOR(SizeBottom)
 STD_CURSOR(SizeBottomRight)
 STD_CURSOR(Hand)
-
 #undef STD_CURSOR
-
 
 #if IS_TS_CORE
 #define FBIMG(x) const Image& FBImg::x() {\

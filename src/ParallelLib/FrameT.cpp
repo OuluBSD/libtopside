@@ -314,7 +314,12 @@ void FrameT<Dim>::MouseMove(Pt, dword keyflags) {
 template <class Dim>
 Image FrameT<Dim>::GetDragImage(Pt dir)
 {
-	static const Image& (*im[9])() = {
+	#if IS_UPP_CORE
+	static Image (*im[9])() =
+	#else
+	static const Image& (*im[9])() =
+	#endif
+	{
 		Image::SizeTopLeft,  Image::SizeLeft,  Image::SizeBottomLeft,
 		Image::SizeTop,      Image::Arrow,     Image::SizeBottom,
 		Image::SizeTopRight, Image::SizeRight, Image::SizeBottomRight,

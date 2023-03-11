@@ -4,6 +4,9 @@
 #include <ParallelCore/ParallelCore.h>
 #include <Geometry/Geometry.h>
 #include <GuboLib/GuboLib.h>
+#if IS_UPP_CORE
+#include <CtrlLib/CtrlLib.h>
+#endif
 
 #include "Base.h"
 #include "BaseAudio.h"

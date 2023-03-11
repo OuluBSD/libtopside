@@ -1,4 +1,5 @@
 #include "Internal.h"
+#include "VirtualGui3D.h"
 
 
 NAMESPACE_UPP
