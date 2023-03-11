@@ -1,10 +1,11 @@
 #include "6502a.h"
 
-mos6502::mos6502(BusRead r, BusWrite w)
+mos6502::mos6502(BusRead r, BusWrite w, void* p)
 {
 	Write = (BusWrite)w;
 	Read = (BusRead)r;
 	Instr instr;
+	arg = p;
 
 	// fill jump table with ILLEGALs
 	instr.addr = &mos6502::Addr_IMP;
@@ -695,8 +696,8 @@ uint16_t mos6502::Addr_ABS()
 	uint16_t addrH;
 	uint16_t addr;
 
-	addrL = Read(pc++);
-	addrH = Read(pc++);
+	addrL = Read(pc++, arg);
+	addrH = Read(pc++, arg);
 
 	addr = addrL + (addrH << 8);
 
@@ -705,7 +706,7 @@ uint16_t mos6502::Addr_ABS()
 
 uint16_t mos6502::Addr_ZER()
 {
-	return Read(pc++);
+	return Read(pc++, arg);
 }
 
 uint16_t mos6502::Addr_IMP()
@@ -718,7 +719,7 @@ uint16_t mos6502::Addr_REL()
 	uint16_t offset;
 	uint16_t addr;
 
-	offset = (uint16_t)Read(pc++);
+	offset = (uint16_t)Read(pc++, arg);
 	if (offset & 0x80) offset |= 0xFF00;
 	addr = pc + (int16_t)offset;
 	return addr;
@@ -733,17 +734,17 @@ uint16_t mos6502::Addr_ABI()
 	uint16_t abs;
 	uint16_t addr;
 
-	addrL = Read(pc++);
-	addrH = Read(pc++);
+	addrL = Read(pc++, arg);
+	addrH = Read(pc++, arg);
 
 	abs = (addrH << 8) | addrL;
 
-	effL = Read(abs);
+	effL = Read(abs, arg);
 
 #ifndef CMOS_INDIRECT_JMP_FIX
-	effH = Read((abs & 0xFF00) + ((abs + 1) & 0x00FF) );
+	effH = Read((abs & 0xFF00) + ((abs + 1) & 0x00FF) , arg);
 #else
-	effH = Read(abs + 1);
+	effH = Read(abs + 1, arg);
 #endif
 
 	addr = effL + 0x100 * effH;
@@ -753,13 +754,13 @@ uint16_t mos6502::Addr_ABI()
 
 uint16_t mos6502::Addr_ZEX()
 {
-	uint16_t addr = (Read(pc++) + X) % 256;
+	uint16_t addr = (Read(pc++, arg) + X) % 256;
 	return addr;
 }
 
 uint16_t mos6502::Addr_ZEY()
 {
-	uint16_t addr = (Read(pc++) + Y) % 256;
+	uint16_t addr = (Read(pc++, arg) + Y) % 256;
 	return addr;
 }
 
@@ -769,8 +770,8 @@ uint16_t mos6502::Addr_ABX()
 	uint16_t addrL;
 	uint16_t addrH;
 
-	addrL = Read(pc++);
-	addrH = Read(pc++);
+	addrL = Read(pc++, arg);
+	addrH = Read(pc++, arg);
 
 	addr = addrL + (addrH << 8) + X;
 	return addr;
@@ -782,8 +783,8 @@ uint16_t mos6502::Addr_ABY()
 	uint16_t addrL;
 	uint16_t addrH;
 
-	addrL = Read(pc++);
-	addrH = Read(pc++);
+	addrL = Read(pc++, arg);
+	addrH = Read(pc++, arg);
 
 	addr = addrL + (addrH << 8) + Y;
 	return addr;
@@ -796,9 +797,9 @@ uint16_t mos6502::Addr_INX()
 	uint16_t zeroH;
 	uint16_t addr;
 
-	zeroL = (Read(pc++) + X) % 256;
+	zeroL = (Read(pc++, arg) + X) % 256;
 	zeroH = (zeroL + 1) % 256;
-	addr = Read(zeroL) + (Read(zeroH) << 8);
+	addr = Read(zeroL, arg) + (Read(zeroH, arg) << 8);
 
 	return addr;
 }
@@ -809,9 +810,9 @@ uint16_t mos6502::Addr_INY()
 	uint16_t zeroH;
 	uint16_t addr;
 
-	zeroL = Read(pc++);
+	zeroL = Read(pc++, arg);
 	zeroH = (zeroL + 1) % 256;
-	addr = Read(zeroL) + (Read(zeroH) << 8) + Y;
+	addr = Read(zeroL, arg) + (Read(zeroH, arg) << 8) + Y;
 
 	return addr;
 }
@@ -822,7 +823,7 @@ void mos6502::Reset()
 	Y = reset_Y;
 	X = reset_X;
 
-	pc = (Read(rstVectorH) << 8) + Read(rstVectorL); // load PC from reset vector
+	pc = (Read(rstVectorH, arg) << 8) + Read(rstVectorL, arg); // load PC from reset vector
 
 	sp = reset_sp;
 
@@ -835,7 +836,7 @@ void mos6502::Reset()
 
 void mos6502::StackPush(uint8_t byte)
 {
-	Write(0x0100 + sp, byte);
+	Write(0x0100 + sp, byte, arg);
 	if(sp == 0x00) sp = 0xFF;
 	else sp--;
 }
@@ -844,7 +845,7 @@ uint8_t mos6502::StackPop()
 {
 	if(sp == 0xFF) sp = 0x00;
 	else sp++;
-	return Read(0x0100 + sp);
+	return Read(0x0100 + sp, arg);
 }
 
 void mos6502::IRQ()
@@ -856,7 +857,7 @@ void mos6502::IRQ()
 		StackPush(pc & 0xFF);
 		StackPush((status & ~BREAK) | CONSTANT);
 		SET_INTERRUPT(1);
-		pc = (Read(irqVectorH) << 8) + Read(irqVectorL);
+		pc = (Read(irqVectorH, arg) << 8) + Read(irqVectorL, arg);
 	}
 	return;
 }
@@ -868,8 +869,24 @@ void mos6502::NMI()
 	StackPush(pc & 0xFF);
 	StackPush((status & ~BREAK) | CONSTANT);
 	SET_INTERRUPT(1);
-	pc = (Read(nmiVectorH) << 8) + Read(nmiVectorL);
+	pc = (Read(nmiVectorH, arg) << 8) + Read(nmiVectorL, arg);
 	return;
+}
+
+bool mos6502::Step() {
+	uint8_t opcode;
+	Instr instr;
+	
+	// fetch
+	opcode = Read(pc++, arg);
+
+	// decode
+	instr = InstrTable[opcode];
+
+	// execute
+	Exec(instr);
+	
+	return !illegalOpcode;
 }
 
 void mos6502::Run(
@@ -883,7 +900,7 @@ void mos6502::Run(
 	while(cyclesRemaining > 0 && !illegalOpcode)
 	{
 		// fetch
-		opcode = Read(pc++);
+		opcode = Read(pc++, arg);
 
 		// decode
 		instr = InstrTable[opcode];
@@ -991,7 +1008,7 @@ void mos6502::Op_ILLEGAL(uint16_t src)
 
 void mos6502::Op_ADC(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	unsigned int tmp = m + A + (IF_CARRY() ? 1 : 0);
 	SET_ZERO(!(tmp & 0xFF));
 	if (IF_DECIMAL())
@@ -1020,7 +1037,7 @@ void mos6502::Op_ADC(uint16_t src)
 
 void mos6502::Op_AND(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	uint8_t res = m & A;
 	SET_NEGATIVE(res & 0x80);
 	SET_ZERO(!res);
@@ -1031,13 +1048,13 @@ void mos6502::Op_AND(uint16_t src)
 
 void mos6502::Op_ASL(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	SET_CARRY(m & 0x80);
 	m <<= 1;
 	m &= 0xFF;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 	return;
 }
 
@@ -1083,7 +1100,7 @@ void mos6502::Op_BEQ(uint16_t src)
 
 void mos6502::Op_BIT(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	uint8_t res = m & A;
 	SET_NEGATIVE(res & 0x80);
 	status = (status & 0x3F) | (uint8_t)(m & 0xC0) | CONSTANT | BREAK;
@@ -1125,7 +1142,7 @@ void mos6502::Op_BRK(uint16_t src)
 	StackPush(pc & 0xFF);
 	StackPush(status | CONSTANT | BREAK);
 	SET_INTERRUPT(1);
-	pc = (Read(irqVectorH) << 8) + Read(irqVectorL);
+	pc = (Read(irqVectorH, arg) << 8) + Read(irqVectorL, arg);
 	return;
 }
 
@@ -1173,7 +1190,7 @@ void mos6502::Op_CLV(uint16_t src)
 
 void mos6502::Op_CMP(uint16_t src)
 {
-	unsigned int tmp = A - Read(src);
+	unsigned int tmp = A - Read(src, arg);
 	SET_CARRY(tmp < 0x100);
 	SET_NEGATIVE(tmp & 0x80);
 	SET_ZERO(!(tmp & 0xFF));
@@ -1182,7 +1199,7 @@ void mos6502::Op_CMP(uint16_t src)
 
 void mos6502::Op_CPX(uint16_t src)
 {
-	unsigned int tmp = X - Read(src);
+	unsigned int tmp = X - Read(src, arg);
 	SET_CARRY(tmp < 0x100);
 	SET_NEGATIVE(tmp & 0x80);
 	SET_ZERO(!(tmp & 0xFF));
@@ -1191,7 +1208,7 @@ void mos6502::Op_CPX(uint16_t src)
 
 void mos6502::Op_CPY(uint16_t src)
 {
-	unsigned int tmp = Y - Read(src);
+	unsigned int tmp = Y - Read(src, arg);
 	SET_CARRY(tmp < 0x100);
 	SET_NEGATIVE(tmp & 0x80);
 	SET_ZERO(!(tmp & 0xFF));
@@ -1200,11 +1217,11 @@ void mos6502::Op_CPY(uint16_t src)
 
 void mos6502::Op_DEC(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	m = (m - 1) % 256;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 	return;
 }
 
@@ -1230,7 +1247,7 @@ void mos6502::Op_DEY(uint16_t src)
 
 void mos6502::Op_EOR(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	m = A ^ m;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
@@ -1239,11 +1256,11 @@ void mos6502::Op_EOR(uint16_t src)
 
 void mos6502::Op_INC(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	m = (m + 1) % 256;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 }
 
 void mos6502::Op_INX(uint16_t src)
@@ -1279,7 +1296,7 @@ void mos6502::Op_JSR(uint16_t src)
 
 void mos6502::Op_LDA(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
 	A = m;
@@ -1287,7 +1304,7 @@ void mos6502::Op_LDA(uint16_t src)
 
 void mos6502::Op_LDX(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
 	X = m;
@@ -1295,7 +1312,7 @@ void mos6502::Op_LDX(uint16_t src)
 
 void mos6502::Op_LDY(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
 	Y = m;
@@ -1303,12 +1320,12 @@ void mos6502::Op_LDY(uint16_t src)
 
 void mos6502::Op_LSR(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	SET_CARRY(m & 0x01);
 	m >>= 1;
 	SET_NEGATIVE(0);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 }
 
 void mos6502::Op_LSR_ACC(uint16_t src)
@@ -1328,7 +1345,7 @@ void mos6502::Op_NOP(uint16_t src)
 
 void mos6502::Op_ORA(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	m = A | m;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
@@ -1364,14 +1381,14 @@ void mos6502::Op_PLP(uint16_t src)
 
 void mos6502::Op_ROL(uint16_t src)
 {
-	uint16_t m = Read(src);
+	uint16_t m = Read(src, arg);
 	m <<= 1;
 	if (IF_CARRY()) m |= 0x01;
 	SET_CARRY(m > 0xFF);
 	m &= 0xFF;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 	return;
 }
 
@@ -1390,14 +1407,14 @@ void mos6502::Op_ROL_ACC(uint16_t src)
 
 void mos6502::Op_ROR(uint16_t src)
 {
-	uint16_t m = Read(src);
+	uint16_t m = Read(src, arg);
 	if (IF_CARRY()) m |= 0x100;
 	SET_CARRY(m & 0x01);
 	m >>= 1;
 	m &= 0xFF;
 	SET_NEGATIVE(m & 0x80);
 	SET_ZERO(!m);
-	Write(src, m);
+	Write(src, m, arg);
 	return;
 }
 
@@ -1440,7 +1457,7 @@ void mos6502::Op_RTS(uint16_t src)
 
 void mos6502::Op_SBC(uint16_t src)
 {
-	uint8_t m = Read(src);
+	uint8_t m = Read(src, arg);
 	unsigned int tmp = A - m - (IF_CARRY() ? 0 : 1);
 	SET_NEGATIVE(tmp & 0x80);
 	SET_ZERO(!(tmp & 0xFF));
@@ -1479,19 +1496,19 @@ void mos6502::Op_SEI(uint16_t src)
 
 void mos6502::Op_STA(uint16_t src)
 {
-	Write(src, A);
+	Write(src, A, arg);
 	return;
 }
 
 void mos6502::Op_STX(uint16_t src)
 {
-	Write(src, X);
+	Write(src, X, arg);
 	return;
 }
 
 void mos6502::Op_STY(uint16_t src)
 {
-	Write(src, Y);
+	Write(src, Y, arg);
 	return;
 }
 

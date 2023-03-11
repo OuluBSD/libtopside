@@ -1,16 +1,24 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
 void SetupTest1_Memory(Machine& mach);
+void SetupTest2_6502(Machine& mach);
 void SetupUK101(Machine& mach);
 void SetupInterak(Machine& mach);
 void SetupMiniMax8085(Machine& mach);
 
+NAMESPACE_TOPSIDE_END
+
 CONSOLE_APP_MAIN {
+	using namespace TS;
+	
 	Machine		mach;
 	int			max_ticks = 10;
 	
-	switch (0) {
+	switch (1) {
 		case 0: SetupTest1_Memory(mach); break;
+		case 1: SetupTest2_6502(mach); break;
 		/*case 0: SetupUK101(mach); break;
 		case 1: SetupInterak(mach); break;
 		case 2: SetupMiniMax8085(mach); break;*/

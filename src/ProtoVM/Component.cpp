@@ -1,5 +1,7 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 Pin::Pin() {
 	AddBidirectional("bi");
@@ -63,3 +65,6 @@ ElcCapacitor::ElcCapacitor() {
 	AddSource("O");
 	
 }
+
+
+NAMESPACE_TOPSIDE_END

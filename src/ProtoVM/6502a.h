@@ -20,6 +20,8 @@ using namespace std;
 #define ZERO      0x02
 #define CARRY     0x01
 
+#undef SET_ZERO
+
 #define SET_NEGATIVE(x) (x ? (status |= NEGATIVE) : (status &= (~NEGATIVE)) )
 #define SET_OVERFLOW(x) (x ? (status |= OVERFLOW) : (status &= (~OVERFLOW)) )
 //#define SET_CONSTANT(x) (x ? (status |= CONSTANT) : (status &= (~CONSTANT)) )
@@ -174,10 +176,11 @@ private:
 	static const uint16_t nmiVectorL = 0xFFFA;
 
 	// read/write callbacks
-	typedef void (*BusWrite)(uint16_t, uint8_t);
-	typedef uint8_t (*BusRead)(uint16_t);
+	typedef void (*BusWrite)(uint16_t, uint8_t, void*);
+	typedef uint8_t (*BusRead)(uint16_t, void*);
 	BusRead Read;
 	BusWrite Write;
+	void* arg = 0;
 
 	// stack operations
 	inline void StackPush(uint8_t byte);
@@ -188,10 +191,11 @@ public:
 		INST_COUNT,
 		CYCLE_COUNT,
 	};
-	mos6502(BusRead r, BusWrite w);
+	mos6502(BusRead r, BusWrite w, void* p);
 	void NMI();
 	void IRQ();
 	void Reset();
+	bool Step();
 	void Run(
 		int32_t cycles,
 		uint64_t& cycleCount,

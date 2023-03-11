@@ -1,5 +1,7 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
 void SetupTest1_Memory(Machine& mach) {
 	struct MemTester : Chip {
 		Vector<byte> data;
@@ -151,3 +153,5 @@ void SetupTest1_Memory(Machine& mach) {
 		LOG("error: " << e);
 	}
 }
+
+NAMESPACE_TOPSIDE_END

@@ -1,6 +1,8 @@
 #ifndef _ProtoVM_Bus_h_
 #define _ProtoVM_Bus_h_
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 template <int Width>
 class Bus : public ElcBase {
@@ -85,5 +87,7 @@ public:
 	
 };
 
+
+NAMESPACE_TOPSIDE_END
 
 #endif

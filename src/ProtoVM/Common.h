@@ -1,6 +1,7 @@
 #ifndef _ProtoVM_Common_h_
 #define _ProtoVM_Common_h_
 
+NAMESPACE_TOPSIDE_BEGIN
 
 
 typedef enum {
@@ -134,5 +135,6 @@ public:
 using ENode = ElectricNode;
 
 
+NAMESPACE_TOPSIDE_END
 
 #endif

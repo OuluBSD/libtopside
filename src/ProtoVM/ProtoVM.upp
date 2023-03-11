@@ -4,7 +4,8 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
-	Simple.cpp,
+	Test01.cpp,
+	Test02.cpp,
 	UK101.cpp,
 	Interak.cpp,
 	MiniMax8085.cpp,
@@ -22,6 +23,7 @@ file
 	Mechanical.cpp,
 	ICs.h,
 	ICs.cpp,
+	IC6502.cpp,
 	Chip.h,
 	Bus.h,
 	Bus.cpp,

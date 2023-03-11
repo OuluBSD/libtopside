@@ -3,12 +3,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if IS_UPP_CORE
 Color DefaultInk() {
 	struct SpecialColor : Color {
 		SpecialColor(dword d) {color = d;}
 	};
 	return SpecialColor(254);
 }
+#endif
 
 
 Draw3::~Draw3() {

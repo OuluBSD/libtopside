@@ -1,5 +1,7 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 InterakBus::InterakBus() {
 	AddBidirectional("+5V_0");
@@ -94,3 +96,6 @@ InterakBus::InterakBus() {
 	
 	
 }
+
+
+NAMESPACE_TOPSIDE_END

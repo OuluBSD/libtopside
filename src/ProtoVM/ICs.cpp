@@ -1,41 +1,6 @@
 #include "ProtoVM.h"
 
-
-IC6502::IC6502() {
-	AddSink("~Res");
-	AddSource("~NMI");
-	AddSource("~IRQ");
-	AddSource("Rdy");
-	AddBidirectional("D0");
-	AddBidirectional("D1");
-	AddBidirectional("D2");
-	AddBidirectional("D3");
-	AddBidirectional("D4");
-	AddBidirectional("D5");
-	AddBidirectional("D6");
-	AddBidirectional("D7");
-	AddSource("~RW");
-	AddSource("Phi2 out");
-	AddSource("A0");
-	AddSource("A1");
-	AddSource("A2");
-	AddSource("A3");
-	AddSource("A4");
-	AddSource("A5");
-	AddSource("A6");
-	AddSource("A7");
-	AddSource("A8");
-	AddSource("A9");
-	AddSource("A10");
-	AddSource("A11");
-	AddSource("A12");
-	AddSource("A13");
-	AddSource("A14");
-	AddSource("A15");
-	AddSink("Phi in");
-	
-	
-}
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Z80::Z80() {
@@ -330,3 +295,5 @@ ICGAL16V8::ICGAL16V8() {
 	
 }
 
+
+NAMESPACE_TOPSIDE_END

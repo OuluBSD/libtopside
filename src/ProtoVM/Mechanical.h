@@ -1,7 +1,7 @@
 #ifndef _ProtoVM_Mechanical_h_
 #define _ProtoVM_Mechanical_h_
 
-
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class PushButtonComp : public ElcBase {
@@ -17,6 +17,6 @@ public:
 };
 
 
-
+NAMESPACE_TOPSIDE_END
 
 #endif

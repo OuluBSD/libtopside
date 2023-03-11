@@ -1,5 +1,7 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 void SetupInterak(Machine& mach) {
 	
@@ -117,3 +119,6 @@ void SetupInterak(Machine& mach) {
 	
 	
 }
+
+
+NAMESPACE_TOPSIDE_END

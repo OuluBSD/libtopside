@@ -1,9 +1,10 @@
 #ifndef _ProtoVM_Pcb_h_
 #define _ProtoVM_Pcb_h_
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 class Machine;
-
 
 class Pcb {
 	
@@ -50,5 +51,6 @@ public:
 };
 
 
+NAMESPACE_TOPSIDE_END
 
 #endif

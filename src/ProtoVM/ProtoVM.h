@@ -4,6 +4,8 @@
 #include <Local/Local.h>
 using namespace UPP;
 
+#include "6502a.h"
+
 
 #include "Common.h"
 #include "Chip.h"

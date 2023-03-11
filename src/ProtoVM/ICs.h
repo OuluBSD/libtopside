@@ -1,17 +1,25 @@
 #ifndef _ProtoVM_ICs_h_
 #define _ProtoVM_ICs_h_
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 // 8-bit microprocessor
 // https://www.princeton.edu/~mae412/HANDOUTS/Datasheets/6502.pdf
 class IC6502 : public Chip {
 	RTTI_DECL1(IC6502, Chip)
 	
+	mos6502 cpu;
 	
 public:
 	IC6502();
 	
+	bool Tick() override;
+	bool Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
+	bool PutRaw(uint16 conn_id, byte* data, int data_sz) override;
 	
+	void Write(uint16 addr, uint8 data);
+	byte Read(uint16 addr);
 };
 
 // Asynchronous communications interface
@@ -22,7 +30,6 @@ class IC6850 : public Chip {
 	
 public:
 	IC6850();
-	
 	
 };
 
@@ -183,5 +190,8 @@ public:
 	ICGAL16V8();
 	
 };
+
+
+NAMESPACE_TOPSIDE_END
 
 #endif

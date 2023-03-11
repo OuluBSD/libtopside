@@ -1,5 +1,7 @@
 #pragma once
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 struct Machine {
 	Array<Pcb> pcbs;
@@ -16,3 +18,6 @@ struct Machine {
 	
 };
 
+
+
+NAMESPACE_TOPSIDE_END

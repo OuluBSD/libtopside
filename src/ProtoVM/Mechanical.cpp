@@ -1,5 +1,6 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
 
 
 PushButtonComp::PushButtonComp() {
@@ -8,3 +9,4 @@ PushButtonComp::PushButtonComp() {
 }
 
 
+NAMESPACE_TOPSIDE_END

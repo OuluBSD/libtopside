@@ -1,5 +1,8 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
+
 void SetupUK101(Machine& mach) {
 
 	// http://searle.x10host.com/uk101/uk101.html
@@ -197,3 +200,6 @@ void SetupUK101(Machine& mach) {
 		LOG("error: " << e);
 	}
 }
+
+
+NAMESPACE_TOPSIDE_END

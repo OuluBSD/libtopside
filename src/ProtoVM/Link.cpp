@@ -1,5 +1,6 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Link::Link() {
@@ -203,3 +204,6 @@ void LinkMap::UpdateProcess() {
 	}
 	
 }
+
+
+NAMESPACE_TOPSIDE_END

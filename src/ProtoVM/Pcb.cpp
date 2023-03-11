@@ -1,5 +1,8 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
+
 bool Pcb::Tick() {
 	for (ElectricNodeBase& n : nodes) {
 		if (!n.Tick()) {
@@ -182,3 +185,6 @@ void Pcb::GetLinks(Array<Link>& links) {
 	
 	
 }
+
+
+NAMESPACE_TOPSIDE_END

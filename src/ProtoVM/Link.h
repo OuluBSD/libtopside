@@ -1,6 +1,8 @@
 #ifndef _ProtoVM_Link_h_
 #define _ProtoVM_Link_h_
 
+NAMESPACE_TOPSIDE_BEGIN
+
 
 struct Link {
 	Link* to = 0;
@@ -41,5 +43,7 @@ struct LinkMap {
 	
 };
 
+
+NAMESPACE_TOPSIDE_END
 
 #endif

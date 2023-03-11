@@ -1,6 +1,6 @@
 #include "ProtoVM.h"
 
-
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool Machine::Init() {
@@ -84,3 +84,6 @@ Pcb& Machine::AddPcb() {
 	p.mach = this;
 	return p;
 }
+
+
+NAMESPACE_TOPSIDE_END

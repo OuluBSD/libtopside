@@ -1,5 +1,8 @@
 #include "ProtoVM.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
+
 void SetupMiniMax8085(Machine& mach) {
 	
 	// http://www.malinov.com/Home/sergeys-projects/minimax8085
@@ -40,3 +43,6 @@ void SetupMiniMax8085(Machine& mach) {
 		cpu[""] >> pull_up[];*/
 	}
 }
+
+
+NAMESPACE_TOPSIDE_END
