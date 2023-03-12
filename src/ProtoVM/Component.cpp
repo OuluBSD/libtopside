@@ -24,10 +24,10 @@ Pin& Pin::SetReference(bool is_high) {
 
 FlipFlopJK::FlipFlopJK() {
 	AddSink("Ck");
-	AddSource("~Pr");
-	AddSource("~Clr");
-	AddSource("D");
-	AddSource("~Q");
+	AddSource("~Pr").SetMultiConn();
+	AddSource("~Clr").SetMultiConn();
+	AddSource("D").SetMultiConn();
+	AddSource("~Q").SetMultiConn();
 	
 }
 
@@ -36,33 +36,33 @@ FlipFlopJK::FlipFlopJK() {
 
 Crystal::Crystal() {
 	AddSink("I");
-	AddSource("O");
+	AddSource("O").SetMultiConn();
 	
 }
 
 ElcNor::ElcNor() {
 	AddSink("I0");
 	AddSink("I1");
-	AddSource("C");
+	AddSource("C").SetMultiConn();
 	
 }
 
 ElcNand::ElcNand() {
 	AddSink("I0");
 	AddSink("I1");
-	AddSource("O");
+	AddSource("O").SetMultiConn();
 	
 }
 
 ElcNot::ElcNot() {
 	AddSink("I");
-	AddSource("O");
+	AddSource("O").SetMultiConn();
 	
 }
 
 ElcCapacitor::ElcCapacitor() {
 	AddSink("I");
-	AddSource("O");
+	AddSource("O").SetMultiConn();
 	
 }
 

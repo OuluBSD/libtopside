@@ -39,11 +39,11 @@ void SetupTest2_6502(Machine& mach) {
 		addr_bus >> ram["A0,15"];
 		data_bus >> ram["D0,8"];
 		
-		vcc >> cpu["~Res"]; // actually requires resistor
-		vcc >> cpu["~NMI"];
-		vcc >> cpu["~IRQ"];
-		vcc >> cpu["~SO"];
-		vcc >> cpu["RDY"];
+		cpu["~Res"] >> vcc; // actually requires resistor
+		cpu["~NMI"] >> vcc;
+		cpu["~IRQ"] >> vcc;
+		cpu["~SO"] >> vcc;
+		cpu["RDY"] >> vcc;
 		
 		cpu["R~W"] >> mem_nread["I0"];
 		cpu["PHI2 OUT"] >> mem_nread["I1"];
@@ -54,13 +54,17 @@ void SetupTest2_6502(Machine& mach) {
 		cpu["R~W"] >> ram_nwrite0["I1"];
 		ram_nwrite0["O"] >> ram_nwrite1["I1"];
 		cpu["PHI2 OUT"] >> ram_nwrite1["I0"];
-		ram_nwrite1["O"] >> ram["~WE"];
+		ram_nwrite1["O"] >> ram["~WR"];
 		
-		cpu["A15"] >> ram["~CE"];
+		cpu["A15"] >> ram["~CS"];
 		
 		cpu["A14"] >> rom_enable["I0"];
 		cpu["A15"] >> rom_enable["I1"];
-		rom_enable["O"] >> rom["~CE"];
+		rom_enable["O"] >> rom["~CS"];
+		
+		ground >> rom["A14"];
+		ground >> rom["A15"];
+		ground >> ram["A15"];
 	}
 	catch (Exc e) {
 		LOG("error: " << e);

@@ -85,7 +85,7 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 	if (an.GetCount()) a += "(" + an + ")";
 	if (bn.GetCount()) b += "(" + bn + ")";
 	
-	LOG((String)"from " + a + " to " + b);
+	LOG((String)"from " + a + "(" + an + ") to " + b + "(" + bn + ")");
 	ASSERT(!from.IsEmpty() && !to.IsEmpty());
 	ASSERT(&from != &to);
 	int aw = from.GetPinWidth();
@@ -111,6 +111,7 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 		if (!sink.IsConnectable())
 			throw Exc((String)"sink is not connectable, from " + a + " to " + b);
 		
+		ASSERT(sink.is_sink && src.is_src);
 		src.links.Add().conn = &sink;
 		sink.links.Add().conn = &src;
 	}
@@ -125,22 +126,29 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 			if (!sink.IsConnectable())
 				throw Exc((String)"sink is not connectable, from " + a + " to " + b);
 			
+			ASSERT(sink.is_sink && src.is_src);
 			src.links.Add().conn = &sink;
 			sink.links.Add().conn = &src;
 		}
 	}
-	// when input and output pin width doesn't match
-	else if (aw != bw && aw && bw) {
+	else /*if (aw != bw && aw && bw)*/ {
 		int pin_width = min(aw, bw);
-		
-		// a offset
-		// b offset
-		// make new range connectors
-		// add src and sink links
-		TODO
-	}
-	else {
-		TODO
+		//int a_off = from.GetPinBegin();
+		//int b_off = to.GetPinBegin();
+		for(int i = 0; i < pin_width; i++) {
+			ElectricNodeBase::Connector& src = from.Get(i);
+			ElectricNodeBase::Connector& sink = to.Get(i);
+			
+			if (!src.IsConnectable())
+				throw Exc((String)"source is not connectable, from " + a + " to " + b);
+			
+			if (!sink.IsConnectable())
+				throw Exc((String)"sink is not connectable, from " + a + " to " + b);
+			
+			ASSERT(sink.is_sink && src.is_src);
+			src.links.Add().conn = &sink;
+			sink.links.Add().conn = &src;
+		}
 	}
 	
 }
@@ -174,7 +182,11 @@ void Pcb::GetLinks(Array<Link>& links) {
 				}
 					
 				Link& l = links.Add();
-				if (!src_is_src && !sink_is_sink && (src_is_sink || sink_is_src || from.is_sink || to.is_src)) {
+				if (from.is_src && from.is_sink && !to.is_src) {
+					l.sink = &to;
+					l.src = &from;
+				}
+				else if (!src_is_src && !sink_is_sink && (src_is_sink || sink_is_src || from.is_sink || to.is_src)) {
 					l.sink = &from;
 					l.src = &to;
 				}
@@ -182,6 +194,7 @@ void Pcb::GetLinks(Array<Link>& links) {
 					l.sink = &to;
 					l.src = &from;
 				}
+				ASSERT(l.sink->is_sink && l.src->is_src);
 				
 				Pin* test_src_pin = CastPtr<Pin>(l.src->base);
 				ASSERT(!test_src_pin || !test_src_pin->is_ref_volt || !test_src_pin->is_high);

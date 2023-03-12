@@ -169,6 +169,16 @@ int ElectricNodeBase::GetPinWidth() const {
 	return conns.GetCount();
 }
 
+int ElectricNodeBase::GetPinBegin() const {
+	if (type == V_PARTIAL_RANGE)
+		return ptr_i;
+	
+	if (type == V_PARTIAL)
+		return 0;
+	
+	return 0;
+}
+
 ElectricNodeBase& ElectricNodeBase::SetName(String s) {
 	name = s;
 	return *this;
@@ -217,6 +227,25 @@ ElectricNodeBase::Connector& ElectricNodeBase::GetTrivialSink() {
 	NEVER();
 }
 
+/*ElectricNodeBase& ElectricNodeBase::GetRange(int off, int len) {
+	ASSERT(off >= 0 && len > 0);
+	if (ptr) {
+		ASSERT(ptr_i >= 0 && ptr_n > 0);
+		int new_ptr_i = ptr_i + off;
+		int limit = ptr_i + ptr_n;
+		ASSERT(len > 0 && new_ptr_i + len <= limit);
+		return pcb->AddReferenceRange(*ptr, new_ptr_i, len);
+	}
+	else {
+		ASSERT(conns.GetCount());
+		int i = 0;
+		int new_ptr_i = i + off;
+		int limit = i + conns.GetCount();
+		ASSERT(len > 0 && new_ptr_i + len <= limit);
+		return pcb->AddReferenceRange(*this, new_ptr_i, len);
+	}
+}*/
+
 ElectricNodeBase::Connector& ElectricNodeBase::AddBidirectional(String name) {
 	Connector& conn = conns.Add();
 	conn.id = conns.GetCount()-1;
@@ -224,6 +253,7 @@ ElectricNodeBase::Connector& ElectricNodeBase::AddBidirectional(String name) {
 	conn.name = name;
 	conn.is_sink = conn.is_src = true;
 	bi_count++;
+	conn.SetMultiConn();
 	return conn;
 }
 
@@ -233,6 +263,7 @@ ElectricNodeBase::Connector& ElectricNodeBase::AddSource(String name) {
 	conn.base = this;
 	conn.name = name;
 	conn.is_src = true;
+	conn.SetMultiConn();
 	src_count++;
 	return conn;
 }

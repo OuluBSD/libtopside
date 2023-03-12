@@ -12,6 +12,7 @@ dword isdblclick[8] = {0};
 dword mouseb;
 dword modkeys;
 bool  sdlMouseIsIn;
+
 VirtualGui3D* VirtualGui3DPtr;
 
 

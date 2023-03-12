@@ -30,7 +30,7 @@ void DesktopMain() {
 	AtomVirtualGui3D gui;
 	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
 
-	RunVirtualGui(gui, callback(VguiMain));
+	RunVirtualGui3D(gui, callback(VguiMain));
 	
 }
 

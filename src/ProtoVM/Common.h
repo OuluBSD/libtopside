@@ -92,9 +92,11 @@ public:
 	bool IsTrivialSinkDefault() const;
 	bool IsTrivialSinkDefaultRange() const;
 	int GetPinWidth() const;
+	int GetPinBegin() const;
 	Connector& Get(int i);
 	Connector& GetTrivialSource();
 	Connector& GetTrivialSink();
+	//ElectricNodeBase& GetRange(int off, int len);
 	String GetName() const {return name;}
 	String GetClassName() const {return GetDynamicName();}
 	

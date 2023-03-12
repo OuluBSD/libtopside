@@ -40,11 +40,11 @@ IC6502::IC6502()
 	AddBidirectional("A13");
 	AddBidirectional("A14");
 	AddBidirectional("A15");
-	AddSink("~Res");
-	AddSource("~NMI");
-	AddSource("~IRQ");
-	AddSource("~SO");
-	AddSource("RDY");
+	AddBidirectional("~Res");
+	AddBidirectional("~NMI");
+	AddBidirectional("~IRQ");
+	AddBidirectional("~SO");
+	AddBidirectional("RDY");
 	AddSource("R~W");
 	AddSource("PHI2 OUT");
 	//AddSink("PHI IN");

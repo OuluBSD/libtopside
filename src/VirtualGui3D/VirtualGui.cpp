@@ -4,7 +4,6 @@
 
 NAMESPACE_UPP
 
-VirtualGui3D* VirtualGui3DPtr;
 
 INITBLOCK_(VirtualGui) {
 	
