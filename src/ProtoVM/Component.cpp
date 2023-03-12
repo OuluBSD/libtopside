@@ -41,16 +41,16 @@ Crystal::Crystal() {
 }
 
 ElcNor::ElcNor() {
-	AddSink("A");
-	AddSink("B");
+	AddSink("I0");
+	AddSink("I1");
 	AddSource("C");
 	
 }
 
 ElcNand::ElcNand() {
-	AddSink("A");
-	AddSink("B");
-	AddSource("C");
+	AddSink("I0");
+	AddSink("I1");
+	AddSource("O");
 	
 }
 

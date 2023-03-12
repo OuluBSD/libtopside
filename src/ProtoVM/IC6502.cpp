@@ -16,10 +16,6 @@ uint8_t IC6502_BusRead(uint16_t addr, void* p) {
 
 IC6502::IC6502()
 {
-	AddSink("~Res");
-	AddSource("~NMI");
-	AddSource("~IRQ");
-	AddSource("Rdy");
 	AddBidirectional("D0");
 	AddBidirectional("D1");
 	AddBidirectional("D2");
@@ -28,25 +24,30 @@ IC6502::IC6502()
 	AddBidirectional("D5");
 	AddBidirectional("D6");
 	AddBidirectional("D7");
-	AddSource("~RW");
-	AddSource("Phi2 out");
-	AddSource("A0");
-	AddSource("A1");
-	AddSource("A2");
-	AddSource("A3");
-	AddSource("A4");
-	AddSource("A5");
-	AddSource("A6");
-	AddSource("A7");
-	AddSource("A8");
-	AddSource("A9");
-	AddSource("A10");
-	AddSource("A11");
-	AddSource("A12");
-	AddSource("A13");
-	AddSource("A14");
-	AddSource("A15");
-	AddSink("Phi in");
+	AddBidirectional("A0");
+	AddBidirectional("A1");
+	AddBidirectional("A2");
+	AddBidirectional("A3");
+	AddBidirectional("A4");
+	AddBidirectional("A5");
+	AddBidirectional("A6");
+	AddBidirectional("A7");
+	AddBidirectional("A8");
+	AddBidirectional("A9");
+	AddBidirectional("A10");
+	AddBidirectional("A11");
+	AddBidirectional("A12");
+	AddBidirectional("A13");
+	AddBidirectional("A14");
+	AddBidirectional("A15");
+	AddSink("~Res");
+	AddSource("~NMI");
+	AddSource("~IRQ");
+	AddSource("~SO");
+	AddSource("RDY");
+	AddSource("R~W");
+	AddSource("PHI2 OUT");
+	//AddSink("PHI IN");
 	
 	
 }

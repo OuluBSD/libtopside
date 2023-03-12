@@ -210,7 +210,7 @@ IC27256::IC27256() {
 	AddSink("A15");
 	AddSink("~OE");
 	AddSink("~CS");
-	AddSource("Vpp");
+	//AddSource("Vpp");
 	
 }
 

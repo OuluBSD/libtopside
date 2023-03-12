@@ -129,6 +129,16 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 			sink.links.Add().conn = &src;
 		}
 	}
+	// when input and output pin width doesn't match
+	else if (aw != bw && aw && bw) {
+		int pin_width = min(aw, bw);
+		
+		// a offset
+		// b offset
+		// make new range connectors
+		// add src and sink links
+		TODO
+	}
 	else {
 		TODO
 	}
