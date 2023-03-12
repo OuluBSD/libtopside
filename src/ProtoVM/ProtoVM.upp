@@ -1,5 +1,6 @@
 uses
-	Local;
+	Local,
+	ports/chips;
 
 file
 	ProtoVM.h,
@@ -29,13 +30,6 @@ file
 	Bus.cpp,
 	Common.h,
 	Common.cpp,
-	ICs readonly separator,
-	6502a.h,
-	6502a.cpp,
-	6502b.h,
-	6502b.c,
-	6850.h,
-	6850.c,
 	_ readonly separator;
 
 mainconfig

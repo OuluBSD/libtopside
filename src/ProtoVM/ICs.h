@@ -3,14 +3,20 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+// Resources:
+//  - https://github.com/floooh/chips
+
 
 // 8-bit microprocessor
 // https://www.princeton.edu/~mae412/HANDOUTS/Datasheets/6502.pdf
 class IC6502 : public Chip {
 	RTTI_DECL1(IC6502, Chip)
 	
-	mos6502 cpu;
-	
+	m6502_t cpu;
+	uint64_t pins;
+	uint8_t mem[1<<16];
+	bool reading = 0;
+	bool writing = 0;
 public:
 	IC6502();
 	
@@ -21,6 +27,29 @@ public:
 	void Write(uint16 addr, uint8 data);
 	byte Read(uint16 addr);
 };
+
+// 8-bit microprocessor
+// https://datasheetspdf.com/pdf-file/1110522/Zilog/Z80/1
+class Z80 : public Chip {
+	RTTI_DECL1(Z80, Chip)
+	
+	
+public:
+	Z80();
+	
+	
+};
+
+// 8-bit microprocessor
+// https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8085_datasheet.pdf
+class IC8085 : public Chip {
+	RTTI_DECL1(IC8085, Chip)
+	
+public:
+	IC8085();
+	
+};
+
 
 // Asynchronous communications interface
 // http://dunfield.classiccmp.org/r/6850.pdf
@@ -105,19 +134,6 @@ public:
 	
 };
 
-// 8-bit microprocessor
-// https://datasheetspdf.com/pdf-file/1110522/Zilog/Z80/1
-class Z80 : public Chip {
-	RTTI_DECL1(Z80, Chip)
-	
-	
-public:
-	Z80();
-	
-	
-};
-
-
 // 3-STATE Octal Bus Transceiver
 // https://www.futurlec.com/74LS/74LS245.shtml
 class IC74LS245 : public Chip {
@@ -128,16 +144,6 @@ public:
 	IC74LS245();
 	
 	
-	
-};
-
-// 8-bit microprocessor
-// https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8085_datasheet.pdf
-class IC8085 : public Chip {
-	RTTI_DECL1(IC8085, Chip)
-	
-public:
-	IC8085();
 	
 };
 
