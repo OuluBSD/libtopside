@@ -26,6 +26,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#ifdef COMPILER_MSC
+	#define alignas(x)
+#else
+	#include <stdalign.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

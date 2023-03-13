@@ -264,7 +264,7 @@ static void _mem_map(mem_t* m, size_t layer, uint16_t addr, uint32_t size, const
     const size_t num = size>>MEM_PAGE_SHIFT;
     CHIPS_ASSERT(num <= MEM_NUM_PAGES);
     for (size_t i = 0; i < num; i++) {
-        const uint16_t offset = i * MEM_PAGE_SIZE;
+        const uint16_t offset = (uint16_t)(i * MEM_PAGE_SIZE);
         // the page_index will wrap-around
         const uint16_t page_index = ((addr+offset) & MEM_ADDR_MASK) >> MEM_PAGE_SHIFT;
         CHIPS_ASSERT(page_index <= MEM_NUM_PAGES);

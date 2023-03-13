@@ -1,6 +1,9 @@
 #ifndef _ports_chips_chips_h_
 #define _ports_chips_chips_h_
 
+#include <Core/config.h>
+
+
 #define CHIPS_KC85_TYPE_4 1
 #define NAMCO_PACMAN 1
 

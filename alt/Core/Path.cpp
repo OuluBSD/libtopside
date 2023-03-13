@@ -42,6 +42,100 @@ struct DIR
 #endif
 
 
+#if defined flagWIN32
+
+DIR *opendir(const char *name)
+{
+    DIR *dir = 0;
+
+    if(name && name[0])
+    {
+        size_t base_length = strlen(name);
+        const char *all = /* search pattern must end with suitable wildcard */
+            strchr("/\\", name[base_length - 1]) ? "*" : "/*";
+		
+		dir = new DIR();
+        
+        dir->name = name + String(all);
+        
+        if((dir->handle =
+            (handle_type) _findfirst(dir->name.Begin(), &dir->info)) != -1)
+        {
+            dir->result.d_name = 0;
+        }
+        else /* rollback */
+        {
+            delete (dir);
+            dir = 0;
+        }
+    }
+    else
+    {
+        errno = EINVAL;
+    }
+
+    return dir;
+}
+
+int closedir(DIR *dir)
+{
+    int result = -1;
+
+    if(dir)
+    {
+        if(dir->handle != -1)
+        {
+            result = _findclose(dir->handle);
+        }
+
+        delete (dir);
+    }
+
+    if(result == -1) /* map all errors to EBADF */
+    {
+        errno = EBADF;
+    }
+
+    return result;
+}
+
+struct dirent *readdir(DIR *dir)
+{
+    struct dirent *result = 0;
+
+    if(dir && dir->handle != -1)
+    {
+        if(!dir->result.d_name || _findnext(dir->handle, &dir->info) != -1)
+        {
+            result         = &dir->result;
+            result->d_name = dir->info.name;
+        }
+    }
+    else
+    {
+        errno = EBADF;
+    }
+
+    return result;
+}
+
+void rewinddir(DIR *dir)
+{
+    if(dir && dir->handle != -1)
+    {
+        _findclose(dir->handle);
+        dir->handle = (handle_type) _findfirst(dir->name.Begin(), &dir->info);
+        dir->result.d_name = 0;
+    }
+    else
+    {
+        errno = EBADF;
+    }
+}
+
+#endif
+
+
 String exe_path;
 
 void SetExeFilePath(String s) {

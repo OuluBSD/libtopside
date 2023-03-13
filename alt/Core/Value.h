@@ -130,9 +130,7 @@ public:
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 
-template <class T> String ValueTemplate<T>::ToString() const {return "";}
-template <class T> int64 ValueTemplate<T>::ToInt() const {return 0;}
-template <class T> double ValueTemplate<T>::ToDouble() const {return 0;}
+
 
 template <> inline String ValueTemplate<int>::ToString() const    {return ptr ? IntStr(*ptr) : "";}
 template <> inline int64  ValueTemplate<int>::ToInt() const       {return ptr ? *ptr : 0;}
@@ -141,6 +139,7 @@ template <> inline String ValueTemplate<double>::ToString() const {return ptr ? 
 template <> inline int64  ValueTemplate<double>::ToInt() const    {return ptr ? *ptr : 0;}
 template <> inline double ValueTemplate<double>::ToDouble() const {return ptr ? *ptr : 0;}
 template <> inline String ValueTemplate<String>::ToString() const {return ptr ? *ptr : "";}
+template <> inline String ValueTemplate<WString>::ToString() const;
 template <> inline String ValueTemplate<Date>::ToString() const   {return ptr ? ptr->ToString() : "";}
 template <> inline int64  ValueTemplate<Date>::ToInt() const      {return ptr ? ptr->Get() : 0;}
 template <> inline double ValueTemplate<Date>::ToDouble() const   {return ptr ? ptr->Get() : 0;}
@@ -154,6 +153,10 @@ template <> inline double ValueTemplate<int64>::ToDouble() const  {return ptr ? 
 template <> inline String ValueTemplate<bool>::ToString() const   {return ptr ? (*ptr ? "true" : "false") : "";}
 template <> inline int64  ValueTemplate<bool>::ToInt() const      {return ptr ? *ptr : 0;}
 template <> inline double ValueTemplate<bool>::ToDouble() const   {return ptr ? *ptr : 0;}
+
+template <class T> inline String ValueTemplate<T>::ToString() const {return "";}
+template <class T> inline int64  ValueTemplate<T>::ToInt() const    {return 0;}
+template <class T> inline double ValueTemplate<T>::ToDouble() const {return 0;}
 
 
 class Value : RTTIBase {

@@ -499,7 +499,7 @@ static uint64_t _mc6847_decode_scanline(mc6847_t* vdg, uint64_t pins, size_t y) 
             size_t dots_per_bit  = (sub_mode < 3) ? 2 : 1;
             size_t bytes_per_row = (sub_mode < 3) ? 16 : 32;
             size_t row_height = (pins & MC6847_GM2) ? 1 : (pins & MC6847_GM1) ? 2 : 3;
-            uint16_t addr = (y / row_height) * bytes_per_row;
+            uint16_t addr = (uint16_t)((y / row_height) * bytes_per_row);
             uint8_t fg_color = (pins & MC6847_CSS) ? MC6847_HWCOLOR_GFX_BUFF : MC6847_HWCOLOR_GFX_GREEN;
             for (size_t x = 0; x < bytes_per_row; x++) {
                 MC6847_SET_ADDR(pins, addr++);
@@ -526,7 +526,7 @@ static uint64_t _mc6847_decode_scanline(mc6847_t* vdg, uint64_t pins, size_t y) 
             size_t dots_per_2bit = (sub_mode == 0) ? 4 : 2;
             size_t bytes_per_row = (sub_mode == 0) ? 16 : 32;
             size_t row_height = (pins & MC6847_GM2) ? ((pins & MC6847_GM1) ? 1 : 2) : 3;
-            uint16_t addr = (y / row_height) * bytes_per_row;
+            uint16_t addr = (uint16_t)((y / row_height) * bytes_per_row);
             for (size_t x = 0; x < bytes_per_row; x++) {
                 MC6847_SET_ADDR(pins, addr++);
                 pins = vdg->fetch_cb(pins, ud);
@@ -544,7 +544,7 @@ static uint64_t _mc6847_decode_scanline(mc6847_t* vdg, uint64_t pins, size_t y) 
         //  we're in alphanumeric/semigraphics mode, one cell is 8x12 pixels
 
         // the vidmem src address and offset into the font data
-        uint16_t addr = (y / 12) * 32;
+        uint16_t addr = (uint16_t)((y / 12) * 32);
         uint8_t m; // the pixel bitmask
         size_t chr_y = y % 12;
         // bit shifters to extract a 2x2 or 2x3 semigraphics 2-bit stack

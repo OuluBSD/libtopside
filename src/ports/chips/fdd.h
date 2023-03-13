@@ -74,13 +74,13 @@ typedef struct {
         fdd_upd765_sectorinfo_t upd765;
         uint8_t raw[8];
     } info;
-    int data_offset;    // start of sector data in disc data blob
+    size_t data_offset;    // start of sector data in disc data blob
     int data_size;      // size in bytes of sector data drive data buffer
 } fdd_sector_t;
 
 // a track description
 typedef struct {
-    int data_offset;    // offset of track data in disc data blob
+    size_t data_offset;    // offset of track data in disc data blob
     int data_size;      // track data size in bytes
     int num_sectors;    // number of sectors in track
     fdd_sector_t sectors[FDD_MAX_SECTORS];  // the sector descriptions
@@ -100,11 +100,11 @@ typedef struct {
     int cur_side;
     int cur_track_index;
     int cur_sector_index;
-    int cur_sector_pos;
+    size_t cur_sector_pos;
     bool has_disc;
     bool motor_on;
     fdd_disc_t disc;
-    int data_size;
+    size_t data_size;
     uint8_t data[FDD_MAX_DISC_SIZE];
 } fdd_t;
 
@@ -276,7 +276,7 @@ int fdd_read(fdd_t* fdd, int side, uint8_t* out_data) {
         fdd->cur_side = side;
         const fdd_sector_t* sector = &fdd->disc.tracks[side][fdd->cur_track_index].sectors[fdd->cur_sector_index];
         if (fdd->cur_sector_pos < sector->data_size) {
-            const int data_offset = sector->data_offset + fdd->cur_sector_pos;
+            const size_t data_offset = sector->data_offset + fdd->cur_sector_pos;
             *out_data = fdd->data[data_offset];
             fdd->cur_sector_pos++;
             if (fdd->cur_sector_pos < sector->data_size) {

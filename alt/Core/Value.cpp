@@ -2,6 +2,8 @@
 
 NAMESPACE_UPP
 
+template <> String ValueTemplate<WString>::ToString() const {return ptr ? ptr->ToString() : "";}
+
 
 const Nuller Null;
 
@@ -241,7 +243,7 @@ String Format(String pattern, Value v0, Value v1, Value v2, Value v3, Value v4, 
 			
 			else if (type == TYPE_STRING) {
 				if (arg < MAX_ARGS)
-					out << (String)*v[arg++];
+					out << ~*v[arg++];
 				else
 					out << "<arg overflow " << arg++ << ">";
 			}

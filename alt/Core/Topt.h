@@ -131,7 +131,7 @@ public:
 	CombineHash& Put64(int64 value) {Put((int)((uint64)value >> 32ULL)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
 	
 	CombineHash& operator << (int value) { Put(value); return *this; }
-	CombineHash& operator << (hash_t value) { Put(value); return *this; }
+	CombineHash& operator << (hash_t value) { Put64(value); return *this; }
 	CombineHash& operator << (int64 value) { Put64(value); return *this; }
 	template <class T> CombineHash& operator << (const T& value) { Put(GetHashValue(value)); return *this; }
 	

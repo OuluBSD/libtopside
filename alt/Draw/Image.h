@@ -22,6 +22,7 @@ class Image : Moveable<Image> {
 public:
 	RTTI_SECONDARY(Image)
 	
+	#undef NO_DATA
 	typedef enum {
 		NO_DATA,
 		IMAGE_DATA_REF,

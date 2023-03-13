@@ -50,6 +50,12 @@
 	#include <string.h> // memcmp
 	#include <corecrt_io.h>
 	#include <Shlobj.h>
+	#include <shlwapi.h>
+#endif
+
+#if defined flagWIN32 && defined flagCLANG
+	#include <shlobj.h>
+	#include <shlwapi.h>
 #endif
 
 #include <functional>

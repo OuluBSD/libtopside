@@ -1050,22 +1050,22 @@ static inline uint8_t _m6569_color_multiplex(uint16_t bmc, uint16_t sc, uint8_t 
     uint8_t c;
     if (sc == 0) {
         // sprite unit didn't produce a color, use the bitmap color
-        c = bmc;
+        c = (uint8_t)bmc;
     }
     else if ((sc>>8) & mdp) {
         // data priority bit is set, sprite color is behind bitmap foreground color
         if ((bmc & 0xFF00) == 0) {
             // bitmap color is background, use sprite color
-            c = sc;
+            c = (uint8_t)sc;
         }
         else {
             // bitmap color is foreground
-            c = bmc;
+            c = (uint8_t)bmc;
         }
     }
     else {
         // sprite color is in front of bitmap color
-        c = sc;
+        c = (uint8_t)sc;
     }
     return c;
 }
