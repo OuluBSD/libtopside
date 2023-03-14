@@ -54,6 +54,49 @@ ElcNand::ElcNand() {
 	
 }
 
+bool ElcNand::Tick() {
+	out = !(in0 && in1);
+	return true;
+}
+
+bool ElcNand::Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
+	if (type == READ) {
+		TODO
+	}
+	else if (type == WRITE) {
+		switch (conn_id) {
+		case 2:
+			return dest.PutRaw(dest_conn_id, (byte*)&out, 1, 0);
+			break;
+		default:
+			LOG("error: ElcNand: unimplemented conn-id");
+			return false;
+		}
+	}
+	else {
+		LOG("error: ElcNand: unimplemented ProcessType");
+		return false;
+	}
+	return true;
+}
+
+bool ElcNand:: PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {
+	switch (conn_id) {
+	case 0: // I0
+		ASSERT(data_bytes == 1 && data_bits == 0);
+		in0 = *data;
+		break;
+	case 1: // I1
+		ASSERT(data_bytes == 1 && data_bits == 0);
+		in1 = *data;
+		break;
+	default:
+		LOG("error: ElcNand: unimplemented conn-id");
+		return false;
+	}
+	return true;
+}
+
 ElcNot::ElcNot() {
 	AddSink("I");
 	AddSource("O").SetMultiConn();

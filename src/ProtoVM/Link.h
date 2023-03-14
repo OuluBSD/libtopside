@@ -32,7 +32,8 @@ struct ProcessOp : Moveable<ProcessOp> {
 	
 };
 
-struct LinkMap {
+class LinkMap {
+public:
 	Array<Link> links;
 	Array<ProcessOp> init_ops, rt_ops;
 	

@@ -112,7 +112,7 @@ bool ElectricNodeBase::IsTrivialSourceDefaultRange() const {
 	if (type == V_PARTIAL)
 		return ptr_conn->is_src;
 	
-	for (Connector& c : conns)
+	for (const Connector& c : conns)
 		if (!c.is_src)
 			return false;
 		
@@ -132,7 +132,7 @@ bool ElectricNodeBase::IsTrivialSinkDefaultRange() const {
 	if (type == V_PARTIAL)
 		return ptr_conn->is_sink;
 	
-	for (Connector& c : conns)
+	for (const Connector& c : conns)
 		if (!c.is_sink)
 			return false;
 		

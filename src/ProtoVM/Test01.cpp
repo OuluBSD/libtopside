@@ -58,35 +58,28 @@ void SetupTest1_Memory(Machine& mach) {
 			return true;
 		}
 		
-		bool Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override {
+		bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override {
 			union {
 				byte tmp[2];
 				uint16 tmp16;
 			};
-			if (type == BYTE_WRITE) {
+			if (type == WRITE) {
 				switch (conn_id) {
 				case 0:
 					tmp[0] = this->data[this->addr];
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
 				case 8:
 					tmp16 = addr;
-					return dest.PutRaw(dest_conn_id, &tmp[0], 2);
-				default:
-					LOG("error: MemTester: unimplemented conn-id");
-					return false;
-				}
-			}
-			else if (type == BIT_WRITE) {
-				switch (conn_id) {
+					return dest.PutRaw(dest_conn_id, &tmp[0], 2, 0);
 				case 24:
 					tmp[0] = !writing; // ~WRITE
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
 				case 25:
 					tmp[0] = !!writing; // ~READ
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
 				case 26:
 					tmp[0] = false;
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
 				default:
 					LOG("error: MemTester: unimplemented conn-id");
 					return false;
@@ -99,14 +92,14 @@ void SetupTest1_Memory(Machine& mach) {
 				
 			return true;
 		}
-		bool PutRaw(uint16 conn_id, byte* data, int data_sz) override {
+		bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override {
 			switch (conn_id) {
 			case 0:
-				ASSERT(data_sz == 1);
+				ASSERT(data_bytes == 1 && data_bits == 0);
 				in_data = *data;
 				break;
 			case 8:
-				ASSERT(data_sz == 2);
+				ASSERT(data_bytes == 2 && data_bits == 0);
 				in_addr = *(uint16*)data;
 				break;
 			default:

@@ -631,7 +631,11 @@ struct InternalPacketData : RTTIBase {
 	
 	int GetTextLength() const			{return (int)strnlen(txt, 8);}
 	String GetText() const				{return String(txt, GetTextLength());}
+	#ifdef COMPILER_MSC
+	void SetText(const char* s)			{strncpy_s(txt, 8, s, 1 << 24);}
+	#else
 	void SetText(const char* s)			{strncpy(txt, s, 8);}
+	#endif
 	bool IsText(const char* s) const	{return strncmp(txt, s, 8) == 0;}
 	
 	//void ClearLinks() {dev_comp = 0;}

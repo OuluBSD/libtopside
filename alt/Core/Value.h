@@ -136,20 +136,20 @@ template <> inline String ValueTemplate<int>::ToString() const    {return ptr ? 
 template <> inline int64  ValueTemplate<int>::ToInt() const       {return ptr ? *ptr : 0;}
 template <> inline double ValueTemplate<int>::ToDouble() const    {return ptr ? *ptr : 0;}
 template <> inline String ValueTemplate<double>::ToString() const {return ptr ? DblStr(*ptr) : "";}
-template <> inline int64  ValueTemplate<double>::ToInt() const    {return ptr ? *ptr : 0;}
+template <> inline int64  ValueTemplate<double>::ToInt() const    {return ptr ? (int64)*ptr : 0;}
 template <> inline double ValueTemplate<double>::ToDouble() const {return ptr ? *ptr : 0;}
 template <> inline String ValueTemplate<String>::ToString() const {return ptr ? *ptr : "";}
 template <> inline String ValueTemplate<WString>::ToString() const;
 template <> inline String ValueTemplate<Date>::ToString() const   {return ptr ? ptr->ToString() : "";}
 template <> inline int64  ValueTemplate<Date>::ToInt() const      {return ptr ? ptr->Get() : 0;}
-template <> inline double ValueTemplate<Date>::ToDouble() const   {return ptr ? ptr->Get() : 0;}
+template <> inline double ValueTemplate<Date>::ToDouble() const   {return ptr ? (double)ptr->Get() : 0;}
 template <> inline String ValueTemplate<Time>::ToString() const   {return ptr ? ptr->ToString() : "";}
 template <> inline int64  ValueTemplate<Time>::ToInt() const      {return ptr ? ptr->Get() : 0;}
-template <> inline double ValueTemplate<Time>::ToDouble() const   {return ptr ? ptr->Get() : 0;}
+template <> inline double ValueTemplate<Time>::ToDouble() const   {return ptr ? (double)ptr->Get() : 0;}
 template <> inline String ValueTemplate<Exc>::ToString() const    {return ptr ? *ptr : "";}
 template <> inline String ValueTemplate<int64>::ToString() const  {return ptr ? IntStr64(*ptr) : "";}
 template <> inline int64  ValueTemplate<int64>::ToInt() const     {return ptr ? *ptr : 0;}
-template <> inline double ValueTemplate<int64>::ToDouble() const  {return ptr ? *ptr : 0;}
+template <> inline double ValueTemplate<int64>::ToDouble() const  {return ptr ? (double)*ptr : 0;}
 template <> inline String ValueTemplate<bool>::ToString() const   {return ptr ? (*ptr ? "true" : "false") : "";}
 template <> inline int64  ValueTemplate<bool>::ToInt() const      {return ptr ? *ptr : 0;}
 template <> inline double ValueTemplate<bool>::ToDouble() const   {return ptr ? *ptr : 0;}

@@ -6,12 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 typedef enum {
 	INVALID,
-	BIT_READ,
-	BIT_WRITE,
-	BIT_RW,
-	BYTE_READ,
-	BYTE_WRITE,
-	BYTE_RW,
+	READ,
+	WRITE,
+	RW,
 } ProcessType;
 
 class Pcb;
@@ -108,10 +105,10 @@ public:
 	virtual bool Tick() {
 		LOG("error: Tick not implemented in " << GetClassName()); return false;
 	}
-	virtual bool Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
+	virtual bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
 		LOG("error: Process not implemented in " << GetClassName()); return false;
 	}
-	virtual bool PutRaw(uint16 conn_id, byte* data, int data_sz) {
+	virtual bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {
 		LOG("error: PutRaw not implemented in " << GetClassName()); return false;
 	}
 	

@@ -76,12 +76,14 @@ bool IC6502::Tick() {
     return true;
 }
 
-bool IC6502::Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
-	TODO
+bool IC6502::Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
+	LOG("IC6502::Process: TODO");
+	return true;
 }
 
-bool IC6502::PutRaw(uint16 conn_id, byte* data, int data_sz) {
-	TODO
+bool IC6502::PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {
+	LOG("IC6502::PutRaw: TODO");
+	return true;
 }
 
 

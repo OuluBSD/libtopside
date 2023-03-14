@@ -253,6 +253,8 @@ typedef Size3_<double> Size3f;
 
 
 
+#undef near
+#undef far
 
 template <class T>
 struct Cub_ : Moveable<Cub_<T>> {

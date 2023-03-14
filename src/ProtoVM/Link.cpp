@@ -8,7 +8,12 @@ Link::Link() {
 }
 
 bool Link::operator()(const Link& a, const Link& b) const {
-	return a.layer < b.layer;
+	//if (a.layer != b.layer) return a.layer < b.layer;
+	if (a.sink->base != b.sink->base) return a.sink->base < b.sink->base;
+	if (a.sink->id != b.sink->id) return a.sink->id < b.sink->id;
+	if (a.src->base != b.src->base) return a.src->base < b.src->base;
+	if (a.src->id != b.src->id) return a.src->id < b.src->id;
+	return &a < &b;
 }
 
 String Link::ToString() const {
@@ -84,9 +89,9 @@ void LinkMap::GetLayerRange(const ElectricNodeBase& n, int& min, int& max) {
 	min = INT_MAX;
 	max = INT_MIN;
 	
-	for (ElectricNodeBase::Connector& c : n.conns) {
+	for (const ElectricNodeBase::Connector& c : n.conns) {
 		
-		for (ElectricNodeBase::CLink& l : c.links) {
+		for (const ElectricNodeBase::CLink& l : c.links) {
 			Link& link = *l.link;
 			if (link.layer < 0)
 				continue;
@@ -160,26 +165,26 @@ void LinkMap::UpdateProcess() {
 			}
 			
 			// Check if match count aligns byte size
-			if ((match_count % 8) == 0) {
+			if (match_count >= 2) {
 				found_byte_range = true;
 				int bytes = match_count / 8;
-				if (verbose) {LOG("byte op: " << bytes << " bytes: " << link.ToString());}
+				int bitmod = match_count % 8;
+				if (verbose) {LOG("byte op: " << bytes << " bytes" << (bitmod ? " + " + IntStr(bitmod) + " bits" : String()) << ": " << link.ToString());}
 				
-				// Add op
 				ProcessOp& op = rt_ops.Add();
 				if (link.src->is_sink && link.src->is_src)
-					op.type = ProcessType::BYTE_RW;
+					op.type = ProcessType::RW;
 				else if (link.src->is_src)
-					op.type = ProcessType::BYTE_WRITE;
+					op.type = ProcessType::WRITE;
 				else
 					TODO; // fail?
 				op.mem_bytes = bytes;
+				op.mem_bits = bitmod;
 				op.link = &link;
 				op.processor = link.src->base;
 				op.dest = link.sink->base;
 				op.id = link.src->id;
 				op.dest_id = link.sink->id;
-				
 				i += match_count - 1; // skip bits, which were included in bytes
 			}
 		}
@@ -189,11 +194,12 @@ void LinkMap::UpdateProcess() {
 			// Add op
 			ProcessOp& op = rt_ops.Add();
 			if (link.src->is_sink && link.src->is_src)
-				op.type = ProcessType::BIT_RW;
+				op.type = ProcessType::RW;
 			else if (link.src->is_src)
-				op.type = ProcessType::BIT_WRITE;
+				op.type = ProcessType::WRITE;
 			else
 				TODO; // fail?
+			op.mem_bytes = 0;
 			op.mem_bits = 1;
 			op.link = &link;
 			op.processor = link.src->base;

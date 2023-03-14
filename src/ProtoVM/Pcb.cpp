@@ -15,7 +15,7 @@ bool Pcb::Tick() {
 
 bool Pcb::IsAllConnected() const {
 	bool r = true;
-	for (ElectricNodeBase& n : nodes) {
+	for (const ElectricNodeBase& n : nodes) {
 		String dn = n.GetDynamicName();
 		String nn = n.GetName();
 		if (nn.GetCount())
@@ -26,7 +26,7 @@ bool Pcb::IsAllConnected() const {
 			r = false;
 		}
 		
-		for (ElectricNodeBase::Connector& c : n.conns) {
+		for (const ElectricNodeBase::Connector& c : n.conns) {
 			if (!c.IsConnected() && c.IsRequired()) {
 				LOG("Pcb::IsAllConnected: " << dn << " pin " << c.name << " not connected");
 				r = false;

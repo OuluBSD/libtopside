@@ -5,7 +5,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 static void DaemonBase_signal_handler(int sig)
 {
+	#ifdef flagMSC
+	TODO
+	#else
 	signal(sig, SIG_IGN);
+	#endif
 	
 	Cout() << "DaemonBase - stopping\n";
 
@@ -25,7 +29,11 @@ DaemonBase::DaemonBase() {
 }
 
 bool DaemonBase::Init() {
+	#ifdef flagMSC
+	TODO
+	#else
 	signal(SIGINT, DaemonBase_signal_handler);
+	#endif
 	
 	if (requested_services.IsEmpty()) {
 		LOG("DaemonBase::Init: error: no requested service");

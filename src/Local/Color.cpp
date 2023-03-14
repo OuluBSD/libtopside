@@ -310,17 +310,17 @@ RGBA InvertRGBA(const RGBA& c) {
 }
 
 RGBA TransformHue(const RGBA& in, float angle) {
-	float U = cos(angle * M_PI / 180);
-	float W = sin(angle * M_PI / 180);
+	double U = cos(angle * M_PI / 180);
+	double W = sin(angle * M_PI / 180);
 	
 	RGBA ret;
-	float r =   (.299 + .701 * U + .168 * W) * in.r
+	double r =  (.299 + .701 * U + .168 * W) * in.r
 			  + (.587 - .587 * U + .330 * W) * in.g
 			  + (.114 - .114 * U - .497 * W) * in.b;
-	float g =   (.299 - .299 * U - .328 * W) * in.r
+	double g =  (.299 - .299 * U - .328 * W) * in.r
 			  + (.587 + .413 * U + .035 * W) * in.g
 			  + (.114 - .114 * U + .292 * W) * in.b;
-	float b =   (.299 - .3   * U + 1.25 * W) * in.r
+	double b =  (.299 - .3   * U + 1.25 * W) * in.r
 			  + (.587 - .588 * U - 1.05 * W) * in.g
 			  + (.114 + .886 * U - .203 * W) * in.b;
 	ret.r = min(255, max(0, (int)r));

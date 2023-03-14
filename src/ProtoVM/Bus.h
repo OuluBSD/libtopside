@@ -8,10 +8,11 @@ template <int Width>
 class Bus : public ElcBase {
 	RTTI_DECL1(Bus, ElcBase);
 	
-	static constexpr int bytes = Width / 8 + ((Width % 8) ? 1 : 0);
+	static constexpr int BYTES = Width / 8 + ((Width % 8) ? 1 : 0);
+	static constexpr int BITS = Width % 8;
 	
 	bool processing = false;
-	byte data[bytes];
+	byte data[BYTES];
 	bool verbose = false;
 	
 public:
@@ -26,47 +27,48 @@ public:
 	
 	bool Tick() override {
 		if (verbose) {
-			LOG("Bus::Tick: value " << HexString((const char*)data, bytes));
+			LOG("Bus::Tick: value " << HexString((const char*)data, BYTES));
 		}
 		return true;
 	}
 	
-	bool Process(ProcessType type, byte sz, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override {
+	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override {
 		if (processing) {
 			LOG("error: recursive processing");
 			return false;
 		}
 		
-		if (type == BYTE_WRITE || type == BIT_WRITE ||
-			type == BYTE_RW    || type == BIT_RW) {
-			if (!dest.PutRaw(dest_conn_id, this->data, bytes))
+		if (type == WRITE || type == RW) {
+			if (!dest.PutRaw(dest_conn_id, this->data, bytes, bits))
 				return false;
 		}
 		
-		if (type == BYTE_READ || type == BIT_READ ||
-			type == BYTE_RW    || type == BIT_RW) {
-			ProcessType dest_type;
+		if (type == READ || type == RW) {
+			ProcessType dest_type = ProcessType::INVALID;
 			switch(type) {
-				case BYTE_READ: dest_type = BYTE_WRITE; break;
-				case BIT_READ:  dest_type = BIT_WRITE;  break;
-				case BYTE_RW:   dest_type = BYTE_WRITE; break;
-				case BIT_RW:    dest_type = BIT_WRITE;  break;
+				case READ:      dest_type = WRITE;  break;
+				case RW:        dest_type = WRITE; break;
 				default: break;
 			}
 			processing = true;
-			bool ret = dest.Process(dest_type, sz, dest_conn_id, *this, conn_id);
+			bool ret = dest.Process(dest_type, bytes, bits, dest_conn_id, *this, conn_id);
 			processing = false;
 			return ret;
 		}
 		return true;
 	}
 	
-	bool PutRaw(uint16 conn_id, byte* data, int data_sz) override {
+	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override {
 		if (conn_id == 0) {
-			ASSERT(data_sz == bytes);
-			int copy_sz = min(data_sz, bytes);
-			memcpy(this->data, data, copy_sz);
-			return true;
+			if (BITS == 0) {
+				ASSERT(data_bytes == BYTES && data_bits == 0);
+				int copy_bytes = min(data_bytes, BYTES);
+				memcpy(this->data, data, copy_bytes);
+				return true;
+			}
+			else {
+				TODO
+			}
 		}
 		LOG("error: Bus: unexpected conn id");
 		return false;

@@ -3,7 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct Machine {
+class Machine {
+public:
 	Array<Pcb> pcbs;
 	Port power;
 	LinkMap l;

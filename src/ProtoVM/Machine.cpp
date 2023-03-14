@@ -28,11 +28,10 @@ bool Machine::Init() {
 
 bool Machine::RunInitOps() {
 	for (const ProcessOp& op : l.init_ops) {
-		switch (op.type) {
-			break;
-			
+		/*switch (op.type) {
 		default: TODO
-		}
+		}*/
+		TODO
 	}
 	return true;
 }
@@ -40,21 +39,11 @@ bool Machine::RunInitOps() {
 bool Machine::RunRtOps() {
 	for (const ProcessOp& op : l.rt_ops) {
 		switch (op.type) {
-		case ProcessType::BIT_READ:
-		case ProcessType::BIT_WRITE:
-		case ProcessType::BIT_RW:
+		case ProcessType::READ:
+		case ProcessType::WRITE:
+		case ProcessType::RW:
 			ASSERT(op.processor);
-			if (!op.processor->Process(op.type, op.mem_bits, op.id, *op.dest, op.dest_id)) {
-				LOG("error: processing failed in " << op.processor->GetClassName());
-				return false;
-			}
-			break;
-			
-		case ProcessType::BYTE_READ:
-		case ProcessType::BYTE_WRITE:
-		case ProcessType::BYTE_RW:
-			ASSERT(op.processor);
-			if (!op.processor->Process(op.type, op.mem_bytes, op.id, *op.dest, op.dest_id)) {
+			if (!op.processor->Process(op.type, op.mem_bytes, op.mem_bits, op.id, *op.dest, op.dest_id)) {
 				LOG("error: processing failed in " << op.processor->GetClassName());
 				return false;
 			}
@@ -63,7 +52,6 @@ bool Machine::RunRtOps() {
 		default:
 			TODO
 			break;
-			
 		}
 	}
 	return true;
