@@ -34,12 +34,12 @@ void LinkMap::UpdateLinkLayers() {
 	for (Link& l : links) {
 		Pin* src_pin = CastPtr<Pin>(l.src->base);
 		Pin* sink_pin = CastPtr<Pin>(l.sink->base);
-		ASSERT(!src_pin || !src_pin->is_ref_volt || !src_pin->is_high);
-		ASSERT(!sink_pin || !sink_pin->is_ref_volt || sink_pin->is_high);
-		if (src_pin && src_pin->is_ref_volt && !src_pin->is_high) {
+		ASSERT(!src_pin || !src_pin->is_high);
+		ASSERT(!sink_pin || sink_pin->is_high);
+		if (src_pin && !src_pin->is_high) {
 			l.layer = 0;
 		}
-		if (sink_pin && sink_pin->is_ref_volt && sink_pin->is_high) {
+		if (sink_pin && sink_pin->is_high) {
 			l.layer = INT_MAX;
 		}
 	}

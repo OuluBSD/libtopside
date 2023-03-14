@@ -12,11 +12,26 @@ NAMESPACE_TOPSIDE_BEGIN
 class IC6502 : public Chip {
 	RTTI_DECL1(IC6502, Chip)
 	
+	static constexpr int A0  =  0;
+	static constexpr int D0  = 16;
+	static constexpr int RW  = 24;     // out: memory read or write access
+	static constexpr int SYNC = 25;    // out: start of a new instruction
+	static constexpr int IRQ = 26;     // in: maskable interrupt requested
+	static constexpr int NMI = 27;     // in: non-maskable interrupt requested
+	static constexpr int RDY = 28;     // in: freeze execution at next read cycle
+	static constexpr int AEC = 29;     // in, m6510 only, put bus lines into tristate mode, not implemented
+	static constexpr int RES = 30;     // request RESET
+	
 	m6502_t cpu;
 	uint64_t pins;
-	uint8_t mem[1<<16];
+	
 	bool reading = 0;
-	bool writing = 0;
+	bool sync = 0;
+	byte in_data = 0;
+	uint16 in_addr = 0;
+	
+	bool verbose = true;
+	
 public:
 	IC6502();
 	
@@ -59,70 +74,6 @@ class IC6850 : public Chip {
 	
 public:
 	IC6850();
-	
-};
-
-// 32Kx8 bit Low Power CMOS Static RAM
-// https://www.futurlec.com/Memory/62256.shtml
-class IC62256 : public Chip {
-	RTTI_DECL1(IC62256, Chip)
-	
-	static constexpr int size = 32768;
-	
-	byte data[size];
-	uint16 addr = 0;
-	bool writing = 0;
-	bool reading = 0;
-	bool enabled = 0;
-	
-	
-	byte in_data = 0;
-	uint16 in_addr = 0;
-	bool in_writing = 0;
-	bool in_reading = 0;
-	bool in_enabled = 0;
-	
-public:
-	IC62256();
-	
-	bool Tick() override;
-	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
-	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override;
-};
-
-// NMOS 256 Kbit (32Kb x 8) UV EPROM
-// https://www.futurlec.com/Memory/27256_Datasheet.shtml
-class IC27256 : public Chip {
-	RTTI_DECL1(IC27256, Chip)
-	
-	static constexpr int size = 32768;
-	
-	byte data[size];
-	uint16 addr = 0;
-	bool reading = 0;
-	bool enabled = 0;
-	
-	
-	byte in_data = 0;
-	uint16 in_addr = 0;
-	bool in_reading = 0;
-	bool in_enabled = 0;
-	
-public:
-	IC27256();
-	
-	bool Tick() override;
-	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
-	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override;
-};
-
-// 128K (16kb x 8) 150ns NMOS EPROM
-// https://www.futurlec.com/Memory/27128-150.shtml
-class IC27128 : public Chip {
-	RTTI_DECL1(IC27128, Chip)
-	
-public:
-	IC27128();
 	
 };
 

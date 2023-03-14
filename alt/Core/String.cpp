@@ -91,8 +91,8 @@ String HexString(const char* data, int len) {
 		char c = data[i];
 		byte low = (byte)c & 0xF;
 		byte high = ((byte)c >> 4) & 0xF;
-		s.Cat(HexDigit(low));
 		s.Cat(HexDigit(high));
+		s.Cat(HexDigit(low));
 	}
 	return s;
 }

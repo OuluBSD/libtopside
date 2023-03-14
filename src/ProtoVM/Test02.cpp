@@ -23,13 +23,13 @@ void SetupTest2_6502(Machine& mach) {
 	IC6502& cpu = b.Add<IC6502>();
 	IC27256& rom = b.Add<IC27256>();
 	IC62256& ram = b.Add<IC62256>();
-	Bus8& data_bus = b.Add<Bus8>();
-	Bus16& addr_bus = b.Add<Bus16>();
+	Bus8& data_bus = b.Add<Bus8>("data_bus");
+	Bus16& addr_bus = b.Add<Bus16>("addr_bus");
 	
-	ElcNand& mem_nread = b.Add<ElcNand>();
-	ElcNand& ram_nwrite0 = b.Add<ElcNand>();
-	ElcNand& ram_nwrite1 = b.Add<ElcNand>();
-	ElcNand& rom_enable = b.Add<ElcNand>();
+	ElcNand& mem_nread = b.Add<ElcNand>("mem_nread");
+	ElcNand& ram_nwrite0 = b.Add<ElcNand>("ram_nwrite0");
+	ElcNand& ram_nwrite1 = b.Add<ElcNand>("ram_nwrite1");
+	ElcNand& rom_enable = b.Add<ElcNand>("rom_enable");
 	
 	try {
 		cpu["A0,16"] >> addr_bus;
@@ -39,10 +39,10 @@ void SetupTest2_6502(Machine& mach) {
 		addr_bus >> ram["A0,15"];
 		data_bus >> ram["D0,8"];
 		
-		cpu["~Res"] >> vcc; // actually requires resistor
+		cpu["~Res"] >> vcc; // actually requires some voltage between ground and vcc
 		cpu["~NMI"] >> vcc;
 		cpu["~IRQ"] >> vcc;
-		cpu["~SO"] >> vcc;
+		cpu["AEC"] >> vcc;
 		cpu["RDY"] >> vcc;
 		
 		cpu["R~W"] >> mem_nread["I0"];

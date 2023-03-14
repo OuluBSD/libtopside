@@ -1,5 +1,11 @@
 #include "ProtoVM.h"
 
+/*
+Links:
+	- https://github.com/vygr/C-PCB
+*/
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 void SetupTest1_Memory(Machine& mach);
@@ -14,7 +20,7 @@ CONSOLE_APP_MAIN {
 	using namespace TS;
 	
 	Machine		mach;
-	int			max_ticks = 10;
+	int			max_ticks = 100;
 	
 	switch (1) {
 		case 0: SetupTest1_Memory(mach); break;

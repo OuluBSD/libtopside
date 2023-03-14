@@ -13,15 +13,7 @@ void SetupTest1_Memory(Machine& mach) {
 		
 		RTTI_DECL1(MemTester, Chip)
 		MemTester() {
-			AddBidirectional("D0"); // 0
-			AddBidirectional("D1");
-			AddBidirectional("D2");
-			AddBidirectional("D3");
-			AddBidirectional("D4");
-			AddBidirectional("D5");
-			AddBidirectional("D6");
-			AddBidirectional("D7");
-			AddBidirectional("A0"); // 8
+			AddBidirectional("A0"); // 0
 			AddBidirectional("A1");
 			AddBidirectional("A2");
 			AddBidirectional("A3");
@@ -37,6 +29,14 @@ void SetupTest1_Memory(Machine& mach) {
 			AddBidirectional("A13");
 			AddBidirectional("A14");
 			AddBidirectional("A15");
+			AddBidirectional("D0"); // 16
+			AddBidirectional("D1");
+			AddBidirectional("D2");
+			AddBidirectional("D3");
+			AddBidirectional("D4");
+			AddBidirectional("D5");
+			AddBidirectional("D6");
+			AddBidirectional("D7");
 			AddSource("~WRITE"); // 24
 			AddSource("~READ"); // 25
 			AddSource("~ENABLE"); // 26
@@ -66,20 +66,20 @@ void SetupTest1_Memory(Machine& mach) {
 			if (type == WRITE) {
 				switch (conn_id) {
 				case 0:
-					tmp[0] = this->data[this->addr];
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
-				case 8:
 					tmp16 = addr;
 					return dest.PutRaw(dest_conn_id, &tmp[0], 2, 0);
+				case 16:
+					tmp[0] = this->data[this->addr];
+					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
 				case 24:
 					tmp[0] = !writing; // ~WRITE
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 0, 1);
 				case 25:
 					tmp[0] = !!writing; // ~READ
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 0, 1);
 				case 26:
 					tmp[0] = false;
-					return dest.PutRaw(dest_conn_id, &tmp[0], 1, 0);
+					return dest.PutRaw(dest_conn_id, &tmp[0], 0, 1);
 				default:
 					LOG("error: MemTester: unimplemented conn-id");
 					return false;
@@ -95,12 +95,12 @@ void SetupTest1_Memory(Machine& mach) {
 		bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override {
 			switch (conn_id) {
 			case 0:
-				ASSERT(data_bytes == 1 && data_bits == 0);
-				in_data = *data;
-				break;
-			case 8:
 				ASSERT(data_bytes == 2 && data_bits == 0);
 				in_addr = *(uint16*)data;
+				break;
+			case 16:
+				ASSERT(data_bytes == 1 && data_bits == 0);
+				in_data = *data;
 				break;
 			default:
 				LOG("error: MemTester: unimplemented conn-id");

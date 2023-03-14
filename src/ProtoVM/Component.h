@@ -7,12 +7,14 @@ NAMESPACE_TOPSIDE_BEGIN
 struct Pin : public ElcBase {
 	RTTI_DECL1(Pin, ElcBase);
 	
-	bool is_ref_volt = false;
-	bool is_high = false;
+	byte is_high = 0;
 	
 	Pin();
 	Pin& SetReference(bool is_high);
 	
+	bool Tick() override;
+	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
+	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override;
 };
 
 struct Port : public ElcBase {

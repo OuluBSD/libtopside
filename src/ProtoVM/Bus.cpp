@@ -4,28 +4,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 InterakBus::InterakBus() {
-	AddBidirectional("+5V_0");
-	AddBidirectional("+5V_1");
-	AddBidirectional("GND_0");
-	AddBidirectional("GND_1");
-	AddBidirectional("-12V_0");
-	AddBidirectional("-12V_1");
-	AddBidirectional("+12V_0");
-	AddBidirectional("+12V_1");
-	AddBidirectional("WAIT");
-	AddBidirectional("RCLK");
-	AddBidirectional("NRFSH");
-	AddBidirectional("NENOUT");
-	AddBidirectional("NENIN");
-	AddBidirectional("D0");
-	AddBidirectional("D1");
-	AddBidirectional("D2");
-	AddBidirectional("D3");
-	AddBidirectional("D4");
-	AddBidirectional("D5");
-	AddBidirectional("D6");
-	AddBidirectional("D7");
-	AddBidirectional("~RESET");
 	AddBidirectional("A0");
 	AddBidirectional("A1");
 	AddBidirectional("A2");
@@ -42,6 +20,28 @@ InterakBus::InterakBus() {
 	AddBidirectional("A13");
 	AddBidirectional("A14");
 	AddBidirectional("A15");
+	AddBidirectional("D0");
+	AddBidirectional("D1");
+	AddBidirectional("D2");
+	AddBidirectional("D3");
+	AddBidirectional("D4");
+	AddBidirectional("D5");
+	AddBidirectional("D6");
+	AddBidirectional("D7");
+	AddBidirectional("+5V_0");
+	AddBidirectional("+5V_1");
+	AddBidirectional("GND_0");
+	AddBidirectional("GND_1");
+	AddBidirectional("-12V_0");
+	AddBidirectional("-12V_1");
+	AddBidirectional("+12V_0");
+	AddBidirectional("+12V_1");
+	AddBidirectional("WAIT");
+	AddBidirectional("RCLK");
+	AddBidirectional("NRFSH");
+	AddBidirectional("NENOUT");
+	AddBidirectional("NENIN");
+	AddBidirectional("~RESET");
 	AddBidirectional("~RD");
 	AddBidirectional("~WR");
 	AddBidirectional("MEMREQ");

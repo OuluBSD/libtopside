@@ -97,8 +97,8 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 	
 	Pin* src_pin = CastPtr<Pin>(&from);
 	Pin* sink_pin = CastPtr<Pin>(&to);
-	ASSERT(!src_pin || !src_pin->is_ref_volt || !src_pin->is_high);
-	ASSERT(!sink_pin || !sink_pin->is_ref_volt || sink_pin->is_high);
+	ASSERT(!src_pin || !src_pin->is_high);
+	ASSERT(!sink_pin || sink_pin->is_high);
 	
 	
 	if (atriv && btriv) {
@@ -172,12 +172,12 @@ void Pcb::GetLinks(Array<Link>& links) {
 				
 				Pin* src_pin = CastPtr<Pin>(&n);
 				Pin* sink_pin = CastPtr<Pin>(to.base);
-				bool src_is_sink = src_pin && src_pin->is_ref_volt && src_pin->is_high;
-				bool sink_is_src = sink_pin && sink_pin->is_ref_volt && !sink_pin->is_high;
-				bool src_is_src = src_pin && src_pin->is_ref_volt && !src_pin->is_high;
-				bool sink_is_sink = sink_pin && sink_pin->is_ref_volt && sink_pin->is_high;
+				bool src_is_sink = src_pin && src_pin->is_high;
+				bool sink_is_src = sink_pin && !sink_pin->is_high;
+				bool src_is_src = src_pin && !src_pin->is_high;
+				bool sink_is_sink = sink_pin && sink_pin->is_high;
 				
-				if (src_pin && src_pin->is_ref_volt && sink_pin && sink_pin->is_ref_volt && src_pin->is_high == sink_pin->is_high) {
+				if (src_pin && sink_pin && src_pin->is_high == sink_pin->is_high) {
 					Panic("internal error");
 				}
 					
@@ -197,7 +197,7 @@ void Pcb::GetLinks(Array<Link>& links) {
 				ASSERT(l.sink->is_sink && l.src->is_src);
 				
 				Pin* test_src_pin = CastPtr<Pin>(l.src->base);
-				ASSERT(!test_src_pin || !test_src_pin->is_ref_volt || !test_src_pin->is_high);
+				ASSERT(!test_src_pin || !test_src_pin->is_high);
 				
 				from_clink.link = &l;
 				to_clink->link = &l;

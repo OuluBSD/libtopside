@@ -13,7 +13,7 @@ class Bus : public ElcBase {
 	
 	bool processing = false;
 	byte data[BYTES];
-	bool verbose = false;
+	bool verbose = 1;
 	
 public:
 	Bus() {
@@ -27,8 +27,10 @@ public:
 	
 	bool Tick() override {
 		if (verbose) {
-			LOG("Bus::Tick: value " << HexString((const char*)data, BYTES));
+			LOG("Bus::Tick(" << GetName() << "): " << HexString((const char*)data, BYTES));
 		}
+		for(int i = 0; i < BYTES; i++)
+			data[i] = 0;
 		return true;
 	}
 	

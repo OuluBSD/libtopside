@@ -9,6 +9,7 @@ using namespace UPP;
 
 #include "Common.h"
 #include "Chip.h"
+#include "ICRamRom.h"
 #include "ICs.h"
 #include "Mechanical.h"
 #include "Component.h"
