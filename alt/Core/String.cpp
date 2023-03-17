@@ -88,7 +88,7 @@ WString FromUtf8(const String& x) {
 String HexString(const char* data, int len) {
 	String s = "0x";
 	for(int i = 0; i < len; i++) {
-		char c = data[i];
+		char c = data[len-1-i];
 		byte low = (byte)c & 0xF;
 		byte high = ((byte)c >> 4) & 0xF;
 		s.Cat(HexDigit(high));

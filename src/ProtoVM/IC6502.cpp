@@ -6,13 +6,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-void IC6502_BusWrite(uint16_t addr, uint8_t data, void* p) {
-	((IC6502*)p)->Write(addr, data);
-}
-
-uint8_t IC6502_BusRead(uint16_t addr, void* p) {
-	return ((IC6502*)p)->Read(addr);
-}
 
 IC6502::IC6502()
 {
@@ -44,35 +37,27 @@ IC6502::IC6502()
 	
 	AddSource("R~W");
 	AddSource("PHI2 OUT");
-	AddBidirectional("~IRQ");
-	AddBidirectional("~NMI");
-	AddBidirectional("RDY");
-	AddBidirectional("AEC");
-	AddBidirectional("~Res");
+	AddSink("~IRQ");
+	AddSink("~NMI");
+	AddSink("RDY");
+	AddSink("AEC");
+	AddSink("~Res");
 	//AddSink("PHI IN");
 	
-	
-}
-
-void IC6502::Write(uint16 addr, uint8 data) {
-	TODO
-}
-
-byte IC6502::Read(uint16 addr) {
-	TODO
+	in_pins = 0;
+	in_pins_mask = M6502_IRQ | M6502_NMI | M6502_RDY | M6510_AEC | M6502_RES;
 }
 
 bool IC6502::Tick() {
+	pins = (pins & 0xFFFFFFFFFF000000ULL) | (uint64)in_addr | ((uint64)in_data << 16ULL);
+	pins = (pins & ~in_pins_mask) | in_pins;
+	
     pins = m6502_tick(&cpu, pins);
+	
     const uint16_t addr = M6502_GET_ADDR(pins);
     
-    #if 0
-    reading = M6502_RW == (pins & (M6502_SYNC|M6502_RW));
-    sync = (M6502_SYNC|M6502_RW) == (pins & (M6502_SYNC|M6502_RW));
-    #else
     reading = (pins & M6502_RW);
-    sync = (pins & M6502_SYNC);
-    #endif
+    sync = !(pins & M6502_SYNC);
     
     if (verbose) {
         String s;
@@ -106,6 +91,9 @@ bool IC6502::Tick() {
 	    LOG("IC6502::Tick:\n" << s);
     }
     
+	in_addr = 0;
+	in_data = 0;
+	in_pins = 0;
     return true;
 }
 
@@ -114,7 +102,8 @@ bool IC6502::Process(ProcessType type, int bytes, int bits, uint16 conn_id, Elec
 		byte tmp[2];
 		uint16 tmp16;
 	};
-	if (type == WRITE || type == ProcessType::RW) {
+	bool true_value = true;
+	if (type == WRITE) {
 		switch (conn_id) {
 		case A0:
 		case A0+1:
@@ -133,7 +122,8 @@ bool IC6502::Process(ProcessType type, int bytes, int bits, uint16 conn_id, Elec
 		case A0+14:
 		case A0+15:
 			if (sync) {
-				tmp16 = (pins >> (conn_id - A0));
+				tmp16 = (pins >> (uint64)(conn_id));
+				if (conn_id == A0 && bytes == 2) {LOG("IC6502::Process: sent addr: " << HexStr(tmp16));}
 				return dest.PutRaw(dest_conn_id, tmp, bytes, bits);
 			}
 			break;
@@ -146,19 +136,21 @@ bool IC6502::Process(ProcessType type, int bytes, int bits, uint16 conn_id, Elec
 		case D0+6:
 		case D0+7:
 			if (!reading && sync) {
-				tmp[0] = (pins >> (conn_id - D0)) & 0xFF;
+				tmp[0] = (pins >> (uint64)(conn_id));
+				if (conn_id == D0 && bytes == 1) {LOG("IC6502::Process: sent data: " << HexStr(tmp[0]));}
 				return dest.PutRaw(dest_conn_id, tmp, bytes, bits);
 			}
 			break;
-		case RW:
-		case SYNC:
 		case IRQ:
 		case NMI:
+		case RES:
+			true_value = false; // negate pin
+		case RW:
+		case SYNC:
 		case RDY:
 		case AEC:
-		case RES:
-			tmp[0] = pins & (1 << conn_id);
-			return dest.PutRaw(dest_conn_id, &tmp[0], 0, 1);
+			tmp[0] = ((pins >> (uint16)conn_id) & 1) == true_value;
+			return dest.PutRaw(dest_conn_id, tmp, 0, 1);
 			
 		default:
 			LOG("error: IC6502::Process: unimplemented connection-id");
@@ -166,28 +158,52 @@ bool IC6502::Process(ProcessType type, int bytes, int bits, uint16 conn_id, Elec
 		}
 	}
 	
-	if (type == READ || type == ProcessType::RW) {
-		ProcessType dest_type = ProcessType::INVALID;
-		switch(type) {
-			case ProcessType::READ:      dest_type = WRITE;  break;
-			case ProcessType::RW:        dest_type = WRITE; break;
-			default: break;
-		}
+	/*if (type == READ) {
+		ProcessType dest_type = WRITE;
 		return dest.Process(dest_type, bytes, bits, dest_conn_id, *this, conn_id);
-	}
+	}*/
 	return true;
 }
 
-bool IC6502::PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {int off;
+bool IC6502::PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {
+	int off;
 	uint16 mask;
 	uint16 data16;
-	
+	bool value;
+	bool true_value = true;
+	if (conn_id == 0 && data_bytes == 2) {
+		LOG("IC6502::Process: got addr: " << HexStr(*(uint16*)data));
+	}
+	if (conn_id == 16 && data_bytes == 1) {
+		LOG("IC6502::Process: got data: " << HexStr(*data));
+	}
 	switch (conn_id) {
 		#include "D8A16.inl"
-		default: TODO
+		case IRQ:
+		case NMI:
+		case RES:
+			true_value = false; // negate pin
+		case RW:
+		case SYNC:
+		case RDY:
+		case AEC:
+			ASSERT(data_bytes == 0 && data_bits == 1);
+			value = (*data & 0x1) == true_value;
+			SetPin(conn_id, value);
+			break;
+	default:
+		LOG("IC6502::PutRaw: error: unsupported conn-id");
+		return false;
 	};
 	return true;
 }
 
+void IC6502::SetPin(int i, bool b) {
+	uint64 mask = 1ULL << (uint64)i;
+	if (b)
+		in_pins |= mask;
+	else
+		in_pins &= ~mask;
+}
 
 NAMESPACE_TOPSIDE_END

@@ -6,9 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 typedef enum {
 	INVALID,
-	READ,
 	WRITE,
-	RW,
+	TICK,
 } ProcessType;
 
 class Pcb;
@@ -102,6 +101,7 @@ public:
 	ElectricNodeBase& operator[](int i);
 	
 	virtual int GetMemorySize() const {return 0;}
+	virtual int GetFixedPriority() const {return -1;}
 	virtual bool Tick() {
 		LOG("error: Tick not implemented in " << GetClassName()); return false;
 	}
@@ -115,6 +115,7 @@ public:
 };
 
 using ElcBase = ElectricNodeBase;
+using ElcConn = ElectricNodeBase::Connector;
 
 
 

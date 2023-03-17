@@ -19,7 +19,9 @@ bool Machine::Init() {
 	}
 	
 	l.UpdateLinkLayers();
-	l.UpdateProcess();
+	
+	if (!l.UpdateProcess())
+		return false;
 	
 	RunInitOps();
 	
@@ -27,21 +29,21 @@ bool Machine::Init() {
 }
 
 bool Machine::RunInitOps() {
-	for (const ProcessOp& op : l.init_ops) {
-		/*switch (op.type) {
+	/*for (const ProcessOp& op : l.init_ops) {
+		switch (op.type) {
 		default: TODO
-		}*/
+		}
 		TODO
-	}
+	}*/
 	return true;
 }
 
 bool Machine::RunRtOps() {
+	int op_i = 0;
 	for (const ProcessOp& op : l.rt_ops) {
 		switch (op.type) {
-		case ProcessType::READ:
+		//case ProcessType::READ:
 		case ProcessType::WRITE:
-		case ProcessType::RW:
 			ASSERT(op.processor);
 			if (!op.processor->Process(op.type, op.mem_bytes, op.mem_bits, op.id, *op.dest, op.dest_id)) {
 				LOG("error: processing failed in " << op.processor->GetClassName());
@@ -49,19 +51,25 @@ bool Machine::RunRtOps() {
 			}
 			break;
 			
+		case ProcessType::TICK:
+			if (!op.dest->Tick())
+				return false;
+			break;
+			
 		default:
 			TODO
 			break;
 		}
+		op_i++;
 	}
 	return true;
 }
 
 bool Machine::Tick() {
-	for (Pcb& pcb : pcbs) {
+	/*for (Pcb& pcb : pcbs) {
 		if (!pcb.Tick())
 			return false;
-	}
+	}*/
 	if (!RunRtOps())
 		return false;
 	return true;

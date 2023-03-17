@@ -15,6 +15,7 @@ struct Pin : public ElcBase {
 	bool Tick() override;
 	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
 	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override;
+	int GetFixedPriority() const override;
 };
 
 struct Port : public ElcBase {

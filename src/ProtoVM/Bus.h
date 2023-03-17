@@ -19,18 +19,26 @@ public:
 	Bus() {
 		for(int i = 0; i < Width; i++)
 			AddBidirectional(IntStr(i)).SetMultiConn();
+		Clear();
 	}
 	
 	Bus& Verbose(bool b=true) {verbose = b; return *this;}
 	
 	int GetMemorySize() const override {return Width / 8 + ((Width % 8) == 0 ? 0 : 1);}
 	
+	void Clear() {
+		for(int i = 0; i < BYTES; i++)
+			data[i] = 0;
+	}
+	
 	bool Tick() override {
 		if (verbose) {
 			LOG("Bus::Tick(" << GetName() << "): " << HexString((const char*)data, BYTES));
 		}
-		for(int i = 0; i < BYTES; i++)
-			data[i] = 0;
+		
+		// Clearing bus doesn't really work
+		//Clear();
+		
 		return true;
 	}
 	
@@ -40,23 +48,18 @@ public:
 			return false;
 		}
 		
-		if (type == WRITE || type == RW) {
+		if (type == WRITE) {
 			if (!dest.PutRaw(dest_conn_id, this->data, bytes, bits))
 				return false;
 		}
 		
-		if (type == READ || type == RW) {
-			ProcessType dest_type = ProcessType::INVALID;
-			switch(type) {
-				case READ:      dest_type = WRITE;  break;
-				case RW:        dest_type = WRITE; break;
-				default: break;
-			}
+		/*if (type == READ) {
+			ProcessType dest_type = ProcessType::WRITE;
 			processing = true;
 			bool ret = dest.Process(dest_type, bytes, bits, dest_conn_id, *this, conn_id);
 			processing = false;
 			return ret;
-		}
+		}*/
 		return true;
 	}
 	

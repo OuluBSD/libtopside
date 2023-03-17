@@ -24,7 +24,7 @@ bool Pin::Tick() {
 }
 
 bool Pin::Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
-	if (type == WRITE || type == RW) {
+	if (type == WRITE) {
 		ASSERT(bytes == 0 && bits == 1);
 		return dest.PutRaw(dest_conn_id, &is_high, 0, 1);
 	}
@@ -39,6 +39,10 @@ bool Pin::Process(ProcessType type, int bytes, int bits, uint16 conn_id, Electri
 bool Pin::PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) {
 	// this can be put if it's high, because... that's the order of connections
 	return is_high;
+}
+
+int Pin::GetFixedPriority() const {
+	return is_high ? INT_MAX : 0;
 }
 
 
@@ -86,10 +90,10 @@ bool ElcNand::Tick() {
 }
 
 bool ElcNand::Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) {
-	if (type == READ) {
+	/*if (type == READ) {
 		TODO
 	}
-	else if (type == WRITE) {
+	else*/ if (type == WRITE) {
 		switch (conn_id) {
 		case 0:
 		case 1:

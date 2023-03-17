@@ -24,6 +24,7 @@ class IC6502 : public Chip {
 	
 	m6502_t cpu;
 	uint64_t pins;
+	uint64_t in_pins, in_pins_mask;
 	
 	bool reading = 0;
 	bool sync = 0;
@@ -32,6 +33,8 @@ class IC6502 : public Chip {
 	
 	bool verbose = true;
 	
+	void SetPin(int i, bool b);
+	
 public:
 	IC6502();
 	
@@ -39,8 +42,6 @@ public:
 	bool Process(ProcessType type, int bytes, int bits, uint16 conn_id, ElectricNodeBase& dest, uint16 dest_conn_id) override;
 	bool PutRaw(uint16 conn_id, byte* data, int data_bytes, int data_bits) override;
 	
-	void Write(uint16 addr, uint8 data);
-	byte Read(uint16 addr);
 };
 
 // 8-bit microprocessor

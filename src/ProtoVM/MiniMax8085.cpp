@@ -9,13 +9,8 @@ void SetupMiniMax8085(Machine& mach) {
 	
 	Pcb& b = mach.AddPcb();
 	
-	Port& power = mach.GetPower();
-	power.SetCount(2);
-	Pin& ground = power.GetPin(0).SetReference(0);
-	Pin& vcc = power.GetPin(1).SetReference(1);
-	ground.SetName("ground");
-	vcc.SetName("vcc");
-	
+	Pin& ground = b.Add<Pin>("ground").SetReference(0);
+	Pin& vcc = b.Add<Pin>("vcc").SetReference(1);
 	IC8085& cpu = b.Add<IC8085>();
 	IC74F573& latch = b.Add<IC74F573>();
 	IC27128& rom = b.Add<IC27128>();

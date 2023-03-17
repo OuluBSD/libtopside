@@ -97,8 +97,8 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 	
 	Pin* src_pin = CastPtr<Pin>(&from);
 	Pin* sink_pin = CastPtr<Pin>(&to);
-	ASSERT(!src_pin || !src_pin->is_high);
-	ASSERT(!sink_pin || sink_pin->is_high);
+	//ASSERT(!src_pin || !src_pin->is_high);
+	//ASSERT(!sink_pin || sink_pin->is_high);
 	
 	
 	if (atriv && btriv) {
@@ -196,8 +196,8 @@ void Pcb::GetLinks(Array<Link>& links) {
 				}
 				ASSERT(l.sink->is_sink && l.src->is_src);
 				
-				Pin* test_src_pin = CastPtr<Pin>(l.src->base);
-				ASSERT(!test_src_pin || !test_src_pin->is_high);
+				//Pin* test_src_pin = CastPtr<Pin>(l.src->base);
+				//ASSERT(!test_src_pin || !test_src_pin->is_high);
 				
 				from_clink.link = &l;
 				to_clink->link = &l;

@@ -11,13 +11,8 @@ void SetupUK101(Machine& mach) {
 	
 	Pcb& b = mach.AddPcb();
 	
-	Port& power = mach.GetPower();
-	power.SetCount(2);
-	Pin& ground = power.GetPin(0).SetReference(0);
-	Pin& vcc = power.GetPin(1).SetReference(1);
-	ground.SetName("ground");
-	vcc.SetName("vcc");
-	
+	Pin& ground = b.Add<Pin>("ground").SetReference(0);
+	Pin& vcc = b.Add<Pin>("vcc").SetReference(1);
 	PushButtonComp& reset = b.Add<PushButtonComp>();
 	Resistor4k7& r4k7 = b.Add<Resistor4k7>();
 	Resistor& crystal_r0 = b.Add<Resistor>();

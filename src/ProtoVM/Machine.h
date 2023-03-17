@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class Machine {
 public:
 	Array<Pcb> pcbs;
-	Port power;
+	//Port power;
 	LinkMap l;
 	
 	bool Init();
@@ -15,7 +15,7 @@ public:
 	bool RunRtOps();
 	
 	Pcb& AddPcb();
-	Port& GetPower() {return power;}
+	//Port& GetPower() {return power;}
 	
 };
 
