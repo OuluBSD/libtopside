@@ -18,7 +18,7 @@ void DrawProg::Process(const DrawCommand* begin, const DrawCommand* end) {
 	static bool has_ptrs;
 	if (!has_ptrs) {
 		memset(ptrs, 0, sizeof(ptrs));
-		//ptrs[DRAW_SET_SIZE] = &DrawProg::SetSize;
+		ptrs[DRAW_SET_SIZE] = &DrawProg::SetSize;
 		//ptrs[DRAW_IMAGE] = &DrawProg::DrawImage;
 		//ptrs[DRAW_CTRL_DRAW_BEGIN] = &DrawProg::CtrlDrawBegin;
 		//ptrs[DRAW_CTRL_DRAW_END] = &DrawProg::CtrlDrawEnd;
@@ -112,6 +112,16 @@ void DrawProg::GetPageSize(const DrawCommand& cmd) {
 		);
 }
 */
+void DrawProg::SetSize(const DrawCommand& cmd) {
+	ImageDraw* id = CastPtr<ImageDraw>(GetTarget());
+	if (id) {
+		id->Create(cmd.sz);
+	}
+	else {
+		Panic("Unexpected Draw class");
+	}
+}
+
 void DrawProg::StartPage(const DrawCommand& cmd) {
 	((Draw*)this)->StartPage(
 		);

@@ -3,6 +3,9 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+void DebugMainLoop();
+
+
 
 #if 0
 void SurfaceFrame::FramePaint(Draw& draw, const Rect& r) {}
@@ -618,7 +621,7 @@ void Surface::PaintDebug(ProgPainter& pp) {
 }*/
 
 void Surface::EventLoop() {
-	TODO
+	DebugMainLoop();
 }
 
 void Surface::EventLoopIteration(void*) {
@@ -632,15 +635,29 @@ void Surface::PaintAll(bool b) {
 
 
 void Surface::InitFB() {
-	TODO
+	SetStdFont(ScreenSans(12));
+	
+	using namespace TS;
+	using namespace TS::Parallel;
+	
+	Machine& mach = GetActiveMachine();
+	Gu::SurfaceSystemRef wins = mach.Get<Gu::SurfaceSystem>();
+	ASSERT(wins);
+	if (wins) {
+		Gu::SurfaceManager& mgr = wins->GetActiveScope();
+		LOG("Surface::InitFB: TODO desktop gubo/surface");
+		//Gu::SurfaceHandle& x = mgr.GetDesktop();
+		//x.Background(Cyan());
+		//SetDesktop(x);
+	}
 }
 
 void Surface::ExitFB() {
-	TODO
+	LOG("Surface::ExitFB: TODO");
 }
 
 void Surface::SetDesktopSize(Size sz) {
-	TODO
+	LOG("Surface::SetDesktopSize: TODO");
 }
 
 

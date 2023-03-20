@@ -4,21 +4,23 @@
 NAMESPACE_TOPSIDE_BEGIN
 	
 struct AtomVirtualGui3D : VirtualGui3D {
+	RTTI_DECL1(AtomVirtualGui3D, VirtualGui3D)
+	
 	virtual dword       GetOptions();
-	virtual Size        GetSize();
 	virtual dword       GetMouseButtons();
 	virtual dword       GetModKeys();
 	virtual bool        IsMouseIn();
 	virtual bool        ProcessEvent(bool *quit);
-	virtual void        WaitEvent(int ms);
-	virtual bool        IsWaitingEvent();
-	virtual void        WakeUpGuiThread();
 	virtual void        SetMouseCursor(const Image& image);
-	virtual SystemDraw& BeginDraw();
-	virtual void        CommitDraw();
-	virtual bool        Poll(UPP::CtrlEvent& e);
-	virtual void        SetTitle(String title);
-	virtual uint32      GetTickCount();
+	Size        GetSize() override;
+	void        WaitEvent(int ms) override;
+	bool        IsWaitingEvent() override;
+	void        WakeUpGuiThread() override;
+	SystemDraw& BeginDraw() override;
+	void        CommitDraw() override;
+	bool        Poll(UPP::CtrlEvent& e) override;
+	void        SetTitle(String title) override;
+	uint32      GetTickCount() override;
 
 	virtual void        Quit();
 	//virtual void        HandleSDLEvent(SDL_Event* event);

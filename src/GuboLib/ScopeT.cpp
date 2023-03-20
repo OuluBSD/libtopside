@@ -53,8 +53,6 @@ void ScopeT<Ctx2D>::Paint(DrawT& draw) {
 template <class Dim>
 void ScopeT<Dim>::Render()
 {
-	TODO
-	#if 0
 	Box b = this->GetFrameBox();
 	Sz sz = b.GetSize();
 	
@@ -74,7 +72,6 @@ void ScopeT<Dim>::Render()
 	pd.cmd_screen_begin.Check();
 	
 	//pp.Dump();
-	#endif
 }
 
 template <class Dim>
@@ -83,10 +80,8 @@ void ScopeT<Dim>::Shutdown()
 	TODO
 }
 
-#if 0
 template <class Dim>
-void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
-{
+void ScopeT<Dim>::AddInterface(TopContainer& ts) {
 	ASSERT(this->GetFrameBox().Width() > 0);
 	int id = handle_counter++;
 	int pos = handles.GetCount();
@@ -94,7 +89,7 @@ void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 	Handle& h = handles.Add(id);
 	h.SetParent(this);
 	h.SetId(id);
-	h.SetInterface(iface);
+	h.SetTopContainer(ts);
 	GeomInteraction::Add(h); // Add to Interaction (e.g. GeomInteraction2D)
 
 	// Default initial position
@@ -121,7 +116,7 @@ void ScopeT<Dim>::AddInterface(InterfaceProxy& iface)
 	h.Layout();
 	h.Refresh();
 }
-#endif
+
 
 template <class Dim>
 bool ScopeT<Dim>::CheckRender()

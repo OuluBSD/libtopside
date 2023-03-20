@@ -160,8 +160,9 @@ void Draw::DrawText(int x, int y, int angle, const String& text, Font font,
 
 void Draw::DrawText(int x, int y, const String& text, Font font, Color ink, const int *dx)
 {
-	TODO //WString h = TextUnicode(text, text.GetLength(), CHARSET_DEFAULT, font);
-	//DrawText(x, y, h, font, ink, h.GetLength(), dx);
+	//WString h = TextUnicode(text, text.GetLength(), CHARSET_DEFAULT, font);
+	WString h = text.ToWString();
+	DrawTextOp(x, y, 0, h.Begin(), font, ink, h.GetLength(), dx);
 }
 
 void Draw::DrawPolyline(const Point *vertices, int count,

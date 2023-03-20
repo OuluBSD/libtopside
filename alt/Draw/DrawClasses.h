@@ -218,6 +218,7 @@ struct DrawProxy : Draw {
 	DrawProxy(Draw& d) : ptr(&d) {}
 	
 	void SetTarget(Draw* d) {ptr = d;}
+	Draw* GetTarget() const {return ptr;}
 	
 	dword GetInfo() const override;
 	Size GetPageSize() const override;

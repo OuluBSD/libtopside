@@ -23,6 +23,11 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     mach.Add<ScriptLoader>();
     
     mach.Add<Gu::GuboSystem>();
+    
+    #if IS_TS_CORE && defined flagGUI
+    mach.Add<Gu::SurfaceSystem>();
+    #endif
+    
     #if IS_UPP_CORE && defined flagGUI
     mach.Add<WindowSystem>();
     #endif

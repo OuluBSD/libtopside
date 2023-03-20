@@ -17,6 +17,7 @@ public:
 	
 	void CreateGeom2DComponent();
 	void UpdateFromTransform2D();
+	void OpenMain();
 	void Run();
 	void RunInMachine();
 	void FocusEvent();

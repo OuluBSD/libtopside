@@ -10,9 +10,11 @@
 			#define GUI_EON "deps/default_gui_app_uppsdl_ogl.eon"
 		#endif
 		#define GUBO_EON "deps/default_gubo_app_sdl_ogl.eon"
+		#define SURFACE_EON "deps/default_surface_app_sdl.eon"
 	#else
 		#define GUI_EON "deps/default_gui_app_sdl.eon"
 		#define GUBO_EON "deps/default_gubo_app_sdl.eon"
+		#define SURFACE_EON "deps/default_surface_app_sdl.eon"
 	#endif
 #elif defined flagPOSIX
 	#define GUI_EON "deps/default_gui_app_x11.eon"

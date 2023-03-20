@@ -6,5 +6,6 @@
 
 #include "Factory.h"
 #include "Events.h"
+#include "Tester.h"
 
 #endif

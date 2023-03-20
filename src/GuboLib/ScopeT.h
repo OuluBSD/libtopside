@@ -34,10 +34,6 @@ private:
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;
 	
-	/*#if IS_UPP_CORE
-	Array<UppTopSurface> tws;
-	#endif*/
-	
 	int handle_counter = 0;
 	bool maximize_all;
 	int active_pos, active_id;
@@ -98,10 +94,7 @@ public:
 	void Paint(DrawT& draw) override;
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
-	
-	#if IS_UPP_CORE
-	void AddInterface(UPP::TopSurface&);
-	#endif
+	void AddInterface(TopContainer&);
 	
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
@@ -110,6 +103,7 @@ public:
 	HandleSystem* GetManager() const { return this->GetParentUnsafe().Get(); }
 	Handle* GetHandle(TopContainer& ctrl);
 	Handle* GetActiveHandle();
+	
 	int GetActiveHandlePos() { return active_pos; }
 	int GetActiveHandleId() { return active_id; }
 	int GetPosId(int handle_pos)

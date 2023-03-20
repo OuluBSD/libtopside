@@ -1,6 +1,4 @@
 #include "GuboCore.h"
-#include <ParallelLib/ParallelLib.h>
-#include <GuboLib/GuboLib.h>
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -16,6 +14,10 @@ TopSurface::TopSurface() {
 	return this;
 }*/
 
+void TopSurface::OpenMain() {
+	CreateGeom2DComponent();
+}
+
 void TopSurface::Run() {
 	TODO
 }
@@ -26,35 +28,6 @@ void TopSurface::RunInMachine() {
 
 void TopSurface::FocusEvent() {
 	TODO
-}
-
-void TopSurface::CreateGeom2DComponent() {
-	using namespace Ecs;
-	using namespace Parallel;
-	
-	#if 0
-	RTLOG("TopSurface::CreateGeom2DComponent");
-	Ecs::Engine& eng = GetActiveEngine();
-	WindowSystemRef wins = eng.Get<WindowSystem>();
-	EntityStoreRef ents = eng.Get<EntityStore>();
-	EntityRef e = ents->GetRoot()->Create<Window2D>();
-	Ref<Geom2DComponent> cw = e->Get<Geom2DComponent>();
-	ASSERT(cw);
-	SetTarget(cw);
-	
-	WindowSystemScreen* active_screen = wins->GetActiveScreen();
-	active_screen->AddWindow(*cw);
-	
-	//UpdateFromTransform2D();
-	
-	#else
-	
-	Machine& mach = GetActiveMachine();
-	Gu::SurfaceSystemRef wins = mach.Get<Gu::SurfaceSystem>();
-	Gu::SurfaceManager& mgr = wins->GetActiveScope();
-	TODO //mgr.AddInterface(*this);
-	
-	#endif
 }
 
 #if 0

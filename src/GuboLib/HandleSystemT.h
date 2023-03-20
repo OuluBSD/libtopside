@@ -58,6 +58,7 @@ public:
 	void Set_GetMouseCursor(Image (*fn)(void*), void* arg);
 	
 	void RealizeScope();
+	Scope& GetDesktop() {return GetActiveScope();}
 	Scope& GetActiveScope();
 	Scope& GetScope(int i);
 	void DoEvents(const EventCollection& ev);

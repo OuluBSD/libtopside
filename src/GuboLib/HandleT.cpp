@@ -82,12 +82,14 @@ HandleT<Dim>::HandleT() :
 }
 
 template <class Dim>
+void HandleT<Dim>::SetTopContainer(TopContainer& tw) {
+	ASSERT(!this->tw);
+	this->tw = &tw;
+}
+
+template <class Dim>
 typename Dim::TopContainer* HandleT<Dim>::GetTopContainer() {
-	TODO
-	/*auto* proxy = this->GetLinkedProxy();
-	if (!proxy)
-		return 0;
-	return CastPtr<typename Dim::TopContainer>(proxy);*/
+	return tw;
 }
 
 /*template <class Dim>
@@ -152,9 +154,7 @@ void HandleT<Dim>::Layout() {
 	decor_box.bottom = decor_box.top + title_h;
 	decor.SetFrameBox(decor_box);
 	
-	TODO
-	/*typename Dim::Interaction* iact = CastPtr<typename Dim::Interaction>(this->GetLinkedProxy());
-	if (iact) {
+	if (tw) {
 		Box content_box = handle_box;
 		content_box.top = content_box.top + title_h;
 		#if 0
@@ -163,8 +163,8 @@ void HandleT<Dim>::Layout() {
 		content_box.left += 5;
 		content_box.right -= 5;
 		#endif
-		iact->SetFrameBox(content_box);
-	}*/
+		tw->SetFrameBox(content_box);
+	}
 }
 
 template <class Dim>
@@ -264,13 +264,10 @@ void HandleT<Dim>::SetPendingPartialRedraw() {
 	pending_partial_redraw = true;
 }
 
-/*template <class Dim>
+template <class Dim>
 GeomInteraction* HandleT<Dim>::GetDynamicallyLinked() const {
-	auto* abs_proxy = this->GetLinkedProxy();
-	if (abs_proxy)
-		return abs_proxy->GetInteraction();
-	return 0;
-}*/
+	return tw;
+}
 
 template <class Dim>
 ScopeT<Dim>& HandleT<Dim>::GetScope() const {
@@ -446,9 +443,7 @@ void HandleT<Dim>::MouseMove(Pt pt, dword keyflags) {
 
 template <class Dim>
 GeomInteraction* HandleT<Dim>::GetProxy() const {
-	TODO
-	/*auto proxy = this->GetLinkedProxy();
-	return CastPtr<GeomInteraction>(proxy);*/
+	return tw;
 }
 
 template <class Dim>

@@ -119,6 +119,9 @@ void GeomInteraction::DeepUnfocus() {
 }
 
 void GeomInteraction::Add(GeomInteraction& c) {
+	if (c.Is3D()) {
+		LOG("");
+	}
 	for (GeomInteraction* s : sub)
 		if (s == &c)
 			return;
@@ -259,6 +262,7 @@ void GeomInteraction::SetWithMouse(GeomInteraction* c) {
 }
 
 void GeomInteraction::DeepLayout() {
+	LOG(GetDynamicName());
 	TODO
 }
 

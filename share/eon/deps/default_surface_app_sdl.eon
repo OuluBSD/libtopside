@@ -14,8 +14,8 @@ machine sdl.app:
 				target = event.register
 		
 		loop video:
-			ogl.customer
-			ogl.prog.pipe:
+			center.customer
+			center.video.prog.pipe:
 				screen.id = 0
 			sdl.prog.pipe:
 				sizeable =		true

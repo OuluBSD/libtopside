@@ -114,6 +114,13 @@ bool ScriptLoopLoader::IsTopSidesConnected() const {
 	return true;
 }
 
+void ScriptLoopLoader::UndoLoad() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--)
+		added_atoms[i].a->Stop();
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--)
+		added_atoms[i].a->UninitializeDeep();
+}
+
 bool ScriptLoopLoader::Load() {
 	RTLOG("ScriptLoopLoader::Load: " << def.id.ToString());
 	ScriptLoader& loader = GetLoader();
@@ -237,6 +244,10 @@ bool ScriptLoopLoader::Load() {
 			
 			if (!l->MakeLink(src, sink)) {
 				AddError(FileLocation(), "could not link atoms");
+				for(int i = added_atoms.GetCount()-1; i >= 0; i--)
+					added_atoms[i].a->Stop();
+				for(int i = added_atoms.GetCount()-1; i >= 0; i--)
+					added_atoms[i].a->UninitializeDeep();
 				return false;
 			}
 			

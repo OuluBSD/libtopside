@@ -129,6 +129,7 @@ public:
 	bool		Parse();
 	bool		PostInitialize();
 	void		UpdateLoopLimits();
+	void		UndoLoad();
 	int			GetAtomLinkCount() const {return atom_links.GetCount();}
 	
 	bool		Load() override;

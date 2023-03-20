@@ -8,6 +8,8 @@ file
 	GuboSuite.h,
 	Factory.h,
 	Debug readonly separator,
+	Tester.h,
+	Tester.cpp,
 	Events.h,
 	Events.cpp;
 

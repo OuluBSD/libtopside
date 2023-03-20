@@ -5,8 +5,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
-	: size(sz), begin(&begin), end(&end)
+	: begin(&begin), end(&end)
 {
+	SDraw::Init(sz);
 	prev = p.cur ? p.cur : p.begin;
 	next = p.end;
 	begin.prev = prev;
@@ -16,8 +17,9 @@ ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawComman
 }
 
 ProgPainter::ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
-	size(sz), prev(&prev), begin(&begin), end(&end), next(&next)
+	prev(&prev), begin(&begin), end(&end), next(&next)
 {
+	SDraw::Init(sz);
 	
 }
 
@@ -168,17 +170,16 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 
 
 void ProgPainter::SetSize(Size sz) {
-	this->size = sz;
+	Init(sz);
 	
-	TODO
-	/*DrawCommand& cmd = CreateCommand();
+	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_SET_SIZE;
-	cmd.sz = sz;*/
+	cmd.sz = sz;
 }
 
 void ProgPainter::CtrlDrawBegin(hash_t h) {
 	BindWindow(h);
-	SetSize(size);
+	SetSize(sz);
 }
 
 void ProgPainter::CtrlDrawEnd() {
@@ -190,8 +191,8 @@ dword ProgPainter::GetInfo() const {
 }
 
 Size ProgPainter::GetPageSize() const {
-	ASSERT(!size.IsEmpty());
-	return size;
+	ASSERT(!sz.IsEmpty());
+	return sz;
 }
 
 void ProgPainter::StartPage() {
@@ -274,7 +275,7 @@ bool ProgPainter::IsPaintingOp(const Rect& r) const {
 }
 
 Rect ProgPainter::GetPaintRect() const {
-	return Rect(size);
+	return Rect(sz);
 }
 
 void ProgPainter::DrawRectOp(int x, int y, int cx, int cy, Color color) {
@@ -768,9 +769,9 @@ void ProgPainter::End() {
 #endif
 
 void ProgPainter::WindowOffset(const Rect& r) {
-	DrawCommand& cmd = CreateCommand();
-	TODO
-	/*cmd.type = DRAW_WINDOW_OFFSET;
+	Clipoff(r);
+	/*DrawCommand& cmd = CreateCommand();
+	cmd.type = DRAW_WINDOW_OFFSET;
 	cmd.i[0] = r.left;
 	cmd.i[1] = r.top;
 	cmd.i[2] = r.right;
@@ -778,7 +779,7 @@ void ProgPainter::WindowOffset(const Rect& r) {
 }
 
 void ProgPainter::WindowEnd() {
-	TODO
+	End();
 	/*
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_WINDOW_END;*/

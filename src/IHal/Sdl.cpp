@@ -506,8 +506,8 @@ bool HalSdl::CenterVideoSinkDevice_PostInitialize(NativeCenterVideoSinkDevice& d
     int fb_stride = 4;
     SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
 	#else
-    int fb_stride = 3;
-    SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
+    int fb_stride = 4;
+    SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
 	#endif
 
 	if (!fb) {
@@ -646,11 +646,14 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			const RGBA* begin = img.Begin();
 			int id_len = img.GetLength() * 4;
 			int id_h = img.GetHeight();
+			int id_pitch = img.GetWidth() * 4;
+			int id_stride = 4;
 			#else
 			int id_len = dev.id->Data().GetCount();
 			int id_h = dev.id->GetHeight();
+			int id_pitch = dev.id->GetPitch();
+			int id_stride = dev.id->GetStride();
 			#endif
-			ASSERT(len == id_len);
 			if (len == id_len) {
 				#if IS_UPP_CORE
 				memcpy(pixels, (byte*)begin, len);
@@ -658,31 +661,36 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
 				#endif
 			}
-			#if 0
-			else if (id_h == h) {
+			else if (id_stride == stride) {
+				int copy_h = min(id_h, h);
+				int copy_pitch = min(id_pitch, pitch);
 				byte* to = pixels;
+				
 				#if IS_UPP_CORE
 				byte* from = (byte*)begin;
 				#else
 				byte* from = dev.id->Data().Begin();
 				#endif
+				
 				// optional vertical invert (1 is on)
-				#if 0
-				for (int y = 0; y < h; y++) {
-					memcpy(to, from, pitch);
+				#if 1
+				for (int y = 0; y < copy_h; y++) {
+					memcpy(to, from, copy_pitch);
 					to += pitch;
-					from += pitch;
+					from += id_pitch;
 				}
 				#else
-				from += (h - 1) * pitch;
-				for (int y = 0; y < h; y++) {
-					memcpy(to, from, pitch);
+				from += (h - 1) * copy_pitch;
+				for (int y = 0; y < copy_h; y++) {
+					memcpy(to, from, copy_pitch);
 					to += pitch;
-					from -= pitch;
+					from += id_pitch;
 				}
 				#endif
 			}
-			#endif
+			else {
+				Panic("invalid framebuffer size");
+			}
 			//memset(pixels, Random(0x100), len);
 			SDL_UnlockTexture(fb);
 		}
@@ -1197,9 +1205,8 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 		dev.gubos = m.Get<Gu::GuboSystem>();
 		
 		if (dev.surfs) {
-			TODO
-			/*dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
-			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);*/
+			dev.surfs->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
+			dev.surfs->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
 		
 		#if IS_UPP_CORE

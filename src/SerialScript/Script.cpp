@@ -175,9 +175,19 @@ bool ScriptLoader::ImplementScript() {
 	RTLOG("ScriptLoader::ImplementScript: load loops");
 	Vector<ScriptLoopLoader*> loops;
 	loader->GetLoops(loops);
-	for (ScriptLoopLoader* ll : loops) {
-		if (!ll->Load())
-			return false;
+	int fail = -1;
+	for(int i = 0; i < loops.GetCount(); i++) {
+		ScriptLoopLoader* ll = loops[i];
+		if (!ll->Load()) {
+			fail = i;
+			break;
+		}
+	}
+	if (fail >= 0) {
+		// Stop and uninitialise loops in reverse order
+		for (int i = fail-1; i >= 0; i--)
+			loops[i]->UndoLoad();
+		return false;
 	}
 	
 	RTLOG("ScriptLoader::ImplementScript: connect sides");

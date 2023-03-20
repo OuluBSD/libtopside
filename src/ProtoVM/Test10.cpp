@@ -11,6 +11,7 @@ Links:
 
 Notes:
 	- tri-state changes op order? (this is going to suck...)
+		- maybe just write directly over bus to other connected nodes?
 	- https://github.com/vygr/C-PCB
 */
 

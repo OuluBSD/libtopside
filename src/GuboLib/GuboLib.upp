@@ -3,7 +3,8 @@ description "\377B28,127,255";
 uses
 	GuboCore,
 	Geometry,
-	VirtualGui3D;
+	VirtualGui3D,
+	SerialLib;
 
 file
 	GuboLib.h,
@@ -13,14 +14,16 @@ file
 	TextEdit.h,
 	EditString.cpp,
 	Push.h,
+	Push.cpp,
 	"2D System" readonly separator,
 	HandleTypes.h,
 	HandleSystemT.h,
 	HandleSystemT.cpp,
-	HandleT.h,
-	HandleT.cpp,
 	ScopeT.h,
 	ScopeT.cpp,
+	HandleT.h,
+	HandleT.cpp,
+	Surface.cpp,
 	VirtualGui3D readonly separator,
 	Atom.h,
 	Atom.cpp,

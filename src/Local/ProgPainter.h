@@ -38,7 +38,6 @@ class ProgPainter : public SDraw {
 	
 	Vector<Point> tmp0;
 	Vector<double> angles;
-	Size size;
 	Rect drawingclip;
 	
 	DrawCommand& CreateCommand();

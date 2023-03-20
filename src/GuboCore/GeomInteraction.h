@@ -144,7 +144,7 @@ public:
 	virtual GeomInteraction3D* Get3D();
 	virtual Gubo* GetGubo() {return 0;}
 	virtual Surface* GetSurface() {return 0;}
-	//virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
+	virtual GeomInteraction* GetDynamicallyLinked() const {return 0;}
 	virtual GeomInteraction* GetProxy() const {return 0;}
 	
 	
@@ -153,6 +153,7 @@ public:
 	const GeomInteraction* GetGeomDrawBegin() const;
 	GeomInteraction* FindProxy();
 	
+	virtual void SetPendingPartialRedraw() {}
 	virtual void SetPendingRedrawDeep();
 	virtual void SetCaptured(GeomInteraction* c);
 	virtual void SetWithMouse(GeomInteraction* c);

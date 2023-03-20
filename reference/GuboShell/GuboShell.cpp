@@ -13,8 +13,8 @@ void VguiMain() {
 	#endif
 	
 	
-	Gu::EventsTester app;
-	//GuiTesterApp app;
+	Gu::GuiTesterApp app;
+	//Gu::EventsTester app;
 	//CtrlTesterApp app;
 	app.OpenMain();
 	//app.SetRect(RectC(10,10,640,480));
@@ -24,8 +24,8 @@ void VguiMain() {
 void DesktopMain() {
 	using namespace Parallel;
 	
-	Surface::SetDebugDraw(true);
-	Gubo::SetDebugDraw(true);
+	Surface::SetDebugDraw(0);
+	Gubo::SetDebugDraw(1);
 	
 	AtomVirtualGui3D gui;
 	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
@@ -47,7 +47,7 @@ CONSOLE_APP_MAIN {
 	
 	SingleMachine mach;
 	if (mach.Start()) {
-		DefaultRunner(0, "Gui App", GUI_EON);
+		DefaultRunner(0, "Gui App", SURFACE_EON);
 		
 		mach.Stop();
 	}

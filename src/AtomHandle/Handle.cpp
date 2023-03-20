@@ -423,16 +423,16 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 				ProgPainter& pp = pd.GetPainter();
 				InternalPacketData& data = out.SetData<InternalPacketData>();
 				
+				#if 1
+				data.ptr = pp.GetBegin();
+				#else
 				pd.Realize(w.GetSize());
 				
-				TODO
-				#if 0
-				UPP::AtomVirtualGui* vgui = CastPtr<AtomVirtualGui>(VirtualGui3DPtr);
-				ASSERT(VirtualGuiPtr && vgui);
+				AtomVirtualGui3D* vgui = CastPtr<AtomVirtualGui3D>(VirtualGui3DPtr);
+				ASSERT(VirtualGui3DPtr && vgui);
 				vgui->SetTarget(pd);
-				#endif
 				
-				Surface::EventLoopIteration(NULL);
+				//Surface::EventLoopIteration(NULL);
 				
 				// h4x
 				if (!pp.GetCurrentBegin()) {
@@ -453,6 +453,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 					}
 				}
 				ASSERT(0);
+				#endif
 				#endif
 			}
 			else {

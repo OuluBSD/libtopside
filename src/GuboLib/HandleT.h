@@ -36,10 +36,11 @@ public:
 	using Box = typename Dim::Box;
 	using CmdDraw = typename Dim::CmdDraw;
 	using CmdPainter = typename Dim::CmdPainter;
+	using Button = typename Dim::Button;
 	
 protected:
 	Handle* handle = NULL;
-	Button3 minimize, maximize, close;
+	Button minimize, maximize, close;
 	String label;
 	bool left_down;
 	Pt left_down_pt;
@@ -94,6 +95,9 @@ public:
 	enum {CENTER, TL, TR, BL, BR, TOP, BOTTOM, LEFT, RIGHT};
 	
 protected:
+	friend class ScopeT<Dim>;
+	
+	TopContainer* tw = 0;
 	GeomDecoration decor;
 	Box stored_box;
 	bool maximized;
@@ -122,8 +126,8 @@ public:
 	HandleT&					MinimizeBox(bool b=true);
 	int							Run(bool appmodal=false);
 	String						GetTitle() const;
-	void						SetPendingPartialRedraw();
-	//GeomInteraction*			GetDynamicallyLinked() const override;
+	void						SetPendingPartialRedraw() override;
+	GeomInteraction*			GetDynamicallyLinked() const override;
 	Image						OverrideCursor(const Image& m);
 	Image						DefaultCursor();
 	
@@ -142,6 +146,7 @@ public:
 	void						CheckMouseBorder(const Pt& pt);
 	TopContainer*				GetTopContainer();
 	int							GetArea(const Pt& pt);
+	void						SetTopContainer(TopContainer& tw);
 	
 	void SetMaximized(bool b=true);
 	//void Clear();

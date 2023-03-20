@@ -29,6 +29,7 @@ struct Ctx2D {
 	using DrawT = Draw;
 	using CmdDraw = ProgDraw;
 	using CmdPainter = ProgPainter;
+	using Button = Button2;
 	
 	inline static Rect GetDefaultScopeDimensions() {return RectC(0,0,1280,720);}
 	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,320,240);}
@@ -49,6 +50,7 @@ struct Ctx3D {
 	using DrawT = Draw3;
 	using CmdDraw = ProgDraw3;
 	using CmdPainter = ProgPainter3;
+	using Button = Button3;
 	
 	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
 	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubC(o,o,o,256,256,256);}

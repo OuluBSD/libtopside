@@ -1,5 +1,5 @@
 #include "Draw.h"
-
+#include <StaticInterface/StaticInterface.h>
 
 NAMESPACE_UPP
 
@@ -26,14 +26,26 @@ void DrawCommandCache::Return(DrawCommand* cmd) {
 
 
 void SDraw::Init(const Rect& r) {
-	TODO
+	this->sz = r.GetSize();
+	this->sz.cx += max(0, r.left);
+	this->sz.cy += max(0, r.top);
+	
+	cur_area = r;
+	ops.Clear();
+	ops.Add().cur_area = r;
+	
+	/*Point tl = r.TopLeft();
+	if (tl.x != 0 || tl.y != 0)
+		Offset(tl);*/
+	
 }
 
 dword SDraw::GetInfo() const { return 0; }
 
 
 void SDraw::Finish() {
-	
+	ASSERT(ops.GetCount() == 1);
+	ops.Clear();
 }
 
 Size SDraw::GetPageSize() const {
@@ -65,7 +77,10 @@ void SDraw::DrawRectOp(int x, int y, int cx, int cy, Color color) {
 
 void SDraw::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
 	            Color ink, int n, const int *dx) {
-	TODO
+	// TODO: improve and take other params into acoount
+	String s = WString(text).ToString();
+	Image img = RenderTextBlended(font, s, ink);
+	DrawImageOp(x, y, img.GetWidth(), img.GetHeight(), img, img.GetSize(), Color());
 }
 
 void SDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
@@ -91,7 +106,8 @@ void SDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	}
 }
 
-bool SDraw::ClipOp(const Rect& r0) {
+bool SDraw::ClipoffOp(const Rect& r0) {
+	ASSERT(!cur_area.IsEmpty());
 	Rect r = r0;
 	r.left = max(0, r.left);
 	r.right = max(0, r.right);
@@ -116,14 +132,18 @@ bool SDraw::ClipOp(const Rect& r0) {
 	return new_area.GetWidth() > 0 && new_area.GetHeight() > 0;
 }
 
+bool SDraw::ClipOp(const Rect& r0) {
+	return true;
+}
+
 void SDraw::EndOp() {
 	Op& o = ops.Top();
 	cur_area = o.cur_area;
 	ops.SetCount(ops.GetCount()-1);
 }
 
-#if 0
-void SDraw::DrawImage(int x, int y, Image img, byte alpha) {
+void SDraw::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) {
+	byte alpha = 255;
 	Size sz = img.GetSize();
 	Rect r = RectC(x, y, sz.cx, sz.cy);
 	if (!DoOps(r))
@@ -174,6 +194,7 @@ void SDraw::DrawImage(int x, int y, Image img, byte alpha) {
 	}
 }
 
+#if 0
 void SDraw::DrawTriangle(Point a, Point b, Point c, RGBA clr) {
 	// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!)
 	if (a.y > b.y) Swap(a, b);
@@ -466,14 +487,12 @@ void SDraw::StartPage() {TODO}
 void SDraw::EndPage() {TODO}
 void SDraw::BeginOp() {TODO}
 void SDraw::OffsetOp(Point p) {TODO}
-bool SDraw::ClipoffOp(const Rect& r) {TODO}
 bool SDraw::ExcludeClipOp(const Rect& r) {TODO}
 bool SDraw::IntersectClipOp(const Rect& r) {TODO}
 bool SDraw::IsPaintingOp(const Rect& r) const {TODO}
 Rect SDraw::GetPaintRect() const {TODO}
 void SDraw::SysDrawImageOp(int x, int y, const Image& img, Color color) {TODO}
 void SDraw::SysDrawImageOp(int x, int y, const Image& img, const Rect& src, Color color) {TODO}
-void SDraw::DrawImageOp(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color) {TODO}
 void SDraw::DrawDataOp(int x, int y, int cx, int cy, const String& data, const char *id) {TODO}
 void SDraw::DrawPolyPolyPolygonOp(const Point *vertices, int vertex_count,
                            const int *subpolygon_counts, int scc,
