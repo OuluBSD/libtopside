@@ -42,6 +42,9 @@ class ProgPainter : public SDraw {
 	
 	DrawCommand& CreateCommand();
 	
+	#if IS_UPP_CORE
+	Size sz;
+	#endif
 	
 public:
 	#if IS_UPP_CORE

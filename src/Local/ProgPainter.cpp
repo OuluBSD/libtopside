@@ -170,8 +170,11 @@ void ProgPainter::AppendPick(DrawCommand* begin, DrawCommand* end) {
 
 
 void ProgPainter::SetSize(Size sz) {
-	Init(sz);
+	#if IS_UPP_CORE
+	this->sz = sz;
+	#endif
 	
+	Init(sz);
 	DrawCommand& cmd = CreateCommand();
 	cmd.type = DRAW_SET_SIZE;
 	cmd.sz = sz;

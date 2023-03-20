@@ -113,7 +113,11 @@ void DrawProg::GetPageSize(const DrawCommand& cmd) {
 }
 */
 void DrawProg::SetSize(const DrawCommand& cmd) {
+	#if IS_TS_CORE
 	ImageDraw* id = CastPtr<ImageDraw>(GetTarget());
+	#else
+	ImageDraw* id = dynamic_cast<ImageDraw*>(ptr);
+	#endif
 	if (id) {
 		id->Create(cmd.sz);
 	}

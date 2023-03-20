@@ -8,7 +8,20 @@
 #if IS_UPP_CORE
 NAMESPACE_TOPSIDE_BEGIN
 
-using VirtualGui3D = VirtualGui;
+struct VirtualGui3D : RTTIBase {
+	RTTI_DECL0(VirtualGui3D)
+	
+	virtual bool        Poll(UPP::CtrlEvent& e) = 0;
+	virtual Size        GetSize() = 0;
+	virtual void        SetTitle(String title) = 0;
+	virtual SystemDraw& BeginDraw() = 0;
+	virtual void        CommitDraw() = 0;
+	virtual uint32      GetTickCount() = 0;
+	virtual void        WaitEvent(int ms) = 0;
+	virtual void        WakeUpGuiThread() = 0;
+	virtual bool        IsWaitingEvent() = 0;
+	
+};
 
 NAMESPACE_TOPSIDE_END
 #endif
