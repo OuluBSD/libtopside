@@ -1,0 +1,14 @@
+uses
+	Complete,
+	GuboSuite;
+
+file
+	SurfaceShell.h,
+	SurfaceShell.cpp;
+
+mainconfig
+	"" = "GUI SCREEN SDL2",
+	"" = "GUI SCREEN SDL2 DEBUG_RT",
+	"" = "GUI SCREEN SDL2 USEMALLOC",
+	"" = "GUI SCREEN SDL2 USEMALLOC OGL";
+
