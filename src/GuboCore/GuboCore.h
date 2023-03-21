@@ -7,7 +7,9 @@
 
 
 #include "Defs.h"
+#include "DrawCommand.h"
 #include "Draw3.h"
+#include "SDraw3.h"
 #include "ProgPainter3.h"
 
 #include "GeomInteraction.h"

@@ -108,7 +108,7 @@ void HandleT<Dim>::SetInterface(InterfaceProxy& iface) {
 
 template <class Dim>
 void HandleT<Dim>::Paint(DrawT& draw) {
-	TODO // permanent
+	// pass
 }
 
 template <>
@@ -617,7 +617,7 @@ GeomDecorationT<Dim>::GeomDecorationT(Handle* h) {
 
 template <class Dim>
 void GeomDecorationT<Dim>::Paint(DrawT& draw) {
-	TODO // permanent
+	// pass
 }
 
 template <>

@@ -151,7 +151,7 @@ TopSurface* Gubo::GetTopSurface() {
 }*/
 
 void Gubo::SetFrameBox(const Cubf& r) {
-	this->frame = r;
+	this->frame_r = r;
 	/*SetPendingEffectRedraw();
 	if (parent) {
 		parent->SetPendingLayout();
@@ -170,12 +170,12 @@ void Gubo::SetContentBox(const Cubf& r) {
 }
 
 Cubf Gubo::GetContentBox() const {
-	ASSERT(frame.Contains(content));
+	ASSERT(frame_r.Contains(content));
 	return content;
 }
 
 Point3f Gubo::GetContentPoint(const Point3f& pt) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
 	Point3f cpt = fpt - ctl;
@@ -183,9 +183,9 @@ Point3f Gubo::GetContentPoint(const Point3f& pt) {
 }
 
 void Gubo::MouseMoveInFrameContent(Point3f pt, dword keyflags) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f fpt = pt - ftl;
-	Cubf r(frame.GetSize());
+	Cubf r(frame_r.GetSize());
 	GuboFrame* last_fitting = NULL;
 	Cubf fitting_rect;
 	for(int i = 0; i < frames.GetCount(); i++) {
@@ -221,12 +221,12 @@ void Gubo::MouseMoveInFrameContent(Point3f pt, dword keyflags) {
 }
 
 void Gubo::DeepMouseMoveInFrameContent(Point3f pt, dword keyflags) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
 	
 	if (GetFrameCaptured()) {
-		Cubf r(frame.GetSize());
+		Cubf r(frame_r.GetSize());
 		GuboFrame* last_fitting = NULL;
 		Cubf fitting_rect;
 		for(int i = 0; i < frames.GetCount(); i++) {
@@ -248,14 +248,14 @@ void Gubo::DeepMouseMoveInFrameContent(Point3f pt, dword keyflags) {
 }
 
 bool Gubo::MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
 	Point3f cpt = fpt - ctl;
 	
 	GuboFrame* frame_captured = GetFrameCaptured();
 	if (frame_captured) {
-		Cubf r(frame.GetSize());
+		Cubf r(frame_r.GetSize());
 		GuboFrame* last_fitting = NULL;
 		Cubf fitting_rect;
 		for(int i = 0; i < frames.GetCount(); i++) {
@@ -301,9 +301,9 @@ bool Gubo::MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword ke
 }
 
 void Gubo::MouseEventInFrameContent(int mouse_code, const Point3f& pt, dword keyflags) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f fpt = pt - ftl;
-	Cubf r(frame.GetSize());
+	Cubf r(frame_r.GetSize());
 	GuboFrame* last_fitting = NULL;
 	Cubf fitting_rect;
 	for(int i = 0; i < frames.GetCount(); i++) {
@@ -367,7 +367,7 @@ void Gubo::MouseLeaveFrame() {
 }
 
 bool Gubo::MouseWheelInFrameContent(Point3f pt, int zdelta, dword keyflags) {
-	Point3f ftl = frame.FirstCorner();
+	Point3f ftl = frame_r.FirstCorner();
 	Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
 	Point3f cpt = fpt - ctl;
@@ -381,7 +381,7 @@ bool Gubo::MouseWheelInFrameContent(Point3f pt, int zdelta, dword keyflags) {
 		MouseWheel(cpt, zdelta, keyflags);
 	}
 	else {
-		Cubf r(frame.GetSize());
+		Cubf r(frame_r.GetSize());
 		GuboFrame* last_fitting = NULL;
 		Cubf fitting_rect;
 		for(int i = 0; i < frames.GetCount(); i++) {
@@ -437,23 +437,8 @@ void Gubo::SetFocus() {
 	GeomInteraction::SetFocus();
 }
 
-
-void Gubo::SetPendingRedrawDeep() {
-	SetPendingEffectRedraw();
-	SetPendingRedraw();
-	int c = GetChildCount();
-	for(int i = 0; i < c; i++) {
-		GetIndexChild(i)->SetPendingRedrawDeep();
-	}
-}
-
 void Gubo::Refresh() {
-	SetPendingRedrawDeep();
-	
-	TODO
-	/*Absolute3DInterface* aw = GetAbsolute3D();
-	if (aw)
-		aw->SetPendingPartialRedraw();*/
+	GeomInteraction3D::Refresh();
 }
 
 void Gubo::DeepUnfocus() {
@@ -545,7 +530,7 @@ void Gubo::SetFrameWithMouse(GuboFrame* c) {
 
 
 void Gubo::DeepFrameLayout() {
-	Volf sz(frame.GetSize());
+	Volf sz(frame_r.GetSize());
 	Cubf new_content(sz);
 	for(int i = 0; i < frames.GetCount(); i++) {
 		GuboFrame& f = *frames[i];

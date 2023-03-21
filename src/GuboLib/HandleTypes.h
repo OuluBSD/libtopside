@@ -52,8 +52,8 @@ struct Ctx3D {
 	using CmdPainter = ProgPainter3;
 	using Button = Button3;
 	
-	inline static Cubf GetDefaultScopeDimensions() {return CubC(0,0,0,1024,1024,1024);}
-	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubC(o,o,o,256,256,256);}
+	inline static Cubf GetDefaultScopeDimensions() {return CubfC(0,0,0,1024,1024,1024);}
+	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubfC(o,o,o,256,256,256);}
 	
 };
 

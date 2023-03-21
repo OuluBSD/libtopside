@@ -7,8 +7,7 @@ file
 	GuboShell.cpp;
 
 mainconfig
-	"" = "GUI SCREEN SDL2",
-	"" = "GUI SCREEN SDL2 DEBUG_RT",
-	"" = "GUI SCREEN SDL2 USEMALLOC",
-	"" = "GUI SCREEN SDL2 USEMALLOC OGL";
+	"" = "GUI SCREEN SDL2 OGL",
+	"" = "GUI SCREEN SDL2 OGL DEBUG_RT",
+	"" = "GUI SCREEN SDL2 OGL USEMALLOC";
 

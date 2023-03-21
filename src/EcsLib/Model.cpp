@@ -199,6 +199,11 @@ void ModelComponent::Clear() {
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
+	if (gfx_state) {
+		// TODO if differs, reset gfx_id etc.
+		ASSERT(&gfx_state == &state);
+	}
+	
 	gfx_state = &state;
 	
 	
@@ -245,7 +250,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		model_changed = false;
 	}
 	
-	
+	// If model is not loaded to the state
 	if (gfx_id < 0) {
 		if (dbg) {
 			LOG("debug");

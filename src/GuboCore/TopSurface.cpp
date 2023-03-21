@@ -15,7 +15,7 @@ TopSurface::TopSurface() {
 }*/
 
 void TopSurface::OpenMain() {
-	CreateGeom2DComponent();
+	
 }
 
 void TopSurface::Run() {

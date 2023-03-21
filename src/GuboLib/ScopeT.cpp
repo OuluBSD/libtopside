@@ -1,5 +1,5 @@
 #include "GuboLib.h"
-
+#include <SerialLib/SerialLib.h>
 
 NAMESPACE_GUBO_BEGIN
 
@@ -18,11 +18,33 @@ ScopeT<Dim>::ScopeT()
 }
 
 template <class Dim>
+bool ScopeT<Dim>::Attach()
+{
+	return true;
+}
+
+template <>
+bool ScopeT<Ctx3D>::Attach()
+{
+	RenderingSystemRef rend = GetManager()->GetMachine().template Find<RenderingSystem>();
+	if (!rend) {
+		LOG("ScopeT<Dim>::Init: error: no RenderingSystem in machine");
+		return false;
+	}
+	rend->Attach(this);
+	
+	return true;
+}
+
+template <class Dim>
 bool ScopeT<Dim>::Init()
 {
 	this->SetPendingLayout();
 	this->SetPendingRedraw();
 	this->SetPendingEffectRedraw();
+	
+	if (!Attach())
+		return false;
 	
 	return true;
 }
@@ -40,7 +62,7 @@ bool ScopeT<Dim>::Poll(typename Dim::Event& e)
 
 template <class Dim>
 void ScopeT<Dim>::Paint(DrawT& draw) {
-	TODO // persistent
+	// pass
 }
 
 template <>
@@ -90,7 +112,7 @@ void ScopeT<Dim>::AddInterface(TopContainer& ts) {
 	h.SetParent(this);
 	h.SetId(id);
 	h.SetTopContainer(ts);
-	GeomInteraction::Add(h); // Add to Interaction (e.g. GeomInteraction2D)
+	this->Add(h); // Add to Interaction (e.g. GeomInteraction2D)
 
 	// Default initial position
 	int i = handles.GetCount();
@@ -648,6 +670,12 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
+template <class Dim>
+bool ScopeT<Dim>::Load(Parallel::GfxDataState& state) {
+	
+	TODO
+	
+}
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 

@@ -1,53 +1,44 @@
-#ifndef _GuboCore_ProgPainter3_h_
-#define _GuboCore_ProgPainter3_h_
+#ifndef _GuboCore_SDraw3_h_
+#define _GuboCore_SDraw3_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ProgPainter3 : public SDraw3 {
-	DrawCommand3 *prev;
-	DrawCommand3 *next;
-	DrawCommand3 *begin;
-	DrawCommand3 *end;
-	DrawCommand3 *cur_begin = NULL;
-	DrawCommand3 *cur = NULL;
+class SDraw3 : public Draw3 {
 	
-	Vector<Point3f> tmp0;
-	Vector<double> angles;
-	Volf size;
-	Cubf drawingclip;
+	struct Op : Moveable<Op> {
+		Cubf cur_area;
+	};
+	Vector<Op> ops;
+		
 	
-	DrawCommand3& CreateCommand();
+	byte AtRGBA(RGBA rgba, int i);
+	void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color);
 	
+	bool DoOpsX(float& x);
+	bool DoOpsY(float& y);
+	bool DoOpsZ(float& z);
+	//bool DoOpsHorz(float& x0, int& x1);
+	bool DoOps(Cubf& r);
+	
+	
+protected:
+	Volf sz;
+	
+	Cubf cur_area;
 	
 public:
-	RTTI_DECL1(ProgPainter3, SDraw3);
+	RTTI_DECL1(SDraw3, Draw3)
+	virtual ~SDraw3() {}
 	
-	ProgPainter3(Volf sz, DrawCommand3& prev, DrawCommand3& begin, DrawCommand3& end, DrawCommand3& next);
-	ProgPainter3(Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCommand3& end);
-	~ProgPainter3() {/*Clear();*/}
+	void Init(const Cubf& r);
 	
-	void Clear();
-	DrawCommand3* GetCurrentBegin() const;
-	DrawCommand3* GetBegin() const;
-	DrawCommand3* GetEnd() const;
+	void Finish();
+	int GetWidth() const {return sz.cx;}
+	int GetHeight() const {return sz.cy;}
+	int GetDepth() const {return sz.cz;}
 	
-	void Link();
-	void Dump();
-	
-	void Attach(DrawCommand3& begin, DrawCommand3& end);
-	void AppendPick(DrawCommand3* begin, DrawCommand3* end);
-		
-	// libtopside draw functions (could be deprecated probably)
-	void BindWindow(hash_t h);
-	void UnbindWindow();
-	void WindowOffset(const Cubf& r);
-	void WindowEnd();
-	
-	void SetSize(Volf sz);
-	void DrawImage(int x, int y, Image img, byte alpha=255);
-	void CtrlDrawBegin(hash_t h);
-	void CtrlDrawEnd();
+	void DrawPixel(float x, float y, float z, Color c);
 	
 	dword GetInfo() const override;
 	Volf GetPageSize() const override;
@@ -89,7 +80,6 @@ public:
 	void Escape(const String& data) override;
 	
 };
-
 
 NAMESPACE_TOPSIDE_END
 

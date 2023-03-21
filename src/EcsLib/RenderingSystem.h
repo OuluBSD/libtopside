@@ -42,7 +42,7 @@ using RenderableRef = Ref<Renderable>;
 class VirtualGui;
 
 
-
+#if 0
 class RenderingSystem :
 	public System<RenderingSystem>
 {
@@ -112,6 +112,7 @@ public:
 };
 
 using RenderingSystemRef = Ref<RenderingSystem>;
+#endif
 
 
 NAMESPACE_ECS_END

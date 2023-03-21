@@ -4,7 +4,6 @@ machine sdl.app:
 		sdl.context
 
 	chain program:
-
 		state event.register
 
 		loop center.events:
@@ -13,10 +12,14 @@ machine sdl.app:
 			state.event.pipe:
 				target = event.register
 
-		loop video:
-			center.customer
-			center.video.prog.pipe:
-				screen.id = 0
-			sdl.prog.pipe:
+		loop ogl.fbo:
+			ogl.customer
+			sdl.ogl.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =		"shaders/tests/07d_fragment.glsl"
+				shader.default.vtx.path =		"shaders/tests/07d_vertex.glsl"
+			sdl.fbo.sink:
+				close_machine =	true
 				sizeable =		true
 				env =			event.register

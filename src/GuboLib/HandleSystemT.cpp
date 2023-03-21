@@ -16,7 +16,7 @@ bool HandleSystemT<Dim>::Initialize() {
 
 template <>
 bool HandleSystemT<Ctx2D>::Initialize() {
-	RealizeScope();
+	//RealizeScope();
 	return true;
 }
 

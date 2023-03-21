@@ -21,6 +21,57 @@ GeomInteraction2D::GeomInteraction2D() {
 	cmd_end.prev = &cmd_post;
 }
 
+void GeomInteraction2D::Add(GeomInteraction& c) {
+	if (c.Is2D()) {
+		GeomInteraction2D& c2 = *c.Get2D();
+		cmd_post.prev = &c2.cmd_end;
+		c2.cmd_end.next = &cmd_post;
+		if (sub.GetCount()) {
+			GeomInteraction2D* top = sub.Top()->Get2D();
+			ASSERT(top);
+			if (top) {
+				c2.cmd_begin.prev = &top->cmd_end;
+				top->cmd_end.next = &c2.cmd_begin;
+			}
+		}
+		else {
+			c2.cmd_begin.prev = &cmd_pre;
+			cmd_pre.next = &c2.cmd_begin;
+		}
+	}
+	
+	GeomInteraction::Add(c);
+}
+
+bool GeomInteraction2D::RemoveSub(GeomInteraction* c) {
+	if (GeomInteraction::RemoveSub(c)) {
+		GeomInteraction2D* c0 = c->Get2D();
+		if (c0) {
+			c0->cmd_end.next->prev = c0->cmd_begin.prev;
+			c0->cmd_begin.prev->next = c0->cmd_end.next;
+			c0->cmd_end.next = NULL;
+			c0->cmd_begin.prev = NULL;
+		}
+		return true;
+	}
+	return false;
+}
+
+String GeomInteraction2D::GetDrawCommandString() const {
+	const DrawCommand* it = &cmd_begin;
+	int i = 0;
+	String s;
+	while (it) {
+		s << i++ << ": " << it->ToString() << "\n";
+		it = it->next;
+	}
+	return s;
+}
+
+void GeomInteraction2D::DumpDrawCommands() const {
+	LOG(GetDrawCommandString());
+}
+
 bool GeomInteraction2D::Is2D() const {
 	return true;
 }

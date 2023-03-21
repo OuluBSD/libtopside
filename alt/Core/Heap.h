@@ -12,6 +12,8 @@ inline void  *MemoryAlloc48()              { return new byte[48]; }
 inline void   MemoryFree32(void *ptr)      { delete[] (byte *)ptr; }
 inline void   MemoryFree48(void *ptr)      { delete[] (byte *)ptr; }
 
+void MemoryIgnoreLeaksBegin();
+void MemoryIgnoreLeaksEnd();
 
 NAMESPACE_UPP_END
 

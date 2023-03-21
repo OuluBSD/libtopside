@@ -46,6 +46,7 @@ namespace TS  {}
 #ifdef UPP_VERSION
 	#define IS_UPP_CORE 1
 	#define IS_TS_CORE 0
+	#define flagUPPCORE 1
 #else
 	#define IS_UPP_CORE 0
 	#define IS_TS_CORE 1

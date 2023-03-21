@@ -83,14 +83,14 @@ public:
 	
 	void DeepFrameLayout() override;
 	void SetFrameBox(const Cubf& r) override;
-	void DeepMouseMoveInFrameContent(Point3f pt, dword keyflags);
-	void MouseMoveInFrameContent(Point3f pt, dword keyflags);
+	void DeepMouseMoveInFrameContent(Point3f pt, dword keyflags) override;
+	void MouseMoveInFrameContent(Point3f pt, dword keyflags) override;
 	bool MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags) override;
-	void MouseEventInFrameContent(int mouse_code, const Point3f& pt, dword keyflags);
+	void MouseEventInFrameContent(int mouse_code, const Point3f& pt, dword keyflags) override;
 	void MouseLeaveFrame() override;
-	Cubf GetContentBox() const;
+	Cubf GetContentBox() const override;
 	Point3f GetContentPoint(const Point3f& pt) override;
-	bool MouseWheelInFrameContent(Point3f p, int zdelta, dword keyflags);
+	bool MouseWheelInFrameContent(Point3f p, int zdelta, dword keyflags) override;
 	void SetFocus() override;
 	void DeepUnfocus() override;
 	void PaintPreFrame(ProgPainter3& pp) override;
@@ -98,7 +98,6 @@ public:
 	void PaintDebug(ProgPainter3& pp) override;
 	bool IsGubo() const;
 	void Refresh() override;
-	void SetPendingRedrawDeep() override;
 	Gubo* GetGubo() override {return this;}
 	
 	void SetCubf(const Cubf& r);

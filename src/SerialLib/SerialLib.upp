@@ -18,5 +18,7 @@ file
 	AtomShell.h,
 	AtomShell.cpp,
 	DummyAtom.h,
-	DummyAtom.cpp;
+	DummyAtom.cpp,
+	RenderingSystem.h,
+	RenderingSystem.cpp;
 

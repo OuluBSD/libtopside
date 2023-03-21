@@ -1,1 +1,25 @@
- 
+machine sdl.app:
+
+	driver context:
+		sdl.context
+
+	chain program:
+		state event.register
+
+		loop center.events:
+			center.customer
+			sdl.event.pipe
+			state.event.pipe:
+				target = event.register
+
+		loop ogl.fbo:
+			ogl.customer
+			sdl.ogl.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =		"shaders/tests/07d_fragment.glsl"
+				shader.default.vtx.path =		"shaders/tests/07d_vertex.glsl"
+			sdl.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

@@ -9,8 +9,6 @@ TopGubo::TopGubo() {
 	SetFrameBox(CubfC(0,0,0,320,240,240));
 	CreateGeom3DComponent();
 	
-	TODO
-	
 }
 
 void TopGubo::FocusEvent() {
@@ -30,36 +28,6 @@ void TopGubo::RunInMachine() {
 
 int TopGubo::Run() {
 	TODO
-}
-
-void TopGubo::CreateGeom3DComponent() {
-	using namespace Parallel;
-	
-	#if 0
-	RTLOG("TopGubo::CreateGeom2DComponent");
-	Ecs::Engine& eng = GetActiveEngine();
-	WindowSystemRef wins = eng.Get<WindowSystem>();
-	EntityStoreRef ents = eng.Get<EntityStore>();
-	EntityRef e = ents->GetRoot()->Create<Window2D>();
-	Ref<Geom2DComponent> cw = e->Get<Geom2DComponent>();
-	ASSERT(cw);
-	SetTarget(cw);
-	
-	WindowSystemScreen* active_screen = wins->GetActiveScreen();
-	active_screen->AddWindow(*cw);
-	
-	//UpdateFromTransform2D();
-	
-	#else
-	
-	TODO // follow upp TopGubo better
-	
-	/*Machine& mach = GetActiveMachine();
-	WindowSystemRef wins = mach.Get<WindowSystem>();
-	WindowManager& mgr = wins->GetActiveScope();
-	mgr.AddInterface(*this);*/
-	
-	#endif
 }
 
 void TopGubo::UpdateFromTransform3D() {
@@ -99,7 +67,7 @@ void TopGubo::UpdateFromTransform3D() {
 }
 
 void TopGubo::OpenMain() {
-	TODO
+	
 }
 
 NAMESPACE_TOPSIDE_END

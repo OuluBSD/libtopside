@@ -24,6 +24,7 @@ file
 	HandleT.h,
 	HandleT.cpp,
 	Surface.cpp,
+	Gubo.cpp,
 	VirtualGui3D readonly separator,
 	Atom.h,
 	Atom.cpp,

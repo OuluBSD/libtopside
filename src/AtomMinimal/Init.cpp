@@ -125,7 +125,7 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglFboAtomSA>();
 	#endif
-	#if (defined flagSDL2 && defined flagOGL)
+	#if (defined flagSDL2 && defined flagOGL && defined flagUPPCORE)
 	Factory::RegisterAtom<SdlUppOglDeviceSA>();
 	#endif
 	#if (defined flagSDL2 && defined flagOGL)
@@ -134,7 +134,7 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglFboAtom>();
 	#endif
-	#if defined flagSDL2
+	#if (defined flagSDL2 && defined flagUPPCORE)
 	Factory::RegisterAtom<SdlUppEventsBasePipe>();
 	#endif
 	#if defined flagSDL2

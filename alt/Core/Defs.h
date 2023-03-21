@@ -243,7 +243,7 @@ public:
 
 class Nuller {
 public:
-
+	
 	Nuller() {}
 	operator int8() const     { return 0; }
 	operator uint8() const    { return 0; }
@@ -254,6 +254,7 @@ public:
 	operator int64() const    { return 0; }
 	operator uint64() const   { return 0; }
 	operator double() const   { return 0; }
+	operator float() const    { return 0; }
 	operator bool() const     { return false; }
 	
 	template <class T> operator T*() const    { return 0; }

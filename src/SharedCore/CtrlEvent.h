@@ -151,6 +151,7 @@ struct GeomEvent : Moveable<GeomEvent> {
 	};
 	int n = 0;
 	Point pt;
+	float pt3[3];
 	Size sz;
 	
 	// Device extension
@@ -175,6 +176,7 @@ struct GeomEvent : Moveable<GeomEvent> {
 		trans = e.trans;
 		ctrl = e.ctrl;
 		state = e.state;
+		for(int i = 0; i < 3; i++) pt3[i] = e.pt3[i];
 	}
 	
 	void Clear() {
@@ -186,6 +188,7 @@ struct GeomEvent : Moveable<GeomEvent> {
 		trans = 0;
 		ctrl = 0;
 		state = 0;
+		for(int i = 0; i < 3; i++) pt3[i] = 0;
 	}
 	
 	String ToString() const {

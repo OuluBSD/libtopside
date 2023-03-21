@@ -35,6 +35,9 @@ class Button3 : public Gubo {
 	
 	
 public:
+	RTTI_DECL1(Button3, Gubo)
+	
+	void Paint(Draw3& d) override;
 	
 	void SetImage(const Image&) {}
 	

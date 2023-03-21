@@ -217,12 +217,12 @@ Cubf Draw3::GetPaintCubf() const
 	return Cubf(-(FLT_MAX / 2), -(FLT_MAX / 2), -(FLT_MAX / 2), FLT_MAX / 2, FLT_MAX / 2, FLT_MAX / 2);
 }
 
-void Draw3::SysDrawImageOp(float x, float y, float z, const Image& img, Color color)
+void Draw3::SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, Color color)
 {
 	NEVER();
 }
 
-void Draw3::SysDrawImageOp(float x, float y, float z, const Image& img, const Cubf& src, Color color)
+void Draw3::SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, const Rect& src, Color color)
 {
 	TODO/*if(src == Cubf(img.GetSize()))
 		SysDrawImageOp(x, y, z, img, color);
@@ -233,7 +233,7 @@ void Draw3::SysDrawImageOp(float x, float y, float z, const Image& img, const Cu
 	}*/
 }
 
-void Draw3::DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Cubf& src, Color color)
+void Draw3::DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Rect& src, Color color)
 {
 	TODO
 }
@@ -353,17 +353,17 @@ void DrawProxy3::DrawBoxOp(float x, float y, float z, float cx, float cy, float 
 	ptr->DrawBoxOp(x, y, z, cx, cy, cz, color);
 }
 
-void DrawProxy3::SysDrawImageOp(float x, float y, float z, const Image& img, Color color)
+void DrawProxy3::SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, Color color)
 {
-	ptr->SysDrawImageOp(x, y, z, img, color);
+	ptr->SysDrawImageOp(x, y, z, imgsz, img, color);
 }
 
-void DrawProxy3::SysDrawImageOp(float x, float y, float z, const Image& img, const Cubf& src, Color color)
+void DrawProxy3::SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, const Rect& src, Color color)
 {
-	ptr->SysDrawImageOp(x, y, z, img, src, color);
+	ptr->SysDrawImageOp(x, y, z, imgsz, img, src, color);
 }
 
-void DrawProxy3::DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Cubf& src, Color color)
+void DrawProxy3::DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Rect& src, Color color)
 {
 	ptr->DrawImageOp(x, y, z, cx, cy, cz, img, src, color);
 }

@@ -22,8 +22,8 @@ void InterfaceBuilder::AddHal() {
 	Interface("OglVideoSinkDevice", "OGL");
 	Interface("ContextBase");
 	Interface("EventsBase");
-	Interface("UppEventsBase");
-	Interface("UppOglDevice", "OGL");
+	Interface("UppEventsBase", "UPPCORE");
+	Interface("UppOglDevice", "OGL&UPPCORE");
 	
 	Vendor("Sdl", "SDL2");
 	

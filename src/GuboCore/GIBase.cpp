@@ -119,23 +119,9 @@ void GeomInteraction::DeepUnfocus() {
 }
 
 void GeomInteraction::Add(GeomInteraction& c) {
-	if (c.Is3D()) {
-		LOG("");
-	}
 	for (GeomInteraction* s : sub)
 		if (s == &c)
 			return;
-	cmd_post.prev = &c.cmd_end;
-	c.cmd_end.next = &cmd_post;
-	if (sub.GetCount()) {
-		GeomInteraction& top = *sub.Top();
-		c.cmd_begin.prev = &top.cmd_end;
-		top.cmd_end.next = &c.cmd_begin;
-	}
-	else {
-		c.cmd_begin.prev = &cmd_pre;
-		cmd_pre.next = &c.cmd_begin;
-	}
 	sub.Add(&c);
 	c.owner = this;
 	c.Activate();
@@ -158,19 +144,16 @@ GeomInteraction* GeomInteraction::GetIndexSub(int i) {
 	return sub[i];
 }
 
-void GeomInteraction::RemoveSub(GeomInteraction* c) {
+bool GeomInteraction::RemoveSub(GeomInteraction* c) {
 	for(int i = 0; i < sub.GetCount(); i++) {
 		if (sub[i] == c) {
-			c->cmd_end.next->prev = c->cmd_begin.prev;
-			c->cmd_begin.prev->next = c->cmd_end.next;
-			c->cmd_end.next = NULL;
-			c->cmd_begin.prev = NULL;
-			
 			c->Deactivate();
 			c->owner = NULL;
 			sub.Remove(i--);
+			return true;
 		}
 	}
+	return false;
 }
 
 void GeomInteraction::DeepMouseLeave() {
@@ -261,28 +244,8 @@ void GeomInteraction::SetWithMouse(GeomInteraction* c) {
 		draw_begin->SetWithMouse(c);
 }
 
-void GeomInteraction::DeepLayout() {
-	LOG(GetDynamicName());
-	TODO
-}
-
 void GeomInteraction::DeepFrameLayout() {
 	// pass
-}
-
-String GeomInteraction::GetDrawCommandString() const {
-	const DrawCommand* it = &cmd_begin;
-	int i = 0;
-	String s;
-	while (it) {
-		s << i++ << ": " << it->ToString() << "\n";
-		it = it->next;
-	}
-	return s;
-}
-
-void GeomInteraction::DumpDrawCommands() const {
-	LOG(GetDrawCommandString());
 }
 
 bool GeomInteraction::Dispatch(const CtrlEvent& e) {

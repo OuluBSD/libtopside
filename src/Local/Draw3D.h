@@ -73,9 +73,9 @@ public:
 	virtual Cubf GetPaintCubf() const;
 
 	virtual	void DrawBoxOp(float x, float y, float z, float cx, float cy, float cz, Color color) = 0;
-	virtual void SysDrawImageOp(float x, float y, float z, const Image& img, Color color);
-	virtual void SysDrawImageOp(float x, float y, float z, const Image& img, const Cubf& src, Color color);
-	virtual void DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Cubf& src, Color color);
+	virtual void SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, Color color);
+	virtual void SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, const Rect& src, Color color);
+	virtual void DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Rect& src, Color color);
 	virtual void DrawDataOp(float x, float y, float z, float cx, float cy, float cz, const String& data, const char *id);
 	virtual void DrawLineOp(float x1, float y1, float z1, float x2, float y2, float z2, float width, Color color) = 0;
 
@@ -251,9 +251,9 @@ struct DrawProxy3 : Draw3 {
 	bool IsPaintingOp(const Cubf& r) const override;
 	Cubf GetPaintCubf() const override;
 	void DrawBoxOp(float x, float y, float z, float cx, float cy, float cz, Color color) override;
-	void SysDrawImageOp(float x, float y, float z, const Image& img, Color color) override;
-	void SysDrawImageOp(float x, float y, float z, const Image& img, const Cubf& src, Color color) override;
-	void DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Cubf& src, Color color) override;
+	void SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, Color color) override;
+	void SysDrawImageOp(float x, float y, float z, Sizef imgsz, const Image& img, const Rect& src, Color color) override;
+	void DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Rect& src, Color color) override;
 	void DrawDataOp(float x, float y, float z, float cx, float cy, float cz, const String& data, const char *id) override;
 	void DrawLineOp(float x1, float y1, float z1, float x2, float y2, float z2, float width, Color color) override;
 	void DrawPolyPolylineOp(const Point3f *vertices, int vertex_count,

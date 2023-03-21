@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgDraw3::ProgDraw3() /*: fb(state), shader(state)*/ {
-	//Create(Size(16,16));
+	Create(Volf(16,16,16));
 }
 
 ProgDraw3::ProgDraw3(Volf sz) /*: fb(state), shader(state)*/ {
@@ -40,7 +40,7 @@ void ProgDraw3::Create(Volf sz){
 	DrawProxy3::SetTarget(&*d);
 }
 
-void ProgDraw3::Create(Volf sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
+void ProgDraw3::Create(Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end) {
 	Clear();
 	//state.size = sz;
 	

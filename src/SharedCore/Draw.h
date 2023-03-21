@@ -4,32 +4,6 @@
 
 NAMESPACE_UPP
 
-#if 0
-#define DRAWCMD_LIST \
-	DRAWCMD(NULL) \
-	DRAWCMD(META_SIZE) \
-	DRAWCMD(META_SIZE3) \
-	\
-	DRAWCMD(BEGIN) /* dummy */ \
-	DRAWCMD(BIND_WINDOW) \
-	DRAWCMD(UNBIND_WINDOW) \
-	DRAWCMD(LINE) \
-	DRAWCMD(TEXT) \
-	DRAWCMD(IMAGE) \
-	DRAWCMD(IMAGE_SIZED) \
-	DRAWCMD(IMAGEBUFFER) \
-	DRAWCMD(RECT) \
-	DRAWCMD(TRIANGLES) \
-	DRAWCMD(POLYLINE) \
-	DRAWCMD(CLIPOFF) \
-	DRAWCMD(OFFSET) \
-	DRAWCMD(OFFSET_POINT) \
-	DRAWCMD(END) \
-	DRAWCMD(WINDOW_OFFSET) \
-	DRAWCMD(WINDOW_END) \
-	DRAWCMD(CUBF) \
-	
-#endif
 
 #define DRAWCMD_LIST \
 	DRAWCMD(NULL) \
@@ -69,17 +43,17 @@ NAMESPACE_UPP
 	
 
 
-enum {
+typedef enum {
 	#define DRAWCMD(x) DRAW_##x,
 	DRAWCMD_LIST
 	#undef DRAWCMD
 	
 	DRAW_CMD_COUNT,
-};
+} DrawCmdType;
 
 struct DrawCommand {
 	DrawCommand *prev = NULL, *next = NULL;
-	Byte type = 0;
+	DrawCmdType type = DRAW_NULL;
 	Point pt, pt2;
 	Size sz;
 	Rect r, crop;

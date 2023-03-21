@@ -113,8 +113,8 @@ struct Point3_ : Moveable<Point3_<T>> {
 
 
 typedef Point3_<int> Point3;
-typedef Point3_<float> Point3F32;
-typedef Point3_<double> Point3f;
+typedef Point3_<float> Point3f;
+typedef Point3_<double> Point3d;
 
 template <class T>
 struct Tri_ : Moveable<Tri_<T>> {
@@ -153,8 +153,8 @@ struct Tri_ : Moveable<Tri_<T>> {
 };
 
 typedef Tri_<int> Tri;
-typedef Tri_<float> TriF32;
-typedef Tri_<double> Trif;
+typedef Tri_<float> Trif;
+typedef Tri_<double> Trid;
 
 
 template <class T>
@@ -240,16 +240,16 @@ bool operator==(const Vol_<T>& a, const Vol_<T>& b) {
 }
 
 typedef Vol_<int> Vol;
-typedef Vol_<float> VolF32;
-typedef Vol_<double> Volf;
+typedef Vol_<float> Volf;
+typedef Vol_<double> Vold;
 
 
 
 template <class T> using Size3_ = Vol_<T>;
 
 typedef Size3_<int> Size3;
-typedef Size3_<float> Size3F32;
-typedef Size3_<double> Size3f;
+typedef Size3_<float> Size3f;
+typedef Size3_<double> Size3d;
 
 
 
@@ -386,7 +386,7 @@ bool operator==(const Cub_<T>& a, const Cub_<T>& b) {
 }
 
 typedef Cub_<int> Cub;
-typedef Cub_<double> Cubf;
+typedef Cub_<float> Cubf;
 
 
 inline Cubf CubfC(float x, float y, float z, float w, float h, float d) {

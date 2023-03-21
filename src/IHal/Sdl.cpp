@@ -3,15 +3,17 @@
 #if defined flagSDL2
 
 #include <CtrlCore/CtrlCore.h>
-#if IS_UPP_CORE
+
+#ifdef flagUPPCORE
 #include <GLDraw/GLDraw.h>
 #endif
 
 NAMESPACE_UPP
 
-#if IS_UPP_CORE
+#ifdef flagUPPCORE
 extern VirtualGui *VirtualGuiPtr;
 #endif
+
 extern dword lastbdowntime[8];
 extern dword isdblclick[8];
 extern dword mouseb;
@@ -76,6 +78,7 @@ struct HalSdl::NativeOglVideoSinkDevice : HalSdl_CommonOgl {
     GfxAccelAtom<SdlOglGfx> accel;
 };
 
+#ifdef flagUPPCORE
 struct HalSdl::NativeUppOglDevice : HalSdl_CommonOgl {
 	GLDraw gldraw;
 	Size sz;
@@ -83,6 +86,10 @@ struct HalSdl::NativeUppOglDevice : HalSdl_CommonOgl {
 };
 
 HalSdl::NativeUppOglDevice* HalSdl::NativeUppOglDevice::last;
+
+void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event);
+
+#endif
 
 #endif
 
@@ -100,7 +107,7 @@ struct HalSdl::NativeEventsBase {
     bool is_rctrl;
     Point prev_mouse_pt;
     Vector<int> invalids;
-    #if IS_UPP_CORE
+    #ifdef flagUPPCORE
     Ref<WindowSystem> wins;
     #endif
     Ref<Gu::SurfaceSystem> surfs;
@@ -112,7 +119,7 @@ struct HalSdl::NativeEventsBase {
         ev_sendable = 0;
         prev_mouse_pt = Point(0,0);
         sz.Clear();
-        #if IS_UPP_CORE
+        #ifdef flagUPPCORE
         wins.Clear();
         #endif
         surfs.Clear();
@@ -128,10 +135,9 @@ struct HalSdl::NativeContextBase {
 	void* p;
 };
 
+#ifdef flagUPPCORE
 struct HalSdl::NativeUppEventsBase {
-	#if IS_UPP_CORE
-    Ref<WindowSystem> wins;
-    #endif
+	Ref<WindowSystem> wins;
     Ref<Gu::SurfaceSystem> surfs;
     Ref<Gu::GuboSystem> gubos;
     double time;
@@ -150,14 +156,14 @@ struct HalSdl::NativeUppEventsBase {
     void Clear() {
         time = 0;
         seq = 0;
-        #if IS_UPP_CORE
+        #ifdef flagUPPCORE
         wins.Clear();
         #endif
         surfs.Clear();
         gubos.Clear();
     }
 };
-
+#endif
 
 
 void StaticAudioOutputSinkCallback(void* userdata, Uint8* stream, int len) {
@@ -502,7 +508,7 @@ bool HalSdl::CenterVideoSinkDevice_PostInitialize(NativeCenterVideoSinkDevice& d
     
     
     // Renderer
-    #if IS_UPP_CORE
+    #ifdef flagUPPCORE
     int fb_stride = 4;
     SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
 	#else
@@ -569,7 +575,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 	}
 	else if (fmt.IsProg()) {
 		if (dev.id.IsEmpty()) {
-			#if IS_UPP_CORE
+			#ifdef flagUPPCORE
 			dev.id = new ImageDraw(dev.sz);
 			#else
 			dev.id.Create(dev.sz, 3);
@@ -642,7 +648,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			int pitch = surf->pitch;
 			byte* pixels = (byte*)surf->pixels;
 			int len = h * pitch;
-			#if IS_UPP_CORE
+			#ifdef flagUPPCORE
 			const RGBA* begin = img.Begin();
 			int id_len = img.GetLength() * 4;
 			int id_h = img.GetHeight();
@@ -655,7 +661,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			int id_stride = dev.id->GetStride();
 			#endif
 			if (len == id_len) {
-				#if IS_UPP_CORE
+				#ifdef flagUPPCORE
 				memcpy(pixels, (byte*)begin, len);
 				#else
 				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
@@ -666,7 +672,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				int copy_pitch = min(id_pitch, pitch);
 				byte* to = pixels;
 				
-				#if IS_UPP_CORE
+				#ifdef flagUPPCORE
 				byte* from = (byte*)begin;
 				#else
 				byte* from = dev.id->Data().Begin();
@@ -1149,7 +1155,6 @@ void HalSdl__SetMouseCursor(void* ptr, const Image& image)
 
 
 
-void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event);
 
 bool HalSdl::EventsBase_Create(One<NativeEventsBase>& dev) {
 	dev.Create();
@@ -1209,7 +1214,7 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 			dev.surfs->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
 		
-		#if IS_UPP_CORE
+		#ifdef flagUPPCORE
 		dev.wins = m.Get<WindowSystem>();
 		if (dev.wins) {
 			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
@@ -1231,7 +1236,7 @@ void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
 }
 
 void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
-	#if IS_UPP_CORE
+	#ifdef flagUPPCORE
 	dev.wins.Clear();
 	#endif
 	dev.surfs.Clear();
@@ -1323,7 +1328,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 				dev.sz = screen_sz;
 				e.type = EVENT_WINDOW_RESIZE;
 				e.sz = screen_sz;
-				#ifdef flagOGL
+				#if defined flagOGL && defined flagUPPCORE
 				if (HalSdl::NativeUppOglDevice::last)
 					HalSdl::NativeUppOglDevice::last->sz = screen_sz;
 				#endif
@@ -1490,7 +1495,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	if (dev.ev.IsEmpty())
 		return false;
 	
-	#if IS_UPP_CORE
+	#ifdef flagUPPCORE
 	if (dev.wins) {
 		dev.wins->DoEvents(dev.ev);
 	}
@@ -1565,6 +1570,7 @@ void HalSdl::EventsBase_DetachContext(NativeEventsBase&, AtomBase& a, AtomBase& 
 
 
 
+#ifdef flagUPPCORE
 extern SDL_TimerID waketimer_id;
 
 bool HalSdl::UppEventsBase_Create(One<NativeUppEventsBase>& dev) {
@@ -1616,14 +1622,11 @@ bool HalSdl::UppEventsBase_PostInitialize(NativeUppEventsBase& dev, AtomBase& a)
 		
 		dev.surfs = m.Find<Gu::SurfaceSystem>();
 		dev.gubos = m.Find<Gu::GuboSystem>();
-		
-		#if IS_UPP_CORE
 		dev.wins = m.Get<WindowSystem>();
 		if (dev.wins) {
 			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
 			dev.wins->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
-		#endif
 	}
 	
 	return true;
@@ -1639,9 +1642,7 @@ void HalSdl::UppEventsBase_Stop(NativeUppEventsBase&, AtomBase& a) {
 }
 
 void HalSdl::UppEventsBase_Uninitialize(NativeUppEventsBase& dev, AtomBase& a) {
-	#if IS_UPP_CORE
 	dev.wins.Clear();
-	#endif
 	dev.surfs.Clear();
 	dev.gubos.Clear();
 	
@@ -1806,6 +1807,7 @@ void HalSdl::UppOglDevice_DetachContext(NativeUppOglDevice& dev, AtomBase& a, At
 }
 
 #endif
+#endif
 
 
 
@@ -1955,6 +1957,7 @@ dword fbKEYtoK(dword chr)
 }
 
 
+#ifdef flagUPPCORE
 void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 {
 	#if 1
@@ -2131,6 +2134,7 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 	
 	
 }
+#endif
 
 
 NAMESPACE_PARALLEL_END

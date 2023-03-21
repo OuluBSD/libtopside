@@ -13,8 +13,8 @@ class ProgDraw3 : public DrawProxy3 {
 	Volf GetFrameSize() const;
 	
 public:
-	DrawCommand cmd_screen_begin, cmd_screen_end;
-	DrawCommand render_begin, render_end;
+	DrawCommand3 cmd_screen_begin, cmd_screen_end;
+	DrawCommand3 render_begin, render_end;
 	
 	
 	void LinkRender();
@@ -26,7 +26,7 @@ public:
 	
 	void Realize(Volf sz);
 	void Create(Volf sz);
-	void Create(Volf sz, DrawCommand& sub_begin, DrawCommand& sub_end);
+	void Create(Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end);
 	void Clear();
 	void Finish();
 	void DetachTo(ProgPainter3& pp);

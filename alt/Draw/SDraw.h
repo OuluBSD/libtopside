@@ -5,11 +5,6 @@
 NAMESPACE_UPP
 
 
-
-
-
-
-
 class SDraw : public Draw {
 	
 	struct Op : Moveable<Op> {

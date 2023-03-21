@@ -13,11 +13,8 @@ void VguiMain() {
 	#endif
 	
 	
-	Gu::GuiTesterApp app;
-	//Gu::EventsTester app;
-	//CtrlTesterApp app;
+	Gu::GuboTester app;
 	app.OpenMain();
-	//app.SetRect(RectC(10,10,640,480));
 	Surface::EventLoop();
 }
 
@@ -27,11 +24,13 @@ void DesktopMain() {
 	Surface::SetDebugDraw(0);
 	Gubo::SetDebugDraw(1);
 	
+	#if 0
 	AtomVirtualGui3D gui;
-	gui.Create(RectC(100, 100, 1024, 768), "Libtopside Virtual Gui Test");
-
+	gui.Create(RectC(100, 100, 1024, 768), "GuboShell");
 	RunVirtualGui3D(gui, callback(VguiMain));
+	#endif
 	
+	VguiMain();
 }
 
 
@@ -47,7 +46,7 @@ CONSOLE_APP_MAIN {
 	
 	SingleMachine mach;
 	if (mach.Start()) {
-		DefaultRunner(0, "Gui App", SURFACE_EON);
+		DefaultRunner(0, "Gubo App", GUBO_EON);
 		
 		mach.Stop();
 	}

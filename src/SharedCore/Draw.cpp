@@ -7,14 +7,14 @@ NAMESPACE_UPP
 DrawCommand& DrawCommandCache::CreateCommand() {
 	if (unused.IsEmpty()) {
 		DrawCommand& cmd = owned.Add();
-		cmd.type = 0;
+		cmd.type = DRAW_NULL;
 		cmd.is_cached = true;
 		return cmd;
 	}
 	DrawCommand& cmd = *unused.Pop();
 	cmd.next = NULL;
 	cmd.prev = NULL;
-	cmd.type = 0;
+	cmd.type = DRAW_NULL;
 	cmd.is_cached = true;
 	return cmd;
 }

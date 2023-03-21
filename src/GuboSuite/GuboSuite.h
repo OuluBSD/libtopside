@@ -7,5 +7,6 @@
 #include "Factory.h"
 #include "Events.h"
 #include "Tester.h"
+#include "GuboTester.h"
 
 #endif

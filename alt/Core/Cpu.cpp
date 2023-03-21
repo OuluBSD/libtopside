@@ -12,5 +12,8 @@ void EndianSwap(int *v, size_t count) ENDIAN_SWAP
 void EndianSwap(int64 *v, size_t count) ENDIAN_SWAP
 void EndianSwap(uint64 *v, size_t count) ENDIAN_SWAP
 
+void MemoryIgnoreLeaksBegin() {}
+void MemoryIgnoreLeaksEnd() {}
+
 
 END_UPP_NAMESPACE

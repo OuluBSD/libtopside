@@ -34,7 +34,6 @@ typedef GeomInteraction3D Gi3;
 class GeomInteraction : RTTIBase {
 	
 public:
-	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	GeomInteraction* owner = NULL;
 	Vector<GeomInteraction*> sub;
 	LogPos pos;
@@ -63,16 +62,12 @@ public:
 	
 	int GetSubCount() const;
 	GeomInteraction* GetOwner() const;
-	void Add(GeomInteraction& c);
 	void AddSub(GeomInteraction* c);
 	GeomInteraction* GetLastSub();
 	GeomInteraction* GetIndexSub(int i);
-	void RemoveSub(GeomInteraction* c);
 	void ClearSub();
 	const LogPos& GetLogPos() const {return pos;}
 	
-	void DumpDrawCommands() const;
-	String GetDrawCommandString() const;
 	void Show(bool b=true);
 	void Hide() {Show(false);}
 	bool IsShown() const;
@@ -82,8 +77,6 @@ public:
 	bool HasMouseDeep() const {return has_mouse_deep;}
 	void WantFocus(bool b=true) {want_focus = b;}
 	void IgnoreMouse(bool b=true) {ignore_mouse = b;}
-	DrawCommand& GetCommandBegin() {return cmd_begin;}
-	DrawCommand& GetCommandEnd() {return cmd_end;}
 	bool IsPendingLayout() const {return pending_layout;}
 	
 	void SetPendingLayout() {pending_layout = true;}
@@ -100,6 +93,8 @@ public:
 	void Layout0();
 	void Refresh0();
 	
+	virtual void Add(GeomInteraction& c);
+	virtual bool RemoveSub(GeomInteraction* c);
 	virtual bool Redraw(bool only_pending) = 0;
 	virtual void SetFocus();
 	virtual void DeepUnfocus();
@@ -126,7 +121,7 @@ public:
 	virtual void PaintPreFrame(ProgPainter3& pp) {}
 	virtual void PaintPostFrame(ProgPainter3& pp) {}
 	virtual void PaintDebug(ProgPainter3& pp) {}
-	virtual void DeepLayout();
+	virtual void DeepLayout() = 0;
 	virtual void DeepFrameLayout();
 	virtual void DeepMouseLeave();
 	
@@ -164,6 +159,7 @@ public:
 class GeomInteraction2D : public GeomInteraction {
 	
 protected:
+	DrawCommand cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
 	Rect frame_r;
 	
 public:
@@ -179,6 +175,10 @@ public:
 	Rect GetFrameBox() const {return frame_r;}
 	GeomInteraction2D* GetAbsoluteDrawBegin();
 	
+	void DumpDrawCommands() const;
+	String GetDrawCommandString() const;
+	DrawCommand& GetCommandBegin() {return cmd_begin;}
+	DrawCommand& GetCommandEnd() {return cmd_end;}
 	
 	Size GetSize() const {return frame_r.GetSize();}
 	Size GetFrameSize() const {return frame_r.GetSize();}
@@ -246,6 +246,8 @@ public:
 	virtual void PadTouch(int controller, Pointf p) {}
 	virtual void PadUntouch(int controller) {}
 	
+	void Add(GeomInteraction& c) override;
+	bool RemoveSub(GeomInteraction* c) override;
 	bool Redraw(bool only_pending) override;
 	bool Is2D() const override;
 	GeomInteraction2D* Get2D() override;
@@ -261,7 +263,8 @@ public:
 class GeomInteraction3D : public GeomInteraction {
 	
 protected:
-	Cubf frame;
+	DrawCommand3 cmd_begin, cmd_frame, cmd_pre, cmd_post, cmd_end;
+	Cubf frame_r;
 	
 public:
 	RTTI_DECL1(GeomInteraction3D, GeomInteraction);
@@ -270,31 +273,47 @@ public:
 	
 	
 	// Common interface for template usage
-	Cubf GetFrameBox() const {return frame;}
-	Volf GetFrameSize() const {return frame.GetSize();}
+	Cubf GetFrameBox() const {return frame_r;}
+	Volf GetFrameSize() const {return frame_r.GetSize();}
 	GeomInteraction3D* At(int i);
 	void SetFrameCubf(const Cubf& c) {SetFrameBox(c);}
+	GeomInteraction3D* GetAbsoluteDrawBegin();
 	
+	void DumpDrawCommands() const;
+	String GetDrawCommandString() const;
+	DrawCommand3& GetCommandBegin() {return cmd_begin;}
+	DrawCommand3& GetCommandEnd() {return cmd_end;}
+	
+	void Add(GeomInteraction& c) override;
+	bool RemoveSub(GeomInteraction* c) override;
 	bool Is3D() const override;
 	GeomInteraction3D* Get3D() override;
 	bool Redraw(bool only_pending) override;
 	bool Dispatch(const CtrlEvent& e) override;
 	void Refresh() override;
+	void DeepLayout() override;
 	
-	virtual void Paint(Draw3& d) {}
+	virtual void Paint(Draw3& d);
 	virtual void SetFrameBox(const Cubf& c);
+	virtual Cubf GetContentBox() const;
 	virtual Point3f GetContentPoint(const Point3f& pt);
 	virtual Image FrameMouseEvent(int event, Point3f p, int zdelta, dword keyflags);
 	virtual Image MouseEvent(int event, Point3f p, int zdelta, dword keyflags);
+	virtual void DeepMouseMoveInFrameContent(Point3f pt, dword keyflags);
 	virtual bool DeepMouseMoveInFrame(Point3f pt, dword keyflags);
 	virtual bool DeepMouseMove(const Point3f& pt, dword keyflags);
+	virtual bool DeepMouse(int mouse_code, const Point3f& pt, dword keyflags);
+	virtual bool DeepMouseDispatch(int mouse_code, const Point3f& pt, dword keyflags);
 	virtual bool DeepMouseWheel(const Point3f& pt, int zdelta, dword keyflags);
 	virtual bool MouseMoveInFrame(Point3f pt, dword keyflags);
 	virtual bool MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword keyflags);
 	virtual bool MouseEventInFrame(int mouse_code, const Point3f& pt, dword keyflags);
+	virtual void MouseEventInFrameContent(int mouse_code, const Point3f& pt, dword keyflags);
 	virtual bool MouseWheelInFrame(Point3f p, int zdelta, dword keyflags);
+	virtual bool MouseWheelInFrameContent(Point3f p, int zdelta, dword keyflags);
 	virtual void MouseEnter(Point3f frame_p, dword keyflags);
 	virtual void MouseMove(Point3f content_p, dword keyflags) {}
+	virtual void MouseMoveInFrameContent(Point3f p, dword keyflags) {}
 	virtual void LeftDown(Point3f p, dword keyflags) {}
 	virtual void LeftDouble(Point3f p, dword keyflags) {}
 	virtual void LeftTriple(Point3f p, dword keyflags) {}
@@ -328,6 +347,8 @@ public:
 	GeomInteraction3D& TopPos(int i, int size);
 	GeomInteraction3D& LeftPos(int i, int size);
 	GeomInteraction3D& RightPos(int i, int size);
+	
+	static Point3f GetFramePointBetween(GeomInteraction3D& top_owner, GeomInteraction3D& deep_sub, const Point3f& pt);
 	
 };
 

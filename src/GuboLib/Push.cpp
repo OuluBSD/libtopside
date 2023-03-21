@@ -55,4 +55,12 @@ void Button2::MouseMove(Point content_p, dword keyflags) {
 
 
 
+
+
+
+void Button3::Paint(Draw3& d) {
+	LOG("Button3::Paint: TODO");
+}
+
+
 NAMESPACE_UPP_END

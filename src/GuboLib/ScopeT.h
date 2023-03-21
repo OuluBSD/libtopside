@@ -1,6 +1,15 @@
 #ifndef _GuboCore_ScopeT_h_
 #define _GuboCore_ScopeT_h_
 
+
+NAMESPACE_TOPSIDE_BEGIN
+
+namespace Parallel {
+struct GfxDataState;
+}
+
+NAMESPACE_TOPSIDE_END
+
 NAMESPACE_GUBO_BEGIN
 
 template <class Dim>
@@ -85,6 +94,7 @@ public:
 	ScopeT();
 
 	bool Init();
+	bool Attach();
 	//void AddInterface(InterfaceProxy&);
 	bool Poll(typename Dim::Event& e);
 	void Render();
@@ -95,7 +105,7 @@ public:
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
 	void AddInterface(TopContainer&);
-	
+	bool Load(Parallel::GfxDataState& state);
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
 	

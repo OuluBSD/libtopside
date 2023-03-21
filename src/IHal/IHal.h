@@ -38,8 +38,10 @@ struct HalSdl {
 	#endif
 	struct NativeContextBase;
 	struct NativeEventsBase;
+	#if defined flagUPPCORE
 	struct NativeUppEventsBase;
-	#if defined flagOGL
+	#endif
+	#if (defined flagOGL && defined flagUPPCORE)
 	struct NativeUppOglDevice;
 	#endif
 	
@@ -98,14 +100,16 @@ struct HalEventsBase : public Atom {
 	virtual ~HalEventsBase() {}
 };
 
+#if defined flagUPPCORE
 struct HalUppEventsBase : public Atom {
 	RTTI_DECL1(HalUppEventsBase, Atom)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~HalUppEventsBase() {}
 };
+#endif
 
-#if defined flagOGL
+#if (defined flagOGL && defined flagUPPCORE)
 struct HalUppOglDevice : public Atom {
 	RTTI_DECL1(HalUppOglDevice, Atom)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
@@ -447,6 +451,7 @@ template <class Hal> struct HalEventsBaseT : HalEventsBase {
 		Hal::EventsBase_DetachContext(*dev, *this, a);
 	}
 };
+#if defined flagUPPCORE
 template <class Hal> struct HalUppEventsBaseT : HalUppEventsBase {
 	using CLASSNAME = HalUppEventsBaseT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalUppEventsBase)
@@ -502,7 +507,8 @@ template <class Hal> struct HalUppEventsBaseT : HalUppEventsBase {
 		Hal::UppEventsBase_DetachContext(*dev, *this, a);
 	}
 };
-#if defined flagOGL
+#endif
+#if (defined flagOGL && defined flagUPPCORE)
 template <class Hal> struct HalUppOglDeviceT : HalUppOglDevice {
 	using CLASSNAME = HalUppOglDeviceT<Hal>;
 	RTTI_DECL1(CLASSNAME, HalUppOglDevice)
@@ -569,8 +575,10 @@ using SdlOglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl>;
 #endif
 using SdlContextBase = HalContextBaseT<HalSdl>;
 using SdlEventsBase = HalEventsBaseT<HalSdl>;
+#if defined flagUPPCORE
 using SdlUppEventsBase = HalUppEventsBaseT<HalSdl>;
-#if defined flagOGL
+#endif
+#if (defined flagOGL && defined flagUPPCORE)
 using SdlUppOglDevice = HalUppOglDeviceT<HalSdl>;
 #endif
 #endif

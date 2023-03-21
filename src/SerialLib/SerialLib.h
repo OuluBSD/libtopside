@@ -12,6 +12,7 @@
 #include "OglAtom.h"
 #include "DummyAtom.h"
 #include "AtomShell.h"
+#include "RenderingSystem.h"
 
 
 #endif
