@@ -9,13 +9,15 @@ Ground::Ground() {
 }
 
 Ground& Ground::SetSize(float len) {
-	Cubf c = CubfC(-len, -len, -len, 2*len, 2*len, 2*len);
+	float h = 0.1;
+	Cubf c = CubfC(-len, 0, -len, 2*len, h, 2*len);
 	SetFrameBox(c);
 	return *this;
 }
 
 void Ground::Paint(Draw3& d) {
-	TODO
+	Cubf c = GetFrameBox().GetSize();
+	d.DrawBox(c, Green());
 }
 
 
@@ -35,7 +37,8 @@ Box& Box::Move(const Point3f& pt) {
 }
 
 void Box::Paint(Draw3& d) {
-	TODO
+	Cubf c = GetFrameBox().GetSize();
+	d.DrawBox(c, Brown());
 }
 
 
@@ -52,6 +55,7 @@ GuboTester::GuboTester() {
 			1,
 			-2 + Randomf() * 4);
 		b.Move(pt);
+		Add(b);
 	}
 }
 

@@ -283,7 +283,7 @@ Cubf ProgPainter3::GetPaintCubf() const {
 
 void ProgPainter3::DrawBoxOp(float x, float y, float z, float cx, float cy, float cz, Color color) {
 	DrawCommand3& cmd = CreateCommand();
-	cmd.type = DRAW3_RECT_OP;
+	cmd.type = DRAW3_BOX_OP;
 	cmd.pt.x = x;
 	cmd.pt.y = y;
 	cmd.pt.z = z;

@@ -112,6 +112,8 @@ void ScopeT<Dim>::AddInterface(TopContainer& ts) {
 	h.SetParent(this);
 	h.SetId(id);
 	h.SetTopContainer(ts);
+	
+	h.Add(ts.SizePos());
 	this->Add(h); // Add to Interaction (e.g. GeomInteraction2D)
 
 	// Default initial position
@@ -670,11 +672,50 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
-template <class Dim>
-bool ScopeT<Dim>::Load(Parallel::GfxDataState& state) {
+template <>
+bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
+	auto& pp = pd.GetPainter();
 	
-	TODO
+	Render();
 	
+	if (1)
+		pp.Dump();
+	
+	const Cmd* it = &pd.cmd_screen_begin;
+	while (it) {
+		
+		switch (it->type) {
+		case DRAW3_BOX_OP:
+			// hash from Gubo ptr
+			
+			
+			// GfxModelState with hash (fix dictionary --> Index<hash_t>)
+			
+			
+			// Add DataObject
+			
+			
+			// Use offset
+			
+			
+		case DRAW3_CLIPOFF_OP:
+			// update offset
+			
+		case DRAW3_END_OP:
+			// update offset
+			
+			TODO;
+			break;
+			
+		default:
+			break;
+			
+		}
+		
+		it = it->next;
+	}
+	
+	return true;
 }
 
 HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)

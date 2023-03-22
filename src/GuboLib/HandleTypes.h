@@ -27,6 +27,7 @@ struct Ctx2D {
 	using Pt = Point;
 	using Box = Rect;
 	using DrawT = Draw;
+	using Cmd = DrawCommand;
 	using CmdDraw = ProgDraw;
 	using CmdPainter = ProgPainter;
 	using Button = Button2;
@@ -48,6 +49,7 @@ struct Ctx3D {
 	using Pt = Point3f;
 	using Box = Cubf;
 	using DrawT = Draw3;
+	using Cmd = DrawCommand3;
 	using CmdDraw = ProgDraw3;
 	using CmdPainter = ProgPainter3;
 	using Button = Button3;

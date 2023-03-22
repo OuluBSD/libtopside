@@ -47,40 +47,40 @@ String DrawCommand3::GetTypeString() const {
 String DrawCommand3::ToString() const {
 	String s;
 	switch (type) {
-		case DRAW3_NULL:					s << "-"; break;
-		//case DRAW3_SET_SIZE:				s << "set-size([" << sz.cx << "," << sz.cy << "])"; break;
+		case DRAW3_NULL:				s << "-"; break;
+		//case DRAW3_SET_SIZE:			s << "set-size([" << sz.cx << "," << sz.cy << "])"; break;
 		//case DRAW3_IMAGE:				s << "draw-image([" << sz.cx << "," << sz.cy << "], " << img.ToString() << ")"; break;
-		//case DRAW3_CTRL_DRAW3_BEGIN:		s << "ctrl-draw-begin()"; break;
-		//case DRAW3_CTRL_DRAW3_END:		s << "ctrl-draw-end()"; break;
-		//case DRAW3_GET_INFO:				s << "get-info()"; break;
+		//case DRAW3_CTRL_DRAW3_BEGIN:	s << "ctrl-draw-begin()"; break;
+		//case DRAW3_CTRL_DRAW3_END:	s << "ctrl-draw-end()"; break;
+		//case DRAW3_GET_INFO:			s << "get-info()"; break;
 		//case DRAW3_GET_PAGE_SIZE:		s << "get-page-size()"; break;
 		case DRAW3_START_PAGE:			s << "start-page()"; break;
-		case DRAW3_END_PAGE:				s << "end-page()"; break;
-		case DRAW3_BEGIN_OP:				s << "begin-op()"; break;
+		case DRAW3_END_PAGE:			s << "end-page()"; break;
+		case DRAW3_BEGIN_OP:			s << "begin-op()"; break;
 		case DRAW3_END_OP:				s << "end-op()"; break;
 		case DRAW3_OFFSET_OP:			s << "offset-op(" << AsString(pt) << ")"; break;
 		case DRAW3_CLIP_OP:				s << "clip-op(" << AsString(r) << ")"; break;
 		case DRAW3_CLIPOFF_OP:			s << "clipoff-op(" << AsString(r) << ")"; break;
 		case DRAW3_EXCLUDE_CLIP_OP:		s << "exclude-clip-op(" << AsString(r) << ")"; break;
 		case DRAW3_INTERSECT_CLIP_OP:	s << "intersect-clip-op(" << AsString(r) << ")"; break;
-		//case DRAW3_IS_PAINTING_OP:		s << "is-painting-op()"; break;
-		//case DRAW3_GET_PAINT_RECT:		s << "get-paint-rect()"; break;
-		case DRAW3_RECT_OP:				s << "rect-op(pt[" << pt.x << ", " << pt.y << "], sz[" << sz.cx << "," << sz.cy << "])"; break;
-		case DRAW3_SYSDRAW_IMAGE_OP:		s << "sysdraw-image-op(" << AsString(pt) << ", " << AsString(img.ToString()) << ", " << AsString(r) << ", " << ColorString() << ")"; break;
-		case DRAW3_IMAGE_OP:				s << "image-op(" << AsString(pt) << ", " << AsString(sz) << ", " << AsString(img.ToString()) << ", " << AsString(r) << ", " << ColorString() << ")"; break;
+		//case DRAW3_IS_PAINTING_OP:	s << "is-painting-op()"; break;
+		//case DRAW3_GET_PAINT_RECT:	s << "get-paint-rect()"; break;
+		case DRAW3_BOX_OP:				s << "box-op(pt[" << pt.x << ", " << pt.y << ", " << pt.z << "], sz[" << sz.cx << "," << sz.cy << "," << sz.cz << "])"; break;
+		case DRAW3_SYSDRAW_IMAGE_OP:	s << "sysdraw-image-op(" << AsString(pt) << ", " << AsString(img.ToString()) << ", " << AsString(r) << ", " << ColorString() << ")"; break;
+		case DRAW3_IMAGE_OP:			s << "image-op(" << AsString(pt) << ", " << AsString(sz) << ", " << AsString(img.ToString()) << ", " << AsString(r) << ", " << ColorString() << ")"; break;
 		case DRAW3_DATA_OP:				s << "data-op(" << AsString(pt) << ", " << AsString(sz) << ", " << txt << ", " << id << ")"; break;
 		case DRAW3_LINE_OP:				s << "line-op(" << AsString(pt) << ", " << AsString(pt2) << ", " << width << ", " << ColorString() << ")"; break;
-		case DRAW3_POLY_POLYLINE_OP:		s << "poly-polyline-op(vertices=" << points.GetCount() << ", width=" << width << ")"; break;
-		case DRAW3_POLY_POLY_POLYGON_OP:	s << "poly-poly-polygon-op(vertices=" << points.GetCount() << ")"; break;
+		case DRAW3_POLY_POLYLINE_OP:	s << "poly-polyline-op(vertices=" << points.GetCount() << ", width=" << width << ")"; break;
+		case DRAW3_POLY_POLY_POLYGON_OP:s << "poly-poly-polygon-op(vertices=" << points.GetCount() << ")"; break;
 		case DRAW3_ARC_OP:				s << "arc-op(" << AsString(r) << ", " << AsString(pt) << ", " << AsString(pt2) << ", " << width << ")"; break;
 		case DRAW3_ELLIPSE_OP:			s << "ellipse-op(" << AsString(r) << ", width=" << width << ")"; break;
 		case DRAW3_TEXT_OP:				s << "text-op([" << pt.x << ", " << pt.y << "], " << txt << ")"; break;
 		case DRAW3_DRAWING_OP:			s << "drawing-op(" << AsString(r) << ")"; break;
 		case DRAW3_PAINTING_OP:			s << "painting-op(" << AsString(r) << ")"; break;
-		//case DRAW3_GET_NATIVE_DPI:		s << "get-native-dpi()"; break;
-		case DRAW3_BEGIN_NATIVE:			s << "begin-native()"; break;
+		//case DRAW3_GET_NATIVE_DPI:	s << "get-native-dpi()"; break;
+		case DRAW3_BEGIN_NATIVE:		s << "begin-native()"; break;
 		case DRAW3_END_NATIVE:			s << "end-native()"; break;
-		//case DRAW3_GET_CLOFF_LEVEL:		s << "get-cloff-leve()"; break;
+		//case DRAW3_GET_CLOFF_LEVEL:	s << "get-cloff-leve()"; break;
 		case DRAW3_ESCAPE:				s << "escape(" << txt << ")"; break;
 		
 		#if 0
