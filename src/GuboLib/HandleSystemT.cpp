@@ -11,6 +11,7 @@ HandleSystemT<Dim>::HandleSystemT(Parallel::Machine& m) :
 
 template <class Dim>
 bool HandleSystemT<Dim>::Initialize() {
+	time = 0;
 	return true;
 }
 
@@ -28,6 +29,8 @@ void HandleSystemT<Dim>::Start() {
 template <class Dim>
 void HandleSystemT<Dim>::Update(double dt) {
 	bool closed = false;
+	
+	this->time += dt;
 	
 	for(int i = 0; i < scopes.GetCount(); i++) {
 		Scope& s = scopes[i];

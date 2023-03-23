@@ -4,15 +4,15 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgDraw3::ProgDraw3() /*: fb(state), shader(state)*/ {
-	Create(Volf(16,16,16));
+	Create(0, Volf(16,16,16));
 }
 
-ProgDraw3::ProgDraw3(Volf sz) /*: fb(state), shader(state)*/ {
-	Create(sz);
+ProgDraw3::ProgDraw3(void* hash, Volf sz) /*: fb(state), shader(state)*/ {
+	Create(hash, sz);
 }
 
-ProgDraw3::ProgDraw3(float w, float h, float d) /*: fb(state), shader(state)*/ {
-	Create(Volf(w,h,d));
+ProgDraw3::ProgDraw3(void* hash, float w, float h, float d) /*: fb(state), shader(state)*/ {
+	Create(hash, Volf(w,h,d));
 }
 
 Volf ProgDraw3::GetFrameSize() const {
@@ -20,27 +20,27 @@ Volf ProgDraw3::GetFrameSize() const {
 	//return state.size;
 }
 
-void ProgDraw3::Realize(Volf sz){
+void ProgDraw3::Realize(void* hash, Volf sz){
 	if (d.IsEmpty() || d->GetPageSize() != sz)
-		Create(sz);
+		Create(hash, sz);
 	
 	d->Clear();
 }
 
-void ProgDraw3::Create(Volf sz){
+void ProgDraw3::Create(void* hash, Volf sz){
 	Clear();
 	//state.size = sz;
 	
 	LinkRender();
 	
-	d = new ProgPainter3(sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
+	d = new ProgPainter3(hash, sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
 	
 	d->Init(sz);
 	
 	DrawProxy3::SetTarget(&*d);
 }
 
-void ProgDraw3::Create(Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end) {
+void ProgDraw3::Create(void* hash, Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end) {
 	Clear();
 	//state.size = sz;
 	
@@ -51,7 +51,7 @@ void ProgDraw3::Create(Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end) 
 	cmd_screen_begin.next = &sub_begin;
 	cmd_screen_end.prev = &sub_end;
 	
-	d = new ProgPainter3(sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
+	d = new ProgPainter3(hash, sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
 	
 }
 

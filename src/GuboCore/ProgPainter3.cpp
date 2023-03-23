@@ -2,7 +2,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-ProgPainter3::ProgPainter3(Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCommand3& end) {
+ProgPainter3::ProgPainter3(void* hash, Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCommand3& end) {
+	this->uniq = (hash_t)hash;
 	prev = p.cur ? p.cur : p.begin;
 	next = p.end;
 	begin.prev = prev;
@@ -11,11 +12,11 @@ ProgPainter3::ProgPainter3(Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCo
 	next->prev = &end;
 }
 
-ProgPainter3::ProgPainter3(Volf sz, DrawCommand3& prev, DrawCommand3& begin, DrawCommand3& end, DrawCommand3& next) :
+ProgPainter3::ProgPainter3(void* hash, Volf sz, DrawCommand3& prev, DrawCommand3& begin, DrawCommand3& end, DrawCommand3& next) :
 	prev(&prev), begin(&begin), end(&end), next(&next)
 {
+	this->uniq = (hash_t)hash;
 	SDraw3::Init(sz);
-	
 }
 
 void ProgPainter3::Clear() {
@@ -57,6 +58,7 @@ DrawCommand3& ProgPainter3::CreateCommand() {
 	cur = cmd;
 	if (!cur_begin)
 		cur_begin = cur;
+	cur->hash = uniq;
 	return *cur;
 }
 
@@ -252,6 +254,7 @@ bool ProgPainter3::ClipoffOp(const Cubf& r) {
 	DrawCommand3& cmd = CreateCommand();
 	cmd.type = DRAW3_CLIPOFF_OP;
 	cmd.r = r;
+	ASSERT(!r.IsEmpty());
 	return true;
 }
 

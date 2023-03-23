@@ -385,6 +385,18 @@ DataStateT<Gfx>::~DataStateT() {
 }
 
 template <class Gfx>
+GfxModelState& DataStateT<Gfx>::RealizeModel(hash_t link) {
+	int i = models.Find(link);
+	if (i < 0) {
+		ModelState& ms = models.Add(link);
+		ms.owner = this;
+		ms.id = link;
+		return ms;
+	}
+	else return models[i];
+}
+
+template <class Gfx>
 ModelStateT<Gfx>& DataStateT<Gfx>::AddModelT() {
 	int id = models.IsEmpty() ? 0 : models.Top().id + 1;
 	ModelState& ms = models.Add(id);

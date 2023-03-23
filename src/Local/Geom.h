@@ -359,6 +359,8 @@ struct Cub_ : Moveable<Cub_<T>> {
 	void   Offset(T dx, T dy, T dz)             { OffsetHorz(dx); OffsetVert(dy); OffsetDepth(dz); }
 	void   Offset(Pt p)                         { Offset(p.x, p.y, p.z); }
 	
+	void   Intersect(const Cub_& c);
+	
 	operator Cub_<int>() const {return Cub_<int>(left,top,near,right,bottom,far);}
 	operator Cub_<double>() const {return Cub_<double>(left,top,near,right,bottom,far);}
 	
@@ -383,6 +385,19 @@ bool operator==(const Cub_<T>& a, const Cub_<T>& b) {
 		a.right  == b.right &&
 		a.near   == b.near &&
 		a.far    == b.far;
+}
+
+template <class T>
+void Cub_<T>::Intersect(const Cub_<T>& r) {
+	if(r.left > left) left = r.left;
+	if(r.top > top) top = r.top;
+	if(r.near > near) near = r.near;
+	if(right < left) right = left;
+	if(r.right < right) right = r.right;
+	if(r.bottom < bottom) bottom = r.bottom;
+	if(r.far < far) far = r.far;
+	if(bottom < top) bottom = top;
+	if(far < near) far = near;
 }
 
 typedef Cub_<int> Cub;

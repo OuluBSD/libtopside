@@ -22,12 +22,12 @@ public:
 	RTTI_DECL1(ProgDraw, Draw)
 	#endif
 	ProgDraw();
-	ProgDraw(Size sz);
-	ProgDraw(int w, int h);
+	ProgDraw(void* hash, Size sz);
+	ProgDraw(void* hash, int w, int h);
 	
-	void Realize(Size sz);
-	void Create(Size sz);
-	void Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end);
+	void Realize(void* hash, Size sz);
+	void Create(void* hash, Size sz);
+	void Create(void* hash, Size sz, DrawCommand& sub_begin, DrawCommand& sub_end);
 	void Clear();
 	void Finish();
 	void DetachTo(ProgPainter& pp);

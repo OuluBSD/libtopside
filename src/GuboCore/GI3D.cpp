@@ -84,7 +84,7 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	Volf sz = GetFrameSize();
 	
 	if (!IsShown()) {
-		ProgPainter3 fast_exit(sz, *cmd_begin.prev, cmd_begin, cmd_end, *cmd_end.next);
+		ProgPainter3 fast_exit(this, sz, *cmd_begin.prev, cmd_begin, cmd_end, *cmd_end.next);
 		fast_exit.Link();
 		pending_fx_redraw = false;
 		pending_redraw = false;
@@ -94,7 +94,7 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	if (pending_fx_redraw) {
 		ASSERT(cmd_begin.prev);
 		ASSERT(cmd_frame.next);
-		ProgPainter3 fx(sz, *cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
+		ProgPainter3 fx(this, sz, *cmd_begin.prev, cmd_begin, cmd_frame, *cmd_frame.next);
 		
 		if (frame) {
 			fx.CtrlDrawBegin((hash_t)this);
@@ -113,7 +113,7 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	if (pending_redraw) {
 		ASSERT(cmd_frame.prev);
 		ASSERT(cmd_pre.next);
-		ProgPainter3 pre(sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
+		ProgPainter3 pre(this, sz, *cmd_frame.prev, cmd_frame, cmd_pre, *cmd_pre.next);
 		
 		bool frame = IsGeomDrawBegin();
 		if (frame && !draw_begin) {
@@ -142,7 +142,7 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	if (pending_redraw) {
 		ASSERT(cmd_post.prev);
 		ASSERT(cmd_end.next);
-		ProgPainter3 post(sz, *cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
+		ProgPainter3 post(this, sz, *cmd_post.prev, cmd_post, cmd_end, *cmd_end.next);
 		
 		content->PaintPostFrame(post);
 		post.WindowEnd();

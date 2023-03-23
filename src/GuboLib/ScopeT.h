@@ -40,6 +40,10 @@ public:
 	#endif*/
 	
 private:
+	struct Op : Moveable<Op> {
+		Box area;
+	};
+	Vector<Op> ops;
 	CmdDraw pd;
 	Vector<int> close_handle_queue;
 	ArrayMap<int, Handle> handles;

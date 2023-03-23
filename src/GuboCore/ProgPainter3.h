@@ -16,6 +16,7 @@ class ProgPainter3 : public SDraw3 {
 	Vector<double> angles;
 	Volf size;
 	Cubf drawingclip;
+	hash_t uniq = 0;
 	
 	DrawCommand3& CreateCommand();
 	
@@ -23,8 +24,8 @@ class ProgPainter3 : public SDraw3 {
 public:
 	RTTI_DECL1(ProgPainter3, SDraw3);
 	
-	ProgPainter3(Volf sz, DrawCommand3& prev, DrawCommand3& begin, DrawCommand3& end, DrawCommand3& next);
-	ProgPainter3(Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCommand3& end);
+	ProgPainter3(void* hash, Volf sz, DrawCommand3& prev, DrawCommand3& begin, DrawCommand3& end, DrawCommand3& next);
+	ProgPainter3(void* hash, Volf sz, ProgPainter3& p, DrawCommand3& begin, DrawCommand3& end);
 	~ProgPainter3() {/*Clear();*/}
 	
 	void Clear();

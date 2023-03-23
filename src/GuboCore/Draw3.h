@@ -21,12 +21,12 @@ public:
 public:
 	RTTI_DECL1(ProgDraw3, DrawProxy3)
 	ProgDraw3();
-	ProgDraw3(Volf sz);
-	ProgDraw3(float w, float h, float d);
+	ProgDraw3(void* hash, Volf sz);
+	ProgDraw3(void* hash, float w, float h, float d);
 	
-	void Realize(Volf sz);
-	void Create(Volf sz);
-	void Create(Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end);
+	void Realize(void* hash, Volf sz);
+	void Create(void* hash, Volf sz);
+	void Create(void* hash, Volf sz, DrawCommand3& sub_begin, DrawCommand3& sub_end);
 	void Clear();
 	void Finish();
 	void DetachTo(ProgPainter3& pp);

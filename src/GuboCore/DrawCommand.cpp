@@ -48,7 +48,7 @@ String DrawCommand3::ToString() const {
 	String s;
 	switch (type) {
 		case DRAW3_NULL:				s << "-"; break;
-		//case DRAW3_SET_SIZE:			s << "set-size([" << sz.cx << "," << sz.cy << "])"; break;
+		case DRAW3_SET_SIZE:			s << "set-size([" << sz.cx << "," << sz.cy << "," << sz.cz << "])"; break;
 		//case DRAW3_IMAGE:				s << "draw-image([" << sz.cx << "," << sz.cy << "], " << img.ToString() << ")"; break;
 		//case DRAW3_CTRL_DRAW3_BEGIN:	s << "ctrl-draw-begin()"; break;
 		//case DRAW3_CTRL_DRAW3_END:	s << "ctrl-draw-end()"; break;
@@ -82,13 +82,13 @@ String DrawCommand3::ToString() const {
 		case DRAW3_END_NATIVE:			s << "end-native()"; break;
 		//case DRAW3_GET_CLOFF_LEVEL:	s << "get-cloff-leve()"; break;
 		case DRAW3_ESCAPE:				s << "escape(" << txt << ")"; break;
+		case DRAW3_BIND_WINDOW:			s << "bind-window(" << HexStr(hash) << ")"; break;
+		case DRAW3_UNBIND_WINDOW:		s << "unbind-window()"; break;
 		
 		#if 0
 		case DRAW3_META_SIZE:		s << "meta-size([" << i[0] << "," << i[1] << "])"; break;
 		case DRAW3_META_SIZE3:		s << "meta-size3([" << i[0] << "," << i[1] << "," << i[2] << "])"; break;
 		case DRAW3_BEGIN:			s << "-"; break;
-		case DRAW3_BIND_WINDOW:		s << "bind-window(" << HexStr(hash) << ")"; break;
-		case DRAW3_UNBIND_WINDOW:	s << "unbind-window()"; break;
 		case DRAW3_LINE:				s << "line([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "])"; break;
 		case DRAW3_IMAGE_SIZED:		s << "image-sized([" << i[0] << "," << i[1] << "], [" << i[2] << "," << i[3] << "], " << img.ToString() << ")"; break;
 		case DRAW3_IMAGEBUFFER:		s << "image-buffer([" << i[0] << "," << i[1] << ", " << i[2] << "," << i[3] << "], " << HexStr(ptr) << ")"; break;

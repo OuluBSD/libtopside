@@ -26,6 +26,8 @@ struct VirtualGui3D : RTTIBase {
 NAMESPACE_TOPSIDE_END
 #endif
 
+#include "CoordinateSystem.h"
+
 #include "StaticGubo.h"
 #include "Push.h"
 

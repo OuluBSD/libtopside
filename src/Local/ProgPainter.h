@@ -39,6 +39,7 @@ class ProgPainter : public SDraw {
 	Vector<Point> tmp0;
 	Vector<double> angles;
 	Rect drawingclip;
+	hash_t uniq;
 	
 	DrawCommand& CreateCommand();
 	
@@ -53,8 +54,8 @@ public:
 	RTTI_DECL1(ProgPainter, SDraw);
 	#endif
 	
-	ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
-	ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
+	ProgPainter(void* hash, Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next);
+	ProgPainter(void* hash, Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end);
 	~ProgPainter() {/*Clear();*/}
 	
 	void Clear();

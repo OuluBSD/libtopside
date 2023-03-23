@@ -22,7 +22,7 @@ void DesktopMain() {
 	using namespace Parallel;
 	
 	Surface::SetDebugDraw(0);
-	Gubo::SetDebugDraw(1);
+	Gubo::SetDebugDraw(0);
 	
 	#if 0
 	AtomVirtualGui3D gui;

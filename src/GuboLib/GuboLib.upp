@@ -9,6 +9,8 @@ uses
 file
 	GuboLib.h,
 	GuboLib.cpp,
+	CoordinateSystem.h,
+	CoordinateSystem.cpp,
 	StaticGubo.h,
 	StaticGubo.cpp,
 	TextEdit.h,

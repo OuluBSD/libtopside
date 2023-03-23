@@ -51,7 +51,7 @@ struct GfxModelState : ErrorReporter {
 	RTTI_DECL1(GfxModelState, ErrorReporter)
 	
 	// meta
-	int id = -1;
+	hash_t id = -1;
 	int env_material = -1; // own material
 	int env_material_model = -1; // other model in same DataState
 	
@@ -93,6 +93,7 @@ struct GfxDataState : ErrorReporter {
 	
 	virtual GfxModelState& AddModel() = 0;
 	virtual GfxModelState& GetModel(int i) = 0;
+	virtual GfxModelState& RealizeModel(hash_t link) = 0;
 	
 };
 

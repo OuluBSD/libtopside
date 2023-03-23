@@ -31,6 +31,7 @@ private:
 	Array<Scope> scopes;
 	int active_pos = -1;
 	bool close_machine_when_empty = false;
+	double time = 0;
 	
 	Array<TopContainer> owned_wins;
 	Mutex lock;
@@ -65,6 +66,7 @@ public:
 	
 	int GetScopeCount() const {return scopes.GetCount();}
 	int GetScreenCount() const {return GetScopeCount();}
+	double GetTime() const {return time;}
 	
 	static Image OverrideCursor(const Image& img);
 	

@@ -4,15 +4,15 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 ProgDraw::ProgDraw() /*: fb(state), shader(state)*/ {
-	Create(Size(16,16));
+	Create(0,Size(16,16));
 }
 
-ProgDraw::ProgDraw(Size sz) /*: fb(state), shader(state)*/ {
-	Create(sz);
+ProgDraw::ProgDraw(void* hash, Size sz) /*: fb(state), shader(state)*/ {
+	Create(hash, sz);
 }
 
-ProgDraw::ProgDraw(int w, int h) /*: fb(state), shader(state)*/ {
-	Create(Size(w,h));
+ProgDraw::ProgDraw(void* hash, int w, int h) /*: fb(state), shader(state)*/ {
+	Create(hash, Size(w,h));
 }
 
 Size ProgDraw::GetFrameSize() const {
@@ -20,27 +20,27 @@ Size ProgDraw::GetFrameSize() const {
 	//return state.size;
 }
 
-void ProgDraw::Realize(Size sz){
+void ProgDraw::Realize(void* hash, Size sz){
 	if (d.IsEmpty() || d->GetPageSize() != sz)
-		Create(sz);
+		Create(hash, sz);
 	
 	d->Clear();
 }
 
-void ProgDraw::Create(Size sz){
+void ProgDraw::Create(void* hash, Size sz){
 	Clear();
 	//state.size = sz;
 	
 	LinkRender();
 	
-	d = new ProgPainter(sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
+	d = new ProgPainter(hash, sz, cmd_screen_begin, render_begin, render_end, cmd_screen_end);
 	
 	d->Init(sz);
 	
 	DrawProxy::SetTarget(&*d);
 }
 
-void ProgDraw::Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
+void ProgDraw::Create(void* hash, Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
 	Clear();
 	//state.size = sz;
 	
@@ -51,7 +51,7 @@ void ProgDraw::Create(Size sz, DrawCommand& sub_begin, DrawCommand& sub_end) {
 	cmd_screen_begin.next = &sub_begin;
 	cmd_screen_end.prev = &sub_end;
 	
-	d = new ProgPainter(sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
+	d = new ProgPainter(hash, sz, cmd_screen_begin, sub_begin, sub_end, cmd_screen_end);
 	
 }
 

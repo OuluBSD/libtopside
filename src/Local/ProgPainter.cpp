@@ -4,9 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
+ProgPainter::ProgPainter(void* hash, Size sz, ProgPainter& p, DrawCommand& begin, DrawCommand& end)
 	: begin(&begin), end(&end)
 {
+	uniq = (hash_t)hash;
 	SDraw::Init(sz);
 	prev = p.cur ? p.cur : p.begin;
 	next = p.end;
@@ -16,9 +17,10 @@ ProgPainter::ProgPainter(Size sz, ProgPainter& p, DrawCommand& begin, DrawComman
 	next->prev = &end;
 }
 
-ProgPainter::ProgPainter(Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
+ProgPainter::ProgPainter(void* hash, Size sz, DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : 
 	prev(&prev), begin(&begin), end(&end), next(&next)
 {
+	uniq = (hash_t)hash;
 	SDraw::Init(sz);
 	
 }
@@ -54,6 +56,7 @@ DrawCommand& ProgPainter::CreateCommand() {
 	cur = cmd;
 	if (!cur_begin)
 		cur_begin = cur;
+	cur->hash = uniq;
 	return *cur;
 }
 

@@ -122,7 +122,7 @@ struct DataStateT : GfxDataState {
 	using PipelineState = PipelineStateT<Gfx>;
 	
 	
-	ArrayMap<int, ModelState> models;
+	ArrayMap<hash_t, ModelState> models; // hash_t for "ptr hash"
 	ArrayMap<int, PipelineState> pipelines;
 	Index<String> dictionary;
 	Vector<Base*> linked;
@@ -131,6 +131,7 @@ struct DataStateT : GfxDataState {
 	~DataStateT();
 	
 	ModelState& AddModelT();
+	GfxModelState& RealizeModel(hash_t link) override;
 	GfxModelState& AddModel() override {return AddModelT();}
 	GfxModelState& GetModel(int i) override;
 	PipelineState& GetAddPipeline(String name);

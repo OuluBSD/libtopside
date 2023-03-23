@@ -79,7 +79,7 @@ void ScopeT<Dim>::Render()
 	Sz sz = b.GetSize();
 	
 	if (pd.GetPageSize() != sz)
-		pd.Create(sz);
+		pd.Create(this, sz);
 	
 	CmdPainter& pp = pd.GetPainter();
 	
@@ -681,39 +681,134 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 	if (1)
 		pp.Dump();
 	
+	ops.SetCount(0);
+	
 	const Cmd* it = &pd.cmd_screen_begin;
 	while (it) {
-		
-		switch (it->type) {
-		case DRAW3_BOX_OP:
-			// hash from Gubo ptr
-			
-			
-			// GfxModelState with hash (fix dictionary --> Index<hash_t>)
-			
+		if (it->type == DRAW3_NULL) {
+			// pass
+		}
+		else if (it->type == DRAW3_BIND_WINDOW) {
+			// pass
+		}
+		else if (it->type == DRAW3_UNBIND_WINDOW) {
+			// pass
+		}
+		else if (it->type == DRAW3_SET_SIZE) {
+			ops.Add().area = it->sz;
+		}
+		else if (it->type == DRAW3_BOX_OP) {
+			// GfxModelState with hash
+			ASSERT(it->hash);
+			GfxModelState& mdl_state = state.RealizeModel(it->hash);
 			
 			// Add DataObject
-			
-			
-			// Use offset
-			
-			
-		case DRAW3_CLIPOFF_OP:
+			if (mdl_state.GetObjectCount() == 0) {
+				ModelBuilder mb;
+				vec3 pt = GuPtVec(it->pt);
+				vec3 sz = GuSzVec(it->sz);
+				Mesh& mesh = mb.AddBox(pt, sz, false, false);
+				Model& src_mdl = mb;
+				
+				//Image img = win.rend.GetImage();
+				//src_mdl.SetTexture(plane_mesh, TEXTYPE_DIFFUSE, img, "" );
+				
+				if (!mdl_state.LoadModel(src_mdl)) {
+					LOG("ScopeT<Ctx3D>::Load: error: could not load model");
+					return false;
+				}
+				
+				ASSERT(mdl_state.GetObjectCount() == 1);
+				GfxDataObject& src_obj = mdl_state.GetObject(0);
+				
+				vec3 offset = GuPtVec(ops.Top().area.FirstCorner());
+				src_obj.model = Translate(offset);
+				
+				/*auto& mtl = src_mdl.materials.Get(mesh.material);
+				
+				win.tex_id = mtl.tex_id[TEXTYPE_DIFFUSE];
+				win.tex = mdl_state.textures.Get(win.tex_id);
+				win.inited = true;*/
+			}
+		}
+		else if (it->type == DRAW3_CLIPOFF_OP) {
 			// update offset
-			
-		case DRAW3_END_OP:
-			// update offset
-			
-			TODO;
-			break;
-			
-		default:
-			break;
-			
+			Box area = ops.Top().area;
+			Point3f tl = area.FirstCorner();
+			Box new_area = CubfC(tl + it->r.FirstCorner(), it->r.GetSize());
+			new_area.Intersect(area);
+			ops.Add().area = new_area;
+		}
+		else if (it->type == DRAW3_END_OP) {
+			ops.Pop();
+		}
+		else {
+			TODO
 		}
 		
 		it = it->next;
 	}
+	ASSERT(ops.GetCount() == 1);
+	
+	
+	float phase_time = 3.0;
+	float time = GetParentUnsafe()->GetTime();
+	Size sz(1280,720);
+	float ratio = (float)sz.cy / (float)sz.cx;
+	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
+	float aspect = (float)sz.cx / (float)sz.cy;
+	float f = time / phase_time;
+	float angle = f * (2.0 * M_PI);
+	
+	if (!state.user_view) {
+		float rad = 1.5;
+		float x = cos(angle) * rad;
+		float z = sin(angle) * rad * SCALAR_FWD_Z;
+		float eye_x = cos(angle);
+		float eye_y = sin(angle);
+		mat4 proj = Perspective(DEG2RAD(90), 1.0, 0.1, 100.0);
+		
+		vec3 eye {x, 0, z};
+		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
+		vec3 center {0, 0, 0};
+		vec3 up = VEC_UP;
+		mat4 lookat = LookAt(eye, center, up);
+		mat4 port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
+		mat4 base = port * proj;
+		
+		state.camera_pos = eye;
+		state.camera_dir = (center - eye).GetNormalized();
+		state.view = base * lookat;
+		
+		if (1) {
+			float eye_dist = 0.08;
+			state.is_stereo = true;
+			mat4 eye_port = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
+			mat4 base = eye_port * proj;
+			vec3 l_eye(-eye_dist, 0, -1 * SCALAR_FWD_Z);
+			vec3 r_eye(+eye_dist, 0, -1 * SCALAR_FWD_Z);
+			vec3 l_center { -eye_dist, 0, 0};
+			vec3 r_center { +eye_dist, 0, 0};
+			mat4 l_lookat = LookAt(l_eye, l_center, up);
+			mat4 r_lookat = LookAt(r_eye, r_center, up);
+			state.view_stereo[0] = base * l_lookat;
+			state.view_stereo[1] = base * r_lookat;
+		}
+		
+		//state.view_stereo[0] = state.view;
+		//state.view_stereo[1] = state.view;
+		
+		//mat4 rot = rotate(Identity<mat4>(), angle, up);
+		//mat4 model = Translate(vec3(0.0, 0.0, 0.0));
+		//state.view = port * proj * lookat * model * rot;
+		
+	}
+	#if 0
+	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	#else
+	state.light_dir = AxesDir(M_PI/2, M_PI/4);
+	#endif
+	
 	
 	return true;
 }
