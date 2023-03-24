@@ -285,7 +285,7 @@ void EntityContentCtrl::GetCursor(ComponentBaseRef& c) {
 
 
 EntityBrowserCtrl::EntityBrowserCtrl() {
-	ent_list.WhenEntityChanged = Proxy0(WhenEntityChanged);
+	ent_list.WhenEntityChanged = WhenEntityChanged.Proxy();
 	
 	Add(vsplit.SizePos());
 	

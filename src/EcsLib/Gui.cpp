@@ -1,6 +1,5 @@
 #include "EcsLib.h"
 #include <EcsLocal/EcsLocal.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
 
 
 NAMESPACE_ECS_BEGIN

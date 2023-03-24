@@ -158,7 +158,7 @@ void ShootingComponent::Uninitialize() {
 }
 
 bool ShootingComponent::LoadModel(ModelComponent& mdl) {
-	RenderingSystemRef sys = GetEngine().TryGet<RenderingSystem>();
+	Ecs::RenderingSystemRef sys = GetEngine().TryGet<Ecs::RenderingSystem>();
 	if (!sys)
 		return false;
 	

@@ -1,5 +1,7 @@
 #include "EcsLib.h"
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -31,3 +33,5 @@ void EventSystem::Uninitialize() {
 
 
 NAMESPACE_ECS_END
+
+#endif

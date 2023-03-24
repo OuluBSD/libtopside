@@ -77,7 +77,7 @@ void VrSpatialInteractionManager::UpdateState() {
 	
 	if (sys->is_calibration) {
 		if (!rend)
-			rend = sys->GetEngine().TryGet<RenderingSystem>();
+			rend = sys->GetEngine().TryGet<Ecs::RenderingSystem>();
 		UpdateCalibrationStateKeyboard();
 	}
 	
@@ -220,7 +220,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	}
 	
 	if (ev.n >= 0) {
-		rend->CalibrationEvent(ev);
+		TODO //rend->CalibrationEvent(ev);
 	}
 	
 }

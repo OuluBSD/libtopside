@@ -36,13 +36,4 @@ bool Ctrl::DoKeyFB(dword key, int cnt) {
 	TODO
 }
 
-void Ctrl::PaintAll() {
-	TODO
-}
-
-void Ctrl::EndSession() {
-	TODO
-}
-
-
 NAMESPACE_UPP_END

@@ -85,6 +85,7 @@ public:
 		LEFTUP,
 		RIGHTUP,
 		MIDDLEUP,
+		CURSORIMAGE,
 	};
 	
 public:
@@ -93,6 +94,7 @@ public:
 	virtual ~Ctrl() {}
 	
 	
+	virtual void   Layout();
 	virtual void   Paint(Draw& w);
 	virtual void   MouseEnter(Point p, dword keyflags) {}
 	virtual void   MouseMove(Point p, dword keyflags) {}
@@ -120,7 +122,21 @@ public:
 	virtual void   MouseWheel(Point p, int zdelta, dword keyflags) {}
 	virtual void   MouseLeave() {}
 	virtual bool   Key(dword key, int count);
-	void        Refresh();
+	virtual void   Updated();
+	virtual void   GotFocus();
+	virtual void   LostFocus();
+	
+	void           AddFrame(CtrlFrame&) {}
+	void           SetFrame(CtrlFrame&) {}
+	void           SetFocus() {}
+	void           Refresh() {}
+	void           Shutdown() {}
+	void           ClearModify() {}
+	void           SetModify() {}
+	void           Update() {}
+	void           WantFocus(bool b=true) {}
+	Image FrameMouseEvent(int event, Point p, int zdelta, dword keyflags) {return Image();}
+	Image MouseEvent(int event, Point p, int zdelta, dword keyflags) {return Image();}
 	
 	// VirtualGui
 	void        Invalidate();
@@ -129,9 +145,33 @@ public:
 	static void TimerProc(double dt);
 	static void DoMouseFB(int event, Point p, int zdelta = 0);
 	static bool DoKeyFB(dword key, int cnt);
-	static void PaintAll();
-	static void EndSession();
+	static void PaintAll() {}
+	static void EndSession() {}
 	
+	
+	Size GetSize() const {return Size(0,0);}
+	Rect GetRect() const {return Rect(0,0,0,0);}
+	void SetRect(const Rect& r) {}
+	int GetChildCount() const {return 0;}
+	int GetCursor() const {return 0;}
+	int Get() const {return 0;}
+	Ctrl* GetIndexChild(int i) {return 0;}
+	bool HasFocus() const {return false;}
+	bool IsCursor() const {return false;}
+	bool IsModified() const {return false;}
+	bool HasMouse() const {return false;}
+	
+	Ctrl& Add(Ctrl& c) {return *this;}
+	Ctrl& RemoveChild(Ctrl* c) {return *this;}
+	Ctrl& SizePos() {return *this;}
+	Ctrl& HSizePos(int a=0, int b=0) {return *this;}
+	Ctrl& VSizePos(int a=0, int b=0) {return *this;}
+	Ctrl& BottomPosZ(int a=0, int b=0) {return *this;}
+	Ctrl& LeftPos(int a=0, int b=0) {return *this;}
+	Ctrl& RightPos(int a=0, int b=0) {return *this;}
+	Ctrl& BottomPos(int a=0, int b=0) {return *this;}
+	Ctrl& TopPos(int a=0, int b=0) {return *this;}
+	Ctrl& Horz() {return *this;}
 };
 
 inline String GetKeyDesc(dword key) {return "";}
@@ -147,6 +187,7 @@ public:
 	virtual ~TopWindow() {}
 	
 	TopWindow& Title(const char *s) {return *this;}
+	TopWindow& Icon(Image) {return *this;}
 	
 };
 

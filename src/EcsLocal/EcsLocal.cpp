@@ -4,9 +4,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void BindEcsEventsBase(Serial::EcsEventsBase* b) {
+/*void BindEcsEventsBase(Serial::EcsEventsBase* b) {
 	Ecs::GetActiveEngine().Get<Ecs::EventSystem>()->Attach(b);
-}
+}*/
 
 template <class Gfx>
 void BindGfxBuffer(String id, Parallel::BufferT<Gfx>* b) {
@@ -16,11 +16,12 @@ void BindGfxBuffer(String id, Parallel::BufferT<Gfx>* b) {
 void BindEcsToSerial() {
 	using namespace Parallel;
 	
-	Serial::EcsEventsBase::WhenInitialize << callback(BindEcsEventsBase);
+	//Serial::EcsEventsBase::WhenInitialize << callback(BindEcsEventsBase);
+	
 	#ifdef flagSDL2
-	BufferT<SdlSwGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlSwGfx>));
+	BufferT<SdlSwGfx>::WhenLinkInit << callback(BindGfxBuffer<SdlSwGfx>);
 	#ifdef flagOGL
-	BufferT<SdlOglGfx>::WhenLinkInit.Add(callback(BindGfxBuffer<SdlOglGfx>));
+	BufferT<SdlOglGfx>::WhenLinkInit << callback(BindGfxBuffer<SdlOglGfx>);
 	#endif
 	#endif
 }

@@ -1,6 +1,8 @@
 #ifndef _EcsLib_Geom2DComponent_h_
 #define _EcsLib_Geom2DComponent_h_
 
+#if 0
+
 #ifdef flagGUI
 
 NAMESPACE_ECS_BEGIN
@@ -41,10 +43,10 @@ struct Geom2DComponentLink;
 
 class Geom2DComponent :
 	public GeomInteraction2D,
-	public Absolute2D,
+	/*public Absolute2D,*/
 	public Component<Geom2DComponent>
 {
-	RTTI_COMP2(Geom2DComponent, GeomInteraction2D, Absolute2D)
+	RTTI_COMP1(Geom2DComponent, GeomInteraction2D)
 	
 	#if 0
 	struct ResizeFrame : public CtrlFrame {
@@ -248,5 +250,6 @@ struct Window3D :
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

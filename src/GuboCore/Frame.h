@@ -73,8 +73,8 @@ public:
 };
 
 
-GuboFrame& NullFrame();
-GuboFrame& InsetFrame();
+/*GuboFrame& NullFrame();
+GuboFrame& InsetFrame();*/
 
 NAMESPACE_TOPSIDE_END
 

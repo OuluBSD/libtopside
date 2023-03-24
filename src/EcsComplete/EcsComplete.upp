@@ -6,8 +6,6 @@ uses
 	EcsAudioCore,
 	Complete;
 
-uses(GUI) EcsVirtualGui;
-
 uses(GUI) EcsCtrl;
 
 uses(VR) EcsVR;

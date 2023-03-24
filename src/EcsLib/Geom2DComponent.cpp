@@ -1,3 +1,4 @@
+#if 0
 #include "EcsLib.h"
 
 
@@ -689,4 +690,5 @@ void WindowDecoration::LocalMenu(Bar& bar) {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

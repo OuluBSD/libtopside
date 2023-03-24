@@ -33,7 +33,8 @@ struct Edge : Moveable<Edge> {
 };
 
 inline Size MinFactor(Size sz, int w, int h) {
-	sz *= 1.5;
+	sz.cx = (int)(sz.cx * 1.5);
+	sz.cy = (int)(sz.cy * 1.5);
 	double factor = (double)sz.cx / sz.cy;
 	double target = (double)w / h;
 	if (factor < target)

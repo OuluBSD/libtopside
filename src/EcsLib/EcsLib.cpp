@@ -12,8 +12,8 @@ INITBLOCK_(EcsLib) {
 	
 	// System
 	Engine::Register<Ecs::RegistrySystem>("registry");
-	Engine::Register<EventSystem>("events");
-	Engine::Register<RenderingSystem>("rendering");
+	//Engine::Register<Ecs::EventSystem>("events");
+	Engine::Register<Ecs::RenderingSystem>("rendering");
 	
 	
 	// Component

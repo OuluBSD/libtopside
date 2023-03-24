@@ -201,7 +201,7 @@ void ModelComponent::Clear() {
 bool ModelComponent::Load(GfxDataState& state) {
 	if (gfx_state) {
 		// TODO if differs, reset gfx_id etc.
-		ASSERT(&gfx_state == &state);
+		ASSERT(gfx_state == &state);
 	}
 	
 	gfx_state = &state;
@@ -237,7 +237,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 			return false;
 		}
 		
-		skybox.env_material = skybox.GetMateriaKey(0);
+		skybox.env_material = skybox.GetMaterialKey(0);
 		skybox.env_material_model = skybox.id;
 		
 		bool b = skybox.SetProgram("sky");

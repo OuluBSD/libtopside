@@ -13,6 +13,7 @@
 #include "DummyAtom.h"
 #include "AtomShell.h"
 #include "Rendering.h"
+#include "ModelCache.h"
 
 
 #endif

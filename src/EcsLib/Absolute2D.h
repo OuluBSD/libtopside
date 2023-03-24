@@ -1,6 +1,7 @@
 #ifndef _EcsLib_Abs2D_h_
 #define _EcsLib_Abs2D_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 namespace Ecs {
@@ -50,4 +51,5 @@ public:
 END_UPP_NAMESPACE
 
 
+#endif
 #endif

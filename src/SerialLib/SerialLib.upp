@@ -21,6 +21,8 @@ file
 	DummyAtom.cpp,
 	Rendering.h,
 	Rendering.cpp,
+	ModelCache.h,
+	ModelCache.cpp,
 	Trash readonly separator,
 	RenderingSystem.h,
 	RenderingSystem.cpp;

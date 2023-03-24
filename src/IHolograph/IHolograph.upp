@@ -1,11 +1,14 @@
 description "\377B85,42,150";
 
-	uses ParallelLib;
-	uses IMedia;
-	uses(LINUX) ports/hcidump;
-	uses(LOCALHMD) LocalHMD;
+uses
+	ParallelLib,
+	IMedia;
 
-	library(LINUX & OPENHMD) "openhmd hidapi-libusb";
+uses(LINUX) ports/hcidump;
+
+uses(LOCALHMD) LocalHMD;
+
+library(LINUX & OPENHMD) "openhmd hidapi-libusb";
 
 file
 	IHolograph.h,
@@ -18,4 +21,5 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-        "" = "";
+	"" = "";
+

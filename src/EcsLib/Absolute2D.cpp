@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#if 0
 
 NAMESPACE_UPP
 
@@ -92,3 +93,5 @@ Ecs::Geom2DComponent* Absolute2D::GetWindow() {
 
 
 END_UPP_NAMESPACE
+
+#endif

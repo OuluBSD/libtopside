@@ -36,11 +36,12 @@
 #include "Absolute2D.h"
 #include "Geom2DComponent.h"
 
-#ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
-	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
-#else
-	#error GUIPLATFORM_INCLUDE_AFTER_ECSLIB not defined
-#endif
+//#ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
+//	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
+//#else
+//	#error GUIPLATFORM_INCLUDE_AFTER_ECSLIB not defined
+//#endif
+
 
 #endif
 

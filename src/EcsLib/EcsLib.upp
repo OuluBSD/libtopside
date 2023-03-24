@@ -20,8 +20,6 @@ file
 	RenderingSystem.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
-	EventSystem.h,
-	EventSystem.cpp,
 	Prefab.h,
 	Prefab.cpp,
 	WorldLogic.h,
@@ -31,9 +29,11 @@ file
 	PhysicsSystem.cpp,
 	Gui.h,
 	Gui.cpp,
+	Trash readonly separator,
+	EventSystem.h,
+	EventSystem.cpp,
 	Absolute2D.h,
 	Absolute2D.cpp,
 	Geom2DComponent.h,
-	Geom2DComponent.cpp,
-	Trash readonly separator;
+	Geom2DComponent.cpp;
 

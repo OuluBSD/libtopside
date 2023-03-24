@@ -113,11 +113,11 @@ void InteractionSystem::BindEventHandlers() {
 	ASSERT(spatial_interaction_manager);
 	InteractionManager* s = spatial_interaction_manager;
 	
-    s->WhenSourceDetected.Add(THISBACK(HandleSourceDetected));
-    s->WhenSourcePressed.Add(THISBACK(HandleSourcePressed));
-    s->WhenSourceUpdated.Add(THISBACK(HandleSourceUpdated));
-    s->WhenSourceReleased.Add(THISBACK(HandleSourceReleased));
-    s->WhenSourceLost.Add(THISBACK(HandleSourceLost));
+    s->WhenSourceDetected << (THISBACK(HandleSourceDetected));
+    s->WhenSourcePressed << (THISBACK(HandleSourcePressed));
+    s->WhenSourceUpdated << (THISBACK(HandleSourceUpdated));
+    s->WhenSourceReleased << (THISBACK(HandleSourceReleased));
+    s->WhenSourceLost << (THISBACK(HandleSourceLost));
     
 }
 
@@ -125,11 +125,19 @@ void InteractionSystem::ReleaseEventHandlers() {
     ASSERT(spatial_interaction_manager);
 	InteractionManager* s = spatial_interaction_manager;
 
+#if 0
     s->WhenSourceLost.RemoveThis(this);
     s->WhenSourceReleased.RemoveThis(this);
     s->WhenSourceUpdated.RemoveThis(this);
     s->WhenSourcePressed.RemoveThis(this);
     s->WhenSourceDetected.RemoveThis(this);
+#else
+    s->WhenSourceLost.Clear();
+    s->WhenSourceReleased.Clear();
+    s->WhenSourceUpdated.Clear();
+    s->WhenSourcePressed.Clear();
+    s->WhenSourceDetected.Clear();
+#endif
 }
 
 void InteractionSystem::HandleSourceDetected(const InteractionManager&, const CtrlEvent& e) {

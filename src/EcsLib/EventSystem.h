@@ -1,6 +1,8 @@
 #ifndef _EcsLib_EventSystem_h_
 #define _EcsLib_EventSystem_h_
 
+#if 0
+
 NAMESPACE_ECS_BEGIN
 using namespace Parallel;
 
@@ -34,4 +36,5 @@ using EventSystemRef = Ref<EventSystem>;
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

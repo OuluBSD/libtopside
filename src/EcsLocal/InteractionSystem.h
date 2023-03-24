@@ -94,7 +94,7 @@ struct VrControllerSource : ControllerSource {
 
 struct VrSpatialInteractionManager : InteractionManager {
 	EnvStateRef state;
-	RenderingSystemRef rend;
+	Ecs::RenderingSystemRef rend;
 	VrControllerSource ctrl;
 	InteractionSystem* sys = 0;
 	Point prev_mouse = Point(0,0);

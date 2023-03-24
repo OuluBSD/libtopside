@@ -6,7 +6,6 @@
 #include <EcsMinimal/EcsMinimal.h>
 #include <Physics/Physics.h>
 #include <EcsLocal/EcsLocal.h>
-#include <EcsVirtualGui/EcsVirtualGui.h>
 
 
 #ifdef flagGUI

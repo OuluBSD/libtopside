@@ -24,10 +24,6 @@ protected:
 	bool						is_dummy = false;
 	
 	// calibration
-	CalibrationData				calib;
-	
-	ArrayMap<String, ModelLoader> model_cache;
-	
 	Vector<Gu::GuboManager*> gubo_scopes;
 	
 protected:

@@ -4,8 +4,6 @@ uses
 	EcsLocal,
 	EcsPhysics;
 
-uses(GUI) EcsVirtualGui;
-
 file
 	EcsMinimal.h,
 	EcsMinimal.cpp;
