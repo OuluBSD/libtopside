@@ -5,11 +5,10 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-template <class Gfx>
-struct GuiProgT :
+struct GuiProg :
 	public BinderIfaceVideo
 {
-	RTTI_DECL1(GuiProgT, BinderIfaceVideo)
+	RTTI_DECL1(GuiProg, BinderIfaceVideo)
 	
 	ModelLoader loader;
 	String obj;
@@ -25,15 +24,15 @@ struct GuiProgT :
 	bool have_skybox = false;
 	String skybox_diffuse, skybox_irradiance;
 	
-	GuiProgT();
-	void operator=(const GuiProgT& t) {Panic("Can't copy GuiProgT");}
+	GuiProg();
+	void operator=(const GuiProg& t) {Panic("Can't copy GuiProgT");}
 	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Render(Draw& draw) override;
 	bool Arg(const String& key, const String& value) override;
 	
-	void DrawObj(StateDrawT<Gfx>& fb, bool use_texture);
+	void DrawObj(GfxStateDraw& fb, bool use_texture);
 	
 };
 

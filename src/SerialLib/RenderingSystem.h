@@ -1,6 +1,8 @@
 #ifndef _SerialLib_RenderingSystem_h_
 #define _SerialLib_RenderingSystem_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 using namespace Serial;
 
@@ -62,4 +64,5 @@ using RenderingSystemRef = Ref<RenderingSystem>;
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

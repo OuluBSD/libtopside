@@ -179,7 +179,7 @@ void ModelStateT<Gfx>::Clear() {
 }
 
 template <class Gfx>
-int ModelStateT<Gfx>::GetMateriaKey(int i) const {
+int ModelStateT<Gfx>::GetMaterialKey(int i) const {
 	return materials.GetKey(i);
 }
 

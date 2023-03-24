@@ -15,7 +15,8 @@ NAMESPACE_GUBO_BEGIN
 template <class Dim>
 class ScopeT :
 	public RefScopeEnabler<ScopeT<Dim>, HandleSystemT<Dim>>,
-	public Dim::Container
+	public Dim::Container,
+	public Parallel::RendererContent
 {
 
 public:
@@ -94,7 +95,7 @@ public:
 	void SetFrameWithMouse(ContainerFrame* c) { frame_with_mouse = c; }
 
 public:
-	RTTI_DECL_R1(Scope, Container)
+	RTTI_DECL_R2(Scope, Container, RendererContent)
 	typedef ScopeT<Dim> CLASSNAME;
 	ScopeT();
 
@@ -110,7 +111,7 @@ public:
 	bool MouseMoveInFrame(Pt pt, dword keyflags) override;
 	bool DeepMouseMove(const Pt& pt, dword keyflags) override;
 	void AddInterface(TopContainer&);
-	bool Load(Parallel::GfxDataState& state);
+	bool Load(Parallel::GfxDataState& state) override;
 	bool CheckRender();
 	bool IsRender() const {return do_render;}
 	

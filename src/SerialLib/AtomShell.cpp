@@ -183,7 +183,6 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 				    #if IS_UPP_CORE && defined flagGUI
 				    WindowSystemRef win		= mach.FindAdd<WindowSystem>();
 				    #endif
-				    RenderingSystemRef rend	= mach.FindAdd<RenderingSystem>();
 				    
 				    mach.FindAdd<PacketTracker>();
 				}

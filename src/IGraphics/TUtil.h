@@ -38,7 +38,7 @@ struct StateDrawT : GfxStateDraw {
 	void DrawShaderPipeline(ShaderPipeline&) {TODO}
 	
 	bool HasTarget() const override {return /*rend && fb &&*/ state;}
-	DataState& GetState() {return *state;}
+	DataState& GetState() override {return *state;}
 	GfxDataState& GetGfxState() override {return *state;}
 	Size GetPageSize() const override {return size;}
 	

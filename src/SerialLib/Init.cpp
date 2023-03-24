@@ -14,6 +14,8 @@ INITBLOCK_(SerialLib) {
 	#undef IFACE_CTX_CLS
 	#undef ECS_CTX
 	
+	GfxProgramLibrary::template AddProgramClass<Parallel::RendererBase>("the_renderer_program");
+	
 }
 
 NAMESPACE_UPP_END

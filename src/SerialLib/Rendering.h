@@ -1,14 +1,14 @@
-#ifndef _IGraphics_ObjViewProg_h_
-#define _IGraphics_ObjViewProg_h_
-
+#ifndef _SerialLib_Rendering_h_
+#define _SerialLib_Rendering_h_
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-struct ObjViewProg :
+
+struct RendererBase :
 	public BinderIfaceVideo
 {
-	RTTI_DECL1(ObjViewProg, BinderIfaceVideo)
+	RTTI_DECL1(RendererBase, BinderIfaceVideo)
 	
 	ModelLoader loader;
 	String obj;
@@ -24,8 +24,8 @@ struct ObjViewProg :
 	bool have_skybox = false;
 	String skybox_diffuse, skybox_irradiance;
 	
-	ObjViewProg();
-	void operator=(const ObjViewProg& t) {Panic("Can't copy ObjViewProgT");}
+	RendererBase();
+	void operator=(const RendererBase& t) {Panic("Can't copy RendererBase");}
 	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	void Initialize() override;
 	void Uninitialize() override;
@@ -38,6 +38,5 @@ struct ObjViewProg :
 
 
 NAMESPACE_PARALLEL_END
-
 
 #endif

@@ -1,11 +1,9 @@
-#include "IGraphics.h"
-
+#include "SerialLib.h"
 
 NAMESPACE_PARALLEL_BEGIN
 
 
-
-ObjViewProg::ObjViewProg() {
+RendererBase::RendererBase() {
 	sz = Size(TS::default_width, TS::default_height);
 	
 	if (0) {
@@ -16,19 +14,16 @@ ObjViewProg::ObjViewProg() {
 	}
 }
 
-
-void ObjViewProg::Initialize() {
-	TODO //Serial::FboAtom::Latest().AddBinder(this);
+void RendererBase::Initialize() {
+	//DON'T do something like: Serial::FboAtomT<Gfx>::Latest().AddBinder(this);
 }
 
-
-void ObjViewProg::Uninitialize() {
-	TODO //Serial::FboAtom::Latest().RemoveBinder(this);
+void RendererBase::Uninitialize() {
+	//DON'T do something like: Serial::FboAtomT<Gfx>::Latest().RemoveBinder(this);
 	loader.Clear();
 }
 
-
-bool ObjViewProg::Arg(const String& key, const String& value) {
+bool RendererBase::Arg(const String& key, const String& value) {
 	
 	if (key == "use.pbr") {
 		use_pbr = value == "true";
@@ -55,13 +50,17 @@ bool ObjViewProg::Arg(const String& key, const String& value) {
 	return true;
 }
 
-
-bool ObjViewProg::Render(Draw& fb) {
-	GfxStateDraw* sd = CastPtr<GfxStateDraw>(&fb);
+bool RendererBase::Render(Draw& fb) {
+	using DataState = GfxStateDraw;
+	using ModelState = GfxModelState;
+	using StateDraw = GfxStateDraw;
+	
+	StateDraw* sd = CastPtr<StateDraw>(&fb);
 	ASSERT(sd);
+	if (!sd) return false;
+	GfxDataState& state = sd->GetState();
 	
 	if (frame == 0) {
-		GfxDataState& state = sd->GetState();
 		
 		if (state.GetModelCount() == 0) {
 			int env_material_model = -1;
@@ -121,6 +120,12 @@ bool ObjViewProg::Render(Draw& fb) {
 	}
 	
 	
+	for (RendererContent* rc : RendererContent::Content()) {
+		if (!rc->Load(state))
+			return false;
+	}
+	
+	
 	DrawObj(*sd, true);
 	
 	iter++;
@@ -134,8 +139,7 @@ bool ObjViewProg::Render(Draw& fb) {
 	return true;
 }
 
-
-void ObjViewProg::DrawObj(GfxStateDraw& fb, bool use_texture) {
+void RendererBase::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	GfxDataState& state = fb.GetState();
 	

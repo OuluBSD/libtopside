@@ -26,13 +26,7 @@ bool ScopeT<Dim>::Attach()
 template <>
 bool ScopeT<Ctx3D>::Attach()
 {
-	RenderingSystemRef rend = GetManager()->GetMachine().template Find<RenderingSystem>();
-	if (!rend) {
-		LOG("ScopeT<Dim>::Init: error: no RenderingSystem in machine");
-		return false;
-	}
-	rend->Attach(this);
-	
+	Parallel::RendererContent::AddContent(this);
 	return true;
 }
 
@@ -672,8 +666,16 @@ void ScopeT<Dim>::SetWithMouse(Container* c) {
 	with_mouse_ctrl = c;
 }
 
+
+template <class Dim>
+bool ScopeT<Dim>::Load(Parallel::GfxDataState& state) {
+	LOG("ScopeT<Dim>::Load: error: unimplemented");
+	return false;
+}
+
 template <>
 bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
+	using namespace Parallel;
 	auto& pp = pd.GetPainter();
 	
 	Render();

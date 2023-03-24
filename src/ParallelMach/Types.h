@@ -489,6 +489,23 @@ typedef FixedArray<byte, 256> KeyVec;
 
 }
 
+
+
+struct GfxDataState;
+
+struct RendererContent : RTTIBase {
+	RTTI_DECL0(RendererContent)
+	
+	virtual bool Load(GfxDataState& state) = 0;
+	
+	static Vector<RendererContent*>& Content() {static Vector<RendererContent*> v; return v;}
+	static void AddContent(RendererContent* r) {VectorFindAdd(Content(), r);}
+	static void RemoveContent(RendererContent* r) {VectorRemoveKey(Content(), r);}
+	
+};
+
+
+
 NAMESPACE_PARALLEL_END
 
 

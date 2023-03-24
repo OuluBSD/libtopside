@@ -5,8 +5,8 @@ uses
 	SerialScript;
 
 file
-	SerialLib.h,
 	Init.cpp,
+	SerialLib.h,
 	Types.h,
 	SingleMachine.cpp,
 	EntitySystem.h,
@@ -19,6 +19,9 @@ file
 	AtomShell.cpp,
 	DummyAtom.h,
 	DummyAtom.cpp,
+	Rendering.h,
+	Rendering.cpp,
+	Trash readonly separator,
 	RenderingSystem.h,
 	RenderingSystem.cpp;
 

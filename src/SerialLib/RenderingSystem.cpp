@@ -1,5 +1,7 @@
 #include "SerialLib.h"
 
+#if 0
+
 #if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 NAMESPACE_PARALLEL_BEGIN
 GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev);
@@ -122,3 +124,5 @@ void RenderingSystem::Attach(Gu::GuboManager* b) {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

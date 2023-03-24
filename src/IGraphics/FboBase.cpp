@@ -36,7 +36,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	
 	String bin  = program + "_program";
-	auto& bin_map  = ShaderLibrary<Gfx>::GetBinders();
+	auto& bin_map  = GfxProgramLibrary::GetBinders();
 	int bin_i  = bin_map.Find(bin);
 	
 	if (bin_i < 0) {
@@ -91,8 +91,14 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 		prog.pending_compilation = true;
 	}
 	
+	
+	// Create BinderIfaceVideo
 	own_binder = bin_map[bin_i]();
+	if (!own_binder)
+		return false;
+	own_binder->Initialize();
 	binders.Add(&*own_binder);
+	
 	
 	Index<String> keys;
 	ws.FindKeys(".program.arg.", keys);
@@ -135,6 +141,10 @@ bool FboAtomT<Gfx>::PostInitialize() {
 
 template <class Gfx>
 void FboAtomT<Gfx>::Uninitialize() {
+	if (own_binder) {
+		own_binder->Uninitialize();
+		own_binder.Clear();
+	}
 	data.Clear();
 }
 

@@ -32,9 +32,6 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     mach.Add<WindowSystem>();
     #endif
     
-    // After Gubo & WindowSystem
-    mach.Add<RenderingSystem>();
-    
 	
     reg->SetAppName("Non-screen machine");
     

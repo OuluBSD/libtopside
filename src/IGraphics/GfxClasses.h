@@ -63,7 +63,7 @@ struct GfxModelState : ErrorReporter {
 	virtual bool LoadModel(ModelLoader& l) = 0;
 	virtual bool LoadModel(Model& m) = 0;
 	virtual bool LoadModelTextures(Model& m) = 0;
-	virtual int GetMateriaKey(int i) const = 0;
+	virtual int GetMaterialKey(int i) const = 0;
 	virtual bool SetProgram(String name) = 0;
 	
 };
@@ -94,6 +94,7 @@ struct GfxDataState : ErrorReporter {
 	virtual GfxModelState& AddModel() = 0;
 	virtual GfxModelState& GetModel(int i) = 0;
 	virtual GfxModelState& RealizeModel(hash_t link) = 0;
+	virtual int GetModelCount() const = 0;
 	
 };
 
@@ -315,6 +316,7 @@ struct GfxStateDraw : Draw2 {
 	
 	virtual GfxDataState& GetGfxState() = 0;
 	virtual bool HasTarget() const = 0;
+	virtual GfxDataState& GetState() = 0;
 	
 };
 

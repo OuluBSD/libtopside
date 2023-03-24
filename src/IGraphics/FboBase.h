@@ -4,9 +4,19 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+class GfxAtomBase : public Atom {
+	
+	
+public:
+	RTTI_DECL1(GfxAtomBase, Atom)
+	GfxAtomBase() {}
+	
+};
+
+
 template <class Gfx>
 struct FboAtomT :
-	Atom
+	GfxAtomBase
 {
 	using StateDraw = StateDrawT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
@@ -32,7 +42,7 @@ struct FboAtomT :
 	static FboAtomT*	latest;
 	
 public:
-	RTTI_DECL1(FboAtomT, Atom);
+	RTTI_DECL1(FboAtomT, GfxAtomBase);
 	FboAtomT();
 	
 	bool			Initialize(const Script::WorldState& ws) override;

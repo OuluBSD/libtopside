@@ -94,7 +94,7 @@ struct ModelStateT : GfxModelState {
 	bool LoadModel(Model& m) override;
 	bool LoadModelTextures(Model& m) override;
 	void Clear() override;
-	int GetMateriaKey(int i) const override;
+	int GetMaterialKey(int i) const override;
 	bool SetProgram(String name) override;
 	
 protected:
@@ -137,7 +137,7 @@ struct DataStateT : GfxDataState {
 	PipelineState& GetAddPipeline(String name);
 	PipelineState* FindPipeline(String name);
 	
-	int GetModelCount() const {return models.GetCount();}
+	int GetModelCount() const override {return models.GetCount();}
 	void Clear();
 	
 };

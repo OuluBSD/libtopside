@@ -16,7 +16,7 @@ machine sdl.app:
 			ogl.customer
 			sdl.ogl.fbo.program:
 				drawmem =		"false"
-				program =		"obj_view"
+				program =		"the_renderer"
 				shader.default.frag.path =		"shaders/tests/07d_fragment.glsl"
 				shader.default.vtx.path =		"shaders/tests/07d_vertex.glsl"
 			sdl.fbo.sink:

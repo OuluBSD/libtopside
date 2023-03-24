@@ -4,25 +4,21 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-template <class Gfx>
-GuiProgT<Gfx>::GuiProgT() {
+GuiProg::GuiProg() {
 	sz = Size(TS::default_width, TS::default_height);
 	
 }
 
-template <class Gfx>
-void GuiProgT<Gfx>::Initialize() {
-	Serial::FboAtomT<Gfx>::Latest().AddBinder(this);
+void GuiProg::Initialize() {
+	TODO //Serial::FboAtomT::Latest().AddBinder(this);
 }
 
-template <class Gfx>
-void GuiProgT<Gfx>::Uninitialize() {
-	Serial::FboAtomT<Gfx>::Latest().RemoveBinder(this);
+void GuiProg::Uninitialize() {
+	TODO //Serial::FboAtomT::Latest().RemoveBinder(this);
 	loader.Clear();
 }
 
-template <class Gfx>
-bool GuiProgT<Gfx>::Arg(const String& key, const String& value) {
+bool GuiProg::Arg(const String& key, const String& value) {
 	
 	if (key == "use.pbr") {
 		use_pbr = value == "true";
@@ -49,13 +45,8 @@ bool GuiProgT<Gfx>::Arg(const String& key, const String& value) {
 	return true;
 }
 
-template <class Gfx>
-bool GuiProgT<Gfx>::Render(Draw& fb) {
-	using DataState = DataStateT<Gfx>;
-	using ModelState = ModelStateT<Gfx>;
-	using StateDraw = StateDrawT<Gfx>;
-	
-	StateDraw* sd = CastPtr<StateDraw>(&fb);
+bool GuiProg::Render(Draw& fb) {
+	GfxStateDraw* sd = CastPtr<GfxStateDraw>(&fb);
 	ASSERT(sd);
 	
 	#if 0
@@ -134,12 +125,9 @@ bool GuiProgT<Gfx>::Render(Draw& fb) {
 	return true;
 }
 
-template <class Gfx>
-void GuiProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
-	using DataState = DataStateT<Gfx>;
-	
+void GuiProg::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
-	DataState& state = fb.GetState();
+	GfxDataState& state = fb.GetState();
 	
 	#if 1
 	
@@ -200,11 +188,6 @@ void GuiProgT<Gfx>::DrawObj(StateDrawT<Gfx>& fb, bool use_texture) {
 	#endif
 	
 }
-
-
-SDLOGL_EXCPLICIT_INITIALIZE_CLASS(GuiProgT)
-X11OGL_EXCPLICIT_INITIALIZE_CLASS(GuiProgT)
-X11SW_EXCPLICIT_INITIALIZE_CLASS(GuiProgT)
 
 
 NAMESPACE_PARALLEL_END
