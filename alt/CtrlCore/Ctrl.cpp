@@ -2,7 +2,7 @@
 
 NAMESPACE_UPP_BEGIN
 
-VirtualGui* VirtualGuiPtr;
+//VirtualGui* VirtualGuiPtr;
 
 
 Bar::Bar() {
@@ -19,8 +19,29 @@ Bar& Bar::Separator() {
 
 
 
+Ctrl* Ctrl::captureCtrl;
+Ctrl* Ctrl::LoopCtrl;
 
-bool GetMouseLeft() {
+//Ptr<Ctrl>      Ctrl::desktop;
+Ptr<Ctrl>      Ctrl::focusCtrl;
+//Vector<Ctrl *> Ctrl::topctrl;
+
+//bool           Ctrl::invalid;
+bool           Ctrl::ignoreclick;
+bool           Ctrl::inloop;
+
+//Point          Ctrl::fbCursorPos;
+//Image          Ctrl::fbCursorImage;
+
+//Rect           Ctrl::fbCaretRect;
+//int            Ctrl::fbCaretTm;
+//bool           Ctrl::fbEndSession;
+//int            Ctrl::PaintLock;
+dword          Ctrl::EndSessionLoopNo;
+dword          Ctrl::EventLoopNo;
+dword          Ctrl::LoopLevel;
+
+/*bool GetMouseLeft() {
 	return false;
 }
 
@@ -34,6 +55,11 @@ void Ctrl::DoMouseFB(int event, Point p, int zdelta) {
 
 bool Ctrl::DoKeyFB(dword key, int cnt) {
 	TODO
-}
+}*/
+
+/*void Ctrl::MouseEventFB(Ptr<Ctrl> t, int event, Point p, int zdelta) {
+	
+}*/
+
 
 NAMESPACE_UPP_END

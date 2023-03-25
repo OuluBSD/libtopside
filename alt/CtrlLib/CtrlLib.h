@@ -7,7 +7,7 @@
 NAMESPACE_UPP_BEGIN
 
 struct FileSel {
-	void ActiveDir(String path);
+	void ActiveDir(String path) {}
 };
 class Button: public Ctrl {};
 class DocEdit: public Ctrl {};

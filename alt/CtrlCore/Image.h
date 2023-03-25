@@ -6,11 +6,30 @@ NAMESPACE_UPP_BEGIN
 
 
 struct FBImg {
-	#define IMG(x) static const Image& x() {static Image i; return i;}
-	IMG(overlap)
-	IMG(maximize)
-	IMG(minimize)
-	#undef IMG
+	#define FBIMG(x) static const Image& x();// {static Image i; return i;}
+	FBIMG(close)
+	FBIMG(maximize)
+	FBIMG(overlap)
+	FBIMG(border)
+	FBIMG(title)
+	FBIMG(bgtitle)
+	FBIMG(Arrow)
+	FBIMG(Wait)
+	FBIMG(IBeam)
+	FBIMG(No)
+	FBIMG(SizeAll)
+	FBIMG(SizeHorz)
+	FBIMG(SizeVert)
+	FBIMG(SizeTopLeft)
+	FBIMG(SizeTop)
+	FBIMG(SizeTopRight)
+	FBIMG(SizeLeft)
+	FBIMG(SizeRight)
+	FBIMG(SizeBottomLeft)
+	FBIMG(SizeBottom)
+	FBIMG(SizeBottomRight)
+	FBIMG(Hand)
+	#undef FBIMG
 };
 
 struct CtrlImg {
