@@ -25,7 +25,7 @@ void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
 
 void DefaultGuiAppComponent::Initialize() {
 	AddToUpdateList();
-	Serial::EcsVideoBase::AddBinder(this);
+	Serial::HandleVideoBase::AddBinder(this);
 	Serial::EventStateBase::AddBinder(this);
 	
 	cw = GetEntity()->Find<Geom2DComponent>();
@@ -39,7 +39,7 @@ void DefaultGuiAppComponent::Uninitialize() {
 	trans2.Clear();
 	
 	RemoveFromUpdateList();
-	Serial::EcsVideoBase::RemoveBinder(this);
+	Serial::HandleVideoBase::RemoveBinder(this);
 	Serial::EventStateBase::RemoveBinder(this);
 }
 

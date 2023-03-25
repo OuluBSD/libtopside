@@ -161,7 +161,7 @@ public:
 	static Callback WhenPreFirstUpdate;
 	
 	Serial::EntitySystem& GetEntitySystem() {ASSERT(sys); return *sys;}
-	
+	Serial::Machine& GetMachine() {return sys->GetMachine();}
 	
 protected:
 	friend class Serial::EntitySystem;

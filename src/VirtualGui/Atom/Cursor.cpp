@@ -2,8 +2,8 @@
 
 namespace UPP {
 
-#define LLOG(x)  LOG(x)
-#define LDUMP(x) //DDUMP(x)
+//#define LLOG(x)  LOG(x)
+//#define LDUMP(x) //DDUMP(x)
 
 #if 0
 struct RectSDL {
@@ -35,8 +35,10 @@ SDL_Texture *SDLTextureFromImage(SDL_Renderer *renderer, const Image& m)
 
 void AtomVirtualGui::SetMouseCursor(const Image& image)
 {
+	#if IS_UPP_CORE
 	if (mgr)
 		wins->OverrideCursor(image);
+	#endif
 }
 
 }

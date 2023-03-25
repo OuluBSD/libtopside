@@ -141,7 +141,7 @@ bool Ctrl::ProcessEvents(bool *quit)
 
 bool Ctrl::EventLoopIteration(void* p) {
 	Ctrl *ctrl = (Ctrl*)p;
-	bool quit = false;
+	bool quit = false;	
 	static int64 loopno;
 	
 	loopno = ++EventLoopNo;

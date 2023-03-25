@@ -76,17 +76,6 @@ void Draw::DrawImage(int x, int y, int cx, int cy, const Image& img) {
 	TODO
 }
 
-void Draw::DrawPolygon(const Vector<Point>& vertices, Color color, int width, Color outline, uint64 pattern, Color doxor) {
-	int tris = vertices.GetCount() / 3;
-	for(int i = 0; i < tris; i++) {
-		int off = i * 3;
-		const Point& a = vertices[off + 0];
-		const Point& b = vertices[off + 1];
-		const Point& c = vertices[off + 2];
-		DrawTriangle(a, b, c, color);
-	}
-}
-
 void Draw::DrawEllipse(const Rect& r, Color color, int pen, Color pencolor) {
 	TODO
 }
@@ -96,6 +85,17 @@ void Draw::DrawEllipse(int x, int y, int cx, int cy, Color color, int pen, Color
 }
 
 #endif
+
+void Draw::DrawPolygon(const Vector<Point>& vertices, Color color, int width, Color outline, uint64 pattern, Color doxor) {
+	int tris = vertices.GetCount() / 3;
+	for(int i = 0; i < tris; i++) {
+		int off = i * 3;
+		const Point& a = vertices[off + 0];
+		const Point& b = vertices[off + 1];
+		const Point& c = vertices[off + 2];
+		TODO //DrawTriangle(a, b, c, color);
+	}
+}
 
 
 void Draw::DrawText(int x, int y, const wchar *text, Font font,

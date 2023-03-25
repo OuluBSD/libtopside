@@ -1,12 +1,12 @@
 #ifndef _EcsLib_Geom2DComponent_h_
 #define _EcsLib_Geom2DComponent_h_
 
-#if 0
-
 #ifdef flagGUI
 
 NAMESPACE_ECS_BEGIN
 
+
+#if 0
 
 class Windows;
 
@@ -38,6 +38,7 @@ public:
 	
 };
 
+#endif
 
 struct Geom2DComponentLink;
 
@@ -83,12 +84,12 @@ class Geom2DComponent :
 	//One<Absolute2DInterface> owned_aw;
 	//Absolute2DInterface* aw = 0;
 	void (Geom2DComponent::*reset_fn)() = 0;
-	Windows* wins = NULL;
+	//Windows* wins = NULL;
 	Geom2DComponentLink* linked = NULL;
 	
 	//ResizeFrame resize_frame;
-	WindowDecoration decor;
-	Button minimize, maximize, close;
+	//WindowDecoration decor;
+	//Button minimize, maximize, close;
 	Rect stored_rect;
 	int id = -1;
 	bool pending_partial_redraw = false;
@@ -99,7 +100,7 @@ protected:
 	
 	bool maximized;
 	
-	void SetContent(Windows* wins, int id);
+	//void SetContent(Windows* wins, int id);
 	void SetMaximized(bool b=true);
 	
 	
@@ -110,8 +111,9 @@ public:
 public:
 	typedef Geom2DComponent CLASSNAME;
 	Geom2DComponent();
-	Geom2DComponent(const Geom2DComponent& cw) : stored_rect(0,0,0,0), decor(this) {*this = cw;}
-	
+	Geom2DComponent(const Geom2DComponent& cw) : stored_rect(0,0,0,0)/*, decor(this)*/ {
+		*this = cw;
+	}
 	void operator=(const Geom2DComponent& cw);
 	
 	#if 0
@@ -147,7 +149,7 @@ public:
 	//const Framebuffer& GetFramebuffer() const {return fb;}
 	int GetId() const;
 	Rect GetStoredRect() const;
-	Absolute2DInterface* GetAbsolute2D();
+	//Absolute2DInterface* GetAbsolute2D();
 	bool IsMaximized() const;
 	bool IsActive() const;
 	void MoveWindow(Point pt);
@@ -155,18 +157,18 @@ public:
 	void Restore();
 	void Minimize();
 	//void Close() override;
-	void FocusEvent() override;
+	//void FocusEvent() override;
 	void ToggleMaximized();
 	bool IsPendingPartialRedraw() const;
 	void Wait();
-	Windows* GetWindows() const {return wins;}
+	//Windows* GetWindows() const {return wins;}
 	TopWindow* GetTopWindow() const;
 	
-	String GetTitle() const override;
+	//String GetTitle() const override;
 	void Layout() override;
 	void Uninitialize() override;
-	bool IsGeomDrawBegin() override;
-	void SetFrameRect(const Rect& r) override;
+	//bool IsGeomDrawBegin() override;
+	//void SetFrameRect(const Rect& r) override;
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;
 	void ChildGotFocus() override;
@@ -250,6 +252,5 @@ struct Window3D :
 
 NAMESPACE_ECS_END
 
-#endif
 #endif
 #endif

@@ -67,7 +67,7 @@ protected:
 	// calibration
 	CalibrationData				calib;
 	
-	ArrayMap<String, ModelLoader> model_cache;
+	//ArrayMap<String, ModelLoader> model_cache;
 	
 protected:
     bool Initialize() override;
@@ -86,7 +86,7 @@ public:
     ECS_SYS_CTOR(RenderingSystem)
 	SYS_DEF_VISIT
 	
-	ModelRef GetAddModelFile(String path);
+	//ModelRef GetAddModelFile(String path);
 	
 	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);

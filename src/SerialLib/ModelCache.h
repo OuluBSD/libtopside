@@ -9,7 +9,7 @@ class ModelCache :
 {
 	
 protected:
-	CalibrationData				calib;
+	//CalibrationData				calib;
 	ArrayMap<String, ModelLoader> model_cache;
 	double time = 0;
 	
@@ -28,7 +28,7 @@ public:
 	
 	ModelRef GetAddModelFile(String path);
 	
-	void CalibrationEvent(CtrlEvent& ev);
+	//void CalibrationEvent(CtrlEvent& ev);
 	
 };
 

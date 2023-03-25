@@ -164,10 +164,12 @@ void TopWindow::CreateGeom2DComponent() {
 	using namespace Ecs;
 	using namespace Parallel;
 	
+	#if IS_UPP_CORE
 	Machine& mach = GetActiveMachine();
 	WindowSystemRef wins = mach.Get<TS::Parallel::WindowSystem>();
 	WindowManager& mgr = wins->GetActiveScope();
 	mgr.AddInterface(*this);
+	#endif
 }
 
 

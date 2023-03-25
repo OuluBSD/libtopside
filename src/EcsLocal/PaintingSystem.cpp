@@ -518,7 +518,7 @@ void PaintComponent::Destroy() {
 }
 
 bool PaintComponent::LoadModel(ModelComponent& mdl) {
-	Ecs::RenderingSystemRef sys = GetEngine().TryGet<Ecs::RenderingSystem>();
+	ModelCacheRef sys = GetEngine().GetMachine().Get<ModelCache>();
 	if (!sys)
 		return false;
 	

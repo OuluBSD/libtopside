@@ -27,8 +27,10 @@ struct AtomVirtualGui : VirtualGui {
 	
 	SystemDraw          sysdraw;
 	
+	#if IS_UPP_CORE
 	WindowSystemRef		wins;
 	WindowManagerRef	mgr;
+	#endif
 	
 	void SetTarget(Draw& d);
 	//void Attach(SDL_Window *win, SDL_GLContext glcontext);

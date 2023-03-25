@@ -1,5 +1,7 @@
 #include "Internal.h"
 
+#if 0
+
 #if HAVE_WINDOWSYSTEM
 
 NAMESPACE_UPP
@@ -99,4 +101,5 @@ void Ctrl::Invalidate() {
 
 END_UPP_NAMESPACE
 
+#endif
 #endif

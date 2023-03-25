@@ -29,14 +29,10 @@ void EngineEcsInit() {
 	eng.GetAdd<Ecs::RegistrySystem>();
 	eng.GetAdd<Ecs::InteractionSystem>();
 	
-	//eng.GetAdd<Ecs::RenderingSystem>();
+	eng.GetAdd<Ecs::RenderingSystem>();
 	eng.GetAdd<Ecs::EntityStore>();
 	eng.GetAdd<Ecs::ComponentStore>();
 	//eng.GetAdd<Ecs::EventSystem>();
-	
-	#ifdef flagDEBUG
-	LOG("warning: TODO ecs window system");
-	#endif
 	
 	#if 0
 	#if HAVE_WINDOWSYSTEM

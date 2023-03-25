@@ -62,8 +62,6 @@ void RenderingSystem::RemoveCamera(CameraBase& c) {
 
 void RenderingSystem::Update(double dt) {
 	
-	TODO
-	
 	for (ModelComponentRef& m : models) {
 		
 		m->Load(*state);
@@ -78,6 +76,18 @@ void RenderingSystem::Update(double dt) {
 		
 		cb->Load(*state);
 	}
+	
+}
+
+bool RenderingSystem::Initialize() {
+	return true;
+}
+
+void RenderingSystem::Start() {
+	
+}
+
+void RenderingSystem::Stop() {
 	
 }
 

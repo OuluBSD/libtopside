@@ -6,12 +6,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 extern dword fbKEYtoK(dword chr);
 
-dword lastbdowntime[8] = {0};
-dword isdblclick[8] = {0};
+extern dword lastbdowntime[8]; // = {0};
+extern dword isdblclick[8]; // = {0};
 
-dword mouseb;
-dword modkeys;
-bool  sdlMouseIsIn;
+extern dword mouseb;
+extern dword modkeys;
+extern bool  sdlMouseIsIn;
 
 VirtualGui3D* VirtualGui3DPtr;
 

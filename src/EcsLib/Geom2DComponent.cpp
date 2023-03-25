@@ -1,4 +1,3 @@
-#if 0
 #include "EcsLib.h"
 
 
@@ -15,7 +14,7 @@ NAMESPACE_ECS_BEGIN
 //Shader Geom2DComponent::window_shader;
 
 Geom2DComponent::Geom2DComponent() :
-	decor(this),
+	//decor(this),
 	stored_rect(0,0,0,0)
 {
 	//aw = 0;
@@ -24,7 +23,7 @@ Geom2DComponent::Geom2DComponent() :
 	
 	
 	//AddFrame(resize_frame);
-	Add(decor);
+	/*Add(decor);
 	SetFrameRect(RectC(0, 0, 320, 240));
 	
 	close.SetImage(WindowsImg::close());
@@ -33,7 +32,7 @@ Geom2DComponent::Geom2DComponent() :
 	
 	Add(close.TopPos(3, 19).RightPos(3, 19));
 	Add(maximize.TopPos(3, 19).RightPos(3+22, 19));
-	Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));
+	Add(minimize.TopPos(3, 19).RightPos(3+22+19, 19));*/
 	
 	/*decor.WhenWindowMove = Proxy(WhenWindowMove);
 	decor.WhenFocus = THISBACK(FocusEvent);
@@ -42,10 +41,10 @@ Geom2DComponent::Geom2DComponent() :
 	decor.WhenClose = Proxy(WhenClose);
 	*/
 	
-	close.WhenAction = THISBACK(Close);
+	/*close.WhenAction = THISBACK(Close);
 	maximize.WhenAction = THISBACK(ToggleMaximized);
 	minimize.WhenAction = THISBACK(Minimize);
-	
+	*/
 }
 
 void Geom2DComponent::Uninitialize() {
@@ -70,13 +69,13 @@ void Geom2DComponent::Clear() {
 	//owned_aw.Clear();
 }
 
-void Geom2DComponent::Title(String label) {
+/*void Geom2DComponent::Title(String label) {
 	decor.SetLabel(label);
 }
 
 void Geom2DComponent::StoreRect() {
 	stored_rect = GetFrameRect();
-}
+}*/
 
 void Geom2DComponent::LoadRect() {
 	ASSERT(stored_rect.bottom && stored_rect.right);
@@ -99,21 +98,21 @@ Rect Geom2DComponent::GetStoredRect() const {
 	return stored_rect;
 }
 
-String Geom2DComponent::GetTitle() const {
+/*String Geom2DComponent::GetTitle() const {
 	return decor.GetLabel();
-}
+}*/
 
 void Geom2DComponent::Layout() {
 	Size sz = frame_r.GetSize();
 	ASSERT(!sz.IsEmpty());
 	Rect decor_r = RectC(0,0, sz.cx, 20);
-	decor.SetFrameRect(decor_r);
+	TODO //decor.SetFrameRect(decor_r);
 	
 }
 
-Absolute2DInterface* Geom2DComponent::GetAbsolute2D() {
+/*Absolute2DInterface* Geom2DComponent::GetAbsolute2D() {
 	return this;
-}
+}*/
 
 bool Geom2DComponent::IsMaximized() const {
 	return maximized;
@@ -374,7 +373,7 @@ void Geom2DComponent::SetMaximized(bool b) {
 	//resize_frame.SetActive(!b);
 }
 
-void Geom2DComponent::SetContent(Windows* wins, int id) {
+/*void Geom2DComponent::SetContent(Windows* wins, int id) {
 	this->wins = wins;
 	this->id = id;
 	
@@ -389,7 +388,7 @@ void Geom2DComponent::SetContent(Windows* wins, int id) {
 		maximized = false;
 		Maximize();
 	}
-}
+}*/
 
 
 bool Geom2DComponent::IsActive() const
@@ -458,7 +457,7 @@ void Geom2DComponent::Minimize()
 	#endif
 }*/
 
-void Geom2DComponent::FocusEvent()
+/*void Geom2DComponent::FocusEvent()
 {
 	TODO
 	#if 0
@@ -470,7 +469,7 @@ void Geom2DComponent::FocusEvent()
 bool Geom2DComponent::IsGeomDrawBegin()
 {
 	return true;
-}
+}*/
 
 
 #if 0
@@ -482,7 +481,7 @@ void Geom2DComponent::SetFrameRect(const Rect& r) {
 }
 #endif
 
-void Geom2DComponent::SetFrameRect(const Rect& r) {
+/*void Geom2DComponent::SetFrameRect(const Rect& r) {
 	GeomInteraction2D::SetFrameRect(r);
 	if (!transform2d.IsEmpty()) {
 		transform2d->position[0] = r.left;
@@ -496,27 +495,28 @@ void Geom2DComponent::SetFrameRect(const Rect& r) {
 		transform->size[0] = r.Width();
 		transform->size[1] = r.Height();
 	}
-}
+}*/
 
 bool Geom2DComponent::Redraw(bool only_pending) {
 	return GeomInteraction2D::Redraw(only_pending);
 }
 
 void Geom2DComponent::LeftDown(Point p, dword keyflags) {
-	FocusEvent();
+	TODO //FocusEvent();
 	
 }
 
 void Geom2DComponent::ChildGotFocus() {
-	FocusEvent();
+	TODO //FocusEvent();
 	
 }
 
 void Geom2DComponent::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags) {
 	
-	if (event == MOUSE_LEFTDOWN) {
+	TODO
+	/*if (event == MOUSE_LEFTDOWN) {
 		FocusEvent();
-	}
+	}*/
 	
 }
 
@@ -524,11 +524,11 @@ void Geom2DComponent::Wait() {
 	TODO
 }
 
-TopWindow* Geom2DComponent::GetTopWindow() const {
+/*TopWindow* Geom2DComponent::GetTopWindow() const {
 	if (!proxy)
 		return 0;
 	return CastPtr<TopWindow>(proxy);
-}
+}*/
 
 void Geom2DComponent::Paint(Draw& id) {
 	Size sz(GetFrameSize());
@@ -599,7 +599,7 @@ Geom2DComponent& Geom2DComponentLink::GetWindow() const {
 
 
 
-
+#if 0
 WindowDecoration::WindowDecoration(Geom2DComponent* win) : win(win) {
 	left_down = false;
 	
@@ -686,9 +686,9 @@ void WindowDecoration::LocalMenu(Bar& bar) {
 	bar.Separator();
 	TODO //bar.Add("Close", callback(win, &Geom2DComponent::Close));
 }
+#endif
 
 
 NAMESPACE_ECS_END
 
-#endif
 #endif
