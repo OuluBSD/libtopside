@@ -6,6 +6,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct{
     uint64_t size;        // Size of input in bytes
     uint32_t buffer[4];   // Current accumulation of hash
@@ -26,5 +30,8 @@ void md5File(FILE *file, uint8_t *result);
 
 void MD5(const unsigned char* src, int len, unsigned char* digest);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
