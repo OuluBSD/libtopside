@@ -22,6 +22,7 @@
 
 #include <SharedCore/SharedDefs.h>
 
+
 static constexpr bool is_in_topside = false;
 static constexpr bool is_in_parallel = false;
 

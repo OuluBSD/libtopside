@@ -1,7 +1,7 @@
 #ifndef __Plugin_bz2lib__
 #define __Plugin_bz2lib__
 
-#ifdef flagWIN32
+#if defined flagWIN32 || PLATFORM_EMSCRIPTEN
 	#include "lib/bzlib.h"
 #else
 	#include <bzlib.h>

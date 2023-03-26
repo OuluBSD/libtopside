@@ -82,6 +82,8 @@
 				#endif
 			#elif __sun
 				#define PLATFORM_SOLARIS 1
+			#elif EMSCRIPTEN
+				#define PLATFORM_EMSCRIPTEN 1
 			#else
 				#error Unknown OS
 			#endif
@@ -144,6 +146,12 @@
 		#define _HAVE_NO_STDWSTRING 1
 		//BF toolchain has no support for __thread (TLS), so U++ Heap not possible
 		#define flagUSEMALLOC
+	#elif __wasm__
+		#define CPU_WASM 1
+		#define CPU_32 1
+		#define CPU_LE 1
+		#define CPU_LITTLE_ENDIAN 1
+		#define CPU_ALIGNED 1
 	#else
 		#error Unknown CPU architecture
 	#endif

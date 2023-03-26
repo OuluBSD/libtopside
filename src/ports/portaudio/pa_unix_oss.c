@@ -47,7 +47,10 @@
  @ingroup hostapi_src
 */
 
-#ifdef flagPOSIX
+#include <Core/config.h>
+
+
+#if defined flagPOSIX && !PLATFORM_EMSCRIPTEN
 
 #include <stdio.h>
 #include <string.h>

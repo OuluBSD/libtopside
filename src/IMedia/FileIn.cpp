@@ -596,7 +596,10 @@ void VideoFrameQueueT<Backend>::Process(double time_pos, AVFrame* frame, bool vf
 	Packet p = CreatePacket(gen.Create());
 	p->SetFormat(fmt);
 	f->MakePacket(p);
+	
+	buf.EnterWrite();
 	buf.Add(p);
+	buf.LeaveWrite();
 }
 
 

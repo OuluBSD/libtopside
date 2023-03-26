@@ -104,6 +104,9 @@ DEFAULT_SERIALIZER(int64)
 DEFAULT_SERIALIZER(uint64)
 DEFAULT_SERIALIZER(float)
 DEFAULT_SERIALIZER(double)
+#if CPU_32
+DEFAULT_SERIALIZER(unsigned long)
+#endif
 
 class FileStream : public Stream {
 	

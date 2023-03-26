@@ -204,6 +204,7 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 			LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
 			if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
 			else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
+			if (fail) GetMachine().SetFailed("IntervalPipeLink error");
 		}
 		
 		RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
@@ -250,6 +251,7 @@ void VoidPollerSinkBase::Uninitialize() {
 		fail = true;
 	if (!fail) {LOG("VoidPollerSinkBase::Uninitialize: success!");}
 	else       {LOG("VoidPollerSinkBase::Uninitialize: fail :(");}
+	if (fail) GetMachine().SetFailed("VoidPollerSinkBase error");
 	RemoveAtomFromUpdateList();
 }
 
@@ -705,6 +707,7 @@ void TestEventSrcBase::Uninitialize() {
 	bool succ = sent_count >= 2;
 	if (succ) {LOG("TestEventSrcBase::Uninitialize: success! " << sent_count << " packets sent");}
 	else       {LOG("TestEventSrcBase::Uninitialize: fail :(");}
+	if (!succ) GetMachine().SetFailed("TestEventSrcBase error");
 }
 
 bool TestEventSrcBase::IsReady(PacketIO& io) {

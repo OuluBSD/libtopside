@@ -129,6 +129,7 @@ public:
     virtual ~Machine();
 
     bool HasStarted() const;
+    bool HasFailed() const {return is_failed;}
 
     bool Start();
     void Update(double dt);
@@ -141,6 +142,7 @@ public:
     bool IsStarted() const {return is_started;}
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}
+	void SetFailed(String msg="") {is_failed = true; fail_msg = msg;}
 	void Visit(RuntimeVisitor& vis);
 	void WarnDeveloper(String msg);
 	
@@ -165,6 +167,8 @@ private:
     bool is_initialized = false;
     bool is_suspended = false;
     bool is_running = false;
+    bool is_failed = false;
+    String fail_msg;
     
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
     SystemCollection::PtrIterator FindSystemPtr(TypeCls type_id) {return systems.FindPtr(type_id);}

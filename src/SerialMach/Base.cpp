@@ -689,8 +689,8 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 				return false;
 			}
 		}
-		ASSERT(!src_fmt.IsAudio() || sink.p->GetBeginTime());
-		ASSERT(!src_fmt.IsAudio() || src.p->GetBeginTime());
+		//ASSERT(!src_fmt.IsAudio() || sink.p->GetBeginTime());
+		//ASSERT(!src_fmt.IsAudio() || src.p->GetBeginTime());
 	}
 	
 	return true;

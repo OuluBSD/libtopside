@@ -122,6 +122,11 @@ void Machine::Stop() {
 	for (auto it = systems.rpbegin(); it != systems.rpend(); --it) {
 		it->Uninitialize();
 	}
+	
+	if (is_failed) {
+		LOG("Machine::Stop: failure: " << fail_msg);
+		SetExitCode(1);
+	}
 }
 
 void Machine::Suspend() {

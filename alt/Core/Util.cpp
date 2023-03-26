@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #endif
 
-#include <openssl/md5.h>
+#include <ports/md5/md5.h>
 #include <ports/bz2lib/bz2lib.h>
 
 NAMESPACE_UPP_BEGIN

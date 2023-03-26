@@ -256,6 +256,9 @@ public:
 	operator double() const   { return 0; }
 	operator float() const    { return 0; }
 	operator bool() const     { return false; }
+	#if CPU_32
+	operator unsigned long() const    { return 0; }
+	#endif
 	
 	template <class T> operator T*() const    { return 0; }
 	

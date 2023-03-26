@@ -17,3 +17,17 @@ make
 ```
 apt install upp sndio ffmpeg hidapi sdl2 sdl2_ttf sdl2_image opencv glew freeglut portmidi portaudio
 ```
+
+
+### Emscripten (in FreeBSD)
+Install emscripten and make compatibility symbolic link for linker, because TheIDE doesn't support emscripten yet (only regular ar).
+
+```
+pkg install emscripten
+mkdir /usr/local/bin/embin
+ln -s /usr/local/bin/emar /usr/local/bin/embin/ar
+```
+
+Duplicate your existing CLANG build method in TheIDE and add ```/usr/local/bin/embin``` directory to your BIN directory list as **first**.
+
+To enable exceptions, add ```-fwasm-exceptions``` to the build method's Common options and Common link options. By default, exception catching is disabled in Emscripten.

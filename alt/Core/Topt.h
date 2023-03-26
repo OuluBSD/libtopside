@@ -99,11 +99,15 @@ template <> inline hash_t GetHashValue(const int& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned char& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned short& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned int& k) { return k; }
-template <> inline hash_t GetHashValue(const unsigned long long& k) {union {uint64 u64; dword dw[2];}; u64 = k; return dw[0] ^ dw[1];}
-#ifndef flagWIN32
-template <> inline hash_t GetHashValue(const uint64& k) {union {uint64 u64; dword dw[2];}; u64 = k; return dw[0] ^ dw[1];}
+template <> inline hash_t GetHashValue(const unsigned long& k) { return k; }
+#if CPU_64
+template <> inline hash_t GetHashValue(const unsigned long long& k) {return *(hash_t*)&k;}
+template <> inline hash_t GetHashValue(const long long& k) {return *(hash_t*)&k;}
 #endif
+#if CPU_32
+template <> inline hash_t GetHashValue(const unsigned long long& k) {union {uint64 u64; dword dw[2];}; u64 = k; return dw[0] ^ dw[1];}
 template <> inline hash_t GetHashValue(const long long& k) {union {uint64 u64; dword dw[2];}; u64 = k; return dw[0] ^ dw[1];}
+#endif
 template <> inline hash_t GetHashValue(const long& k) { return k; }
 template <> inline hash_t GetHashValue(const float& k) { return static_cast<hash_t>(k); }
 template <> inline hash_t GetHashValue(const double& k) {return GetHashValue(*(uint64*)&k);}

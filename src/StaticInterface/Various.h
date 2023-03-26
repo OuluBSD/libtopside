@@ -1,7 +1,7 @@
 #ifndef _StaticInterface_Various_h_
 #define _StaticInterface_Various_h_
 
-#ifdef flagPOSIX
+#if defined flagPOSIX && !PLATFORM_EMSCRIPTEN
 	#define HAVE_LIBPNG 1
 #endif
 

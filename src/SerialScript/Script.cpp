@@ -888,6 +888,19 @@ bool ScriptLoader::LoadArguments(ArrayMap<String, Object>& args, AstNode* n) {
 								TODO
 							}
 						}
+						else if (key->src == SEMT_VARIABLE) {
+							String key_str = key->name;
+							if (value->src == SEMT_CONSTANT) {
+								Object val_obj;
+								value->CopyToObject(val_obj);
+								args.GetAdd(key_str) = val_obj;
+								succ = true;
+							}
+							else {
+								LOG(rval.GetTreeString(0));
+								TODO
+							}
+						}
 						else {
 							LOG(rval.GetTreeString(0));
 							TODO
