@@ -4,7 +4,7 @@ library(DEBUG & WIN32) ode_doubled;
 
 library(!DEBUG & WIN32) ode_double;
 
-library(!WIN32) ode;
+library(!WIN32 & !EMSCRIPTEN) ode;
 
 file
 	Physics.h,

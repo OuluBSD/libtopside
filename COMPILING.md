@@ -31,3 +31,11 @@ ln -s /usr/local/bin/emar /usr/local/bin/embin/ar
 Duplicate your existing CLANG build method in TheIDE and add ```/usr/local/bin/embin``` directory to your BIN directory list as **first**.
 
 To enable exceptions, add ```-fwasm-exceptions``` to the build method's Common options and Common link options. By default, exception catching is disabled in Emscripten.
+
+
+### Emscripten (in Linux)
+Download and install Emscripten SDK.
+Duplicate your existing CLANG build method in TheIDE and add emsdk bin directory to your BIN directory list as **first**.
+Add ```-fwasm-exceptions -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sUSE_BZIP2=1 -sUSE_LIBPNG -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1``` to the build method's Common options.
+Add ```-fwasm-exceptions -sUSE_BZIP2=1 -sUSE_LIBPNG -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1``` to the build method's Common link options.
+

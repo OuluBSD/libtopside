@@ -1,12 +1,10 @@
 description "\377B112,112,112";
 
-uses
-	ParallelLib,
-	IGraphics;
+	uses ParallelLib;
+	uses IGraphics;
 
-library(POSIX) "X11 Xrandr Xxf86vm";
-
-library(POSIX & OGL) "GLX GL GLU GLEW glut";
+	library(POSIX & !EMSCRIPTEN) "X11 Xrandr Xxf86vm";
+	library(POSIX & OGL & !EMSCRIPTEN) "GLX GL GLU GLEW glut";
 
 file
 	IScreen.h,
@@ -17,5 +15,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

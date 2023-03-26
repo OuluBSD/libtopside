@@ -47,7 +47,7 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 
 #endif
 
-#if defined flagPOSIX && defined flagOGL
+#if defined flagPOSIXDESKTOP && defined flagOGL
 template <>
 void FramebufferT<X11OglGfx>::DrawFill(const byte* mem, int sz) {
 	Panic("Not implemented");

@@ -17,7 +17,7 @@ library(WIN32) "shlwapi comdlg32";
 
 library(WIN32) Ws2_32;
 
-library(POSIX) "pthread crypto bz2";
+library(POSIX & !EMSCRIPTEN) "pthread crypto bz2";
 
 library(WIN32 & (CLANG|GCC)) crypto;
 

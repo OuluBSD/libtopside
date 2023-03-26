@@ -41,10 +41,10 @@ INITBLOCK_(AtomMinimal) {
 	#if defined flagSCREEN
 	Factory::RegisterAtom<EventStatePipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwFboProg>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboProg>();
 	#endif
 	#if defined flagSDL2
@@ -53,19 +53,19 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglFboProg>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwShaderPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglShaderPipe>();
 	#endif
 	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglShaderPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwFboAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboAtomPipe>();
 	#endif
 	#if defined flagSDL2
@@ -77,22 +77,22 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagSDL2 && defined flagOGL)
 	Factory::RegisterAtom<SdlOglProgAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11ContextAtom>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwContextAtom>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglContextAtom>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11EventAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwEventAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglEventAtomPipe>();
 	#endif
 	Factory::RegisterAtom<OglCustomer>();
@@ -107,19 +107,19 @@ INITBLOCK_(AtomMinimal) {
 	Factory::RegisterAtom<SdlOglImageLoader>();
 	#endif
 	Factory::RegisterAtom<VolumeLoaderAtom>();
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11VideoAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglVideoAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboAtomSA>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwVideoAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwFboAtomSA>();
 	#endif
 	#if (defined flagSDL2 && defined flagOGL)
@@ -143,13 +143,13 @@ INITBLOCK_(AtomMinimal) {
 	#if defined flagSDL2
 	Factory::RegisterAtom<SdlProgAtomPipe>();
 	#endif
-	#if (defined flagPOSIX && defined flagSCREEN)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11ProgAtomPipe>();
 	#endif
-	#if defined flagSCREEN
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 	Factory::RegisterAtom<X11SwFboGuiProg>();
 	#endif
-	#if (defined flagSCREEN && defined flagOGL)
+	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglFboGuiProg>();
 	#endif
 	#if (defined flagSCREEN && defined flagSDL2 && defined flagOGL)

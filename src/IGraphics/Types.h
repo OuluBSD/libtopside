@@ -19,7 +19,11 @@ NAMESPACE_PARALLEL_BEGIN
 	GFX_CLS(BufferStage, g) \
 
 
-#if defined flagOGL && defined flagPOSIX
+#if defined flagOGL && defined flagEMSCRIPTEN
+#define GFX_RENDSYS_LIST \
+	GFX_RSYS(SdlOgl) \
+
+#elif defined flagOGL && defined flagPOSIX
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(SdlOgl) \
 	GFX_RSYS(X11Ogl) \
@@ -196,7 +200,7 @@ struct Dx11GfxT {
 
 
 
-#ifdef flagPOSIX
+#if PLATFORM_POSIX_DESKTOP
 struct X11Gfx {
 	using NativeDisplay			= ::Display*;
 	using NativeWindow			= ::Window;
@@ -259,7 +263,7 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 #endif
 #endif
 
-#if defined flagPOSIX
+#if PLATFORM_POSIX_DESKTOP
 	#define X11SW_GFXTYPE GFXTYPE(X11Sw)
 	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11SwGfx>;
 #else
@@ -267,7 +271,7 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x)
 #endif
 
-#if defined flagPOSIX && defined flagOGL
+#if PLATFORM_POSIX_DESKTOP && defined flagOGL
 	#define X11OGL_GFXTYPE GFXTYPE(X11Ogl)
 	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11OglGfx>;
 #else

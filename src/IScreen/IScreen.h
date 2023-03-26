@@ -25,7 +25,7 @@ SCR_VNDR_LIST
 #undef SCR_VNDR
 #undef SCR_CLS
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 struct ScrX11 {
 	struct NativeSinkDevice;
 	struct NativeContext;
@@ -41,7 +41,7 @@ struct ScrX11 {
 	
 };
 #endif
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 struct ScrX11Sw {
 	struct NativeSinkDevice;
 	struct NativeContext;
@@ -57,7 +57,7 @@ struct ScrX11Sw {
 	
 };
 #endif
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 struct ScrX11Ogl {
 	struct NativeSinkDevice;
 	struct NativeContext;
@@ -244,17 +244,17 @@ template <class Scr> struct ScreenEventsBaseT : ScrEventsBase {
 	}
 };
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 using X11SinkDevice = ScreenSinkDeviceT<ScrX11>;
 using X11Context = ScreenContextT<ScrX11>;
 using X11EventsBase = ScreenEventsBaseT<ScrX11>;
 #endif
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 using X11SwSinkDevice = ScreenSinkDeviceT<ScrX11Sw>;
 using X11SwContext = ScreenContextT<ScrX11Sw>;
 using X11SwEventsBase = ScreenEventsBaseT<ScrX11Sw>;
 #endif
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 using X11OglSinkDevice = ScreenSinkDeviceT<ScrX11Ogl>;
 using X11OglContext = ScreenContextT<ScrX11Ogl>;
 using X11OglEventsBase = ScreenEventsBaseT<ScrX11Ogl>;

@@ -64,7 +64,7 @@ public:
 };
 
 
-#if defined flagPOSIX
+#if defined flagPOSIXDESKTOP
 using X11SwFboBase = FboAtomT<X11SwGfx>;
 
 #ifdef flagOGL

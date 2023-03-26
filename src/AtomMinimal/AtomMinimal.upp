@@ -12,7 +12,7 @@ uses(GUI | SCREEN) IGraphics;
 
 uses(GUI | SCREEN) IHal;
 
-uses(GUI | SCREEN) IScreen;
+uses((GUI | SCREEN) & !EMSCRIPTEN) IScreen;
 
 file
 	AtomMinimal.h,

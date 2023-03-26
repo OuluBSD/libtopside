@@ -1,8 +1,9 @@
 description "\3770,128,128";
 
 uses
-	ParallelLib,
-	IHolograph;
+	ParallelLib;
+
+uses(!EMSCRIPTEN) IHolograph;
 
 uses(SCREEN) IGraphics;
 

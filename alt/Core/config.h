@@ -45,6 +45,9 @@
 			#define PLATFORM_LINUX 1
 			#if __ANDROID__
 				#define PLATFORM_ANDROID 1
+			#else
+				#define PLATFORM_POSIX_DESKTOP 1
+				#define flagPOSIXDESKTOP 1
 			#endif
 		// zvzv add
 		// __linux is undef on APPLE MACOSX, MACOSX has BSD stuff
@@ -70,6 +73,8 @@
 				#define PLATFORM_BSD 1
 				#if __FreeBSD__
 					#define PLATFORM_FREEBSD 1
+					#define PLATFORM_POSIX_DESKTOP 1
+					#define flagPOSIXDESKTOP 1
 				#endif
 				#if __OpenBSD__
 					#define PLATFORM_OPENBSD 1

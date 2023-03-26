@@ -1016,7 +1016,7 @@ template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, G
 
 
 #if defined flagOGL && defined flagSCREEN
-#ifdef flagPOSIX
+#ifdef flagPOSIXDESKTOP
 template struct OglGfxT<X11OglGfx>;
 #endif
 #ifdef flagSDL2

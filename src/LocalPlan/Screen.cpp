@@ -8,8 +8,8 @@ void InterfaceBuilder::AddScreen() {
 	SetColor(112, 112, 112);
 	Dependency("ParallelLib");
 	Dependency("IGraphics");
-	Library("X11 Xrandr Xxf86vm", "POSIX");
-	Library("GLX GL GLU GLEW glut", "POSIX & OGL");
+	Library("X11 Xrandr Xxf86vm", "POSIX & !EMSCRIPTEN");
+	Library("GLX GL GLU GLEW glut", "POSIX & OGL & !EMSCRIPTEN");
 	HaveRecvFinalize();
 	HaveNegotiateFormat();
 	HaveIsReady();
@@ -18,9 +18,9 @@ void InterfaceBuilder::AddScreen() {
 	Interface("Context");
 	Interface("EventsBase");
 	
-	Vendor("X11", "POSIX&SCREEN");
-	Vendor("X11Sw", "POSIX&SCREEN");
-	Vendor("X11Ogl", "POSIX&SCREEN&OGL");
+	Vendor("X11", "POSIXDESKTOP&SCREEN");
+	Vendor("X11Sw", "POSIXDESKTOP&SCREEN");
+	Vendor("X11Ogl", "POSIXDESKTOP&SCREEN&OGL");
 	
 	
 }

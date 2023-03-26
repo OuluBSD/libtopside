@@ -629,7 +629,7 @@ void SwGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, in
 template struct SwGfxT<SdlSwGfx>;
 #endif
 
-#if defined flagPOSIX && defined flagSCREEN
+#if defined flagPOSIXDESKTOP && defined flagSCREEN
 template struct SwGfxT<X11SwGfx>;
 #endif
 

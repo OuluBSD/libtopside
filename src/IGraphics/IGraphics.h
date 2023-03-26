@@ -31,7 +31,7 @@
 
 #undef main
 
-#ifdef flagPOSIX
+#if PLATFORM_POSIX_DESKTOP
 	#define Time XTime
 	#define Font XFont
 	#include <X11/Xlib.h>

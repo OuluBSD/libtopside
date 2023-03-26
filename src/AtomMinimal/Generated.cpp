@@ -549,7 +549,7 @@ AtomTypeCls EventStatePipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwFboProg::GetAction() {
 	return "x11.sw.fbo.program";
 }
@@ -578,7 +578,7 @@ AtomTypeCls X11SwFboProg::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglFboProg::GetAction() {
 	return "x11.ogl.fbo.program";
 }
@@ -665,7 +665,7 @@ AtomTypeCls SdlOglFboProg::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwShaderPipe::GetAction() {
 	return "x11.sw.fbo.pipe";
 }
@@ -693,7 +693,7 @@ AtomTypeCls X11SwShaderPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglShaderPipe::GetAction() {
 	return "x11.ogl.fbo.pipe";
 }
@@ -749,7 +749,7 @@ AtomTypeCls SdlOglShaderPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwFboAtomPipe::GetAction() {
 	return "x11.sw.fbo.sink";
 }
@@ -777,7 +777,7 @@ AtomTypeCls X11SwFboAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglFboAtomPipe::GetAction() {
 	return "x11.ogl.fbo.sink";
 }
@@ -889,7 +889,7 @@ AtomTypeCls SdlOglProgAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11ContextAtom::GetAction() {
 	return "x11.context";
 }
@@ -917,7 +917,7 @@ AtomTypeCls X11ContextAtom::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwContextAtom::GetAction() {
 	return "x11.sw.context";
 }
@@ -945,7 +945,7 @@ AtomTypeCls X11SwContextAtom::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglContextAtom::GetAction() {
 	return "x11.ogl.context";
 }
@@ -973,7 +973,7 @@ AtomTypeCls X11OglContextAtom::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11EventAtomPipe::GetAction() {
 	return "x11.event.pipe";
 }
@@ -1001,7 +1001,7 @@ AtomTypeCls X11EventAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwEventAtomPipe::GetAction() {
 	return "x11.sw.event.pipe";
 }
@@ -1029,7 +1029,7 @@ AtomTypeCls X11SwEventAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglEventAtomPipe::GetAction() {
 	return "x11.ogl.event.pipe";
 }
@@ -1221,7 +1221,7 @@ AtomTypeCls VolumeLoaderAtom::GetType() const {
 }
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11VideoAtomPipe::GetAction() {
 	return "x11.video.pipe";
 }
@@ -1249,7 +1249,7 @@ AtomTypeCls X11VideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglVideoAtomPipe::GetAction() {
 	return "glx.video.pipe";
 }
@@ -1277,7 +1277,7 @@ AtomTypeCls X11OglVideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglFboAtomSA::GetAction() {
 	return "x11.ogl.fbo.standalone";
 }
@@ -1305,7 +1305,7 @@ AtomTypeCls X11OglFboAtomSA::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwVideoAtomPipe::GetAction() {
 	return "x11.sw.video.pipe";
 }
@@ -1333,7 +1333,7 @@ AtomTypeCls X11SwVideoAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwFboAtomSA::GetAction() {
 	return "x11.sw.fbo.standalone";
 }
@@ -1565,7 +1565,7 @@ AtomTypeCls SdlProgAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagPOSIX && defined flagSCREEN)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11ProgAtomPipe::GetAction() {
 	return "x11.prog.pipe";
 }
@@ -1593,7 +1593,7 @@ AtomTypeCls X11ProgAtomPipe::GetType() const {
 #endif
 
 
-#if defined flagSCREEN
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 String X11SwFboGuiProg::GetAction() {
 	return "x11.sw.prog";
 }
@@ -1622,7 +1622,7 @@ AtomTypeCls X11SwFboGuiProg::GetType() const {
 #endif
 
 
-#if (defined flagSCREEN && defined flagOGL)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 String X11OglFboGuiProg::GetAction() {
 	return "x11.ogl.prog";
 }
