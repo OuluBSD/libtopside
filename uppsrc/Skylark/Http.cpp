@@ -436,4 +436,16 @@ Http& Http::UxRun(const String& js_code)
 	return Ux("!", js_code);
 }
 
+String Http::GetURI() const {
+	return hdr.GetURI();
+}
+
+String Http::GetResponseCodeText() const {
+	switch (code) {
+		case 200: return "OK";
+		case 304: return "Not Modified";
+		default: return "OK";
+	}
+}
+
 };

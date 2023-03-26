@@ -1,0 +1,19 @@
+#include uppweb/base
+
+#define GENERATED
+
+$for(s in SOURCES)
+	<h3>$s._key</h3>
+	<pre class="prettyprint lang-$s.TYPE indent">$s.CODE</pre>
+$/
+$if(count(SOURCES))
+	<script type="text/javascript">
+	addEventListener('load', function (event) { prettyPrint() }, false);
+	</script>
+$/
+
+
+#define HEAD
+
+<link href="/static/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/static/prettify.js"></script>

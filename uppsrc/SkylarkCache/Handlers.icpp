@@ -1,0 +1,30 @@
+#include "SkylarkCache.h"
+
+#ifdef _DEBUG
+
+using namespace Upp;
+
+SKYLARK(Cache, "dbg/cache") {
+	http  << "Cache stats: \r\n============\r\n"
+	<< "Count: " << SkylarkCache().GetCount() << "\r\n"
+	<< "Size: " << SkylarkCache().GetSize()/1024 << " kB\r\n"
+	<< "New size: " << SkylarkCache().GetNewSize()/1024 << " kB\r\n"
+	<< "Found size: " << SkylarkCache().GetFoundSize()/1024 << " kB\r\n"
+	<< "Mem: " << MemoryUsedKb() << "kB \r\n";
+	MemoryProfile* mem = PeakMemoryProfile();
+	if (mem)
+		http << "\r\n" << AsString(*mem);
+	http.ContentType("text/plain");
+}
+
+SKYLARK(ClearCacheCounters, "dbg/cache_clear_counters") {
+	SkylarkCache().ClearCounters();
+	http.Redirect("cache");
+}
+
+SKYLARK(ClearCache, "dbg/cache_clear") {
+	SkylarkCache().Clear();
+	http.Redirect("cache");
+}
+
+#endif

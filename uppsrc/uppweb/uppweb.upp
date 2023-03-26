@@ -1,0 +1,27 @@
+description "Webpages for U++\377";
+
+uses
+	Skylark,
+	RichText,
+	Painter,
+	SkylarkCache;
+
+file
+	uppweb.h,
+	Main.cpp,
+	Topics.cpp,
+	Reflinks.cpp,
+	Misc.cpp,
+	Handlers.icpp,
+	Functions.icpp,
+	sources.witz,
+	examples.witz,
+	manual.witz,
+	base.witz,
+	www.t,
+	prettify.css,
+	prettify.js;
+
+mainconfig
+	"" = "MT SSE2";
+

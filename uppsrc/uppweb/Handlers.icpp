@@ -1,0 +1,158 @@
+#include "uppweb.h"
+
+SKYLARK(Topics, "topic/**") {
+	String paths[] = {TRUNK+"/uppbox", TRUNK+"/uppsrc", TRUNK+"/bazaar"};
+	String file;
+	for(int i = 0; i < http.GetParamCount(); i++){
+		file.Cat("/");
+		file.Cat(http[i]);
+		if(i==http.GetParamCount()-1)
+			file.Cat("_en-us");
+		if(i>=http.GetParamCount()-2)
+			file.Cat(".tpp");
+	}
+	for(int i = 0; i < 3; i++){
+		String fn=paths[i]+file;
+		if(FileExists(fn)){
+			ServeTopic(fn, http);
+			return;
+		}
+	}
+	http.Response(404, "File not found");
+}
+
+SKYLARK(HomePage, ""){
+	RTIMING("HomePage");
+	ServeTopic(TRUNK+"uppbox/uppweb/www.tpp/index_en-us.tpp", http);
+}
+
+SKYLARK(Overview,"overview"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/overview_en-us.tpp", http);
+}
+
+SKYLARK(Examples,"examples"){
+	ParseLanguage(http);
+	VectorMap<String,String> pkgs;
+	Vector<int> order;
+	ValueMap vm;
+	for(FindFile ff(TRUNK+"/examples/*"); ff; ff.Next()){
+		if(ff.GetName()[0]=='.')
+			continue;
+		String upp = AppendFileName(ff.GetPath(),ff.GetName()+".upp");
+		if(FileExists(upp))
+			pkgs.Add(ff.GetName(), GetDescription(upp));
+	}
+	order = GetSortOrder(pkgs.GetKeys());
+	for(int i = 0; i < order.GetCount(); i++)
+		vm.Add(pkgs.GetKey(order[i]), pkgs[order[i]]);
+	http("EXAMPLES", vm);
+	vm.Clear();
+	pkgs.Clear();
+	for(FindFile ff(TRUNK+"/reference/*"); ff; ff.Next()){
+		if(ff.GetName()[0]=='.')
+			continue;
+		String upp = AppendFileName(ff.GetPath(),ff.GetName()+".upp");
+		if(FileExists(upp))
+			pkgs.Add(ff.GetName(), GetDescription(upp));
+	}
+	order = GetSortOrder(pkgs.GetKeys());
+	for(int i = 0; i < order.GetCount(); i++)
+		vm.Add(pkgs.GetKey(order[i]), pkgs[order[i]]);
+	http("REFERENCE", vm)("TOPIC", "Examples")
+		.RenderResult("uppweb/examples");
+}
+
+SKYLARK(Example,"examples/*"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/examples.tpp/"+http[0]+"_en-us.tpp", http, false);
+	Sources("examples", http[0], http);
+}
+
+SKYLARK(Reference,"reference/*"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/reference.tpp/"+http[0]+"_en-us.tpp", http, false);
+	Sources("reference", http[0], http);
+}
+
+SKYLARK(Screenshots,"screenshots"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/ss_en-us.tpp", http);
+}
+
+SKYLARK(Comparisons,"comparisons"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/comparison_en-us.tpp", http);
+}
+
+SKYLARK(Applications,"apps"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/apps_en-us.tpp", http);
+}
+
+SKYLARK(Download,"download"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/download_en-us.tpp", http);
+}
+
+SKYLARK(Manual,"manual"){
+	ParseLanguage(http);
+	ValueMap pkgs;
+	Index<String> x;
+	x.Add("Web"); // Web package is deprecated, don't show it in reference
+	static const char* packages[] = {
+		"Core", "Draw", "CtrlCore", "CtrlLib", "RichText", "Sql", "Skylark"
+	};
+	FindFile ff(AppendFileName(TRUNK+"/uppsrc", "*.*"));
+	Array<String> folders;
+	while(ff){
+		if(ff.IsFolder())
+			folders.Add(ff.GetName());
+		ff.Next();
+	}
+	Sort(folders);
+	for (int i = 0; i < 7; i++)
+		GetDocs(packages[i], pkgs, x);
+	for (int i = 0; i < folders.GetCount(); ++i)
+		GetDocs(folders[i], pkgs, x);
+
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/documentation_en-us.tpp", http, false);
+	http("PKGS", pkgs);
+	http.RenderResult("uppweb/manual");
+}
+
+SKYLARK(Bazaar,"bazaar"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/bazaar_en-us.tpp", http);
+}
+
+SKYLARK(Roadmap,"roadmap"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/Roadmap_en-us.tpp", http);
+}
+
+SKYLARK(FAQ,"faq"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/FAQ_en-us.tpp", http);
+}
+
+SKYLARK(License,"license"){
+	ServeTopic(TRUNK+"/uppsrc/ide/app.tpp/About_en-us.tpp", http);
+}
+
+CACHED_SKYLARK(Forums,"forum"){
+	ParseLanguage(http);
+	http("CSS", "")
+		("CONTENT", "Forum is not implemented yet")
+		("TOPIC", "Forum")
+		.RenderResult("uppweb/base.witz");
+}
+
+SKYLARK(Funding,"funding"){
+	ServeTopic(TRUNK+"/uppbox/uppweb/www.tpp/Funding_en-us.tpp", http);
+}
+
+SKYLARK(LargeStatic, "/L$/static/*.png"){
+	http.SetHeader("Cache-Control","public");
+	http.Content("image/png", LoadFile(((uppweb&)SkylarkApp::TheApp()).basedir+"/L$/static/"+http[0]));
+}
+
+SKYLARK(Favicon, "favicon.ico"){
+	http.SetHeader("Cache-Control","public");
+	http.Content("image/png", LoadFile(((uppweb&)SkylarkApp::TheApp()).basedir+"/favicon.png"));
+}
+
+SKYLARK(CatchAll, "**")
+{
+	http.Response(404,"File not found");
+}

@@ -1,0 +1,10 @@
+description "Simple caching for Skylark\377";
+
+uses
+	Skylark;
+
+file
+	SkylarkCache.h,
+	SkylarkCache.cpp,
+	Handlers.icpp;
+

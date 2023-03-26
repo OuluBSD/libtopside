@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>$if(TOPIC)$TOPIC | $/ Ultimate++</title>
+<style type="text/css"><!--
+$CSS
+a.l1         { text-decoration:none; font-size: 8pt; font-family: sans-serif; font-weight: normal; }
+a.l1:link    { color:#000000; }
+a.l1:visited { color:#000080; }
+a.l1:hover   { color:#9933CC; }
+a.l1:active  { color:#000000; }
+a.l2         { text-decoration:none; font-size: 12pt; font-family: sans-serif; font-variant: small-caps; }
+a.l2:link    { color:#0066FF; }
+a.l2:visited { color:#FF6600; }
+a.l2:hover   { color:#BC0624; }
+a.l2:active  { color:#BC0024; }
+
+body  { background-color: #D2D9D2; margin: 5px 5px 5px 5px;}
+.top  { background: white; border: 1px solid #6E89AE; height: 88px; margin-bottom: 5px; }
+.ad1  { background-image: url('/static/0i.png'); float: right; width: 580px; height: 88px;}
+.logo { width: 400px; float: left;}
+.content { bottom:0; top:0; margin-left: 185px; background-color: white; border: 1px solid #6E89AE; padding: 5px 5px 5px 5px;}
+.bottom { width: 100%;}
+.menu { float: left; width: 180px; border:0; border-top-width: 1px; border-top-color: #6E89AE; border-top-style: solid; margin-right: 5px;}
+.menubox { background-image: url('/static/2i.png'); padding: 3px 12px 3px 12px; border: 1px solid #6E89AE; border-top-width: 0;}
+.menutitle { font-size: 8pt; font-family: sans-serif; background-image: url('/static/3i.png'); border: 1px solid #6E89AE; color: white; padding: 1px 12px 1px 12px;}
+.indent {margin-left: 51px;}
+--></style>
+<meta name="keywords" content="framework, toolkit, widget, c++, visual, studio, dev-cpp, builder, ide, class, component,wxwidgets, qt, rapid, application, development, rad, mfc, linux, gui, sdl, directx, desktop">
+<meta name="robots" content="index,follow">
+#HEAD
+<script type="text/javascript">
+function setLang(sel){
+  var exdate=new Date();
+  exdate.setDate(exdate.getDate() + 365);
+  document.cookie="lang=" + sel.value + "; expires="+exdate.toUTCString();
+}
+</script>
+</head>
+<body>
+
+<div class="top">
+<div class="logo"><a href="/"><img src="/static/1i.png" alt=""></a></div>
+<div class="ad1">&nbsp;</div>
+</div>
+
+<div class="bottom">
+<div class="menu">
+	<div class="menubox"><a href="/overview" class="l1">$t_("Overview")</a></div>
+	<div class="menubox"><a href="/examples" class="l1">$t_("Examples")</a></div>
+	<div class="menubox"><a href="/screenshots" class="l1">$t_("Screenshots")</a></div>
+	<div class="menubox"><a href="/comparisons" class="l1">$t_("Comparisons")</a></div>
+	<div class="menubox"><a href="/apps" class="l1">$t_("Applications")</a></div>
+	<div class="menubox"><a href="/download" class="l1">$t_("Download")</a></div>
+	<div class="menubox"><a href="/manual" class="l1">$t_("Manual")</a></div>
+	<div class="menubox"><a href="/bazaar" class="l1">$t_("Bazaar")</a></div>
+	<div class="menubox"><a href="/roadmap" class="l1">$t_("Status & Roadmap")</a></div>
+	<div class="menubox"><a href="/faq" class="l1">$t_("FAQ")</a></div>
+	<div class="menubox"><a href="/license" class="l1">$t_("Authors & License")</a></div>
+	<div class="menubox"><a href="/forum" class="l1">$t_("Forums")</a></div>
+	<div class="menubox"><a href="/funding" class="l1">$t_("Funding U++")</a></div>
+	</br>
+	<div class="menutitle">$t_("Search on this site")</div>
+	<div class="menubox">
+		<form action="http://www.google.com/search" method="GET">
+			<img src="/static/4i.png" alt="" border="0">
+			<input type="HIDDEN" name="ie" value="UTF-8">
+			<input type="HIDDEN" name="oe" value="UTF-8">
+			<input type="TEXT" name="q" size="13" maxlength="256">
+			<input type="HIDDEN" name="domains" value="www.ultimatepp.org">
+			<input type="HIDDEN" name="sitesearch" value="www.ultimatepp.org">
+		</form>
+	</div>
+	</br>
+	<div class="menutitle">$t_("Language")</div>
+	<div class="menubox">
+		<img src="/static/5i.png" alt="" border="0">
+		<select id="lang" onchange="setLang(this);window.location=window.location.href.replace(/lang=[-a-z]*/,'');">
+			<option value="en-us" selected="1">English</option>
+			<option value="ca-es" $if(@lang=="ca-es") selected="1" $endif>català</option>
+			<option value="cs-cz" $if(@lang=="cs-cz") selected="1" $endif>čeština</option>
+			<option value="de-de" $if(@lang=="de-de") selected="1" $endif>Deutsch</option>
+			<option value="es-es" $if(@lang=="es-es") selected="1" $endif>español</option>
+			<option value="eu-es" $if(@lang=="eu-es") selected="1" $endif>euskara</option>
+			<option value="fr-fr" $if(@lang=="fr-fr") selected="1" $endif>français</option>
+			<option value="ro-ro" $if(@lang=="ro-ro") selected="1" $endif>română</option>
+			<option value="ru-ru" $if(@lang=="ru-ru") selected="1" $endif>русский</option>
+			<option value="zh-cn" $if(@lang=="zh-cn") selected="1" $endif>中文(简体)</option>
+			<option value="zh-tw" $if(@lang=="zh-tw") selected="1" $endif>中文(繁體)</option>
+		</select>
+	</div>
+</div>
+<div class="content">
+$CONTENT
+#GENERATED
+<div style="text-align:right;font-size:8pt;">$if(TIME)$t_("Generated:") $TIME $/</div>
+</div>
+</div>
+</body>
+</html>
+
+#define HEAD
+
+#define GENERATED

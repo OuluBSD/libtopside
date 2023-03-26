@@ -166,8 +166,10 @@ public:
 	Http&  UxRun(const String& js_code);
 	
 	String GetResponse() const                        { return response; }
-	
+	int    GetResponseCode() const                    { return code; }
+	String GetResponseCodeText() const;
 	void   Finalize();
+	String GetURI() const;
 
 	void   Dispatch(TcpSocket& socket);
 	

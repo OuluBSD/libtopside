@@ -1,0 +1,16 @@
+#include uppweb/base
+
+#define GENERATED
+
+<h2>$t_("Demostration examples")</h2>
+<div class="indent"><dl>
+$for(i in EXAMPLES)
+  <dt><a href=/examples/$i._key>$i._key</a></dt><dd>$if(i) $i $else $t_("No description available") $/</dd>
+$/
+</dl></div>
+<h2>$t_("Reference examples")</h2>
+<div class="indent"><dl>
+$for(i in REFERENCE)
+  <dt><a href=/reference/$i._key>$i._key</a></dt><dd>$if(i) $i $else $t_("No description available") $/</dd>
+$/
+</dl></div>

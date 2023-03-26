@@ -1,0 +1,13 @@
+#ifndef _uppweb_icpp_init_stub
+#define _uppweb_icpp_init_stub
+#include "Skylark/init"
+#include "RichText/init"
+#include "Painter/init"
+#include "SkylarkCache/init"
+#define BLITZ_INDEX__ F438787781fbae1ea5942cd5fa1628555
+#include "Handlers.icpp"
+#undef BLITZ_INDEX__
+#define BLITZ_INDEX__ Fa757bcd34f021d23d64e7e58f19cd700
+#include "Functions.icpp"
+#undef BLITZ_INDEX__
+#endif

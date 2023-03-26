@@ -1,0 +1,14 @@
+#include "uppweb.h"
+
+#define TFILE <uppweb/www.t>
+#include <Core/t.h>
+
+Value Translate(const Vector<Value>& arg, const Renderer *) {
+	if(arg.GetCount() != 1 || !IsString(arg[0]))
+		return String();
+	return GetLngString(String(arg[0]));
+}
+
+INITBLOCK {
+	Compiler::Register("t_", Translate);
+}

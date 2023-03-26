@@ -1,0 +1,28 @@
+#include uppweb/base
+
+#define GENERATED
+
+<div class="indent">
+$for(p in PKGS)
+	<h3>$p._key</h3>
+	<div class=indent>
+	$p.DESCRIPTION
+	$if(count(p.SRCDOC)>0)
+		<h4>$t_("manual\vUsing ") $p._key</h4>
+		<div class="indent">
+		$for(s in p.SRCDOC)
+			<a href="$s">$s._key</a><br>
+		$/
+		</div>
+	$/
+	$if(count(p.SRC)>0)
+		<h4>$p._key $t_("manual\vreference")</h4>
+		<div class="indent">
+		$for(s in p.SRC)
+			<a href="$s">$s._key</a><br>
+		$/
+		</div>
+	$/
+	</div><br>
+$/
+</div>
