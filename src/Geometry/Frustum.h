@@ -1,6 +1,7 @@
 #ifndef _Geometry_Frustum_h_
 #define _Geometry_Frustum_h_
 
+#undef NEAR
 #undef FAR
 
 NAMESPACE_TOPSIDE_BEGIN

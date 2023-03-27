@@ -906,7 +906,8 @@ public:
 	V& operator[](int i) {return GetPos(i);}
 	
 	V& Top() { ASSERT(GetCount() > 0); return values.Top(); }
-	V Pop() {V v(std::move(values.Top())); Remove(values.GetCount()-1); return v;}
+	//V Pop() {V v(std::move(values.Top())); Remove(values.GetCount()-1); return v;}
+	V* Pop() {V* v = values.Top(); Remove(values.GetCount()-1); return v;}
 
 	int Find(const K& key) const { return keys.Find(key); }
 	Iterator FindIterator(const K& key) const { Iterator it = Begin(); int pos = Find(key); it += pos == -1 ? GetCount() : pos; return it;}

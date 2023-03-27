@@ -8,7 +8,7 @@
 
 #include <Local/Before.h>
 
-#if UPP_OLD_VERSION //defined flagWIN32 && defined flagGCC
+#if UPP_OLD_VERSION || (defined flagWIN32 && defined flagGCC)
 	#define GLEW_STATIC 1
 	#include <ports/glew/glew.h>
 #else

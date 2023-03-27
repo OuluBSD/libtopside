@@ -14,7 +14,7 @@ mainconfig
 	"Have everything (Windows)" = "GUI SCREEN SDL2 OGL VR FLUIDLITE BUILTIN_PORTAUDIO BUILTIN_ASSIMP",
 	"Have everything (Emscripten)" = "GUI SCREEN SDL2 EMSCRIPTEN",
 	"" = "",
-	"" = "SCREEN",
+	"" = "GUI SCREEN",
 	"" = "SCREEN OGL BUILTIN_ASSIMP",
 	"" = "SCREEN SDL2",
 	"" = "SCREEN SDL2 OGL",

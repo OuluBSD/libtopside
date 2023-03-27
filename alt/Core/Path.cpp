@@ -155,7 +155,7 @@ String GetHomeDirectory() {
 	struct passwd *pw = getpwuid(getuid());
 	String homedir = pw->pw_dir;
 	return homedir;
-	#elif defined flagWIN32
+	#elif defined flagWIN32 && !defined flagGCC
 	char buff[255];
     SHGetSpecialFolderPathA(HWND_DESKTOP, buff, CSIDL_PROFILE, FALSE);
     return buff;
@@ -333,7 +333,7 @@ String GetDataFile(String filename) {
 
 bool FileExists(String path) {
 	#ifdef flagWIN32
-	#ifndef flagUWP
+	#if !defined flagUWP && !defined flagGCC
 	return PathFileExistsA(path.Begin());
 	#else
 	struct stat stat_info;

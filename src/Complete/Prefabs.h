@@ -19,6 +19,10 @@
 #elif defined flagPOSIX
 	#define GUI_EON "deps/default_gui_app_x11.eon"
 	#define GUBO_EON "deps/default_gubo_app_x11.eon"
+#elif defined flagWIN32
+	#define GUI_EON ""
+	#define GUBO_EON ""
+	#define SURFACE_EON ""
 #else
 	#error No eon file for GUI app on this platform.
 #endif

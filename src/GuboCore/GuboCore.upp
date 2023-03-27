@@ -33,13 +33,9 @@ file
 	Images.cpp,
 	2D readonly separator,
 	CtrlCore.h,
-	Util.h,
-	Util.cpp,
 	Surface.h,
 	Surface.cpp,
 	TopSurface.h,
 	TopSurface.cpp,
-	Images.h,
-	Images.cpp,
 	_ readonly separator;
 

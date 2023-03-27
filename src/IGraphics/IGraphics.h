@@ -2,7 +2,7 @@
 #define _IGraphics_IGraphics_h_
 
 
-#if 0 && defined flagWIN32
+#if defined flagGCC && defined flagWIN32
 	#define GLEW_STATIC 1
 	#include <ports/glew/glew.h>
 #else
