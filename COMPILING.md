@@ -37,5 +37,6 @@ To enable exceptions, add ```-fwasm-exceptions``` to the build method's Common o
 Download and install Emscripten SDK.
 Duplicate your existing CLANG build method in TheIDE and add emsdk bin directory to your BIN directory list as **first**.
 Add ```-fwasm-exceptions -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sUSE_BZIP2=1 -sUSE_LIBPNG -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1``` to the build method's Common options.
-Add ```-fwasm-exceptions -sUSE_BZIP2=1 -sUSE_LIBPNG -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1``` to the build method's Common link options.
+Add ```-fwasm-exceptions -sUSE_BZIP2=1 -sUSE_LIBPNG -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1  --embed-file /home/user/libtopside/share/eon/tests/00a_audio_gen.eon@/tests/``` to the build method's Common link options.
+Set up lightthd server and symlink new files to the web root. Create html file with some hello world emscripten example.
 

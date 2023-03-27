@@ -399,6 +399,13 @@ void AppInit__(int argc, const char** argv) {
 	for(int i = 0; i < argc; i++)
 		args.Add(argv[i*2]);
 	::UPP::ParseCommandLine(argc, args.Begin());
+	#elif PLATFORM_EMSCRIPTEN
+	const char* argv_[4] = {"Shell", "-e", "tests/00a_audio_gen.eon", 0};
+	argc = 3;
+	argv = argv_;
+	if (argc > 0)
+		::UPP::SetExeFilePath(argv[0]);
+	::UPP::ParseCommandLine(argc, argv);
 	#else
 	if (argc > 0)
 		::UPP::SetExeFilePath(argv[0]);

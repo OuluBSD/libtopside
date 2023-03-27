@@ -3,6 +3,11 @@
 NAMESPACE_UPP_BEGIN
 
 
+#if !defined flagMSC
+typedef std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> UnicodeConverter;
+UnicodeConverter& GetUnicodeConverter() {static UnicodeConverter conv; return conv;}
+#endif
+
 
 
 String ToUtf8(const wchar_t* s, int len) {

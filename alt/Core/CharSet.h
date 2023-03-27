@@ -11,11 +11,6 @@ inline String ToUtf8(wchar code) { return ToUtf8(&code, 1); }
 
 extern Tuple<dword, const char *> KeyNames__[];
 
-#if !defined flagMSC
-typedef std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> UnicodeConverter;
-inline UnicodeConverter& GetUnicodeConverter() {static UnicodeConverter conv; return conv;}
-#endif
-
 template<> inline String AsString(const WString& o) {return ToUtf8(o.Begin(), o.GetCount());}
 		   inline String ToString(const WString& o) {return ToUtf8(o.Begin(), o.GetCount());}
 template<> inline WString ToWString(const CString& o) {return FromUtf8(o, -1);}
