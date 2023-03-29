@@ -1,12 +1,13 @@
 #ifndef _IGraphics_IGraphics_h_
 #define _IGraphics_IGraphics_h_
 
-
-#if defined flagGCC && defined flagWIN32
-	#define GLEW_STATIC 1
-	#include <ports/glew/glew.h>
-#else
-	#include <GL/glew.h>
+#if defined flagOGL
+	#if defined flagGCC && defined flagWIN32
+		#define GLEW_STATIC 1
+		#include <ports/glew/glew.h>
+	#else
+		#include <GL/glew.h>
+	#endif
 #endif
 
 

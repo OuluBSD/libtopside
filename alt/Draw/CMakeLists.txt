@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -21,20 +21,27 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
       Draw.h
-      Image.h
-      Font.h
       DrawClasses.h
+      Display.h
+      Font.h
+      Image.h
+      ImageOp.h
       iml_header.h
       iml_source.h
       SDraw.h
-      Chameleon.h
+      Cham.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      Image.cpp
-      Font.cpp
       DrawClasses.cpp
+      Font.cpp
+      Draw.cpp
+      Image.cpp
+      ImageOp.cpp
+      SDraw.cpp
       SImageDraw.cpp
+      Cham.cpp
+      SColors.cpp
 )
 
 list ( APPEND Draw_DEPEND_LIST

@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,8 +29,8 @@ if ((NOT DEFINED flagDEBUG AND WIN32))
   list ( APPEND LINK_LIST ode_double )
 endif()
 
-# library(!WIN32) ode;
-if ((NOT WIN32))
+# library(!WIN32 & !EMSCRIPTEN) ode;
+if ((NOT WIN32 AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST ode )
 endif()
 

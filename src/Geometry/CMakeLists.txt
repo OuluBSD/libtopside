@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -22,11 +22,6 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 # uses(BUILTIN_ASSIMP | MSC | LINUX) ports/assimp;
 if ((DEFINED flagBUILTIN_ASSIMP OR DEFINED flagMSC OR DEFINED flagLINUX))
   list ( APPEND Geometry_DEPEND_LIST ports_assimp-lib )
-endif()
-
-# uses(GUI) LocalCtrl;
-if ((DEFINED flagGUI))
-  list ( APPEND Geometry_DEPEND_LIST LocalCtrl-lib )
 endif()
 
 # library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
@@ -63,6 +58,8 @@ list ( APPEND HEADER_LIST
       MeshTracker.h
       Uncamera.h
       Vr.h
+      ModelPainter.h
+      ModelDraw.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -79,7 +76,6 @@ list ( APPEND SOURCE_LIST_CPP
       Model.cpp
       ModelBuilder.cpp
       Draw.cpp
-      ProgPainter.cpp
       Frustum.cpp
       Compare.cpp
       Camera.cpp
@@ -87,6 +83,8 @@ list ( APPEND SOURCE_LIST_CPP
       MeshTracker.cpp
       Uncamera.cpp
       Vr.cpp
+      ModelPainter.cpp
+      ModelDraw.cpp
 )
 
 list ( APPEND Geometry_DEPEND_LIST

@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,8 +29,8 @@ if ((DEFINED flagGUI OR DEFINED flagSCREEN))
   list ( APPEND AtomMinimal_DEPEND_LIST IHal-lib )
 endif()
 
-# uses(GUI | SCREEN) IScreen;
-if ((DEFINED flagGUI OR DEFINED flagSCREEN))
+# uses((GUI | SCREEN) & !EMSCRIPTEN) IScreen;
+if ((DEFINED flagGUI OR DEFINED flagSCREEN) AND (NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND AtomMinimal_DEPEND_LIST IScreen-lib )
 endif()
 

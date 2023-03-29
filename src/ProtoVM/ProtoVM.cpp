@@ -16,6 +16,8 @@ void SetupMiniMax8085(Machine& mach);
 
 NAMESPACE_TOPSIDE_END
 
+#ifdef flagMAIN
+
 CONSOLE_APP_MAIN {
 	using namespace TS;
 	
@@ -43,3 +45,5 @@ CONSOLE_APP_MAIN {
 		
 	}
 }
+
+#endif

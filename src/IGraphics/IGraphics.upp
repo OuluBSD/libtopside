@@ -15,7 +15,7 @@ uses(WIN32&MSC) ports/glext;
 
 library(MSC) glew32;
 
-library(MSC) OpenGL32;
+library(MSC) "OpenGL32 Gdi32";
 
 file
 	IGraphics.h,

@@ -8,15 +8,17 @@
 
 #include <Local/Before.h>
 
-#if UPP_OLD_VERSION || (defined flagWIN32 && defined flagGCC)
-	#define GLEW_STATIC 1
-	#include <ports/glew/glew.h>
-#else
-	#include <GL/glew.h>
-#endif
-
-#if HAVE_GLUT
-	#include <GL/freeglut.h>
+#if defined flagOGL
+	#if UPP_OLD_VERSION || (defined flagWIN32 && defined flagGCC)
+		#define GLEW_STATIC 1
+		#include <ports/glew/glew.h>
+	#else
+		#include <GL/glew.h>
+	#endif
+	
+	#if HAVE_GLUT
+		#include <GL/freeglut.h>
+	#endif
 #endif
 
 

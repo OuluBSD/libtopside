@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -34,9 +34,9 @@ if ((DEFINED flagMSC))
   list ( APPEND LINK_LIST glew32 )
 endif()
 
-# library(MSC) OpenGL32;
+# library(MSC) "OpenGL32 Gdi32";
 if ((DEFINED flagMSC))
-  list ( APPEND LINK_LIST OpenGL32 )
+  list ( APPEND LINK_LIST OpenGL32 Gdi32 )
 endif()
 
 list ( APPEND HEADER_LIST

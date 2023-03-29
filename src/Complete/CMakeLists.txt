@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,11 +19,6 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# uses(GUI) DesktopSuite;
-if ((DEFINED flagGUI))
-  list ( APPEND Complete_DEPEND_LIST DesktopSuite-lib )
-endif()
-
 # uses(NEVER) Physics;
 if ((DEFINED flagNEVER))
   list ( APPEND Complete_DEPEND_LIST Physics-lib )
@@ -42,10 +37,13 @@ list ( APPEND SOURCE_LIST_CPP
 list ( APPEND Complete_DEPEND_LIST
       AudioCore-lib
       Shadertoy-lib
-      EcsComplete-lib
-      EcsMinimal-lib
       AtomLocal-lib
       AudioHost-lib
+      GuboLib-lib
+      IMidiFile-lib
+      IMidiHw-lib
+      SerialLib-lib
+      AtomHandle-lib
 )
 
 # Module properties

@@ -1,0 +1,14 @@
+uses
+	ProtoVM,
+	ProtoCtrl;
+
+file
+	ProtoApp.h,
+	ProtoApp.cpp,
+	Top.h,
+	Top.cpp,
+	VmCtrl.cpp;
+
+mainconfig
+	"" = "GUI";
+

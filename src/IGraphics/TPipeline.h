@@ -87,7 +87,6 @@ struct ShaderT :
     
     
 	void SetState(DataStateBase& d) {state = &d;}
-    bool CheckCompileErrors(GLuint shader, String type);
 	void BasicMeshRefresh(Model& model, Mesh& mesh);
     
 	GfxDataObject* CreateObject() override {return state ? &state->CreateObject() : 0;}

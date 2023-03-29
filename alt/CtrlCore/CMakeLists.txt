@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -22,19 +22,14 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 list ( APPEND HEADER_LIST
       CtrlCore.h
       Defs.h
-      Util.h
+      VirtualGui.h
       MKeys.h
       Ctrl.h
-      TopWindow.h
-      Images.h
+      Image.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      Util.cpp
       Ctrl.cpp
-      Bar.cpp
-      TopWindow.cpp
-      Images.cpp
 )
 
 list ( APPEND CtrlCore_DEPEND_LIST

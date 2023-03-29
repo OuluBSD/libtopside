@@ -9,8 +9,7 @@ library(WIN32 MSC) "SDL2.lib SDL2main.lib OpenGL32.lib";
 
 library(WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
 
-pkg_config
-	sdl2;
+pkg_config(!MSC) sdl2;
 
 file
 	Atom.h,

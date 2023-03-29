@@ -41,6 +41,7 @@ class SoftRend {
 		SoftShader* frag = 0;
 		SoftShader* vtx = 0;
 		
+		RenderSource(){}
 		bool use_processed_vertices = false;
 		SoftVertexBuffer processed_vertices;
 		SoftVertexBuffer& GetVertices() {return use_processed_vertices ? processed_vertices : *vbo;}

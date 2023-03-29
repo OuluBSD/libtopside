@@ -1,3 +1,5 @@
+description "\377B128,0,0";
+
 uses
 	Local,
 	ports/chips;
@@ -33,6 +35,9 @@ file
 	Bus.cpp,
 	Common.h,
 	Common.cpp,
+	Router readonly separator,
+	Router.h,
+	Router.cpp,
 	_ readonly separator;
 
 mainconfig

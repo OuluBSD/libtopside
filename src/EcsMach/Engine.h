@@ -58,9 +58,9 @@ public:
 #define ECS_SYS_CTOR_DERIVED(x, derived_from) \
 	typedef x CLASSNAME; \
 	x(Engine& m) : derived_from(m) {}
-#define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
+#define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Ecs::System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_DERIVED(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<x>(this);}
-#define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
+#define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<Ecs::System<CLASSNAME>>(this);}
 
 struct ComponentBaseUpdater {
 	

@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -26,6 +26,10 @@ list ( APPEND HEADER_LIST
       BaseAudio.h
       BaseVideo.h
       RegistrySystem.h
+      HandleTypes.h
+      HandleSystemT.h
+      ScopeT.h
+      FrameT.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -34,6 +38,9 @@ list ( APPEND SOURCE_LIST_CPP
       BaseAudio.cpp
       BaseVideo.cpp
       RegistrySystem.cpp
+      HandleSystemT.cpp
+      ScopeT.cpp
+      FrameT.cpp
 )
 
 list ( APPEND ParallelLib_DEPEND_LIST

@@ -44,7 +44,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 #else
 	#define GFX_RENDSYS_LIST
-	#warning no render system in IGraphics
+	#if defined flagCLANG || defined flagGCC
+		#warning no render system in IGraphics
+	#endif
 #endif
 
 

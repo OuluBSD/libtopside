@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -53,6 +53,7 @@ list ( APPEND HEADER_LIST
       LocalCtrl.h
       Defs.h
       Compat.h
+      Util.h
       PathCtrl.h
       Container.h
       TabMgrCtrl.h
@@ -70,6 +71,8 @@ list ( APPEND HEADER_LIST
 
 list ( APPEND SOURCE_LIST_CPP
       CtrlUtils.cpp
+      Compat.cpp
+      Util.cpp
       PathCtrl.cpp
       TabMgrCtrl.cpp
       GridCtrl.cpp

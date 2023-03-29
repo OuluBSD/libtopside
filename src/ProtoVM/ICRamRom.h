@@ -47,6 +47,7 @@ class ICMem8T : public ICMem8Base {
 	byte data[I];
 	
 	
+public:
 	ICMem8T() : ICMem8Base(data, size, WRITABLE) {}
 	
 };

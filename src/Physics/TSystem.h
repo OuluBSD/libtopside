@@ -10,10 +10,10 @@ struct SystemT :
 	Ecs::System<SystemT<Fys>>
 {
 	using Base = SystemT<Fys>;
-	using SP = System<SystemT<Fys>>;
+	using SP = Ecs::System<SystemT<Fys>>;
 	using Node = NodeT<Fys>;
 	using Space = SpaceT<Fys>;
-	using EcsSystem = System<SystemT<Fys>>;
+	using EcsSystem = Ecs::System<SystemT<Fys>>;
 	using NativeWorld = typename Fys::NativeWorld;
 	using NativeSpace = typename Fys::NativeSpace;
 	using NativeJointGroup = typename Fys::NativeJointGroup;
@@ -51,7 +51,7 @@ public:
 		Fys::AttachThreadPool(threading, pool);
 		Fys::AttachThreading(world, threading);
 	}
-	SYS_DEF_VISIT
+	 SYS_DEF_VISIT
 	
 	~SystemT() {
 		Fys::DetachThreading(threading);

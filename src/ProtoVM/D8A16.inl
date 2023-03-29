@@ -2,6 +2,7 @@
 
 case A0:
 if (data_bytes == 2 && data_bits == 0) {
+	data16 = *(uint16*)data;
 	in_addr = data16;
 	return true;
 }

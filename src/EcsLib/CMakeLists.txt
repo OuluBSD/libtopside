@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -28,11 +28,13 @@ list ( APPEND HEADER_LIST
       Model.h
       RenderingSystem.h
       RegistrySystem.h
-      EventSystem.h
       Prefab.h
       WorldLogic.h
       EonLoader.h
       Gui.h
+      EventSystem.h
+      Absolute2D.h
+      Geom2DComponent.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -43,12 +45,14 @@ list ( APPEND SOURCE_LIST_CPP
       Model.cpp
       RenderingSystem.cpp
       RegistrySystem.cpp
-      EventSystem.cpp
       Prefab.cpp
       WorldLogic.cpp
       EonLoader.cpp
       PhysicsSystem.cpp
       Gui.cpp
+      EventSystem.cpp
+      Absolute2D.cpp
+      Geom2DComponent.cpp
 )
 
 list ( APPEND EcsLib_DEPEND_LIST

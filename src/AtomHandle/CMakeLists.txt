@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -20,40 +20,40 @@ endif()
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
-      AtomEcs.h
+      AtomHandle.h
       Generated.h
-      Ecs.h
+      Handle.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      AtomEcs.cpp
+      AtomHandle.cpp
       Init.cpp
       Generated.cpp
-      Ecs.cpp
+      Handle.cpp
 )
 
-list ( APPEND AtomEcs_DEPEND_LIST
+list ( APPEND AtomHandle_DEPEND_LIST
       AtomAudio-lib
 )
 
 # Module properties
 create_cpps_from_icpps()
 set_source_files_properties ( ${HEADER_LIST} PROPERTIES HEADER_FILE_ONLY ON )
-add_library ( AtomEcs-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
-target_include_directories ( AtomEcs-lib PUBLIC ${INCLUDE_LIST} )
-set_property ( TARGET AtomEcs-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
+add_library ( AtomHandle-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
+target_include_directories ( AtomHandle-lib PUBLIC ${INCLUDE_LIST} )
+set_property ( TARGET AtomHandle-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
 
 # Module link
-if ( AtomEcs_DEPEND_LIST OR LINK_LIST )
-  target_link_libraries ( AtomEcs-lib ${AtomEcs_DEPEND_LIST} ${LINK_LIST} )
+if ( AtomHandle_DEPEND_LIST OR LINK_LIST )
+  target_link_libraries ( AtomHandle-lib ${AtomHandle_DEPEND_LIST} ${LINK_LIST} )
 endif()
 
 # Precompiled headers settings
 get_directory_property ( PCH_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-set_target_properties ( AtomEcs-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
-set_target_properties ( AtomEcs-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
-set_target_properties ( AtomEcs-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
-set_target_properties ( AtomEcs-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
+set_target_properties ( AtomHandle-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
+set_target_properties ( AtomHandle-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
+set_target_properties ( AtomHandle-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
+set_target_properties ( AtomHandle-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
 
 list ( LENGTH PCH_FILE PCH_FILE_LENGTH )
 if ( PCH_FILE_LENGTH GREATER 1 )
@@ -62,7 +62,7 @@ endif()
 
 if ( PCH_FILE AND DEFINED flagPCH )
   get_filename_component ( PCH_NAME ${PCH_FILE} NAME )
-  set ( PCH_DIR ${PROJECT_PCH_DIR}/AtomEcs-lib )
+  set ( PCH_DIR ${PROJECT_PCH_DIR}/AtomHandle-lib )
   set ( PCH_HEADER ${PCH_DIR}/${PCH_NAME} )
   if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
       if ( ${CMAKE_VERBOSE_MAKEFILE} EQUAL 1 )
@@ -75,7 +75,7 @@ if ( PCH_FILE AND DEFINED flagPCH )
       set ( PCH_INCLUDE_PARAMS " -Winvalid-pch -include-pch ${PCH_HEADER}.pch" )
   endif()
   if ( MSVC )
-      set_target_properties ( AtomEcs-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
+      set_target_properties ( AtomHandle-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
       set_source_files_properties ( ${SOURCE_LIST_CPP} PROPERTIES COMPILE_FLAGS "Yc${PCH_NAME} -Fp${PCH_HEADER}.pch" )
   endif()
   if ( PCH_INCLUDE_PARAMS )

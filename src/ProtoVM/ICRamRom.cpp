@@ -54,7 +54,7 @@ bool ICMem8Base::Tick() {
 		data[addr] = in_data;
 	}
 	if (verbose) {
-		LOG("ICMem8Base::Tick: r=" << in_reading << ", w=" << in_writing << ", addr=" << HexStr(in_addr) << ", data=" << HexStr(in_data));
+		LOG("ICMem8Base::Tick: r=" << (int)in_reading << ", w=" << (int)in_writing << ", addr=" << HexStr(in_addr) << ", data=" << HexStr(in_data));
 	}
 	in_data = 0;
 	in_addr = 0;

@@ -51,12 +51,4 @@ void AtomVirtualGui3D::Quit() {
 }
 
 
-/*#if IS_TS_CORE
-
-bool GetCtrl() {TODO}
-bool GetAlt() {TODO}
-bool GetShift() {TODO}
-
-#endif*/
-
 NAMESPACE_TOPSIDE_END

@@ -91,6 +91,8 @@ struct GfxDataState : ErrorReporter {
 	vec2				resolution;
 	vec2				offset;
 	
+	
+	GfxDataState();
 	virtual GfxModelState& AddModel() = 0;
 	virtual GfxModelState& GetModel(int i) = 0;
 	virtual GfxModelState& RealizeModel(hash_t link) = 0;

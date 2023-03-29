@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -34,6 +34,7 @@ list ( APPEND HEADER_LIST
       PaintingSystem.h
       ShootingSystem.h
       ThrowingSystem.h
+      DesktopSystem.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -53,11 +54,13 @@ list ( APPEND SOURCE_LIST_CPP
       PaintingSystem.cpp
       ShootingSystem.cpp
       ThrowingSystem.cpp
+      DesktopSystem.cpp
 )
 
 list ( APPEND EcsLocal_DEPEND_LIST
       EcsLib-lib
       Geometry-lib
+      DesktopSuite-lib
 )
 
 # Module properties

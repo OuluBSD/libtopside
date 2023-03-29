@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -37,6 +37,7 @@ list ( APPEND HEADER_LIST
       Index.h
       Container.h
       RTuple.h
+      StringUtil.h
       Util.h
       Process.h
       Math.h
@@ -61,6 +62,12 @@ list ( APPEND HEADER_LIST
       Html.h
       Url.h
       Debugging.h
+      Draw2D.h
+      Draw3D.h
+      GeomInteraction.h
+      ProgDraw.h
+      ProgPainter.h
+      Workspace.h
       Ctrl.h
       Ctrl.inl
       GEnums.h
@@ -98,7 +105,13 @@ list ( APPEND SOURCE_LIST_CPP
       Midi.cpp
       Html.cpp
       Url.cpp
+      Draw3D.cpp
       Debugging.cpp
+      GIBase.cpp
+      GI2D.cpp
+      GI3D.cpp
+      ProgDraw.cpp
+      ProgPainter.cpp
       Graphics.cpp
       Daemon.cpp
       Network.cpp

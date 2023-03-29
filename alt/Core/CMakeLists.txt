@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -43,8 +43,8 @@ if ((WIN32))
   list ( APPEND LINK_LIST Ws2_32 )
 endif()
 
-# library(POSIX) "pthread crypto bz2";
-if ((DEFINED flagPOSIX))
+# library(POSIX & !EMSCRIPTEN) "pthread crypto bz2";
+if ((DEFINED flagPOSIX AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST pthread crypto bz2 )
 endif()
 
@@ -85,54 +85,70 @@ list ( APPEND HEADER_LIST
       Macros.h
       Fn.h
       Ops.h
-      Hash.h
-      Algo.h
+      Atomic.h
+      Mt.h
+      Heap.h
       String_.h
-      StringUtil.h
+      StrUtil.h
+      SplitMerge.h
+      CharSet.h
+      Path.h
+      App.h
       Tuple.h
-      Vector.h
       Stream.h
-      Math.h
       Util.h
       Sort.h
-      Chrono.h
-      Thread.h
-      Socket.h
-      Callback.h
-      Gate.h
-      Graph.h
-      Geom.h
-      Ptr.h
+      LocalProcess.h
+      t_.h
+      Algo.h
       Topt.h
+      Vcont.h
+      Function.h
+      Callback.h
+      CallbackN.i
+      CallbackNP.i
+      CallbackR.i
+      Gate.h
+      TimeDate.h
+      Complex.h
+      Color.h
       Value.h
+      Gtypes.h
+      i18n.h
       Parser.h
+      Uuid.h
+      Hash.h
+      Ptr.h
       JSON.h
-      System.h
-      Internet.h
+      Inet.h
+      Http.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
       Core.cpp
-      Fn.cpp
       Cpu.cpp
-      Algo.cpp
+      Mt.cpp
       StringInline.cpp
       StringTmpl.cpp
       String.cpp
-      StringUtil.cpp
-      Vector.cpp
+      StrUtil.cpp
+      SplitMerge.cpp
+      CharSet.cpp
+      Path.cpp
       Stream.cpp
       Util.cpp
-      Chrono.cpp
-      Thread.cpp
-      Socket.cpp
+      Vcont.cpp
       Callback.cpp
-      Graph.cpp
-      Geom.cpp
+      TimeDate.cpp
+      Color.cpp
       Value.cpp
+      Gtypes.cpp
+      i18n.cpp
       Parser.cpp
+      Uuid.cpp
       JSON.cpp
-      Internet.cpp
+      Socket.cpp
+      Http.cpp
 )
 
 list ( APPEND Core_DEPEND_LIST
@@ -140,6 +156,7 @@ list ( APPEND Core_DEPEND_LIST
       RTTI-lib
       SharedCore-lib
       StaticInterface-lib
+      ports_md5-lib
 )
 
 # Module properties

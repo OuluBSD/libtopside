@@ -62,19 +62,21 @@ void RenderingSystem::RemoveCamera(CameraBase& c) {
 
 void RenderingSystem::Update(double dt) {
 	
-	for (ModelComponentRef& m : models) {
-		
-		m->Load(*state);
-		
-	}
-	
-	for (CameraBase* cb : cams) {
-		if (calib.is_enabled) {
-			cb->calib = calib;
-			cb->UpdateCalibration();
+	if (state) {
+		for (ModelComponentRef& m : models) {
+			
+			m->Load(*state);
+			
 		}
 		
-		cb->Load(*state);
+		for (CameraBase* cb : cams) {
+			if (calib.is_enabled) {
+				cb->calib = calib;
+				cb->UpdateCalibration();
+			}
+			
+			cb->Load(*state);
+		}
 	}
 	
 }

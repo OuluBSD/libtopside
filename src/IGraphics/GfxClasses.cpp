@@ -3,6 +3,10 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+GfxDataState::GfxDataState() {
+	
+}
+
 String GfxInputState::GetSamplerString() const {
 	switch (type) {
 		case GVar::CUBEMAP_INPUT:	return "samplerCube";

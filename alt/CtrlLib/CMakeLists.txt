@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -21,30 +21,6 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
       CtrlLib.h
-      Button.h
-      EditString.h
-      Keys.h
-      StaticCtrl.h
-      Bar.h
-      FileSel.h
-      TabCtrl.h
-      ArrayCtrl.h
-      TreeCtrl.h
-      ScrollBar.h
-      Splitter.h
-)
-
-list ( APPEND SOURCE_LIST_CPP
-      Button.cpp
-      EditString.cpp
-      StaticCtrl.cpp
-      Bar.cpp
-      FileSel.cpp
-      TabCtrl.cpp
-      ArrayCtrl.cpp
-      TreeCtrl.cpp
-      ScrollBar.cpp
-      Splitter.cpp
 )
 
 list ( APPEND CtrlLib_DEPEND_LIST

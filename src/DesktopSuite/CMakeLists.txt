@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -20,21 +20,30 @@ endif()
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
+      Notes.txt
       DesktopSuite.h
-      System.h
       Factory.h
+      TaskBar.h
+      Explorer.h
+      ControlPanel.h
+      Events.h
       Tester.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
       Init.cpp
-      System.cpp
       Factory.cpp
+      TaskBar.cpp
+      Explorer.cpp
+      ControlPanel.cpp
+      Events.cpp
       Tester.cpp
 )
 
 list ( APPEND DesktopSuite_DEPEND_LIST
-      EcsCtrl-lib
+      CtrlLib-lib
+      VirtualGui_Atom-lib
+      LocalCtrl-lib
 )
 
 # Module properties

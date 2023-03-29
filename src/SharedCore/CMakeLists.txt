@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -21,6 +21,7 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
       SharedCore.h
+      SharedDefs.h
       Policies.h
       RTTIDummy.h
       Shared.h
@@ -31,6 +32,8 @@ list ( APPEND HEADER_LIST
       TokenParser.h
       String.h
       Draw.h
+      Random.h
+      Ctrl.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -40,6 +43,8 @@ list ( APPEND SOURCE_LIST_CPP
       TokenParser.cpp
       String.cpp
       Draw.cpp
+      Random.cpp
+      Ctrl.cpp
 )
 
 # Module properties

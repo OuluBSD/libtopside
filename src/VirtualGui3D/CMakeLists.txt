@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -25,25 +25,11 @@ list ( APPEND HEADER_LIST
       Local.h
       Keys.h
       After.h
-      Ctrl.h
-      Top.h
-      AfterEcsLib.h
-      Direct.h
-      Windows.h
-      CoreWindow.h
-      WindowManager.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
       VirtualGui.cpp
-      Ctrl.cpp
       Wnd.cpp
-      Top.cpp
-      Direct.cpp
-      Windows.cpp
-      CoreWindow.cpp
-      WindowFrame.cpp
-      WindowManager.cpp
 )
 
 # Module properties

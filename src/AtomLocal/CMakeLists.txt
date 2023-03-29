@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,6 +19,11 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
+# uses(!EMSCRIPTEN) IHolograph;
+if ((NOT DEFINED flagEMSCRIPTEN))
+  list ( APPEND AtomLocal_DEPEND_LIST IHolograph-lib )
+endif()
+
 # uses(SCREEN) IGraphics;
 if ((DEFINED flagSCREEN))
   list ( APPEND AtomLocal_DEPEND_LIST IGraphics-lib )
@@ -35,7 +40,6 @@ list ( APPEND SOURCE_LIST_CPP
 
 list ( APPEND AtomLocal_DEPEND_LIST
       ParallelLib-lib
-      IHolograph-lib
 )
 
 # Module properties

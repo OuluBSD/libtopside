@@ -1,4 +1,4 @@
-#ifdef flagWIN32
+#if defined flagWIN32 && !defined flagMSC
 
 #include "maindef.h"
 #include "glcorearb.h"

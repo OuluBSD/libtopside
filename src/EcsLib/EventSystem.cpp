@@ -1,6 +1,5 @@
 #include "EcsLib.h"
 
-#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -9,11 +8,11 @@ bool EventSystem::Initialize() {
 	return true;
 }
 
-void EventSystem::Attach(Serial::EcsEventsBase* b) {
+/*void EventSystem::Attach(Serial::EcsEventsBase* b) {
 	ASSERT(b);
 	EventStateBase::AddBinder(this);
 	serial = b;
-}
+}*/
 
 void EventSystem::Start() {
 	
@@ -34,4 +33,3 @@ void EventSystem::Uninitialize() {
 
 NAMESPACE_ECS_END
 
-#endif

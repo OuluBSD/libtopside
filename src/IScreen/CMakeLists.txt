@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Mon Nov 21 21:46:11 EET 2022
+# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,13 +19,13 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# library(POSIX) "X11 Xrandr Xxf86vm";
-if ((DEFINED flagPOSIX))
+# library(POSIX & !EMSCRIPTEN) "X11 Xrandr Xxf86vm";
+if ((DEFINED flagPOSIX AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST X11 Xrandr Xxf86vm )
 endif()
 
-# library(POSIX & OGL) "GLX GL GLU GLEW glut";
-if ((DEFINED flagPOSIX AND DEFINED flagOGL))
+# library(POSIX & OGL & !EMSCRIPTEN) "GLX GL GLU GLEW glut";
+if ((DEFINED flagPOSIX AND DEFINED flagOGL AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST GLX GL GLU GLEW glut )
 endif()
 
