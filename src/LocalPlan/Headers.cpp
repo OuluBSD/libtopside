@@ -406,6 +406,63 @@ void InterfaceBuilder::Headers() {
 		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
+	AddHeader("WinContextAtom", "WinContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("win.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
+	AddHeader("WinVideoAtomPipe", "WinSinkDevice", "pipe")
+		.In("CenterVideo").Out("CenterReceipt")
+		.Action("win.video.pipe")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	/*
+	AddHeader("X11SwContextAtom", "X11SwContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("x11.sw.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
+	AddHeader("X11OglContextAtom", "X11OglContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("x11.ogl.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+	;
+	
+	AddHeader("X11EventAtomPipe", "X11EventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("x11.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("X11SwEventAtomPipe", "X11SwEventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("x11.sw.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("X11OglEventAtomPipe", "X11OglEventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("x11.ogl.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	*/
 	AddHeader("OglCustomer", "CustomerBase", "customer")
 		.In("OglReceipt").Out("OglOrder")
 		.Action("ogl.customer")

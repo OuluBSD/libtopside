@@ -5,13 +5,13 @@ uses
 
 library(FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
-library(POSIX & OPENCV) v4l2;
+library(OPENCV & POSIX) v4l2;
 
 library(OPENCV & POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_shape";
 
-library(WIN32 & DEBUG) opencv_world454d;
+library(OPENCV & WIN32 & DEBUG) opencv_world454d;
 
-library(WIN32 & !DEBUG) opencv_world454;
+library(OPENCV & WIN32 & !DEBUG) opencv_world454;
 
 file
 	IMedia.h,

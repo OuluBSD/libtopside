@@ -3,13 +3,13 @@ description "Libtopside VirtualGui implementation for SDL2/OpenGL\377";
 uses
 	VirtualGui;
 
-library(POSIX) "SDL2 SDL2main GL";
+library(SDL2 POSIX) "SDL2 SDL2main GL";
 
-library(WIN32 MSC) "SDL2.lib SDL2main.lib OpenGL32.lib";
+library(SDL2 WIN32 MSC) "SDL2.lib OpenGL32.lib";
 
-library(WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
+library(SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
 
-pkg_config(!MSC) sdl2;
+pkg_config(SDL2 !MSC) sdl2;
 
 file
 	Atom.h,

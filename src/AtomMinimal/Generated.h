@@ -540,6 +540,36 @@ public:
 };
 #endif
 
+#if (defined flagWIN32 && defined flagSCREEN)
+class WinContextAtom : public WinContext {
+
+public:
+	RTTI_DECL1(WinContextAtom, WinContext)
+	COPY_PANIC(WinContextAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagWIN32 && defined flagSCREEN)
+class WinVideoAtomPipe : public WinSinkDevice {
+
+public:
+	RTTI_DECL1(WinVideoAtomPipe, WinSinkDevice)
+	COPY_PANIC(WinVideoAtomPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 class OglCustomer : public CustomerBase {
 
 public:

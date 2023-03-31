@@ -1057,6 +1057,62 @@ AtomTypeCls X11OglEventAtomPipe::GetType() const {
 #endif
 
 
+#if (defined flagWIN32 && defined flagSCREEN)
+String WinContextAtom::GetAction() {
+	return "win.context";
+}
+
+AtomTypeCls WinContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls WinContextAtom::GetLinkType() {
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void WinContextAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinContext>(this);
+}
+
+AtomTypeCls WinContextAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagWIN32 && defined flagSCREEN)
+String WinVideoAtomPipe::GetAction() {
+	return "win.video.pipe";
+}
+
+AtomTypeCls WinVideoAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_VIDEO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(CENTER,VIDEO),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls WinVideoAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void WinVideoAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinSinkDevice>(this);
+}
+
+AtomTypeCls WinVideoAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 String OglCustomer::GetAction() {
 	return "ogl.customer";
 }

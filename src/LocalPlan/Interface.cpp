@@ -127,7 +127,11 @@ InterfaceBuilder::Header& InterfaceBuilder::Header::Link(String type, String rol
 void InterfaceBuilder::Generate(bool write_actually) {
 	VectorMap<String, String> outputs;
 	
+	#ifdef flagWIN32
+	String prj_dir = "C:\\git\\libtopside";
+	#else
 	String prj_dir = AppendFileName(GetHomeDirectory(), "libtopside");
+	#endif
 	String par_dir = AppendFileName(prj_dir, "src");
 	
 	String pm_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "Generated.h");
@@ -248,6 +252,9 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				const struct Dependency& dep = pkg.deps[i];
 				if (dep.have_header) {
 					String title = GetFileTitle(k);
+					int j = title.ReverseFind("/");
+					if (j >= 0)
+						title = title.Mid(j+1);
 					s << "#include <" << k << "/" << title << ".h>\n";
 				}
 			}

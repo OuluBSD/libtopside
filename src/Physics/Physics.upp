@@ -1,10 +1,10 @@
 description "\377B141,85,150";
 
-library(DEBUG & WIN32) ode_doubled;
+library(ODE & DEBUG & WIN32) ode_doubled;
 
-library(!DEBUG & WIN32) ode_double;
+library(ODE & !DEBUG & WIN32) ode_double;
 
-library(!WIN32 & !EMSCRIPTEN) ode;
+library(ODE & !WIN32 & !EMSCRIPTEN) ode;
 
 file
 	Physics.h,

@@ -24,7 +24,7 @@ bool GetAlt();
 bool GetShift();
 END_UPP_NAMESPACE
 
-#ifdef flagMSC
+#if 0 //defined flagMSC
 	#include <SDL.h>
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>

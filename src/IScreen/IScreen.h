@@ -18,6 +18,7 @@ NAMESPACE_PARALLEL_BEGIN
 	SCR_VNDR(ScrX11) \
 	SCR_VNDR(ScrX11Sw) \
 	SCR_VNDR(ScrX11Ogl) \
+	SCR_VNDR(ScrWin) \
 
 #define SCR_CLS(x, v) struct v##x;
 #define SCR_VNDR(x) SCR_CLS_LIST(x)
@@ -59,6 +60,22 @@ struct ScrX11Sw {
 #endif
 #if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 struct ScrX11Ogl {
+	struct NativeSinkDevice;
+	struct NativeContext;
+	struct NativeEventsBase;
+	
+	struct Thread {
+		
+	};
+	
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+#if (defined flagWIN32 && defined flagSCREEN)
+struct ScrWin {
 	struct NativeSinkDevice;
 	struct NativeContext;
 	struct NativeEventsBase;
@@ -258,6 +275,11 @@ using X11SwEventsBase = ScreenEventsBaseT<ScrX11Sw>;
 using X11OglSinkDevice = ScreenSinkDeviceT<ScrX11Ogl>;
 using X11OglContext = ScreenContextT<ScrX11Ogl>;
 using X11OglEventsBase = ScreenEventsBaseT<ScrX11Ogl>;
+#endif
+#if (defined flagWIN32 && defined flagSCREEN)
+using WinSinkDevice = ScreenSinkDeviceT<ScrWin>;
+using WinContext = ScreenContextT<ScrWin>;
+using WinEventsBase = ScreenEventsBaseT<ScrWin>;
 #endif
 
 NAMESPACE_PARALLEL_END

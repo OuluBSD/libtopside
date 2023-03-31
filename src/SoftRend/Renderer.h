@@ -40,10 +40,10 @@ class SoftRend {
 		SoftProgram* prog = 0;
 		SoftShader* frag = 0;
 		SoftShader* vtx = 0;
-		
-		RenderSource(){}
 		bool use_processed_vertices = false;
 		SoftVertexBuffer processed_vertices;
+		
+		RenderSource() : processed_vertices(0) {}
 		SoftVertexBuffer& GetVertices() {return use_processed_vertices ? processed_vertices : *vbo;}
 		const SoftVertexBuffer& GetVertices() const {return use_processed_vertices ? processed_vertices : *vbo;}
 	};

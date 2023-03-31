@@ -12,19 +12,20 @@
 
 
 #if defined flagSDL2
-	#if defined flagWIN32 && defined flagMSC
+	#if 0 //defined flagWIN32 && defined flagMSC
 		#include <SDL.h>
 		#include <SDL_ttf.h>
 		#include <SDL_image.h>
 		#include <SDL_syswm.h>
-		#ifdef flagSCREEN
+		#ifdef flagOGL
 			#include <SDL_opengl.h>
 		#endif
 	#else
 		#include <SDL2/SDL.h>
 		#include <SDL2/SDL_ttf.h>
 		#include <SDL2/SDL_image.h>
-		#ifdef flagSCREEN
+		#include <SDL2/SDL_syswm.h>
+		#ifdef flagOGL
 			#include <SDL2/SDL_opengl.h>
 		#endif
 	#endif

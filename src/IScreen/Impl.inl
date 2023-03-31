@@ -1,3 +1,4 @@
+#if X11IMPL
 #define ScanCodeName COMBINE(KeySymToTSScancode, ABBR)
 #define CLASSNAME COMBINE(ScrX11, ABBR)
 #define CONTEXT COMBINE(COMBINE(X11, ABBR), Context)
@@ -366,3 +367,10 @@ int ConvertX11Keycode(CLASSNAME::NativeEventsBase& dev, int keycode)
     return keycode;
 }
 
+#endif
+
+
+
+#if WINIMPL
+
+#endif

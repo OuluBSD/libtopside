@@ -230,7 +230,7 @@ inline double& AudioFrames::operator[] ( size_t n ) {
 
 	if ( n >= size_ ) {
 		
-		LOG("AudioFrames::operator[]: invalid index (" << n << ") value!");
+		LOG("AudioFrames::operator[]: invalid index (" << (int)n << ") value!");
 		Audio::HandleError(AudioError::MEMORY_ACCESS );
 	}
 
@@ -243,7 +243,7 @@ inline double AudioFrames::operator[] ( size_t n ) const {
 
 	if ( n >= size_ ) {
 		
-		LOG("AudioFrames::operator[]: invalid index (" << n << ") value!");
+		LOG("AudioFrames::operator[]: invalid index (" << (int)n << ") value!");
 		Audio::HandleError(AudioError::MEMORY_ACCESS );
 	}
 
@@ -256,7 +256,7 @@ inline double& AudioFrames::operator() ( size_t frame, unsigned int channel ) {
 
 	if ( frame >= frame_count_ || channel >= channel_count_ ) {
 		
-		LOG("AudioFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!");
+		LOG("AudioFrames::operator(): invalid frame (" << (int)frame << ") or channel (" << channel << ") value!");
 		Audio::HandleError(AudioError::MEMORY_ACCESS );
 	}
 
@@ -269,7 +269,7 @@ inline double AudioFrames::operator() ( size_t frame, unsigned int channel ) con
 
 	if ( frame >= frame_count_ || channel >= channel_count_ ) {
 		
-		LOG("AudioFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!");
+		LOG("AudioFrames::operator(): invalid frame (" << (int)frame << ") or channel (" << channel << ") value!");
 		Audio::HandleError(AudioError::MEMORY_ACCESS );
 	}
 

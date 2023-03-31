@@ -4,7 +4,7 @@ noblitz;
 
 flags(WIN32) ALL_WIN_SOURCES;
 
-library(WIN32) "User32 Advapi32";
+library(WIN32) "User32 Advapi32 Winmm Ole32";
 
 library(LINUX) asound;
 

@@ -110,8 +110,6 @@ extern "C" int main(int argc, const char** argv) {\
 } \
 \
 void AppMain()
-//#endif
-
 
 
 #if defined flagGCC || flagCLANG

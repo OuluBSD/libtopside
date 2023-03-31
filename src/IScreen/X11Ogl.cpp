@@ -2,7 +2,7 @@
 
 
 		
-#if defined flagPOSIX && defined flagOGL
+#if defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL
 NAMESPACE_PARALLEL_BEGIN
 
 struct ScrX11Ogl::NativeContext {
@@ -555,6 +555,7 @@ bool ScrX11Ogl::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 
 
 #define ABBR Ogl
+#define X11IMPL 1
 #include "Impl.inl"
 #undef ABBR
 

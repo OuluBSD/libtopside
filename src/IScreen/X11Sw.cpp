@@ -1,7 +1,7 @@
 #include "IScreen.h"
 
 		
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -396,6 +396,7 @@ bool ScrX11Sw::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 
 
 #define ABBR Sw
+#define X11IMPL 1
 #include "Impl.inl"
 #undef ABBR
 

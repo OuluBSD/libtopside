@@ -5,6 +5,8 @@ NAMESPACE_UPP_BEGIN
 
 
 void SetExeFilePath(String s);
+void SetGuiInstance(void* instance);
+void* GetGuiInstance();
 String GetExeFilePath();
 String GetHomeDirectory();
 String ConfigFile(String file_name);

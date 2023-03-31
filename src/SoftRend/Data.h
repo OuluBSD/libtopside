@@ -19,14 +19,14 @@ struct SoftVertexBuffer : SoftInited {
 	using SoftInited::SoftInited;
 	Vector<Vertex> vertices;
 	
-	SoftVertexBuffer(int) {}
+	SoftVertexBuffer(int i = 0) {}
 };
 
 struct SoftElementBuffer : SoftInited {
 	using SoftInited::SoftInited;
 	Vector<uint32> indices;
 	
-	SoftElementBuffer(int) {}
+	SoftElementBuffer(int i = 0) {}
 };
 
 struct SoftVertexArray : SoftInited {
@@ -34,7 +34,7 @@ struct SoftVertexArray : SoftInited {
 	SoftVertexBuffer* vbo = 0;
 	SoftElementBuffer* ebo = 0;
 	
-	SoftVertexArray(int) {}
+	SoftVertexArray(int i = 0) {}
 };
 
 
