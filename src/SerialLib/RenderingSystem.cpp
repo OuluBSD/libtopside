@@ -4,7 +4,7 @@
 
 #if (defined flagPOSIX && defined flagSCREEN && defined flagOGL)
 NAMESPACE_PARALLEL_BEGIN
-GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev);
+GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice*& dev);
 NAMESPACE_PARALLEL_END
 #endif
 

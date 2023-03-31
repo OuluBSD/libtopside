@@ -45,13 +45,13 @@ struct ScrX11Sw::NativeEventsBase {
 };
 
 
-bool ScrX11Sw::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool ScrX11Sw::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void ScrX11Sw::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void ScrX11Sw::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void ScrX11Sw::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -336,13 +336,13 @@ bool ScrX11Sw::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io
 
 
 
-bool ScrX11Sw::Context_Create(One<NativeContext>& dev) {
-	dev.Create();
+bool ScrX11Sw::Context_Create(NativeContext*& dev) {
+	dev = new NativeContext;
 	return true;
 }
 
-void ScrX11Sw::Context_Destroy(One<NativeContext>& dev) {
-	dev.Clear();
+void ScrX11Sw::Context_Destroy(NativeContext*& dev) {
+	delete dev;
 }
 
 void ScrX11Sw::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {

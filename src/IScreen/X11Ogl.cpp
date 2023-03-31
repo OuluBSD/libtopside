@@ -42,7 +42,7 @@ struct ScrX11Ogl::NativeEventsBase {
 };
 
 
-GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(One<ScrX11Ogl::NativeSinkDevice>& dev) {
+GfxAccelAtom<X11OglGfx>& Get_ScrX11Ogl_Ogl(ScrX11Ogl::NativeSinkDevice*& dev) {
 	return dev->accel;
 }
 
@@ -90,13 +90,13 @@ typedef struct {
 	unsigned long   status;
 } Hints;
 
-bool ScrX11Ogl::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool ScrX11Ogl::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void ScrX11Ogl::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void ScrX11Ogl::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void ScrX11Ogl::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -499,13 +499,13 @@ bool ScrX11Ogl::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& i
 
 
 
-bool ScrX11Ogl::Context_Create(One<NativeContext>& dev) {
-	dev.Create();
+bool ScrX11Ogl::Context_Create(NativeContext*& dev) {
+	dev = new NativeContext;
 	return true;
 }
 
-void ScrX11Ogl::Context_Destroy(One<NativeContext>& dev) {
-	dev.Clear();
+void ScrX11Ogl::Context_Destroy(NativeContext*& dev) {
+	delete dev;
 }
 
 void ScrX11Ogl::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {

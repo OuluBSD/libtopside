@@ -127,7 +127,7 @@ template <class Holo> struct HolographSinkDeviceT : HoloSinkDevice {
 		if (dev) Holo::SinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HoloSinkDevice>(this);
 	}
-	One<typename Holo::NativeSinkDevice> dev;
+	typename Holo::NativeSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Holo::SinkDevice_Create(dev))
 			return false;

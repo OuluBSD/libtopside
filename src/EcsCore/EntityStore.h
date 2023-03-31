@@ -20,7 +20,7 @@ class EntityStore : public System<EntityStore> {
 public:
 	SYS_RTTI(EntityStore)
 	ECS_SYS_CTOR_(EntityStore) {InitRoot();}
-	SYS_DEF_VISIT_(vis || root)
+	ECS_SYS_DEF_VISIT_(vis || root)
 	
 	PoolRef GetRoot()	{return *root.begin();}
 	PoolVec& GetRootVec()	{return root;}

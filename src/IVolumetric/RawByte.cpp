@@ -17,13 +17,13 @@ struct VolRawByte::NativeStaticSource {
 };
 
 
-bool VolRawByte::StaticSource_Create(One<NativeStaticSource>& dev) {
-	dev.Create();
+bool VolRawByte::StaticSource_Create(NativeStaticSource*& dev) {
+	dev = new NativeStaticSource;
 	return true;
 }
 
-void VolRawByte::StaticSource_Destroy(One<NativeStaticSource>& dev) {
-	dev.Clear();
+void VolRawByte::StaticSource_Destroy(NativeStaticSource*& dev) {
+	delete dev;
 }
 
 void VolRawByte::StaticSource_Visit(NativeStaticSource& dev, AtomBase&, RuntimeVisitor& vis) {

@@ -1,6 +1,9 @@
 #ifndef _IGraphics_IGraphics_h_
 #define _IGraphics_IGraphics_h_
 
+#include <Core/config.h>
+
+
 #if defined flagOGL
 	#if defined flagGCC && defined flagWIN32
 		#define GLEW_STATIC 1
@@ -34,8 +37,8 @@
 #undef main
 
 #if PLATFORM_POSIX_DESKTOP
-	#define Time XTime
-	#define Font XFont
+	//#define Time XTime
+	//#define Font XFont
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
 	#include <X11/extensions/xf86vmode.h>

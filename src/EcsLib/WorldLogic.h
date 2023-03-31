@@ -10,7 +10,7 @@ class WorldLogicSystem : public System<WorldLogicSystem>
 public:
 	SYS_RTTI(WorldLogicSystem)
     ECS_SYS_CTOR(WorldLogicSystem)
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	void Attach(Transform* t);
 	void Detach(Transform* t);

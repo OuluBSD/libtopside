@@ -185,13 +185,13 @@ void StaticAudioOutputSinkCallback(void* userdata, Uint8* stream, int len) {
 
 
 
-bool HalSdl::AudioSinkDevice_Create(One<NativeAudioSinkDevice>& dev) {
-	dev.Create();
+bool HalSdl::AudioSinkDevice_Create(NativeAudioSinkDevice*& dev) {
+	dev = new NativeAudioSinkDevice;
 	return true;
 }
 
-void HalSdl::AudioSinkDevice_Destroy(One<NativeAudioSinkDevice>& dev) {
-	dev.Clear();
+void HalSdl::AudioSinkDevice_Destroy(NativeAudioSinkDevice*& dev) {
+	delete dev;
 }
 
 void HalSdl::AudioSinkDevice_Visit(NativeAudioSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -334,13 +334,13 @@ void HalSdl::AudioSinkDevice_DetachContext(NativeAudioSinkDevice&, AtomBase& a, 
 
 
 
-bool HalSdl::ContextBase_Create(One<NativeContextBase>& dev) {
-	dev.Create();
+bool HalSdl::ContextBase_Create(NativeContextBase*& dev) {
+	dev = new NativeContextBase;
 	return true;
 }
 
-void HalSdl::ContextBase_Destroy(One<NativeContextBase>& dev) {
-	dev.Clear();
+void HalSdl::ContextBase_Destroy(NativeContextBase*& dev) {
+	delete dev;
 }
 
 void HalSdl::ContextBase_Visit(NativeContextBase& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -438,13 +438,13 @@ bool HalSdl::ContextBase_IsReady(NativeContextBase& ctx, AtomBase&, PacketIO& io
 
 	
 
-bool HalSdl::CenterVideoSinkDevice_Create(One<NativeCenterVideoSinkDevice>& dev) {
-	dev.Create();
+bool HalSdl::CenterVideoSinkDevice_Create(NativeCenterVideoSinkDevice*& dev) {
+	dev = new NativeCenterVideoSinkDevice;
 	return true;
 }
 
-void HalSdl::CenterVideoSinkDevice_Destroy(One<NativeCenterVideoSinkDevice>& dev) {
-	dev.Clear();
+void HalSdl::CenterVideoSinkDevice_Destroy(NativeCenterVideoSinkDevice*& dev) {
+	delete dev;
 }
 
 void HalSdl::CenterVideoSinkDevice_Visit(NativeCenterVideoSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -738,13 +738,13 @@ void HalSdl::CenterVideoSinkDevice_DetachContext(NativeCenterVideoSinkDevice&, A
 
 
 
-bool HalSdl::CenterFboSinkDevice_Create(One<NativeCenterFboSinkDevice>& dev) {
-	dev.Create();
+bool HalSdl::CenterFboSinkDevice_Create(NativeCenterFboSinkDevice*& dev) {
+	dev = new NativeCenterFboSinkDevice;
 	return true;
 }
 
-void HalSdl::CenterFboSinkDevice_Destroy(One<NativeCenterFboSinkDevice>& dev) {
-	dev.Clear();
+void HalSdl::CenterFboSinkDevice_Destroy(NativeCenterFboSinkDevice*& dev) {
+	delete dev;
 }
 
 void HalSdl::CenterFboSinkDevice_Visit(NativeCenterFboSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -896,13 +896,13 @@ void HalSdl::CenterFboSinkDevice_DetachContext(NativeCenterFboSinkDevice& dev, A
 
 
 #ifdef flagOGL
-bool HalSdl::OglVideoSinkDevice_Create(One<NativeOglVideoSinkDevice>& dev) {
-	dev.Create();
+bool HalSdl::OglVideoSinkDevice_Create(NativeOglVideoSinkDevice*& dev) {
+	dev = new NativeOglVideoSinkDevice;
 	return true;
 }
 
-void HalSdl::OglVideoSinkDevice_Destroy(One<NativeOglVideoSinkDevice>& dev) {
-	dev.Clear();
+void HalSdl::OglVideoSinkDevice_Destroy(NativeOglVideoSinkDevice*& dev) {
+	delete dev;
 }
 
 void HalSdl::OglVideoSinkDevice_Visit(NativeOglVideoSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -1156,13 +1156,13 @@ void HalSdl__SetMouseCursor(void* ptr, const Image& image)
 
 
 
-bool HalSdl::EventsBase_Create(One<NativeEventsBase>& dev) {
-	dev.Create();
+bool HalSdl::EventsBase_Create(NativeEventsBase*& dev) {
+	dev = new NativeEventsBase;
 	return true;
 }
 
-void HalSdl::EventsBase_Destroy(One<NativeEventsBase>& dev) {
-	dev.Clear();
+void HalSdl::EventsBase_Destroy(NativeEventsBase*& dev) {
+	delete dev;
 }
 
 void HalSdl::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -1170,9 +1170,6 @@ void HalSdl::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisitor& 
 }
 
 bool HalSdl::EventsBase_Initialize(NativeEventsBase& dev, AtomBase& a, const Script::WorldState&) {
-	dev.Clear();
-	
-	
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
@@ -1573,17 +1570,17 @@ void HalSdl::EventsBase_DetachContext(NativeEventsBase&, AtomBase& a, AtomBase& 
 #ifdef flagUPPCORE
 extern SDL_TimerID waketimer_id;
 
-bool HalSdl::UppEventsBase_Create(One<NativeUppEventsBase>& dev) {
-	dev.Create();
+bool HalSdl::UppEventsBase_Create(NativeUppEventsBase*& dev) {
+	dev = new NativeUppEventsBase;
 	return true;
 }
 
-void HalSdl::UppEventsBase_Destroy(One<NativeUppEventsBase>& dev) {
-	dev.Clear();
+void HalSdl::UppEventsBase_Destroy(NativeUppEventsBase*& dev) {
+	delete dev;
 }
 
 bool HalSdl::UppEventsBase_Initialize(NativeUppEventsBase& dev, AtomBase& a, const Script::WorldState&) {
-	dev.Clear();
+	delete dev;
 	
 	
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
@@ -1692,14 +1689,14 @@ void HalSdl::UppEventsBase_DetachContext(NativeUppEventsBase&, AtomBase& a, Atom
 
 
 #if defined flagOGL
-bool HalSdl::UppOglDevice_Create(One<NativeUppOglDevice>& dev) {
-	dev.Create();
+bool HalSdl::UppOglDevice_Create(NativeUppOglDevice*& dev) {
+	dev = new NativeUppOglDevice;
 	NativeUppOglDevice::last = &*dev;
 	return true;
 }
 
-void HalSdl::UppOglDevice_Destroy(One<NativeUppOglDevice>& dev) {
-	dev.Clear();
+void HalSdl::UppOglDevice_Destroy(NativeUppOglDevice*& dev) {
+	delete dev;
 }
 
 bool HalSdl::UppOglDevice_Initialize(NativeUppOglDevice& dev, AtomBase& a, const Script::WorldState& ws) {

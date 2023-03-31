@@ -1,8 +1,8 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-static bool Sink_Create(One<NativeSink>& dev);
-static void Sink_Destroy(One<NativeSink>& dev);
+static bool Sink_Create(NativeSink*& dev);
+static void Sink_Destroy(NativeSink*& dev);
 static bool Sink_Initialize(NativeSink&, AtomBase&, const Script::WorldState&);
 static bool Sink_PostInitialize(NativeSink&, AtomBase&);
 static bool Sink_Start(NativeSink&, AtomBase&);

@@ -64,7 +64,7 @@ template <class Fx> struct EffectEffectT : FxEffect {
 		if (dev) Fx::Effect_Visit(*dev, *this, vis);
 		vis.VisitThis<FxEffect>(this);
 	}
-	One<typename Fx::NativeEffect> dev;
+	typename Fx::NativeEffect* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Fx::Effect_Create(dev))
 			return false;

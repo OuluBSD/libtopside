@@ -14,13 +14,13 @@ struct HoloLocalHMD::NativeSinkDevice {
 };
 
 
-bool HoloLocalHMD::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool HoloLocalHMD::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void HoloLocalHMD::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void HoloLocalHMD::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void HoloLocalHMD::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {

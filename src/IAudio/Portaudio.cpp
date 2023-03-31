@@ -237,13 +237,13 @@ struct AudPortaudio::NativeSourceDevice {
 
 void AudPortaudio::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {}
 
-bool AudPortaudio::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool AudPortaudio::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void AudPortaudio::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void AudPortaudio::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev_, AtomBase& a, const Script::WorldState& ws) {

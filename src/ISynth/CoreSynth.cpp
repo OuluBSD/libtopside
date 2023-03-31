@@ -28,13 +28,13 @@ void CreateSynCoreInstrument(SynCoreSynth::NativeInstrument& dev, AtomBase& a, c
 	}
 }
 
-bool SynCoreSynth::Instrument_Create(One<NativeInstrument>& dev) {
-	dev.Create();
+bool SynCoreSynth::Instrument_Create(NativeInstrument*& dev) {
+	dev = new NativeInstrument;
 	return true;
 }
 
-void SynCoreSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
-	dev.Clear();
+void SynCoreSynth::Instrument_Destroy(NativeInstrument*& dev) {
+	delete dev;
 }
 
 void SynCoreSynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {

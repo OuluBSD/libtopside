@@ -37,13 +37,13 @@ PmTimestamp midithru_time_proc(void *info) {
     return ts;
 }
 
-bool MidPortmidi::Source_Create(One<NativeSource>& dev) {
-	dev.Create();
+bool MidPortmidi::Source_Create(NativeSource*& dev) {
+	dev = new NativeSource;
 	return true;
 }
 
-void MidPortmidi::Source_Destroy(One<NativeSource>& dev) {
-	dev.Clear();
+void MidPortmidi::Source_Destroy(NativeSource*& dev) {
+	delete dev;
 }
 
 void MidPortmidi::Source_Visit(NativeSource& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -54,7 +54,7 @@ bool MidPortmidi::Source_Initialize(NativeSource& dev, AtomBase& a, const Script
 	dev.msg_count = 0;
 	
 	// Search for usb device by default
-	bool search_usb = ws.GetBool(".search.usb", true);
+	//bool search_usb = ws.GetBool(".search.usb", true);
 	
     Pm_Initialize();
 

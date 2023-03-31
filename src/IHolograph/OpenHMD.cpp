@@ -59,13 +59,13 @@ void PrintOHMD(HoloOpenHMD::NativeSinkDevice& dev, String name, int len, ohmd_in
 	LOG("HoloOpenHMD: info: " << s);
 }
 
-bool HoloOpenHMD::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool HoloOpenHMD::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void HoloOpenHMD::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void HoloOpenHMD::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 bool HoloOpenHMD::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {

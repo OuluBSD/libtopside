@@ -13,13 +13,13 @@ struct HoloRemoteVRServer::NativeSinkDevice {
 
 
 
-bool HoloRemoteVRServer::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool HoloRemoteVRServer::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void HoloRemoteVRServer::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void HoloRemoteVRServer::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void HoloRemoteVRServer::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {

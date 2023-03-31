@@ -159,7 +159,6 @@ public:
 	String Get(int size) override {
 		if (!s || !size) return String();
 		ASSERT(size > 0);
-		int pos = ftell(s);
 		Vector<char> v;
 		v.SetCount(size, 0);
 		char* it = v.Begin();
@@ -183,7 +182,7 @@ public:
 		Vector<char> v;
 		v.SetCount(size+1);
 		v[size] = 0;
-		size_t read_size = fread(v.Begin(), 1, size, s);
+		fread(v.Begin(), 1, size, s);
 		return v.GetData();
 	}
 

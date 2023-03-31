@@ -228,13 +228,13 @@ void SynFluidsynth::Instrument_Finalize(NativeInstrument& dev, AtomBase&, Realti
 
 
 
-bool SynFluidsynth::Instrument_Create(One<NativeInstrument>& dev) {
-	dev.Create();
+bool SynFluidsynth::Instrument_Create(NativeInstrument*& dev) {
+	dev = new NativeInstrument;
 	return true;
 }
 
-void SynFluidsynth::Instrument_Destroy(One<NativeInstrument>& dev) {
-	dev.Clear();
+void SynFluidsynth::Instrument_Destroy(NativeInstrument*& dev) {
+	delete dev;
 }
 
 void SynFluidsynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {

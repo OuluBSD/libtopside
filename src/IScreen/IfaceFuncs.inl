@@ -1,8 +1,8 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-static bool SinkDevice_Create(One<NativeSinkDevice>& dev);
-static void SinkDevice_Destroy(One<NativeSinkDevice>& dev);
+static bool SinkDevice_Create(NativeSinkDevice*& dev);
+static void SinkDevice_Destroy(NativeSinkDevice*& dev);
 static bool SinkDevice_Initialize(NativeSinkDevice&, AtomBase&, const Script::WorldState&);
 static bool SinkDevice_PostInitialize(NativeSinkDevice&, AtomBase&);
 static bool SinkDevice_Start(NativeSinkDevice&, AtomBase&);
@@ -15,8 +15,8 @@ static void SinkDevice_Finalize(NativeSinkDevice&, AtomBase&, RealtimeSourceConf
 static bool SinkDevice_NegotiateSinkFormat(NativeSinkDevice&, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);
 static bool SinkDevice_IsReady(NativeSinkDevice&, AtomBase&, PacketIO& io);
 
-static bool Context_Create(One<NativeContext>& dev);
-static void Context_Destroy(One<NativeContext>& dev);
+static bool Context_Create(NativeContext*& dev);
+static void Context_Destroy(NativeContext*& dev);
 static bool Context_Initialize(NativeContext&, AtomBase&, const Script::WorldState&);
 static bool Context_PostInitialize(NativeContext&, AtomBase&);
 static bool Context_Start(NativeContext&, AtomBase&);
@@ -29,8 +29,8 @@ static void Context_Finalize(NativeContext&, AtomBase&, RealtimeSourceConfig&);
 static bool Context_NegotiateSinkFormat(NativeContext&, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);
 static bool Context_IsReady(NativeContext&, AtomBase&, PacketIO& io);
 
-static bool EventsBase_Create(One<NativeEventsBase>& dev);
-static void EventsBase_Destroy(One<NativeEventsBase>& dev);
+static bool EventsBase_Create(NativeEventsBase*& dev);
+static void EventsBase_Destroy(NativeEventsBase*& dev);
 static bool EventsBase_Initialize(NativeEventsBase&, AtomBase&, const Script::WorldState&);
 static bool EventsBase_PostInitialize(NativeEventsBase&, AtomBase&);
 static bool EventsBase_Start(NativeEventsBase&, AtomBase&);

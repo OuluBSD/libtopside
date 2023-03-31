@@ -758,7 +758,7 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 	Size sz(1280,720);
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
-	float aspect = (float)sz.cx / (float)sz.cy;
+	//float aspect = (float)sz.cx / (float)sz.cy;
 	float f = time / phase_time;
 	float angle = f * (2.0 * M_PI);
 	
@@ -766,8 +766,8 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 		float rad = 1.5;
 		float x = cos(angle) * rad;
 		float z = sin(angle) * rad * SCALAR_FWD_Z;
-		float eye_x = cos(angle);
-		float eye_y = sin(angle);
+		//float eye_x = cos(angle);
+		//float eye_y = sin(angle);
 		mat4 proj = Perspective(DEG2RAD(90), 1.0, 0.1, 100.0);
 		
 		vec3 eye {x, 0, z};

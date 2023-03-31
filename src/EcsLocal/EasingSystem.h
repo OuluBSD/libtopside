@@ -40,7 +40,7 @@ class EasingSystem : public System<EasingSystem>
 public:
 	SYS_RTTI(EasingSystem)
     ECS_SYS_CTOR(EasingSystem)
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	void Attach(Easing* e);
 	void Detach(Easing* e);

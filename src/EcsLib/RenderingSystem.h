@@ -84,7 +84,7 @@ public:
 	using Base = System<RenderingSystem>;
 	RTTI_DECL1(RenderingSystem, Base)
     ECS_SYS_CTOR(RenderingSystem)
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	//ModelRef GetAddModelFile(String path);
 	

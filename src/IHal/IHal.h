@@ -126,7 +126,7 @@ template <class Hal> struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		if (dev) Hal::AudioSinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HalAudioSinkDevice>(this);
 	}
-	One<typename Hal::NativeAudioSinkDevice> dev;
+	typename Hal::NativeAudioSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::AudioSinkDevice_Create(dev))
 			return false;
@@ -181,7 +181,7 @@ template <class Hal> struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice
 		if (dev) Hal::CenterVideoSinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HalCenterVideoSinkDevice>(this);
 	}
-	One<typename Hal::NativeCenterVideoSinkDevice> dev;
+	typename Hal::NativeCenterVideoSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::CenterVideoSinkDevice_Create(dev))
 			return false;
@@ -236,7 +236,7 @@ template <class Hal> struct HalCenterFboSinkDeviceT : HalCenterFboSinkDevice {
 		if (dev) Hal::CenterFboSinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HalCenterFboSinkDevice>(this);
 	}
-	One<typename Hal::NativeCenterFboSinkDevice> dev;
+	typename Hal::NativeCenterFboSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::CenterFboSinkDevice_Create(dev))
 			return false;
@@ -292,7 +292,7 @@ template <class Hal> struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
 		if (dev) Hal::OglVideoSinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HalOglVideoSinkDevice>(this);
 	}
-	One<typename Hal::NativeOglVideoSinkDevice> dev;
+	typename Hal::NativeOglVideoSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::OglVideoSinkDevice_Create(dev))
 			return false;
@@ -348,7 +348,7 @@ template <class Hal> struct HalContextBaseT : HalContextBase {
 		if (dev) Hal::ContextBase_Visit(*dev, *this, vis);
 		vis.VisitThis<HalContextBase>(this);
 	}
-	One<typename Hal::NativeContextBase> dev;
+	typename Hal::NativeContextBase* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::ContextBase_Create(dev))
 			return false;
@@ -403,7 +403,7 @@ template <class Hal> struct HalEventsBaseT : HalEventsBase {
 		if (dev) Hal::EventsBase_Visit(*dev, *this, vis);
 		vis.VisitThis<HalEventsBase>(this);
 	}
-	One<typename Hal::NativeEventsBase> dev;
+	typename Hal::NativeEventsBase* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::EventsBase_Create(dev))
 			return false;
@@ -459,7 +459,7 @@ template <class Hal> struct HalUppEventsBaseT : HalUppEventsBase {
 		if (dev) Hal::UppEventsBase_Visit(*dev, *this, vis);
 		vis.VisitThis<HalUppEventsBase>(this);
 	}
-	One<typename Hal::NativeUppEventsBase> dev;
+	typename Hal::NativeUppEventsBase* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::UppEventsBase_Create(dev))
 			return false;
@@ -516,7 +516,7 @@ template <class Hal> struct HalUppOglDeviceT : HalUppOglDevice {
 		if (dev) Hal::UppOglDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<HalUppOglDevice>(this);
 	}
-	One<typename Hal::NativeUppOglDevice> dev;
+	typename Hal::NativeUppOglDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Hal::UppOglDevice_Create(dev))
 			return false;

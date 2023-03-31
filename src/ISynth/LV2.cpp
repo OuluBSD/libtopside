@@ -18,13 +18,13 @@ struct SynLV2::NativeInstrument {
 };
 
 
-bool SynLV2::Instrument_Create(One<NativeInstrument>& dev){
-	dev.Create();
+bool SynLV2::Instrument_Create(NativeInstrument*& dev){
+	dev = new NativeInstrument;
 	return true;
 }
 
-void SynLV2::Instrument_Destroy(One<NativeInstrument>& dev){
-	dev.Clear();
+void SynLV2::Instrument_Destroy(NativeInstrument*& dev){
+	delete dev;
 }
 
 bool SynLV2::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Script::WorldState& ws){

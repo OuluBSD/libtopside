@@ -31,7 +31,7 @@ class PaintStrokeSystemBase :
 public:
 	SYS_RTTI(PaintStrokeSystemBase)
 	ECS_SYS_CTOR(PaintStrokeSystemBase);
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	~PaintStrokeSystemBase() = default;
 	

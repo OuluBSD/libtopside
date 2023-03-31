@@ -12,13 +12,13 @@ struct SynFmSynth::NativeInstrument {
 
 
 
-bool SynFmSynth::Instrument_Create(One<NativeInstrument>& dev) {
-	dev.Create();
+bool SynFmSynth::Instrument_Create(NativeInstrument*& dev) {
+	dev = new NativeInstrument;
 	return true;
 }
 
-void SynFmSynth::Instrument_Destroy(One<NativeInstrument>& dev) {
-	dev.Clear();
+void SynFmSynth::Instrument_Destroy(NativeInstrument*& dev) {
+	delete dev;
 }
 
 void SynFmSynth::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {

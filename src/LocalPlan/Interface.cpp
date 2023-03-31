@@ -368,7 +368,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 					   "\t\tvis.VisitThis<"<<a<<k<<">(this);\n"
 					   "\t}\n"
 					
-					<< "\tOne<typename "<<a<<"::Native"<<k<<"> dev;\n"
+					<< "\ttypename "<<a<<"::Native"<<k<<"* dev = 0;\n"
 					
 					<< "\tbool Initialize(const Script::WorldState& ws) override {\n"
 				    << "\t\tif (!"<<a<<"::"<<k<<"_Create(dev))\n"
@@ -499,8 +499,8 @@ void InterfaceBuilder::Generate(bool write_actually) {
 				
 				String nat_this_ = "Native" + k + "&, ";
 				
-				s	<< "static bool " << k << "_Create(One<Native" + k + ">& dev);\n"
-					<< "static void " << k << "_Destroy(One<Native" + k + ">& dev);\n"
+				s	<< "static bool " << k << "_Create(Native" + k + "*& dev);\n"
+					<< "static void " << k << "_Destroy(Native" + k + "*& dev);\n"
 					<< "static bool " << k << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n"
 					<< "static bool " << k << "_PostInitialize(" << nat_this_ << "AtomBase&);\n"
 					<< "static bool " << k << "_Start(" << nat_this_ << "AtomBase&);\n"

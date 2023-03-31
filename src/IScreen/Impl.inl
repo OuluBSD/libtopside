@@ -4,13 +4,13 @@
 #define CONTEXT COMBINE(COMBINE(X11, ABBR), Context)
 
 
-bool CLASSNAME::EventsBase_Create(One<NativeEventsBase>& dev) {
-	dev.Create();
+bool CLASSNAME::EventsBase_Create(NativeEventsBase*& dev) {
+	dev = new NativeEventsBase;
 	return true;
 }
 
-void CLASSNAME::EventsBase_Destroy(One<NativeEventsBase>& dev) {
-	dev.Clear();
+void CLASSNAME::EventsBase_Destroy(NativeEventsBase*& dev) {
+	delete dev;
 }
 
 void CLASSNAME::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisitor& vis) {

@@ -30,13 +30,13 @@ struct HoloDevBluetooth::NativeSinkDevice {
 
 
 
-bool HoloDevBluetooth::SinkDevice_Create(One<NativeSink>& dev) {
-	dev.Create();
+bool HoloDevBluetooth::SinkDevice_Create(NativeSink*& dev) {
+	dev = new NativeSink;
 	return true;
 }
 
-void HoloDevBluetooth::SinkDevice_Destroy(One<NativeSink>& dev) {
-	dev.Clear();
+void HoloDevBluetooth::SinkDevice_Destroy(NativeSink*& dev) {
+	delete dev;
 }
 
 void HoloDevBluetooth::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {

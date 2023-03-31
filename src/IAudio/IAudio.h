@@ -60,7 +60,7 @@ template <class Aud> struct AudioSinkDeviceT : AudSinkDevice {
 		if (dev) Aud::SinkDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<AudSinkDevice>(this);
 	}
-	One<typename Aud::NativeSinkDevice> dev;
+	typename Aud::NativeSinkDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Aud::SinkDevice_Create(dev))
 			return false;
@@ -100,7 +100,7 @@ template <class Aud> struct AudioSourceDeviceT : AudSourceDevice {
 		if (dev) Aud::SourceDevice_Visit(*dev, *this, vis);
 		vis.VisitThis<AudSourceDevice>(this);
 	}
-	One<typename Aud::NativeSourceDevice> dev;
+	typename Aud::NativeSourceDevice* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Aud::SourceDevice_Create(dev))
 			return false;

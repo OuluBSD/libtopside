@@ -48,7 +48,7 @@ template <class Vol> struct VolumetricStaticSourceT : VolStaticSource {
 		if (dev) Vol::StaticSource_Visit(*dev, *this, vis);
 		vis.VisitThis<VolStaticSource>(this);
 	}
-	One<typename Vol::NativeStaticSource> dev;
+	typename Vol::NativeStaticSource* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Vol::StaticSource_Create(dev))
 			return false;

@@ -19,7 +19,6 @@ library(MSC) "OpenGL32 Gdi32";
 
 file
 	IGraphics.h,
-	main.cpp,
 	IGraphics.icpp,
 	Types.h,
 	TypeFuncList.inl highlight cpp,

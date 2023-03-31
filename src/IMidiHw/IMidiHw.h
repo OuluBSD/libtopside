@@ -51,7 +51,7 @@ template <class Mid> struct MidiHwSourceT : MidSource {
 		if (dev) Mid::Source_Visit(*dev, *this, vis);
 		vis.VisitThis<MidSource>(this);
 	}
-	One<typename Mid::NativeSource> dev;
+	typename Mid::NativeSource* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mid::Source_Create(dev))
 			return false;

@@ -51,7 +51,7 @@ template <class Cam> struct CameraCameraT : CamCamera {
 		if (dev) Cam::Camera_Visit(*dev, *this, vis);
 		vis.VisitThis<CamCamera>(this);
 	}
-	One<typename Cam::NativeCamera> dev;
+	typename Cam::NativeCamera* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Cam::Camera_Create(dev))
 			return false;

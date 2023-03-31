@@ -66,9 +66,9 @@ void HugePersistent::LoadData() {
 	if (!data) {
 		data = MemoryAlloc(data_size);
 		
-		byte* zero_begin = (byte*)data + persistent_size;
-		int64 zero_size = data_size - persistent_size;
-		memset(data, 0, zero_size);
+		//byte* zero_begin = (byte*)data + persistent_size;
+		//int64 zero_size = data_size - persistent_size;
+		memset(data, 0, data_size);
 	}
 	
 	TimeStop ts;

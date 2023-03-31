@@ -4,7 +4,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+//#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 //#include "Miniz.c"
 #pragma GCC diagnostic pop

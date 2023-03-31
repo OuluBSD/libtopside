@@ -47,7 +47,7 @@ public:
 	using Base = ComponentBase;
 	RTTI_DECL1(ComponentStore, System<ComponentStore>)
 	ECS_SYS_CTOR(ComponentStore);
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	using Parent = Engine;
 	using Factory = EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;

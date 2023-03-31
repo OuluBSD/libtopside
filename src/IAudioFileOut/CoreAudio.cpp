@@ -12,13 +12,13 @@ struct AFOCoreAudio::NativeSink {
 };
 
 
-bool AFOCoreAudio::Sink_Create(One<NativeSink>& dev) {
-	dev.Create();
+bool AFOCoreAudio::Sink_Create(NativeSink*& dev) {
+	dev = new NativeSink;
 	return true;
 }
 
-void AFOCoreAudio::Sink_Destroy(One<NativeSink>& dev) {
-	dev.Clear();
+void AFOCoreAudio::Sink_Destroy(NativeSink*& dev) {
+	delete dev;
 }
 
 bool AFOCoreAudio::Sink_Initialize(NativeSink& dev, AtomBase& a, const Script::WorldState& ws) {

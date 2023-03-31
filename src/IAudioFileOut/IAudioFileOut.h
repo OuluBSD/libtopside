@@ -48,7 +48,7 @@ template <class AFO> struct AudioFileOutSinkT : AFOSink {
 		if (dev) AFO::Sink_Visit(*dev, *this, vis);
 		vis.VisitThis<AFOSink>(this);
 	}
-	One<typename AFO::NativeSink> dev;
+	typename AFO::NativeSink* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!AFO::Sink_Create(dev))
 			return false;

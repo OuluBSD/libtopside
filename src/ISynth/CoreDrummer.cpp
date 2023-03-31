@@ -61,13 +61,13 @@ void CreateSynCoreInstrument(SynCoreDrummer::NativeInstrument& dev, AtomBase& a,
 	}
 }
 
-bool SynCoreDrummer::Instrument_Create(One<NativeInstrument>& dev) {
-	dev.Create();
+bool SynCoreDrummer::Instrument_Create(NativeInstrument*& dev) {
+	dev = new NativeInstrument;
 	return true;
 }
 
-void SynCoreDrummer::Instrument_Destroy(One<NativeInstrument>& dev) {
-	dev.Clear();
+void SynCoreDrummer::Instrument_Destroy(NativeInstrument*& dev) {
+	delete dev;
 }
 
 void SynCoreDrummer::Instrument_Visit(NativeInstrument& dev, AtomBase&, RuntimeVisitor& vis) {

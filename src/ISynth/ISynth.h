@@ -120,7 +120,7 @@ template <class Syn> struct SynthInstrumentT : SynInstrument {
 		if (dev) Syn::Instrument_Visit(*dev, *this, vis);
 		vis.VisitThis<SynInstrument>(this);
 	}
-	One<typename Syn::NativeInstrument> dev;
+	typename Syn::NativeInstrument* dev = 0;
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Syn::Instrument_Create(dev))
 			return false;

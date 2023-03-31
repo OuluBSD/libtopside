@@ -18,13 +18,13 @@ struct HoloOpenVR::NativeSinkDevice {
 };
 
 
-bool HoloOpenVR::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool HoloOpenVR::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void HoloOpenVR::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void HoloOpenVR::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void HoloOpenVR::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {

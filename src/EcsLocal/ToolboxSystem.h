@@ -64,7 +64,7 @@ class ToolboxSystemBase :
 {
 	
 public:
-	SYS_DEF_VISIT_(vis && tools && selectors && selector_objects)
+	ECS_SYS_DEF_VISIT_(vis && tools && selectors && selector_objects)
 	
 	RTTI_DECL2(ToolboxSystemBase, System<ToolboxSystemBase>, InteractionListener)
 	ECS_SYS_CTOR(ToolboxSystemBase);

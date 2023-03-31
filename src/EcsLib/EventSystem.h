@@ -24,7 +24,7 @@ public:
 	using Base = System<EventSystem>;
 	RTTI_DECL2(EventSystem, Base, BinderIfaceEvents)
     ECS_SYS_CTOR(EventSystem)
-	SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	//void Attach(Serial::EcsEventsBase* b);
 	

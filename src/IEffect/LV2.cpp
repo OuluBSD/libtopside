@@ -6,11 +6,11 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 
-bool FxLV2::Effect_Create(One<NativeEffect>& dev){
+bool FxLV2::Effect_Create(NativeEffect*& dev){
 	
 }
 
-void FxLV2::Effect_Destroy(One<NativeEffect>& dev){
+void FxLV2::Effect_Destroy(NativeEffect*& dev){
 	
 }
 

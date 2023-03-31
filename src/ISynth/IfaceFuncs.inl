@@ -1,8 +1,8 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-static bool Instrument_Create(One<NativeInstrument>& dev);
-static void Instrument_Destroy(One<NativeInstrument>& dev);
+static bool Instrument_Create(NativeInstrument*& dev);
+static void Instrument_Destroy(NativeInstrument*& dev);
 static bool Instrument_Initialize(NativeInstrument&, AtomBase&, const Script::WorldState&);
 static bool Instrument_PostInitialize(NativeInstrument&, AtomBase&);
 static bool Instrument_Start(NativeInstrument&, AtomBase&);

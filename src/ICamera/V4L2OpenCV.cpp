@@ -30,13 +30,13 @@ struct CamV4L2OpenCV::NativeCamera {
 
 
 
-bool CamV4L2OpenCV::Camera_Create(One<NativeCamera>& dev) {
-	dev.Create();
+bool CamV4L2OpenCV::Camera_Create(NativeCamera*& dev) {
+	dev = new NativeCamera;
 	return true;
 }
 
-void CamV4L2OpenCV::Camera_Destroy(One<NativeCamera>& dev) {
-	dev.Clear();
+void CamV4L2OpenCV::Camera_Destroy(NativeCamera*& dev) {
+	delete dev;
 }
 
 void CamV4L2OpenCV::Camera_Visit(NativeCamera& dev, AtomBase&, RuntimeVisitor& vis) {

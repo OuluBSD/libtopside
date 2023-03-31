@@ -28,7 +28,7 @@ void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 		String str;
 		for(int i = 3; i < 3 + strlen; i++) {
 			int chr = e[i];
-			str.Cat(i);
+			str.Cat(chr);
 		}
 		switch (mnum) {
 			case MidiIO::MIDIMETA_SEQNUM:
@@ -83,7 +83,7 @@ void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 		//LOG("Ignore aftertouch: " << e.ToString());
 	}
 	else if (e.IsTimbre() || e.IsPatchChange()) {
-		int channel = e.GetChannel();
+		/*int channel = e.GetChannel();
 		int value = e.GetP1();
 		if (track_i < 0 || channel == track_i) {
 			//LOG("Changing channel patch: channel " << channel << " to " << value << ": " << e.ToString());
@@ -93,18 +93,18 @@ void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 				bank = 128;
 			}
 			//program_select(bank, value);
-		}
+		}*/
 	}
 	else if (e.IsPressure()) {
 		//LOG("Ignore pressure: " << e.ToString());
 	}
 	else if (e.IsPitchbend()) {
 		int channel = e.GetChannel();
-		int value = e.GetP1();
+		//int value = e.GetP1();
 		if (track_i < 0 || channel == track_i) {
 			//LOG("Setting pitch bend: channel " << channel << " to " << value);
-			int fs_pbend = (128 + value) * 0x4000 / 256;
-			//pitch_bend(fs_pbend);
+			/*int fs_pbend = (128 + value) * 0x4000 / 256;
+			pitch_bend(fs_pbend);*/
 		}
 	}
 	else {

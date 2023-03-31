@@ -12,13 +12,13 @@ struct HoloDevUsb::NativeSinkDevice {
 
 
 
-bool HoloDevUsb::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool HoloDevUsb::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void HoloDevUsb::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void HoloDevUsb::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void HoloDevUsb::SinkDevice_Visit(NativeSinkDevice&, AtomBase&, RuntimeVisitor& vis) {

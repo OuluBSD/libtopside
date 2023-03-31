@@ -1,8 +1,8 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
 
-static bool Effect_Create(One<NativeEffect>& dev);
-static void Effect_Destroy(One<NativeEffect>& dev);
+static bool Effect_Create(NativeEffect*& dev);
+static void Effect_Destroy(NativeEffect*& dev);
 static bool Effect_Initialize(NativeEffect&, AtomBase&, const Script::WorldState&);
 static bool Effect_PostInitialize(NativeEffect&, AtomBase&);
 static bool Effect_Start(NativeEffect&, AtomBase&);

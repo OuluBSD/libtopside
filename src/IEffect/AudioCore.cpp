@@ -21,13 +21,13 @@ struct FxAudioCore::NativeEffect {
 
 
 
-bool FxAudioCore::Effect_Create(One<NativeEffect>& dev) {
-	dev.Create();
+bool FxAudioCore::Effect_Create(NativeEffect*& dev) {
+	dev = new NativeEffect;
 	return true;
 }
 
-void FxAudioCore::Effect_Destroy(One<NativeEffect>& dev) {
-	dev.Clear();
+void FxAudioCore::Effect_Destroy(NativeEffect*& dev) {
+	delete dev;
 }
 
 void FxAudioCore::Effect_Visit(NativeEffect& dev, AtomBase&, RuntimeVisitor& vis) {

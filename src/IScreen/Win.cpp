@@ -61,13 +61,13 @@ struct ScrWin::NativeEventsBase {
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-bool ScrWin::SinkDevice_Create(One<NativeSinkDevice>& dev) {
-	dev.Create();
+bool ScrWin::SinkDevice_Create(NativeSinkDevice*& dev) {
+	dev = new NativeSinkDevice;
 	return true;
 }
 
-void ScrWin::SinkDevice_Destroy(One<NativeSinkDevice>& dev) {
-	dev.Clear();
+void ScrWin::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+	delete dev;
 }
 
 void ScrWin::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
@@ -326,13 +326,13 @@ bool ScrWin::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) 
 
 
 
-bool ScrWin::Context_Create(One<NativeContext>& dev) {
-	dev.Create();
+bool ScrWin::Context_Create(NativeContext*& dev) {
+	dev = new NativeContext;
 	return true;
 }
 
-void ScrWin::Context_Destroy(One<NativeContext>& dev) {
-	dev.Clear();
+void ScrWin::Context_Destroy(NativeContext*& dev) {
+	delete dev;
 }
 
 void ScrWin::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {

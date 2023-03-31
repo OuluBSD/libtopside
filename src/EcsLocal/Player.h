@@ -139,7 +139,7 @@ class PlayerBodySystem :
 public:
 	RTTI_DECL2(PlayerBodySystem, System<PlayerBodySystem>, InteractionListener)
 	ECS_SYS_CTOR(PlayerBodySystem)
-	SYS_DEF_VISIT_(vis && bodies)
+	ECS_SYS_DEF_VISIT_(vis && bodies)
 	
 	const Array<PlayerBodyComponentRef>& GetComponents() const {return bodies;}
 	

@@ -16,7 +16,7 @@ void CLI::RunStdIO() {
 		if (params.IsEmpty())
 			continue;
 		
-		int count = params.GetCount();
+		//int count = params.GetCount();
 		String key = params[0];
 		
 		if (key == "q" || key == "quit")

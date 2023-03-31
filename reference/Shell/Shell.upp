@@ -18,7 +18,7 @@ mainconfig
 	"" = "GUI SCREEN",
 	"" = "SCREEN OGL BUILTIN_ASSIMP",
 	"" = "SCREEN SDL2",
-	"" = "SCREEN SDL2 OGL",
+	"" = "GUI SCREEN SDL2 OGL",
 	"" = "SCREEN SDL2 OGL FFMPEG",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
