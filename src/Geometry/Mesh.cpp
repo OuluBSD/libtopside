@@ -159,7 +159,7 @@ void Mesh::SetAnchor(vec3 pos)
 
 void Mesh::TransformVertices(TS::mat4 transform)
 {
-	int m_num_vertex = vertices.GetCount();
+	//int m_num_vertex = vertices.GetCount();
     TS::mat4 normal_transform = Transpose(Inverse(transform));
     for (Vertex& v : vertices) {
         v.position		=  transform        * v.position;

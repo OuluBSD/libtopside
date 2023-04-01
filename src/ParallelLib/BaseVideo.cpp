@@ -48,7 +48,7 @@ void DebugVideoGenerator::GenerateNoise(const VideoFormat& fmt) {
 	int frame_size = frame_samples * fmt.GetPackedSingleSize();
 	int wavelen = 17;
 	int pan_i = 0;
-	int pan_samples = fmt.res[0] / 4;
+	//int pan_samples = fmt.res[0] / 4;
 	frame_part_size = frame_size;
 	int size = frame_size * pan_frames;
 	frame.SetCount(size);
@@ -120,7 +120,7 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 		for(int i = 0; i < frame_samples; i++) {
 			double tonerad = tone_mul * M_2PI * (double)i / (double)wavelen;
 			double tonesin = FastSin(tonerad);
-			double tonevol = (tonesin + 1.0) * 0.5;
+			//double tonevol = (tonesin + 1.0) * 0.5;
 			double panrad = M_2PI * (double)pan_i / (double)pan_samples;
 			double pansin = FastSin(panrad);
 			double panvol = (pansin + 1.0) * 0.5;

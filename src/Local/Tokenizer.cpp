@@ -72,12 +72,13 @@ bool Tokenizer::Process(String str, String path) {
 	
 	int& cursor = loc.cursor;
 	
+	bool fail = false;
 	while (cursor < input.GetCount()) {
 		int chr = input[cursor];
 		
 		if (parse_indent && chr != '\n') {
 			int line_indent = 0;
-			bool fail = false;
+			fail = false;
 			while (cursor < input.GetCount()) {
 				chr = input[cursor];
 				if (chr == ' ') {
@@ -273,8 +274,6 @@ bool Tokenizer::Process(String str, String path) {
 		}
 		else if (chr == '\"') {
 			Token& tk = Add(TK_STRING);
-			int begin_line = loc.line;
-			int begin_col = loc.col;
 			Next();
 			String str;
 			bool success = false;
@@ -328,7 +327,7 @@ bool Tokenizer::Process(String str, String path) {
 			tk.end = loc;
 		}
 		else if (chr == '/') {
-			int begin_line = loc.line, begin_col = loc.col;
+			//int begin_line = loc.line, begin_col = loc.col;
 			int chr1 = cursor+1 < input.GetCount() ? input[cursor+1] : 0;
 			if (chr1 == '*') {
 				Token* tk = NULL;

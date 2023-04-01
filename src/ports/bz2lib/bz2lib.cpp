@@ -38,7 +38,7 @@ void BZ2Decompress(Stream& out, Stream& in)
 	z.avail_out = BUF_SIZE;
 	int code;
 	bool running = true;
-	int64 total = in.GetLeft();
+	//int64 total = in.GetLeft();
 	int done = 0;
 	do
 	{
@@ -83,7 +83,7 @@ void BZ2Compress(Stream& out, Stream& in)
 	z.next_out = output;
 	int code;
 	int flush = BZ_RUN;
-	int64 total = in.GetLeft();
+	//int64 total = in.GetLeft();
 	int done = 0;
 	do
 	{

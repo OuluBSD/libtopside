@@ -119,7 +119,7 @@ int SoftProgram::GetVarSize(int i) const {
 
 
 int SoftProgram::GetVarType(int i) const {
-	int idx = uniforms.GetKey(i);
+	//int idx = uniforms.GetKey(i);
 	return 1;
 }
 
@@ -191,7 +191,7 @@ void SoftProgram::SetVar(int i, float f) {
 
 
 void SoftProgram::SetVar(int i, float f0, float f1) {
-	int idx = uniforms.GetKey(i);
+	//int idx = uniforms.GetKey(i);
 	TODO
 }
 

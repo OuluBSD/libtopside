@@ -159,14 +159,14 @@ Stream& LogFile() {
 		else {
 			String exe_title = GetFileTitle(exepath);
 			String path = ConfigFile(exe_title + ".log");
-			int r0 = (path.GetString0()->GetRefs());
-			const char* p = path.Begin();
-			int r1 = (path.GetString0()->GetRefs());
+			//int r0 = (path.GetString0()->GetRefs());
+			//const char* p = path.Begin();
+			//int r1 = (path.GetString0()->GetRefs());
 			RealizeDirectory(GetFileDirectory(path));
-			int r2 = (path.GetString0()->GetRefs());
+			//int r2 = (path.GetString0()->GetRefs());
 			//cout << path << EOL;
 			fout.Open(path);
-			int r3 = (path.GetString0()->GetRefs());
+			//int r3 = (path.GetString0()->GetRefs());
 			fout << " *** " << GetSysTime().ToString() << " ***" << EOL
 				 << " *** " << GetExeFilePath() << " ***" << EOL;
 			
@@ -175,9 +175,9 @@ Stream& LogFile() {
 			
 			fout.Flush();
 			
-			int r4 = (path.GetString0()->GetRefs());
+			//int r4 = (path.GetString0()->GetRefs());
 			
-			int s = r0 + r1 + r2 + r3 + r4;
+			//int s = r0 + r1 + r2 + r3 + r4;
 		}
 	}
 	return fout;

@@ -208,7 +208,7 @@ void MeshTracker::UpdateTrackedTriangles(const MeshTrackerFrame& from, MeshTrack
 	    vec3 scale, translation, skew;
 	    vec4 pers;
 	    mat4 view_diff_inv = view_diff.GetInverse();
-	    bool r = Decompose(view_diff_inv, scale, rotation, translation, skew, pers);
+	    Decompose(view_diff_inv, scale, rotation, translation, skew, pers);
 	    
 		// Add global values to average counter
 		camera_average.Add(translation, rotation);

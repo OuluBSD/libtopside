@@ -73,7 +73,6 @@ void Camera::SetPerspective(float fov_angle, float aspect, float zNear, float zF
 	this->near = zNear;
 	this->far = zFar;
 	
-	float ratio = 1.0f / aspect;
 	this->proj = Perspective(DEG2RAD(fov_angle * 0.5), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
@@ -471,11 +470,11 @@ axes2 LensPoly::Unproject(int lens_i, const vec2& pixel) {
 	if (leni0 >= pixel_to_angle.GetCount()) return axes2(0,0);
 	
 	float angle = pixel_to_angle[leni0] * f0 + pixel_to_angle[leni1] * f1;
-	float deg = angle / M_PI * 180;
+	//float deg = angle / M_PI * 180;
 	//vec3 v0(sin(angle), 0, -cos(angle));
 	
 	float roll_angle = -atan2f(ct_rel[0], ct_rel[1]);
-	float roll_deg = roll_angle / M_PI * 180;
+	//float roll_deg = roll_angle / M_PI * 180;
 	//mat4 rot = ZRotation(roll_angle);
 	
 	//vec3 dir = (rot * v0.Embed()).Splice();

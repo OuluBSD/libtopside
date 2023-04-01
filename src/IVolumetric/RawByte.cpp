@@ -45,7 +45,7 @@ bool VolRawByte__LoadFile(VolRawByte::NativeStaticSource& dev, AtomBase& a) {
 	}
 	
 	MemReadStream data(s.Begin(), s.GetCount());
-	int magic, w, h, d, channels, len;
+	int magic = 0, w = 0, h = 0, d = 0, channels = 0, len = 0;
 	data.Get(&magic, 4); // "BIN "
 	if (magic == 0x004e4942) {
 		data.Get(&w, 4);

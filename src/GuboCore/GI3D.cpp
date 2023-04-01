@@ -78,7 +78,7 @@ bool GeomInteraction3D::Redraw(bool only_pending) {
 	}*/
 	
 	bool did_draw = false;
-	bool was_pending_fx_redraw = pending_fx_redraw;
+	//bool was_pending_fx_redraw = pending_fx_redraw;
 	bool frame = IsGeomDrawBegin();
 	bool draw_begin = false;
 	Volf sz = GetFrameSize();

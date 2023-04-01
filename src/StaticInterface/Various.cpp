@@ -131,7 +131,7 @@ Image LibPngBackend::LoadFileAny(String path) {
 	
 	
 	int depth = 0;
-	int bpp = 0;
+	int bpp = 1;
 	switch (color_type) {
 		case PNG_COLOR_TYPE_GRAY:		bpp = 1 * bit_depth / 8; break;
 		case PNG_COLOR_TYPE_GRAY_ALPHA:	bpp = 2 * bit_depth / 8; break;
@@ -163,7 +163,7 @@ Image LibPngBackend::LoadFileAny(String path) {
 	static_assert(sizeof(RGBA) == 4, "invalid size");
 	byte* it = (byte*)img->data.Begin();
 	byte* end = (byte*)img->data.End();
-	if (img->data.GetCount() % bpp == 0) {
+	if ((img->data.GetCount() % bpp) == 0) {
 		while (it != end) {
 			byte b = it[0];
 			it[0] = it[2];

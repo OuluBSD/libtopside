@@ -156,7 +156,7 @@ bool System::Initialise() {
 	right_lens_center[0] = sep/2.0f;
 	
 	// Assume calibration was for lens view to which ever edge of screen is further away from lens center
-	float warp_scale = (left_lens_center[0] > right_lens_center[0]) ? left_lens_center[0] : right_lens_center[0];
+	//float warp_scale = (left_lens_center[0] > right_lens_center[0]) ? left_lens_center[0] : right_lens_center[0];
 	float warp_adj = 1.0f;
 	
 	// Get controller info

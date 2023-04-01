@@ -534,7 +534,7 @@ void SynFluidsynth_HandleEvent(SynFluidsynth::NativeInstrument& dev, const MidiI
 		String str;
 		for(int i = 3; i < 3 + strlen; i++) {
 			int chr = e[i];
-			str.Cat(i);
+			str.Cat(chr);
 		}
 		switch (mnum) {
 			case MidiIO::MIDIMETA_SEQNUM:

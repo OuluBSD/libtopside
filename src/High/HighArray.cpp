@@ -134,7 +134,7 @@ bool HiValue::Replace(int i, int n, HiValue a)
 		ta.InsertN(i, q);
 	else
 		ta.Remove(i, -q);
-	int last = sa.GetCount()-1 + i;
+	//int last = sa.GetCount()-1 + i;
 	//if (last >= ta.GetCount())
 	//	return false;
 	for(q = 0; q < sa.GetCount(); q++)

@@ -128,7 +128,7 @@ size_t DefaultIOStream::FileSize() const
             return 0;
         mCachedSize = (size_t) (fileStat.st_size);
 #elif defined __FreeBSD__
-		const char* path = mFilename.c_str();
+		//const char* path = mFilename.c_str();
         struct stat fileStat;
         int err = stat(mFilename.c_str(), &fileStat );
         if (0 != err)

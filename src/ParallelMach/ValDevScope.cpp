@@ -11,7 +11,7 @@ void SimpleValue::Exchange(Ex& e) {
 	const RealtimeSourceConfig& conf = e.SourceConfig();
 	
 	SimpleValue* src_val;
-	Format src_fmt = src.GetFormat();
+	//Format src_fmt = src.GetFormat();
 	Format& sink_fmt = fmt;
 	
 	if ((src_val = CastPtr<SimpleValue>(&src))) {

@@ -53,12 +53,12 @@ void SDraw3::DrawBoxOp(float x, float y, float z, float cx, float cy, float cz, 
 	float w = GetWidth();
 	float h = GetHeight();
 	float d = GetDepth();
-	float x0 = max(0.0f, min(w-1, x));
+	/*float x0 = max(0.0f, min(w-1, x));
 	float x1 = max(0.0f, min(w-1, x+cx));
 	float y0 = max(0.0f, min(h-1, y));
 	float y1 = max(0.0f, min(h-1, y+cy));
 	float z0 = max(0.0f, min(d-1, z));
-	float z1 = max(0.0f, min(d-1, z+cz));
+	float z1 = max(0.0f, min(d-1, z+cz));*/
 	
 	TODO
 	//for(int y = y0; y <= y1; y++)

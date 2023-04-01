@@ -144,7 +144,7 @@ ModelNode& Model::AddNode(String name, NodeIndex parent) {
 
 Optional<NodeIndex> Model::FindFirstNode(String name, Optional<NodeIndex> const& parent_node_index) {
 	// Children are guaranteed to come after their parents, so start looking after the parent index if one is provided.
-    const NodeIndex start_index = parent_node_index ? parent_node_index.value() + 1 : ModelNode::RootIdx;
+    //const NodeIndex start_index = parent_node_index ? parent_node_index.value() + 1 : ModelNode::RootIdx;
     for (const ModelNode& node : nodes) {
         if ((!parent_node_index || node.parent_node_index == parent_node_index.value()) &&
             node.name == name) {
@@ -354,7 +354,7 @@ void ModelLoader::ProcessMaterial(Model& model, TS::Material& m, const aiMateria
 	        }
 	        aiString str;
 	        str.Clear();
-	        int r = mat->GetTexture((aiTextureType) type, i, &str);
+	        mat->GetTexture((aiTextureType) type, i, &str);
 	        
 	        String path = AppendFileName(model.directory, str.C_Str());
 	        Image img = StreamRaster::LoadFileAny(path);

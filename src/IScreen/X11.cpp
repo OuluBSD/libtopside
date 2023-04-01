@@ -183,7 +183,7 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	);
 	ASSERT(fb);
 	
-	int bpp = fb->bits_per_pixel / 8;
+	//int bpp = fb->bits_per_pixel / 8;
 	
 	XSync(display, False);
 	
@@ -238,9 +238,9 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	    ctx.fb->data = (char*)(const unsigned char*)pixmap.Begin();
 	    ctx.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
 	    
-	    int scr_bpp = ctx.fb->bits_per_pixel / 8;
+	    /*int scr_bpp = ctx.fb->bits_per_pixel / 8;
 	    int img_bpp = vfmt.GetPackedCount();
-	    //ASSERT(scr_bpp == img_bpp);
+	    ASSERT(scr_bpp == img_bpp);*/
 	    
 	    ASSERT(width == ctx.fb->width);
 	    ASSERT(height == ctx.fb->height);
@@ -325,9 +325,9 @@ bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	    ctx.fb->data = (char*)(const unsigned char*)dev.id->Data().Begin();
 	    ctx.fb->bytes_per_line = sz.cx * bpp;
 	    
-	    int scr_bpp = ctx.fb->bits_per_pixel / 8;
+	    /*int scr_bpp = ctx.fb->bits_per_pixel / 8;
 	    int img_bpp = bpp;
-	    //ASSERT(scr_bpp == img_bpp);
+	    ASSERT(scr_bpp == img_bpp);*/
 	    
 	    ASSERT(sz.cx == ctx.fb->width);
 	    ASSERT(sz.cy == ctx.fb->height);

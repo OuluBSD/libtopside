@@ -59,7 +59,7 @@ static void HandleControllerSensorMsg(ControllerPrivateData* priv, unsigned char
 
 	UpdateFusion(&priv->sensor_fusion, dt, &priv->raw_gyro, &priv->raw_accel, &mag);
 
-	last_sample_tick = s->timestamp;
+	//last_sample_tick = s->timestamp;
 }
 
 static void UpdateDevice_WmrCtrl(Device* device)

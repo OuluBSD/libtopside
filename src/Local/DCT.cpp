@@ -147,8 +147,8 @@ void ConvertToParamsLine(int point_count, const Point* pt, int size, char* param
 	const Point* begin = pt;
 	const Point* end = pt + point_count - 1;
 	Point diff = *end - *begin;
-	double len = FastSqrt((double)(diff.x * diff.x + diff.y * diff.y));
-	int steps = max((int)(max(diff.x, diff.y) / 2), 1);
+	//double len = FastSqrt((double)(diff.x * diff.x + diff.y * diff.y));
+	//int steps = max((int)(max(diff.x, diff.y) / 2), 1);
 	
 	pts.SetCount(0);
 	
@@ -184,7 +184,7 @@ void ConvertToParamsLine(int point_count, const Point* pt, int size, char* param
 void ConvertFromParamsLineAppend(int param_count, const char* params, Point begin, Point end, Vector<Point>& pts) {
 	MAKE_STATIC_LOCAL(Vector<Pointf>, hline);
 	Point diff = end - begin;
-	double len = FastSqrt((double)(diff.x * diff.x + diff.y * diff.y));
+	//double len = FastSqrt((double)(diff.x * diff.x + diff.y * diff.y));
 	int steps = max((int)(max(diff.x, diff.y) / 2), 1);
 	
 	ConvertFromParamsHLine(param_count, params, steps, hline);

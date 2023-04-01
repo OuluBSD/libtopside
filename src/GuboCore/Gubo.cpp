@@ -222,7 +222,7 @@ void Gubo::MouseMoveInFrameContent(Point3f pt, dword keyflags) {
 
 void Gubo::DeepMouseMoveInFrameContent(Point3f pt, dword keyflags) {
 	Point3f ftl = frame_r.FirstCorner();
-	Point3f ctl = content.FirstCorner();
+	//Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
 	
 	if (GetFrameCaptured()) {
@@ -251,7 +251,7 @@ bool Gubo::MouseEventInFrameCaptured(int mouse_code, const Point3f& pt, dword ke
 	Point3f ftl = frame_r.FirstCorner();
 	Point3f ctl = content.FirstCorner();
 	Point3f fpt = pt - ftl;
-	Point3f cpt = fpt - ctl;
+	//Point3f cpt = fpt - ctl;
 	
 	GuboFrame* frame_captured = GetFrameCaptured();
 	if (frame_captured) {

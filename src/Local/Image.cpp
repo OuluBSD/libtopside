@@ -161,7 +161,7 @@ void ByteImage::Set(int w, int h, int stride, int src_pitch, const byte* src_dat
 	if (src_data) {
 		byte* b = data;
 		const byte* it = src_data;
-		const byte* end = src_data + size;
+		//const byte* end = src_data + size;
 		
 		if (src_pitch == pitch) {
 			#if 1
@@ -461,7 +461,7 @@ Image MirrorVertical(const Image& img) {
 	RGBA* dst = ib.End();
 	
 	int line = stride * width;
-	int sz = line * height;
+	//int sz = line * height;
 	ASSERT(pitch >= line);
 	
 	if (stride == 4) {
@@ -480,7 +480,7 @@ Image MirrorVertical(const Image& img) {
 	else {
 		ASSERT(stride < 4);
 		const int dst_stride = 4;
-		int dst_size = dst_stride * width * height;
+		//int dst_size = dst_stride * width * height;
 		
 		int line_pad = pitch - line;
 		ASSERT(line_pad >= 0);

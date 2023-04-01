@@ -474,7 +474,7 @@ bool MergerLink::IsReady(PacketIO& io) {
 	RTLOG("MergerLink::IsReady: " << BinStr(io.active_sink_mask));
 	
 	// require primary and single side channel
-	int src_ch_count = GetSink()->GetSinkCount();
+	//int src_ch_count = GetSink()->GetSinkCount();
 	if (!(io.active_sink_mask & 1))
 		return false;
 	for (Exchange& e : side_src_conn)

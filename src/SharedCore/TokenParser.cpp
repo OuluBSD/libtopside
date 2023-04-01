@@ -181,7 +181,7 @@ void NumberParser::Parse() {
 				else if (chr == '.') {
 					exp = FRAC;
 					cat = true;
-					upcoming_type = is_float ? upcoming_type = NumberParser::FLOAT : NumberParser::DOUBLE;
+					upcoming_type = is_float ? NumberParser::FLOAT : NumberParser::DOUBLE;
 				}
 			}
 			else if (exp == HEX) {

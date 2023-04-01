@@ -848,7 +848,7 @@ void FmSynth::HandleEvent(const MidiIO::Event& e, int track_i) {
 		String str;
 		for(int i = 3; i < 3 + strlen; i++) {
 			int chr = e[i];
-			str.Cat(i);
+			str.Cat(chr);
 		}
 		switch (mnum) {
 			case MidiIO::MIDIMETA_SEQNUM:

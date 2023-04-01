@@ -639,7 +639,7 @@ void CameraObject(
 	// get angle between relative direction vector and eye direction
 	float local_obj_eye_dot = Dot(local_obj_dir, local_eye_dir);
 	float local_obj_eye_angle = acos(local_obj_eye_dot / (local_obj_dir_mag * local_eye_dir_mag));
-	float local_obj_eye_angle_deg = RAD2DEG(local_obj_eye_angle);
+	//float local_obj_eye_angle_deg = RAD2DEG(local_obj_eye_angle);
 	
 	// calculate plane's z-distance from angle
 	float local_plane_z = cos(local_obj_eye_angle) * obj_dist;
@@ -1688,8 +1688,8 @@ vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
 
 vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 	float d = eye_dist;
-	float deg0 = a0 / M_PI * 180;
-	float deg1 = a1 / M_PI * 180;
+	//float deg0 = a0 / M_PI * 180;
+	//float deg1 = a1 / M_PI * 180;
 	
 	
 	if (a0 < M_PI/2 && a1 < M_PI/2) {
@@ -1746,7 +1746,7 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 	}
 	else {
 		vec2 v = CalculateThirdPoint(vec2(-eye_dist/2,0), vec2(+eye_dist/2,0), a0, a1);
-		TODO // inv z?
+		Panic("TODO"); // inv z?
 		return v;
 	}
 	
@@ -1778,8 +1778,8 @@ bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_
 	//DUMP(dir_a2); DUMP(dir_b2);
 	float alp1 = VectorAngle(dir_a2, vec2(+1,0));
 	float alp2 = VectorAngle(dir_b2, vec2(-1,0));
-	float deg1 = alp1 / M_PI * 180;
-	float deg2 = alp2 / M_PI * 180;
+	//float deg1 = alp1 / M_PI * 180;
+	//float deg2 = alp2 / M_PI * 180;
 	if (alp1 + alp2 >= M_PI)
 		return false;
 	vec2 tgt = CalculateStereoThirdPoint(eye_dist, alp1, alp2);
@@ -1828,7 +1828,7 @@ bool CalculateTriangleChange(const vec3& a0, const vec3& a1, const vec3& a2, con
 	
 	mat4 a_rot_inv = GetPrincipalAxesMat(a10, a20);
 	mat4 b_rot_inv = GetPrincipalAxesMat(b10, b20);
-	mat4 a_rot = a_rot_inv.GetInverse();
+	//mat4 a_rot = a_rot_inv.GetInverse();
 	mat4 b_rot = b_rot_inv.GetInverse();
 	mat4 rot = a_rot_inv * b_rot;
 	mat4 rot_inv = rot.GetInverse();
@@ -1851,14 +1851,14 @@ bool CalculateTriangleChange(const vec3& a0, const vec3& a1, const vec3& a2, con
 
 bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_eye1, vec3& v_tgt, mat4& mat, mat4& inv_mat, bool have_common_scale, float& common_scale) {
 	float dist = (v1 - v0).GetLength();
-	vec3 v_ct = (v0 + v1) * 0.5;
+	//vec3 v_ct = (v0 + v1) * 0.5;
 	
 	bool upwards = Cross(v1 - v0, -v0)[1] > 0;
-	float x_mult = upwards ? +1.0f : -1.0f;
+	//float x_mult = upwards ? +1.0f : -1.0f;
 	
-	vec3 v_rot_z = -v_ct.GetNormalized();
-	vec3 v_rot_x = (v1 - v_ct).GetNormalized() * x_mult;
-	vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
+	//vec3 v_rot_z = -v_ct.GetNormalized();
+	//vec3 v_rot_x = (v1 - v_ct).GetNormalized() * x_mult;
+	//vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
 	
 	if (!have_common_scale) {
 		common_scale = 1.0 / dist;
