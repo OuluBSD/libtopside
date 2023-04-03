@@ -35,14 +35,14 @@ void TournamentTree::LayoutPrepare() {
 	// To reverse the order of rendering, we need to find out the
 	// absolute number of levels we have. simple log math applies.
 	int node_count = order.GetCount();
-	int level_count = log((double)node_count + 1.0) / log((double)2);
+	int level_count = (int)(log((double)node_count + 1.0) / log((double)2));
 	int counter = 1;
 	
 	for (int i = 0; i < order.GetCount(); i++) {
 		Node& node = *order[i];
-		int depth = log((double)counter) / log(2.0);
-		int offset = pow(2.0, (double)(level_count - depth));
-		int final_x = offset + (counter - pow(2.0, (double)depth)) * pow(2.0, (double)(level_count - depth) + 1.0);
+		int depth = (int)(log((double)counter) / log(2.0));
+		int offset = (int)pow(2.0, (double)(level_count - depth));
+		int final_x = (int)(offset + (counter - pow(2.0, (double)depth)) * pow(2.0, (double)(level_count - depth) + 1.0));
 		node.layout_pos_x = final_x;
 		node.layout_pos_y = depth;
 		counter++;

@@ -5,7 +5,7 @@
 
 
 #if defined flagOGL
-	#if defined flagGCC && defined flagWIN32
+	#if UPP_OLD_VERSION || (defined flagGCC && defined flagWIN32)
 		#define GLEW_STATIC 1
 		#include <ports/glew/glew.h>
 	#else

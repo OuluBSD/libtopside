@@ -119,7 +119,7 @@ int WorldState::GetInt(const String& key, int def) const {
 	if (i >= 0) {
 		const Object& o = values[i];
 		ASSERT(o.IsInt());
-		return o.ToInt();
+		return o.ToInt32();
 	}
 	return def;
 }

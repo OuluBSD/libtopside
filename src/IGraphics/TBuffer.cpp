@@ -388,7 +388,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			for(int i = 0; i < 2; i++) {
 				DataObject& o = m.objects[i];
 				//mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, i == 0 ? 0 : -0.2, 0));
-				mat4 trans_mat = Translate(vec3(i == 0 ? -1 : +1, 0, 0));
+				mat4 trans_mat = Translate(vec3(i == 0 ? -1.f : +1.f, 0, 0));
 				mat4 model = scale_mat * trans_mat;
 				o.model = model;
 			}

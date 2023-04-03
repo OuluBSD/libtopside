@@ -372,12 +372,12 @@ mat4 Rotate(mat4 const& m, float angle, vec3 const& v) {
 }
 
 quat AxisAngleQuat(const vec3& v, float angle) {
-	double s = sinf(angle * 0.5);
+	float s = sinf(angle * 0.5f);
 	quat r;
 	r[0] = v[0] * s;
 	r[1] = v[1] * s;
 	r[2] = v[2] * s;
-	r[3] = cosf(angle * 0.5);
+	r[3] = cosf(angle * 0.5f);
 	#if IS_CW_ANGLE
 	r[2] = -r[2];
 	#endif
@@ -567,12 +567,12 @@ void DirAxes(vec3 dir, float& yaw, float& pitch) {
 	pitch = asin(dir.data[1]);
 	#if IS_NEGATIVE_Z
 	yaw = -atan2(dir.data[2], dir.data[0]);
-	yaw -= M_PI_2;
+	yaw -= M_PI_2f;
 	#else
 	yaw = atan2(dir.data[2], dir.data[0]);
-	yaw -= M_PI_2;
+	yaw -= M_PI_2f;
 	#endif
-	yaw = yaw < -M_PI ? yaw + M_2PI : yaw;
+	yaw = yaw < -M_PIf ? yaw + M_2PIf : yaw;
 }
 
 void DirAxes(vec3 dir, vec3& axes) {
@@ -731,19 +731,19 @@ mat4 Minor(const mat4& mat) {
 void Cofactor(mat2& out, const mat2& minor) {
 	for (int i = 0; i < 2; ++i)
 		for (int j = 0; j < 2; ++j)
-			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+			out[j][i] = minor[j][i] * powf(-1.0f, (float)(i + j));
 }
 
 void Cofactor(mat3& out, const mat3& minor) {
 	for (int i = 0; i < 3; ++i)
 		for (int j = 0; j < 3; ++j)
-			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+			out[j][i] = minor[j][i] * powf(-1.0f, (float)(i + j));
 }
 
 void Cofactor(mat4& out, const mat4& minor) {
 	for (int i = 0; i < 4; ++i)
 		for (int j = 0; j < 4; ++j)
-			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+			out[j][i] = minor[j][i] * powf(-1.0f, (float)(i + j));
 }
 
 mat2 Cofactor(const mat2& mat) {
@@ -947,12 +947,12 @@ void Multiply(mat3& res, const mat3& a, const mat3& b) {
 
 bool FactorCholesky(mat3& A, vec3& out) {
     bool failure = false;
-    const unsigned n = 3;
+    const int n = 3;
     
-    for (unsigned i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         vec3& cc = A[i];
         {
-            for (unsigned j = 0; j < i; ++j) {
+            for (int j = 0; j < i; ++j) {
                 vec3& bb = A[j];
                 
                 float sum = cc[j];
@@ -964,7 +964,7 @@ bool FactorCholesky(mat3& A, vec3& out) {
         }
         {
             float sum = cc[i];
-            for (unsigned j = 0; j < i; ++j) {
+            for (int j = 0; j < i; ++j) {
                 float f = cc[j];
                 sum -= f * f;
             }
@@ -1096,7 +1096,7 @@ mat4 DoubleToMatrix4(const std::vector<double>& v) {
 	int k = 0;
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 4; j++) {
-			m[i][j] = k < v.size() ? v[k] : 0;
+			m[i][j] = k < (int)v.size() ? (float)v[k] : 0;
 			k++;
 		}
 	}
@@ -1107,7 +1107,7 @@ vec3 DoubleToVector3(const std::vector<double>& v) {
 	ASSERT(v.size() == 3);
 	vec3 r;
 	for(int i = 0; i < 3; i++)
-		r[i] = v[i];
+		r[i] = (float)v[i];
 	return r;
 }
 
@@ -1115,7 +1115,7 @@ vec3 DoubleToVector4(const std::vector<double>& v) {
 	ASSERT(v.size() == 4);
 	vec3 r;
 	for(int i = 0; i < 4; i++)
-		r[i] = v[i];
+		r[i] = (float)v[i];
 	return r;
 }
 
@@ -1123,7 +1123,7 @@ quat DoubleToQuat(const std::vector<double>& v) {
 	ASSERT(v.size() == 4);
 	quat r;
 	for(int i = 0; i < 4; i++)
-		r[i] = v[i];
+		r[i] = (float)v[i];
 	return r;
 }
 
@@ -1540,15 +1540,15 @@ String Plot(const vec3& a, const vec3& b) {
 
 	String s;
 	if (dot < 0) {
-		int spaces = (1.0 + dot) * chars;
+		int spaces = (int)((1.0f + dot) * chars);
 		int fills = chars - spaces;
 		s.Cat(' ', spaces);
 		s.Cat('#', fills);
 		s.Cat(' ', chars);
 	}
 	else {
-		int fills = dot * chars;
-		int spaces = (1.0 - dot) * chars;
+		int fills = (int)(dot * chars);
+		int spaces = (int)((1.0f - dot) * chars);
 		s.Cat(' ', chars);
 		s.Cat('#', fills);
 		s.Cat(' ', spaces);
@@ -1630,8 +1630,8 @@ bool IsClose(const mat4& a, const mat4& b) {
 
 
 axes2s LookAtStereoAngles(float eye_dist, const vec3& pt) {
-	vec3 l(-eye_dist*0.5,0,0);
-	vec3 r(+eye_dist*0.5,0,0);
+	vec3 l(-eye_dist*0.5f, 0, 0);
+	vec3 r(+eye_dist*0.5f, 0, 0);
 	vec3 pt_l = pt - l;
 	vec3 pt_r = pt - r;
 	vec3 axes_l = GetDirAxes(pt_l);
@@ -1657,7 +1657,7 @@ void AxesStereoMono(const axes2s& axes, axes2& l, axes2& r) {
 }
 
 axes2s AxesMonoStereo(const axes2& l, const axes2& r) {
-	float pitch = (l.data[1] + r.data[1]) * 0.5;
+	float pitch = (l.data[1] + r.data[1]) * 0.5f;
 	return axes2s(
 		l.data[0],
 		r.data[0],
@@ -1675,12 +1675,12 @@ vec2 CalculateThirdPoint(const vec2& a, const vec2& b, float alp1, float alp2) {
 	float y2 = b[1];
 	float u = x2 - x1;
 	float v = y2 - y1;
-	float a3 = sqrt(u * u + v * v);
-	float alp3 = M_PI - alp1 - alp2;
+	float a3 = sqrtf(u * u + v * v);
+	float alp3 = M_PIf - alp1 - alp2;
 	ASSERT(alp3 > 0 && alp3 < M_PI);
-	float a2 = a3 * sin(alp2) / sin(alp3);
-	float RHS1 = x1 * u + y1 * v + a2 * a3 * cos(alp1);
-	float RHS2 = y2 * u - x2 * v - a2 * a3 * sin(alp1);
+	float a2 = a3 * sinf(alp2) / sinf(alp3);
+	float RHS1 = x1 * u + y1 * v + a2 * a3 * cosf(alp1);
+	float RHS2 = y2 * u - x2 * v - a2 * a3 * sinf(alp1);
 	float x3 = (1 / (a3 * a3)) * (u * RHS1 - v * RHS2);
 	float y3 = (1 / (a3 * a3)) * (v * RHS1 + u * RHS2);
 	return vec2(x3, y3);
@@ -1704,10 +1704,10 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 		// y = tan(a1) * (d - x0)
 		// tan(a0) * x0 = tan(a1) * (d - x0)
 		// x0 = d*tan(a1)/(tan(a0)+tan(a1))
-		float ta1 = tan(a1);
-		float x0 = d*ta1/(tan(a0)+ta1);
-		float y = tan(a0) * x0;
-		float x = -d*0.5 + x0;
+		float ta1 = tanf(a1);
+		float x0 = d*ta1/(tanf(a0)+ta1);
+		float y = tanf(a0) * x0;
+		float x = -d*0.5f + x0;
 		return vec2(x,y);
 	}
 	else if (a0 > M_PI/2 && a1 < M_PI/2) {
@@ -1720,11 +1720,11 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 		// (d + x0) * tan(a1) = y
 		// x0 * tan(M_PI-a0) = (d + x0) * tan(a1)
 		// x0 = d*tan(a1)/(tan(M_PI-a0)-tan(a1))
-		float ta0 = tan(M_PI-a0);
-		float ta1 = tan(a1);
+		float ta0 = tanf(M_PIf-a0);
+		float ta1 = tanf(a1);
 		float x0 = d*ta1/(ta0-ta1);
 		float y = x0 * ta0;
-		float x = -d*0.5 - x0;
+		float x = -d*0.5f - x0;
 		return vec2(x,y);
 	}
 	else if (a0 < M_PI/2 && a1 > M_PI/2) {
@@ -1737,11 +1737,11 @@ vec2 CalculateStereoThirdPoint(float eye_dist, float a0, float a1) {
 		// x1 * tan(M_PI-a1) = y
 		// (d + x1) * tan(a0) = x1 * tan(M_PI-a1)
 		// x1 = -d*tan(a0)/(tan(a0)-tan(M_PI-a1));
-		float ta0 = tan(a0);
-		float ta1 = tan(M_PI-a1);
+		float ta0 = tanf(a0);
+		float ta1 = tanf(M_PIf-a1);
 		float x1 = -d*ta0/(ta0-ta1);
 		float y = x1 * ta1;
-		float x = +d*0.5 + x1;
+		float x = +d*0.5f + x1;
 		return vec2(x,y);
 	}
 	else {
@@ -1772,8 +1772,8 @@ bool CalculateStereoTarget(const axes2s& stereo_axes, float eye_dist, vec3& dir_
 	// Calculate third point of the leveled triangle
 	vec2 dir_a2(flat_a[0], flat_a[2]);
 	vec2 dir_b2(flat_b[0], flat_b[2]);
-	vec2 l_eye(-eye_dist*0.5,0);
-	vec2 r_eye(+eye_dist*0.5,0);
+	vec2 l_eye(-eye_dist * 0.5f, 0);
+	vec2 r_eye(+eye_dist * 0.5f, 0);
 	//DUMP(dir_a); DUMP(dir_b);
 	//DUMP(dir_a2); DUMP(dir_b2);
 	float alp1 = VectorAngle(dir_a2, vec2(+1,0));
@@ -1820,8 +1820,8 @@ bool CalculateTriangleChange(const vec3& a0, const vec3& a1, const vec3& a2, con
 	vec3 b10 = b1 - b0;
 	vec3 b20 = b2 - b0;
 	
-	float a_scale = (a10.GetLength() + a20.GetLength()) * 0.5;
-	float b_scale = (b10.GetLength() + b20.GetLength()) * 0.5;
+	float a_scale = (a10.GetLength() + a20.GetLength()) * 0.5f;
+	float b_scale = (b10.GetLength() + b20.GetLength()) * 0.5f;
 	float scale_factor = b_scale / a_scale;
 	
 	vec3 scale(scale_factor);
@@ -1861,7 +1861,7 @@ bool TriangleToStereoEyes(const vec3& v0, const vec3& v1, vec3& v_eye0, vec3& v_
 	//vec3 v_rot_y = Cross(v_rot_x, v_rot_z);
 	
 	if (!have_common_scale) {
-		common_scale = 1.0 / dist;
+		common_scale = 1.0f / dist;
 	}
 	float scale_mul = dist * common_scale;
 	mat = mat * Scale(vec3(scale_mul));
@@ -1925,9 +1925,9 @@ mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b) {
 	vec3 x, y, z;
 	GetPrincipalAxes(a, b, x, y, z);
 	return mat4 {
-		x.data[0], x.data[1], x.data[2] * SCALAR_FWD_Z, 0,
-		y.data[0], y.data[1], y.data[2] * SCALAR_FWD_Z, 0,
-		z.data[0], z.data[1], z.data[2] * SCALAR_FWD_Z, 0,
+		x.data[0], x.data[1], x.data[2] * SCALAR_FWD_Zf, 0,
+		y.data[0], y.data[1], y.data[2] * SCALAR_FWD_Zf, 0,
+		z.data[0], z.data[1], z.data[2] * SCALAR_FWD_Zf, 0,
 		0,0,0,1
 	};
 }
@@ -1955,7 +1955,7 @@ float radicalInverse_VdC(uint32 bits)
 	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
 	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
 	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-	return float(bits) * 2.3283064365386963e-10;
+	return float(bits) * 2.3283064365386963e-10f;
 }
 
 vec2 sampleHammersley(uint32 i)
@@ -1967,22 +1967,22 @@ vec3 sampleGGX(float u1, float u2, float roughness)
 {
 	float alpha = roughness * roughness;
 
-	float cosTheta = sqrt((1.0 - u2) / (1.0 + (alpha*alpha - 1.0) * u2));
-	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
-	float phi = M_2PI * u1;
+	float cosTheta = sqrtf((1.0f - u2) / (1.0f + (alpha*alpha - 1.0f) * u2));
+	float sinTheta = sqrtf(1.0f - cosTheta*cosTheta);
+	float phi = M_2PIf * u1;
 
 	return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 }
 
 float gaSchlickG1(float cosTheta, float k)
 {
-	return cosTheta / (cosTheta * (1.0 - k) + k);
+	return cosTheta / (cosTheta * (1.0f - k) + k);
 }
 
 float gaSchlickGGX_IBL(float cosLi, float cosLo, float roughness)
 {
 	float r = roughness;
-	float k = (r * r) / 2.0;
+	float k = (r * r) / 2.0f;
 	return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
 }
 
@@ -1990,7 +1990,7 @@ void MakeSpecBRDF(FloatImage& img, int side_len) {
 	Size sz(side_len, side_len);
 	img.Set(sz, 3);
 	
-	const float Epsilon = 0.001;
+	const float Epsilon = 0.001f;
 	
 	float* begin = img.Begin();
 	
@@ -2003,7 +2003,7 @@ void MakeSpecBRDF(FloatImage& img, int side_len) {
 		
 			cosLo = max(cosLo, Epsilon);
 		
-			vec3 Lo = vec3(sqrt(1.0 - cosLo*cosLo), 0.0, cosLo);
+			vec3 Lo = vec3(sqrt(1.0f - cosLo*cosLo), 0.0f, cosLo);
 		
 			float DFG1 = 0;
 			float DFG2 = 0;
@@ -2020,7 +2020,7 @@ void MakeSpecBRDF(FloatImage& img, int side_len) {
 				if(cosLi > 0.0f) {
 					float G  = gaSchlickGGX_IBL(cosLi, cosLo, roughness);
 					float Gv = G * cosLoLh / (cosLh * cosLo);
-					float Fc = pow(1.0f - cosLoLh, 5);
+					float Fc = powf(1.0f - cosLoLh, 5);
 		
 					DFG1 += (1 - Fc) * Gv;
 					DFG2 += Fc * Gv;
@@ -2066,7 +2066,7 @@ void MakeSpecBRDF(FloatImage& img, int side_len) {
 	
 	        float denom = yNorm * yNorm * (alphaSqr - 1) + 1;
 	
-	        denom = max(M_PI * denom * denom, 0.0000001);
+	        denom = max(M_PI * denom * denom, 0.0000001f);
 	        float D = alphaSqr / denom;
 	        
 	        float G = yNorm / max(yNorm * (1 - k) + k, 0.0000001f);

@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-class FboProgAtomT :
+struct FboProgAtomT :
 	public BufferBaseT<Gfx>
 {
 	using DataState = DataStateT<Gfx>;

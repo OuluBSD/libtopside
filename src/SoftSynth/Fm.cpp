@@ -300,7 +300,7 @@ void FmSynth::SetSustain(bool enable) {
 
 void FmSynth::SetModWheel(byte wheel) {
 	float value = wheel * (1.0f / 127.0f);
-	wheel = value;
+	wheel = (byte)value;
 	
 	for (int i = 0; i < SYNTH_VOICES; i++) {
 		Voice& v = voices[i];
@@ -744,12 +744,20 @@ Status FmSynth::SavePreset(
 	char str[PRESET_STRING_SIZE];
 	
 	memset(str, 0, sizeof(str));
+	#ifdef flagWIN32
+	strncpy_s(str, metadata.name.Begin(), min(PRESET_STRING_SIZE-1, metadata.name.GetCount()));
+	#else
 	strncpy(str, metadata.name.Begin(), min(PRESET_STRING_SIZE-1, metadata.name.GetCount()));
+	#endif
 	memcpy(buffer, str, sizeof(str));
 	buffer += PRESET_STRING_SIZE;
 	
 	memset(str, 0, sizeof(str));
+	#ifdef flagWIN32
+	strncpy_s(str, metadata.author.Begin(), min(PRESET_STRING_SIZE-1, metadata.name.GetCount()));
+	#else
 	strncpy(str, metadata.author.Begin(), min(PRESET_STRING_SIZE-1, metadata.name.GetCount()));
+	#endif
 	memcpy(buffer, str, sizeof(str));
 	buffer += PRESET_STRING_SIZE;
 	
@@ -799,11 +807,11 @@ Status FmSynth::LoadPreset(GlobalParameters& global_params,
 	char str[PRESET_STRING_SIZE];
 	
 	memcpy(str, buffer, sizeof(str));
-	metadata.name.Set(str, strnlen(str, PRESET_STRING_SIZE));
+	metadata.name.Set(str, (int)strnlen(str, PRESET_STRING_SIZE));
 	buffer += PRESET_STRING_SIZE;
 	
 	memcpy(str, buffer, sizeof(str));
-	metadata.author.Set(str, strnlen(str, PRESET_STRING_SIZE));
+	metadata.author.Set(str, (int)strnlen(str, PRESET_STRING_SIZE));
 	buffer += PRESET_STRING_SIZE;
 	
 	float *globals = &global_params.volume;

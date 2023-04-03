@@ -6,7 +6,14 @@ NAMESPACE_UPP
 
 
 
-class GuiLock {};
+void EnterGuiMutex();
+bool TryEnterGuiMutex();
+void LeaveGuiMutex();
+
+struct GuiLock {
+	GuiLock()  { EnterGuiMutex(); }
+	~GuiLock() { LeaveGuiMutex(); }
+};
 
 
 bool GetMouseLeft();

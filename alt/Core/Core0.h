@@ -11,14 +11,14 @@
 #include <SharedCore/Policies.h>
 
 #include "config.h"
+#include "Macros.h"
 #include "Defs.h"
 #include <SharedCore/RTTIDummy.h>
-#include "Macros.h"
 #include "Atomic.h"
 #include "Fn.h"
+#include "Ops.h"
 #include "Topt.h"
 #include "Atomic.h"
-#include "Ops.h"
 #include "Heap.h"
 #include <SharedCore/Random.h>
 #include "Algo.h"

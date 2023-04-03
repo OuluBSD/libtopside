@@ -42,7 +42,7 @@ void SDraw3::DrawLineOp(float x1, float y1, float z1, float x2, float y2, float 
 		if (x1 == x2 && y1 == y2 && z1 == z2)
 			SDraw3::DrawPixel(x1, GetHeight() - 1 - y1, z1, color);
 		else
-			SDraw3::DrawLine(x1, y1, z1, x2, y2, z2, color);
+			SDraw3::DrawLine(x1, y1, z1, x2, y2, z2, width, color);
 	}
 	else {
 		TODO
@@ -65,12 +65,12 @@ void SDraw3::DrawBoxOp(float x, float y, float z, float cx, float cy, float cz, 
 	//	DrawHLine(x0, x1, y, color);
 }
 
-void SDraw3::DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font,
+void SDraw3::DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font,
 	            Color ink, int n, const int *dx) {
 	// TODO: improve and take other params into acoount
 	String s = WString(text).ToString();
 	Image img = RenderTextBlended(font, s, ink);
-	DrawImageOp(x, y, z, img.GetWidth(), img.GetHeight(), 0.01, img, img.GetSize(), Color());
+	DrawImageOp(x, y, z, (float)img.GetWidth(), (float)img.GetHeight(), 0.01f, img, img.GetSize(), Color());
 }
 
 void SDraw3::DrawPolyPolylineOp(const Point3f *vertices, int vertex_count,
@@ -85,7 +85,7 @@ void SDraw3::DrawPolyPolylineOp(const Point3f *vertices, int vertex_count,
 				Point3f a = *it++;
 				while (it != end) {
 					Point3f b = *it++;
-					DrawLine(a.x, a.y, a.z, b.x, b.y, b.z, color);
+					DrawLine(a.x, a.y, a.z, b.x, b.y, b.z, width, color);
 					Swap(a, b);
 				}
 			}
@@ -137,7 +137,7 @@ void SDraw3::EndOp() {
 void SDraw3::DrawImageOp(float x, float y, float z, float cx, float cy, float cz, const Image& img, const Rect& src, Color color) {
 	byte alpha = 255;
 	Size sz = img.GetSize();
-	Cubf r = CubfC(x, y, z, sz.cx, sz.cy, 0.01);
+	Cubf r = CubfC(x, y, z, (float)sz.cx, (float)sz.cy, 0.01f);
 	if (!DoOps(r))
 		return;
 	

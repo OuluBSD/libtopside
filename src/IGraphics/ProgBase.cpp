@@ -132,14 +132,14 @@ void FboProgAtomT<Gfx>::ProcessWindowCommands(DrawCommand* begin, DrawCommand* e
 	if (!win.inited) {
 		ModelState& mdl_state = this->data.AddModelT();
 		
-		vec2 sz_vec(sz.cx * resize_multiplier, sz.cy * resize_multiplier);
+		vec2 sz_vec((float)(sz.cx * resize_multiplier), (float)(sz.cy * resize_multiplier));
 		
 		ModelBuilder mb;
 		Mesh& plane_mesh = mb.AddPlane(vec3(0), sz_vec, 16);
 		Model& src_mdl = mb;
 		
 		plane_mesh.CenterAnchor();
-		plane_mesh.TransformVertices(AxesMat(0,M_PI/2,0));
+		plane_mesh.TransformVertices(AxesMat(0,M_PIf/2,0));
 		
 		Image img = win.rend.GetImage();
 		src_mdl.SetTexture(plane_mesh, TEXTYPE_DIFFUSE, img, "" );

@@ -74,7 +74,7 @@ bool PointInOrientedRectangle(const vec2& point, const OrientedRectangle& rectan
 	// Second, we rotate that vector by the inverse of the rectangles
 	// rotation (On the Z axis in 3D). We can either invert a matrix,
 	// or construct a matrix from the negative rotation angle
-	float theta = -DEG2RAD(rectangle.rotation);
+	float theta = -DEG2RADf(rectangle.rotation);
 	
 	// Construct matrix
 	mat2 zRotation2x2 {
@@ -261,7 +261,7 @@ bool LineRectangle(const line2& line, const Rectangle& rect) {
 #endif
 
 bool LineOrientedRectangle(const line2& line, const OrientedRectangle& rectangle) {
-	float theta = -DEG2RAD(rectangle.rotation);
+	float theta = -DEG2RADf(rectangle.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };
@@ -300,7 +300,7 @@ bool CircleRectangle(const Circle& circle, const Rectangle& rect) {
 
 bool CircleOrientedRectangle(const Circle& circle, const OrientedRectangle& rect) {
 	vec2 rotVector = circle.position - rect.position;
-	float theta = -DEG2RAD(rect.rotation);
+	float theta = -DEG2RADf(rect.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };
@@ -380,7 +380,7 @@ Interval GetInterval(const OrientedRectangle& rect, const vec2& axis) {
 	vec2 max = GetMax(nonOrientedRect);
 	vec2 verts[] = { min, max, vec2(min[0], max[1]), vec2(max[0], min[1]) };
 
-	float theta = DEG2RAD(rect.rotation);
+	float theta = DEG2RADf(rect.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };
@@ -421,7 +421,7 @@ bool RectangleOrientedRectangle(const Rectangle& rect1, const OrientedRectangle&
 		vec2(0, rect2.halfExtents[1]).GetNormalized()
 	};
 
-	float theta = DEG2RAD(rect2.rotation);
+	float theta = DEG2RADf(rect2.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };
@@ -456,7 +456,7 @@ bool OrientedRectangleOrientedRectangleSAT(const OrientedRectangle& rect1, const
 	};
 
 	// Collision axis of rect 2
-	float theta = DEG2RAD(rect2.rotation);
+	float theta = DEG2RADf(rect2.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };
@@ -464,7 +464,7 @@ bool OrientedRectangleOrientedRectangleSAT(const OrientedRectangle& rect1, const
 	Multiply(axisToTest[3], vec2(0, rect2.halfExtents[1]).GetNormalized(), zRotation2x2);
 
 	// Collision axis of rect 1
-	theta = DEG2RAD(rect1.rotation);
+	theta = DEG2RADf(rect1.rotation);
 	zRotation2x2[0] = cosf(theta);
 	zRotation2x2[1] = sinf(theta);
 	zRotation2x2[2] = -sinf(theta);
@@ -490,7 +490,7 @@ bool OrientedRectangleOrientedRectangle(const OrientedRectangle& r1, const Orien
 
 	localRect2.rotation = r2.rotation - r1.rotation;
 	vec2 rotVector = r2.position - r1.position;
-	float theta = -DEG2RAD(r1.rotation);
+	float theta = -DEG2RADf(r1.rotation);
 	mat2 zRotation2x2 {
 		cosf(theta), sinf(theta),
 		-sinf(theta), cosf(theta) };

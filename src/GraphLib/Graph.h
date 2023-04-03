@@ -33,12 +33,12 @@ struct Edge : Moveable<Edge> {
 };
 
 inline Size MinFactor(Size sz, int w, int h) {
-	sz.cx = (int)(sz.cx * 1.5);
-	sz.cy = (int)(sz.cy * 1.5);
+	sz.cx = (int)(sz.cx * 1.5f);
+	sz.cy = (int)(sz.cy * 1.5f);
 	double factor = (double)sz.cx / sz.cy;
 	double target = (double)w / h;
 	if (factor < target)
-		sz.cx = sz.cy * target;
+		sz.cx = (int)(sz.cy * target);
 	return sz;
 }
 
@@ -63,7 +63,7 @@ struct Node : Moveable<Node> {
 	Node();
 	Node(const Node& src);
 	
-	Rect GetBoundingBox() const {return RectC(point.x - sz.cx/2, point.y - sz.cy/2, sz.cx, sz.cy);}
+	Rect GetBoundingBox() const {return RectC((int)(point.x - sz.cx/2), (int)(point.y - sz.cy/2), sz.cx, sz.cy);}
 	
 	Node& SetSize(Size sz) {this->sz = sz; return *this;}
 	Node& SetLabel(String s);

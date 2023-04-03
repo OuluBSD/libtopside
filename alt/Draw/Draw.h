@@ -2,7 +2,6 @@
 #define _DrawAlt_Draw_h_
 
 #include <Core/Core.h>
-#include <SharedCore/Ctrl.h>
 #include <guiplatform.h>
 
 #ifdef GUIPLATFORM_BACKEND_INCLUDE
@@ -16,8 +15,6 @@
 #include "Display.h"
 #include "Cham.h"
 #include "SDraw.h"
-
-#include <SharedCore/Draw.h>
 
 #ifdef GUIPLATFORM_INCLUDE
 	#include GUIPLATFORM_INCLUDE

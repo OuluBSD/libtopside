@@ -1974,7 +1974,6 @@ bool SemanticParser::ParseAtom(PathIdentifier& id) {
 	
 	if (!IsLineEnd()) {
 		if (TryToken('[')) {
-			AstNode* conn;
 			while (!TryToken(']')) {
 				if (TryToken(',')) {
 					AddEmptyAtomConnector(iter->loc, 0);

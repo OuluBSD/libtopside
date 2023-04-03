@@ -25,7 +25,7 @@ void Renderer::SetBorder(int i) {border = i;}
 
 void Renderer::SetImageSize(Size sz, int border) {
 	if (border == -1)
-		border = min(sz.cx, sz.cy) * 0.2;
+		border = (int)(min(sz.cx, sz.cy) * 0.2f);
 	this->border = border;
 	
 	//Rect r(sz);
@@ -125,21 +125,21 @@ void Renderer::DrawNode(Draw& w, Node& node) {
 	pt.y -= height / 2;
 	
 	if (node.shape == Node::SHAPE_ELLIPSE)
-		w.DrawEllipse(pt.x, pt.y, width, height, node.fill_clr, 2, node.line_clr);
+		w.DrawEllipse((int)pt.x, (int)pt.y, (int)width, (int)height, node.fill_clr, 2, node.line_clr);
 	else if (node.shape == Node::SHAPE_RECT) {
-		w.DrawRect(pt.x - 2, pt.y - 2, width + 4, height + 4, node.line_clr);
-		w.DrawRect(pt.x, pt.y, width, height, node.fill_clr);
+		w.DrawRect((int)pt.x - 2, (int)pt.y - 2, (int)width + 4, (int)height + 4, node.line_clr);
+		w.DrawRect((int)pt.x, (int)pt.y, (int)width, (int)height, node.fill_clr);
 	}
 	else if (node.shape == Node::SHAPE_DIAMOND) {
 		diam.SetCount(5);
-		diam[0].x = pt.x + width / 2;
-		diam[0].y = pt.y;
-		diam[1].x = pt.x + width;
-		diam[1].y = pt.y + height / 2;
-		diam[2].x = pt.x + width / 2;
-		diam[2].y = pt.y + height;
-		diam[3].x = pt.x;
-		diam[3].y = pt.y + height / 2;
+		diam[0].x = (int)(pt.x + width / 2);
+		diam[0].y = (int) pt.y;
+		diam[1].x = (int)(pt.x + width);
+		diam[1].y = (int)(pt.y + height / 2);
+		diam[2].x = (int)(pt.x + width / 2);
+		diam[2].y = (int)(pt.y + height);
+		diam[3].x = (int) pt.x;
+		diam[3].y = (int)(pt.y + height / 2);
 		diam[4] = diam[0];
 		
 		w.DrawPolygon(diam, node.fill_clr, 2, node.line_clr);
@@ -151,8 +151,8 @@ void Renderer::DrawNode(Draw& w, Node& node) {
 	Size txt_sz = GetTextSize(lbl, fnt);
 	
 	w.DrawText(
-		pt.x + (width - txt_sz.cx) / 2,
-		pt.y + (height - txt_sz.cy) / 2,
+		(int)(pt.x + (width - txt_sz.cx) / 2),
+		(int)(pt.y + (height - txt_sz.cy) / 2),
 		lbl,
 		fnt, Black());
 	
@@ -202,7 +202,7 @@ void Renderer::DrawEdge(Draw& w, Edge& edge) {
 								 ((i != 0 && j != 5) || p[i].y > p[j].y) &&
 								 ((i != 1 && j != 4) || p[i].y < p[j].y))
 			   ) {
-				dis.Add(sqrt((double)(dx * dx + dy * dy)));
+				dis.Add((int)sqrt((double)(dx * dx + dy * dy)));
 				Comb& c = d.Add();
 				c.a = i;
 				c.b = j;
@@ -278,7 +278,7 @@ void Renderer::DrawEdge(Draw& w, Edge& edge) {
 		double xf = GET_POINT(xd, xe, i);
 		double yf = GET_POINT(yd, ye, i);
 		
-		bezier_path.Add(Point(xf,yf));
+		bezier_path.Add(Point((int)xf, (int)yf));
 	}
 	
 	w.DrawPolyline(bezier_path, edge.line_width, edge.stroke_clr);
@@ -293,12 +293,12 @@ void Renderer::DrawEdge(Draw& w, Edge& edge) {
 		// vector normalisation to specified length
 		#define norm(x) (double)(-(x) * 10 / mag)
 		arrow.SetCount(3);
-		arrow[0].x = norm(x4 - x3) + norm(y4 - y3) + x4;
-		arrow[0].y = norm(y4 - y3) + norm(x4 - x3) + y4;
-		arrow[1].x = x4;
-		arrow[1].y = y4;
-		arrow[2].x = norm(x4 - x3) - norm(y4 - y3) + x4;
-		arrow[2].y = norm(y4 - y3) - norm(x4 - x3) + y4;
+		arrow[0].x = (int)(norm(x4 - x3) + norm(y4 - y3) + x4);
+		arrow[0].y = (int)(norm(y4 - y3) + norm(x4 - x3) + y4);
+		arrow[1].x = (int)x4;
+		arrow[1].y = (int)y4;
+		arrow[2].x = (int)(norm(x4 - x3) - norm(y4 - y3) + x4);
+		arrow[2].y = (int)(norm(y4 - y3) - norm(x4 - x3) + y4);
 		w.DrawPolyline(arrow, edge.line_width, edge.stroke_clr);
 	}
 	

@@ -222,11 +222,11 @@ bool BufferStageT<Gfx>::ImageInitialize() {
 		float horz_sep = 0.063f;
 		float vpos = 0.025953f;
 		//float warp_adj = 1.0f;
-		viewport_scale = vec2(fb.size.cx, fb.size.cy);
-		left_lens_center  = vec2(viewport_scale[0] * (1 - horz_sep)/2.0f, viewport_scale[1] * (0.5 + vpos));
-		right_lens_center = vec2(viewport_scale[0] * (1 + horz_sep)/2.0f, viewport_scale[1] * (0.5 + vpos));
+		viewport_scale = vec2((float)fb.size.cx, (float)fb.size.cy);
+		left_lens_center  = vec2(viewport_scale[0] * (1 - horz_sep)/2.0f, viewport_scale[1] * (0.5f + vpos));
+		right_lens_center = vec2(viewport_scale[0] * (1 + horz_sep)/2.0f, viewport_scale[1] * (0.5f + vpos));
 		//float ws = (left_lens_center[0] > right_lens_center[0]) ? left_lens_center[0] : right_lens_center[0];
-		warp_scale = fb.size.cx / 2; // ws * warp_adj
+		warp_scale = fb.size.cx / 2.0f; // ws * warp_adj
 		hmd_warp_param = vec4(0,0,0,1);
 		aberr = vec3(1,1,1);
 	}

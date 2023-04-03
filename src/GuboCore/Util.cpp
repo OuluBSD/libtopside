@@ -9,26 +9,26 @@ static StaticMutex sGLock;
 
 static thread_local int sGLockLevel = 0;
 
-void EnterGuiMutex()
+void EnterGuboMutex()
 {
-	LLOG(">EnterGuiMutex " << sGLockLevel << ' ' << IsMainThread());
+	LLOG(">EnterGuboMutex " << sGLockLevel << ' ' << IsMainThread());
 	if(sGLockLevel++ == 0)
 		sGLock.Enter();
-	LLOG("EnterGuiMutex " << sGLockLevel << ' ' << IsMainThread());
+	LLOG("EnterGuboMutex " << sGLockLevel << ' ' << IsMainThread());
 }
 
-void EnterGuiMutex(int n)
+void EnterGuboMutex(int n)
 {
-	LLOG(">EnterGuiMutex: " << n << ' ' << sGLockLevel << ' ' << IsMainThread());
+	LLOG(">EnterGuboMutex: " << n << ' ' << sGLockLevel << ' ' << IsMainThread());
 	if(n > 0) {
 		if(sGLockLevel == 0)
 			sGLock.Enter();
 		sGLockLevel += n;
 	}
-	LLOG("EnterGuiMutex " << sGLockLevel << ' ' << IsMainThread());
+	LLOG("EnterGuboMutex " << sGLockLevel << ' ' << IsMainThread());
 }
 
-bool TryEnterGuiMutex()
+bool TryEnterGuboMutex()
 {
 	if(sGLockLevel == 0 && sGLock.TryEnter()) {
 		sGLockLevel++;
@@ -37,33 +37,33 @@ bool TryEnterGuiMutex()
 	return false;
 }
 
-void LeaveGuiMutex()
+void LeaveGuboMutex()
 {
-	LLOG(">LeaveGuiMutex " << sGLockLevel << ' ' << IsMainThread());
+	LLOG(">LeaveGuboMutex " << sGLockLevel << ' ' << IsMainThread());
 	ASSERT(sGLockLevel > 0);
 	if(--sGLockLevel == 0)
 		sGLock.Leave();
-	LLOG("LeaveGuiMutex " << sGLockLevel << ' ' << IsMainThread());
+	LLOG("LeaveGuboMutex " << sGLockLevel << ' ' << IsMainThread());
 }
 
-int LeaveGuiMutexAll()
+int LeaveGuboMutexAll()
 {
-	LLOG(">LeaveGuiMutexAll " << sGLockLevel << ' ' << IsMainThread());
+	LLOG(">LeaveGuboMutexAll " << sGLockLevel << ' ' << IsMainThread());
 	int q = sGLockLevel;
 	if(q) {
 		sGLock.Leave();
 		sGLockLevel = 0;
 	}
-	LLOG("LeaveGuiMutexAll " << q << ' ' << IsMainThread());
+	LLOG("LeaveGuboMutexAll " << q << ' ' << IsMainThread());
 	return q;
 }
 
-bool ThreadHasGuiLock()
+bool ThreadHasGuboLock()
 {
 	return Thread::IsMain() || sGLockLevel;
 }
 
-int  GetGuiLockLevel()
+int  GetGuboLockLevel()
 {
 	return sGLockLevel;
 }

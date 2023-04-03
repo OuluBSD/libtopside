@@ -58,7 +58,7 @@ public:
 	void AddBinder(BinderIfaceVideo* iface);
 	void RemoveBinder(BinderIfaceVideo* iface);
 	
-	static Callback1<FboAtomT*>	WhenInitialize;
+	static Callback1<FboAtomT<Gfx>*>	WhenInitialize;
 	static FboAtomT& Latest();
 	
 };

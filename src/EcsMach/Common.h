@@ -28,7 +28,7 @@ class Viewable;
 class Viewport;
 class Transform;
 class ExtComponent;
-struct PaintComponent;
+class PaintComponent;
 class ComponentStore;
 
 using EcsSystemParent		= RefParent1<Engine>;

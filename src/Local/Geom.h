@@ -98,7 +98,7 @@ struct Point3_ : Moveable<Point3_<T>> {
 		return Point3(x * b.x, y * b.y, z * b.z);
 	}
 	
-	String	ToString() const {return "Point3(" + IntStr(x) + ", " + IntStr(y) + ", " + IntStr(z) + ")";}
+	String	ToString() const {return "Point3(" + AsString(x) + ", " + AsString(y) + ", " + AsString(z) + ")";}
 	int		ToInt() const {return x * y * z;}
 	double	ToDouble() const {return x * y * z;}
 	hash_t	GetHashValue() const {return x * y * z;}
@@ -224,7 +224,7 @@ struct Vol_ : Moveable<Vol_<T>> {
 	
 	Vol_ operator*(double v) {return Vol_(cx * v, cy * v, cz * v);}
 	Vol_ operator/(double v) {return Vol_(cx * v, cy * v, cz * v);}
-	String ToString() const {return "Vol(" + IntStr(cx) + ", " + IntStr(cy) + ", " + IntStr(cz) + ")";}
+	String ToString() const {return "Vol(" + AsString(cx) + ", " + AsString(cy) + ", " + AsString(cz) + ")";}
 	
 	operator Vol_<int>() const {return Vol_<int>(cx,cy,cz);}
 	operator Vol_<double>() const {return Vol_<double>(cx,cy,cz);}
@@ -419,10 +419,6 @@ inline Cub CubC(int x, int y, int z, int w, int h, int d) { return Cub(x, y, z, 
 
 
 
-template <class Box=Rect> inline Box BoxC(int x, int y, int w, int h) { return Box(x, y, x + w, y + h); }
-template <class Box=Rect> inline Box BoxC(const Point& tl, const Size& sz) { return Box(tl.x, tl.y, tl.x + sz.cx, tl.y + sz.cy); }
-template <class Box=Cubf> inline Box BoxC(float x, float y, float z, float w, float h, float d) { return Box(x, y, z, x + w, y + h, z + d); }
-template <class Box=Cubf> inline Box BoxC(const Point3f& tl, const Volf& sz) { return Box(tl.x, tl.y, tl.z, tl.x + sz.cx, tl.y + sz.cy, tl.z + sz.cz); }
 
 
 

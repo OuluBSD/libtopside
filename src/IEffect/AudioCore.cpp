@@ -88,7 +88,7 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 			if (fmt.IsAudio()) {
 				AudioFormat& afmt = fmt;
 				if (dev.prim_audio_sink_ch < 0) {
-					freq = afmt.freq;
+					freq = (float)afmt.freq;
 					dev.prim_audio_sink_ch = i;
 				}
 
@@ -115,7 +115,7 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 		AudioFormat& afmt = fmt;
 		afmt.SetType(BinarySample::FLT_LE);
 		afmt.SetSampleRate(dev.sample_rate);
-		dev.effect->SetSampleRate(afmt.freq);
+		dev.effect->SetSampleRate((float)afmt.freq);
 		
 		v.SetFormat(fmt);
 	}
@@ -211,7 +211,7 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 				}
 			}
 			
-			dev.buffer_time = dev.last_audio_in->GetBeginTime();
+			dev.buffer_time = (float)dev.last_audio_in->GetBeginTime();
 			dev.last_audio_in.Clear();
 		}
 		else {
@@ -255,7 +255,7 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 				}
 			}
 			
-			dev.buffer_time = dev.last_audio_in->GetBeginTime();
+			dev.buffer_time = (float)dev.last_audio_in->GetBeginTime();
 			dev.last_audio_in.Clear();
 			dev.last_audio_side_in.Clear();
 		}

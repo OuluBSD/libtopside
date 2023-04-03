@@ -9,7 +9,7 @@ struct Uuid {
 
 	Uuid() {}
 
-	hash_t GetHashValue() const { CombineHash ch; ch.Put64(v[0]); ch.Put64(v[1]); return ch;}
+	hash_t GetHashValue() const { CombineHash ch; ch.Put(v[0]); ch.Put(v[1]); return ch;}
 
 	void     New();
 	

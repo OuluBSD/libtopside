@@ -76,13 +76,13 @@ void ColorTestFragment::Process(FragmentShaderArgs& args) {
 	
 	float t = args.generic->iTime;
 	
-	vec3 shift = vec3(			sin(t),
-								sin(t + M_PI / 3.0),
-								sin(t + M_PI * 2.0 / 3.0));
+	vec3 shift = vec3(			sinf(t),
+								sinf(t + M_PIf / 3.0f),
+								sinf(t + M_PIf * 2.0f / 3.0f));
 	
 	args.frag_color_out = vec4(	args.frag_coord[0] / res[0] + shift[0],
 								args.frag_coord[1] / res[1] + shift[1],
-								1.0 - args.frag_coord[1] / res[1] + shift[2],
+								1.0f - args.frag_coord[1] / res[1] + shift[2],
 								0);
 }
 
@@ -94,17 +94,17 @@ ProxyInput0Fragment::ProxyInput0Fragment() {
 }
 
 vec4 texture(const ByteImage* ch, const vec2& uv) {
-	int x = uv[0] * (ch->GetWidth()-1);
-	int y = (1.0f - uv[1]) * (ch->GetHeight()-1);
+	int x = (int)(uv[0] * (ch->GetWidth()-1));
+	int y = (int)((1.0f - uv[1]) * (ch->GetHeight()-1));
 	
-	if (x >= 0 && y >= 0 &&
-		x < ch->GetWidth() && y < ch->GetHeight()) {
+	if (x >= 0              && y >= 0 &&
+		x <  ch->GetWidth() && y <  ch->GetHeight()) {
 		const byte* it = ch->GetIter(x, y);
 		ASSERT(ch->GetChannels() == 3 || ch->GetChannels() == 4);
-		return vec4(	it[0] / 255.0,
-						it[1] / 255.0,
-						it[2] / 255.0,
-						1.0);
+		return vec4(	it[0] / 255.0f,
+						it[1] / 255.0f,
+						it[2] / 255.0f,
+						1.0f);
 	}
 	return vec4{0,0,0,0};
 }
@@ -218,7 +218,7 @@ void ObjViewFragment::Process(FragmentShaderArgs& args) {
 	
 	float intensity = std::max(0.0f, m);
 	
-	intensity = intensity * 0.5 + 0.5;
+	intensity = intensity * 0.5f + 0.5f;
 	
 	auto& diffuse = args.fa->color_buf[TEXTYPE_DIFFUSE];
 	if (diffuse) {
@@ -227,13 +227,13 @@ void ObjViewFragment::Process(FragmentShaderArgs& args) {
 		float tex_y = args.tex_coord[1];
 		ASSERT(tex_x >= 0.0f && tex_x <= 1.0f);
 		ASSERT(tex_y >= 0.0f && tex_y <= 1.0f);
-		int tex_xi = tex_x * tex.GetWidth();
-		int tex_yi = tex_y * tex.GetHeight();
+		int tex_xi = (int)(tex_x * tex.GetWidth());
+		int tex_yi = (int)(tex_y * tex.GetHeight());
 		tex_xi = std::max(0, std::min(tex.GetWidth() - 1, tex_xi));
 		tex_yi = std::max(0, std::min(tex.GetHeight() - 1, tex_yi));
 		const byte* b = tex.GetIter(tex_xi, tex_yi);
 		ASSERT(intensity <= 1.0f);
-		float mul = intensity / 255.0;
+		float mul = intensity / 255.0f;
 		float R = b[0] * mul;
 		float G = b[1] * mul;
 		float B = b[2] * mul;

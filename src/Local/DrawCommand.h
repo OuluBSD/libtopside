@@ -2,7 +2,7 @@
 #define _SharedCore_Draw_h_
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 #define DRAWCMD_LIST \
@@ -95,7 +95,7 @@ public:
 };
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
 
 
 #endif

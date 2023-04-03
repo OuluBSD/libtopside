@@ -17,9 +17,9 @@ WmrMotionControllerModel::WmrMotionControllerModel() {
 void WmrMotionControllerModel::InitDefault() {
 	
 	// Measured by hand (might be errors)
-	outer_rad = 0.118 * 0.5; // diameter 11.8cm
-	inner_rad = 0.097 * 0.5; // diameter 9.7cm
-	outer_inner_edge_distance = 0.028; // distance from edge of the circle to another circle
+	outer_rad = 0.118f * 0.5f; // diameter 11.8cm
+	inner_rad = 0.097f * 0.5f; // diameter 9.7cm
+	outer_inner_edge_distance = 0.028f; // distance from edge of the circle to another circle
 	
 	// Distance between circles (x = ?)
 	float y = outer_rad - inner_rad;
@@ -87,7 +87,7 @@ void WmrMotionControllerModel::InitDefault() {
 	inner_pts.SetCount(0);
 	float inner_roll = 0, inner_hypo_sum = 0;
 	for(int i = 0; i < inner.GetCount()-1; i++)
-		AddPoint(inner[i], inner_x_sum, -1, inner_roll, -0.004, inner_hypo_sum, inner_pts);
+		AddPoint(inner[i], inner_x_sum, -1, inner_roll, -0.004f, inner_hypo_sum, inner_pts);
 	
 	
 	
@@ -97,11 +97,11 @@ void WmrMotionControllerModel::InitDefault() {
 
 void WmrMotionControllerModel::AddPoint(const Point& pt, float x_sum, float roll_mul, float& roll, float rad_diff, float& hypo_sum, Vector<vec3>& vec) {
 	float roll_ratio = pt.x / x_sum;
-	float roll_change = M_PI*2 * roll_ratio * roll_mul;
+	float roll_change = M_PIf*2 * roll_ratio * roll_mul;
 	roll += roll_change;
 	ASSERT(roll < M_PI*2 || IsClose(roll, M_PI*2));
 	
-	float hypo = outer_inner_edge_distance - pt.y * 0.001;
+	float hypo = outer_inner_edge_distance - pt.y * 0.001f;
 	float y = sin(angle) * hypo;
 	float x = cos(angle) * hypo;
 	float rad = inner_rad + y + rad_diff;
@@ -111,7 +111,7 @@ void WmrMotionControllerModel::AddPoint(const Point& pt, float x_sum, float roll
 	vec3 ctrl_pt;
 	ctrl_pt[0] = 0;
 	ctrl_pt[1] = rad;
-	ctrl_pt[2] = (z_axis_dist - x) * -SCALAR_FWD_Z;
+	ctrl_pt[2] = (z_axis_dist - x) * -SCALAR_FWD_Zf;
 	
 	ctrl_pt = VecMul(ZRotation(roll), ctrl_pt);
 	

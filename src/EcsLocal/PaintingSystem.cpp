@@ -49,7 +49,7 @@ String PaintingInteractionSystemBase::GetDisplayName() const {
 EntityRef PaintingInteractionSystemBase::CreateToolSelector() const {
 	auto selector = GetEngine().Get<EntityStore>()->GetRoot()->Create<ToolSelectorPrefab>();
 	selector->Get<ModelComponent>()->SetPrefabModel("PaintBrush");
-	selector->Get<Transform>()->data.orientation = AxisAngleQuat({ 1, 0, 0 }, M_PI / 1.5f);
+	selector->Get<Transform>()->data.orientation = AxisAngleQuat({ 1, 0, 0 }, M_PIf / 1.5f);
 	selector->Get<ToolSelectorKey>()->type = GetType();
 	return selector;
 }
@@ -395,7 +395,7 @@ void PaintingInteractionSystemBase::Update(double dt) {
 					const vec3 forward = pointer_pose->GetForwardDirection();
 					
 					if (abs(paint->thumbstick_y) > ThumbstickMovementThresholdPercent) {
-						const vec3 forward_movement = forward * paint->thumbstick_y * MovementSpeedInMetersPerSecond * dt;
+						const vec3 forward_movement = forward * paint->thumbstick_y * MovementSpeedInMetersPerSecond * (float)dt;
 						
 						// Move all paintings along beam path
 						for (auto& stroke : paint->strokes) {
@@ -421,8 +421,8 @@ void PaintingInteractionSystemBase::Update(double dt) {
 				auto iter = paint->clr_pick_objects.begin();
 				
 				for (int i = 0; i < num_colors; ++i, ++iter) {
-					const float angle = (static_cast<float>(i * -1 - 1) / static_cast<float>(num_colors)) * (2 * M_PI) - M_PI;
-					const float next_angle = (static_cast<float>((i + 1) * -1 - 1) / static_cast<float>(num_colors)) * (2 * M_PI) - M_PI;
+					const float angle = (static_cast<float>(i * -1 - 1) / static_cast<float>(num_colors)) * (2 * M_PIf) - M_PIf;
+					const float next_angle = (static_cast<float>((i + 1) * -1 - 1) / static_cast<float>(num_colors)) * (2 * M_PIf) - M_PIf;
 					const float angle_delta = (next_angle - angle) / 2; // Want color icon to appear in the middle of the segment, not the start.
 					const float final_angle = angle - angle_delta;
 					const vec3 color_indicator_on_paint_brush = { std::cos(final_angle)* colorpicker_diameter, colorpicker_height, std::sin(final_angle)* colorpicker_diameter };

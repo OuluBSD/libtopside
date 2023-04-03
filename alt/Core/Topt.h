@@ -120,29 +120,31 @@ template <> inline hash_t GetHashValue(const VOID_PTR& k) {
 }
 
 
-class CombineHash : Moveable<CombineHash> {
-	hash_t hash = 123456789;
+struct CombineHash {
+	hash_t hash;
+
+	template <class T> CombineHash& Do(const T& x)                  { Put(GetHashValue(x)); return *this; }
 
 public:
-	CombineHash() {}
-	CombineHash(int v0) { Put(v0); }
-	CombineHash(int v0, int v1) { Put(v0); Put(v1); }
+	CombineHash& Put(hash_t h)                                      { hash = HASH_CONST2 * hash + h; return *this; }
 
-	operator hash_t() const { return hash; }
-	hash_t Get() const { return hash; }
+	operator hash_t() const                                         { return hash; }
 
-	CombineHash& Put(int value) { hash = ((hash << 5) + hash) + value; return *this; }
-	CombineHash& Put64(int64 value) {Put((int)((uint64)value >> 32ULL)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
-	
-	CombineHash& operator << (int value) { Put(value); return *this; }
-	CombineHash& operator << (hash_t value) { Put64(value); return *this; }
-	CombineHash& operator << (int64 value) { Put64(value); return *this; }
-	template <class T> CombineHash& operator << (const T& value) { Put(GetHashValue(value)); return *this; }
-	
+	CombineHash()                                                   { hash = HASH_CONST1; }
+	template <class T>
+	CombineHash(const T& h1)                                        { hash = HASH_CONST1; Do(h1); }
+	template <class T, class U>
+	CombineHash(const T& h1, const U& h2)                           { hash = HASH_CONST1; Do(h1); Do(h2); }
+	template <class T, class U, class V>
+	CombineHash(const T& h1, const U& h2, const V& h3)              { hash = HASH_CONST1; Do(h1); Do(h2); Do(h3); }
+	template <class T, class U, class V, class W>
+	CombineHash(const T& h1, const U& h2, const V& h3, const W& h4)	{ hash = HASH_CONST1; Do(h1); Do(h2); Do(h3); Do(h4); }
+
+	template <class T> CombineHash& operator<<(const T& x)          { Do(x); return *this; }
 };
 
-template <> inline CombineHash& CombineHash::operator << (const int& value) { Put(value); return *this; }
-template <> inline CombineHash& CombineHash::operator << (const int64& value) { Put64(value); return *this; }
+
+template <> inline CombineHash& CombineHash::operator << (const size_t& value) { Put(value); return *this; }
 
 
 template <class T>

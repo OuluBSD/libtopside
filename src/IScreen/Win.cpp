@@ -125,7 +125,7 @@ bool ScrWin::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
 bool ScrWin::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 	ShowWindow(dev.ctx->hwnd, SW_SHOWNORMAL);
 	
-	LPRECT lp_rect;
+	LPRECT lp_rect {0};
 	
 	if (GetWindowRect(dev.ctx->hwnd, lp_rect)) {
 		int width = lp_rect->right - lp_rect->left;

@@ -305,7 +305,7 @@ void ProgPainter3::SysDrawImageOp(float x, float y, float z, Sizef imgsz, const 
 	cmd.type = DRAW3_SYSDRAW_IMAGE_OP;
 	cmd.pt = Point3f(x,y,z);
 	cmd.img = img;
-	cmd.r = Volf(imgsz.cx, imgsz.cy, 0.01);
+	cmd.r = Volf((float)imgsz.cx, (float)imgsz.cy, 0.01f);
 	cmd.rect = src;
 	cmd.color = color;
 }
@@ -394,7 +394,7 @@ void ProgPainter3::DrawEllipseOp(const Cubf& r, Color color, float pen, Color pe
 	cmd.outline = pencolor;
 }
 
-void ProgPainter3::DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font,
+void ProgPainter3::DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font,
 				Color ink, int n, const int *dx) {
 	DrawCommand3& cmd = CreateCommand();
 	cmd.type = DRAW3_TEXT_OP;

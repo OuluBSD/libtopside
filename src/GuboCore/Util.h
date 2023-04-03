@@ -3,27 +3,27 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-void EnterGuiMutex();
-bool TryEnterGuiMutex();
-void LeaveGuiMutex();
+void EnterGuboMutex();
+bool TryEnterGuboMutex();
+void LeaveGuboMutex();
 
-int  LeaveGuiMutexAll();
-void EnterGuiMutex(int n);
+int  LeaveGuboMutexAll();
+void EnterGuboMutex(int n);
 
-bool ThreadHasGuiLock();
-int  GetGuiLockLevel();
+bool ThreadHasGuboLock();
+int  GetGuboLockLevel();
 
-struct GuiLock {
-	GuiLock()  { EnterGuiMutex(); }
-	~GuiLock() { LeaveGuiMutex(); }
+struct GuboLock {
+	GuboLock()  { EnterGuboMutex(); }
+	~GuboLock() { LeaveGuboMutex(); }
 };
 
-class GuiUnlock {
+class GuboUnlock {
 	int n;
 
 public:
-	GuiUnlock()  { n = LeaveGuiMutexAll(); }
-	~GuiUnlock() { EnterGuiMutex(n); }
+	GuboUnlock()  { n = LeaveGuboMutexAll(); }
+	~GuboUnlock() { EnterGuboMutex(n); }
 };
 
 NAMESPACE_TOPSIDE_END

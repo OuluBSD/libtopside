@@ -230,7 +230,7 @@ bool HalSdl::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase
 	
 	SDL_AudioSpec audio_fmt;
 	SDL_AudioSpec audio_desired;
-	SDL_AudioDeviceID audio_dev;
+	//SDL_AudioDeviceID audio_dev;
 	
 	SDL_zero(audio_desired);
 	audio_desired.freq = 44100;

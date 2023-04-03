@@ -98,7 +98,7 @@ Mass& Mass::SetMass(float kg) {
 
 Mass& Mass::SetFunctionSphere(float density, float radius) {
 	float total_mass =
-		(4.0f/3.0f) * M_PI *
+		(4.0f/3.0f) * M_PIf *
 		radius*radius*radius *
 		density;
     

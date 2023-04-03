@@ -381,7 +381,7 @@ inline String GetOpCodeString(OpType t) {
 		case OP_SUB: return "-";
 		case OP_MUL: return "*";
 		case OP_DIV: return "/";
-		case OP_MOD: return "\%";
+		case OP_MOD: return "%";
 		case OP_LSH: return "<<";
 		case OP_RSH: return ">>";
 		case OP_GREQ: return ">=";
@@ -401,7 +401,7 @@ inline String GetOpCodeString(OpType t) {
 		case OP_SUBASS: return "-=";
 		case OP_MULASS: return "*=";
 		case OP_DIVASS: return "/=";
-		case OP_MODASS: return "\%=";
+		case OP_MODASS: return "%=";
 		default: return "<invalid>";
 	}
 }

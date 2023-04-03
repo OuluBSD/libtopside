@@ -35,6 +35,7 @@ public:
 	using CmdPainter = typename Dim::CmdPainter;
 	using DrawT = typename Dim::DrawT;
 	using Cmd = typename Dim::Cmd;
+	using Unit = typename Dim::Unit;
 	
 	/*#if IS_UPP_CORE
 	using UppTopSurface = SurfaceInterfaceGeom<UPP::TopWindow>;

@@ -78,7 +78,7 @@ void VirtualStereoUncamera::ResetTempVariables(UncameraFrame& to) {
 
 void VirtualStereoUncamera::FindPreviousFrameMatches(const UncameraFrame& from, UncameraFrame& to) {
 	for (const Descriptor& d : to.l_dimg.GetDescriptors()) {
-		int yi = d.y / y_level_h;
+		int yi = (int)(d.y / y_level_h);
 		if (yi >= 0 && yi < y_levels) {
 			const TrackedPoint* tp = FindTrackedPoint(from, d);
 			if (tp)
@@ -88,7 +88,7 @@ void VirtualStereoUncamera::FindPreviousFrameMatches(const UncameraFrame& from, 
 		}
 	}
 	for (const Descriptor& d : to.r_dimg.GetDescriptors()) {
-		int yi = d.y / y_level_h;
+		int yi = (int)(d.y / y_level_h);
 		if (yi >= 0 && yi < y_levels) {
 			const TrackedPoint* tp = FindTrackedPoint(from, d);
 			if (tp)

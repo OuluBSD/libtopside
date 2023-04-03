@@ -218,9 +218,9 @@ void SoftProgram::SetVar(int i, float f0, float f1, float f2) {
 
 void SoftProgram::SetVar(int i, float f0, float f1, float f2, float f3) {
 	int idx = uniforms.GetKey(i);
-	switch (idx) {
+	/*switch (idx) {
 		default: break;
-	}
+	}*/
 	TODO
 }
 

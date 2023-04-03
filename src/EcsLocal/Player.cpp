@@ -102,7 +102,7 @@ void PlayerBodyComponent::Uninitialize() {
 
 bool PlayerBodyComponent::Arg(String key, Object value) {
 	if (key == "height")
-		height = StrDbl(value);
+		height = (float)StrDbl(value);
 	
 	return true;
 }
@@ -159,8 +159,8 @@ void PlayerBodySystem::Update(double dt) {
 		if (!trans)
 			continue;
 		
-		float eyes_from_height = 0.15; // guesstimate, that height of eyes is 15cm from your total height
-		float hand_from_height = 0.4; // guesstimate
+		float eyes_from_height = 0.15f; // guesstimate, that height of eyes is 15cm from your total height
+		float hand_from_height = 0.4f; // guesstimate
 		
 		vec3 body_feet_pos = trans->data.position;
 		vec3 head_direction = VEC_FWD;
@@ -194,10 +194,10 @@ void PlayerBodySystem::Update(double dt) {
 				if (hand_trans) {
 					if (b->hands[i]->is_simulated) {
 						hand_trans->data = tm;
-						float horz_deg = (i == 1 ? -1 : +1) * 30;
+						float horz_deg = (i == 1 ? -1.f : +1.f) * 30;
 						CameraObject(
 							tm.position, head_direction, head_up,
-							DEG2RAD(horz_deg), DEG2RAD(-30), 0.3f,
+							DEG2RADf(horz_deg), DEG2RADf(-30), 0.3f,
 							hand_trans->data.position);
 							
 					}

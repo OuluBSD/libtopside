@@ -90,6 +90,7 @@ public:
 	using Box = typename Dim::Box;
 	using Sz = typename Dim::Sz;
 	using Pt = typename Dim::Pt;
+	using Unit = typename Dim::Unit;
 	
 public:
 	enum {CENTER, TL, TR, BL, BR, TOP, BOTTOM, LEFT, RIGHT};

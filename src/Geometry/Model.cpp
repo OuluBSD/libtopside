@@ -308,7 +308,7 @@ bool ModelLoader::LoadModelAssimp(String path) {
 
 void ModelLoader::ProcessMaterials(Model& model, const aiScene *scene) {
 	model.materials.Clear();
-	for(int i = 0; i < scene->mNumMaterials; i++) {
+	for(int i = 0; i < (int)scene->mNumMaterials; i++) {
 		const aiMaterial* m = scene->mMaterials[i];
 		ASSERT(m);
 		TS::Material& mat = model.materials.Add(i);
@@ -325,7 +325,7 @@ void ModelLoader::ProcessMaterial(Model& model, TS::Material& m, const aiMateria
 			TODO
 		}
 		
-		for(unsigned int i = 0; i < c; i++) {
+		for(int i = 0; i < c; i++) {
 			TexType textype = TEXTYPE_COUNT;
 			switch (type) {
 				#define TYPE(x) case aiTextureType_##x: textype = TEXTYPE_##x; break;

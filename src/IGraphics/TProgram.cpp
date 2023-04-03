@@ -161,8 +161,8 @@ int FindTexId(ModelStateT<Gfx>& mdl, const DataObjectT<Gfx>& o, int tex_ch, Mode
 		used_mat = &mat;
 	}
 	else {
-		int env_material_model =
-			mdl.env_material_model >= 0 ?
+		hash_t env_material_model =
+			mdl.env_material_model > 0 ?
 				mdl.env_material_model :
 				mdl.owner->env_material_model;
 		int i = mdl.owner->models.Find(mdl.env_material_model);
@@ -332,9 +332,9 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 		vec2 off = data.offset;
 		
 		if (res[0] > 0 && res[1] > 0) {
-			int x = off[0];
-			int y = -off[1];
-			Gfx::Uniform2f(uindex, (float)x, (float)y);
+			float x = floor( off[0]);
+			float y = floor(-off[1]);
+			Gfx::Uniform2f(uindex, x, y);
 		} else {
 			Gfx::Uniform2f(uindex, 0.0f, 0.0f);
 		}
@@ -359,7 +359,7 @@ void ProgramStateT<Gfx>::SetVar(ContextState& ctx, EnvStateRef& env, int var, co
 		float values[INPUT_COUNT];
 		for(int j = 0; j < INPUT_COUNT; j++) {
 			InputState& in = inputs[j];
-			values[j] = in.stage ? in.stage->buf->ctx.time_total : 0;
+			values[j] = in.stage ? (float)in.stage->buf->ctx.time_total : 0;
 		}
 		//Gfx::Uniform1fv(uindex, 4, values);
 		Gfx::Uniform4f(uindex, (float)values[0], (float)values[1], (float)values[2], (float)values[3]);
@@ -592,7 +592,7 @@ bool ProgramStateT<Gfx>::SetupLoopback(int loopback, BufferStage& s) {
 
 template <class Gfx>
 void ProgramStateT<Gfx>::RefreshProgramStages() {
-	if (native >= 0) {
+	if (native) {
 		int bmask = 0;
 		for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 			if (shaders[(GVar::ShaderType)i].enabled) {

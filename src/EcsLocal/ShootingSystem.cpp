@@ -119,7 +119,7 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
 		ASSERT(e.ctrl);
 		bool should_render_controller = e.ctrl->ctrl[1].IsGrasped();
-		model->color[3] = should_render_controller ? 0.25 : 1.0;
+		model->color[3] = should_render_controller ? 0.25f : 1.0f;
 	}
 }
 
@@ -164,7 +164,7 @@ bool ShootingComponent::LoadModel(ModelComponent& mdl) {
 	
 	String path = KnownModelNames::GetPath(KnownModelNames::Gun);
 	ModelRef m = sys->GetAddModelFile(path);
-	mdl.SetModelMatrix(YRotation(M_PI));
+	mdl.SetModelMatrix(YRotation(M_PIf));
 	mdl.SetModel(m);
 	
 	if (0) {

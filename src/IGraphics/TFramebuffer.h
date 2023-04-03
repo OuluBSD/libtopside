@@ -46,9 +46,9 @@ struct FramebufferT : Gfx::FramebufferBase {
 	byte* GetIterator(int x, int y) override {Panic("Not usable: OglFramebuffer::GetIterator"); return 0;}
 	void DrawFill(const byte* mem, int sz) override;
 	
-	void Bind();
-	void Clear();
-	void Render();
+	//void Bind();
+	//void Clear();
+	//void Render();
 	
 	
 	void SetWindowFbo(bool b=true);

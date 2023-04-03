@@ -500,7 +500,7 @@ void HandleT<Dim>::LeftUp(Pt p, dword keyflags) {
 template <class Dim>
 void HandleT<Dim>::ContinueGlobalMouseMomentum() {
 	if (is_resizing) {
-		int c = 1;
+		Unit c = 1;
 		switch (resize_area) {
 			case CENTER:
 				break;

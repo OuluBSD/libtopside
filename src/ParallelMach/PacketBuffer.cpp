@@ -42,7 +42,7 @@ PacketTimingManager& PacketTimingManager::Local() {
 }
 
 float PacketTimingManager::Get() const {
-	float s = ts.Seconds();
+	float s = (float)ts.Seconds();
 	ASSERT(s > 0.0f);
 	return s;
 }

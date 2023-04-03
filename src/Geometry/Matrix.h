@@ -10,7 +10,8 @@ NAMESPACE_TOPSIDE_BEGIN
 	#define VEC_FWD4 vec4(0,0,-1,1)
 	#define VEC_BWD vec3(0,0,1)
 	#define VEC_BWD4 vec4(0,0,1,1)
-	#define SCALAR_FWD_Z -1
+	#define SCALAR_FWD_Z  -1.0
+	#define SCALAR_FWD_Zf -1.0f
 	#define VEC_POS_ROT vec3(1,1,-1)
 	#define VEC_POS_ROT4 vec3(1,1,-1,1)
 #else
@@ -18,7 +19,8 @@ NAMESPACE_TOPSIDE_BEGIN
 	#define VEC_FWD4 vec4(0,0,1,1)
 	#define VEC_BWD vec3(0,0,-1)
 	#define VEC_BWD4 vec4(0,0,-1,1)
-	#define SCALAR_FWD_Z 1
+	#define SCALAR_FWD_Z  1.0
+	#define SCALAR_FWD_Zf 1.0f
 	#define VEC_POS_ROT vec3(1,1,1)
 	#define VEC_POS_ROT4 vec3(1,1,1,1)
 #endif
@@ -126,7 +128,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec Multiply(const Vec& v)  const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
 	Vec Multiply(T v)           const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v; return r;}
 	Vec Modulus(T v)            const {Vec r; for(int i = 0; i < I; i++) r.data[i] = fmod(data[i], v); return r;}
-	Vec Mix(const Vec& v, T f)  const {Vec r; for(int i = 0; i < I; i++) r.data[i] = (1.0 - f) * data[i] + f * v.data[i]; return r;}
+	Vec Mix(const Vec& v, T f)  const {Vec r; for(int i = 0; i < I; i++) r.data[i] = ((T)1 - f) * data[i] + f * v.data[i]; return r;}
 	
 	Vec operator*(const Matrix<T,I,I>& m) const;
 	
@@ -454,7 +456,7 @@ struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 	void Zero()  {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
 	
 	template <class M> void CopyTo(M& o) const {
-		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) o.data[i].data[j] = data[i].data[j];
+		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) o.data[i].data[j] = (M::Unit)data[i].data[j];
 	}
 	
 	Matrix& Transpose() {
@@ -1031,9 +1033,9 @@ struct PositionOrientationAverageT {
 		}
 		else {
 			vec3 delta_pos = pos - position;
-			position += delta_pos / count;
+			position += delta_pos / (float)count;
 			vec4 delta_q = q.data - orientation.data;
-			orientation.data += delta_q / count;
+			orientation.data += delta_q / (float)count;
 		}
 		count++;
 	}

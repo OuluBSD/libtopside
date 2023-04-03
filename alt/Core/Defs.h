@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 #ifdef WINSOCK_HACK_FIX
 	#define _WS2DEF_
 	#define _WINSOCK2API_
@@ -271,6 +270,14 @@ auto pick(T&& x) noexcept -> decltype(std::move(x)) { return std::move(x); }
 
 template<class T> class Function;
 
+
+
+#ifdef COMPILER_MSC
+	#define I64(c) ((int64)COMBINE(c, i64))
+#else
+	#define I64(c) ((int64)COMBINE(c, LL))
+#endif
+
 NAMESPACE_UPP_END
 
 
@@ -288,6 +295,8 @@ errno_t getenv_s(
 }
 
 #endif
+
+
 
 
 #endif

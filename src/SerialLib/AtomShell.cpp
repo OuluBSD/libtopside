@@ -159,7 +159,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	if (dbg_ref)
 		BreakRefAdd(dbg_ref);
 	
-	__dbg_time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
+	__dbg_time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToInt32();
 	
 	{
 		Machine& mach = GetActiveMachine();

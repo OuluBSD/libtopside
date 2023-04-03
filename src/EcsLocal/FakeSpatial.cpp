@@ -28,8 +28,8 @@ FakeSpatialInteractionManager::FakeSpatialInteractionManager() {
 bool FakeSpatialInteractionManager::Initialize(InteractionSystem& sys) {
 	this->sys = &sys;
 	
-	hand_velocity = vec3(0, 0.1, 0.1);
-	hand_angular_velocity = vec3(0.1, 0.1, 0);
+	hand_velocity = vec3(0, 0.1f, 0.1f);
+	hand_angular_velocity = vec3(0.1f, 0.1f, 0);
 	
 	prev.SetAll(false);
 	
@@ -99,7 +99,7 @@ void FakeSpatialInteractionManager::UpdateStateKeyboard() {
 	bool bwd  = data['s'];
 	bool right = data['d'];
 	
-	float step = last_dt * 1.5;
+	float step = (float)last_dt * 1.5f;
 	
 	if (fwd) {
 		Move(VEC_FWD, step);
@@ -208,21 +208,23 @@ void FakeSpatialInteractionManager::Look(Point mouse_diff) {
 	ev.pt = mouse_diff; // extra
 	ev.trans = &trans;
 	
-	double prev_yaw = yaw;
-	double prev_pitch = pitch;
+	float prev_yaw = yaw;
+	float prev_pitch = pitch;
 	
-	double rot_speed = 0.05 / (2*M_PI);
-	double yaw_change = -mouse_diff.x * rot_speed;
-	double pitch_change = mouse_diff.y * rot_speed;
+	float rot_speed = 0.05f / (2*M_PIf);
+	float yaw_change = -mouse_diff.x * rot_speed;
+	float pitch_change = mouse_diff.y * rot_speed;
 	yaw += yaw_change;
 	pitch += pitch_change;
 	
 	vec3 prev_head_direction;
-	for(int i = 0; i < 3; i++) prev_head_direction[i] = av[i].GetMean();
+	for(int i = 0; i < 3; i++)
+		prev_head_direction[i] = (float)av[i].GetMean();
 	
 	head_direction = AxesDir(yaw, pitch);
 	
-	for(int i = 0; i < 3; i++) av[i].Add(head_direction[i]);
+	for(int i = 0; i < 3; i++)
+		av[i].Add(head_direction[i]);
 	
 	trans.mode = TransformMatrix::MODE_LOOKAT;
 	trans.direction = head_direction;

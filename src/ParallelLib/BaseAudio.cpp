@@ -73,7 +73,7 @@ AudioMixerBase::AudioMixerBase() {
 bool AudioMixerBase::Initialize(const Script::WorldState& ws) {
 	auto_limit = ws.GetBool(".auto.limit", false);
 	sync = ws.GetBool(".sync", false);
-	max_sync_drift_time = ws.GetDouble(".sync.drift.limit", 0.010); // ms
+	max_sync_drift_time = (float)ws.GetDouble(".sync.drift.limit", 0.010f); // ms
 	
 	return true;
 }
@@ -136,7 +136,7 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 			ch_i++;
 			if (it.packets.IsEmpty()) continue;
 			Packet& p = it.packets[0];
-			float begin = p->GetBeginTime();
+			float begin = (float)p->GetBeginTime();
 			ASSERT(begin != 0);
 			min_begin = min(min_begin, begin);
 		}
@@ -144,7 +144,7 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 		for (auto& it : queue) {
 			if (it.packets.IsEmpty()) continue;
 			Packet& p = it.packets[0];
-			float begin = p->GetBeginTime();
+			float begin = (float)p->GetBeginTime();
 			it.skip = begin >= begin_limit;
 			nonempty_count++;
 			skip_count += it.skip ? 1 : 0;
@@ -167,7 +167,7 @@ void AudioMixerBase::Finalize(RealtimeSourceConfig& cfg) {
 		int remaining = samples - it.offset;
 		min_remaining = min(remaining, min_remaining);
 		//DUMP(remaining);
-		float begin = p->GetBeginTime();
+		float begin = (float)p->GetBeginTime();
 		min_begin = min(min_begin, begin);
 	}
 	if (!min_begin) min_begin = PacketTimingManager::Local().Get();

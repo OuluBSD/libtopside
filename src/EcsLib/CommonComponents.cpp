@@ -37,17 +37,17 @@ vec3 Transform::GetForwardDirection() const {
 
 bool Transform::Arg(String key, Object value) {
 	if (key == "x")
-		data.position[0] = value.ToDouble();
+		data.position[0] = value.ToFloat();
 	else if (key == "y")
-		data.position[1] = value.ToDouble();
+		data.position[1] = value.ToFloat();
 	else if (key == "z")
-		data.position[2] = value.ToDouble();
+		data.position[2] = value.ToFloat();
 	else if (key == "cx")
-		size[0] = value.ToDouble();
+		size[0] = value.ToFloat();
 	else if (key == "cy")
-		size[1] = value.ToDouble();
+		size[1] = value.ToFloat();
 	else if (key == "cz")
-		size[2] = value.ToDouble();
+		size[2] = value.ToFloat();
 	else
 		return false;
 	

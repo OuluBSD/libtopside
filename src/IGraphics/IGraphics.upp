@@ -9,9 +9,9 @@ uses
 	ports/MingwDx,
 	SoftRend;
 
-uses(WIN32&MSC&NEVER) ports/glew;
+uses(WIN32 & GCC) ports/glew;
 
-uses(WIN32&MSC) ports/glext;
+uses(WIN32 & MSC) ports/glext;
 
 library(MSC) glew32;
 

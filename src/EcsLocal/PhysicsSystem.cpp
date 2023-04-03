@@ -32,15 +32,15 @@ void PhysicsSystem::Update(double dt)
 		Ref<Transform> transform = ent->Find<Transform>();
 		
 		if (rigid_body && transform && rigid_body->IsEnabled()) {
-			rigid_body->velocity += rigid_body->acceleration * dt;
-			transform->data.position += rigid_body->velocity * dt;
+			rigid_body->velocity += rigid_body->acceleration * (float)dt;
+			transform->data.position += rigid_body->velocity * (float)dt;
 			
 			vec3 adjusted_angular = TS::VectorTransform(rigid_body->angular_velocity, Inverse(QuatMat(transform->data.orientation)));
 			
 			float angle = adjusted_angular.GetLength();
 			if (angle > 0.0f) {
 				vec3 axis = adjusted_angular / angle;
-				transform->data.orientation *= AxisAngleQuat(axis, angle * dt);
+				transform->data.orientation *= AxisAngleQuat(axis, angle * (float)dt);
 			}
 			
 			rigid_body->velocity *= rigid_body->damping_factor;
@@ -67,7 +67,7 @@ bool PhysicsSystem::Arg(String key, Object value) {
 		remove_outside_area = value.ToString() == "true";
 	}
 	if (key == "rm.area.size") {
-		area_length = value.ToDouble();
+		area_length = value.ToFloat();
 	}
 	
 	return true;
@@ -93,7 +93,7 @@ void PhysicsSystem::RunTestFn(PhysicsBody& b) {
 			double x = sin(phase) * radius;
 			double z = cos(phase) * radius;
 			
-			t.data.position = vec3(x, 2, z);
+			t.data.position = vec3((float)x, 2, (float)z);
 			if (debug_log) {
 				LOG("PhysicsSystem::RunTestFn: " << time << ": " << HexStr(&b) << ": " << x << ":" << z);
 			}

@@ -127,7 +127,7 @@ void AnimObject::Paint(Draw& d, const AnimFrameHeader& f, const AnimKeypointPlay
 	Point anchor = kp.GetAnchor(kpif);
 	Point tl = pos - anchor;
 	
-	mat2 rot = Rotation2x2(angle);
+	mat2 rot = Rotation2x2((float)angle);
 	
 	//LOG("AnimObject::Paint: angle=" << angle);
 	
@@ -150,8 +150,8 @@ void AnimObject::Paint(Draw& d, const AnimFrameHeader& f, const AnimKeypointPlay
 			vec2 rotated = vec2 {(float)rel.x, (float)rel.y} * rot;
 			vec2 rotated_translated = rotated + rotated_tl;
 			
-			dst.x = rotated_translated[0];
-			dst.y = rotated_translated[1];
+			dst.x = (int)rotated_translated[0];
+			dst.y = (int)rotated_translated[1];
 			it++;
 		}
 		d.DrawPolygon(pts, clr);

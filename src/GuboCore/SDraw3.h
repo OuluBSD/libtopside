@@ -34,9 +34,9 @@ public:
 	void Init(const Cubf& r);
 	
 	void Finish();
-	int GetWidth() const {return sz.cx;}
-	int GetHeight() const {return sz.cy;}
-	int GetDepth() const {return sz.cz;}
+	float GetWidth() const {return sz.cx;}
+	float GetHeight() const {return sz.cy;}
+	float GetDepth() const {return sz.cz;}
 	
 	void DrawPixel(float x, float y, float z, Color c);
 	
@@ -69,7 +69,7 @@ public:
 	                           uint64 pattern, Color doxor) override;
 	void DrawArcOp(const Cubf& rc, Point3f start, Point3f end, float width, Color color) override;
 	void DrawEllipseOp(const Cubf& r, Color color, float pen, Color pencolor) override;
-	void DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font,
+	void DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font,
 		            Color ink, int n, const int *dx) override;
 	void DrawDrawingOp(const Cubf& target, const Drawing& w) override;
 	void DrawPaintingOp(const Cubf& target, const Painting& w) override;

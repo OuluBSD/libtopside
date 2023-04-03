@@ -53,7 +53,7 @@ bool SynSoft::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const Sc
 	
 	// Initialize preset on special 10th MIDI channel to use percussion sound bank (128) if available
 	dev.instrument.SetChannelBankPreset(9, 128, 0);
-	dev.instrument.SetOutput(SoftInstru::STEREO_INTERLEAVED, afmt.freq, -9);
+	dev.instrument.SetOutput(SoftInstru::STEREO_INTERLEAVED, (int)afmt.freq, -9);
 	
 	
 	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);

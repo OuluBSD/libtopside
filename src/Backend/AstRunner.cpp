@@ -373,7 +373,6 @@ AstNode* AstRunner::Visit(const AstNode& n) {
 	AstNode* d = 0;
 	AstNode* sd = 0;
 	AstNode* ad = 0;
-	Object* o;
 	int pop_count;
 	CHECK_SPATH_INIT
 	

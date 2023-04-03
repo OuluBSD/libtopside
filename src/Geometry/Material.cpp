@@ -60,10 +60,10 @@ Image Material::CreateSolidColorTexture(vec4 clr) {
 	for(int i = 0; i < 4; i++) {ASSERT(clr[i] >= 0 && clr[i] <= 1);}
 	ImageBuffer ib(1,1);
 	RGBA* dst = ib.Begin();
-	dst->r = clr[0] / 255.0;
-	dst->g = clr[1] / 255.0;
-	dst->b = clr[2] / 255.0;
-	dst->a = clr[3] / 255.0;
+	dst->r = (byte)(clr[0] / 255.0);
+	dst->g = (byte)(clr[1] / 255.0);
+	dst->b = (byte)(clr[2] / 255.0);
+	dst->a = (byte)(clr[3] / 255.0);
 	return ib;
 }
 

@@ -141,6 +141,38 @@ void Swap(T& a, T& b) {
 }
 
 
+
+#ifdef CPU_64
+
+#define HASH64
+
+#define HASH_CONST1 I64(0xf7c21089bee7c0a5)
+#define HASH_CONST2 I64(0xc85abc8da7534a4d)
+#define HASH_CONST3 I64(0x8642b0fe3e86671b)
+
+typedef qword hash_t;
+
+inline dword FoldHash(qword h)
+{
+	return (dword)SwapEndian64(HASH_CONST3 * h);
+}
+
+#else
+
+#define HASH_CONST1 0xbee7c0a5
+#define HASH_CONST2 0xa7534a4d
+#define HASH_CONST3 0x8e86671b
+
+typedef dword hash_t;
+
+inline dword FoldHash(dword h)
+{
+	return SwapEndian32(HASH_CONST3 * h);
+}
+
+#endif
+
+
 NAMESPACE_UPP_END
 
 #endif

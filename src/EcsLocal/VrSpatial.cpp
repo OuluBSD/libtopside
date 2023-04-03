@@ -27,8 +27,8 @@ VrSpatialInteractionManager::VrSpatialInteractionManager() {
 bool VrSpatialInteractionManager::Initialize(InteractionSystem& sys) {
 	this->sys = &sys;
 	
-	hand_velocity = vec3(0, 0.1, 0.1);
-	hand_angular_velocity = vec3(0.1, 0.1, 0);
+	hand_velocity = vec3(0, 0.1f, 0.1f);
+	hand_angular_velocity = vec3(0.1f, 0.1f, 0);
 	
 	prev.SetAll(false);
 	
@@ -108,7 +108,7 @@ void VrSpatialInteractionManager::UpdateCalibrationStateKeyboard() {
 	
 	
 	WhenSourcePressed(*this, ev);
-	float step = last_dt * 0.3;
+	float step = (float)last_dt * 0.3f;
 	
 	if (calib_mode == CALIB_FOV_SCALE_EYEDIST) {
 		

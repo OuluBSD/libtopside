@@ -40,7 +40,7 @@ void Quadtree::Initialize(int min_scale_level, int max_scale_level) {
 	root.Clear();
 	root.level = this->max_scale_level;
 	
-	max_len = 0.5f * FastPow<float>(2, this->max_scale_level);
+	max_len = 0.5f * FastPow<float>(2.f, (float)this->max_scale_level);
 	transform = Identity<mat4>();
 	has_transform = false;
 	
@@ -115,7 +115,7 @@ uint64 Quadtree::GetSeekBits(vec3 pos, int level) const {
 		uint64 seek = 0, j = 0;
 		for(int shift = rev_level_i - 1; shift >= 0; shift--) {
 			uint32 mask = 1UL << shift;
-			for(uint64 i = 0; i < 3; i++)
+			for(int i = 0; i < 3; i++)
 				if (ipos[i] & mask)
 					seek |= 1ULL << (j + i);
 			j += 3;

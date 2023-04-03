@@ -55,7 +55,6 @@ void AstExporter::PopInlineScope() {
 }
 
 void AstExporter::Visit(const AstNode& n, bool force, bool declare) {
-	bool skip_indent;
 	
 	switch (n.src) {
 	case SEMT_BUILTIN:

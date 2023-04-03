@@ -398,7 +398,7 @@ GfxModelState& DataStateT<Gfx>::RealizeModel(hash_t link) {
 
 template <class Gfx>
 ModelStateT<Gfx>& DataStateT<Gfx>::AddModelT() {
-	int id = models.IsEmpty() ? 0 : models.Top().id + 1;
+	int id = ++id_counter;
 	ModelState& ms = models.Add(id);
 	ms.owner = this;
 	ms.id = id;
@@ -406,8 +406,8 @@ ModelStateT<Gfx>& DataStateT<Gfx>::AddModelT() {
 }
 
 template <class Gfx>
-GfxModelState& DataStateT<Gfx>::GetModel(int i) {
-	return models.Get(i);
+GfxModelState& DataStateT<Gfx>::GetModel(hash_t h) {
+	return models.Get(h);
 }
 
 template <class Gfx>

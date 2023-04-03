@@ -17,7 +17,7 @@ double AnimKeypointPlayer::GetFraction(double kpif, int i) const {
 	int begin = idx[0][i];
 	int end = idx[1][i];
 	int range = end - begin;
-	int kpi = kpif;
+	int kpi = (int)kpif;
 	if (kpi < begin || !range)
 		return 0;
 	if (kpi > end)
@@ -47,16 +47,16 @@ double AnimKeypointPlayer::GetAngle(double kpi) const {
 Point AnimKeypointPlayer::GetPosition(double kpi) const {
 	double f = GetFraction(kpi, AnimKeypoint::E_POS);
 	Point r;
-	r.x = position[0].x * (1.0 - f) + position[1].x * f;
-	r.y = position[0].y * (1.0 - f) + position[1].y * f;
+	r.x = (int)(position[0].x * (1.0f - f) + position[1].x * f);
+	r.y = (int)(position[0].y * (1.0f - f) + position[1].y * f);
 	return r;
 }
 
 Point AnimKeypointPlayer::GetAnchor(double kpi) const {
 	double f = GetFraction(kpi, AnimKeypoint::E_ANCHOR);
 	Point r;
-	r.x = anchor[0].x * (1.0 - f) + anchor[1].x * f;
-	r.y = anchor[0].y * (1.0 - f) + anchor[1].y * f;
+	r.x = (int)(anchor[0].x * (1.0 - f) + anchor[1].x * f);
+	r.y = (int)(anchor[0].y * (1.0 - f) + anchor[1].y * f);
 	return r;
 }
 
@@ -299,7 +299,7 @@ void AnimPlayer::UpdateInternalTime() {
 }
 
 void AnimPlayer::UpdateKeypointIndex() {
-	kpi = time * a->GetKeysPerSecond();
+	kpi = (int)(time * a->GetKeysPerSecond());
 	AnimScene& s = a->GetActiveScene();
 	int s_len = s.GetLength();
 	if (is_playing && kpi >= s_len) {

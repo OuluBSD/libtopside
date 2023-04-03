@@ -112,7 +112,7 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 			float* f = (float*)(byte*)data.Begin();
 			float* end = f + sz / sizeof(float);
 			while (f != end)
-				*f++ = rolling_value++ / 255.0 * 2.0 - 1.0;
+				*f++ = rolling_value++ / 255.0f * 2.0f - 1.0f;
 		}
 		else if (afmt.type == TS::Serial::BinarySample::U16_LE) {
 			uint16* f = (uint16*)(byte*)data.Begin();

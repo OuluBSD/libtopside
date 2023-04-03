@@ -53,7 +53,7 @@ struct GfxModelState : ErrorReporter {
 	// meta
 	hash_t id = -1;
 	int env_material = -1; // own material
-	int env_material_model = -1; // other model in same DataState
+	hash_t env_material_model = 0; // other model in same DataState
 	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual int GetObjectCount() const = 0;
@@ -75,7 +75,7 @@ struct GfxDataState : ErrorReporter {
 	int		id = -1;
 	
 	// models
-	int		env_material_model = -1;
+	hash_t		env_material_model = 0;
 	
 	// renderer
     mat4				view;
@@ -94,7 +94,7 @@ struct GfxDataState : ErrorReporter {
 	
 	GfxDataState();
 	virtual GfxModelState& AddModel() = 0;
-	virtual GfxModelState& GetModel(int i) = 0;
+	virtual GfxModelState& GetModel(hash_t h) = 0;
 	virtual GfxModelState& RealizeModel(hash_t link) = 0;
 	virtual int GetModelCount() const = 0;
 	

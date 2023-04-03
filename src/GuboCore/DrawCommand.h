@@ -67,7 +67,7 @@ struct DrawCommand3 {
 	String txt, id;
 	WString wtxt;
 	void* ptr;
-	int width, angle;
+	float width, angle;
 	Vector<Point3f> points;
 	Vector<int> ints, subpolygon_counts, disjunct_polygon_counts;
 	Value value;

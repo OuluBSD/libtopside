@@ -26,7 +26,7 @@ bool Instrument::Load(Stream& stream)
 				#define HandleChunk(chunkId, chunkName) \
 				(FourCCEquals(chunk.id, #chunkId) && !(chunk.size % chunkName##_SizeInFile)) \
 				{ \
-					int num = chunk.size / chunkName##_SizeInFile, i; \
+					int num = chunk.size / chunkName##_SizeInFile; \
 					hydra.chunkName.SetCount(num); \
 					for (auto& o : hydra.chunkName) o.Read(stream); \
 				}
@@ -183,7 +183,7 @@ void Instrument::SetMaxVoices(int max_voices)
 int Instrument::NoteOn(int preset_index, int key, float vel)
 {
 	short midi_velocity = (short)(vel * 127);
-	int voice_play_idx;
+	int voice_play_idx = 0;
 
 	if (preset_index < 0 || preset_index >= presets.GetCount()) return 1;
 	if (vel <= 0.0f) { NoteOff(preset_index, key); return 1; }
@@ -214,7 +214,7 @@ int Instrument::NoteOn(int preset_index, int key, float vel)
 
 		if (!voice)
 		{
-			Voice* new_voices;
+			//Voice* new_voices;
 			if (max_voice_count)
 			{
 				// voices have been pre-allocated and limited to a maximum, unable to start playing this voice

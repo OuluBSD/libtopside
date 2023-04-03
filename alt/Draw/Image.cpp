@@ -249,7 +249,7 @@ hash_t Image::GetHashValue() const {
 		while (it != end) {
 			c.Put(*it++);
 		}
-		return c.Get();
+		return c;
 	}
 	return 0;
 }

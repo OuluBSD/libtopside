@@ -25,7 +25,7 @@ template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val
 
 
 template <class Gfx>
-class GfxAccelAtom : RTTIBase {
+struct GfxAccelAtom : RTTIBase {
 	
 protected:
 	friend class Events;
@@ -79,7 +79,7 @@ protected:
 	bool GfxRenderer();
 	
 	
-	void SetWindowRect(Rect r);
+	//void SetWindowRect(Rect r);
 	
 public:
 	typedef GfxAccelAtom<Gfx> GfxAccelAtomT;
@@ -94,7 +94,7 @@ public:
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool PostInitialize();
-	bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
+	//bool Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
 	void Uninitialize();
 	
 	bool Open(Size sz, int channels, bool skip_fullscreen=false);

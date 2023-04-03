@@ -7,8 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 	#define M_2PI (2.0 * M_PI)
 #endif
 
-#define DEG2RAD(x) (((x) / 360.0) * M_2PI)
-#define RAD2DEG(x) (((x) / M_2PI) * 360.0)
+#define DEG2RAD(x)         (((x) / 360.0) * M_2PI)
+#define DEG2RADf(x) (float)(((x) / 360.0) * M_2PI)
+#define RAD2DEG(x)         (((x) / M_2PI) * 360.0)
+#define RAD2DEGf(x) (float)(((x) / M_2PI) * 360.0)
 
 
 extern const float EPSILONf;
@@ -96,9 +98,13 @@ template <class T> struct FastTrig {
 		T *s = sin.Begin(), *c = cos.Begin(), *t = tan.Begin();
 		T *as = asin.Begin(), *ac = acos.Begin(), *at = atan.Begin();
 		for(int i = 0; i < accuracy; i++) {
-			T a = (PI2 * i) / accuracy;
-			*s = ::sin(a); *c = ::cos(a); *t = ::tan(a);
-			*as = ::asin(a); *ac = ::acos(a); *at = ::atan(a);
+			double a = (PI2 * i) / accuracy;
+			*s = (T)::sin(a);
+			*c = (T)::cos(a);
+			*t = (T)::tan(a);
+			*as = (T)::asin(a);
+			*ac = (T)::acos(a);
+			*at = (T)::atan(a);
 			//LOG(Format("%d %3n: sin %3n, cos %3n, tan %3n", i, a, *s, *c, *t));
 			s++, c++, t++;
 			as++, ac++, at++;

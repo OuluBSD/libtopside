@@ -17,11 +17,6 @@ file
 	TokenParser.cpp,
 	String.h,
 	String.cpp,
-	Draw.h,
-	Draw.cpp,
 	Random.h,
-	Random.cpp,
-	Trash readonly separator,
-	Ctrl.h,
-	Ctrl.cpp;
+	Random.cpp;
 

@@ -1,6 +1,9 @@
 #ifndef _CoreAlt_Macros_h_
 #define _CoreAlt_Macros_h_
 
+#include <limits.h>
+
+
 NAMESPACE_UPP_BEGIN
 
 
@@ -47,8 +50,12 @@ NAMESPACE_UPP_BEGIN
 	#define M_2_SQRTPI 1.12837916709551257390   // 2/sqrt(pi)
 	#define M_SQRT2    1.41421356237309504880   // sqrt(2)
 	#define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
+	#define M_2PI      6.283185307179586
 #endif
 
+#define M_PIf	(float)(M_PI)
+#define M_PI_2f	(float)(M_PI_2)
+#define M_2PIf	(float)(M_2PI)
 
 #undef TODO
 #define MK_str_(x)		#x

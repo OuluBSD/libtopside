@@ -38,10 +38,10 @@ public:
 	
 	void AttachContent() {TODO}
 	void DetachContent() {TODO}
-	void SetPosition(double x, double y, double z) {Fys::SetBodyPosition(body, x, y, z);}
-	void SetGeomPosition(double x, double y, double z) {Fys::SetGeomPosition(geom, x, y, z);}
+	void SetPosition(float x, float y, float z) {Fys::SetBodyPosition(body, x, y, z);}
+	void SetGeomPosition(float x, float y, float z) {Fys::SetGeomPosition(geom, x, y, z);}
 	void SetGeomRotationIdentity() {Fys::ResetGeomRotation(geom);}
-	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetGeomRotationAxisAngle(geom, ax, ay, az, angle);}
+	void RotateFromAxisAndAngle(float ax, float ay, float az, float angle) {Fys::SetGeomRotationAxisAngle(geom, ax, ay, az, angle);}
 	//vec3 GetBodyPosition() {return Gfx::GetBodyPosition(body);}
 	//void LoadModel(CpuDataState& state);
 	//void LoadModel(OglDataState& state);

@@ -12,7 +12,7 @@ library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";
 
 library(NEVER) libglew32mx.a;
 
-library(WIN32 & MSC) glew32s;
+library(WIN32 & MSC) glew32;
 
 library(WIN32) opengl32;
 

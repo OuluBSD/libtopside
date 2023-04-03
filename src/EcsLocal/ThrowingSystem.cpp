@@ -58,7 +58,7 @@ void ThrowingInteractionSystemBase::Update(double dt) {
 				ball_transform->data.orientation = trans->data.orientation;
 				
 				if (ball_transform->size[0] < 1.0f) {
-					ball_transform->size += vec3( 2.0 * dt );
+					ball_transform->size += vec3( 2.0f * (float)dt );
 				}
 			}
 		}

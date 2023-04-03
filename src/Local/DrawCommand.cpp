@@ -1,7 +1,7 @@
-#include <Local/Local.h>
+#include "Local.h"
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 DrawCommand& DrawCommandCache::CreateCommand() {
@@ -147,4 +147,4 @@ String DrawCommand::GetQueueString() const {
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END

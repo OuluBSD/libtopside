@@ -2,10 +2,10 @@
 #define _GuboCore_HandleTypes_h_
 
 #define SURFACE2D_EXCPLICIT_INITIALIZE_CLASS(x) \
-	template struct x <Ctx2D>;
+	template class x <Ctx2D>;
 
 #define CUBOID3D_EXCPLICIT_INITIALIZE_CLASS(x) \
-	template struct x <Ctx3D>;
+	template class x <Ctx3D>;
 
 #define HANDLETYPE_EXCPLICIT_INITIALIZE_CLASS(x) \
 	 \
@@ -31,9 +31,13 @@ struct Ctx2D {
 	using CmdDraw = ProgDraw;
 	using CmdPainter = ProgPainter;
 	using Button = Button2;
+	using Unit = int;
 	
 	inline static Rect GetDefaultScopeDimensions() {return RectC(0,0,1280,720);}
 	inline static Rect GetDefaultHandleDimensions(int o=0) {return RectC(o,o,320,240);}
+	
+	inline static Box BoxC(int x, int y, int w, int h) { return Rect(x, y, x + w, y + h); }
+	inline static Box BoxC(const Point& tl, const Size& sz) { return Rect(tl.x, tl.y, tl.x + sz.cx, tl.y + sz.cy); }
 	
 };
 
@@ -53,9 +57,13 @@ struct Ctx3D {
 	using CmdDraw = ProgDraw3;
 	using CmdPainter = ProgPainter3;
 	using Button = Button3;
+	using Unit = float;
 	
-	inline static Cubf GetDefaultScopeDimensions() {return CubfC(0,0,0,1024,1024,1024);}
-	inline static Cubf GetDefaultHandleDimensions(int o=0) {return CubfC(o,o,o,256,256,256);}
+	inline static Cubf GetDefaultScopeDimensions() {return CubfC(0,0,0,1024.f,1024.f,1024.f);}
+	inline static Cubf GetDefaultHandleDimensions(float o=0) {return CubfC(o,o,o,256.f,256.f,256.f);}
+	
+	inline static Box BoxC(float x, float y, float z, float w, float h, float d) { return Box(x, y, z, x + w, y + h, z + d); }
+	inline static Box BoxC(const Point3f& tl, const Volf& sz) { return Box(tl.x, tl.y, tl.z, tl.x + sz.cx, tl.y + sz.cy, tl.z + sz.cz); }
 	
 };
 

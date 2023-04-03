@@ -513,7 +513,7 @@ String IR::ToString() const {
 	if (file)
 		s += " (" + GetFileName(String(file)) + ":" + IntStr(line) + ")";
 	if (codepos.ptr) {
-		int col = codepos.ptr - codepos.lineptr;
+		int col = (int)(codepos.ptr - codepos.lineptr);
 		int line = codepos.line;
 		s += " (" + IntStr(line) + ":" + IntStr(col) + ")";
 	}
@@ -1296,7 +1296,7 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 			str = ir.arg[0].GetString();
 			if (!val->lval && (i = global.Find(str)) >= 0) {
 				regs[1] = i;
-				regs[0] = global[i].IsLambda();
+				regs[0] = global[(int)i].IsLambda();
 				return;
 			}
 		}
@@ -1309,7 +1309,7 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 		if (i < 0 || i >= global.GetCount())
 			OnError("invalid global index");
 		else
-			r_stack.Top() = global[i];
+			r_stack.Top() = global[(int)i];
 		return;
 	
 	case IR_RSELF_LVAL_CHECK:

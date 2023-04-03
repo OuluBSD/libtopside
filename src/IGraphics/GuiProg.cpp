@@ -134,16 +134,16 @@ void GuiProg::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	float ratio = (float)sz.cy / (float)sz.cx;
 	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
 	//float aspect = (float)sz.cx / (float)sz.cy;
-	float f = ts.Seconds() / phase_time;
-	float angle = f * (2.0 * M_PI);
+	float f = (float)(ts.Seconds() / phase_time);
+	float angle = f * (2.0f * M_PIf);
 	
 	if (!state.user_view) {
 		float rad = 1.5;
 		float x = cos(angle) * rad;
-		float z = sin(angle) * rad * SCALAR_FWD_Z;
+		float z = sin(angle) * rad * SCALAR_FWD_Zf;
 		//float eye_x = cos(angle);
 		//float eye_y = sin(angle);
-		mat4 proj = Perspective(DEG2RAD(90), 1.0, 0.1, 100.0);
+		mat4 proj = Perspective(DEG2RADf(90), 1.0f, 0.1f, 100.0f);
 		
 		vec3 eye {x, 0, z};
 		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
@@ -158,7 +158,7 @@ void GuiProg::DrawObj(GfxStateDraw& fb, bool use_texture) {
 		state.view = base * lookat;
 		
 		if (1) {
-			float eye_dist = 0.08;
+			float eye_dist = 0.08f;
 			state.is_stereo = true;
 			mat4 eye_port = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 			mat4 base = eye_port * proj;
@@ -183,7 +183,7 @@ void GuiProg::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	#if 0
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	#else
-	state.light_dir = AxesDir(M_PI/2, M_PI/4);
+	state.light_dir = AxesDir(M_PIf/2, M_PIf/4);
 	#endif
 	#endif
 	

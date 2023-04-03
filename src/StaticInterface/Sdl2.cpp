@@ -1,7 +1,7 @@
 #include "StaticInterface.h"
 
 #ifdef flagSDL2
-#ifdef flagMSC
+#if 0 //def flagMSC
 	#include <SDL_image.h>
 	#include <SDL_rwops.h>
 	#include <SDL_ttf.h>

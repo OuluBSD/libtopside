@@ -1,5 +1,7 @@
 description "\377B128,128,0";
 
+options(BUILDER_OPTION) NOWARNINGS;
+
 uses
 	Local,
 	Geometry,

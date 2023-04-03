@@ -5,13 +5,15 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Backend>
-struct VideoCodecFormatT {
+class VideoCodecFormatT {
+	
+public:
 	uint32			pix_fmt = 0;
 	
 };
 
 template <class Backend>
-struct VideoSourceFormatResolutionT {
+class VideoSourceFormatResolutionT {
 	VideoFormat		fmt;
 	
 public:
@@ -23,7 +25,7 @@ public:
 };
 
 template <class Backend>
-struct VideoSourceFormatT {
+class VideoSourceFormatT {
 	using VideoCodecFormat = VideoCodecFormatT<Backend>;
 	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<Backend>;
 	

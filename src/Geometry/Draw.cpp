@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 namespace Colors {
 
-#define FLTCLR(r, g, b) r / 255.0, g / 255.0, b / 255.0, 1.0
+#define FLTCLR(r, g, b) r / 255.0f, g / 255.0f, b / 255.0f, 1.0f
 
 vec4 Red			{FLTCLR(128,	  0,	  0)};
 vec4 Chocolate		{FLTCLR(128,	 90,	 70)};
@@ -26,7 +26,7 @@ vec4 DarkSlateBlue	{FLTCLR(72,		61,		139)};
 };
 
 void DrawGeometry::DrawLine(const vec2& a, const vec2& b, int line_width, Color c) {
-	DrawProxy::DrawLine(a[0], a[1], b[0], b[1], line_width, c);
+	DrawProxy::DrawLine((int)a[0], (int)a[1], (int)b[0], (int)b[1], line_width, c);
 }
 
 void DrawGeometry::DrawLine(int x0, int y0, int x1, int y1, int line_width, Color c) {

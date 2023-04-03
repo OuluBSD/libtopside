@@ -94,9 +94,9 @@ void SoftRend::RenderScreenRect0(bool elements) {
 		SoftShaderBase& fs = tmp_sources[0].frag->Get();
 		for (int y = 0; y < h; y++) {
 			byte* it = data + (h - 1 - y) * pitch;
-			coord[1] = y;
+			coord[1] = (byte)y;
 			for (int x = 0; x < w; x++) {
-				coord[0] = x;
+				coord[0] = (float)x;
 				fs.Process(frag_args);
 				for(int i = 0; i < stride; i++) {
 					*it = max(0, min(255, (int)(out[i] * 255)));
@@ -122,9 +122,9 @@ void SoftRend::RenderScreenRect0(bool elements) {
 		// NOTE: non-accelerated y is top-left (not bottom-left). Don't blame me... not my decision.
 		for (int y = 0; y < h; y++) {
 			byte* it = data + (h - 1 - y) * pitch;
-			coord[1] = y;
+			coord[1] = (float)y;
 			for (int x = 0; x < w; x++) {
-				coord[0] = x;
+				coord[0] = (float)x;
 				
 				if (*(uint32*)zbuffer == *(uint32*)&reset_f) {
 					for(int i = 0; i < stride; i++) {
@@ -145,7 +145,7 @@ void SoftRend::RenderScreenRect0(bool elements) {
 					frag_args.generic = &g;
 					frag_args.fa = &prog.GetFragmentArgs(src_id);
 					if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
-						g.iResolution = vec3(w, h, 0);
+						g.iResolution = vec3((float)w, (float)h, 0);
 					
 					bc_screen = zinfo->bc_screen;
 					use_quad = zinfo->use_quad;
@@ -272,8 +272,8 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 	const Vertex* iter_in_end = iter_in + vtx_count;
 	Vertex*       iter_out    = (Vertex*)processed_vertices.vertices.Begin();
 	
-	int width = vtx_args.generic->iResolution[0];
-	int height = vtx_args.generic->iResolution[1];
+	int width = (int)vtx_args.generic->iResolution[0];
+	int height = (int)vtx_args.generic->iResolution[1];
 	ASSERT(width && height); // crash here: vertex shdaer did not call this in ctor: UseUniform(GVar::VAR_COMPAT_RESOLUTION);
 	while (iter_in != iter_in_end) {
 		vtx_args.v = *iter_in++;
@@ -285,8 +285,8 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 		//LOG("\t\t\t\t\t" << vtx_args.v.position.ToString());
 		
 		auto& pos = vtx_args.v.position;
-		pos[0] = (int)((pos[0] + 1.0) * width  / 2.0);
-		pos[1] = (int)((pos[1] + 1.0) * height / 2.0);
+		pos[0] = (float)floor((pos[0] + 1.0) * width  / 2.0);
+		pos[1] = (float)floor((pos[1] + 1.0) * height / 2.0);
 		
 		*iter_out++ = vtx_args.v;
 	}
@@ -296,13 +296,15 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 
 
 void SoftRend::DepthTestTriangle(DepthImage::Info& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
-	vec2 bboxmin(w - 1,  h - 1);
+	float wd = (float)(w - 1);
+	float hd = (float)(h - 1);
+	vec2 bboxmin(wd, hd);
 	vec2 bboxmax(0, 0);
-	vec2 clamp(w - 1, h - 1);
+	vec2 clamp(wd, hd);
 	const vec3 pts[3] = {a.position.Splice(), b.position.Splice(), c.position.Splice()};
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 2; j++) {
-			bboxmin[j] = std::max<float>(0.0,      std::min<float>(bboxmin[j], pts[i][j]));
+			bboxmin[j] = std::max<float>(0.0f,     std::min<float>(bboxmin[j], pts[i][j]));
 			bboxmax[j] = std::min<float>(clamp[j], std::max<float>(bboxmax[j], pts[i][j]));
 		}
 	}
@@ -348,9 +350,11 @@ void SoftRend::DepthTestTriangle(DepthImage::Info& info, const Vertex& a, const 
 
 
 void SoftRend::DepthTestQuad(DepthImage::Info& info, const Vertex& a, const Vertex& b, const Vertex& c, const Vertex& d, uint16 src_id) {
-	vec2 bboxmin(w - 1,  h - 1);
+	float wd = (float)(w - 1);
+	float hd = (float)(h - 1);
+	vec2 bboxmin(wd,  hd);
 	vec2 bboxmax(0, 0);
-	vec2 clamp(w - 1, h - 1);
+	vec2 clamp(wd, hd);
 	const vec4 pts[4] = {a.position, b.position, c.position, d.position};
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 2; j++) {

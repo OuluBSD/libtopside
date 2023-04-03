@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-class BufferBaseT :
+struct BufferBaseT :
 	public Atom
 {
 	
@@ -30,7 +30,7 @@ public:
 
 
 template <class Gfx>
-class ShaderBaseT :
+struct ShaderBaseT :
 	public BufferBaseT<Gfx>
 {
 	
@@ -56,7 +56,7 @@ public:
 
 
 template <class Gfx>
-class TextureBaseT :
+struct TextureBaseT :
 	public BufferBaseT<Gfx>
 {
 	using Filter = GVar::Filter;
@@ -88,7 +88,7 @@ public:
 
 
 template <class Gfx>
-class FboReaderBaseT :
+struct FboReaderBaseT :
 	public BufferBaseT<Gfx>
 {
 	using Buffer = BufferT<Gfx>;
@@ -118,7 +118,7 @@ public:
 
 
 template <class Gfx>
-class KeyboardBaseT :
+struct KeyboardBaseT :
 	public BufferBaseT<Gfx>
 {
 	String			target;
@@ -140,7 +140,7 @@ public:
 
 
 template <class Gfx>
-class AudioBaseT :
+struct AudioBaseT :
 	public BufferBaseT<Gfx>
 {
 	

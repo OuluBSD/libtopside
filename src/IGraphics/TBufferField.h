@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-class GfxBufferFieldT : RTTIBase {
+struct GfxBufferFieldT : RTTIBase {
 	
 public:
 	using Buffer = BufferT<Gfx>;

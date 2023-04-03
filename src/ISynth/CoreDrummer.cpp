@@ -92,7 +92,7 @@ bool SynCoreDrummer::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, c
 	
 	ISourceRef src = a.GetSource();
 	int c = src->GetSourceCount();
-	int freq = 44100;
+	float freq = 44100.f;
 	for(int i = 1; i < c; i++) {
 		Value& v = src->GetSourceValue(i);
 		Format fmt = v.GetFormat();
@@ -101,7 +101,7 @@ bool SynCoreDrummer::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, c
 			afmt.SetType(BinarySample::FLT_LE);
 			afmt.SetSampleRate(dev.sample_rate);
 			v.SetFormat(fmt);
-			freq = afmt.freq;
+			freq = (float)afmt.freq;
 		}
 	}
 	for(int i = 0; i < dev.voices.GetCount(); i++) {
@@ -194,7 +194,7 @@ bool SynCoreDrummer::Instrument_Send(NativeInstrument& dev, AtomBase& a, Realtim
 		}
 		
 		if (abs_max > 1.0f) {
-			float mul = (1.0f / abs_max) * 0.99;
+			float mul = (1.0f / abs_max) * 0.99f;
 			dev.multiplier *= mul;
 			float* f = begin;
 			for(int i = 0; i < sr; i++)

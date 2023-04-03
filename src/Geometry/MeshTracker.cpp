@@ -240,7 +240,7 @@ void MeshTracker::UpdateTrackedTriangles(const MeshTrackerFrame& from, MeshTrack
 			quat full_orient = MatQuat(to.view);
 			vec3 full_axes;
 			QuatAxes(full_orient, full_axes);
-			full_axes = full_axes / M_PI * 180;
+			full_axes = full_axes / M_PIf * 180;
 			vec3 pos_comp = to.view.GetTranslation();
 			LOG("\t" << full_axes[0] << ": " << pos_comp[0] << ", " << pos_comp[2]);
 		}

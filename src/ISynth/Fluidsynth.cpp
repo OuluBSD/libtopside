@@ -351,7 +351,7 @@ bool SynFluidsynth_InitializeSoundfont(SynFluidsynth::NativeInstrument& dev, int
 
 void SynFluidsynth_ProcessThread(SynFluidsynth::NativeInstrument* dev, AtomBase* a) {
 	int buf_size = 2 * dev->sample_rate * sizeof(float);
-	float wait_time = dev->sample_rate / 44100.;
+	float wait_time = (float)dev->sample_rate / 44100.f;
 	
 	while (dev->flag.IsRunning()) {
 		if (dev->packets.GetCount() >= dev->max_cache) {

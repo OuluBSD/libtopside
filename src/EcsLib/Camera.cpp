@@ -144,16 +144,16 @@ void ChaseCam::UpdateCalibration() {
 	
 
 void ChaseCam::SetViewportSize(Size sz) {
-	viewport_sz[0] = sz.cx;
-	viewport_sz[1] = sz.cy;
+	viewport_sz[0] = (float)sz.cx;
+	viewport_sz[1] = (float)sz.cy;
 	UpdateProjection();
 }
 
 float ChaseCam::GetUsedFov() {
 	if (this->trans && this->trans->data.fov > 0)
-		fov = this->trans->data.fov;
+		fov = (float)this->trans->data.fov;
 	else if (vport)
-		fov = vport->fov;
+		fov = (float)vport->fov;
 	
 	float f = fov + (calib.is_enabled ? calib.fov : 0);
 	
@@ -168,7 +168,7 @@ void ChaseCam::CheckUpdateProjection() {
 
 void ChaseCam::UpdateProjection() {
 	float ratio = viewport_sz[1] / viewport_sz[0];
-	float eye_ratio = viewport_sz[1] / (viewport_sz[0] * 0.5);
+	float eye_ratio = viewport_sz[1] / (viewport_sz[0] * 0.5f);
 	port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	port_stereo = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 	
@@ -180,7 +180,7 @@ void ChaseCam::UpdateView() {
 	int width = TS::default_width;
 	int height = TS::default_height;
 	
-	float eye_dist = 0.064;
+	float eye_dist = 0.064f;
 	
 	CheckUpdateProjection();
 	
@@ -240,7 +240,7 @@ void ChaseCam::UpdateView() {
 			vec3 target = position + direction;
 			vec3 up = tm.up;
 			if (direction == up)
-				direction += vec3(0.01, 0.01, 0.01);
+				direction += vec3(0.01f, 0.01f, 0.01f);
 			CalculateCameraView(this->view, this->mvp_stereo, eye_dist, position, target, up, port, port_stereo, projection);
 		}
 		else if (tm.mode == TransformMatrix::MODE_AXES) {
@@ -274,7 +274,7 @@ void ChaseCam::UpdateView() {
 			mat4 r_trans = Translate(vec3(-eye_dist * mul, 0, 0));
 			
 			if (calib.is_enabled) {
-				mat4 scale_mat = Scale(vec3(1.0 + calib.scale));
+				mat4 scale_mat = Scale(vec3(1.0f + calib.scale));
 				this->mvp_stereo[0] = port_stereo * scale_mat * l_trans * projection * rotate * yaw * tran;
 				this->mvp_stereo[1] = port_stereo * scale_mat * r_trans * projection * rotate * yaw * tran;
 			}

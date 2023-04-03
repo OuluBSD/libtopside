@@ -94,7 +94,7 @@ bool SynCoreSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, con
 	afmt.SetSampleRate(dev.sample_rate);
 	for(int i = 0; i < dev.voices.GetCount(); i++) {
 		Audio::Instrument& instrument = dev.voices[i];
-		instrument.SetSampleRate(afmt.freq);
+		instrument.SetSampleRate((float)afmt.freq);
 	}
 	
 	v.SetFormat(fmt);
@@ -161,7 +161,7 @@ bool SynCoreSynth::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeS
 		}
 		
 		if (abs_max > 1.0f) {
-			float mul = (1.0f / abs_max) * 0.99;
+			float mul = (1.0f / abs_max) * 0.99f;
 			dev.multiplier *= mul;
 			float* f = begin;
 			for(int i = 0; i < sr; i++)

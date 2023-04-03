@@ -125,7 +125,7 @@ void MidiFileReaderAtom::CollectTrackEvents(int i) {
 	int& iter = track_i[i];
 	const auto& t = file[i];
 	
-	float dt_limit;
+	double dt_limit;
 	if (use_global_time)
 		dt_limit = GlobalAudioTime::Local().Get();
 	else

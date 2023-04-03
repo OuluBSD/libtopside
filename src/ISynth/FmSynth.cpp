@@ -66,7 +66,7 @@ bool SynFmSynth::Instrument_Initialize(NativeInstrument& dev, AtomBase& a, const
 	AudioFormat& afmt = fmt;
 	afmt.SetType(BinarySample::FLT_LE);
 	afmt.SetSampleRate(dev.sample_rate);
-	dev.instrument.Init(afmt.freq);
+	dev.instrument.Init((float)afmt.freq);
 	
 	v.SetFormat(fmt);
 	

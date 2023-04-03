@@ -62,4 +62,10 @@ bool Ctrl::DoKeyFB(dword key, int cnt) {
 }*/
 
 
+
+void EnterGuiMutex() {}
+bool TryEnterGuiMutex() {return 0;}
+void LeaveGuiMutex() {}
+
+
 NAMESPACE_UPP_END

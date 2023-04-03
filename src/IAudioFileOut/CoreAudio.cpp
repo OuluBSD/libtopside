@@ -83,7 +83,7 @@ bool AFOCoreAudio::Sink_Recv(NativeSink& dev, AtomBase& a, int ch, const Packet&
 			
 			dev.size += data.GetCount();
 			
-			float frame_time = afmt.GetFrameSeconds();
+			float frame_time = (float)afmt.GetFrameSeconds();
 			GlobalAudioTime::Local().Add(frame_time);
 		}
 	}

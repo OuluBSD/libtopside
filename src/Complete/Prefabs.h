@@ -31,7 +31,7 @@
 	#warning TODO
 #else
 
-#define GUI_APP_MAIN \
+/*#define GUI_APP_MAIN \
 void UserGuiMainFn_(); \
 \
 APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializer, TS::DefaultStartup) \
@@ -39,7 +39,7 @@ RENDER_APP_MAIN { \
 	TS::Serial::Machine::WhenUserProgram << Callback(UserGuiMainFn_); \
 	TS::DefaultRunner(0, "Gui App", GUI_EON);} \
 \
-void UserGuiMainFn_()
+void UserGuiMainFn_()*/
 
 #define GUBO_APP_MAIN \
 void UserGuiMainFn_(); \

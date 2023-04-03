@@ -196,7 +196,7 @@ void Draw3::DrawBox(float x, float y, float z, float cx, float cy, float cz, Col
 
 void Draw3::DrawLine(Point3f p1, Point3f p2, float width, Color color)
 {
-	DrawLine(p1.x, p1.y, p2.x, p2.y, width, color);
+	DrawLine(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, width, color);
 }
 
 void Draw3::DrawLine(float x1, float y1, float z1, float x2, float y2, float z2, float width, Color color)
@@ -407,7 +407,7 @@ void DrawProxy3::DrawEllipseOp(const Cubf& r, Color color, float pen, Color penc
 	ptr->DrawEllipseOp(r, color, pen, pencolor);
 }
 
-void DrawProxy3::DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font, Color ink, int n, const int *dx)
+void DrawProxy3::DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font, Color ink, int n, const int *dx)
 {
 	ptr->DrawTextOp(x, y, z, angle, text, font, ink, n, dx);
 }

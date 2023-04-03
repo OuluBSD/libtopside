@@ -224,6 +224,8 @@ void FboAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	last_cfg = &cfg;
 }
 
+template <class Gfx>
+Callback1<FboAtomT<Gfx>*>	FboAtomT<Gfx>::WhenInitialize;
 
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)

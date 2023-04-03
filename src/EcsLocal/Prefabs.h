@@ -34,7 +34,7 @@ struct DummyToolModel : EntityPrefab<Transform, ModelComponent, ToolComponent>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<ModelComponentRef>()->MakeCylinder(vec3(0,0,0), 0.2, 1.0);
+        components.Get<ModelComponentRef>()->MakeCylinder(vec3(0,0,0), 0.2f, 1.0f);
 
         return components;
     }
@@ -59,7 +59,7 @@ struct Bullet : EntityPrefab<Transform, ModelComponent, RigidBody, PhysicsBody>
         auto components = EntityPrefab::Make(e);
 
         components.Get<RigidBodyRef>()->acceleration = e.GetEngine().Get<PhysicsSystem>()->gravity;
-        components.Get<ModelComponentRef>()->MakeBall(vec3(0,0,0), 0.2);
+        components.Get<ModelComponentRef>()->MakeBall(vec3(0,0,0), 0.2f);
         components.Get<ModelComponentRef>()->color = vec4(0, 0, 1, 1);
         components.Get<TransformRef>()->size = vec3(0.025f);
 

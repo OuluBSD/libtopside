@@ -111,7 +111,7 @@ void AudioHeatmapCtrl::Paint(Draw& d) {
 		int k = 0;
 		for (int y = 0; y < sz.cy; y++) {
 			double freq_log10 = (double)(sz.cy - y) / sz.cy * freq_range_log + freq_min_log10;
-			double freq = pow(10, freq_log10);
+			double freq = powf(10, freq_log10);
 			int fft_pos = (freq - freq_min) / freq_range * fft_pos_range + fft_pos_min;
 			
 			int w = sz.cx / px_width;
@@ -141,7 +141,7 @@ void AudioHeatmapCtrl::Paint(Draw& d) {
 			if (0) {
 				mag = (mag - min_mag) / mag_range;
 				mag = mag * mag_range_log10 + min_mag_log10;
-				mag = pow(10, mag);
+				mag = powf(10, mag);
 				mag = (mag - min_mag) / mag_range;
 			} else {
 				mag = log10(mag);

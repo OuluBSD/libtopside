@@ -121,21 +121,21 @@ template <class Gfx>
 void SwGfxT<Gfx>::Uniform1i(int idx, int i) {
 	auto& prog = Local().prog;
 	ASSERT(prog);
-	if (prog) prog->SetVar(idx, i);
+	if (prog) prog->SetVar(idx, (float)i);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform2i(int idx, int i0, int i1) {
 	auto& prog = Local().prog;
 	ASSERT(prog);
-	if (prog) prog->SetVar(idx, i0, i1);
+	if (prog) prog->SetVar(idx, (float)i0, (float)i1);
 }
 
 template <class Gfx>
 void SwGfxT<Gfx>::Uniform3i(int idx, int i0, int i1, int i2) {
 	auto& prog = Local().prog;
 	ASSERT(prog);
-	if (prog) prog->SetVar(idx, i0, i1, i2);
+	if (prog) prog->SetVar(idx, (float)i0, (float)i1, (float)i2);
 }
 
 template <class Gfx>

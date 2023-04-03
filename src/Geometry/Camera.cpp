@@ -36,8 +36,8 @@ void Camera::SetResolution(int width, int height) {
 }
 
 void Camera::SetResolution(Size sz) {
-	width = sz.cx;
-	height = sz.cy;
+	width = (float)sz.cx;
+	height = (float)sz.cy;
 	
 	UpdateMatrices();
 }
@@ -46,7 +46,7 @@ void Camera::UpdateMatrices() {
 	this->aspect = (float)width / (float)height;
 
 	if (this->proj_mode == 0) {
-		this->proj = Perspective(DEG2RAD(this->fov * 0.5), this->aspect, this->near, this->far);
+		this->proj = Perspective(DEG2RADf(this->fov * 0.5f), this->aspect, this->near, this->far);
 	}
 	else if (this->proj_mode == 1) {
 
@@ -73,7 +73,7 @@ void Camera::SetPerspective(float fov_angle, float aspect, float zNear, float zF
 	this->near = zNear;
 	this->far = zFar;
 	
-	this->proj = Perspective(DEG2RAD(fov_angle * 0.5), aspect, zNear, zFar);
+	this->proj = Perspective(DEG2RADf(fov_angle * 0.5f), aspect, zNear, zFar);
 	this->proj_mode = 0;
 }
 
@@ -339,7 +339,7 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 	
 	mat4 world = GetViewMatrix();
 	
-	LensPoly::SetSize(Size(width, height));
+	LensPoly::SetSize(Size((int)width, (int)height));
 	
 	
 	while (iter) {
@@ -355,7 +355,7 @@ void VirtualStereoCamera::Render(const Octree& o, DescriptorImage& l_img, Descri
 				continue;
 			
 			// Random additional descriptor values
-			float angle = Randomf() * 2*M_PI;
+			float angle = (float)Randomf() * 2*M_PIf;
 			union {
 				byte desc[32];
 				uint32 u32[8];
@@ -439,8 +439,8 @@ vec2 LensPoly::Project(int lens_i, axes2 axes) {
 	px.data[0] += img_sz.cx / 2;
 	px.data[1] += img_sz.cy / 2;
 	if (0) {
-		px.data[0] = floor(px.data[0] + 0.5);
-		px.data[1] = floor(px.data[1] + 0.5);
+		px.data[0] = floor(px.data[0] + 0.5f);
+		px.data[1] = floor(px.data[1] + 0.5f);
 	}
 	
 	#if 0
@@ -450,7 +450,7 @@ vec2 LensPoly::Project(int lens_i, axes2 axes) {
 	}
 	ASSERT(IsClose(a, axes, 1));
 	#else
-	ASSERT(IsClose(Unproject(lens_i, px), axes, 0.01));
+	ASSERT(IsClose(Unproject(lens_i, px), axes, 0.01f));
 	#endif
 	
 	return px;
@@ -459,7 +459,7 @@ vec2 LensPoly::Project(int lens_i, axes2 axes) {
 axes2 LensPoly::Unproject(int lens_i, const vec2& pixel) {
 	ASSERT(img_sz.cx && img_sz.cy);
 	
-	vec2 ct_rel = pixel - vec2(img_sz.cx / 2, img_sz.cy / 2);
+	vec2 ct_rel = pixel - vec2(img_sz.cx / 2.f, img_sz.cy / 2.f);
 	float len = ct_rel.GetLength();
 	int leni0 = (int)(len * PIX_MUL);
 	int leni1 = leni0 + 1 < pixel_to_angle.GetCount() ? leni0 + 1 : leni0;
@@ -509,7 +509,7 @@ void LensPoly::MakePixelToAngle() {
 		ASSERT(angle_to_pixel_poly.data[i] != 0);
 	}
 	
-	float step = 0.0001 / (double)PIX_MUL;
+	float step = 0.0001f / (float)PIX_MUL;
 	for (float angle = 0; angle <= M_PI; angle += step) {
 		float pix_dist =
 			angle_to_pixel_poly.data[0] * angle +

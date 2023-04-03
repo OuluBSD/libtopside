@@ -90,7 +90,7 @@ public:
 	virtual void DrawArcOp(const Cubf& rc, Point3f start, Point3f end, float width, Color color) = 0;
 
 	virtual void DrawEllipseOp(const Cubf& r, Color color, float pen, Color pencolor) = 0;
-	virtual void DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font,
+	virtual void DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font,
 		                    Color ink, int n, const int *dx) = 0;
 	virtual void DrawDrawingOp(const Cubf& target, const Drawing& w);
 	virtual void DrawPaintingOp(const Cubf& target, const Painting& w);
@@ -266,7 +266,7 @@ struct DrawProxy3 : Draw3 {
 	                           uint64 pattern, Color doxor) override;
 	void DrawArcOp(const Cubf& rc, Point3f start, Point3f end, float width, Color color) override;
 	void DrawEllipseOp(const Cubf& r, Color color, float pen, Color pencolor) override;
-	void DrawTextOp(float x, float y, float z, int angle, const wchar *text, Font font,
+	void DrawTextOp(float x, float y, float z, float angle, const wchar *text, Font font,
 		            Color ink, int n, const int *dx) override;
 	void DrawDrawingOp(const Cubf& target, const Drawing& w) override;
 	void DrawPaintingOp(const Cubf& target, const Painting& w) override;

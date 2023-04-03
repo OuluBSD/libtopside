@@ -58,8 +58,8 @@ bool ModelComponent::Arg(String key, Object value) {
 			mb.AddSphere(pos, 2, 3, 3);
 		}
 		else if (name == "cylinder") {
-			float rad = 1 < parts.GetCount() ? StrDbl(parts[1]) : 1.0;
-			float len = 2 < parts.GetCount() ? StrDbl(parts[2]) : 0.2;
+			float rad = 1 < parts.GetCount() ? (float)StrDbl(parts[1]) : 1.0f;
+			float len = 2 < parts.GetCount() ? (float)StrDbl(parts[2]) : 0.2f;
 			vec3 pos(0,0,0);
 			mb.AddCylinder(pos, rad, len);
 		}
@@ -102,15 +102,15 @@ bool ModelComponent::Arg(String key, Object value) {
 		model = loader.GetModel();
 		return true;
 	}
-	else if (key == "x") {offset[0] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "y") {offset[1] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "z") {offset[2] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "cx") {scale[0] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "cy") {scale[1] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "cz") {scale[2] = value.ToDouble(); RefreshExtModel();}
-	else if (key == "pitch") {pitch = DEG2RAD(value.ToDouble()); RefreshExtModel();}
-	else if (key == "yaw") {yaw = DEG2RAD(value.ToDouble()); RefreshExtModel();}
-	else if (key == "roll") {roll = DEG2RAD(value.ToDouble()); RefreshExtModel();}
+	else if (key == "x") {offset[0] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "y") {offset[1] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "z") {offset[2] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "cx") {scale[0] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "cy") {scale[1] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "cz") {scale[2] = value.ToFloat(); RefreshExtModel();}
+	else if (key == "pitch") {pitch = DEG2RADf(value.ToFloat()); RefreshExtModel();}
+	else if (key == "yaw") {yaw = DEG2RADf(value.ToFloat()); RefreshExtModel();}
+	else if (key == "roll") {roll = DEG2RADf(value.ToFloat()); RefreshExtModel();}
 	else if (key == "always.enabled") {always_enabled = value.ToString() == "true";}
 	else {
 		LOG("ModelComponent::Arg: error: invalid key '" << key << "'");
@@ -188,7 +188,7 @@ void ModelComponent::SetModelMatrix(const mat4& m) {
 }
 
 void ModelComponent::Clear() {
-	if (gfx_state && gfx_id >= 0) {
+	if (gfx_state && gfx_id > 0) {
 		gfx_state->GetModel(gfx_id).Clear();
 	}
 	model.Clear();
@@ -243,7 +243,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		bool b = skybox.SetProgram("sky");
 		ASSERT(b);
 		
-		if (state.env_material_model < 0)
+		if (state.env_material_model == 0)
 			state.env_material_model = skybox.id;
 		
 		this->model = loader.GetModel();

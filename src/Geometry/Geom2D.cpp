@@ -12,7 +12,7 @@ void Circle::SetContainerFromPoints(const Vector<vec2>& pts) {
 	}
 	for(const vec2& v : pts)
 		ct += v;
-	ct /= (double)pts.GetCount();
+	ct /= (float)pts.GetCount();
 	
 	rad = (ct - pts[0]).GetLengthSquared();
 	for(const vec2* it = pts.Begin() + 1, *end = pts.End(); it != end; it++)
@@ -334,7 +334,7 @@ void Shape2DWrapper::ShapeLine::Rotate(float rad) {
 void Shape2DWrapper::ShapeLine::GetFaces(Vector<tri3>& faces) {
 	vec2 v = l.GetVector();
 	vec2 n = v.GetCrossProduct(v * -1);
-	vec2 unit = n.GetNormalized() * 0.01;
+	vec2 unit = n.GetNormalized() * 0.01f;
 	vec3 bl = (l.a + unit).Extend();
 	vec3 br = (l.a - unit).Extend();
 	vec3 tl = (l.b + unit).Extend();
@@ -350,7 +350,7 @@ void Shape2DWrapper::ShapeLine::GetFaces(Vector<tri3>& faces) {
 
 void Shape2DWrapper::ShapeCircle::GetFaces(Vector<line2>& faces) {
 	int steps = 36;
-	float angle_step = M_2PI / (float)(steps - 1);
+	float angle_step = M_2PIf / (float)(steps - 1);
 	vec2 a, b;
 	float angle = 0;
 	a[0] = c.ct[0] + c.rad;
@@ -366,7 +366,7 @@ void Shape2DWrapper::ShapeCircle::GetFaces(Vector<line2>& faces) {
 
 void Shape2DWrapper::ShapeCircle::GetFaces(Vector<tri3>& faces) {
 	int steps = 36;
-	float angle_step = M_2PI / (float)(steps - 1);
+	float angle_step = M_2PIf / (float)(steps - 1);
 	vec3 a, b, ct;
 	float angle = 0;
 	a = ct = c.ct.Extend();
@@ -615,8 +615,8 @@ vec2 Intersect(const vec2& a, const vec2& b, const vec2& c, const vec2& d) {
 		return (a + b + c + d) / 4;
 	}
 	else {
-		double x = (b2*c1 - b1*c2)/determinant;
-		double y = (a1*c2 - a2*c1)/determinant;
+		float x = (float)((b2*c1 - b1*c2)/determinant);
+		float y = (float)((a1*c2 - a2*c1)/determinant);
 		return vec2(x, y);
 	}
 }

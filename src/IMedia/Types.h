@@ -35,7 +35,7 @@ NAMESPACE_PARALLEL_BEGIN
 	#define MEDIA_CLS(x, g) struct g##x;
 		MEDIA_RENDSYS_LIST
 	#undef MEDIA_CLS
-	#define MEDIA_CLS(x, g) template <class Backend> struct x##T;
+	#define MEDIA_CLS(x, g) template <class Backend> class x##T;
 		MEDIA_RENDSYS_LIST
 	#undef MEDIA_CLS
 #undef MEDIA_RSYS

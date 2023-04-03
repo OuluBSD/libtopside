@@ -32,7 +32,7 @@ public:
 	RTTI_DECL2(Base, Space, EcsSystem)
 	using Parent = Engine;
 	
-	static vec3 EarthGravity() {return vec3(0,-9.81,0);}
+	static vec3 EarthGravity() {return vec3(0,-9.81f,0);}
 	
 	ECS_SYS_CTOR_(SystemT) {
 		Fys::InitializeLibrary();
@@ -51,7 +51,7 @@ public:
 		Fys::AttachThreadPool(threading, pool);
 		Fys::AttachThreading(world, threading);
 	}
-	 SYS_DEF_VISIT
+	ECS_SYS_DEF_VISIT
 	
 	~SystemT() {
 		Fys::DetachThreading(threading);
@@ -92,7 +92,7 @@ public:
 	NativeJointGroup GetJointGroupId() const {ASSERT(contactgroup); return contactgroup;}
 	
 	void Collide() {ASSERT(this->space); Fys::Collide(this->space, this, &StaticNearCallback);}
-	void StepWorld(double seconds) {Fys::Step(this->world, seconds);}
+	void StepWorld(double seconds) {Fys::Step(this->world, (float)seconds);}
 	void RemoveContactJoints() {Fys::DetachJointGroup(contactgroup);}
 	
 	virtual void NearCallback(void *, NativeGeom o1, NativeGeom o2) {TODO}

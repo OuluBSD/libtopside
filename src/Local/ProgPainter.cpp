@@ -958,12 +958,12 @@ bool TriangulatePointf::Process(const Vector<Pointf> &contour, Vector<float> &re
 			const auto& aa = contour[a];
 			const auto& bb = contour[b];
 			const auto& cc = contour[c];
-			result.Add(aa.x);
-			result.Add(aa.y);
-			result.Add(bb.x);
-			result.Add(bb.y);
-			result.Add(cc.x);
-			result.Add(cc.y);
+			result.Add((float)aa.x);
+			result.Add((float)aa.y);
+			result.Add((float)bb.x);
+			result.Add((float)bb.y);
+			result.Add((float)cc.x);
+			result.Add((float)cc.y);
 			#endif
 			
 			m++;

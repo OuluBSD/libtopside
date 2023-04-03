@@ -31,7 +31,7 @@ template <class T> T Inverse(const T& o) {return o.GetInverse();}
 template <class T> T Transpose(const T& o) {return o.GetTransposed();}
 template<class T, class K> T Scale(const T& a, const K& b) {return a.Scale(b);}
 template<class T, class K> T Translate(const T& a, const K& b) {return a.Translate(b);}
-template<class T> float Dot(const T& a, const T& b) {return a.GetDotProduct(b);}
+template<class T> float Dot(const T& a, const T& b) {return (float)a.GetDotProduct(b);}
 vec3 Combine(const vec3& a, const vec3& b, float ascl, float bscl);
 
 void ChangeZConvention(mat4& m);
@@ -192,9 +192,9 @@ Vec<T,3> GetBarycentricTriangle(const Vec<T,3>* pts, const Vec<K,2>& P) {
 	if (std::abs(u[2]) < 1)
 		return vec3(-1, 1, 1);
 	return vec3(
-		1.0 - (u[0] + u[1]) / u[2],
-		              u[1]  / u[2],
-		              u[0]  / u[2]);
+		1.0f - (u[0] + u[1]) / u[2],
+		               u[1]  / u[2],
+		               u[0]  / u[2]);
 }
 
 template<class T, class K>

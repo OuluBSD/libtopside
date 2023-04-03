@@ -3,7 +3,8 @@ description "Essential classes for Topside namespace.\377B128,0,0";
 uses
 	Core,
 	Draw,
-	SharedCore;
+	SharedCore,
+	StaticInterface;
 
 file
 	Local.h,
@@ -77,6 +78,8 @@ file
 	Url.h,
 	Url.cpp,
 	Debugging.h,
+	DrawCommand.h,
+	DrawCommand.cpp,
 	Draw2D.h,
 	Draw3D.h,
 	Draw3D.cpp,

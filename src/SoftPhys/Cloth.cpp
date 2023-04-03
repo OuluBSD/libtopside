@@ -7,7 +7,7 @@ NAMESPACE_SOFTPHYS_BEGIN
 void Cloth::Initialize(int grid_sz, float distance, const vec3& position) {
 	float k = -1.0f;
 	float b = 0.0f;
-	clothSize = grid_sz;
+	clothSize = (float)grid_sz;
 
 	verts.Clear();
 	structural.Clear();

@@ -9,7 +9,7 @@ NAMESPACE_SOFTINSTRU_BEGIN
 void HydraPresetHeader::Read(Stream& stream) {
 	char cname[20];
 	TSFR(cname) TSFR(preset) TSFR(bank) TSFR(preset_bag_idx) TSFR(library) TSFR(genre) TSFR(morphology)
-	name.Set(cname, strnlen(cname, 20));
+	name.Set(cname, (int)strnlen(cname, 20));
 }
 
 void HydraPresetBag::Read(Stream& stream) {
@@ -28,7 +28,7 @@ void HydraPresetGen::Read(Stream& stream) {
 void HydraInstrument::Read(Stream& stream) {
 	char cname[20];
 	TSFR(cname) TSFR(bag_idx)
-	name.Set(cname, strnlen(cname, 20));
+	name.Set(cname, (int)strnlen(cname, 20));
 }
 
 void HydraInstrumentBag::Read(Stream& stream) {
@@ -46,7 +46,7 @@ void HydraInstrumentGen::Read(Stream& stream) {
 void HydraSampleHeader::Read(Stream& stream) {
 	char cname[20];
 	TSFR(cname) TSFR(start) TSFR(end) TSFR(start_loop) TSFR(end_loop) TSFR(sample_rate) TSFR(orig_pitch) TSFR(pitch_correction) TSFR(sample_link) TSFR(sample_type)
-	name.Set(cname, strnlen(cname, 20));
+	name.Set(cname, (int)strnlen(cname, 20));
 }
 
 #undef TSFR

@@ -112,7 +112,7 @@ void ScopeT<Dim>::AddInterface(TopContainer& ts) {
 
 	// Default initial position
 	int i = handles.GetCount();
-	int offset = i * 30;
+	Unit offset = (Unit)(i * 30);
 	h.SetFrameBox(Dim::GetDefaultHandleDimensions(offset));
 
 	if(maximize_all)
@@ -208,7 +208,7 @@ void ScopeT<Dim>::MoveHandle(Pt pt, int handle_id)
 	Sz sz(h.GetFrameSize());
 	Pt tl = FirstCorner(h.GetFrameBox());
 	tl += pt;
-	h.SetFrameBox(BoxC(tl, sz));
+	h.SetFrameBox(Dim::BoxC(tl, sz));
 }
 
 template <class Dim>
@@ -244,7 +244,7 @@ void ScopeT<Dim>::FocusHandlePos(int handle_pos)
 	else {
 		Sz sz(this->GetFrameSize());
 		Handle& h = handles[handle_pos];
-		h.SetFrameBox(BoxC(Pt(), sz));
+		h.SetFrameBox(Dim::BoxC(Pt(), sz));
 	}
 	h.GetTopContainer()->FocusEvent();
 	this->RemoveSub(&h);
@@ -308,7 +308,7 @@ void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
 			h.StoreRect();
 			h.SetMaximized(true);
 		}
-		h.SetFrameBox(BoxC(Pt(), sz));
+		h.SetFrameBox(Dim::BoxC(Pt(), sz));
 		maximize_all = true;
 	}
 	else {
@@ -319,7 +319,7 @@ void ScopeT<Dim>::SetHandleMaximized(Handle& h, bool b)
 
 		Sz h_size = h.GetFrameSize();
 		if(h_size.cx > sz.cx || h_size.cy > sz.cy) {
-			h.SetFrameBox(BoxC(Pt(10), sz - Sz(20)));
+			h.SetFrameBox(Dim::BoxC(Pt(10), sz - Sz(20)));
 		}
 	}
 	this->SetPendingLayout();
@@ -468,7 +468,7 @@ void ScopeT<Dim>::Layout()
 			return;
 		Sz sz(this->GetFrameSize());
 		Handle& h = handles[active_pos];
-		h.SetFrameBox(BoxC(Pt(Null), sz));
+		h.SetFrameBox(Dim::BoxC(Pt(Null), sz));
 	}
 }
 
@@ -570,7 +570,7 @@ void ScopeT<Dim>::OrderTileHandles()
 
 	int pos = 0;
 	for(int i = 0; i < cols; i++) {
-		int x = i * x_step;
+		int x = (int)(i * x_step);
 		int rows_i;
 		double yi_step;
 		if(i < cols - 1) {
@@ -582,9 +582,15 @@ void ScopeT<Dim>::OrderTileHandles()
 			yi_step = ymod_step;
 		}
 		for(int j = 0; j < rows_i; j++) {
-			int y = j * yi_step;
+			int y = (int)(j * yi_step);
 			Handle& h = handles[pos];
-			h.SetFrameBox(BoxC<Box>(x, y, x_step, yi_step));
+			Pt pt;
+			pt.x = (Unit)x;
+			pt.y = (Unit)y;
+			Sz sz;
+			sz.cx = (Unit)x_step;
+			sz.cy = (Unit)yi_step;
+			h.SetFrameBox(Dim::BoxC(pt, sz));
 			h.SetMaximized(false);
 			pos++;
 		}
@@ -607,7 +613,13 @@ void ScopeT<Dim>::OrderTileHandlesVert()
 
 	for(int i = 0; i < handles.GetCount(); i++) {
 		Handle& h = handles[i];
-		h.SetFrameBox(BoxC<Box>(0, i * y_step, sz.cx, y_step));
+		Pt pt;
+		pt.x = 0;
+		pt.y = (Unit)(i * y_step);
+		Sz sz;
+		sz.cx = (Unit)sz.cx;
+		sz.cy = (Unit)y_step;
+		h.SetFrameBox(Dim::BoxC(pt, sz));
 		h.SetMaximized(false);
 	}
 }
@@ -753,22 +765,22 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 	ASSERT(ops.GetCount() == 1);
 	
 	
-	float phase_time = 3.0;
-	float time = GetParentUnsafe()->GetTime();
+	float phase_time = 3.0f;
+	float time = (float)GetParentUnsafe()->GetTime();
 	Size sz(1280,720);
 	float ratio = (float)sz.cy / (float)sz.cx;
-	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5);
+	float eye_ratio = (float)sz.cy / (float)(sz.cx * 0.5f);
 	//float aspect = (float)sz.cx / (float)sz.cy;
 	float f = time / phase_time;
-	float angle = f * (2.0 * M_PI);
+	float angle = f * (2.0f * M_PIf);
 	
 	if (!state.user_view) {
-		float rad = 1.5;
+		float rad = 1.5f;
 		float x = cos(angle) * rad;
-		float z = sin(angle) * rad * SCALAR_FWD_Z;
+		float z = sin(angle) * rad * SCALAR_FWD_Zf;
 		//float eye_x = cos(angle);
 		//float eye_y = sin(angle);
-		mat4 proj = Perspective(DEG2RAD(90), 1.0, 0.1, 100.0);
+		mat4 proj = Perspective(DEG2RADf(90), 1.0f, 0.1f, 100.0f);
 		
 		vec3 eye {x, 0, z};
 		//vec3 center {0.3f * -eye_x, 0.0f, 0.3f * eye_y};
@@ -783,7 +795,7 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 		state.view = base * lookat;
 		
 		if (1) {
-			float eye_dist = 0.08;
+			float eye_dist = 0.08f;
 			state.is_stereo = true;
 			mat4 eye_port = GetViewport(-1 * eye_ratio, -1, 2 * eye_ratio, 2, 1);
 			mat4 base = eye_port * proj;
@@ -808,7 +820,7 @@ bool ScopeT<Ctx3D>::Load(Parallel::GfxDataState& state) {
 	#if 0
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	#else
-	state.light_dir = AxesDir(M_PI/2, M_PI/4);
+	state.light_dir = AxesDir(M_PIf/2, M_PIf/4);
 	#endif
 	
 	

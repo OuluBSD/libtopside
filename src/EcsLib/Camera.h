@@ -24,7 +24,8 @@ public:
 };
 
 
-struct Viewport : public Component<Viewport> {
+class Viewport : public Component<Viewport> {
+public:
 	RTTI_COMP0(Viewport)
 	COMP_DEF_VISIT
 	

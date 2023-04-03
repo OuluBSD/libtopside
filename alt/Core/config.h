@@ -20,7 +20,7 @@
 	
 	#define UNREACHABLE __builtin_unreachable()
 	
-	#define GLEW_STATIC
+	#define GLEW_STATIC 1
 	#define GLEW_INCLUDE <GL/glew.h>
 	
 	#if defined(__WIN32) || defined(_WIN32) || defined(WIN32)
@@ -179,9 +179,12 @@
 	
 	#define UNREACHABLE __assume(0)
 	
-	//#define GLEW_INCLUDE <ports/glew/glew.h>
-	#define GLEW_STATIC
-	#define GLEW_INCLUDE <GL/glew.h>
+	#if 0
+		#define GLEW_INCLUDE <ports/glew/glew.h>
+		#define GLEW_STATIC 1
+	#else
+		#define GLEW_INCLUDE <GL/glew.h>
+	#endif
 	
 	#ifdef _WIN64
 		#define PLATFORM_WIN64 1

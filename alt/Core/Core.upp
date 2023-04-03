@@ -8,7 +8,6 @@ uses
 	ports/bz2lib,
 	RTTI,
 	SharedCore,
-	StaticInterface,
 	ports/md5;
 
 uses(GCC WIN32) ports/MingwThreads;

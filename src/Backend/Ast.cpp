@@ -278,7 +278,7 @@ String AstNode::GetConstantString() const {
 	String s = GetConstString(con) + ": ";
 	switch (con) {
 		case CONST_NULL:	s += "null"; break;
-		case CONST_INT32:	s += IntStr(i64); break;
+		case CONST_INT32:	s += IntStr((int)i64); break;
 		case CONST_INT64:	s += IntStr64(i64); break;
 		case CONST_DOUBLE:	s += DblStr(dbl); break;
 		case CONST_STRING:	s += "\"" + str + "\""; break;
