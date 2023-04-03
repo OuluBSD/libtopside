@@ -79,6 +79,18 @@ int AtomBase::FindSourceWithValDev(ValDevCls vd) {
 	return -1;
 }
 
+int AtomBase::FindSinkWithValDev(ValDevCls vd) {
+	InterfaceSinkRef src = GetSink();
+	int c = src->GetSinkCount();
+	for(int i = 0; i < c; i++) {
+		Value& v = src->GetValue(i);
+		Format f = v.GetFormat();
+		if (f.vd == vd)
+			return i;
+	}
+	return -1;
+}
+
 void AtomBase::UpdateSinkFormat(ValCls vc, Format fmt) {
 	InterfaceSinkRef sink_iface = GetSink();
 	int sink_count = sink_iface->GetSinkCount();

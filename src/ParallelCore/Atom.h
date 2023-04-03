@@ -118,6 +118,7 @@ public:
 	void					SetInterface(const IfaceConnTuple& iface);
 	const IfaceConnTuple&	GetInterface() const;
 	int						FindSourceWithValDev(ValDevCls vd);
+	int						FindSinkWithValDev(ValDevCls vd);
 	void					SetPrimarySinkQueueSize(int i);
 	
 public:
