@@ -7,25 +7,25 @@ NAMESPACE_AUDIO_BEGIN
 
 class Chorus : public Effect {
 public:
-	Chorus( double baseDelay = 6000 );
+	Chorus( float baseDelay = 6000 );
 	void Clear() override;
-	void SetModDepth( double depth );
-	void SetModFrequency( double frequency );
-	double GetLastOut( unsigned int channel = 0 );
-	double Tick( double input, unsigned int channel = 0 ) override;
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	void SetModDepth( float depth );
+	void SetModFrequency( float frequency );
+	float GetLastOut( int channel = 0 );
+	float Tick( float input, int channel = 0 ) override;
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
 	DelayL delay_line_[2];
 	SineWave mods_[2];
-	double baseLength_;
-	double mod_depth_;
+	float baseLength_;
+	float mod_depth_;
 
 };
 
-inline double Chorus::GetLastOut( unsigned int channel ) {
+inline float Chorus::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -37,7 +37,7 @@ inline double Chorus::GetLastOut( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline double Chorus::Tick( double input, unsigned int channel ) {
+inline float Chorus::Tick( float input, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -46,14 +46,14 @@ inline double Chorus::Tick( double input, unsigned int channel ) {
 	}
 
 	#endif
-	delay_line_[0].SetDelay( baseLength_ * 0.707 * ( 1.0 + mod_depth_ * mods_[0].Tick() ) );
-	delay_line_[1].SetDelay( baseLength_  * 0.5 *  ( 1.0 - mod_depth_ * mods_[1].Tick() ) );
+	delay_line_[0].SetDelay( baseLength_ * 0.707f * ( 1.0f + mod_depth_ * mods_[0].Tick() ) );
+	delay_line_[1].SetDelay( baseLength_  * 0.5f *  ( 1.0f - mod_depth_ * mods_[1].Tick() ) );
 	last_frame_[0] = effect_mix_ * ( delay_line_[0].Tick( input ) - input ) + input;
 	last_frame_[1] = effect_mix_ * ( delay_line_[1].Tick( input ) - input ) + input;
 	return last_frame_[channel];
 }
 
-inline AudioFrames& Chorus::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Chorus::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() - 1 ) {
@@ -62,12 +62,12 @@ inline AudioFrames& Chorus::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount() - 1;
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount() - 1;
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
-		delay_line_[0].SetDelay( baseLength_ * 0.707 * ( 1.0 + mod_depth_ * mods_[0].Tick() ) );
-		delay_line_[1].SetDelay( baseLength_  * 0.5 *  ( 1.0 - mod_depth_ * mods_[1].Tick() ) );
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		delay_line_[0].SetDelay( baseLength_ * 0.707f * ( 1.0f + mod_depth_ * mods_[0].Tick() ) );
+		delay_line_[1].SetDelay( baseLength_  * 0.5f *  ( 1.0f - mod_depth_ * mods_[1].Tick() ) );
 		*samples = effect_mix_ * ( delay_line_[0].Tick( *samples ) - *samples ) + *samples;
 		samples++;
 		*samples = effect_mix_ * ( delay_line_[1].Tick( *samples ) - *samples ) + *samples;
@@ -78,7 +78,7 @@ inline AudioFrames& Chorus::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-inline AudioFrames& Chorus::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& Chorus::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() - 1 ) {
@@ -87,13 +87,13 @@ inline AudioFrames& Chorus::Tick( AudioFrames& in_frames, AudioFrames& out_frame
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
-		delay_line_[0].SetDelay( baseLength_ * 0.707 * ( 1.0 + mod_depth_ * mods_[0].Tick() ) );
-		delay_line_[1].SetDelay( baseLength_  * 0.5 *  ( 1.0 - mod_depth_ * mods_[1].Tick() ) );
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+		delay_line_[0].SetDelay( baseLength_ * 0.707f * ( 1.0f + mod_depth_ * mods_[0].Tick() ) );
+		delay_line_[1].SetDelay( baseLength_  * 0.5f *  ( 1.0f - mod_depth_ * mods_[1].Tick() ) );
 		*out_samples = effect_mix_ * ( delay_line_[0].Tick( *in_samples ) - *in_samples ) + *in_samples;
 		*(out_samples + 1) = effect_mix_ * ( delay_line_[1].Tick( *in_samples ) - *in_samples ) + *in_samples;
 	}

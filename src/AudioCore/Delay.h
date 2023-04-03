@@ -8,46 +8,46 @@ NAMESPACE_AUDIO_BEGIN
 class Delay : public Filter {
 public:
 
-	Delay( unsigned long delay = 0, unsigned long max_delay = 4095 );
+	Delay( int delay = 0, int max_delay = 4095 );
 	~Delay();
 
-	unsigned long GetMaximumDelay() {
+	int GetMaximumDelay() {
 		return inputs_.GetCount() - 1;
 	};
 
-	void SetMaximumDelay( unsigned long delay );
-	void SetDelay( unsigned long delay );
+	void SetMaximumDelay( int delay );
+	void SetDelay( int delay );
 
-	unsigned long GetDelay() const {
+	int GetDelay() const {
 		return delay_;
 	};
 
-	double GetTapOut( unsigned long tap_delay );
-	void TapIn( double value, unsigned long tap_delay );
-	double addTo( double value, unsigned long tap_delay );
+	float GetTapOut( int tap_delay );
+	void TapIn( float value, int tap_delay );
+	float addTo( float value, int tap_delay );
 	
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double GetNextOut() {
+	float GetNextOut() {
 		return inputs_[out_point_];
 	};
 
-	double GetEnergy() const;
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float GetEnergy() const;
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
-	unsigned long in_point_;
-	unsigned long out_point_;
-	unsigned long delay_;
+	int in_point_;
+	int out_point_;
+	int delay_;
 	
 };
 
-inline double Delay::Tick( double input ) {
+inline float Delay::Tick( float input ) {
 	inputs_[in_point_++] = input * gain_;
 
 	if ( in_point_ == inputs_.GetCount() )
@@ -61,7 +61,7 @@ inline double Delay::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& Delay::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Delay::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -70,10 +70,10 @@ inline AudioFrames& Delay::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		inputs_[in_point_++] = *samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;
@@ -87,7 +87,7 @@ inline AudioFrames& Delay::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-inline AudioFrames& Delay::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& Delay::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -96,11 +96,11 @@ inline AudioFrames& Delay::Tick( AudioFrames& in_frames, AudioFrames& out_frames
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		inputs_[in_point_++] = *in_samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;

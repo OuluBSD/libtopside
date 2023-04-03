@@ -14,40 +14,40 @@ public:
 
 	void Reset() {
 		wave_.Reset();
-		last_frame_[0] = 0.0;
+		last_frame_[0] = 0.0f;
 	};
 
 	void Normalize() {
 		wave_.Normalize();
 	};
 
-	void Normalize( double peak ) {
+	void Normalize( float peak ) {
 		wave_.Normalize( peak );
 	};
 
-	void SetFrequency( double frequency );
+	void SetFrequency( float frequency );
 
-	void SetVibratoRate( double rate ) {
+	void SetVibratoRate( float rate ) {
 		modulator_.SetVibratoRate( rate );
 	};
 
-	void SetVibratoGain( double gain ) {
+	void SetVibratoGain( float gain ) {
 		modulator_.SetVibratoGain( gain );
 	};
 
-	void SetRandomGain( double gain ) {
+	void SetRandomGain( float gain ) {
 		modulator_.SetRandomGain( gain );
 	};
 
-	void SetSweepRate( double rate ) {
+	void SetSweepRate( float rate ) {
 		sweepRate_ = rate;
 	};
 
-	void SetGainRate( double rate ) {
+	void SetGainRate( float rate ) {
 		envelope_.SetRate( rate );
 	};
 
-	void SetGainTarget( double target ) {
+	void SetGainTarget( float target ) {
 		envelope_.SetTarget( target );
 	};
 
@@ -59,12 +59,12 @@ public:
 		envelope_.KeyOff();
 	};
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -72,13 +72,13 @@ protected:
 	Modulate modulator_;
 	Envelope envelope_;
 	Envelope pitchEnvelope_;
-	double rate_;
-	double sweepRate_;
+	float rate_;
+	float sweepRate_;
 
 };
 
-inline double SingWave::Tick() {
-	double new_rate = pitchEnvelope_.Tick();
+inline float SingWave::Tick() {
+	float new_rate = pitchEnvelope_.Tick();
 	new_rate += new_rate * modulator_.Tick();
 	wave_.SetRate( new_rate );
 	last_frame_[0] = wave_.Tick();
@@ -86,7 +86,7 @@ inline double SingWave::Tick() {
 	return last_frame_[0];
 }
 
-inline AudioFrames& SingWave::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& SingWave::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -95,10 +95,10 @@ inline AudioFrames& SingWave::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = SingWave::Tick();
 
 	return frames;

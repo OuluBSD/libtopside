@@ -8,15 +8,15 @@ NAMESPACE_AUDIO_BEGIN
 class Sitar : public Instrument {
 public:
 
-	Sitar( double lowest_freq = 8.0 );
+	Sitar( float lowest_freq = 8.0 );
 	~Sitar();
 	void Clear();
-	void SetFrequency( double frequency );
-	void Pluck( double amplitude );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetFrequency( float frequency );
+	void Pluck( float amplitude );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -25,19 +25,19 @@ protected:
 	Noise   noise_;
 	ADSR    envelope_;
 
-	double loop_gain_;
-	double am_gain_;
-	double delay_;
-	double target_delay_;
+	float loop_gain_;
+	float am_gain_;
+	float delay_;
+	float target_delay_;
 
 };
 
-inline double Sitar::Tick( unsigned int ) {
-	if ( fabs(target_delay_ - delay_) > 0.001 ) {
+inline float Sitar::Tick( int ) {
+	if ( fabs(target_delay_ - delay_) > 0.001f ) {
 		if ( target_delay_ < delay_ )
-			delay_ *= 0.99999;
+			delay_ *= 0.99999f;
 		else
-			delay_ *= 1.00001;
+			delay_ *= 1.00001f;
 
 		delay_line_.SetDelay( delay_ );
 	}
@@ -47,8 +47,8 @@ inline double Sitar::Tick( unsigned int ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& Sitar::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Sitar::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -57,15 +57,15 @@ inline AudioFrames& Sitar::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

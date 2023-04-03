@@ -4,13 +4,13 @@
 NAMESPACE_AUDIO_BEGIN
 
 Sampler::Sampler() {
-	base_frequency_ = 440.0;
-	attackGain_ = 0.25;
-	loop_gain_ = 0.25;
+	base_frequency_ = 440.0f;
+	attackGain_ = 0.25f;
+	loop_gain_ = 0.25f;
 }
 
 Sampler::~Sampler() {
-	unsigned int i;
+	int i;
 
 	for ( i = 0; i < attacks_.GetCount(); i++ ) delete attacks_[i];
 
@@ -18,7 +18,7 @@ Sampler::~Sampler() {
 }
 
 void Sampler::KeyOn() {
-	for ( unsigned int i = 0; i < attacks_.GetCount(); i++ )
+	for ( int i = 0; i < attacks_.GetCount(); i++ )
 		attacks_[i]->Reset();
 
 	adsr_.KeyOn();
@@ -28,7 +28,7 @@ void Sampler::KeyOff() {
 	adsr_.KeyOff();
 }
 
-void Sampler::NoteOff( double amplitude ) {
+void Sampler::NoteOff( float amplitude ) {
 	this->KeyOff();
 }
 

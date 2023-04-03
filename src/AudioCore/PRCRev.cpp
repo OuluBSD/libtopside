@@ -3,18 +3,18 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-PRCRev::PRCRev( double T60 ) {
-	if ( T60 <= 0.0 ) {
+PRCRev::PRCRev( float T60 ) {
+	if ( T60 <= 0.0f ) {
 		LOG("PRCRev::PRCRev: argument (" << T60 << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
-	last_frame_.SetCount( 1, 2, 0.0 );
+	last_frame_.SetCount( 1, 2, 0.0f );
 	int GetCounts[4] = {341, 613, 1557, 2137};
-	double scaler = Audio::GetSampleRate() / 44100.0;
+	float scaler = Audio::GetSampleRate() / 44100.0f;
 	int delay, i;
 
-	if ( scaler != 1.0 ) {
+	if ( scaler != 1.0f ) {
 		for (i = 0; i < 4; i++)	{
 			delay = (int) floor(scaler * GetCounts[i]);
 
@@ -44,22 +44,22 @@ void PRCRev::Clear() {
 	allpass_delays_[1].Clear();
 	comb_delays_[0].Clear();
 	comb_delays_[1].Clear();
-	last_frame_[0] = 0.0;
-	last_frame_[1] = 0.0;
+	last_frame_[0] = 0.0f;
+	last_frame_[1] = 0.0f;
 }
 
-void PRCRev::SetT60( double T60 ) {
-	if ( T60 <= 0.0 ) {
+void PRCRev::SetT60( float T60 ) {
+	if ( T60 <= 0.0f ) {
 		LOG("PRCRev::SetT60: argument (" << T60 << ") must be positive!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
-	comb_coeff_[0] = pow(10.0, (-3.0 * comb_delays_[0].GetDelay() / (T60 * Audio::GetSampleRate())));
-	comb_coeff_[1] = pow(10.0, (-3.0 * comb_delays_[1].GetDelay() / (T60 * Audio::GetSampleRate())));
+	comb_coeff_[0] = powf(10.0f, (-3.0 * comb_delays_[0].GetDelay() / (T60 * Audio::GetSampleRate())));
+	comb_coeff_[1] = powf(10.0f, (-3.0 * comb_delays_[1].GetDelay() / (T60 * Audio::GetSampleRate())));
 }
 
-AudioFrames& PRCRev::Tick( AudioFrames& frames, unsigned int channel ) {
+AudioFrames& PRCRev::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() - 1 ) {
@@ -68,10 +68,10 @@ AudioFrames& PRCRev::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		*samples = Tick( *samples );
 		*(samples + 1) = last_frame_[1];
 	}
@@ -79,7 +79,7 @@ AudioFrames& PRCRev::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-AudioFrames& PRCRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+AudioFrames& PRCRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() - 1 ) {
@@ -88,11 +88,11 @@ AudioFrames& PRCRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsi
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		*out_samples = Tick( *in_samples );
 		*(out_samples + 1) = last_frame_[1];
 	}

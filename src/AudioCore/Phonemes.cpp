@@ -14,49 +14,49 @@ const char Phonemes::phoneme_names[32][4] = {
 	"vvv", "zzz", "thz", "zhh"
 };
 
-const double Phonemes::phoneme_gains[32][2] = {
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
+const float Phonemes::phoneme_gains[32][2] = {
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
 
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
 
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
 
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
-	{1.0, 0.0},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
 
-	{0.0, 0.7},
-	{0.0, 0.7},
-	{0.0, 0.7},
-	{0.0, 0.7},
+	{0.0f, 0.7},
+	{0.0f, 0.7},
+	{0.0f, 0.7},
+	{0.0f, 0.7},
 
-	{0.0, 0.7},
-	{0.0, 0.1},
-	{0.0, 0.1},
-	{0.0, 0.1},
+	{0.0f, 0.7},
+	{0.0f, 0.1},
+	{0.0f, 0.1},
+	{0.0f, 0.1},
 
-	{1.0, 0.1},
-	{1.0, 0.1},
-	{1.0, 0.1},
-	{1.0, 0.1},
+	{1.0f, 0.1},
+	{1.0f, 0.1},
+	{1.0f, 0.1},
+	{1.0f, 0.1},
 
-	{1.0, 1.0},
-	{1.0, 1.0},
-	{1.0, 1.0},
-	{1.0, 1.0}
+	{1.0f, 1.0f},
+	{1.0f, 1.0f},
+	{1.0f, 1.0f},
+	{1.0f, 1.0f}
 };
 
-const double Phonemes::phoneme_parameters[32][4][3] = {
+const float Phonemes::phoneme_parameters[32][4][3] = {
 	{	{ 273, 0.996,  10},
 		{2086, 0.945, -16},
 		{2754, 0.979, -12},
@@ -232,7 +232,7 @@ Phonemes::Phonemes(void) {
 Phonemes::~Phonemes(void) {
 }
 
-const char* Phonemes::name( unsigned int index ) {
+const char* Phonemes::name( int index ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::name: index is greater than 31!");
 		return 0;
@@ -241,61 +241,61 @@ const char* Phonemes::name( unsigned int index ) {
 	return phoneme_names[index];
 }
 
-double Phonemes::GetVoiceGain( unsigned int index ) {
+float Phonemes::GetVoiceGain( int index ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::GetVoiceGain: index is greater than 31!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	return phoneme_gains[index][0];
 }
 
-double Phonemes::GetNoiseGain( unsigned int index ) {
+float Phonemes::GetNoiseGain( int index ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::GetNoiseGain: index is greater than 31!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	return phoneme_gains[index][1];
 }
 
-double Phonemes::GetFormantFrequency( unsigned int index, unsigned int partial ) {
+float Phonemes::GetFormantFrequency( int index, int partial ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::GetFormantFrequency: index is greater than 31!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	if ( partial > 3 ) {
 		LOG("WARNING: Phonemes::GetFormantFrequency: partial is greater than 3!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	return phoneme_parameters[index][partial][0];
 }
 
-double Phonemes::GetFormantRadius( unsigned int index, unsigned int partial ) {
+float Phonemes::GetFormantRadius( int index, int partial ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::GetFormantRadius: index is greater than 31!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	if ( partial > 3 ) {
 		LOG("WARNING: Phonemes::GetFormantRadius: partial is greater than 3!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	return phoneme_parameters[index][partial][1];
 }
 
-double Phonemes::GetFormantGain( unsigned int index, unsigned int partial ) {
+float Phonemes::GetFormantGain( int index, int partial ) {
 	if ( index > 31 ) {
 		LOG("WARNING: Phonemes::GetFormantGain: index is greater than 31!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	if ( partial > 3 ) {
 		LOG("WARNING: Phonemes::GetFormantGain: partial is greater than 3!");
-		return 0.0;
+		return 0.0f;
 	}
 
 	return phoneme_parameters[index][partial][2];

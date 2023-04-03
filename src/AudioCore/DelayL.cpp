@@ -3,19 +3,19 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-DelayL::DelayL( double delay, unsigned long max_delay ) {
-	if ( delay < 0.0 ) {
-		LOG("DelayL::DelayL: delay must be >= 0.0!");
+DelayL::DelayL( float delay, int max_delay ) {
+	if ( delay < 0.0f ) {
+		LOG("DelayL::DelayL: delay must be >= 0.0f!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
-	if ( delay > (double) max_delay ) {
+	if ( delay > (float) max_delay ) {
 		LOG("DelayL::DelayL: max_delay must be > than delay argument!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
 	if ( max_delay + 1 > inputs_.GetCount() )
-		inputs_.SetCount( max_delay + 1, 1, 0.0 );
+		inputs_.SetCount( max_delay + 1, 1, 0.0f );
 
 	in_point_ = 0;
 	this->SetDelay( delay );
@@ -25,13 +25,13 @@ DelayL::DelayL( double delay, unsigned long max_delay ) {
 DelayL::~DelayL() {
 }
 
-void DelayL::SetMaximumDelay( unsigned long delay ) {
+void DelayL::SetMaximumDelay( int delay ) {
 	if ( delay < inputs_.GetCount() ) return;
 
-	inputs_.SetCount(delay + 1, 1, 0.0);
+	inputs_.SetCount(delay + 1, 1, 0.0f);
 }
 
-double DelayL::GetTapOut( unsigned long tap_delay ) {
+float DelayL::GetTapOut( int tap_delay ) {
 	long tap = in_point_ - tap_delay - 1;
 
 	while ( tap < 0 )
@@ -40,7 +40,7 @@ double DelayL::GetTapOut( unsigned long tap_delay ) {
 	return inputs_[tap];
 }
 
-void DelayL::TapIn( double value, unsigned long tap_delay ) {
+void DelayL::TapIn( float value, int tap_delay ) {
 	long tap = in_point_ - tap_delay - 1;
 
 	while ( tap < 0 )

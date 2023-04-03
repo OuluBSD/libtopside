@@ -15,35 +15,35 @@ public:
 		IgnoreSampleRateChange_ = ignore;
 	};
 
-	void SetB0( double b0 ) {
+	void SetB0( float b0 ) {
 		b_[0] = b0;
 	};
 
-	void SetB1( double b1 ) {
+	void SetB1( float b1 ) {
 		b_[1] = b1;
 	};
 
-	void SetB2( double b2 ) {
+	void SetB2( float b2 ) {
 		b_[2] = b2;
 	};
 
-	void SetCoefficients( double b0, double b1, double b2, bool ClearState = false );
-	void SetNotch( double frequency, double radius );
+	void SetCoefficients( float b0, float b1, float b2, bool ClearState = false );
+	void SetNotch( float frequency, float radius );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
-	void SampleRateChanged( double new_rate, double old_rate );
+	void SampleRateChanged( float new_rate, float old_rate );
 };
 
-inline double TwoZero::Tick( double input ) {
+inline float TwoZero::Tick( float input ) {
 	inputs_[0] = gain_ * input;
 	last_frame_[0] = b_[2] * inputs_[2] + b_[1] * inputs_[1] + b_[0] * inputs_[0];
 	inputs_[2] = inputs_[1];
@@ -51,7 +51,7 @@ inline double TwoZero::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& TwoZero::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& TwoZero::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -60,10 +60,10 @@ inline AudioFrames& TwoZero::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		inputs_[0] = gain_ * *samples;
 		*samples = b_[2] * inputs_[2] + b_[1] * inputs_[1] + b_[0] * inputs_[0];
 		inputs_[2] = inputs_[1];
@@ -74,7 +74,7 @@ inline AudioFrames& TwoZero::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-inline AudioFrames& TwoZero::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& TwoZero::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -83,11 +83,11 @@ inline AudioFrames& TwoZero::Tick( AudioFrames& in_frames, AudioFrames& out_fram
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		inputs_[0] = gain_ * *in_samples;
 		*out_samples = b_[2] * inputs_[2] + b_[1] * inputs_[1] + b_[0] * inputs_[0];
 		inputs_[2] = inputs_[1];

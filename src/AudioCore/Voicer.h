@@ -8,21 +8,21 @@ NAMESPACE_AUDIO_BEGIN
 class Voicer : public Audio, Moveable<Voicer> {
 public:
 
-	Voicer( double decayTime = 0.2 );
+	Voicer( float decayTime = 0.2f );
 	void AddInstrument( Instrument* instrument, int group = 0 );
 	void RemoveInstrument( Instrument* instrument );
-	long NoteOn( double note_number, double amplitude, int group = 0 );
-	void NoteOff( double note_number, double amplitude, int group = 0 );
-	void NoteOff( long tag, double amplitude );
-	void SetFrequency( double note_number, int group = 0 );
-	void SetFrequency( long tag, double note_number );
-	void PitchBend( double value, int group = 0 );
-	void PitchBend( long tag, double value );
-	void ControlChange( int number, double value, int group = 0 );
-	void ControlChange( long tag, int number, double value );
+	long NoteOn( float note_number, float amplitude, int group = 0 );
+	void NoteOff( float note_number, float amplitude, int group = 0 );
+	void NoteOff( long tag, float amplitude );
+	void SetFrequency( float note_number, int group = 0 );
+	void SetFrequency( long tag, float note_number );
+	void PitchBend( float value, int group = 0 );
+	void PitchBend( long tag, float value );
+	void ControlChange( int number, float value, int group = 0 );
+	void ControlChange( long tag, int number, float value );
 	void Silence();
 
-	unsigned int GetChannelsOut() const {
+	int GetChannelsOut() const {
 		return last_frame_.GetChannelCount();
 	};
 
@@ -30,23 +30,23 @@ public:
 		return last_frame_;
 	};
 
-	double GetLastOut( unsigned int channel = 0 );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float GetLastOut( int channel = 0 );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
 	struct Voice : Moveable<Voice> {
 		Instrument* instrument;
 		long tag;
-		double note_number;
-		double frequency;
+		float note_number;
+		float frequency;
 		int sounding;
 		int group;
 
 
 		Voice()
-			: instrument(0), tag(0), note_number(-1.0), frequency(0.0), sounding(0), group(0) {}
+			: instrument(0), tag(0), note_number(-1.0f), frequency(0.0f), sounding(0), group(0) {}
 	};
 
 	Vector<Voice> voices_;
@@ -55,7 +55,7 @@ protected:
 	AudioFrames last_frame_;
 };
 
-inline double Voicer::GetLastOut( unsigned int channel ) {
+inline float Voicer::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= last_frame_.GetChannelCount() ) {
@@ -68,12 +68,12 @@ inline double Voicer::GetLastOut( unsigned int channel ) {
 }
 
 
-inline double Voicer::Tick( unsigned int channel ) {
-	unsigned int j;
+inline float Voicer::Tick( int channel ) {
+	int j;
 
-	for ( j = 0; j < last_frame_.GetChannelCount(); j++ ) last_frame_[j] = 0.0;
+	for ( j = 0; j < last_frame_.GetChannelCount(); j++ ) last_frame_[j] = 0.0f;
 
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].sounding != 0 ) {
 			voices_[i].instrument->Tick();
 
@@ -90,8 +90,8 @@ inline double Voicer::Tick( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline AudioFrames& Voicer::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Voicer::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -100,10 +100,10 @@ inline AudioFrames& Voicer::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		Tick();
 
 		for ( j = 0; j < channel_count; j++ )

@@ -3,8 +3,8 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-BlitSaw:: BlitSaw( double frequency ) {
-	if ( frequency <= 0.0 ) {
+BlitSaw:: BlitSaw( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("BlitSaw::BlitSaw: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
@@ -19,12 +19,12 @@ BlitSaw::~BlitSaw() {
 
 void BlitSaw::Reset() {
 	phase_ = 0.0f;
-	state_ = 0.0;
-	last_frame_[0] = 0.0;
+	state_ = 0.0f;
+	last_frame_[0] = 0.0f;
 }
 
-void BlitSaw::SetFrequency( double frequency ) {
-	if ( frequency <= 0.0 ) {
+void BlitSaw::SetFrequency( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("BlitSaw::SetFrequency: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -36,15 +36,15 @@ void BlitSaw::SetFrequency( double frequency ) {
 	this->UpdateHarmonics();
 }
 
-void BlitSaw::SetHarmonics( unsigned int nHarmonics ) {
+void BlitSaw::SetHarmonics( int nHarmonics ) {
 	harmonic_count_ = nHarmonics;
 	this->UpdateHarmonics();
-	state_ = -0.5 * a_;
+	state_ = -0.5f * a_;
 }
 
 void BlitSaw::UpdateHarmonics() {
 	if ( harmonic_count_ <= 0 ) {
-		unsigned int maxHarmonics = (unsigned int) floor( 0.5 * p_ );
+		int maxHarmonics = (int) floor( 0.5f * p_ );
 		m_ = 2 * maxHarmonics + 1;
 	}
 	else

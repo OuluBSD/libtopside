@@ -13,40 +13,40 @@ public:
 	Envelope& operator= ( const Envelope& e );
 	
 	void KeyOn() {
-		this->SetTarget( 1.0 );
+		this->SetTarget( 1.0f );
 	};
 
 	void KeyOff() {
-		this->SetTarget( 0.0 );
+		this->SetTarget( 0.0f );
 	};
 
-	void SetRate( double rate );
-	void SetTime( double time );
-	void SetTarget( double target );
-	void SetValue( double value );
+	void SetRate( float rate );
+	void SetTime( float time );
+	void SetTarget( float target );
+	void SetValue( float value );
 
 	int GetState() const {
 		return state_;
 	};
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
-	void SampleRateChanged( double new_rate, double old_rate );
+	void SampleRateChanged( float new_rate, float old_rate );
 
-	double value_;
-	double target_;
-	double rate_;
+	float value_;
+	float target_;
+	float rate_;
 	int state_;
 };
 
-inline double Envelope::Tick() {
+inline float Envelope::Tick() {
 	if ( state_ ) {
 		if ( target_ > value_ ) {
 			value_ += rate_;
@@ -71,7 +71,7 @@ inline double Envelope::Tick() {
 	return value_;
 }
 
-inline AudioFrames& Envelope::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Envelope::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -80,10 +80,10 @@ inline AudioFrames& Envelope::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Tick();
 
 	return frames;

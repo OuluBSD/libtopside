@@ -5,7 +5,7 @@
 NAMESPACE_AUDIO_BEGIN
 
 
-const double TARGET_THRESHOLD = 0.000001;
+const float TARGET_THRESHOLD = 0.000001f;
 
 class Asymptionic : public Generator {
 public:
@@ -14,35 +14,35 @@ public:
 	~Asymptionic();
 	void KeyOn();
 	void KeyOff();
-	void SetTau( double tau );
-	void SetTime( double time );
-	void SetT60( double t60 );
-	void SetTarget( double target );
-	void SetValue( double value );
+	void SetTau( float tau );
+	void SetTime( float time );
+	void SetT60( float t60 );
+	void SetTarget( float target );
+	void SetValue( float value );
 	
 	int GetState() const {
 		return state_;
 	};
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
-	void SampleRateChanged( double new_rate, double old_rate );
+	void SampleRateChanged( float new_rate, float old_rate );
 
-	double value_;
-	double target_;
-	double factor_;
-	double constant_;
+	float value_;
+	float target_;
+	float factor_;
+	float constant_;
 	int state_;
 };
 
-inline double Asymptionic::Tick() {
+inline float Asymptionic::Tick() {
 	if ( state_ ) {
 		value_ = factor_ * value_ + constant_;
 
@@ -65,7 +65,7 @@ inline double Asymptionic::Tick() {
 	return value_;
 }
 
-inline AudioFrames& Asymptionic::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Asymptionic::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -74,10 +74,10 @@ inline AudioFrames& Asymptionic::Tick( AudioFrames& frames, unsigned int channel
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Asymptionic::Tick();
 
 	return frames;

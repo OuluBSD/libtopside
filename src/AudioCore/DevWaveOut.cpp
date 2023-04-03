@@ -5,7 +5,7 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-DevWaveOut::DevWaveOut( unsigned int bufferFrames )
+DevWaveOut::DevWaveOut( int bufferFrames )
 	: bufferFrames_( bufferFrames ) {
 	channels = 0;
 	device <<= SoundSys().GetDefaultOutput().index;
@@ -77,7 +77,7 @@ void DevWaveOut::Generator(StreamCallbackArgs& arg){
 	
 }
 
-void DevWaveOut::Tick( const double sample ) {
+void DevWaveOut::Tick( const float sample ) {
 	#if defined(flagDEBUG)
 	if (!snd.IsOpen()) {
 		LOG("DevWaveOut::Tick(): no file open!");
@@ -86,13 +86,13 @@ void DevWaveOut::Tick( const double sample ) {
 	}
 	#endif
 	
-	unsigned int channel_count = data_.GetChannelCount();
-	double input = sample;
+	int channel_count = data_.GetChannelCount();
+	float input = sample;
 	ClipTest( input );
 	
 	AudioFrames& dst = data[data_write];
 	
-	for ( unsigned int j = 0; j < channel_count; j++ )
+	for ( int j = 0; j < channel_count; j++ )
 		dst[iData_++] = input;
 	
 	if (iData_ >= dst.GetCount()) {
@@ -115,12 +115,12 @@ void DevWaveOut::Tick( const AudioFrames& frames ) {
 	}
 	#endif
 	
-	unsigned int in_frames = 0;
-	unsigned int j, channel_count = data_.GetChannelCount();
+	int in_frames = 0;
+	int j, channel_count = data_.GetChannelCount();
 	
 	AudioFrames& dst = data[data_write];
 	
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++ ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++ ) {
 		for ( j = 0; j < channel_count; j++ ) {
 			data_[iData_] = frames[in_frames++];
 			ClipTest( data_[iData_++] );

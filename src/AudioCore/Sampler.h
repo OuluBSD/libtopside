@@ -10,13 +10,13 @@ public:
 
 	Sampler();
 	virtual ~Sampler();
-	virtual void SetFrequency( double frequency ) = 0;
+	virtual void SetFrequency( float frequency ) = 0;
 	void KeyOn();
 	void KeyOff();
-	virtual void NoteOff( double amplitude );
-	virtual void ControlChange( int number, double value ) = 0;
-	virtual double Tick( unsigned int channel = 0 ) = 0;
-	virtual AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 ) = 0;
+	virtual void NoteOff( float amplitude );
+	virtual void ControlChange( int number, float value ) = 0;
+	virtual float Tick( int channel = 0 ) = 0;
+	virtual AudioFrames& Tick( AudioFrames& frames, int channel = 0 ) = 0;
 
 protected:
 
@@ -24,11 +24,11 @@ protected:
 	Vector<FileWaveIn*> attacks_;
 	Vector<FileLoop*> loops_;
 	OnePole filter_;
-	double base_frequency_;
-	Vector<double> attack_ratios_;
-	Vector<double> loop_ratios_;
-	double attackGain_;
-	double loop_gain_;
+	float base_frequency_;
+	Vector<float> attack_ratios_;
+	Vector<float> loop_ratios_;
+	float attackGain_;
+	float loop_gain_;
 
 };
 

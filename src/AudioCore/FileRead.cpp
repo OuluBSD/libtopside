@@ -4,11 +4,11 @@
 NAMESPACE_AUDIO_BEGIN
 
 FileRead::FileRead()
-	: fd_(0), fileSize_(0), channels_(0), data_type_(0), fileRate_(0.0) {
+	: fd_(0), fileSize_(0), channels_(0), data_type_(0), fileRate_(0.0f) {
 }
 
-FileRead::FileRead( String file_name, bool type_raw, unsigned int channel_count,
-					  AudioFormat format, double rate )
+FileRead::FileRead( String file_name, bool type_raw, int channel_count,
+					  AudioFormat format, float rate )
 	: fd_(0) {
 	Open( file_name, type_raw, channel_count, format, rate );
 }
@@ -26,7 +26,7 @@ void FileRead::Close() {
 	fileSize_ = 0;
 	channels_ = 0;
 	data_type_ = 0;
-	fileRate_ = 0.0;
+	fileRate_ = 0.0f;
 }
 
 bool FileRead::isOpen() {
@@ -34,11 +34,15 @@ bool FileRead::isOpen() {
 	else return false;
 }
 
-void FileRead::Open( String file_name, bool type_raw, unsigned int channel_count,
-					   AudioFormat format, double rate ) {
+void FileRead::Open( String file_name, bool type_raw, int channel_count,
+					   AudioFormat format, float rate ) {
 	Close();
+	#ifdef flagWIN32
+	fopen_s(&fd_, file_name.Begin(), "rb" );
+	#else
 	fd_ = fopen( file_name.Begin(), "rb" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileRead::open: could not open or find file (" << file_name << ")!");
 		HandleError( AudioError::FILE_NOT_FOUND );
@@ -90,7 +94,7 @@ error:
 	HandleError( AudioError::FILE_ERROR );
 }
 
-bool FileRead::GetRawInfo( const char* file_name, unsigned int channel_count, AudioFormat format, double rate ) {
+bool FileRead::GetRawInfo( const char* file_name, int channel_count, AudioFormat format, float rate ) {
 	struct stat filestat;
 
 	if ( stat(file_name, &filestat) == -1 ) {
@@ -193,7 +197,7 @@ bool FileRead::GetWavInfo( const char* file_name ) {
 	#ifndef __LITTLE_ENDIAN__
 	Swap16((unsigned char*)&temp);
 	#endif
-	channels_ = (unsigned int ) temp;
+	channels_ = (int ) temp;
 	SINT32 srate;
 
 	if ( fread(&srate, 4, 1, fd_) != 1 ) goto error;
@@ -201,7 +205,7 @@ bool FileRead::GetWavInfo( const char* file_name ) {
 	#ifndef __LITTLE_ENDIAN__
 	Swap32((unsigned char*)&srate);
 	#endif
-	fileRate_ = (double) srate;
+	fileRate_ = (float) srate;
 	data_type_ = 0;
 
 	if ( fseek(fd_, 6, SEEK_CUR) == -1 ) goto error;
@@ -301,7 +305,7 @@ bool FileRead::GetSndInfo( const char* file_name ) {
 	#ifdef __LITTLE_ENDIAN__
 	Swap32((unsigned char*)&srate);
 	#endif
-	fileRate_ = (double) srate;
+	fileRate_ = (float) srate;
 	UINT32 chans;
 
 	if ( fread(&chans, 4, 1, fd_) != 1 ) goto error;
@@ -402,12 +406,12 @@ bool FileRead::GetAifInfo( const char* file_name ) {
 	#endif
 	unsigned char srate[10];
 	unsigned char exp;
-	unsigned long mantissa;
-	unsigned long last;
+	int mantissa;
+	int last;
 
 	if ( fread(&srate, 10, 1, fd_) != 1 ) goto error;
 
-	mantissa = (unsigned long) * (unsigned long*)(srate + 2);
+	mantissa = (int) * (int*)(srate + 2);
 	#ifdef __LITTLE_ENDIAN__
 	Swap32((unsigned char*)&mantissa);
 	#endif
@@ -421,7 +425,7 @@ bool FileRead::GetAifInfo( const char* file_name ) {
 
 	if (last & 0x00000001) mantissa++;
 
-	fileRate_ = (double) mantissa;
+	fileRate_ = (float) mantissa;
 	byte_swap_ = false;
 	#ifdef __LITTLE_ENDIAN__
 	byte_swap_ = true;
@@ -575,8 +579,8 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 				return false;
 			}
 			else if ( !haveSampleRate ) {
-				fileRate_ = 44100.0;
-				LOG("FileRead: No sample rate found ... assuming 44100.0");
+				fileRate_ = 44100.0f;
+				LOG("FileRead: No sample rate found ... assuming 44100.0f");
 				HandleError( AudioError::WARNING );
 				return true;
 			}
@@ -606,7 +610,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 			if ( fseek(fd_, namesize - 2, SEEK_CUR) == -1 ) goto error;
 
 			UINT32 type;
-			double srate;
+			float srate;
 
 			if ( fread(&type, 4, 1, fd_) != 1 ) goto error;
 
@@ -621,14 +625,14 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 2 ) {
 				unsigned char rate;
 
 				if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 3 ) {
 				SINT16 rate;
@@ -637,7 +641,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap16((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 4 ) {
 				UINT16 rate;
@@ -646,7 +650,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap16((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 5 ) {
 				SINT32 rate;
@@ -655,7 +659,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap32((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 6 ) {
 				UINT32 rate;
@@ -664,7 +668,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap32((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 7 ) {
 				FLOAT32 rate;
@@ -673,7 +677,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap32((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else if ( type == 9 ) {
 				FLOAT64 rate;
@@ -682,7 +686,7 @@ bool FileRead::GetMatInfo( const char* file_name ) {
 
 				if ( byte_swap_ ) Swap64((unsigned char*)&rate);
 
-				srate = (double) rate;
+				srate = (float) rate;
 			}
 			else
 				goto tryagain;
@@ -750,14 +754,14 @@ error:
 	return false;
 }
 
-void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormalize ) {
+void FileRead::Get( AudioFrames& buffer, int StartFrame, bool doNormalize ) {
 	if ( fd_ == 0 ) {
 		LOG("FileRead::read: a file is not open!");
 		Audio::HandleError( AudioError::WARNING );
 		return;
 	}
 
-	unsigned long frame_count = buffer.GetFrameCount();
+	int frame_count = buffer.GetFrameCount();
 
 	if ( frame_count == 0 ) {
 		LOG("FileRead::read: AudioFrames buffer size is zero ... no data read!");
@@ -779,7 +783,7 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 		frame_count = fileSize_ - StartFrame;
 
 	long i, nSamples = (long) ( frame_count * channels_ );
-	unsigned long offset = StartFrame * channels_;
+	int offset = StartFrame * channels_;
 
 	if ( data_type_ == AUDIO_SINT16 ) {
 		SINT16* buf = (SINT16*) &buffer[0];
@@ -796,7 +800,7 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 		}
 
 		if ( doNormalize ) {
-			double gain = 1.0 / 32768.0;
+			float gain = 1.0f / 32768.0f;
 
 			for ( i = nSamples - 1; i >= 0; i-- )
 				buffer[i] = buf[i] * gain;
@@ -821,14 +825,14 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 		}
 
 		if ( doNormalize ) {
-			double gain = 1.0 / 2147483648.0;
+			float gain = 1.0f / 2147483648.0f;
 
 			for ( i = nSamples - 1; i >= 0; i-- )
 				buffer[i] = buf[i] * gain;
 		}
 		else {
 			for ( i = nSamples - 1; i >= 0; i-- )
-				buffer[i] = buf[i];
+				buffer[i] = (float)buf[i];
 		}
 	}
 	else if ( data_type_ == AUDIO_FLOAT32 ) {
@@ -873,14 +877,14 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 		if ( fread( buf, nSamples, 1, fd_) != 1 ) goto error;
 
 		if ( doNormalize ) {
-			double gain = 1.0 / 128.0;
+			float gain = 1.0f / 128.0f;
 
 			for ( i = nSamples - 1; i >= 0; i-- )
 				buffer[i] = ( buf[i] - 128 ) * gain;
 		}
 		else {
 			for ( i = nSamples - 1; i >= 0; i-- )
-				buffer[i] = buf[i] - 128.0;
+				buffer[i] = buf[i] - 128.0f;
 		}
 	}
 	else if ( data_type_ == AUDIO_SINT8 ) {
@@ -891,7 +895,7 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 		if ( fread( buf, nSamples, 1, fd_ ) != 1 ) goto error;
 
 		if ( doNormalize ) {
-			double gain = 1.0 / 128.0;
+			float gain = 1.0f / 128.0f;
 
 			for ( i = nSamples - 1; i >= 0; i-- )
 				buffer[i] = buf[i] * gain;
@@ -904,7 +908,7 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 	else if ( data_type_ == AUDIO_SINT24 ) {
 		SINT32 temp;
 		unsigned char* ptr = (unsigned char*) &temp;
-		double gain = 1.0 / 2147483648.0;
+		float gain = 1.0f / 2147483648.0f;
 
 		if ( fseek(fd_, dataOffset_ + (offset * 3), SEEK_SET ) == -1 ) goto error;
 
@@ -940,9 +944,9 @@ void FileRead::Get( AudioFrames& buffer, unsigned long StartFrame, bool doNormal
 			#endif
 
 			if ( doNormalize )
-				buffer[i] = (double) temp * gain;
+				buffer[i] = (float) temp * gain;
 			else
-				buffer[i] = (double) temp / 256;
+				buffer[i] = (float) temp / 256;
 		}
 	}
 

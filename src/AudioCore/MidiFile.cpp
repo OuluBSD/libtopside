@@ -261,7 +261,7 @@ int File::Read(Stream& input) {
 	
 	if (longdata != 6) {
 		last_error =	"File " + filename +
-						" is not a MIDI 1.0 Standard MIDI file. "
+						" is not a MIDI 1.0f Standard MIDI file. "
 						"The header size is " + IntStr(longdata) + " bytes.";
 		rwstatus = 0;
 		return rwstatus;
@@ -568,7 +568,7 @@ int File::Write(Stream& out) {
 	ch = 'd';
 	out << ch;
 	
-	// 2. write the size of the header (always a "6" stored in unsigned long
+	// 2. write the size of the header (always a "6" stored in int
 	//    (4 bytes).
 	uint32 longdata = 6;
 	WriteBigEndianULong(out, longdata);
@@ -923,7 +923,7 @@ void File::JoinTracks() {
 		messagesum += events[i].GetCount();
 	}
 	
-	joined_track->Reserve((int)(messagesum + 32 + messagesum * 0.1));
+	joined_track->Reserve((int)(messagesum + 32 + messagesum * 0.1f));
 	
 	int old_time_state = GetTickState();
 	
@@ -1528,7 +1528,7 @@ int File::AddCue(int track, int tick, String text) {
 // File::AddTempo -- Add a tempo meta message (meta #0x51).
 //
 
-int File::AddTempo(int track, int tick, double aTempo) {
+int File::AddTempo(int track, int tick, float aTempo) {
 	Event& me = events[track].Add();
 	me.MakeTempo(aTempo);
 	me.tick = tick;
@@ -1602,7 +1602,7 @@ int File::AddCompoundTimeSignature(int track, int tick, int top,
 
 int File::MakeVLV(uint8 *buffer, int number) {
 
-	unsigned long value = (unsigned long)number;
+	int value = (int)number;
 	
 	if (value >= (1 << 28)) {
 		last_error =	"Meta-message size too large to handle";
@@ -1751,14 +1751,14 @@ int File::AddTimbre(int track, int tick, int channel, int patchnum) {
 // File::AddPitchBend -- convert  number in the range from -1 to +1
 //     into two 7-bit numbers (smallest piece first)
 //
-//   -1.0 maps to 0 (0x0000)
-//    0.0 maps to 8192 (0x2000 --> 0x40 0x00)
-//   +1.0 maps to 16383 (0x3FFF --> 0x7F 0x7F)
+//   -1.0f maps to 0 (0x0000)
+//    0.0f maps to 8192 (0x2000 --> 0x40 0x00)
+//   +1.0f maps to 16383 (0x3FFF --> 0x7F 0x7F)
 //
 
-int File::AddPitchBend(int track, int tick, int channel, double amount) {
+int File::AddPitchBend(int track, int tick, int channel, float amount) {
 	timemapvalid = 0;
-	amount += 1.0;
+	amount += 1.0f;
 	int value = int(amount * 8192 + 0.5);
 	
 	// prevent any wrap-around in case of round-off errors
@@ -2082,17 +2082,17 @@ int File::GetTrackCountAsType1() {
 //     the current message.
 //
 
-double File::GetTimeInSeconds(int track, int index) {
+float File::GetTimeInSeconds(int track, int index) {
 	return GetTimeInSeconds(GetEvent(track, index).tick);
 }
 
 
-double File::GetTimeInSeconds(int tickvalue) {
+float File::GetTimeInSeconds(int tickvalue) {
 	if (timemapvalid == 0) {
 		BuildTimeMap();
 		
 		if (timemapvalid == 0) {
-			return -1.0;    // something went wrong
+			return -1.0f;    // something went wrong
 		}
 	}
 	
@@ -2127,7 +2127,7 @@ double File::GetTimeInSeconds(int tickvalue) {
 //    the given time in seconds, then interpolate between two values.
 //
 
-int File::GetAbsoluteTickTime(double starttime) {
+int File::GetAbsoluteTickTime(float starttime) {
 	if (timemapvalid == 0) {
 		BuildTimeMap();
 		
@@ -2168,16 +2168,16 @@ int File::GetAbsoluteTickTime(double starttime) {
 //    function is called, it will be called automatically.
 //
 
-double File::GetTotalTimeInSeconds() {
+float File::GetTotalTimeInSeconds() {
 	if (timemapvalid == 0) {
 		BuildTimeMap();
 		
 		if (timemapvalid == 0) {
-			return -1.0;    // something went wrong
+			return -1.0f;    // something went wrong
 		}
 	}
 	
-	double output = 0.0;
+	float output = 0.0f;
 	
 	for (int i = 0; i < (int)events.GetCount(); i++) {
 		if (events[i].Last().seconds > output) {
@@ -2232,8 +2232,8 @@ int File::GetTotalTimeInTicks() {
 //    while in aboslute tick mode.
 //
 
-double File::GetTotalTimeInQuarters() {
-	double totalTicks = GetTotalTimeInTicks();
+float File::GetTotalTimeInQuarters() {
+	float totalTicks = GetTotalTimeInTicks();
 	return totalTicks / GetTicksPerQuarterNote();
 }
 
@@ -2299,7 +2299,7 @@ void File::ClearLinks() {
 //    given input time.
 //
 
-int File::LinearTickInterpolationAtSecond(double seconds) {
+int File::LinearTickInterpolationAtSecond(float seconds) {
 	if (timemapvalid == 0) {
 		BuildTimeMap();
 		
@@ -2308,10 +2308,10 @@ int File::LinearTickInterpolationAtSecond(double seconds) {
 		}
 	}
 	
-	double lasttime = timemap[timemap.GetCount()-1].seconds;
+	float lasttime = timemap[timemap.GetCount()-1].seconds;
 	// give an error value of -1 if time is out of range of data.
 	
-	if (seconds < 0.0) {
+	if (seconds < 0.0f) {
 		return -1;
 	}
 	
@@ -2362,12 +2362,12 @@ int File::LinearTickInterpolationAtSecond(double seconds) {
 		return -1;
 	}
 	
-	double x1 = timemap[startindex].seconds;
+	float x1 = timemap[startindex].seconds;
 	
-	double x2 = timemap[startindex+1].seconds;
-	double y1 = timemap[startindex].tick;
-	double y2 = timemap[startindex+1].tick;
-	double xi = seconds;
+	float x2 = timemap[startindex+1].seconds;
+	float y1 = timemap[startindex].tick;
+	float y2 = timemap[startindex+1].tick;
+	float xi = seconds;
 	
 	return (int)((xi -x1) * ((y2 - y1) / (x2 - x1)) + y1);
 }
@@ -2377,22 +2377,22 @@ int File::LinearTickInterpolationAtSecond(double seconds) {
 //////////////////////////////
 //
 // File::LinearSecondInterpolationAtTick -- return the time in seconds
-//    value at the given input tick time. (Ticks input could be made double).
+//    value at the given input tick time. (Ticks input could be made float).
 //
 
-double File::LinearSecondInterpolationAtTick(int ticktime) {
+float File::LinearSecondInterpolationAtTick(int ticktime) {
 	if (timemapvalid == 0) {
 		BuildTimeMap();
 		
 		if (timemapvalid == 0) {
-			return -1.0;    // something went wrong
+			return -1.0f;    // something went wrong
 		}
 	}
 	
-	double lasttick = timemap[timemap.GetCount()-1].tick;
+	float lasttick = timemap[timemap.GetCount()-1].tick;
 	// give an error value of -1 if time is out of range of data.
 	
-	if (ticktime < 0.0) {
+	if (ticktime < 0.0f) {
 		return -1;
 	}
 	
@@ -2447,12 +2447,12 @@ double File::LinearSecondInterpolationAtTick(int ticktime) {
 		return timemap[startindex].seconds;
 	}
 	
-	double x1 = timemap[startindex].tick;
+	float x1 = timemap[startindex].tick;
 	
-	double x2 = timemap[startindex+1].tick;
-	double y1 = timemap[startindex].seconds;
-	double y2 = timemap[startindex+1].seconds;
-	double xi = ticktime;
+	float x2 = timemap[startindex+1].tick;
+	float y1 = timemap[startindex].seconds;
+	float y2 = timemap[startindex+1].seconds;
+	float xi = ticktime;
 	
 	return (xi -x1) * ((y2 - y1) / (x2 - x1)) + y1;
 }
@@ -2496,11 +2496,11 @@ void File::BuildTimeMap() {
 	int tickinit = 0;
 	
 	int tpq = GetTicksPerQuarterNote();
-	double defaultTempo = 120.0;
-	double secondsPerTick = 60.0 / (defaultTempo * tpq);
+	float defaultTempo = 120.0f;
+	float secondsPerTick = 60.0f / (defaultTempo * tpq);
 	
-	double lastsec = 0.0;
-	double cursec = 0.0;
+	float lastsec = 0.0f;
+	float cursec = 0.0f;
 	
 	for (int i = 0; i < GetEventCount(0); i++) {
 		curtick = GetEvent(0, i).tick;
@@ -2718,7 +2718,7 @@ uint32 File::ReadVLValue(Stream& input) {
 
 //////////////////////////////
 //
-// File::UnpackVLV -- converts a VLV value to an unsigned long value.
+// File::UnpackVLV -- converts a VLV value to an int value.
 //     The bytes a, b, c, d are in big-endian order (the order they would
 //     be read out of the MIDI file).
 // default values: a = b = c = d = 0;
@@ -2762,7 +2762,7 @@ uint32 File::UnpackVLV(uint8 a, uint8 b, uint8 c, uint8 d) {
 void File::WriteVLValue(long value, Vector<uint8>& outdata) {
 	uint8 bytes[4] = {0};
 	
-	if ((unsigned long)value >= (1 << 28)) {
+	if ((int)value >= (1 << 28)) {
 		last_error =	"number too large to convert to VLV";
 		value = 0x0FFFffff;
 	}
@@ -3131,9 +3131,9 @@ Stream& File::WriteLittleEndianFloat(Stream& out, float value) {
 // File::WriteBigEndianDouble --
 //
 
-Stream& File::WriteBigEndianDouble(Stream& out, double value) {
+Stream& File::WriteBigEndianDouble(Stream& out, float value) {
 	union { char bytes[8];
-		double d;
+		float d;
 	} data;
 	data.d = value;
 	out << data.bytes[7];
@@ -3154,9 +3154,9 @@ Stream& File::WriteBigEndianDouble(Stream& out, double value) {
 // File::WriteLittleEndianDouble --
 //
 
-Stream& File::WriteLittleEndianDouble(Stream& out, double value) {
+Stream& File::WriteLittleEndianDouble(Stream& out, float value) {
 	union { char bytes[8];
-		double d;
+		float d;
 	} data;
 	data.d = value;
 	out << data.bytes[0];

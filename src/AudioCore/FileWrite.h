@@ -9,7 +9,7 @@ NAMESPACE_AUDIO_BEGIN
 class FileWrite : public Audio {
 public:
 
-	typedef unsigned long FILE_TYPE;
+	typedef int FILE_TYPE;
 
 	static const FILE_TYPE FILE_RAW;
 	static const FILE_TYPE FILE_WAV;
@@ -19,10 +19,10 @@ public:
 
 
 	FileWrite();
-	FileWrite( String file_name, unsigned int channel_count = 1, FILE_TYPE type = FILE_WAV, Audio::AudioFormat format = AUDIO_SINT16 );
+	FileWrite( String file_name, int channel_count = 1, FILE_TYPE type = FILE_WAV, Audio::AudioFormat format = AUDIO_SINT16 );
 	virtual ~FileWrite();
 
-	void Open( String file_name, unsigned int channel_count = 1,
+	void Open( String file_name, int channel_count = 1,
 			   FileWrite::FILE_TYPE type = FILE_WAV, Audio::AudioFormat format = AUDIO_SINT16 );
 	void Close();
 	bool isOpen();
@@ -43,8 +43,8 @@ protected:
 	FILE* fd_;
 	FILE_TYPE file_type_;
 	AudioFormat data_type_;
-	unsigned int channels_;
-	unsigned long frame_counter_;
+	int channels_;
+	int frame_counter_;
 	bool byte_swap_;
 
 };

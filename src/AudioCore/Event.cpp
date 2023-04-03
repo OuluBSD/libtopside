@@ -73,7 +73,7 @@ Event::~Event() {
 void Event::ClearVariables() {
 	tick      = 0;
 	track     = 0;
-	seconds   = 0.0;
+	seconds   = 0.0f;
 	seq       = 0;
 	eventlink = NULL;
 }
@@ -259,14 +259,14 @@ int Event::GetTickDuration() {
 //     reported as zero.
 //
 
-double Event::GetDurationInSeconds() const {
+float Event::GetDurationInSeconds() const {
 	const Event* mev = GetLinkedEvent();
 	
 	if (mev == NULL) {
 		return 0;
 	}
 	
-	double seconds2 = mev->seconds;
+	float seconds2 = mev->seconds;
 	
 	if (seconds2 > seconds) {
 		return seconds2 - seconds;

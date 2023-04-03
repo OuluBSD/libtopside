@@ -85,7 +85,7 @@ void Drummer::SetPreset(String preset_txt) {
 	//DUMPM(preset);
 }
 
-double Drummer::Tick(unsigned int) {
+float Drummer::Tick(int) {
 	last_frame_.Zero();
 	
 	if (sounding_count == 0)
@@ -119,8 +119,8 @@ double Drummer::Tick(unsigned int) {
 	return last_frame_[0];
 }
 
-AudioFrames& Drummer::Tick(AudioFrames& frames, unsigned int channel) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+AudioFrames& Drummer::Tick(AudioFrames& frames, int channel) {
+	int channel_count = last_frame_.GetChannelCount();
 #if defined(flagDEBUG)
 	
 	if (channel > frames.GetChannelCount() - channel_count) {
@@ -129,16 +129,16 @@ AudioFrames& Drummer::Tick(AudioFrames& frames, unsigned int channel) {
 	}
 	
 #endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 	
 	if (channel_count == 1) {
-		for (unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step)
+		for (int i = 0; i < frames.GetFrameCount(); i++, samples += step)
 			* samples++ = Tick();
 	}
 	
 	else {
-		for (unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step) {
+		for (int i = 0; i < frames.GetFrameCount(); i++, samples += step) {
 			*samples++ = Tick();
 			
 			for (j = 1; j < channel_count; j++)
@@ -149,14 +149,14 @@ AudioFrames& Drummer::Tick(AudioFrames& frames, unsigned int channel) {
 	return frames;
 }
 
-void Drummer::NoteOn(double instrument, double amplitude) {
-	if (amplitude < 0.0 || amplitude > 1.0) {
+void Drummer::NoteOn(float instrument, float amplitude) {
+	if (amplitude < 0.0f || amplitude > 1.0f) {
 		LOG("Drummer::noteOn: amplitude parameter is out of bounds!");
 		HandleError(AudioError::WARNING);
 		return;
 	}
 	
-	int note_number = (int)((12 * log(instrument / 220.0) / log(2.0)) + 57.01);
+	int note_number = (int)((12 * log(instrument / 220.0f) / log(2.0f)) + 57.01f);
 	int i_wave;
 	
 	for (i_wave = 0; i_wave < DRUM_POLYPHONY; i_wave++) {
@@ -167,7 +167,7 @@ void Drummer::NoteOn(double instrument, double amplitude) {
 				
 				waves_[i_wave].Reset();
 				
-				filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
+				filters_[i_wave].SetPole(0.999f - (amplitude * 0.6f));
 				filters_[i_wave].SetGain(amplitude);
 				break;
 			}
@@ -205,22 +205,22 @@ void Drummer::NoteOn(double instrument, double amplitude) {
 			waves_[i_wave].OpenFile(path.Begin(), false);
 		#endif
 		
-		if (Audio::GetSampleRate() != 44100.0)
-			waves_[i_wave].SetRate(44100.0 / Audio::GetSampleRate());
+		if (Audio::GetSampleRate() != 44100.0f)
+			waves_[i_wave].SetRate(44100.0f / Audio::GetSampleRate());
 			
-		filters_[i_wave].SetPole(0.999 - (amplitude * 0.6));
+		filters_[i_wave].SetPole(0.999f - (amplitude * 0.6f));
 		filters_[i_wave].SetGain(amplitude);
 	}
 }
 
-void Drummer::NoteOff(double amplitude) {
+void Drummer::NoteOff(float amplitude) {
 	if (skip_note_off)
 		return;
 	
 	int i = 0;
 	
 	while (i < sounding_count)
-		filters_[i++].SetGain(amplitude * 0.01);
+		filters_[i++].SetGain(amplitude * 0.01f);
 }
 
 NAMESPACE_AUDIO_END

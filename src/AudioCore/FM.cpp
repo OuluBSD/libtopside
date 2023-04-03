@@ -3,69 +3,69 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-FM::FM( unsigned int operators )
+FM::FM( int operators )
 	: nOperators_(operators) {
 	if ( nOperators_ == 0 ) {
 		LOG("FM::FM: Number of operators must be greater than zero!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
-	twozero_.SetB2( -1.0 );
-	twozero_.SetGain( 0.0 );
+	twozero_.SetB2( -1.0f );
+	twozero_.SetGain( 0.0f );
 	vibrato_.SetFrequency( 6.0 );
-	unsigned int j;
+	int j;
 	adsr_.SetCount( nOperators_ );
 	waves_.SetCount( nOperators_ );
 
 	for (j = 0; j < nOperators_; j++ ) {
-		ratios_.Add( 1.0 );
-		gains_.Add( 1.0 );
+		ratios_.Add( 1.0f );
+		gains_.Add( 1.0f );
 		adsr_[j] = new ADSR();
 	}
 
-	mod_depth_ = 0.0;
-	control1_ = 1.0;
-	control2_ = 1.0;
-	base_frequency_ = 440.0;
+	mod_depth_ = 0.0f;
+	control1_ = 1.0f;
+	control2_ = 1.0f;
+	base_frequency_ = 440.0f;
 	int i;
-	double temp = 1.0;
+	float temp = 1.0f;
 
 	for (i = 99; i >= 0; i--) {
 		fm_gains_[i] = temp;
-		temp *= 0.933033;
+		temp *= 0.933033f;
 	}
 
-	temp = 1.0;
+	temp = 1.0f;
 
 	for (i = 15; i >= 0; i--) {
 		fm_sus_levels_[i] = temp;
-		temp *= 0.707101;
+		temp *= 0.707101f;
 	}
 
-	temp = 8.498186;
+	temp = 8.498186f;
 
 	for (i = 0; i < 32; i++) {
 		fm_attr_times_[i] = temp;
-		temp *= 0.707101;
+		temp *= 0.707101f;
 	}
 }
 
 FM::~FM() {
-	for (unsigned int i = 0; i < nOperators_; i++ ) {
+	for (int i = 0; i < nOperators_; i++ ) {
 		delete waves_[i];
 		delete adsr_[i];
 	}
 }
 
 void FM::LoadWaves( const char** filenames ) {
-	for (unsigned int i = 0; i < nOperators_; i++ )
+	for (int i = 0; i < nOperators_; i++ )
 		waves_[i] = new FileLoop( filenames[i], true );
 }
 
-void FM::SetFrequency( double frequency ) {
+void FM::SetFrequency( float frequency ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("FM::SetFrequency: argument is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -74,11 +74,11 @@ void FM::SetFrequency( double frequency ) {
 	#endif
 	base_frequency_ = frequency;
 
-	for ( unsigned int i = 0; i < nOperators_; i++ )
+	for ( int i = 0; i < nOperators_; i++ )
 		waves_[i]->SetFrequency( base_frequency_ * ratios_[i] );
 }
 
-void FM::SetRatio( unsigned int waveIndex, double ratio ) {
+void FM::SetRatio( int waveIndex, float ratio ) {
 	if ( waveIndex >= nOperators_ ) {
 		LOG("FM:setRatio: waveIndex parameter is greater than the number of operators!");
 		HandleError( AudioError::WARNING );
@@ -87,13 +87,13 @@ void FM::SetRatio( unsigned int waveIndex, double ratio ) {
 
 	ratios_[waveIndex] = ratio;
 
-	if (ratio > 0.0)
+	if (ratio > 0.0f)
 		waves_[waveIndex]->SetFrequency( base_frequency_ * ratio );
 	else
 		waves_[waveIndex]->SetFrequency( ratio );
 }
 
-void FM::SetGain( unsigned int waveIndex, double gain ) {
+void FM::SetGain( int waveIndex, float gain ) {
 	if ( waveIndex >= nOperators_ ) {
 		LOG("FM::SetGain: waveIndex parameter is greater than the number of operators!");
 		HandleError( AudioError::WARNING );
@@ -104,37 +104,37 @@ void FM::SetGain( unsigned int waveIndex, double gain ) {
 }
 
 void FM::KeyOn() {
-	for ( unsigned int i = 0; i < nOperators_; i++ )
+	for ( int i = 0; i < nOperators_; i++ )
 		adsr_[i]->KeyOn();
 }
 
 void FM::KeyOff() {
-	for ( unsigned int i = 0; i < nOperators_; i++ )
+	for ( int i = 0; i < nOperators_; i++ )
 		adsr_[i]->KeyOff();
 }
 
-void FM::NoteOff( double amplitude ) {
+void FM::NoteOff( float amplitude ) {
 	this->KeyOff();
 }
 
-void FM::ControlChange( int number, double value ) {
+void FM::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0f ) == false ) {
 		LOG("FM::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if (number == __SK_Breath_)
 		this->SetControl1( normalizedValue );
 	else if (number == __SK_FootControl_)
 		this->SetControl2( normalizedValue );
 	else if (number == __SK_ModFrequency_)
-		this->SetModulationSpeed( normalizedValue * 12.0);
+		this->SetModulationSpeed( normalizedValue * 12.0f);
 	else if (number == __SK_ModWheel_)
 		this->SetModulationDepth( normalizedValue );
 	else if (number == __SK_AfterTouch_Cont_)	{

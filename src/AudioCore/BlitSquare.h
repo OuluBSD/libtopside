@@ -8,47 +8,47 @@ NAMESPACE_AUDIO_BEGIN
 class BlitSquare: public Generator {
 public:
 
-	BlitSquare( double frequency = 220.0 );
+	BlitSquare( float frequency = 220.0f );
 	~BlitSquare();
 	void Reset();
 	
-	void SetPhase( double phase ) {
+	void SetPhase( float phase ) {
 		phase_ = PI * phase;
 	};
 
-	double GetPhase() const {
+	float GetPhase() const {
 		return phase_ / PI;
 	};
 
-	void SetFrequency( double frequency );
-	void SetHarmonics( unsigned int nHarmonics = 0 );
+	void SetFrequency( float frequency );
+	void SetHarmonics( int nHarmonics = 0 );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
 	void UpdateHarmonics();
 
-	unsigned int harmonic_count_;
-	unsigned int m_;
-	double rate_;
-	double phase_;
-	double p_;
-	double a_;
-	double last_blit_output_;
-	double dcb_state_;
+	int harmonic_count_;
+	int m_;
+	float rate_;
+	float phase_;
+	float p_;
+	float a_;
+	float last_blit_output_;
+	float dcb_state_;
 };
 
-inline double BlitSquare::Tick() {
-	double temp = last_blit_output_;
-	double denominator = sin( phase_ );
+inline float BlitSquare::Tick() {
+	float temp = last_blit_output_;
+	float denominator = sin( phase_ );
 
-	if ( fabs( denominator )  < std::numeric_limits<double>::epsilon() ) {
+	if ( fabs( denominator )  < std::numeric_limits<float>::epsilon() ) {
 		if ( phase_ < 0.1f || phase_ > TWO_PI - 0.1f )
 			last_blit_output_ = a_;
 		else
@@ -60,7 +60,7 @@ inline double BlitSquare::Tick() {
 	}
 
 	last_blit_output_ += temp;
-	last_frame_[0] = last_blit_output_ - dcb_state_ + 0.999 * last_frame_[0];
+	last_frame_[0] = last_blit_output_ - dcb_state_ + 0.999f * last_frame_[0];
 	dcb_state_ = last_blit_output_;
 	phase_ += rate_;
 
@@ -69,7 +69,7 @@ inline double BlitSquare::Tick() {
 	return last_frame_[0];
 }
 
-inline AudioFrames& BlitSquare::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& BlitSquare::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -78,10 +78,10 @@ inline AudioFrames& BlitSquare::Tick( AudioFrames& frames, unsigned int channel 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = BlitSquare::Tick();
 
 	return frames;

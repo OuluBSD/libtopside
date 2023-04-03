@@ -9,10 +9,10 @@ class Generator : public Audio {
 public:
 
 	Generator() {
-		last_frame_.SetCount( 1, 1, 0.0 );
+		last_frame_.SetCount( 1, 1, 0.0f );
 	};
 
-	unsigned int GetChannelsOut() const {
+	int GetChannelsOut() const {
 		return last_frame_.GetChannelCount();
 	};
 
@@ -20,7 +20,7 @@ public:
 		return last_frame_;
 	};
 
-	virtual AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 ) = 0;
+	virtual AudioFrames& Tick( AudioFrames& frames, int channel = 0 ) = 0;
 
 protected:
 

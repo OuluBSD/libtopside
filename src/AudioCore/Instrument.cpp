@@ -3,7 +3,7 @@
 NAMESPACE_AUDIO_BEGIN
 
 Instrument::Instrument() {
-	last_frame_.SetCount( 1, 2, 0.0 );
+	last_frame_.SetCount( 1, 2, 0.0f );
 }
 
 void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
@@ -73,7 +73,7 @@ void Instrument::HandleEvent(const MidiIO::Event& e, int track_i) {
 	}
 	else if (e.IsNoteOn()) {
 		float freq = 440.0f * powf(2.0f, (e.GetP1() - 69.0f) / 12.0f);
-		float ampl = e.GetP2() / 127.0;
+		float ampl = e.GetP2() / 127.0f;
 		NoteOn(freq, ampl);
 	}
 	else if (e.IsNote()) {

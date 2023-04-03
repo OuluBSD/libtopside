@@ -35,13 +35,13 @@ public:
 	const Event*	GetLinkedEvent() const;
 	Event*			GetLinkedEvent();
 	int        GetTickDuration();
-	double     GetDurationInSeconds() const;
+	float     GetDurationInSeconds() const;
 	
 	String     ToString() const;
 	
 	int       tick;
 	int       track;
-	double    seconds;
+	float    seconds;
 	int       seq;
 	
 private:

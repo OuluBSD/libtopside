@@ -5,8 +5,8 @@ NAMESPACE_AUDIO_BEGIN
 
 Simple::Simple() {
 	loop_ = new FileLoop( (Audio::GetRawWavePath() + "impuls10.raw").Begin(), true );
-	filter_.SetPole( 0.5 );
-	base_frequency_ = 440.0;
+	filter_.SetPole( 0.5f );
+	base_frequency_ = 440.0f;
 	SetFrequency( base_frequency_ );
 	loop_gain_ = 0.5;
 }
@@ -23,19 +23,19 @@ void Simple::KeyOff() {
 	adsr_.KeyOff();
 }
 
-void Simple::NoteOn( double frequency, double amplitude ) {
+void Simple::NoteOn( float frequency, float amplitude ) {
 	this->KeyOn();
 	this->SetFrequency( frequency );
 	filter_.SetGain( amplitude );
 }
-void Simple::NoteOff( double amplitude ) {
+void Simple::NoteOff( float amplitude ) {
 	this->KeyOff();
 }
 
-void Simple::SetFrequency( double frequency ) {
+void Simple::SetFrequency( float frequency ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Simple::SetFrequency: argument is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -46,24 +46,24 @@ void Simple::SetFrequency( double frequency ) {
 	loop_->SetFrequency( frequency );
 }
 
-void Simple::ControlChange( int number, double value ) {
+void Simple::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0 ) == false ) {
 		LOG("Simple::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if (number == __SK_Breath_)
-		filter_.SetPole( 0.99 * (1.0 - (normalizedValue * 2.0)) );
+		filter_.SetPole( 0.99 * (1.0f - (normalizedValue * 2.0f)) );
 	else if (number == __SK_NoiseLevel_)
 		loop_gain_ = normalizedValue;
 	else if (number == __SK_ModFrequency_) {
-		normalizedValue /= 0.2 * Audio::GetSampleRate();
+		normalizedValue /= 0.2f * Audio::GetSampleRate();
 		adsr_.SetAttackRate( normalizedValue );
 		adsr_.SetDecayRate( normalizedValue );
 		adsr_.SetReleaseRate( normalizedValue );

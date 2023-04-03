@@ -77,7 +77,7 @@ void CompressorParameter::Init(float freq)
 
 
 Compressor::Compressor() {
-	last_frame_.SetCount( 1, 2, 0.0 );
+	last_frame_.SetCount( 1, 2, 0.0f );
 	param.SetDefault(GetSampleRate());
 	this->Clear();
 }
@@ -166,7 +166,7 @@ void Compressor::Clear() {
 	sample = 0;
 }
 
-double Compressor::Tick(double input, unsigned int channel) {
+float Compressor::Tick(float input, int channel) {
 	this->sample = input;
 	SignDetection();
 	
@@ -192,7 +192,7 @@ double Compressor::Tick(double input, unsigned int channel) {
 	return output;
 }
 
-double Compressor::Tick2( double input1, double input2, unsigned int channel ) {
+float Compressor::Tick2( float input1, float input2, int channel ) {
 	this->sample = input1;
 	SignDetection();
 	
@@ -226,27 +226,27 @@ void Compressor::LoadState(const ArrayMap<String, Object>& state) {
 	
 	i = state.Find(".gain");
 	if (i >= 0)
-		param.gain_db = state[i].ToDouble();
+		param.gain_db = state[i].ToFloat();
 	
 	i = state.Find(".treshold");
 	if (i >= 0)
-		param.th_db = state[i].ToDouble();
+		param.th_db = state[i].ToFloat();
 	
 	i = state.Find(".knee");
 	if (i >= 0)
-		param.w_db = state[i].ToDouble();
+		param.w_db = state[i].ToFloat();
 	
 	i = state.Find(".ratio");
 	if (i >= 0)
-		param.ratio = state[i].ToDouble();
+		param.ratio = state[i].ToFloat();
 	
 	i = state.Find(".attack");
 	if (i >= 0)
-		param.att = state[i].ToDouble();
+		param.att = state[i].ToFloat();
 	
 	i = state.Find(".release");
 	if (i >= 0)
-		param.rlt = state[i].ToDouble();
+		param.rlt = state[i].ToFloat();
 	
 	i = state.Find(".auto.makeup");
 	if (i >= 0)

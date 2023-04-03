@@ -8,30 +8,30 @@ NAMESPACE_AUDIO_BEGIN
 class TapDelay : public Filter {
 public:
 
-	TapDelay( const Vector<unsigned long>& taps, unsigned long max_delay );
+	TapDelay( const Vector<int>& taps, int max_delay );
 	~TapDelay();
 
-	void SetMaximumDelay( unsigned long delay );
-	void SetTapDelays( const Vector<unsigned long>& taps );
+	void SetMaximumDelay( int delay );
+	void SetTapDelays( const Vector<int>& taps );
 
-	const Vector<unsigned long>& GetTapDelays() const {
+	const Vector<int>& GetTapDelays() const {
 		return delays_;
 	};
 
-	double GetLastOut( unsigned int tap = 0 ) const;
-	AudioFrames& Tick( double input, AudioFrames& outputs );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0 );
+	float GetLastOut( int tap = 0 ) const;
+	AudioFrames& Tick( float input, AudioFrames& outputs );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0 );
 
 protected:
 
-	unsigned long in_point_;
-	Vector<unsigned long> out_point_;
-	Vector<unsigned long> delays_;
+	int in_point_;
+	Vector<int> out_point_;
+	Vector<int> delays_;
 
 };
 
-inline double TapDelay::GetLastOut( unsigned int tap ) const {
+inline float TapDelay::GetLastOut( int tap ) const {
 	#if defined(flagDEBUG)
 
 	if ( tap >= last_frame_.GetCount() ) {
@@ -43,7 +43,7 @@ inline double TapDelay::GetLastOut( unsigned int tap ) const {
 	return last_frame_[tap];
 }
 
-inline AudioFrames& TapDelay::Tick( double input, AudioFrames& outputs ) {
+inline AudioFrames& TapDelay::Tick( float input, AudioFrames& outputs ) {
 	#if defined(flagDEBUG)
 
 	if ( outputs.GetChannelCount() < out_point_.GetCount() ) {
@@ -57,9 +57,9 @@ inline AudioFrames& TapDelay::Tick( double input, AudioFrames& outputs ) {
 	if ( in_point_ == inputs_.GetCount() )
 		in_point_ = 0;
 
-	double* outs = &outputs[0];
+	float* outs = &outputs[0];
 
-	for ( unsigned int i = 0; i < out_point_.GetCount(); i++ ) {
+	for ( int i = 0; i < out_point_.GetCount(); i++ ) {
 		*outs++ = inputs_[out_point_[i]];
 		last_frame_[i] = *outs;
 
@@ -70,7 +70,7 @@ inline AudioFrames& TapDelay::Tick( double input, AudioFrames& outputs ) {
 	return outputs;
 }
 
-inline AudioFrames& TapDelay::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& TapDelay::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -84,13 +84,13 @@ inline AudioFrames& TapDelay::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* in_samples = &frames[channel];
-	double* out_samples = &frames[0];
-	std::size_t j;
-	unsigned int in_step = frames.GetChannelCount();
-	std::size_t out_step = frames.GetChannelCount() - out_point_.GetCount();
+	float* in_samples = &frames[channel];
+	float* out_samples = &frames[0];
+	int j;
+	int in_step = frames.GetChannelCount();
+	int out_step = frames.GetChannelCount() - out_point_.GetCount();
 
-	for ( unsigned long i = 0; i < frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( long i = 0; i < frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		inputs_[in_point_++] = *in_samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;
@@ -109,7 +109,7 @@ inline AudioFrames& TapDelay::Tick( AudioFrames& frames, unsigned int channel ) 
 	return frames;
 }
 
-inline AudioFrames& TapDelay::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel ) {
+inline AudioFrames& TapDelay::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() ) {
@@ -123,13 +123,13 @@ inline AudioFrames& TapDelay::Tick( AudioFrames& in_frames, AudioFrames& out_fra
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[0];
-	std::size_t j;
-	unsigned int in_step = in_frames.GetChannelCount();
-	std::size_t out_step = out_frames.GetChannelCount() - out_point_.GetCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[0];
+	int j;
+	int in_step = in_frames.GetChannelCount();
+	int out_step = out_frames.GetChannelCount() - out_point_.GetCount();
 
-	for ( unsigned long i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		inputs_[in_point_++] = *in_samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;

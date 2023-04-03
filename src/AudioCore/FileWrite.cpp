@@ -53,7 +53,7 @@ struct AifHeader {
 	char comm[4];
 	SINT32 commSize;
 	SINT16 channel_count;
-	unsigned long sampleFrames;
+	int sampleFrames;
 	SINT16 sampleSize;
 	unsigned char srate[10];
 };
@@ -61,8 +61,8 @@ struct AifHeader {
 struct AifSsnd {
 	char ssnd[4];
 	SINT32 ssndSize;
-	unsigned long offset;
-	unsigned long blockSize;
+	int offset;
+	int blockSize;
 };
 
 
@@ -78,7 +78,7 @@ FileWrite::FileWrite()
 	: fd_( 0 ) {
 }
 
-FileWrite::FileWrite( String file_name, unsigned int channel_count, FILE_TYPE type, Audio::AudioFormat format )
+FileWrite::FileWrite( String file_name, int channel_count, FILE_TYPE type, Audio::AudioFormat format )
 	: fd_( 0 ) {
 	this->Open( file_name, channel_count, type, format );
 }
@@ -109,7 +109,7 @@ bool FileWrite::isOpen() {
 	else return false;
 }
 
-void FileWrite::Open( String file_name, unsigned int channel_count, FileWrite::FILE_TYPE type, Audio::AudioFormat format ) {
+void FileWrite::Open( String file_name, int channel_count, FileWrite::FILE_TYPE type, Audio::AudioFormat format ) {
 	this->Close();
 
 	if ( channel_count < 1 ) {
@@ -219,7 +219,7 @@ bool FileWrite::SetWavFile( String file_name ) {
 
 	hdr.bytesPerSample = (SINT16) (channels_ * hdr.bitsPerSample / 8);
 	hdr.bytesPerSecond = (SINT32) (hdr.sampleRate * hdr.bytesPerSample);
-	unsigned int bytesToWrite = 36;
+	int bytesToWrite = 36;
 
 	if ( channels_ > 2 || hdr.bitsPerSample > 16 ) {
 		bytesToWrite = 72;
@@ -431,8 +431,8 @@ bool FileWrite::SetAifFile( String file_name ) {
 	}
 
 	SINT16 i;
-	unsigned long exp;
-	unsigned long rate = (unsigned long) Audio::GetSampleRate();
+	int exp;
+	int rate = (int) Audio::GetSampleRate();
 	memset( hdr.srate, 0, 10 );
 	exp = rate;
 
@@ -508,7 +508,7 @@ error:
 }
 
 void FileWrite::CloseAifFile() {
-	unsigned long frames = (unsigned long) frame_counter_;
+	int frames = (int) frame_counter_;
 	#ifdef __LITTLE_ENDIAN__
 	Swap32((unsigned char*)&frames);
 	#endif
@@ -526,7 +526,7 @@ void FileWrite::CloseAifFile() {
 	else if ( data_type_ == AUDIO_FLOAT64 )
 		bytesPerSample = 8;
 
-	unsigned long bytes = frame_counter_ * bytesPerSample * channels_ + 46;
+	int bytes = frame_counter_ * bytesPerSample * channels_ + 46;
 
 	if ( data_type_ == AUDIO_FLOAT32 || data_type_ == AUDIO_FLOAT64 ) bytes += 6;
 
@@ -703,13 +703,13 @@ void FileWrite::write( AudioFrames& buffer ) {
 		return;
 	}
 
-	unsigned long nSamples = buffer.GetCount();
+	int nSamples = buffer.GetCount();
 
 	if ( data_type_ == AUDIO_SINT16 ) {
 		SINT16 sample;
 
-		for ( unsigned long k = 0; k < nSamples; k++ ) {
-			sample = (SINT16) (buffer[k] * 32767.0);
+		for ( int k = 0; k < nSamples; k++ ) {
+			sample = (SINT16) (buffer[k] * 32767.0f);
 
 			if ( byte_swap_ ) Swap16( (unsigned char*)&sample );
 
@@ -720,8 +720,8 @@ void FileWrite::write( AudioFrames& buffer ) {
 		if ( file_type_ == FILE_WAV ) {
 			unsigned char sample;
 
-			for ( unsigned long k = 0; k < nSamples; k++ ) {
-				sample = (unsigned char) (buffer[k] * 127.0 + 128.0);
+			for ( int k = 0; k < nSamples; k++ ) {
+				sample = (unsigned char) (buffer[k] * 127.0 + 128.0f);
 
 				if ( fwrite(&sample, 1, 1, fd_) != 1 ) goto error;
 			}
@@ -729,8 +729,8 @@ void FileWrite::write( AudioFrames& buffer ) {
 		else {
 			signed char sample;
 
-			for ( unsigned long k = 0; k < nSamples; k++ ) {
-				sample = (signed char) (buffer[k] * 127.0);
+			for ( int k = 0; k < nSamples; k++ ) {
+				sample = (signed char) (buffer[k] * 127.0f);
 
 				if ( fwrite(&sample, 1, 1, fd_) != 1 ) goto error;
 			}
@@ -739,8 +739,8 @@ void FileWrite::write( AudioFrames& buffer ) {
 	else if ( data_type_ == AUDIO_SINT32 ) {
 		SINT32 sample;
 
-		for ( unsigned long k = 0; k < nSamples; k++ ) {
-			sample = (SINT32) (buffer[k] * 2147483647.0);
+		for ( int k = 0; k < nSamples; k++ ) {
+			sample = (SINT32) (buffer[k] * 2147483647.0f);
 
 			if ( byte_swap_ ) Swap32( (unsigned char*)&sample );
 
@@ -750,7 +750,7 @@ void FileWrite::write( AudioFrames& buffer ) {
 	else if ( data_type_ == AUDIO_FLOAT32 ) {
 		FLOAT32 sample;
 
-		for ( unsigned long k = 0; k < nSamples; k++ ) {
+		for ( int k = 0; k < nSamples; k++ ) {
 			sample = (FLOAT32) (buffer[k]);
 
 			if ( byte_swap_ ) Swap32( (unsigned char*)&sample );
@@ -761,7 +761,7 @@ void FileWrite::write( AudioFrames& buffer ) {
 	else if ( data_type_ == AUDIO_FLOAT64 ) {
 		FLOAT64 sample;
 
-		for ( unsigned long k = 0; k < nSamples; k++ ) {
+		for ( int k = 0; k < nSamples; k++ ) {
 			sample = (FLOAT64) (buffer[k]);
 
 			if ( byte_swap_ ) Swap64( (unsigned char*)&sample );
@@ -772,8 +772,8 @@ void FileWrite::write( AudioFrames& buffer ) {
 	else if ( data_type_ == AUDIO_SINT24 ) {
 		SINT32 sample;
 
-		for ( unsigned long k = 0; k < nSamples; k++ ) {
-			sample = (SINT32) (buffer[k] * 8388607.0);
+		for ( int k = 0; k < nSamples; k++ ) {
+			sample = (SINT32) (buffer[k] * 8388607.0f);
 
 			if ( byte_swap_ ) {
 				Swap32( (unsigned char*)&sample );

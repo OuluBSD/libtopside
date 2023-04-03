@@ -9,27 +9,27 @@ class Iir : public Filter {
 public:
 
 	Iir();
-	Iir( Vector<double>& bCoefficients, Vector<double>& aCoefficients );
+	Iir( Vector<float>& bCoefficients, Vector<float>& aCoefficients );
 	~Iir();
-	void SetCoefficients( Vector<double>& bCoefficients, Vector<double>& aCoefficients, bool ClearState = false );
-	void SetNumerator( Vector<double>& bCoefficients, bool ClearState = false );
-	void SetDenominator( Vector<double>& aCoefficients, bool ClearState = false );
+	void SetCoefficients( Vector<float>& bCoefficients, Vector<float>& aCoefficients, bool ClearState = false );
+	void SetNumerator( Vector<float>& bCoefficients, bool ClearState = false );
+	void SetDenominator( Vector<float>& aCoefficients, bool ClearState = false );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
 };
 
-inline double Iir::Tick( double input ) {
-	size_t i;
-	outputs_[0] = 0.0;
+inline float Iir::Tick( float input ) {
+	int i;
+	outputs_[0] = 0.0f;
 	inputs_[0] = gain_ * input;
 
 	for ( i = b_.GetCount() - 1; i > 0; i-- ) {
@@ -48,7 +48,7 @@ inline double Iir::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& Iir::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Iir::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -57,12 +57,12 @@ inline AudioFrames& Iir::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	size_t i;
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int i;
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int j = 0; j < frames.GetFrameCount(); j++, samples += step ) {
-		outputs_[0] = 0.0;
+	for ( int j = 0; j < frames.GetFrameCount(); j++, samples += step ) {
+		outputs_[0] = 0.0f;
 		inputs_[0] = gain_ * *samples;
 
 		for ( i = b_.GetCount() - 1; i > 0; i-- ) {
@@ -84,7 +84,7 @@ inline AudioFrames& Iir::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-inline AudioFrames& Iir::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& Iir::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -93,13 +93,13 @@ inline AudioFrames& Iir::Tick( AudioFrames& in_frames, AudioFrames& out_frames, 
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	size_t i;
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int i;
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int j = 0; j < in_frames.GetFrameCount(); j++, in_samples += in_step, out_samples += out_step ) {
-		outputs_[0] = 0.0;
+	for ( int j = 0; j < in_frames.GetFrameCount(); j++, in_samples += in_step, out_samples += out_step ) {
+		outputs_[0] = 0.0f;
 		inputs_[0] = gain_ * *in_samples;
 
 		for ( i = b_.GetCount() - 1; i > 0; i-- ) {

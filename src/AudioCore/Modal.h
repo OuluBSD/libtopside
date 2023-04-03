@@ -8,28 +8,28 @@ NAMESPACE_AUDIO_BEGIN
 class Modal : public Instrument {
 public:
 
-	Modal( unsigned int modes = 4 );
+	Modal( int modes = 4 );
 	virtual ~Modal();
 	void Clear();
-	virtual void SetFrequency( double frequency );
-	void SetRatioAndRadius( unsigned int modeIndex, double ratio, double radius );
+	virtual void SetFrequency( float frequency );
+	void SetRatioAndRadius( int modeIndex, float ratio, float radius );
 	
-	void SetMasterGain( double aGain ) {
+	void SetMasterGain( float aGain ) {
 		masterGain_ = aGain;
 	};
 
-	void SetDirectGain( double aGain ) {
+	void SetDirectGain( float aGain ) {
 		directGain_ = aGain;
 	};
 
-	void SetModeGain( unsigned int modeIndex, double gain );
-	virtual void Strike( double amplitude );
-	void Damp( double amplitude );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	virtual void ControlChange( int number, double value ) = 0;
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetModeGain( int modeIndex, float gain );
+	virtual void Strike( float amplitude );
+	void Damp( float amplitude );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	virtual void ControlChange( int number, float value ) = 0;
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -39,30 +39,30 @@ protected:
 	OnePole  onepole_;
 	SineWave vibrato_;
 
-	unsigned int mode_count_;
-	Vector<double> ratios_;
-	Vector<double> radii_;
+	int mode_count_;
+	Vector<float> ratios_;
+	Vector<float> radii_;
 
-	double vibrato_gain_;
-	double masterGain_;
-	double directGain_;
-	double stickHardness_;
-	double strike_position_;
-	double base_frequency_;
+	float vibrato_gain_;
+	float masterGain_;
+	float directGain_;
+	float stickHardness_;
+	float strike_position_;
+	float base_frequency_;
 };
 
-inline double Modal::Tick( unsigned int ) {
-	double temp = masterGain_ * onepole_.Tick( wave_->Tick() * envelope_.Tick() );
-	double temp2 = 0.0;
+inline float Modal::Tick( int ) {
+	float temp = masterGain_ * onepole_.Tick( wave_->Tick() * envelope_.Tick() );
+	float temp2 = 0.0f;
 
-	for ( unsigned int i = 0; i < mode_count_; i++ )
+	for ( int i = 0; i < mode_count_; i++ )
 		temp2 += filters_[i]->Tick(temp);
 
 	temp2  -= temp2 * directGain_;
 	temp2 += directGain_ * temp;
 
-	if ( vibrato_gain_ != 0.0 ) {
-		temp = 1.0 + ( vibrato_.Tick() * vibrato_gain_ );
+	if ( vibrato_gain_ != 0.0f ) {
+		temp = 1.0f + ( vibrato_.Tick() * vibrato_gain_ );
 		temp2 = temp * temp2;
 	}
 
@@ -70,8 +70,8 @@ inline double Modal::Tick( unsigned int ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& Modal::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Modal::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -80,15 +80,15 @@ inline AudioFrames& Modal::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

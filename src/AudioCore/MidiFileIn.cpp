@@ -64,21 +64,21 @@ MidiFileIn::MidiFileIn( String file_name ) {
 	Swap16((unsigned char*)&buffer);
 	#endif
 	division_ = (int) * data;
-	double tickrate;
+	float tickrate;
 	usingTimeCode_ = false;
 
 	if ( *data & 0x8000 ) {
-		tickrate = (double) - (*data & 0x7F00);
+		tickrate = (float) - (*data & 0x7F00);
 
-		if ( tickrate == 29.0 ) tickrate = 29.97;
+		if ( tickrate == 29.0f ) tickrate = 29.97;
 
 		tickrate *= (*data & 0x00FF);
 		usingTimeCode_ = true;
 	}
 	else
-		tickrate = (double) (*data & 0x7FFF);
+		tickrate = (float) (*data & 0x7FFF);
 
-	unsigned int i;
+	int i;
 
 	for ( i = 0; i < nTracks_; i++ ) {
 		if ( !file_.Get( chunkType, 4 ) ) goto error;
@@ -97,8 +97,8 @@ MidiFileIn::MidiFileIn( String file_name ) {
 		trackStatus_.Add( 0 );
 		file_.SeekCur( *size );
 
-		if ( usingTimeCode_ ) tickSeconds_.Add( (double) (1.0 / tickrate) );
-		else tickSeconds_.Add( (double) (0.5 / tickrate) );
+		if ( usingTimeCode_ ) tickSeconds_.Add( (float) (1.0f / tickrate) );
+		else tickSeconds_.Add( (float) (0.5f / tickrate) );
 	}
 
 	TempoChange tempoEvent;
@@ -108,7 +108,7 @@ MidiFileIn::MidiFileIn( String file_name ) {
 
 	if ( format_ == 1 && !usingTimeCode_ ) {
 		Vector<unsigned char> event;
-		unsigned long value, count;
+		int value, count;
 		usingTimeCode_ = true;
 		count = GetNextEvent( &event, 0 );
 
@@ -117,7 +117,7 @@ MidiFileIn::MidiFileIn( String file_name ) {
 				 ( event[1] == 0x51 ) && ( event[2] == 0x03 ) ) {
 				tempoEvent.count = count;
 				value = ( event[3] << 16 ) + ( event[4] << 8 ) + event[5];
-				tempoEvent.tickSeconds = (double) (0.000001 * value / tickrate);
+				tempoEvent.tickSeconds = (float) (0.000001 * value / tickrate);
 
 				if ( count > tempoEvents_.Top().count )
 					tempoEvents_.Add( tempoEvent );
@@ -130,7 +130,7 @@ MidiFileIn::MidiFileIn( String file_name ) {
 
 		RewindTrack( 0 );
 
-		for ( unsigned int i = 0; i < nTracks_; i++ ) {
+		for ( int i = 0; i < nTracks_; i++ ) {
 			trackCounters_.Add( 0 );
 			trackTempoIndex_.Add( 0 );
 		}
@@ -148,7 +148,7 @@ MidiFileIn::~MidiFileIn() {
 	file_.Close();
 }
 
-void MidiFileIn::RewindTrack( unsigned int track ) {
+void MidiFileIn::RewindTrack( int track ) {
 	if ( track >= nTracks_ ) {
 		LOG("MidiFileIn::GetNextEvent: invalid track argument (" <<  track << ").");
 		HandleError( AudioError::WARNING );
@@ -160,17 +160,17 @@ void MidiFileIn::RewindTrack( unsigned int track ) {
 	tickSeconds_[track] = tempoEvents_[0].tickSeconds;
 }
 
-double MidiFileIn::GetTickSeconds( unsigned int track ) {
+float MidiFileIn::GetTickSeconds( int track ) {
 	if ( track >= nTracks_ ) {
 		LOG("MidiFileIn::GetTickSeconds: invalid track argument (" <<  track << ").");
 		HandleError( AudioError::WARNING );
-		return 0.0;
+		return 0.0f;
 	}
 
 	return tickSeconds_[track];
 }
 
-unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned int track ) {
+int MidiFileIn::GetNextEvent( Vector<unsigned char>* event, int track ) {
 	event->Clear();
 
 	if ( track >= nTracks_ ) {
@@ -182,7 +182,7 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 	if ( (trackPointers_[track] - trackOffsets_[track]) >= trackLengths_[track] )
 		return 0;
 
-	unsigned long ticks = 0, bytes = 0;
+	int ticks = 0, bytes = 0;
 	bool isTempoEvent = false;
 	file_.Seek( trackPointers_[track] );
 
@@ -194,7 +194,7 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 
 	switch ( c ) {
 	case 0xFF:
-		unsigned long position;
+		int position;
 		trackStatus_[track] = 0;
 		event->push_back( c );
 
@@ -204,11 +204,11 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 
 		if ( format_ != 1 && ( c == 0x51 ) ) isTempoEvent = true;
 
-		position = (unsigned long)file_.GetSize();
+		position = (int)file_.GetSize();
 
 		if ( !GetVariableLength( &bytes ) ) goto error;
 
-		bytes += ( (unsigned long)file_.GetSize() - position );
+		bytes += ( (int)file_.GetSize() - position );
 		file_.Seek( position );
 		break;
 
@@ -216,11 +216,11 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 	case 0xF7:
 		trackStatus_[track] = 0;
 		event->push_back( c );
-		position = (unsigned long)file_.GetSize();
+		position = (int)file_.GetSize();
 
 		if ( !GetVariableLength( &bytes ) ) goto error;
 
-		bytes += ( (unsigned long)file_.GetSize() - position );
+		bytes += ( (int)file_.GetSize() - position );
 		file_.Seek( position );
 		break;
 
@@ -245,7 +245,7 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 		else goto error;
 	}
 
-	unsigned long i;
+	int i;
 
 	for ( i = 0; i < bytes; i++ ) {
 		if ( !file_.Get( (char*)&c, 1 ) ) goto error;
@@ -255,9 +255,9 @@ unsigned long MidiFileIn::GetNextEvent( Vector<unsigned char>* event, unsigned i
 
 	if ( !usingTimeCode_ ) {
 		if ( isTempoEvent ) {
-			double tickrate = (double) (division_ & 0x7FFF);
-			unsigned long value = ( event->At(3) << 16 ) + ( event->At(4) << 8 ) + event->At(5);
-			tickSeconds_[track] = (double) (0.000001 * value / tickrate);
+			float tickrate = (float) (division_ & 0x7FFF);
+			int value = ( event->At(3) << 16 ) + ( event->At(4) << 8 ) + event->At(5);
+			tickSeconds_[track] = (float) (0.000001 * value / tickrate);
 		}
 
 		if ( format_ == 1 ) {
@@ -279,14 +279,14 @@ error:
 	return 0;
 }
 
-unsigned long MidiFileIn::GetNextMidiEvent( Vector<unsigned char>* midiEvent, unsigned int track ) {
+int MidiFileIn::GetNextMidiEvent( Vector<unsigned char>* midiEvent, int track ) {
 	if ( track >= nTracks_ ) {
 		LOG("MidiFileIn::GetNextMidiEvent: invalid track argument (" <<  track << ").");
 		HandleError( AudioError::WARNING );
 		return 0;
 	}
 
-	unsigned long ticks = GetNextEvent( midiEvent, track );
+	int ticks = GetNextEvent( midiEvent, track );
 
 	while ( midiEvent->GetCount() && ( midiEvent->At(0) >= 0xF0 ) )
 		ticks = GetNextEvent( midiEvent, track );
@@ -294,13 +294,13 @@ unsigned long MidiFileIn::GetNextMidiEvent( Vector<unsigned char>* midiEvent, un
 	return ticks;
 }
 
-bool MidiFileIn::GetVariableLength( unsigned long* value ) {
+bool MidiFileIn::GetVariableLength( int* value ) {
 	*value = 0;
 	char c;
 
 	if ( !file_.Get( &c, 1 ) ) return false;
 
-	*value = (unsigned long) c;
+	*value = (int) c;
 
 	if ( *value & 0x80 ) {
 		*value &= 0x7f;

@@ -6,8 +6,8 @@ namespace Portaudio {
 
 extern "C"{
 	//this is a C callable function, to wrap U++ Callback into PaStreamCallback
-	int StreamCallback(const void *input, void *output, unsigned long frames,
-	          const PaStreamCallbackTimeInfo *timeinfo, unsigned long flags, void *data)
+	int StreamCallback(const void *input, void *output, int frames,
+	          const PaStreamCallbackTimeInfo *timeinfo, int flags, void *data)
 	{
 		StreamCallbackData *scd = static_cast<StreamCallbackData*>(data);
 		StreamCallbackArgs sca(input, output, frames, timeinfo, flags,scd->data);
@@ -85,19 +85,19 @@ bool AudioBase::IsActive() const{
 	return err;
 }
 
-double AudioBase::GetInputLatency() const{
+float AudioBase::GetInputLatency() const{
 	const PaStreamInfo *info = Pa_GetStreamInfo(stream);
 	if (info != NULL) return info->inputLatency;
 	else return 0;
 }
 
-double AudioBase::GetOutputLatency() const{
+float AudioBase::GetOutputLatency() const{
 	const PaStreamInfo *info = Pa_GetStreamInfo(stream);
 	if (info != NULL) return info->outputLatency;
 	else return 0;
 }
 
-double AudioBase::GetFrequency() const{
+float AudioBase::GetFrequency() const{
 	const PaStreamInfo *info = Pa_GetStreamInfo(stream);
 	if (info != NULL) return info->sampleRate;
 	else return 0;

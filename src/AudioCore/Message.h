@@ -182,10 +182,10 @@ public:
 	
 	int            GetTempoMicro() const;
 	int            GetTempoMicroseconds() const;
-	double         GetTempoSeconds() const;
-	double         GetTempoBPM() const;
-	double         GetTempoTPS(int tpq) const;
-	double         GetTempoSPT(int tpq) const;
+	float         GetTempoSeconds() const;
+	float         GetTempoBPM() const;
+	float         GetTempoTPS(int tpq) const;
+	float         GetTempoSPT(int tpq) const;
 	
 	int            IsMetaMessage() const;
 	int            IsMeta() const;
@@ -252,15 +252,15 @@ public:
 	void           MakeMarker(String text);
 	void           MakeCue(String text);
 	void           MakeCopyright(String text);
-	void           MakeTempo(double tempo) {SetTempo(tempo);}
+	void           MakeTempo(float tempo) {SetTempo(tempo);}
 	void           MakeTimeSignature(int top, int bottom, int clocks_per_click = 24, int num32dsPerQuarter = 8);
 	        
 	// meta-message related functions:
 	int            GetMettype() const;
 	int            IsTempo() const;
-	void           SetTempo(double tempo);
+	void           SetTempo(float tempo);
 	void           SetTempoMicroseconds(int microseconds);
-	void           SetMetaTempo(double tempo);
+	void           SetMetaTempo(float tempo);
 	int            IsEndOfTrack() const;
 	
 };

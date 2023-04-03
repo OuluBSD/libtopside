@@ -15,47 +15,47 @@ public:
 		IgnoreSampleRateChange_ = ignore;
 	};
 
-	void SetResonance( double frequency, double radius );
-	void SetStates( double frequency, double radius, double gain = 1.0 );
-	void SetTargets( double frequency, double radius, double gain = 1.0 );
-	void SetSweepRate( double rate );
-	void SetSweepTime( double time );
+	void SetResonance( float frequency, float radius );
+	void SetStates( float frequency, float radius, float gain = 1.0f );
+	void SetTargets( float frequency, float radius, float gain = 1.0f );
+	void SetSweepRate( float rate );
+	void SetSweepTime( float time );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
-	virtual void SampleRateChanged( double new_rate, double old_rate );
+	virtual void SampleRateChanged( float new_rate, float old_rate );
 
 	bool dirty_;
-	double frequency_;
-	double radius_;
-	double StartFrequency_;
-	double StartRadius_;
-	double StartGain_;
-	double targetFrequency_;
-	double targetRadius_;
-	double targetGain_;
-	double deltaFrequency_;
-	double deltaRadius_;
-	double deltaGain_;
-	double sweepState_;
-	double sweepRate_;
+	float frequency_;
+	float radius_;
+	float StartFrequency_;
+	float StartRadius_;
+	float StartGain_;
+	float targetFrequency_;
+	float targetRadius_;
+	float targetGain_;
+	float deltaFrequency_;
+	float deltaRadius_;
+	float deltaGain_;
+	float sweepState_;
+	float sweepRate_;
 
 };
 
-inline double FormSwep::Tick( double input ) {
+inline float FormSwep::Tick( float input ) {
 	if ( dirty_ )  {
 		sweepState_ += sweepRate_;
 
-		if ( sweepState_ >= 1.0 )   {
-			sweepState_ = 1.0;
+		if ( sweepState_ >= 1.0f )   {
+			sweepState_ = 1.0f;
 			dirty_ = false;
 			radius_ = targetRadius_;
 			frequency_ = targetFrequency_;
@@ -80,7 +80,7 @@ inline double FormSwep::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& FormSwep::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& FormSwep::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -89,16 +89,16 @@ inline AudioFrames& FormSwep::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Tick( *samples );
 
 	return frames;
 }
 
-inline AudioFrames& FormSwep::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& FormSwep::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -107,11 +107,11 @@ inline AudioFrames& FormSwep::Tick( AudioFrames& in_frames, AudioFrames& out_fra
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
 		* out_samples = Tick( *in_samples );
 
 	return in_frames;

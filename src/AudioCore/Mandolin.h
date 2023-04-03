@@ -8,20 +8,20 @@ NAMESPACE_AUDIO_BEGIN
 class Mandolin : public Instrument {
 public:
 
-	Mandolin( double lowest_freq = DEFAULT_LOWEST_FREQ);
+	Mandolin( float lowest_freq = DEFAULT_LOWEST_FREQ);
 	~Mandolin();
 	void Clear();
-	void SetDetune( double detune );
-	void SetBodySize( double size );
-	void SetPluckPosition( double position );
-	void SetFrequency( double frequency );
-	void Pluck( double amplitude );
-	void Pluck( double amplitude, double position );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetDetune( float detune );
+	void SetBodySize( float size );
+	void SetPluckPosition( float position );
+	void SetFrequency( float frequency );
+	void Pluck( float amplitude );
+	void Pluck( float amplitude, float position );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -29,25 +29,25 @@ protected:
 	FileWaveIn soundfile_[12];
 
 	int mic_;
-	double detuning_;
-	double frequency_;
-	double pluck_amplitude_;
+	float detuning_;
+	float frequency_;
+	float pluck_amplitude_;
 };
 
-inline double Mandolin::Tick( unsigned int ) {
-	double temp = 0.0;
+inline float Mandolin::Tick( int ) {
+	float temp = 0.0f;
 
 	if ( !soundfile_[mic_].IsFinished() )
 		temp = soundfile_[mic_].Tick() * pluck_amplitude_;
 
 	last_frame_[0] = strings_[0].Tick( temp );
 	last_frame_[0] += strings_[1].Tick( temp );
-	last_frame_[0] *= 0.2;
+	last_frame_[0] *= 0.2f;
 	return last_frame_[0];
 }
 
-inline AudioFrames& Mandolin::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Mandolin::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -56,15 +56,15 @@ inline AudioFrames& Mandolin::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

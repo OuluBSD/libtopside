@@ -243,19 +243,19 @@ int Message::GetTempoMicroseconds() const {
 //////////////////////////////
 //
 // Message::GetTempoSeconds -- Returns the number of seconds per
-//      quarter note.  Returns -1.0 if the MIDI message is not a
+//      quarter note.  Returns -1.0f if the MIDI message is not a
 //      tempo meta message.
 //
 
-double Message::GetTempoSeconds() const {
+float Message::GetTempoSeconds() const {
 	int microseconds = GetTempoMicroseconds();
 	
 	if (microseconds < 0) {
-		return -1.0;
+		return -1.0f;
 	}
 	
 	else {
-		return (double)microseconds / 1000000.0;
+		return (float)microseconds / 1000000.0f;
 	}
 }
 
@@ -267,14 +267,14 @@ double Message::GetTempoSeconds() const {
 //   Returns -1 if the Message is note a tempo meta message.
 //
 
-double Message::GetTempoBPM() const {
+float Message::GetTempoBPM() const {
 	int microseconds = GetTempoMicroseconds();
 	
 	if (microseconds < 0) {
-		return -1.0;
+		return -1.0f;
 	}
 	
-	return 60000000.0 / (double)microseconds;
+	return 60000000.0f / (float)microseconds;
 }
 
 
@@ -284,15 +284,15 @@ double Message::GetTempoBPM() const {
 // Message::GetTempoTPS -- Returns the tempo in terms of ticks per seconds.
 //
 
-double Message::GetTempoTPS(int tpq) const {
+float Message::GetTempoTPS(int tpq) const {
 	int microseconds = GetTempoMicroseconds();
 	
 	if (microseconds < 0) {
-		return -1.0;
+		return -1.0f;
 	}
 	
 	else {
-		return tpq * 1000000.0 / (double)microseconds;
+		return tpq * 1000000.0f / (float)microseconds;
 	}
 }
 
@@ -303,15 +303,15 @@ double Message::GetTempoTPS(int tpq) const {
 // Message::GetTempoSPT -- Returns the tempo in terms of seconds per tick.
 //
 
-double Message::GetTempoSPT(int tpq) const {
+float Message::GetTempoSPT(int tpq) const {
 	int microseconds = GetTempoMicroseconds();
 	
 	if (microseconds < 0) {
-		return -1.0;
+		return -1.0f;
 	}
 	
 	else {
-		return (double)microseconds / 1000000.0 / tpq;
+		return (float)microseconds / 1000000.0f / tpq;
 	}
 }
 
@@ -1027,7 +1027,7 @@ void Message::SetMessage(const Vector<int>& message) {
 // Message::SetSpelling -- Encode a Plus accidental state for a note.
 //    For example, if a note's key number is 60, the enharmonic pitch name
 //    could be any of these possibilities:
-//        C, B-sharp, D-double-flat
+//        C, B-sharp, D-float-flat
 //    MIDI note 60 is ambiguous as to which of these names are intended,
 //    so MIDIPlus allows these mappings to be preserved for later recovery.
 //    See Chapter 5 (pp. 99-104) of Beyond MIDI (1997).
@@ -1043,8 +1043,8 @@ void Message::SetMessage(const Vector<int>& message) {
 //       octave * 7 + 6 = B pitches
 //
 //    The second parameter is the semitone alteration (accidental).
-//    0 = natural state, 1 = sharp, 2 = double sharp, -1 = flat,
-//    -2 = double flat.
+//    0 = natural state, 1 = sharp, 2 = float sharp, -1 = flat,
+//    -2 = float flat.
 //
 //    Only note-on messages can be processed (other messages will be
 //    silently ignored).
@@ -1615,8 +1615,8 @@ void Message::GetSpelling(int& base7, int& accidental) {
 //   (meta message #0x51).
 //
 
-void Message::SetMetaTempo(double tempo) {
-	int microseconds = (int)(60.0 / tempo * 1000000.0 + 0.5);
+void Message::SetMetaTempo(float tempo) {
+	int microseconds = (int)(60.0f / tempo * 1000000.0f + 0.5);
 	SetTempoMicroseconds(microseconds);
 }
 
@@ -1627,7 +1627,7 @@ void Message::SetMetaTempo(double tempo) {
 // Message::SetTempo -- Alias for Message::SetMetaTempo().
 //
 
-void Message::SetTempo(double tempo) {
+void Message::SetTempo(float tempo) {
 	SetMetaTempo(tempo);
 }
 

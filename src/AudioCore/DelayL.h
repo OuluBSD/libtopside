@@ -8,44 +8,44 @@ NAMESPACE_AUDIO_BEGIN
 class DelayL : public Filter {
 public:
 
-	DelayL( double delay = 0.0, unsigned long max_delay = 4095 );
+	DelayL( float delay = 0.0f, int max_delay = 4095 );
 	~DelayL();
 	
-	unsigned long GetMaximumDelay() {
+	int GetMaximumDelay() {
 		return inputs_.GetCount() - 1;
 	};
 
-	void SetMaximumDelay( unsigned long delay );
-	void SetDelay( double delay );
+	void SetMaximumDelay( int delay );
+	void SetDelay( float delay );
 
-	double GetDelay() const {
+	float GetDelay() const {
 		return delay_;
 	};
 
-	double GetTapOut( unsigned long tap_delay );
-	void TapIn( double value, unsigned long tap_delay );
+	float GetTapOut( int tap_delay );
+	void TapIn( float value, int tap_delay );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double GetNextOut();
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float GetNextOut();
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
-	unsigned long in_point_;
-	unsigned long out_point_;
-	double delay_;
-	double alpha_;
-	double omAlpha_;
-	double next_output_;
+	int in_point_;
+	int out_point_;
+	float delay_;
+	float alpha_;
+	float omAlpha_;
+	float next_output_;
 	bool do_next_out_;
 };
 
-inline double DelayL::GetNextOut() {
+inline float DelayL::GetNextOut() {
 	if ( do_next_out_ ) {
 		next_output_ = inputs_[out_point_] * omAlpha_;
 
@@ -60,7 +60,7 @@ inline double DelayL::GetNextOut() {
 	return next_output_;
 }
 
-inline void DelayL::SetDelay( double delay ) {
+inline void DelayL::SetDelay( float delay ) {
 	if ( delay + 1 > inputs_.GetCount() ) {
 		LOG("DelayL::SetDelay: argument (" << delay << ") greater than  maximum!");
 		HandleError( AudioError::WARNING );
@@ -73,7 +73,7 @@ inline void DelayL::SetDelay( double delay ) {
 		return;
 	}
 
-	double out_pointer = in_point_ - delay;
+	float out_pointer = in_point_ - delay;
 	delay_ = delay;
 
 	while ( out_pointer < 0 )
@@ -81,14 +81,14 @@ inline void DelayL::SetDelay( double delay ) {
 
 	out_point_ = (long) out_pointer;
 	alpha_ = out_pointer - out_point_;
-	omAlpha_ = (double) 1.0 - alpha_;
+	omAlpha_ = (float) 1.0f - alpha_;
 
 	if ( out_point_ == inputs_.GetCount() ) out_point_ = 0;
 
 	do_next_out_ = true;
 }
 
-inline double DelayL::Tick( double input ) {
+inline float DelayL::Tick( float input ) {
 	inputs_[in_point_++] = input * gain_;
 
 	if ( in_point_ == inputs_.GetCount() )
@@ -103,7 +103,7 @@ inline double DelayL::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& DelayL::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& DelayL::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -112,10 +112,10 @@ inline AudioFrames& DelayL::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		inputs_[in_point_++] = *samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;
@@ -130,7 +130,7 @@ inline AudioFrames& DelayL::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-inline AudioFrames& DelayL::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& DelayL::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -139,11 +139,11 @@ inline AudioFrames& DelayL::Tick( AudioFrames& in_frames, AudioFrames& out_frame
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		inputs_[in_point_++] = *in_samples * gain_;
 
 		if ( in_point_ == inputs_.GetCount() ) in_point_ = 0;

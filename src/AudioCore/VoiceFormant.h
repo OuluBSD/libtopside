@@ -11,20 +11,20 @@ public:
 	VoiceFormant();
 	~VoiceFormant();
 	void Clear();
-	void SetFrequency( double frequency );
+	void SetFrequency( float frequency );
 	bool SetPhoneme( const char* phoneme );
 
-	void SetVoiced( double vGain ) {
+	void SetVoiced( float vGain ) {
 		voiced_->SetGainTarget(vGain);
 	};
 
-	void SetUnVoiced( double nGain ) {
+	void SetUnVoiced( float nGain ) {
 		noise_env_.SetTarget(nGain);
 	};
 
-	void SetFilterSweepRate( unsigned int whichOne, double rate );
+	void SetFilterSweepRate( int whichOne, float rate );
 
-	void SetPitchSweepRate( double rate ) {
+	void SetPitchSweepRate( float rate ) {
 		voiced_->SetSweepRate(rate);
 	};
 
@@ -33,15 +33,15 @@ public:
 	};
 
 	void Quiet();
-	void NoteOn( double frequency, double amplitude );
+	void NoteOn( float frequency, float amplitude );
 
-	void NoteOff( double amplitude ) {
+	void NoteOff( float amplitude ) {
 		this->Quiet();
 	};
 
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -54,8 +54,8 @@ protected:
 
 };
 
-inline double VoiceFormant::Tick( unsigned int ) {
-	double temp;
+inline float VoiceFormant::Tick( int ) {
+	float temp;
 	temp = onepole_.Tick( onezero_.Tick( voiced_->Tick() ) );
 	temp += noise_env_.Tick() * noise_.Tick();
 	last_frame_[0] = filters_[0].Tick(temp);
@@ -65,8 +65,8 @@ inline double VoiceFormant::Tick( unsigned int ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& VoiceFormant::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& VoiceFormant::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -75,15 +75,15 @@ inline AudioFrames& VoiceFormant::Tick( AudioFrames& frames, unsigned int channe
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

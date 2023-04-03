@@ -8,21 +8,21 @@ Moog::Moog() {
 	loops_.push_back ( new FileLoop( (Audio::GetRawWavePath() + "impuls20.raw").Begin(), true ) );
 	loops_.push_back ( new FileLoop( (Audio::GetRawWavePath() + "sinewave.raw").Begin(), true ) );
 	loops_[1]->SetFrequency( 6.122 );
-	filters_[0].SetTargets( 0.0, 0.7 );
-	filters_[1].SetTargets( 0.0, 0.7 );
+	filters_[0].SetTargets( 0.0f, 0.7 );
+	filters_[1].SetTargets( 0.0f, 0.7 );
 	adsr_.SetAllTimes( 0.001, 1.5, 0.6, 0.250 );
 	filter_q_ = 0.85;
 	filter_rate_ = 0.0001;
-	mod_depth_ = 0.0;
+	mod_depth_ = 0.0f;
 }
 
 Moog::~Moog() {
 }
 
-void Moog::SetFrequency( double frequency ) {
+void Moog::SetFrequency( float frequency ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Moog::SetFrequency: parameter is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -30,38 +30,38 @@ void Moog::SetFrequency( double frequency ) {
 
 	#endif
 	base_frequency_ = frequency;
-	double rate = attacks_[0]->GetSize() * 0.01 * base_frequency_ / Audio::GetSampleRate();
+	float rate = attacks_[0]->GetSize() * 0.01 * base_frequency_ / Audio::GetSampleRate();
 	attacks_[0]->SetRate( rate );
 	loops_[0]->SetFrequency( base_frequency_ );
 }
 
-void Moog::NoteOn( double frequency, double amplitude ) {
-	double temp;
+void Moog::NoteOn( float frequency, float amplitude ) {
+	float temp;
 	this->SetFrequency( frequency );
 	this->KeyOn();
-	attackGain_ = amplitude * 0.5;
+	attackGain_ = amplitude * 0.5f;
 	loop_gain_ = amplitude;
-	temp = filter_q_ + 0.05;
-	filters_[0].SetStates( 2000.0, temp );
-	filters_[1].SetStates( 2000.0, temp );
-	temp = filter_q_ + 0.099;
+	temp = filter_q_ + 0.05f;
+	filters_[0].SetStates( 2000.0f, temp );
+	filters_[1].SetStates( 2000.0f, temp );
+	temp = filter_q_ + 0.099f;
 	filters_[0].SetTargets( frequency, temp );
 	filters_[1].SetTargets( frequency, temp );
-	filters_[0].SetSweepRate( filter_rate_ * 22050.0 / Audio::GetSampleRate() );
-	filters_[1].SetSweepRate( filter_rate_ * 22050.0 / Audio::GetSampleRate() );
+	filters_[0].SetSweepRate( filter_rate_ * 22050.0f / Audio::GetSampleRate() );
+	filters_[1].SetSweepRate( filter_rate_ * 22050.0f / Audio::GetSampleRate() );
 }
 
-void Moog::ControlChange( int number, double value ) {
+void Moog::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0 ) == false ) {
 		LOG("Moog::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if (number == __SK_FilterQ_)
 		filter_q_ = 0.80 + ( 0.1 * normalizedValue );

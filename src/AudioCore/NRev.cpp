@@ -3,15 +3,15 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-NRev::NRev( double T60 ) {
-	if ( T60 <= 0.0 ) {
+NRev::NRev( float T60 ) {
+	if ( T60 <= 0.0f ) {
 		LOG("NRev::NRev: argument (" << T60 << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
-	last_frame_.SetCount( 1, 2, 0.0 );
+	last_frame_.SetCount( 1, 2, 0.0f );
 	int GetCounts[15] = {1433, 1601, 1867, 2053, 2251, 2399, 347, 113, 37, 59, 53, 43, 37, 29, 19};
-	double scaler = Audio::GetSampleRate() / 25641.0;
+	float scaler = Audio::GetSampleRate() / 25641.0f;
 	int delay, i;
 
 	for ( i = 0; i < 15; i++ ) {
@@ -27,7 +27,7 @@ NRev::NRev( double T60 ) {
 	for ( i = 0; i < 6; i++ ) {
 		comb_delays_[i].SetMaximumDelay( GetCounts[i] );
 		comb_delays_[i].SetDelay( GetCounts[i] );
-		comb_coeff_[i] = pow(10.0, (-3 * GetCounts[i] / (T60 * Audio::GetSampleRate())));
+		comb_coeff_[i] = powf(10.0f, (-3 * GetCounts[i] / (T60 * Audio::GetSampleRate())));
 	}
 
 	for ( i = 0; i < 8; i++ ) {
@@ -48,23 +48,23 @@ void NRev::Clear() {
 
 	for (i = 0; i < 8; i++) allpass_delays_[i].Clear();
 
-	last_frame_[0] = 0.0;
-	last_frame_[1] = 0.0;
-	lowpass_state_ = 0.0;
+	last_frame_[0] = 0.0f;
+	last_frame_[1] = 0.0f;
+	lowpass_state_ = 0.0f;
 }
 
-void NRev::SetT60( double T60 ) {
-	if ( T60 <= 0.0 ) {
+void NRev::SetT60( float T60 ) {
+	if ( T60 <= 0.0f ) {
 		LOG("NRev::SetT60: argument (" << T60 << ") must be positive!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	for ( int i = 0; i < 6; i++ )
-		comb_coeff_[i] = pow(10.0, (-3.0 * comb_delays_[i].GetDelay() / (T60 * Audio::GetSampleRate())));
+		comb_coeff_[i] = powf(10.0f, (-3.0 * comb_delays_[i].GetDelay() / (T60 * Audio::GetSampleRate())));
 }
 
-AudioFrames& NRev::Tick( AudioFrames& frames, unsigned int channel ) {
+AudioFrames& NRev::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() - 1 ) {
@@ -73,10 +73,10 @@ AudioFrames& NRev::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		*samples = Tick( *samples );
 		*(samples + 1) = last_frame_[1];
 	}
@@ -84,7 +84,7 @@ AudioFrames& NRev::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-AudioFrames& NRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+AudioFrames& NRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() - 1 ) {
@@ -93,11 +93,11 @@ AudioFrames& NRev::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsign
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		*out_samples = Tick( *in_samples );
 		*(out_samples + 1) = last_frame_[1];
 	}

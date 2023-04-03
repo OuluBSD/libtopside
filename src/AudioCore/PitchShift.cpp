@@ -13,27 +13,27 @@ PitchShift::PitchShift() {
 	delay_line_[1].SetMaximumDelay( max_delay );
 	delay_line_[1].SetDelay( delay_[1] );
 	effect_mix_ = 0.5;
-	rate_ = 1.0;
+	rate_ = 1.0f;
 }
 
 void PitchShift::Clear() {
 	delay_line_[0].Clear();
 	delay_line_[1].Clear();
-	last_frame_[0] = 0.0;
+	last_frame_[0] = 0.0f;
 }
 
-void PitchShift::SetShift( double shift ) {
-	if ( shift < 1.0 )
-		rate_ = 1.0 - shift;
-	else if ( shift > 1.0 )
-		rate_ = 1.0 - shift;
+void PitchShift::SetShift( float shift ) {
+	if ( shift < 1.0f )
+		rate_ = 1.0f - shift;
+	else if ( shift > 1.0f )
+		rate_ = 1.0f - shift;
 	else {
-		rate_ = 0.0;
+		rate_ = 0.0f;
 		delay_[0] = half_length_ + 12;
 	}
 }
 
-AudioFrames& PitchShift::Tick( AudioFrames& frames, unsigned int channel ) {
+AudioFrames& PitchShift::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -42,16 +42,16 @@ AudioFrames& PitchShift::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Tick( *samples );
 
 	return frames;
 }
 
-AudioFrames& PitchShift::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+AudioFrames& PitchShift::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -60,11 +60,11 @@ AudioFrames& PitchShift::Tick( AudioFrames& in_frames, AudioFrames& out_frames, 
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
 		* out_samples = Tick( *in_samples );
 
 	return in_frames;

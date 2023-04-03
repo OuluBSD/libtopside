@@ -4,28 +4,28 @@
 NAMESPACE_AUDIO_BEGIN
 
 
-const double FreeVerb::fixedGain = 0.015;
-const double FreeVerb::scaleWet = 3;
-const double FreeVerb::scaleDry = 2;
-const double FreeVerb::scaleDamp = 0.4;
-const double FreeVerb::scaleRoom = 0.28;
-const double FreeVerb::offsetRoom = 0.7;
+const float FreeVerb::fixedGain = 0.015;
+const float FreeVerb::scaleWet = 3;
+const float FreeVerb::scaleDry = 2;
+const float FreeVerb::scaleDamp = 0.4;
+const float FreeVerb::scaleRoom = 0.28;
+const float FreeVerb::offsetRoom = 0.7;
 int FreeVerb::cDelayLengths[] = {1617, 1557, 1491, 1422, 1356, 1277, 1188, 1116};
 int FreeVerb::aDelayLengths[] = {225, 556, 441, 341};
 
 FreeVerb::FreeVerb() {
-	last_frame_.SetCount( 1, 2, 0.0 );
+	last_frame_.SetCount( 1, 2, 0.0f );
 	Effect::SetEffectMix( 0.75 );
 	roomSizeMem_ = (0.75 * scaleRoom) + offsetRoom;
 	dampMem_ = 0.25 * scaleDamp;
-	width_ = 1.0;
+	width_ = 1.0f;
 	frozenMode_ = false;
 	Refresh();
 	gain_ = fixedGain;
 	g_ = 0.5;
-	double fsScale = Audio::GetSampleRate() / 44100.0;
+	float fsScale = Audio::GetSampleRate() / 44100.0f;
 
-	if ( fsScale != 1.0 ) {
+	if ( fsScale != 1.0f ) {
 		for ( int i = 0; i < nCombs; i++ )
 			cDelayLengths[i] = (int) floor(fsScale * cDelayLengths[i]);
 
@@ -64,35 +64,35 @@ void FreeVerb::LoadState(const ArrayMap<String, Object>& state) {
 	
 }
 
-void FreeVerb::SetEffectMix( double mix ) {
+void FreeVerb::SetEffectMix( float mix ) {
 	Effect::SetEffectMix( mix );
 	Refresh();
 }
 
-void FreeVerb::SetRoomSize( double roomSize ) {
+void FreeVerb::SetRoomSize( float roomSize ) {
 	roomSizeMem_ = (roomSize * scaleRoom) + offsetRoom;
 	Refresh();
 }
 
-double FreeVerb::GetRoomSize() {
+float FreeVerb::GetRoomSize() {
 	return (roomSizeMem_ - offsetRoom) / scaleRoom;
 }
 
-void FreeVerb::SetDamping( double damping ) {
+void FreeVerb::SetDamping( float damping ) {
 	dampMem_ = damping * scaleDamp;
 	Refresh();
 }
 
-double FreeVerb::GetDamping() {
+float FreeVerb::GetDamping() {
 	return dampMem_ / scaleDamp;
 }
 
-void FreeVerb::SetWidth( double width ) {
+void FreeVerb::SetWidth( float width ) {
 	width_ = width;
 	Refresh();
 }
 
-double FreeVerb::GetWidth() {
+float FreeVerb::GetWidth() {
 	return width_;
 }
 
@@ -101,22 +101,22 @@ void FreeVerb::SetMode( bool isFrozen ) {
 	Refresh();
 }
 
-double FreeVerb::GetMode() {
+float FreeVerb::GetMode() {
 	return frozenMode_;
 }
 
 void FreeVerb::Refresh() {
-	double wet = scaleWet * effect_mix_;
-	dry_ = scaleDry * (1.0 - effect_mix_);
+	float wet = scaleWet * effect_mix_;
+	dry_ = scaleDry * (1.0f - effect_mix_);
 	wet /= (wet + dry_);
 	dry_ /= (wet + dry_);
 	wet1_ = wet * (width_ / 2.0 + 0.5);
-	wet2_ = wet * (1.0 - width_) / 2.0;
+	wet2_ = wet * (1.0f - width_) / 2.0f;
 
 	if ( frozenMode_ ) {
-		roomSize_ = 1.0;
-		damp_ = 0.0;
-		gain_ = 0.0;
+		roomSize_ = 1.0f;
+		damp_ = 0.0f;
+		gain_ = 0.0f;
 	}
 	else {
 		roomSize_ = roomSizeMem_;
@@ -125,8 +125,8 @@ void FreeVerb::Refresh() {
 	}
 
 	for ( int i = 0; i < nCombs; i++ ) {
-		combLPL_[i].SetCoefficients(1.0 - damp_, -damp_);
-		combLPR_[i].SetCoefficients(1.0 - damp_, -damp_);
+		combLPL_[i].SetCoefficients(1.0f - damp_, -damp_);
+		combLPR_[i].SetCoefficients(1.0f - damp_, -damp_);
 	}
 }
 
@@ -141,11 +141,11 @@ void FreeVerb::Clear() {
 		allPassDelayR_[i].Clear();
 	}
 
-	last_frame_[0] = 0.0;
-	last_frame_[1] = 0.0;
+	last_frame_[0] = 0.0f;
+	last_frame_[1] = 0.0f;
 }
 
-AudioFrames& FreeVerb::Tick( AudioFrames& frames, unsigned int channel ) {
+AudioFrames& FreeVerb::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() - 1 ) {
@@ -154,10 +154,10 @@ AudioFrames& FreeVerb::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		*samples = Tick( *samples, *(samples + 1) );
 		*(samples + 1) = last_frame_[1];
 	}
@@ -165,7 +165,7 @@ AudioFrames& FreeVerb::Tick( AudioFrames& frames, unsigned int channel ) {
 	return frames;
 }
 
-AudioFrames& FreeVerb::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+AudioFrames& FreeVerb::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() - 1 ) {
@@ -174,13 +174,13 @@ AudioFrames& FreeVerb::Tick( AudioFrames& in_frames, AudioFrames& out_frames, un
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount();
-	unsigned int out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount();
+	int out_step = out_frames.GetChannelCount();
 	bool stereoInput = ( in_frames.GetChannelCount() > in_channel + 1 ) ? true : false;
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step) {
 		if ( stereoInput )
 			*out_samples = Tick( *in_samples, *(in_samples + 1) );
 		else

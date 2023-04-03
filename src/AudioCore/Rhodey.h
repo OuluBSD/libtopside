@@ -10,15 +10,15 @@ public:
 
 	Rhodey();
 	~Rhodey();
-	void SetFrequency( double frequency );
-	void NoteOn( double frequency, double amplitude );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetFrequency( float frequency );
+	void NoteOn( float frequency, float amplitude );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 };
 
-inline double Rhodey::Tick( unsigned int ) {
-	double temp, temp2;
+inline float Rhodey::Tick( int ) {
+	float temp, temp2;
 	temp = gains_[1] * adsr_[1]->Tick() * waves_[1]->Tick();
 	temp = temp * control1_;
 	waves_[0]->AddPhaseOffset( temp );
@@ -26,16 +26,16 @@ inline double Rhodey::Tick( unsigned int ) {
 	temp = gains_[3] * adsr_[3]->Tick() * waves_[3]->Tick();
 	twozero_.Tick(temp);
 	waves_[2]->AddPhaseOffset( temp );
-	temp = ( 1.0 - (control2_ * 0.5)) * gains_[0] * adsr_[0]->Tick() * waves_[0]->Tick();
-	temp += control2_ * 0.5 * gains_[2] * adsr_[2]->Tick() * waves_[2]->Tick();
+	temp = ( 1.0f - (control2_ * 0.5f)) * gains_[0] * adsr_[0]->Tick() * waves_[0]->Tick();
+	temp += control2_ * 0.5f * gains_[2] * adsr_[2]->Tick() * waves_[2]->Tick();
 	temp2 = vibrato_.Tick() * mod_depth_;
-	temp = temp * (1.0 + temp2);
-	last_frame_[0] = temp * 0.5;
+	temp = temp * (1.0f + temp2);
+	last_frame_[0] = temp * 0.5f;
 	return last_frame_[0];
 }
 
-inline AudioFrames& Rhodey::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Rhodey::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -44,15 +44,15 @@ inline AudioFrames& Rhodey::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

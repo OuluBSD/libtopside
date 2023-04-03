@@ -7,9 +7,13 @@ NAMESPACE_AUDIO_BEGIN
 
 // TODO: fix use of these compatiblity functions
 inline int NotNpos(int i) {
-	if (i == std::string::npos) return -1;
-
+	if (i == std::string::npos || i < 0) return -1;
 	return i;
+}
+
+inline int NotNpos(size_t i) {
+	if (i == std::string::npos) return -1;
+	return (int)i;
 }
 
 inline int FindFirstOf(const String& str, const String& search, int pos) {
@@ -87,7 +91,7 @@ public:
 class Audio {
 public:
 
-	typedef unsigned long AudioFormat;
+	typedef int AudioFormat;
 	static const AudioFormat AUDIO_SINT8;
 	static const AudioFormat AUDIO_SINT16;
 	static const AudioFormat AUDIO_SINT24;
@@ -96,11 +100,11 @@ public:
 	static const AudioFormat AUDIO_FLOAT64;
 
 
-	static double GetSampleRate() {
+	static float GetSampleRate() {
 		return srate_;
 	}
 
-	static void SetSampleRate( double rate );
+	static void SetSampleRate( float rate );
 
 	void IgnoreSampleRateChange( bool ignore = true ) {
 		IgnoreSampleRateChange_ = ignore;
@@ -118,10 +122,10 @@ public:
 	static void Swap16( unsigned char* ptr );
 	static void Swap32( unsigned char* ptr );
 	static void Swap64( unsigned char* ptr );
-	static void Sleep( unsigned long milliseconds );
+	static void Sleep( int milliseconds );
 
 
-	static bool InRange( double value, double min, double max ) {
+	static bool InRange( float value, float min, float max ) {
 		if ( value < min ) return false;
 		else if ( value > max ) return false;
 		else return true;
@@ -141,7 +145,7 @@ public:
 	}
 
 private:
-	static double srate_;
+	static float srate_;
 	static String rawwavepath_;
 	static bool show_warnings_;
 	static bool print_errors_;
@@ -153,7 +157,7 @@ protected:
 	
 	Audio();
 	virtual ~Audio();
-	virtual void SampleRateChanged( double new_rate, double old_rate );
+	virtual void SampleRateChanged( float new_rate, float old_rate );
 	void AddSampleRateAlert( Audio* ptr );
 	void RemoveSampleRateAlert( Audio* ptr );
 };
@@ -165,58 +169,58 @@ protected:
 
 class AudioFrames {
 public:
-	AudioFrames( unsigned int frame_count = 0, unsigned int channel_count = 0 );
-	AudioFrames( const double& value, unsigned int frame_count, unsigned int channel_count );
+	AudioFrames( int frame_count = 0, int channel_count = 0 );
+	AudioFrames( const float& value, int frame_count, int channel_count );
 	~AudioFrames();
 	AudioFrames( const AudioFrames& f );
 	AudioFrames& operator= ( const AudioFrames& f );
-	double& operator[] ( size_t n );
-	double operator[] ( size_t n ) const;
+	float& operator[] ( size_t n );
+	float operator[] ( size_t n ) const;
 	AudioFrames operator+(const AudioFrames& frames) const;
 	void operator+= ( AudioFrames& f );
 	void operator*= ( AudioFrames& f );
-	double& operator() ( size_t frame, unsigned int channel );
-	double operator() ( size_t frame, unsigned int channel ) const;
-	double interpolate( double frame, unsigned int channel = 0 ) const;
+	float& operator() ( int frame, int channel );
+	float operator() ( int frame, int channel ) const;
+	float interpolate( float frame, int channel = 0 ) const;
 	
-	size_t GetCount() const {
+	int GetCount() const {
 		return size_;
 	};
 
 	bool IsEmpty() const;
-	void SetCount( size_t frame_count, unsigned int channel_count = 1 );
-	void SetCount( size_t frame_count, unsigned int channel_count, double value );
-	AudioFrames& GetChannel(unsigned int channel, AudioFrames& dest_frame_count, unsigned int dest_chan) const;
-	void SetChannel(unsigned int channel, const AudioFrames& src_frames, unsigned int src_channel);
+	void SetCount( int frame_count, int channel_count = 1 );
+	void SetCount( int frame_count, int channel_count, float value );
+	AudioFrames& GetChannel(int channel, AudioFrames& dest_frame_count, int dest_chan) const;
+	void SetChannel(int channel, const AudioFrames& src_frames, int src_channel);
 	
 	void Zero() {
-		if (data_) memset(data_, 0, size_ * sizeof(double));
+		if (data_) memset(data_, 0, size_ * sizeof(float));
 	}
 	
-	unsigned int GetChannelCount() const {
+	int GetChannelCount() const {
 		return channel_count_;
 	};
 
-	unsigned int GetFrameCount() const {
-		return (unsigned int)frame_count_;
+	int GetFrameCount() const {
+		return (int)frame_count_;
 	};
 
-	void SetDataRate( double rate ) {
+	void SetDataRate( float rate ) {
 		dataRate_ = rate;
 	};
 
-	double dataRate() const {
+	float dataRate() const {
 		return dataRate_;
 	};
 
 private:
 
-	double* data_;
-	double dataRate_;
-	size_t frame_count_;
-	unsigned int channel_count_;
-	size_t size_;
-	size_t bufferSize_;
+	float* data_;
+	float dataRate_;
+	int frame_count_;
+	int channel_count_;
+	int size_;
+	int bufferSize_;
 
 };
 
@@ -225,7 +229,7 @@ inline bool AudioFrames::IsEmpty() const {
 	else return true;
 }
 
-inline double& AudioFrames::operator[] ( size_t n ) {
+inline float& AudioFrames::operator[] ( size_t n ) {
 	#if defined(flagDEBUG)
 
 	if ( n >= size_ ) {
@@ -238,7 +242,7 @@ inline double& AudioFrames::operator[] ( size_t n ) {
 	return data_[n];
 }
 
-inline double AudioFrames::operator[] ( size_t n ) const {
+inline float AudioFrames::operator[] ( size_t n ) const {
 	#if defined(flagDEBUG)
 
 	if ( n >= size_ ) {
@@ -251,7 +255,7 @@ inline double AudioFrames::operator[] ( size_t n ) const {
 	return data_[n];
 }
 
-inline double& AudioFrames::operator() ( size_t frame, unsigned int channel ) {
+inline float& AudioFrames::operator() ( int frame, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( frame >= frame_count_ || channel >= channel_count_ ) {
@@ -264,7 +268,7 @@ inline double& AudioFrames::operator() ( size_t frame, unsigned int channel ) {
 	return data_[ frame * channel_count_ + channel ];
 }
 
-inline double AudioFrames::operator() ( size_t frame, unsigned int channel ) const {
+inline float AudioFrames::operator() ( int frame, int channel ) const {
 	#if defined(flagDEBUG)
 
 	if ( frame >= frame_count_ || channel >= channel_count_ ) {
@@ -287,12 +291,12 @@ inline AudioFrames AudioFrames::operator+(const AudioFrames& f) const {
 	}
 
 	#endif
-	AudioFrames sum((unsigned int)frame_count_, channel_count_);
-	double* sumPtr = &sum[0];
-	const double* fptr = f.data_;
-	const double* dPtr = data_;
+	AudioFrames sum((int)frame_count_, channel_count_);
+	float* sumPtr = &sum[0];
+	const float* fptr = f.data_;
+	const float* dPtr = data_;
 
-	for (unsigned int i = 0; i < size_; i++)
+	for (int i = 0; i < size_; i++)
 		*sumPtr++ = *fptr++ + *dPtr++;
 
 	return sum;
@@ -308,10 +312,10 @@ inline void AudioFrames::operator+= ( AudioFrames& f ) {
 	}
 
 	#endif
-	double* fptr = &f[0];
-	double* dptr = data_;
+	float* fptr = &f[0];
+	float* dptr = data_;
 
-	for ( unsigned int i = 0; i < size_; i++ )
+	for ( int i = 0; i < size_; i++ )
 		*dptr++ += *fptr++;
 }
 
@@ -325,34 +329,34 @@ inline void AudioFrames::operator*= ( AudioFrames& f ) {
 	}
 
 	#endif
-	double* fptr = &f[0];
-	double* dptr = data_;
+	float* fptr = &f[0];
+	float* dptr = data_;
 
-	for ( unsigned int i = 0; i < size_; i++ )
+	for ( int i = 0; i < size_; i++ )
 		*dptr++ *= *fptr++;
 }
 
 
 typedef unsigned short UINT16;
-typedef unsigned int UINT32;
+typedef int UINT32;
 typedef signed short SINT16;
 typedef signed int SINT32;
 typedef float FLOAT32;
-typedef double FLOAT64;
+typedef float FLOAT64;
 
 
-const double SRATE = 44100.0;
+const float SRATE = 44100.0f;
 
-const unsigned int RT_BUFFER_SIZE = 512;
+const int RT_BUFFER_SIZE = 512;
 
 
 #if !defined(RAWWAVE_PATH)
 	#define RAWWAVE_PATH "audio/stk/"
 #endif
 
-const double PI           = 3.14159265358979;
-const double TWO_PI       = 2 * PI;
-const double ONE_OVER_128 = 0.0078125;
+const float PI           = 3.14159265358979f;
+const float TWO_PI       = 2.f * PI;
+const float ONE_OVER_128 = 0.0078125f;
 
 
 NAMESPACE_AUDIO_END

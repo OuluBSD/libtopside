@@ -9,14 +9,14 @@ class Function : public Audio {
 public:
 
 	Function() {
-		last_frame_.SetCount( 1, 1, 0.0 );
+		last_frame_.SetCount( 1, 1, 0.0f );
 	};
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	virtual double Tick( double input ) = 0;
+	virtual float Tick( float input ) = 0;
 
 protected:
 

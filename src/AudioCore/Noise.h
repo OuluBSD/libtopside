@@ -8,23 +8,23 @@ NAMESPACE_AUDIO_BEGIN
 class Noise : public Generator {
 public:
 
-	Noise( unsigned int seed = 0 );
-	void SetSeed( unsigned int seed = 0 );
+	Noise( int seed = 0 );
+	void SetSeed( int seed = 0 );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 };
 
-inline double Noise::Tick() {
-	return last_frame_[0] = (double) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+inline float Noise::Tick() {
+	return last_frame_[0] = (float) ( 2.0 * rand() / (RAND_MAX + 1.0f) - 1.0f );
 }
 
-inline AudioFrames& Noise::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Noise::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -33,11 +33,11 @@ inline AudioFrames& Noise::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
-		* samples = (double) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		* samples = (float) ( 2.0 * rand() / (RAND_MAX + 1.0f) - 1.0f );
 
 	last_frame_[0] = *(samples - step);
 	return frames;

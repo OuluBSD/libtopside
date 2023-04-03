@@ -3,11 +3,11 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-FileWaveOut::FileWaveOut( unsigned int bufferFrames )
+FileWaveOut::FileWaveOut( int bufferFrames )
 	: bufferFrames_( bufferFrames ) {
 }
 
-FileWaveOut::FileWaveOut( String file_name, unsigned int channel_count, FileWrite::FILE_TYPE type, Audio::AudioFormat format, unsigned int bufferFrames )
+FileWaveOut::FileWaveOut( String file_name, int channel_count, FileWrite::FILE_TYPE type, Audio::AudioFormat format, int bufferFrames )
 	: bufferFrames_( bufferFrames ) {
 	this->OpenFile( file_name, channel_count, type, format );
 }
@@ -29,7 +29,7 @@ void FileWaveOut::CloseFile() {
 }
 
 bool FileWaveOut::OpenFile( String file_name,
-							  unsigned int channel_count,
+							  int channel_count,
 							  FileWrite::FILE_TYPE type,
 							  Audio::AudioFormat format ) {
 	CloseFile();
@@ -59,7 +59,7 @@ void FileWaveOut::incrementFrame() {
 	}
 }
 
-void FileWaveOut::Tick( const double sample ) {
+void FileWaveOut::Tick( const float sample ) {
 	#if defined(flagDEBUG)
 
 	if ( !file_.isOpen() ) {
@@ -69,17 +69,17 @@ void FileWaveOut::Tick( const double sample ) {
 	}
 
 	#endif
-	unsigned int channel_count = data_.GetChannelCount();
-	double input = sample;
+	int channel_count = data_.GetChannelCount();
+	float input = sample;
 	ClipTest( input );
 
-	for ( unsigned int j = 0; j < channel_count; j++ )
+	for ( int j = 0; j < channel_count; j++ )
 		data_[iData_++] = input;
 
 	this->incrementFrame();
 }
 
-void FileWaveOut::Tick( const double l, const double r ) {
+void FileWaveOut::Tick( const float l, const float r ) {
 	#if defined(flagDEBUG)
 
 	if ( !file_.isOpen() ) {
@@ -89,10 +89,10 @@ void FileWaveOut::Tick( const double l, const double r ) {
 	}
 
 	#endif
-	unsigned int channel_count = data_.GetChannelCount();
+	int channel_count = data_.GetChannelCount();
 	
 	for(int j = 0; j < channel_count; j++) {
-		double input = j == 0 ? l : r;
+		float input = j == 0 ? l : r;
 		ClipTest( input );
 		data_[iData_++] = input;
 	}
@@ -115,10 +115,10 @@ void FileWaveOut::Tick( const AudioFrames& frames ) {
 	}
 
 	#endif
-	unsigned int in_frames = 0;
-	unsigned int j, channel_count = data_.GetChannelCount();
+	int in_frames = 0;
+	int j, channel_count = data_.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++ ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++ ) {
 		for ( j = 0; j < channel_count; j++ ) {
 			data_[iData_] = frames[in_frames++];
 			ClipTest( data_[iData_++] );

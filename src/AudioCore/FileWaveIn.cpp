@@ -3,15 +3,15 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-FileWaveIn::FileWaveIn( unsigned long chunkThreshold, unsigned long chunkSize )
-	: finished_(true), interpolate_(false), time_(0.0), rate_(0.0),
+FileWaveIn::FileWaveIn( int chunkThreshold, int chunkSize )
+	: finished_(true), interpolate_(false), time_(0.0f), rate_(0.0f),
 	  chunkThreshold_(chunkThreshold), chunkSize_(chunkSize) {
 	Audio::AddSampleRateAlert( this );
 }
 
 FileWaveIn::FileWaveIn( String file_name, bool raw, bool doNormalize,
-						  unsigned long chunkThreshold, unsigned long chunkSize )
-	: finished_(true), interpolate_(false), time_(0.0), rate_(0.0),
+						  int chunkThreshold, int chunkSize )
+	: finished_(true), interpolate_(false), time_(0.0f), rate_(0.0f),
 	  chunkThreshold_(chunkThreshold), chunkSize_(chunkSize) {
 	OpenFile( file_name, raw, doNormalize );
 	Audio::AddSampleRateAlert( this );
@@ -22,7 +22,7 @@ FileWaveIn::~FileWaveIn() {
 	Audio::RemoveSampleRateAlert( this );
 }
 
-void FileWaveIn::SampleRateChanged( double new_rate, double old_rate ) {
+void FileWaveIn::SampleRateChanged( float new_rate, float old_rate ) {
 	if ( !IgnoreSampleRateChange_ )
 		this->SetRate( old_rate * rate_ / new_rate );
 }
@@ -65,31 +65,31 @@ void FileWaveIn::OpenFile( String file_name, bool raw, bool doNormalize ) {
 }
 
 void FileWaveIn::Reset(void) {
-	time_ = (double) 0.0;
+	time_ = (float) 0.0f;
 
-	for ( unsigned int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0;
+	for ( int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0f;
 
 	finished_ = false;
 }
 
 void FileWaveIn::Normalize(void) {
-	this->Normalize( 1.0 );
+	this->Normalize( 1.0f );
 }
 
 
-void FileWaveIn::Normalize( double peak ) {
+void FileWaveIn::Normalize( float peak ) {
 	if ( chunking_ ) return;
 
-	size_t i;
-	double max = 0.0;
+	int i;
+	float max = 0.0f;
 
 	for ( i = 0; i < data_.GetCount(); i++ ) {
 		if ( fabs( data_[i] ) > max )
-			max = (double) fabs((double) data_[i]);
+			max = (float) fabs((float) data_[i]);
 	}
 
-	if ( max > 0.0 ) {
-		max = 1.0 / max;
+	if ( max > 0.0f ) {
+		max = 1.0f / max;
 		max *= peak;
 
 		for ( i = 0; i < data_.GetCount(); i++ )
@@ -97,30 +97,30 @@ void FileWaveIn::Normalize( double peak ) {
 	}
 }
 
-void FileWaveIn::SetRate( double rate ) {
+void FileWaveIn::SetRate( float rate ) {
 	rate_ = rate;
 
-	if ( (rate_ < 0) && (time_ == 0.0) ) time_ = fileSize_ - 1.0;
+	if ( (rate_ < 0) && (time_ == 0.0f) ) time_ = fileSize_ - 1.0f;
 
-	if ( fmod( rate_, 1.0 ) != 0.0 ) interpolate_ = true;
+	if ( fmod( rate_, 1.0f ) != 0.0f ) interpolate_ = true;
 	else interpolate_ = false;
 }
 
-void FileWaveIn::AddTime( double time ) {
+void FileWaveIn::AddTime( float time ) {
 	time_ += time;
 
-	if ( time_ < 0.0 ) time_ = 0.0;
+	if ( time_ < 0.0f ) time_ = 0.0f;
 
-	if ( time_ > fileSize_ - 1.0 ) {
-		time_ = fileSize_ - 1.0;
+	if ( time_ > fileSize_ - 1.0f ) {
+		time_ = fileSize_ - 1.0f;
 
-		for ( unsigned int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0;
+		for ( int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0f;
 
 		finished_ = true;
 	}
 }
 
-double FileWaveIn::Tick( unsigned int channel ) {
+float FileWaveIn::Tick( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= data_.GetChannelCount() ) {
@@ -130,27 +130,27 @@ double FileWaveIn::Tick( unsigned int channel ) {
 
 	#endif
 
-	if ( finished_ ) return 0.0;
+	if ( finished_ ) return 0.0f;
 
-	if ( time_ < 0.0 || time_ > (double) ( fileSize_ - 1.0 ) ) {
-		for ( unsigned int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0;
+	if ( time_ < 0.0f || time_ > (float) ( fileSize_ - 1.0f ) ) {
+		for ( int i = 0; i < last_frame_.GetCount(); i++ ) last_frame_[i] = 0.0f;
 
 		finished_ = true;
-		return 0.0;
+		return 0.0f;
 	}
 
-	double tyme = time_;
+	float tyme = time_;
 
 	if ( chunking_ ) {
-		if ( ( time_ < (double) chunkPointer_ ) ||
-			 ( time_ > (double) ( chunkPointer_ + chunkSize_ - 1 ) ) ) {
-			while ( time_ < (double) chunkPointer_ ) {
+		if ( ( time_ < (float) chunkPointer_ ) ||
+			 ( time_ > (float) ( chunkPointer_ + chunkSize_ - 1 ) ) ) {
+			while ( time_ < (float) chunkPointer_ ) {
 				chunkPointer_ -= chunkSize_ - 1;
 
 				if ( chunkPointer_ < 0 ) chunkPointer_ = 0;
 			}
 
-			while ( time_ > (double) ( chunkPointer_ + chunkSize_ - 1 ) ) {
+			while ( time_ > (float) ( chunkPointer_ + chunkSize_ - 1 ) ) {
 				chunkPointer_ += chunkSize_ - 1;
 
 				if ( chunkPointer_ + chunkSize_ > fileSize_ )
@@ -164,11 +164,11 @@ double FileWaveIn::Tick( unsigned int channel ) {
 	}
 
 	if ( interpolate_ ) {
-		for ( unsigned int i = 0; i < last_frame_.GetCount(); i++ )
+		for ( int i = 0; i < last_frame_.GetCount(); i++ )
 			last_frame_[i] = data_.interpolate( tyme, i );
 	}
 	else {
-		for ( unsigned int i = 0; i < last_frame_.GetCount(); i++ )
+		for ( int i = 0; i < last_frame_.GetCount(); i++ )
 			last_frame_[i] = data_( (size_t) tyme, i );
 	}
 
@@ -176,7 +176,7 @@ double FileWaveIn::Tick( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-AudioFrames& FileWaveIn::Tick( AudioFrames& frames, unsigned int channel) {
+AudioFrames& FileWaveIn::Tick( AudioFrames& frames, int channel) {
 	if ( !file_.isOpen() ) {
 		#if defined(flagDEBUG)
 		LOG("FileWaveIn::Tick(): no file data is loaded!");
@@ -185,7 +185,7 @@ AudioFrames& FileWaveIn::Tick( AudioFrames& frames, unsigned int channel) {
 		return frames;
 	}
 
-	unsigned int channel_count = last_frame_.GetChannelCount();
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -194,15 +194,15 @@ AudioFrames& FileWaveIn::Tick( AudioFrames& frames, unsigned int channel) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

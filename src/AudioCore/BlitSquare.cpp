@@ -4,8 +4,8 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-BlitSquare:: BlitSquare( double frequency ) {
-	if ( frequency <= 0.0 ) {
+BlitSquare:: BlitSquare( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("BlitSquare::BlitSquare: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
@@ -19,32 +19,32 @@ BlitSquare::~BlitSquare() {
 }
 
 void BlitSquare::Reset() {
-	phase_ = 0.0;
-	last_frame_[0] = 0.0;
-	dcb_state_ = 0.0;
+	phase_ = 0.0f;
+	last_frame_[0] = 0.0f;
+	dcb_state_ = 0.0f;
 	last_blit_output_ = 0;
 }
 
-void BlitSquare::SetFrequency( double frequency ) {
-	if ( frequency <= 0.0 ) {
+void BlitSquare::SetFrequency( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("BlitSquare::SetFrequency: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
-	p_ = 0.5 * Audio::GetSampleRate() / frequency;
+	p_ = 0.5f * Audio::GetSampleRate() / frequency;
 	rate_ = PI / p_;
 	this->UpdateHarmonics();
 }
 
-void BlitSquare::SetHarmonics( unsigned int nHarmonics ) {
+void BlitSquare::SetHarmonics( int nHarmonics ) {
 	harmonic_count_ = nHarmonics;
 	this->UpdateHarmonics();
 }
 
 void BlitSquare::UpdateHarmonics() {
 	if ( harmonic_count_ <= 0 ) {
-		unsigned int maxHarmonics = (unsigned int) floor( 0.5 * p_ );
+		int maxHarmonics = (int) floor( 0.5f * p_ );
 		m_ = 2 * (maxHarmonics + 1);
 	}
 	else

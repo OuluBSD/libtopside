@@ -10,14 +10,14 @@ public:
 	Instrument();
 	
 	virtual void Clear() {};
-	virtual void NoteOn( double frequency, double amplitude ) = 0;
-	virtual void NoteOff( double amplitude ) = 0;
-	virtual void SetFrequency( double frequency );
-	virtual void ControlChange(int number, double value);
+	virtual void NoteOn( float frequency, float amplitude ) = 0;
+	virtual void NoteOff( float amplitude ) = 0;
+	virtual void SetFrequency( float frequency );
+	virtual void ControlChange(int number, float value);
 	
 	void HandleEvent(const MidiIO::Event& e, int track_i=-1);
 	
-	unsigned int GetChannelsOut() const {
+	int GetChannelsOut() const {
 		return last_frame_.GetChannelCount();
 	};
 
@@ -25,9 +25,9 @@ public:
 		return last_frame_;
 	};
 
-	double GetLastOut( unsigned int channel = 0 );
-	virtual double Tick( unsigned int channel = 0 ) = 0;
-	virtual AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 ) = 0;
+	float GetLastOut( int channel = 0 );
+	virtual float Tick( int channel = 0 ) = 0;
+	virtual AudioFrames& Tick( AudioFrames& frames, int channel = 0 ) = 0;
 	virtual void LoadState(const ArrayMap<String, Object>& state) {}
 
 protected:
@@ -36,12 +36,12 @@ protected:
 
 };
 
-inline void Instrument::SetFrequency( double frequency ) {
+inline void Instrument::SetFrequency( float frequency ) {
 	LOG("Instrument::SetFrequency: virtual SetFrequency function call!");
 	HandleError( AudioError::WARNING );
 }
 
-inline double Instrument::GetLastOut( unsigned int channel ) {
+inline float Instrument::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= last_frame_.GetChannelCount() ) {
@@ -53,7 +53,7 @@ inline double Instrument::GetLastOut( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline void Instrument::ControlChange( int number, double value ) {
+inline void Instrument::ControlChange( int number, float value ) {
 	LOG("Instrument::controlChange: virtual function call!");
 	HandleError( AudioError::WARNING );
 }

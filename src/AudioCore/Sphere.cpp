@@ -10,20 +10,20 @@ vec3* Sphere::GetRelativePosition( vec3* position ) {
 	return &working_vector_;
 };
 
-double Sphere::GetVelocity( vec3* velocity ) {
+float Sphere::GetVelocity( vec3* velocity ) {
 	velocity->Set( velocity_.data[0], velocity_.data[1], velocity_.data[2] );
 	return velocity_.GetLength();
 };
 
-double Sphere::isInside( vec3* position ) {
-	double distance;
+float Sphere::isInside( vec3* position ) {
+	float distance;
 	vec3* tempVector;
 	tempVector = this->GetRelativePosition( position );
 	distance = tempVector->GetLength();
 	return distance - radius_;
 };
 
-void Sphere::AddVelocity(double x, double y, double z) {
+void Sphere::AddVelocity(float x, float y, float z) {
 	velocity_.data[0] = (velocity_.data[0] + x);
 	velocity_.data[1] = (velocity_.data[1] + y);
 	velocity_.data[2] = (velocity_.data[2] + z);

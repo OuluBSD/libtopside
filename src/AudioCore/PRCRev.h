@@ -8,25 +8,25 @@ NAMESPACE_AUDIO_BEGIN
 class PRCRev : public Effect {
 public:
 
-	PRCRev( double T60 = 1.0 );
+	PRCRev( float T60 = 1.0f );
 
 	void Clear() override;
-	void SetT60( double T60 );
-	double GetLastOut( unsigned int channel = 0 );
-	double Tick( double input, unsigned int channel = 0 ) override;
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	void SetT60( float T60 );
+	float GetLastOut( int channel = 0 );
+	float Tick( float input, int channel = 0 ) override;
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
 	Delay    allpass_delays_[2];
 	Delay    comb_delays_[2];
-	double allpass_coeff_;
-	double comb_coeff_[2];
+	float allpass_coeff_;
+	float comb_coeff_[2];
 
 };
 
-inline double PRCRev::GetLastOut( unsigned int channel ) {
+inline float PRCRev::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -38,7 +38,7 @@ inline double PRCRev::GetLastOut( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline double PRCRev::Tick( double input, unsigned int channel ) {
+inline float PRCRev::Tick( float input, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -47,7 +47,7 @@ inline double PRCRev::Tick( double input, unsigned int channel ) {
 	}
 
 	#endif
-	double temp, temp0, temp1, temp2, temp3;
+	float temp, temp0, temp1, temp2, temp3;
 	temp = allpass_delays_[0].GetLastOut();
 	temp0 = allpass_coeff_ * temp;
 	temp0 += input;
@@ -62,7 +62,7 @@ inline double PRCRev::Tick( double input, unsigned int channel ) {
 	temp3 = temp1 + ( comb_coeff_[1] * comb_delays_[1].GetLastOut() );
 	last_frame_[0] = effect_mix_ * (comb_delays_[0].Tick(temp2));
 	last_frame_[1] = effect_mix_ * (comb_delays_[1].Tick(temp3));
-	temp = (1.0 - effect_mix_) * input;
+	temp = (1.0f - effect_mix_) * input;
 	last_frame_[0] += temp;
 	last_frame_[1] += temp;
 	return last_frame_[channel];

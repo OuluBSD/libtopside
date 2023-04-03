@@ -13,7 +13,7 @@ public:
 	struct MessengerData {
 		Script skini;
 		Vector<Script::Message> queue;
-		unsigned int queueLimit;
+		int queueLimit;
 		int sources;
 
 		MessengerData()

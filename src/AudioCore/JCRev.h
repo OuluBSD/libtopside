@@ -9,14 +9,14 @@ NAMESPACE_AUDIO_BEGIN
 class JCRev : public Effect {
 public:
 
-	JCRev( double T60 = 1.0 );
+	JCRev( float T60 = 1.0f );
 
 	void Clear() override;
-	void SetT60( double T60 );
-	double GetLastOut( unsigned int channel = 0 );
-	double Tick( double input, unsigned int channel = 0 ) override;
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	void SetT60( float T60 );
+	float GetLastOut( int channel = 0 );
+	float Tick( float input, int channel = 0 ) override;
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
@@ -25,12 +25,12 @@ protected:
 	OnePole combFilters_[4];
 	Delay outLeftDelay_;
 	Delay outRightDelay_;
-	double allpass_coeff_;
-	double comb_coeff_[4];
+	float allpass_coeff_;
+	float comb_coeff_[4];
 
 };
 
-inline double JCRev::GetLastOut( unsigned int channel ) {
+inline float JCRev::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -42,7 +42,7 @@ inline double JCRev::GetLastOut( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline double JCRev::Tick( double input, unsigned int channel ) {
+inline float JCRev::Tick( float input, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -51,8 +51,8 @@ inline double JCRev::Tick( double input, unsigned int channel ) {
 	}
 
 	#endif
-	double temp, temp0, temp1, temp2, temp3, temp4, temp5, temp6;
-	double filtout;
+	float temp, temp0, temp1, temp2, temp3, temp4, temp5, temp6;
+	float filtout;
 	temp = allpass_delays_[0].GetLastOut();
 	temp0 = allpass_coeff_ * temp;
 	temp0 += input;
@@ -79,10 +79,10 @@ inline double JCRev::Tick( double input, unsigned int channel ) {
 	filtout = temp3 + temp4 + temp5 + temp6;
 	last_frame_[0] = effect_mix_ * (outLeftDelay_.Tick(filtout));
 	last_frame_[1] = effect_mix_ * (outRightDelay_.Tick(filtout));
-	temp = (1.0 - effect_mix_) * input;
+	temp = (1.0f - effect_mix_) * input;
 	last_frame_[0] += temp;
 	last_frame_[1] += temp;
-	return 0.7 * last_frame_[channel];
+	return 0.7f * last_frame_[channel];
 }
 
 NAMESPACE_AUDIO_END

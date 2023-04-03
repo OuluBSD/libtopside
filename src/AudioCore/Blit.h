@@ -8,44 +8,44 @@ NAMESPACE_AUDIO_BEGIN
 class Blit: public Generator {
 public:
 
-	Blit( double frequency = 220.0 );
+	Blit( float frequency = 220.0f );
 	~Blit();
 	void Reset();
-	void SetPhase( double phase ) {
+	void SetPhase( float phase ) {
 		phase_ = PI * phase;
 	};
 
-	double GetPhase() const {
+	float GetPhase() const {
 		return phase_ / PI;
 	};
 
-	void SetFrequency( double frequency );
-	void SetHarmonics( unsigned int nHarmonics = 0 );
+	void SetFrequency( float frequency );
+	void SetHarmonics( int nHarmonics = 0 );
 
-	double GetLastOut() const {
+	float GetLastOut() const {
 		return last_frame_[0];
 	};
 
-	double Tick();
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	float Tick();
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
 	void UpdateHarmonics();
 
-	unsigned int harmonic_count_;
-	unsigned int m_;
-	double rate_;
-	double phase_;
-	double p_;
+	int harmonic_count_;
+	int m_;
+	float rate_;
+	float phase_;
+	float p_;
 
 };
 
-inline double Blit::Tick() {
-	double tmp, denominator = sin( phase_ );
+inline float Blit::Tick() {
+	float tmp, denominator = sin( phase_ );
 
-	if ( denominator <= std::numeric_limits<double>::epsilon() )
-		tmp = 1.0;
+	if ( denominator <= std::numeric_limits<float>::epsilon() )
+		tmp = 1.0f;
 	else {
 		tmp =  sin( m_ * phase_ );
 		tmp /= m_ * denominator;
@@ -59,7 +59,7 @@ inline double Blit::Tick() {
 	return last_frame_[0];
 }
 
-inline AudioFrames& Blit::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& Blit::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -68,10 +68,10 @@ inline AudioFrames& Blit::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Blit::Tick();
 
 	return frames;

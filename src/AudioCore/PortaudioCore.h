@@ -55,9 +55,9 @@ struct AudioFormat {
 };
 
 struct StreamTimeInfo {
-	double			input_adc;
-	double			current;
-	double			output_adc;
+	float			input_adc;
+	float			current;
+	float			output_adc;
 	
 	StreamTimeInfo(	const PaStreamCallbackTimeInfo* timeinfo):
 					input_adc(timeinfo->inputBufferAdcTime),
@@ -74,12 +74,12 @@ struct StreamCallbackArgs {
 	void*			output;
 	void*			data;
 	int				state;
-	unsigned long	fpb;
+	int	fpb;
 	StreamTimeInfo	timeinfo;
-	unsigned long	flags;
+	int	flags;
 	
-	StreamCallbackArgs(const void *input, void *output, unsigned long fpb,
-	                   StreamTimeInfo timeinfo, unsigned long flags,
+	StreamCallbackArgs(const void *input, void *output, int fpb,
+	                   StreamTimeInfo timeinfo, int flags,
 	                   void* data) : input(input),output(output),fpb(fpb),timeinfo(timeinfo),
 	                                 flags(flags),data(data),state(SND_CONTINUE){};
 };
@@ -109,7 +109,7 @@ struct StreamParameters {
 	int				device;
 	int				channels;
 	PaSampleFormat	format;
-	double			latency;
+	float			latency;
 	void*			api_specific_info;
 	
 	operator const PaStreamParameters*() const{
@@ -149,7 +149,7 @@ public:
 	AudioBase&		SetFrequency(int freq)          {pa_fmt.freq = freq; return *this;}
 	AudioBase&		SetSampleRate(dword sr)         {pa_fmt.sample_rate = sr; return *this;}
 	AudioBase&		SetFlags(StreamFlags f)         {flags = f; return *this;}
-	double			GetFrequency() const;
+	float			GetFrequency() const;
 	dword			GetSampleRate() const           {return pa_fmt.sample_rate;}
 	StreamFlags		GetFlags() const                {return flags;}
 
@@ -167,10 +167,10 @@ public:
 	String			GetError() const                {return Pa_GetErrorText(err);}
 	AudioFormat		GetFormat() const				{return pa_fmt;}
 
-	double			GetInputLatency() const;
-	double			GetOutputLatency() const;
-	double			Time() const                 {return Pa_GetStreamTime(stream);}
-	double			CpuLoad() const              {return Pa_GetStreamCpuLoad(stream);}
+	float			GetInputLatency() const;
+	float			GetOutputLatency() const;
+	float			Time() const                 {return Pa_GetStreamTime(stream);}
+	float			CpuLoad() const              {return Pa_GetStreamCpuLoad(stream);}
 };
 
 class AudioDeviceStream : public AudioBase {
@@ -242,11 +242,11 @@ public:
 	int				api;
 	int				input_channels;
 	int				output_channels;
-	double			low_input_latency;
-	double			low_output_latency;
-	double			high_input_latency;
-	double			high_output_latency;
-	double			sample_rate;
+	float			low_input_latency;
+	float			low_output_latency;
+	float			high_input_latency;
+	float			high_output_latency;
+	float			sample_rate;
 	
 	AudioDevice() : index(Null), name("Null") {};
 	AudioDevice(const Nuller&) : index(Null), name("Null") {}

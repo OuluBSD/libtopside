@@ -8,7 +8,7 @@ NAMESPACE_AUDIO_BEGIN
 class LentPitchShift : public Effect {
 public:
 
-	LentPitchShift( double periodRatio = 1.0, int tMax = RT_BUFFER_SIZE );
+	LentPitchShift( float periodRatio = 1.0f, int tMax = RT_BUFFER_SIZE );
 
 	~LentPitchShift() {
 		delete window;
@@ -18,10 +18,10 @@ public:
 	}
 
 	void Clear() override;
-	void SetShift( double shift );
-	double Tick( double input, unsigned int channel = 0 ) override;
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	void SetShift( float shift );
+	float Tick( float input, int channel = 0 ) override;
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
@@ -33,28 +33,28 @@ protected:
 	Delay input_line_;
 	int inputPtr;
 	Delay outputLine_;
-	double outputPtr;
-	unsigned long tMax_;
-	double threshold_;
-	unsigned long lastPeriod_;
-	double* dt;
-	double* cumDt;
-	double* dpt;
-	double env[2];
-	double* window;
-	double periodRatio_;
+	float outputPtr;
+	int tMax_;
+	float threshold_;
+	int lastPeriod_;
+	float* dt;
+	float* cumDt;
+	float* dpt;
+	float env[2];
+	float* window;
+	float periodRatio_;
 	AudioFrames zeroFrame;
 
 };
 
 inline void LentPitchShift::Process() {
-	double x_t;
-	double x_t_T;
-	double coeff;
-	unsigned long alternativePitch = tMax_;
+	float x_t;
+	float x_t_T;
+	float coeff;
+	int alternativePitch = tMax_;
 	lastPeriod_ = tMax_ + 1;
-	unsigned long delay_;
-	unsigned int n;
+	int delay_;
+	int n;
 
 	for ( delay_ = 1; delay_ <= tMax_; delay_++ )
 		dt[delay_] = 0.;
@@ -100,17 +100,17 @@ inline void LentPitchShift::Process() {
 
 	long M;
 	long N;
-	double sample;
+	float sample;
 
 	for ( ; inputPtr < (int)(tMax_ - lastPeriod_); inputPtr += lastPeriod_ ) {
 		while ( outputPtr < inputPtr ) {
-			env[1] = fmod( outputPtr + tMax_, 1.0 );
-			env[0] = 1.0 - env[1];
+			env[1] = fmod( outputPtr + tMax_, 1.0f );
+			env[0] = 1.0f - env[1];
 			M = tMax_ - inputPtr + lastPeriod_ - 1;
-			N = 2 * tMax_ - (unsigned long)floor(outputPtr + tMax_) + lastPeriod_ - 1;
+			N = 2 * tMax_ - (int)floor(outputPtr + tMax_) + lastPeriod_ - 1;
 
-			for ( unsigned int j = 0; j < 2 * lastPeriod_; j++, M--, N-- ) {
-				sample = input_line_.GetTapOut(M) * window[j] / 2.;
+			for ( int j = 0; j < 2 * lastPeriod_; j++, M--, N-- ) {
+				sample = input_line_.GetTapOut(M) * window[j] / 2.f;
 				outputLine_.addTo(env[0] * sample, N);
 				outputLine_.addTo(env[1] * sample, N - 1);
 			}
@@ -124,8 +124,8 @@ inline void LentPitchShift::Process() {
 }
 
 
-inline double LentPitchShift::Tick( double input, unsigned int channel ) {
-	double sample;
+inline float LentPitchShift::Tick( float input, int channel ) {
+	float sample;
 	inputFrames[ptrFrames] = input;
 	sample = outputFrames[ptrFrames++];
 
@@ -137,7 +137,7 @@ inline double LentPitchShift::Tick( double input, unsigned int channel ) {
 	return sample;
 }
 
-inline AudioFrames& LentPitchShift::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& LentPitchShift::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -146,16 +146,16 @@ inline AudioFrames& LentPitchShift::Tick( AudioFrames& frames, unsigned int chan
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 		* samples = Tick( *samples );
 
 	return frames;
 }
 
-inline AudioFrames& LentPitchShift::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& LentPitchShift::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -164,11 +164,11 @@ inline AudioFrames& LentPitchShift::Tick( AudioFrames& in_frames, AudioFrames& o
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step )
 		* out_samples = Tick( *in_samples );
 
 	return in_frames;

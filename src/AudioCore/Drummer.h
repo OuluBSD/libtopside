@@ -14,10 +14,10 @@ public:
 	Drummer();
 	~Drummer();
 	void SetPreset(String preset);
-	void NoteOn( double instrument, double amplitude );
-	void NoteOff( double amplitude );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void NoteOn( float instrument, float amplitude );
+	void NoteOff( float amplitude );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 	
 protected:
 

@@ -13,17 +13,17 @@ public:
 	BandedWaveGuide();
 	~BandedWaveGuide();
 	void Clear();
-	void SetStrikePosition( double position );
+	void SetStrikePosition( float position );
 	void SetPreset( int preset );
-	void SetFrequency( double frequency );
-	void StartBowing( double amplitude, double rate );
-	void StopBowing( double rate );
-	void Pluck( double amp );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetFrequency( float frequency );
+	void StartBowing( float amplitude, float rate );
+	void StopBowing( float rate );
+	void Pluck( float amp );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -35,25 +35,25 @@ protected:
 	ADSR     adsr_;
 	BiQuad   bandpass_[MAX_BANDED_MODES];
 	DelayL   delay_[MAX_BANDED_MODES];
-	double max_velocity_;
-	double modes_[MAX_BANDED_MODES];
-	double frequency_;
-	double base_gain_;
-	double gains_[MAX_BANDED_MODES];
-	double basegains_[MAX_BANDED_MODES];
-	double excitation_[MAX_BANDED_MODES];
-	double integration_constant_;
-	double velocity_input_;
-	double bow_velocity_;
-	double bow_target_;
-	double bow_position_;
-	double strikeAmp_;
+	float max_velocity_;
+	float modes_[MAX_BANDED_MODES];
+	float frequency_;
+	float base_gain_;
+	float gains_[MAX_BANDED_MODES];
+	float basegains_[MAX_BANDED_MODES];
+	float excitation_[MAX_BANDED_MODES];
+	float integration_constant_;
+	float velocity_input_;
+	float bow_velocity_;
+	float bow_target_;
+	float bow_position_;
+	float strikeAmp_;
 	int strike_position_;
 
 };
 
-inline AudioFrames& BandedWaveGuide::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& BandedWaveGuide::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -62,15 +62,15 @@ inline AudioFrames& BandedWaveGuide::Tick( AudioFrames& frames, unsigned int cha
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

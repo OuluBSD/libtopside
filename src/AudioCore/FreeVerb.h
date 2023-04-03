@@ -11,21 +11,21 @@ public:
 	FreeVerb();
 	~FreeVerb();
 	
-	void SetEffectMix( double mix ) override;
-	void SetRoomSize( double value );
-	double GetRoomSize();
-	void SetDamping( double value );
-	double GetDamping();
-	void SetWidth( double value );
-	double GetWidth();
+	void SetEffectMix( float mix ) override;
+	void SetRoomSize( float value );
+	float GetRoomSize();
+	void SetDamping( float value );
+	float GetDamping();
+	void SetWidth( float value );
+	float GetWidth();
 	void SetMode( bool isFrozen );
-	double GetMode();
+	float GetMode();
 	void Clear() override;
-	double GetLastOut( unsigned int channel = 0 );
-	double Tick( double inputL, unsigned int channel ) override {return Tick(inputL, 0.0, channel);}
-	double Tick( double inputL, double inputR = 0.0, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float GetLastOut( int channel = 0 );
+	float Tick( float inputL, int channel ) override {return Tick(inputL, 0.0f, channel);}
+	float Tick( float inputL, float inputR = 0.0f, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 	void LoadState(const ArrayMap<String, Object>& state) override;
 	
 protected:
@@ -35,23 +35,23 @@ protected:
 	static const int nCombs = 8;
 	static const int nAllpasses = 4;
 	static const int stereoSpread = 23;
-	static const double fixedGain;
-	static const double scaleWet;
-	static const double scaleDry;
-	static const double scaleDamp;
-	static const double scaleRoom;
-	static const double offsetRoom;
+	static const float fixedGain;
+	static const float scaleWet;
+	static const float scaleDry;
+	static const float scaleDamp;
+	static const float scaleRoom;
+	static const float offsetRoom;
 
 	static int cDelayLengths[nCombs];
 	static int aDelayLengths[nAllpasses];
 
-	double g_;
-	double gain_;
-	double roomSizeMem_, roomSize_;
-	double dampMem_, damp_;
-	double wet1_, wet2_;
-	double dry_;
-	double width_;
+	float g_;
+	float gain_;
+	float roomSizeMem_, roomSize_;
+	float dampMem_, damp_;
+	float wet1_, wet2_;
+	float dry_;
+	float width_;
 	bool frozenMode_;
 
 	Delay combDelayL_[nCombs];
@@ -63,7 +63,7 @@ protected:
 	Delay allPassDelayR_[nAllpasses];
 };
 
-inline double FreeVerb::GetLastOut( unsigned int channel ) {
+inline float FreeVerb::GetLastOut( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -75,7 +75,7 @@ inline double FreeVerb::GetLastOut( unsigned int channel ) {
 	return last_frame_[channel];
 }
 
-inline double FreeVerb::Tick( double inputL, double inputR, unsigned int channel ) {
+inline float FreeVerb::Tick( float inputL, float inputR, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel > 1 ) {
@@ -84,12 +84,12 @@ inline double FreeVerb::Tick( double inputL, double inputR, unsigned int channel
 	}
 
 	#endif
-	double fInput = (inputL + inputR) * gain_;
-	double outL = 0.0;
-	double outR = 0.0;
+	float fInput = (inputL + inputR) * gain_;
+	float outL = 0.0f;
+	float outR = 0.0f;
 
 	for ( int i = 0; i < nCombs; i++ ) {
-		double yn = fInput + (roomSize_ * combLPL_[i].Tick( combDelayL_[i].GetNextOut() ) );
+		float yn = fInput + (roomSize_ * combLPL_[i].Tick( combDelayL_[i].GetNextOut() ) );
 		combDelayL_[i].Tick(yn);
 		outL += yn;
 		yn = fInput + (roomSize_ * combLPR_[i].Tick( combDelayR_[i].GetNextOut() ) );
@@ -98,14 +98,14 @@ inline double FreeVerb::Tick( double inputL, double inputR, unsigned int channel
 	}
 
 	for ( int i = 0; i < nAllpasses; i++ ) {
-		double vn_m = allPassDelayL_[i].GetNextOut();
-		double vn = outL + (g_ * vn_m);
+		float vn_m = allPassDelayL_[i].GetNextOut();
+		float vn = outL + (g_ * vn_m);
 		allPassDelayL_[i].Tick(vn);
-		outL = -vn + (1.0 + g_) * vn_m;
+		outL = -vn + (1.0f + g_) * vn_m;
 		vn_m = allPassDelayR_[i].GetNextOut();
 		vn = outR + (g_ * vn_m);
 		allPassDelayR_[i].Tick(vn);
-		outR = -vn + (1.0 + g_) * vn_m;
+		outR = -vn + (1.0f + g_) * vn_m;
 	}
 
 	last_frame_[0] = outL * wet1_ + outR * wet2_ + inputL * dry_;

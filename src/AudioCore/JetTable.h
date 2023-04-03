@@ -9,23 +9,23 @@ NAMESPACE_AUDIO_BEGIN
 class JetTable : public Function {
 public:
 
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 };
 
-inline double JetTable::Tick( double input ) {
-	last_frame_[0] = input * (input * input - 1.0);
+inline float JetTable::Tick( float input ) {
+	last_frame_[0] = input * (input * input - 1.0f);
 
-	if ( last_frame_[0] > 1.0 ) last_frame_[0] = 1.0;
+	if ( last_frame_[0] > 1.0f ) last_frame_[0] = 1.0f;
 
-	if ( last_frame_[0] < -1.0 ) last_frame_[0] = -1.0;
+	if ( last_frame_[0] < -1.0f ) last_frame_[0] = -1.0f;
 
 	return last_frame_[0];
 }
 
-inline AudioFrames& JetTable::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& JetTable::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -34,22 +34,22 @@ inline AudioFrames& JetTable::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
-		*samples = *samples * (*samples * *samples - 1.0);
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		*samples = *samples * (*samples * *samples - 1.0f);
 
-		if ( *samples > 1.0) *samples = 1.0;
+		if ( *samples > 1.0f) *samples = 1.0f;
 
-		if ( *samples < -1.0) *samples = -1.0;
+		if ( *samples < -1.0f) *samples = -1.0f;
 	}
 
 	last_frame_[0] = *(samples - step);
 	return frames;
 }
 
-inline AudioFrames& JetTable::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& JetTable::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -58,16 +58,16 @@ inline AudioFrames& JetTable::Tick( AudioFrames& in_frames, AudioFrames& out_fra
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
-		*out_samples = *out_samples * (*out_samples * *out_samples - 1.0);
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+		*out_samples = *out_samples * (*out_samples * *out_samples - 1.0f);
 
-		if ( *out_samples > 1.0) *out_samples = 1.0;
+		if ( *out_samples > 1.0f) *out_samples = 1.0f;
 
-		if ( *out_samples < -1.0) *out_samples = -1.0;
+		if ( *out_samples < -1.0f) *out_samples = -1.0f;
 	}
 
 	last_frame_[0] = *(out_samples - out_step);

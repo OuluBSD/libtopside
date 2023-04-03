@@ -7,33 +7,33 @@ const int CAN_RADIUS = 100;
 const int PEA_RADIUS = 30;
 const int BUMP_RADIUS = 5;
 
-const double NORM_CAN_LOSS = 0.97;
+const float NORM_CAN_LOSS = 0.97;
 
-const double GRAVITY = 20.0;
+const float GRAVITY = 20.0f;
 
-const double NORM_TICK_SIZE = 0.004;
+const float NORM_TICK_SIZE = 0.004;
 
 
-const double ENV_RATE = 0.001;
+const float ENV_RATE = 0.001f;
 
 Whistle::Whistle() {
-	sine_.SetFrequency( 2800.0 );
+	sine_.SetFrequency( 2800.0f );
 	can_.SetRadius( CAN_RADIUS );
 	can_.SetPosition(0, 0, 0);
 	can_.SetVelocity(0, 0, 0);
-	onepole_.SetPole(0.95);
+	onepole_.SetPole(0.95f);
 	bumper_.SetRadius( BUMP_RADIUS );
-	bumper_.SetPosition(0.0, CAN_RADIUS - BUMP_RADIUS, 0);
-	bumper_.SetPosition(0.0, CAN_RADIUS - BUMP_RADIUS, 0);
+	bumper_.SetPosition(0.0f, CAN_RADIUS - BUMP_RADIUS, 0);
+	bumper_.SetPosition(0.0f, CAN_RADIUS - BUMP_RADIUS, 0);
 	pea_.SetRadius( PEA_RADIUS );
 	pea_.SetPosition(0, CAN_RADIUS / 2, 0);
 	pea_.SetVelocity(35, 15, 0);
 	envelope_.SetRate( ENV_RATE );
 	envelope_.KeyOn();
-	fipple_freq_mod_ = 0.5;
-	fipple_gain_mod_ = 0.5;
-	blow_freq_mod_ = 0.25;
-	noise_gain_ = 0.125;
+	fipple_freq_mod_ = 0.5f;
+	fipple_gain_mod_ = 0.5f;
+	blow_freq_mod_ = 0.25f;
+	noise_gain_ = 0.125f;
 	base_frequency_ = 2000;
 	tick_size_ = NORM_TICK_SIZE;
 	can_loss_ = NORM_CAN_LOSS;
@@ -50,10 +50,10 @@ Whistle::~Whistle() {
 void Whistle::Clear() {
 }
 
-void Whistle::SetFrequency( double frequency ) {
+void Whistle::SetFrequency( float frequency ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Whistle::SetFrequency: parameter is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -63,8 +63,8 @@ void Whistle::SetFrequency( double frequency ) {
 	base_frequency_ = frequency * 4;
 }
 
-void Whistle::StartBlowing( double amplitude, double rate ) {
-	if ( amplitude <= 0.0 || rate <= 0.0 ) {
+void Whistle::StartBlowing( float amplitude, float rate ) {
+	if ( amplitude <= 0.0f || rate <= 0.0f ) {
 		LOG("Whistle::StartBlowing: one or more arguments is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -74,8 +74,8 @@ void Whistle::StartBlowing( double amplitude, double rate ) {
 	envelope_.SetTarget( amplitude );
 }
 
-void Whistle::StopBlowing( double rate ) {
-	if ( rate <= 0.0 ) {
+void Whistle::StopBlowing( float rate ) {
+	if ( rate <= 0.0f ) {
 		LOG("Whistle::StopBlowing: argument is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -85,22 +85,22 @@ void Whistle::StopBlowing( double rate ) {
 	envelope_.KeyOff();
 }
 
-void Whistle::NoteOn( double frequency, double amplitude ) {
+void Whistle::NoteOn( float frequency, float amplitude ) {
 	this->SetFrequency( frequency );
-	this->StartBlowing( amplitude * 2.0 , amplitude * 0.2 );
+	this->StartBlowing( amplitude * 2.0 , amplitude * 0.2f );
 }
 
-void Whistle::NoteOff( double amplitude ) {
+void Whistle::NoteOff( float amplitude ) {
 	this->StopBlowing( amplitude * 0.02 );
 }
 
 int frameCount = 0;
 
-double Whistle::Tick( unsigned int ) {
-	double soundMix, tempFreq;
-	double envOut = 0, temp, temp1, temp2, tempX, tempY;
-	double phi, cosphi, sinphi;
-	double gain = 0.5, mod = 0.0;
+float Whistle::Tick( int ) {
+	float soundMix, tempFreq;
+	float envOut = 0, temp, temp1, temp2, tempX, tempY;
+	float phi, cosphi, sinphi;
+	float gain = 0.5, mod = 0.0f;
 
 	if ( --sub_samp_count_ <= 0 )	{
 		temp_vector_p_ = pea_.GetPosition();
@@ -120,16 +120,16 @@ double Whistle::Tick( unsigned int ) {
 
 		if (temp < (BUMP_RADIUS + PEA_RADIUS)) {
 			tempX = envOut * tick_size_ * 2000 * noise_.Tick();
-			tempY = -envOut * tick_size_ * 1000 * (1.0 + noise_.Tick());
+			tempY = -envOut * tick_size_ * 1000 * (1.0f + noise_.Tick());
 			pea_.AddVelocity( tempX, tempY, 0 );
 			pea_.Tick( tick_size_ );
 		}
 
 		mod  = exp(-temp * 0.01);
 		temp = onepole_.Tick(mod);
-		gain = (1.0 - (fipple_gain_mod_ * 0.5)) + (2.0 * fipple_gain_mod_ * temp);
+		gain = (1.0f - (fipple_gain_mod_ * 0.5)) + (2.0 * fipple_gain_mod_ * temp);
 		gain *= gain;
-		tempFreq = 1.0 + fipple_freq_mod_ * (0.25 - temp) + blow_freq_mod_ * (envOut - 1.0);
+		tempFreq = 1.0f + fipple_freq_mod_ * (0.25 - temp) + blow_freq_mod_ * (envOut - 1.0f);
 		tempFreq *= base_frequency_;
 		sine_.SetFrequency(tempFreq);
 		temp_vector_p_ = pea_.GetPosition();
@@ -167,8 +167,8 @@ double Whistle::Tick( unsigned int ) {
 			tempY = 3.0 * temp * sinphi;
 		}
 		else {
-			tempX = 0.0;
-			tempY = 0.0;
+			tempX = 0.0f;
+			tempY = 0.0f;
 		}
 
 		temp = (0.9 + 0.1 * sub_sample_ * noise_.Tick()) * envOut * 0.6 * tick_size_;
@@ -182,17 +182,17 @@ double Whistle::Tick( unsigned int ) {
 	return last_frame_[0];
 }
 
-void Whistle::ControlChange( int number, double value ) {
+void Whistle::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0 ) == false ) {
 		LOG("Whistle::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if ( number == __SK_NoiseLevel_ )
 		noise_gain_ = 0.25 * normalizedValue;
@@ -207,7 +207,7 @@ void Whistle::ControlChange( int number, double value ) {
 	else if ( number == __SK_Sustain_ )	{
 		sub_sample_ = (int) value;
 
-		if ( sub_sample_ < 1.0 ) sub_sample_ = 1;
+		if ( sub_sample_ < 1.0f ) sub_sample_ = 1;
 
 		envelope_.SetRate( ENV_RATE / sub_sample_ );
 	}

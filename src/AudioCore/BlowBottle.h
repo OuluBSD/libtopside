@@ -11,14 +11,14 @@ public:
 	BlowBottle();
 	~BlowBottle();
 	void Clear();
-	void SetFrequency( double frequency );
-	void StartBlowing( double amplitude, double rate );
-	void StopBlowing( double rate );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetFrequency( float frequency );
+	void StartBlowing( float amplitude, float rate );
+	void StopBlowing( float rate );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -28,30 +28,30 @@ protected:
 	Noise noise_;
 	ADSR adsr_;
 	SineWave vibrato_;
-	double max_pressure_;
-	double noise_gain_;
-	double vibrato_gain_;
-	double output_gain_;
+	float max_pressure_;
+	float noise_gain_;
+	float vibrato_gain_;
+	float output_gain_;
 
 };
 
-inline double BlowBottle::Tick( unsigned int ) {
-	double breath_pressure;
-	double randPressure;
-	double pressure_diff;
+inline float BlowBottle::Tick( int ) {
+	float breath_pressure;
+	float randPressure;
+	float pressure_diff;
 	breath_pressure = max_pressure_ * adsr_.Tick();
 	breath_pressure += vibrato_gain_ * vibrato_.Tick();
 	pressure_diff = breath_pressure - resonator_.GetLastOut();
 	randPressure = noise_gain_ * noise_.Tick();
 	randPressure *= breath_pressure;
-	randPressure *= (1.0 + pressure_diff);
+	randPressure *= (1.0f + pressure_diff);
 	resonator_.Tick( breath_pressure + randPressure - ( jet_table_.Tick( pressure_diff ) * pressure_diff ) );
-	last_frame_[0] = 0.2 * output_gain_ * dc_block_.Tick( pressure_diff );
+	last_frame_[0] = 0.2f * output_gain_ * dc_block_.Tick( pressure_diff );
 	return last_frame_[0];
 }
 
-inline AudioFrames& BlowBottle::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& BlowBottle::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -60,15 +60,15 @@ inline AudioFrames& BlowBottle::Tick( AudioFrames& frames, unsigned int channel 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

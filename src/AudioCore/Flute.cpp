@@ -3,28 +3,28 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-Flute::Flute( double lowest_freq ) {
-	if ( lowest_freq <= 0.0 ) {
+Flute::Flute( float lowest_freq ) {
+	if ( lowest_freq <= 0.0f ) {
 		LOG("Flute::Flute: argument is less than or equal to zero!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
-	unsigned long delay_counts = (unsigned long) ( Audio::GetSampleRate() / lowest_freq );
+	int delay_counts = (int) ( Audio::GetSampleRate() / lowest_freq );
 	bore_delay_.SetMaximumDelay( delay_counts + 1 );
 	jet_delay_.SetMaximumDelay( delay_counts + 1 );
-	jet_delay_.SetDelay( 49.0 );
-	vibrato_.SetFrequency( 5.925 );
-	filter_.SetPole( 0.7 - ( 0.1 * 22050.0 / Audio::GetSampleRate() ) );
+	jet_delay_.SetDelay( 49.0f );
+	vibrato_.SetFrequency( 5.925f );
+	filter_.SetPole( 0.7f - ( 0.1f * 22050.0f / Audio::GetSampleRate() ) );
 	dc_block_.SetBlockZero();
-	adsr_.SetAllTimes( 0.005, 0.01, 0.8, 0.010 );
-	end_reflection = 0.5;
-	jetReflection_ = 0.5;
-	noise_gain_     = 0.15;
-	vibrato_gain_   = 0.05;
-	jetRatio_      = 0.32;
-	max_pressure_ = 0.0;
+	adsr_.SetAllTimes( 0.005f, 0.01f, 0.8f, 0.010f );
+	end_reflection = 0.5f;
+	jetReflection_ = 0.5f;
+	noise_gain_     = 0.15f;
+	vibrato_gain_   = 0.05f;
+	jetRatio_      = 0.32f;
+	max_pressure_ = 0.0f;
 	this->Clear();
-	this->SetFrequency( 220.0 );
+	this->SetFrequency( 220.0f );
 }
 
 Flute::~Flute() {
@@ -37,41 +37,41 @@ void Flute::Clear() {
 	dc_block_.Clear();
 }
 
-void Flute::SetFrequency( double frequency ) {
+void Flute::SetFrequency( float frequency ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Flute::SetFrequency: argument is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	last_frequency_ = frequency * 0.66666;
-	double delay = Audio::GetSampleRate() / last_frequency_ - filter_.GetPhaseDelay( last_frequency_ ) - 1.0;
+	last_frequency_ = frequency * 0.66666f;
+	float delay = Audio::GetSampleRate() / last_frequency_ - filter_.GetPhaseDelay( last_frequency_ ) - 1.0f;
 	bore_delay_.SetDelay( delay );
 	jet_delay_.SetDelay( delay * jetRatio_ );
 }
 
-void Flute::SetJetDelay( double aRatio ) {
+void Flute::SetJetDelay( float aRatio ) {
 	jetRatio_ = aRatio;
 	jet_delay_.SetDelay( bore_delay_.GetDelay() * aRatio );
 }
 
-void Flute::StartBlowing( double amplitude, double rate ) {
-	if ( amplitude <= 0.0 || rate <= 0.0 ) {
+void Flute::StartBlowing( float amplitude, float rate ) {
+	if ( amplitude <= 0.0f || rate <= 0.0f ) {
 		LOG("Flute::StartBlowing: one or more arguments is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	adsr_.SetAttackRate( rate );
-	max_pressure_ = amplitude / (double) 0.8;
+	max_pressure_ = amplitude / (float) 0.8f;
 	adsr_.KeyOn();
 }
 
-void Flute::StopBlowing( double rate ) {
-	if ( rate <= 0.0 ) {
+void Flute::StopBlowing( float rate ) {
+	if ( rate <= 0.0f ) {
 		LOG("Flute::StopBlowing: argument is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -81,37 +81,37 @@ void Flute::StopBlowing( double rate ) {
 	adsr_.KeyOff();
 }
 
-void Flute::NoteOn( double frequency, double amplitude ) {
+void Flute::NoteOn( float frequency, float amplitude ) {
 	this->SetFrequency( frequency );
-	this->StartBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02 );
-	output_gain_ = amplitude + 0.001;
+	this->StartBlowing( 1.1f + (amplitude * 0.20f), amplitude * 0.02f );
+	output_gain_ = amplitude + 0.001f;
 }
 
-void Flute::NoteOff( double amplitude ) {
-	this->StopBlowing( amplitude * 0.02 );
+void Flute::NoteOff( float amplitude ) {
+	this->StopBlowing( amplitude * 0.02f );
 }
 
 
-void Flute::ControlChange( int number, double value ) {
+void Flute::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0f ) == false ) {
 		LOG("Flute::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if (number == __SK_JetDelay_)
-		this->SetJetDelay( (double) (0.08 + (0.48 * normalizedValue)) );
+		this->SetJetDelay( (float) (0.08f + (0.48f * normalizedValue)) );
 	else if (number == __SK_NoiseLevel_)
-		noise_gain_ = ( normalizedValue * 0.4);
+		noise_gain_ = ( normalizedValue * 0.4f);
 	else if (number == __SK_ModFrequency_)
-		vibrato_.SetFrequency( normalizedValue * 12.0);
+		vibrato_.SetFrequency( normalizedValue * 12.0f);
 	else if (number == __SK_ModWheel_)
-		vibrato_gain_ = ( normalizedValue * 0.4 );
+		vibrato_gain_ = ( normalizedValue * 0.4f );
 	else if (number == __SK_AfterTouch_Cont_)
 		adsr_.SetTarget( normalizedValue );
 

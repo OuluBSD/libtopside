@@ -8,19 +8,19 @@ NAMESPACE_AUDIO_BEGIN
 class StifKarp : public Instrument {
 public:
 
-	StifKarp( double lowest_freq = 8.0 );
+	StifKarp( float lowest_freq = 8.0 );
 	~StifKarp();
 	void Clear();
-	void SetFrequency( double frequency );
-	void SetStretch( double stretch );
-	void SetPickupPosition( double position );
-	void SetBaseLoopGain( double aGain );
-	void Pluck( double amplitude );
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void SetFrequency( float frequency );
+	void SetStretch( float stretch );
+	void SetPickupPosition( float position );
+	void SetBaseLoopGain( float aGain );
+	void Pluck( float amplitude );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -30,19 +30,19 @@ protected:
 	Noise   noise_;
 	BiQuad  biquad_[4];
 
-	unsigned long size_;
-	double loop_gain_;
-	double base_loop_gain_;
-	double last_frequency_;
-	double last_length_;
-	double stretching_;
-	double pluck_amplitude_;
-	double pickup_position_;
+	int size_;
+	float loop_gain_;
+	float base_loop_gain_;
+	float last_frequency_;
+	float last_length_;
+	float stretching_;
+	float pluck_amplitude_;
+	float pickup_position_;
 
 };
 
-inline double StifKarp::Tick( unsigned int ) {
-	double temp = delay_line_.GetLastOut() * loop_gain_;
+inline float StifKarp::Tick( int ) {
+	float temp = delay_line_.GetLastOut() * loop_gain_;
 
 	for (int i = 0; i < 4; i++)
 		temp = biquad_[i].Tick(temp);
@@ -53,8 +53,8 @@ inline double StifKarp::Tick( unsigned int ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& StifKarp::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& StifKarp::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -63,15 +63,15 @@ inline AudioFrames& StifKarp::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

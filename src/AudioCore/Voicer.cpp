@@ -3,15 +3,15 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-Voicer::Voicer( double decayTime ) {
-	if ( decayTime < 0.0 ) {
+Voicer::Voicer( float decayTime ) {
+	if ( decayTime < 0.0f ) {
 		LOG("Voicer::Voicer: argument (" << decayTime << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
 
 	tags_ = 23456;
 	mute_time_ = (int) ( decayTime * Audio::GetSampleRate() );
-	last_frame_.SetCount( 1, 1, 0.0 );
+	last_frame_.SetCount( 1, 1, 0.0f );
 }
 
 void Voicer::AddInstrument( Instrument* instrument, int group ) {
@@ -22,11 +22,11 @@ void Voicer::AddInstrument( Instrument* instrument, int group ) {
 	voices_.Add( voice );
 
 	if ( instrument->GetChannelsOut() > last_frame_.GetChannelCount() ) {
-		unsigned int StartChannel = last_frame_.GetChannelCount();
+		int StartChannel = last_frame_.GetChannelCount();
 		last_frame_.SetCount( 1, instrument->GetChannelsOut() );
 
-		for ( unsigned int i = StartChannel; i < last_frame_.GetCount(); i++ )
-			last_frame_[i] = 0.0;
+		for ( int i = StartChannel; i < last_frame_.GetCount(); i++ )
+			last_frame_[i] = 0.0f;
 	}
 }
 
@@ -43,7 +43,7 @@ void Voicer::RemoveInstrument( Instrument* instrument ) {
 	}
 
 	if ( found ) {
-		unsigned int maxChannels = 1;
+		int maxChannels = 1;
 
 		for ( int i = 0; i != voices_.GetCount(); ++i ) {
 			Voice& voice = voices_[i];
@@ -61,9 +61,9 @@ void Voicer::RemoveInstrument( Instrument* instrument ) {
 	}
 }
 
-long Voicer::NoteOn(double note_number, double amplitude, int group ) {
-	unsigned int i;
-	double frequency = (double) 220.0 * pow( 2.0, (note_number - 57.0) / 12.0 );
+long Voicer::NoteOn(float note_number, float amplitude, int group ) {
+	int i;
+	float frequency = (float) 220.0f * powf( 2.0, (note_number - 57.0f) / 12.0 );
 
 	for ( i = 0; i < voices_.GetCount(); i++ ) {
 		if (voices_[i].note_number < 0 && voices_[i].group == group) {
@@ -99,8 +99,8 @@ long Voicer::NoteOn(double note_number, double amplitude, int group ) {
 	return -1;
 }
 
-void Voicer::NoteOff( double note_number, double amplitude, int group ) {
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+void Voicer::NoteOff( float note_number, float amplitude, int group ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].note_number == note_number && voices_[i].group == group ) {
 			voices_[i].instrument->NoteOff( amplitude * ONE_OVER_128 );
 			voices_[i].sounding = -mute_time_;
@@ -108,8 +108,8 @@ void Voicer::NoteOff( double note_number, double amplitude, int group ) {
 	}
 }
 
-void Voicer::NoteOff( long tag, double amplitude ) {
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+void Voicer::NoteOff( long tag, float amplitude ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].tag == tag ) {
 			voices_[i].instrument->NoteOff( amplitude * ONE_OVER_128 );
 			voices_[i].sounding = -mute_time_;
@@ -118,10 +118,10 @@ void Voicer::NoteOff( long tag, double amplitude ) {
 	}
 }
 
-void Voicer::SetFrequency( double note_number, int group ) {
-	double frequency = (double) 220.0 * pow( 2.0, (note_number - 57.0) / 12.0 );
+void Voicer::SetFrequency( float note_number, int group ) {
+	float frequency = (float) 220.0f * powf( 2.0, (note_number - 57.0f) / 12.0 );
 
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].group == group ) {
 			voices_[i].note_number = note_number;
 			voices_[i].frequency = frequency;
@@ -130,10 +130,10 @@ void Voicer::SetFrequency( double note_number, int group ) {
 	}
 }
 
-void Voicer::SetFrequency( long tag, double note_number ) {
-	double frequency = (double) 220.0 * pow( 2.0, (note_number - 57.0) / 12.0 );
+void Voicer::SetFrequency( long tag, float note_number ) {
+	float frequency = (float) 220.0f * powf( 2.0, (note_number - 57.0f) / 12.0 );
 
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].tag == tag ) {
 			voices_[i].note_number = note_number;
 			voices_[i].frequency = frequency;
@@ -143,45 +143,45 @@ void Voicer::SetFrequency( long tag, double note_number ) {
 	}
 }
 
-void Voicer::PitchBend( double value, int group ) {
-	double pitchScaler;
+void Voicer::PitchBend( float value, int group ) {
+	float pitchScaler;
 
 	if ( value < 8192.0 )
-		pitchScaler = pow( 0.5, (8192.0 - value) / 8192.0 );
+		pitchScaler = powf( 0.5, (8192.0 - value) / 8192.0 );
 	else
-		pitchScaler = pow( 2.0, (value - 8192.0) / 8192.0 );
+		pitchScaler = powf( 2.0, (value - 8192.0f) / 8192.0 );
 
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].group == group )
-			voices_[i].instrument->SetFrequency( (double) (voices_[i].frequency * pitchScaler) );
+			voices_[i].instrument->SetFrequency( (float) (voices_[i].frequency * pitchScaler) );
 	}
 }
 
-void Voicer::PitchBend( long tag, double value ) {
-	double pitchScaler;
+void Voicer::PitchBend( long tag, float value ) {
+	float pitchScaler;
 
 	if ( value < 8192.0 )
-		pitchScaler = pow( 0.5, (8192.0 - value) / 8192.0 );
+		pitchScaler = powf( 0.5, (8192.0 - value) / 8192.0 );
 	else
-		pitchScaler = pow( 2.0, (value - 8192.0) / 8192.0 );
+		pitchScaler = powf( 2.0, (value - 8192.0f) / 8192.0 );
 
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].tag == tag ) {
-			voices_[i].instrument->SetFrequency( (double) (voices_[i].frequency * pitchScaler) );
+			voices_[i].instrument->SetFrequency( (float) (voices_[i].frequency * pitchScaler) );
 			break;
 		}
 	}
 }
 
-void Voicer::ControlChange( int number, double value, int group ) {
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+void Voicer::ControlChange( int number, float value, int group ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].group == group )
 			voices_[i].instrument->ControlChange( number, value );
 	}
 }
 
-void Voicer::ControlChange( long tag, int number, double value ) {
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+void Voicer::ControlChange( long tag, int number, float value ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].tag == tag ) {
 			voices_[i].instrument->ControlChange( number, value );
 			break;
@@ -190,9 +190,9 @@ void Voicer::ControlChange( long tag, int number, double value ) {
 }
 
 void Voicer::Silence() {
-	for ( unsigned int i = 0; i < voices_.GetCount(); i++ ) {
+	for ( int i = 0; i < voices_.GetCount(); i++ ) {
 		if ( voices_[i].sounding > 0 )
-			voices_[i].instrument->NoteOff( 0.5 );
+			voices_[i].instrument->NoteOff( 0.5f );
 	}
 }
 

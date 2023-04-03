@@ -55,8 +55,8 @@ public:
 	static Stream& WriteBigEndianLong(Stream& out, long   value);
 	static Stream& WriteLittleEndianFloat(Stream& out, float  value);
 	static Stream& WriteBigEndianFloat(Stream& out, float  value);
-	static Stream& WriteLittleEndianDouble(Stream& out, double value);
-	static Stream& WriteBigEndianDouble(Stream& out, double value);
+	static Stream& WriteLittleEndianDouble(Stream& out, float value);
+	static Stream& WriteBigEndianDouble(Stream& out, float value);
 	
 	static String   KeyToPitchName(int key);
 	

@@ -5,7 +5,7 @@ NAMESPACE_AUDIO_BEGIN
 
 #define BASE_COUPLING_GAIN 0.01
 
-Guitar::Guitar( unsigned int nStrings, String bodyfile ) {
+Guitar::Guitar( int nStrings, String bodyfile ) {
 	strings_.SetCount( nStrings );
 	stringState_.SetCount( nStrings, 0 );
 	decayCounter_.SetCount( nStrings, 0 );
@@ -13,13 +13,13 @@ Guitar::Guitar( unsigned int nStrings, String bodyfile ) {
 	pluckGains_.SetCount( nStrings, 0 );
 	SetBodyFile( bodyfile );
 	couplingGain_ = BASE_COUPLING_GAIN;
-	couplingFilter_.SetPole( 0.9 );
-	pick_filter_.SetPole( 0.95 );
-	last_frame_.SetCount(1, 1, 0.0);
+	couplingFilter_.SetPole( 0.9f );
+	pick_filter_.SetPole( 0.95f );
+	last_frame_.SetCount(1, 1, 0.0f);
 }
 
 void Guitar::Clear() {
-	for ( unsigned int i = 0; i < strings_.GetCount(); i++ ) {
+	for ( int i = 0; i < strings_.GetCount(); i++ ) {
 		strings_[i].Clear();
 		stringState_[i] = 0;
 		filePointer_[i] = 0;
@@ -32,7 +32,7 @@ void Guitar::SetBodyFile( String bodyfile ) {
 	if ( bodyfile != "" ) {
 		try {
 			FileWaveIn file( bodyfile );
-			excitation_.SetCount( (unsigned long) ( 0.5 + ( file.GetSize() * Audio::GetSampleRate() / file.GetFileRate() ) ) );
+			excitation_.SetCount( (int) ( 0.5f + ( file.GetSize() * Audio::GetSampleRate() / file.GetFileRate() ) ) );
 			file.Tick( excitation_ );
 			fileLoaded = true;
 		}
@@ -43,37 +43,37 @@ void Guitar::SetBodyFile( String bodyfile ) {
 	}
 
 	if ( !fileLoaded ) {
-		unsigned int M = 200;
+		int M = 200;
 		excitation_.SetCount( M );
 		Noise noise;
 		noise.Tick( excitation_ );
-		unsigned int N = (unsigned int) M * 0.2;
+		int N = (int) M * 0.2f;
 
-		for ( unsigned int n = 0; n < N; n++ ) {
-			double weight = 0.5 * ( 1.0 - cos( n * PI / (N - 1) ) );
+		for ( int n = 0; n < N; n++ ) {
+			float weight = 0.5f * ( 1.0f - cos( n * PI / (N - 1) ) );
 			excitation_[n] *= weight;
 			excitation_[M - n - 1] *= weight;
 		}
 	}
 
 	pick_filter_.Tick( excitation_ );
-	double mean = 0.0;
+	float mean = 0.0f;
 
-	for ( unsigned int i = 0; i < excitation_.GetFrameCount(); i++ )
+	for ( int i = 0; i < excitation_.GetFrameCount(); i++ )
 		mean += excitation_[i];
 
 	mean /= excitation_.GetFrameCount();
 
-	for ( unsigned int i = 0; i < excitation_.GetFrameCount(); i++ )
+	for ( int i = 0; i < excitation_.GetFrameCount(); i++ )
 		excitation_[i] -= mean;
 
-	for ( unsigned int i = 0; i < strings_.GetCount(); i++ )
+	for ( int i = 0; i < strings_.GetCount(); i++ )
 		filePointer_[i] = 0;
 }
 
 
-void Guitar::SetPluckPosition( double position, int string ) {
-	if ( position < 0.0 || position > 1.0 ) {
+void Guitar::SetPluckPosition( float position, int string ) {
+	if ( position < 0.0f || position > 1.0f ) {
 		LOG("WARNING: Guitar::SetPluckPosition: position parameter out of range!");
 		return;
 	}
@@ -84,14 +84,14 @@ void Guitar::SetPluckPosition( double position, int string ) {
 	}
 
 	if ( string < 0 )
-		for ( unsigned int i = 0; i < strings_.GetCount(); i++ )
+		for ( int i = 0; i < strings_.GetCount(); i++ )
 			strings_[i].SetPluckPosition( position );
 	else
 		strings_[string].SetPluckPosition( position );
 }
 
-void Guitar::SetLoopGain( double gain, int string ) {
-	if ( gain < 0.0 || gain > 1.0 ) {
+void Guitar::SetLoopGain( float gain, int string ) {
+	if ( gain < 0.0f || gain > 1.0f ) {
 		LOG("WARNING: Guitar::SetLoopGain: gain parameter out of range!");
 		return;
 	}
@@ -102,16 +102,16 @@ void Guitar::SetLoopGain( double gain, int string ) {
 	}
 
 	if ( string < 0 )
-		for ( unsigned int i = 0; i < strings_.GetCount(); i++ )
+		for ( int i = 0; i < strings_.GetCount(); i++ )
 			strings_[i].SetLoopGain( gain );
 	else
 		strings_[string].SetLoopGain( gain );
 }
 
-void Guitar::SetFrequency( double frequency, unsigned int string ) {
+void Guitar::SetFrequency( float frequency, int string ) {
 	#if defined(flagDEBUG)
 
-	if ( frequency <= 0.0 ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Guitar::SetFrequency: frequency parameter is less than or equal to zero!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -127,7 +127,7 @@ void Guitar::SetFrequency( double frequency, unsigned int string ) {
 	strings_[string].SetFrequency( frequency );
 }
 
-void Guitar::NoteOn( double frequency, double amplitude, unsigned int string ) {
+void Guitar::NoteOn( float frequency, float amplitude, int string ) {
 	#if defined(flagDEBUG)
 
 	if ( string >= strings_.GetCount() ) {
@@ -136,8 +136,8 @@ void Guitar::NoteOn( double frequency, double amplitude, unsigned int string ) {
 		return;
 	}
 
-	if ( Audio::InRange( amplitude, 0.0, 1.0 ) == false ) {
-		LOG("Guitar::noteOn: amplitude parameter is outside range 0.0 - 1.0!");
+	if ( Audio::InRange( amplitude, 0.0f, 1.0f ) == false ) {
+		LOG("Guitar::noteOn: amplitude parameter is outside range 0.0f - 1.0f!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
@@ -146,11 +146,11 @@ void Guitar::NoteOn( double frequency, double amplitude, unsigned int string ) {
 	this->SetFrequency( frequency, string );
 	stringState_[string] = 2;
 	filePointer_[string] = 0;
-	strings_[string].SetLoopGain( 0.995 );
+	strings_[string].SetLoopGain( 0.995f );
 	pluckGains_[string] = amplitude;
 }
 
-void Guitar::NoteOff( double amplitude, unsigned int string ) {
+void Guitar::NoteOff( float amplitude, int string ) {
 	#if defined(flagDEBUG)
 
 	if ( string >= strings_.GetCount() ) {
@@ -159,21 +159,21 @@ void Guitar::NoteOff( double amplitude, unsigned int string ) {
 		return;
 	}
 
-	if ( Audio::InRange( amplitude, 0.0, 1.0 ) == false ) {
-		LOG("Guitar::noteOff: amplitude parameter is outside range 0.0 - 1.0!");
+	if ( Audio::InRange( amplitude, 0.0f, 1.0f ) == false ) {
+		LOG("Guitar::noteOff: amplitude parameter is outside range 0.0f - 1.0f!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	strings_[string].SetLoopGain( (1.0 - amplitude) * 0.9 );
+	strings_[string].SetLoopGain( (1.0f - amplitude) * 0.9 );
 	stringState_[string] = 1;
 }
 
-void Guitar::ControlChange( int number, double value, int string ) {
+void Guitar::ControlChange( int number, float value, int string ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0f ) == false ) {
 		LOG("Guitar::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -186,18 +186,18 @@ void Guitar::ControlChange( int number, double value, int string ) {
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if ( number == 2 )
-		couplingGain_ = 1.5 * BASE_COUPLING_GAIN * normalizedValue;
+		couplingGain_ = 1.5f * BASE_COUPLING_GAIN * normalizedValue;
 	else if ( number == __SK_PickPosition_ )
 		this->SetPluckPosition( normalizedValue, string );
 	else if ( number == __SK_StringDamping_ )
-		this->SetLoopGain( 0.97 + (normalizedValue * 0.03), string );
+		this->SetLoopGain( 0.97f + (normalizedValue * 0.03f), string );
 	else if ( number == __SK_ModWheel_ )
-		couplingFilter_.SetPole( 0.98 * normalizedValue );
+		couplingFilter_.SetPole( 0.98f * normalizedValue );
 	else if (number == __SK_AfterTouch_Cont_)
-		pick_filter_.SetPole( 0.95 * normalizedValue );
+		pick_filter_.SetPole( 0.95f * normalizedValue );
 
 	#if defined(flagDEBUG)
 	else {
@@ -212,7 +212,7 @@ float Guitar_NoteToFrequency(byte note) {
 	return 440.0f * powf(2.0f, (note - 69.0f) / 12.0f);
 }
 
-int Guitar::GetString(double frequency) {
+int Guitar::GetString(float frequency) {
 	static bool values;
 	static float freqs[6];
 	if (!values) {
@@ -232,19 +232,19 @@ int Guitar::GetString(double frequency) {
 	return 0;
 }
 
-void Guitar::SetFrequency( double frequency ) {
+void Guitar::SetFrequency( float frequency ) {
 	SetFrequency(frequency, 0);
 }
 
-void Guitar::NoteOn( double frequency, double amplitude ) {
+void Guitar::NoteOn( float frequency, float amplitude ) {
 	return NoteOn(frequency, amplitude, Guitar_NoteToFrequency(frequency));
 }
 
-void Guitar::NoteOff( double amplitude ) {
+void Guitar::NoteOff( float amplitude ) {
 	return NoteOff(amplitude, 0);
 }
 
-void Guitar::ControlChange( int number, double value) {
+void Guitar::ControlChange( int number, float value) {
 	return ControlChange(number, value, -1);
 }
 

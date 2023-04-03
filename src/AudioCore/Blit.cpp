@@ -3,8 +3,8 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-Blit:: Blit( double frequency ) {
-	if ( frequency <= 0.0 ) {
+Blit:: Blit( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Blit::Blit: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::FUNCTION_ARGUMENT );
 	}
@@ -18,12 +18,12 @@ Blit::~Blit() {
 }
 
 void Blit::Reset() {
-	phase_ = 0.0;
-	last_frame_[0] = 0.0;
+	phase_ = 0.0f;
+	last_frame_[0] = 0.0f;
 }
 
-void Blit::SetFrequency( double frequency ) {
-	if ( frequency <= 0.0 ) {
+void Blit::SetFrequency( float frequency ) {
+	if ( frequency <= 0.0f ) {
 		LOG("Blit::SetFrequency: argument (" << frequency << ") must be positive!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -34,14 +34,14 @@ void Blit::SetFrequency( double frequency ) {
 	this->UpdateHarmonics();
 }
 
-void Blit::SetHarmonics( unsigned int nHarmonics ) {
+void Blit::SetHarmonics( int nHarmonics ) {
 	harmonic_count_ = nHarmonics;
 	this->UpdateHarmonics();
 }
 
 void Blit::UpdateHarmonics() {
 	if ( harmonic_count_ <= 0 ) {
-		unsigned int maxHarmonics = (unsigned int) floor( 0.5 * p_ );
+		int maxHarmonics = (int) floor( 0.5f * p_ );
 		m_ = 2 * maxHarmonics + 1;
 	}
 	else

@@ -15,7 +15,7 @@ public:
 		return format_;
 	};
 
-	unsigned int GetNumberOfTracks() const {
+	int GetNumberOfTracks() const {
 		return nTracks_;
 	};
 
@@ -23,34 +23,34 @@ public:
 		return division_;
 	};
 
-	void RewindTrack( unsigned int track = 0 );
-	double GetTickSeconds( unsigned int track = 0 );
-	unsigned long GetNextEvent( Vector<unsigned char>* event, unsigned int track = 0 );
-	unsigned long GetNextMidiEvent( Vector<unsigned char>* midiEvent, unsigned int track = 0 );
+	void RewindTrack( int track = 0 );
+	float GetTickSeconds( int track = 0 );
+	int GetNextEvent( Vector<unsigned char>* event, int track = 0 );
+	int GetNextMidiEvent( Vector<unsigned char>* midiEvent, int track = 0 );
 
 protected:
 
-	bool GetVariableLength( unsigned long* value );
+	bool GetVariableLength( int* value );
 
 	FileIn file_;
-	unsigned int nTracks_;
+	int nTracks_;
 	int format_;
 	int division_;
 	bool usingTimeCode_;
-	Vector<double> tickSeconds_;
+	Vector<float> tickSeconds_;
 	Vector<long> trackPointers_;
 	Vector<long> trackOffsets_;
 	Vector<long> trackLengths_;
 	Vector<char> trackStatus_;
 
 	struct TempoChange : Moveable<TempoChange> {
-		unsigned long count;
-		double tickSeconds;
+		int count;
+		float tickSeconds;
 	};
 	
 	Vector<TempoChange> tempoEvents_;
-	Vector<unsigned long> trackCounters_;
-	Vector<unsigned int> trackTempoIndex_;
+	Vector<int> trackCounters_;
+	Vector<int> trackTempoIndex_;
 };
 
 NAMESPACE_AUDIO_END

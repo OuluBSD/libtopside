@@ -9,18 +9,18 @@ class Phonemes : public Audio {
 public:
 	Phonemes();
 	~Phonemes();
-	static const char* name( unsigned int index );
-	static double GetVoiceGain( unsigned int index );
-	static double GetNoiseGain( unsigned int index );
-	static double GetFormantFrequency( unsigned int index, unsigned int partial );
-	static double GetFormantRadius( unsigned int index, unsigned int partial );
-	static double GetFormantGain( unsigned int index, unsigned int partial );
+	static const char* name( int index );
+	static float GetVoiceGain( int index );
+	static float GetNoiseGain( int index );
+	static float GetFormantFrequency( int index, int partial );
+	static float GetFormantRadius( int index, int partial );
+	static float GetFormantGain( int index, int partial );
 
 private:
 
 	static const char phoneme_names[][4];
-	static const double phoneme_gains[][2];
-	static const double phoneme_parameters[][4][3];
+	static const float phoneme_gains[][2];
+	static const float phoneme_parameters[][4][3];
 };
 
 NAMESPACE_AUDIO_END

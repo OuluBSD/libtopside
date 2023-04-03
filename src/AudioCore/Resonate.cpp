@@ -4,34 +4,34 @@
 NAMESPACE_AUDIO_BEGIN
 
 Resonate::Resonate() {
-	pole_frequency_ = 4000.0;
+	pole_frequency_ = 4000.0f;
 	pole_radius_ = 0.95;
 	filter_.SetResonance( pole_frequency_, pole_radius_, true );
-	zero_frequency_ = 0.0;
-	zero_radius_ = 0.0;
+	zero_frequency_ = 0.0f;
+	zero_radius_ = 0.0f;
 }
 
 Resonate::~Resonate() {
 }
 
-void Resonate::NoteOn( double frequency, double amplitude ) {
+void Resonate::NoteOn( float frequency, float amplitude ) {
 	adsr_.SetTarget( amplitude );
 	this->KeyOn();
 	this->SetResonance( frequency, pole_radius_ );
 }
 
-void Resonate::NoteOff( double amplitude ) {
+void Resonate::NoteOff( float amplitude ) {
 	this->KeyOff();
 }
 
-void Resonate::SetResonance( double frequency, double radius ) {
-	if ( frequency < 0.0 ) {
+void Resonate::SetResonance( float frequency, float radius ) {
+	if ( frequency < 0.0f ) {
 		LOG("Resonate::SetResonance: frequency parameter is less than zero!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
-	if ( radius < 0.0 || radius >= 1.0 ) {
+	if ( radius < 0.0f || radius >= 1.0f ) {
 		LOG("Resonate::SetResonance: radius parameter is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
@@ -42,15 +42,15 @@ void Resonate::SetResonance( double frequency, double radius ) {
 	filter_.SetResonance( pole_frequency_, pole_radius_, true );
 }
 
-void Resonate::SetNotch( double frequency, double radius ) {
-	if ( frequency < 0.0 ) {
-		LOG("Resonate::SetNotch: frequency parameter is less than zero ... Setting to 0.0!");
+void Resonate::SetNotch( float frequency, float radius ) {
+	if ( frequency < 0.0f ) {
+		LOG("Resonate::SetNotch: frequency parameter is less than zero ... Setting to 0.0f!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
-	if ( radius < 0.0 ) {
-		LOG("Resonate::SetNotch: radius parameter is less than 0.0!");
+	if ( radius < 0.0f ) {
+		LOG("Resonate::SetNotch: radius parameter is less than 0.0f!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
@@ -60,17 +60,17 @@ void Resonate::SetNotch( double frequency, double radius ) {
 	filter_.SetNotch( zero_frequency_, zero_radius_ );
 }
 
-void Resonate::ControlChange( int number, double value ) {
+void Resonate::ControlChange( int number, float value ) {
 	#if defined(flagDEBUG)
 
-	if ( Audio::InRange( value, 0.0, 128.0 ) == false ) {
+	if ( Audio::InRange( value, 0.0f, 128.0 ) == false ) {
 		LOG("Resonate::controlChange: value (" << value << ") is out of range!");
 		HandleError( AudioError::WARNING );
 		return;
 	}
 
 	#endif
-	double normalizedValue = value * ONE_OVER_128;
+	float normalizedValue = value * ONE_OVER_128;
 
 	if (number == 2)
 		SetResonance( normalizedValue * Audio::GetSampleRate() * 0.5, pole_radius_ );

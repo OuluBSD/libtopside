@@ -15,7 +15,7 @@ class TickTime : Moveable<TickTime> {
 
 public:
 	int    tick;
-	double seconds;
+	float seconds;
 };
 
 
@@ -93,13 +93,13 @@ public:
 	
 	// physical-time analysis functions:
 	void      DoTimeAnalysis();
-	double    GetTimeInSeconds(int track, int index);
-	double    GetTimeInSeconds(int tickvalue);
-	int       GetAbsoluteTickTime(double starttime);
+	float    GetTimeInSeconds(int track, int index);
+	float    GetTimeInSeconds(int tickvalue);
+	int       GetAbsoluteTickTime(float starttime);
 	
-	double    GetTotalTimeInSeconds();
+	float    GetTotalTimeInSeconds();
 	int       GetTotalTimeInTicks();
-	double    GetTotalTimeInQuarters();
+	float    GetTotalTimeInQuarters();
 	
 	// note-analysis functions:
 	int       LinkNotePairs();
@@ -120,7 +120,7 @@ public:
 	int       AddController(int track, int tick, int channel, int num, int value);
 	int       AddPatchChange(int track, int tick, int channel, int patchnum);
 	int       AddTimbre(int track, int tick, int channel, int patchnum);
-	int       AddPitchBend(int track, int tick, int channel, double amount);
+	int       AddPitchBend(int track, int tick, int channel, float amount);
 	        
 	// Meta-event adding convenience functions:
 	int       AddMetaEvent(int track, int tick, int type, Vector<uint8>& meta_data);
@@ -131,7 +131,7 @@ public:
 	int       AddLyric(int track, int tick, String text);
 	int       AddMarker(int track, int tick, String text);
 	int       AddCue(int track, int tick, String text);
-	int       AddTempo(int track, int tick, double aTempo);
+	int       AddTempo(int track, int tick, float aTempo);
 	int       AddTimeSignature(int track, int tick, int top, int bottom, int clocks_per_click = 24, int num32dsPerQuarter = 8);
 	int       AddCompoundTimeSignature(int track, int tick, int top, int bottom, int clocks_per_click = 36, int num32dsPerQuarter = 8);
 	        
@@ -155,8 +155,8 @@ public:
 	static Stream& WriteBigEndianLong(Stream& out, long   value);
 	static Stream& WriteLittleEndianFloat(Stream& out, float  value);
 	static Stream& WriteBigEndianFloat(Stream& out, float  value);
-	static Stream& WriteLittleEndianDouble(Stream& out, double value);
-	static Stream& WriteBigEndianDouble(Stream& out, double value);
+	static Stream& WriteLittleEndianDouble(Stream& out, float value);
+	static Stream& WriteBigEndianDouble(Stream& out, float value);
 	
 protected:
 	Array<EventList>      events;                     // MIDI file events
@@ -178,8 +178,8 @@ private:
 	static int TickSearch(const void* A, const void* B);
 	static int SecondSearch(const void* A, const void* B);
 	void       BuildTimeMap();
-	int        LinearTickInterpolationAtSecond(double seconds);
-	double     LinearSecondInterpolationAtTick(int ticktime);
+	int        LinearTickInterpolationAtSecond(float seconds);
+	float     LinearSecondInterpolationAtTick(int ticktime);
 };
 
 

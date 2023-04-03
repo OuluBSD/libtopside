@@ -9,14 +9,14 @@ public:
 
 	Simple();
 	~Simple();
-	void SetFrequency( double frequency );
+	void SetFrequency( float frequency );
 	void KeyOn();
 	void KeyOff();
-	void NoteOn( double frequency, double amplitude );
-	void NoteOff( double amplitude );
-	void ControlChange( int number, double value );
-	double Tick( unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
+	void NoteOn( float frequency, float amplitude );
+	void NoteOff( float amplitude );
+	void ControlChange( int number, float value );
+	float Tick( int channel = 0 );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
 
 protected:
 
@@ -25,22 +25,22 @@ protected:
 	OnePole   filter_;
 	BiQuad    biquad_;
 	Noise     noise_;
-	double  base_frequency_;
-	double  loop_gain_;
+	float  base_frequency_;
+	float  loop_gain_;
 
 };
 
-inline double Simple::Tick( unsigned int ) {
+inline float Simple::Tick( int ) {
 	last_frame_[0] = loop_gain_ * loop_->Tick();
 	biquad_.Tick( noise_.Tick() );
-	last_frame_[0] += (1.0 - loop_gain_) * biquad_.GetLastOut();
+	last_frame_[0] += (1.0f - loop_gain_) * biquad_.GetLastOut();
 	last_frame_[0] = filter_.Tick( last_frame_[0] );
 	last_frame_[0] *= adsr_.Tick();
 	return last_frame_[0];
 }
 
-inline AudioFrames& Simple::Tick( AudioFrames& frames, unsigned int channel ) {
-	unsigned int channel_count = last_frame_.GetChannelCount();
+inline AudioFrames& Simple::Tick( AudioFrames& frames, int channel ) {
+	int channel_count = last_frame_.GetChannelCount();
 	#if defined(flagDEBUG)
 
 	if ( channel > frames.GetChannelCount() - channel_count ) {
@@ -49,15 +49,15 @@ inline AudioFrames& Simple::Tick( AudioFrames& frames, unsigned int channel ) {
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int j, step = frames.GetChannelCount() - channel_count;
+	float* samples = &frames[channel];
+	int j, step = frames.GetChannelCount() - channel_count;
 
 	if ( channel_count == 1 ) {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step )
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
 			* samples++ = Tick();
 	}
 	else {
-		for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+		for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 			*samples++ = Tick();
 
 			for ( j = 1; j < channel_count; j++ )

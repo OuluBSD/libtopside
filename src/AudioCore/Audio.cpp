@@ -2,7 +2,7 @@
 
 NAMESPACE_AUDIO_BEGIN
 
-double Audio::srate_ = (double) SRATE;
+float Audio::srate_ = (float) SRATE;
 String Audio::rawwavepath_ = RAWWAVE_PATH;
 const Audio::AudioFormat Audio::AUDIO_SINT8   = 0x1;
 const Audio::AudioFormat Audio::AUDIO_SINT16  = 0x2;
@@ -22,28 +22,28 @@ Audio::Audio()
 Audio::~Audio() {
 }
 
-void Audio::SetSampleRate( double rate ) {
-	if ( rate > 0.0 && rate != srate_ ) {
-		double old_rate = srate_;
+void Audio::SetSampleRate( float rate ) {
+	if ( rate > 0.0f && rate != srate_ ) {
+		float old_rate = srate_;
 		srate_ = rate;
 
-		for ( unsigned int i = 0; i < alertList_.GetCount(); i++ )
+		for ( int i = 0; i < alertList_.GetCount(); i++ )
 			alertList_[i]->SampleRateChanged( srate_, old_rate );
 	}
 }
 
-void Audio::SampleRateChanged( double , double  ) {
+void Audio::SampleRateChanged( float , float  ) {
 }
 
 void Audio::AddSampleRateAlert( Audio* ptr ) {
-	for ( unsigned int i = 0; i < alertList_.GetCount(); i++ )
+	for ( int i = 0; i < alertList_.GetCount(); i++ )
 		if ( alertList_[i] == ptr ) return;
 
 	alertList_.Add( ptr );
 }
 
 void Audio::RemoveSampleRateAlert( Audio* ptr ) {
-	for ( unsigned int i = 0; i < alertList_.GetCount(); i++ ) {
+	for ( int i = 0; i < alertList_.GetCount(); i++ ) {
 		if ( alertList_[i] == ptr ) {
 			alertList_.Remove( i );
 			return;
@@ -96,11 +96,11 @@ void Audio::Swap64(unsigned char* ptr) {
 	*(ptr + 1) = val;
 }
 
-void Audio::Sleep(unsigned long milliseconds) {
+void Audio::Sleep(int milliseconds) {
 	#if defined(__OS_WINDOWS__)
 	Sleep((DWORD) milliseconds);
 	#elif (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
-	uSleep( (unsigned long) (milliseconds * 1000.0) );
+	uSleep( (int) (milliseconds * 1000.0f) );
 	#endif
 }
 
@@ -136,13 +136,13 @@ void Audio::HandleError( String message, int type ) {
 
 
 
-AudioFrames::AudioFrames( unsigned int frame_count, unsigned int channel_count )
+AudioFrames::AudioFrames( int frame_count, int channel_count )
 	: data_( 0 ), frame_count_( frame_count ), channel_count_( channel_count ) {
 	size_ = frame_count_ * channel_count_;
 	bufferSize_ = size_;
 
 	if ( size_ > 0 ) {
-		data_ = (double*) calloc( size_, sizeof( double ) );
+		data_ = (float*) calloc( size_, sizeof( float ) );
 		#if defined(flagDEBUG)
 
 		if ( data_ == NULL ) {
@@ -156,13 +156,13 @@ AudioFrames::AudioFrames( unsigned int frame_count, unsigned int channel_count )
 	dataRate_ = Audio::GetSampleRate();
 }
 
-AudioFrames::AudioFrames( const double& value, unsigned int frame_count, unsigned int channel_count )
+AudioFrames::AudioFrames( const float& value, int frame_count, int channel_count )
 	: data_( 0 ), frame_count_( frame_count ), channel_count_( channel_count ) {
 	size_ = frame_count_ * channel_count_;
 	bufferSize_ = size_;
 
 	if ( size_ > 0 ) {
-		data_ = (double*) malloc( size_ * sizeof( double ) );
+		data_ = (float*) malloc( size_ * sizeof( float ) );
 		#if defined(flagDEBUG)
 
 		if ( data_ == NULL ) {
@@ -187,7 +187,7 @@ AudioFrames::AudioFrames( const AudioFrames& f )
 	SetCount( f.GetFrameCount(), f.GetChannelCount() );
 	dataRate_ = Audio::GetSampleRate();
 
-	for ( unsigned int i = 0; i < size_; i++ ) data_[i] = f[i];
+	for ( int i = 0; i < size_; i++ ) data_[i] = f[i];
 }
 
 AudioFrames& AudioFrames::operator= ( const AudioFrames& f ) {
@@ -199,12 +199,12 @@ AudioFrames& AudioFrames::operator= ( const AudioFrames& f ) {
 	SetCount( f.GetFrameCount(), f.GetChannelCount() );
 	dataRate_ = Audio::GetSampleRate();
 
-	for ( unsigned int i = 0; i < size_; i++ ) data_[i] = f[i];
+	for ( int i = 0; i < size_; i++ ) data_[i] = f[i];
 
 	return *this;
 }
 
-void AudioFrames::SetCount( size_t frame_count, unsigned int channel_count ) {
+void AudioFrames::SetCount( int frame_count, int channel_count ) {
 	frame_count_ = frame_count;
 	channel_count_ = channel_count;
 	size_ = frame_count_ * channel_count_;
@@ -212,7 +212,7 @@ void AudioFrames::SetCount( size_t frame_count, unsigned int channel_count ) {
 	if ( size_ > bufferSize_ ) {
 		if ( data_ ) free( data_ );
 
-		data_ = (double*) malloc( size_ * sizeof( double ) );
+		data_ = (float*) malloc( size_ * sizeof( float ) );
 		#if defined(flagDEBUG)
 
 		if ( data_ == NULL ) {
@@ -225,13 +225,13 @@ void AudioFrames::SetCount( size_t frame_count, unsigned int channel_count ) {
 	}
 }
 
-void AudioFrames::SetCount( size_t frame_count, unsigned int channel_count, double value ) {
+void AudioFrames::SetCount( int frame_count, int channel_count, float value ) {
 	this->SetCount( frame_count, channel_count );
 
 	for ( size_t i = 0; i < size_; i++ ) data_[i] = value;
 }
 
-AudioFrames& AudioFrames::GetChannel(unsigned int src_channel, AudioFrames& dest_frame_count, unsigned int dest_chan) const {
+AudioFrames& AudioFrames::GetChannel(int src_channel, AudioFrames& dest_frame_count, int dest_chan) const {
 	#if defined(flagDEBUG)
 
 	if (src_channel > GetChannelCount() - 1) {
@@ -262,7 +262,7 @@ AudioFrames& AudioFrames::GetChannel(unsigned int src_channel, AudioFrames& dest
 	return dest_frame_count;
 }
 
-void AudioFrames::SetChannel(unsigned int dest_chan, const AudioFrames& src_frames, unsigned int src_channel) {
+void AudioFrames::SetChannel(int dest_chan, const AudioFrames& src_frames, int src_channel) {
 	#if defined(flagDEBUG)
 
 	if (src_channel > src_frames.GetChannelCount() - 1) {
@@ -284,17 +284,17 @@ void AudioFrames::SetChannel(unsigned int dest_chan, const AudioFrames& src_fram
 	}
 
 	#endif
-	unsigned int sourceHop = src_frames.channel_count_;
-	unsigned int destinationHop = channel_count_;
+	int sourceHop = src_frames.channel_count_;
+	int destinationHop = channel_count_;
 
 	for (int i  = dest_chan, j = src_channel ; i < frame_count_ * channel_count_; i += destinationHop, j += sourceHop)
 		data_[i] = src_frames[j];
 }
 
-double AudioFrames::interpolate( double frame, unsigned int channel ) const {
+float AudioFrames::interpolate( float frame, int channel ) const {
 	#if defined(flagDEBUG)
 
-	if ( frame < 0.0 || frame > (double) ( frame_count_ - 1 ) || channel >= channel_count_ ) {
+	if ( frame < 0.0f || frame > (float) ( frame_count_ - 1 ) || channel >= channel_count_ ) {
 		
 		LOG("AudioFrames::interpolate: invalid frame (" << frame << ") or channel (" << channel << ") value!");
 		Audio::HandleError(AudioError::MEMORY_ACCESS );
@@ -302,11 +302,11 @@ double AudioFrames::interpolate( double frame, unsigned int channel ) const {
 
 	#endif
 	size_t iIndex = ( size_t ) frame;
-	double output, alpha = frame - (double) iIndex;
+	float output, alpha = frame - (float) iIndex;
 	iIndex = iIndex * channel_count_ + channel;
 	output = data_[ iIndex ];
 
-	if ( alpha > 0.0 )
+	if ( alpha > 0.0f )
 		output += ( alpha * ( data_[ iIndex + channel_count_ ] - output ) );
 
 	return output;

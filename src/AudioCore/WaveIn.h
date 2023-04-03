@@ -7,7 +7,7 @@ NAMESPACE_AUDIO_BEGIN
 class WaveIn : public Audio {
 public:
 
-	unsigned int GetChannelsOut() const {
+	int GetChannelsOut() const {
 		return data_.GetChannelCount();
 	};
 
@@ -15,8 +15,8 @@ public:
 		return last_frame_;
 	};
 
-	virtual double Tick( unsigned int channel = 0 ) = 0;
-	virtual AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 ) = 0;
+	virtual float Tick( int channel = 0 ) = 0;
+	virtual AudioFrames& Tick( AudioFrames& frames, int channel = 0 ) = 0;
 
 protected:
 

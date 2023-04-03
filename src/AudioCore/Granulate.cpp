@@ -8,10 +8,10 @@ Granulate::Granulate() {
 	this->SetRandomFactor();
 	g_stretch_ = 0;
 	stretch_counter_ = 0;
-	gain_ = 1.0;
+	gain_ = 1.0f;
 }
 
-Granulate::Granulate( unsigned int voice_count, String file_name, bool type_raw ) {
+Granulate::Granulate( int voice_count, String file_name, bool type_raw ) {
 	this->SetGrainParameters();
 	this->SetRandomFactor();
 	g_stretch_ = 0;
@@ -23,7 +23,7 @@ Granulate::Granulate( unsigned int voice_count, String file_name, bool type_raw 
 Granulate::~Granulate() {
 }
 
-void Granulate::SetStretch( unsigned int stretchFactor ) {
+void Granulate::SetStretch( int stretchFactor ) {
 	if ( stretchFactor <= 1 )
 		g_stretch_ = 0;
 	else if ( g_stretch_ >= 1000 )
@@ -32,8 +32,8 @@ void Granulate::SetStretch( unsigned int stretchFactor ) {
 		g_stretch_ = stretchFactor - 1;
 }
 
-void Granulate::SetGrainParameters( unsigned int duration, unsigned int rampPercent,
-									  int offset, unsigned int delay ) {
+void Granulate::SetGrainParameters( int duration, int rampPercent,
+									  int offset, int delay ) {
 	g_duration_ = duration;
 
 	if ( g_duration_ == 0 ) {
@@ -54,9 +54,9 @@ void Granulate::SetGrainParameters( unsigned int duration, unsigned int rampPerc
 	g_delay_ = delay;
 }
 
-void Granulate::SetRandomFactor( double randomness ) {
-	if ( randomness < 0.0 ) g_random_factor_ = 0.0;
-	else if ( randomness > 1.0 ) g_random_factor_ = 0.97;
+void Granulate::SetRandomFactor( float randomness ) {
+	if ( randomness < 0.0f ) g_random_factor_ = 0.0f;
+	else if ( randomness > 1.0f ) g_random_factor_ = 0.97;
 
 	g_random_factor_ = 0.97 * randomness;
 };
@@ -65,7 +65,7 @@ void Granulate::OpenFile( String file_name, bool type_raw ) {
 	FileRead file( file_name, type_raw );
 	data_.SetCount( file.fileSize(), file.GetChannelCount() );
 	file.Get( data_ );
-	last_frame_.SetCount( 1, file.GetChannelCount(), 0.0 );
+	last_frame_.SetCount( 1, file.GetChannelCount(), 0.0f );
 	this->Reset();
 	#if defined(flagDEBUG)
 	LOG("Granulate::openFile: file = " << file_name << ", file frames = " << file.fileSize() << '.');
@@ -76,20 +76,20 @@ void Granulate::OpenFile( String file_name, bool type_raw ) {
 void Granulate::Reset() {
 	g_pointer_ = 0;
 	size_t count;
-	size_t voice_count = (unsigned int)grains_.GetCount();
+	size_t voice_count = (int)grains_.GetCount();
 
-	for ( unsigned int i = 0; i < grains_.GetCount(); i++ ) {
+	for ( int i = 0; i < grains_.GetCount(); i++ ) {
 		grains_[i].repeats = 0;
 		count = ( i * g_duration_ * 0.001 * Audio::GetSampleRate() / voice_count );
 		grains_[i].counter = count;
 		grains_[i].state = GRAIN_STOPPED;
 	}
 
-	for ( unsigned int i = 0; i < last_frame_.GetChannelCount(); i++ )
-		last_frame_[i] = 0.0;
+	for ( int i = 0; i < last_frame_.GetChannelCount(); i++ )
+		last_frame_[i] = 0.0f;
 }
 
-void Granulate::SetVoices( unsigned int voice_count ) {
+void Granulate::SetVoices( int voice_count ) {
 	#if defined(flagDEBUG)
 	LOG("Granulate::SetVoices: voice_count = " << voice_count << ", existing voices = " << grains_.GetCount() << '.');
 	HandleError( AudioError::DEBUG_PRINT );
@@ -106,7 +106,7 @@ void Granulate::SetVoices( unsigned int voice_count ) {
 		grains_[i].state = GRAIN_STOPPED;
 	}
 
-	gain_ = 1.0 / grains_.GetCount();
+	gain_ = 1.0f / grains_.GetCount();
 }
 
 void Granulate::CalculateGrain( Granulate::Grain& grain ) {
@@ -115,7 +115,7 @@ void Granulate::CalculateGrain( Granulate::Grain& grain ) {
 		grain.pointer = grain.StartPointer;
 
 		if ( grain.attackCount > 0 ) {
-			grain.eScaler = 0.0;
+			grain.eScaler = 0.0f;
 			grain.eRate = -grain.eRate;
 			grain.counter = grain.attackCount;
 			grain.state = GRAIN_FADEIN;
@@ -128,16 +128,16 @@ void Granulate::CalculateGrain( Granulate::Grain& grain ) {
 		return;
 	}
 
-	double seconds = g_duration_ * 0.001;
+	float seconds = g_duration_ * 0.001f;
 	seconds += ( seconds * g_random_factor_ * noise.Tick() );
-	unsigned long count = (unsigned long) ( seconds * Audio::GetSampleRate() );
-	grain.attackCount = (unsigned int) ( g_ramp_percent_ * 0.005 * count );
+	int count = (int) ( seconds * Audio::GetSampleRate() );
+	grain.attackCount = (int) ( g_ramp_percent_ * 0.005 * count );
 	grain.decayCount = grain.attackCount;
 	grain.sustainCount = count - 2 * grain.attackCount;
-	grain.eScaler = 0.0;
+	grain.eScaler = 0.0f;
 
 	if ( grain.attackCount > 0 ) {
-		grain.eRate = 1.0 / grain.attackCount;
+		grain.eRate = 1.0f / grain.attackCount;
 		grain.counter = grain.attackCount;
 		grain.state = GRAIN_FADEIN;
 	}
@@ -146,12 +146,12 @@ void Granulate::CalculateGrain( Granulate::Grain& grain ) {
 		grain.state = GRAIN_SUSTAIN;
 	}
 
-	seconds = g_delay_ * 0.001;
+	seconds = g_delay_ * 0.001f;
 	seconds += ( seconds * g_random_factor_ * noise.Tick() );
-	count = (unsigned long) ( seconds * Audio::GetSampleRate() );
+	count = (int) ( seconds * Audio::GetSampleRate() );
 	grain.delayCount = count;
 	grain.repeats = g_stretch_;
-	seconds = g_offset_ * 0.001;
+	seconds = g_offset_ * 0.001f;
 	seconds += ( seconds * g_random_factor_ * std::abs( noise.Tick() ) );
 	int offset = (int) ( seconds * Audio::GetSampleRate() );
 	seconds = g_duration_ * 0.001 * g_random_factor_ * noise.Tick();
@@ -165,7 +165,7 @@ void Granulate::CalculateGrain( Granulate::Grain& grain ) {
 	grain.StartPointer = grain.pointer;
 }
 
-double Granulate::Tick( unsigned int channel ) {
+float Granulate::Tick( int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= data_.GetChannelCount() ) {
@@ -174,13 +174,13 @@ double Granulate::Tick( unsigned int channel ) {
 	}
 
 	#endif
-	unsigned int i, j, channel_count = last_frame_.GetChannelCount();
+	int i, j, channel_count = last_frame_.GetChannelCount();
 
-	for ( j = 0; j < channel_count; j++ ) last_frame_[j] = 0.0;
+	for ( j = 0; j < channel_count; j++ ) last_frame_[j] = 0.0f;
 
-	if ( data_.GetCount() == 0 ) return 0.0;
+	if ( data_.GetCount() == 0 ) return 0.0f;
 
-	double sample;
+	float sample;
 
 	for ( i = 0; i < grains_.GetCount(); i++ ) {
 		if ( grains_[i].counter == 0 ) {
@@ -239,7 +239,7 @@ double Granulate::Tick( unsigned int channel ) {
 	if ( stretch_counter_++ == g_stretch_ ) {
 		g_pointer_++;
 
-		if ( (unsigned long) g_pointer_ >= data_.GetFrameCount() ) g_pointer_ = 0;
+		if ( (int) g_pointer_ >= data_.GetFrameCount() ) g_pointer_ = 0;
 
 		stretch_counter_ = 0;
 	}

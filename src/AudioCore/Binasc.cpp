@@ -933,7 +933,7 @@ int Binasc::ReadEvent(Stream& out, Stream& infile, int& trackbytes,
 						infile.Get((char*)&ch, 1);
 						trackbytes++;
 						number = (number << 8) | ch;
-						double tempo = 1000000.0 / number * 60.0;
+						float tempo = 1000000.0f / number * 60.0f;
 						output << " t" << tempo;
 					}
 					
@@ -1623,7 +1623,7 @@ int Binasc::ProcessDecimalWord(Stream& out, String str, int line_num) {
 		return 0;
 	}
 		
-	// 8 byte decimal output can only occur if reading a double number
+	// 8 byte decimal output can only occur if reading a float number
 	
 	if (periodIndex == -1 && byteCount == 8) {
 		LOG("Error on line " << line_num << " at token: " << str);
@@ -1642,8 +1642,8 @@ int Binasc::ProcessDecimalWord(Stream& out, String str, int line_num) {
 	// Process any floating point numbers possibilities
 	
 	if (periodIndex != -1) {
-		double doubleOutput = ScanDouble(str.Begin() + quoteIndex + 1);
-		float  floatOutput  = (float)doubleOutput;
+		float floatOutput = ScanDouble(str.Begin() + quoteIndex + 1);
+		float  floatOutput  = (float)floatOutput;
 		
 		switch (byteCount) {
 		
@@ -1664,11 +1664,11 @@ int Binasc::ProcessDecimalWord(Stream& out, String str, int line_num) {
 		case 8:
 		
 			if (endiindex == -1) {
-				WriteBigEndianDouble(out, doubleOutput);
+				WriteBigEndianDouble(out, floatOutput);
 			}
 			
 			else {
-				WriteLittleEndianDouble(out, doubleOutput);
+				WriteLittleEndianDouble(out, floatOutput);
 			}
 			
 			return 1;
@@ -2115,13 +2115,13 @@ int Binasc::ProcessTempoWord(Stream& out, String word, int line_num) {
 		return 0;
 	}
 	
-	double value = ScanDouble(word.Begin() + 1);
+	float value = ScanDouble(word.Begin() + 1);
 	
-	if (value < 0.0) {
+	if (value < 0.0f) {
 		value = -value;
 	}
 	
-	int intval = int(60.0 * 1000000.0 / value + 0.5);
+	int intval = int(60.0f * 1000000.0f / value + 0.5);
 	
 	uint8 byte0 = intval & 0xff;
 	uint8 byte1 = (intval >>  8) & 0xff;
@@ -2135,8 +2135,8 @@ int Binasc::ProcessTempoWord(Stream& out, String word, int line_num) {
 ////////////////////////////
 //
 // Binasc::ProcessPitchBendWord -- convert a floating point number in
-//   the range from +1.0 to -1.0 into a 14-point integer with -1.0 mapping
-//   to 0 and +1.0 mapping to 2^15-1.  This integer will be packed into
+//   the range from +1.0f to -1.0f into a 14-point integer with -1.0f mapping
+//   to 0 and +1.0f mapping to 2^15-1.  This integer will be packed into
 //   two bytes, with the LSB coming first and containing the bottom
 //   7-bits of the 14-bit value, then the MSB coming second and containing
 //   the top 7-bits of the 14-bit value.
@@ -2158,17 +2158,17 @@ int Binasc::ProcessPitchBendWord(Stream& out, String word,
 		return 0;
 	}
 	
-	double value = ScanDouble(word.Begin() + 1);
+	float value = ScanDouble(word.Begin() + 1);
 	
-	if (value > 1.0) {
-		value = 1.0;
+	if (value > 1.0f) {
+		value = 1.0f;
 	}
 	
-	if (value < -1.0) {
-		value = -1.0;
+	if (value < -1.0f) {
+		value = -1.0f;
 	}
 	
-	int intval = (int)(((1 << 13) - 0.5)  * (value + 1.0) + 0.5);
+	int intval = (int)(((1 << 13) - 0.5)  * (value + 1.0f) + 0.5);
 	
 	uint8 LSB = intval & 0x7f;
 	uint8 MSB = (intval >>  7) & 0x7f;
@@ -2371,9 +2371,9 @@ Stream& Binasc::WriteLittleEndianFloat(Stream& out, float value) {
 // Binasc::WriteBigEndianDouble --
 //
 
-Stream& Binasc::WriteBigEndianDouble(Stream& out, double value) {
+Stream& Binasc::WriteBigEndianDouble(Stream& out, float value) {
 	union { char bytes[8];
-		double d;
+		float d;
 	} data;
 	data.d = value;
 	out << data.bytes[7];
@@ -2394,9 +2394,9 @@ Stream& Binasc::WriteBigEndianDouble(Stream& out, double value) {
 // Binasc::WriteLittleEndianDouble --
 //
 
-Stream& Binasc::WriteLittleEndianDouble(Stream& out, double value) {
+Stream& Binasc::WriteLittleEndianDouble(Stream& out, float value) {
 	union { char bytes[8];
-		double d;
+		float d;
 	} data;
 	data.d = value;
 	out << data.bytes[0];

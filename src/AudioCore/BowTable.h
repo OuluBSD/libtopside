@@ -8,42 +8,42 @@ NAMESPACE_AUDIO_BEGIN
 class BowTable : public Function {
 public:
 
-	BowTable() : offset_(0.0), slope_(0.1), min_output_(0.01), max_output_(0.98) {};
+	BowTable() : offset_(0.0f), slope_(0.1f), min_output_(0.01f), max_output_(0.98f) {};
 	
-	void SetOffset( double offset ) {
+	void SetOffset( float offset ) {
 		offset_ = offset;
 	};
 
-	void SetSlope( double slope ) {
+	void SetSlope( float slope ) {
 		slope_ = slope;
 	};
 
-	void SetMinOutput( double minimum ) {
+	void SetMinOutput( float minimum ) {
 		min_output_ = minimum;
 	};
 
-	void SetMaxOutput( double maximum ) {
+	void SetMaxOutput( float maximum ) {
 		max_output_ = maximum;
 	};
 
-	double Tick( double input );
-	AudioFrames& Tick( AudioFrames& frames, unsigned int channel = 0 );
-	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel = 0, unsigned int out_channel = 0 );
+	float Tick( float input );
+	AudioFrames& Tick( AudioFrames& frames, int channel = 0 );
+	AudioFrames& Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel = 0, int out_channel = 0 );
 
 protected:
 
-	double offset_;
-	double slope_;
-	double min_output_;
-	double max_output_;
+	float offset_;
+	float slope_;
+	float min_output_;
+	float max_output_;
 
 };
 
-inline double BowTable::Tick( double input ) {
-	double sample  = input + offset_;
+inline float BowTable::Tick( float input ) {
+	float sample  = input + offset_;
 	sample *= slope_;
-	last_frame_[0] = (double) fabs( (double) sample ) + (double) 0.75;
-	last_frame_[0] = (double) pow( last_frame_[0], (double) - 4.0 );
+	last_frame_[0] = (float) fabs( (float) sample ) + (float) 0.75;
+	last_frame_[0] = (float) powf( last_frame_[0], (float) - 4.0 );
 
 	if ( last_frame_[0] < min_output_ ) last_frame_[0] = min_output_;
 
@@ -52,7 +52,7 @@ inline double BowTable::Tick( double input ) {
 	return last_frame_[0];
 }
 
-inline AudioFrames& BowTable::Tick( AudioFrames& frames, unsigned int channel ) {
+inline AudioFrames& BowTable::Tick( AudioFrames& frames, int channel ) {
 	#if defined(flagDEBUG)
 
 	if ( channel >= frames.GetChannelCount() ) {
@@ -61,23 +61,23 @@ inline AudioFrames& BowTable::Tick( AudioFrames& frames, unsigned int channel ) 
 	}
 
 	#endif
-	double* samples = &frames[channel];
-	unsigned int step = frames.GetChannelCount();
+	float* samples = &frames[channel];
+	int step = frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
+	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step ) {
 		*samples = *samples + offset_;
 		*samples *= slope_;
-		*samples = (double) fabs( (double) * samples ) + 0.75;
-		*samples = (double) pow( *samples, (double) - 4.0 );
+		*samples = (float) fabs( (float) * samples ) + 0.75f;
+		*samples = (float) powf( *samples, (float) - 4.0f );
 
-		if ( *samples > 1.0) *samples = 1.0;
+		if ( *samples > 1.0f) *samples = 1.0f;
 	}
 
 	last_frame_[0] = *(samples - step);
 	return frames;
 }
 
-inline AudioFrames& BowTable::Tick( AudioFrames& in_frames, AudioFrames& out_frames, unsigned int in_channel, unsigned int out_channel ) {
+inline AudioFrames& BowTable::Tick( AudioFrames& in_frames, AudioFrames& out_frames, int in_channel, int out_channel ) {
 	#if defined(flagDEBUG)
 
 	if ( in_channel >= in_frames.GetChannelCount() || out_channel >= out_frames.GetChannelCount() ) {
@@ -86,17 +86,17 @@ inline AudioFrames& BowTable::Tick( AudioFrames& in_frames, AudioFrames& out_fra
 	}
 
 	#endif
-	double* in_samples = &in_frames[in_channel];
-	double* out_samples = &out_frames[out_channel];
-	unsigned int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
+	float* in_samples = &in_frames[in_channel];
+	float* out_samples = &out_frames[out_channel];
+	int in_step = in_frames.GetChannelCount(), out_step = out_frames.GetChannelCount();
 
-	for ( unsigned int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
+	for ( int i = 0; i < in_frames.GetFrameCount(); i++, in_samples += in_step, out_samples += out_step ) {
 		*out_samples = *in_samples + offset_;
 		*out_samples *= slope_;
-		*out_samples = (double) fabs( (double) * out_samples ) + 0.75;
-		*out_samples = (double) pow( *out_samples, (double) - 4.0 );
+		*out_samples = (float) fabs( (float) * out_samples ) + 0.75f;
+		*out_samples = (float) powf( *out_samples, (float) - 4.0f );
 
-		if ( *out_samples > 1.0) *out_samples = 1.0;
+		if ( *out_samples > 1.0f) *out_samples = 1.0f;
 	}
 
 	last_frame_[0] = *(out_samples - out_step);

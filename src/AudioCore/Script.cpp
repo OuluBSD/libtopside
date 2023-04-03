@@ -112,17 +112,17 @@ long Script::ParseString(const String& line, Message& message ) {
 			return message.type = 0;
 		}
 
-		message.time = (double) - atof( tokens[1].Begin() );
+		message.time = (float) - atof( tokens[1].Begin() );
 	}
 	else
-		message.time = (double) atof( tokens[1].Begin() );
+		message.time = (float) atof( tokens[1].Begin() );
 
 	message.channel = atoi( tokens[2].Begin() );
 	int iValue = 0;
 	long dataType = skini_msgs[iScript].data2;
 
 	while ( dataType != NOPE ) {
-		if ( tokens.GetCount() <= (unsigned int) (iValue + 3) ) {
+		if ( tokens.GetCount() <= (int) (iValue + 3) ) {
 			LOG( "WARNING: Script::ParseString: inconsistency between type table and parsed line:\n   " << line);
 			HandleError( AudioError::WARNING );
 			return message.type = 0;
@@ -131,7 +131,7 @@ long Script::ParseString(const String& line, Message& message ) {
 		switch ( dataType ) {
 		case SK_INT:
 			message.int_values[iValue] = atoi( tokens[iValue + 3].Begin() );
-			message.float_values[iValue] = (double) message.int_values[iValue];
+			message.float_values[iValue] = (float) message.int_values[iValue];
 			break;
 
 		case SK_DBL:
@@ -145,7 +145,7 @@ long Script::ParseString(const String& line, Message& message ) {
 
 		default:
 			message.int_values[iValue] = dataType;
-			message.float_values[iValue] = (double) message.int_values[iValue];
+			message.float_values[iValue] = (float) message.int_values[iValue];
 			iValue--;
 		}
 
