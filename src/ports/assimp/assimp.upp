@@ -2,6 +2,8 @@ description "\377I28,212,255";
 
 noblitz;
 
+options(BUILDER_OPTION) NOWARNINGS;
+
 uses
 	ports/utf8,
 	ports/poly2tri,

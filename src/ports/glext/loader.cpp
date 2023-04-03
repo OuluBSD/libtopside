@@ -137,7 +137,7 @@ void loadproc(char* name, char** funcptr)
 			if(buffer)
 			{
 				sprintf_s(buffer,128*sizeof(char), "OPENGL: loaded using wglGetProcAddress(\"%s\") = %X\n",
-					name, (unsigned) funcptr);
+					name, (size_t) funcptr);
 				OutputDebugStringA(buffer);
 				free(buffer);
 			}
@@ -163,7 +163,7 @@ void loadproc(char* name, char** funcptr)
 			if(buffer)
 			{
 				sprintf_s(buffer,128*sizeof(char), "OPENGL: loaded using GetProcAddress(OPENGL32.DLL,\"%s\") = %X\n",
-					name, (unsigned) funcptr);
+					name, (size_t) funcptr);
 				OutputDebugStringA(buffer);
 				free(buffer);
 			}

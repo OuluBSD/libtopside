@@ -106,7 +106,11 @@ void PaUtil_DebugPrint( const char *format, ... )
         char strdump[PA_LOG_BUF_SIZE];
         va_list ap;
         va_start(ap, format);
+        #ifdef flagMSC
+        _vsnprintf_s(strdump, sizeof(strdump), PA_LOG_BUF_SIZE, format, ap);
+        #else
         VSNPRINTF(strdump, sizeof(strdump), format, ap);
+        #endif
         strdump[sizeof(strdump)-1] = 0;
         userCB(strdump);
         va_end(ap);

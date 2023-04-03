@@ -618,7 +618,11 @@ void NFFImporter::InternReadFile( const std::string& pFile,
                         // TODO: fix naming of objects in the scenegraph later
                         if (objectName.length())
                         {
+                            #ifdef flagWIN32
+                            ::strcpy_s(mesh->name,objectName.c_str());
+                            #else
                             ::strcpy(mesh->name,objectName.c_str());
+                            #endif
                             ASSIMP_itoa10(&mesh->name[objectName.length()],30,subMeshIdx++);
                         }
 

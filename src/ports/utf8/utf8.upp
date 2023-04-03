@@ -1,5 +1,7 @@
 description "\377I28,212,255";
 
+options(BUILDER_OPTION) NOWARNINGS;
+
 file
 	utf8.h,
 	utf8.cpp,

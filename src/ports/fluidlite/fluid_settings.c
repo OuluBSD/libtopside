@@ -817,6 +817,6 @@ fluid_settings_getint_default(fluid_settings_t* settings, const char* name)
     fluid_int_setting_t* setting = (fluid_int_setting_t*) value;
     return setting->def;
   } else {
-    return 0.0f;
+    return 0;
   }
 }

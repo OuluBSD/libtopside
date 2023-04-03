@@ -1022,7 +1022,7 @@ fluid_synth_sysex_midi_tuning (fluid_synth_t *synth, const char *data, int len,
 
       for (i = 0; i < 128; i++)
       {
-        note = tunedata[i] / 100.0;
+        note = (int)(tunedata[i] / 100.0);
         fluid_clip (note, 0, 127);
 
         frac = ((tunedata[i] - note * 100.0) * 16384.0 + 50.0) / 100.0;

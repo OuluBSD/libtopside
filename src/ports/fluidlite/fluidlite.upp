@@ -1,5 +1,7 @@
 description "\37728,127,255";
 
+options(BUILDER_OPTION) NOWARNINGS;
+
 file
 	Copying,
 	fluidlite.h,

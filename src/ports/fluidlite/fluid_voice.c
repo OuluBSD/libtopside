@@ -1120,7 +1120,7 @@ fluid_voice_update_param(fluid_voice_t* voice, int gen)
 
     /* The 'sound font' Q is defined in dB. The filter needs a linear
        q. Convert. */
-    voice->q_lin = (fluid_real_t) (pow(10.0f, q_dB / 20.0f));
+    voice->q_lin = (fluid_real_t) (powf(10.0f, q_dB / 20.0f));
 
     /* SF 2.01 page 59:
      *
