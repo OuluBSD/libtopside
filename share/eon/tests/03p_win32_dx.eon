@@ -1,0 +1,19 @@
+machine win.app:
+	
+	driver context:
+		win.dx.context
+	
+	chain program:
+		
+		loop dx.fbo:
+			dx.customer
+			win.dx.fbo.program:
+				drawmem =		"false"
+				program =		"obj_view"
+				shader.default.frag.path =		"shaders/tests/03f_fragment.glsl"
+				shader.default.vtx.path =		"shaders/tests/03f_vertex.glsl"
+			
+			win.dx.fbo.sink:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

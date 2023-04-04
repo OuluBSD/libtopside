@@ -570,6 +570,79 @@ public:
 };
 #endif
 
+class DxCustomer : public CustomerBase {
+
+public:
+	RTTI_DECL1(DxCustomer, CustomerBase)
+	COPY_PANIC(DxCustomer)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+class WinDxContextAtom : public WinDxContext {
+
+public:
+	RTTI_DECL1(WinDxContextAtom, WinDxContext)
+	COPY_PANIC(WinDxContextAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagSCREEN && defined flagWIN32 && defined flagDX)
+class WinDxFboProg : public WinDxFboBase {
+
+public:
+	RTTI_DECL1(WinDxFboProg, WinDxFboBase)
+	COPY_PANIC(WinDxFboProg)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+class WinDxFboAtomPipe : public WinDxSinkDevice {
+
+public:
+	RTTI_DECL1(WinDxFboAtomPipe, WinDxSinkDevice)
+	COPY_PANIC(WinDxFboAtomPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+class WinDxFboAtomSA : public WinDxSinkDevice {
+
+public:
+	RTTI_DECL1(WinDxFboAtomSA, WinDxSinkDevice)
+	COPY_PANIC(WinDxFboAtomSA)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 class OglCustomer : public CustomerBase {
 
 public:

@@ -1,0 +1,13 @@
+machine win.app:
+	
+	driver context:
+		win.dx.context
+	
+	chain program:
+		
+		loop dx.fbo:
+			dx.customer
+			win.dx.fbo.standalone:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

@@ -101,6 +101,19 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagWIN32 && defined flagSCREEN)
 	Factory::RegisterAtom<WinVideoAtomPipe>();
 	#endif
+	Factory::RegisterAtom<DxCustomer>();
+	#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+	Factory::RegisterAtom<WinDxContextAtom>();
+	#endif
+	#if (defined flagSCREEN && defined flagWIN32 && defined flagDX)
+	Factory::RegisterAtom<WinDxFboProg>();
+	#endif
+	#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+	Factory::RegisterAtom<WinDxFboAtomPipe>();
+	#endif
+	#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+	Factory::RegisterAtom<WinDxFboAtomSA>();
+	#endif
 	Factory::RegisterAtom<OglCustomer>();
 	#if defined flagSDL2
 	Factory::RegisterAtom<SdlContextAtom>();

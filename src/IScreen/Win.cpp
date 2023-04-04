@@ -77,7 +77,7 @@ ScrWin::NativeSinkDevice* active_ScrWin_NativeSinkDevice;
 ScrWin::NativeEventsBase* active_ScrWin_NativeEventsBase;
 
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK Win_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 bool ScrWin::SinkDevice_Create(NativeSinkDevice*& dev) {
 	dev = new NativeSinkDevice;
@@ -115,7 +115,7 @@ bool ScrWin::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	
 	
 	dev.title = ws.GetString(".title", "libtopside");
-	dev.wc.lpfnWndProc   = WindowProc;
+	dev.wc.lpfnWndProc   = Win_WindowProc;
     dev.wc.hInstance     = instance;
     dev.wc.lpszClassName = dev.CLASS_NAME;
     
@@ -433,7 +433,7 @@ bool ScrWin::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 //constexpr int kTimerID = 101;
 
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Win_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	ASSERT(active_ScrWin_NativeSinkDevice);
 	ScrWin::NativeSinkDevice& dev = *active_ScrWin_NativeSinkDevice;

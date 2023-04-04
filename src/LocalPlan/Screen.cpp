@@ -10,6 +10,7 @@ void InterfaceBuilder::AddScreen() {
 	Dependency("IGraphics");
 	Library("X11 Xrandr Xxf86vm", "POSIX & !EMSCRIPTEN");
 	Library("GLX GL GLU GLEW glut", "POSIX & OGL & !EMSCRIPTEN");
+	Library("D3D11", "WIN32 & DX");
 	HaveRecvFinalize();
 	HaveNegotiateFormat();
 	HaveIsReady();
@@ -23,7 +24,7 @@ void InterfaceBuilder::AddScreen() {
 	Vendor("X11Ogl",	"POSIXDESKTOP&SCREEN&OGL");
 	Vendor("Win",		"WIN32&SCREEN");
 	//Vendor("WinSw",		"WIN32&SCREEN");
-	//Vendor("WinDx",		"WIN32&SCREEN&DX");
+	Vendor("WinDx",		"WIN32&SCREEN&DX");
 	
 	
 }

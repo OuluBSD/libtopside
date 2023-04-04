@@ -1113,6 +1113,145 @@ AtomTypeCls WinVideoAtomPipe::GetType() const {
 #endif
 
 
+String DxCustomer::GetAction() {
+	return "dx.customer";
+}
+
+AtomTypeCls DxCustomer::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::DX_CUSTOMER;
+	t.role = AtomRole::CUSTOMER;
+	t.AddIn(VD(DX,RECEIPT),0);
+	t.AddOut(VD(DX,ORDER),0);
+	return t;
+}
+
+LinkTypeCls DxCustomer::GetLinkType() {
+	return LINKTYPE(CUSTOMER, CUSTOMER);
+}
+
+void DxCustomer::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<CustomerBase>(this);
+}
+
+AtomTypeCls DxCustomer::GetType() const {
+	return GetAtomType();
+}
+
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+String WinDxContextAtom::GetAction() {
+	return "win.dx.context";
+}
+
+AtomTypeCls WinDxContextAtom::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_DX_CONTEXT_ATOM;
+	t.role = AtomRole::DRIVER;
+	t.AddIn(VD(CENTER,RECEIPT),0);
+	t.AddOut(VD(CENTER,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls WinDxContextAtom::GetLinkType() {
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void WinDxContextAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinDxContext>(this);
+}
+
+AtomTypeCls WinDxContextAtom::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagSCREEN && defined flagWIN32 && defined flagDX)
+String WinDxFboProg::GetAction() {
+	return "win.dx.fbo.program";
+}
+
+AtomTypeCls WinDxFboProg::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_DX_FBO_PROG;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(DX,ORDER),0);
+	t.AddIn(VD(DX,FBO),1);
+	t.AddOut(VD(DX,FBO),0);
+	return t;
+}
+
+LinkTypeCls WinDxFboProg::GetLinkType() {
+	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
+}
+
+void WinDxFboProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinDxFboBase>(this);
+}
+
+AtomTypeCls WinDxFboProg::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+String WinDxFboAtomPipe::GetAction() {
+	return "win.dx.fbo.sink";
+}
+
+AtomTypeCls WinDxFboAtomPipe::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_DX_FBO_ATOM_PIPE;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(DX,FBO),0);
+	t.AddOut(VD(DX,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls WinDxFboAtomPipe::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void WinDxFboAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinDxSinkDevice>(this);
+}
+
+AtomTypeCls WinDxFboAtomPipe::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
+String WinDxFboAtomSA::GetAction() {
+	return "win.dx.fbo.standalone";
+}
+
+AtomTypeCls WinDxFboAtomSA::GetAtomType() {
+	AtomTypeCls t;
+	t.sub = SubAtomCls::WIN_DX_FBO_ATOM_SA;
+	t.role = AtomRole::PIPE;
+	t.AddIn(VD(DX,ORDER),0);
+	t.AddOut(VD(DX,RECEIPT),0);
+	return t;
+}
+
+LinkTypeCls WinDxFboAtomSA::GetLinkType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void WinDxFboAtomSA::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinDxSinkDevice>(this);
+}
+
+AtomTypeCls WinDxFboAtomSA::GetType() const {
+	return GetAtomType();
+}
+#endif
+
+
 String OglCustomer::GetAction() {
 	return "ogl.customer";
 }

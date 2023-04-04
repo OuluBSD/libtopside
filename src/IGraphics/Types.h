@@ -427,6 +427,109 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 
 
 
+#if defined flagDX
+
+struct DxFramebufferBase;
+struct DxBufferBase;
+
+template <class Gfx>
+struct DxGfxT {
+	static const bool is_builtin_shader = false;
+	
+	using NativeTexture = uint32;
+	using NativeShaderRef = uint32;
+	using NativeColorBufferRef = uint32;
+	using NativeColorBufferConstRef = uint32;
+	using NativeDepthBufferRef = uint32;
+	using NativeDepthBufferConstRef = uint32;
+	using NativeFrameBufferRef = uint32;
+	using NativeFrameBufferConstRef = uint32;
+	using NativeBuffer = uint32;
+	using SystemFrameBufferRef = NativeFrameBufferRef;
+	using NativeVertexArray = uint32;
+	using NativeVertexBuffer = uint32;
+	using NativeElementBuffer = uint32;
+	using NativeProgram = uint32;
+	using NativePipeline = uint32;
+	using ValFormat = Serial::FboFormat;
+	
+	using FramebufferBase = GfxFramebuffer;
+	using BufferBase = GfxBuffer;
+	
+	static const GVar::GfxType Type = GVar::DX;
+	
+	#include "TypeFuncList.inl"
+	
+	static Serial::FboFormat& GetFormat(Parallel::Format& fmt);
+	
+};
+
+struct DxGfx {
+	using NativeDisplay			= void*;
+	using NativeWindow			= void*;
+	using NativeRenderer		= void*;
+	using NativeRendererInfo	= void*;
+	using NativeGLContext		= void*;
+	
+	static Size GetWindowSize(NativeWindow& win);
+	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend);
+	static void SetTitle(NativeDisplay& display, NativeWindow& win, String title);
+	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
+	static void DestroyRenderer(NativeRenderer& rend);
+	static void DestroyWindow(NativeWindow& win);
+	static void DeleteContext(NativeGLContext& ctx);
+	static void MaximizeWindow(NativeWindow& win);
+	static void RestoreWindow(NativeWindow& win);
+	static void SetWindowPosition(NativeWindow& win, Point pt);
+	static void SetWindowSize(NativeWindow& win, Size sz);
+	
+	
+	
+};
+
+
+struct WinDxGfx : DxGfxT<WinDxGfx>, DxGfx {
+	using NativeSurface = void*;
+	using SoftShaderLibrary = DummySoftShaderLibrary;
+	
+	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
+	GFX_CLS_LIST(WinDx)
+	#undef GFX_CLS
+	
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf);
+	
+};
+
+#define WINDX_GFXTYPE GFXTYPE(WinDx)
+#define WINDX_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <WinDxGfx>;
+
+#define WIN_GFXTYPE \
+	WINDX_GFXTYPE
+
+#define WIN_EXCPLICIT_INITIALIZE_CLASS(x) \
+	WINDX_EXCPLICIT_INITIALIZE_CLASS(x) \
+	
+
+#else
+
+#define WINDX_GFXTYPE
+#define WINDX_EXCPLICIT_INITIALIZE_CLASS(x)
+#define WIN_GFXTYPE
+#define WINDX_EXCPLICIT_INITIALIZE_CLASS(x)
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #define GFXTYPE_LIST \
@@ -434,6 +537,7 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 	X11SW_GFXTYPE \
 	X11OGL_GFXTYPE \
 	SDL_GFXTYPE \
+	WIN_GFXTYPE \
 
 
 #define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
@@ -441,6 +545,7 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 	X11SW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
+	WIN_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
 #define GFX3D_EXCPLICIT_INITIALIZE_CLASS(x) \
@@ -449,6 +554,7 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 	X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) \
+	WINDX_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
 #define SOFTREND_EXCPLICIT_INITIALIZE_CLASS(x) \

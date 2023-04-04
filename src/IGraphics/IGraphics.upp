@@ -20,6 +20,7 @@ library(MSC) "OpenGL32 Gdi32";
 file
 	IGraphics.h,
 	IGraphics.icpp,
+	dxstdafx.h,
 	Types.h,
 	TypeFuncList.inl highlight cpp,
 	Sdl.cpp,
@@ -27,6 +28,7 @@ file
 	Ogl.cpp,
 	Cpu.cpp,
 	SdlCpu.cpp,
+	Dx.cpp,
 	Backend.cpp,
 	GlobalApi.h,
 	OpenGL.h,

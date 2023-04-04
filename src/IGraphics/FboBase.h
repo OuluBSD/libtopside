@@ -78,6 +78,11 @@ using SdlOglFboBase = FboAtomT<SdlOglGfx>;
 #endif
 
 
+#if defined flagDX && defined flagWIN32
+using WinDxFboBase = FboAtomT<WinDxGfx>;
+#endif
+
+
 NAMESPACE_PARALLEL_END
 
 #endif

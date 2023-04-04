@@ -49,25 +49,19 @@ ValCls::Type ValCls::Get(String s) {
 String DevCls::GetName(Type t) {
 	switch (t) {
 		case CENTER:	return "center";
-		case PERMA:		return "perma";
 		case NET:		return "net";
 		case OGL:		return "ogl";
+		case DX:		return "dx";
 		case INVALID:
 		default: return "invalid";
 	}
 }
 
 DevCls::Type DevCls::Get(String s) {
-	if (s == "center")
-		return CENTER;
-	if (s == "perma")
-		return PERMA;
-	if (s == "ogl")
-		return OGL;
-	if (s == "net")
-		return NET;
-	if (s == "ogl")
-		return OGL;
+	if (s == "center")	return CENTER;
+	if (s == "net")		return NET;
+	if (s == "ogl")		return OGL;
+	if (s == "dx")		return DX;
 	
 	return INVALID;
 }

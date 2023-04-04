@@ -24,6 +24,7 @@
 	IFACE_CTX_CLS(CENTER, val, ) \
 	IFACE_CTX_CLS(NET, val, Net) \
 	IFACE_CTX_CLS(OGL, val, Ogl) \
+	IFACE_CTX_CLS(DX, val, Dx) \
 
 #define SERIAL_TYPE_LIST \
 	SERIAL_TYPE(LOOP_STORE) \
@@ -122,16 +123,16 @@ struct DevCls : Moveable<DevCls> {
 	typedef enum : byte {
 		INVALID,
 		CENTER,
-		PERMA,
 		NET,
 		OGL,
+		DX,
 		
 		TYPE_COUNT,
 		
 		Center = CENTER,
-		Perma = PERMA,
 		Net = NET,
 		Ogl = OGL,
+		Dx = DX,
 	} Type;
 	
 	Type type = INVALID;
