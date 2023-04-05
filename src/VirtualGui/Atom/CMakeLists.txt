@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,23 +19,23 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# library(POSIX) "SDL2 SDL2main GL";
-if ((DEFINED flagPOSIX))
+# library(SDL2 POSIX) "SDL2 SDL2main GL";
+if ((DEFINED flagSDL2 AND DEFINED flagPOSIX))
   list ( APPEND LINK_LIST SDL2 SDL2main GL )
 endif()
 
-# library(WIN32 MSC) "SDL2.lib SDL2main.lib OpenGL32.lib";
-if ((WIN32 AND DEFINED flagMSC))
-  list ( APPEND LINK_LIST SDL2.lib SDL2main.lib OpenGL32.lib )
+# library(SDL2 WIN32 MSC) "SDL2.lib OpenGL32.lib";
+if ((DEFINED flagSDL2 AND WIN32 AND DEFINED flagMSC))
+  list ( APPEND LINK_LIST SDL2.lib OpenGL32.lib )
 endif()
 
-# library(WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
-if ((WIN32) AND (DEFINED flagGCC OR DEFINED flagCLANG))
+# library(SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
+if ((DEFINED flagSDL2 AND WIN32) AND (DEFINED flagGCC OR DEFINED flagCLANG))
   list ( APPEND LINK_LIST SDL2.lib SDL2main.lib opengl32 )
 endif()
 
-# pkg_config(!MSC) sdl2;
-if ((NOT DEFINED flagMSC))
+# pkg_config(SDL2 !MSC) sdl2;
+if ((DEFINED flagSDL2 AND NOT DEFINED flagMSC))
   find_package ( PkgConfig REQUIRED )
   pkg_check_modules ( SDL2 REQUIRED sdl2)
   if ( SDL2_FOUND )

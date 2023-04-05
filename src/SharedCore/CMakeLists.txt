@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -31,9 +31,7 @@ list ( APPEND HEADER_LIST
       Container.h
       TokenParser.h
       String.h
-      Draw.h
       Random.h
-      Ctrl.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -42,9 +40,7 @@ list ( APPEND SOURCE_LIST_CPP
       Container.cpp
       TokenParser.cpp
       String.cpp
-      Draw.cpp
       Random.cpp
-      Ctrl.cpp
 )
 
 # Module properties

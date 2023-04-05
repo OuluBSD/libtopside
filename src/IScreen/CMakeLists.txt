@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,6 +29,11 @@ if ((DEFINED flagPOSIX AND DEFINED flagOGL AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST GLX GL GLU GLEW glut )
 endif()
 
+# library(WIN32 & DX11) "D3D11";
+if ((WIN32 AND DEFINED flagDX11))
+  list ( APPEND LINK_LIST D3D11 )
+endif()
+
 list ( APPEND HEADER_LIST
       IScreen.h
       Impl.inl
@@ -39,6 +44,8 @@ list ( APPEND SOURCE_LIST_CPP
       X11.cpp
       X11Sw.cpp
       X11Ogl.cpp
+      Win.cpp
+      WinD11.cpp
 )
 
 list ( APPEND IScreen_DEPEND_LIST

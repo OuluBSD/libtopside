@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -62,6 +62,7 @@ list ( APPEND HEADER_LIST
       Html.h
       Url.h
       Debugging.h
+      DrawCommand.h
       Draw2D.h
       Draw3D.h
       GeomInteraction.h
@@ -105,6 +106,7 @@ list ( APPEND SOURCE_LIST_CPP
       Midi.cpp
       Html.cpp
       Url.cpp
+      DrawCommand.cpp
       Draw3D.cpp
       Debugging.cpp
       GIBase.cpp
@@ -121,6 +123,7 @@ list ( APPEND Local_DEPEND_LIST
       Core-lib
       Draw-lib
       SharedCore-lib
+      StaticInterface-lib
 )
 
 # Module properties

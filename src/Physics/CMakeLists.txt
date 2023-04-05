@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,18 +19,18 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# library(DEBUG & WIN32) ode_doubled;
-if ((DEFINED flagDEBUG AND WIN32))
+# library(ODE & DEBUG & WIN32) ode_doubled;
+if ((DEFINED flagODE AND DEFINED flagDEBUG AND WIN32))
   list ( APPEND LINK_LIST ode_doubled )
 endif()
 
-# library(!DEBUG & WIN32) ode_double;
-if ((NOT DEFINED flagDEBUG AND WIN32))
+# library(ODE & !DEBUG & WIN32) ode_double;
+if ((DEFINED flagODE AND NOT DEFINED flagDEBUG AND WIN32))
   list ( APPEND LINK_LIST ode_double )
 endif()
 
-# library(!WIN32 & !EMSCRIPTEN) ode;
-if ((NOT WIN32 AND NOT DEFINED flagEMSCRIPTEN))
+# library(ODE & !WIN32 & !EMSCRIPTEN) ode;
+if ((DEFINED flagODE AND NOT WIN32 AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST ode )
 endif()
 

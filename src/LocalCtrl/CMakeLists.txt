@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -39,9 +39,9 @@ if ((DEFINED flagNEVER))
   list ( APPEND LINK_LIST libglew32mx.a )
 endif()
 
-# library(WIN32 & MSC) glew32s;
+# library(WIN32 & MSC) glew32;
 if ((WIN32 AND DEFINED flagMSC))
-  list ( APPEND LINK_LIST glew32s )
+  list ( APPEND LINK_LIST glew32 )
 endif()
 
 # library(WIN32) opengl32;

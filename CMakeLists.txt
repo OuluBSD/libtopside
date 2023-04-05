@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -47,7 +47,7 @@ include_directories ( BEFORE ${CMAKE_SOURCE_DIR}/./reference )
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
 
 # Project definitions
-add_definitions ( -DflagMSC19X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX -DflagVR -DflagUWP -DflagGNUC14 -DflagMP -DflagPCH )
+add_definitions ( -DflagMSC19X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX11 -DflagVR -DflagUWP -DflagGNUC14 -DflagMP -DflagPCH )
 
 # Option to distinguish whether to build binary with removed unused code and functions
 option ( REMOVE_UNUSED_CODE "Build binary with removed unused code and functions." ON )
@@ -747,6 +747,7 @@ add_subdirectory ( ./src/AtomVR ${CMAKE_CURRENT_BINARY_DIR}/AtomVR )
 add_subdirectory ( ./alt/Core ${CMAKE_CURRENT_BINARY_DIR}/Core )
 add_subdirectory ( ./alt/Draw ${CMAKE_CURRENT_BINARY_DIR}/Draw )
 add_subdirectory ( ./src/SharedCore ${CMAKE_CURRENT_BINARY_DIR}/SharedCore )
+add_subdirectory ( ./src/StaticInterface ${CMAKE_CURRENT_BINARY_DIR}/StaticInterface )
 add_subdirectory ( ./src/ports/tiny_gltf ${CMAKE_CURRENT_BINARY_DIR}/ports/tiny_gltf )
 add_subdirectory ( ./src/ports/mikktspace ${CMAKE_CURRENT_BINARY_DIR}/ports/mikktspace )
 add_subdirectory ( ./src/ports/assimp ${CMAKE_CURRENT_BINARY_DIR}/ports/assimp )
@@ -772,7 +773,6 @@ add_subdirectory ( ./src/SoftPhys ${CMAKE_CURRENT_BINARY_DIR}/SoftPhys )
 add_subdirectory ( ./src/AtomMinimal ${CMAKE_CURRENT_BINARY_DIR}/AtomMinimal )
 add_subdirectory ( ./src/ports/bz2lib ${CMAKE_CURRENT_BINARY_DIR}/ports/bz2lib )
 add_subdirectory ( ./src/RTTI ${CMAKE_CURRENT_BINARY_DIR}/RTTI )
-add_subdirectory ( ./src/StaticInterface ${CMAKE_CURRENT_BINARY_DIR}/StaticInterface )
 add_subdirectory ( ./src/ports/md5 ${CMAKE_CURRENT_BINARY_DIR}/ports/md5 )
 add_subdirectory ( ./src/ports/MingwThreads ${CMAKE_CURRENT_BINARY_DIR}/ports/MingwThreads )
 add_subdirectory ( ./src/ports/modernjson ${CMAKE_CURRENT_BINARY_DIR}/ports/modernjson )
@@ -906,7 +906,7 @@ else()
 endif()
 
 # Main program dependecies
-set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomHandle-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;DesktopSuite-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVR-lib;Geometry-lib;GLDraw-lib;GraphLib-lib;GuboCore-lib;GuboLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;plugin_z-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_md5-lib;ports_mikktspace-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui-lib;VirtualGui_Atom-lib;VirtualGui3D-lib;" )
+set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomHandle-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;DesktopSuite-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVR-lib;GLDraw-lib;Geometry-lib;GraphLib-lib;GuboCore-lib;GuboLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui-lib;VirtualGui_Atom-lib;VirtualGui3D-lib;plugin_z-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_md5-lib;ports_mikktspace-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;" )
 
 add_dependencies ( Shell-bin ${Shell_DEPEND_LIST} )
 if ( DEFINED MAIN_TARGET_LINK_FLAGS )

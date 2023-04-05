@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -24,8 +24,8 @@ if ((DEFINED flagFFMPEG))
   list ( APPEND LINK_LIST swscale avcodec avformat avutil swresample avdevice avfilter )
 endif()
 
-# library(POSIX & OPENCV) v4l2;
-if ((DEFINED flagPOSIX AND DEFINED flagOPENCV))
+# library(OPENCV & POSIX) v4l2;
+if ((DEFINED flagOPENCV AND DEFINED flagPOSIX))
   list ( APPEND LINK_LIST v4l2 )
 endif()
 
@@ -34,13 +34,13 @@ if ((DEFINED flagOPENCV AND DEFINED flagPOSIX))
   list ( APPEND LINK_LIST opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_shape )
 endif()
 
-# library(WIN32 & DEBUG) opencv_world454d;
-if ((WIN32 AND DEFINED flagDEBUG))
+# library(OPENCV & WIN32 & DEBUG) opencv_world454d;
+if ((DEFINED flagOPENCV AND WIN32 AND DEFINED flagDEBUG))
   list ( APPEND LINK_LIST opencv_world454d )
 endif()
 
-# library(WIN32 & !DEBUG) opencv_world454;
-if ((WIN32 AND NOT DEFINED flagDEBUG))
+# library(OPENCV & WIN32 & !DEBUG) opencv_world454;
+if ((DEFINED flagOPENCV AND WIN32 AND NOT DEFINED flagDEBUG))
   list ( APPEND LINK_LIST opencv_world454 )
 endif()
 

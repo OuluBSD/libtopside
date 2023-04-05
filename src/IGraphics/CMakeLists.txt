@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Mar 29 15:12:51 EEST 2023
+# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,13 +19,13 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# uses(WIN32&MSC&NEVER) ports/glew;
-if ((DEFINED flagWIN32&MSC&NEVER))
+# uses(WIN32 & GCC) ports/glew;
+if ((WIN32 AND DEFINED flagGCC))
   list ( APPEND IGraphics_DEPEND_LIST ports_glew-lib )
 endif()
 
-# uses(WIN32&MSC) ports/glext;
-if ((DEFINED flagWIN32&MSC))
+# uses(WIN32 & MSC) ports/glext;
+if ((WIN32 AND DEFINED flagMSC))
   list ( APPEND IGraphics_DEPEND_LIST ports_glext-lib )
 endif()
 
@@ -41,6 +41,7 @@ endif()
 
 list ( APPEND HEADER_LIST
       IGraphics.h
+      dxstdafx.h
       Types.h
       TypeFuncList.inl
       GlobalApi.h
@@ -66,12 +67,12 @@ list ( APPEND HEADER_LIST
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      main.cpp
       Sdl.cpp
       X11.cpp
       Ogl.cpp
       Cpu.cpp
       SdlCpu.cpp
+      Dx.cpp
       Backend.cpp
       GfxClasses.cpp
       Base.cpp
