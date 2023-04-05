@@ -176,7 +176,7 @@ String FwdScope::GetFlagString() const {
 
 void FwdScope::ForwardWeak() {
 	if (cur) {
-		//int pos = read_i-1;
+		int pos = read_i-1;
 		if (!cur->IsPacketStuck()) {
 			RTLOG("FwdScope::ForwardWeak: fwd " << pos << " (at " << cur->GetDynamicName() << ", " << cur->GetSecondaryName() << "; " << HexStr(&cur->GetRTTI()) << ", " << HexStr(cur->GetSecondaryPtr()) << ")");
 			cur->ForwardSetup(*this);
@@ -194,7 +194,7 @@ void FwdScope::ForwardWeak() {
 
 void FwdScope::Forward() {
 	if (cur) {
-		//int pos = read_i-1;
+		int pos = read_i-1;
 		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << ", " << cur->GetSecondaryName() << "; " << HexStr(&cur->GetRTTI()) << ", " << HexStr(cur->GetSecondaryPtr()) << ")");
 		cur->ForwardSetup(*this);
 		cur->ForwardAtom(*this);

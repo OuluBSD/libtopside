@@ -1139,42 +1139,42 @@ AtomTypeCls DxCustomer::GetType() const {
 }
 
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-String WinDxContextAtom::GetAction() {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+String WinD11ContextAtom::GetAction() {
 	return "win.dx.context";
 }
 
-AtomTypeCls WinDxContextAtom::GetAtomType() {
+AtomTypeCls WinD11ContextAtom::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::WIN_DX_CONTEXT_ATOM;
+	t.sub = SubAtomCls::WIN_D11_CONTEXT_ATOM;
 	t.role = AtomRole::DRIVER;
 	t.AddIn(VD(CENTER,RECEIPT),0);
 	t.AddOut(VD(CENTER,RECEIPT),0);
 	return t;
 }
 
-LinkTypeCls WinDxContextAtom::GetLinkType() {
+LinkTypeCls WinD11ContextAtom::GetLinkType() {
 	return LINKTYPE(DRIVER, DRIVER);
 }
 
-void WinDxContextAtom::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<WinDxContext>(this);
+void WinD11ContextAtom::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinD11Context>(this);
 }
 
-AtomTypeCls WinDxContextAtom::GetType() const {
+AtomTypeCls WinD11ContextAtom::GetType() const {
 	return GetAtomType();
 }
 #endif
 
 
-#if (defined flagSCREEN && defined flagWIN32 && defined flagDX)
-String WinDxFboProg::GetAction() {
+#if (defined flagSCREEN && defined flagWIN32 && defined flagDX11)
+String WinD11FboProg::GetAction() {
 	return "win.dx.fbo.program";
 }
 
-AtomTypeCls WinDxFboProg::GetAtomType() {
+AtomTypeCls WinD11FboProg::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::WIN_DX_FBO_PROG;
+	t.sub = SubAtomCls::WIN_D11_FBO_PROG;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(DX,ORDER),0);
 	t.AddIn(VD(DX,FBO),1);
@@ -1182,71 +1182,71 @@ AtomTypeCls WinDxFboProg::GetAtomType() {
 	return t;
 }
 
-LinkTypeCls WinDxFboProg::GetLinkType() {
+LinkTypeCls WinD11FboProg::GetLinkType() {
 	return LINKTYPE(PIPE_OPTSIDE, PROCESS);
 }
 
-void WinDxFboProg::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<WinDxFboBase>(this);
+void WinD11FboProg::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinD11FboBase>(this);
 }
 
-AtomTypeCls WinDxFboProg::GetType() const {
+AtomTypeCls WinD11FboProg::GetType() const {
 	return GetAtomType();
 }
 #endif
 
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-String WinDxFboAtomPipe::GetAction() {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+String WinD11FboAtomPipe::GetAction() {
 	return "win.dx.fbo.sink";
 }
 
-AtomTypeCls WinDxFboAtomPipe::GetAtomType() {
+AtomTypeCls WinD11FboAtomPipe::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::WIN_DX_FBO_ATOM_PIPE;
+	t.sub = SubAtomCls::WIN_D11_FBO_ATOM_PIPE;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(DX,FBO),0);
 	t.AddOut(VD(DX,RECEIPT),0);
 	return t;
 }
 
-LinkTypeCls WinDxFboAtomPipe::GetLinkType() {
+LinkTypeCls WinD11FboAtomPipe::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void WinDxFboAtomPipe::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<WinDxSinkDevice>(this);
+void WinD11FboAtomPipe::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinD11SinkDevice>(this);
 }
 
-AtomTypeCls WinDxFboAtomPipe::GetType() const {
+AtomTypeCls WinD11FboAtomPipe::GetType() const {
 	return GetAtomType();
 }
 #endif
 
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-String WinDxFboAtomSA::GetAction() {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+String WinD11FboAtomSA::GetAction() {
 	return "win.dx.fbo.standalone";
 }
 
-AtomTypeCls WinDxFboAtomSA::GetAtomType() {
+AtomTypeCls WinD11FboAtomSA::GetAtomType() {
 	AtomTypeCls t;
-	t.sub = SubAtomCls::WIN_DX_FBO_ATOM_SA;
+	t.sub = SubAtomCls::WIN_D11_FBO_ATOM_SA;
 	t.role = AtomRole::PIPE;
 	t.AddIn(VD(DX,ORDER),0);
 	t.AddOut(VD(DX,RECEIPT),0);
 	return t;
 }
 
-LinkTypeCls WinDxFboAtomSA::GetLinkType() {
+LinkTypeCls WinD11FboAtomSA::GetLinkType() {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void WinDxFboAtomSA::Visit(RuntimeVisitor& vis) {
-	vis.VisitThis<WinDxSinkDevice>(this);
+void WinD11FboAtomSA::Visit(RuntimeVisitor& vis) {
+	vis.VisitThis<WinD11SinkDevice>(this);
 }
 
-AtomTypeCls WinDxFboAtomSA::GetType() const {
+AtomTypeCls WinD11FboAtomSA::GetType() const {
 	return GetAtomType();
 }
 #endif

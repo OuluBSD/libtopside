@@ -22,6 +22,10 @@ template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return va
 template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #endif
 
+#if defined flagWIN32 && defined flagDX11
+template <> inline bool IsDefaultGfxVal<WinD11Gfx>(const ValCls& val) {return val == ValCls::FBO;}
+#endif
+
 
 
 template <class Gfx>

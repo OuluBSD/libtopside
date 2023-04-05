@@ -1,10 +1,9 @@
 #include "IScreen.h"
 
-#if defined flagWIN32 && defined flagDX
+#if defined flagWIN32 && defined flagDX11
 
 
 #include <IGraphics/dxstdafx.h>
-#include <windows.h>
 
 
 /*
@@ -73,9 +72,9 @@ private:
 
 
 
-struct ScrWinDx::NativeContext {
+struct ScrWinD11::NativeContext {
     bool running = false;
-    //void* WinDx;
+    //void* WinD11;
     
     HRESULT CreateDesktopWindow();
     
@@ -114,19 +113,19 @@ struct ScrWinDx::NativeContext {
 
 
 
-struct ScrWinDx::NativeSinkDevice {
+struct ScrWinD11::NativeSinkDevice {
     WNDCLASS wc = { };
     String title;
-	const char* CLASS_NAME = "ScrWinDx_NativeWinDxdow";
+	const char* CLASS_NAME = "ScrWinD11_NativeWinD11dow";
     
-    //GfxAccelAtom<WinDxGfx> accel;
+    GfxAccelAtom<WinD11Gfx> accel;
     NativeContext* ctx;
     AtomBase* atom = 0;
     Size sz;
     
 };
 
-struct ScrWinDx::NativeEventsBase {
+struct ScrWinD11::NativeEventsBase {
     NativeContext* ctx;
     int time;
     dword seq;
@@ -143,16 +142,16 @@ struct ScrWinDx::NativeEventsBase {
 };
 
 
-ScrWinDx::NativeSinkDevice* active_ScrWinDx_NativeSinkDevice;
-ScrWinDx::NativeEventsBase* active_ScrWinDx_NativeEventsBase;
+ScrWinD11::NativeSinkDevice* active_ScrWinD11_NativeSinkDevice;
+ScrWinD11::NativeEventsBase* active_ScrWinD11_NativeEventsBase;
 
-LRESULT CALLBACK WinDx_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-
+LRESULT CALLBACK WinD11_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
 
-HRESULT ScrWinDx::NativeContext::CreateDesktopWindow() {
+
+
+HRESULT ScrWinD11::NativeContext::CreateDesktopWindow() {
 	// Window resources are dealt with here.
     
     if(m_hInstance == NULL)
@@ -169,7 +168,7 @@ HRESULT ScrWinDx::NativeContext::CreateDesktopWindow() {
     // Register the windows class
     WNDCLASS wndClass;
     wndClass.style = CS_DBLCLKS;
-    wndClass.lpfnWndProc = WinDx_WindowProc;
+    wndClass.lpfnWndProc = WinD11_WindowProc;
     wndClass.cbClsExtra = 0;
     wndClass.cbWndExtra = 0;
     wndClass.hInstance = m_hInstance;
@@ -233,31 +232,31 @@ HRESULT ScrWinDx::NativeContext::CreateDesktopWindow() {
 
 
 
-bool ScrWinDx::SinkDevice_Create(NativeSinkDevice*& dev) {
+bool ScrWinD11::SinkDevice_Create(NativeSinkDevice*& dev) {
 	dev = new NativeSinkDevice;
 	return true;
 }
 
-void ScrWinDx::SinkDevice_Destroy(NativeSinkDevice*& dev) {
+void ScrWinD11::SinkDevice_Destroy(NativeSinkDevice*& dev) {
 	delete dev;
 }
 
-void ScrWinDx::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
+void ScrWinD11::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
 	
 }
 
-bool ScrWinDx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
-	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<WinDxContext>(1);
-	if (!ctx_) {RTLOG("error: could not find WinDx context"); return false;}
+bool ScrWinD11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<WinD11Context>(1);
+	if (!ctx_) {RTLOG("error: could not find WinD11 context"); return false;}
 	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
 	dev.atom = &a;
 	
-	if (active_ScrWinDx_NativeSinkDevice) {
-		LOG("rWinDx::SinkDevice_Initialize: error: only one  can be opened");
+	if (active_ScrWinD11_NativeSinkDevice) {
+		LOG("rWinD11::SinkDevice_Initialize: error: only one  can be opened");
 		return false;
 	}
-	active_ScrWinDx_NativeSinkDevice = &dev;
+	active_ScrWinD11_NativeSinkDevice = &dev;
 	
 	a.SetDependency(&*ctx_);
 	
@@ -273,7 +272,7 @@ bool ScrWinDx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
     HRESULT hr = ctx.CreateDesktopWindow();
 
     if (!SUCCEEDED(hr)) {
-        LOG("ScrWinDx::SinkDevice_Initialize: error: window creation failed");
+        LOG("ScrWinD11::SinkDevice_Initialize: error: window creation failed");
         return false;
     }
     
@@ -303,7 +302,7 @@ bool ScrWinDx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
     /*hr = ctx.winMain->Run(ctx.deviceResources, ctx.renderer);
     
     if (!SUCCEEDED(hr)) {
-        LOG("ScrWinDx::SinkDevice_Initialize: error: could not run the program");
+        LOG("ScrWinD11::SinkDevice_Initialize: error: could not run the program");
         return false;
     }*/
     
@@ -311,18 +310,18 @@ bool ScrWinDx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	return true;
 }
 
-bool ScrWinDx::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
+bool ScrWinD11::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
 	return true;
 }
 
-bool ScrWinDx::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
+bool ScrWinD11::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 	if (!IsWindowVisible(dev.ctx->hwnd))
 		ShowWindow(dev.ctx->hwnd, SW_SHOWNORMAL);
 	
 	/*LPRECT lp_rect {0};
 	
 	// Crash
-	if (GetWinDxdowRect(dev.ctx->hwnd, lp_rect)) {
+	if (GetWinD11dowRect(dev.ctx->hwnd, lp_rect)) {
 		int width = lp_rect->right - lp_rect->left;
 		int height = lp_rect->bottom - lp_rect->top;
 		ASSERT(width > 0 && height > 0);
@@ -334,7 +333,7 @@ bool ScrWinDx::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 	return true;
 }
 
-void ScrWinDx::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
+void ScrWinD11::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 	auto& ctx = *dev.ctx;
 	
 	
@@ -342,35 +341,35 @@ void ScrWinDx::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 	
 }
 
-void ScrWinDx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+void ScrWinD11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	a.SetDependency(0);
 	
 	auto& ctx = *dev.ctx;
 	
 	CloseWindow(dev.ctx->hwnd);
 	
-	active_ScrWinDx_NativeSinkDevice = 0;
+	active_ScrWinD11_NativeSinkDevice = 0;
 }
 
-bool ScrWinDx::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {
-	TODO //return dev.accel.Recv(ch_i, p);
+bool ScrWinD11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {
+	return dev.accel.Recv(sink_ch, in);
 }
 
-void ScrWinDx::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+void ScrWinD11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
 	
 	
 }
 
-bool ScrWinDx::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool ScrWinD11::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return true;
 }
 
-bool ScrWinDx::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+bool ScrWinD11::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	TODO
 	return false;
 }
 
-bool ScrWinDx::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) {
+bool ScrWinD11::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io) {
 	// Run the message loop.
     MSG msg = { };
     while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -388,56 +387,56 @@ bool ScrWinDx::SinkDevice_IsReady(NativeSinkDevice& dev, AtomBase&, PacketIO& io
 
 
 
-bool ScrWinDx::Context_Create(NativeContext*& dev) {
+bool ScrWinD11::Context_Create(NativeContext*& dev) {
 	dev = new NativeContext;
 	return true;
 }
 
-void ScrWinDx::Context_Destroy(NativeContext*& dev) {
+void ScrWinD11::Context_Destroy(NativeContext*& dev) {
 	delete dev;
 }
 
-void ScrWinDx::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {
+void ScrWinD11::Context_Visit(NativeContext& dev, AtomBase&, RuntimeVisitor& vis) {
 	
 }
 
-bool ScrWinDx::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {
+bool ScrWinD11::Context_Initialize(NativeContext& ctx, AtomBase& a, const Script::WorldState& ws) {
 	return true;
 }
 
-bool ScrWinDx::Context_PostInitialize(NativeContext& ctx, AtomBase& a) {
+bool ScrWinD11::Context_PostInitialize(NativeContext& ctx, AtomBase& a) {
 	return true;
 }
 
-bool ScrWinDx::Context_Start(NativeContext& ctx, AtomBase& a) {
+bool ScrWinD11::Context_Start(NativeContext& ctx, AtomBase& a) {
 	return true;
 }
 
-void ScrWinDx::Context_Stop(NativeContext& ctx, AtomBase& a) {
+void ScrWinD11::Context_Stop(NativeContext& ctx, AtomBase& a) {
 	
 }
 
-void ScrWinDx::Context_Uninitialize(NativeContext& ctx, AtomBase& a) {
+void ScrWinD11::Context_Uninitialize(NativeContext& ctx, AtomBase& a) {
 	
 }
 
-bool ScrWinDx::Context_Send(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+bool ScrWinD11::Context_Send(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
 	return false;
 }
 
-bool ScrWinDx::Context_Recv(NativeContext& ctx, AtomBase& a, int sink_ch, const Packet&) {
+bool ScrWinD11::Context_Recv(NativeContext& ctx, AtomBase& a, int sink_ch, const Packet&) {
 	return false;
 }
 
-void ScrWinDx::Context_Finalize(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig&) {
+void ScrWinD11::Context_Finalize(NativeContext& ctx, AtomBase& a, RealtimeSourceConfig&) {
 	
 }
 
-bool ScrWinDx::Context_NegotiateSinkFormat(NativeContext& ctx, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+bool ScrWinD11::Context_NegotiateSinkFormat(NativeContext& ctx, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	return false;
 }
 
-bool ScrWinDx::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
+bool ScrWinD11::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 	return true;
 }
 
@@ -445,7 +444,7 @@ bool ScrWinDx::Context_IsReady(NativeContext& dev, AtomBase&, PacketIO& io) {
 
 
 #define ABBR
-#define WINDXIMPL 1
+#define WIND11IMPL 1
 #include "Impl.inl"
 #undef ABBR
 

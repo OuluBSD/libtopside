@@ -30,11 +30,15 @@
 		#undef  _WIN32_WINNT
 
 		#ifdef flagWIN10
-			#define _WIN32_WINNT _WIN32_WINNT_WIN10
+			#define _WIN32_WINNT   _WIN32_WINNT_WIN10
 			#undef NTDDI_VERSION
-			#define NTDDI_VERSION NTDDI_WIN10_19H1
+			#define NTDDI_VERSION   NTDDI_WIN10_19H1
+		#elif defined flagWINXP
+			#define _WIN32_WINNT   _WIN32_WINNT_WINXP
 		#else
-			#define _WIN32_WINNT 0x0501
+			#define _WIN32_WINNT   _WIN32_WINNT_VISTA
+			#undef NTDDI_VERSION
+			#define NTDDI_VERSION   NTDDI_VISTA
 		#endif
 	#endif
 
@@ -104,6 +108,7 @@
 		#define CPU_AMD64 1
 		#define CPU_SSE2 1
 		#define CPU_IA64 1
+		#define _AMD64_ 1
 	#elif __i386 || __i386__ || i386
 		#define CPU_LE 1
 		#define CPU_LITTLE_ENDIAN 1
@@ -112,6 +117,7 @@
 		#define CPU_32 1
 		#define CPU_IA32 1
 		#define CPU_SSE2 1
+		#define _X86_ 1
 	#elif __sparc  // ToDo!
 		#define CPU_32 1
 		#define CPU_SPARC 1
@@ -124,6 +130,7 @@
 		#define CPU_LE 1
 		#define CPU_LITTLE_ENDIAN 1
 		#define CPU_UNALIGNED 1
+		#define _ARM_ 1
 	#elif __arm__
 		#define CPU_32 1
 		#define CPU_ARM 1
@@ -192,10 +199,24 @@
 		#define CPU_AMD64 1
 		#define CPU_SSE2 1
 		#define CPU_IA64 1
+		#define _AMD64_ 1
 	#else
 		#define CPU_32 1
 		#define CPU_IA32 1
 		#define CPU_SSE2 1
+		#define _X86_ 1
+	#endif
+	
+	#ifdef flagWIN10
+		#define _WIN32_WINNT   _WIN32_WINNT_WIN10
+		#undef NTDDI_VERSION
+		#define NTDDI_VERSION   NTDDI_WIN10_19H1
+	#elif defined flagWINXP
+		#define _WIN32_WINNT   _WIN32_WINNT_WINXP
+	#else
+		#define _WIN32_WINNT   _WIN32_WINNT_VISTA
+		#undef NTDDI_VERSION
+		#define NTDDI_VERSION   NTDDI_VISTA
 	#endif
 #endif
 

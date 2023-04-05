@@ -1,6 +1,7 @@
 #pragma once
-#ifndef DXSDK_STDAFX_H
-#define DXSDK_STDAFX_H
+
+#include <Core/config.h>
+
 
 #ifndef STRICT
 #define STRICT
@@ -33,22 +34,41 @@
 
 #pragma warning( disable : 4100 ) // disable unreference formal parameter warnings for /W4 builds
 
+
 #define NEAR
 #define FAR
+#define WIN32_LEAN_AND_MEAN 1
+
+#ifndef NTDDI_VERSION
+	#error NTDDI_VERSION not defined
+#endif
+
+#ifndef _WIN32_WINNT
+	#error _WIN32_WINNT not defined
+#endif
+
+#if _WIN32_WINNT < _WIN32_WINNT_VISTA || NTDDI_VERSION < NTDDI_VISTA
+	#error Too low version
+#endif
+
+#include <winapifamily.h>
+#include <sdkddkver.h>
 
 #include <guiddef.h>
 #include <windef.h>
 #include <windows.h>
+
+#include <synchapi.h>
 #include <assert.h>
 #include <wchar.h>
 #include <mmsystem.h>
-#include <commctrl.h> // for InitCommonControls()
-#include <shellapi.h> // for ExtractIcon()
-#include <new.h>      // for placement new
+#include <commctrl.h>
+#include <shellapi.h>
+#include <new.h>
 #include <math.h>
 #include <limits.h>
 #include <stdio.h>
-#include <xinput.h> // Header for XInput APIs
+#include <xinput.h>
 #include <wrl/wrappers/corewrappers.h>
 #include <wrl/client.h>
 
@@ -69,7 +89,7 @@
 // Direct3D includes
 #include <d3d11.h>
 #include <dxgi1_3.h>
-//#include <d3dx11.h>
+#include <d3d11_3.h>
 //#include <dxerr11.h>
 //#include <d3dx11math.h>
 
@@ -140,4 +160,4 @@
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 #endif
 
-#endif // !defined(DXSDK_STDAFX_H)
+#undef IsMaximized

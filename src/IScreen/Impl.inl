@@ -375,7 +375,7 @@ int ConvertX11Keycode(CLASSNAME::NativeEventsBase& dev, int keycode)
 
 #endif
 
-#if WINDXIMPL
+#if WIND11IMPL
 
 
 //-----------------------------------------------------------------------------
@@ -759,10 +759,10 @@ DeviceResources::~DeviceResources()
 
 
 
-LRESULT CALLBACK WinDx_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinD11_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	ASSERT(active_ScrWinDx_NativeSinkDevice);
-	ScrWinDx::NativeSinkDevice& dev = *active_ScrWinDx_NativeSinkDevice;
+	ASSERT(active_ScrWinD11_NativeSinkDevice);
+	ScrWinD11::NativeSinkDevice& dev = *active_ScrWinD11_NativeSinkDevice;
 	
     switch (uMsg)
     {
@@ -770,7 +770,7 @@ LRESULT CALLBACK WinDx_WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
     case WM_CREATE: {
             //RECT r;
             //GetClientRect(hWnd, &r);
-            //SetWinDxdowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG>(new graphic_buffers(r.right - r.left, r.bottom - r.top)));
+            //SetWinD11dowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG>(new graphic_buffers(r.right - r.left, r.bottom - r.top)));
             //SetTimer(dev.ctx->hwnd, kTimerID, 1, NULL);
         }
         break;

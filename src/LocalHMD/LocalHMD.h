@@ -31,12 +31,6 @@
 	#endif
 #endif
 
-#ifdef flagWIN32
-	#define WIN32_LEAN_AND_MEAN
-	#define WIN32_EXTRA_LEAN
-	#include <windows.h>
-#endif
-
 #ifdef __ANDROID__
 	#include <android/sensor.h>
 	#include <poll.h>

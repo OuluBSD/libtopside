@@ -19,7 +19,7 @@ NAMESPACE_PARALLEL_BEGIN
 	SCR_VNDR(ScrX11Sw) \
 	SCR_VNDR(ScrX11Ogl) \
 	SCR_VNDR(ScrWin) \
-	SCR_VNDR(ScrWinDx) \
+	SCR_VNDR(ScrWinD11) \
 
 #define SCR_CLS(x, v) struct v##x;
 #define SCR_VNDR(x) SCR_CLS_LIST(x)
@@ -91,8 +91,8 @@ struct ScrWin {
 	
 };
 #endif
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-struct ScrWinDx {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+struct ScrWinD11 {
 	struct NativeSinkDevice;
 	struct NativeContext;
 	struct NativeEventsBase;
@@ -298,10 +298,10 @@ using WinSinkDevice = ScreenSinkDeviceT<ScrWin>;
 using WinContext = ScreenContextT<ScrWin>;
 using WinEventsBase = ScreenEventsBaseT<ScrWin>;
 #endif
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-using WinDxSinkDevice = ScreenSinkDeviceT<ScrWinDx>;
-using WinDxContext = ScreenContextT<ScrWinDx>;
-using WinDxEventsBase = ScreenEventsBaseT<ScrWinDx>;
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+using WinD11SinkDevice = ScreenSinkDeviceT<ScrWinD11>;
+using WinD11Context = ScreenContextT<ScrWinD11>;
+using WinD11EventsBase = ScreenEventsBaseT<ScrWinD11>;
 #endif
 
 NAMESPACE_PARALLEL_END

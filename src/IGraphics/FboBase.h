@@ -78,8 +78,8 @@ using SdlOglFboBase = FboAtomT<SdlOglGfx>;
 #endif
 
 
-#if defined flagDX && defined flagWIN32
-using WinDxFboBase = FboAtomT<WinDxGfx>;
+#if defined flagDX11 && defined flagWIN32
+using WinD11FboBase = FboAtomT<WinD11Gfx>;
 #endif
 
 

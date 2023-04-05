@@ -370,6 +370,41 @@ struct OglBufferBase : GfxBuffer {
 
 
 
+
+#ifdef flagDX11
+struct Dx11FramebufferBase : GfxFramebuffer{
+	/*int gl_sample_size;
+	GLint gl_type;
+	
+	GLint GetGlType() const;
+	GLint GetGlFormat() const;
+	int GetGlSize() const;
+	int GetGlSampleSize() const;*/
+	
+};
+
+struct Dx11BufferBase : GfxBuffer {
+	/*GLuint fb_accel_type;
+	GLuint fb_size_bytes;
+	GLuint fb_accel_size_bytes;
+	GLint fb_fmt;
+	GLuint fb_accel_fmt;
+	
+	GVar::Sample fb_accel_sampletype = GVar::SAMPLE_U8;
+	GLuint fb_accel_channels = 4;
+	int fb_sample_size = 0;
+	
+	
+	void BaseUpdateTexBuffers(OglFramebufferBase& fb) ;
+	*/
+};
+#endif
+
+
+
+
+
+
 //////// PBR
 
 struct PbrResources : RTTIBase {

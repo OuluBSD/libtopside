@@ -83,6 +83,32 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 #endif
 
 
+#if defined flagWIN32 && defined flagDX11
+template <>
+void GfxAccelAtom<WinD11Gfx>::GfxFlags(uint32& flags) {
+	is_sw = false;
+}
+
+template <>
+bool GfxAccelAtom<WinD11Gfx>::GfxRenderer() {
+	TODO
+	/*ASSERT(fb);
+	
+	NativeColorBufferRef clr = fb->Get(0);
+	ASSERT(clr);
+	
+	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	rend.output.SetWindowFbo();
+	
+	auto& buf = bf.GetBuffer();
+	auto& buf_fb = buf.Top().GetFramebuffer();
+	buf_fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
+	
+	return true;*/
+}
+#endif
+
+
 
 
 template <class Gfx>

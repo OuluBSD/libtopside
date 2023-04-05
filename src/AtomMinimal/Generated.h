@@ -583,12 +583,12 @@ public:
 	
 };
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-class WinDxContextAtom : public WinDxContext {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+class WinD11ContextAtom : public WinD11Context {
 
 public:
-	RTTI_DECL1(WinDxContextAtom, WinDxContext)
-	COPY_PANIC(WinDxContextAtom)
+	RTTI_DECL1(WinD11ContextAtom, WinD11Context)
+	COPY_PANIC(WinD11ContextAtom)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -598,12 +598,12 @@ public:
 };
 #endif
 
-#if (defined flagSCREEN && defined flagWIN32 && defined flagDX)
-class WinDxFboProg : public WinDxFboBase {
+#if (defined flagSCREEN && defined flagWIN32 && defined flagDX11)
+class WinD11FboProg : public WinD11FboBase {
 
 public:
-	RTTI_DECL1(WinDxFboProg, WinDxFboBase)
-	COPY_PANIC(WinDxFboProg)
+	RTTI_DECL1(WinD11FboProg, WinD11FboBase)
+	COPY_PANIC(WinD11FboProg)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -613,12 +613,12 @@ public:
 };
 #endif
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-class WinDxFboAtomPipe : public WinDxSinkDevice {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+class WinD11FboAtomPipe : public WinD11SinkDevice {
 
 public:
-	RTTI_DECL1(WinDxFboAtomPipe, WinDxSinkDevice)
-	COPY_PANIC(WinDxFboAtomPipe)
+	RTTI_DECL1(WinD11FboAtomPipe, WinD11SinkDevice)
+	COPY_PANIC(WinD11FboAtomPipe)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -628,12 +628,12 @@ public:
 };
 #endif
 
-#if (defined flagWIN32 && defined flagSCREEN && defined flagDX)
-class WinDxFboAtomSA : public WinDxSinkDevice {
+#if (defined flagWIN32 && defined flagSCREEN && defined flagDX11)
+class WinD11FboAtomSA : public WinD11SinkDevice {
 
 public:
-	RTTI_DECL1(WinDxFboAtomSA, WinDxSinkDevice)
-	COPY_PANIC(WinDxFboAtomSA)
+	RTTI_DECL1(WinD11FboAtomSA, WinD11SinkDevice)
+	COPY_PANIC(WinD11FboAtomSA)
 	static String GetAction();
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

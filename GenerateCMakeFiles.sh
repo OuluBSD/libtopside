@@ -44,8 +44,8 @@ UPP_SRC_DIR="${UPP_SRC_BASE}/src"
 PROJECT_EXTRA_INCLUDE_DIR="${UPP_SRC_BASE}/alt" # this can be changed to u++'s uppsrc directory
 #PROJECT_NAME="${UPP_SRC_DIR}/Shell/Shell.upp"
 PROJECT_NAME="${UPP_SRC_BASE}/reference/Shell/Shell.upp"
-PROJECT_FLAGS="-DflagMSC19X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX -DflagVR -DflagUWP"
-#PROJECT_FLAGS="-DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagSHARED -DflagCMAKE"
+PROJECT_FLAGS="-DflagGUI -DflagSCREEN -DflagSDL2 -DflagOGL -DflagFFMPEG -DflagOPENCV -DflagVR -DflagLOCALHMD -DflagFLUIDSYNTH -DflagBUILTIN_PORTAUDIO -DflagPORTMIDI -DflagSHARED -DflagCMAKE"
+
 #  -DflagPOSIX -DflagLINUX -DflagGCC 
 
 PROJECT_EXTRA_COMPILE_FLAGS="-I/usr/include/opencv4"

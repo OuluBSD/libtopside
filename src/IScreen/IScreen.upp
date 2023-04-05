@@ -8,7 +8,7 @@ library(POSIX & !EMSCRIPTEN) "X11 Xrandr Xxf86vm";
 
 library(POSIX & OGL & !EMSCRIPTEN) "GLX GL GLU GLEW glut";
 
-library(WIN32 & DX) D3D11;
+library(WIN32 & DX11) D3D11;
 
 file
 	IScreen.h,
@@ -16,7 +16,7 @@ file
 	X11Sw.cpp,
 	X11Ogl.cpp,
 	Win.cpp,
-	WinDx.cpp,
+	WinD11.cpp,
 	Impl.inl highlight cpp,
 	IfaceFuncs.inl highlight cpp;
 

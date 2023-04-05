@@ -30,7 +30,7 @@ void InterfaceBuilder::Headers() {
 	AddCustomBase("X11SwFboProgBase", "POSIXDESKTOP&SCREEN");
 	AddCustomBase("X11OglFboProgBase", "POSIXDESKTOP&SCREEN&OGL");
 	AddCustomBase("SdlOglFboProgBase", "SCREEN&SDL2&OGL");
-	AddCustomBase("WinDxFboBase", "SCREEN&WIN32&DX");
+	AddCustomBase("WinD11FboBase", "SCREEN&WIN32&DX11");
 	AddCustomBase("MidiFileReaderAtom");
 	AddCustomBase("MidiNullAtom");
 	AddCustomBase("AudioMixerBase");
@@ -431,7 +431,7 @@ void InterfaceBuilder::Headers() {
 		.Arg("HINT_PKG", "AtomMinimal")
 	;
 	
-	AddHeader("WinDxContextAtom", "WinDxContext", "driver")
+	AddHeader("WinD11ContextAtom", "WinD11Context", "driver")
 		.In("CenterReceipt").Out("CenterReceipt")
 		.Action("win.dx.context")
 		.Link("DRIVER", "DRIVER")
@@ -439,7 +439,7 @@ void InterfaceBuilder::Headers() {
 		//.Arg("reqdef_flagSCREEN", "1")
 	;
 	
-	AddHeader("WinDxFboProg", "WinDxFboBase", "pipe")
+	AddHeader("WinD11FboProg", "WinD11FboBase", "pipe")
 		.In("DxOrder")
 		.InOpt("DxFbo")
 		.Out("DxFbo")
@@ -450,7 +450,7 @@ void InterfaceBuilder::Headers() {
 		//.Arg("reqdef_flagOGL", "1")
 	;
 	
-	AddHeader("WinDxFboAtomPipe", "WinDxSinkDevice", "pipe")
+	AddHeader("WinD11FboAtomPipe", "WinD11SinkDevice", "pipe")
 		.In("DxFbo").Out("DxReceipt")
 		.Action("win.dx.fbo.sink")
 		//.Arg("reqdef_flagSCREEN", "1")
@@ -459,7 +459,7 @@ void InterfaceBuilder::Headers() {
 		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
-	AddHeader("WinDxFboAtomSA", "WinDxSinkDevice", "pipe")
+	AddHeader("WinD11FboAtomSA", "WinD11SinkDevice", "pipe")
 		.In("DxOrder").Out("DxReceipt")
 		.Action("win.dx.fbo.standalone")
 		//.Arg("reqdef_flagOGL", "1")

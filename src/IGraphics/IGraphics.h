@@ -4,6 +4,11 @@
 #include <Core/config.h>
 
 
+#if defined flagDX11
+	#include "dxstdafx.h"
+#endif
+
+
 #if defined flagOGL
 	#if UPP_OLD_VERSION || (defined flagGCC && defined flagWIN32)
 		#define GLEW_STATIC 1

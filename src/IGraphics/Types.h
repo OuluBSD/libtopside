@@ -2,8 +2,8 @@
 #define _IGraphics_Types_h_
 
 
-NAMESPACE_PARALLEL_BEGIN
 
+NAMESPACE_PARALLEL_BEGIN
 
 
 #define GFX_CLS_LIST(g) \
@@ -168,36 +168,6 @@ struct OglGfxT {
 
 
 
-#ifdef flagDX11
-
-struct Dx11FramebufferBase;
-struct Dx11BufferBase;
-	
-template <class Gfx>
-struct Dx11GfxT {
-	static const bool is_builtin_shader = false;
-	
-	using NativeDeviceRef = ComPtr<ID3D11Device>;
-	using NativeDeviceContextRef = ID3D11DeviceContext3 *;
-	using NativeShaderResourcesRef = ComPtr<ID3D11ShaderResourceView>;
-	using NativeBlendStateRef = ComPtr<ID3D11BlendState>;
-	using NativeSamplerStateRef = ComPtr <ID3D11SamplerState>;
-	using NativeBufferRef = ComPtr <ID3D11Buffer>;
-	using NativeInputLayoutRef = ComPtr <ID3D11InputLayout>;
-	using NativeVertexShaderRef = ComPtr <ID3D11VertexShader>;
-	using NativeGeometryShaderRef = ComPtr <ID3D11GeometryShader>;
-	using NativePixelShaderRef = ComPtr <ID3D11PixelShader>;
-	using FramebufferBase = DxFramebufferBase;
-	using BufferBase = DxBufferBase;
-	
-	static const GVar::GfxType Type = GVar::DX;
-	
-	#include "TypeFuncList.inl"
-	
-	static Serial::FboFormat& GetFormat(Parallel::Format& fmt);
-	
-};
-#endif
 
 
 
@@ -427,14 +397,29 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 
 
 
-#if defined flagDX
+#if defined flagDX11
+using namespace Microsoft::WRL;
 
-struct DxFramebufferBase;
-struct DxBufferBase;
+struct Dx11FramebufferBase;
+struct Dx11BufferBase;
 
 template <class Gfx>
-struct DxGfxT {
+struct D11GfxT {
+	
 	static const bool is_builtin_shader = false;
+	
+	using NativeDeviceRef = ComPtr<ID3D11Device>;
+	using NativeDeviceContextRef = ID3D11DeviceContext3 *;
+	using NativeShaderResourcesRef = ComPtr<ID3D11ShaderResourceView>;
+	using NativeBlendStateRef = ComPtr<ID3D11BlendState>;
+	using NativeSamplerStateRef = ComPtr <ID3D11SamplerState>;
+	using NativeBufferRef = ComPtr <ID3D11Buffer>;
+	using NativeInputLayoutRef = ComPtr <ID3D11InputLayout>;
+	using NativeVertexShaderRef = ComPtr <ID3D11VertexShader>;
+	using NativeGeometryShaderRef = ComPtr <ID3D11GeometryShader>;
+	using NativePixelShaderRef = ComPtr <ID3D11PixelShader>;
+	using FramebufferBase = Dx11FramebufferBase;
+	using BufferBase = Dx11BufferBase;
 	
 	using NativeTexture = uint32;
 	using NativeShaderRef = uint32;
@@ -452,11 +437,11 @@ struct DxGfxT {
 	using NativeProgram = uint32;
 	using NativePipeline = uint32;
 	using ValFormat = Serial::FboFormat;
-	
-	using FramebufferBase = GfxFramebuffer;
-	using BufferBase = GfxBuffer;
-	
+
 	static const GVar::GfxType Type = GVar::DX;
+	
+	using FramebufferBase = Dx11FramebufferBase;
+	using BufferBase = Dx11BufferBase;
 	
 	#include "TypeFuncList.inl"
 	
@@ -488,20 +473,20 @@ struct DxGfx {
 };
 
 
-struct WinDxGfx : DxGfxT<WinDxGfx>, DxGfx {
+struct WinD11Gfx : D11GfxT<WinD11Gfx>, DxGfx {
 	using NativeSurface = void*;
 	using SoftShaderLibrary = DummySoftShaderLibrary;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
-	GFX_CLS_LIST(WinDx)
+	GFX_CLS_LIST(WinD11)
 	#undef GFX_CLS
 	
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf);
 	
 };
 
-#define WINDX_GFXTYPE GFXTYPE(WinDx)
-#define WINDX_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <WinDxGfx>;
+#define WINDX_GFXTYPE GFXTYPE(WinD11)
+#define WINDX_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <WinD11Gfx>;
 
 #define WIN_GFXTYPE \
 	WINDX_GFXTYPE

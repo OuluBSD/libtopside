@@ -6,6 +6,7 @@
 share/presets/fmsynth/generated/*.wav
 pose/**
 gpl/**
+sounds/sf2
 sounds/sf2/**
 sounds/samples/**
 share/sf2/**
@@ -14,3 +15,5 @@ share/samples
 flat/**
 build/**
 *.bz2
+share/sf2
+
