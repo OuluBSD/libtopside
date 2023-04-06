@@ -3,7 +3,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-#ifdef flagSDL2
+/*#ifdef flagSDL2
 template <>
 void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 	SDL_Texture* tex = color_buf[0];
@@ -45,7 +45,7 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 }
 
 
-#endif
+#endif*/
 
 #if defined flagPOSIXDESKTOP && defined flagOGL
 template <>
@@ -71,7 +71,7 @@ void FramebufferT<Gfx>::Init(NativeColorBufferRef clr, int w, int h, int stride)
 	ASSERT(!color_buf[0]);
 	ASSERT(!frame_buf[0]);
 	ASSERT(clr);
-	frame_buf[0] = 0;
+	Gfx::ClearFramebufferRef(frame_buf[0]);
 	color_buf[0] = clr;
 	this->size.cx = w;
 	this->size.cy = h;
@@ -104,6 +104,7 @@ void FramebufferT<Gfx>::SetWindowFbo(bool b) {
 
 GFX3D_EXCPLICIT_INITIALIZE_CLASS(InputStateT)
 GFX_EXCPLICIT_INITIALIZE_CLASS(FramebufferT)
+GFXVIDEO_EXCPLICIT_INITIALIZE_CLASS(FramebufferT)
 
 
 NAMESPACE_PARALLEL_END

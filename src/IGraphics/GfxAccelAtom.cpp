@@ -91,12 +91,25 @@ void GfxAccelAtom<WinD11Gfx>::GfxFlags(uint32& flags) {
 
 template <>
 bool GfxAccelAtom<WinD11Gfx>::GfxRenderer() {
-	TODO
-	/*ASSERT(fb);
+	ASSERT(fb);
 	
-	NativeColorBufferRef clr = fb->Get(0);
-	ASSERT(clr);
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> clr;
+	HRESULT hr = S_OK;
 	
+    hr = fb->GetBuffer(
+        0,
+        __uuidof(ID3D11Texture2D),
+        (void**) &clr);
+	
+    if (FAILED(hr))
+        return false;
+    
+    clr->GetDesc(&impl.m_bbDesc);
+    screen_sz.cx = impl.m_bbDesc.Width;
+    screen_sz.cy = impl.m_bbDesc.Height;
+    
+    TODO
+    
 	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
@@ -104,7 +117,7 @@ bool GfxAccelAtom<WinD11Gfx>::GfxRenderer() {
 	auto& buf_fb = buf.Top().GetFramebuffer();
 	buf_fb.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	
-	return true;*/
+	return true;
 }
 #endif
 
@@ -173,7 +186,7 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::Uninitialize() {
 	ab->RemoveAtomFromUpdateList();
 	bf.ClearRef();
-	fb = 0;
+	Gfx::ClearFramebufferRef(fb);
 	fb_packet.Clear();
 	raw_packet.Clear();
 }
@@ -232,7 +245,7 @@ void GfxAccelAtom<Gfx>::Close() {
 	}
 	if (nat_rend) {
 		Gfx::DestroyRenderer(nat_rend);
-		nat_rend = 0;
+		Gfx::ClearRendererRef(nat_rend);
 	}
 	if (win) {
 		Gfx::DestroyWindow(win);

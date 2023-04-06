@@ -625,6 +625,19 @@ void SwGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, GVar::Sample sample, in
 	TODO
 }
 
+template <class Gfx> void SwGfxT<Gfx>::ClearFramebufferRef(NativeFrameBufferRef& fb) {
+	fb = 0;
+}
+
+template<class Gfx> void SwGfxT<Gfx>::ClearColorBufferRef(NativeColorBufferRef& b) {
+	b = 0;
+}
+
+template<class Gfx> void SwGfxT<Gfx>::ClearDepthBufferRef(NativeDepthBufferRef& b) {
+	b = 0;
+}
+
+
 #if defined flagSDL2
 template struct SwGfxT<SdlSwGfx>;
 #endif

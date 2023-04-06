@@ -88,6 +88,10 @@ void X11SwGfx::UnlockTextureToSurface(NativeTexture& tex) {
 	// pass
 }
 
+void X11SwGfx::ClearFramebufferRef(NativeFrameBufferRef& fb) {
+	fb = 0;
+}
+
 
 NAMESPACE_PARALLEL_END
 

@@ -7,7 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <class Gfx> bool IsDefaultGfxVal(const ValCls& val);
 
 #ifdef flagSDL2
-template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
+//template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
 template <> inline bool IsDefaultGfxVal<SdlSwGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #ifdef flagOGL
 template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return val == ValCls::FBO;}
@@ -48,8 +48,10 @@ protected:
 	using ValFormat				= typename Gfx::ValFormat;
 	using RendererInfo			= typename Gfx::NativeRendererInfo;
 	using GLContext				= typename Gfx::NativeGLContext;
+	using Impl					= typename Gfx::Impl;
 	using Framebuffer = FramebufferT<Gfx>;
 	
+	Impl					impl;
 	GfxBufferFieldT<Gfx>	bf;
     NativeWindow			win;
     NativeDisplay			display;

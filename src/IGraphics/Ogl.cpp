@@ -1014,6 +1014,18 @@ template <class Gfx> void OglGfxT<Gfx>::ReadPixels(int x, int y, int w, int h, G
 	glReadPixels(x, y, w, h, GetOglChCode(channels, sample == GVar::SAMPLE_FLOAT), GetGfxType(sample), dst);
 }
 
+template <class Gfx> void OglGfxT<Gfx>::ClearFramebufferRef(NativeFrameBufferRef& fb) {
+	fb = 0;
+}
+
+template<class Gfx> void OglGfxT<Gfx>::ClearColorBufferRef(NativeColorBufferRef& b) {
+	b = 0;
+}
+
+template<class Gfx> void OglGfxT<Gfx>::ClearDepthBufferRef(NativeDepthBufferRef& b) {
+	b = 0;
+}
+
 
 #if defined flagOGL && defined flagSCREEN
 #ifdef flagPOSIXDESKTOP

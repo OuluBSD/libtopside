@@ -34,6 +34,9 @@ template <class T>
 inline void AssertMoveable0(T *t) { AssertMoveablePtr(&**t, *t); }
 // COMPILATION ERROR HERE MEANS TYPE T WAS NOT MARKED AS Moveable
 
+template <class T>
+inline void AssertMoveable0(T **t) {}
+
 template <class T, class B = EmptyClass>
 struct Moveable : public B {
 	friend void AssertMoveable0(T *) {}

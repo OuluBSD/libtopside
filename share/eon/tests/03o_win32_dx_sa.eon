@@ -4,6 +4,7 @@ machine win.app:
 		win.dx.context
 	
 	chain program:
+		state event.register
 		
 		loop dx.fbo:
 			dx.customer

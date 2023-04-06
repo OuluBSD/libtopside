@@ -37,7 +37,7 @@ public:
     
     void Present();
 
-private:
+public:
 
     //-----------------------------------------------------------------------------
     // Direct3D device
@@ -65,7 +65,6 @@ private:
     // Direct3D device metadata and device resource metadata
     //-----------------------------------------------------------------------------
     D3D_FEATURE_LEVEL       m_featureLevel;
-    D3D11_TEXTURE2D_DESC    m_bbDesc;
     D3D11_VIEWPORT          m_viewport;
 };
 
@@ -98,11 +97,15 @@ struct ScrWinD11::NativeContext {
     
 	HINSTANCE		m_hInstance;
 	std::string		m_windowClassName;
-    HWND			hwnd;
     HMENU			m_hMenu;
     RECT			m_rc;
 	
+	union {
+		HWND		hwnd;
+		HWND		win;
+	};
 	
+    
 };
 
 
@@ -122,6 +125,7 @@ struct ScrWinD11::NativeSinkDevice {
     NativeContext* ctx;
     AtomBase* atom = 0;
     Size sz;
+    
     
 };
 
@@ -242,7 +246,7 @@ void ScrWinD11::SinkDevice_Destroy(NativeSinkDevice*& dev) {
 }
 
 void ScrWinD11::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& vis) {
-	
+	vis % dev.accel;
 }
 
 bool ScrWinD11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -258,7 +262,10 @@ bool ScrWinD11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	}
 	active_ScrWinD11_NativeSinkDevice = &dev;
 	
-	a.SetDependency(&*ctx_);
+	if (!dev.accel.Initialize(a, ws)) {
+		LOG("ScrWinD11::SinkDevice_Initialize: error: accelerator initialization failed");
+		return false;
+	}
 	
 	bool fullscreen = ws.GetBool(".fullscreen", false);
 	
@@ -306,12 +313,31 @@ bool ScrWinD11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
         return false;
     }*/
     
-    
+	a.SetDependency(&*ctx_);
+	
 	return true;
 }
 
 bool ScrWinD11::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
-	return true;
+	auto& ctx = *dev.ctx;
+	
+    ASSERT(ctx.win);
+	dev.accel.SetNative(
+		ctx.deviceResources->m_pd3dDevice,
+		ctx.win,
+		&ctx.deviceResources->m_pd3dDeviceContext,
+		ctx.deviceResources->m_pDXGISwapChain);
+	
+	dev.sz = Size(	(int)ctx.deviceResources->m_viewport.Width,
+					(int)ctx.deviceResources->m_viewport.Height);
+	
+	if (!dev.accel.Open(dev.sz, 4, true)) {
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
+		return false;
+	}
+	
+	
+	return dev.accel.PostInitialize();
 }
 
 bool ScrWinD11::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
@@ -342,6 +368,9 @@ void ScrWinD11::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrWinD11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	
+	dev.accel.Uninitialize();
+	
 	a.SetDependency(0);
 	
 	auto& ctx = *dev.ctx;
@@ -361,6 +390,9 @@ void ScrWinD11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, Realtime
 }
 
 bool ScrWinD11::SinkDevice_Send(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch) {
+	
+	dev.accel.Render(cfg);
+	
 	return true;
 }
 

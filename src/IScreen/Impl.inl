@@ -397,6 +397,7 @@ DeviceResources::DeviceResources()
 //           you recreate the swap chain.
 //
 //-----------------------------------------------------------------------------
+#if 0
 HRESULT DeviceResources::CreateDeviceResources(HWND hWnd)
 {
     HRESULT hr = S_OK;
@@ -481,6 +482,7 @@ HRESULT DeviceResources::CreateDeviceResources(HWND hWnd)
 
     return hr;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //
@@ -592,19 +594,23 @@ HRESULT DeviceResources::CreateWindowResources(HWND hWnd)
 HRESULT DeviceResources::ConfigureBackBuffer()
 {
     HRESULT hr = S_OK;
-
-    hr = m_pDXGISwapChain->GetBuffer(
+	
+	return hr;
+	
+	#if 0
+    /*hr = m_pDXGISwapChain->GetBuffer(
         0,
         __uuidof(ID3D11Texture2D),
         (void**) &m_pBackBuffer);
 
+    m_pBackBuffer->GetDesc(&m_bbDesc);
+    */
     hr = m_pd3dDevice->CreateRenderTargetView(
         m_pBackBuffer.Get(),
         nullptr,
         m_pRenderTarget.GetAddressOf()
         );
 
-    m_pBackBuffer->GetDesc(&m_bbDesc);
 
     // Create a depth-stencil view for use with 3D rendering if needed.
     CD3D11_TEXTURE2D_DESC depthStencilDesc(
@@ -643,6 +649,7 @@ HRESULT DeviceResources::ConfigureBackBuffer()
         );
 
     return hr;
+    #endif
 }
 
 HRESULT DeviceResources::ReleaseBackBuffer()
@@ -726,10 +733,10 @@ HRESULT DeviceResources::GoWindowed()
 //-----------------------------------------------------------------------------
 // Returns the aspect ratio of the back buffer.
 //-----------------------------------------------------------------------------
-float DeviceResources::GetAspectRatio()
+/*float DeviceResources::GetAspectRatio()
 {
     return static_cast<float>(m_bbDesc.Width) / static_cast<float>(m_bbDesc.Height);
-}
+}*/
 
 //-----------------------------------------------------------------------------
 // Present frame:

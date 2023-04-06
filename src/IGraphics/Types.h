@@ -111,6 +111,7 @@ struct SwGfxT {
 	using NativeProgram = SoftProgram;
 	using NativePipeline = SoftPipeline;
 	using ValFormat = Parallel::VideoFormat;
+	using Impl = EmptyClass;
 	
 	static const GVar::GfxType Type = GVar::SW;
 	
@@ -152,6 +153,7 @@ struct OglGfxT {
 	using NativeProgram = GLuint;
 	using NativePipeline = GLuint;
 	using ValFormat = Serial::FboFormat;
+	using Impl = EmptyClass;
 	
 	using FramebufferBase = OglFramebufferBase;
 	using BufferBase = OglBufferBase;
@@ -184,6 +186,7 @@ struct X11Gfx {
 	static void SetTitle(NativeDisplay& display, NativeWindow& win, String title);
 	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
 	static void DestroyRenderer(NativeRenderer& rend);
+	static void ClearRendererRef(NativeRenderer& rend) {rend = 0;}
 	static void DestroyWindow(NativeWindow& win);
 	static void MaximizeWindow(NativeWindow& win);
 	static void RestoreWindow(NativeWindow& win);
@@ -253,7 +256,7 @@ struct X11OglGfx : OglGfxT<X11OglGfx>, X11Gfx {
 
 
 
-
+// used only for FramebufferT direct video
 struct CpuGfx {
 	using FramebufferBase	= GfxFramebuffer;
 	
@@ -278,6 +281,7 @@ struct SdlGfx {
 	static void SetTitle(NativeDisplay& display, NativeWindow& win, String title);
 	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
 	static void DestroyRenderer(NativeRenderer& rend);
+	static void ClearRendererRef(NativeRenderer& rend) {rend = 0;}
 	static void DestroyWindow(NativeWindow& win);
 	static void DeleteContext(NativeGLContext& ctx);
 	static void MaximizeWindow(NativeWindow& win);
@@ -290,6 +294,7 @@ struct SdlGfx {
 };
 
 
+// used only for FramebufferT direct video
 struct SdlCpuGfx : CpuGfx, SdlGfx {
 	using SystemFrameBufferRef = SDL_Texture*;
 	
@@ -313,6 +318,11 @@ struct SdlCpuGfx : CpuGfx, SdlGfx {
 	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
 	static void UnlockTextureToSurface(NativeTexture& tex);
 	
+	static void ClearFramebufferRef(NativeTexture& fb) {fb = 0;}
+	static void ClearFramebufferRef(NativeFrameBufferRef& fb) {fb = 0;}
+	static void ClearColorBufferRef(NativeColorBufferRef& b) {b = 0;}
+	static void ClearDepthBufferRef(NativeDepthBufferRef& b) {b = 0;}
+	
 };
 
 struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
@@ -334,6 +344,9 @@ struct SdlSwGfx : SwGfxT<SdlSwGfx>, SdlGfx {
 	static bool LockTextureToSurface(SoftFramebuffer* tex, Rect r, NativeSurface& surf);
 	static void QueryTexture(SoftFramebuffer* tex, uint32& fmt, int& access, int& w, int& h);
 	static void UnlockTextureToSurface(SoftFramebuffer* tex);
+	
+	static void ClearFramebufferRef(NativeTexture& fb);
+	static void ClearFramebufferRef(NativeFrameBufferRef& fb);
 	
 };
 
@@ -362,16 +375,15 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 
 #define SDL_GFXTYPE \
 	SDLOGL_GFXTYPE \
-	GFXTYPE(SdlCpu)
+	GFXTYPE(SdlSw)
 
-#define SDLCPU_EXCPLICIT_INITIALIZE_CLASS(x) \
+#define SDLVIDEO_EXCPLICIT_INITIALIZE_CLASS(x) \
 	template struct x <SdlCpuGfx>;
 
 #define SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	template struct x <SdlSwGfx>;
 
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
-	SDLCPU_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	
@@ -380,9 +392,9 @@ struct SdlOglGfx : OglGfxT<SdlOglGfx>, SdlGfx {
 
 #define SDL_GFXTYPE
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x)
-#define SDLCPU_EXCPLICIT_INITIALIZE_CLASS(x)
 #define SDLSW_EXCPLICIT_INITIALIZE_CLASS(x)
 #define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x)
+#define SDLVIDEO_EXCPLICIT_INITIALIZE_CLASS(x)
 
 #endif
 
@@ -403,40 +415,47 @@ using namespace Microsoft::WRL;
 struct Dx11FramebufferBase;
 struct Dx11BufferBase;
 
+struct D11GfxImpl {
+    D3D11_TEXTURE2D_DESC    m_bbDesc;
+    
+    
+};
+
 template <class Gfx>
 struct D11GfxT {
 	
 	static const bool is_builtin_shader = false;
 	
-	using NativeDeviceRef = ComPtr<ID3D11Device>;
-	using NativeDeviceContextRef = ID3D11DeviceContext3 *;
-	using NativeShaderResourcesRef = ComPtr<ID3D11ShaderResourceView>;
-	using NativeBlendStateRef = ComPtr<ID3D11BlendState>;
-	using NativeSamplerStateRef = ComPtr <ID3D11SamplerState>;
-	using NativeBufferRef = ComPtr <ID3D11Buffer>;
-	using NativeInputLayoutRef = ComPtr <ID3D11InputLayout>;
-	using NativeVertexShaderRef = ComPtr <ID3D11VertexShader>;
-	using NativeGeometryShaderRef = ComPtr <ID3D11GeometryShader>;
-	using NativePixelShaderRef = ComPtr <ID3D11PixelShader>;
-	using FramebufferBase = Dx11FramebufferBase;
-	using BufferBase = Dx11BufferBase;
+	using NativeDeviceRef			= ComPtr<ID3D11Device>;
+	using NativeDeviceContextRef	= ID3D11DeviceContext3 *;
+	using NativeShaderResourcesRef	= ComPtr<ID3D11ShaderResourceView>;
+	using NativeBlendStateRef		= ComPtr<ID3D11BlendState>;
+	using NativeSamplerStateRef		= ComPtr <ID3D11SamplerState>;
+	using NativeBufferRef			= ComPtr <ID3D11Buffer>;
+	using NativeInputLayoutRef		= ComPtr <ID3D11InputLayout>;
+	using NativeVertexShaderRef		= ComPtr <ID3D11VertexShader>;
+	using NativeGeometryShaderRef	= ComPtr <ID3D11GeometryShader>;
+	using NativePixelShaderRef		= ComPtr <ID3D11PixelShader>;
+	using FramebufferBase			= Dx11FramebufferBase;
+	using BufferBase				= Dx11BufferBase;
 	
-	using NativeTexture = uint32;
+	using NativeTexture				=       ComPtr<ID3D11Texture2D>;
 	using NativeShaderRef = uint32;
-	using NativeColorBufferRef = uint32;
-	using NativeColorBufferConstRef = uint32;
-	using NativeDepthBufferRef = uint32;
-	using NativeDepthBufferConstRef = uint32;
-	using NativeFrameBufferRef = uint32;
-	using NativeFrameBufferConstRef = uint32;
+	using NativeColorBufferRef		=       ComPtr<ID3D11Texture2D>;
+	using NativeColorBufferConstRef	= const ComPtr<ID3D11Texture2D>;
+	using NativeDepthBufferRef		=       ComPtr<ID3D11DepthStencilView>;
+	using NativeDepthBufferConstRef	= const ComPtr<ID3D11DepthStencilView>;
+	using NativeFrameBufferRef		=       ComPtr<IDXGISwapChain>;
+	using NativeFrameBufferConstRef	= const ComPtr<IDXGISwapChain>;
 	using NativeBuffer = uint32;
-	using SystemFrameBufferRef = NativeFrameBufferRef;
+	using SystemFrameBufferRef		= NativeFrameBufferRef;
 	using NativeVertexArray = uint32;
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffer = uint32;
 	using NativeProgram = uint32;
 	using NativePipeline = uint32;
 	using ValFormat = Serial::FboFormat;
+	using Impl = D11GfxImpl;
 
 	static const GVar::GfxType Type = GVar::DX;
 	
@@ -450,9 +469,9 @@ struct D11GfxT {
 };
 
 struct DxGfx {
-	using NativeDisplay			= void*;
-	using NativeWindow			= void*;
-	using NativeRenderer		= void*;
+	using NativeDisplay			= ComPtr<ID3D11Device>;
+	using NativeWindow			= HWND;
+	using NativeRenderer		= ComPtr<ID3D11DeviceContext>;
 	using NativeRendererInfo	= void*;
 	using NativeGLContext		= void*;
 	
@@ -461,6 +480,7 @@ struct DxGfx {
 	static void SetTitle(NativeDisplay& display, NativeWindow& win, String title);
 	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
 	static void DestroyRenderer(NativeRenderer& rend);
+	static void ClearRendererRef(NativeRenderer& rend);
 	static void DestroyWindow(NativeWindow& win);
 	static void DeleteContext(NativeGLContext& ctx);
 	static void MaximizeWindow(NativeWindow& win);
@@ -501,6 +521,7 @@ struct WinD11Gfx : D11GfxT<WinD11Gfx>, DxGfx {
 #define WINDX_EXCPLICIT_INITIALIZE_CLASS(x)
 #define WIN_GFXTYPE
 #define WINDX_EXCPLICIT_INITIALIZE_CLASS(x)
+#define WIN_EXCPLICIT_INITIALIZE_CLASS(x)
 
 #endif
 
@@ -546,6 +567,11 @@ struct WinD11Gfx : D11GfxT<WinD11Gfx>, DxGfx {
 	 \
 	SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	X11SW_EXCPLICIT_INITIALIZE_CLASS(x) \
+
+
+#define GFXVIDEO_EXCPLICIT_INITIALIZE_CLASS(x) \
+	 \
+	SDLVIDEO_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
 NAMESPACE_PARALLEL_END

@@ -1,5 +1,6 @@
 #include "IGraphics.h"
 
+#ifdef flagDX11
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -105,6 +106,18 @@ template<class Gfx> void D11GfxT<Gfx>::SetViewport(Size sz) {TODO}
 //template<class Gfx> void D11GfxT<Gfx>::ActivateNextFrame() {TODO}
 template<class Gfx> void D11GfxT<Gfx>::SetDebugOutput(bool b) {TODO}
 
+template<class Gfx> void D11GfxT<Gfx>::ClearFramebufferRef(NativeFrameBufferRef& fb) {
+	fb.Reset();
+}
+
+template<class Gfx> void D11GfxT<Gfx>::ClearColorBufferRef(NativeColorBufferRef& b) {
+	b.Reset();
+}
+
+template<class Gfx> void D11GfxT<Gfx>::ClearDepthBufferRef(NativeDepthBufferRef& b) {
+	b.Reset();
+}
+
 template<class Gfx> Serial::FboFormat& D11GfxT<Gfx>::GetFormat(Parallel::Format& fmt) {TODO}
 
 #if defined flagWIN32 && defined flagDX11
@@ -120,9 +133,18 @@ void WinD11Gfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRende
 
 Size DxGfx::GetWindowSize(NativeWindow& win) {TODO}
 bool DxGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend) {TODO}
-void DxGfx::SetTitle(NativeDisplay& display, NativeWindow& win, String title) {TODO}
+
+void DxGfx::SetTitle(NativeDisplay& display, NativeWindow& win, String title) {
+	SetWindowTextA(win, title.Begin());
+}
+
 void DxGfx::SetWindowFullscreen(NativeWindow& win, bool b) {TODO}
 void DxGfx::DestroyRenderer(NativeRenderer& rend) {TODO}
+
+void DxGfx::ClearRendererRef(NativeRenderer& rend) {
+	rend.Reset();
+}
+
 void DxGfx::DestroyWindow(NativeWindow& win) {TODO}
 void DxGfx::DeleteContext(NativeGLContext& ctx) {TODO}
 void DxGfx::MaximizeWindow(NativeWindow& win) {TODO}
@@ -130,4 +152,7 @@ void DxGfx::RestoreWindow(NativeWindow& win) {TODO}
 void DxGfx::SetWindowPosition(NativeWindow& win, Point pt) {TODO}
 void DxGfx::SetWindowSize(NativeWindow& win, Size sz) {TODO}
 
+
 NAMESPACE_PARALLEL_END
+
+#endif

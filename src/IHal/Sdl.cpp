@@ -831,7 +831,7 @@ bool HalSdl::CenterFboSinkDevice_PostInitialize(NativeCenterFboSinkDevice& dev, 
 	if (is_fullscreen)
 		SDL_SetWindowFullscreen(dev.win, SDL_WINDOW_FULLSCREEN);
 	
-	return true;
+	return dev.accel.PostInitialize();
 }
 
 bool HalSdl::CenterFboSinkDevice_Start(NativeCenterFboSinkDevice& dev, AtomBase& a) {
