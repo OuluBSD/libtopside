@@ -996,7 +996,7 @@ template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
 template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 
 template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
-	// pass2
+	// pass
 }
 
 template <class Gfx> void OglGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef b) {

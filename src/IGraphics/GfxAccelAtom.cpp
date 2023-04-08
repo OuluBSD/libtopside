@@ -86,7 +86,7 @@ bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
 #if defined flagWIN32 && defined flagDX11
 template <>
 void GfxAccelAtom<WinD11Gfx>::GfxFlags(uint32& flags) {
-	is_sw = false;
+	is_dx11 = true;
 }
 
 template <>
@@ -96,6 +96,8 @@ bool GfxAccelAtom<WinD11Gfx>::GfxRenderer() {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> clr;
 	HRESULT hr = S_OK;
 	
+	
+	// Create the backbuffer
     hr = fb->GetBuffer(
         0,
         __uuidof(ID3D11Texture2D),
@@ -108,8 +110,15 @@ bool GfxAccelAtom<WinD11Gfx>::GfxRenderer() {
     screen_sz.cx = impl.m_bbDesc.Width;
     screen_sz.cy = impl.m_bbDesc.Height;
     
-    TODO
     
+    // Create the render target view based on the back buffer
+    hr = display->CreateRenderTargetView(
+        clr.Get(),
+        nullptr,
+        impl.m_pRenderTarget.GetAddressOf()
+    );
+	
+	
 	rend.output.Init(fb, clr, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend.output.SetWindowFbo();
 	
@@ -425,7 +434,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 template <class Gfx>
 Draw& GfxAccelAtom<Gfx>::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
-	if (is_opengl || is_sw) {
+	if (is_opengl || is_sw || is_dx11) {
 	    rend.display = display;
 	    rend.win = win;
 	    rend.rend = nat_rend;
@@ -435,9 +444,9 @@ Draw& GfxAccelAtom<Gfx>::BeginDraw() {
 	    
 	    rend.PreFrame();
 	}
-	else if (is_dx11) {
+	/*else if (is_dx11) {
 		TODO
-	}
+	}*/
 	else {
 		Panic("Screen internal error");
 	}

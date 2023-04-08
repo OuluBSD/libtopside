@@ -416,7 +416,8 @@ struct Dx11FramebufferBase;
 struct Dx11BufferBase;
 
 struct D11GfxImpl {
-    D3D11_TEXTURE2D_DESC    m_bbDesc;
+    D3D11_TEXTURE2D_DESC			m_bbDesc;
+    ComPtr<ID3D11RenderTargetView>	m_pRenderTarget;
     
     
 };

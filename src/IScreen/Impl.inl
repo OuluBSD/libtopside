@@ -510,7 +510,7 @@ HRESULT DeviceResources::CreateDeviceResources()
     // from the API default. It is required for compatibility with Direct2D.
     UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
-#if defined(DEBUG) || defined(_DEBUG)
+#if defined(DEBUG) || defined(_DEBUG) || defined flagDEBUG
     deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -604,13 +604,13 @@ HRESULT DeviceResources::ConfigureBackBuffer()
         (void**) &m_pBackBuffer);
 
     m_pBackBuffer->GetDesc(&m_bbDesc);
-    */
+    
     hr = m_pd3dDevice->CreateRenderTargetView(
         m_pBackBuffer.Get(),
         nullptr,
         m_pRenderTarget.GetAddressOf()
         );
-
+	*/
 
     // Create a depth-stencil view for use with 3D rendering if needed.
     CD3D11_TEXTURE2D_DESC depthStencilDesc(
@@ -634,7 +634,7 @@ HRESULT DeviceResources::ConfigureBackBuffer()
         m_pDepthStencil.Get(),
         &depthStencilViewDesc,
         &m_pDepthStencilView
-        );
+        );§
 
 
     ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));

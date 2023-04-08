@@ -16,7 +16,11 @@ template<class Gfx> void D11GfxT<Gfx>::BindRenderbuffer(NativeDepthBufferRef rb)
 template<class Gfx> void D11GfxT<Gfx>::UnbindRenderbuffer() {TODO}
 template<class Gfx> void D11GfxT<Gfx>::RenderbufferStorage(Size sz) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::UnbindProgramPipeline() {TODO}
-template<class Gfx> void D11GfxT<Gfx>::BindFramebufferDefault() {TODO}
+
+template<class Gfx> void D11GfxT<Gfx>::BindFramebufferDefault() {
+	TODO
+}
+
 template<class Gfx> void D11GfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {TODO}
 //template<class Gfx> void D11GfxT<Gfx>::SetRender_Color() {TODO}
 template<class Gfx> void D11GfxT<Gfx>::RenderScreenRect() {TODO}
@@ -45,7 +49,12 @@ template<class Gfx> bool D11GfxT<Gfx>::LinkProgram(NativeProgram& prog) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {TODO}
 template<class Gfx> String D11GfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::Clear(GVar::BufferType type) {TODO}
-template<class Gfx> void D11GfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {TODO}
+
+template<class Gfx> void D11GfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {
+	// pass
+	// Pipeline is tied to the ID3D11DeviceContext, which has been created in the atom
+}
+
 template<class Gfx> void D11GfxT<Gfx>::UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pipe) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::TexParameteri(GVar::TextureMode type, GVar::Filter filter, GVar::Wrap repeat) {TODO}
@@ -75,7 +84,11 @@ template<class Gfx> void D11GfxT<Gfx>::TexImage2D(FloatImage& tex) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::DeleteFramebuffer(NativeFrameBufferRef& b) {TODO}
-template<class Gfx> void D11GfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {TODO}
+
+template<class Gfx> void D11GfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBufferRef fb) {
+	// pass
+}
+
 template<class Gfx> void D11GfxT<Gfx>::BeginRender() {TODO}
 template<class Gfx> void D11GfxT<Gfx>::EndRender() {TODO}
 template<class Gfx> void D11GfxT<Gfx>::BeginRenderObject() {TODO}
@@ -104,7 +117,10 @@ template<class Gfx> void D11GfxT<Gfx>::SetTriangleBacksideCulling(bool b) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::SetTriangleFrontsideCCW(bool b) {TODO}
 template<class Gfx> void D11GfxT<Gfx>::SetViewport(Size sz) {TODO}
 //template<class Gfx> void D11GfxT<Gfx>::ActivateNextFrame() {TODO}
-template<class Gfx> void D11GfxT<Gfx>::SetDebugOutput(bool b) {TODO}
+
+template<class Gfx> void D11GfxT<Gfx>::SetDebugOutput(bool b) {
+	// unfortunately not supported
+}
 
 template<class Gfx> void D11GfxT<Gfx>::ClearFramebufferRef(NativeFrameBufferRef& fb) {
 	fb.Reset();
