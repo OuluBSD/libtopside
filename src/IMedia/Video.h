@@ -14,6 +14,10 @@ public:
 
 template <class Backend>
 class VideoSourceFormatResolutionT {
+	
+protected:
+	friend class V4L2_DeviceManager;
+	
 	VideoFormat		fmt;
 	
 public:
@@ -26,6 +30,10 @@ public:
 
 template <class Backend>
 class VideoSourceFormatT {
+	
+protected:
+	friend class V4L2_DeviceManager;
+	
 	using VideoCodecFormat = VideoCodecFormatT<Backend>;
 	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<Backend>;
 	

@@ -21,7 +21,7 @@ public:
 };
 
 inline float Noise::Tick() {
-	return last_frame_[0] = (float) ( 2.0 * rand() / (RAND_MAX + 1.0f) - 1.0f );
+	return last_frame_[0] = (float) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
 }
 
 inline AudioFrames& Noise::Tick( AudioFrames& frames, int channel ) {
@@ -37,7 +37,7 @@ inline AudioFrames& Noise::Tick( AudioFrames& frames, int channel ) {
 	int step = frames.GetChannelCount();
 
 	for ( int i = 0; i < frames.GetFrameCount(); i++, samples += step )
-		* samples = (float) ( 2.0 * rand() / (RAND_MAX + 1.0f) - 1.0f );
+		* samples = (float) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
 
 	last_frame_[0] = *(samples - step);
 	return frames;

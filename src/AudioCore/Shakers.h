@@ -101,15 +101,15 @@ inline float Shakers::TickEqualize( float input ) {
 }
 
 inline int Shakers::RandomInt( int max ) {
-	return (int) ((float)max * rand() / (RAND_MAX + 1.0f) );
+	return (int) (max * rand() / (RAND_MAX + 1.0) );
 }
 
 inline float Shakers::RandomFloat( float max ) {
-	return (float) (max * rand() / (RAND_MAX + 1.0f) );
+	return (float) (max * rand() / (RAND_MAX + 1.0) );
 }
 
 inline float Shakers::GetNoise() {
-	return ( (float) ( 2.0 * rand() / (RAND_MAX + 1.0f) ) - 1.0f );
+	return ( (float) ( 2.0 * rand() / (RAND_MAX + 1.0) ) - 1.0 );
 }
 
 const float MIN_ENERGY = 0.001f;

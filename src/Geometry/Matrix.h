@@ -456,7 +456,7 @@ struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 	void Zero()  {for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) data[i].data[j] = 0;}
 	
 	template <class M> void CopyTo(M& o) const {
-		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) o.data[i].data[j] = (M::Unit)data[i].data[j];
+		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) o.data[i].data[j] = (typename M::Unit)data[i].data[j];
 	}
 	
 	Matrix& Transpose() {

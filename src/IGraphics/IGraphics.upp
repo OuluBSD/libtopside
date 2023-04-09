@@ -7,8 +7,9 @@ uses
 	Geometry,
 	ParallelLib,
 	ports/MingwDx,
-	SoftRend,
-	DxUtil;
+	SoftRend;
+
+uses(DX9 DX11 WIN32) DxUtil;
 
 uses(WIN32 & GCC) ports/glew;
 
