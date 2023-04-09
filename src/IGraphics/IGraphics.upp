@@ -9,8 +9,6 @@ uses
 	ports/MingwDx,
 	SoftRend;
 
-uses(DX9 DX11 WIN32) DxUtil;
-
 uses(WIN32 & GCC) ports/glew;
 
 uses(WIN32 & MSC) ports/glext;

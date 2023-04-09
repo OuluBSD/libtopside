@@ -1,7 +1,7 @@
 description "\377B80,58,119";
 
-	uses ParallelLib;
-
+uses
+	ParallelLib;
 
 file
 	IAudioFileOut.h,
@@ -9,4 +9,5 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-        "" = "";
+	"" = "";
+

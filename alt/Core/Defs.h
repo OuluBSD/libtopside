@@ -12,7 +12,7 @@
 #else
 	#ifdef flagWIN32
 		#include <ws2tcpip.h>
-		#include <windows.h>
+		#include <Windows.h>
 		#include <winsock2.h>
 		#if defined flagAMP
 			#include <amp.h>
