@@ -1342,6 +1342,10 @@ set ( UPP_EXTRA_INCLUDE ${PROJECT_EXTRA_INCLUDE} )
 set ( PROJECT_INC_DIR \${PROJECT_BINARY_DIR}/inc )
 set ( PROJECT_PCH_DIR \${PROJECT_BINARY_DIR}/pch )
 
+if ( MSVC )
+SET ( CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} /std:c++17 /await /AI\"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\UnionMetadata\\\\10.0.22000.0\\\\Facade;D:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\IDE\\\\VC\\\\vcpackages\"" CACHE STRING "compile flags" FORCE)
+endif()
+
 # Set the default include directory for the whole project
 include_directories ( BEFORE \${UPP_SOURCE_DIRECTORY} )
 include_directories ( BEFORE \${PROJECT_INC_DIR} \${UPP_EXTRA_INCLUDE} )
@@ -1424,7 +1428,7 @@ if ( ENABLE_CLANG_TIDY )
     endif()
 endif()
 
-# Extra compilation and link flags
+# Extra compilation and link 
 set ( PROJECT_EXTRA_COMPILE_FLAGS "${PROJECT_EXTRA_COMPILE_FLAGS}" )
 message ( STATUS "Extra compilation flags: \${PROJECT_EXTRA_COMPILE_FLAGS}" )
 set ( PROJECT_EXTRA_LINK_FLAGS "${PROJECT_EXTRA_LINK_FLAGS}" )
@@ -1824,7 +1828,7 @@ if ( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG )
 
 elseif ( MSVC )
   set ( CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} -nologo" )
-
+    
   if ( "\${FlagDefs}" MATCHES "flagEVC(;|$)" )
       if ( NOT "\${FlagDefs}" MATCHES "flagSH3(;|$)" AND NOT "\${FlagDefs}" MATCHES "flagSH4(;|$)" )
           # disable stack checking
@@ -1839,7 +1843,7 @@ elseif ( MSVC )
   else()
       set ( EXTRA_MSVC_FLAGS "\${EXTRA_MSVC_FLAGS} -GX" )
   endif()
-
+	
   if ( \${CMAKE_BUILD_TYPE} STREQUAL DEBUG )
       set ( EXTRA_MSVC_FLAGS_Mx "d" )
   endif()

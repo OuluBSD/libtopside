@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
+# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -24,7 +24,7 @@ if ((DEFINED flagBUILTIN_PORTAUDIO))
   list ( APPEND IAudio_DEPEND_LIST ports_portaudio-lib )
 endif()
 
-# library(PORTAUDIO) "portaudio";
+# library(PORTAUDIO) portaudio;
 if ((DEFINED flagPORTAUDIO))
   list ( APPEND LINK_LIST portaudio )
 endif()

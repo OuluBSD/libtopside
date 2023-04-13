@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
+# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -35,6 +35,10 @@ set ( UPP_EXTRA_INCLUDE ./alt )
 set ( PROJECT_INC_DIR ${PROJECT_BINARY_DIR}/inc )
 set ( PROJECT_PCH_DIR ${PROJECT_BINARY_DIR}/pch )
 
+if ( MSVC )
+SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /await /AI\"C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.22000.0\\Facade;D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\vcpackages\"" CACHE STRING "compile flags" FORCE)
+endif()
+
 # Set the default include directory for the whole project
 include_directories ( BEFORE ${UPP_SOURCE_DIRECTORY} )
 include_directories ( BEFORE ${PROJECT_INC_DIR} ${UPP_EXTRA_INCLUDE} )
@@ -47,7 +51,7 @@ include_directories ( BEFORE ${CMAKE_SOURCE_DIR}/./reference )
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
 
 # Project definitions
-add_definitions ( -DflagMSC19X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX11 -DflagVR -DflagUWP -DflagGNUC14 -DflagMP -DflagPCH )
+add_definitions ( -DflagMSC22X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX12 -DflagVR -DflagUWP -DflagGNUC14 -DflagMP -DflagPCH )
 
 # Option to distinguish whether to build binary with removed unused code and functions
 option ( REMOVE_UNUSED_CODE "Build binary with removed unused code and functions." ON )
@@ -107,7 +111,7 @@ if ( ENABLE_CLANG_TIDY )
     endif()
 endif()
 
-# Extra compilation and link flags
+# Extra compilation and link 
 set ( PROJECT_EXTRA_COMPILE_FLAGS "-I/usr/include/opencv4" )
 message ( STATUS "Extra compilation flags: ${PROJECT_EXTRA_COMPILE_FLAGS}" )
 set ( PROJECT_EXTRA_LINK_FLAGS "" )
@@ -507,7 +511,7 @@ if ( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG )
 
 elseif ( MSVC )
   set ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -nologo" )
-
+    
   if ( "${FlagDefs}" MATCHES "flagEVC(;|$)" )
       if ( NOT "${FlagDefs}" MATCHES "flagSH3(;|$)" AND NOT "${FlagDefs}" MATCHES "flagSH4(;|$)" )
           # disable stack checking
@@ -522,7 +526,7 @@ elseif ( MSVC )
   else()
       set ( EXTRA_MSVC_FLAGS "${EXTRA_MSVC_FLAGS} -GX" )
   endif()
-
+	
   if ( ${CMAKE_BUILD_TYPE} STREQUAL DEBUG )
       set ( EXTRA_MSVC_FLAGS_Mx "d" )
   endif()
@@ -726,6 +730,7 @@ add_subdirectory ( ./src/EcsMinimal ${CMAKE_CURRENT_BINARY_DIR}/EcsMinimal )
 add_subdirectory ( ./src/EcsAudioCore ${CMAKE_CURRENT_BINARY_DIR}/EcsAudioCore )
 add_subdirectory ( ./src/EcsCtrl ${CMAKE_CURRENT_BINARY_DIR}/EcsCtrl )
 add_subdirectory ( ./src/EcsVR ${CMAKE_CURRENT_BINARY_DIR}/EcsVR )
+add_subdirectory ( ./src/EcsWin ${CMAKE_CURRENT_BINARY_DIR}/EcsWin )
 add_subdirectory ( ./src/Local ${CMAKE_CURRENT_BINARY_DIR}/Local )
 add_subdirectory ( ./src/Geometry ${CMAKE_CURRENT_BINARY_DIR}/Geometry )
 add_subdirectory ( ./src/MidiFile ${CMAKE_CURRENT_BINARY_DIR}/MidiFile )
@@ -744,6 +749,7 @@ add_subdirectory ( ./src/DesktopSuite ${CMAKE_CURRENT_BINARY_DIR}/DesktopSuite )
 add_subdirectory ( ./src/EcsPhysics ${CMAKE_CURRENT_BINARY_DIR}/EcsPhysics )
 add_subdirectory ( ./src/GraphLib ${CMAKE_CURRENT_BINARY_DIR}/GraphLib )
 add_subdirectory ( ./src/AtomVR ${CMAKE_CURRENT_BINARY_DIR}/AtomVR )
+add_subdirectory ( ./src/ports/DirectXTK ${CMAKE_CURRENT_BINARY_DIR}/ports/DirectXTK )
 add_subdirectory ( ./alt/Core ${CMAKE_CURRENT_BINARY_DIR}/Core )
 add_subdirectory ( ./alt/Draw ${CMAKE_CURRENT_BINARY_DIR}/Draw )
 add_subdirectory ( ./src/SharedCore ${CMAKE_CURRENT_BINARY_DIR}/SharedCore )
@@ -906,7 +912,7 @@ else()
 endif()
 
 # Main program dependecies
-set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomHandle-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;DesktopSuite-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVR-lib;GLDraw-lib;Geometry-lib;GraphLib-lib;GuboCore-lib;GuboLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui-lib;VirtualGui_Atom-lib;VirtualGui3D-lib;plugin_z-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_md5-lib;ports_mikktspace-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;" )
+set ( Shell_DEPEND_LIST "Shell-lib;Agent-lib;AtomAudio-lib;AtomHandle-lib;AtomLocal-lib;AtomMinimal-lib;AtomVR-lib;AudioCore-lib;AudioHost-lib;Backend-lib;Complete-lib;Core-lib;CtrlCore-lib;CtrlLib-lib;DesktopSuite-lib;Draw-lib;EcsAudioCore-lib;EcsComplete-lib;EcsCore-lib;EcsCtrl-lib;EcsLib-lib;EcsLocal-lib;EcsMach-lib;EcsMinimal-lib;EcsPhysics-lib;EcsVR-lib;EcsWin-lib;GLDraw-lib;Geometry-lib;GraphLib-lib;GuboCore-lib;GuboLib-lib;High-lib;HighAnim-lib;HighLib-lib;IAudio-lib;IAudioFileOut-lib;ICamera-lib;IEffect-lib;IGraphics-lib;IHal-lib;IHolograph-lib;IMedia-lib;IMidiFile-lib;IMidiHw-lib;IScreen-lib;ISynth-lib;IVolumetric-lib;Local-lib;LocalCtrl-lib;LocalHMD-lib;LocalPlan-lib;MidiFile-lib;ParallelCore-lib;ParallelLib-lib;ParallelMach-lib;Physics-lib;RTTI-lib;SerialCore-lib;SerialLib-lib;SerialMach-lib;SerialScript-lib;Shadertoy-lib;SharedCore-lib;SoftInstru-lib;SoftPhys-lib;SoftRend-lib;SoftSynth-lib;StaticInterface-lib;Structural-lib;VirtualGui-lib;VirtualGui_Atom-lib;VirtualGui3D-lib;plugin_z-lib;ports_DirectXTK-lib;ports_MingwDx-lib;ports_MingwThreads-lib;ports_assimp-lib;ports_bz2lib-lib;ports_fluidlite-lib;ports_glew-lib;ports_glext-lib;ports_hcidump-lib;ports_irrxml-lib;ports_lilv-lib;ports_md5-lib;ports_mikktspace-lib;ports_modernjson-lib;ports_poly2tri-lib;ports_portaudio-lib;ports_portmidi-lib;ports_rapidjson-lib;ports_serd-lib;ports_sord-lib;ports_sratom-lib;ports_stb-lib;ports_tiny_gltf-lib;ports_unzip-lib;ports_utf8-lib;ports_zix-lib;" )
 
 add_dependencies ( Shell-bin ${Shell_DEPEND_LIST} )
 if ( DEFINED MAIN_TARGET_LINK_FLAGS )

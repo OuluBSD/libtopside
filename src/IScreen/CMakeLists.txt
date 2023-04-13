@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
+# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,7 +29,7 @@ if ((DEFINED flagPOSIX AND DEFINED flagOGL AND NOT DEFINED flagEMSCRIPTEN))
   list ( APPEND LINK_LIST GLX GL GLU GLEW glut )
 endif()
 
-# library(WIN32 & DX11) "D3D11";
+# library(WIN32 & DX11) D3D11;
 if ((WIN32 AND DEFINED flagDX11))
   list ( APPEND LINK_LIST D3D11 )
 endif()

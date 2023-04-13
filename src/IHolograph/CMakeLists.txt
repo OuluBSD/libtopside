@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
+# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,8 +19,8 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# uses(LINUX) ports/hcidump;
-if ((DEFINED flagLINUX))
+# uses(LINUX HACK) ports/hcidump;
+if ((DEFINED flagLINUX AND DEFINED flagHACK))
   list ( APPEND IHolograph_DEPEND_LIST ports_hcidump-lib )
 endif()
 

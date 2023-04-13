@@ -13,7 +13,7 @@ UPP_SRC_BASE="."
 UPP_SRC_DIR="${UPP_SRC_BASE}/src"
 PROJECT_EXTRA_INCLUDE_DIR="${UPP_SRC_BASE}/alt" # this can be changed to u++'s uppsrc directory
 PROJECT_NAME="${UPP_SRC_BASE}/reference/Shell/Shell.upp"
-PROJECT_FLAGS="-DflagMSC19X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX11 -DflagVR -DflagUWP"
+PROJECT_FLAGS="-DflagMSC22X64 -DflagMSC -DflagWIN32 -DflagGUI -DflagSCREEN -DflagDX12 -DflagVR -DflagUWP"
 PROJECT_EXTRA_COMPILE_FLAGS="-I/usr/include/opencv4"
 PROJECT_EXTRA_LINK_FLAGS=""
 

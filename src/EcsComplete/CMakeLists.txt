@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Wed Apr  5 12:23:14 EEST 2023
+# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -27,6 +27,11 @@ endif()
 # uses(VR) EcsVR;
 if ((DEFINED flagVR))
   list ( APPEND EcsComplete_DEPEND_LIST EcsVR-lib )
+endif()
+
+# uses(DX12) EcsWin;
+if ((DEFINED flagDX12))
+  list ( APPEND EcsComplete_DEPEND_LIST EcsWin-lib )
 endif()
 
 list ( APPEND HEADER_LIST

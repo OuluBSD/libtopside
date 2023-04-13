@@ -109,7 +109,7 @@ inline float Shakers::RandomFloat( float max ) {
 }
 
 inline float Shakers::GetNoise() {
-	return ( (float) ( 2.0 * rand() / (RAND_MAX + 1.0) ) - 1.0 );
+	return (float) ( ( 2.0 * rand() / (RAND_MAX + 1.0) ) - 1.0 );
 }
 
 const float MIN_ENERGY = 0.001f;

@@ -10,6 +10,8 @@ uses(GUI) EcsCtrl;
 
 uses(VR) EcsVR;
 
+uses(DX12) EcsWin;
+
 file
 	EcsComplete.h,
 	EcsComplete.cpp;

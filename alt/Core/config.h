@@ -207,17 +207,21 @@
 		#define _X86_ 1
 	#endif
 	
-	#ifdef flagWIN10
-		#define _WIN32_WINNT   _WIN32_WINNT_WIN10
-		#undef NTDDI_VERSION
-		#define NTDDI_VERSION   NTDDI_WIN10_19H1
+	#ifdef flagUWP
+		#define _WIN32_WINNT    _WIN32_WINNT_WIN10
+		#define  WINAPI_FAMILY   WINAPI_FAMILY_DESKTOP_APP
+		#undef   NTDDI_VERSION
+		#define  NTDDI_VERSION   NTDDI_WINBLUE
+	#elif defined flagWIN10
+		#define _WIN32_WINNT    _WIN32_WINNT_WIN10
+		#undef   NTDDI_VERSION
+		#define  NTDDI_VERSION   NTDDI_WIN10_19H1
 	#elif defined flagWINXP
-		#define _WIN32_WINNT   _WIN32_WINNT_WINXP
+		#define _WIN32_WINNT    _WIN32_WINNT_WINXP
 	#else
-		#define _WIN32_WINNT   _WIN32_WINNT_VISTA
-		#undef NTDDI_VERSION
-		#define NTDDI_VERSION   NTDDI_VISTA
+		#define  NTDDI_VERSION   NTDDI_VISTA
 	#endif
+	
 #endif
 
 #ifdef  flagCLR
