@@ -269,8 +269,6 @@ public:
 	StringT& operator << (const StringT& s) { Cat(s); return *this; }
 	StringT& operator << (int i) { Cat(IntStr(i)); return *this; }
 	StringT& operator << (double d);
-	StringT operator + (const StringT& s) { StringT out(*this); out.Cat(s); return out; }
-	StringT operator + (T chr) { StringT out(*this); out.Cat(chr); return out; }
 
 	static int OctInt(const StringT& s) { return CharOctInt(s.Begin()); }
 	static int BinInt(const StringT& s) { return CharBinInt(s.Begin()); }
@@ -319,8 +317,13 @@ public:
 	
 	Std ToStd();
 	
+	friend StringT operator+(const StringT& a, const StringT& b);
+	friend StringT operator+(const StringT& s, const T*);
+	friend StringT operator+(const T* chr, const StringT& s);
+	
 };
 
+	
 
 #if 0
 typedef StringT<char> String;

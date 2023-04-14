@@ -203,7 +203,7 @@ AstNode* AstRunner::VisitMetaIf(const AstNode& n) {
 	d->type = closest_type;
 	PushScope(*d, true);
 	
-	AstNode* dup_block;
+	AstNode* dup_block = 0;
 	bool b = cond_val->obj.ToBool();
 	if (b) {
 		block->locked = true;

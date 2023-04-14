@@ -75,7 +75,7 @@ struct ScrX11Ogl {
 	
 };
 #endif
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 struct ScrWin {
 	struct NativeSinkDevice;
 	struct NativeContext;
@@ -293,7 +293,7 @@ using X11OglSinkDevice = ScreenSinkDeviceT<ScrX11Ogl>;
 using X11OglContext = ScreenContextT<ScrX11Ogl>;
 using X11OglEventsBase = ScreenEventsBaseT<ScrX11Ogl>;
 #endif
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 using WinSinkDevice = ScreenSinkDeviceT<ScrWin>;
 using WinContext = ScreenContextT<ScrWin>;
 using WinEventsBase = ScreenEventsBaseT<ScrWin>;

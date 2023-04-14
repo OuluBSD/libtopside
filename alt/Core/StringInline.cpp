@@ -300,5 +300,13 @@ TMPL(void) Copy(T* dst, const T* src)
 template class StringT <char>;
 template class StringT <wchar_t>;
 
-	
+
+String operator+(const String& a, const String& b) { String out(a); out.Cat(b); return out; }
+String operator+(const String& s, const char* chr) { String out(s); out.Cat(chr); return out; }
+String operator+(const char* chr, const String& s) { String out; out.Cat(chr); out.Cat(s); return out; }
+WString operator+(const WString& a, const WString& b) { WString out(a); out.Cat(b); return out; }
+WString operator+(const WString& s, const wchar* chr) { WString out(s); out.Cat(chr); return out; }
+WString operator+(const wchar* chr, const WString& s) { WString out; out.Cat(chr); out.Cat(s); return out; }
+
+
 NAMESPACE_UPP_END

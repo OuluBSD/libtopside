@@ -34,7 +34,7 @@
  * requested that these non-binding requests be included along with the 
  * license above.
  */
-#ifdef flagWIN32
+#if defined flagWIN32 && !defined flagUWP
 
 #include <windows.h>
 #include <mmreg.h>

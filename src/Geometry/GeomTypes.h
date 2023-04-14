@@ -189,6 +189,9 @@ struct Ray {
 	inline Ray() : direction(0.0f, 0.0f, 1.0f) {}
 	inline Ray(const vec3& o, const vec3& d) : origin(o), direction(d) {direction.Normalize();}
 	inline void NormalizeDirection() {direction.Normalize();}
+	
+	bool operator==(const Ray& s) const {return s.origin == origin && s.direction == direction;}
+	
 };
 
 struct Sphere {
@@ -201,6 +204,8 @@ struct Sphere {
 	bool Contains(const AABB& p) const;
 	bool Intersects(const AABB& o) const;
 	bool Intersects(const OBB& o) const;
+	
+	bool operator==(const Sphere& s) const {return s.position == position && s.radius == radius;}
 	
 };
 
@@ -216,6 +221,9 @@ struct AABB {
 	bool Intersects(const Sphere& o) const;
 	
 	String ToString() const {return position.ToString() + ", " + size.ToString();}
+	
+	bool operator==(const AABB& s) const {return s.position == position && s.size == size;}
+	
 };
 
 struct OBB : Moveable<OBB> {
@@ -230,6 +238,8 @@ struct OBB : Moveable<OBB> {
 	bool Contains(const vec3& p) const;
 	bool Intersects(const Sphere& o) const;
 	
+	bool operator==(const OBB& s) const {return s.position == position && s.size == size && s.orientation == orientation;}
+	
 };
 
 struct Plane : Moveable<Plane> {
@@ -238,6 +248,9 @@ struct Plane : Moveable<Plane> {
 
 	inline Plane() : normal(1, 0, 0) {}
 	inline Plane(const vec3& n, float d) : normal(n), distance(d) {}
+	
+	bool operator==(const Plane& s) const {return s.normal == normal && s.distance == distance;}
+	
 };
 
 struct RaycastResult : Moveable<RaycastResult> {
@@ -245,6 +258,9 @@ struct RaycastResult : Moveable<RaycastResult> {
 	vec3 normal;
 	float t;
 	bool hit;
+	
+	bool operator==(const RaycastResult& s) const {return s.point == point && s.normal == normal && s.t == t && s.hit == hit;}
+	
 };
 
 

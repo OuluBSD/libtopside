@@ -51,8 +51,8 @@ public:
 	
 	using Parent = Engine;
 	using Factory = EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
-	template<typename T> using IsComponent = std::is_base_of<Base, T>;
-	template<typename T> using IsConnector = std::is_base_of<Base, T>;
+	template<typename T> using IsComponent = ::std::is_base_of<ComponentBase, T>;
+	template<typename T> using IsConnector = ::std::is_base_of<ComponentBase, T>;
 	
 	template <class T>
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}

@@ -208,8 +208,13 @@
 	#endif
 	
 	#ifdef flagUWP
+		#define _UNICODE         1
+		#define  UNICODE         1
 		#define _WIN32_WINNT    _WIN32_WINNT_WIN10
-		#define  WINAPI_FAMILY   WINAPI_FAMILY_DESKTOP_APP
+		#if WINAPI_FAMILY != WINAPI_FAMILY_APP
+			#define  WINAPI_FAMILY   WINAPI_FAMILY_APP
+		#endif
+		#define  __WRL_NO_DEFAULT_LIB__   1
 		#undef   NTDDI_VERSION
 		#define  NTDDI_VERSION   NTDDI_WINBLUE
 	#elif defined flagWIN10
@@ -220,6 +225,7 @@
 		#define _WIN32_WINNT    _WIN32_WINNT_WINXP
 	#else
 		#define  NTDDI_VERSION   NTDDI_VISTA
+		#define _WIN32_WINNT    _WIN32_WINNT_VISTA
 	#endif
 	
 #endif

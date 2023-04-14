@@ -44,7 +44,8 @@
  @ingroup hostapi_src
 */
 
-#ifdef flagWIN32
+#if defined flagWIN32 && !defined flagUWP
+
 #include "pa_win_ds_dynlink.h"
 #include "pa_debugprint.h"
 

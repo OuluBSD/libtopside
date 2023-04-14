@@ -95,10 +95,10 @@ INITBLOCK_(AtomMinimal) {
 	#if (defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL)
 	Factory::RegisterAtom<X11OglEventAtomPipe>();
 	#endif
-	#if (defined flagWIN32 && defined flagSCREEN)
+	#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 	Factory::RegisterAtom<WinContextAtom>();
 	#endif
-	#if (defined flagWIN32 && defined flagSCREEN)
+	#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 	Factory::RegisterAtom<WinVideoAtomPipe>();
 	#endif
 	Factory::RegisterAtom<DxCustomer>();

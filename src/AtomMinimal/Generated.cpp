@@ -1057,7 +1057,7 @@ AtomTypeCls X11OglEventAtomPipe::GetType() const {
 #endif
 
 
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 String WinContextAtom::GetAction() {
 	return "win.context";
 }
@@ -1085,7 +1085,7 @@ AtomTypeCls WinContextAtom::GetType() const {
 #endif
 
 
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 String WinVideoAtomPipe::GetAction() {
 	return "win.video.pipe";
 }

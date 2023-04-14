@@ -2,7 +2,7 @@
 
 NAMESPACE_UPP
 
-template <> String ValueTemplate<WString>::ToString() const {return ptr ? ptr->ToString() : "";}
+template <> String ValueTemplate<WString>::ToString() const {return ptr ? ptr->ToString() : String();}
 
 
 const Nuller Null;

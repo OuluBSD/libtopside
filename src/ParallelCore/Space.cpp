@@ -290,7 +290,7 @@ String Space::GetTreeString(int indent) {
 	String pre;
 	pre.Cat('\t', indent);
 	
-	s << ".." << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << "[" << (int)id << "]\n";
+	s << ".." << (name.IsEmpty() ? (String)"unnamed" : "\"" + name + "\"") << "[" << (int)id << "]\n";
 	
 	for (AtomBaseRef& a : atoms)
 		s << a->ToString();

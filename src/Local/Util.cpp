@@ -365,7 +365,7 @@ void CommandLineArguments::PrintHelp() {
 		CmdArg& a = args[i];
 		cout << "\t-" << a.key;
 		if (a.has_value)
-			cout << " " << (a.value_desc.IsEmpty() ? "value" : a.value_desc);
+			cout << " " << (a.value_desc.IsEmpty() ? (String)"value" : a.value_desc);
 		cout << ": " << a.desc << EOL;
 	}
 }

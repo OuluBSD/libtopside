@@ -46,7 +46,9 @@
    Defining PA_WIN_DS_USE_WMME_TIMER uses the old (pre-May 2011) behavior.
 */
 //#define PA_WIN_DS_USE_WMME_TIMER
-#ifdef flagWIN32
+
+#if defined flagWIN32 && !defined flagUWP
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h> /* strlen() */

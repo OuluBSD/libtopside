@@ -73,12 +73,20 @@ ASSIMP_API const aiExportFormatDesc* aiGetExportFormatDescription( size_t index)
 
     aiExportFormatDesc *desc = new aiExportFormatDesc;
     desc->description = new char[ strlen( orig->description ) + 1 ]();
+    #ifdef flagMSC
+    ::strncpy_s( (char*) desc->description, strlen( orig->description ), orig->description, 0x10000 );
+    desc->fileExtension = new char[ strlen( orig->fileExtension ) + 1 ]();
+    ::strncpy_s( ( char* ) desc->fileExtension, strlen( orig->fileExtension ), orig->fileExtension, 0x10000 );
+    desc->id = new char[ strlen( orig->id ) + 1 ]();
+    ::strncpy_s( ( char* ) desc->id, strlen( orig->id ), orig->id, 0x10000 );
+	#else
     ::strncpy( (char*) desc->description, orig->description, strlen( orig->description ) );
     desc->fileExtension = new char[ strlen( orig->fileExtension ) + 1 ]();
     ::strncpy( ( char* ) desc->fileExtension, orig->fileExtension, strlen( orig->fileExtension ) );
     desc->id = new char[ strlen( orig->id ) + 1 ]();
     ::strncpy( ( char* ) desc->id, orig->id, strlen( orig->id ) );
-
+	#endif
+	
     return desc;
 }
 

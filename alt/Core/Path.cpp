@@ -155,6 +155,8 @@ String GetHomeDirectory() {
 	struct passwd *pw = getpwuid(getuid());
 	String homedir = pw->pw_dir;
 	return homedir;
+	#elif defined flagUWP
+	TODO
 	#elif defined flagWIN32 && !defined flagGCC
 	char buff[255];
     SHGetSpecialFolderPathA(HWND_DESKTOP, buff, CSIDL_PROFILE, FALSE);
@@ -236,7 +238,11 @@ void RealizeDirectory(String dir) {
 }
 
 void DeleteFile(String path) {
+	#ifdef flagUWP
+	TODO
+	#else
 	unlink(path.Begin());
+	#endif
 }
 
 String AppendFileName(String a, String b) {

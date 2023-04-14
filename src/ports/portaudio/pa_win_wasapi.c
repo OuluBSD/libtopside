@@ -1406,11 +1406,14 @@ static HRESULT ActivateAudioInterface(const PaWasapiDeviceInfo *deviceInfo, IAud
 
 // ------------------------------------------------------------------------------------------
 #ifdef PA_WINRT
+#if defined flagWIN32 && !defined flagUWP
+
 static DWORD SignalObjectAndWait(HANDLE hObjectToSignal, HANDLE hObjectToWaitOn, DWORD dwMilliseconds, BOOL bAlertable)
 {
 	SetEvent(hObjectToSignal);
 	return WaitForSingleObjectEx(hObjectToWaitOn, dwMilliseconds, bAlertable);
 }
+#endif
 #endif
 
 // ------------------------------------------------------------------------------------------
@@ -1755,7 +1758,11 @@ PaError PaWasapi_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiInd
                         result = paInsufficientMemory;
                         goto error;
                     }
+                    #if flagUWP
+					_snprintf_s((char *)deviceInfo->name, MAX_STR_LEN - 1, "WASAPI_%s:%d", (i == 0 ? "Output" : "Input"), i);
+					#else
 					_snprintf((char *)deviceInfo->name, MAX_STR_LEN - 1, "WASAPI_%s:%d", (i == 0 ? "Output" : "Input"), i);
+					#endif
 					PA_DEBUG(("WASAPI:%d| name[%s]\n", i, deviceInfo->name));
 				}
 			#endif

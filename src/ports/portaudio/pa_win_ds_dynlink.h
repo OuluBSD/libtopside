@@ -47,6 +47,8 @@
 #ifndef INCLUDED_PA_DSOUND_DYNLINK_H
 #define INCLUDED_PA_DSOUND_DYNLINK_H
 
+#if defined flagWIN32 && !defined flagUWP
+
 /* on Borland compilers, WIN32 doesn't seem to be defined by default, which
     breaks dsound.h. Adding the define here fixes the problem. - rossb. */
 #ifdef __BORLANDC__
@@ -102,5 +104,5 @@ void PaWinDs_TerminateDSoundEntryPoints(void);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
+#endif
 #endif /* INCLUDED_PA_DSOUND_DYNLINK_H */

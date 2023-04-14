@@ -22,7 +22,7 @@ void InterfaceBuilder::AddScreen() {
 	Vendor("X11",		"POSIXDESKTOP&SCREEN");
 	Vendor("X11Sw",		"POSIXDESKTOP&SCREEN");
 	Vendor("X11Ogl",	"POSIXDESKTOP&SCREEN&OGL");
-	Vendor("Win",		"WIN32&SCREEN");
+	Vendor("Win",		"WIN32&SCREEN&!UWP");
 	//Vendor("WinSw",	"WIN32&SCREEN");
 	Vendor("WinD11",	"WIN32&SCREEN&DX11");
 	

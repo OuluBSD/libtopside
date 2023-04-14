@@ -160,8 +160,12 @@ void FileWrite::Open( String file_name, int channel_count, FileWrite::FILE_TYPE 
 bool FileWrite::SetRawFile( String file_name ) {
 	if ( file_name.Find( ".raw" ) == -1 ) file_name += ".raw";
 
+	#ifdef flagMSC
+	fopen_s(&fd_, file_name.Begin(), "wb" );
+	#else
 	fd_ = fopen( file_name.Begin(), "wb" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileWrite: could not create RAW file: " << file_name << '.');
 		return false;
@@ -185,8 +189,12 @@ bool FileWrite::SetRawFile( String file_name ) {
 bool FileWrite::SetWavFile( String file_name ) {
 	if ( file_name.Find( ".wav" ) == -1 ) file_name += ".wav";
 
+	#ifdef flagMSC
+	fopen_s(&fd_, file_name.Begin(), "wb" );
+	#else
 	fd_ = fopen( file_name.Begin(), "wb" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileWrite: could not create WAV file: " << file_name);
 		return false;
@@ -325,8 +333,12 @@ bool FileWrite::SetSndFile( String file_name ) {
 
 	if ( file_name.Find( ".snd" ) == -1 ) file_name += ".snd";
 
+	#ifdef flagMSC
+	fopen_s(&fd_, file_name.Begin(), "wb" );
+	#else
 	fd_ = fopen( file_name.Begin(), "wb" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileWrite: could not create SND file: " << file_name);
 		return false;
@@ -398,8 +410,12 @@ bool FileWrite::SetAifFile( String file_name ) {
 
 	if ( file_name.Find( ".aif" ) == -1 ) file_name += ".aif";
 
+	#ifdef flagMSC
+	fopen_s(&fd_, file_name.Begin(), "wb" );
+	#else
 	fd_ = fopen( file_name.Begin(), "wb" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileWrite: could not create AIF file: " << file_name);
 		return false;
@@ -555,8 +571,12 @@ void FileWrite::CloseAifFile() {
 bool FileWrite::SetMatFile( String file_name ) {
 	if ( file_name.Find( ".mat" ) == -1 ) file_name += ".mat";
 
+	#ifdef flagMSC
+	fopen_s(&fd_, file_name.Begin(), "w+b" );
+	#else
 	fd_ = fopen( file_name.Begin(), "w+b" );
-
+	#endif
+	
 	if ( !fd_ ) {
 		LOG("FileWrite: could not create MAT file: " << file_name);
 		return false;
@@ -570,8 +590,12 @@ bool FileWrite::SetMatFile( String file_name ) {
 
 	struct MatHeader hdr;
 
+	#ifdef flagMSC
+	strcpy_s( hdr.heading, "MATLAB 5.0 MAT-file, Generated using the Synthesis ToolKit in C++ (AUDIO). By Perry R. Cook and Gary P. Scavone." );
+	#else
 	strcpy( hdr.heading, "MATLAB 5.0 MAT-file, Generated using the Synthesis ToolKit in C++ (AUDIO). By Perry R. Cook and Gary P. Scavone." );
-
+	#endif
+	
 	for ( size_t i = strlen(hdr.heading); i < 124; i++ ) hdr.heading[i] = ' ';
 
 	hdr.hff[0] = (SINT16) 0x0100;

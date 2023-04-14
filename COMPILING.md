@@ -1,4 +1,13 @@
 ### In Windows (UWP)
+Theide build method:
+```
+Common options:
+/Zc:wchar_t /sdl /D "_UNICODE" /D "UNICODE" /D "_DEBUG" /D "WINAPI_FAMILY=WINAPI_FAMILY_APP" /D "__WRL_NO_DEFAULT_LIB__" /RTC1 /Gd /EHsc /TP /std:c++latest /FU"D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\lib\x86\store\references\platform.winmd"
+
+C++ options:
+/ZW:nostdlib
+```
+CMake:
 ```
 cmake -G "Visual Studio 17 2022" -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 ..
 ```

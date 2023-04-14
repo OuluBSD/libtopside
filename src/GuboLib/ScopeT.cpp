@@ -128,7 +128,7 @@ void ScopeT<Dim>::AddInterface(TopContainer& ts) {
 	WhenActiveHandleChanges();
 
 	String title = h.GetTitle();
-	h.Title(title.GetCount() ? title : "Unnamed");
+	h.Title(title.GetCount() ? title : String("Unnamed"));
 
 	this->Refresh();
 	h.Layout();

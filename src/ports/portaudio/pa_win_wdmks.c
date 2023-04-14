@@ -50,7 +50,7 @@ format conversion. That means that it will lock out all other users
 of a device for the duration of active stream using those devices
 */
 
-#ifdef flagWIN32
+#if defined flagWIN32 && !defined flagUWP
 
 #include <stdio.h>
 

@@ -45,7 +45,7 @@ public:
 	int64 GetCreatedTick() const {return created;}
 	int64 GetChangedTick() const {return changed;}
 	
-	String ToString() const {return IntStr64(id) + " " + prefab + (name.GetCount() ? ": " + name : "");}
+	String ToString() const {return IntStr64(id) + " " + prefab + (name.GetCount() ? ": " + name : String());}
 	String GetTreeString(int indent=0);
 	void SetName(String s) {name = s;}
 	void OnChange();

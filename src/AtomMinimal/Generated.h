@@ -540,7 +540,7 @@ public:
 };
 #endif
 
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 class WinContextAtom : public WinContext {
 
 public:
@@ -555,7 +555,7 @@ public:
 };
 #endif
 
-#if (defined flagWIN32 && defined flagSCREEN)
+#if (defined flagWIN32 && defined flagSCREEN && !defined flagUWP)
 class WinVideoAtomPipe : public WinSinkDevice {
 
 public:

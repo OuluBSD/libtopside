@@ -1372,7 +1372,11 @@ const char * BZ_API(BZ2_bzlibVersion)(void)
 #ifndef BZ_NO_STDIO
 /*---------------------------------------------------*/
 
-#if defined(_WIN32) || defined(OS2) || defined(MSDOS)
+#if defined flagMSC
+#   include <fcntl.h>
+#   include <io.h>
+#   define SET_BINARY_MODE(file) _setmode(_fileno(file),O_BINARY)
+#elif defined(_WIN32) || defined(OS2) || defined(MSDOS)
 #   include <fcntl.h>
 #   include <io.h>
 #   define SET_BINARY_MODE(file) setmode(fileno(file),O_BINARY)
@@ -1414,21 +1418,34 @@ BZFILE * bzopen_or_bzdopen
       }
       mode++;
    }
+   #ifdef flagMSC
+   strcat_s(mode2, 1, writing ? "w" : "r" );
+   strcat_s(mode2,1, "b");   /* binary mode */
+   #else
    strcat(mode2, writing ? "w" : "r" );
    strcat(mode2,"b");   /* binary mode */
+   #endif
 
    if (open_mode==0) {
       if (path==NULL || strcmp(path,"")==0) {
         fp = (writing ? stdout : stdin);
         SET_BINARY_MODE(fp);
       } else {
+        #ifdef flagMSC
+        fopen_s(fp, path,mode2);
+        #else
         fp = fopen(path,mode2);
+        #endif
       }
    } else {
 #ifdef BZ_STRICT_ANSI
       fp = NULL;
 #else
+      #ifdef flagMSC
+      fp = _fdopen(fd,mode2);
+      #else
       fp = fdopen(fd,mode2);
+      #endif
 #endif
    }
    if (fp == NULL) return NULL;

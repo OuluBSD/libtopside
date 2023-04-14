@@ -1,6 +1,6 @@
 #include "IScreen.h"
 
-#if (defined flagWIN32)
+#if defined flagWIN32 && !defined flagUWP
 
 
 #include <windows.h>

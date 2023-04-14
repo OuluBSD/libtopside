@@ -2,10 +2,11 @@ description "Classes for 2D/3D/etc operations.\377B128,0,54";
 
 uses
 	Local,
-	ports/tiny_gltf,
 	ports/mikktspace;
 
-uses(BUILTIN_ASSIMP | MSC | LINUX) ports/assimp;
+uses(!UWP) ports/tiny_gltf;
+
+uses(BUILTIN_ASSIMP | (MSC & !UWP) | LINUX) ports/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
 

@@ -96,7 +96,7 @@ void Hi::Run() {
 			
 			if (c.l ? !c.l->compiled && !c.l->escape : true) {
 				String code;
-				const char* filename = c.l ? c.l->filename : "expression";
+				String filename = c.l ? c.l->filename : (String)"expression";
 				int line = c.l ? c.l->line : 0;
 				
 				if (c.type == EVALX)	code = c.scope_l->def[c.parent_arg_i];

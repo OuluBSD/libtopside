@@ -1,8 +1,8 @@
 description "\377B54,157,42";
 
-uses
-	ParallelLib,
-	IMedia;
+	uses ParallelLib;
+	uses IMedia;
+
 
 file
 	ICamera.h,
@@ -10,5 +10,4 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-	"" = "";
-
+        "" = "";

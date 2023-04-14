@@ -11,7 +11,7 @@ uses
 
 uses(WIN32 & GCC) ports/glew;
 
-uses(WIN32 & MSC) ports/glext;
+uses(WIN32 & MSC & !UWP) ports/glext;
 
 library(MSC) glew32;
 

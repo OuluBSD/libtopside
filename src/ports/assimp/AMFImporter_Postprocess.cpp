@@ -246,7 +246,11 @@ size_t AMFImporter::PostprocessHelper_GetTextureID_Or_Create(const std::string& 
 	for(uint8_t i = 0; i < src_texture_4check.size(); i++) converted_texture.Tiled |= src_texture_4check[i]->Tiled;
 
 	// Create format hint.
+	#ifdef flagMSC
+	strcpy_s(converted_texture.FormatHint, "rgba0000");// copy initial string.
+	#else
 	strcpy(converted_texture.FormatHint, "rgba0000");// copy initial string.
+	#endif
 	if(!pID_R.empty()) converted_texture.FormatHint[4] = '8';
 	if(!pID_G.empty()) converted_texture.FormatHint[5] = '8';
 	if(!pID_B.empty()) converted_texture.FormatHint[6] = '8';

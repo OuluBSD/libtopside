@@ -850,14 +850,21 @@ String InterfaceBuilder::GetMacroConditionals(String cond_str) {
 		int j = 0;
 		for (String a : ands) {
 			if (j++) s << " && ";
-			s << "defined flag" << a;
+			if (a.Left(1) == "!")
+				s << "!defined flag" << a.Mid(1);
+			else
+				s << "defined flag" << a;
 			parts++;
 		}
 		s << ")";
 	}
 	
-	if (parts == 1)
-		return "defined flag" + cond_str;
+	if (parts == 1) {
+		if (cond_str.Left(1) == "!")
+			return "!defined flag" + cond_str.Mid(1);
+		else
+			return "defined flag" + cond_str;
+	}
 	
 	return s;
 }
@@ -899,7 +906,11 @@ String InterfaceBuilder::GetMacroFlags(String flags) {
 	for (String vs : v) {
 		if (!s.IsEmpty())
 			s << " && ";
-		s << "defined flag" << vs;
+		
+		if (vs.Left(1) == "!")
+			s << "!defined flag" << vs.Mid(1);
+		else
+			s << "defined flag" << vs;
 	}
 	return s;
 }
