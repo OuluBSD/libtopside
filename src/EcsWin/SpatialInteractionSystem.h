@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ public:
     }
 
 protected:
-    void Initialize() override;
+    bool Initialize() override;
     void Uninitialize() override;
 
 private:
@@ -91,4 +91,4 @@ private:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

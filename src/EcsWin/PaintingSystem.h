@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 static constexpr float PaintTipThickness = 0.008f;
 
 
-struct PaintComponent : Neso::Component<PaintComponent>
+struct PaintComponent : Component<PaintComponent>
 {
     enum class State
     {
@@ -21,13 +21,13 @@ struct PaintComponent : Neso::Component<PaintComponent>
     void Destroy() override;
 
     DirectX::XMVECTORF32 selectedColor{ DirectX::Colors::White };
-    std::vector<Neso::SharedEntity> colorPickerObjects;
-    std::vector<Neso::SharedEntity> strokes;
+    std::vector<SharedEntity> colorPickerObjects;
+    std::vector<SharedEntity> strokes;
 
-    Neso::SharedEntity touchpadIndicator;
-    Neso::SharedEntity strokeInProgress;
-    Neso::SharedEntity paintBrush;
-    Neso::SharedEntity beam;
+    SharedEntity touchpadIndicator;
+    SharedEntity strokeInProgress;
+    SharedEntity paintBrush;
+    SharedEntity beam;
 
     State currentState{ State::Idle };
 
@@ -62,11 +62,11 @@ protected:
     // ToolSystemBase
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    Neso::SharedEntity CreateToolSelector() const override;
+    SharedEntity CreateToolSelector() const override;
 
-    void Register(std::vector<Neso::SharedEntity> entities) override;
-    void Activate(Neso::Entity& entity) override;
-    void Deactivate(Neso::Entity& entity) override;
+    void Register(std::vector<SharedEntity> entities) override;
+    void Activate(Entity& entity) override;
+    void Deactivate(Entity& entity) override;
 
     // ISpatialInteractionListener
     void OnSourcePressed(
@@ -95,7 +95,7 @@ private:
         DirectX::Colors::Black
     };
 
-    std::vector<std::vector<Neso::SharedEntity>> m_persistentStrokes;
+    std::vector<std::vector<SharedEntity>> m_persistentStrokes;
 };
 
 

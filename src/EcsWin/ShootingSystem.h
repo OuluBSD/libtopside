@@ -4,12 +4,12 @@
 NAMESPACE_ECS_BEGIN
 
 
-struct ShootingComponent : Neso::Component<ShootingComponent>
+struct ShootingComponent : Component<ShootingComponent>
 {
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
-    Neso::SharedEntity gun;
+    SharedEntity gun;
 
     float bulletSpeed = 20.0f;
     winrt::Windows::Foundation::Numerics::float4x4 barrelToController;
@@ -28,11 +28,11 @@ protected:
     // ToolSystemBase
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    Neso::SharedEntity CreateToolSelector() const override;
+    SharedEntity CreateToolSelector() const override;
 
-    void Register(std::vector<Neso::SharedEntity> entities) override;
-    void Activate(Neso::Entity& entity) override;
-    void Deactivate(Neso::Entity& entity) override;
+    void Register(std::vector<SharedEntity> entities) override;
+    void Activate(Entity& entity) override;
+    void Deactivate(Entity& entity) override;
 
     // ISpatialInteractionListener
     void OnSourcePressed(

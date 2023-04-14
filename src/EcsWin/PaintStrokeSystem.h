@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 	
-struct PaintStrokeComponent : Neso::Component<PaintStrokeComponent>
+struct PaintStrokeComponent : Component<PaintStrokeComponent>
 {
     struct Square
     {
@@ -21,10 +21,10 @@ struct PaintStrokeComponent : Neso::Component<PaintStrokeComponent>
 ////////////////////////////////////////////////////////////////////////////////
 // PaintStrokeSystem
 // This System manages the PaintStrokeComponents and automatically generates the 3D mesh for each stroke
-class PaintStrokeSystem : public Neso::System<PaintStrokeSystem>
+class PaintStrokeSystem : public System<PaintStrokeSystem>
 {
 public:
-    PaintStrokeSystem(Neso::Engine& core, std::shared_ptr<Pbr::Resources> pbrResources);
+    PaintStrokeSystem(Engine& core, std::shared_ptr<Pbr::Resources> pbrResources);
     ~PaintStrokeSystem() = default;
 
 protected:

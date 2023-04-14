@@ -1,7 +1,7 @@
 #ifndef _EcsWin_EcsWin_h_
 #define _EcsWin_EcsWin_h_
 
-#include <EcsLib/EcsLib.h>
+#include <Core/config.h>
 
 #include <optional>
 #include <functional>
@@ -9,6 +9,7 @@
 #include <future>
 #include <tuple>
 #include <mutex>
+#include <shared_mutex>
 #include <vector>
 #include <robuffer.h>
 #include <algorithm>
@@ -17,6 +18,11 @@
 #include <sstream>
 
 #include <winapifamily.h>
+
+#if WINAPI_FAMILY != WINAPI_FAMILY_APP
+	#error Wrong WINAPI_FAMILY
+#endif
+
 #include <Guiddef.h>
 #include <wrl.h>
 #include <wrl/client.h>
@@ -38,6 +44,14 @@
 
 #include <wrl\client.h>
 
+#if WINAPI_FAMILY != WINAPI_FAMILY_APP
+	#error Wrong WINAPI_FAMILY
+#endif
+
+#ifndef __WRL_NO_DEFAULT_LIB__
+	#error Not defined: __WRL_NO_DEFAULT_LIB__
+#endif
+
 #include <ppl.h>
 #include <winrt\Windows.ApplicationModel.Activation.h>
 #include <winrt\Windows.ApplicationModel.Core.h>
@@ -56,10 +70,12 @@
 #include <winrt\Windows.UI.Input.Spatial.h>
 
 
+#include <EcsLib/EcsLib.h>
+
 #include <ports/stb/stb_image.h> // not needed: #define STB_IMAGE_IMPLEMENTATION
 #include <ports/tiny_gltf/tiny_gltf.h>
 #include <ports/mikktspace/mikktspace.h>
-
+#include <ports/DirectXTK/DirectXTK.h>
 
 #include "PbrResources.h"
 #include "PbrCommon.h"
@@ -79,6 +95,9 @@
 #include "EngineCommon.h"
 #include "Component.h"
 #include "AppLogicSystem.h"
+#include "ListenerCollection.h"
+#include "HolographicScene.h"
+#include "SpatialInteractionSystem.h"
 #include "MotionControllerSystem.h"
 
 #include "ToolSystem.h"
@@ -103,15 +122,11 @@
 
 #include "StepTimer.h"
 #include "Entity.h"
-#include "ListenerCollection.h"
-#include "HolographicScene.h"
-#include "SpatialInteractionSystem.h"
 
 #include "AppView.h"
 #include "DemoRoomMain.h"
 
 #include "HolographicRenderer.h"
-#include "HolographicScene.h"
 #include "TextRenderer.h"
 #include "QuadRenderer.h"
 #include "SkyboxRenderer.h"

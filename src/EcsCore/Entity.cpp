@@ -29,7 +29,7 @@ String Entity::GetTreeString(int indent) {
 	
 	s.Cat('\t', indent);
 	
-	s << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << ": " << prefab << "\n";
+	s << (name.IsEmpty() ? (String)"unnamed" : "\"" + name + "\"") << ": " << prefab << "\n";
 	
 	for (ComponentBaseRef& c : comps) {
 		s.Cat('\t', indent+1);

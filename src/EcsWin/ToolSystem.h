@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 ////////////////////////////////////////////////////////////////////////////////
 // ToolSystemBase
 // Base abstract class for all ToolSystems
-class ToolSystemBase abstract : public Neso::SystemBase
+class ToolSystemBase abstract : public SystemBase
 {
 public:
     using SystemBase::SystemBase;
@@ -15,22 +15,22 @@ public:
     virtual std::wstring_view GetInstructions() const = 0;
     virtual std::wstring_view GetDisplayName() const = 0;
     
-    virtual Neso::SharedEntity CreateToolSelector() const = 0;
+    virtual SharedEntity CreateToolSelector() const = 0;
 
-    virtual void Register(std::vector<Neso::SharedEntity> entities) = 0;
+    virtual void Register(std::vector<SharedEntity> entities) = 0;
     virtual void Unregister() = 0;
-    virtual void Activate(Neso::Entity& entity) = 0;
-    virtual void Deactivate(Neso::Entity& entity) = 0;
+    virtual void Activate(Entity& entity) = 0;
+    virtual void Deactivate(Entity& entity) = 0;
 };
 
-struct ToolSelectorKey : Neso::Component<ToolSelectorKey>
+struct ToolSelectorKey : Component<ToolSelectorKey>
 {
-    Neso::detail::type_id type{ typeid(nullptr_t) };
+    detail::type_id type{ typeid(nullptr_t) };
 };
 
-struct ToolSelectorPrefab : Neso::EntityPrefab<Neso::Transform, Neso::PbrRenderable, ToolSelectorKey, Neso::RigidBody, Neso::Easing>
+struct ToolSelectorPrefab : EntityPrefab<Transform, PbrRenderable, ToolSelectorKey, RigidBody, Easing>
 {
-    static Neso::ComponentMap Make(Neso::ComponentStore& store);
+    static ComponentMap Make(ComponentStore& store);
 };
 
 // CRTP implementation helper
@@ -40,14 +40,14 @@ struct ToolSelectorPrefab : Neso::EntityPrefab<Neso::Transform, Neso::PbrRendera
 template<typename T, typename ToolComponent>
 class ToolSystem abstract : 
     public ToolSystemBase, 
-    public Neso::ISpatialInteractionListener,
+    public ISpatialInteractionListener,
     public std::enable_shared_from_this<T>
 {
 public:
     using ToolSystemBase::ToolSystemBase;
 
     // System
-    Neso::detail::type_id type() const override
+    detail::type_id type() const override
     {
         return typeid(T);
     }
@@ -65,7 +65,7 @@ protected:
     }
 
     // ToolSystemBase
-    void Register(std::vector<Neso::SharedEntity> entities) override
+    void Register(std::vector<SharedEntity> entities) override
     {
         m_entities = std::move(entities);
 
@@ -89,20 +89,20 @@ protected:
         m_entities.clear();
     }
 
-    void Activate(Neso::Entity& entity) override
+    void Activate(Entity& entity) override
     {
         entity.Get<ToolComponent>()->SetEnabled(true);
     }
 
-    void Deactivate(Neso::Entity& entity) override
+    void Deactivate(Entity& entity) override
     {
         entity.Get<ToolComponent>()->SetEnabled(false);
     }
 
     // Internal helpers
-    std::vector<std::tuple<Neso::Entity*, ToolComponent*>> GetEnabledEntities() const
+    std::vector<std::tuple<Entity*, ToolComponent*>> GetEnabledEntities() const
     {
-        std::vector<std::tuple<Neso::Entity*, ToolComponent*>> entities;
+        std::vector<std::tuple<Entity*, ToolComponent*>> entities;
 
         for (auto& entity : m_entities)
         {
@@ -116,7 +116,7 @@ protected:
         return entities;
     }
 
-    std::optional<std::tuple<Neso::Entity*, ToolComponent*>> TryGetEntityFromSource(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source) const
+    std::optional<std::tuple<Entity*, ToolComponent*>> TryGetEntityFromSource(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source) const
     {
         for (auto& entity : m_entities)
         {
@@ -133,7 +133,7 @@ protected:
         return std::nullopt;
     }
 
-    std::vector<Neso::SharedEntity> m_entities;
+    std::vector<SharedEntity> m_entities;
 };
 
 

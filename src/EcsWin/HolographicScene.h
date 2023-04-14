@@ -29,7 +29,7 @@ class HolographicScene : public System<HolographicScene>
 public:
     using System::System;
 
-    HolographicScene(Engine& core, winrt::Windows::Graphics::Holographic::HolographicSpace holographicSpace);
+    HolographicScene(Machine& core, winrt::Windows::Graphics::Holographic::HolographicSpace holographicSpace);
 
     winrt::Windows::Graphics::Holographic::HolographicFrame CurrentFrame() const;
     winrt::Windows::Graphics::Holographic::HolographicSpace HolographicSpace() const;
@@ -43,7 +43,7 @@ public:
     void RemovePredictionUpdateListener(std::shared_ptr<IPredictionUpdateListener> listener);
 
 protected:
-    void Initialize() override;
+    bool Initialize() override;
     void Update(double) override;
     void Uninitialize() override;
 

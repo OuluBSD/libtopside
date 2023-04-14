@@ -14,15 +14,15 @@ public:
     CameraResources(winrt::Windows::Graphics::Holographic::HolographicCamera const& holographicCamera);
 
     void CreateResourcesForBackBuffer(
-        const DX::DeviceResources* pDeviceResources,
+        const DeviceResources* pDeviceResources,
         winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters const& cameraParameters
         );
     void ReleaseResourcesForBackBuffer(
-        const DX::DeviceResources* pDeviceResources
+        const DeviceResources* pDeviceResources
         );
 
     bool GetViewProjectionTransform(
-        std::shared_ptr<DX::DeviceResources> deviceResources,
+        std::shared_ptr<DeviceResources> deviceResources,
         winrt::Windows::Graphics::Holographic::HolographicCameraPose const& cameraPose,
         winrt::Windows::Perception::Spatial::SpatialCoordinateSystem const& coordinateSystem,
         _Out_ winrt::Windows::Graphics::Holographic::HolographicStereoTransform* viewTransform,

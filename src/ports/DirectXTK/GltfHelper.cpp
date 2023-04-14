@@ -453,29 +453,29 @@ Primitive ReadPrimitive(const tinygltf::Model& gltfModel, const tinygltf::Primit
 Material ReadMaterial(const tinygltf::Model& gltfModel, const tinygltf::Material& gltfMaterial)
 {
     // Read an optional VEC4 parameter if available, otherwise use the default.
-    auto readParameterFactorAsVec4 = [](const tinygltf::ParameterMap& parameters, char* name, const XMFLOAT4& default) {
+    auto readParameterFactorAsVec4 = [](const tinygltf::ParameterMap& parameters, const char* name, const XMFLOAT4& def) {
         auto c = parameters.find(name);
         return (c != parameters.end() && c->second.number_array.size() == 4) ?
             XMFLOAT4((float)c->second.number_array[0], (float)c->second.number_array[1], (float)c->second.number_array[2], (float)c->second.number_array[3]) :
-            default;
+            def;
     };
 
     // Read an optional VEC3 parameter if available, otherwise use the default.
-    auto readParameterFactorAsVec3 = [](const tinygltf::ParameterMap& parameters, char* name, const XMFLOAT3& default) {
+    auto readParameterFactorAsVec3 = [](const tinygltf::ParameterMap& parameters, const char* name, const XMFLOAT3& def) {
         auto c = parameters.find(name);
         return (c != parameters.end() && c->second.number_array.size() == 3) ?
             XMFLOAT3((float)c->second.number_array[0], (float)c->second.number_array[1], (float)c->second.number_array[2]) :
-            default;
+            def;
     };
 
     // Read an optional scalar parameter if available, otherwise use the default.
-    auto readParameterFactorAsScalar = [](const tinygltf::ParameterMap& parameters, char* name, double default) {
+    auto readParameterFactorAsScalar = [](const tinygltf::ParameterMap& parameters, const char* name, double def) {
         auto c = parameters.find(name);
-        return (c != parameters.end() && c->second.number_array.size() == 1) ? c->second.number_array[0] : default;
+        return (c != parameters.end() && c->second.number_array.size() == 1) ? c->second.number_array[0] : def;
     };
 
     // Read a specific texture from a tinygltf material parameter map.
-    auto loadTextureFromParameter = [&](const tinygltf::ParameterMap& parameterMap, char* textureName)
+    auto loadTextureFromParameter = [&](const tinygltf::ParameterMap& parameterMap, const char* textureName)
     {
         Material::Texture texture{};
 
@@ -499,7 +499,7 @@ Material ReadMaterial(const tinygltf::Model& gltfModel, const tinygltf::Material
     };
 
     // Read a scalar value from a tinygltf material parameter map.
-    auto loadScalarFromParameter = [&](const tinygltf::ParameterMap& parameterMap, char* name, char* scalarField, double defaultValue)
+    auto loadScalarFromParameter = [&](const tinygltf::ParameterMap& parameterMap, const char* name, const char* scalarField, double defaultValue)
     {
         const auto& textureIt = parameterMap.find(name);
         if (textureIt != std::end(parameterMap))

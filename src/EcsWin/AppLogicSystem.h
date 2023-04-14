@@ -8,7 +8,7 @@ namespace DemoRoom
 ////////////////////////////////////////////////////////////////////////////////
 // AppLogicSystem
 // Simple system to destroy objects that get too far away from the user
-class AppLogicSystem : public Neso::System<AppLogicSystem>
+class AppLogicSystem : public System<AppLogicSystem>
 {
 public:
     using System::System;
@@ -16,7 +16,7 @@ public:
 protected:
     void Update(double /*dt*/) override
     {
-        for (auto &componentSet : m_engine.Get<Neso::EntityStore>()->GetComponentsWithEntity<Neso::Transform>())
+        for (auto &componentSet : m_engine.Get<EntityStore>()->GetComponentsWithEntity<Transform>())
         {
             auto[entity, transform] = componentSet;
 

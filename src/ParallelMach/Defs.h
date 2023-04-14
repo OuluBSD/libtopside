@@ -36,7 +36,7 @@
 	ECS_INITIALIZE_DEFAULT_INTERNAL_EON_(TS::BindEcsToParallel) \
 	ECS_APP_MAIN
 
-#ifdef flagMSC
+#if defined flagMSC && !defined flagUWP
 	#define CXX2A_STATIC_ASSERT(x, y) static_assert(x, y)
 #else
 	#define CXX2A_STATIC_ASSERT(x, y)

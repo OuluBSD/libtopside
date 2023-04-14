@@ -26,7 +26,7 @@ public:
     void LoadAppState();
 
 private:
-    std::unique_ptr<Neso::Engine>        m_engine;
+    std::unique_ptr<Engine>        m_engine;
 
     // Cached pointer to device resources.
     std::shared_ptr<DX::DeviceResources> m_deviceResources;

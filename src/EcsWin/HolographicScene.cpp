@@ -9,13 +9,13 @@ using namespace winrt::Windows::Perception;
 using namespace winrt::Windows::Perception::Spatial;
 
 HolographicScene::HolographicScene(
-    Engine& core,
+    Machine& core,
     winrt::Windows::Graphics::Holographic::HolographicSpace holographicSpace) :
     System(core),
     m_holographicSpace(std::move(holographicSpace))
 {}
 
-void HolographicScene::Initialize()
+bool HolographicScene::Initialize()
 {
     m_stageFrameOfReference = SpatialStageFrameOfReference::Current();
 
@@ -25,6 +25,8 @@ void HolographicScene::Initialize()
 
     m_spatialStageCurrentChanged = SpatialStageFrameOfReference::CurrentChanged(
         std::bind(&HolographicScene::OnCurrentStageChanged, this));
+    
+    return true;
 }
 
 void HolographicScene::Update(double)

@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
-struct MotionControllerComponent : Neso::Component<MotionControllerComponent>
+struct MotionControllerComponent : Component<MotionControllerComponent>
 {
     bool IsSource(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& rhs) const;
 
@@ -24,9 +24,9 @@ struct MotionControllerComponent : Neso::Component<MotionControllerComponent>
 // You can also use the MotionControllerComponent::attachControllerModel to automatically attach the correct 3D model to the object
 // so that the virtual controller will be rendered in the same position as the physical controller
 class MotionControllerSystem :
-    public Neso::System<MotionControllerSystem>,
-    public Neso::IPredictionUpdateListener,
-    public Neso::ISpatialInteractionListener
+    public System<MotionControllerSystem>,
+    public IPredictionUpdateListener,
+    public ISpatialInteractionListener
 {
 public:
     using System::System;
@@ -38,7 +38,7 @@ protected:
 
     // IPredictionUpdateListener
     void OnPredictionUpdated(
-        Neso::IPredictionUpdateListener::PredictionUpdateReason reason,
+        IPredictionUpdateListener::PredictionUpdateReason reason,
         const winrt::Windows::Perception::Spatial::SpatialCoordinateSystem& coordinateSystem,
         const winrt::Windows::Graphics::Holographic::HolographicFramePrediction& prediction) override;
 

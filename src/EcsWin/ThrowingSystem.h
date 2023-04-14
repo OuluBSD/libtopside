@@ -4,12 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct ThrowingComponent : Neso::Component<ThrowingComponent>
+struct ThrowingComponent : Component<ThrowingComponent>
 {
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
-    Neso::SharedEntity ballObject;
+    SharedEntity ballObject;
 
     float distanceFromPointer = 0.05f;
     float scale = 0.25f;
@@ -30,7 +30,7 @@ protected:
     // IInteractionModeSystem
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    Neso::SharedEntity CreateToolSelector() const override;
+    SharedEntity CreateToolSelector() const override;
 
     // ISpatialInteractionListener
     void OnSourcePressed(

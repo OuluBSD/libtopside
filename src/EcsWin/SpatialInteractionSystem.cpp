@@ -1,16 +1,17 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace winrt::Windows::UI::Input::Spatial;
 using namespace std::placeholders;
 
-void SpatialInteractionSystem::Initialize()
+bool SpatialInteractionSystem::Initialize()
 {
     m_spatialInteractionManager = SpatialInteractionManager::GetForCurrentView();
     BindEventHandlers();
+    return true;
 }
 
 void SpatialInteractionSystem::Uninitialize()
@@ -101,4 +102,4 @@ void SpatialInteractionSystem::HandleSourceReleased(
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

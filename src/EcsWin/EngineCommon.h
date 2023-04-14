@@ -1,4 +1,3 @@
-#if 0
 #pragma once
 
 
@@ -69,6 +68,7 @@ inline void fail_fast_if(bool condition, std::optional<std::string> message = st
     if (condition) fail_fast(std::move(message));
 }
 
+#if 0
 // Helper to cast between similar basic types, i.e. XMFLOAT3 and float3. Same memory layout, just different typenames
 template<typename T1, typename T2>
 T1& AsRef(T2& val)
@@ -84,11 +84,15 @@ const T1& AsRef(const T2& val)
     return *reinterpret_cast<const T1*>(&val);
 }
 
+#endif
+
 template<typename Container, typename Predicate>
 void erase_if(Container* container, Predicate&& predicate)
 {
     container->erase(std::remove_if(container->begin(), container->end(), std::move(predicate)), container->end());
 }
+
+#if 0
 
 class Destroyable
 {
@@ -143,13 +147,15 @@ protected:
     detail::unordered_type_map<ProducerT> m_producers;
 };
 
+#endif
+
 }
 
 // Specialization for our type_id
 namespace std {
 template<>
-struct hash<Neso::detail::type_id> {
-    size_t operator()(const Neso::detail::type_id& id) const {
+struct hash<TS::detail::type_id> {
+    size_t operator()(const TS::detail::type_id& id) const {
         return id.hash_code();
     }
 };
@@ -157,4 +163,3 @@ struct hash<Neso::detail::type_id> {
 
 NAMESPACE_TOPSIDE_END
 
-#endif

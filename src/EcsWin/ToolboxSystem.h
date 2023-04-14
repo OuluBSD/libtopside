@@ -6,19 +6,19 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ToolSystemBase;
 
-struct ToolComponent : Neso::Component<ToolComponent>
+struct ToolComponent : Component<ToolComponent>
 {
     std::wstring title;
     std::wstring description;
-    Neso::detail::type_id toolType{ typeid(nullptr_t) };
+    detail::type_id toolType{ typeid(nullptr_t) };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolboxSystem
 // This system manages the ToolSystems and manages the two Entities that represent the left and right Motion Controllers
 class ToolboxSystem : 
-    public Neso::System<ToolboxSystem>,
-    public Neso::ISpatialInteractionListener
+    public System<ToolboxSystem>,
+    public ISpatialInteractionListener
 {
 public:
     using System::System;
@@ -37,8 +37,8 @@ protected:
         const winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs& args) override;
 
 private:
-    Neso::detail::type_map<std::shared_ptr<ToolSystemBase>> m_selectors;
-    Neso::detail::type_map<Neso::SharedEntity> m_selectorObjects;
+    detail::type_map<std::shared_ptr<ToolSystemBase>> m_selectors;
+    detail::type_map<SharedEntity> m_selectorObjects;
 
     bool m_showToolbox{ false };
 
@@ -50,18 +50,18 @@ private:
     static winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceHandedness ControllerHandToHandedness(ControllerHand hand);
 
     struct ControllerContext {
-        Neso::SharedEntity Controller;
-        Neso::SharedEntity DebugText;
+        SharedEntity Controller;
+        SharedEntity DebugText;
         ControllerHand Hand;
     };
 
-    void SwitchToolType(Neso::Entity& entity, const Neso::detail::type_id& newType);
+    void SwitchToolType(Entity& entity, const detail::type_id& newType);
 
-    Neso::SharedEntity FindController(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source);
+    SharedEntity FindController(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source);
 
     std::array<ControllerContext, ControllerHand::Count> m_controllers;
 
-    Neso::SharedEntity m_instructionalText{ nullptr };
+    SharedEntity m_instructionalText{ nullptr };
 };
 
 
