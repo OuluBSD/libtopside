@@ -62,4 +62,9 @@ inline bool SdkLayersAvailable()
 #endif
 
 
+inline DirectX::XMVECTOR ToDxVec(const vec4& v) {
+	return DirectX::XMVECTOR {v[0], v[1], v[2], v[3]};
+}
+
+
 NAMESPACE_TOPSIDE_END

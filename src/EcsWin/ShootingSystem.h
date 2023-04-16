@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 struct ShootingComponent : Component<ShootingComponent>
@@ -9,7 +9,7 @@ struct ShootingComponent : Component<ShootingComponent>
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
-    SharedEntity gun;
+    EntityRef gun;
 
     float bulletSpeed = 20.0f;
     winrt::Windows::Foundation::Numerics::float4x4 barrelToController;
@@ -28,9 +28,9 @@ protected:
     // ToolSystemBase
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    SharedEntity CreateToolSelector() const override;
+    EntityRef CreateToolSelector() const override;
 
-    void Register(std::vector<SharedEntity> entities) override;
+    void Register(Array<EntityRef>& entities) override;
     void Activate(Entity& entity) override;
     void Deactivate(Entity& entity) override;
 
@@ -43,4 +43,4 @@ protected:
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

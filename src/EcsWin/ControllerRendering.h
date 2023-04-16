@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 namespace Pbr {
@@ -10,8 +10,7 @@ struct Resources;
 }
 
 // Helper functionality related to controller rendering.
-namespace ControllerRendering
-{
+namespace ControllerRendering {
 
 // A controller model can be cached using a key based on the Vendor ID, Product ID, Version, and Handedness.
 using ControllerModelKey = std::tuple<uint16_t, uint16_t, uint16_t, winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceHandedness>;
@@ -69,5 +68,6 @@ private:
     std::map<ControllerModelKey, std::shared_ptr<const Pbr::Model>> m_controllerMeshes;
 };
 
+}
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

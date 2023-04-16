@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -30,7 +30,7 @@ struct VertexPositionTex
 };
 
 // Loads vertex and pixel shaders from files and instantiates the quad geometry.
-QuadRenderer::QuadRenderer(std::shared_ptr<DX::DeviceResources> deviceResources) :
+QuadRenderer::QuadRenderer(std::shared_ptr<DeviceResources> deviceResources) :
     m_deviceResources(std::move(deviceResources))
 {
     CreateDeviceDependentResources();
@@ -249,4 +249,4 @@ void QuadRenderer::ReleaseDeviceDependentResources()
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

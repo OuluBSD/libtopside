@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 struct MotionControllerComponent : Component<MotionControllerComponent>
@@ -58,4 +58,4 @@ private:
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

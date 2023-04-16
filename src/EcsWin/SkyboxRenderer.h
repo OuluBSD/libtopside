@@ -11,7 +11,7 @@ class SkyboxRenderer
 {
 public:
     SkyboxRenderer(
-        std::shared_ptr<DX::DeviceResources> deviceResources,
+        std::shared_ptr<DeviceResources> deviceResources,
         ID3D11ShaderResourceView* skyboxTexture);
 
     ~SkyboxRenderer() = default;
@@ -33,7 +33,7 @@ public:
     void Unbind();
 
 private:
-    std::shared_ptr<DX::DeviceResources> m_deviceResources;
+    std::shared_ptr<DeviceResources> m_deviceResources;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_skyboxTexture;
     Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;

@@ -2,8 +2,7 @@
 #pragma once
 
 
-namespace Neso
-{
+namespace Neso {
 
 struct Easing : Component<Easing>
 {
@@ -27,4 +26,6 @@ protected:
 };
 
 }
+
+
 #endif

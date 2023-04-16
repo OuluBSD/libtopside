@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace winrt::Windows::Foundation::Numerics;
@@ -16,13 +16,14 @@ struct TextDisplay : EntityPrefab<Transform, TextRenderable>
 
 static const std::wstring_view InstructionalText = L"Press the menu button to bring interaction objects toward you.\n\nGrasp (grasp button) an interaction object to use it.";
 
-namespace 
+namespace {
+	
+bool HitTest(float3 positionA, float3 positionB, float diameter)
 {
-    bool HitTest(float3 positionA, float3 positionB, float diameter)
-    {
-        auto distance = length(positionA - positionB);
-        return distance < diameter;
-    }
+    auto distance = length(positionA - positionB);
+    return distance < diameter;
+}
+
 }
 
 void ToolboxSystem::AddToolSystem(std::shared_ptr<ToolSystemBase> system)
@@ -65,26 +66,26 @@ void ToolboxSystem::Start()
     m_instructionalText = m_entityStore->Create<TextDisplay>();
     m_instructionalText->Get<TextRenderable>()->Text = InstructionalText;
     m_instructionalText->Get<Transform>()->position = { 0, 1.5f, -5.f };
-    m_instructionalText->Get<Transform>()->scale = float3{ 2.0f };
+    m_instructionalText->Get<Transform>()->size = float3{ 2.0f };
 
     m_controllers[Left].DebugText = m_entityStore->Create<TextDisplay>();
     m_controllers[Left].DebugText->Get<Transform>()->position = { -2.5, 1.25f, -4.f };
     m_controllers[Left].DebugText->Get<Transform>()->orientation = make_quaternion_from_axis_angle({ 0, 1, 0 }, DirectX::XM_PI * 0.15f);
-    m_controllers[Left].DebugText->Get<Transform>()->scale = float3{ 2.0f };
+    m_controllers[Left].DebugText->Get<Transform>()->size = float3{ 2.0f };
     m_controllers[Left].DebugText->Get<TextRenderable>()->FontSize = 52.0f;
 
     m_controllers[Right].DebugText = m_entityStore->Create<TextDisplay>();
     m_controllers[Right].DebugText->Get<Transform>()->position = { 2.5, 1.25f, -4.f };
     m_controllers[Right].DebugText->Get<Transform>()->orientation = make_quaternion_from_axis_angle({ 0, 1, 0 }, -DirectX::XM_PI * 0.15f);
-    m_controllers[Right].DebugText->Get<Transform>()->scale = float3{ 2.0f };
+    m_controllers[Right].DebugText->Get<Transform>()->size = float3{ 2.0f };
     m_controllers[Right].DebugText->Get<TextRenderable>()->FontSize = 52.0f;
 
-    m_engine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+    m_engine.Get<SpatialInteractionSystem>()->AddListener(AsRefT());
 }
 
 void ToolboxSystem::Stop()
 {
-    m_engine.Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
+    m_engine.Get<SpatialInteractionSystem>()->RemoveListener(AsRefT());
 }
 
 void ToolboxSystem::Update(double dt)
@@ -257,7 +258,7 @@ void ToolboxSystem::SwitchToolType(Entity& entity, const detail::type_id& newTyp
     }
 }
 
-SharedEntity ToolboxSystem::FindController(const SpatialInteractionSource& source)
+EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source)
 {
     for (auto& context : m_controllers)
     {
@@ -271,4 +272,4 @@ SharedEntity ToolboxSystem::FindController(const SpatialInteractionSource& sourc
 }
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

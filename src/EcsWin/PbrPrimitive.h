@@ -1,11 +1,11 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
-namespace Pbr
-{
+namespace Pbr {
+
 
 struct Model;
 
@@ -34,7 +34,8 @@ private:
     std::shared_ptr<Material> m_material;
 };
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

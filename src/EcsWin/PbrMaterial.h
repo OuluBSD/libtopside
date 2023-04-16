@@ -1,11 +1,11 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
-namespace Pbr
-{
+namespace Pbr {
+
 	
 // A Material contains the metallic roughness parameters and textures.
 // Primitives specify which Material to use when being rendered.
@@ -60,7 +60,8 @@ private:
     mutable uint32_t m_constantBufferBookmark{ (uint32_t)-1 };
 };
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

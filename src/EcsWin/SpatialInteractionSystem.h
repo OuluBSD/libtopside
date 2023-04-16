@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,4 +91,4 @@ private:
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

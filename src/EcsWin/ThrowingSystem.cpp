@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 
@@ -23,7 +23,7 @@ std::wstring_view ThrowingInteractionSystem::GetDisplayName() const
     return L"Throwing";
 }
 
-SharedEntity ThrowingInteractionSystem::CreateToolSelector() const
+EntityRef ThrowingInteractionSystem::CreateToolSelector() const
 {
     auto selector = m_engine.Get<EntityStore>()->Create<ToolSelectorPrefab>();
 
@@ -69,7 +69,7 @@ void ThrowingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
             auto throwing = std::get<ThrowingComponent*>(*enabledEntity);
 
             auto ball = m_engine.Get<EntityStore>()->Create<Baseball>();
-            ball->Get<Transform>()->scale = float3{ throwing->scale };
+            ball->Get<Transform>()->size = float3{ throwing->scale };
             ball->Get<RigidBody>()->SetEnabled(false);
             throwing->ballObject = std::move(ball);
         }
@@ -140,4 +140,4 @@ void ThrowingComponent::Destroy()
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

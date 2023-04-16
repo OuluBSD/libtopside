@@ -1,14 +1,13 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-namespace Pbr
-{
+namespace Pbr {
 
 Material::Material(Pbr::Resources const& pbrResources)
 {
@@ -94,4 +93,4 @@ void Material::Bind(_In_ ID3D11DeviceContext3* context) const
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

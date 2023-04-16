@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 TextRenderer::TextRenderer(
-    std::shared_ptr<DX::DeviceResources> deviceResources,
+    std::shared_ptr<DeviceResources> deviceResources,
     uint32_t textureWidth,
     uint32_t textureHeight,
     float fontSize) :

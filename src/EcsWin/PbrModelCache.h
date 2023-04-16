@@ -1,11 +1,11 @@
 #pragma once
 
 
-NAMESPACE_SERIAL_BEGIN
-
+NAMESPACE_WIN_BEGIN
 
 
 struct PbrRenderable;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // PbrModelCache
@@ -35,4 +35,4 @@ private:
 
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_WIN_END

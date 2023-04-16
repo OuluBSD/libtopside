@@ -1,6 +1,6 @@
 #include "EcsWin.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -41,8 +41,7 @@ ComPtr<ID3D11Buffer> CreateIndexBuffer(_In_ ID3D11Device* device, const Pbr::Pri
 
 
 
-namespace Pbr
-{
+namespace Pbr {
 
 Primitive::Primitive(UINT indexCount, ID3D11Buffer* indexBuffer, ID3D11Buffer* vertexBuffer, std::shared_ptr<Material> material)
     : m_indexCount(indexCount)
@@ -76,7 +75,8 @@ void Primitive::Render(_In_ ID3D11DeviceContext3* context) const
     context->DrawIndexedInstanced(m_indexCount, 2, 0, 0, 0);
 }
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

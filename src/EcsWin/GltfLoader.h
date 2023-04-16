@@ -1,11 +1,13 @@
 #pragma once
 
-
-NAMESPACE_TOPSIDE_BEGIN
-
-
+EXTERN_C {
 interface ID3D11Device;
 interface ID3D11DeviceContext3;
+}
+
+NAMESPACE_WIN_BEGIN
+
+
 
 	
 // Creates a Pbr Model from tinygltf model with the specified root transform.
@@ -39,4 +41,4 @@ inline std::shared_ptr<Pbr::Model> FromGltfBinary(
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

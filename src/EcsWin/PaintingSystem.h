@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 static constexpr float PaintTipThickness = 0.008f;
@@ -21,13 +21,13 @@ struct PaintComponent : Component<PaintComponent>
     void Destroy() override;
 
     DirectX::XMVECTORF32 selectedColor{ DirectX::Colors::White };
-    std::vector<SharedEntity> colorPickerObjects;
-    std::vector<SharedEntity> strokes;
+    Array<EntityRef> colorPickerObjects;
+    Array<EntityRef> strokes;
 
-    SharedEntity touchpadIndicator;
-    SharedEntity strokeInProgress;
-    SharedEntity paintBrush;
-    SharedEntity beam;
+    EntityRef touchpadIndicator;
+    EntityRef strokeInProgress;
+    EntityRef paintBrush;
+    EntityRef beam;
 
     State currentState{ State::Idle };
 
@@ -62,9 +62,9 @@ protected:
     // ToolSystemBase
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    SharedEntity CreateToolSelector() const override;
+    EntityRef CreateToolSelector() const override;
 
-    void Register(std::vector<SharedEntity> entities) override;
+    void Register(Array<EntityRef>& entities) override;
     void Activate(Entity& entity) override;
     void Deactivate(Entity& entity) override;
 
@@ -95,8 +95,8 @@ private:
         DirectX::Colors::Black
     };
 
-    std::vector<std::vector<SharedEntity>> m_persistentStrokes;
+    std::vector<Array<EntityRef>> m_persistentStrokes;
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

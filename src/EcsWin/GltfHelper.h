@@ -4,8 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace GltfHelper
-{
+namespace GltfHelper {
+
 // Vertex data.
 struct Vertex
 {
@@ -59,5 +59,6 @@ Material ReadMaterial(const tinygltf::Model& gltfModel, const tinygltf::Material
 // Converts the image to RGBA if necessary. Requires a temporary buffer only if it needs to be converted.
 const uint8_t* ReadImageAsRGBA(const tinygltf::Image& image, _Inout_ std::vector<uint8_t>* tempBuffer);
 
+}
 
 NAMESPACE_TOPSIDE_END

@@ -16,6 +16,7 @@
 #include <array>
 #include <map>
 #include <sstream>
+#include <optional>
 
 #include <winapifamily.h>
 
@@ -70,8 +71,11 @@
 #include <winrt\Windows.UI.Input.Spatial.h>
 
 
-#include <EcsLib/EcsLib.h>
+#include <EcsLocal/EcsLocal.h>
 
+#define NAMESPACE_WIN_BEGIN		NAMESPACE_ECS_BEGIN namespace Win {
+#define NAMESPACE_WIN_END		} NAMESPACE_ECS_END
+	
 #include <ports/stb/stb_image.h> // not needed: #define STB_IMAGE_IMPLEMENTATION
 #include <ports/tiny_gltf/tiny_gltf.h>
 #include <ports/mikktspace/mikktspace.h>
@@ -82,6 +86,7 @@
 #include "PbrMaterial.h"
 #include "PbrPrimitive.h"
 #include "PbrModel.h"
+#include "CommonComponents.h"
 #include "PbrModelCache.h"
 
 #include "CameraResources.h"
@@ -100,8 +105,8 @@
 #include "SpatialInteractionSystem.h"
 #include "MotionControllerSystem.h"
 
-#include "ToolSystem.h"
 #include "ToolboxSystem.h"
+#include "ToolSystem.h"
 #include "PaintingSystem.h"
 #include "ShootingSystem.h"
 #include "ThrowingSystem.h"
@@ -109,22 +114,21 @@
 #include "EasingSystem.h"
 #include "EntityStore.h"
 
-#include "CommonComponents.h"
 #include "ComponentStore.h"
 #include "ControllerRendering.h"
 #include "GltfHelper.h"
 #include "GltfLoader.h"
 
 #include "PhysicsSystem.h"
+#include "StepTimer.h"
+#include "DemoRoomMain.h"
 #include "EntityPrefabs.h"
 
 #include "Haptics.h"
 
-#include "StepTimer.h"
 #include "Entity.h"
 
 #include "AppView.h"
-#include "DemoRoomMain.h"
 
 #include "HolographicRenderer.h"
 #include "TextRenderer.h"

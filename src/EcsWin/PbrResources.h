@@ -1,14 +1,14 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
-namespace Pbr
-{
+namespace Pbr {
 
-namespace ShaderSlots
-{
+
+namespace ShaderSlots {
+
 
 enum VSResourceViews
 {
@@ -82,7 +82,8 @@ private:
     std::shared_ptr<Impl> m_impl;
 };
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

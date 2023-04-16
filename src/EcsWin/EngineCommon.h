@@ -4,8 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace detail
-{
+namespace detail {
 	
 // We declare an explicit wrapper around type_info to allow copying/passing objects around. 
 class type_id : std::reference_wrapper<const type_info>
@@ -149,7 +148,9 @@ protected:
 
 #endif
 
-}
+
+NAMESPACE_TOPSIDE_END
+
 
 // Specialization for our type_id
 namespace std {
@@ -159,7 +160,6 @@ struct hash<TS::detail::type_id> {
         return id.hash_code();
     }
 };
+}
 
-
-NAMESPACE_TOPSIDE_END
 

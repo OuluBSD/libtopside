@@ -15,19 +15,22 @@ using namespace winrt::Windows::UI::Input::Spatial;
 
 
 
+#if 0
 
 // Loads and initializes application assets when the application is loaded.
 DemoRoomMain::DemoRoomMain() :
-    m_deviceResources(std::make_shared<DX::DeviceResources>())
+    m_deviceResources(std::make_shared<DeviceResources>())
 {}
 
 void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
 {
-    if (m_engine && m_engine->HasStarted())
+	TODO
+	Ecs::Engine& m_engine = Ecs::GetActiveEngine();
+	
+    /*if (m_engine.HasStarted())
     {
-        m_engine->Stop();
-        m_engine.reset();
-    }
+        m_engine.Stop();
+    }*/
 
     if (holographicSpace == nullptr)
     {
@@ -38,17 +41,17 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
 
     const auto pbrResources = std::make_shared<Pbr::Resources>(m_deviceResources->GetD3DDevice());
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuseEnvironmentMap; 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuseEnvironmentMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularEnvironmentMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> brdlutTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skyboxTexture;
 
-    auto resourceLoadingTask = std::async(std::launch::async, [&] 
+    auto resourceLoadingTask = std::async(std::launch::async, [&]
     {
-        auto diffuseTextureFuture = DX::LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/DiffuseHDR.dds");
-        auto specularTextureFuture = DX::LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/SpecularHDR.dds");
-        auto skyboxTextureFuture = DX::LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/EnvHDR.dds");
-        auto brdfLutFileDataFuture = DX::ReadDataAsync(L"ms-appx:///PBR/brdf_lut.png");
+        auto diffuseTextureFuture = LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/DiffuseHDR.dds");
+        auto specularTextureFuture = LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/SpecularHDR.dds");
+        auto skyboxTextureFuture = LoadDDSTextureAsync(m_deviceResources->GetD3DDevice(), L"ms-appx:///Media/Environment/EnvHDR.dds");
+        auto brdfLutFileDataFuture = ReadDataAsync(L"ms-appx:///PBR/brdf_lut.png");
 
         diffuseEnvironmentMap = diffuseTextureFuture.get();
         specularEnvironmentMap = specularTextureFuture.get();
@@ -67,32 +70,32 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
 
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
-    m_engine = std::make_unique<Engine>();
+    //m_engine = std::make_unique<Engine>();
 
-    m_engine->Add<EntityStore>();
-    m_engine->Add<ComponentStore>();
-    m_engine->Add<HolographicScene>(holographicSpace);
-    m_engine->Add<EasingSystem>();
-    m_engine->Add<PhysicsSystem>();
-    m_engine->Add<PbrModelCache>(pbrResources);
+    m_engine.Add<EntityStore>();
+    m_engine.Add<ComponentStore>();
+    m_engine.Add<HolographicScene>(holographicSpace);
+    m_engine.Add<EasingSystem>();
+    m_engine.Add<PhysicsSystem>();
+    m_engine.Add<PbrModelCache>(pbrResources);
 
-    m_engine->Add<SpatialInteractionSystem>();
-    m_engine->Add<MotionControllerSystem>();
-    m_engine->Add<AppLogicSystem>();
+    m_engine.Add<SpatialInteractionSystem>();
+    m_engine.Add<MotionControllerSystem>();
+    m_engine.Add<AppLogicSystem>();
 
-    m_engine->Add<ToolboxSystem>();
-    m_engine->Add<ShootingInteractionSystem>();
-    m_engine->Add<PaintingInteractionSystem>();
-    m_engine->Add<ThrowingInteractionSystem>();
+    m_engine.Add<ToolboxSystem>();
+    m_engine.Add<ShootingInteractionSystem>();
+    m_engine.Add<PaintingInteractionSystem>();
+    m_engine.Add<ThrowingInteractionSystem>();
 
-    m_engine->Add<PaintStrokeSystem>(pbrResources);
+    m_engine.Add<PaintStrokeSystem>(pbrResources);
 
-    m_engine->Add<HolographicRenderer>(m_deviceResources, pbrResources, skyboxTexture.Get());
+    m_engine.Add<HolographicRenderer>(m_deviceResources, pbrResources, skyboxTexture.Get());
 
-    m_engine->Start();
+    m_engine.Start();
 
     // Seed model cache
-    auto pbrModelCache = m_engine->Get<PbrModelCache>();
+    auto pbrModelCache = m_engine.Get<PbrModelCache>();
 
     // Register a low poly sphere model.
     {
@@ -128,10 +131,10 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
         std::optional<DirectX::XMFLOAT4X4> transform = std::nullopt,
         std::optional<DirectX::XMFLOAT4> color = std::nullopt) -> std::future<void>
     {
-        auto pbrModelCache = m_engine->Get<PbrModelCache>();
-        auto pbrResources = m_engine->Get<HolographicRenderer>()->GetPbrResources();
+        auto pbrModelCache = m_engine.Get<PbrModelCache>();
+        auto pbrResources = m_engine.Get<HolographicRenderer>()->GetPbrResources();
 
-        std::vector<byte> fileData = co_await DX::ReadDataAsync(std::wstring(path));
+        std::vector<byte> fileData = co_await ReadDataAsync(std::wstring(path));
 
         const DirectX::XMMATRIX modelTransform = transform.has_value()
             ? DirectX::XMLoadFloat4x4(&transform.value())
@@ -167,17 +170,18 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
     loadGLBModels(L"ms-appx:///Media/Models/PaintBrush.glb", KnownModelNames::PaintBrush);
 
     // We don't store the returned Floor Entity locally, so it lives foreeevvverrr
-    m_engine->Get<EntityStore>()->Create<FloorPrefab>();
+    m_engine.Get<EntityStore>()->Create<FloorPrefab>();
 
     // Reset timer on startup so the first update's delta time is sensible (albeit still small)
     m_timer.ResetElapsedTime();
+    
 }
 
 DemoRoomMain::~DemoRoomMain()
 {
     if (m_engine)
     {
-        m_engine->Stop();
+        m_engine.Stop();
         m_engine.reset();
     }
 }
@@ -187,7 +191,7 @@ void DemoRoomMain::Update()
 {
     m_timer.Tick([&]
     {
-        m_engine->Update(static_cast<float>(m_timer.GetElapsedSeconds()));
+        m_engine.Update(static_cast<float>(m_timer.GetElapsedSeconds()));
     });
 }
 
@@ -197,7 +201,7 @@ void DemoRoomMain::SaveAppState()
 
     if (m_engine)
     {
-        m_engine->Suspend();
+        m_engine.Suspend();
     }
 }
 
@@ -205,9 +209,11 @@ void DemoRoomMain::LoadAppState()
 {
     if (m_engine)
     {
-        m_engine->Resume();
+        m_engine.Resume();
     }
 }
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

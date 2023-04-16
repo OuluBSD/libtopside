@@ -2,8 +2,7 @@
 #pragma once
 
 
-namespace Neso
-{
+namespace Neso {
 	
 ////////////////////////////////////////////////////////////////////////////////
 // EntityStore
@@ -14,10 +13,10 @@ class EntityStore : public System<EntityStore>
 public:
     using System::System;
 
-    SharedEntity CreateFromComponentMap(ComponentMap components);
+    EntityRef CreateFromComponentMap(ComponentMap components);
 
     template<typename PrefabT>
-    SharedEntity Create()
+    EntityRef Create()
     {
         static_assert(detail::tuple_all_components<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 
@@ -81,9 +80,9 @@ protected:
 
 private:
     Entity::EntityId m_nextId = 0;
-    std::vector<SharedEntity> m_objects;
+    Array<EntityRef> m_objects;
 
-    SharedEntity AddEntity(SharedEntity obj);
+    EntityRef AddEntity(EntityRef obj);
     Entity::EntityId GetNextId();
 };
 

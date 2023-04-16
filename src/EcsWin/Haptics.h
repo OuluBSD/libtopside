@@ -3,8 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace SpatialInputUtilities::Haptics
-{
+namespace SpatialInputUtilities::Haptics {
+
 	
 // Creates a continuous haptic feedback on the given SpatialInteractionSource.
 static inline void SendContinuousBuzzForDuration(
@@ -36,6 +36,7 @@ static inline void SendContinuousBuzzForDuration(
         }
     }
 }
+
 
 }
 

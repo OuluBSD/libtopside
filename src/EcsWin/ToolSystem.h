@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,9 +15,9 @@ public:
     virtual std::wstring_view GetInstructions() const = 0;
     virtual std::wstring_view GetDisplayName() const = 0;
     
-    virtual SharedEntity CreateToolSelector() const = 0;
+    virtual EntityRef CreateToolSelector() const = 0;
 
-    virtual void Register(std::vector<SharedEntity> entities) = 0;
+    virtual void Register(Array<EntityRef>& entities) = 0;
     virtual void Unregister() = 0;
     virtual void Activate(Entity& entity) = 0;
     virtual void Deactivate(Entity& entity) = 0;
@@ -30,7 +30,7 @@ struct ToolSelectorKey : Component<ToolSelectorKey>
 
 struct ToolSelectorPrefab : EntityPrefab<Transform, PbrRenderable, ToolSelectorKey, RigidBody, Easing>
 {
-    static ComponentMap Make(ComponentStore& store);
+    static Components Make(Entity& e);
 };
 
 // CRTP implementation helper
@@ -38,34 +38,33 @@ struct ToolSelectorPrefab : EntityPrefab<Transform, PbrRenderable, ToolSelectorK
 // Adds functionality to automatically register to listeners and helpers to access entities 
 // that actually have the associated ToolComponent attached and enabled
 template<typename T, typename ToolComponent>
-class ToolSystem abstract : 
-    public ToolSystemBase, 
-    public ISpatialInteractionListener,
-    public std::enable_shared_from_this<T>
+class ToolSystem abstract :
+    public ToolSystemBase,
+    public ISpatialInteractionListener
+    //public std::enable_shared_from_this<T>
 {
 public:
     using ToolSystemBase::ToolSystemBase;
-
+	
+	RTTI_DECL2(ToolSystem, ToolSystemBase, ISpatialInteractionListener)
+	
     // System
-    detail::type_id type() const override
-    {
-        return typeid(T);
-    }
+    //detail::type_id type() const override {return typeid(T);}
 
 protected:
     // System
     void Start() override
     {
-        m_engine.Get<ToolboxSystem>()->AddToolSystem(shared_from_this());
+        GetEngine().Get<ToolboxSystem>()->AddToolSystem(AsRefT());
     }
 
     void Stop() override
     {
-        m_engine.Get<ToolboxSystem>()->RemoveToolSystem(shared_from_this());
+        GetEngine().Get<ToolboxSystem>()->RemoveToolSystem(AsRefT());
     }
 
     // ToolSystemBase
-    void Register(std::vector<SharedEntity> entities) override
+    void Register(Array<EntityRef>& entities) override
     {
         m_entities = std::move(entities);
 
@@ -74,12 +73,12 @@ protected:
             entity->Add<ToolComponent>()->SetEnabled(false);
         }
 
-        m_engine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+        GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT());
     }
 
-    void Unregister() override 
+    void Unregister() override
     {
-        m_engine.Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
+        GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(AsRefT());
 
         for (auto& entity : m_entities)
         {
@@ -133,8 +132,8 @@ protected:
         return std::nullopt;
     }
 
-    std::vector<SharedEntity> m_entities;
+    Array<EntityRef> m_entities;
 };
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

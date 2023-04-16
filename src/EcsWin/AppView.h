@@ -56,6 +56,8 @@ public:
 
 private:
     AppView holographicView;
+    
+    
 };
 
 

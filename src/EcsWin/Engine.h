@@ -2,8 +2,7 @@
 
 #if 0
 
-namespace Neso
-{
+namespace Neso {
 
 class Engine;
 

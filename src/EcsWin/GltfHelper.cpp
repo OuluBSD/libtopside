@@ -379,8 +379,8 @@ void LoadIndexAccessor(const tinygltf::Model& gltfModel, const tinygltf::Accesso
 }
 }
 
-namespace GltfHelper
-{
+namespace GltfHelper {
+
 XMMATRIX XM_CALLCONV ReadNodeLocalTransform(const tinygltf::Node& gltfNode)
 {
     // A node may specify either a 4x4 matrix or TRS (Translation-Rotation-Scale) values, but not both.
@@ -580,6 +580,7 @@ const uint8_t* ReadImageAsRGBA(const tinygltf::Image& image, _Inout_ std::vector
     return nullptr;
 }
 
+}
 
 NAMESPACE_TOPSIDE_END
 

@@ -32,7 +32,7 @@ public:
         auto it = m_producers.find(key);
         if (it == m_producers.end())
         {
-            m_producers.insert(it, { key, [] { return std::make_shared<ComponentT>(); } });
+            TODO //m_producers.insert(it, { key, [] { return std::make_shared<ComponentT>(); } });
         }
 
         return CreateComponent(typeid(ComponentT));

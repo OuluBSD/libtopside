@@ -4,8 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace SpatialInputUtilities::Physics
-{
+namespace SpatialInputUtilities::Physics {
+
 
 // Compute the linear velocity near a SpatialInteractionSourceLocation assuming the position is part of the
 // spatial interaction source rigid body. When a user does a throwing motion, the user often snaps their
@@ -34,6 +34,7 @@ static inline std::optional<winrt::Windows::Foundation::Numerics::float3> GetVel
     // Combine the tangential velocity with the velocity to get the combined velocity.
     return graspVelocity.Value() + angularTangentialVelocity;
 }
+
 
 }
 

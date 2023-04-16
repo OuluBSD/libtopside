@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -17,7 +17,7 @@ using namespace DirectX;
 ////////////////////////////////////////////////////////////////////////////////
 HolographicRenderer::HolographicRenderer(
     Engine& core,
-    std::shared_ptr<DX::DeviceResources> deviceResources,
+    std::shared_ptr<DeviceResources> deviceResources,
     std::shared_ptr<Pbr::Resources> pbrResources,
     ID3D11ShaderResourceView* skyboxTexture) :
     System(core),
@@ -36,7 +36,7 @@ std::shared_ptr<Pbr::Resources> HolographicRenderer::GetPbrResources()
     return m_pbrResources;
 }
 
-std::shared_ptr<DX::DeviceResources> HolographicRenderer::GetDeviceResources()
+std::shared_ptr<DeviceResources> HolographicRenderer::GetDeviceResources()
 {
     fail_fast_if(m_deviceResources == nullptr);
     return m_deviceResources;
@@ -64,10 +64,11 @@ void HolographicRenderer::OnDeviceRestored()
     m_skyboxRenderer->CreateDeviceDependentResources();
 }
 
-void HolographicRenderer::Initialize()
+bool HolographicRenderer::Initialize()
 {
     m_deviceResources->RegisterDeviceNotify(this);
     m_pbrResources->SetLight(XMVECTORF32{ 0.0f, 0.7071067811865475f, -0.7071067811865475f }, Colors::White);
+    return true;
 }
 
 void HolographicRenderer::Uninitialize()
@@ -98,7 +99,7 @@ void HolographicRenderer::Update(double)
     m_deviceResources->EnsureCameraResources(holographicFrame, holographicFrame.CurrentPrediction());
 
     const bool shouldPresent = m_deviceResources->UseHolographicCameraResources<bool>(
-        [this, holographicFrame](std::map<UINT32, std::unique_ptr<DX::CameraResources>>& cameraResourceMap)
+        [this, holographicFrame](std::map<UINT32, std::unique_ptr<CameraResources>>& cameraResourceMap)
     {
         // Up-to-date frame predictions enhance the effectiveness of image stablization and
         // allow more accurate positioning of holograms.
@@ -111,7 +112,7 @@ void HolographicRenderer::Update(double)
         for (HolographicCameraPose const& cameraPose : prediction.CameraPoses())
         {
             // This represents the device-based resources for a HolographicCamera.
-            DX::CameraResources* pCameraResources = cameraResourceMap[cameraPose.HolographicCamera().Id()].get();
+            CameraResources* pCameraResources = cameraResourceMap[cameraPose.HolographicCamera().Id()].get();
 
             if (RenderAtCameraPose(pCameraResources, coordinateSystem, prediction, holographicFrame.GetRenderingParameters(cameraPose), cameraPose))
             {
@@ -141,7 +142,7 @@ TextRenderer* HolographicRenderer::GetTextRendererForFontSize(float fontSize)
 }
 
 bool HolographicRenderer::RenderAtCameraPose(
-    DX::CameraResources *pCameraResources,
+    CameraResources *pCameraResources,
     winrt::Windows::Perception::Spatial::SpatialCoordinateSystem const& coordinateSystem,
     winrt::Windows::Graphics::Holographic::HolographicFramePrediction& prediction,
     winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters const& renderingParameters,
@@ -322,4 +323,4 @@ void HolographicRenderer::OnCameraRemoved(
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

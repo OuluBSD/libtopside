@@ -26,13 +26,15 @@ public:
     void LoadAppState();
 
 private:
-    std::unique_ptr<Engine>        m_engine;
+    //std::unique_ptr<Engine>        m_engine;
 
     // Cached pointer to device resources.
-    std::shared_ptr<DX::DeviceResources> m_deviceResources;
+    std::shared_ptr<DeviceResources> m_deviceResources;
 
     // Render loop timer.
-    DX::StepTimer                        m_timer;
+    StepTimer                        m_timer;
+    
+    
 };
 
 

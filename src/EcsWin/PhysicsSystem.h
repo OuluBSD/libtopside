@@ -1,13 +1,14 @@
+#if 0
 #pragma once
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // PhysicsSystem
 // Simple physics system to move objects around with basic integration (acceleration, velocity)
-class PhysicsSystem : public System<PhysicsSystem>
+class PhysicsSystem : public ::TS::Ecs::System<PhysicsSystem>
 {
 public:
     using System::System;
@@ -16,7 +17,9 @@ public:
 
 protected:
     void Update(double dt) override;
+    
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_ECS_END
+#endif

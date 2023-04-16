@@ -1,7 +1,8 @@
+#if 0
 #include "EcsWin.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -31,4 +32,5 @@ void PhysicsSystem::Update(double dt)
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
+#endif

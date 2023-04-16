@@ -1,37 +1,39 @@
 #pragma once
 
 
-NAMESPACE_SERIAL_BEGIN
-
+NAMESPACE_PARALLEL_BEGIN
+using namespace ::TS::Ecs::Win;
 	
 class HolographicScene;
 class TextRenderer;
 class QuadRenderer;
 class SkyboxRenderer;
 
-////////////////////////////////////////////////////////////////////////////////
+
 // HolographicRenderer
 // A stereoscopic 3D rendering system, manages rendering everything in the scene
 // through DirectX 11 and Windows::Perception APIs
-class HolographicRenderer : public System<HolographicRenderer>, public DX::IDeviceNotify
+class HolographicRenderer :
+	public System<HolographicRenderer>,
+	public IDeviceNotify
 {
 public:
     HolographicRenderer(
-        Engine& core, 
-        std::shared_ptr<DX::DeviceResources> deviceResources, 
+        Machine& core,
+        std::shared_ptr<DeviceResources> deviceResources,
         std::shared_ptr<Pbr::Resources> pbrResources,
         ID3D11ShaderResourceView* skyboxTexture);
 
     ~HolographicRenderer();
 
     std::shared_ptr<Pbr::Resources> GetPbrResources();
-    std::shared_ptr<DX::DeviceResources> GetDeviceResources();
+    std::shared_ptr<DeviceResources> GetDeviceResources();
 
     void OnDeviceLost() override;
     void OnDeviceRestored() override;
 
 protected:
-    void Initialize() override;
+    bool Initialize() override;
     void Start() override;
     void Update(double) override;
     void Stop() override;
@@ -44,7 +46,8 @@ protected:
         const winrt::Windows::Graphics::Holographic::HolographicSpace& holographicSpace);
 
 private:
-    std::shared_ptr<EntityStore> m_entityStore{ nullptr };
+    Ecs::EntityStoreRef m_entityStore;
+    
     std::shared_ptr<HolographicScene> m_holoScene{ nullptr };
 
     std::unique_ptr<SkyboxRenderer> m_skyboxRenderer{ nullptr };
@@ -57,12 +60,12 @@ private:
     winrt::event_token m_cameraAddedToken{};
     winrt::event_token m_cameraRemovedToken{};
 
-    std::shared_ptr<DX::DeviceResources> m_deviceResources{ nullptr };
+    std::shared_ptr<DeviceResources> m_deviceResources{ nullptr };
 
     TextRenderer* GetTextRendererForFontSize(float fontSize);
 
     bool RenderAtCameraPose(
-        DX::CameraResources *pCameraResources,
+        CameraResources *pCameraResources,
         winrt::Windows::Perception::Spatial::SpatialCoordinateSystem const& coordinateSystem,
         winrt::Windows::Graphics::Holographic::HolographicFramePrediction& prediction,
         winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters const& renderingParameters,
@@ -81,4 +84,4 @@ private:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

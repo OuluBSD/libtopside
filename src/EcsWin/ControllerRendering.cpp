@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace std::placeholders;
@@ -37,7 +37,7 @@ void AddTouchpadTouchIndicator(Pbr::Model& controllerModel, Pbr::Resources& pbrR
         Colors::Black /* base color */,
         0.5f /* roughness */,
         0.0f /* metallic */,
-        Colors::DarkSlateBlue /* emissive */);
+        ToDxVec(Colors::DarkSlateBlue) /* emissive */);
     touchIndicatorMaterial->Name = TouchIndicatorMaterialName;
     touchIndicatorMaterial->Hidden = true;
 
@@ -60,8 +60,9 @@ void AddTouchpadTouchIndicator(Pbr::Model& controllerModel, Pbr::Resources& pbrR
 }
 }
 
-namespace ControllerRendering
-{
+namespace ControllerRendering {
+	
+	
 ControllerModelKey GetControllerModelKey(SpatialInteractionSource const& source)
 {
     if (!source.Controller())
@@ -206,6 +207,7 @@ void ControllerModelCache::ReleaseDeviceDependentResources()
     m_controllerMeshes.clear();
 }
 
+}
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END
 

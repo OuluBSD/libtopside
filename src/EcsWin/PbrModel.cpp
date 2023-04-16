@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -10,10 +10,8 @@ using namespace DirectX;
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
 
 
+namespace Pbr {
 
-
-namespace Pbr
-{
 
 constexpr NodeIndex_t RootParentNodeIndex = -1;
 
@@ -156,7 +154,8 @@ void Model::UpdateTransforms(Pbr::Resources const& pbrResources, _In_ ID3D11Devi
     }
 }
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

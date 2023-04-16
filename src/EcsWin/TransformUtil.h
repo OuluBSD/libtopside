@@ -5,8 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // Helpers to extract data from transform matrices
-namespace float4x4_util
-{
+namespace float4x4_util {
 	
 using float3 = winrt::Windows::Foundation::Numerics::float3;
 using quaternion = winrt::Windows::Foundation::Numerics::quaternion;
@@ -70,8 +69,7 @@ inline float4x4 remove_scale(const float4x4& transform)
 
 }
 
-namespace location_util
-{
+namespace location_util {
 
 using float3 = winrt::Windows::Foundation::Numerics::float3;
 using quaternion = winrt::Windows::Foundation::Numerics::quaternion;

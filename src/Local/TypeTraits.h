@@ -183,7 +183,7 @@ protected:
 
 
 
-template<bool...> 
+template<bool...>
 struct bool_pack;
 
 template <typename Base, typename T>

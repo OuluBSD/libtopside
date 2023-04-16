@@ -4,6 +4,9 @@
 NAMESPACE_ECS_BEGIN
 
 
+extern const vec3 EarthGravity;
+
+
 class Transform : public Component<Transform> {
 	
 public:
@@ -27,6 +30,9 @@ public:
 	void Uninitialize() override;
 	
 };
+
+typedef Ref<Transform> TransformRef;
+
 
 void CopyTransformPos(EntityRef from, EntityRef to);
 

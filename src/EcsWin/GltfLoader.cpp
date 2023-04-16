@@ -1,6 +1,6 @@
 #include "EcsWin.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -113,10 +113,11 @@ void XM_CALLCONV LoadNode(Pbr::NodeIndex_t parentNodeIndex, const tinygltf::Mode
         LoadNode(transformIndex, gltfModel, childNodeId, primitiveBuilderMap, model);
     }
 }
-}
 
-namespace Gltf
-{
+
+namespace Gltf {
+
+
 std::shared_ptr<Pbr::Model> FromGltfObject(
     const Pbr::Resources& pbrResources,
     const tinygltf::Model& gltfModel,
@@ -161,7 +162,7 @@ std::shared_ptr<Pbr::Model> FromGltfObject(
             if (materialIndex == -1) // No material was referenced. Make up a material for it.
             {
                 // Default material is a grey material, 50% roughness, non-metallic.
-                pbrMaterial = Pbr::Material::CreateFlat(pbrResources, Colors::Gray, 0.5f);
+                pbrMaterial = Pbr::Material::CreateFlat(pbrResources, ToDxVec(Colors::Gray), 0.5f);
             }
             else
             {
@@ -256,5 +257,8 @@ std::shared_ptr<Pbr::Model> FromGltfBinary(
 }
 
 
-NAMESPACE_TOPSIDE_END
+}
+
+
+NAMESPACE_WIN_END
 

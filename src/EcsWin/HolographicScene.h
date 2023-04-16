@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 // PredictionUpdated event listener
@@ -24,7 +24,7 @@ public:
 // HolographicScene
 // Maintains a list of our current state of Windows::Perception objects, ensuring the rest of the systems
 // use the same coordinate system, timestamp, etc. 
-class HolographicScene : public System<HolographicScene>
+class HolographicScene : public Parallel::System<HolographicScene>
 {
 public:
     using System::System;
@@ -64,4 +64,4 @@ private:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

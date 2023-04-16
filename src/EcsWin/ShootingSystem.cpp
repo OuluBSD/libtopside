@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace winrt::Windows::Foundation::Numerics;
@@ -20,7 +20,7 @@ std::wstring_view ShootingInteractionSystem::GetDisplayName() const
     return L"Shooting";
 }
 
-SharedEntity ShootingInteractionSystem::CreateToolSelector() const
+EntityRef ShootingInteractionSystem::CreateToolSelector() const
 {
     auto selector = m_engine.Get<EntityStore>()->Create<ToolSelectorPrefab>();
 
@@ -30,7 +30,7 @@ SharedEntity ShootingInteractionSystem::CreateToolSelector() const
     return selector;
 }
 
-void ShootingInteractionSystem::Register(std::vector<SharedEntity> entities)
+void ShootingInteractionSystem::Register(Array<EntityRef>& entities)
 {
     ToolSystem::Register(std::move(entities));
 
@@ -134,4 +134,4 @@ void ShootingComponent::Destroy()
 }
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

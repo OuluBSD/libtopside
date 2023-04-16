@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 struct ThrowingComponent : Component<ThrowingComponent>
@@ -9,7 +9,7 @@ struct ThrowingComponent : Component<ThrowingComponent>
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
-    SharedEntity ballObject;
+    EntityRef ballObject;
 
     float distanceFromPointer = 0.05f;
     float scale = 0.25f;
@@ -30,7 +30,7 @@ protected:
     // IInteractionModeSystem
     std::wstring_view GetInstructions() const override;
     std::wstring_view GetDisplayName() const override;
-    SharedEntity CreateToolSelector() const override;
+    EntityRef CreateToolSelector() const override;
 
     // ISpatialInteractionListener
     void OnSourcePressed(
@@ -41,4 +41,4 @@ protected:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

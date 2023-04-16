@@ -3,6 +3,9 @@
 NAMESPACE_ECS_BEGIN
 
 
+const vec3 EarthGravity = { 0, -9.8f, 0 };
+
+
 void Transform::Initialize() {
 	data.position = zero<vec3>();
 	size = one<vec3>();

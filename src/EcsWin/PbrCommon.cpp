@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -9,11 +9,9 @@ using namespace DirectX;
 
 #define TRIANGLE_VERTEX_COUNT 3 // #define so it can be used in lambdas without capture
 
-namespace Pbr
-{
+namespace Pbr {
 	
-namespace Internal
-{
+namespace Internal {
 
 void ThrowIfFailed(HRESULT hr)
 {
@@ -185,112 +183,113 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float sideLength, Pbr::NodeIndex_t t
     return *this;
 }
 
-namespace Texture
+namespace Texture {
+
+std::array<uint8_t, 4> XM_CALLCONV CreateRGBA(DirectX::FXMVECTOR color)
 {
-    std::array<uint8_t, 4> XM_CALLCONV CreateRGBA(DirectX::FXMVECTOR color)
+    DirectX::XMFLOAT4 colorf;
+    DirectX::XMStoreFloat4(&colorf, DirectX::XMVectorScale(color, 255));
+    return std::array<uint8_t, 4> { (uint8_t)colorf.x, (uint8_t)colorf.y, (uint8_t)colorf.z, (uint8_t)colorf.w };
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadImage(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* fileData, uint32_t fileSize)
+{
+    auto freeImageData = [](unsigned char* ptr) { ::free(ptr); };
+    using stbi_unique_ptr = std::unique_ptr<unsigned char, decltype(freeImageData)>;
+
+    int w, h, c;
+    stbi_unique_ptr rgbaData(stbi_load_from_memory(fileData, fileSize, &w, &h, &c, 4), freeImageData);
+    if (!rgbaData)
     {
-        DirectX::XMFLOAT4 colorf;
-        DirectX::XMStoreFloat4(&colorf, DirectX::XMVectorScale(color, 255));
-        return std::array<uint8_t, 4> { (uint8_t)colorf.x, (uint8_t)colorf.y, (uint8_t)colorf.z, (uint8_t)colorf.w };
+        throw std::exception("Failed to load image file data.");
     }
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadImage(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* fileData, uint32_t fileSize)
+    return CreateTexture(device, rgbaData.get(), w * h * c, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(_In_ ID3D11Device* device, CXMVECTOR color, DXGI_FORMAT format)
+{
+    D3D11_TEXTURE2D_DESC desc{};
+    desc.Width = 1;
+    desc.Height = 1;
+    desc.MipLevels = 1;
+    desc.ArraySize = 6;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+    // Each side is a 1x1 pixel (RGBA) image.
+    const std::array<uint8_t, 4> rgbaColor = CreateRGBA(color);
+    D3D11_SUBRESOURCE_DATA initData[6];
+    for (int i = 0; i < _countof(initData); i++)
     {
-        auto freeImageData = [](unsigned char* ptr) { ::free(ptr); };
-        using stbi_unique_ptr = std::unique_ptr<unsigned char, decltype(freeImageData)>;
-
-        int w, h, c;
-        stbi_unique_ptr rgbaData(stbi_load_from_memory(fileData, fileSize, &w, &h, &c, 4), freeImageData);
-        if (!rgbaData)
-        {
-            throw std::exception("Failed to load image file data.");
-        }
-
-        return CreateTexture(device, rgbaData.get(), w * h * c, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);
+        initData[i].pSysMem = rgbaColor.data();
+        initData[i].SysMemPitch = initData[i].SysMemSlicePitch = 4;
     }
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(_In_ ID3D11Device* device, CXMVECTOR color, DXGI_FORMAT format)
-    {
-        D3D11_TEXTURE2D_DESC desc{};
-        desc.Width = 1;
-        desc.Height = 1;
-        desc.MipLevels = 1;
-        desc.ArraySize = 6;
-        desc.Format = format;
-        desc.SampleDesc.Count = 1;
-        desc.SampleDesc.Quality = 0;
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+    ComPtr<ID3D11Texture2D> cubeTexture;
+    Internal::ThrowIfFailed(device->CreateTexture2D(&desc, initData, &cubeTexture));
 
-        // Each side is a 1x1 pixel (RGBA) image.
-        const std::array<uint8_t, 4> rgbaColor = CreateRGBA(color);
-        D3D11_SUBRESOURCE_DATA initData[6];
-        for (int i = 0; i < _countof(initData); i++)
-        {
-            initData[i].pSysMem = rgbaColor.data();
-            initData[i].SysMemPitch = initData[i].SysMemSlicePitch = 4;
-        }
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = desc.Format;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+    srvDesc.Texture2D.MipLevels = desc.MipLevels;
+    srvDesc.Texture2D.MostDetailedMip = 0;
 
-        ComPtr<ID3D11Texture2D> cubeTexture;
-        Internal::ThrowIfFailed(device->CreateTexture2D(&desc, initData, &cubeTexture));
+    ComPtr<ID3D11ShaderResourceView> textureView;
+    Internal::ThrowIfFailed(device->CreateShaderResourceView(cubeTexture.Get(), &srvDesc, &textureView));
 
-        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-        srvDesc.Format = desc.Format;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-        srvDesc.Texture2D.MipLevels = desc.MipLevels;
-        srvDesc.Texture2D.MostDetailedMip = 0;
+    return textureView;
+}
 
-        ComPtr<ID3D11ShaderResourceView> textureView;
-        Internal::ThrowIfFailed(device->CreateShaderResourceView(cubeTexture.Get(), &srvDesc, &textureView));
+ComPtr<ID3D11ShaderResourceView> CreateTexture(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* rgba, uint32_t size, int width, int height, DXGI_FORMAT format)
+{
+    D3D11_TEXTURE2D_DESC desc{};
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-        return textureView;
-    }
+    D3D11_SUBRESOURCE_DATA initData{};
+    initData.pSysMem = rgba;
+    initData.SysMemPitch = size / height;
+    initData.SysMemSlicePitch = size;
 
-    ComPtr<ID3D11ShaderResourceView> CreateTexture(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* rgba, uint32_t size, int width, int height, DXGI_FORMAT format)
-    {
-        D3D11_TEXTURE2D_DESC desc{};
-        desc.Width = width;
-        desc.Height = height;
-        desc.MipLevels = 1;
-        desc.ArraySize = 1;
-        desc.Format = format;
-        desc.SampleDesc.Count = 1;
-        desc.SampleDesc.Quality = 0;
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    ComPtr<ID3D11Texture2D> texture2D;
+    Internal::ThrowIfFailed(device->CreateTexture2D(&desc, &initData, &texture2D));
 
-        D3D11_SUBRESOURCE_DATA initData{};
-        initData.pSysMem = rgba;
-        initData.SysMemPitch = size / height;
-        initData.SysMemSlicePitch = size;
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = desc.Format;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = desc.MipLevels;
+    srvDesc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
 
-        ComPtr<ID3D11Texture2D> texture2D;
-        Internal::ThrowIfFailed(device->CreateTexture2D(&desc, &initData, &texture2D));
+    ComPtr<ID3D11ShaderResourceView> textureView;
+    Internal::ThrowIfFailed(device->CreateShaderResourceView(texture2D.Get(), &srvDesc, &textureView));
 
-        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-        srvDesc.Format = desc.Format;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = desc.MipLevels;
-        srvDesc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
+    return textureView;
+}
 
-        ComPtr<ID3D11ShaderResourceView> textureView;
-        Internal::ThrowIfFailed(device->CreateShaderResourceView(texture2D.Get(), &srvDesc, &textureView));
+ComPtr<ID3D11SamplerState> CreateSampler(_In_ ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
+{
+    CD3D11_SAMPLER_DESC samplerDesc(CD3D11_DEFAULT{});
+    samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = addressMode;
 
-        return textureView;
-    }
-
-    ComPtr<ID3D11SamplerState> CreateSampler(_In_ ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode)
-    {
-        CD3D11_SAMPLER_DESC samplerDesc(CD3D11_DEFAULT{});
-        samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = addressMode;
-
-        ComPtr<ID3D11SamplerState> samplerState;
-        Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&samplerDesc, &samplerState));
-        return samplerState;
-    }
+    ComPtr<ID3D11SamplerState> samplerState;
+    Pbr::Internal::ThrowIfFailed(device->CreateSamplerState(&samplerDesc, &samplerState));
+    return samplerState;
 }
 
 }
 
-NAMESPACE_TOPSIDE_END
+}
+
+NAMESPACE_WIN_END

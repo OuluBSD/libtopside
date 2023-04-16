@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 class ToolSystemBase;
@@ -38,7 +38,7 @@ protected:
 
 private:
     detail::type_map<std::shared_ptr<ToolSystemBase>> m_selectors;
-    detail::type_map<SharedEntity> m_selectorObjects;
+    detail::type_map<EntityRef> m_selectorObjects;
 
     bool m_showToolbox{ false };
 
@@ -50,19 +50,21 @@ private:
     static winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceHandedness ControllerHandToHandedness(ControllerHand hand);
 
     struct ControllerContext {
-        SharedEntity Controller;
-        SharedEntity DebugText;
+        EntityRef Controller;
+        EntityRef DebugText;
         ControllerHand Hand;
     };
 
     void SwitchToolType(Entity& entity, const detail::type_id& newType);
 
-    SharedEntity FindController(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source);
+    EntityRef FindController(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source);
 
     std::array<ControllerContext, ControllerHand::Count> m_controllers;
 
-    SharedEntity m_instructionalText{ nullptr };
+    EntityRef m_instructionalText;
+    
+    
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

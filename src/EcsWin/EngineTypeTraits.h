@@ -1,17 +1,13 @@
-#if 0
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
 // TypeTraits used throughout Neso for compile-time validation
-namespace Neso {
 
-class Engine;
-class SystemBase;
-struct ComponentBase;
-class Entity;
+NAMESPACE_TOPSIDE_BEGIN
 
-namespace detail
-{
+
+namespace detail {
+
 ////////////////////////////////////////
 // https://codereview.stackexchange.com/a/67394
 template <typename Tuple, typename Func, std::size_t ...Indices>
@@ -52,13 +48,13 @@ template <typename T, typename... Ts>
 using all_same = all_true<std::is_same<T, Ts>::value...>;
 
 template<typename T>
-using is_component = std::is_base_of<ComponentBase, T>;
 
+using is_component = std::is_base_of<Ecs::ComponentBase, T>;
 template<typename T>
 using is_system = std::is_base_of<SystemBase, T>;
 
 template<typename... Ts>
-using all_components = all_base_of<ComponentBase, Ts...>;
+using all_components = all_base_of<Ecs::ComponentBase, Ts...>;
 
 template<typename... Ts>
 using all_systems = all_base_of<SystemBase, Ts...>;
@@ -67,9 +63,11 @@ template <typename Tuple>
 struct tuple_all_components : std::false_type {};
 
 template <typename... Ts>
-struct tuple_all_components<std::tuple<Ts...>> : all_base_of<ComponentBase, Ts...> {};
+struct tuple_all_components<std::tuple<Ts...>> : all_base_of<Ecs::ComponentBase, Ts...> {};
 }
 
-}
 
-#endif
+
+NAMESPACE_TOPSIDE_END
+
+

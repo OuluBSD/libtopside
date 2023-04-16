@@ -11,7 +11,7 @@ class TextRenderer
 {
 public:
     TextRenderer(
-        std::shared_ptr<DX::DeviceResources> deviceResources, 
+        std::shared_ptr<DeviceResources> deviceResources, 
         uint32_t textureWidth, 
         uint32_t textureHeight,
         float fontSize);
@@ -28,7 +28,7 @@ public:
 
 private:
     // Cached pointer to device resources.
-    std::shared_ptr<DX::DeviceResources> m_deviceResources;
+    std::shared_ptr<DeviceResources> m_deviceResources;
 
     // Direct3D resources for rendering text to an off-screen render target.
     Microsoft::WRL::ComPtr<ID3D11Texture2D>             m_texture;

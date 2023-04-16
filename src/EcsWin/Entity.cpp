@@ -14,7 +14,7 @@ Entity::~Entity()
     Destroy();
 }
 
-SharedEntity Entity::Clone() const
+EntityRef Entity::Clone() const
 {
     return m_engine.Get<EntityStore>()->CreateFromComponentMap(m_engine.Get<ComponentStore>()->Clone(m_components));
 }

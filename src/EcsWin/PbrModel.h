@@ -1,11 +1,10 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
-namespace Pbr
-{
+namespace Pbr {
 
 	
 // Node for creating a hierarchy of transforms. These transforms are referenced by vertices in the model's primitives.
@@ -99,7 +98,8 @@ private:
     mutable uint32_t TotalModifyCount{ 0 };
 };
 
+
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

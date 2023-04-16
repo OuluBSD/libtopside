@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 
@@ -139,4 +139,4 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData()
 }
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

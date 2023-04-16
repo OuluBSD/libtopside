@@ -1,8 +1,10 @@
 description "\377B0,0,128";
 
+noblitz;
+
 uses
-	EcsLib,
-	ports/DirectXTK;
+	ports/DirectXTK,
+	EcsLocal;
 
 file
 	Copying,
@@ -49,8 +51,6 @@ file
 	PbrResources.h,
 	PbrResources.cpp,
 	Physics.h,
-	PhysicsSystem.h,
-	PhysicsSystem.cpp,
 	QuadRenderer.h,
 	QuadRenderer.cpp,
 	ShootingSystem.h,
@@ -69,7 +69,10 @@ file
 	ToolSystem.h,
 	ToolSystem.cpp,
 	TransformUtil.h,
+	EngineTypeTraits.h,
 	Trash readonly separator,
+	PhysicsSystem.h,
+	PhysicsSystem.cpp,
 	Engine.h,
 	Engine.cpp,
 	Entity.h,
@@ -81,7 +84,6 @@ file
 	EasingSystem.h,
 	EasingSystem.cpp,
 	EngineCommon.h,
-	EngineTypeTraits.h,
 	EntityStore.h,
 	EntityStore.cpp;
 

@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 
@@ -14,12 +14,12 @@ using namespace std::literals::chrono_literals;
 
 void PaintingInteractionSystem::Start()
 {
-    m_engine.Get<ToolboxSystem>()->AddToolSystem(shared_from_this());
+    m_engine.Get<ToolboxSystem>()->AddToolSystem(AsRefT());
 }
 
 void PaintingInteractionSystem::Stop()
 {
-    m_engine.Get<ToolboxSystem>()->RemoveToolSystem(shared_from_this());
+    m_engine.Get<ToolboxSystem>()->RemoveToolSystem(AsRefT());
 }
 
 std::wstring_view PaintingInteractionSystem::GetInstructions() const 
@@ -35,7 +35,7 @@ std::wstring_view PaintingInteractionSystem::GetDisplayName() const
     return L"Painting";
 }
 
-SharedEntity PaintingInteractionSystem::CreateToolSelector() const
+EntityRef PaintingInteractionSystem::CreateToolSelector() const
 {
     auto selector = m_engine.Get<EntityStore>()->Create<ToolSelectorPrefab>();
 
@@ -46,7 +46,7 @@ SharedEntity PaintingInteractionSystem::CreateToolSelector() const
     return selector;
 }
 
-void PaintingInteractionSystem::Register(std::vector<SharedEntity> entities)
+void PaintingInteractionSystem::Register(Array<EntityRef>& entities)
 {
     ToolSystem::Register(std::move(entities));
 
@@ -62,20 +62,20 @@ void PaintingInteractionSystem::Register(std::vector<SharedEntity> entities)
         paintBrush->Get<MotionControllerComponent>()->requestedHandedness = entity->Get<MotionControllerComponent>()->requestedHandedness;
 
         auto touchpadIndicator = entityStore->Create<StaticSphere>();
-        touchpadIndicator->Get<Transform>()->scale = { 0.005f, 0.005f, 0.005f };
+        touchpadIndicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
         touchpadIndicator->Get<PbrRenderable>()->Color = DirectX::Colors::Gray;
 
-        std::vector<SharedEntity> colorPickersObjects;
+        Array<EntityRef> colorPickersObjects;
         for (auto color : m_colors)
         {
             auto colorPicker = entityStore->Create<StaticSphere>();
-            colorPicker->Get<Transform>()->scale = { 0.01f, 0.01f, 0.01f };
+            colorPicker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
             colorPicker->Get<PbrRenderable>()->Color = color;
             colorPickersObjects.push_back(std::move(colorPicker));
         }
 
         auto beam = entityStore->Create<StaticCube>();
-        beam->Get<Transform>()->scale = { 0.005f, 0.005f, 10.0f };
+        beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
         beam->Get<PbrRenderable>()->Color = DirectX::Colors::Aquamarine;
 
         PaintComponent* paint = entity->Get<PaintComponent>();
@@ -89,7 +89,7 @@ void PaintingInteractionSystem::Register(std::vector<SharedEntity> entities)
         paint->SetEnabled(false);
     }
 
-    m_engine.Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+    m_engine.Get<SpatialInteractionSystem>()->AddListener(AsRefT());
 }
 
 void PaintingInteractionSystem::Activate(Entity& entity)
@@ -449,4 +449,4 @@ void PaintComponent::Destroy()
 }
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

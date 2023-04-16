@@ -1,14 +1,14 @@
-#if 0
 #pragma once
 
 
-namespace Neso {
+NAMESPACE_WIN_BEGIN
 
+#if 0
 class Engine;
 
 class EntityStore;
 class Entity;
-using SharedEntity = std::shared_ptr<Entity>;
+using EntityRef = std::shared_ptr<Entity>;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Entity
@@ -42,7 +42,7 @@ public:
     Entity(ComponentMap components, EntityId id, Engine& core);
     virtual ~Entity();
 
-    SharedEntity Clone() const;
+    EntityRef Clone() const;
 
     EntityId Id() const { return m_id; }
 
@@ -63,12 +63,13 @@ private:
 // Example, an Entity 
 // Declaration: 
 // struct GiantBall : EntityPrefab<Transform, BallComponent> {
-//     static ComponentMap Make(ComponentStore& store) {
-//         auto components = EntityPrefab::Make(store);
-//         components.Get<Transform>()->scale = { 500.0f, 500.0f, 500.0f };
+//     static Components Make(Entity& e) {
+//         auto components = EntityPrefab::Make(e);
+//         components.Get<Transform>()->size = { 500.0f, 500.0f, 500.0f };
 //         return components;
 //     }
 // };
+#endif
 
 // Usage: 
 // auto giantBall = m_engine.Get<EntityStore>()->Create<GiantBall>();
@@ -80,10 +81,18 @@ struct EntityPrefab
 
     using Components = std::tuple<ComponentTs...>;
 
-    static ComponentMap Make(ComponentStore& store)
-    {
-        return store.CreateComponentMap<ComponentTs...>();
+    static Components Make(Entity& e) {
+        #if 0
+        ComponentStoreRef store = e.GetEngine().Get<ComponentStore>();
+        ASSERT(store);
+        return store->template CreateComponentMap<ComponentTs...>();
+        #else
+        Pool& p = e.GetPool();
+        EntityRef e = p->template Create<EntityPrefab<ComponentTs...>>();
+        return e->template TryGetComponents<ComponentTs...>();
+        #endif
     }
 };
-}
-#endif
+
+NAMESPACE_WIN_END
+

@@ -1,14 +1,15 @@
 #pragma once
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 namespace Pbr {
 
-namespace Internal
-{
-    void ThrowIfFailed(HRESULT hr);
+namespace Internal {
+
+void ThrowIfFailed(HRESULT hr);
+
 }
 
 using NodeIndex_t = uint16_t; // This type must align with the type used in the Pbr shaders.
@@ -36,13 +37,14 @@ struct PrimitiveBuilder
     PrimitiveBuilder& AddCube(float sideLength, Pbr::NodeIndex_t transformIndex = Pbr::RootNodeIndex);
 };
 
-namespace Texture
-{
-    std::array<uint8_t, 4> XM_CALLCONV CreateRGBA(DirectX::FXMVECTOR color);
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadImage(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* fileData, uint32_t fileSize);
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(_In_ ID3D11Device* device, DirectX::CXMVECTOR color, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM);
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* rgba, uint32_t size, int width, int height, DXGI_FORMAT format);
-    Microsoft::WRL::ComPtr<ID3D11SamplerState> CreateSampler(_In_ ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode = D3D11_TEXTURE_ADDRESS_CLAMP);
+namespace Texture {
+
+std::array<uint8_t, 4> XM_CALLCONV CreateRGBA(DirectX::FXMVECTOR color);
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadImage(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* fileData, uint32_t fileSize);
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateFlatCubeTexture(_In_ ID3D11Device* device, DirectX::CXMVECTOR color, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM);
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(_In_ ID3D11Device* device, _In_reads_bytes_(size) const uint8_t* rgba, uint32_t size, int width, int height, DXGI_FORMAT format);
+Microsoft::WRL::ComPtr<ID3D11SamplerState> CreateSampler(_In_ ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode = D3D11_TEXTURE_ADDRESS_CLAMP);
+
 }
 
 // Catch changes to a value of type T for lazy sync with DirectX.
@@ -89,4 +91,4 @@ private:
 
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_WIN_END

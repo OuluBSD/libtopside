@@ -1,12 +1,12 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 ComponentMap ToolSelectorPrefab::Make(ComponentStore& store)
 {
-    auto components = EntityPrefab::Make(store);
+    auto components = EntityPrefab::Make(e);
 
     components.Get<RigidBody>()->angularVelocity = { 0.0f, -3.0f, 0.0f }; // Spin in place
     components.Get<RigidBody>()->dampingFactor = 1.0f;
@@ -16,4 +16,4 @@ ComponentMap ToolSelectorPrefab::Make(ComponentStore& store)
 }
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END

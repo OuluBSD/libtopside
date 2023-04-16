@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 using namespace winrt::Windows::Foundation::Numerics;
 
 SkyboxRenderer::SkyboxRenderer(
-    std::shared_ptr<DX::DeviceResources> deviceResources,
+    std::shared_ptr<DeviceResources> deviceResources,
     ID3D11ShaderResourceView* skyboxTexture) :
     m_deviceResources(std::move(deviceResources)),
     m_skyboxTexture(skyboxTexture)

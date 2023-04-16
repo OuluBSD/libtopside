@@ -1,13 +1,12 @@
 #include "EcsLib.h"
 
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-const vec3 PhysicsSystem::EarthGravity = { 0, -9.8f, 0 };
 
+#if 0
 void PhysicsSystem::Update(double dt)
 {
 	PoolRef p = GetMachine().Get<EntityStore>()->GetRoot();
@@ -32,8 +31,8 @@ void PhysicsSystem::Update(double dt)
         rigid_body.angular_velocity *= rigid_body.damping_factor;
     }
 }
+#endif
 
 
 NAMESPACE_TOPSIDE_END
 
-#endif

@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_WIN_BEGIN
 
 
 namespace Pbr {
@@ -9,6 +9,7 @@ struct Model;
 }
 
 
+#if 0
 // These are a few commonly used components
 struct Transform : Component<Transform>
 {
@@ -38,6 +39,7 @@ struct RigidBody : Component<RigidBody>
 
     float dampingFactor = 0.999f;
 };
+#endif
 
 struct PbrRenderable : Component<PbrRenderable>
 {
@@ -55,6 +57,9 @@ struct PbrRenderable : Component<PbrRenderable>
     std::optional<float> AlphaMultiplier;
 };
 
+typedef Ref<PbrRenderable> PbrRenderableRef;
+
+
 struct TextRenderable : Component<TextRenderable>
 {
     std::wstring Text = L"";
@@ -63,5 +68,5 @@ struct TextRenderable : Component<TextRenderable>
 
 
 
-NAMESPACE_ECS_END
+NAMESPACE_WIN_END
 
