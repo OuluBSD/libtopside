@@ -185,7 +185,7 @@ void CameraResources::CommitDirect3D11DepthBuffer(HolographicCameraRenderingPara
     winrt::check_hresult(depthStencilResource->CreateSubresourceSurface(0, &depthDxgiSurface));
 
     winrt::com_ptr<::IInspectable> inspectableSurface;
-    winrt::check_hresult(CreateDirect3D11SurfaceFromDXGISurface(depthDxgiSurface.Get(), winrt::put_abi(inspectableSurface)));
+    winrt::check_hresult(CreateDirect3D11SurfaceFromDXGISurface(depthDxgiSurface.Get(), (IInspectable**)winrt::put_abi(inspectableSurface)));
 
     // Calling CommitDirect3D11DepthBuffer causes the system to queue Direct3D commands to
     // read the depth buffer. It will then use that information to stabilize the image as

@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 using namespace winrt::Windows::Foundation::Numerics;
@@ -170,4 +170,4 @@ void SkyboxRenderer::Unbind()
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

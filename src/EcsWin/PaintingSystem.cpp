@@ -14,12 +14,14 @@ using namespace std::literals::chrono_literals;
 
 void PaintingInteractionSystem::Start()
 {
-    m_engine.Get<ToolboxSystem>()->AddToolSystem(AsRefT());
+	Engine& m_engine = GetEngine();
+    m_engine.Get<ToolboxSystem>()->AddToolSystem(*this);
 }
 
 void PaintingInteractionSystem::Stop()
 {
-    m_engine.Get<ToolboxSystem>()->RemoveToolSystem(AsRefT());
+	Engine& m_engine = GetEngine();
+    m_engine.Get<ToolboxSystem>()->RemoveToolSystem(*this);
 }
 
 std::wstring_view PaintingInteractionSystem::GetInstructions() const 
@@ -37,59 +39,62 @@ std::wstring_view PaintingInteractionSystem::GetDisplayName() const
 
 EntityRef PaintingInteractionSystem::CreateToolSelector() const
 {
-    auto selector = m_engine.Get<EntityStore>()->Create<ToolSelectorPrefab>();
+	Engine& m_engine = GetEngine();
+    auto selector = m_engine.Get<EntityStore>()->GetRoot()->Create<ToolSelectorPrefab>();
 
     selector->Get<PbrRenderable>()->ResetModel("PaintBrush");
-    selector->Get<Transform>()->orientation = make_quaternion_from_axis_angle({ 1, 0, 0 }, DirectX::XM_PI / 1.5f);
-    selector->Get<ToolSelectorKey>()->type = type();
+    selector->Get<Transform>()->data.orientation = AxisAngleQuat(vec3(1, 0, 0), M_PIf / 1.5f);
+    selector->Get<ToolSelectorKey>()->type = GetTypeId();
 
     return selector;
 }
 
 void PaintingInteractionSystem::Register(Array<EntityRef>& entities)
 {
-    ToolSystem::Register(std::move(entities));
+	Engine& m_engine = GetEngine();
+    ToolSystem::Register(entities);
 
-    auto entityStore = m_engine.Get<EntityStore>();
+    EntityStoreRef entityStore = m_engine.Get<EntityStore>();
 
-    for (auto& entity : m_entities) 
+    for (auto& entity : m_entities)
     {
         const auto& selectedColor = m_colors[0];
 
-        auto paintBrush = entityStore->Create<PaintBrush>();
+		auto pool = entityStore->GetRoot();
+        auto paintBrush = pool->Create<PaintBrush>();
         paintBrush->Get<PbrRenderable>()->Color = selectedColor;
 
         paintBrush->Get<MotionControllerComponent>()->requestedHandedness = entity->Get<MotionControllerComponent>()->requestedHandedness;
 
-        auto touchpadIndicator = entityStore->Create<StaticSphere>();
+        auto touchpadIndicator = pool->Create<StaticSphere>();
         touchpadIndicator->Get<Transform>()->size = { 0.005f, 0.005f, 0.005f };
         touchpadIndicator->Get<PbrRenderable>()->Color = DirectX::Colors::Gray;
 
         Array<EntityRef> colorPickersObjects;
         for (auto color : m_colors)
         {
-            auto colorPicker = entityStore->Create<StaticSphere>();
+            EntityRef colorPicker = pool->Create<StaticSphere>();
             colorPicker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
             colorPicker->Get<PbrRenderable>()->Color = color;
-            colorPickersObjects.push_back(std::move(colorPicker));
+            colorPickersObjects.Add(colorPicker);
         }
 
-        auto beam = entityStore->Create<StaticCube>();
+        auto beam = pool->Create<StaticCube>();
         beam->Get<Transform>()->size = { 0.005f, 0.005f, 10.0f };
         beam->Get<PbrRenderable>()->Color = DirectX::Colors::Aquamarine;
 
-        PaintComponent* paint = entity->Get<PaintComponent>();
+        PaintComponentRef paint = entity->Get<PaintComponent>();
 
         paint->selectedColor = selectedColor;
         paint->paintBrush = std::move(paintBrush);
         paint->touchpadIndicator = std::move(touchpadIndicator);
-        paint->colorPickerObjects = std::move(colorPickersObjects);
-        paint->beam = std::move(beam);
+        paint->colorPickerObjects <<= colorPickersObjects;
+        paint->beam = beam;
 
         paint->SetEnabled(false);
     }
 
-    m_engine.Get<SpatialInteractionSystem>()->AddListener(AsRefT());
+    m_engine.Get<SpatialInteractionSystem>()->AddListener(*this);
 }
 
 void PaintingInteractionSystem::Activate(Entity& entity)
@@ -104,17 +109,17 @@ void PaintingInteractionSystem::Deactivate(Entity& entity)
 {
     entity.Get<PbrRenderable>()->SetEnabled(true);
 
-    PaintComponent* paint = entity.Get<PaintComponent>();
+    PaintComponentRef paint = entity.Get<PaintComponent>();
 
     // Copy out the strokes from the component so they can persist in the world.
     if (paint->strokeInProgress)
     {
-        paint->strokes.push_back(std::move(paint->strokeInProgress));
+        paint->strokes.Add(paint->strokeInProgress);
     }
 
-    if (paint->strokes.size())
+    if (paint->strokes.GetCount())
     {
-        m_persistentStrokes.push_back(std::move(paint->strokes));
+        m_persistentStrokes.Add(paint->strokes);
     }
 
     ToolSystem::Deactivate(entity);
@@ -135,12 +140,12 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
                 stroke->Destroy();
             }
 
-            paint->strokes.clear();
+            paint->strokes.Clear();
 
             if (paint->strokeInProgress)
             {
                 paint->strokeInProgress->Destroy();
-                paint->strokeInProgress = nullptr;
+                paint->strokeInProgress.Clear();
             }
         }
 
@@ -153,7 +158,7 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
             }
         }
 
-        m_persistentStrokes.clear();
+        m_persistentStrokes.Clear();
     }
 }
 
@@ -255,10 +260,10 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
                 // Start new stroke
                 if (newStrokeStarted)
                 {
-                    paint->strokeInProgress = m_engine.Get<EntityStore>()->Create<PaintStroke>();
+                    paint->strokeInProgress = m_engine.Get<EntityStore>()->GetRoot()->Create<PaintStroke>();
                     paint->strokeInProgress->Get<PbrRenderable>()->Color = paint->selectedColor;
 
-                    paint->strokes.push_back(paint->strokeInProgress);
+                    paint->strokes.Add(paint->strokeInProgress);
                 }
 
                 auto properties = sourceState.Properties();

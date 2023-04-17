@@ -191,7 +191,7 @@ void DeviceResources::CreateDeviceResources()
     winrt::com_ptr<::IInspectable> object;
     winrt::check_hresult(CreateDirect3D11DeviceFromDXGIDevice(
         dxgiDevice.Get(),
-        winrt::put_abi(object)));
+        (IInspectable**)winrt::put_abi(object)));
     m_d3dInteropDevice = object.as<IDirect3DDevice>();
 
     // Cache the DXGI adapter.

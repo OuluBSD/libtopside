@@ -4,32 +4,36 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-////////////////////////////////////////////////////////////////////////////////
 // ListenerCollection
 // Collection of weak_ptr's and helper functions to remove objects that don't exist anymore
-template<typename T>
+template<typename T, typename Parent=T::Parent>
 class ListenerCollection
 {
 public:
-    void Add(std::shared_ptr<T> listener)
+	using R = Ref<T,Parent>;
+	
+    void Add(R listener)
     {
-        std::unique_lock<std::mutex> lock(m_mutex);
-        m_listeners.push_back(std::move(listener));
+        TODO
+        /*std::unique_lock<std::mutex> lock(m_mutex);
+        m_listeners.push_back(std::move(listener));*/
     }
 
-    void Remove(std::shared_ptr<T> listener)
+    void Remove(R listener)
     {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        TODO
+        /*std::unique_lock<std::mutex> lock(m_mutex);
         erase_if(&m_listeners, [&listener](const std::weak_ptr<T>& weak)
         {
             std::shared_ptr<T> ptr = weak.lock();
             return ptr == listener;
-        });
+        });*/
     }
 
-    std::vector<std::shared_ptr<T>> PurgeAndGetListeners()
+    Array<R> PurgeAndGetListeners()
     {
-        std::vector<std::shared_ptr<T>> result;
+        TODO
+        /*Array<Ref<T>> result;
         {
             std::unique_lock<std::mutex> lock(m_mutex);
             erase_if(&m_listeners, [&result](const std::weak_ptr<T>& weak)
@@ -46,17 +50,20 @@ public:
                 }
             });
         }
-        return result;
+        return result;*/
     }
 
     virtual ~ListenerCollection()
     {
-        fail_fast_if(!m_listeners.empty());
+        TODO
+        //fail_fast_if(!m_listeners.empty());
     }
 
 private:
-    std::mutex m_mutex;
-    std::vector<std::weak_ptr<T>> m_listeners;
+    Mutex m_mutex;
+    Array<R> m_listeners;
+    
+    
 };
 
 

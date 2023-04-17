@@ -11,6 +11,9 @@ struct ToolComponent : Component<ToolComponent>
     std::wstring title;
     std::wstring description;
     detail::type_id toolType{ typeid(nullptr_t) };
+    
+    COPY_PANIC(ToolComponent)
+    
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,10 +24,12 @@ class ToolboxSystem :
     public ISpatialInteractionListener
 {
 public:
+	using Base = System<ToolboxSystem>;
     using System::System;
+    RTTI_DECL2(ToolboxSystem, Base, ISpatialInteractionListener)
 
-    void AddToolSystem(std::shared_ptr<ToolSystemBase> system);
-    void RemoveToolSystem(const std::shared_ptr<ToolSystemBase>& system);
+    void AddToolSystem(ToolSystemBase& system);
+    void RemoveToolSystem(ToolSystemBase& system);
 
 protected:
     // System

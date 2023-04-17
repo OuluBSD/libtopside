@@ -12,13 +12,19 @@ using namespace winrt::Windows::Foundation::Numerics;
 PaintStrokeSystem::PaintStrokeSystem(
     Engine& core,
     std::shared_ptr<Pbr::Resources> pbrResources) :
-    System(core),
+    SP(core),
     m_pbrResources(std::move(pbrResources))
 {}
 
 void PaintStrokeSystem::Update(double)
 {
-    for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponents<PaintStrokeComponent, PbrRenderable>())
+	Engine& m_engine = GetEngine();
+	
+	TODO
+	#if 0
+	auto comps = m_engine.Get<EntityStore>()->GetComponents<PaintStrokeComponent, PbrRenderable>();
+	
+    for (auto& componentSet : comps)
     {
         auto[paintStroke, pbr] = componentSet;
 
@@ -42,6 +48,7 @@ void PaintStrokeSystem::Update(double)
             paintStroke->strokeChanged = false;
         }
     }
+    #endif
 }
 
 void PaintStrokeComponent::AddPoint(const float4x4& transformation, float width)

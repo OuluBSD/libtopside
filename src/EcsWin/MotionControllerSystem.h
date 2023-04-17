@@ -6,6 +6,8 @@ NAMESPACE_WIN_BEGIN
 
 struct MotionControllerComponent : Component<MotionControllerComponent>
 {
+	COPY_PANIC(MotionControllerComponent)
+	
     bool IsSource(const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& rhs) const;
 
     bool attachControllerModel{ false };
@@ -13,6 +15,13 @@ struct MotionControllerComponent : Component<MotionControllerComponent>
     winrt::Windows::UI::Input::Spatial::SpatialInteractionSource source{ nullptr };
     winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceLocation location{ nullptr };
 };
+
+
+NAMESPACE_WIN_END
+
+
+NAMESPACE_PARALLEL_BEGIN
+using namespace ::TS::Ecs::Win;
 
 ////////////////////////////////////////////////////////////////////////////////
 // MotionControllerSystem
@@ -29,7 +38,9 @@ class MotionControllerSystem :
     public ISpatialInteractionListener
 {
 public:
+	using Base = System<MotionControllerSystem>;
     using System::System;
+	RTTI_DECL3(MotionControllerSystem, Base, IPredictionUpdateListener, ISpatialInteractionListener)
 
 protected:
     // System
@@ -58,4 +69,4 @@ private:
 };
 
 
-NAMESPACE_WIN_END
+NAMESPACE_PARALLEL_END

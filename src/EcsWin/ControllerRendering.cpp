@@ -34,7 +34,7 @@ void AddTouchpadTouchIndicator(Pbr::Model& controllerModel, Pbr::Resources& pbrR
     // Create a material for the touch indicator. Use emissive color so it is visible in all light conditions.
     std::shared_ptr<Pbr::Material> touchIndicatorMaterial = Pbr::Material::CreateFlat(
         pbrResources,
-        Colors::Black /* base color */,
+        ToDxVec(Colors::Black) /* base color */,
         0.5f /* roughness */,
         0.0f /* metallic */,
         ToDxVec(Colors::DarkSlateBlue) /* emissive */);
@@ -58,15 +58,14 @@ void AddTouchpadTouchIndicator(Pbr::Model& controllerModel, Pbr::Resources& pbrR
         }
     }
 }
-}
+
 
 namespace ControllerRendering {
 	
 	
 ControllerModelKey GetControllerModelKey(SpatialInteractionSource const& source)
 {
-    if (!source.Controller())
-    {
+    if (!source.Controller()) {
         return {};
     }
 
@@ -101,7 +100,7 @@ std::future<std::shared_ptr<const Pbr::Model>> ControllerRendering::TryLoadRende
     winrt::check_hresult(buffer.as<::Windows::Storage::Streams::IBufferByteAccess>()->Buffer(&rawBuffer));
 
     // Load the binary controller model data into a Pbr::Model
-    const std::shared_ptr<Pbr::Model> model = Gltf::FromGltfBinary(*pbrResources, rawBuffer, buffer.Length());
+    const std::shared_ptr<Pbr::Model> model = FromGltfBinary(*pbrResources, rawBuffer, buffer.Length());
 
     // Give the model a debug friendly name.
     model->Name = source.Handedness() == SpatialInteractionSourceHandedness::Left ? "Left" :

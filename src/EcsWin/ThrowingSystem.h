@@ -13,6 +13,9 @@ struct ThrowingComponent : Component<ThrowingComponent>
 
     float distanceFromPointer = 0.05f;
     float scale = 0.25f;
+    
+    COPY_PANIC(ThrowingComponent)
+    
 };
 
 ////////////////////////////////////////////////////////////////////////////////

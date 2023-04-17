@@ -7,9 +7,11 @@ NAMESPACE_WIN_BEGIN
 ////////////////////////////////////////////////////////////////////////////////
 // ToolSystemBase
 // Base abstract class for all ToolSystems
-class ToolSystemBase abstract : public SystemBase
+class ToolSystemBase abstract :
+	public SystemBase
 {
 public:
+	RTTI_DECL1(ToolSystemBase, SystemBase)
     using SystemBase::SystemBase;
 
     virtual std::wstring_view GetInstructions() const = 0;
@@ -25,7 +27,10 @@ public:
 
 struct ToolSelectorKey : Component<ToolSelectorKey>
 {
-    detail::type_id type{ typeid(nullptr_t) };
+	COPY_PANIC(ToolSelectorKey)
+	
+    //detail::type_id type{ typeid(nullptr_t) };
+    TypeCls type;
 };
 
 struct ToolSelectorPrefab : EntityPrefab<Transform, PbrRenderable, ToolSelectorKey, RigidBody, Easing>
@@ -44,9 +49,10 @@ class ToolSystem abstract :
     //public std::enable_shared_from_this<T>
 {
 public:
+	using ToolSystemT = ToolSystem<T,ToolComponent>;
     using ToolSystemBase::ToolSystemBase;
 	
-	RTTI_DECL2(ToolSystem, ToolSystemBase, ISpatialInteractionListener)
+	RTTI_DECL2(ToolSystemT, ToolSystemBase, ISpatialInteractionListener)
 	
     // System
     //detail::type_id type() const override {return typeid(T);}
@@ -55,37 +61,36 @@ protected:
     // System
     void Start() override
     {
-        GetEngine().Get<ToolboxSystem>()->AddToolSystem(AsRefT());
+        GetEngine().Get<ToolboxSystem>()->AddToolSystem(*this);
     }
 
     void Stop() override
     {
-        GetEngine().Get<ToolboxSystem>()->RemoveToolSystem(AsRefT());
+        GetEngine().Get<ToolboxSystem>()->RemoveToolSystem(*this);
     }
 
     // ToolSystemBase
     void Register(Array<EntityRef>& entities) override
     {
-        m_entities = std::move(entities);
+        m_entities <<= entities;
 
-        for (auto& entity : m_entities)
-        {
+        for (auto& entity : m_entities) {
             entity->Add<ToolComponent>()->SetEnabled(false);
         }
 
-        GetEngine().Get<SpatialInteractionSystem>()->AddListener(AsRefT());
+        GetEngine().Get<SpatialInteractionSystem>()->AddListener(*this);
     }
 
     void Unregister() override
     {
-        GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(AsRefT());
+        GetEngine().Get<SpatialInteractionSystem>()->RemoveListener(*this);
 
         for (auto& entity : m_entities)
         {
             entity->Remove<ToolComponent>();
         }
 
-        m_entities.clear();
+        m_entities.Clear();
     }
 
     void Activate(Entity& entity) override

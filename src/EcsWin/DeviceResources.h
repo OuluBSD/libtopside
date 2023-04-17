@@ -5,8 +5,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
-interface IDeviceNotify
+interface IDeviceNotify : RTTIBase
 {
+	RTTI_DECL0(IDeviceNotify)
+	
     virtual void OnDeviceLost()     = 0;
     virtual void OnDeviceRestored() = 0;
 };

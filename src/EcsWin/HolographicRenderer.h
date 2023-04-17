@@ -18,6 +18,10 @@ class HolographicRenderer :
 	public IDeviceNotify
 {
 public:
+	using System<HolographicRenderer>::System;
+	using Base = System<HolographicRenderer>;
+	RTTI_DECL2(HolographicRenderer, Base, IDeviceNotify)
+	
     HolographicRenderer(
         Machine& core,
         std::shared_ptr<DeviceResources> deviceResources,
@@ -46,9 +50,9 @@ protected:
         const winrt::Windows::Graphics::Holographic::HolographicSpace& holographicSpace);
 
 private:
-    Ecs::EntityStoreRef m_entityStore;
+    //Ecs::EntityStoreRef m_entityStore;
     
-    std::shared_ptr<HolographicScene> m_holoScene{ nullptr };
+    Ref<HolographicScene> m_holoScene;
 
     std::unique_ptr<SkyboxRenderer> m_skyboxRenderer{ nullptr };
 

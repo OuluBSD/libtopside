@@ -16,11 +16,11 @@ using namespace DirectX;
 // Holographic Renderer 
 ////////////////////////////////////////////////////////////////////////////////
 HolographicRenderer::HolographicRenderer(
-    Engine& core,
+    Machine& core,
     std::shared_ptr<DeviceResources> deviceResources,
     std::shared_ptr<Pbr::Resources> pbrResources,
     ID3D11ShaderResourceView* skyboxTexture) :
-    System(core),
+    SP(core),
     m_deviceResources(std::move(deviceResources)),
     m_pbrResources(std::move(pbrResources))
 {
@@ -67,7 +67,7 @@ void HolographicRenderer::OnDeviceRestored()
 bool HolographicRenderer::Initialize()
 {
     m_deviceResources->RegisterDeviceNotify(this);
-    m_pbrResources->SetLight(XMVECTORF32{ 0.0f, 0.7071067811865475f, -0.7071067811865475f }, Colors::White);
+    m_pbrResources->SetLight(XMVECTORF32{ 0.0f, 0.7071067811865475f, -0.7071067811865475f }, ToDxVec(Colors::White));
     return true;
 }
 
@@ -78,7 +78,8 @@ void HolographicRenderer::Uninitialize()
 
 void HolographicRenderer::Start()
 {
-    m_entityStore = m_engine.Get<EntityStore>();
+	Machine& m_engine = this->GetMachine();
+    //m_entityStore = m_engine.Get<Ecs::EntityStore>();
     m_holoScene = m_engine.Get<HolographicScene>();
 
     BindEventHandlers(m_holoScene->HolographicSpace());
@@ -88,8 +89,8 @@ void HolographicRenderer::Stop()
 {
     ReleaseEventHandlers(m_holoScene->HolographicSpace());
 
-    m_holoScene = nullptr;
-    m_entityStore = nullptr;
+    m_holoScene.Clear();
+    //m_entityStore = nullptr;
 }
 
 void HolographicRenderer::Update(double)
@@ -179,8 +180,9 @@ bool HolographicRenderer::RenderAtCameraPose(
             XMLoadFloat4x4(&viewToProjection.Right));
 
         m_pbrResources->Bind(m_deviceResources->GetD3DDeviceContext());
-
-        for (auto[transform, pbr] : m_entityStore->GetComponents<Transform, PbrRenderable>())
+		
+		TODO
+        /*for (auto[transform, pbr] : m_entityStore->GetComponents<Transform, PbrRenderable>())
         {
             if (pbr->Model)
             {
@@ -194,7 +196,7 @@ bool HolographicRenderer::RenderAtCameraPose(
                 pbr->Model->GetNode(Pbr::RootNodeIndex).SetTransform(XMLoadFloat4x4(&transformMtx));
                 pbr->Model->Render(*m_pbrResources, m_deviceResources->GetD3DDeviceContext());
             }
-        }
+        }*/
 
         ////////////////////////////////////////////////////////////////////////////////
         // Text Rendering
@@ -208,8 +210,9 @@ bool HolographicRenderer::RenderAtCameraPose(
 
         float prevFontSize = std::numeric_limits<float>::quiet_NaN();
         TextRenderer* textRenderer = nullptr;
-
-        for (auto[transform, textRenderable] : m_entityStore->GetComponents<Transform, TextRenderable>())
+		
+		TODO
+        /*for (auto[transform, textRenderable] : m_entityStore->GetComponents<Transform, TextRenderable>())
         {
             if (prevFontSize != textRenderable->FontSize)
             {
@@ -219,7 +222,7 @@ bool HolographicRenderer::RenderAtCameraPose(
 
             textRenderer->RenderTextOffscreen(textRenderable->Text);
             m_quadRenderer->Render(transform->GetMatrix(), textRenderer->GetTexture());
-        }
+        }*/
 
         m_quadRenderer->Unbind();
 

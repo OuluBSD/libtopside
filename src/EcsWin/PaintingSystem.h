@@ -9,6 +9,9 @@ static constexpr float PaintTipThickness = 0.008f;
 
 struct PaintComponent : Component<PaintComponent>
 {
+	RTTI_DECL1(PaintComponent, Component<PaintComponent>)
+	COPY_PANIC(PaintComponent)
+	
     enum class State
     {
         Idle,
@@ -44,13 +47,20 @@ struct PaintComponent : Component<PaintComponent>
     std::optional<DirectX::XMMATRIX> brushTipOffsetFromHoldingPose;
 };
 
+using PaintComponentRef = Ref<PaintComponent>;
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // PaintingInteractionSystem
 // This ToolSystem manages the PaintBrush tool which allows you to draw 3D strokes in the scene
 
-class PaintingInteractionSystem : public ToolSystem<PaintingInteractionSystem, PaintComponent>
+class PaintingInteractionSystem :
+	public ToolSystem<PaintingInteractionSystem, PaintComponent>
 {
 public:
+	using Base = ToolSystem<PaintingInteractionSystem, PaintComponent>;
+	RTTI_DECL1(PaintingInteractionSystem, Base)
+	
     using ToolSystem::ToolSystem;
 
 protected:
@@ -95,7 +105,7 @@ private:
         DirectX::Colors::Black
     };
 
-    std::vector<Array<EntityRef>> m_persistentStrokes;
+    Array<Array<EntityRef>> m_persistentStrokes;
 };
 
 

@@ -6,7 +6,8 @@ NAMESPACE_WIN_BEGIN
 
 ////////////////////////////////////////////////////////////////////////////////
 // SpatialInteraction event listener
-class ISpatialInteractionListener abstract
+class ISpatialInteractionListener abstract :
+	public WeakRefScopeEnabler<ISpatialInteractionListener,Engine>
 {
 public:
     virtual void OnSourceDetected(
@@ -25,7 +26,10 @@ public:
         const winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs& args) {};
 };
 
-////////////////////////////////////////////////////////////////////////////////
+using ISpatialInteractionListenerRef = Ref<ISpatialInteractionListener, Engine>;
+
+
+
 // SpatialInteractionSystem
 // Responsible for managing the events from SpatialInteractionManager with additional filtering
 class SpatialInteractionSystem final : public System<SpatialInteractionSystem>
@@ -33,14 +37,14 @@ class SpatialInteractionSystem final : public System<SpatialInteractionSystem>
 public:
     using System::System;
 
-    void AddListener(std::shared_ptr<ISpatialInteractionListener> listener)
+    void AddListener(ISpatialInteractionListener& listener)
     {
-        m_spatialInteractionListeners.Add(std::move(listener));
+        m_spatialInteractionListeners.Add(listener);
     }
 
-    void RemoveListener(std::shared_ptr<ISpatialInteractionListener> listener)
+    void RemoveListener(ISpatialInteractionListener& listener)
     {
-        m_spatialInteractionListeners.Remove(std::move(listener));
+        m_spatialInteractionListeners.Remove(listener);
     }
 
     winrt::Windows::UI::Input::Spatial::ISpatialInteractionManager GetInteractionManager() const
@@ -62,7 +66,7 @@ private:
 
     winrt::event_token m_sourceTokens[SourceEvent::Count];
 
-    ListenerCollection<ISpatialInteractionListener> m_spatialInteractionListeners;
+    ListenerCollection<ISpatialInteractionListener,Engine> m_spatialInteractionListeners;
 
     void BindEventHandlers();
     void ReleaseEventHandlers();

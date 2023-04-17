@@ -26,9 +26,10 @@ bool HitTest(float3 positionA, float3 positionB, float diameter)
 
 }
 
-void ToolboxSystem::AddToolSystem(std::shared_ptr<ToolSystemBase> system)
+void ToolboxSystem::AddToolSystem(ToolSystemBase& system)
 {
-    system->Register({ m_controllers[Left].Controller, m_controllers[Right].Controller });
+	TODO
+    /*system->Register({ m_controllers[Left].Controller, m_controllers[Right].Controller });
 
     m_selectorObjects.emplace(system->type(), system->CreateToolSelector());
 
@@ -37,16 +38,17 @@ void ToolboxSystem::AddToolSystem(std::shared_ptr<ToolSystemBase> system)
     for (auto& context : m_controllers)
     {
         SwitchToolType(*context.Controller, system->type());
-    }
+    }*/
 }
 
-void ToolboxSystem::RemoveToolSystem(const std::shared_ptr<ToolSystemBase>& system)
+void ToolboxSystem::RemoveToolSystem(ToolSystemBase& system)
 {
-    m_selectors.erase(system->type());
+	TODO
+    /*m_selectors.erase(system->type());
 
     m_selectorObjects.erase(system->type());
 
-    system->Unregister();
+    system->Unregister();*/
 }
 
 void ToolboxSystem::Start()

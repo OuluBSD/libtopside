@@ -246,8 +246,9 @@ std::shared_ptr<Pbr::Model> FromGltfBinary(
     // Parse the GLB buffer data into a tinygltf model object.
     tinygltf::Model gltfModel;
     std::string errorMessage;
+    std::string warnMessage;
     tinygltf::TinyGLTF loader;
-    if (!loader.LoadBinaryFromMemory(&gltfModel, &errorMessage, buffer, bufferBytes, "."))
+    if (!loader.LoadBinaryFromMemory(&gltfModel, &errorMessage, &warnMessage, buffer, bufferBytes, "."))
     {
         const auto msg = std::string("\r\nFailed to load gltf model (") + std::to_string(bufferBytes) + " bytes). Error: " + errorMessage;
         throw std::exception(msg.c_str());

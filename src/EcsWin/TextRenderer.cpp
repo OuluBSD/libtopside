@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 TextRenderer::TextRenderer(
@@ -132,4 +132,4 @@ void TextRenderer::CreateDeviceDependentResources()
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

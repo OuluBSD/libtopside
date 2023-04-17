@@ -13,6 +13,9 @@ struct ShootingComponent : Component<ShootingComponent>
 
     float bulletSpeed = 20.0f;
     winrt::Windows::Foundation::Numerics::float4x4 barrelToController;
+    
+    COPY_PANIC(ShootingComponent)
+    
 };
 
 ////////////////////////////////////////////////////////////////////////////////

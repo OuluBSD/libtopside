@@ -47,20 +47,25 @@ std::future<void> LoadAndCacheModel(
         }
     }
 }
-}
 
-namespace DemoRoom {
+
+NAMESPACE_WIN_END
+
+
+NAMESPACE_PARALLEL_BEGIN
+
 
 void MotionControllerSystem::Start()
 {
-	m_engine.Get<HolographicScene>()->AddPredictionUpdateListener(AsRefT());
-	m_engine.Get<SpatialInteractionSystem>()->AddListener(AsRefT());
+	Machine& m_engine = GetMachine();
+	m_engine.Get<HolographicScene>()->AddPredictionUpdateListener(*this);
+	m_engine.Get<SpatialInteractionSystem>()->AddListener(*this);
 }
 
 void MotionControllerSystem::OnPredictionUpdated(
-IPredictionUpdateListener::PredictionUpdateReason /*reason*/,
-const SpatialCoordinateSystem& coordinateSystem,
-const HolographicFramePrediction& prediction)
+	IPredictionUpdateListener::PredictionUpdateReason /*reason*/,
+	const SpatialCoordinateSystem& coordinateSystem,
+	const HolographicFramePrediction& prediction)
 {
 	// Update the positions of the controllers based on the current timestamp.
 	for (auto& sourceState : m_engine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
@@ -140,7 +145,7 @@ void MotionControllerSystem::OnSourceDetected(const SpatialInteractionSourceEven
 	    // Attempt to load any controller models into the PbrModelCache
 	    (void)LoadAndCacheModel(args.State().Source(), m_engine);
 	
-	    // Update any components with their new Source 
+	    // Update any components with their new Source
 	    RefreshComponentsForSource(args.State().Source());
 	}
 }
@@ -167,6 +172,5 @@ bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) co
 	return (this->source && rhs) ? this->source.Id() == rhs.Id() : false;
 }
 
-}
 
-NAMESPACE_WIN_END
+NAMESPACE_PARALLEL_END

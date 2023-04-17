@@ -114,8 +114,8 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
     {
         // Load the primitive into D3D buffers with associated material
         Pbr::Primitive cubePrimitive(
-            *pbrResources, 
-            Pbr::PrimitiveBuilder().AddCube(1.0f), 
+            *pbrResources,
+            Pbr::PrimitiveBuilder().AddCube(1.0f),
             Pbr::Material::CreateFlat(*pbrResources, Colors::White, 0.15f));
 
         // Add the primitive into a new model.
@@ -140,7 +140,7 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holographicSpace)
             ? DirectX::XMLoadFloat4x4(&transform.value())
             : DirectX::XMMatrixIdentity();
 
-        std::shared_ptr<Pbr::Model> pbrModel = Gltf::FromGltfBinary(
+        std::shared_ptr<Pbr::Model> pbrModel = FromGltfBinary(
             *pbrResources,
             fileData.data(),
             (uint32_t)fileData.size(),

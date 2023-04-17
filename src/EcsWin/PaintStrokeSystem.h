@@ -17,9 +17,12 @@ struct PaintStrokeComponent : Component<PaintStrokeComponent>
 
     void AddPoint(const winrt::Windows::Foundation::Numerics::float4x4& transformationMatrix, float width);
     Pbr::PrimitiveBuilder GetPrimitiveData();
+    
+    COPY_PANIC(PaintStrokeComponent)
+    
 };
 
-////////////////////////////////////////////////////////////////////////////////
+
 // PaintStrokeSystem
 // This System manages the PaintStrokeComponents and automatically generates the 3D mesh for each stroke
 class PaintStrokeSystem : public System<PaintStrokeSystem>

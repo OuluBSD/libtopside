@@ -13,6 +13,8 @@ struct Model;
 // These are a few commonly used components
 struct Transform : Component<Transform>
 {
+	COPY_PANIC(Transform)
+	
     winrt::Windows::Foundation::Numerics::float3 position = winrt::Windows::Foundation::Numerics::float3::zero();
     winrt::Windows::Foundation::Numerics::float3 scale = winrt::Windows::Foundation::Numerics::float3::one();
     winrt::Windows::Foundation::Numerics::quaternion orientation = winrt::Windows::Foundation::Numerics::quaternion::identity();
@@ -32,6 +34,8 @@ struct Transform : Component<Transform>
 
 struct RigidBody : Component<RigidBody>
 {
+	COPY_PANIC(RigidBody)
+	
     winrt::Windows::Foundation::Numerics::float3 velocity = winrt::Windows::Foundation::Numerics::float3::zero();
     winrt::Windows::Foundation::Numerics::float3 acceleration = winrt::Windows::Foundation::Numerics::float3::zero();
     winrt::Windows::Foundation::Numerics::float3 angularVelocity = winrt::Windows::Foundation::Numerics::float3::zero();
@@ -43,6 +47,8 @@ struct RigidBody : Component<RigidBody>
 
 struct PbrRenderable : Component<PbrRenderable>
 {
+	COPY_PANIC(PbrRenderable)
+	
     void ResetModel(std::string name, std::optional<winrt::Windows::Foundation::Numerics::float4x4> offset = std::nullopt)
     {
         ModelName = std::move(name);
@@ -62,6 +68,8 @@ typedef Ref<PbrRenderable> PbrRenderableRef;
 
 struct TextRenderable : Component<TextRenderable>
 {
+	COPY_PANIC(TextRenderable)
+	
     std::wstring Text = L"";
     float FontSize = 60.0f;
 };

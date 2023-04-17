@@ -5,7 +5,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 // PredictionUpdated event listener
-class IPredictionUpdateListener abstract
+class IPredictionUpdateListener abstract :
+	public RefScopeEnabler<IPredictionUpdateListener,Machine>
 {
 public:
     enum PredictionUpdateReason
@@ -20,14 +21,16 @@ public:
         const winrt::Windows::Graphics::Holographic::HolographicFramePrediction& prediction) = 0;
 };
 
-////////////////////////////////////////////////////////////////////////////////
+
 // HolographicScene
 // Maintains a list of our current state of Windows::Perception objects, ensuring the rest of the systems
-// use the same coordinate system, timestamp, etc. 
+// use the same coordinate system, timestamp, etc.
 class HolographicScene : public Parallel::System<HolographicScene>
 {
 public:
     using System::System;
+    using Base = Parallel::System<HolographicScene>;
+	RTTI_DECL1(HolographicScene, Base)
 
     HolographicScene(Machine& core, winrt::Windows::Graphics::Holographic::HolographicSpace holographicSpace);
 
@@ -39,8 +42,8 @@ public:
 
     void UpdateCurrentPrediction();
 
-    void AddPredictionUpdateListener(std::shared_ptr<IPredictionUpdateListener> listener);
-    void RemovePredictionUpdateListener(std::shared_ptr<IPredictionUpdateListener> listener);
+    void AddPredictionUpdateListener(IPredictionUpdateListener& listener);
+    void RemovePredictionUpdateListener(IPredictionUpdateListener& listener);
 
 protected:
     bool Initialize() override;

@@ -66,5 +66,9 @@ inline DirectX::XMVECTOR ToDxVec(const vec4& v) {
 	return DirectX::XMVECTOR {v[0], v[1], v[2], v[3]};
 }
 
+inline vec4 ToTsVec(const DirectX::XMVECTORF32& v) {
+	return vec4(v.f[0], v.f[1], v.f[2], v.f[3]);
+}
+
 
 NAMESPACE_TOPSIDE_END

@@ -11,7 +11,7 @@ using namespace winrt::Windows::Perception::Spatial;
 HolographicScene::HolographicScene(
     Machine& core,
     winrt::Windows::Graphics::Holographic::HolographicSpace holographicSpace) :
-    System(core),
+    SP(core),
     m_holographicSpace(std::move(holographicSpace))
 {}
 
@@ -63,20 +63,20 @@ void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::Prediction
     const HolographicFramePrediction prediction = m_currentFrame.CurrentPrediction();
     const SpatialCoordinateSystem coordinateSystem = WorldCoordinateSystem();
 
-    for (const auto& listener : m_predictionUpdatelisteners.PurgeAndGetListeners())
+    for (auto& listener : m_predictionUpdatelisteners.PurgeAndGetListeners())
     {
         listener->OnPredictionUpdated(reason, coordinateSystem, prediction);
     }
 }
 
-void HolographicScene::AddPredictionUpdateListener(std::shared_ptr<IPredictionUpdateListener> listener)
+void HolographicScene::AddPredictionUpdateListener(IPredictionUpdateListener& listener)
 {
-    m_predictionUpdatelisteners.Add(std::move(listener));
+    TODO //m_predictionUpdatelisteners.Add(std::move(listener));
 }
 
-void HolographicScene::RemovePredictionUpdateListener(std::shared_ptr<IPredictionUpdateListener> listener)
+void HolographicScene::RemovePredictionUpdateListener(IPredictionUpdateListener& listener)
 {
-    m_predictionUpdatelisteners.Remove(std::move(listener));
+    TODO //m_predictionUpdatelisteners.Remove(std::move(listener));
 }
 
 SpatialCoordinateSystem HolographicScene::WorldCoordinateSystem() const

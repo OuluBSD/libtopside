@@ -113,8 +113,7 @@ public:
 	}
 	template<typename T> RefT_Entity<T> Add() {
 		OnChange();
-		auto comp = Add0<T>();
-		InitializeComponent(*comp);
+		auto comp = Add0<T>(true);
 		return comp;
 	}
 	template<typename T> RefT_Entity<T> GetAdd() {
@@ -122,8 +121,7 @@ public:
 		if (o)
 			return o;
 		OnChange();
-		auto comp = Add0<T>();
-		InitializeComponent(*comp);
+		auto comp = Add0<T>(true);
 		return comp;
 	}
 	

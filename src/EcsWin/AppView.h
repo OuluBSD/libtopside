@@ -46,6 +46,13 @@ private:
 
     // The holographic space the app will use for rendering.
     winrt::Windows::Graphics::Holographic::HolographicSpace m_holographicSpace = nullptr;
+    
+    
+#if defined(_DEBUG) && !defined(WINRT_NO_MAKE_DETECTION)
+	void use_make_function_to_create_this_object() override {
+		TODO
+	}
+#endif
 };
 
 class AppViewSource sealed : public winrt::implements<AppViewSource, winrt::Windows::ApplicationModel::Core::IFrameworkViewSource>
@@ -58,6 +65,11 @@ private:
     AppView holographicView;
     
     
+#if defined(_DEBUG) && !defined(WINRT_NO_MAKE_DETECTION)
+	void use_make_function_to_create_this_object() override {
+		TODO
+	}
+#endif
 };
 
 
