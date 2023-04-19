@@ -25,7 +25,7 @@ std::string ControllerModelKeyToString(const std::tuple<uint16_t, uint16_t, uint
 }
 
 std::future<void> LoadAndCacheModel(
-    const SpatialInteractionSource& source, 
+    const SpatialInteractionSource& source,
     Engine& engine)
 {
     const auto controllerModelName = ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(source));
@@ -33,16 +33,15 @@ std::future<void> LoadAndCacheModel(
     auto pbrModelCache = engine.Get<PbrModelCache>();
     if (!pbrModelCache->ModelExists(controllerModelName.c_str()))
     {
-        const auto pbrResources = engine.Get<HolographicRenderer>()->GetPbrResources();
+        Machine& mach = engine.GetMachine();
+        const auto pbrResources = mach.Get<HolographicRenderer>()->GetPbrResources();
 
         const auto model = co_await ControllerRendering::TryLoadRenderModelAsync(pbrResources, source);
 
-        if (model) 
-        {
+        if (model) {
             pbrModelCache->RegisterModel(controllerModelName, model->Clone(*pbrResources));
         }
-        else
-        {
+        else {
             debug_log("Failed to load model for source %d", source.Id());
         }
     }
@@ -53,12 +52,15 @@ NAMESPACE_WIN_END
 
 
 NAMESPACE_PARALLEL_BEGIN
+using namespace ::TS::Ecs;
 
 
 void MotionControllerSystem::Start()
 {
-	Machine& m_engine = GetMachine();
-	m_engine.Get<HolographicScene>()->AddPredictionUpdateListener(*this);
+	Machine& m_mach = GetMachine();
+	m_mach.Get<HolographicScene>()->AddPredictionUpdateListener(*this);
+	
+	Engine& m_engine = m_mach.Get<EntitySystem>()->GetEngine();
 	m_engine.Get<SpatialInteractionSystem>()->AddListener(*this);
 }
 
@@ -67,10 +69,14 @@ void MotionControllerSystem::OnPredictionUpdated(
 	const SpatialCoordinateSystem& coordinateSystem,
 	const HolographicFramePrediction& prediction)
 {
+	Machine& mach = GetMachine();
+	Ecs::Engine& m_engine = mach.GetEngine();
 	// Update the positions of the controllers based on the current timestamp.
-	for (auto& sourceState : m_engine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp()))
+	auto states = m_engine.Get<SpatialInteractionSystem>()->GetInteractionManager().GetDetectedSourcesAtTimestamp(prediction.Timestamp());
+	PoolRef root =  m_engine.Get<EntityStore>()->GetRoot();
+	for (const auto& sourceState : states)
 	{
-	    for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponents<Transform, MotionControllerComponent>())
+	    for (const auto& componentSet : root->GetComponents<Transform, MotionControllerComponent>())
 	    {
 	        auto[transform, controller] = componentSet;
 	
@@ -82,10 +88,9 @@ void MotionControllerSystem::OnPredictionUpdated(
 	
 	            controller->location = location;
 	
-	            if (location)
-	            {
-	                transform->position = location_util::position(location);
-	                transform->orientation = location_util::orientation(location);
+	            if (location) {
+	                transform->data.position = ToTs(location_util::position(location));
+	                transform->data.orientation = ToTs(location_util::orientation(location));
 	            }
 	        }
 	    }
@@ -94,13 +99,21 @@ void MotionControllerSystem::OnPredictionUpdated(
 
 void MotionControllerSystem::Stop()
 {
-	m_engine.Get<HolographicScene>()->RemovePredictionUpdateListener(AsRefT());
-	m_engine.Get<SpatialInteractionSystem>()->RemoveListener(AsRefT());
+	Machine& mach = GetMachine();
+	mach.Get<HolographicScene>()->RemovePredictionUpdateListener(*this);
+	
+	Engine& m_engine = mach.Get<EntitySystem>()->GetEngine();
+	m_engine.Get<SpatialInteractionSystem>()->RemoveListener(*this);
 }
 
 void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteractionSource& source)
 {
-	for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponentsWithEntity<MotionControllerComponent>())
+	Machine& mach = GetMachine();
+	Ecs::Engine& eng = mach.GetEngine();
+	PoolRef root = eng.Get<EntityStore>()->GetRoot();
+	
+	auto comps = root->GetComponentsWithEntity<MotionControllerComponent>();
+	for (auto& componentSet : comps)
 	{
 	    auto[entity, controller] = componentSet;
 	
@@ -116,21 +129,22 @@ void MotionControllerSystem::RefreshComponentsForSource(const SpatialInteraction
 
 void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args)
 {
+	Machine& mach = GetMachine();
+	Ecs::Engine& eng = mach.GetEngine();
+	PoolRef root = eng.Get<EntityStore>()->GetRoot();
+	
 	if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
 	{
-	    for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponents<PbrRenderable, MotionControllerComponent>())
-	    {
+		auto comps = root->GetComponents<PbrRenderable, MotionControllerComponent>();
+	    for (auto& componentSet : comps) {
 	        auto[pbr, controller] = componentSet;
 	
-	        if (controller->IsSource(args.State().Source()) && controller->attachControllerModel)
-	        {
+	        if (controller->IsSource(args.State().Source()) && controller->attachControllerModel) {
 	            // If we don't have a model yet, set the ModelName so PbrModelCache will update the model
-	            if (!pbr->Model)
-	            {
+	            if (!pbr->Model) {
 	                pbr->ResetModel(ControllerModelKeyToString(ControllerRendering::GetControllerModelKey(controller->source)));
 	            }
-	            else
-	            {
+	            else {
 	                ControllerRendering::ArticulateControllerModel(ControllerRendering::GetArticulateValues(args.State()), *pbr->Model);
 	            }
 	        }
@@ -140,22 +154,24 @@ void MotionControllerSystem::OnSourceUpdated(const SpatialInteractionSourceEvent
 
 void MotionControllerSystem::OnSourceDetected(const SpatialInteractionSourceEventArgs& args)
 {
-	if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
-	{
+	Machine& m_engine = GetMachine();
+	TODO
+	/*Ecs::Engine& ecs_engine = ;
+	if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller) {
 	    // Attempt to load any controller models into the PbrModelCache
-	    (void)LoadAndCacheModel(args.State().Source(), m_engine);
+	    (void)LoadAndCacheModel(args.State().Source(), ecs_engine);
 	
 	    // Update any components with their new Source
 	    RefreshComponentsForSource(args.State().Source());
-	}
+	}*/
 }
 
 void MotionControllerSystem::OnSourceLost(const SpatialInteractionSourceEventArgs& args)
 {
-	if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller)
-	{
-	    for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponents<MotionControllerComponent>())
-	    {
+	if (args.State().Source().Kind() == SpatialInteractionSourceKind::Controller) {
+		PoolRef root = GetMachine().GetEngine().Get<EntityStore>()->GetRoot();
+		auto comps = root->GetComponents<MotionControllerComponent>();
+	    for (auto& componentSet : comps) {
 	        auto[controller] = componentSet;
 	
 	        if (controller->IsSource(args.State().Source()))
@@ -167,10 +183,18 @@ void MotionControllerSystem::OnSourceLost(const SpatialInteractionSourceEventArg
 	}
 }
 
-bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const 
-{
+
+NAMESPACE_PARALLEL_END
+
+
+
+
+NAMESPACE_WIN_BEGIN
+
+
+bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const {
 	return (this->source && rhs) ? this->source.Id() == rhs.Id() : false;
 }
 
 
-NAMESPACE_PARALLEL_END
+NAMESPACE_WIN_END

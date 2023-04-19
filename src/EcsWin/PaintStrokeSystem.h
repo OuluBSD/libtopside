@@ -15,7 +15,7 @@ struct PaintStrokeComponent : Component<PaintStrokeComponent>
     std::vector<Square> squares;
     bool strokeChanged{ true };
 
-    void AddPoint(const winrt::Windows::Foundation::Numerics::float4x4& transformationMatrix, float width);
+    void AddPoint(const mat4& transformationMatrix, float width);
     Pbr::PrimitiveBuilder GetPrimitiveData();
     
     COPY_PANIC(PaintStrokeComponent)

@@ -51,7 +51,7 @@ void PaintStrokeSystem::Update(double)
     #endif
 }
 
-void PaintStrokeComponent::AddPoint(const float4x4& transformation, float width)
+void PaintStrokeComponent::AddPoint(const mat4& transformation, float width)
 {
     const float halfWidth = width / 2.0f;
 
@@ -84,10 +84,10 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData()
 
         for (auto& square : squares)
         {
-            vertices.push_back({ AsRef<XMFLOAT3>(square.TopLeft), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.push_back({ AsRef<XMFLOAT3>(square.TopRight), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.push_back({ AsRef<XMFLOAT3>(square.BottomRight), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.push_back({ AsRef<XMFLOAT3>(square.BottomLeft), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
+            vertices.push_back({ HelperCastRef<XMFLOAT3>(square.TopLeft), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
+            vertices.push_back({ HelperCastRef<XMFLOAT3>(square.TopRight), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
+            vertices.push_back({ HelperCastRef<XMFLOAT3>(square.BottomRight), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
+            vertices.push_back({ HelperCastRef<XMFLOAT3>(square.BottomLeft), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
         }
 
         constexpr size_t numIndicesPerFace = 6u;

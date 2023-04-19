@@ -67,23 +67,23 @@ inline void fail_fast_if(bool condition, std::optional<std::string> message = st
     if (condition) fail_fast(std::move(message));
 }
 
-#if 0
+
 // Helper to cast between similar basic types, i.e. XMFLOAT3 and float3. Same memory layout, just different typenames
 template<typename T1, typename T2>
-T1& AsRef(T2& val)
+T1& HelperCastRef(T2& val)
 {
     static_assert(sizeof(T1) == sizeof(T2), "Sizes should be the same");
     return *reinterpret_cast<T1*>(&val);
 }
 
 template<typename T1, typename T2>
-const T1& AsRef(const T2& val)
+const T1& HelperCastRef(const T2& val)
 {
     static_assert(sizeof(T1) == sizeof(T2), "Sizes should be the same");
     return *reinterpret_cast<const T1*>(&val);
 }
 
-#endif
+
 
 template<typename Container, typename Predicate>
 void erase_if(Container* container, Predicate&& predicate)

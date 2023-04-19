@@ -1134,6 +1134,9 @@ struct TransformMatrix : RTTIBase {
 	void FillFromOrientation();
 	void FillFromLookAt();
 	
+	TransformMatrix& Move(const vec3& pos) {position += pos; return *this;}
+	TransformMatrix& Rotate(const quat& q) {orientation += q; return *this;}
+	
 	vec3 GetForwardDirection() const;
 	String GetAxesString() const;
 	

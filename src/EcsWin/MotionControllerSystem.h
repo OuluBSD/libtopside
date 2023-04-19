@@ -17,10 +17,15 @@ struct MotionControllerComponent : Component<MotionControllerComponent>
 };
 
 
+using MotionControllerComponentRef = Ref<MotionControllerComponent>;
+
+
 NAMESPACE_WIN_END
 
 
 NAMESPACE_PARALLEL_BEGIN
+
+
 using namespace ::TS::Ecs::Win;
 
 ////////////////////////////////////////////////////////////////////////////////

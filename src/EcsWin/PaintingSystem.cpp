@@ -119,7 +119,7 @@ void PaintingInteractionSystem::Deactivate(Entity& entity)
 
     if (paint->strokes.GetCount())
     {
-        m_persistentStrokes.Add(paint->strokes);
+        m_persistentStrokes.Add() <<= paint->strokes;
     }
 
     ToolSystem::Deactivate(entity);
@@ -164,6 +164,7 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 
 void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args)
 {
+	Engine& m_engine = GetEngine();
     const auto& sourceState = args.State();
     const auto& source = sourceState.Source();
 
@@ -182,9 +183,15 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
                 // Calcluate paint tip offset from holding pose
                 // we use offset as it does not rely on the current transform of the model
                 // we initialize it once as the value will not change
-                const auto brushTipWorldTransform = paintBrushModel->GetNodeWorldTransform(touchNode.value());
-                const auto paintBrushWorldTransform = paintBrushModel->GetNode(Pbr::RootNodeIndex).GetTransform();
-                paint->brushTipOffsetFromHoldingPose = brushTipWorldTransform * XMMatrixInverse(nullptr, paintBrushWorldTransform);
+                const mat4 brush_tip_world_transform = ToTs(paintBrushModel->GetNodeWorldTransform(touchNode.value()));
+                const mat4 paint_brush_world_transform = ToTs(paintBrushModel->GetNode(Pbr::RootNodeIndex).GetTransform());
+                paint->brushTipOffsetFromHoldingPose =
+				        brush_tip_world_transform *
+				        paint_brush_world_transform.GetInverse();
+                    /*ToTs(
+	                    brushTipWorldTransform *
+	                    XMMatrixInverse(nullptr, paintBrushWorldTransform)
+                    );*/
             }
         }
 
@@ -274,10 +281,13 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
                 {
                     if (paint->brushTipOffsetFromHoldingPose && paint->strokeInProgress)
                     {
-                        float4x4 paintToWorld;
-                        XMStoreFloat4x4(&paintToWorld, *paint->brushTipOffsetFromHoldingPose * XMLoadFloat4x4(&location_util::matrix(location)));
+                        mat4 paintToWorld =
+                            *paint->brushTipOffsetFromHoldingPose *
+                             ToTs(location_util::matrix(location));
 
-                        paint->strokeInProgress->Get<PaintStrokeComponent>()->AddPoint(float4x4_util::remove_scale(paintToWorld), PaintTipThickness);
+                        paint->strokeInProgress->Get<PaintStrokeComponent>()->AddPoint(
+                            RemoveScale(paintToWorld), PaintTipThickness
+                        );
                     }
                 }
             }
@@ -296,7 +306,7 @@ void PaintingInteractionSystem::Update(double dt)
         auto entity = std::get<Entity*>(enabledEntity);
         auto paint = std::get<PaintComponent*>(enabledEntity);
 
-        const MotionControllerComponent* controller = entity->Get<MotionControllerComponent>();
+        MotionControllerComponentRef controller = entity->Get<MotionControllerComponent>();
 
         paint->beam->Get<PbrRenderable>()->SetEnabled(paint->currentState == PaintComponent::State::Manipulating);
 
@@ -314,8 +324,8 @@ void PaintingInteractionSystem::Update(double dt)
 
         if (auto location = controller->location)
         {
-            const float3 position = location_util::position(location);
-            const quaternion orientation = location_util::orientation(location);
+            const vec3 pos = ToTs(location_util::position(location));
+            const quat orient = ToTs(location_util::orientation(location));
 
             const DirectX::XMVECTORF32 paintTipColor = paint->currentState == PaintComponent::State::ColorSelection ? SelectColor(paint->touchpadX, paint->touchpadY) : paint->selectedColor;
             paint->paintBrush->Get<PbrRenderable>()->Color = paintTipColor;
@@ -325,16 +335,15 @@ void PaintingInteractionSystem::Update(double dt)
                 // Update the paint strokes based on the change in location
                 if (paint->previousManipulationLocation)
                 {
-                    const float3 previousPosition = location_util::position(paint->previousManipulationLocation);
-                    const quaternion previousOrientation = location_util::orientation(paint->previousManipulationLocation);
-
-                    const quaternion orientationDelta = orientation * inverse(previousOrientation);
-
-                    const float4x4 manipulationTransform = make_float4x4_translation(-previousPosition) * make_float4x4_from_quaternion(orientationDelta) * make_float4x4_translation(position);
-
-                    for (auto stroke : paint->strokes)
-                    {
-                        stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulationTransform);
+                    vec3 prev_pos = ToTs(location_util::position(paint->previousManipulationLocation));
+                    quat prev_orient = ToTs(location_util::orientation(paint->previousManipulationLocation));
+                    quat orient_diff = orient * Inverse(prev_orient);
+					vec3 pos_diff = pos - prev_pos;
+					
+                    for (auto stroke : paint->strokes) {
+                        stroke->Get<Transform>()->data.
+							Move(pos_diff).
+							Rotate(orient_diff);
                     }
                 }
 
@@ -347,22 +356,26 @@ void PaintingInteractionSystem::Update(double dt)
 
                 if (auto pointerPose = location.SourcePointerPose())
                 {
-                    const float3 position = pointerPose.Position();
-                    const float3 forward = pointerPose.ForwardDirection();
+                    const vec3 position = ToTs(pointerPose.Position());
+                    const vec3 forward = ToTs(pointerPose.ForwardDirection());
 
                     if (abs(paint->thumbstickY) > ThumbstickMovementThresholdPercent)
                     {
-                        const float3 forwardMovement = forward * paint->thumbstickY * MovementSpeedInMetersPerSecond * dt;
+                        const vec3 forwardMovement =
+                            forward *
+                            paint->thumbstickY *
+                            MovementSpeedInMetersPerSecond *
+                            (float)dt;
 
                         // Move all paintings along beam path
-                        for (auto& stroke : paint->strokes)
-                        {
-                            stroke->Get<Transform>()->position += forwardMovement;
+                        for (auto& stroke : paint->strokes) {
+                            stroke->Get<Transform>()->data.Move(forwardMovement);
                         }
                     }
-
-                    paint->beam->Get<Transform>()->position = position + forward * (paint->beam->Get<Transform>()->scale.z * 0.5f);
-                    paint->beam->Get<Transform>()->orientation = pointerPose.Orientation();
+					
+					TransformRef trans = paint->beam->Get<Transform>();
+                    trans->data.position = position + forward * (trans->size[2] * 0.5f);
+                    trans->data.orientation = ToTs(pointerPose.Orientation());
                 }
             }
             else if (paint->currentState == PaintComponent::State::ColorSelection)
@@ -370,15 +383,16 @@ void PaintingInteractionSystem::Update(double dt)
                 constexpr float colorpickerDiameter = 0.025f;
                 constexpr float colorpickerHeight = 0.015f;
 
-                const float4x4 paintBrushToWorld = paint->paintBrush->Get<Transform>()->GetMatrix();
+                const mat4 paintBrushToWorld = paint->paintBrush->Get<Transform>()->GetMatrix();
 
-                const float3 touchpadIndicatorOnPaintBrush = { paint->touchpadX * colorpickerDiameter, colorpickerHeight, paint->touchpadY * colorpickerDiameter * -1 };
-                const float3 touchpadIndicatorInWorld = transform(touchpadIndicatorOnPaintBrush, paintBrushToWorld);
-
-                paint->touchpadIndicator->Get<Transform>()->position = touchpadIndicatorInWorld;
+                const vec3 touchpadIndicatorOnPaintBrush = { paint->touchpadX * colorpickerDiameter, colorpickerHeight, paint->touchpadY * colorpickerDiameter * -1 };
+                const vec3 touchpadIndicatorInWorld = VectorTransform(touchpadIndicatorOnPaintBrush, paintBrushToWorld);
+				
+				TransformRef trans = paint->touchpadIndicator->Get<Transform>();
+                trans->data.position = touchpadIndicatorInWorld;
 
                 // Color picker plane defined as slightly above the touchpad with the same orientation as the touchpad
-                const int numColors = static_cast<int>(paint->colorPickerObjects.size());
+                const int numColors = static_cast<int>(paint->colorPickerObjects.GetCount());
 
                 for (int i = 0; i < numColors; ++i)
                 {
@@ -387,10 +401,11 @@ void PaintingInteractionSystem::Update(double dt)
                     const float angleDelta = (nextAngle - angle) / 2; // Want color icon to appear in the middle of the segment, not the start.
                     const float finalAngle = angle - angleDelta;
 
-                    const float3 colorIndicatorOnPaintBrush = { std::cos(finalAngle) * colorpickerDiameter, colorpickerHeight, std::sin(finalAngle) * colorpickerDiameter };
-                    const float3 colorIndicatorInWorld = transform(colorIndicatorOnPaintBrush, paintBrushToWorld);
-
-                    paint->colorPickerObjects[i]->Get<Transform>()->position = colorIndicatorInWorld;
+                    const vec3 colorIndicatorOnPaintBrush = { std::cos(finalAngle) * colorpickerDiameter, colorpickerHeight, std::sin(finalAngle) * colorpickerDiameter };
+                    const vec3 colorIndicatorInWorld = VectorTransform(colorIndicatorOnPaintBrush, paintBrushToWorld);
+					
+					TransformRef trans = paint->colorPickerObjects[i]->Get<Transform>();
+                    trans->data.position = colorIndicatorInWorld;
                 }
             }
         }

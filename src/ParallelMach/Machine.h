@@ -1,6 +1,14 @@
 #ifndef _ParallelMach_Machine_h_
 #define _ParallelMach_Machine_h_
 
+
+NAMESPACE_TOPSIDE_BEGIN
+namespace Ecs {
+class Engine;
+}
+NAMESPACE_TOPSIDE_END
+
+
 NAMESPACE_PARALLEL_BEGIN
 using namespace Serial;
 
@@ -147,6 +155,7 @@ public:
 	void WarnDeveloper(String msg);
 	
 	MachineVerifier*	GetMachineVerifier() const {return mver;}
+	Ecs::Engine&		GetEngine();
 	
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;

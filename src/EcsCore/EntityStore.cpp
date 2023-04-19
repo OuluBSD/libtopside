@@ -68,3 +68,19 @@ EntityRef EntityStore::FindEntity(String path) {
 
 
 NAMESPACE_ECS_END
+
+
+NAMESPACE_PARALLEL_BEGIN
+
+
+Ecs::Engine& Machine::GetEngine() {
+	EntitySystemRef es = Get<EntitySystem>();
+	if (es)
+		return es->GetEngine();
+	
+	Panic("No EntitySystem in machine");
+	return *(Ecs::Engine*)0;
+}
+
+
+NAMESPACE_PARALLEL_END

@@ -162,10 +162,10 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float sideLength, Pbr::NodeIndex_t t
 
         const XMVECTOR positions[4] =
         {
-            { (normal - side1 - side2) * halfSideLength },
-            { (normal - side1 + side2) * halfSideLength },
-            { (normal + side1 + side2) * halfSideLength },
-            { (normal + side1 - side2) * halfSideLength }
+            { (XMVectorSubtract(XMVectorSubtract(normal, side1), side2) * halfSideLength },
+            { (XMVectorAdd(XMVectorSubtract		(normal, side1), side2) * halfSideLength },
+            { (XMVectorAdd(XMVectorAdd			(normal, side1), side2) * halfSideLength },
+            { (XMVectorSubtract(XMVectorAdd		(normal, side1), side2) * halfSideLength }
         };
 
         for (int i = 0; i < 4; i++)

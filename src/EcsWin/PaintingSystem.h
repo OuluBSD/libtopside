@@ -44,7 +44,8 @@ struct PaintComponent : Component<PaintComponent>
 
     winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceLocation previousManipulationLocation{ nullptr };
 
-    std::optional<DirectX::XMMATRIX> brushTipOffsetFromHoldingPose;
+    std::optional<mat4> brushTipOffsetFromHoldingPose;
+    
 };
 
 using PaintComponentRef = Ref<PaintComponent>;
