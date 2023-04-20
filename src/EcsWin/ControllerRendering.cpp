@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace std::placeholders;
@@ -208,5 +208,5 @@ void ControllerModelCache::ReleaseDeviceDependentResources()
 
 }
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
 

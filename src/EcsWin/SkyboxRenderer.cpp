@@ -39,19 +39,24 @@ void SkyboxRenderer::SetViewProjection(
 
 void SkyboxRenderer::CreateDeviceDependentResources()
 {
+	String g_SkyBoxPixelShader = LoadFile(ShareDirFile("shaders/hlsl/SkyBoxPixelShader.hlsl"));
+	String g_SkyBoxVertexShaderVprt = LoadFile(ShareDirFile("shaders/hlsl/SkyBoxVertexShaderVprt.hlsl"));
+	String g_SkyBoxVertexShaderNoVprt = LoadFile(ShareDirFile("shaders/hlsl/SkyBoxVertexShaderNoVprt.hlsl"));
+	String g_SkyBoxGeometryShaderNoVprt = LoadFile(ShareDirFile("shaders/hlsl/SkyBoxGeometryShaderNoVprt.hlsl"));
+	
     const auto device = m_deviceResources->GetD3DDevice();
 
     DirectX::ThrowIfFailed(device->CreatePixelShader(
-        g_SkyBoxPixelShader, sizeof(g_SkyBoxPixelShader), nullptr, &m_pixelShader));
+        g_SkyBoxPixelShader, g_SkyBoxPixelShader.GetCount(), nullptr, &m_pixelShader));
 
     const bool useVprt = m_deviceResources->GetDeviceSupportsVprt();
     const void* vertexShader = (useVprt) ? g_SkyBoxVertexShaderVprt : g_SkyBoxVertexShaderNoVprt;
-    const size_t vertexShaderSize = (useVprt) ? _countof(g_SkyBoxVertexShaderVprt) : _countof(g_SkyBoxVertexShaderNoVprt);
+    const size_t vertexShaderSize = (useVprt) ? g_SkyBoxVertexShaderVprt.GetCount() : g_SkyBoxVertexShaderNoVprt.GetCount();
 
     if (!useVprt)
     {
         DirectX::ThrowIfFailed(device->CreateGeometryShader(
-            g_SkyBoxGeometryShaderNoVprt, sizeof(g_SkyBoxGeometryShaderNoVprt), nullptr, &m_geometryShader));
+            g_SkyBoxGeometryShaderNoVprt, g_SkyBoxGeometryShaderNoVprt.GetCount(), nullptr, &m_geometryShader));
     }
 
     DirectX::ThrowIfFailed(device->CreateVertexShader(

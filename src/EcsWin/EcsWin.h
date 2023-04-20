@@ -73,8 +73,6 @@
 
 #include <EcsLocal/EcsLocal.h>
 
-#define NAMESPACE_WIN_BEGIN		NAMESPACE_ECS_BEGIN namespace Win {
-#define NAMESPACE_WIN_END		} NAMESPACE_ECS_END
 	
 #include <ports/stb/stb_image.h> // not needed: #define STB_IMAGE_IMPLEMENTATION
 #include <ports/tiny_gltf/tiny_gltf.h>

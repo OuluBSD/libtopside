@@ -1,7 +1,8 @@
+#if 0
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -48,7 +49,7 @@ std::future<void> LoadAndCacheModel(
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -189,7 +190,7 @@ NAMESPACE_PARALLEL_END
 
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) const {
@@ -197,4 +198,6 @@ bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) co
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
+
+#endif

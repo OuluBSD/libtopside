@@ -4,6 +4,16 @@ NAMESPACE_ECS_BEGIN
 
 namespace KnownModelNames {
 
+	
+const char* UnitSphere = "UnitSphere_LowPoly";
+const char* UnitCube = "UnitCube";
+const char* UnitQuad = "UnitQuad";
+const char* Baseball = "Baseball";
+const char* PaintBrush = "PaintBrush";
+const char* Gun = "Gun";
+
+
+
 String GetPath(String name) {
 	String path;
 	

@@ -1,13 +1,13 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 PbrModelCache::PbrModelCache(
-    Machine& core,
+    Engine& core,
     std::shared_ptr<Pbr::Resources> pbrResources) :
-    System(core),
+    SP(core),
     m_pbrResources(std::move(pbrResources))
 {}
 
@@ -21,7 +21,7 @@ void PbrModelCache::RegisterModel(std::string_view name, std::shared_ptr<Pbr::Mo
     m_modelMap[std::string(name)] = std::move(model);
 }
 
-PbrRenderable* PbrModelCache::SetModel(std::string_view name, PbrRenderable* pbrRenderableComponent)
+PbrRenderableRef PbrModelCache::SetModel(std::string_view name, PbrRenderableRef pbrRenderableComponent)
 {
     pbrRenderableComponent->ModelName = name;
 
@@ -36,9 +36,9 @@ PbrRenderable* PbrModelCache::SetModel(std::string_view name, PbrRenderable* pbr
     return pbrRenderableComponent;
 }
 
-PbrRenderable* PbrModelCache::SetModel(std::string_view name, ComponentMap& componentMap)
+PbrRenderableRef PbrModelCache::SetModel(std::string_view name, ComponentMap& componentMap)
 {
-    PbrRenderable* pbrRenderableComponent = componentMap.Get<PbrRenderable>();
+    PbrRenderableRef pbrRenderableComponent = componentMap.Get<PbrRenderable>();
     return SetModel(name, pbrRenderableComponent);
 }
 
@@ -49,7 +49,9 @@ bool PbrModelCache::ModelExists(std::string_view name)
 
 void PbrModelCache::Update(double dt)
 {
-    for (auto& componentSet : m_engine.Get<EntityStore>()->GetComponents<PbrRenderable>())
+	Engine& m_engine = GetEngine();
+	auto comps = m_engine.Get<EntityStore>()->GetRoot()->GetComponents<PbrRenderable>();
+    for (auto& componentSet : comps)
     {
         auto[pbrRenderable] = componentSet;
 
@@ -96,4 +98,4 @@ void PbrModelCache::Uninitialize()
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

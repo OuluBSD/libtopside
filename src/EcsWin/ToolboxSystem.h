@@ -1,7 +1,8 @@
+#if 0
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class ToolSystemBase;
@@ -72,4 +73,5 @@ private:
 };
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
+#endif

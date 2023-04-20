@@ -1,7 +1,7 @@
 #pragma once
+#if 0
 
-
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 struct MotionControllerComponent : Component<MotionControllerComponent>
@@ -20,13 +20,11 @@ struct MotionControllerComponent : Component<MotionControllerComponent>
 using MotionControllerComponentRef = Ref<MotionControllerComponent>;
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
 
 
 NAMESPACE_PARALLEL_BEGIN
 
-
-using namespace ::TS::Ecs::Win;
 
 ////////////////////////////////////////////////////////////////////////////////
 // MotionControllerSystem
@@ -75,3 +73,5 @@ private:
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

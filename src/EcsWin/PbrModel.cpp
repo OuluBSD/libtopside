@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -158,4 +158,4 @@ void Model::UpdateTransforms(Pbr::Resources const& pbrResources, _In_ ID3D11Devi
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 struct PbrRenderable;
@@ -16,12 +16,15 @@ struct PbrRenderable;
 class PbrModelCache : public System<PbrModelCache>
 {
 public:
-    PbrModelCache(Machine& core, std::shared_ptr<Pbr::Resources> pbrResources);
+	using Base = System<PbrModelCache>;
+	RTTI_DECL1(PbrModelCache, Base);
+	
+    PbrModelCache(Engine& core, std::shared_ptr<Pbr::Resources> pbrResources);
 
     void RegisterModel(std::string_view name, std::shared_ptr<Pbr::Model> model);
     bool ModelExists(std::string_view name);
-    PbrRenderable* SetModel(std::string_view name, PbrRenderable* pbrRenderableComponent);
-    PbrRenderable* SetModel(std::string_view name, Ecs::ComponentMap& componentMap);
+    PbrRenderableRef SetModel(std::string_view name, PbrRenderableRef pbrRenderableComponent);
+    PbrRenderableRef SetModel(std::string_view name, Ecs::ComponentMap& componentMap);
 
 protected:
     void Update(double) override;
@@ -35,4 +38,4 @@ private:
 
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -93,4 +93,4 @@ void Material::Bind(_In_ ID3D11DeviceContext3* context) const
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

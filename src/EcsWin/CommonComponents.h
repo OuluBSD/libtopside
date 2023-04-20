@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 namespace Pbr {
@@ -66,15 +66,15 @@ struct PbrRenderable : Component<PbrRenderable>
 typedef Ref<PbrRenderable> PbrRenderableRef;
 
 
-struct TextRenderable : Component<TextRenderable>
+/*struct TextRenderable : Component<TextRenderable>
 {
 	COPY_PANIC(TextRenderable)
 	
     std::wstring Text = L"";
     float FontSize = 60.0f;
-};
+};*/
 
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
 

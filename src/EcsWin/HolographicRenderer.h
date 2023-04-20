@@ -2,8 +2,9 @@
 
 
 NAMESPACE_PARALLEL_BEGIN
-using namespace ::TS::Ecs::Win;
-	
+
+using namespace ::TS::Ecs;
+
 class HolographicScene;
 class TextRenderer;
 class QuadRenderer;

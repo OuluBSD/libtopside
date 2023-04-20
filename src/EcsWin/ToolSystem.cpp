@@ -1,7 +1,8 @@
+#if 0
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 ComponentMap ToolSelectorPrefab::Make(ComponentStore& store)
@@ -16,4 +17,5 @@ ComponentMap ToolSelectorPrefab::Make(ComponentStore& store)
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
+#endif

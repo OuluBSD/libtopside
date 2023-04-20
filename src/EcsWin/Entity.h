@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 #if 0
 class Engine;
@@ -69,7 +69,6 @@ private:
 //         return components;
 //     }
 // };
-#endif
 
 // Usage: 
 // auto giantBall = m_engine.Get<EntityStore>()->Create<GiantBall>();
@@ -94,5 +93,7 @@ struct EntityPrefab
     }
 };
 
-NAMESPACE_WIN_END
+#endif
+
+NAMESPACE_ECS_END
 

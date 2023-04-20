@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -162,10 +162,10 @@ PrimitiveBuilder& PrimitiveBuilder::AddCube(float sideLength, Pbr::NodeIndex_t t
 
         const XMVECTOR positions[4] =
         {
-            { (XMVectorSubtract(XMVectorSubtract(normal, side1), side2) * halfSideLength },
-            { (XMVectorAdd(XMVectorSubtract		(normal, side1), side2) * halfSideLength },
-            { (XMVectorAdd(XMVectorAdd			(normal, side1), side2) * halfSideLength },
-            { (XMVectorSubtract(XMVectorAdd		(normal, side1), side2) * halfSideLength }
+            { XMVectorScale(XMVectorSubtract(XMVectorSubtract(normal, side1), side2), halfSideLength) },
+            { XMVectorScale(XMVectorAdd(XMVectorSubtract		(normal, side1), side2), halfSideLength) },
+            { XMVectorScale(XMVectorAdd(XMVectorAdd			(normal, side1), side2), halfSideLength) },
+            { XMVectorScale(XMVectorSubtract(XMVectorAdd		(normal, side1), side2), halfSideLength) }
         };
 
         for (int i = 0; i < 4; i++)
@@ -292,4 +292,4 @@ ComPtr<ID3D11SamplerState> CreateSampler(_In_ ID3D11Device* device, D3D11_TEXTUR
 
 }
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

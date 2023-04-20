@@ -97,9 +97,14 @@ void QuadRenderer::SetViewProjection(
 
 void QuadRenderer::CreateDeviceDependentResources()
 {
+	String g_QuadVPRTVertexShader = LoadFile(ShareDirFile("shaders/hlsl/QuadVPRTVertexShader.hlsl"));
+	String g_QuadVertexShader = LoadFile(ShareDirFile("shaders/hlsl/QuadVertexShader.hlsl"));
+	String g_QuadPixelShaderRGB = LoadFile(ShareDirFile("shaders/hlsl/QuadPixelShaderRGB.hlsl"));
+	String g_QuadGeometryShader = LoadFile(ShareDirFile("shaders/hlsl/QuadGeometryShader.hlsl"));
+	
     const bool usingVprt = m_deviceResources->GetDeviceSupportsVprt();
     const void* vertexShader = (usingVprt) ? g_QuadVPRTVertexShader : g_QuadVertexShader;
-    const size_t vertexShaderSize = (usingVprt) ? _countof(g_QuadVPRTVertexShader) : _countof(g_QuadVertexShader);
+    const size_t vertexShaderSize = (usingVprt) ? g_QuadVPRTVertexShader.GetCount() : g_QuadVertexShader.GetCount();
 
     DirectX::ThrowIfFailed(
         m_deviceResources->GetD3DDevice()->CreateVertexShader(
@@ -128,7 +133,7 @@ void QuadRenderer::CreateDeviceDependentResources()
     DirectX::ThrowIfFailed(
         m_deviceResources->GetD3DDevice()->CreatePixelShader(
             g_QuadPixelShaderRGB,
-            _countof(g_QuadPixelShaderRGB),
+            g_QuadPixelShaderRGB.GetCount(),
             nullptr,
             &m_pixelShaderRGB
         )
@@ -139,7 +144,7 @@ void QuadRenderer::CreateDeviceDependentResources()
         DirectX::ThrowIfFailed(
             m_deviceResources->GetD3DDevice()->CreateGeometryShader(
                 g_QuadGeometryShader,
-                _countof(g_QuadGeometryShader),
+                g_QuadGeometryShader.GetCount(),
                 nullptr,
                 &m_geometryShader
             )

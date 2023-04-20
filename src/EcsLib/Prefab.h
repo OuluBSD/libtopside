@@ -6,12 +6,12 @@ NAMESPACE_ECS_BEGIN
 
 namespace KnownModelNames {
 
-constexpr auto UnitSphere = "UnitSphere_LowPoly";
-constexpr auto UnitCube = "UnitCube";
-constexpr auto UnitQuad = "UnitQuad";
-constexpr auto Baseball = "Baseball";
-constexpr auto PaintBrush = "PaintBrush";
-constexpr auto Gun = "Gun";
+extern const char* UnitSphere;
+extern const char* UnitCube;
+extern const char* UnitQuad;
+extern const char* Baseball;
+extern const char* PaintBrush;
+extern const char* Gun;
 
 String GetPath(String name);
 

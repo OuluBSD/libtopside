@@ -1,7 +1,8 @@
+#if 0
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace winrt::Windows::Foundation::Numerics;
@@ -134,4 +135,5 @@ void ShootingComponent::Destroy()
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
+#endif

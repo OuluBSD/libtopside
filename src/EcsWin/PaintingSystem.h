@@ -1,7 +1,8 @@
+#if 0
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 static constexpr float PaintTipThickness = 0.008f;
@@ -110,4 +111,5 @@ private:
 };
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
+#endif

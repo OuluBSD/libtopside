@@ -1,7 +1,7 @@
 #include "EcsWin.h"
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 using namespace Microsoft::WRL;
@@ -20,29 +20,32 @@ struct SceneConstantBuffer
 
 namespace Pbr {
 
-	
+
 struct Resources::Impl
 {
     void Initialize(_In_ ID3D11Device* device)
     {
+        String g_psPbrMain = LoadFile(ShareDirFile("shaders/hlsl/PbrPixelShader.hlsl"));
+        String g_vsPbrVprtMain = LoadFile(ShareDirFile("shaders/hlsl/PbrVertexShaderVprt.hlsl"));
+        String g_vsPbrNoVprtMain = LoadFile(ShareDirFile("shaders/hlsl/PbrVertexShaderNoVprt.hlsl"));
+        String g_gsPbrNoVprtMain = LoadFile(ShareDirFile("shaders/hlsl/PbrGeometryShaderNoVprt.hlsl"));
+        
         // Set up pixel shader.
         Internal::ThrowIfFailed(device->CreatePixelShader(g_psPbrMain, sizeof(g_psPbrMain), nullptr, &Resources.PixelShader));
 
         // Check for device support for the optional feature that allows setting the render target array index from the vertex shader stage.
         D3D11_FEATURE_DATA_D3D11_OPTIONS3 options{};
         device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
-        if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer)
-        {
+        if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer) {
             // Set up vertex shader with VPRT support.
-            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::s_vertexDesc, ARRAYSIZE(Pbr::Vertex::s_vertexDesc), g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), &Resources.InputLayout));
-            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrVprtMain, sizeof(g_vsPbrVprtMain), nullptr, &Resources.VertexShader));
+            Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::s_vertexDesc, ARRAYSIZE(Pbr::Vertex::s_vertexDesc), g_vsPbrVprtMain, g_vsPbrVprtMain.GetCount(), &Resources.InputLayout));
+            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrVprtMain, g_vsPbrVprtMain.GetCount(), nullptr, &Resources.VertexShader));
         }
-        else
-        {
+        else {
             // Set up vertex shader with geometry shader due to no VPRT support.
             Internal::ThrowIfFailed(device->CreateInputLayout(Pbr::Vertex::s_vertexDesc, ARRAYSIZE(Pbr::Vertex::s_vertexDesc), g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), &Resources.InputLayout));
-            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrNoVprtMain, sizeof(g_vsPbrNoVprtMain), nullptr, &Resources.VertexShader));
-            Internal::ThrowIfFailed(device->CreateGeometryShader(g_gsPbrNoVprtMain, sizeof(g_gsPbrNoVprtMain), nullptr, &Resources.GeometryShader));
+            Internal::ThrowIfFailed(device->CreateVertexShader(g_vsPbrNoVprtMain, g_vsPbrNoVprtMain.GetCount(), nullptr, &Resources.VertexShader));
+            Internal::ThrowIfFailed(device->CreateGeometryShader(g_gsPbrNoVprtMain, g_gsPbrNoVprtMain.GetCount(), nullptr, &Resources.GeometryShader));
         }
 
         // Set up the constant buffers.
@@ -189,4 +192,4 @@ void Resources::Bind(_In_ ID3D11DeviceContext3* context) const
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

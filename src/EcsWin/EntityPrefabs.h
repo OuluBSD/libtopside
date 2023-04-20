@@ -1,17 +1,9 @@
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
-//using namespace ::TS::Ecs;
-using ::TS::Ecs::Transform;
+NAMESPACE_ECS_BEGIN
 
-namespace KnownModelNames {
-constexpr auto UnitSphere = "UnitSphere_LowPoly";
-constexpr auto UnitCube = "UnitCube";
-constexpr auto Baseball = "Baseball";
-constexpr auto PaintBrush = "PaintBrush";
-constexpr auto Gun = "Gun";
-}
+using ::TS::Ecs::Transform;
 
 	
 struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
@@ -27,6 +19,8 @@ struct FloorPrefab : EntityPrefab<Transform, PbrRenderable>
         return components;
     }
 };
+
+#if 0
 
 struct Baseball : EntityPrefab<Transform, PbrRenderable, RigidBody>
 {
@@ -118,5 +112,6 @@ struct StaticCube : EntityPrefab<Transform, PbrRenderable>
     }
 };
 
+#endif
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END

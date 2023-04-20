@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_WIN_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 namespace Pbr {
@@ -38,4 +38,4 @@ private:
 }
 
 
-NAMESPACE_WIN_END
+NAMESPACE_ECS_END
