@@ -3,6 +3,10 @@
 #ifdef flagWIN32
 #include <shlwapi.h>
 #include <stdlib.h>
+#ifdef flagUWP
+	#include <winrt/Windows.Foundation.Collections.h>
+	#include <winrt/Windows.Web.Syndication.h>
+#endif
 #endif
 
 #include <ports/md5/md5.h>
@@ -416,6 +420,9 @@ void AppInit__(int argc, const char** argv) {
 	::UPP::ReadCoreCmdlineArgs();
 	::UPP::RunInitBlocks();
 	
+	#ifdef flagUWP
+    winrt::init_apartment();
+    #endif
 }
 
 void AppExit__() {

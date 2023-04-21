@@ -6,6 +6,9 @@ uses
 	ports/DirectXTK,
 	EcsLocal;
 
+library
+	"ole32 oleaut32 Kernel32";
+
 file
 	Copying,
 	EcsWin.h,

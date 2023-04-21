@@ -381,7 +381,9 @@ String FindShareDir() {
 	if (DirectoryExists(config_share))
 		return config_share;
 	
-	#if defined flagWIN32
+	#if defined flagUWP
+	String home_upphub_share = "ms-appx://share";
+	#elif defined flagWIN32
 	String home_upphub_share = "C:\\git\\libtopside\\share";
 	if (!DirectoryExists(home_upphub_share))
 		home_upphub_share = "C:\\libtopside\\share";

@@ -73,9 +73,11 @@ PaError PaWasapi_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiInd
 
 #ifdef flagALL_WIN_SOURCES
 	//#define PA_USE_WMME 1
-	#define PA_USE_DS 1
-	#ifdef flagMSC
-		#define PA_USE_WASAPI 1
+	#ifndef flagUWP
+		#define PA_USE_DS 1
+		#ifdef flagMSC
+			#define PA_USE_WASAPI 1
+		#endif
 	#endif
 	//#define PA_USE_WDMKS 1
 #endif

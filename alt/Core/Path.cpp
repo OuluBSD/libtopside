@@ -8,6 +8,12 @@
 
 #include <sys/stat.h>
 
+#if defined flagUWP
+	#include <winrt/Windows.Foundation.h>
+	#include <winrt/Windows.Foundation.Collections.h>
+	#include <winrt/Windows.UI.Core.h>
+#endif
+
 NAMESPACE_UPP_BEGIN
 
 #if defined flagWIN32
@@ -155,9 +161,11 @@ String GetHomeDirectory() {
 	struct passwd *pw = getpwuid(getuid());
 	String homedir = pw->pw_dir;
 	return homedir;
+	#elif defined flagUWPREL
+	return "ms-appdata:///local/";
 	#elif defined flagUWP
-	TODO
-	#elif defined flagWIN32 && !defined flagGCC
+	return ConfigFile("");
+	#elif defined flagWIN32 && (defined flagMSC || defined flagCLANG)
 	char buff[255];
     SHGetSpecialFolderPathA(HWND_DESKTOP, buff, CSIDL_PROFILE, FALSE);
     return buff;
@@ -174,7 +182,11 @@ String ConfigFile(String file_name) {
 	if (config_path.GetCount())
 		return AppendFileName(config_path, file_name);
 	#ifdef flagWIN32
+	#ifdef flagUWPREL
+	String dir = "ms-appdata:///local/";
+	#else
 	String dir = GetExeDirFile("");
+	#endif
 	#else
 	String home_dir = GetHomeDirectory();
 	String upp = AppendFileName(home_dir, ".config");
@@ -238,7 +250,9 @@ void RealizeDirectory(String dir) {
 }
 
 void DeleteFile(String path) {
-	#ifdef flagUWP
+	#ifdef flagUWPREL
+	TODO
+	#elif defined flagUWP
 	TODO
 	#else
 	unlink(path.Begin());
@@ -327,20 +341,39 @@ void SetDataPath(String path) {
 String GetDataDirectory() {
 	if(sDataPath.GetCount())
 		return sDataPath;
+	#ifdef flagUWPREL
+	return "ms-appx://";
+	#else
 	return GetEnv("UPP_MAIN__");
+	#endif
 }
 
 String GetDataFile(String filename) {
 	if(sDataPath.GetCount())
 		return AppendFileName(sDataPath, filename);
+	#ifdef flagUWPREL
+	return AppendFileName("ms-appx://", filename);
+	#else
 	String s = GetEnv("UPP_MAIN__");
 	return s.GetCount() ? AppendFileName(s, filename) : GetExeDirFile(filename);
+	#endif
 }
 
 bool FileExists(String path) {
 	#ifdef flagWIN32
-	#if !defined flagUWP && !defined flagGCC
+	#if defined flagMSC || defined flagCLANG
+	
+	#if defined flagUWP
+	#if defined flagUWPREL
+	ASSERT(path.GetCount() < 2 || path[1] != ':');
+	path = "ms-appx://" + path;
+	#endif
+	DWORD dwAttrib = GetFileAttributes(path.ToWString().Begin());
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+	#else
 	return PathFileExistsA(path.Begin());
+	#endif
+	
 	#else
 	struct stat stat_info;
 	if (stat(path.Begin(), &stat_info) != 0)
@@ -354,14 +387,12 @@ bool FileExists(String path) {
 
 bool DirectoryExists(String path) {
 	#ifdef flagWIN32
-	#ifndef flagUWP
-	DWORD dwAttrib = GetFileAttributes(path.Begin());
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-         (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-	#else
-	ASSERT(0, "Directories are not supported in UWP");
-	return false;
+	#ifdef flagUWPREL
+	ASSERT(path.GetCount() < 2 || path[1] != ':');
+	path = "ms-appx://" + path;
 	#endif
+	DWORD dwAttrib = GetFileAttributes(path.ToWString().Begin());
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 	#else
 	DIR* dir = opendir(path.Begin());
 	if (dir) {

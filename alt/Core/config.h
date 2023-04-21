@@ -243,4 +243,9 @@
 	#define CPP_11
 #endif
 
+#if defined flagUWP && defined flagRELPKG
+	#define UWPREL 1
+	#define flagUWPREL 1
+#endif
+
 #endif

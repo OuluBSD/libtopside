@@ -22,7 +22,8 @@ bool DefaultInitializer(bool skip_eon_file) {
 	
 	const auto& inputs = cmd.GetInputs();
 	for(const auto& in : inputs) {
-		if (in.key == 'e') eon_file = in.value;
+		if (in.key == 'e')
+			eon_file = in.value;
 	}
 	
 	__def_args <<= cmd.GetVariables();
@@ -74,6 +75,8 @@ void DefaultRunner(bool main_loop, String app_name, String override_eon_file, Ve
 	
 	if (!override_eon_file.IsEmpty())
 		eon_file = override_eon_file;
+	
+	LOG("Eon-file path: " << eon_file);
 	
 	if (extra_args) {
 		for(int i = 0; i < extra_args->GetCount(); i++)

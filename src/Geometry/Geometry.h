@@ -1,8 +1,9 @@
 #ifndef _Geometry_Geometry_h_
 #define _Geometry_Geometry_h_
 
-
-#define flagASSIMP
+#if (defined flagMSC && !defined flagUWP) || defined flagLINUX
+	#define flagASSIMP
+#endif
 
 #ifdef flagASSIMP
 	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32 && !defined flagUWP) || flagLINUX
