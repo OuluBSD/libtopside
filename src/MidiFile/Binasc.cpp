@@ -1785,9 +1785,9 @@ int Binasc::ProcessDecimalWord(Stream& out, String str, int line_num) {
 			
 			uint32 tempLong = (uint32)ScanInt(str.Begin() + quoteIndex + 1);
 			
-			uint8 byte1 = (tempLong & 0x00ff0000) >> 16;
-			uint8 byte2 = (tempLong & 0x0000ff00) >>  8;
-			uint8 byte3 = (tempLong & 0x000000ff);
+			uint8 byte1 = (uint8)((tempLong & 0x00ff0000) >> 16);
+			uint8 byte2 = (uint8)((tempLong & 0x0000ff00) >>  8);
+			uint8 byte3 = (uint8)((tempLong & 0x000000ff));
 			
 			if (endiindex == -1) {
 				out << byte1;

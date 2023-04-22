@@ -154,7 +154,33 @@ inline Rect GetFrameBox<Ctrl,Rect>(const Ctrl& c) {
 }
 
 
+Image RenderTextBlended(Font font, String s, Color ink);
+
+
 NAMESPACE_TOPSIDE_END
 
+
+// U++ VirtualGui bug
+#if IS_UPP_CORE && defined flagWIN32 && !defined GUI_APP_MAIN
+
+#define GUI_APP_MAIN \
+void GuiMainFn_();\
+\
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpCmdLine, int nCmdShow) \
+{ \
+	UPP::AppInitEnvironment__(); \
+	GUI_APP_MAIN_HOOK \
+	UPP::Ctrl::InitWin32(hInstance); \
+	UPP::AppExecute__(GuiMainFn_); \
+	UPP::Ctrl::CloseTopCtrls(); \
+	UPP::Ctrl::ExitWin32(); \
+	UPP::Ctrl::ShutdownThreads(); \
+	UPP::AppExit__(); \
+	return UPP::GetExitCode(); \
+} \
+\
+void GuiMainFn_()
+
+#endif
 
 #endif

@@ -107,12 +107,17 @@ bool ScrWin::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	
 	a.SetDependency(&*ctx_);
 	
+	#if VIRTUALGUI
+	HINSTANCE instance = 0;
+	LOG("ScrWin::SinkDevice_Initialize: error: can't access window instance with VIRTUALGUI");
+	return false;
+	#else
 	HINSTANCE instance = (HINSTANCE)GetWin32Instance();
 	if (!instance) {
 		LOG("ScrWin::SinkDevice_Initialize: error: no gui instance");
 		return false;
 	}
-	
+	#endif
 	
 	dev.title = ws.GetString(".title", "libtopside");
 	dev.wc.lpfnWndProc   = Win_WindowProc;
@@ -235,7 +240,7 @@ bool ScrWin::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, co
 	    memcpy(dev.data, pixmap.Begin(), frame_sz);
 	    
 	    ASSERT(scr_bpp == vfmt.GetPackedCount());
-	    ASSERT(frame_sz == dev.data_sz.GetArea() * scr_bpp);
+	    ASSERT(frame_sz == dev.data_sz.cx * dev.data_sz.cy * scr_bpp);
 	    
 	    InvalidateRect(dev.ctx->hwnd, NULL, FALSE);
 	    

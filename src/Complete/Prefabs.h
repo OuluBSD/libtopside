@@ -28,7 +28,9 @@
 #endif
 
 #if IS_UPP_CORE
-	#warning TODO
+	#ifndef flagMSC
+		#warning TODO
+	#endif
 #else
 
 /*#define GUI_APP_MAIN \

@@ -66,7 +66,7 @@ public:
 	#endif
 	
 	typedef FrameT CLASSNAME;
-	FrameT() {TODO}
+	FrameT();
 	
 	void SetScope(Scope* h);
 	void SetId(int id) {this->id = id;}

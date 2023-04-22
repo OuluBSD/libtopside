@@ -693,7 +693,7 @@ uint32 FmSynth::PackFloat(float value) {
 		fractional = -0x8000;
 	}
 	else {
-		fractional = fixed_mantissa;
+		fractional = (int16)fixed_mantissa;
 	}
 		
 	return (((uint32)exponent & 0xffff) << 16) | (uint16)fractional;

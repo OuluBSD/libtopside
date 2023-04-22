@@ -132,8 +132,9 @@ bool HandleVideoBase::Initialize(const Script::WorldState& ws) {
 	
 	#if IS_UPP_CORE && defined flagGUI
 	wins = GetMachine().Get<WindowSystem>();
-	#endif
+	#else
 	surfs = GetMachine().Get<Gu::SurfaceSystem>();
+	#endif
 	
 	return true;
 }
@@ -385,7 +386,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 				ProgPainter& pp = pd.GetPainter();
 				InternalPacketData& data = out.SetData<InternalPacketData>();
 				
-				pd.Realize(w.GetSize());
+				pd.Realize(this, w.GetSize());
 				
 				UPP::AtomVirtualGui* vgui = CastPtr<AtomVirtualGui>(VirtualGuiPtr);
 				ASSERT(VirtualGuiPtr && vgui);

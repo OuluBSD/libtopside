@@ -90,4 +90,8 @@ public:
 	#endif
 	byte GetOverpaint() const {return overpaint;}
 	#endif
+	
+	static void InitWin32(HINSTANCE inst) {}
+	static void ExitWin32() {}
+	
 //$ };

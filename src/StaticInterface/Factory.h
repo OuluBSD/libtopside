@@ -31,7 +31,7 @@ struct StaticIfaceFactory {
 		bool read, write;
 	};
 	
-	static VectorMap<String, Vector<Backend>> new_fns;
+	static VectorMap<String, Vector<Backend>>& NewFns() {static VectorMap<String, Vector<Backend>> v; return v;}
 	static ArrayMap<TypeCls, StaticIfaceBackend> backends;
 	
 	
@@ -40,7 +40,7 @@ struct StaticIfaceFactory {
 	
 	template <class T>
 	static void AddFileFormat(String ext, bool read, bool write) {
-		Vector<Backend>& fns = new_fns.GetAdd(ext);
+		Vector<Backend>& fns = NewFns().GetAdd(ext);
 		Backend& b = fns.Add();
 		b.type = GetTypeIdClass<T>();
 		b.new_fn = &New<T>;

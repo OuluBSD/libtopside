@@ -81,7 +81,7 @@
 NAMESPACE_UPP_BEGIN
 
 NTL_MOVEABLE(TS::Circle);
-NTL_MOVEABLE(TS::Rectangle);
+NTL_MOVEABLE(TS::FixedRectangle);
 NTL_MOVEABLE(TS::OrientedRectangle);
 
 NAMESPACE_UPP_END

@@ -12,9 +12,9 @@ machine sdl.app:
 			state.event.pipe:
 				target = event.register
 
-		loop ogl.fbo:
-			ogl.customer
-			sdl.ogl.fbo.program:
+		loop center.fbo:
+			center.customer
+			sdl.fbo.program:
 				drawmem =		"false"
 				program =		"the_renderer"
 				shader.default.frag.path =		"shaders/tests/07d_fragment.glsl"

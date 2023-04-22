@@ -4,13 +4,13 @@
 
 #include <CtrlCore/CtrlCore.h>
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 #include <GLDraw/GLDraw.h>
 #endif
 
 NAMESPACE_UPP
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 extern VirtualGui *VirtualGuiPtr;
 #endif
 
@@ -22,6 +22,7 @@ extern bool sdlMouseIsIn;
 bool GetCtrl();
 bool GetAlt();
 bool GetShift();
+
 END_UPP_NAMESPACE
 
 #if 0 //defined flagMSC
@@ -78,20 +79,21 @@ struct HalSdl::NativeOglVideoSinkDevice : HalSdl_CommonOgl {
     GfxAccelAtom<SdlOglGfx> accel;
 };
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 struct HalSdl::NativeUppOglDevice : HalSdl_CommonOgl {
 	GLDraw gldraw;
 	Size sz;
 	static NativeUppOglDevice* last;
 };
-
 HalSdl::NativeUppOglDevice* HalSdl::NativeUppOglDevice::last;
+#endif
+#endif
 
+
+#if IS_UPP_CORE
 void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event);
-
 #endif
 
-#endif
 
 struct HalSdl::NativeEventsBase {
     double time;
@@ -107,7 +109,7 @@ struct HalSdl::NativeEventsBase {
     bool is_rctrl;
     Point prev_mouse_pt;
     Vector<int> invalids;
-    #ifdef flagUPPCORE
+    #if IS_UPP_CORE
     Ref<WindowSystem> wins;
     #endif
     Ref<Gu::SurfaceSystem> surfs;
@@ -119,7 +121,7 @@ struct HalSdl::NativeEventsBase {
         ev_sendable = 0;
         prev_mouse_pt = Point(0,0);
         sz.Clear();
-        #ifdef flagUPPCORE
+        #if IS_UPP_CORE
         wins.Clear();
         #endif
         surfs.Clear();
@@ -135,7 +137,7 @@ struct HalSdl::NativeContextBase {
 	void* p;
 };
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 struct HalSdl::NativeUppEventsBase {
 	Ref<WindowSystem> wins;
     Ref<Gu::SurfaceSystem> surfs;
@@ -156,7 +158,7 @@ struct HalSdl::NativeUppEventsBase {
     void Clear() {
         time = 0;
         seq = 0;
-        #ifdef flagUPPCORE
+        #if IS_UPP_CORE
         wins.Clear();
         #endif
         surfs.Clear();
@@ -508,7 +510,7 @@ bool HalSdl::CenterVideoSinkDevice_PostInitialize(NativeCenterVideoSinkDevice& d
     
     
     // Renderer
-    #ifdef flagUPPCORE
+    #if IS_UPP_CORE
     int fb_stride = 4;
     SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
 	#else
@@ -575,7 +577,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 	}
 	else if (fmt.IsProg()) {
 		if (dev.id.IsEmpty()) {
-			#ifdef flagUPPCORE
+			#if IS_UPP_CORE
 			dev.id = new ImageDraw(dev.sz);
 			#else
 			dev.id.Create(dev.sz, 3);
@@ -636,7 +638,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			
 			auto fb = dev.fb.GetActiveColorBuffer();
 			ASSERT(fb);
-			uint32 fmt = 0;
+			Uint32 fmt = 0;
 			int access, w = 0, h = 0;
 			if (SDL_QueryTexture(fb, &fmt, &access, &w, &h) < 0 || w == 0 || h == 0)
 				return false;
@@ -648,9 +650,9 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			int pitch = surf->pitch;
 			byte* pixels = (byte*)surf->pixels;
 			int len = h * pitch;
-			#ifdef flagUPPCORE
+			#if IS_UPP_CORE
 			const RGBA* begin = img.Begin();
-			int id_len = img.GetLength() * 4;
+			int id_len = (int)img.GetLength() * 4;
 			int id_h = img.GetHeight();
 			int id_pitch = img.GetWidth() * 4;
 			int id_stride = 4;
@@ -661,7 +663,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			int id_stride = dev.id->GetStride();
 			#endif
 			if (len == id_len) {
-				#ifdef flagUPPCORE
+				#if IS_UPP_CORE
 				memcpy(pixels, (byte*)begin, len);
 				#else
 				memcpy(pixels, (byte*)dev.id->Data().Begin(), len);
@@ -672,7 +674,7 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				int copy_pitch = min(id_pitch, pitch);
 				byte* to = pixels;
 				
-				#ifdef flagUPPCORE
+				#if IS_UPP_CORE
 				byte* from = (byte*)begin;
 				#else
 				byte* from = dev.id->Data().Begin();
@@ -1211,7 +1213,7 @@ bool HalSdl::EventsBase_PostInitialize(NativeEventsBase& dev, AtomBase& a) {
 			dev.surfs->Set_GetMouseCursor(&HalSdl__GetMouseCursor, &dev);
 		}
 		
-		#ifdef flagUPPCORE
+		#if IS_UPP_CORE
 		dev.wins = m.Get<WindowSystem>();
 		if (dev.wins) {
 			dev.wins->Set_SetMouseCursor(&HalSdl__SetMouseCursor, &dev);
@@ -1233,7 +1235,7 @@ void HalSdl::EventsBase_Stop(NativeEventsBase& dev, AtomBase& a) {
 }
 
 void HalSdl::EventsBase_Uninitialize(NativeEventsBase& dev, AtomBase& a) {
-	#ifdef flagUPPCORE
+	#if IS_UPP_CORE
 	dev.wins.Clear();
 	#endif
 	dev.surfs.Clear();
@@ -1492,7 +1494,7 @@ bool Events__Poll(HalSdl::NativeEventsBase& dev, AtomBase& a) {
 	if (dev.ev.IsEmpty())
 		return false;
 	
-	#ifdef flagUPPCORE
+	#if IS_UPP_CORE
 	if (dev.wins) {
 		dev.wins->DoEvents(dev.ev);
 	}
@@ -1567,7 +1569,7 @@ void HalSdl::EventsBase_DetachContext(NativeEventsBase&, AtomBase& a, AtomBase& 
 
 
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 extern SDL_TimerID waketimer_id;
 
 bool HalSdl::UppEventsBase_Create(NativeUppEventsBase*& dev) {
@@ -1580,9 +1582,6 @@ void HalSdl::UppEventsBase_Destroy(NativeUppEventsBase*& dev) {
 }
 
 bool HalSdl::UppEventsBase_Initialize(NativeUppEventsBase& dev, AtomBase& a, const Script::WorldState&) {
-	delete dev;
-	
-	
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<SdlContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
@@ -1954,7 +1953,7 @@ dword fbKEYtoK(dword chr)
 }
 
 
-#ifdef flagUPPCORE
+#if IS_UPP_CORE
 void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 {
 	#if 1

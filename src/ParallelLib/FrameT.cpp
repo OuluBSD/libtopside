@@ -5,6 +5,13 @@ NAMESPACE_PARALLEL_BEGIN
 #define LLOG(x)  // LOG(x)
 #define LDUMP(x) //DDUMP(x)
 
+
+template <class Dim>
+FrameT<Dim>::FrameT() {
+	TODO
+}
+
+	
 #if IS_UPP_CORE
 template <>
 FrameT<CtxUpp2D>::FrameT() {

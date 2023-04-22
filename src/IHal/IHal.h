@@ -4,6 +4,7 @@
 #ifndef _IHal_IHal_h_
 #define _IHal_IHal_h_
 
+#include <Local/Local.h>
 #include <ParallelLib/ParallelLib.h>
 #include <IGraphics/IGraphics.h>
 

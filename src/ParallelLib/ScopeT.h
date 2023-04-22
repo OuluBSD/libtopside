@@ -122,7 +122,7 @@ public:
 	int GetFrameWidth() const {return frame_width;}
 	int GetCornerWidth() const {return corner_width;}
 	Pt GetMousePos() const;
-	bool IsForeground() const;
+	//bool IsForeground() const;
 	
 	void FocusHandle(TopContainer* tc);
 	void OrderTileHandles();

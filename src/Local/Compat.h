@@ -256,9 +256,9 @@ template <class T> template <class Arg>
 ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {}
 
 
-#ifndef flagMSC
+//#if !(defined flagMSC && !defined flagUWP)
 inline WString FromUtf8(String s) {return s.ToWString();}
-#endif
+//#endif
 
 
 END_UPP_NAMESPACE

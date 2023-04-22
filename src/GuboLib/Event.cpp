@@ -2,7 +2,7 @@
 
 #define LLOG(x)
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_UPP_BEGIN
 
 extern dword fbKEYtoK(dword chr);
 
@@ -14,6 +14,11 @@ extern dword modkeys;
 extern bool  sdlMouseIsIn;
 
 VirtualGui3D* VirtualGui3DPtr;
+
+
+NAMESPACE_UPP_END
+
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void RunVirtualGui3D(VirtualGui3D& gui, Event<> app_main)

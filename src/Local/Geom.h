@@ -16,6 +16,7 @@ struct Point3_ : Moveable<Point3_<T>> {
 	Point3_(T v) : x(v), y(v), z(v) {}
 	Point3_(T x, T y, T z) : x(x), y(y), z(z) {}
 	Point3_(const Point3_& pt) : x(pt.x), y(pt.y), z(pt.z) {}
+	Point3_(const Nuller&) {}
 
 
 	#ifdef flagSTDRTTI

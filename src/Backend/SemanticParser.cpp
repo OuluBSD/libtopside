@@ -1200,7 +1200,7 @@ bool SemanticParser::Term(bool meta) {
 	Iterator& iter = TopIterator();
 	
 	if(iter->IsType(TK_HEX)) {
-		EMIT PushRvalConstant(iter->loc, HexInt(iter->str_value));
+		EMIT PushRvalConstant(iter->loc, (int32)HexInt(iter->str_value));
 		iter++;
 		return true;
 	}
@@ -1211,13 +1211,13 @@ bool SemanticParser::Term(bool meta) {
 		return true;
 	}
 	if(iter->IsType(TK_OCT)) {
-		EMIT PushRvalConstant(iter->loc, OctInt(iter->str_value));
+		EMIT PushRvalConstant(iter->loc, (int32)OctInt(iter->str_value));
 		iter++;
 		return true;
 	}
 	if(iter->IsType(TK_INTEGER)) {
 		// TODO: int64 !
-		EMIT PushRvalConstant(iter->loc, StrInt(iter->str_value));
+		EMIT PushRvalConstant(iter->loc, (int32)StrInt(iter->str_value));
 		iter++;
 		return true;
 	}

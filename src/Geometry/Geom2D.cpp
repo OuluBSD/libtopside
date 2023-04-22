@@ -67,7 +67,7 @@ bool Circle::Intersects(const Circle& c) const {
 
 
 
-void Rectangle::SetContainerFromPoints(const Vector<vec2>& pts) {
+void FixedRectangle::SetContainerFromPoints(const Vector<vec2>& pts) {
 	pos.Clear();
 	sz.Clear();
 	if (pts.IsEmpty())
@@ -88,13 +88,13 @@ void Rectangle::SetContainerFromPoints(const Vector<vec2>& pts) {
 	sz = max - min;
 }
 
-bool Rectangle::Contains(const vec2& pt) const {
+bool FixedRectangle::Contains(const vec2& pt) const {
 	vec2 min = GetMin(), max = GetMax();
 	return	(pt[0] >= min[0] && pt[0] <= max[0]) &&
 			(pt[1] >= min[1] && pt[1] <= max[1]);
 }
 
-bool Rectangle::Intersects(const line2& l) const {
+bool FixedRectangle::Intersects(const line2& l) const {
 	if (Contains(l.a) || Contains(l.b))
 		return true;
 	
@@ -143,7 +143,7 @@ bool Rectangle::Intersects(const line2& l) const {
 	}
 }
 
-bool Rectangle::Intersects(const Circle& c) const {
+bool FixedRectangle::Intersects(const Circle& c) const {
 	vec2 min = GetMin();
 	vec2 max = GetMax();
 	vec2 closest_pt = c.ct;
@@ -155,7 +155,7 @@ bool Rectangle::Intersects(const Circle& c) const {
 	return l.GetLengthSquared() <= c.rad * c.rad;
 }
 
-bool Rectangle::Intersects(const Rectangle& r) const {
+bool FixedRectangle::Intersects(const FixedRectangle& r) const {
 	vec2 min0 = GetMin();
 	vec2 max0 = GetMax();
 	vec2 min1 = r.GetMin();
@@ -165,7 +165,7 @@ bool Rectangle::Intersects(const Rectangle& r) const {
 	return overlap_x && overlap_y;
 }
 
-ival1 Rectangle::GetInterval(const vec2& axis) const {
+ival1 FixedRectangle::GetInterval(const vec2& axis) const {
 	ival1 res;
 	vec2 min = GetMin();
 	vec2 max = GetMax();
@@ -182,13 +182,13 @@ ival1 Rectangle::GetInterval(const vec2& axis) const {
 	return res;
 }
 
-bool Rectangle::OverlapsOnAxis(const Rectangle& r, const vec2& axis) const {
+bool FixedRectangle::OverlapsOnAxis(const FixedRectangle& r, const vec2& axis) const {
 	ival1 a = GetInterval(axis);
 	ival1 b = r.GetInterval(axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
-bool Rectangle::IntersectsSAT(const Rectangle& r) const {
+bool FixedRectangle::IntersectsSAT(const FixedRectangle& r) const {
 	vec2 axisToTest[2] = { vec2{1, 0}, vec2{0, 1} };
 	
 	for(int i = 0; i < 2; i++)
@@ -209,7 +209,7 @@ bool OrientedRectangle::Contains(const vec2& pt) const {
 	F s = (F)FastSin(theta);
 	mat2 zrot {	vec2 { c, s}, vec2 {-s, c} }; // rotation vector for local space
 	local_pt = zrot * AsMatrix(local_pt); // move the point fully to local space (with rotation)
-	Rectangle local_rc(hext * -1, hext * (F)2); // Create un-oriented rectangle in local (with [0,0] center)
+	FixedRectangle local_rc(hext * -1, hext * (F)2); // Create un-oriented rectangle in local (with [0,0] center)
 	return local_rc.Contains(local_pt);
 }
 
@@ -231,7 +231,7 @@ bool OrientedRectangle::Intersects(const line2& l) const {
 	local_pt = zrot * AsMatrix(local_pt);
 	local_line.b = local_pt + hext;
 	
-	Rectangle local_rc(hext * (F)2);
+	FixedRectangle local_rc(hext * (F)2);
 	return local_rc.Intersects(local_line);
 }
 
@@ -245,12 +245,12 @@ bool OrientedRectangle::Intersects(const Circle& c) const {
 	mat2 zrot {	vec2 { cos, sin}, vec2 {-sin, cos} };
 	r = zrot * AsMatrix(r);
 	Circle lc(r + hext, c.rad);
-	Rectangle lr(hext * (F)2);
+	FixedRectangle lr(hext * (F)2);
 	return lr.Intersects(lc);
 }
 
 ival1 OrientedRectangle::GetInterval(const vec2& axis) const {
-	Rectangle r { ct - hext, hext * (F)2};
+	FixedRectangle r { ct - hext, hext * (F)2};
 	vec2 min = r.GetMin();
 	vec2 max = r.GetMax();
 	vec2 verts[4] {
@@ -275,13 +275,13 @@ ival1 OrientedRectangle::GetInterval(const vec2& axis) const {
 	return res;
 }
 
-bool OrientedRectangle::OverlapsOnAxis(const Rectangle& r, const vec2& axis) const {
+bool OrientedRectangle::OverlapsOnAxis(const FixedRectangle& r, const vec2& axis) const {
 	ival1 a = r.GetInterval(axis);
 	ival1 b = GetInterval(axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
-bool OrientedRectangle::Intersects(const Rectangle& r) const {
+bool OrientedRectangle::Intersects(const FixedRectangle& r) const {
 	vec2 axis;
 	vec2 test_axis[4] {
 		vec2 { 1, 0 }, vec2 { 0, 1 },
@@ -305,7 +305,7 @@ bool OrientedRectangle::Intersects(const Rectangle& r) const {
 }
 
 bool OrientedRectangle::Intersects(const OrientedRectangle& rect) const {
-	Rectangle local0(hext * (F)2);
+	FixedRectangle local0(hext * (F)2);
 	vec2 r = rect.ct - ct;
 	OrientedRectangle local1 = rect;
 	local1.rot -= rot;
@@ -463,7 +463,7 @@ void Shape2DWrapper::Create(ShapeId type, vec2 a, vec2 b, float f) {
 	switch (type) {
 		case SHAPE2_LINE:		shape = new ShapeLine( line2(a, b)); break;
 		case SHAPE2_CIRCLE:		shape = new ShapeCircle( Circle(a, f)); break;
-		case SHAPE2_RECT:		shape = new ShapeRect( Rectangle(a, b)); break;
+		case SHAPE2_RECT:		shape = new ShapeRect( FixedRectangle(a, b)); break;
 		case SHAPE2_ORIENTRECT:	shape = new ShapeOrientedRect( OrientedRectangle(a, b, f) ); break;
 		default: LOG("error: unimplemented shape id" << (int)type);
 	}
@@ -552,7 +552,7 @@ bool BoundingShape::Intersects(const Circle& c0) const {
 	return false;
 }
 
-bool BoundingShape::Intersects(const Rectangle& r0) const {
+bool BoundingShape::Intersects(const FixedRectangle& r0) const {
 	for(const auto& l : lines)
 		if (r0.Intersects(l))
 			return true;

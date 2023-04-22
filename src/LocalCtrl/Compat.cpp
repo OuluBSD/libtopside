@@ -135,4 +135,30 @@ Ctrl& CtrlGeomProxy::operator*() {ASSERT(p); return *p;}
 Ctrl* CtrlGeomProxy::GetCtrl() {return p;}
 #endif
 
+
+
+
+
+
+Image RenderTextBlended(Font font, String s, Color ink) {
+	Size sz = GetTextSize(s, font);
+	ImageDraw iw(sz);
+	iw.Alpha().DrawRect(sz, GrayColor(0));
+	iw.DrawText(0, 0, s, font, ink);
+	return iw;
+}
+
+
 NAMESPACE_TOPSIDE_END
+
+
+// PdfDraw is POSIX only package
+#ifdef flagWIN32
+NAMESPACE_UPP_BEGIN
+
+void __cdecl PdfDraw__initializer() {
+	
+}
+
+NAMESPACE_UPP_END
+#endif

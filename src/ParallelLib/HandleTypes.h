@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 #define UPPCTRL2D_EXCPLICIT_INITIALIZE_CLASS(x) \
-	template struct x <CtxUpp2D>;
+	template class x <CtxUpp2D>;
 
 #if IS_UPP_CORE
 #define PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(x) \

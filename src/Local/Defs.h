@@ -36,6 +36,18 @@
 #endif
 
 
-	
+#ifndef M_PIf
+	#define M_PIf	3.1415926535897932f
+#endif
+
+#ifndef M_PI_2f
+	#define M_PI_2f	1.5707963267948966f
+#endif
+
+#ifndef M_2PIf
+	#define M_2PIf	(2.f * 3.1415926535897932f)
+#endif
+
+
 
 #endif

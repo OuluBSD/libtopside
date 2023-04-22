@@ -38,8 +38,8 @@ void DesktopMain() {
 NAMESPACE_TOPSIDE_END
 
 
-
-CONSOLE_APP_MAIN {
+GUI_APP_MAIN
+{
 	using namespace TS;
 	Serial::Machine::WhenInitialize << callback(DefaultSerialInitializer);
 	Serial::Machine::WhenPreFirstUpdate << callback(DefaultStartup);

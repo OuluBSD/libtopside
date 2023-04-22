@@ -4,6 +4,7 @@
 #include <Draw/Draw.h>
 #include <Local/Local.h>
 #include <CtrlCore/CtrlCore.h>
+#include <LocalCtrl/LocalCtrl.h>
 
 
 #include "Defs.h"

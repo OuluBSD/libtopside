@@ -41,7 +41,7 @@ struct Circle {
 //	- it's origin + size, not min + max
 //  - it's positive y value upwards, not downwards (as is easier in 2d gui)
 
-struct Rectangle {
+struct FixedRectangle {
 	typedef float F;
 	typedef Vec<F, 2> vec2;
 	
@@ -54,12 +54,12 @@ struct Rectangle {
 		vec2 sz;
 	};
 	
-	Rectangle() {}
-	Rectangle(const Rectangle& r) { *this = r; }
-	Rectangle(const vec2& sz) : sz(sz) {pos.Clear(); }
-	Rectangle(const vec2& pos, const vec2& sz) : pos(pos), sz(sz) {}
+	FixedRectangle() {}
+	FixedRectangle(const FixedRectangle& r) { *this = r; }
+	FixedRectangle(const vec2& sz) : sz(sz) {pos.Clear(); }
+	FixedRectangle(const vec2& pos, const vec2& sz) : pos(pos), sz(sz) {}
 
-	void operator=(const Rectangle& src) {
+	void operator=(const FixedRectangle& src) {
 		pos = src.pos;
 		sz = src.sz;
 	}
@@ -75,12 +75,12 @@ struct Rectangle {
 	bool Contains(const vec2& pt) const;
 	bool Intersects(const line2& l) const;
 	bool Intersects(const Circle& c) const;
-	bool Intersects(const Rectangle& r) const;
-	bool IntersectsSAT(const Rectangle& r) const;
+	bool Intersects(const FixedRectangle& r) const;
+	bool IntersectsSAT(const FixedRectangle& r) const;
 	ival1 GetInterval(const vec2& axis) const;
-	bool OverlapsOnAxis(const Rectangle& r, const vec2& axis) const;
+	bool OverlapsOnAxis(const FixedRectangle& r, const vec2& axis) const;
 	
-	Rectangle& SetFromMinMax(vec2 min, vec2 max) {pos = min; sz = max - min; return *this;}
+	FixedRectangle& SetFromMinMax(vec2 min, vec2 max) {pos = min; sz = max - min; return *this;}
 
 };
 
@@ -107,12 +107,12 @@ struct OrientedRectangle {
 	};
 	
 	OrientedRectangle() {}
-	OrientedRectangle(const Rectangle& r) { *this = r; }
+	OrientedRectangle(const FixedRectangle& r) { *this = r; }
 	OrientedRectangle(const OrientedRectangle& r) { *this = r; }
 	OrientedRectangle(const vec2& ct, const vec2& hext, float rot) : ct(ct), hext(hext), rot(rot) {}
 
 	void operator=(const OrientedRectangle& src) {memcpy(this, &src, sizeof(OrientedRectangle));}
-	void operator=(const Rectangle& src) {
+	void operator=(const FixedRectangle& src) {
 		ct = src.GetCenter();
 		hext = src.GetSize() * 0.5;
 		rot = 0;
@@ -122,10 +122,10 @@ struct OrientedRectangle {
 	bool Contains(const vec2& pt) const;
 	bool Intersects(const line2& l) const;
 	bool Intersects(const Circle& c) const;
-	bool Intersects(const Rectangle& r) const;
+	bool Intersects(const FixedRectangle& r) const;
 	bool Intersects(const OrientedRectangle& r) const;
 	ival1 GetInterval(const vec2& axis) const;
-	bool OverlapsOnAxis(const Rectangle& r, const vec2& axis) const;
+	bool OverlapsOnAxis(const FixedRectangle& r, const vec2& axis) const;
 
 	
 };
@@ -153,7 +153,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 		virtual ~ShapeBase() {}
 		virtual bool Intersects(const line2&) = 0;
 		virtual bool Intersects(const Circle&) = 0;
-		virtual bool Intersects(const Rectangle&) = 0;
+		virtual bool Intersects(const FixedRectangle&) = 0;
 		virtual bool Intersects(const OrientedRectangle&) = 0;
 		virtual vec2 GetPos() = 0;
 		virtual void Move(const vec2& v) = 0;
@@ -170,7 +170,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 		ShapeLine(line2 l) : l(l) {}
 		bool Intersects(const line2& l) override {THROW(Exc("Not implemented"));}
 		bool Intersects(const Circle& c) override {return c.Intersects(l);}
-		bool Intersects(const Rectangle& r) override {return r.Intersects(l);}
+		bool Intersects(const FixedRectangle& r) override {return r.Intersects(l);}
 		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(l);}
 		vec2 GetPos() override {return (l.a + l.b) * 0.5;}
 		void Move(const vec2& v) override {l.a += v; l.b += v;}
@@ -185,7 +185,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 		ShapeCircle(Circle c) : c(c) {}
 		bool Intersects(const line2& l) override {return c.Intersects(l);}
 		bool Intersects(const Circle& c) override {return this->c.Intersects(c);}
-		bool Intersects(const Rectangle& r) override {return r.Intersects(c);}
+		bool Intersects(const FixedRectangle& r) override {return r.Intersects(c);}
 		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(c);}
 		vec2 GetPos() override {return c.ct;}
 		void Move(const vec2& v) override {c.ct += v;}
@@ -196,11 +196,11 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 	
 	struct ShapeRect : public ShapeBase {
 		RTTI_DECL1(ShapeRect, ShapeBase)
-		Rectangle r;
-		ShapeRect(Rectangle r) : r(r) {}
+		FixedRectangle& r;
+		ShapeRect(FixedRectangle r) : r(r) {}
 		bool Intersects(const line2& l) override {return r.Intersects(l);}
 		bool Intersects(const Circle& c) override {return r.Intersects(c);}
-		bool Intersects(const Rectangle& r) override {return this->r.Intersects(r);}
+		bool Intersects(const FixedRectangle& r) override {return this->r.Intersects(r);}
 		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(r);}
 		vec2 GetPos() override {return r.GetCenter();}
 		void Move(const vec2& v) override {r.pos += v;}
@@ -215,7 +215,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 		ShapeOrientedRect(OrientedRectangle o) : o(o) {}
 		bool Intersects(const line2& l) override {return o.Intersects(l);}
 		bool Intersects(const Circle& c) override {return o.Intersects(c);}
-		bool Intersects(const Rectangle& r) override {return o.Intersects(r);}
+		bool Intersects(const FixedRectangle& r) override {return o.Intersects(r);}
 		bool Intersects(const OrientedRectangle& o) override {return this->o.Intersects(o);}
 		vec2 GetPos() override {return o.ct;}
 		void Move(const vec2& v) override {o.ct += v;}
@@ -238,13 +238,13 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 struct BoundingShape {
 	Vector<line2> lines;
 	Vector<Circle> circles;
-	Vector<Rectangle> rects;
+	Vector<FixedRectangle> rects;
 	Vector<OrientedRectangle> orects;
 	
 	
 	bool Intersects(const line2& l) const;
 	bool Intersects(const Circle& c) const;
-	bool Intersects(const Rectangle& r) const;
+	bool Intersects(const FixedRectangle& r) const;
 	bool Intersects(const OrientedRectangle& r) const;
 	
 };

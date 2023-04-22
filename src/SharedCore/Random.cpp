@@ -1,4 +1,7 @@
 #include <Core/Core.h>
+#if !defined IS_UPP_CORE && !defined IS_TS_CORE
+	#include <Local/Local.h>
+#endif
 
 
 NAMESPACE_UPP_BEGIN
