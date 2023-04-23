@@ -3,6 +3,24 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
+struct ShellConnectorApp {
+	
+	
+    // Sets the holographic space. This is our closest analogue to setting a new window
+    // for the app.
+    void SetHolographicSpace(
+        winrt::Windows::Graphics::Holographic::HolographicSpace const& holographicSpace);
+
+    // Starts the holographic frame and updates the content.
+    void Update();
+
+    // Handle saving and loading of app state owned by AppMain.
+    void SaveAppState();
+    void LoadAppState();
+    
+};
+
 	
 // IFrameworkView class. Connects the app with the Windows shell and handles application lifecycle events.
 class AppView sealed : public winrt::implements<AppView, winrt::Windows::ApplicationModel::Core::IFrameworkView>
@@ -31,7 +49,7 @@ protected:
     void OnPointerPressed(winrt::Windows::UI::Core::CoreWindow const& sender, winrt::Windows::UI::Core::PointerEventArgs const& args);
 
 private:
-    std::unique_ptr<DemoRoomMain>                           m_main;
+    std::unique_ptr<ShellConnectorApp>                      m_main;
 
     bool                                                    m_windowClosed  = false;
     bool                                                    m_windowVisible = true;

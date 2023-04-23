@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -24,8 +24,8 @@ if ((WIN32 AND DEFINED flagGCC))
   list ( APPEND IGraphics_DEPEND_LIST ports_glew-lib )
 endif()
 
-# uses(WIN32 & MSC) ports/glext;
-if ((WIN32 AND DEFINED flagMSC))
+# uses(WIN32 & MSC & !UWP) ports/glext;
+if ((WIN32 AND DEFINED flagMSC AND NOT DEFINED flagUWP))
   list ( APPEND IGraphics_DEPEND_LIST ports_glext-lib )
 endif()
 

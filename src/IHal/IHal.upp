@@ -4,6 +4,8 @@ uses
 	ParallelLib,
 	IGraphics;
 
+library(UWP&DX12) "D3D11 DXGI D2d1 Dwrite";
+
 library(SDL2) SDL2;
 
 library(SDL2) SDL2_ttf;
@@ -13,6 +15,7 @@ library(SDL2) SDL2_image;
 file
 	IHal.h,
 	Sdl.cpp,
+	Holo.cpp,
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig

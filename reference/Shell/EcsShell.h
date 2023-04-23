@@ -3,5 +3,8 @@
 
 #include <EcsMinimal/EcsMinimal.h>
 
+#if defined flagUWP && defined flagDX12
+	#include <EcsWin/EcsWin.h>
+#endif
 
 #endif

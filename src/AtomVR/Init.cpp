@@ -18,5 +18,14 @@ INITBLOCK_(AtomVR) {
 	#if (defined flagFREEBSD && defined flagHACK) || (defined flagLINUX && defined flagHACK)
 	Factory::RegisterAtom<BluetoothHoloPipe>();
 	#endif
+	#if (defined flagUWP && defined flagDX12)
+	Factory::RegisterAtom<HoloContextAtom>();
+	#endif
+	#if (defined flagUWP && defined flagDX12)
+	Factory::RegisterAtom<HoloEventAtomPipe>();
+	#endif
+	#if (defined flagUWP && defined flagDX12 && defined flagDX12)
+	Factory::RegisterAtom<HoloD12FboAtomSA>();
+	#endif
 }
 

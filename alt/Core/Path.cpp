@@ -391,7 +391,11 @@ bool DirectoryExists(String path) {
 	ASSERT(path.GetCount() < 2 || path[1] != ':');
 	path = "ms-appx://" + path;
 	#endif
+	#ifdef flagUWP
 	DWORD dwAttrib = GetFileAttributes(path.ToWString().Begin());
+	#else
+	DWORD dwAttrib = GetFileAttributes(path.Begin());
+	#endif
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 	#else
 	DIR* dir = opendir(path.Begin());

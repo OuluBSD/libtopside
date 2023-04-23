@@ -1,10 +1,12 @@
 description "\377B198,85,150";
 
-	uses ParallelLib;
-	uses MidiFile;
-	uses(BUILTIN_PORTMIDI) ports/portmidi;
+uses
+	ParallelLib,
+	MidiFile;
 
-	library(PORTMIDI) "portmidi";
+uses(BUILTIN_PORTMIDI) ports/portmidi;
+
+library(PORTMIDI) portmidi;
 
 file
 	IMidiHw.h,
@@ -12,4 +14,5 @@ file
 	IfaceFuncs.inl highlight cpp;
 
 mainconfig
-        "" = "";
+	"" = "";
+

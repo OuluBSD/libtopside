@@ -80,7 +80,7 @@ PrimitiveBuilder& PrimitiveBuilder::AddSphere(float diameter, uint32_t tessellat
             const XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
 
             Pbr::Vertex vert;
-            XMStoreFloat3(&vert.Position, normal * radius);
+			XMStoreFloat3(&vert.Position, XMVectorScale(normal, radius));
             XMStoreFloat3(&vert.Normal, normal);
             XMStoreFloat4(&vert.Tangent, tangent);
             XMStoreFloat2(&vert.TexCoord0, textureCoordinate);

@@ -248,4 +248,14 @@
 	#define flagUWPREL 1
 #endif
 
+
+
+#ifdef flagUWP
+	#ifndef WINAPI_FAMILY
+		#define WINAPI_FAMILY WINAPI_FAMILY_APP
+	#endif
+#endif
+
+
+
 #endif

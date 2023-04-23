@@ -39,7 +39,7 @@ void AppView::Initialize(CoreApplicationView const& applicationView)
 
     m_resumingEventToken = CoreApplication::Resuming(std::bind(&AppView::OnResuming, this, _1, _2));
 
-    m_main = std::make_unique<DemoRoomMain>();
+    TODO //m_main = std::make_unique<DemoRoomMain>();
 }
 
 void AppView::OnKeyPressed(winrt::Windows::UI::Core::CoreWindow const& sender, winrt::Windows::UI::Core::KeyEventArgs const& args)
@@ -180,6 +180,35 @@ void AppView::OnWindowClosed(CoreWindow const& sender, CoreWindowEventArgs const
 {
     m_windowClosed = true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+void ShellConnectorApp::SetHolographicSpace(
+    winrt::Windows::Graphics::Holographic::HolographicSpace const& holographicSpace) {
+	TODO
+}
+
+void ShellConnectorApp::Update() {
+	TODO
+}
+
+void ShellConnectorApp::SaveAppState() {
+	TODO
+}
+
+void ShellConnectorApp::LoadAppState() {
+	TODO
+}
+
 
 
 NAMESPACE_TOPSIDE_END

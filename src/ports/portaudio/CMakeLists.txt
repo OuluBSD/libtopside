@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -31,6 +31,11 @@ endif()
 # library(WIN32) "User32 Advapi32 Winmm Ole32";
 if ((WIN32))
   list ( APPEND LINK_LIST User32 Advapi32 Winmm Ole32 )
+endif()
+
+# library(WIN32 & UWP) Mmdevapi;
+if ((WIN32 AND DEFINED flagUWP))
+  list ( APPEND LINK_LIST Mmdevapi )
 endif()
 
 # library(LINUX) asound;

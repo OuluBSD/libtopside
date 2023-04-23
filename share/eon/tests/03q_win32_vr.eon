@@ -1,0 +1,19 @@
+machine holo.app:
+	
+	driver context:
+		holo.context
+	
+	chain program:
+		state event.register
+		
+		loop center.events:
+			center.customer
+			holo.event.pipe
+			state.event.pipe: target = event.register
+		
+		loop dx.fbo:
+			dx.customer
+			holo.fbo.standalone:
+				close_machine =	true
+				sizeable =		true
+				env =			event.register

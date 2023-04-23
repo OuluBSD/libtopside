@@ -510,4 +510,8 @@ int  SDraw::GetCloffLevel() const {TODO}
 void SDraw::Escape(const String& data) {TODO}
 Color SDraw::GetDefaultInk() const {TODO}
 
+SImageDraw& SImageDraw::Alpha() {
+	TODO
+}
+
 END_UPP_NAMESPACE

@@ -67,6 +67,24 @@ static bool OglVideoSinkDevice_AttachContext(NativeOglVideoSinkDevice&, AtomBase
 static void OglVideoSinkDevice_DetachContext(NativeOglVideoSinkDevice&, AtomBase& a, AtomBase& other);
 #endif
 
+#if defined flagDX12
+static bool D12VideoSinkDevice_Create(NativeD12VideoSinkDevice*& dev);
+static void D12VideoSinkDevice_Destroy(NativeD12VideoSinkDevice*& dev);
+static bool D12VideoSinkDevice_Initialize(NativeD12VideoSinkDevice&, AtomBase&, const Script::WorldState&);
+static bool D12VideoSinkDevice_PostInitialize(NativeD12VideoSinkDevice&, AtomBase&);
+static bool D12VideoSinkDevice_Start(NativeD12VideoSinkDevice&, AtomBase&);
+static void D12VideoSinkDevice_Stop(NativeD12VideoSinkDevice&, AtomBase&);
+static void D12VideoSinkDevice_Uninitialize(NativeD12VideoSinkDevice&, AtomBase&);
+static bool D12VideoSinkDevice_Send(NativeD12VideoSinkDevice&, AtomBase&, RealtimeSourceConfig& cfg, PacketValue& out, int src_ch);
+static void D12VideoSinkDevice_Visit(NativeD12VideoSinkDevice&, AtomBase&, RuntimeVisitor& vis);
+static bool D12VideoSinkDevice_Recv(NativeD12VideoSinkDevice&, AtomBase&, int, const Packet&);
+static void D12VideoSinkDevice_Finalize(NativeD12VideoSinkDevice&, AtomBase&, RealtimeSourceConfig&);
+static void D12VideoSinkDevice_Update(NativeD12VideoSinkDevice&, AtomBase&, double dt);
+static bool D12VideoSinkDevice_IsReady(NativeD12VideoSinkDevice&, AtomBase&, PacketIO& io);
+static bool D12VideoSinkDevice_AttachContext(NativeD12VideoSinkDevice&, AtomBase& a, AtomBase& other);
+static void D12VideoSinkDevice_DetachContext(NativeD12VideoSinkDevice&, AtomBase& a, AtomBase& other);
+#endif
+
 static bool ContextBase_Create(NativeContextBase*& dev);
 static void ContextBase_Destroy(NativeContextBase*& dev);
 static bool ContextBase_Initialize(NativeContextBase&, AtomBase&, const Script::WorldState&);

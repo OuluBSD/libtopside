@@ -67,6 +67,51 @@ public:
 };
 #endif
 
+#if (defined flagUWP && defined flagDX12)
+class HoloContextAtom : public HoloContextBase {
+
+public:
+	RTTI_DECL1(HoloContextAtom, HoloContextBase)
+	COPY_PANIC(HoloContextAtom)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagUWP && defined flagDX12)
+class HoloEventAtomPipe : public HoloEventsBase {
+
+public:
+	RTTI_DECL1(HoloEventAtomPipe, HoloEventsBase)
+	COPY_PANIC(HoloEventAtomPipe)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
+#if (defined flagUWP && defined flagDX12 && defined flagDX12)
+class HoloD12FboAtomSA : public HoloD12VideoSinkDevice {
+
+public:
+	RTTI_DECL1(HoloD12FboAtomSA, HoloD12VideoSinkDevice)
+	COPY_PANIC(HoloD12FboAtomSA)
+	static String GetAction();
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	
+};
+#endif
+
 }
 
 }

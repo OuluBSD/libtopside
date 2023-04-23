@@ -6,7 +6,7 @@ uses
 
 uses(!UWP) ports/tiny_gltf;
 
-uses(BUILTIN_ASSIMP | (MSC & !UWP) | LINUX) ports/assimp;
+uses(!UWP & (BUILTIN_ASSIMP | MSC | LINUX)) ports/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
 

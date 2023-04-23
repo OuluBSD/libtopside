@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,6 +19,9 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
+# append library "ole32 oleaut32 Kernel32";
+  list ( APPEND LINK_LIST ole32 oleaut32 Kernel32 )
+
 list ( APPEND HEADER_LIST
       EcsWin.h
       AppView.h
@@ -35,9 +38,6 @@ list ( APPEND HEADER_LIST
       HolographicRenderer.h
       HolographicScene.h
       ListenerCollection.h
-      MotionControllerSystem.h
-      PaintingSystem.h
-      PaintStrokeSystem.h
       PbrCommon.h
       PbrMaterial.h
       PbrModel.h
@@ -45,17 +45,21 @@ list ( APPEND HEADER_LIST
       PbrPrimitive.h
       PbrResources.h
       Physics.h
-      PhysicsSystem.h
       QuadRenderer.h
-      ShootingSystem.h
       SkyboxRenderer.h
-      SpatialInteractionSystem.h
       StepTimer.h
       TextRenderer.h
+      TransformUtil.h
+      EngineTypeTraits.h
+      MotionControllerSystem.h
+      PaintingSystem.h
+      PaintStrokeSystem.h
+      ShootingSystem.h
+      SpatialInteractionSystem.h
       ThrowingSystem.h
       ToolboxSystem.h
       ToolSystem.h
-      TransformUtil.h
+      PhysicsSystem.h
       Engine.h
       Entity.h
       AppLogicSystem.h
@@ -63,7 +67,6 @@ list ( APPEND HEADER_LIST
       ComponentStore.h
       EasingSystem.h
       EngineCommon.h
-      EngineTypeTraits.h
       EntityStore.h
 )
 
@@ -77,24 +80,24 @@ list ( APPEND SOURCE_LIST_CPP
       GltfLoader.cpp
       HolographicRenderer.cpp
       HolographicScene.cpp
-      MotionControllerSystem.cpp
-      PaintingSystem.cpp
-      PaintStrokeSystem.cpp
       PbrCommon.cpp
       PbrMaterial.cpp
       PbrModel.cpp
       PbrModelCache.cpp
       PbrPrimitive.cpp
       PbrResources.cpp
-      PhysicsSystem.cpp
       QuadRenderer.cpp
-      ShootingSystem.cpp
       SkyboxRenderer.cpp
-      SpatialInteractionSystem.cpp
       TextRenderer.cpp
+      MotionControllerSystem.cpp
+      PaintingSystem.cpp
+      PaintStrokeSystem.cpp
+      ShootingSystem.cpp
+      SpatialInteractionSystem.cpp
       ThrowingSystem.cpp
       ToolboxSystem.cpp
       ToolSystem.cpp
+      PhysicsSystem.cpp
       Engine.cpp
       Entity.cpp
       ComponentStore.cpp
@@ -103,8 +106,8 @@ list ( APPEND SOURCE_LIST_CPP
 )
 
 list ( APPEND EcsWin_DEPEND_LIST
-      EcsLib-lib
       ports_DirectXTK-lib
+      EcsLocal-lib
 )
 
 # Module properties

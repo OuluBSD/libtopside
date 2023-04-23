@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,8 +19,13 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
-# uses(BUILTIN_ASSIMP | MSC | LINUX) ports/assimp;
-if ((DEFINED flagBUILTIN_ASSIMP OR DEFINED flagMSC OR DEFINED flagLINUX))
+# uses(!UWP) ports/tiny_gltf;
+if ((NOT DEFINED flagUWP))
+  list ( APPEND Geometry_DEPEND_LIST ports_tiny_gltf-lib )
+endif()
+
+# uses(!UWP & (BUILTIN_ASSIMP | MSC | LINUX)) ports/assimp;
+if ((NOT DEFINED flagUWP) AND (DEFINED flagBUILTIN_ASSIMP OR DEFINED flagMSC OR DEFINED flagLINUX))
   list ( APPEND Geometry_DEPEND_LIST ports_assimp-lib )
 endif()
 
@@ -89,7 +94,6 @@ list ( APPEND SOURCE_LIST_CPP
 
 list ( APPEND Geometry_DEPEND_LIST
       Local-lib
-      ports_tiny_gltf-lib
       ports_mikktspace-lib
 )
 

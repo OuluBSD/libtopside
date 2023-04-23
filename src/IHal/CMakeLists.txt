@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -18,6 +18,11 @@ endif()
 
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
+# library(UWP&DX12) "D3D11 DXGI D2d1 Dwrite";
+if ((DEFINED flagUWP&DX12))
+  list ( APPEND LINK_LIST D3D11 DXGI D2d1 Dwrite )
+endif()
 
 # library(SDL2) SDL2;
 if ((DEFINED flagSDL2))
@@ -41,6 +46,7 @@ list ( APPEND HEADER_LIST
 
 list ( APPEND SOURCE_LIST_CPP
       Sdl.cpp
+      Holo.cpp
 )
 
 list ( APPEND IHal_DEPEND_LIST

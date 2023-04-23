@@ -7,10 +7,10 @@ NAMESPACE_SOFTPHYS_BEGIN
 
 struct QuadTreeData {
 	void* object;
-	Rectangle bounds;
+	FixedRectangle bounds;
 	bool flag;
 
-	inline QuadTreeData(void* o, const Rectangle& b) :
+	inline QuadTreeData(void* o, const FixedRectangle& b) :
 		object(o), bounds(b), flag(false) { }
 };
 
@@ -22,13 +22,13 @@ protected:
 	int cur_depth;
 	static int max_depth;
 	static int max_obj_per_node;
-	Rectangle node_bounds;
+	FixedRectangle node_bounds;
 	
 public:
 	QuadTreeNode() {}
-	inline QuadTreeNode(const Rectangle& bounds) : node_bounds(bounds), cur_depth(0) {}
+	inline QuadTreeNode(const FixedRectangle& bounds) : node_bounds(bounds), cur_depth(0) {}
 	
-	void Set(const Rectangle& bounds) {node_bounds = bounds; cur_depth = 0;}
+	void Set(const FixedRectangle& bounds) {node_bounds = bounds; cur_depth = 0;}
 	
 	bool IsLeaf();
 	
@@ -41,7 +41,7 @@ public:
 	void Shake();
 	void Split();
 	void Reset();
-	Vector<QuadTreeData*> Query(const Rectangle& area);
+	Vector<QuadTreeData*> Query(const FixedRectangle& area);
 	
 };
 

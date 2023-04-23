@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Fri Apr 14 01:52:15 EEST 2023
+# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -112,7 +112,7 @@ if ( ENABLE_CLANG_TIDY )
 endif()
 
 # Extra compilation and link 
-set ( PROJECT_EXTRA_COMPILE_FLAGS "-I/usr/include/opencv4" )
+set ( PROJECT_EXTRA_COMPILE_FLAGS "" )
 message ( STATUS "Extra compilation flags: ${PROJECT_EXTRA_COMPILE_FLAGS}" )
 set ( PROJECT_EXTRA_LINK_FLAGS "" )
 message ( STATUS "Extra link flags: ${PROJECT_EXTRA_LINK_FLAGS}" )
@@ -754,8 +754,8 @@ add_subdirectory ( ./alt/Core ${CMAKE_CURRENT_BINARY_DIR}/Core )
 add_subdirectory ( ./alt/Draw ${CMAKE_CURRENT_BINARY_DIR}/Draw )
 add_subdirectory ( ./src/SharedCore ${CMAKE_CURRENT_BINARY_DIR}/SharedCore )
 add_subdirectory ( ./src/StaticInterface ${CMAKE_CURRENT_BINARY_DIR}/StaticInterface )
-add_subdirectory ( ./src/ports/tiny_gltf ${CMAKE_CURRENT_BINARY_DIR}/ports/tiny_gltf )
 add_subdirectory ( ./src/ports/mikktspace ${CMAKE_CURRENT_BINARY_DIR}/ports/mikktspace )
+add_subdirectory ( ./src/ports/tiny_gltf ${CMAKE_CURRENT_BINARY_DIR}/ports/tiny_gltf )
 add_subdirectory ( ./src/ports/assimp ${CMAKE_CURRENT_BINARY_DIR}/ports/assimp )
 add_subdirectory ( ./src/ParallelCore ${CMAKE_CURRENT_BINARY_DIR}/ParallelCore )
 add_subdirectory ( ./src/IMedia ${CMAKE_CURRENT_BINARY_DIR}/IMedia )

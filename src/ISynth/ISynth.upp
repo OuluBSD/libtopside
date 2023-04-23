@@ -6,7 +6,7 @@ uses
 	SoftSynth,
 	AudioCore;
 
-uses(FLUIDLITE & !UWP) ports/fluidlite;
+uses(FLUIDLITE) ports/fluidlite;
 
 uses(LV2) ports/lilv;
 

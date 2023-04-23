@@ -21,22 +21,22 @@ float LengthSq(const line2& line) {
 	return MagnitudeSq(line.end - line.start);
 }
 
-vec2 GetMin(const Rectangle& rect) {
+vec2 GetMin(const FixedRectangle& rect) {
 	vec2 p1 = rect.origin;
 	vec2 p2 = rect.origin + rect.size;
 
 	return vec2(fminf(p1[0], p2[0]), fminf(p1[1], p2[1]));
 }
 
-vec2 GetMax(const Rectangle& rect) {
+vec2 GetMax(const FixedRectangle& rect) {
 	vec2 p1 = rect.origin;
 	vec2 p2 = rect.origin + rect.size;
 
 	return vec2(fmaxf(p1[0], p2[0]), fmaxf(p1[1], p2[1]));
 }
 
-Rectangle FromMinMax(const vec2& min, const vec2& max) {
-	return Rectangle(min, max - min);
+FixedRectangle FromMinMax(const vec2& min, const vec2& max) {
+	return FixedRectangle(min, max - min);
 }
 
 bool PointOnLine(const vec2& point, const line2& line) {
@@ -56,7 +56,7 @@ bool PointInCircle(const vec2& point, const Circle& circle) {
 	return false;
 }
 
-bool PointInRectangle(const vec2& point, const Rectangle& rectangle) {
+bool PointInRectangle(const vec2& point, const FixedRectangle& rectangle) {
 	vec2 min = GetMin(rectangle);
 	vec2 max = GetMax(rectangle);
 
@@ -65,7 +65,7 @@ bool PointInRectangle(const vec2& point, const Rectangle& rectangle) {
 }
 
 bool PointInOrientedRectangle(const vec2& point, const OrientedRectangle& rectangle) {
-	Rectangle localRectangle(vec2(), rectangle.halfExtents * 2.0f);
+	FixedRectangle localRectangle(vec2(), rectangle.halfExtents * 2.0f);
 
 	// First, we get a vector from the center of the rectangle
 	// pointing to the point we want to test!
@@ -123,7 +123,7 @@ Stream& operator<<(Stream& os, const Circle& shape) {
 	os << "position: (" << shape.position[0] << ", " << shape.position[1] << "), radius: " << shape.radius;
 	return os;
 }
-Stream& operator<<(Stream& os, const Rectangle& shape) {
+Stream& operator<<(Stream& os, const FixedRectangle& shape) {
 	vec2 min = GetMin(shape);
 	vec2 max = GetMax(shape);
 
@@ -160,7 +160,7 @@ bool LineCircle(const line2& line, const Circle& circle) {
 }
 
 #if 1
-bool LineRectangle(const line2& line, const Rectangle& rect) {
+bool LineRectangle(const line2& line, const FixedRectangle& rect) {
 	if (PointInRectangle(line.start, rect) || PointInRectangle(line.end, rect)) {
 		return true;
 	}
@@ -180,7 +180,7 @@ bool LineRectangle(const line2& line, const Rectangle& rect) {
 	return t > 0.0f && t * t < LengthSq(line);
 }
 #else // Same code, just a bit easyer to read!
-bool LineRectangle(const line2& line, const Rectangle& rect) {
+bool LineRectangle(const line2& line, const FixedRectangle& rect) {
 	// If either point of the line is in the rectangle, we have collision!
 	if (PointInRectangle(line.start, rect) || PointInRectangle(line.end, rect)) {
 		return true;
@@ -275,7 +275,7 @@ bool LineOrientedRectangle(const line2& line, const OrientedRectangle& rectangle
 	Multiply(rotVector, vec2(rotVector[0], rotVector[1]), zRotation2x2);
 	localLine.end = rotVector + rectangle.halfExtents;
 	
-	Rectangle localRectangle(vec2(), rectangle.halfExtents * 2.0f);
+	FixedRectangle localRectangle(vec2(), rectangle.halfExtents * 2.0f);
 	return LineRectangle(localLine, localRectangle);
 }
 
@@ -285,7 +285,7 @@ bool CircleCircle(const Circle& circle1, const Circle& circle2) {
 	return LengthSq(line) <= radiiSum * radiiSum;
 }
 
-bool CircleRectangle(const Circle& circle, const Rectangle& rect) {
+bool CircleRectangle(const Circle& circle, const FixedRectangle& rect) {
 	vec2 closestPoint = circle.position;
 	vec2 min = GetMin(rect);
 	vec2 max = GetMax(rect);
@@ -307,12 +307,12 @@ bool CircleOrientedRectangle(const Circle& circle, const OrientedRectangle& rect
 	Multiply(rotVector, vec2(rotVector[0], rotVector[1]), zRotation2x2);
 	
 	Circle localCircle(rotVector + rect.halfExtents, circle.radius);
-	Rectangle localRectangle(vec2(), rect.halfExtents * 2.0f);
+	FixedRectangle localRectangle(vec2(), rect.halfExtents * 2.0f);
 
 	return CircleRectangle(localCircle, localRectangle);
 }
 
-bool RectangleRectangle(const Rectangle& rect1, const Rectangle& rect2) {
+bool RectangleRectangle(const FixedRectangle& rect1, const FixedRectangle& rect2) {
 	vec2 aMin = GetMin(rect1);
 	vec2 aMax = GetMax(rect1);
 	vec2 bMin = GetMin(rect2);
@@ -324,7 +324,7 @@ bool RectangleRectangle(const Rectangle& rect1, const Rectangle& rect2) {
 	return xOverlap && yOverlap;
 }
 
-Interval GetInterval(const Rectangle& rect, const vec2& axis) {
+Interval GetInterval(const FixedRectangle& rect, const vec2& axis) {
 	vec2 min = GetMin(rect);
 	vec2 max = GetMax(rect);
 
@@ -351,13 +351,13 @@ Interval GetInterval(const Rectangle& rect, const vec2& axis) {
 	return result;
 }
 
-bool OverlapOnAxis(const Rectangle& rect1, const Rectangle& rect2, const vec2& axis) {
+bool OverlapOnAxis(const FixedRectangle& rect1, const FixedRectangle& rect2, const vec2& axis) {
 	Interval a = GetInterval(rect1, axis);
 	Interval b = GetInterval(rect2, axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
-bool RectangleRectangleSAT(const Rectangle& rect1, const Rectangle& rect2) {
+bool RectangleRectangleSAT(const FixedRectangle& rect1, const FixedRectangle& rect2) {
 	vec2 axisToTest[] = {
 		vec2(1, 0),
 		vec2(0, 1)
@@ -375,7 +375,7 @@ bool RectangleRectangleSAT(const Rectangle& rect1, const Rectangle& rect2) {
 }
 
 Interval GetInterval(const OrientedRectangle& rect, const vec2& axis) {
-	Rectangle nonOrientedRect = Rectangle(vec2(rect.position - rect.halfExtents), rect.halfExtents * 2.0f);
+	FixedRectangle nonOrientedRect = FixedRectangle(vec2(rect.position - rect.halfExtents), rect.halfExtents * 2.0f);
 	vec2 min = GetMin(nonOrientedRect); 
 	vec2 max = GetMax(nonOrientedRect);
 	vec2 verts[] = { min, max, vec2(min[0], max[1]), vec2(max[0], min[1]) };
@@ -407,13 +407,13 @@ Interval GetInterval(const OrientedRectangle& rect, const vec2& axis) {
 }
 
 
-bool OverlapOnAxis(const Rectangle& rect1, const OrientedRectangle& rect2, const vec2& axis) {
+bool OverlapOnAxis(const FixedRectangle& rect1, const OrientedRectangle& rect2, const vec2& axis) {
 	Interval a = GetInterval(rect1, axis);
 	Interval b = GetInterval(rect2, axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
-bool RectangleOrientedRectangle(const Rectangle& rect1, const OrientedRectangle& rect2) {
+bool RectangleOrientedRectangle(const FixedRectangle& rect1, const OrientedRectangle& rect2) {
 	vec2 axisToTest[]{
 		vec2(1, 0),
 		vec2(0, 1),
@@ -485,7 +485,7 @@ bool OrientedRectangleOrientedRectangleSAT(const OrientedRectangle& rect1, const
 
 bool OrientedRectangleOrientedRectangle(const OrientedRectangle& r1, const OrientedRectangle& r2) {
 	//return OrientedRectangleOrientedRectangleSAT(rect1, rect2);
-	Rectangle localRect1(vec2(), r1.halfExtents * 2.0f);
+	FixedRectangle localRect1(vec2(), r1.halfExtents * 2.0f);
 	OrientedRectangle localRect2(r2.position, r2.halfExtents, r2.rotation);
 
 	localRect2.rotation = r2.rotation - r1.rotation;
@@ -537,7 +537,7 @@ Circle ContainingCircleAlt(vec2* pointArray, int arrayCount) {
 	return Circle((min + max) * 0.5f, Magnitude(max - min) * 0.5f);
 }
 
-Rectangle ContainingRectangle(vec2* pointArray, int arrayCount) {
+FixedRectangle ContainingRectangle(vec2* pointArray, int arrayCount) {
 	vec2 min = pointArray[0];
 	vec2 max = pointArray[0];
 
@@ -596,7 +596,7 @@ bool CircleShape(const Circle& circle, const BoundingShape& shape) {
 	return false;
 }
 
-bool RectangleShape(const Rectangle& rectangle, const BoundingShape& shape) {
+bool RectangleShape(const FixedRectangle& rectangle, const BoundingShape& shape) {
 	for (auto& s : shape.circles) {
 		if (RectangleCircle(rectangle, s)) {
 			return true;

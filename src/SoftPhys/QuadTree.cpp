@@ -151,11 +151,11 @@ void QuadTreeNode::Split() {
 	vec2 max = GetMax(node_bounds);
 	vec2 center = min + ((max - min) * 0.5f);
 
-	Rectangle childAreas[] = {
-		Rectangle(FromMinMax(vec2(min[0], min[1]), vec2(center[0], center[1]))),
-		Rectangle(FromMinMax(vec2(center[0], min[1]), vec2(max[0], center[1]))),
-		Rectangle(FromMinMax(vec2(center[0], center[1]), vec2(max[0], max[1]))),
-		Rectangle(FromMinMax(vec2(min[0], center[1]), vec2(center[0], max[1]))),
+	FixedRectangle childAreas[] = {
+		FixedRectangle(FromMinMax(vec2(min[0], min[1]), vec2(center[0], center[1]))),
+		FixedRectangle(FromMinMax(vec2(center[0], min[1]), vec2(max[0], center[1]))),
+		FixedRectangle(FromMinMax(vec2(center[0], center[1]), vec2(max[0], max[1]))),
+		FixedRectangle(FromMinMax(vec2(min[0], center[1]), vec2(center[0], max[1]))),
 	};
 	for (int i = 0; i < 4; ++i) {
 		children.Add().Set(childAreas[i]);
@@ -169,7 +169,7 @@ void QuadTreeNode::Split() {
 	contents.Clear();
 }
 
-Vector<QuadTreeData*> QuadTreeNode::Query(const Rectangle& area) {
+Vector<QuadTreeData*> QuadTreeNode::Query(const FixedRectangle& area) {
 	Vector<QuadTreeData*> result;
 	if (!RectangleRectangle(area, node_bounds)) {
 		return result;

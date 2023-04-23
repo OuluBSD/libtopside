@@ -45,6 +45,7 @@
 
 #include <wrl\client.h>
 
+/*
 #if WINAPI_FAMILY != WINAPI_FAMILY_APP
 	#error Wrong WINAPI_FAMILY
 #endif
@@ -52,6 +53,7 @@
 #ifndef __WRL_NO_DEFAULT_LIB__
 	#error Not defined: __WRL_NO_DEFAULT_LIB__
 #endif
+*/
 
 #include <ppl.h>
 #include <winrt\Windows.ApplicationModel.Activation.h>

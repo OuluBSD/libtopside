@@ -119,6 +119,8 @@ public:
 	void PutImage(Point p, const Image& img, const Rect& src) override {TODO}
 	void PutRect(const Rect& r, Color color) override {TODO}
 	
+	SImageDraw& Alpha();
+	
 };
 
 END_UPP_NAMESPACE

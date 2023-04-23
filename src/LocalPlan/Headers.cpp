@@ -549,6 +549,31 @@ void InterfaceBuilder::Headers() {
 		.Arg("HINT_PKG", "AtomMinimal")
 	;
 	
+	{
+		AddHeader("HoloContextAtom", "HoloContextBase", "driver")
+			.In("CenterReceipt").Out("CenterReceipt")
+			.Action("holo.context")
+			.Link("DRIVER", "DRIVER")
+			.Arg("HINT_PKG", "AtomVR")
+		;
+		
+		AddHeader("HoloEventAtomPipe", "HoloEventsBase", "pipe")
+			.In("CenterOrder").Out("CenterEvent")
+			.Action("holo.event.pipe")
+			.Arg("HINT_PKG", "AtomVR")
+			.Link("POLLER_PIPE", "PROCESS")
+		;
+		
+		AddHeader("HoloD12FboAtomSA", "HoloD12VideoSinkDevice", "pipe")
+			.In("DxOrder").Out("DxReceipt")
+			.Action("holo.fbo.standalone")
+			//.Arg("reqdef_flagHOLOLENS", "1")
+			//.Arg("reqdef_flagDX12", "1")
+			.Arg("HINT_PKG", "AtomVR")
+			.Link("POLLER_PIPE", "PROCESS")
+		;
+	}
+	
 	AddHeader("VolumeLoaderAtom", "RawByteStaticSource", "pipe")
 		.In("CenterOrder").Out("CenterReceipt").OutOpt("CenterVolume")
 		.Action("center.volume.loader")
