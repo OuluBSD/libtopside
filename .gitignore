@@ -16,4 +16,6 @@ flat/**
 build/**
 *.bz2
 share/sf2
-
+vs/**/.vs
+vs/**/Generated Files/**
+vs**/x64/**
