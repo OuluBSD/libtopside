@@ -1343,7 +1343,7 @@ set ( PROJECT_INC_DIR \${PROJECT_BINARY_DIR}/inc )
 set ( PROJECT_PCH_DIR \${PROJECT_BINARY_DIR}/pch )
 
 if ( MSVC )
-SET ( CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} /std:c++17 /await /AI\"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\UnionMetadata\\\\10.0.22000.0\\\\Facade;D:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\IDE\\\\VC\\\\vcpackages\"" CACHE STRING "compile flags" FORCE)
+SET ( CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} /std:c++17 /await /Ycpch.h /AI\"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\UnionMetadata\\\\10.0.22000.0\\\\Facade;D:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\IDE\\\\VC\\\\vcpackages\"" CACHE STRING "compile flags" FORCE)
 endif()
 
 # Set the default include directory for the whole project

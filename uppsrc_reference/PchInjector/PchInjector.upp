@@ -1,0 +1,10 @@
+uses
+	Core;
+
+file
+	in.txt,
+	pch_injector.cpp;
+
+mainconfig
+	"" = "";
+
