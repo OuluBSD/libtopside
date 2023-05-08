@@ -644,8 +644,15 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				return false;
 			SDL_Surface* surf = 0;
 			SDL_Rect r {0, 0, w, h};
+			
+			#if SDL_VERSION_ATLEAST(2,0,12)
 			if (SDL_LockTextureToSurface(fb, &r, &surf) < 0 || !surf)
 				return false;
+			#else
+			ASSERT_(0, "Too old sdl2");
+			return false;
+			#endif
+			
 			int stride = surf->format->BytesPerPixel;
 			int pitch = surf->pitch;
 			byte* pixels = (byte*)surf->pixels;
