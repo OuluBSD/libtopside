@@ -317,13 +317,9 @@ public:
 	
 	Std ToStd();
 	
-	friend StringT operator+(const StringT& a, const StringT& b);
-	friend StringT operator+(const StringT& s, const T*);
-	friend StringT operator+(const T* chr, const StringT& s);
 	
 };
 
-	
 
 #if 0
 typedef StringT<char> String;
@@ -332,6 +328,15 @@ typedef StringT<wchar_t> WString;
 using String = StringT<char>;
 using WString = StringT<wchar_t>;
 #endif
+
+
+String operator+(const String& a, const String& b);
+String operator+(const String& s, const char*);
+String operator+(const char* chr, const String& s);
+
+WString operator+(const WString& a, const WString& b);
+WString operator+(const WString& s, const wchar_t*);
+WString operator+(const wchar_t* chr, const WString& s);
 
 
 

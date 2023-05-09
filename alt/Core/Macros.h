@@ -53,9 +53,17 @@ NAMESPACE_UPP_BEGIN
 	#define M_2PI      6.283185307179586
 #endif
 
-#define M_PIf	(float)(M_PI)
-#define M_PI_2f	(float)(M_PI_2)
-#define M_2PIf	(float)(M_2PI)
+#ifndef M_PIf
+	#define M_PIf	(float)(M_PI)
+#endif
+
+#ifndef M_PI_2f
+	#define M_PI_2f	(float)(M_PI_2)
+#endif
+
+#ifndef M_2PIf
+	#define M_2PIf	(float)(M_2PI)
+#endif
 
 #undef TODO
 #define MK_str_(x)		#x
