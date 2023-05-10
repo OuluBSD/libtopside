@@ -3,7 +3,11 @@
 
 #include <Local/Local.h>
 #include <AudioCore/AudioCore.h>
-#include <GuboLib/GuboLib.h>
+
+#ifdef flagGUI
+	#include <GuboLib/GuboLib.h>
+#endif
+
 #include <SerialLib/SerialLib.h>
 
 

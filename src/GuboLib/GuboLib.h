@@ -1,6 +1,10 @@
 #ifndef _GuboLib_GuboLib_h_
 #define _GuboLib_GuboLib_h_
 
+#ifndef flagGUI
+	#error <GuboLib/GuboLib.h> should only be included, when GUI flag is set.
+#endif
+
 #include <GuboCore/GuboCore.h>
 #include <Geometry/Geometry.h>
 #include <ParallelLib/ParallelLib.h>

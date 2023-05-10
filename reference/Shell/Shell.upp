@@ -1,8 +1,9 @@
 description "Libtopside main package\377";
 
 uses
-	Complete,
-	EcsComplete;
+	Complete;
+
+uses(GUI) EcsComplete;
 
 file
 	EcsShell.h,

@@ -45,8 +45,16 @@ GUI_APP_MAIN
 #else
 
 
+#ifdef flagGUI
+
 // Just call default macro in AtomComplete
 DEFAULT_ECS_SHELL
+
+#else
+
+DEFAULT_ATOMSHELL
+
+#endif
 
 
 #endif

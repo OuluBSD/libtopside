@@ -184,7 +184,11 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 					AtomStoreRef as			= mach.FindAdd<AtomStore>();
 				    AtomSystemRef asys		= mach.FindAdd<AtomSystem>();
 				    ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
+					
+					#ifdef flagGUI
 				    Gu::GuboSystemRef gubo	= mach.FindAdd<Gu::GuboSystem>();
+				    #endif
+				    
 				    #if IS_UPP_CORE && defined flagGUI
 				    WindowSystemRef win		= mach.FindAdd<WindowSystem>();
 				    #endif

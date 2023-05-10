@@ -5,6 +5,8 @@
 
 #include "ParallelLib.h"
 
+#ifdef flagGUI
+
 NAMESPACE_PARALLEL_BEGIN
 
 template <class Dim>
@@ -794,3 +796,5 @@ PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(ScopeT)
 
 
 NAMESPACE_PARALLEL_END
+
+#endif
