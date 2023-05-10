@@ -258,7 +258,7 @@ LinkTypeCls IntervalPipeLink::GetType() {
 }
 
 void IntervalPipeLink::IntervalSinkProcess() {
-	RTLOG("IntervalPipeLink::IntervalSinkProcess: starts");
+	LOG("IntervalPipeLink::IntervalSinkProcess: starts");
 	
 	const int sink_ch_i = 0;
 	

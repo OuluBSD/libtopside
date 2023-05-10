@@ -7,17 +7,23 @@ NAMESPACE_SERIAL_BEGIN
 class AsyncMemForwarderBase :
 	public Link
 {
-	Packet		partial_packet;
-	byte*		write_mem = 0;
-	int			write_size = 0;
-	int			write_pos = 0;
-	int			partial_pos = 0;
+	Packet			partial_packet;
+	byte*			write_mem = 0;
+	int				write_size = 0;
+	int				write_pos = 0;
+	int				partial_pos = 0;
+	PacketBuffer	buffer;
+	
+	off32_gen	dbg_off_gen;
+	off32		dbg_offset;
+	int			dbg_data_offset = 0;
 	
 	
 	void	Consume(int data_begin, Packet p); // "const Packet&"" is invalid here
 	
 public:
 	RTTI_DECL1(AsyncMemForwarderBase, Link)
+	AsyncMemForwarderBase();
 	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	bool	IsReady(PacketIO& io) final;

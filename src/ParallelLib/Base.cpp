@@ -122,7 +122,7 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 		}
 		time += internal_fmt.GetFrameSeconds();
 		
-		out.time = time;
+		out.seq = seq++;
 	}
 	else if (internal_fmt.IsVideo()) {
 		TODO
@@ -168,8 +168,6 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 	RTLOG("VoidSinkBase::Consume: " << HexStr((size_t)data) << ", len=" << len);
 	
 	if (fmt.IsAudio()) {
-		//ASSERT(out.seq == rolling_value);
-		
 		AudioFormat& afmt = fmt;
 		
 		// Verify data
@@ -181,7 +179,7 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 			dbg_count = (int)(end - it);
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
-				double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
+				double f1 = (rolling_value++ / 255.0) * 2.0 - 1.0;
 				if (!IsClose(f0, f1))
 					fail = true;
 			}
@@ -354,6 +352,7 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 		else {
 			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " invalid audio format");
 			fail = true;
+			GetMachine().SetFailed("VoidPollerSinkBase error");
 		}
 		
 		if (dbg_limit > 0 && t.rolling_value >= dbg_limit) {

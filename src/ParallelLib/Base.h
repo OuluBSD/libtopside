@@ -40,6 +40,7 @@ class RollingValueBase :
 	public Atom
 {
 	byte				rolling_value = 0;
+	uint64				seq = 0;
 	double				time = 0;
 	Format				internal_fmt;
 	

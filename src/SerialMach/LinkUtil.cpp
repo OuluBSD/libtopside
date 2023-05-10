@@ -3,7 +3,12 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+AsyncMemForwarderBase::AsyncMemForwarderBase() : dbg_offset(dbg_off_gen) {
+	
+}
+
 bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
+	
 	RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: size " << size << " at " << HexStr(mem));
 	ASSERT(size > 0);
 	write_mem = mem;
@@ -12,15 +17,22 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	
 	ASSERT(partial_pos == 0 || !partial_packet.IsEmpty());
 	if (partial_packet) {
-		RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: consuming partial packet");
+		RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: consuming partial packet: seq=" << IntStr64(partial_packet->seq) << " + " << partial_pos);
 		Consume(partial_pos, partial_packet);
 	}
 	else {
 		RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: no partial packet");
 	}
 	
-	if (write_pos < size)
+	if (write_pos < size) {
 		ForwardAsync();
+		
+		ASSERT(buffer.IsFilled());
+		buffer.EnterWrite();
+		Packet p = buffer.PopFirst();
+		Consume(0, p);
+		buffer.LeaveWrite();
+	}
 	
 	if (write_pos < size) {
 		RTLOG("AsyncMemForwarderBase::ForwardAsyncMem: warning: not enough packets to read memory entirely");
@@ -62,8 +74,12 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 		src.from_sink_ch = 0;
 		src.p = ReplyPacket(0, sink0.p);
 		RTLOG("AsyncMemForwarderBase::ProcessPackets: sink #0 " << sink0.p->ToString());
-		if (PassConsumePacket(src.from_sink_ch, sink0.p))
-			Consume(src.from_sink_ch, sink0.p);
+		if (PassConsumePacket(src.from_sink_ch, sink0.p)) {
+			buffer.EnterWrite();
+			//Consume(src.from_sink_ch, sink0.p);
+			buffer.Add(sink0.p);
+			buffer.LeaveWrite();
+		}
 	}
 	else if (io.sinks.GetCount() > 1) {
 		PacketIO::Sink& sink1 = io.sinks[1];
@@ -72,8 +88,12 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 		src.from_sink_ch = 1;
 		src.p = ReplyPacket(0, sink1.p);
 		RTLOG("AsyncMemForwarderBase::ProcessPackets: sink #1 " << sink1.p->ToString());
-		if (PassConsumePacket(src.from_sink_ch, sink1.p))
-			Consume(src.from_sink_ch, sink1.p);
+		if (PassConsumePacket(src.from_sink_ch, sink1.p)) {
+			buffer.EnterWrite();
+			//Consume(src.from_sink_ch, sink1.p);
+			buffer.Add(sink1.p);
+			buffer.LeaveWrite();
+		}
 	}
 	else return false;
 	
@@ -86,9 +106,23 @@ bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 
 void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	ASSERT(p);
-	RTLOG("AsyncMemForwarderBase::Consume: " << p->ToString());
+	
+	RTLOG("AsyncMemForwarderBase::Consume: seq=" << IntStr64(p->seq) << ", " << p->ToString());
 	partial_packet.Clear();
 	partial_pos = 0;
+	
+	// error checking
+	off32 p_off = p->GetOffset();
+	off32 p_off1 = p_off;
+	p_off1++;
+	ASSERT(!(dbg_data_offset == data_begin && p_off == dbg_offset));
+	if (p_off < dbg_offset)
+		Panic("AsyncMemForwarderBase::Consume: got older packet");
+	else if (p_off > p_off1)
+		Panic("AsyncMemForwarderBase::Consume: got too new packet, which skipped one in between");
+	else if (p_off > dbg_offset)
+		dbg_offset = p_off;
+	dbg_data_offset = data_begin;
 	
 	#if HAVE_PACKETTIMINGCHECK
 	p->CheckTiming();
