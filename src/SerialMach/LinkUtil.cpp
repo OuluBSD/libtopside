@@ -53,6 +53,9 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 bool AsyncMemForwarderBase::IsReady(PacketIO& io) {
 	bool b = false;
 	
+	if (buffer.GetCount() >= 1)
+		return false;
+	
 	if (!write_mem || write_pos >= write_size)
 		return false;
 	
