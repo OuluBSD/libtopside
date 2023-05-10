@@ -25,13 +25,16 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	}
 	
 	if (write_pos < size) {
-		ForwardAsync();
-		
-		if (buffer.IsFilled()) {
-			buffer.EnterWrite();
-			Packet p = buffer.PopFirst();
-			Consume(0, p);
-			buffer.LeaveWrite();
+		while (write_pos < size) {
+			ForwardAsync();
+			
+			if (buffer.IsFilled()) {
+				buffer.EnterWrite();
+				Packet p = buffer.PopFirst();
+				Consume(0, p);
+				buffer.LeaveWrite();
+			}
+			else break;
 		}
 	}
 	

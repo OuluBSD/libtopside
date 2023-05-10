@@ -212,7 +212,7 @@ bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a,
 	dword sdl_flag = SDL_INIT_AUDIO;
 	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
 	
-	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }
@@ -224,8 +224,8 @@ bool HalSdl::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase
 		return false;
 	}
 	
-	if (!dep->IsRunning()) {
-		LOG("HalSdl::AudioSinkDevice_PostInitialize: context is not running");
+	if (!dep->IsInitialized()) {
+		LOG("HalSdl::AudioSinkDevice_PostInitialize: context is not initialized");
 	}
 	
 	RTLOG("HalSdl::AudioSinkDevice_PostInitialize");
