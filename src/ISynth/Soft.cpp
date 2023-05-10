@@ -93,6 +93,8 @@ bool SynSoft::Instrument_Send(NativeInstrument& dev, AtomBase& a, RealtimeSource
 			dev.instrument.RenderShort((short*)(byte*)data.Begin(), dev.sample_rate, 0);
 		else if (afmt.GetType() == BinarySample::FLT_LE)
 			dev.instrument.RenderFloat((float*)(byte*)data.Begin(), dev.sample_rate, 0);
+		
+		out.SetAge(0.5);
 	}
 	return true;
 }

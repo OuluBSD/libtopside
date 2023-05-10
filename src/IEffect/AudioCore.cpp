@@ -13,6 +13,7 @@ struct FxAudioCore::NativeEffect {
     int prim_audio_sink_ch;
     dword packet_in_mask;
     Packet last_audio_in;
+    Format fmt;
     ArrayMap<int, Packet> last_audio_side_in;
     Vector<float> buffer;
     float buffer_time;
@@ -75,7 +76,7 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 		return false;
 	}
 	
-	dev.sample_rate = ws.GetInt(".samplerate", 128);
+	dev.sample_rate = ws.GetInt(".samplerate", 1024);
 	{
 		ISinkRef sink = a.GetSink();
 		int c = sink->GetSinkCount();
@@ -95,6 +96,8 @@ bool FxAudioCore::Effect_Initialize(NativeEffect& dev, AtomBase& a, const Script
 				afmt.SetType(BinarySample::FLT_LE);
 				afmt.SetSampleRate(dev.sample_rate);
 				v.SetFormat(fmt);
+				
+				dev.fmt = fmt;
 			}
 		}
 		if (dev.prim_audio_sink_ch < 0)
@@ -152,7 +155,11 @@ bool FxAudioCore::Effect_Send(NativeEffect& dev, AtomBase& a, RealtimeSourceConf
 	if (fmt.IsAudio()) {
 		if (dev.buffer.GetCount()) {
 			Vector<byte>& d = out.Data();
+			
+			int frame_sz = fmt.GetFrameSize();
 			int bytes = dev.buffer.GetCount() * sizeof(float);
+			ASSERT(bytes == frame_sz);
+			
 			d.SetCount(bytes, 0);
 			float* f = (float*)(byte*)d.Begin();
 			memcpy(f, dev.buffer.Begin(), bytes);
@@ -183,7 +190,7 @@ bool FxAudioCore::Effect_Recv(NativeEffect& dev, AtomBase& a, int sink_ch, const
 void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
 	if (dev.last_audio_in) {
 		if (dev.last_audio_side_in.IsEmpty()) {
-			Format fmt = dev.last_audio_in->GetFormat();
+			Format fmt = dev.fmt;
 			
 			AudioFormat& afmt = fmt;
 			int sr = afmt.GetSampleRate();
@@ -197,7 +204,11 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 			const Vector<byte>& in = dev.last_audio_in->Data();
 			const float* in_f = (const float*)(const byte*)in.Begin();
 			
-			dev.buffer.SetCount(sr * ch, 0);
+			// TODO handle different sample rate in source and packet
+			ASSERT_(sr == in_sr, "TODO sample rate support");
+			
+			int samples = sr * ch;
+			dev.buffer.SetCount(samples, 0);
 			float* f = (float*)dev.buffer.Begin();
 			
 			Audio::Effect& fx = *dev.effect;
@@ -212,10 +223,11 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 			}
 			
 			dev.buffer_time = (float)dev.last_audio_in->GetBeginTime();
+			ASSERT(dev.buffer_time);
 			dev.last_audio_in.Clear();
 		}
 		else {
-			Format fmt = dev.last_audio_in->GetFormat();
+			Format fmt = dev.fmt;
 			
 			AudioFormat& afmt = fmt;
 			int sr = afmt.GetSampleRate();
@@ -256,6 +268,7 @@ void FxAudioCore::Effect_Finalize(NativeEffect& dev, AtomBase& a, RealtimeSource
 			}
 			
 			dev.buffer_time = (float)dev.last_audio_in->GetBeginTime();
+			ASSERT(dev.buffer_time);
 			dev.last_audio_in.Clear();
 			dev.last_audio_side_in.Clear();
 		}
