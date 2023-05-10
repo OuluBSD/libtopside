@@ -182,8 +182,34 @@ void SoftProgram::SetVar(int i, int j) {
 
 void SoftProgram::SetVar(int i, float f) {
 	int idx = uniforms.GetKey(i);
+	int tex;
 	switch (idx) {
-		case GVar::VAR_COMPAT_TIME: args.iTime = f; return;
+		case GVar::VAR_COMPAT_CHANNEL0:		args.iChannel0 = f; return;
+		case GVar::VAR_COMPAT_CHANNEL1:		args.iChannel1 = f; return;
+		case GVar::VAR_COMPAT_CHANNEL2:		args.iChannel2 = f; return;
+		case GVar::VAR_COMPAT_CHANNEL3:		args.iChannel3 = f; return;
+		case GVar::VAR_COMPAT_TIME:			args.iTime = f; return;
+		case GVar::VAR_DIFFUSE:
+		case GVar::VAR_NONE:
+		case GVar::VAR_SPECULAR:
+		case GVar::VAR_AMBIENT:
+		case GVar::VAR_EMISSIVE:
+		case GVar::VAR_HEIGHT:
+		case GVar::VAR_NORMALS:
+		case GVar::VAR_SHININESS:
+		case GVar::VAR_OPACITY:
+		case GVar::VAR_DISPLACEMENT:
+		case GVar::VAR_LIGHTMAP:
+		case GVar::VAR_REFLECTION:
+		case GVar::VAR_UNKNOWN:
+		case GVar::VAR_CUBE_DIFFUSE:
+		case GVar::VAR_CUBE_IRRADIANCE:
+			ASSERT(obj_i >= 0);
+			tex = idx - GVar::VAR_NONE;
+			args.color_buf[tex] = objs[obj_i].fargs.color_buf[tex];
+			ASSERT(args.color_buf[tex]);
+			return;
+			
 		default: break;
 	}
 	ASSERT(0);
