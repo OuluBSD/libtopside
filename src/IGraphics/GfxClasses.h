@@ -163,7 +163,7 @@ struct GfxFramebuffer : ErrorReporter {
 	virtual void Enter() = 0;
 	virtual void Leave() = 0;
 	virtual byte* GetIterator(int x, int y) = 0;
-	virtual void DrawFill(const byte* mem, int sz) = 0;
+	virtual void DrawFill(const byte* mem, int sz, int pitch) = 0;
 	
 	int GetWidth() const {return size.cx;}
 	int GetHeight() const {return size.cy;}

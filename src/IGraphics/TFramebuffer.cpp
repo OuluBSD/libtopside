@@ -3,9 +3,9 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-/*#ifdef flagSDL2
+#ifdef flagSDL2
 template <>
-void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
+void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz, int mem_pitch) {
 	SDL_Texture* tex = color_buf[0];
 	ASSERT(tex);
 	
@@ -20,42 +20,38 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 		return;
 	
 	int stride = surf->format->BytesPerPixel;
-	int pitch = surf->pitch;
+	int surf_pitch = surf->pitch;
 	byte* pixels = (byte*)surf->pixels;
 	
 	
-	if (sz == h * pitch) {
+	if (sz == h * surf_pitch) {
 		memcpy(pixels, mem, sz);
-	}
-	else if (sz == w * h * stride) {
-		int row = w * stride;
-		byte* dst = pixels;
-		for (int y = 0; y < h; y++) {
-			memcpy(dst, mem, row);
-			mem += row;
-			dst += pitch;
-		}
 	}
 	else {
-		sz = min(sz, h * pitch);
-		memcpy(pixels, mem, sz);
+		byte* dst = pixels;
+		int copy = min(mem_pitch, surf_pitch);
+		for (int y = 0; y < h; y++) {
+			memcpy(dst, mem, copy);
+			mem += mem_pitch;
+			dst += surf_pitch;
+		}
 	}
 	
 	SDL_UnlockTexture(tex);
 }
 
 
-#endif*/
+#endif
 
 #if defined flagPOSIXDESKTOP && defined flagOGL
 template <>
-void FramebufferT<X11OglGfx>::DrawFill(const byte* mem, int sz) {
+void FramebufferT<X11OglGfx>::DrawFill(const byte* mem, int sz, int pitch) {
 	Panic("Not implemented");
 }
 #endif
 
 template <class Gfx>
-void FramebufferT<Gfx>::DrawFill(const byte* mem, int sz) {
+void FramebufferT<Gfx>::DrawFill(const byte* mem, int sz, int pitch) {
 	Panic("Not implemented");
 }
 

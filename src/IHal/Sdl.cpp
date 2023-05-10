@@ -567,10 +567,11 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		const byte* mem = (const byte*)data.Begin();
 		int len = data.GetCount();
 		VideoFormat& vfmt = fmt;
+		int frame_pitch = vfmt.GetSampleSize() * vfmt.GetSize().cx;
 		int frame_size = vfmt.GetFrameSize();
 		
 		if (mem && len > 0 && len == frame_size) {
-			dev.fb.DrawFill(mem, len);
+			dev.fb.DrawFill(mem, len, frame_pitch);
 		}
 		
 		return true;
