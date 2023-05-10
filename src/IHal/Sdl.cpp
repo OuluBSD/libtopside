@@ -292,13 +292,17 @@ bool HalSdl::AudioSinkDevice_Start(NativeAudioSinkDevice& dev, AtomBase& a) {
 }
 
 void HalSdl::AudioSinkDevice_Stop(NativeAudioSinkDevice& dev, AtomBase& a) {
+	if (dev.id) {
+		SDL_PauseAudioDevice(dev.id, 1);
+		Sleep(200);
+	}
+	
 	a.ClearDependency();
 }
 
 void HalSdl::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
 	
 	if (dev.id) {
-		SDL_PauseAudioDevice(dev.id, 1);
 		SDL_CloseAudioDevice(dev.id);
 		dev.id = 0;
 	}

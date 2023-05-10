@@ -610,7 +610,8 @@ bool JoinerLink::ProcessPackets(PacketIO& io) {
 		scheduler_iter = 1;
 	
 	ASSERT(side_sink_ch >= 0);
-	if (side_sink_ch < 0) return false;
+	if (side_sink_ch < 0)
+		return false;
 	
 	PacketIO::Sink& sink = io.sinks[side_sink_ch];
 	
@@ -661,11 +662,12 @@ bool SplitterLink::IsReady(PacketIO& io) {
 bool SplitterLink::ProcessPackets(PacketIO& io) {
 	ASSERT(io.srcs.GetCount() > 1 && io.sinks.GetCount() == 1);
 	ASSERT(io.active_sink_mask == 0x0001);
-	PacketIO::Sink& sink = io.sinks[0];
+	int sink_ch = 0;
+	PacketIO::Sink& sink = io.sinks[sink_ch];
 	sink.may_remove = true;
 	
 	PacketIO::Source& prim_src = io.srcs[0];
-	prim_src.from_sink_ch = 0;
+	prim_src.from_sink_ch = sink_ch;
 	prim_src.p = ReplyPacket(0, sink.p);
 	
 	Format in_fmt = sink.p->GetFormat();
@@ -676,8 +678,8 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 		if (!src.val)
 			continue;
 		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
+		src.from_sink_ch = sink_ch;
 		if (src_fmt.IsCopyCompatible(in_fmt)) {
-			src.from_sink_ch = 0;
 			src.p = sink.p;
 		}
 		else {
