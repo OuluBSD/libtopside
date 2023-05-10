@@ -308,6 +308,24 @@ bool FboReaderBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (out_fmt.IsAudio()) {
 		this->SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	}
+	
+	{
+		int sample_rate = ws.GetInt(".samplerate", 1024);
+		
+		ISourceRef src = this->GetSource();
+		int c = src->GetSourceCount();
+		Value& v = src->GetSourceValue(c-1);
+		Format fmt = v.GetFormat();
+		if (!fmt.IsAudio())
+			return false;
+		
+		AudioFormat& afmt = fmt;
+		afmt.SetType(BinarySample::U16_LE);
+		afmt.SetSampleRate(sample_rate);
+		
+		v.SetFormat(fmt);
+	}
+	
 	return true;
 }
 
