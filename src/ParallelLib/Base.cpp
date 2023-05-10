@@ -273,6 +273,11 @@ bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 		ts = 0;
 		b = true;
 	}
+	
+	dword iface_sink_mask = iface.GetSinkMask();
+	if (io.active_sink_mask != iface_sink_mask)
+		return false;
+	
 	RTLOG("VoidPollerSinkBase::IsReady: " << (b ? "true " : "false ") << BinStr(io.active_sink_mask));
 	return b;
 }
@@ -282,28 +287,28 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 	
 	#if HAVE_PACKETTRACKER
 	uint64 route_desc = in.GetRouteDescriptor();
-	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
+	RTLOG("VoidPollerSinkBase::Recv: sink #" << IntStr(sink_ch) << ": " << in.ToString() << ", descriptor " << HexStr(route_desc));
 	#else
-	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString());
+	RTLOG("VoidPollerSinkBase::Recv: sink #" << IntStr(sink_ch) << ": " << in.ToString());
 	#endif
 	
 	Parallel::Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
 		Serial::AudioFormat& afmt = fmt;
-		
+		uint32 thrd_id = 0;
 		#if HAVE_PACKETTRACKER
-		int i = thrds.Find(route_desc);
-		if (i < 0) {
-			i = thrds.GetCount();
-			thrds.Add(route_desc);
-			RTLOG("VoidPollerSinkBase::Recv: creating new thread for route " + IntStr64(route_desc));
-		}
+		thrd_id = route_desc;
 		#else
-		if (thrds.IsEmpty()) thrds.Add(0);
-		int i = 0;
+		thrd_id = sink_ch;
+		Panic("VoidPollerSinkBase::Recv: requires PACKET TRACKER!");
 		#endif
 		
-		Thread& t = thrds[i];
+		if (thrds.Find(thrd_id) < 0) {
+			RTLOG("VoidPollerSinkBase::Recv: creating new thread for " + IntStr64(thrd_id));
+		}
+		
+		Thread& t = thrds.GetAdd(thrd_id);
+		int i = thrds.Find(thrd_id);
 		
 		const Vector<byte>& data = in.GetData();
 		if (data.IsEmpty()) {

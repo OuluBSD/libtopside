@@ -5,10 +5,12 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-#ifdef flagPACKETTRACKER
-	#define HAVE_PACKETTRACKER 1
-#else
+// Disabling packet tracker breaks tests:
+//    e.g. 00c_audio_gen, because of VoidPollerSinkBase::Recv
+#ifdef flagNOPACKETTRACKER
 	#define HAVE_PACKETTRACKER 0
+#else
+	#define HAVE_PACKETTRACKER 1
 #endif
 
 

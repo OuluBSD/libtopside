@@ -572,11 +572,20 @@ bool JoinerLink::IsReady(PacketIO& io) {
 	
 	// require primary and single side channel
 	int src_ch_count = GetSink()->GetSinkCount();
+	if (src_ch_count == 3) {
+		LOG("");
+	}
 	if (!(io.active_sink_mask & 1))
 		return false;
-	for(int i = 1; i < src_ch_count; i++)
-		if (io.active_sink_mask & (1 << i))
+	
+	int sink_ch = scheduler_iter;
+	for(int i = 1; i < src_ch_count; i++) {
+		if (io.active_sink_mask & (1 << sink_ch))
 			return true;
+		sink_ch = (sink_ch + 1) % src_ch_count;
+		if (!sink_ch) sink_ch = 1;
+	}
+	
 	return false;
 }
 
@@ -590,15 +599,15 @@ bool JoinerLink::ProcessPackets(PacketIO& io) {
 	for (int tries = 0; tries < 3; tries++) {
 		int sink_ch = scheduler_iter;
 		
-		scheduler_iter++;
-		if (scheduler_iter >= io.sinks.GetCount())
-			scheduler_iter = 1;
-		
 		if (io.sinks[sink_ch].p) {
 			side_sink_ch = sink_ch;
 			break;
 		}
 	}
+	
+	scheduler_iter++;
+	if (scheduler_iter >= io.sinks.GetCount())
+		scheduler_iter = 1;
 	
 	ASSERT(side_sink_ch >= 0);
 	if (side_sink_ch < 0) return false;
