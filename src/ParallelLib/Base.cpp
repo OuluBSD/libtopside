@@ -121,6 +121,8 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 				*f++ = rolling_value++;
 		}
 		time += internal_fmt.GetFrameSeconds();
+		
+		out.time = time;
 	}
 	else if (internal_fmt.IsVideo()) {
 		TODO
@@ -163,8 +165,11 @@ bool VoidSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 }
 
 bool VoidSinkBase::Consume(const void* data, int len) {
+	RTLOG("VoidSinkBase::Consume: " << HexStr((size_t)data) << ", len=" << len);
 	
 	if (fmt.IsAudio()) {
+		//ASSERT(out.seq == rolling_value);
+		
 		AudioFormat& afmt = fmt;
 		
 		// Verify data
@@ -193,7 +198,7 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 			}
 		}
 		else {
-			LOG("IntervalPipeLink::IntervalSinkProcess: error: invalid audio format");
+			LOG("VoidSinkBase::Consume: error: invalid audio format");
 		}
 		dbg_total_samples += dbg_count;
 		dbg_total_bytes += dbg_count * 4;
@@ -201,13 +206,13 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 		
 		if (fail || (dbg_limit > 0 && dbg_iter >= dbg_limit)) {
 			GetMachine().SetNotRunning();
-			LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
-			if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
-			else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
-			if (fail) GetMachine().SetFailed("IntervalPipeLink error");
+			LOG("VoidSinkBase::Consume: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+			if (!fail) {LOG("VoidSinkBase::Consume: success!");}
+			else       {LOG("VoidSinkBase::Consume: fail :(");}
+			if (fail) GetMachine().SetFailed("VoidSinkBase error");
 		}
 		
-		RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
+		RTLOG("VoidSinkBase::Consume: successfully verified frame");
 	}
 	
 	return true;
