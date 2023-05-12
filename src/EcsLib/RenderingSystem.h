@@ -60,7 +60,6 @@ protected:
 	Array<ModelComponentRef>	models;
 	Vector<CameraBase*>			cams;
 	
-	GfxDataState*				state = 0;
 	double						time = 0;
 	bool						is_dummy = false;
 	
@@ -77,7 +76,6 @@ protected:
     void Uninitialize() override;
     bool Arg(String key, Object value) override;
     
-    void Render(GfxDataState& data);
     
     
 public:
@@ -87,6 +85,8 @@ public:
 	ECS_SYS_DEF_VISIT
 	
 	//ModelRef GetAddModelFile(String path);
+	
+	void Render(GfxDataState& s);
 	
 	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);

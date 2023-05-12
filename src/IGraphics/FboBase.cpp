@@ -117,6 +117,10 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (type == "stereo")
 		data.is_stereo = true;
 	
+	data.mach = &GetMachine();
+	accel_sd.SetTarget(data);
+	
+	
 	return true;
 }
 
@@ -156,7 +160,6 @@ bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 		io.full_src_mask == 0 &&
 		binders.GetCount() > 0;
 	
-	accel_sd.SetTarget(data);
 	for (BinderIfaceVideo* binder : binders)
 		if (!binder->Render(accel_sd))
 			b = false;

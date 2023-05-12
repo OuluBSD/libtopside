@@ -91,6 +91,8 @@ struct GfxDataState : ErrorReporter {
 	vec2				resolution;
 	vec2				offset;
 	
+	// generic
+	Machine* mach = 0;
 	
 	GfxDataState();
 	virtual GfxModelState& AddModel() = 0;

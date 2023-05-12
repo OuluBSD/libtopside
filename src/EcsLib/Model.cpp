@@ -290,10 +290,10 @@ bool ModelComponent::Load(GfxDataState& state) {
 		}
 		
 		if (model) {
-			state.GetModel(gfx_id).Refresh(*model);
+			state.RealizeModel(gfx_id).Refresh(*model);
 		}
 		else {
-			state.GetModel(gfx_id).Clear();
+			state.RealizeModel(gfx_id).Clear();
 		}
 	}
 	else {

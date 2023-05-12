@@ -46,6 +46,8 @@ file
 	ProgBase.h,
 	ProgBase.cpp,
 	Programs readonly separator,
+	EcsViewProg.h,
+	EcsViewProg.cpp,
 	ObjViewProg.h,
 	ObjViewProg.cpp,
 	GuiProg.h,
