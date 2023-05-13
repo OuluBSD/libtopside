@@ -59,7 +59,7 @@ public:
 protected:
 	Ref<Model> model;
 	ModelLoader loader;
-	hash_t gfx_id = 0;
+	hash_t gfx_hash = 0;
 	GfxDataState* gfx_state = 0;
 	
 	vec3 offset = zero<vec3>();

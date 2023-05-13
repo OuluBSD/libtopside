@@ -39,6 +39,11 @@ bool EcsViewProg::Render(Draw& fb) {
 	Ecs::RenderingSystemRef rend = eng.Get<Ecs::RenderingSystem>();
 	ASSERT(rend);
 	
+	
+	// Default values
+	state.light_dir = vec3 {sinf(DEG2RAD(75)), 0.0, cosf(DEG2RAD(20))};
+	
+	
 	rend->Render(state);
 	
 	return true;

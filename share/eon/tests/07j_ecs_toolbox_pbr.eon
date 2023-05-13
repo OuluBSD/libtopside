@@ -15,7 +15,7 @@ machine sdl.app:
 			ogl.customer
 			sdl.ogl.fbo.program:
 				drawmem =		"false"
-				program =		"obj_view"
+				program =		"ecs_view"
 				shader.default.frag.path =		"shaders/tests/07j_fragment.glsl"
 				shader.default.vtx.path =		"shaders/tests/07j_vertex.glsl"
 				shader.sky.frag.path =			"shaders/tests/03n_skybox_fragment.glsl"

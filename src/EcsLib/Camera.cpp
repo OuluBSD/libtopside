@@ -205,7 +205,7 @@ void ChaseCam::UpdateView() {
 					double angle_x = asin(mod[0] / mod[2]) * 360.0 / (2.0*M_PI);
 					double len_xz = sqrt(mod[0] * mod[0] + mod[2] * mod[2]);
 					double angle_y = asin(mod[1] / len_xz) * 360.0 / (2.0*M_PI);
-					LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
+					//LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
 				}
 		    }
 		    #if 0

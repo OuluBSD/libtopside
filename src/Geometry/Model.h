@@ -120,6 +120,7 @@ public:
     void ReverseFaces();
     Mesh& AddMesh();
     Material& AddMaterial();
+    Material& RealizeMaterial(Mesh& m);
     ModelNode& AddNode(String name="", NodeIndex parent=-1);
     Optional<NodeIndex> FindFirstNode(String name, Optional<NodeIndex> const& parent_node_index = {});
     mat4 GetNodeWorldTransform(NodeIndex node_idx) const;

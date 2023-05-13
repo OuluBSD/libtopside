@@ -7,8 +7,8 @@ NAMESPACE_TOPSIDE_BEGIN
 class Model;
 
 struct MaterialParameters {
+    vec3 diffuse = {0.5, 0.5, 0.5};
     vec3 ambient = {0,0,0};
-    vec3 diffuse = {0,0,0};
     vec3 specular = {0,0,0};
     float shininess = 0;
     
@@ -38,8 +38,11 @@ struct Material {
 	Material();
 	
     // Create a flat (no texture) material.
+    Material& SetDiffuse(const Color& clr);
+    Material& SetDiffuse(const vec3& clr);
+    Material& SetDiffuse(const vec4& clr);
     void SetFlat(
-        const vec4&			base_color_factor,
+        const vec4&			base_color_factor = vec4{1,1,1,1},
         float				roughness_factor = 1.0f,
         float				metallic_factor = 0.0f,
         const vec4&			emissive_factor = vec4{0,0,0,1});

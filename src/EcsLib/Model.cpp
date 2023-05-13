@@ -188,19 +188,19 @@ void ModelComponent::SetModelMatrix(const mat4& m) {
 }
 
 void ModelComponent::Clear() {
-	if (gfx_state && gfx_id > 0) {
-		gfx_state->GetModel(gfx_id).Clear();
+	if (gfx_state && gfx_hash > 0) {
+		gfx_state->GetModel(gfx_hash).Clear();
 	}
 	model.Clear();
 	loader.Clear();
 	model_changed = true;
 	gfx_state = 0;
-	gfx_id = -1;
+	gfx_hash = 0;
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
 	if (gfx_state) {
-		// TODO if differs, reset gfx_id etc.
+		// TODO if differs, reset gfx_hash etc.
 		ASSERT(gfx_state == &state);
 	}
 	
@@ -212,7 +212,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		load_skybox = false;
 		
 		GfxModelState& skybox = state.AddModel();
-		gfx_id = skybox.id;
+		gfx_hash = skybox.id;
 		
 		ASSERT(skybox.id >= 0);
 		float skybox_sz = 1e8;
@@ -251,19 +251,19 @@ bool ModelComponent::Load(GfxDataState& state) {
 	}
 	
 	// If model is not loaded to the state
-	if (gfx_id < 0) {
+	if (gfx_hash == 0) {
 		if (dbg) {
 			LOG("debug");
 		}
 		
 		if (model) {
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
+			gfx_hash = mdl.id;
 			mdl.LoadModel(*model);
 		}
 		else if (loader) {
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
+			gfx_hash = mdl.id;
 			if (!mdl.LoadModel(loader)) {
 				LOG("ModelComponent::Load: error: model loading failed");
 				return false;
@@ -273,7 +273,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 		else if (!prefab_name.IsEmpty()) {
 			String path = KnownModelNames::GetPath(prefab_name);
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
+			gfx_hash = mdl.id;
 			if (!loader.LoadModel(path))
 				return false;
 			if (!mdl.LoadModel(loader))
@@ -290,10 +290,10 @@ bool ModelComponent::Load(GfxDataState& state) {
 		}
 		
 		if (model) {
-			state.RealizeModel(gfx_id).Refresh(*model);
+			state.RealizeModel(gfx_hash).Refresh(*model);
 		}
 		else {
-			state.RealizeModel(gfx_id).Clear();
+			state.RealizeModel(gfx_hash).Clear();
 		}
 	}
 	else {
@@ -333,7 +333,7 @@ bool ModelComponent::Load(GfxDataState& state) {
 	
 	static thread_local Vector<GfxMesh*> meshes;
 	meshes.SetCount(0);
-	auto& mdl_state = state.GetModel(gfx_id);
+	auto& mdl_state = state.GetModel(gfx_hash);
 	int obj_count = mdl_state.GetObjectCount();
 	for(int i = 0; i < obj_count; i++) {
 		GfxDataObject& obj = mdl_state.GetObject(i);

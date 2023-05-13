@@ -687,6 +687,9 @@ public:
 		return value;
 	}
 	
+	T* operator->() {return &value;}
+	const T* operator->() const {return &value;}
+	
 private:
 	T value;
 	mutable Atomic change_count;

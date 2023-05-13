@@ -134,6 +134,18 @@ Material& Model::AddMaterial() {
 	return m;
 }
 
+Material& Model::RealizeMaterial(Mesh& mesh) {
+	if (mesh.material < 0) {
+		Material& mat = AddMaterial();
+		mesh.material = mat.id;
+		return mat;
+	}
+	else {
+		Material& mat = materials.Get(mesh.material);
+		return mat;
+	}
+}
+
 ModelNode& Model::AddNode(String name, NodeIndex parent) {
 	ModelNode& n = nodes.Add();
 	n.name = name;

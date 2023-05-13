@@ -116,9 +116,8 @@ typedef unsigned int	Gxbf;
 #include "FboBase.h"
 #include "ProgBase.h"
 
-#include "EcsViewProg.h"
 #include "ObjViewProg.h"
-#include "GuiProg.h"
+#include "EcsViewProg.h"
 
 
 

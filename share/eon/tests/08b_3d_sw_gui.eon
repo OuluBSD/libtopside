@@ -15,7 +15,7 @@ machine sdl.app:
 			center.customer
 			x11.sw.fbo.program[loop == video]:
 				drawmem =					"false"
-				program =					"gui"
+				program =					"ecs_view"
 				shader.default.frag.name =	"obj_view"
 				shader.default.vtx.name =	"obj_view"
 			x11.sw.fbo.sink:
