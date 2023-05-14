@@ -213,8 +213,8 @@ bool ModelComponent::Load(GfxDataState& state) {
 		
 		GfxModelState& skybox = state.AddModel();
 		gfx_hash = skybox.id;
+		ASSERT(skybox.id > 0);
 		
-		ASSERT(skybox.id >= 0);
 		float skybox_sz = 1e8;
 		Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
 		Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
@@ -274,21 +274,29 @@ bool ModelComponent::Load(GfxDataState& state) {
 			String path = KnownModelNames::GetPath(prefab_name);
 			auto& mdl = state.AddModel();
 			gfx_hash = mdl.id;
-			if (!loader.LoadModel(path))
-				return false;
-			if (!mdl.LoadModel(loader))
-				return false;
-			model = loader.GetModel();
+			ModelCacheRef cache = GetEngine().GetMachine().Get<ModelCache>();
+			if (cache) {
+				model = cache->GetAddModelFile(path);
+			}
+			else {
+				if (!loader.LoadModel(path))
+					return false;
+				if (!mdl.LoadModel(loader))
+					return false;
+				model = loader.GetModel();
+			}
 		}
 		else {
 			return false;
 		}
+		ASSERT(gfx_hash != 0); // unsigned
 	}
 	else if (model_changed) {
 		if (dbg) {
 			LOG("debug");
 		}
 		
+		ASSERT(gfx_hash > 0);
 		if (model) {
 			state.RealizeModel(gfx_hash).Refresh(*model);
 		}
@@ -333,6 +341,8 @@ bool ModelComponent::Load(GfxDataState& state) {
 	
 	static thread_local Vector<GfxMesh*> meshes;
 	meshes.SetCount(0);
+	
+	ASSERT(gfx_hash > 0);
 	auto& mdl_state = state.GetModel(gfx_hash);
 	int obj_count = mdl_state.GetObjectCount();
 	for(int i = 0; i < obj_count; i++) {
