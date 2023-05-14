@@ -115,7 +115,7 @@ struct GfxInputState : ErrorReporter {
 	virtual ~GfxInputState() {}
 	
 	int id = -1;
-	InputType type;
+	InputType type = GVar::InputType::INVALID;
 	bool is_loopback = false;
 	
 	void Clear() {id = -1; type = GVar::InputType::INVALID;}

@@ -361,7 +361,7 @@ bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		    
 		    DUMPC(screens);
 		    if (screen_idx < 0 || screen_idx >= screens.GetCount()) {
-		        LOG("ScrX11Ogl::SinkDevice_Initialize: error: screen index out of range");
+		        LOG("ScrX11Ogl::SinkDevice_Initialize: error: screen index out of range (is HMD connected?)");
 				return false;
 		    }
 		    Rect r = screens[screen_idx];

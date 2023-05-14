@@ -1,5 +1,7 @@
 #include "StaticInterface.h"
 
+#if IS_TS_CORE
+
 #ifdef flagSDL2
 #if 0 //def flagMSC
 	#include <SDL_image.h>
@@ -152,4 +154,5 @@ Image Sdl2FileBackend::RenderTextBlended(const SysFont& fnt, const char* s, SysC
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

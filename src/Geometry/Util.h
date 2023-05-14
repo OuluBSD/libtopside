@@ -365,6 +365,7 @@ mat4 GetPrincipalAxesMat(const vec3& a, const vec3& b);
 void MakeSpecBRDF(FloatImage& img, int sz);
 
 
+vec3 mix(const vec3& a, const vec3& b, float fade);
 
 NAMESPACE_TOPSIDE_END
 

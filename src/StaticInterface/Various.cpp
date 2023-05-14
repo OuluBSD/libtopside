@@ -1,4 +1,7 @@
 #include "StaticInterface.h"
+
+#if IS_TS_CORE
+
 #include "tga_reader.h"
 
 #if HAVE_LIBPNG
@@ -190,3 +193,5 @@ void LibPngBackend::ClearImage(SysImage& img) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif
