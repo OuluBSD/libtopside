@@ -9,7 +9,7 @@ SerialServiceBase::SerialServiceBase() {
 	
 }
 
-bool SerialServiceBase::AddTcpSocket(uint32 magic, Callback1<TcpSocket&> cb) {
+/*bool SerialServiceBase::AddTcpSocket(uint32 magic, Callback1<TcpSocket&> cb) {
 	int i = handlers.Find(magic);
 	if (i >= 0) {
 		TcpSocketHandler* h = CastPtr<TcpSocketHandler>(&handlers[i]);
@@ -28,7 +28,7 @@ bool SerialServiceBase::AddTcpSocket(uint32 magic, Callback1<TcpSocket&> cb) {
 	handlers.Add(magic, h);
 	return true;
 }
-
+*/
 
 
 SerialServiceServer::SerialServiceServer() {
@@ -145,76 +145,62 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 		
 		HandlerBase& hb = handlers[i];
 		
-		if (hb.socket_handler) {
-			//LOG("SerialServiceServer::ClientHandler: info: socket handler enter");
-			hb.Call(sock);
-			//LOG("SerialServiceServer::ClientHandler: info: socket handler leave");
+		GET(in_sz);
+		if (in_sz > 10000000) {
+			LOG("SerialServiceServer::ClientHandler: error: too large input packet: " << in_sz);
+			break;
 		}
-		else if (hb.serialized) {
-			GET(in_sz);
-			if (in_sz > 10000000) {
-				LOG("SerialServiceServer::ClientHandler: error: too large input packet: " << in_sz);
-				break;
-			}
-			
-			GET(out_sz);
-			if (out_sz != 0) {
-				LOG("SerialServiceServer::ClientHandler: error: unexpected output size: " << out_sz);
-				break;
-			}
-			
-			in.SetCount(in_sz);
-			got = sock.Get(in.Begin(), in.GetCount());
-			if (got != in_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: expected " << in_sz << ", but got " << got);
-				break;
-			}
-			
-			MemReadStream ms(in.Begin(), in.GetCount());
-			//ms.SetLoading();
-			ss.SetSize(0);
-			ss.SetStoring();
-			
-			hb.Call(ms, ss);
-			
-			String result = ss.GetResult();
-			out_sz = result.GetCount();
-			SEND(out_sz);
-			
-			sent = sock.Put(result.Begin(), result.GetCount());
-			if (sent != out_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: couldn't send full structure (" << sent << " < " << hb.out_sz << ")");
-				break;
-			}
+		
+		GET(out_sz);
+		
+		
+		in.SetCount(in_sz);
+		got = sock.Get(in.Begin(), in.GetCount());
+		if (got != in_sz) {
+			LOG("SerialServiceServer::ClientHandler: error: expected " << in_sz << ", but got " << got);
+			break;
 		}
-		else {
-			GET(in_sz);
-			if (in_sz != hb.in_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: input structure size mismatch (" << in_sz << " != " << hb.in_sz << ")");
-				break;
+		
+		switch (hb.fn_type) {
+			case FN_FIXED: {
+				if (out_sz != hb.out_sz) {
+					LOG("SerialServiceServer::ClientHandler: error: unexpected output size: " << out_sz << " (expected " << hb.out_sz << ")");
+					break;
+				}
+				out.SetCount(hb.out_sz);
+				hb.Call(in, out);
+				sent = sock.Put(out.Begin(), out.GetCount());
+				
+				if (sent != out_sz) {
+					LOG("SerialServiceServer::ClientHandler: error: couldn't send full structure (" << sent << " < " << hb.out_sz << ")");
+					break;
+				}
 			}
 			
-			GET(out_sz);
-			if (out_sz != hb.out_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: output structure size mismatch (" << out_sz << " != " << hb.out_sz << ")");
-				break;
-			}
-			
-			in.SetCount(in_sz);
-			got = sock.Get(in.Begin(), in_sz);
-			if (got != in_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: couldn't receive full structure (" << got << " < " << hb.in_sz << ")");
-				break;
-			}
-			
-			out.SetCount(out_sz);
-			memset(out.Begin(), 0, out_sz);
-			hb.Call(in, out);
-			
-			sent = sock.Put(out.Begin(), out_sz);
-			if (sent != out_sz) {
-				LOG("SerialServiceServer::ClientHandler: error: couldn't send full structure (" << sent << " < " << hb.out_sz << ")");
-				break;
+			case FN_SERIALIZED:
+			case FN_STREAMED: {
+				if (out_sz != 0) {
+					LOG("SerialServiceServer::ClientHandler: error: unexpected output size: " << out_sz);
+					break;
+				}
+				
+				MemReadStream ms(in.Begin(), in.GetCount());
+				//ms.SetLoading();
+				ss.SetSize(0);
+				ss.SetStoring();
+				
+				hb.Call(ms, ss);
+				
+				String result = ss.GetResult();
+				out_sz = result.GetCount();
+				SEND(out_sz);
+				
+				sent = sock.Put(result.Begin(), result.GetCount());
+				
+				if (sent != result.GetCount()) {
+					LOG("SerialServiceServer::ClientHandler: error: couldn't send full memory (" << sent << " < " << result.GetCount() << ")");
+					break;
+				}
 			}
 		}
 	}
@@ -351,7 +337,7 @@ bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, Vec
 	return true;
 }
 
-bool SerialServiceClient::CallSocket(uint32 magic, Callback1<TcpSocket&> cb) {
+bool SerialServiceClient::CallStream(uint32 magic, Callback2<Stream&, Stream&> cb) {
 	if (!tcp.IsOpen())
 		return false;
 	
@@ -366,7 +352,7 @@ bool SerialServiceClient::CallSocket(uint32 magic, Callback1<TcpSocket&> cb) {
 		return false;
 	}
 	
-	cb(tcp);
+	TODO //cb(tcp);
 	
 	return true;
 }
@@ -395,4 +381,108 @@ void SerialServiceClient::Deinit() {
 #undef GET
 #undef SEND
 
+
+
+
+
+
+void  TcpSocketReadStream::_Put(int w) {
+	ASSERT_(0, "This stream is for reading only");
+}
+
+int   TcpSocketReadStream::_Term() {
+	return 0;
+}
+
+int   TcpSocketReadStream::_Get() {
+	byte b;
+	sock->Get(&b, 1);
+	return b;
+}
+
+void  TcpSocketReadStream::_Put(const void *data, dword size) {
+	ASSERT_(0, "This stream is for reading only");
+}
+
+dword TcpSocketReadStream::_Get(void *data, dword size) {
+	return sock->Get(data, size);
+}
+
+void  TcpSocketReadStream::Seek(int64 pos) {
+	
+}
+
+int64 TcpSocketReadStream::GetSize() const {
+	return 0;
+}
+
+void  TcpSocketReadStream::SetSize(int64 size) {
+	ASSERT_(0, "This stream is for reading only");
+}
+
+void  TcpSocketReadStream::Flush() {
+	ASSERT_(0, "This stream is for reading only");
+}
+
+void  TcpSocketReadStream::Close() {
+	//sock->Close();
+}
+
+bool  TcpSocketReadStream::IsOpen() const {
+	return sock->IsOpen();
+}
+
+
+
+
+void  TcpSocketWriteStream::_Put(int w) {
+	char c = w;
+	sock->Put(&c, 1);
+}
+
+int   TcpSocketWriteStream::_Term() {
+	ASSERT_(0, "This stream is for writing only");
+	return 0;
+}
+
+int   TcpSocketWriteStream::_Get() {
+	ASSERT_(0, "This stream is for writing only");
+	return 0;
+}
+
+void  TcpSocketWriteStream::_Put(const void *data, dword size) {
+	sock->Put(data, size);
+}
+
+dword TcpSocketWriteStream::_Get(void *data, dword size) {
+	ASSERT_(0, "This stream is for writing only");
+	return 0;
+}
+
+void  TcpSocketWriteStream::Seek(int64 pos) {
+	ASSERT_(0, "This stream is for writing only");
+}
+
+int64 TcpSocketWriteStream::GetSize() const {
+	ASSERT_(0, "This stream is for writing only");
+	return 0;
+}
+
+void  TcpSocketWriteStream::SetSize(int64 size) {
+	
+}
+
+void  TcpSocketWriteStream::Flush() {
+	
+}
+
+void  TcpSocketWriteStream::Close() {
+	//sock->Close();
+}
+
+bool  TcpSocketWriteStream::IsOpen() const {
+	return sock->IsOpen();
+}
+
+	
 NAMESPACE_TOPSIDE_END

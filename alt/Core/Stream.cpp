@@ -22,6 +22,13 @@ int Stream::Get() {
 	return b;
 }
 
+String Stream::Get(int size) {
+	Vector<char> v;
+	v.SetCount(size);
+	size = Get(v.Begin(), size);
+	return String(v.Begin(), size);
+}
+
 void Stream::PutEol() {
 #ifdef flagWIN32
 	char b[2] = {'\r', '\n'};

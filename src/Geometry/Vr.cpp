@@ -46,10 +46,10 @@ void WmrFusionSystem::PutSensorData(CtrlEvent& ev) {
 }
 
 void WmrFusionSystem::Attach(SerialServiceServer& server) {
-	server.AddTcpSocket(NET_SEND_FUSION_DATA, THISBACK(SendFusionData));
+	server.AddStream(NET_SEND_FUSION_DATA, THISBACK(SendFusionData));
 }
 
-void WmrFusionSystem::SendFusionData(TcpSocket& out) {
+void WmrFusionSystem::SendFusionData(Stream& in, Stream& out) {
 	
 	TODO
 	
@@ -85,7 +85,7 @@ WmrFusionSystemReceiver::WmrFusionSystemReceiver() {
 
 bool WmrFusionSystemReceiver::UpdateFrom(SerialServiceClient& client) {
 	
-	if (!client.CallSocket(NET_LATEST_BRIGHT_FRAME, THISBACK(GetEvent)))
+	if (!client.CallStream(NET_LATEST_BRIGHT_FRAME, THISBACK(GetEvent)))
 		return false;
 	
 	TODO
@@ -93,7 +93,7 @@ bool WmrFusionSystemReceiver::UpdateFrom(SerialServiceClient& client) {
 	return ev_sendable;
 }
 
-void WmrFusionSystemReceiver::GetEvent(TcpSocket& sock) {
+void WmrFusionSystemReceiver::GetEvent(Stream& in, Stream& out) {
 	
 	TODO
 	

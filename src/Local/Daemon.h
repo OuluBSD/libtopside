@@ -7,13 +7,14 @@ NAMESPACE_TOPSIDE_BEGIN
 class DaemonBase;
 
 
-class DaemonService {
+class DaemonService : RTTIBase {
 	
 protected:
 	friend class DaemonBase;
 	DaemonBase* base;
 	
 public:
+	RTTI_DECL0(DaemonService)
 	virtual ~DaemonService() {}
 	
 	virtual bool Init(String name) = 0;
@@ -28,22 +29,27 @@ public:
 };
 
 
-class DaemonBase {
+class DaemonBase : RTTIBase {
 	ArrayMap<String, DaemonService> services;
 	Index<String> requested_services;
 	bool running = false;
+	int timeout = 0;
 	
 public:
+	RTTI_DECL0(DaemonBase)
 	DaemonBase();
 	virtual ~DaemonBase() {}
 	
-	void Add(String svc_name) {requested_services.FindAdd(svc_name);}
+	DaemonBase& SetTimeout(int sec) {timeout = sec; return *this;}
+	void Add(String svc_name);
 	
 	virtual bool Init();
 	virtual void Run();
 	virtual void Stop();
 	virtual void Deinit();
+	void Update();
 	void DefaultProcedure();
+	void SetNotRunning();
 	
 	DaemonService* FindService(String name);
 	
@@ -67,6 +73,7 @@ struct Glib2Daemon : DaemonBase {
 	
 	
 	
+	RTTI_DECL1(Glib2Daemon, DaemonBase)
 	Glib2Daemon() {}
 	~Glib2Daemon() {}
 	

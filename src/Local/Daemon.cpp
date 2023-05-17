@@ -13,7 +13,7 @@ static void DaemonBase_signal_handler(int sig)
 	
 	Cout() << "DaemonBase - stopping\n";
 
-	DaemonBase::Latest()->Stop();
+	DaemonBase::Latest()->SetNotRunning();
 }
 
 
@@ -64,7 +64,20 @@ bool DaemonBase::Init() {
 }
 
 void DaemonBase::Run() {
-	
+	TimeStop ts;
+	while (running && (!timeout || ts.Seconds() < timeout)) {
+		Update();
+		Sleep(10);
+	}
+}
+
+void DaemonBase::Update() {
+	for (DaemonService& s : services.GetValues())
+		s.Update();
+}
+
+void DaemonBase::SetNotRunning() {
+	running = false;
 }
 
 void DaemonBase::Stop() {
@@ -103,6 +116,11 @@ DaemonService* DaemonBase::FindService(String name) {
 	if (i < 0)
 		return 0;
 	return &services[i];
+}
+
+void DaemonBase::Add(String svc_name) {
+	ASSERT(!svc_name.IsEmpty());
+	requested_services.FindAdd(svc_name);
 }
 
 

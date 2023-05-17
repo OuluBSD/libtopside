@@ -1,0 +1,29 @@
+description "\37728,212,255";
+
+file
+	libtopside readonly separator,
+	Init.cpp,
+	EnetService.h,
+	Service.h,
+	Service.cpp,
+	enet readonly separator,
+	Copying,
+	enet.h,
+	callbacks.h,
+	callbacks.c,
+	compress.c,
+	host.c,
+	list.h,
+	list.c,
+	packet.c,
+	peer.c,
+	protocol.h,
+	protocol.c,
+	time.h,
+	types.h,
+	unix.h,
+	unix.c,
+	utility.h,
+	win32.h,
+	win32.c;
+
