@@ -83,7 +83,13 @@ bool EnetServiceServer::Listen(uint16 port) {
 }
 
 void EnetServiceServer::Close() {
+	flag.Stop();
 	if (server) {
+		for (EnetServerClient& c : clients) {
+			enet_peer_disconnect_now(c.peer, 0);
+		}
+		clients.Clear();
+		
 		enet_host_destroy(server);
 		server = 0;
 	}
@@ -125,6 +131,14 @@ void EnetServiceServer::StopThread() {
 	flag.Stop();
 }
 
+EnetServerClient* EnetServiceServer::FindClientByPeer(ENetPeer* peer) {
+	for (EnetServerClient& c : clients) {
+		if (c.peer == peer)
+			return &c;
+	}
+	return 0;
+}
+
 EnetServerClient& EnetServiceServer::RealizeClient(const ENetAddress& addr) {
 	for (EnetServerClient& c : clients) {
 		if (memcmp(&c.addr, &addr, sizeof(ENetAddress)) == 0)
@@ -149,7 +163,7 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 	ENetPeer* peer = e.peer;
 	
 	if (verbose) {
-		LOG("EnetServiceServer::ClientHandler: starting handling client " << GetHostAddress(peer));
+		LOG("EnetServiceServer::ClientHandler: got packet from client " << GetHostAddress(peer));
 	}
 	
 	if (!e.peer)
@@ -174,8 +188,8 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 				EnetServerClient& c = *(EnetServerClient*)e.peer->data;
 				
 				if (verbose) {
-					LOG("EnetServiceServer::ClientHandler: "
-						"A packet of length " << (int)e.packet -> dataLength <<
+					LOG("EnetServiceServer::ClientHandler:     "
+						"length " << (int)e.packet -> dataLength <<
 						" containing " << HexString(e.packet -> data, e.packet -> dataLength) <<
 						" was received from " << c.GetHostAddress() <<
 						" on channel " << (int)e.channelID);
@@ -190,7 +204,7 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
         return;
        
     case ENET_EVENT_TYPE_DISCONNECT:
-        if (e.packet->data) {
+        if (e.packet && e.packet->data) {
 			EnetServerClient& c = *(EnetServerClient*)e.peer->data;
             
 			if (verbose) {
@@ -201,6 +215,11 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 	        /* Reset the peer's client information. */
 	        e.peer->data = NULL;
             RemoveClient(c);
+        }
+        else {
+            EnetServerClient* c = FindClientByPeer(e.peer);
+            if (c)
+				RemoveClient(*c);
         }
 		return;
         
@@ -213,7 +232,7 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 void EnetServiceServer::ReceiveHandler(ENetEvent& e) {
 	EnetServerClient& c = *(EnetServerClient*)e.peer->data;
 	int got = 0, sent = 0;
-	uint32 magic = 0, in_sz = 0, out_sz = 0;
+	uint32 magic = 0, call_id = 0, in_sz = 0, out_sz = 0;
 	
 	MemReadStream sin(e.packet->data, e.packet->dataLength);
 	StringStream& sout = c.sout;
@@ -237,6 +256,10 @@ void EnetServiceServer::ReceiveHandler(ENetEvent& e) {
 	GET_ERROR(magic);
 	
 	
+	RECV(call_id);
+	SEND(call_id);
+	
+	
 	// Keepalive magic
 	c.last_seen = enet_time_get();
 	if (magic == 1) {
@@ -249,18 +272,17 @@ void EnetServiceServer::ReceiveHandler(ENetEvent& e) {
 		if (i < 0) {
 			LOG("EnetServiceServer::ClientHandler: error: could not find magic " << magic);
 			magic = 0;
-			SEND(magic);
 			return;
 		}
 		c.handler = &handlers[i];
 	}
 	
-	SEND(magic);
 	
 	if (verbose) {
 		LOG("EnetServiceServer::ClientHandler: info: magic " << magic << ", h " << HexStr(&c));
 	}
 	
+	c.peer = e.peer;
 	HandlerBase& hb = *c.handler;
 	String result;
 	const void* data;
@@ -280,7 +302,7 @@ void EnetServiceServer::ReceiveHandler(ENetEvent& e) {
 	}
 	
 	
-	/* Create a reliable packet of size 7 containing "packet\0" */
+	/* Create a reliable packet */
 	ENetPacket* packet = enet_packet_create( data,
 	                                         data_len,
 	                                         ENET_PACKET_FLAG_RELIABLE);
@@ -376,88 +398,43 @@ void EnetServiceClient::Close() {
 	client = 0;
 }
 
-#define RECV(x) \
-	got = stream.Get(&x, sizeof(x));
-#define GET_ERROR(x) \
-	if (got != sizeof(x)) { \
-		LOG("EnetServiceClient::CallMem: error: expected " << (int)sizeof(x) << ", but got " << got); stream.Close(); return false;}
-#define GET(x) \
-	RECV(x) \
-	GET_ERROR(x)
-#define SEND(x) \
-	sent = stream.Put(&x, sizeof(x)); \
-	if (sent != sizeof(x)) { \
-		LOG("EnetServiceClient::CallMem: error: expected to send " << (int)sizeof(x) << ", but sent " << sent); stream.Close(); return false;}
-
-
-bool EnetServiceClient::CallMem(uint32 magic, const void* out, int out_sz, void* in, int in_sz) {
-	if (!server)
+bool EnetServiceClient::CallMem(uint32 magic, const void* out, int out_sz, int in_sz, CallBase* call) {
+	ASSERT(connected);
+	if (!connected)
 		return false;
 	
-	MemReadStream sin(in, in_sz);
-	uint32 sent = 0, got = 0, got_magic = 0;
-	
-	SEND(magic);
-	GET(got_magic);
-	if (!got_magic) {
-		LOG("EnetServiceClient::CallMem: error: magic not found on server");
-		return false;
-	}
-	SEND(out_sz);
-	SEND(in_sz);
-	
-	sent = stream.Put(out, out_sz);
-	if (sent != out_sz) {
-		LOG("EnetServiceClient::CallMem: error: expected to send " << out_sz << ", but sent " << sent);
+	if (!server) {
+		delete call;
 		return false;
 	}
 	
-	got = stream.Get(in, in_sz);
-	if (got != in_sz) {
-		LOG("EnetServiceClient::CallMem: error: expected to get " << in_sz << ", but got " << got);
-		return false;
-	}
+	lock.EnterWrite();
+	call->time = enet_time_get();
+	call->id = call_counter++;
+	calls.Add(call->id) = call;
+	lock.LeaveWrite();
+	
+	/* Create a reliable packet */
+	ENetPacket* packet = enet_packet_create( 0,
+	                                         0,
+	                                         ENET_PACKET_FLAG_RELIABLE);
+	                                         
+	/* Extend the packet so and append the data */
+	int total_out_sz = sizeof(magic) + sizeof(call->id) + sizeof(out_sz) + sizeof(in_sz) + out_sz;
+    enet_packet_resize (packet, total_out_sz);
+    *(uint32*)(packet -> data +  0) = magic;
+    *(uint32*)(packet -> data +  4) = call->id;
+    *(uint32*)(packet -> data +  8) = out_sz;
+    *(uint32*)(packet -> data + 12) = in_sz;
+    memcpy(packet -> data + 16, out, out_sz);
+    
+	/* Send the packet to the peer over channel id 0. */
+	enet_peer_send (server, 0, packet);
+	
+	/* One could just use enet_host_service() instead. */
+	enet_host_flush(client);
 	
 	return true;
-}
-
-bool EnetServiceClient::CallMem(uint32 magic, const void* out, int out_sz, Vector<byte>& in) {
-	
-	TODO
-	#if 0
-	
-	if (!tcp.IsOpen())
-		return false;
-	
-	auto& stream = tcp;
-	int in_sz = 0;
-	uint32 sent = 0, got = 0, got_magic = 0;
-	
-	SEND(magic);
-	GET(got_magic);
-	if (!got_magic) {
-		LOG("EnetServiceClient::CallMem: error: magic not found on server");
-		return false;
-	}
-	SEND(out_sz);
-	SEND(in_sz); // == 0
-	
-	sent = stream.Put(out, out_sz);
-	if (sent != out_sz) {
-		LOG("EnetServiceClient::CallMem: error: expected to send " << out_sz << ", but sent " << sent);
-		return false;
-	}
-	
-	GET(in_sz);
-	in.SetCount(in_sz);
-	got = stream.Get(in.Begin(), in_sz);
-	if (got != in_sz) {
-		LOG("EnetServiceClient::CallMem: error: expected to get " << in_sz << ", but got " << got);
-		return false;
-	}
-	
-	return true;
-	#endif
 }
 
 bool EnetServiceClient::CallStream(uint32 magic, Callback1<Stream&> cb) {
@@ -558,7 +535,7 @@ void EnetServiceClient::ServerHandler(ENetEvent& e) {
 	ENetPeer* peer = e.peer;
 	
 	if (verbose) {
-		LOG("EnetServiceClient::ClientHandler: starting handling client " << GetHostAddress(peer));
+		LOG("EnetServiceClient::ServerHandler: got packet from server " << GetHostAddress(peer));
 	}
 	
 	if (!e.peer)
@@ -577,12 +554,35 @@ void EnetServiceClient::ServerHandler(ENetEvent& e) {
 			base->SetNotRunning();
 			break;
 			
-		default:
-			TODO
+		case ENET_EVENT_TYPE_RECEIVE:
+			ReceiveHandler(e);
+			break;
+			
+		case ENET_EVENT_TYPE_NONE:
+			break;
 	}
 }
 
 void EnetServiceClient::ReceiveHandler(ENetEvent& e) {
+	int got = 0, sent = 0;
+	uint32 call_id = 0;
+	
+	call_id			= *(uint32*)		(e.packet->data + 0);
+	const void* out	=  (const void*)	(e.packet->data + 4);
+	int out_sz = e.packet->dataLength - 4;
+	
+	lock.EnterRead();
+	auto iter = calls.Find(call_id);
+	lock.LeaveRead();
+	if (!iter)
+		return;
+	
+	CallBase& cb = **iter;
+	cb.Execute(out, out_sz);
+	
+	lock.EnterWrite();
+	calls.Remove(iter);
+	lock.LeaveWrite();
 	
 }
 

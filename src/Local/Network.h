@@ -28,8 +28,8 @@ public:
 		virtual ~HandlerBase() {}
 		
 		uint32 magic = 0;
-		int in_sz = 0;
-		int out_sz = 0;
+		uint32 in_sz = 0;
+		uint32 out_sz = 0;
 		FnType fn_type;
 		
 		virtual void Call(const Vector<byte>& in, Vector<byte>& out) {Panic("not implemented");}
@@ -51,11 +51,21 @@ public:
 		}
 		
 		void Call(Stream& in, Stream& out) override {
-			in.Get(b_in, sizeof(In));
-			const In* o_in = (const In*)b_in;
-			Out* o_out = (Out*)b_out;
-			cb(*o_in, *o_out);
-			out.Put(b_out, sizeof(Out));
+			uint32 in_sz, out_sz;
+			in.Get(&in_sz, sizeof(in_sz));
+			in.Get(&out_sz, sizeof(out_sz));
+			if (in_sz == sizeof(In) && out_sz == sizeof(Out)) {
+				in.Get(b_in, sizeof(In));
+				const In* o_in = (const In*)b_in;
+				Out* o_out = (Out*)b_out;
+				cb(*o_in, *o_out);
+				out.Put(b_out, sizeof(Out));
+			}
+			else {
+				#ifdef flagDEBUG
+				LOG("FixedHandlerT: error: size mismatch");
+				#endif
+			}
 		}
 	};
 	
@@ -71,6 +81,9 @@ public:
 				tmp_in.Create();
 				tmp_out.Create();
 			}
+			uint32 in_sz, out_sz;
+			in.Get(&in_sz, 4);
+			in.Get(&out_sz, 4);
 			
 			in % *tmp_in;
 			cb(*tmp_in, *tmp_out);

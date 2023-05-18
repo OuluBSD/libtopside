@@ -5,6 +5,7 @@ using namespace TS;
 
 enum {
 	ENET_TEST_INT = 20100,
+	ENET_TEST_VEC,
 	
 };
 
@@ -22,13 +23,30 @@ struct Tester : public DaemonService {
 	
 	void Update() override {
 		
-		if (client) {
-			int in = 1 + Random(16), out = 0;
-			LOG("TESTER: client called ENET_TEST_INT " << in);
-			client->Call(ENET_TEST_INT, in, [=](const int& out) {
-				LOG("TESTER: client received ENET_TEST_INT " << out);
-				ASSERT(out == 2 * in);
-			});
+		if (client && client->IsConnected()) {
+			int fn = Random(2);
+			if (fn == 0) {
+				int in = 1 + Random(16), out = 0;
+				LOG("TESTER: client called ENET_TEST_INT " << in);
+				client->CallEvent<int>(ENET_TEST_INT, in, [=](const int& out) {
+					LOG("TESTER: client received ENET_TEST_INT " << out);
+					ASSERT(out == 2 * in);
+				}, false);
+			}
+			else if (fn == 1) {
+				Vector<int> in;
+				for(int i = 0; i < 5; i++)
+					in.Add(1 + Random(16));
+				LOG("TESTER: client called ENET_TEST_VEC");
+				client->CallEvent<Vector<int>>(ENET_TEST_VEC, in, [=](const Vector<int>& out) {
+					LOG("TESTER: client received ENET_TEST_VEC " << out.GetCount());
+					ASSERT(out.GetCount() == 10);
+					for(int i = 0; i < 5; i++) {
+						ASSERT(out[i] != 0);
+						ASSERT(out[i+5] == 2 * out[i]);
+					}
+				}, true);
+			}
 		}
 		
 	}
@@ -50,12 +68,23 @@ struct Tester : public DaemonService {
 	
 	void Attach(EnetServiceServer& d) {
 		d.AddFixed<int,int>(ENET_TEST_INT, THISBACK(ServerInt));
+		d.AddSerializer<Vector<int>,Vector<int>>(ENET_TEST_VEC, THISBACK(ServerVec));
 		//d.AddStream(ENET_TEST_INT, THISBACK(ServerInt));
 	}
 	
 	void ServerInt(const int& in, int& out) {
 		out = in * 2;
 		LOG("TESTER: server got call ENET_TEST_INT " << in << " --> sending " << out);
+	}
+	
+	void ServerVec(const Vector<int>& in, Vector<int>& out) {
+		int c = in.GetCount();
+		out.SetCount(c * 2);
+		for(int i = 0; i < c; i++) {
+			out[i] = in[i];
+			out[c + i] = in[i] * 2;
+		}
+		LOG("TESTER: server got call ENET_TEST_VEC, count " << c);
 	}
 	
 	void ClientInt(Stream& in, Stream& out) {

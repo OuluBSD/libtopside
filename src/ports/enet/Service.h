@@ -20,6 +20,7 @@ public:
 
 struct EnetServerClient {
 	ENetAddress addr;
+	ENetPeer* peer = 0;
 	uint16 port;
 	uint32 last_seen = 0;
 	SerialServiceBase::HandlerBase* handler = 0;
@@ -51,6 +52,7 @@ class EnetServiceServer : public SerialServiceBase {
 	
 	EnetServerClient& RealizeClient(const ENetAddress& addr);
 	void RemoveClient(EnetServerClient& c);
+	EnetServerClient* FindClientByPeer(ENetPeer* peer);
 	
 public:
 	RTTI_DECL1(EnetServiceServer, SerialServiceBase)
@@ -96,6 +98,51 @@ class EnetServiceClient : public SerialServiceBase {
 	bool connected = false;
 	
 public:
+	struct CallBase {
+		virtual ~CallBase() {}
+		dword id;
+		dword time;
+		virtual void Execute(const void* data, int data_len) = 0;
+	};
+	
+	template <class T>
+	struct CallT : CallBase {
+		T* out = 0;
+		bool serialized;
+		Callback cb;
+		void Execute(const void* data, int data_len) override {
+			if (!serialized) {
+				*out = *(const T*)data;
+				cb();
+			}
+			else {
+				TODO
+			}
+		}
+	};
+	
+	template <class T>
+	struct CallEventT : CallBase {
+		bool serialized;
+		Event<const T&> cb;
+		void Execute(const void* data, int data_len) override {
+			if (!serialized) {
+				cb(*(const T*)data);
+			}
+			else {
+				MemReadStream s(data, data_len);
+				T o;
+				s % o;
+				cb(o);
+			}
+		}
+	};
+	
+	LinkedMap<dword, One<CallBase>> calls;
+	dword call_counter = 0;
+	RWMutex lock;
+	
+public:
 	RTTI_DECL1(EnetServiceClient, SerialServiceBase)
 	typedef EnetServiceClient CLASSNAME;
 	EnetServiceClient();
@@ -108,29 +155,50 @@ public:
 	
 	bool Connect(String addr, uint16 port);
 	void Close();
-	bool CallMem(uint32 magic, const void* out, int out_sz, void* in, int in_sz);
-	bool CallMem(uint32 magic, const void* out, int out_sz, Vector<byte>& in);
+	bool CallMem(uint32 magic, const void* out, int out_sz, int in_sz, CallBase* call);
 	bool CallStream(uint32 magic, Callback1<Stream&> cb);
+	bool IsConnected() const {return connected;}
 	
-	template <class In, class Out>
-	bool Call(uint32 magic, const In& in, Out& out) {
-		return CallMem(magic, (const void*)&in, sizeof(In), (void*)&out, sizeof(Out));
+	template <class Out, class In>
+	bool CallEvent(uint32 magic, const In& in, Event<const Out&> out, bool serialized) {
+		CallEventT<Out>* cb = new CallEventT<Out>;
+		cb->cb = out;
+		cb->serialized = serialized;
+		if (!serialized)
+			return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
+		else {
+			StringStream ss;
+			ss % const_cast<In&>(in);
+			String data = ss.GetResult();
+			return CallMem(magic, data.Begin(), data.GetCount(), 0, cb);
+		}
 	}
 	
-	template <class In, class Out>
+	template <class Out, class In>
+	bool Call(uint32 magic, const In& in, Out& out, Callback user_cb) {
+		CallT<Out>* cb = new CallT<Out>;
+		cb->cb = user_cb;
+		cb->out = &out;
+		cb->serialized = false;
+		return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
+	}
+	
+	template <class Out, class In>
 	bool CallSerialized(uint32 magic, In& in, Out& out) {
+		CallT<Out>* cb = new CallT<Out>;
+		cb->out = &out;
+		cb->serialized = true;
 		StringStream ss;
 		ss.SetStoring();
 		ss % in;
 		String in_data = ss.GetResult();
-		thread_local static Vector<byte> out_data;
-		out_data.SetCount(0);
-		if (!CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), out_data))
+		return CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), cb);
+		/*if (!CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), out_data))
 			return false;
 		MemReadStream ms(out_data.Begin(), out_data.GetCount());
 		//ms.SetLoading();
 		ms % out;
-		return true;
+		return true;*/
 	}
 	
 	bool IsOpen() const {return server != 0;}
