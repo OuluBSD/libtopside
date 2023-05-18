@@ -95,7 +95,7 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 	LOG("SerialServiceServer::ClientHandler: starting handling client " << sock.GetPeerAddr());
 	
 	Vector<byte> in, out;
-	StringStream ss;
+	WriteEther ss;
 	
 	sock.Timeout(3000);
 	int wait_count = 0;
@@ -184,7 +184,7 @@ void SerialServiceServer::ClientHandler(TcpSocket* ptr) {
 					break;
 				}
 				
-				MemReadStream ms(in.Begin(), in.GetCount());
+				ReadEther ms(in.Begin(), in.GetCount());
 				//ms.SetLoading();
 				ss.SetSize(0);
 				ss.SetStoring();
@@ -337,7 +337,7 @@ bool SerialServiceClient::CallMem(uint32 magic, const void* out, int out_sz, Vec
 	return true;
 }
 
-bool SerialServiceClient::CallStream(uint32 magic, Callback2<Stream&, Stream&> cb) {
+bool SerialServiceClient::CallStream(uint32 magic, Callback2<Ether&, Ether&> cb) {
 	if (!tcp.IsOpen())
 		return false;
 	
@@ -386,20 +386,6 @@ void SerialServiceClient::Deinit() {
 
 
 
-void  TcpSocketReadStream::_Put(int w) {
-	ASSERT_(0, "This stream is for reading only");
-}
-
-int   TcpSocketReadStream::_Term() {
-	return 0;
-}
-
-int   TcpSocketReadStream::_Get() {
-	byte b;
-	sock->Get(&b, 1);
-	return b;
-}
-
 void  TcpSocketReadStream::_Put(const void *data, dword size) {
 	ASSERT_(0, "This stream is for reading only");
 }
@@ -420,35 +406,10 @@ void  TcpSocketReadStream::SetSize(int64 size) {
 	ASSERT_(0, "This stream is for reading only");
 }
 
-void  TcpSocketReadStream::Flush() {
-	ASSERT_(0, "This stream is for reading only");
-}
-
-void  TcpSocketReadStream::Close() {
-	//sock->Close();
-}
-
-bool  TcpSocketReadStream::IsOpen() const {
-	return sock->IsOpen();
-}
 
 
 
 
-void  TcpSocketWriteStream::_Put(int w) {
-	char c = w;
-	sock->Put(&c, 1);
-}
-
-int   TcpSocketWriteStream::_Term() {
-	ASSERT_(0, "This stream is for writing only");
-	return 0;
-}
-
-int   TcpSocketWriteStream::_Get() {
-	ASSERT_(0, "This stream is for writing only");
-	return 0;
-}
 
 void  TcpSocketWriteStream::_Put(const void *data, dword size) {
 	sock->Put(data, size);
@@ -470,18 +431,6 @@ int64 TcpSocketWriteStream::GetSize() const {
 
 void  TcpSocketWriteStream::SetSize(int64 size) {
 	
-}
-
-void  TcpSocketWriteStream::Flush() {
-	
-}
-
-void  TcpSocketWriteStream::Close() {
-	//sock->Close();
-}
-
-bool  TcpSocketWriteStream::IsOpen() const {
-	return sock->IsOpen();
 }
 
 	

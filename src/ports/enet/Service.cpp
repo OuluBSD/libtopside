@@ -86,7 +86,8 @@ void EnetServiceServer::Close() {
 	flag.Stop();
 	if (server) {
 		for (EnetServerClient& c : clients) {
-			enet_peer_disconnect_now(c.peer, 0);
+			if (c.peer)
+				enet_peer_disconnect_now(c.peer, 0);
 		}
 		clients.Clear();
 		
@@ -180,6 +181,7 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 			
 			/* Store any relevant client information here. */
 			e.peer->data = &c;
+			c.peer = e.peer;
 		}
         return;
 		
@@ -234,8 +236,8 @@ void EnetServiceServer::ReceiveHandler(ENetEvent& e) {
 	int got = 0, sent = 0;
 	uint32 magic = 0, call_id = 0, in_sz = 0, out_sz = 0;
 	
-	MemReadStream sin(e.packet->data, e.packet->dataLength);
-	StringStream& sout = c.sout;
+	ReadEther sin(e.packet->data, e.packet->dataLength);
+	WriteEther& sout = c.sout;
 	sout.SetSize(0);
 	
 	#define RECV(x) \

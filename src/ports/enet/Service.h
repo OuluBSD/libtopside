@@ -26,7 +26,7 @@ struct EnetServerClient {
 	SerialServiceBase::HandlerBase* handler = 0;
 	
 	// Temp vars
-	StringStream sout;
+	WriteEther sout;
 	
 	String GetHostAddress() const;
 	
@@ -130,7 +130,7 @@ public:
 				cb(*(const T*)data);
 			}
 			else {
-				MemReadStream s(data, data_len);
+				ReadEther s(data, data_len);
 				T o;
 				s % o;
 				cb(o);
@@ -167,7 +167,7 @@ public:
 		if (!serialized)
 			return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
 		else {
-			StringStream ss;
+			WriteEther ss;
 			ss % const_cast<In&>(in);
 			String data = ss.GetResult();
 			return CallMem(magic, data.Begin(), data.GetCount(), 0, cb);
@@ -188,17 +188,11 @@ public:
 		CallT<Out>* cb = new CallT<Out>;
 		cb->out = &out;
 		cb->serialized = true;
-		StringStream ss;
+		WriteEther ss;
 		ss.SetStoring();
 		ss % in;
 		String in_data = ss.GetResult();
 		return CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), cb);
-		/*if (!CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), out_data))
-			return false;
-		MemReadStream ms(out_data.Begin(), out_data.GetCount());
-		//ms.SetLoading();
-		ms % out;
-		return true;*/
 	}
 	
 	bool IsOpen() const {return server != 0;}

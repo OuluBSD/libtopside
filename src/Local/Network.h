@@ -33,7 +33,7 @@ public:
 		FnType fn_type;
 		
 		virtual void Call(const Vector<byte>& in, Vector<byte>& out) {Panic("not implemented");}
-		virtual void Call(Stream& in, Stream& out) {Panic("not implemented");}
+		virtual void Call(Ether& in, Ether& out) {Panic("not implemented");}
 	};
 	
 	template <class In, class Out> struct FixedHandlerT : HandlerBase {
@@ -50,7 +50,7 @@ public:
 			cb(*o_in, *o_out);
 		}
 		
-		void Call(Stream& in, Stream& out) override {
+		void Call(Ether& in, Ether& out) override {
 			uint32 in_sz, out_sz;
 			in.Get(&in_sz, sizeof(in_sz));
 			in.Get(&out_sz, sizeof(out_sz));
@@ -76,7 +76,7 @@ public:
 		One<In> tmp_in;
 		One<Out> tmp_out;
 		
-		void Call(Stream& in, Stream& out) override {
+		void Call(Ether& in, Ether& out) override {
 			if (tmp_in.IsEmpty()) {
 				tmp_in.Create();
 				tmp_out.Create();
@@ -94,9 +94,9 @@ public:
 	struct StreamHandler : HandlerBase {
 		RTTI_DECL1(StreamHandler, HandlerBase);
 		
-		Callback2<Stream&, Stream&> cb;
+		Callback2<Ether&, Ether&> cb;
 		
-		void Call(Stream& in, Stream& out) override {
+		void Call(Ether& in, Ether& out) override {
 			cb(in, out);
 		}
 	};
@@ -151,8 +151,8 @@ public:
 		return AddReceiverT<SerializerHandlerT<In,Out>,In,Out>(magic, cb, FN_SERIALIZED);
 	}
 	
-	bool AddStream(uint32 magic, Callback2<Stream&, Stream&> cb) {
-		return AddReceiverT<StreamHandler,dword,dword,Callback2<Stream&,Stream&>>(magic, cb, FN_STREAMED);
+	bool AddStream(uint32 magic, Callback2<Ether&, Ether&> cb) {
+		return AddReceiverT<StreamHandler,dword,dword,Callback2<Ether&,Ether&>>(magic, cb, FN_STREAMED);
 	}
 	
 };
@@ -201,7 +201,7 @@ public:
 	void CloseTcp();
 	bool CallMem(uint32 magic, const void* out, int out_sz, void* in, int in_sz);
 	bool CallMem(uint32 magic, const void* out, int out_sz, Vector<byte>& in);
-	bool CallStream(uint32 magic, Callback2<Stream&, Stream&> cb);
+	bool CallStream(uint32 magic, Callback2<Ether&, Ether&> cb);
 	//bool CallSocket(uint32 magic, Callback1<TcpSocket&> cb);
 	
 	template <class In, class Out>
@@ -211,7 +211,7 @@ public:
 	
 	template <class In, class Out>
 	bool CallSerialized(uint32 magic, In& in, Out& out) {
-		StringStream ss;
+		WriteEther ss;
 		ss.SetStoring();
 		ss % in;
 		String in_data = ss.GetResult();
@@ -219,7 +219,7 @@ public:
 		out_data.SetCount(0);
 		if (!CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), out_data))
 			return false;
-		MemReadStream ms(out_data.Begin(), out_data.GetCount());
+		ReadEther ms(out_data.Begin(), out_data.GetCount());
 		//ms.SetLoading();
 		ms % out;
 		return true;
@@ -240,42 +240,30 @@ public:
 
 
 
-class TcpSocketReadStream : public Stream {
+class TcpSocketReadStream : public Ether {
 	TcpSocket* sock = 0;
 	
-	void  _Put(int w) override;
-	int   _Term() override;
-	int   _Get() override;
 	void  _Put(const void *data, dword size) override;
 	dword _Get(void *data, dword size) override;
 	
 	void  Seek(int64 pos) override;
 	int64 GetSize() const override;
 	void  SetSize(int64 size) override;
-	void  Flush() override;
-	void  Close() override;
-	bool  IsOpen() const override;
 	
 public:
 	TcpSocketReadStream(TcpSocket& s) : sock(&s) {}
 	
 };
 
-class TcpSocketWriteStream : public Stream {
+class TcpSocketWriteStream : public Ether {
 	TcpSocket* sock = 0;
 	
-	void  _Put(int w) override;
-	int   _Term() override;
-	int   _Get() override;
 	void  _Put(const void *data, dword size) override;
 	dword _Get(void *data, dword size) override;
 	
 	void  Seek(int64 pos) override;
 	int64 GetSize() const override;
 	void  SetSize(int64 size) override;
-	void  Flush() override;
-	void  Close() override;
-	bool  IsOpen() const override;
 	
 public:
 	TcpSocketWriteStream(TcpSocket& s) : sock(&s) {}
