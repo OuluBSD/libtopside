@@ -50,6 +50,7 @@ void GlobalEnet::Uninitialize() {
 
 
 uint16 EnetServiceServer::port_arg;
+bool EnetServiceServer::verbose = false;
 
 EnetServiceServer::EnetServiceServer() {
 	#ifdef flagVERBOSE
@@ -76,8 +77,14 @@ bool EnetServiceServer::Listen(uint16 port) {
                                       0  /* assume any amount of incoming bandwidth */,
                                       0  /* assume any amount of outgoing bandwidth */);
 	
-	if (server == NULL)
+	if (server == NULL) {
+		LOG("EnetServiceServer::Listen: error: could not listen port " << (int)port);
 		return false;
+	}
+	
+	if (verbose) {
+		LOG("EnetServiceServer::Listen: listening port " << (int)port);
+	}
 	
 	return true;
 }
@@ -109,7 +116,9 @@ void EnetServiceServer::ListenerHandler() {
 	flag.Start(1);
 	
 	ENetEvent event;
-	while (server && flag.IsRunning()) {
+	while (	server &&
+			flag.IsRunning() &&
+			!Thread::IsShutdownThreads()) {
 		int timeout = this->timeout > 1 ? this->timeout : 10;
 		
 		int r = enet_host_service(
@@ -192,7 +201,7 @@ void EnetServiceServer::ClientHandler(ENetEvent& e) {
 				if (verbose) {
 					LOG("EnetServiceServer::ClientHandler:     "
 						"length " << (int)e.packet -> dataLength <<
-						" containing " << HexString(e.packet -> data, e.packet -> dataLength) <<
+						" containing " << HexString(e.packet -> data, e.packet -> dataLength).Left(32) <<
 						" was received from " << c.GetHostAddress() <<
 						" on channel " << (int)e.channelID);
 				}
@@ -330,7 +339,7 @@ bool EnetServiceServer::Init(String name) {
 		port = 7776;
 	
 	if (!Listen(port)) {
-		LOG("EnetServiceServer::Init: Could not listen port " << (int)EnetServiceServer::port_arg);
+		LOG("EnetServiceServer::Init: Could not listen port " << port);
 		return false;
 	}
 	
@@ -357,7 +366,8 @@ void EnetServiceServer::Deinit() {
 
 String EnetServiceClient::addr_arg;
 uint16 EnetServiceClient::port_arg;
-
+bool EnetServiceClient::verbose;
+bool EnetServiceClient::close_daemon_on_fail;
 
 EnetServiceClient::EnetServiceClient() {
 	#ifdef flagVERBOSE
@@ -500,7 +510,7 @@ void EnetServiceClient::Update() {
 	if (!connected && ts.Seconds() >= timeout) {
 		LOG("EnetServiceClient::Update: error: server did not respond");
 		
-		if (1) {
+		if (close_daemon_on_fail) {
 			LOG("EnetServiceClient::Update: closing daemon");
 			base->SetNotRunning();
 		}

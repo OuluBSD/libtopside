@@ -13,6 +13,9 @@ uses(VR) EcsVR;
 uses(DX12) EcsWin;
 
 file
+	Init.cpp,
 	EcsComplete.h,
-	EcsComplete.cpp;
+	EcsComplete.cpp,
+	Service.h,
+	Service.cpp;
 

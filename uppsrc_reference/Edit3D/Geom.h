@@ -39,9 +39,12 @@ struct GeomObject {
 	};
 	
 	GeomDirectory* owner = 0;
+	
+	hash_t key;
 	String name;
 	int type = 0;
 	
+	GeomObject() {}
 	One<Model> mdl;
 	Camera cam;
 	OctreePointModel octree;
@@ -52,14 +55,20 @@ struct GeomObject {
 	bool IsModel() const {return type == O_MODEL;}
 	bool IsOctree() const {return type == O_OCTREE;}
 	bool IsCamera() const {return type == O_CAMERA;}
+	String GetPath() const;
 	
 };
 
 struct GeomDirectory {
+	virtual ~GeomDirectory() {}
+	
 	ArrayMap<String, GeomDirectory> subdir;
 	Array<GeomObject> objs;
+	String name;
+	GeomDirectory* owner = 0;
 	
-	
+	GeomProject& GetProject() const;
+	GeomDirectory& GetAddDirectory(String name);
 	GeomObject& GetAddModel(String name);
 	GeomObject& GetAddCamera(String name);
 	GeomObject& GetAddOctree(String name);
@@ -108,7 +117,6 @@ struct GeomObjectCollection {
 
 struct GeomScene : GeomDirectory {
 	GeomProject* owner = 0;
-	String name;
 	int length = 0;
 	
 };
@@ -118,13 +126,17 @@ struct GeomProject {
 	int kps = 5;
 	int fps = 60;
 	
+	hash_t key_counter;
+	
 	void Clear() {
 		scenes.Clear();
 		kps = 5;
 		fps = 60;
+		key_counter = 1;
 	}
 	
 	GeomScene& AddScene();
+	hash_t NewKey() {return key_counter++;}
 	
 };
 

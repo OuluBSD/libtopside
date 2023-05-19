@@ -28,9 +28,11 @@ public:
 	Mesh() {Clear();}
 	Mesh(const Mesh& m) {*this = m;}
 	
+    void Etherize(Ether& e);
+    
 	void Clear();
 	void ReverseFaces();
-	//void Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
+	
     bool AddTextureFilePath(String key, String path);
 	void operator=(const Mesh& src) {
         Clear();

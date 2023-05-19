@@ -80,6 +80,7 @@
 #include "MeshTracker.h"
 #include "Uncamera.h"
 #include "Vr.h"
+#include "Serializer.h"
 
 
 NAMESPACE_UPP_BEGIN

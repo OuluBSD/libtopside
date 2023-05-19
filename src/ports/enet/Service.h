@@ -43,7 +43,7 @@ class EnetServiceServer : public SerialServiceBase {
 	int max_conns = 32;
 	int channels = 2;
 	int timeout = 10; // milliseconds to wait for a event
-	bool verbose = false;
+	static bool verbose;
 	
 	Array<EnetServerClient> clients;
 	
@@ -64,7 +64,6 @@ public:
 	void SetMaxConnections(int i) {max_conns = i;}
 	void SetChannels(int i) {channels = i;}
 	void SetTimeout(int i) {timeout = i;}
-	void SetVerbose(bool b=true) {verbose = b;}
 	
 	bool Listen(uint16 port);
 	void StartThread();
@@ -80,6 +79,7 @@ public:
 	void Deinit() override;
 	
 	
+	static void SetVerbose(bool b=true) {verbose = b;}
 	static uint16 port_arg;
 };
 
@@ -92,7 +92,6 @@ class EnetServiceClient : public SerialServiceBase {
 	double timeout = 3.000;
 	int port = 0;
 	String addrname;
-	bool verbose = false;
 	
 	TimeStop ts;
 	bool connected = false;
@@ -108,33 +107,40 @@ public:
 	template <class T>
 	struct CallT : CallBase {
 		T* out = 0;
-		bool serialized;
-		Callback cb;
+		Event<> cb;
 		void Execute(const void* data, int data_len) override {
-			if (!serialized) {
-				*out = *(const T*)data;
-				cb();
-			}
-			else {
-				TODO
-			}
+			*out = *(const T*)data;
+			cb();
+		}
+	};
+	
+	template <class T>
+	struct CallSerializedT : CallBase {
+		T* out = 0;
+		Event<> cb;
+		void Execute(const void* data, int data_len) override {
+			ReadEther s(data, data_len);
+			Etherize(s, *out);
+			cb();
 		}
 	};
 	
 	template <class T>
 	struct CallEventT : CallBase {
-		bool serialized;
 		Event<const T&> cb;
 		void Execute(const void* data, int data_len) override {
-			if (!serialized) {
-				cb(*(const T*)data);
-			}
-			else {
-				ReadEther s(data, data_len);
-				T o;
-				s % o;
-				cb(o);
-			}
+			cb(*(const T*)data);
+		}
+	};
+	
+	template <class T>
+	struct CallEventSerializedT : CallBase {
+		Event<const T&> cb;
+		void Execute(const void* data, int data_len) override {
+			ReadEther s(data, data_len);
+			T o;
+			s % o;
+			cb(o);
 		}
 	};
 	
@@ -151,7 +157,6 @@ public:
 	void SetAddress(String s) {addrname = s;}
 	void SetPort(int i) {port = i;}
 	void SetTimeout(int i) {timeout = i;}
-	void SetVerbose(bool b=true) {verbose = b;}
 	
 	bool Connect(String addr, uint16 port);
 	void Close();
@@ -160,39 +165,40 @@ public:
 	bool IsConnected() const {return connected;}
 	
 	template <class Out, class In>
-	bool CallEvent(uint32 magic, const In& in, Event<const Out&> out, bool serialized) {
+	bool CallEvent(uint32 magic, const In& in, Event<const Out&> out) {
 		CallEventT<Out>* cb = new CallEventT<Out>;
 		cb->cb = out;
-		cb->serialized = serialized;
-		if (!serialized)
-			return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
-		else {
-			WriteEther ss;
-			ss % const_cast<In&>(in);
-			String data = ss.GetResult();
-			return CallMem(magic, data.Begin(), data.GetCount(), 0, cb);
-		}
-	}
-	
-	template <class Out, class In>
-	bool Call(uint32 magic, const In& in, Out& out, Callback user_cb) {
-		CallT<Out>* cb = new CallT<Out>;
-		cb->cb = user_cb;
-		cb->out = &out;
-		cb->serialized = false;
 		return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
 	}
 	
 	template <class Out, class In>
-	bool CallSerialized(uint32 magic, In& in, Out& out) {
+	bool CallEventSerialized(uint32 magic, const In& in, Event<const Out&> out) {
+		CallEventSerializedT<Out>* cb = new CallEventSerializedT<Out>;
+		cb->cb = out;
+		WriteEther ss;
+		ss % const_cast<In&>(in);
+		String data = ss.GetResult();
+		return CallMem(magic, data.Begin(), data.GetCount(), 0, cb);
+	}
+	
+	template <class Out, class In>
+	bool Call(uint32 magic, const In& in, Out& out, Event<> user_cb) {
 		CallT<Out>* cb = new CallT<Out>;
+		cb->cb = user_cb;
 		cb->out = &out;
-		cb->serialized = true;
+		return CallMem(magic, (const void*)&in, sizeof(In), sizeof(Out), cb);
+	}
+	
+	template <class Out, class In>
+	bool CallSerialized(uint32 magic, In& in, Out& out, Event<> user_cb) {
+		CallSerializedT<Out>* cb = new CallSerializedT<Out>;
+		cb->cb = user_cb;
+		cb->out = &out;
 		WriteEther ss;
 		ss.SetStoring();
 		ss % in;
 		String in_data = ss.GetResult();
-		return CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), cb);
+		return CallMem(magic, (const void*)in_data.Begin(), in_data.GetCount(), 0, cb);
 	}
 	
 	bool IsOpen() const {return server != 0;}
@@ -207,8 +213,11 @@ public:
 	void ServerHandler(ENetEvent& e);
 	void ReceiveHandler(ENetEvent& e);
 	
+	static void SetVerbose(bool b=true) {verbose = b;}
 	static String addr_arg;
 	static uint16 port_arg;
+	static bool verbose;
+	static bool close_daemon_on_fail;
 	
 };
 

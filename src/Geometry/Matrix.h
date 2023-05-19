@@ -95,6 +95,10 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec(Nuller) {SetNull();}
 	//Vec(const byte* b, T mul, T offset) {Set(b, mul, offset);}
 	
+    void Etherize(Ether& e) {
+        if (e.IsLoading()) e.Get(data, sizeof(data));
+        else e.Put(data, sizeof(data));
+    }
 	void SetNull() {for(int i = 0; i < I; i++) data[i] = std::numeric_limits<T>::max();}
 	bool IsNull() const {for(int i = 0; i < I; i++) if (data[i] != std::numeric_limits<T>::max()) return false; return true;}
 	//operator bool() const {return !IsNull();}
@@ -257,6 +261,11 @@ struct quat {
 	quat(const quat& q) {*this = q;}
 	quat(float x, float y, float z, float w) : data(x,y,z,w) {}
 	
+    void Etherize(Ether& e) {
+        if (e.IsLoading()) e.Get(data.data, sizeof(data.data));
+        else e.Put(data.data, sizeof(data.data));
+    }
+    
 	void operator=(const quat& q) {data = q.data;}
 	
 	void Clear() {data.Clear();}
@@ -359,6 +368,11 @@ struct Matrix : Moveable<Matrix<T,R,C,Precise> > {
 		int i = 0; for(auto& v : list) {data[i / C].data[i % C] = v; i++;}
 	}
 	
+    void Etherize(Ether& e) {
+        if (e.IsLoading()) e.Get(data, sizeof(data));
+        else e.Put(data, sizeof(data));
+    }
+    
 	void SetNull() {for(int i = 0; i < R; i++) data[i].SetNull();}
 	bool IsNull() const {for(int i = 0; i < R; i++) if (!data[i].IsNull()) return false; return true;}
 	

@@ -31,21 +31,21 @@ struct Tester : public DaemonService {
 				client->CallEvent<int>(ENET_TEST_INT, in, [=](const int& out) {
 					LOG("TESTER: client received ENET_TEST_INT " << out);
 					ASSERT(out == 2 * in);
-				}, false);
+				});
 			}
 			else if (fn == 1) {
 				Vector<int> in;
 				for(int i = 0; i < 5; i++)
 					in.Add(1 + Random(16));
 				LOG("TESTER: client called ENET_TEST_VEC");
-				client->CallEvent<Vector<int>>(ENET_TEST_VEC, in, [=](const Vector<int>& out) {
+				client->CallEventSerialized<Vector<int>>(ENET_TEST_VEC, in, [=](const Vector<int>& out) {
 					LOG("TESTER: client received ENET_TEST_VEC " << out.GetCount());
 					ASSERT(out.GetCount() == 10);
 					for(int i = 0; i < 5; i++) {
 						ASSERT(out[i] != 0);
 						ASSERT(out[i+5] == 2 * out[i]);
 					}
-				}, true);
+				});
 			}
 		}
 		
@@ -118,6 +118,7 @@ CONSOLE_APP_MAIN {
 	}
 	else if (cmd.IsArg('c')) {
 		daemon.Add("EnetClient");
+		EnetServiceClient::close_daemon_on_fail = true;
 		EnetServiceClient::addr_arg = cmd.GetArg('c');
 		EnetServiceClient::port_arg = StrInt(cmd.GetArg('p'));
 		LOG("Connecting to port " << (int)EnetServiceClient::port_arg);
@@ -127,21 +128,7 @@ CONSOLE_APP_MAIN {
 		return;
 	}
 	
-	
 	daemon.Add("EnetServiceTester");
-	
-	
 	daemon.SetTimeout(daemon_timeout);
-	if (!daemon.Init())
-		return;
-	
-	//Tester* test = CastPtr<Tester>(d.FindService("EnetServiceTester"));
-	//test->Attach(daemon);
-	
-	daemon.Run();
-	
-	daemon.Stop();
-	daemon.Deinit();
-	
-	
+	daemon.DefaultProcedure();
 }

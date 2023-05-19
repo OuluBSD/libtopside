@@ -10,39 +10,98 @@ MAKE_STATIC(String, eon_script)
 MAKE_STATIC(String, eon_file)
 
 
+dword active_shell_mode;
+
+
+bool IsShellMode(ShellMode m) {
+	return active_shell_mode & (dword)m;
+}
+
+void SetShellMode(ShellMode m) {
+	active_shell_mode |= (dword)m;
+}
+
+bool IsEmptyShellMode() {
+	return active_shell_mode == 0;
+}
+
 bool DefaultInitializer(bool skip_eon_file) {
 	SetCoutLog();
-	
 	CommandLineArguments cmd;
+	DaemonBase& daemon = DaemonBase::Single();
+	
+	// Script interpreter platform
 	cmd.AddArg('e', "The path for the eon file", true, "path");
+	
+	// Development platform (remote connection)
+	cmd.AddArg('l', "Listen to connections", false);
+	cmd.AddArg('p', "Port", true, "integer");
+	cmd.AddArg('v', "Verbose", false);
+	
+	// Parse command line
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
 		return false;
 	}
 	
-	const auto& inputs = cmd.GetInputs();
-	for(const auto& in : inputs) {
-		if (in.key == 'e')
-			eon_file = in.value;
-	}
-	
+	// Get rest of the command line arguments
 	__def_args <<= cmd.GetVariables();
 	
-	if (!skip_eon_file && eon_file.IsEmpty()) {
-		cmd.PrintHelp();
-		LOG("");
-		LOG("\te.g. -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3");
+	// Arguments for remote connection
+	if (cmd.IsArg('l')) {
+		daemon.Add("EnetServer");
+		daemon.Add("Ecs");
+		EnetServiceServer::SetVerbose(cmd.IsArg('v'));
+		EnetServiceServer::port_arg = StrInt(cmd.GetArg('p'));
+		if (EnetServiceServer::port_arg) {
+			LOG("User gave listening port " << (int)EnetServiceServer::port_arg);
+		}
+		SetShellMode(SHELLMODE_REMOTE);
+	}
+	
+	// Arguments for script interpreter platform
+	const auto& inputs = cmd.GetInputs();
+	for(const auto& in : inputs) {
+		if (in.key == 'e') {
+			eon_file = in.value;
+			SetShellMode(SHELLMODE_INTERPRETER);
+		}
+	}
+	
+	// Remote connection startup
+	if (IsShellMode(SHELLMODE_REMOTE)) {
+		// Start daemon in a separate thread
+		if (!daemon.Init()) {
+			LOG("DefaultInitializer: error: couldn't start daemon");
+			return false;
+		}
+		daemon.RunInThread();
+	}
+	
+	// Script interpreter platform startup
+	if (IsShellMode(SHELLMODE_INTERPRETER)) {
+		if (!skip_eon_file && eon_file.IsEmpty()) {
+			cmd.PrintHelp();
+			LOG("");
+			LOG("\te.g. -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3");
+			return false;
+		}
+		
+		eon_file = Parallel::RealizeEonFile(eon_file);
+		
+		if (GetFileExt(eon_file) != ".eon") {
+			eon_script = SerialLoaderFactory::LoadFile(eon_file);
+			if (eon_script.IsEmpty())
+				return false;
+		}
+	}
+	
+	// Error handling
+	if (IsEmptyShellMode()) {
+		LOG("DefaultInitializer: error: no enough program arguments to do anything");
 		return false;
 	}
 	
-	eon_file = Parallel::RealizeEonFile(eon_file);
-	
-	
-	if (GetFileExt(eon_file) != ".eon") {
-		eon_script = SerialLoaderFactory::LoadFile(eon_file);
-		if (eon_script.IsEmpty())
-			return false;
-	}
 	
 	return true;
 }
@@ -63,7 +122,7 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 	
 	
 	if (!DefaultInitializer(skip_eon_file))
-		return;
+		GetActiveMachine().SetFailed("Default serial initializer failed");
 	
 }
 
@@ -76,7 +135,9 @@ void DefaultRunner(bool main_loop, String app_name, String override_eon_file, Ve
 	if (!override_eon_file.IsEmpty())
 		eon_file = override_eon_file;
 	
-	LOG("Eon-file path: " << eon_file);
+	if (IsShellMode(SHELLMODE_INTERPRETER)) {
+		LOG("Eon-file path: " << eon_file);
+	}
 	
 	if (extra_args) {
 		for(int i = 0; i < extra_args->GetCount(); i++)
@@ -129,7 +190,7 @@ void DebugMainLoop(Parallel::Machine& mach, bool (*fn)(void*), void* arg) {
     TimeStop t, total;
     double sleep_dt_limit = 0.001;
     int fast_iter = 0;
-    while (mach.IsRunning()) {
+    while (mach.IsRunning() && !Thread::IsShutdownThreads()) {
         double dt = ResetSeconds(t);
         
         mach.Update(dt);
@@ -156,9 +217,11 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 	
 	SetCoutLog();
 	
-	if (script_content.IsEmpty() && script_file.IsEmpty()) {
-		LOG("No script file given");
-		return;
+	if (IsShellMode(SHELLMODE_INTERPRETER)) {
+		if (script_content.IsEmpty() && script_file.IsEmpty()) {
+			LOG("No script file given");
+			return;
+		}
 	}
 	
 	if (dbg_ref)
@@ -211,34 +274,36 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 				
 				LoopRef root = ls->GetRoot();
 				
-				String path = RealizeEonFile(script_file);
-				
-				String script_str;
-				if (script_content.IsEmpty()) {
-					script_str = LoadFile(path);
+				if (IsShellMode(SHELLMODE_INTERPRETER)) {
+					String path = RealizeEonFile(script_file);
+					
+					String script_str;
+					if (script_content.IsEmpty()) {
+						script_str = LoadFile(path);
+						if (script_str.IsEmpty()) {
+							LOG("Empty file in " << path);
+							return;
+						}
+					}
+					else
+						script_str = script_content;
+					
 					if (script_str.IsEmpty()) {
-						LOG("Empty file in " << path);
+						LOG("No script");
 						return;
 					}
-				}
-				else
-					script_str = script_content;
+					for(int i = 0; i < args.GetCount(); i++) {
+						String key = "${" + args.GetKey(i) + "}";
+						String value = args[i].ToString();
+						value = EscapeString(value);
+						script_str.Replace(key, value);
+					}
+					LOG(script_str);
 				
-				if (script_str.IsEmpty()) {
-					LOG("No script");
-					return;
+					script->PostLoadString(script_str);
 				}
-				for(int i = 0; i < args.GetCount(); i++) {
-					String key = "${" + args.GetKey(i) + "}";
-					String value = args[i].ToString();
-					value = EscapeString(value);
-					script_str.Replace(key, value);
-				}
-				LOG(script_str);
-				
-		        script->PostLoadString(script_str);
 		    }
-		        
+		    
 		    if (!fail) {
 		        if (!mach.IsStarted())
 					fail = !mach.Start();

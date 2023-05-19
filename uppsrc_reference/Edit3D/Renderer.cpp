@@ -189,7 +189,7 @@ void EditRenderer::Paint(Draw& d) {
 		DrawLine(sz, d, view, corners[3], corners[7], lw, clr, z_cull);
 	}
 	
-	
+	// Draw red-green-blue unit-vectors
 	if (1) {
 		vec3 axes[3] = {vec3(1,0,0), vec3(0,1,0), vec3(0,0,1)};
 		Color clr[3] = {LtRed(), LtGreen(), LtBlue()};

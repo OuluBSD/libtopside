@@ -3,6 +3,7 @@
 
 
 #include <SerialScript/SerialScript.h>
+#include <ports/enet/enet.h>
 
 
 #include "Types.h"

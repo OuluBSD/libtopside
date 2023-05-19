@@ -49,7 +49,7 @@ void WmrFusionSystem::Attach(SerialServiceServer& server) {
 	server.AddStream(NET_SEND_FUSION_DATA, THISBACK(SendFusionData));
 }
 
-void WmrFusionSystem::SendFusionData(Stream& in, Stream& out) {
+void WmrFusionSystem::SendFusionData(Ether& in, Ether& out) {
 	
 	TODO
 	
@@ -93,7 +93,7 @@ bool WmrFusionSystemReceiver::UpdateFrom(SerialServiceClient& client) {
 	return ev_sendable;
 }
 
-void WmrFusionSystemReceiver::GetEvent(Stream& in, Stream& out) {
+void WmrFusionSystemReceiver::GetEvent(Ether& in, Ether& out) {
 	
 	TODO
 	

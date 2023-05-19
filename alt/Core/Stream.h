@@ -150,7 +150,7 @@ public:
 		if (mode == READ) {
 			if (s) fclose(s);
 			fopen_s(&s, path.Begin(), "rb");
-			eof = feof(s);
+			eof = s ? feof(s) : true;
 			return s != NULL;
 		}
 		else if (mode == CREATE || mode == APPEND) {
@@ -161,7 +161,7 @@ public:
 			#else
 			s = fopen(path.Begin(), mode_str);
 			#endif
-			eof = false;
+			eof = s ? feof(s) : true;
 			if (mode == APPEND)
 				Seek(GetSize());
 			return s != NULL;

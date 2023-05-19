@@ -8,7 +8,9 @@ enum {
 	NET_LATEST_BRIGHT_FRAME = 10100,
 	NET_LATEST_DARK_FRAME,
 	
-	NET_SEND_FUSION_DATA = 10200
+	NET_SEND_FUSION_DATA = 10200,
+	
+	NET_GEOM_SERIALIZER = 10300,
 	
 };
 
@@ -97,19 +99,13 @@ public:
 		Callback2<Ether&, Ether&> cb;
 		
 		void Call(Ether& in, Ether& out) override {
+			uint32 in_sz, out_sz;
+			in.Get(&in_sz, 4);
+			in.Get(&out_sz, 4);
+			
 			cb(in, out);
 		}
 	};
-	
-	/*struct TcpSocketHandler : HandlerBase {
-		RTTI_DECL1(TcpSocketHandler, HandlerBase);
-		
-		Callback1<TcpSocket&> cb;
-		
-		void Call(TcpSocket& out) override {
-			cb(out);
-		}
-	};*/
 	
 protected:
 	ArrayMap<uint32, HandlerBase> handlers;

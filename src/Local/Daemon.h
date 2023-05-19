@@ -32,13 +32,15 @@ public:
 class DaemonBase : RTTIBase {
 	ArrayMap<String, DaemonService> services;
 	Index<String> requested_services;
-	bool running = false;
+	RunningFlag flag;
+	bool inited = false;
 	int timeout = 0;
 	
 public:
+	typedef DaemonBase CLASSNAME;
 	RTTI_DECL0(DaemonBase)
 	DaemonBase();
-	virtual ~DaemonBase() {}
+	virtual ~DaemonBase();
 	
 	DaemonBase& SetTimeout(int sec) {timeout = sec; return *this;}
 	void Add(String svc_name);
@@ -51,9 +53,20 @@ public:
 	void DefaultProcedure();
 	void SetNotRunning();
 	
+	void RunInThread() {Thread::Start(THISBACK(Run));}
+	
 	DaemonService* FindService(String name);
+	template <class T> T* FindServiceT() {
+		for (DaemonService& svc : services.GetValues()) {
+			T* o = CastPtr<T>(&svc);
+			if (o)
+				return o;
+		}
+		return 0;
+	}
 	
 	static DaemonBase*& Latest() {static DaemonBase* p; return p;}
+	static DaemonBase& Single();
 	
 public:
 	typedef DaemonService* (*NewFn)();

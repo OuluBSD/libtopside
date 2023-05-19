@@ -2,7 +2,8 @@ description "Components\377B128,0,0";
 
 uses
 	High,
-	SerialScript;
+	SerialScript,
+	ports/enet;
 
 file
 	Init.cpp,

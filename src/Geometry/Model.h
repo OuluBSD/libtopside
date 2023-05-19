@@ -11,6 +11,8 @@ struct ModelNode : Moveable<ModelNode>
 	ModelNode();
 	ModelNode(const ModelNode& n);
 	
+    void Etherize(Ether& e);
+    
     void Set(const mat4& local_transform, String name, NodeIndex index, NodeIndex parent_node_index) {
         this->name = name;
         this->index = index;
@@ -38,6 +40,7 @@ struct ModelNode : Moveable<ModelNode>
 		local_transform = n.local_transform;
 	}
 	
+public:
     String			name;
     NodeIndex		index;
     NodeIndex		parent_node_index;
@@ -66,13 +69,18 @@ public:
 	struct Texture {
 		ByteImage img;
 		String path;
+		
+		void Etherize(Ether& e);
 	};
 	
 	struct CubeTexture {
 		ByteImage img[6];
 		String path;
+		
+		void Etherize(Ether& e);
 	};
 	
+public:
 	Array<Mesh> meshes;
 	Vector<ModelNode> nodes;
 	ArrayMap<int, Material> materials;
@@ -82,7 +90,7 @@ public:
     String directory;
     
     
-    
+public:
 	RTTI_DECL_R0(Model)
 	Model() {}
 	Model(const Model& m) {*this = m;}
@@ -114,8 +122,7 @@ public:
 	bool LoadCubemapFile(Mesh& mesh, TexType type, String path);
 	
 	void MakeModel(Shape2DWrapper& shape);
-	//void Refresh(GfxDataState& s, GfxDataObject& o);
-    //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
+    void Etherize(Ether& e);
     void Dump();
     void ReverseFaces();
     Mesh& AddMesh();

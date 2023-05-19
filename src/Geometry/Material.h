@@ -21,6 +21,8 @@ struct MaterialParameters {
 	float occlusion_strength{ 1 };
 	
 	
+public:
+    void Etherize(Ether& e);
 	void Clear();
 	
 };
@@ -35,8 +37,11 @@ struct Material {
 	GVar::Filter tex_filter[TEXTYPE_COUNT];
 	
 	
+public:
 	Material();
 	
+    void Etherize(Ether& e);
+    
     // Create a flat (no texture) material.
     Material& SetDiffuse(const Color& clr);
     Material& SetDiffuse(const vec3& clr);

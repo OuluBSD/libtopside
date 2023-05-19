@@ -16,5 +16,7 @@
 	#include <EcsVR/EcsVR.h>
 #endif
 
+#include "Service.h"
+
 
 #endif

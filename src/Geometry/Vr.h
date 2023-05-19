@@ -33,7 +33,7 @@ public:
 	
 	void Process();
 	void Attach(SerialServiceServer& srv);
-	void SendFusionData(Stream& in, Stream& out);
+	void SendFusionData(Ether& in, Ether& out);
 	void PutBrightFrame(bool& lock, Size sz, const Vector<byte>& data);
 	void PutDarkFrame(bool& lock, Size sz, const Vector<byte>& data);
 	void PutSensorData(CtrlEvent& ev);
@@ -52,7 +52,7 @@ struct WmrFusionSystemReceiver {
 	typedef WmrFusionSystemReceiver CLASSNAME;
 	WmrFusionSystemReceiver();
 	bool UpdateFrom(SerialServiceClient& c);
-	void GetEvent(Stream& in, Stream& out);
+	void GetEvent(Ether& in, Ether& out);
 	
 };
 

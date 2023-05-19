@@ -141,10 +141,37 @@ GeomScene& GeomProject::AddScene() {
 }*/
 
 
+String GeomObject::GetPath() const {
+	String path = name;
+	GeomDirectory* dir = owner;
+	while (dir) {
+		path = dir->name + "/" + path;
+		dir = dir->owner;
+	}
+	return path;
+}
 
 
 
 
+GeomProject& GeomDirectory::GetProject() const {
+	const GeomDirectory* root = this;
+	while (root->owner)
+		root = root->owner;
+	const GeomScene* scene = CastConstPtr<GeomScene>(root);
+	ASSERT(scene && scene->GeomScene::owner);
+	return *scene->GeomScene::owner;
+}
+
+GeomDirectory& GeomDirectory::GetAddDirectory(String name) {
+	int i = subdir.Find(name);
+	if (i >= 0)
+		return subdir[i];
+	GeomDirectory& dir = subdir.Add(name);
+	dir.name = name;
+	dir.owner = this;
+	return dir;
+}
 
 GeomObject* GeomDirectory::FindObject(String name) {
 	for(GeomObject& o : objs)
@@ -159,6 +186,7 @@ GeomObject& GeomDirectory::GetAddModel(String name) {
 		return *o;
 	
 	o = &objs.Add();
+	o->key = GetProject().NewKey();
 	o->name = name;
 	o->type = GeomObject::O_MODEL;
 	return *o;
@@ -170,6 +198,7 @@ GeomObject& GeomDirectory::GetAddCamera(String name) {
 		return *o;
 	
 	o = &objs.Add();
+	o->key = GetProject().NewKey();
 	o->name = name;
 	o->type = GeomObject::O_CAMERA;
 	return *o;
@@ -181,6 +210,7 @@ GeomObject& GeomDirectory::GetAddOctree(String name) {
 		return *o;
 	
 	o = &objs.Add();
+	o->key = GetProject().NewKey();
 	o->name = name;
 	o->type = GeomObject::O_OCTREE;
 	return *o;

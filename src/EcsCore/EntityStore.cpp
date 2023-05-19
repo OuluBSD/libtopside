@@ -79,7 +79,7 @@ Ecs::Engine& Machine::GetEngine() {
 		return es->GetEngine();
 	
 	Panic("No EntitySystem in machine");
-	return *(Ecs::Engine*)0;
+	UNREACHABLE;
 }
 
 

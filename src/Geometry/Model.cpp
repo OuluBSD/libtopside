@@ -4,6 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
+
 ModelNode::ModelNode() {
 	local_transform = Identity<mat4>();
 	modify_count = 0;
@@ -14,8 +16,50 @@ ModelNode::ModelNode(const ModelNode& n) {
 	*this = n;
 }
 
+void ModelNode::Etherize(Ether& e) {
+	e % name
+	  % index
+	  % parent_node_index
+	  % local_transform;
+	
+	if (e.IsLoading())
+		++modify_count;
+}
 
 
+
+
+
+
+
+
+void Model::Texture::Etherize(Ether& e) {
+	e % img
+	  % path;
+}
+
+void Model::CubeTexture::Etherize(Ether& e) {
+	for(int i = 0; i < 6; i++) {
+		e % img[i];
+	}
+	e % path;
+}
+
+void Model::Etherize(Ether& e) {
+	e % meshes
+	  % nodes
+	  % materials
+	  % textures
+	  % cube_textures
+	  % path
+	  % directory;
+	if (e.IsLoading()) {
+		for (Mesh& m : meshes)
+			m.owner = this;
+		for (Material& m : materials.GetValues())
+			m.owner = this;
+	}
+}
 
 bool Model::AddTextureFile(int mesh_i, TexType type, String path) {
 	if (mesh_i < 0 || mesh_i >= meshes.GetCount())

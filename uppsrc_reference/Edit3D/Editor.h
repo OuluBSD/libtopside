@@ -10,6 +10,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Edit3D;
+class EditClientService;
 
 
 struct EditConfiguration {
@@ -69,11 +70,13 @@ struct Edit3D : TopWindow {
 	TimeCallback tc;
 	TimeStop ts;
 	
+	EditClientService* svc = 0;
 	
 public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();
 	
+	void LoadRemote(EditClientService* svc);
 	void SetView(ViewType view);
 	void Update();
 	void Data();

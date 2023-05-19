@@ -14,6 +14,7 @@ static void DaemonBase_signal_handler(int sig)
 	Cout() << "DaemonBase - stopping\n";
 
 	DaemonBase::Latest()->SetNotRunning();
+	Thread::ShutdownThreads();
 }
 
 
@@ -28,11 +29,22 @@ DaemonBase::DaemonBase() {
 	Latest() = this;
 }
 
+DaemonBase::~DaemonBase() {
+	if (flag.IsRunning()) {
+		Stop();
+		Deinit();
+	}
+}
+
 bool DaemonBase::Init() {
 	#ifdef flagMSC
 	TODO
 	#else
 	signal(SIGINT, DaemonBase_signal_handler);
+	signal(SIGQUIT, DaemonBase_signal_handler);
+	signal(SIGABRT, DaemonBase_signal_handler);
+	signal(SIGTERM, DaemonBase_signal_handler);
+	signal(SIGHUP, DaemonBase_signal_handler);
 	#endif
 	
 	if (requested_services.IsEmpty()) {
@@ -59,16 +71,22 @@ bool DaemonBase::Init() {
 		}
 	}
 	
-	running = true;
+	inited = true;
 	return true;
 }
 
 void DaemonBase::Run() {
+	flag.Stop();
+	flag.Start(1);
+	
 	TimeStop ts;
-	while (running && (!timeout || ts.Seconds() < timeout)) {
+	while (	 flag.IsRunning() &&
+			(!timeout || ts.Seconds() < timeout) &&
+			 !Thread::IsShutdownThreads()) {
 		Update();
 		Sleep(10);
 	}
+	flag.DecreaseRunning();
 }
 
 void DaemonBase::Update() {
@@ -77,18 +95,19 @@ void DaemonBase::Update() {
 }
 
 void DaemonBase::SetNotRunning() {
-	running = false;
+	flag.SetNotRunning();
 }
 
 void DaemonBase::Stop() {
+	flag.Stop();
+	
 	for(int i = 0; i < services.GetCount(); i++) {
 		String name = services.GetKey(i);
 		DaemonService& svc = services[i];
 		svc.Stop();
 	}
 	
-	
-	running = false;
+	inited = false;
 }
 
 void DaemonBase::Deinit() {
@@ -106,8 +125,7 @@ void DaemonBase::DefaultProcedure() {
 		return;
 	
 	Run();
-	if (running)
-		Stop();
+	Stop();
 	Deinit();
 }
 
@@ -123,6 +141,9 @@ void DaemonBase::Add(String svc_name) {
 	requested_services.FindAdd(svc_name);
 }
 
+DaemonBase& DaemonBase::Single() {
+	return UPP::Single<DaemonBase>();
+}
 
 
 

@@ -18,8 +18,39 @@ void MaterialParameters::Clear() {
 	
 }
 
+void MaterialParameters::Etherize(Ether& e) {
+	e % diffuse
+	  % ambient
+	  % specular
+	  % shininess
+	
+	  % base_clr_factor
+	  % metallic_factor
+	  % roughness_factor
+	  % emissive_factor
+	  % normal_scale
+	  % occlusion_strength;
+}
+
+
+
 Material::Material() {
 	Clear();
+}
+
+void Material::Etherize(Ether& e) {
+	e % id
+	  % *params;
+	if (e.IsStoring()) ++params;
+	
+	if (e.IsLoading()) {
+		e.Get(tex_id, sizeof(tex_id));
+		e.Get(tex_filter, sizeof(tex_filter));
+	}
+	else if (e.IsStoring()) {
+		e.Put(tex_id, sizeof(tex_id));
+		e.Put(tex_filter, sizeof(tex_filter));
+	}
 }
 
 void Material::Clear() {

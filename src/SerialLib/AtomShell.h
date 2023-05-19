@@ -4,6 +4,14 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+typedef enum {
+	SHELLMODE_INTERPRETER	= 1 << 0,
+	SHELLMODE_REMOTE		= 1 << 1,
+} ShellMode;
+
+bool IsShellMode(ShellMode m);
+
+
 void DefaultStartup();
 void DefaultRunner(bool main_loop, String app_name, String override_eon_file="", VectorMap<String,Object>* extra_args=0, const char* extra_str=0);
 void DefaultRunnerStop();

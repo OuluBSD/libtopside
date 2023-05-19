@@ -121,6 +121,22 @@ void FloatImage::Set(Size sz, int channels) {
 
 
 
+void ByteImage::Etherize(Ether& e) {
+	e % sz.cx % sz.cy
+	  % pitch
+	  % channels
+	  % size
+	  % lock_channels;
+	if (e.IsStoring()) {
+		e.Put(data, size);
+	}
+	else {
+		if (data) delete data;
+		data = (byte*)malloc(sizeof(byte) * size);
+		e.Get(data, size);
+	}
+}
+
 void ByteImage::operator=(const ByteImage& i) {
 	if (i.data)
 		Set(i.sz.cx, i.sz.cy, i.channels, i.pitch, i.data);

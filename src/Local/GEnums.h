@@ -54,7 +54,7 @@ typedef enum : uint32 {
 	BUFFER_TYPE(DEPTH_BUFFER) \
 	BUFFER_TYPE(STENCIL_BUFFER)
 
-typedef enum {
+typedef enum : int {
 	FILTER_NEAREST,
 	FILTER_LINEAR,
 	FILTER_MIPMAP,
