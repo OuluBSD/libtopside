@@ -301,6 +301,13 @@ void ModelLoader::Set(const Model& m) {
 	model->SetParent(this);
 }
 
+void ModelLoader::Attach(Model* m) {
+	Clear();
+	model = m;
+	if (m)
+		m->SetParent(this);
+}
+
 void ModelLoader::operator=(const Model & m) {
 	Set(m);
 }

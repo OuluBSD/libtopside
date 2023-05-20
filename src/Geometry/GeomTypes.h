@@ -21,6 +21,15 @@ struct Vertex : Moveable<Vertex> {
     void Set(float x, float y, float z);
     void Set(float x, float y, float z, float tex_x, float tex_y);
     
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(position.GetHashValue());
+        c.Put(normal.GetHashValue());
+        c.Put(tex_coord.GetHashValue());
+        c.Put(tangent.GetHashValue());
+        c.Put(mdl_transform_idx);
+        return c;
+    }
 };
 
 

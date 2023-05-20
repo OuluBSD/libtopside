@@ -11,6 +11,14 @@ struct ModelNode : Moveable<ModelNode>
 	ModelNode();
 	ModelNode(const ModelNode& n);
 	
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(name.GetHashValue());
+        c.Put(index);
+        c.Put(parent_node_index);
+        c.Put(local_transform.GetHashValue());
+        return c;
+    }
     void Etherize(Ether& e);
     
     void Set(const mat4& local_transform, String name, NodeIndex index, NodeIndex parent_node_index) {
@@ -70,6 +78,12 @@ public:
 		ByteImage img;
 		String path;
 		
+	    hash_t GetHashValue() const {
+	        CombineHash c;
+	        c.Put(img.GetHashValue());
+	        c.Put(path.GetHashValue());
+	        return c;
+	    }
 		void Etherize(Ether& e);
 	};
 	
@@ -77,6 +91,13 @@ public:
 		ByteImage img[6];
 		String path;
 		
+	    hash_t GetHashValue() const {
+	        CombineHash c;
+	        for(int i = 0; i < 6; i++)
+				c.Put(img[i].GetHashValue());
+	        c.Put(path.GetHashValue());
+	        return c;
+	    }
 		void Etherize(Ether& e);
 	};
 	
@@ -104,6 +125,26 @@ public:
 		directory.Clear();
 	}
 	
+    hash_t GetHashValue() const {
+        CombineHash ch;
+        for (auto& v : meshes) ch.Put(v.GetHashValue());
+        for (auto& v : nodes) ch.Put(v.GetHashValue());
+        for(int i = 0; i < materials.GetCount(); i++) {
+			ch.Put(materials.GetKey(i));
+			ch.Put(materials[i].GetHashValue());
+        }
+        for(int i = 0; i < textures.GetCount(); i++) {
+			ch.Put(textures.GetKey(i));
+			ch.Put(textures[i].GetHashValue());
+        }
+        for(int i = 0; i < cube_textures.GetCount(); i++) {
+			ch.Put(cube_textures.GetKey(i));
+			ch.Put(cube_textures[i].GetHashValue());
+        }
+        ch.Put(path.GetHashValue());
+        ch.Put(directory.GetHashValue());
+        return ch;
+    }
     void Visit(RuntimeVisitor& vis) {/*vis | meshes | textures;*/}
     
 	void operator=(const Model& src) {
@@ -161,6 +202,7 @@ public:
 	
 	void Clear();
     void Set(const Model& m);
+    void Attach(Model* m);
     void operator=(const Model& m);
     void operator=(ModelBuilder& mb);
 	operator bool() const;

@@ -22,13 +22,11 @@ void GeomSerializer::Etherize(Ether& e) {
 			
 			switch (item.type) {
 			case GEOMVAR_ENTITY_KEY:
-				e.Get(&item.hash, sizeof(item.hash));
+				//e.Get(&item.hash, sizeof(item.hash));
+				item.str = e.GetString();
 				break;
 			case GEOMVAR_RESET_ENTITY_KEY:
 				// pass
-				break;
-			case GEOMVAR_SYSTEM_PATH:
-				item.str = e.GetString();
 				break;
 			case GEOMVAR_ORIENTATION:
 				e.Get(item.f, sizeof(item.f[0]) * 4);
@@ -57,13 +55,11 @@ void GeomSerializer::Etherize(Ether& e) {
 			
 			switch (item.type) {
 			case GEOMVAR_ENTITY_KEY:
-				e.Put(&item.hash, sizeof(item.hash));
+				//e.Put(&item.hash, sizeof(item.hash));
+				item.str = e.GetString();
 				break;
 			case GEOMVAR_RESET_ENTITY_KEY:
 				// pass
-				break;
-			case GEOMVAR_SYSTEM_PATH:
-				e.Put(item.str);
 				break;
 			case GEOMVAR_ORIENTATION:
 				e.Put(item.f, sizeof(item.f[0]) * 4);
@@ -92,10 +88,10 @@ void GeomSerializer::Clear() {
 	items.Clear();
 }
 
-void GeomSerializer::BindEntity(hash_t key) {
+void GeomSerializer::BindEntity(String path) {
 	Item& i = items.Add();
 	i.type = GEOMVAR_ENTITY_KEY;
-	i.hash = key;
+	i.str = path;
 }
 
 void GeomSerializer::UnbindEntity() {
@@ -103,7 +99,7 @@ void GeomSerializer::UnbindEntity() {
 	i.type = GEOMVAR_RESET_ENTITY_KEY;
 }
 
-void GeomSerializer::GeomSerializer::Set(GeomVar t, const Model& mdl) {
+void GeomSerializer::GeomSerializer::Set(GeomVar t, Model& mdl) {
 	Item& i = items.Add();
 	i.type = t;
 	i.mdl = &mdl;
@@ -147,6 +143,14 @@ void GeomSerializer::Set(GeomVar t, const quat& q) {
 	i.type = t;
 	for(int j = 0; j < 4; j++)
 		i.f[j] = q.data[j];
+}
+
+Model* GeomSerializer::DetachModel(Model* mdl) {
+	for(int i = 0; i < model_cache.GetCount(); i++)
+		if (&model_cache[i] == mdl)
+			return model_cache.Detach(i);
+	ASSERT_(0, "couldn't detach model");
+	return 0;
 }
 
 

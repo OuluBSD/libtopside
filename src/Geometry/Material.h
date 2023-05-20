@@ -22,6 +22,20 @@ struct MaterialParameters {
 	
 	
 public:
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(diffuse.GetHashValue());
+        c.Put(ambient.GetHashValue());
+        c.Put(specular.GetHashValue());
+        c.Put(*(dword*)&shininess);
+        c.Put(base_clr_factor.GetHashValue());
+        c.Put(*(dword*)&metallic_factor);
+        c.Put(*(dword*)&roughness_factor);
+        c.Put(emissive_factor.GetHashValue());
+        c.Put(*(dword*)&normal_scale);
+        c.Put(*(dword*)&occlusion_strength);
+        return c;
+    }
     void Etherize(Ether& e);
 	void Clear();
 	
@@ -40,6 +54,17 @@ struct Material {
 public:
 	Material();
 	
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(id);
+        c.Put(params->GetHashValue());
+        for(int i = 0; i < TEXTYPE_COUNT; i++) {
+			c.Put(tex_id[i]);
+			c.Put(tex_filter[i]);
+        }
+        return c;
+    }
+    
     void Etherize(Ether& e);
     
     // Create a flat (no texture) material.

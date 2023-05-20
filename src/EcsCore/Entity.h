@@ -117,7 +117,7 @@ public:
 		return comp;
 	}
 	template<typename T> RefT_Entity<T> GetAdd() {
-		T* o = Find<T>();
+		RefT_Entity<T> o = Find<T>();
 		if (o)
 			return o;
 		OnChange();

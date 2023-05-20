@@ -8,7 +8,6 @@ typedef enum : byte {
 	GEOMVAR_NULL,
 	GEOMVAR_ENTITY_KEY,			// hash_t
 	GEOMVAR_RESET_ENTITY_KEY,
-	GEOMVAR_SYSTEM_PATH,		// string
 	GEOMVAR_ORIENTATION,		// quat
 	GEOMVAR_POSITION,			// vec3
 	GEOMVAR_MODEL,				// Model
@@ -24,8 +23,8 @@ protected:
 		GeomVar type;
 		hash_t hash;
 		union {
-			const Model* mdl;
-			void* ptr;
+			Model* mdl;
+			void* ptr = 0;
 		};
 		String str;
 		float f[16];
@@ -40,9 +39,9 @@ public:
 	void Etherize(Ether& e);
 	void Clear();
 	
-	void BindEntity(hash_t key);
+	void BindEntity(String path);
 	void UnbindEntity();
-	void Set(GeomVar t, const Model& mdl);
+	void Set(GeomVar t, Model& mdl);
 	void Set(GeomVar t, const String& s);
 	void Set(GeomVar t, float f);
 	void Set(GeomVar t, const vec2& v);
@@ -52,6 +51,8 @@ public:
 	
 	int GetCount() const {return items.GetCount();}
 	const Item& Get(int i) const {return items[i];}
+	
+	Model* DetachModel(Model* mdl);
 	
 };
 

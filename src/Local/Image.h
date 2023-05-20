@@ -79,6 +79,7 @@ public:
 	~ByteImage() {Clear();}
 	ByteImage(Image& img) {*this = img;}
 	
+    hash_t GetHashValue() const;
 	void Etherize(Ether& e);
 	
 	void operator=(const ByteImage& i);

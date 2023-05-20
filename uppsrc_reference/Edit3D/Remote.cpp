@@ -33,6 +33,8 @@ bool RemoteExchange::Update() {
 	write.Clear();
 	
 	GeomWorldState& state = *this->state;
+	if (!state.HasActiveScene())
+		return false;
 	GeomScene& scene = state.GetActiveScene();
 	GeomCamera& camera = state.program;
 	
@@ -83,12 +85,14 @@ void RemoteExchange::SyncData(const GeomObjectState& os) {
 	//mat4 o_world = (QuatMat(os.orientation) * Translate(os.position)).GetInverse();
 	//mat4 o_view = view * o_world;
 	
+	write.BindEntity(go.GetPath());
+	
 	if (go.IsModel()) {
 		if (!go.mdl)
 			return;
 		ASSERT(go.key != 0);
 		
-		const Model& mdl = *go.mdl;
+		Model& mdl = *go.mdl;
 		hash_t mdl_hash = (hash_t)&mdl;
 		write.Set(GEOMVAR_MODEL, mdl);
 		
@@ -96,6 +100,8 @@ void RemoteExchange::SyncData(const GeomObjectState& os) {
 	else if (go.IsOctree()) {
 		TODO
 	}
+	
+	write.UnbindEntity();
 }
 
 void RemoteExchange::SyncEntity(const GeomObjectState& os) {
@@ -108,8 +114,7 @@ void RemoteExchange::SyncEntity(const GeomObjectState& os) {
 	//mat4 o_world = (QuatMat(os.orientation) * Translate(os.position)).GetInverse();
 	//mat4 o_view = view * o_world;
 	
-	write.BindEntity(go.key);
-	write.Set(GEOMVAR_SYSTEM_PATH, go.GetPath());
+	write.BindEntity(go.GetPath());
 	write.Set(GEOMVAR_ORIENTATION, os.orientation);
 	write.Set(GEOMVAR_POSITION, os.position);
 	

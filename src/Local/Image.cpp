@@ -121,6 +121,18 @@ void FloatImage::Set(Size sz, int channels) {
 
 
 
+hash_t ByteImage::GetHashValue() const {
+    CombineHash c;
+    c.Put(size);
+    c.Put(pitch);
+    c.Put(channels);
+    const byte* it = data;
+    const byte* end = it + size;
+    while (it != end)
+        c.Put(*it++);
+    return c;
+}
+
 void ByteImage::Etherize(Ether& e) {
 	e % sz.cx % sz.cy
 	  % pitch

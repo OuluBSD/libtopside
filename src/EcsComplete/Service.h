@@ -6,6 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class EcsService : public DaemonService {
 	EnetServiceServer* server = 0;
+	Ecs::EntityRef bound_entity;
+	
+	Ecs::EntityRef ResolveEntity(Ecs::PoolRef& root, String path);
 	
 public:
 	// Remote connection

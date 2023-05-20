@@ -187,6 +187,7 @@ struct GeomWorldState {
 	
 	void UpdateObjects();
 	GeomScene& GetActiveScene();
+	bool HasActiveScene() const {return active_scene >= 0;}
 	
 };
 
