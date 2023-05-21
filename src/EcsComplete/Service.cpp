@@ -20,7 +20,8 @@ void EcsService::Update() {
 		if (!server)
 			return;
 		
-		server->AddStream(NET_GEOM_SERIALIZER, THISBACK(ReceiveGeoms));
+		server->AddStream(NET_GEOM_LOAD_ENGINE, THISBACK(ReceiveGeoms));
+		server->AddStream(NET_GEOM_STORE_ENGINE, THISBACK(SendEngine));
 	}
 	
 }
@@ -34,15 +35,13 @@ void EcsService::Deinit() {
 }
 
 void EcsService::ReceiveGeoms(Ether& in, Ether& out) {
-	
-	in % read;
-	
 	Parallel::Machine& mach = GetActiveMachine();
 	Ecs::Engine& eng = mach.GetEngine();
 	Ecs::PoolRef root = eng.Get<Ecs::EntityStore>()->GetRoot();
 	
+	in % *root;
 	
-	for (GeomSerializer::Item& item : read.items) {
+	/*for (GeomSerializer::Item& item : read.items) {
 		
 		switch (item.type) {
 		case GEOMVAR_ENTITY_KEY:
@@ -79,7 +78,17 @@ void EcsService::ReceiveGeoms(Ether& in, Ether& out) {
 		default:
 			break;
 		}
-	}
+	}*/
+	
+}
+
+void EcsService::SendEngine(Ether& in, Ether& out) {
+	
+	Parallel::Machine& mach = GetActiveMachine();
+	Ecs::Engine& eng = mach.GetEngine();
+	Ecs::PoolRef root = eng.Get<Ecs::EntityStore>()->GetRoot();
+	
+	out % *root;
 	
 }
 

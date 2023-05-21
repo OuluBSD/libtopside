@@ -6,6 +6,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 typedef enum : byte {
 	GEOMVAR_NULL,
+	GEOMVAR_PUSH_POOL_REL,		// string
+	GEOMVAR_POP_POOL,
+	GEOMVAR_PUSH_ENTITY_REL,		// string
+	GEOMVAR_POP_ENTITY,
+	GEOMVAR_PUSH_COMPONENT,		// string (type)
+	GEOMVAR_POP_COMPONENT,
+	
 	GEOMVAR_ENTITY_KEY,			// hash_t
 	GEOMVAR_RESET_ENTITY_KEY,
 	GEOMVAR_ORIENTATION,		// quat
@@ -53,6 +60,8 @@ public:
 	const Item& Get(int i) const {return items[i];}
 	
 	Model* DetachModel(Model* mdl);
+	
+	
 	
 };
 

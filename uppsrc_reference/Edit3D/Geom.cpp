@@ -180,6 +180,17 @@ GeomObject* GeomDirectory::FindObject(String name) {
 	return 0;
 }
 
+GeomObject* GeomDirectory::FindObject(String name, GeomObject::Type type) {
+	for(GeomObject& o : objs)
+		if (o.name == name && o.type == type)
+			return &o;
+	return 0;
+}
+
+GeomObject* GeomDirectory::FindCamera(String name) {
+	return FindObject(name, GeomObject::O_CAMERA);
+}
+
 GeomObject& GeomDirectory::GetAddModel(String name) {
 	GeomObject* o = FindObject(name);
 	if (o)

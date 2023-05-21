@@ -16,6 +16,8 @@ class Pool :
 	BitField<dword>		freeze_bits;
 	String				name;
 	PoolId				id;
+	EntityVec			objects;
+	PoolVec				pools;
 	
 protected:
 	friend class EntityStore;
@@ -38,6 +40,7 @@ public:
 		BIT_TRANSFORM,
 	} Bit;
 	
+	void Etherize(Ether& e);
 	
 	PoolId GetId() const {return id;}
 	
@@ -159,9 +162,6 @@ public:
 	void Visit(RuntimeVisitor& vis) {
 		vis || objects || pools;
 	}
-private:
-	EntityVec				objects;
-	PoolVec					pools;
 	
 };
 

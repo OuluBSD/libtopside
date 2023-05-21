@@ -42,6 +42,8 @@ public:
 	
 	EntityRef GetEntity();
 	
+	virtual void Etherize(Ether& e) {TODO} //= 0;
+	
 	virtual bool Arg(String key, Object value) {return true;}
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}

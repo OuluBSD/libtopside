@@ -18,6 +18,9 @@ class Entity :
 	String prefab;
 	String name;
 	
+	ComponentMap comps;
+	EntityId m_id;
+	
 protected:
 	friend class Pool;
 	
@@ -37,6 +40,8 @@ public:
 	virtual ~Entity();
 	
 	static EntityId GetNextId();
+	
+	void Etherize(Ether& e);
 	
 	void SetPrefab(String s) {prefab = s;}
 	String GetPrefab() const {return prefab;}
@@ -170,10 +175,6 @@ public:
 	void Visit(RuntimeVisitor& vis) {vis || comps;}
 	
 private:
-	ComponentMap comps;
-	
-	EntityId m_id;
-	
 	
 	template<typename T> void Remove0();
 	template<typename T> RefT_Entity<T> Add0(bool initialize);

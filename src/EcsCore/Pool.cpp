@@ -18,6 +18,45 @@ Pool::~Pool() {
 	DBG_DESTRUCT
 }
 
+void Pool::Etherize(Ether& e) {
+	GeomVar type;
+	/*
+	e % freeze_bits
+	  % name
+	  % id
+	  ;
+	*/
+	if (e.IsLoading()) {
+		TODO
+		while (!e.IsEof()) {
+			e.GetT(type);
+			
+		}
+	}
+	else {
+		for (PoolRef p : pools) {
+			type = GEOMVAR_PUSH_POOL_REL;
+			e.PutT(type);
+			e.Put(p->name);
+			
+			p->Etherize(e);
+			
+			type = GEOMVAR_POP_POOL;
+			e.PutT(type);
+		}
+		for (EntityRef o : objects) {
+			type = GEOMVAR_PUSH_ENTITY_REL;
+			e.PutT(type);
+			e.Put(o->name);
+			
+			o->Etherize(e);
+			
+			type = GEOMVAR_POP_ENTITY;
+			e.PutT(type);
+		}
+	}
+}
+
 PoolId Pool::GetNextId() {
 	static Atomic next_id;
 	return ++next_id;

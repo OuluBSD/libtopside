@@ -29,20 +29,20 @@ struct GeomTimeline {
 };
 
 struct GeomObject {
-	enum {
+	typedef enum {
 		O_NULL,
 		O_MODEL,
 		O_CAMERA,
 		O_OCTREE,
 		
 		O_COUNT
-	};
+	} Type;
 	
 	GeomDirectory* owner = 0;
 	
 	hash_t key;
 	String name;
-	int type = 0;
+	Type type = O_NULL;
 	
 	GeomObject() {}
 	One<Model> mdl;
@@ -73,6 +73,8 @@ struct GeomDirectory {
 	GeomObject& GetAddCamera(String name);
 	GeomObject& GetAddOctree(String name);
 	GeomObject* FindObject(String name);
+	GeomObject* FindObject(String name, GeomObject::Type type);
+	GeomObject* FindCamera(String name);
 	
 };
 
@@ -136,6 +138,8 @@ struct GeomProject {
 	}
 	
 	GeomScene& AddScene();
+	GeomScene& GetScene(int i) {return scenes[i];}
+	
 	hash_t NewKey() {return key_counter++;}
 	
 };

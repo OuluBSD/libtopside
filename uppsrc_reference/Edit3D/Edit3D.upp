@@ -18,6 +18,7 @@ file
 	GeomProjectCtrl.cpp,
 	Remote.h,
 	Remote.cpp,
+	RemoteCtrl.cpp,
 	Geom.h,
 	Geom.cpp,
 	Renderer.h,

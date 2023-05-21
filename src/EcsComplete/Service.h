@@ -12,9 +12,10 @@ class EcsService : public DaemonService {
 	
 public:
 	// Remote connection
-	GeomSerializer write, read;
+	//GeomSerializer write, read;
 	
 	void ReceiveGeoms(Ether& in, Ether& out);
+	void SendEngine(Ether& in, Ether& out);
 	
 public:
 	typedef EcsService CLASSNAME;

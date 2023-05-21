@@ -35,6 +35,22 @@ struct ComponentFactory {
 	
 	static void Dump();
 	
+	template <class T>
+	static String GetComponentName() {
+		for (CompData& c : CompDataMap().GetValues()) {
+			if (c.new_fn == &CreateComp<T>)
+				return c.name;
+		}
+		return "";
+	}
+	
+	static String GetComponentName(TypeCls type) {
+		for (CompData& c : CompDataMap().GetValues()) {
+			if (c.rtti_cls == type)
+				return c.name;
+		}
+		return "";
+	}
 };
 
 #define REG_EXT(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v) {\

@@ -9,8 +9,12 @@ class EditClientService : public DaemonService {
 	bool is_calling = false;
 	
 public:
+	Edit3D* edit = 0;
+	
 	// Remote connection
 	RemoteExchange sync;
+	bool debug = false;
+	bool ready = false;
 	
 	
 public:
@@ -20,6 +24,9 @@ public:
 	void Update() override;
 	void Stop() override;
 	void Deinit() override;
+	
+	void SetReady(bool b=true) {ready = b;}
+	void SetDebuggingMode() {debug = true;}
 	
 };
 

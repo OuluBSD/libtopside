@@ -34,6 +34,27 @@ public:
 	
 };
 
+
+
+class RemoteDebugCtrl : public Ctrl {
+	Edit3D* e;
+	
+	TabCtrl tabs;
+	
+	Splitter eng_vert, eng_horz;
+	ArrayCtrl eng_entities, eng_components, eng_compdata;
+	DocEdit eng_log;
+	
+public:
+	typedef RemoteDebugCtrl CLASSNAME;
+	
+	RemoteDebugCtrl(Edit3D* e);
+	void Update(double dt);
+	void Data();
+	
+	
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

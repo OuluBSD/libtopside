@@ -4,7 +4,9 @@ uses
 	EcsLocal,
 	EcsMinimal,
 	EcsAudioCore,
-	Complete;
+	Complete,
+	EcsMultimedia,
+	EcsDummy;
 
 uses(GUI) EcsCtrl;
 

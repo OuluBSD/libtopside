@@ -23,6 +23,7 @@ GUI_APP_MAIN {
 	cmd.AddArg('n', "Pointcloud directory", true, "directory");
 	cmd.AddArg('c', "Connect to a server", true, "address");
 	cmd.AddArg('p', "Port", true, "integer");
+	cmd.AddArg('g', "Debug-mode", false);
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
 		return;
@@ -32,7 +33,8 @@ GUI_APP_MAIN {
 		EMPTY,
 		POINTCLOUD,
 		PROJECT0,
-		REMOTE
+		REMOTE,
+		REMOTE_DEBUG,
 	};
 	int mode = EMPTY;
 	
@@ -47,7 +49,10 @@ GUI_APP_MAIN {
 			LOG("Connecting to port " << (int)EnetServiceClient::port_arg);
 		}
 		EnetServiceClient::SetVerbose(cmd.IsArg('v'));
-		mode = REMOTE;
+		if (cmd.IsArg('g'))
+			mode = REMOTE_DEBUG;
+		else
+			mode = REMOTE;
 	}
 	else if (cmd.IsArg('n')) {
 		pointcloud_dir = cmd.GetArg('n');
@@ -64,8 +69,11 @@ GUI_APP_MAIN {
 	
 	Edit3D app;
 	
-	if (mode == REMOTE)
-		app.LoadRemote(daemon.FindServiceT<EditClientService>());
+	
+	if (mode == REMOTE_DEBUG)
+		app.LoadRemote(daemon.FindServiceT<EditClientService>(), true);
+	else if (mode == REMOTE)
+		app.LoadRemote(daemon.FindServiceT<EditClientService>(), false);
 	else if (mode == POINTCLOUD)
 		app.LoadWmrStereoPointcloud(pointcloud_dir);
 	else if (mode == PROJECT0)

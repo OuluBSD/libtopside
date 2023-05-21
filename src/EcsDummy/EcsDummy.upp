@@ -7,9 +7,5 @@ uses(NEVER) EcsAudioCore;
 
 file
 	EcsDummy.h,
-	EcsDummy.icpp,
-	AudioGenerator.h,
-	AudioGenerator.cpp,
-	SoundCard.h,
-	SoundCard.cpp;
+	EcsDummy.icpp;
 

@@ -55,6 +55,9 @@ public:
 	template <class T> Ether& operator%(T& o);
 	
 	
+	template <class T> void GetT(T& o) {Get(&o, sizeof(o));}
+	template <class T> void PutT(T& o) {Put(&o, sizeof(o));}
+	
 };
 
 #define DEFAULT_ETHERIZER(type) template <> inline void Etherize(Ether& e, type& o) {\

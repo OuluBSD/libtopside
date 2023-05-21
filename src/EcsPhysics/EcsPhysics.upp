@@ -6,6 +6,7 @@ uses
 
 file
 	EcsPhysics.h,
+	EcsPhysics.cpp,
 	OdePrefab.h,
 	OdePrefab.cpp,
 	TPrefab.h,

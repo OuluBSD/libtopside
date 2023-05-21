@@ -14,6 +14,49 @@ Entity::~Entity() {
 	DBG_DESTRUCT
 }
 
+void Entity::Etherize(Ether& e) {
+	/*
+	EntityId id = -1;
+	int64 created = 0;
+	int64 changed = 0;
+
+	String prefab;
+	String name;
+	
+	ComponentMap comps;
+	EntityId m_id;
+	*/
+	
+	GeomVar type;
+	/*
+	e % freeze_bits
+	  % name
+	  % id
+	  ;
+	*/
+	if (e.IsLoading()) {
+		TODO
+		while (!e.IsEof()) {
+			e.GetT(type);
+			
+		}
+	}
+	else {
+		for (ComponentRef c : comps) {
+			type = GEOMVAR_PUSH_COMPONENT;
+			e.PutT(type);
+			TypeCls cls = c->GetTypeId();
+			String name = ComponentFactory::GetComponentName(cls);
+			e.Put(name);
+			
+			c->Etherize(e);
+			
+			type = GEOMVAR_POP_COMPONENT;
+			e.PutT(type);
+		}
+	}
+}
+
 void Entity::UnrefDeep() {
 	RefClearVisitor vis;
 	vis.Visit(*this);

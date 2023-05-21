@@ -2,14 +2,10 @@
 
 NAMESPACE_UPP
 
-
-
-
-
-
 INITBLOCK_(EcsDummy) {
-	EcsFactory::RegisterComponent<DummySoundGeneratorComponent>();
-	EcsFactory::RegisterComponent<DummyAudioSinkComponent>();
+	
+	//EcsFactory::RegisterComponent<>();
+	
 }
 
 END_UPP_NAMESPACE
