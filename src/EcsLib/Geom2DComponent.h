@@ -81,11 +81,14 @@ class Geom2DComponent :
 	};
 	#endif
 	
+public:
 	//One<Absolute2DInterface> owned_aw;
 	//Absolute2DInterface* aw = 0;
-	void (Geom2DComponent::*reset_fn)() = 0;
 	//Windows* wins = NULL;
+	void (Geom2DComponent::*reset_fn)() = 0;
 	Geom2DComponentLink* linked = NULL;
+	TransformRef    transform;
+	Transform2DRef  transform2d;
 	
 	//ResizeFrame resize_frame;
 	//WindowDecoration decor;
@@ -102,11 +105,6 @@ protected:
 	
 	//void SetContent(Windows* wins, int id);
 	void SetMaximized(bool b=true);
-	
-	
-public:
-	TransformRef    transform;
-	Transform2DRef  transform2d;
 	
 public:
 	typedef Geom2DComponent CLASSNAME;
@@ -164,9 +162,11 @@ public:
 	//Windows* GetWindows() const {return wins;}
 	TopWindow* GetTopWindow() const;
 	
+	void Etherize(Ether& e) override;
+	void Initialize() override;
+	void Uninitialize() override;
 	//String GetTitle() const override;
 	void Layout() override;
-	void Uninitialize() override;
 	//bool IsGeomDrawBegin() override;
 	//void SetFrameRect(const Rect& r) override;
 	bool Redraw(bool only_pending) override;
@@ -191,6 +191,7 @@ struct Geom2DComponentLink : public Component<Geom2DComponentLink> {
 	Geom2DComponent* linked = 0;
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	

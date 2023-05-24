@@ -17,6 +17,7 @@ public:
 	COMP_DEF_VISIT_(vis & model)
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
@@ -31,20 +32,11 @@ public:
     
 	void GetModels(VectorRendModel& models);
 	void Attach(Model* m) {loader.model = m;}
-	
-	
 	void Clear();
 	void SetPrefabModel(String prefab); // ResetModel
 	
+	
 public:
-	vec4 color;
-	String prefab_name;
-	String skybox_diffuse, skybox_irradiance;
-	bool load_skybox = false;
-	bool always_enabled = false;
-	bool dbg = false;
-	
-	
 	void SetRotation(float yaw, float pitch, float roll);
 	void SetTranslation(const vec3& v);
 	void SetScale(const vec3& v);
@@ -56,12 +48,21 @@ public:
 	void MakeBall(const vec3& pos, float radius);
 	void MakeCylinder(const vec3& pos, float radius, float length);
 	
+public:
+	vec4 color;
+	String prefab_name;
+	String skybox_diffuse, skybox_irradiance;
+	bool load_skybox = false;
+	bool always_enabled = false;
+	bool dbg = false;
+	
 protected:
 	Ref<Model> model;
-	ModelLoader loader;
-	hash_t gfx_hash = 0;
 	GfxDataState* gfx_state = 0;
 	
+	ModelLoader loader;
+	
+	hash_t gfx_hash = 0;
 	vec3 offset = zero<vec3>();
 	vec3 scale = one<vec3>();
 	float pitch = 0, yaw = 0, roll = 0;

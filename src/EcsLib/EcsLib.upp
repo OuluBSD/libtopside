@@ -31,9 +31,9 @@ file
 	Gui.cpp,
 	EventSystem.h,
 	EventSystem.cpp,
+	Geom2DComponent.h,
+	Geom2DComponent.cpp,
 	Trash readonly separator,
 	Absolute2D.h,
-	Absolute2D.cpp,
-	Geom2DComponent.h,
-	Geom2DComponent.cpp;
+	Absolute2D.cpp;
 

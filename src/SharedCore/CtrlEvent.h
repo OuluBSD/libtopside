@@ -132,7 +132,7 @@ struct ControllerProperties {
 };
 
 struct ControllerState;
-struct TransformMatrix;
+class TransformMatrix;
 struct ControllerMatrix;
 
 #define COPY2(dst, from) for(int i = 0; i < 2; i++) dst[i] = from[i]

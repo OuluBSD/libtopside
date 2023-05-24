@@ -12,6 +12,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CustomToolComponent>(this); vis & ball_object;}
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	void SetEnabled(bool enable) override;

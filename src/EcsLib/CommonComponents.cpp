@@ -30,6 +30,15 @@ void Transform::operator=(const Transform& t) {
     size = t.size;
 }
 
+void Transform::Etherize(Ether& e) {
+	e % data
+	  % size
+	  % relative_position
+	  % anchor_position
+	  % anchor_orientation
+	  % verbose;
+}
+
 mat4 Transform::GetMatrix() const {
 	return Translate(data.position) * QuatMat(data.orientation) * Scale(size);
 }
@@ -68,6 +77,11 @@ String Transform::ToString() const {
 
 
 
+
+void Transform2D::Etherize(Ether& e) {
+	e % position
+	  % size;
+}
 
 void Transform2D::operator=(const Transform2D& t) {
     position = t.position;

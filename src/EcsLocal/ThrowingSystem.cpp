@@ -169,6 +169,15 @@ void ThrowingInteractionSystemBase::Deactivate(EntityRef entity) {
 
 
 
+void ThrowingComponent::Etherize(Ether& e) {
+	CustomToolComponent::Etherize(e);
+	
+	e % distance_from_pointer
+	  % scale;
+	
+	TODO // ref
+}
+
 void ThrowingComponent::Initialize() {
 	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
 	if (tool)

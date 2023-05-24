@@ -13,6 +13,7 @@ public:
 	RTTI_COMP0(Viewable)
 	COMP_DEF_VISIT
 	
+	void Etherize(Ether& e) override {}
 	void Initialize() override;
 	void Uninitialize() override;
 	
@@ -38,6 +39,7 @@ public:
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}
 	
+	void Etherize(Ether& e) override {e % target % fov % angle;}
 	bool Arg(String key, Object value) override;
 	
 	void operator=(const Viewport& vp) {
@@ -54,14 +56,16 @@ struct CameraBase :
 	RTTI_DECL0(CameraBase)
 	
 	bool use_stereo = false;
+	CalibrationData calib;
+	
 	mat4 view_stereo[2];
 	mat4 proj_stereo[2];
 	mat4 mvp_stereo[2];
 	
-	CalibrationData calib;
 	
 	virtual bool Load(GfxDataState& state) = 0;
 	virtual void UpdateCalibration() = 0;
+	void Etherize(Ether& e);
 	
 };
 
@@ -93,6 +97,7 @@ public:
 	typedef ChaseCam CLASSNAME;
 	RTTI_COMP1(ChaseCam, CameraBase)
 	
+	void Etherize(Ether& e) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & viewable & vport;}
 	void Initialize() override;
 	void Uninitialize() override;

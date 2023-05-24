@@ -8,13 +8,13 @@ class PlayerBodyComponent;
 using PlayerBodyComponentRef = RefT_Entity<PlayerBodyComponent>;
 
 
-typedef enum {
+typedef enum : byte {
 	Unspecified,
 	Left,
 	Right
 } PlayerHandedness;
 
-typedef enum {
+typedef enum : byte {
 	High,
 	Approximate,
 } HandPositionAccuracy;
@@ -62,6 +62,7 @@ public:
 	
 	COPY_PANIC(PlayerHandComponent)
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
@@ -70,11 +71,12 @@ public:
 	
 	
 	PlayerBodyComponentRef				body;
-	bool								is_simulated = false;
-    bool								attach_ctrl_model = false;
-    PlayerHandedness					req_hand = Unspecified;
     const HandLocationSource*			source = 0;
     HandActionSourceLocation*			location = 0;
+	
+	bool								is_simulated = false;
+    bool								attach_ctrl_model = false;
+    byte								req_hand = Unspecified;
     
 };
 
@@ -90,6 +92,7 @@ public:
 	
 	COPY_PANIC(PlayerHeadComponent)
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
@@ -107,8 +110,10 @@ class PlayerBodyComponent : public Component<PlayerBodyComponent> {
 	
 protected:
 	friend class PlayerBodySystem;
+	
 	PlayerHandComponentRef hands[2];
 	PlayerHeadComponentRef head;
+	
 	float height = 1.8f;
 	
 public:
@@ -116,6 +121,7 @@ public:
 	COMP_DEF_VISIT_(vis & hands[0] & hands[1] & head)
 	COPY_PANIC(PlayerBodyComponent)
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;

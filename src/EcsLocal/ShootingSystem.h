@@ -12,6 +12,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CustomToolComponent>(this); /*vis & gun;*/}
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool LoadModel(ModelComponent&) override;

@@ -47,6 +47,20 @@ Geom2DComponent::Geom2DComponent() :
 	*/
 }
 
+void Geom2DComponent::Etherize(Ether& e) {
+	TODO // ptrs & refs
+	
+	e % stored_rect
+	  % id
+	  % pending_partial_redraw;
+	
+	
+}
+
+void Geom2DComponent::Initialize() {
+	
+}
+
 void Geom2DComponent::Uninitialize() {
 	transform.Clear();
 	transform2d.Clear();
@@ -548,6 +562,10 @@ void Geom2DComponent::Paint(Draw& id) {
 
 
 
+
+void Geom2DComponentLink::Etherize(Ether& e) {
+	TODO // ptr
+}
 
 void Geom2DComponentLink::Initialize() {
 	

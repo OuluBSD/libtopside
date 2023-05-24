@@ -4,6 +4,39 @@
 NAMESPACE_ECS_BEGIN
 
 
+void ModelComponent::Etherize(Ether& e) {
+	e % color
+	  % prefab_name
+	  % skybox_diffuse
+	  % skybox_irradiance
+	  % load_skybox
+	  % always_enabled
+	  % dbg
+	
+	  % gfx_hash
+	  % offset
+	  % scale
+	  % pitch
+	  % yaw
+	  % roll
+	  % ext_model
+	  % have_ext_model
+	  % model_changed;
+	
+	if (e.IsLoading()) {
+		TODO
+	}
+	else {
+		ModelRef own_model = loader.GetModel();
+		if (own_model.IsEmpty()) {
+			TODO // complicated model ref serialization (some post queue via Ether class?)
+		}
+		else {
+			e % *own_model;
+		}
+	}
+}
+
 void ModelComponent::Initialize() {
 	color = one<vec4>();
 	prefab_name.Clear();

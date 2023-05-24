@@ -19,6 +19,10 @@ void Renderable::Uninitialize() {
 		rend->RemoveRenderable(AsRef<ComponentBase>());
 }
 
+void Renderable::Etherize(Ether& e) {
+	e % color % offset % alpha_multiplier;
+}
+
 
 
 void RenderingSystem::AddViewable(ViewableRef v) {

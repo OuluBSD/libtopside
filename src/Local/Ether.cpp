@@ -20,6 +20,10 @@ String Ether::GetString() {
 
 
 
+WriteEther::WriteEther() {
+	SetStoring();
+}
+
 void WriteEther::_Put(const void *data, dword size) {
 	ss.Put(data, size);
 }

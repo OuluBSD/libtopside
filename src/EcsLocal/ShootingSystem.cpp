@@ -137,6 +137,14 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 
 
 
+void ShootingComponent::Etherize(Ether& e) {
+	CustomToolComponent::Etherize(e);
+	
+	e % bullet_speed
+	  % barrel_to_ctrl;
+	
+}
+
 void ShootingComponent::Initialize() {
 	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();
 	if (tool)

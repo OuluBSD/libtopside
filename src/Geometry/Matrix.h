@@ -1067,6 +1067,7 @@ using PositionOrientationAverage = PositionOrientationAverageT<>;
 struct Square : Moveable<Square> {
 	vec3 tl, tr, br, bl;
 	
+	void Etherize(Ether& e) {e % tl % tr % br % bl;}
 };
 
 
@@ -1116,10 +1117,12 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_UPP
 using namespace TS;
 #undef TransformMatrix
-struct TransformMatrix : RTTIBase {
+class TransformMatrix : RTTIBase {
+	
+public:
 	RTTI_DECL0(TransformMatrix);
 	
-	typedef enum {
+	typedef enum : byte {
 		MODE_POSITION,
 		MODE_LOOKAT,
 		MODE_AXES, // yaw, pitch, roll
@@ -1127,7 +1130,8 @@ struct TransformMatrix : RTTIBase {
 		//MODE_VIEW,
 	} Mode;
 	
-	Mode mode = MODE_POSITION;
+public:
+	byte mode = MODE_POSITION;
 	bool is_stereo = false;
 	
 	vec3 position;
@@ -1140,8 +1144,11 @@ struct TransformMatrix : RTTIBase {
 	float fov = 0;
 	
 	
+public:
 	TransformMatrix() {}
 	TransformMatrix(const TransformMatrix& m) {*this = m;}
+	
+	void Etherize(Ether& e);
 	void operator=(const TransformMatrix& m);
 	
 	void Clear();
@@ -1268,6 +1275,7 @@ struct CalibrationData {
 	float eye_dist = 0;
 	
 	
+	void Etherize(Ether& e);
 	String ToString() const;
 	void Dump();
 	

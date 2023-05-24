@@ -16,6 +16,7 @@ public:
 	float alpha_multiplier;
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	
@@ -30,6 +31,7 @@ public:
         offset = e.offset;
         alpha_multiplier = e.alpha_multiplier;
     }
+    
     
 	Callback cb;
 	

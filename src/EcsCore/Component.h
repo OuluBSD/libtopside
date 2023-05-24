@@ -42,7 +42,7 @@ public:
 	
 	EntityRef GetEntity();
 	
-	virtual void Etherize(Ether& e) {TODO} //= 0;
+	virtual void Etherize(Ether& e) = 0;
 	
 	virtual bool Arg(String key, Object value) {return true;}
 	

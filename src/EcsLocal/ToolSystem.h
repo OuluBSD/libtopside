@@ -34,6 +34,9 @@ public:
 	
 	
 	TypeId type { AsVoidTypeId() };
+	
+	void Etherize(Ether& e) override;
+	
 };
 
 struct ToolSelectorPrefab :

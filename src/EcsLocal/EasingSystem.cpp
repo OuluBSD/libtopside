@@ -3,6 +3,17 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+
+
+
+void Easing::Etherize(Ether& e) {
+	e % target_position
+	  % target_orientation
+	  % position_easing_factor
+	  % orientation_easing_factor;
+}
+
 void Easing::Initialize() {
 	Ref<EasingSystem> sys = GetEngine().TryGet<EasingSystem>();
 	if (sys)

@@ -66,12 +66,12 @@ public:
 }
 
 DEFAULT_ETHERIZER(bool)
-DEFAULT_ETHERIZER(int8)
-DEFAULT_ETHERIZER(uint8)
-DEFAULT_ETHERIZER(int16)
-DEFAULT_ETHERIZER(uint16)
-DEFAULT_ETHERIZER(int32)
-DEFAULT_ETHERIZER(uint32)
+DEFAULT_ETHERIZER(char)
+DEFAULT_ETHERIZER(unsigned char)
+DEFAULT_ETHERIZER(short)
+DEFAULT_ETHERIZER(unsigned short)
+DEFAULT_ETHERIZER(int)
+DEFAULT_ETHERIZER(unsigned int)
 DEFAULT_ETHERIZER(int64)
 DEFAULT_ETHERIZER(uint64)
 DEFAULT_ETHERIZER(float)
@@ -79,6 +79,10 @@ DEFAULT_ETHERIZER(double)
 #if CPU_32
 DEFAULT_ETHERIZER(unsigned long)
 #endif
+DEFAULT_ETHERIZER(Point)
+DEFAULT_ETHERIZER(Size)
+DEFAULT_ETHERIZER(Rect)
+DEFAULT_ETHERIZER(RGBA)
 
 template <> inline void Etherize(Ether& e, String& s) {
 	if (e.IsLoading()) s = e.GetString();
@@ -143,7 +147,7 @@ public:
 	void  SetSize(int64 size) override;
 	
 public:
-	WriteEther() {}
+	WriteEther();
 	
 	String GetResult() {return ss.GetResult();}
 	

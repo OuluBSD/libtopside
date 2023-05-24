@@ -19,6 +19,13 @@ bool HitTest(vec3 positionA, vec3 positionB, float diameter) {
 
 
 
+void ToolComponent::Etherize(Ether& e) {
+	e % title
+	  % description;
+	
+	TODO // tools: make refs & tool_type TypeCId
+}
+
 void ToolComponent::Initialize() {
 	ToolboxSystemBaseRef sys = GetEngine().TryGet<ToolboxSystemBase>();
 	if (sys)

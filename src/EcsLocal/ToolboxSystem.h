@@ -22,6 +22,9 @@ public:
 	
 	virtual bool LoadModel(ModelComponent&) = 0;
 	
+	void Etherize(Ether& e) override {}
+	
+	
 };
 
 using CustomToolComponentRef = Ref<CustomToolComponent>;
@@ -35,6 +38,7 @@ public:
 	COPY_PANIC(ToolComponent)
 	COMP_DEF_VISIT_(vis & active_tool & active_hand; vis && tools;)
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;

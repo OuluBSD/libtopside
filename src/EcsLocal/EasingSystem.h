@@ -25,6 +25,7 @@ public:
         orientation_easing_factor = e.orientation_easing_factor;
     }
     
+	void Etherize(Ether& e) override;
     void Initialize() override;
     void Uninitialize() override;
     

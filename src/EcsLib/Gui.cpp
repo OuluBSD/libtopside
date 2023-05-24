@@ -23,6 +23,11 @@ void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
 	vis & trans2;
 }
 
+void DefaultGuiAppComponent::Etherize(Ether& e) {
+	TODO // refs
+	e % prev_mouse;
+}
+
 void DefaultGuiAppComponent::Initialize() {
 	AddToUpdateList();
 	Serial::HandleVideoBase::AddBinder(this);
