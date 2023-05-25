@@ -130,7 +130,7 @@ public:
 		return comp;
 	}
 	
-	
+	ComponentBaseRef	GetAdd(String comp_name);
 	
 	template<typename... ComponentTs>
 	RTuple<RefT_Entity<ComponentTs>...> TryGetComponents() {
@@ -152,6 +152,8 @@ public:
 	Engine&				GetEngine();
 	const Engine&		GetEngine() const;
 	Pool&				GetPool() const;
+	Pool&				GetRoot();
+	void				GetEntityPath(Vector<String>& path);
 	
 	ComponentMap&		GetComponents() {return comps;}
 	const ComponentMap&	GetComponents() const {return comps;}
@@ -170,6 +172,7 @@ public:
 	}
 	
 	ComponentBaseRef CreateEon(String id);
+	ComponentBaseRef CreateComponent(TypeCls type);
 	
 	
 	void Visit(RuntimeVisitor& vis) {vis || comps;}
@@ -184,6 +187,8 @@ private:
 	
 	
 };
+
+
 
 
 

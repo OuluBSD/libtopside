@@ -19,13 +19,13 @@ Pool::~Pool() {
 }
 
 void Pool::Etherize(Ether& e) {
-	GeomVar type;
 	/*
 	e % freeze_bits
 	  % name
 	  % id
 	  ;
 	*/
+	GeomVar type;
 	if (e.IsLoading()) {
 		TODO
 		while (!e.IsEof()) {
@@ -237,6 +237,52 @@ void Pool::RemoveEntity(Entity* e) {
 		++i;
 		++it;
 	}
+}
+
+ComponentBaseRef Pool::RealizeComponentPath(const Vector<String>& path) {
+	int c = path.GetCount();
+	ASSERT(c >= 2);
+	if (c < 2) return ComponentBaseRef();
+	
+	String ent_name = path[c-2];
+	String comp_name = path[c-1];
+	ASSERT(!ent_name.IsEmpty())
+	ASSERT(!comp_name.IsEmpty())
+	
+	Pool* pool = this;
+	for(int i = 0; i < c-2; i++) {
+		String pool_name = path[i];
+		ASSERT(!pool_name.IsEmpty());
+		pool = &*pool->GetAddPool(pool_name);
+		ASSERT(pool);
+	}
+	
+	EntityRef ent = pool->GetAddEmpty(ent_name);
+	ComponentBaseRef comp = ent->GetAdd(comp_name);
+	ASSERT(comp);
+	
+	return comp;
+}
+
+EntityRef Pool::RealizeEntityPath(const Vector<String>& path) {
+	int c = path.GetCount();
+	ASSERT(c >= 1);
+	if (c < 1) return EntityRef();
+	
+	String ent_name = path[c-1];
+	ASSERT(!ent_name.IsEmpty())
+	
+	Pool* pool = this;
+	for(int i = 0; i < c-1; i++) {
+		String pool_name = path[i];
+		ASSERT(!pool_name.IsEmpty());
+		pool = &*pool->GetAddPool(pool_name);
+		ASSERT(pool);
+	}
+	
+	EntityRef ent = pool->GetAddEmpty(ent_name);
+	
+	return ent;
 }
 
 

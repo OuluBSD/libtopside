@@ -125,7 +125,8 @@ void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
 void PhysicsBody::Etherize(Ether& e) {
 	e % test_fn
 	  % is_bound;
-	TODO // refs
+	EtherizeRef(e, trans);
+	EtherizeRef(e, player);
 }
 
 void PhysicsBody::operator=(const PhysicsBody& r) {

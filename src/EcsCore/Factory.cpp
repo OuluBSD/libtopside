@@ -15,6 +15,28 @@ void ComponentFactory::Dump() {
 	}
 }
 
+ComponentBase* ComponentFactory::CreateComponent(TypeCls type) {
+	int i = CompDataMap().Find(type);
+	if (i < 0) return 0;
+	CompData& d = CompDataMap()[i];
+	return d.new_fn();
+}
+
+String ComponentFactory::GetComponentName(TypeCls type) {
+	for (CompData& c : CompDataMap().GetValues()) {
+		if (c.rtti_cls == type)
+			return c.name;
+	}
+	return "";
+}
+
+TypeCls ComponentFactory::GetComponentType(String name) {
+	for (CompData& c : CompDataMap().GetValues()) {
+		if (c.name == name)
+			return c.rtti_cls;
+	}
+	return TypeCls();
+}
 
 
 

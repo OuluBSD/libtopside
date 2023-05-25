@@ -39,6 +39,15 @@ void GeomSerializer::Etherize(Ether& e) {
 				const_cast<Model*>(item.mdl)->Etherize(e);
 				break;
 				
+			case GEOMVAR_PUSH_POOL_REL:		// string
+			case GEOMVAR_POP_POOL:
+			case GEOMVAR_PUSH_ENTITY_REL:		// string
+			case GEOMVAR_POP_ENTITY:
+			case GEOMVAR_PUSH_COMPONENT:		// string (type)
+			case GEOMVAR_POP_COMPONENT:
+				TODO
+				break;
+				
 			case GEOMVAR_NULL:
 				break;
 			default:

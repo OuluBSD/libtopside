@@ -23,7 +23,11 @@ void ToolComponent::Etherize(Ether& e) {
 	e % title
 	  % description;
 	
-	TODO // tools: make refs & tool_type TypeCId
+	EtherizeRef(e, active_tool);
+	EtherizeRefContainer(e, tools);
+	EtherizeRef(e, active_hand);
+	
+	TODO // tool_type TypeCId
 }
 
 void ToolComponent::Initialize() {

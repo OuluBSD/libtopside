@@ -29,6 +29,29 @@ String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
 
+void ComponentBase::GetComponentPath(Vector<String>& path) {
+	path.Clear();
+	
+	String name = ComponentFactory::GetComponentName(GetTypeId());
+	ASSERT(!name.IsEmpty());
+	path.Add(name);
+	
+	EntityRef ent = GetEntity();
+	String ent_name = ent->GetName();
+	ASSERT(!ent_name.IsEmpty());
+	path.Add(ent_name);
+	
+	Pool* pool = &ent->GetPool();
+	while (pool) {
+		String pool_name = pool->GetName();
+		path.Add(pool_name);
+		pool = pool->GetParent();
+	}
+	
+	Reverse(path);
+}
+
+
 
 
 

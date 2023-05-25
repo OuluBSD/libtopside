@@ -156,6 +156,20 @@ public:
 	bool IsEmpty() const {return count == 0;}
 	bool IsFilled() const {return count != 0;}
 	operator bool() const {return count > 0;}
+	
+	void SetCount(int i) {
+		if (i < 0) return;
+		int diff = i - GetCount();
+		if (!diff) return;
+		if (diff > 0) {
+			for(int i = 0; i < diff; i++)
+				Add();
+		}
+		else {
+			diff = -diff;
+			RemoveLast(diff);
+		}
+	}
 	void RemoveFirst(int count=1) {
 		if (!count) return;
 		ASSERT(count > 0 && count <= this->count);

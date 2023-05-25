@@ -4,6 +4,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class EngineSerializer {
+	
+	
+public:
+	void Etherize(Ether& e) {TODO}
+	
+};
+
 class RemoteExchange {
 	GeomProject* prj = 0;
 	GeomWorldState* state = 0;
@@ -30,7 +38,8 @@ public:
 	
 	
 	
-	GeomSerializer write, read;
+	GeomSerializer write;
+	EngineSerializer read;
 	
 };
 

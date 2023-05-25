@@ -104,7 +104,10 @@ void ChaseCam::Etherize(Ether& e) {
 	  % fov
 	  % used_fov;
 	
-	TODO // refs
+	EtherizeRef(e, trans);
+	EtherizeRef(e, target);
+	EtherizeRef(e, viewable);
+	EtherizeRef(e, vport);
 }
 
 void ChaseCam::Initialize() {

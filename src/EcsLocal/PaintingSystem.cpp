@@ -471,7 +471,14 @@ void PaintComponent::Etherize(Ether& e) {
 	  % brush_tip_offset_from_holding_pose
 	  % has_brush_tip_offset;
 	
-	TODO // refs & ptrs
+	EtherizeRef(e, touchpad_indicator);
+	EtherizeRef(e, stroke_in_progress);
+	EtherizeRef(e, paint_brush);
+	EtherizeRef(e, beam);
+	EtherizeRefContainer(e, clr_pick_objects);
+	EtherizeRefContainer(e, strokes);
+	
+	TODO // ptr
 }
 
 void PaintComponent::Initialize() {

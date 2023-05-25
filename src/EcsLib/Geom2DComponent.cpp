@@ -48,13 +48,16 @@ Geom2DComponent::Geom2DComponent() :
 }
 
 void Geom2DComponent::Etherize(Ether& e) {
-	TODO // ptrs & refs
-	
 	e % stored_rect
 	  % id
 	  % pending_partial_redraw;
 	
+	EtherizeRef(e, transform);
+	EtherizeRef(e, transform2d);
 	
+	if ((reset_fn || linked) && e.IsStoring()) {
+		TODO
+	}
 }
 
 void Geom2DComponent::Initialize() {

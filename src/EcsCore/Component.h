@@ -62,8 +62,12 @@ public:
 			sys->Remove(ref);
 	}
 	
-	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
+	
+	template <class T> void EtherizeRef(Ether& e, Ref<T>& ref);
+	template <class T> void EtherizeRefContainer(Ether& e, T& cont);
+	
+	void GetComponentPath(Vector<String>& path);
 	
 };
 

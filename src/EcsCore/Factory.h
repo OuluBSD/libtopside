@@ -19,6 +19,8 @@ struct ComponentFactory {
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	
+	static ComponentBase* CreateComponent(TypeCls type);
+	
 	template <class T> static void Register(String eon_id) {
 		TypeCls cls = AsTypeCls<T>();
 		ASSERT(CompDataMap().Find(cls) < 0);
@@ -44,13 +46,9 @@ struct ComponentFactory {
 		return "";
 	}
 	
-	static String GetComponentName(TypeCls type) {
-		for (CompData& c : CompDataMap().GetValues()) {
-			if (c.rtti_cls == type)
-				return c.name;
-		}
-		return "";
-	}
+	static String GetComponentName(TypeCls type);
+	static TypeCls GetComponentType(String name);
+	
 };
 
 #define REG_EXT(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v) {\

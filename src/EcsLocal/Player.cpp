@@ -8,7 +8,9 @@ void PlayerHandComponent::Etherize(Ether& e) {
 	  % attach_ctrl_model
 	  % req_hand;
 	
-	TODO // refs & ptrs
+	EtherizeRef(e, body);
+	
+	// ptrs can be ignored for now
 }
 
 void PlayerHandComponent::Initialize() {
@@ -64,7 +66,7 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 
 
 void PlayerHeadComponent::Etherize(Ether& e) {
-	TODO // refs & ptrs
+	EtherizeRef(e, body);
 }
 
 void PlayerHeadComponent::Initialize() {
@@ -104,7 +106,9 @@ bool PlayerHeadComponent::Arg(String key, Object value) {
 void PlayerBodyComponent::Etherize(Ether& e) {
 	e % height;
 	
-	TODO // refs & ptrs
+	EtherizeRef(e, hands[0]);
+	EtherizeRef(e, hands[1]);
+	EtherizeRef(e, head);
 }
 
 void PlayerBodyComponent::Initialize() {

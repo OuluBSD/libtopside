@@ -175,7 +175,7 @@ void ThrowingComponent::Etherize(Ether& e) {
 	e % distance_from_pointer
 	  % scale;
 	
-	TODO // ref
+	EtherizeRef(e, ball_object);
 }
 
 void ThrowingComponent::Initialize() {
