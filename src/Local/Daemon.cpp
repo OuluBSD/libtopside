@@ -38,13 +38,15 @@ DaemonBase::~DaemonBase() {
 
 bool DaemonBase::Init() {
 	#ifdef flagMSC
-	TODO
+	LOG("DaemonBase::Init: warning: TODO signal handlers");
 	#else
 	signal(SIGINT, DaemonBase_signal_handler);
-	signal(SIGQUIT, DaemonBase_signal_handler);
 	signal(SIGABRT, DaemonBase_signal_handler);
 	signal(SIGTERM, DaemonBase_signal_handler);
+	#ifdef flagPOSIX
+	signal(SIGQUIT, DaemonBase_signal_handler);
 	signal(SIGHUP, DaemonBase_signal_handler);
+	#endif
 	#endif
 	
 	if (requested_services.IsEmpty()) {

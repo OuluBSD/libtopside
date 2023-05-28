@@ -53,6 +53,9 @@ GUI_APP_MAIN {
 			mode = REMOTE_DEBUG;
 		else
 			mode = REMOTE;
+		
+		if (!daemon.Init())
+			return;
 	}
 	else if (cmd.IsArg('n')) {
 		pointcloud_dir = cmd.GetArg('n');
@@ -62,8 +65,6 @@ GUI_APP_MAIN {
 		mode = PROJECT0;
 	}
 	
-	if (!daemon.Init())
-		return;
 	
 	daemon.RunInThread();
 	

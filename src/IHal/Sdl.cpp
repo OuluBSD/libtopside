@@ -650,7 +650,10 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 			SDL_Surface* surf = 0;
 			SDL_Rect r {0, 0, w, h};
 			
-			#if SDL_VERSION_ATLEAST(2,0,12)
+			#ifdef flagMSC
+			ASSERT_(0, "SDL_LockTextureToSurface not working");
+			return false;
+			#elif SDL_VERSION_ATLEAST(2,0,12)
 			if (SDL_LockTextureToSurface(fb, &r, &surf) < 0 || !surf)
 				return false;
 			#else

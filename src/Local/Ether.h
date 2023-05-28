@@ -83,6 +83,9 @@ DEFAULT_ETHERIZER(Point)
 DEFAULT_ETHERIZER(Size)
 DEFAULT_ETHERIZER(Rect)
 DEFAULT_ETHERIZER(RGBA)
+#if IS_UPP_CORE && defined flagMSC
+DEFAULT_ETHERIZER(dword)
+#endif
 
 template <> inline void Etherize(Ether& e, String& s) {
 	if (e.IsLoading()) s = e.GetString();

@@ -22,11 +22,13 @@ library(WIN32 & (CLANG|GCC)) crypto;
 
 library(WIN32 & (CLANG|GCC) & MSYS2) "bz2 z iconv";
 
-library(WIN32 & MSC & !DEBUG) "libcryptoMT libsslMT Advapi32 User32";
+library(WIN32 & MSC & !DEBUG & UPPLIB) "libcryptoMT libsslMT Advapi32 User32";
 
-library(WIN32 & MSC & DEBUG) "libcryptoMTd libsslMTd Advapi32 User32";
+library(WIN32 & MSC & DEBUG & UPPLIB) "libcryptoMTd libsslMTd Advapi32 User32";
 
 library(WIN32) "Userenv Shell32";
+
+library(WIN32 & MSC) "libcrypto libssl Advapi32 User32";
 
 file
 	srcdoc.tpp,

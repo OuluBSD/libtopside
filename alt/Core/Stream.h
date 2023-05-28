@@ -231,7 +231,7 @@ public:
 	int _Term() override {
 		if (feof(s))
 			return 0;
-		size_t cur = ftell(s);
+		long cur = ftell(s);
 		byte b;
 		fread(&b, 1, 1, s);
 		fseek(s, cur, SEEK_SET);

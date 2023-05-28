@@ -4,13 +4,11 @@ uses
 	ParallelLib,
 	IGraphics;
 
+library(SDL2 & (!WIN32 | MSC)) "SDL2 SDL2_ttf SDL2_image";
+
 library(UWP&DX12) "D3D11 DXGI D2d1 Dwrite";
 
-library(SDL2) SDL2;
-
-library(SDL2) SDL2_ttf;
-
-library(SDL2) SDL2_image;
+library(SDL2 & WIN32 & !MSC) "SDL2main SDL2 SDL2_image SDL2_ttf glew32 freetype harfbuzz SetupAPI jpeg jxl png tiff webp Imm32 Version OleAut32 hwy brotlidec brotlicommon graphite2 Rpcrt4  jbig deflate lzma zstd Lerc sharpyuv";
 
 file
 	IHal.h,

@@ -16,8 +16,14 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz, int mem_pitch) {
 	
 	SDL_Surface* surf = 0;
 	SDL_Rect r {0, 0, w, h};
+	
+	#ifdef flagMSC
+	ASSERT_(0, "SDL_LockTextureToSurface not working");
+	return;
+	#else
 	if (SDL_LockTextureToSurface(tex, &r, &surf) < 0 || !surf)
 		return;
+	#endif
 	
 	int stride = surf->format->BytesPerPixel;
 	int surf_pitch = surf->pitch;
