@@ -91,6 +91,8 @@ struct GfxDataState : ErrorReporter {
 	vec2				resolution;
 	vec2				offset;
 	
+	// generic
+	Machine* mach = 0;
 	
 	GfxDataState();
 	virtual GfxModelState& AddModel() = 0;
@@ -113,7 +115,7 @@ struct GfxInputState : ErrorReporter {
 	virtual ~GfxInputState() {}
 	
 	int id = -1;
-	InputType type;
+	InputType type = GVar::InputType::INVALID;
 	bool is_loopback = false;
 	
 	void Clear() {id = -1; type = GVar::InputType::INVALID;}
@@ -163,7 +165,7 @@ struct GfxFramebuffer : ErrorReporter {
 	virtual void Enter() = 0;
 	virtual void Leave() = 0;
 	virtual byte* GetIterator(int x, int y) = 0;
-	virtual void DrawFill(const byte* mem, int sz) = 0;
+	virtual void DrawFill(const byte* mem, int sz, int pitch) = 0;
 	
 	int GetWidth() const {return size.cx;}
 	int GetHeight() const {return size.cy;}

@@ -25,6 +25,9 @@ INITBLOCK_(EcsLib) {
 	ComponentFactory::Register<Renderable>("renderable");
 	ComponentFactory::Register<ModelComponent>("model");
 	
+	#ifdef flagGUI
+	ComponentFactory::Register<DefaultGuiAppComponent>("gui.app");
+	#endif
 	
 }
 

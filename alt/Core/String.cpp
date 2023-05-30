@@ -85,7 +85,8 @@ WString FromUtf8(const String& x) {
 	return ToWString(x);
 }
 
-String HexString(const char* data, int len) {
+String HexString(void* data_, int len) {
+	const char* data = (const char*)data_;
 	String s = "0x";
 	for(int i = 0; i < len; i++) {
 		char c = data[len-1-i];

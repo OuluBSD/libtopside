@@ -10,6 +10,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Edit3D;
+class EditClientService;
 
 
 struct EditConfiguration {
@@ -49,12 +50,14 @@ struct Edit3D : TopWindow {
 		VIEW_NONE,
 		VIEW_GEOMPROJECT,
 		VIEW_VIDEOIMPORT,
+		VIEW_REMOTE_DEBUG,
 	} ViewType;
 	
 	ViewType view = VIEW_NONE;
 	
 	GeomProjectCtrl v0;
 	VideoImportCtrl v1;
+	RemoteDebugCtrl v_rdbg;
 	MenuBar menu;
 	ToolBar tool;
 	
@@ -69,11 +72,19 @@ struct Edit3D : TopWindow {
 	TimeCallback tc;
 	TimeStop ts;
 	
+	EditClientService* svc = 0;
+	bool debug_remote = false;
+	
+	void CreateDefaultInit();
+	void CreateDefaultPostInit();
+	void LoadTestCirclingCube();
+	void LoadTestOctree();
 	
 public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();
 	
+	void LoadRemote(EditClientService* svc, bool debug);
 	void SetView(ViewType view);
 	void Update();
 	void Data();
@@ -85,8 +96,10 @@ public:
 	void RefrehRenderers();
 	void RefrehToolbar();
 	void OnSceneEnd();
+	void OnDebugMetadata();
 	void Toolbar(Bar& bar);
 	
+	void LoadEmptyProject();
 	void LoadTestProject(int test_i);
 	void LoadWmrStereoPointcloud(String directory);
 	

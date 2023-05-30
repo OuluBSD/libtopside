@@ -1653,7 +1653,7 @@ double IrVM::DoCompare(const HiValue& a, const HiValue& b, const char *op)
 		return 1;
 	if(a.IsVoid() && !b.IsVoid())
 		return -1;
-	OnError("invalid values for comparison " + a.GetTypeName() + ' ' + String(op) + ' ' + b.GetTypeName());
+	OnError("invalid values for comparison " + a.GetTypeName() + " " + String(op) + " " + b.GetTypeName());
 	return 0;
 }
 

@@ -1,0 +1,12 @@
+description "Enet daemon service. This should work on all Core backends.\377";
+
+uses
+	Local,
+	ports/enet;
+
+file
+	Main.cpp;
+
+mainconfig
+	"" = "VERBOSE";
+

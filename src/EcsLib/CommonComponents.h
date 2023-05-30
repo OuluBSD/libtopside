@@ -24,10 +24,11 @@ public:
 	mat4 GetMatrix() const;
 	vec3 GetForwardDirection() const;
 	
-	bool Arg(String key, Object value) override;
-	String ToString() const override;
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
+	bool Arg(String key, Object value) override;
+	String ToString() const override;
 	
 };
 
@@ -48,6 +49,7 @@ public:
 	
 	void operator=(const Transform2D& t);
 	
+	void Etherize(Ether& e) override;
 	
 };
 

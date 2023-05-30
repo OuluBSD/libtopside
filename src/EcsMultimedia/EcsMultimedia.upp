@@ -1,27 +1,10 @@
 description "\3770,128,128";
 
 uses
-	Multimedia,
 	EcsAudioCore,
-	EcsLib,
-	EcsEssential;
+	EcsLib;
 
 file
 	EcsMultimedia.h,
-	EcsMultimedia.icpp,
-	Audio.h,
-	Video.h,
-	Video.cpp,
-	Media.h,
-	Media.cpp,
-	Ffmpeg.h,
-	Ffmpeg.cpp,
-	FfmpegFileIn.h,
-	FfmpegFileIn.cpp,
-	OpenCV.h,
-	OpenCV.cpp,
-	Capture_OpenCV.h,
-	Capture_OpenCV.cpp,
-	Capture_V4L2.h,
-	Capture_V4L2.cpp;
+	EcsMultimedia.icpp;
 

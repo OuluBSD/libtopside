@@ -19,11 +19,14 @@ struct DefaultGuiAppComponent :
 	TransformRef trans;
 	Transform2DRef trans2;
 	
+	
 	DefaultGuiAppComponent();
 	void operator=(const DefaultGuiAppComponent& t) {Panic("Can't copy DefaultGuiAppComponent");}
-	void Visit(RuntimeVisitor& vis) override;
+	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override;
 	void Update(double dt) override;
 	bool Render(Draw& d) override;
 	bool RenderProg(DrawCommand*& begin, DrawCommand*& end) override;

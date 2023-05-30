@@ -533,12 +533,16 @@ class CommandLineArguments {
 	
 public:
 	CommandLineArguments() {}
+	
 	void AddArg(char key, const char* desc, bool has_value, String value_desc="value");
 	bool Parse();
 	void PrintHelp();
-	int GetInputCount() const {return inputs.GetCount();}
-	const Array<CmdInput>& GetInputs() const {return inputs;}
 	
+	int GetInputCount() const {return inputs.GetCount();}
+	bool IsArg(char c) const;
+	String GetArg(char c) const;
+	
+	const Array<CmdInput>& GetInputs() const {return inputs;}
 	const VectorMap<String,Object>& GetVariables() const {return vars;}
 	
 };

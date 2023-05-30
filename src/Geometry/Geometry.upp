@@ -6,7 +6,7 @@ uses
 
 uses(!UWP) ports/tiny_gltf;
 
-uses(!UWP & (BUILTIN_ASSIMP | MSC | LINUX)) ports/assimp;
+uses(!UWP & (BUILTIN_ASSIMP | LINUX)) ports/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
 
@@ -56,6 +56,8 @@ file
 	Uncamera.cpp,
 	Vr.h,
 	Vr.cpp,
+	Serializer.h,
+	Serializer.cpp,
 	Trash readonly separator,
 	ModelPainter.h,
 	ModelPainter.cpp,

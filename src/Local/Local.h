@@ -59,6 +59,7 @@
 #include "Workspace.h"
 #include "Ctrl.h"
 #include "GEnums.h"
+#include "Ether.h"
 #include "Daemon.h"
 #include "Network.h"
 #include "ProgPainter.h"

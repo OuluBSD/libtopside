@@ -20,9 +20,14 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size, int grid_steps) 
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	// If forced texture
+	if (0)
+		model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	else
+		model.RealizeMaterial(m).SetDiffuse(Colors::Gray).SetFlat();
+	
 	m.disable_textures = mb_disable_textures;
-	//m.Refresh();
+	
 	return m;
 }
 
@@ -39,9 +44,14 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered, bool
 		v.position += off;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	// If forced texture
+	if (0)
+		model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	else
+		model.RealizeMaterial(m).SetDiffuse(Colors::Gray).SetFlat();
+	
 	m.disable_textures = mb_disable_textures;
-	//m.Refresh();
+	
 	return m;
 }
 
@@ -55,9 +65,14 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius, int slices, int sta
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	// If forced texture
+	if (0)
+		model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	else
+		model.RealizeMaterial(m).SetDiffuse(Colors::Gray).SetFlat();
+	
 	m.disable_textures = mb_disable_textures;
-	//m.Refresh();
+	
 	return m;
 }
 
@@ -79,9 +94,14 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length, int
 		v.position += pos;
 	}
 	
-	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	// If forced texture
+	if (0)
+		model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID), "grid");
+	else
+		model.RealizeMaterial(m).SetDiffuse(Colors::Gray).SetFlat();
+	
 	m.disable_textures = mb_disable_textures;
-	//m.Refresh();
+	
 	return m;
 }
 

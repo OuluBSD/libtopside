@@ -14,12 +14,22 @@ struct Vertex : Moveable<Vertex> {
     vec4			tangent;
     NodeIndex		mdl_transform_idx;
     
+    void Etherize(Ether& e);
     void SetPosTex(vec3 pos, vec2 tex);
     void Set(vec3 pos, vec3 norm);
     void Set(vec3 pos, vec3 norm, vec3 tan, vec2 tex);
     void Set(float x, float y, float z);
     void Set(float x, float y, float z, float tex_x, float tex_y);
     
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(position.GetHashValue());
+        c.Put(normal.GetHashValue());
+        c.Put(tex_coord.GetHashValue());
+        c.Put(tangent.GetHashValue());
+        c.Put(mdl_transform_idx);
+        return c;
+    }
 };
 
 

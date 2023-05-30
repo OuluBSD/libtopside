@@ -1,5 +1,7 @@
 #include "ParallelLib.h"
 
+#ifdef flagGUI
+
 NAMESPACE_PARALLEL_BEGIN
 
 #define LLOG(x)  // LOG(x)
@@ -517,3 +519,5 @@ PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(FrameT)
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

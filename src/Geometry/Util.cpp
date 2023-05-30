@@ -2099,4 +2099,9 @@ float Area2(const vec2& a, const vec2& b, const vec2& c) {
 }
 
 
+
+vec3 mix(const vec3& a, const vec3& b, float fade) {
+	return (a * (fade-1)) + (b * fade);
+}
+
 NAMESPACE_TOPSIDE_END

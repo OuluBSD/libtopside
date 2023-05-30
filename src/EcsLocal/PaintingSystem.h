@@ -15,29 +15,31 @@ public:
 	
 	
 	
-	enum class State {
+	typedef enum : byte  {
 		Idle,
 		Painting,
 		Manipulating,
 		ColorSelection
-	};
+	} State;
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	void SetEnabled(bool enable) override;
 	void Destroy() override;
 	bool LoadModel(ModelComponent&) override;
 	
-	vec4 selected_color = Colors::White;
-	LinkedList<EntityRef> clr_pick_objects;
-	LinkedList<EntityRef> strokes;
 	
 	EntityRef touchpad_indicator;
 	EntityRef stroke_in_progress;
 	EntityRef paint_brush;
 	EntityRef beam;
+	LinkedList<EntityRef> clr_pick_objects;
+	LinkedList<EntityRef> strokes;
+	HandSourceLocation* prev_manip_loc = 0;
 	
-	State cur_state { State::Idle };
+	vec4 selected_color = Colors::White;
+	byte cur_state { State::Idle };
 	
 	float touchpad_x = 0.0f;
 	float touchpad_y = 0.0f;
@@ -47,9 +49,8 @@ public:
 	
 	bool wait_touchpad_release = false;
 	
-	HandSourceLocation* prev_manip_loc = 0;
-	
-	Optional<mat4> brush_tip_offset_from_holding_pose;
+	mat4 brush_tip_offset_from_holding_pose;
+	bool has_brush_tip_offset = false;
 	
 };
 

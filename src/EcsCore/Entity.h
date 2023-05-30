@@ -18,6 +18,9 @@ class Entity :
 	String prefab;
 	String name;
 	
+	ComponentMap comps;
+	EntityId m_id;
+	
 protected:
 	friend class Pool;
 	
@@ -37,6 +40,8 @@ public:
 	virtual ~Entity();
 	
 	static EntityId GetNextId();
+	
+	void Etherize(Ether& e);
 	
 	void SetPrefab(String s) {prefab = s;}
 	String GetPrefab() const {return prefab;}
@@ -117,7 +122,7 @@ public:
 		return comp;
 	}
 	template<typename T> RefT_Entity<T> GetAdd() {
-		T* o = Find<T>();
+		RefT_Entity<T> o = Find<T>();
 		if (o)
 			return o;
 		OnChange();
@@ -125,7 +130,7 @@ public:
 		return comp;
 	}
 	
-	
+	ComponentBaseRef	GetAdd(String comp_name);
 	
 	template<typename... ComponentTs>
 	RTuple<RefT_Entity<ComponentTs>...> TryGetComponents() {
@@ -147,6 +152,8 @@ public:
 	Engine&				GetEngine();
 	const Engine&		GetEngine() const;
 	Pool&				GetPool() const;
+	Pool&				GetRoot();
+	void				GetEntityPath(Vector<String>& path);
 	
 	ComponentMap&		GetComponents() {return comps;}
 	const ComponentMap&	GetComponents() const {return comps;}
@@ -165,15 +172,12 @@ public:
 	}
 	
 	ComponentBaseRef CreateEon(String id);
+	ComponentBaseRef CreateComponent(TypeCls type);
 	
 	
 	void Visit(RuntimeVisitor& vis) {vis || comps;}
 	
 private:
-	ComponentMap comps;
-	
-	EntityId m_id;
-	
 	
 	template<typename T> void Remove0();
 	template<typename T> RefT_Entity<T> Add0(bool initialize);
@@ -183,6 +187,8 @@ private:
 	
 	
 };
+
+
 
 
 

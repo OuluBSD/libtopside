@@ -7,7 +7,7 @@ library(SDL2 POSIX) "SDL2 SDL2main GL";
 
 library(SDL2 WIN32 MSC) "SDL2.lib OpenGL32.lib";
 
-library(SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
+library(NEVER SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
 
 pkg_config(SDL2 !MSC) sdl2;
 

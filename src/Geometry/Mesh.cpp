@@ -15,6 +15,16 @@ void Mesh::Clear() {
 	
 }
 
+void Mesh::Etherize(Ether& e) {
+	e % vertices
+	  % indices
+	  % named_vertices
+	  % material
+	  % disable_textures
+	  % wireframe_only
+	  % use_quad;
+}
+
 void Mesh::UpdateBoundingBox() {
 	if (!use_quad) {
 		int m_num_tri = indices.GetCount() / 3;

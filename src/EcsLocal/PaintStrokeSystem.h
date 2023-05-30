@@ -18,6 +18,7 @@ public:
 	bool stroke_changed = false;
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	void AddPoint(const mat4& trans_mtx, float width);

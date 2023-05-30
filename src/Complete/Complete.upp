@@ -5,11 +5,12 @@ uses
 	Shadertoy,
 	AtomLocal,
 	AudioHost,
-	GuboLib,
 	IMidiFile,
 	IMidiHw,
 	SerialLib,
 	AtomHandle;
+
+uses(GUI) GuboLib;
 
 uses(NEVER) Physics;
 

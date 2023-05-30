@@ -153,18 +153,18 @@ HiValue::operator WString() const
 {
 	#if LIBTOPSIDE
 	LTIMING("operator WString");
-	WStringStream s;
+	Vector<wchar_t> s;
 	if(IsArray()) {
 		const Vector<HiValue>& a = GetArray();
 		for(int i = 0; i < a.GetCount(); i++) {
 			if(a[i].IsInt()) {
-				int c = a[i].GetInt();
+				wchar_t c = a[i].GetInt();
 				if(c >= 0 && c < 65536)
-					s.Cat(c);
+					s.Add(c);
 			}
 		}
 	}
-	return WString(s);
+	return WString(s.Begin());
 	#else
 	LTIMING("operator WString");
 	WString s;

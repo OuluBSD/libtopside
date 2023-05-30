@@ -121,6 +121,8 @@ bool RollingValueBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src
 				*f++ = rolling_value++;
 		}
 		time += internal_fmt.GetFrameSeconds();
+		
+		out.seq = seq++;
 	}
 	else if (internal_fmt.IsVideo()) {
 		TODO
@@ -163,6 +165,7 @@ bool VoidSinkBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch)
 }
 
 bool VoidSinkBase::Consume(const void* data, int len) {
+	RTLOG("VoidSinkBase::Consume: " << HexStr((size_t)data) << ", len=" << len);
 	
 	if (fmt.IsAudio()) {
 		AudioFormat& afmt = fmt;
@@ -176,7 +179,7 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 			dbg_count = (int)(end - it);
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
-				double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
+				double f1 = (rolling_value++ / 255.0) * 2.0 - 1.0;
 				if (!IsClose(f0, f1))
 					fail = true;
 			}
@@ -193,7 +196,7 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 			}
 		}
 		else {
-			LOG("IntervalPipeLink::IntervalSinkProcess: error: invalid audio format");
+			LOG("VoidSinkBase::Consume: error: invalid audio format");
 		}
 		dbg_total_samples += dbg_count;
 		dbg_total_bytes += dbg_count * 4;
@@ -201,13 +204,13 @@ bool VoidSinkBase::Consume(const void* data, int len) {
 		
 		if (fail || (dbg_limit > 0 && dbg_iter >= dbg_limit)) {
 			GetMachine().SetNotRunning();
-			LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
-			if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
-			else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
-			if (fail) GetMachine().SetFailed("IntervalPipeLink error");
+			LOG("VoidSinkBase::Consume: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+			if (!fail) {LOG("VoidSinkBase::Consume: success!");}
+			else       {LOG("VoidSinkBase::Consume: fail :(");}
+			if (fail) GetMachine().SetFailed("VoidSinkBase error");
 		}
 		
-		RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
+		RTLOG("VoidSinkBase::Consume: successfully verified frame");
 	}
 	
 	return true;
@@ -268,6 +271,11 @@ bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 		ts = 0;
 		b = true;
 	}
+	
+	dword iface_sink_mask = iface.GetSinkMask();
+	if (io.active_sink_mask != iface_sink_mask)
+		return false;
+	
 	RTLOG("VoidPollerSinkBase::IsReady: " << (b ? "true " : "false ") << BinStr(io.active_sink_mask));
 	return b;
 }
@@ -277,28 +285,28 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 	
 	#if HAVE_PACKETTRACKER
 	uint64 route_desc = in.GetRouteDescriptor();
-	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString() << ", descriptor " << HexStr(route_desc));
+	RTLOG("VoidPollerSinkBase::Recv: sink #" << IntStr(sink_ch) << ": " << in.ToString() << ", descriptor " << HexStr(route_desc));
 	#else
-	RTLOG("VoidPollerSinkBase::Recv: sink #0: " << in.ToString());
+	RTLOG("VoidPollerSinkBase::Recv: sink #" << IntStr(sink_ch) << ": " << in.ToString());
 	#endif
 	
 	Parallel::Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
 		Serial::AudioFormat& afmt = fmt;
-		
+		uint32 thrd_id = 0;
 		#if HAVE_PACKETTRACKER
-		int i = thrds.Find(route_desc);
-		if (i < 0) {
-			i = thrds.GetCount();
-			thrds.Add(route_desc);
-			RTLOG("VoidPollerSinkBase::Recv: creating new thread for route " + IntStr64(route_desc));
-		}
+		thrd_id = route_desc;
 		#else
-		if (thrds.IsEmpty()) thrds.Add(0);
-		int i = 0;
+		thrd_id = sink_ch;
+		Panic("VoidPollerSinkBase::Recv: requires PACKET TRACKER!");
 		#endif
 		
-		Thread& t = thrds[i];
+		if (thrds.Find(thrd_id) < 0) {
+			RTLOG("VoidPollerSinkBase::Recv: creating new thread for " + IntStr64(thrd_id));
+		}
+		
+		Thread& t = thrds.GetAdd(thrd_id);
+		int i = thrds.Find(thrd_id);
 		
 		const Vector<byte>& data = in.GetData();
 		if (data.IsEmpty()) {
@@ -344,6 +352,7 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 		else {
 			LOG("VoidPollerSinkBase::Recv: error: thrd #" << i << " invalid audio format");
 			fail = true;
+			GetMachine().SetFailed("VoidPollerSinkBase error");
 		}
 		
 		if (dbg_limit > 0 && t.rolling_value >= dbg_limit) {

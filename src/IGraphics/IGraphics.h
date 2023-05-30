@@ -117,7 +117,7 @@ typedef unsigned int	Gxbf;
 #include "ProgBase.h"
 
 #include "ObjViewProg.h"
-#include "GuiProg.h"
+#include "EcsViewProg.h"
 
 
 

@@ -3,6 +3,10 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
+class Ether;
+
+
 enum {
 	IMAGEID_GRID,
 	
@@ -74,6 +78,9 @@ public:
 	ByteImage() : sz(0,0) {}
 	~ByteImage() {Clear();}
 	ByteImage(Image& img) {*this = img;}
+	
+    hash_t GetHashValue() const;
+	void Etherize(Ether& e);
 	
 	void operator=(const ByteImage& i);
 	void operator=(const Image& img) {Set(img);}

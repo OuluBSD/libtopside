@@ -4,14 +4,21 @@ uses
 	Geometry,
 	ComputerVision,
 	plugin/jpg,
-	SoftRend;
+	SoftRend,
+	ports/enet;
 
 file
 	Todo.txt,
 	Edit3D.h,
 	main.cpp,
+	EditClientService.h,
+	EditClientService.cpp,
 	Editor.h,
 	Editor.cpp,
+	GeomProjectCtrl.cpp,
+	Remote.h,
+	Remote.cpp,
+	RemoteCtrl.cpp,
 	Geom.h,
 	Geom.cpp,
 	Renderer.h,

@@ -28,9 +28,25 @@ public:
 	Mesh() {Clear();}
 	Mesh(const Mesh& m) {*this = m;}
 	
+    hash_t GetHashValue() const {
+        CombineHash c;
+        for (auto& v : vertices) c.Put(v.GetHashValue());
+        for (auto& v : indices) c.Put(v);
+        for(int i = 0; i < named_vertices.GetCount(); i++) {
+			c.Put(named_vertices.GetKey(i).GetHashValue());
+			c.Put(named_vertices[i]);
+        }
+        c.Put(material);
+        c.Put(disable_textures);
+        c.Put(wireframe_only);
+        c.Put(use_quad);
+        return c;
+    }
+    void Etherize(Ether& e);
+    
 	void Clear();
 	void ReverseFaces();
-	//void Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
+	
     bool AddTextureFilePath(String key, String path);
 	void operator=(const Mesh& src) {
         Clear();

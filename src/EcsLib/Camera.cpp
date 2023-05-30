@@ -60,6 +60,7 @@ void Viewable::Uninitialize()  {
 
 
 
+
 bool Viewport::Arg(String key, Object value) {
 	if (key == "fov") {
 		fov = DEG2RAD(value.ToDouble());
@@ -75,6 +76,39 @@ bool Viewport::Arg(String key, Object value) {
 
 
 
+
+
+void CameraBase::Etherize(Ether& e) {
+	e % use_stereo
+	  % calib;
+	
+	for(int i = 0; i < 2; i++) {
+		e % view_stereo[i]
+		  % proj_stereo[i]
+		  % mvp_stereo[i];
+	}
+}
+
+void ChaseCam::Etherize(Ether& e) {
+	CameraBase::Etherize(e);
+	
+	e % view
+	  % projection
+	  % port
+	  % port_stereo
+	  % viewport_sz
+	  
+	  % test_log
+	  % time
+	  % phase_time
+	  % fov
+	  % used_fov;
+	
+	EtherizeRef(e, trans);
+	EtherizeRef(e, target);
+	EtherizeRef(e, viewable);
+	EtherizeRef(e, vport);
+}
 
 void ChaseCam::Initialize() {
 	trans		= GetEntity()->Get<Transform>();
@@ -205,7 +239,7 @@ void ChaseCam::UpdateView() {
 					double angle_x = asin(mod[0] / mod[2]) * 360.0 / (2.0*M_PI);
 					double len_xz = sqrt(mod[0] * mod[0] + mod[2] * mod[2]);
 					double angle_y = asin(mod[1] / len_xz) * 360.0 / (2.0*M_PI);
-					LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
+					//LOG("ChaseCam::Update: horz " << angle_x << ", vert " << angle_y);
 				}
 		    }
 		    #if 0

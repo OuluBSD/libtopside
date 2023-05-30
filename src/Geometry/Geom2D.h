@@ -196,7 +196,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 	
 	struct ShapeRect : public ShapeBase {
 		RTTI_DECL1(ShapeRect, ShapeBase)
-		FixedRectangle& r;
+		FixedRectangle r;
 		ShapeRect(FixedRectangle r) : r(r) {}
 		bool Intersects(const line2& l) override {return r.Intersects(l);}
 		bool Intersects(const Circle& c) override {return r.Intersects(c);}

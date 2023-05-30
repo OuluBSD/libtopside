@@ -3,7 +3,5 @@
 
 #include <EcsLib/EcsLib.h>
 
-#include "AudioGenerator.h"
-#include "SoundCard.h"
 
 #endif

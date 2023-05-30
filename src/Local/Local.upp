@@ -97,6 +97,8 @@ file
 	Ctrl.inl highlight cpp,
 	Graphics.cpp,
 	GEnums.h,
+	Ether.h,
+	Ether.cpp,
 	Daemon.h,
 	Daemon.cpp,
 	Network.h,

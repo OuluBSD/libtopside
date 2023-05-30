@@ -780,9 +780,10 @@ bool BufferStageT<Gfx>::LoadInputLink(int in_id, const PacketValue& v) {
 		if (fmt.IsVideo()) {
 			VideoFormat& vfmt = fmt;
 			int frame_sz = vfmt.GetFrameSize();
+			int frame_pitch = vfmt.GetSampleSize() * vfmt.GetSize().cx;
 			ASSERT(data.GetCount() == frame_sz);
 			if (data.GetCount() == frame_sz)
-				fb.DrawFill(data.Begin(), frame_sz);
+				fb.DrawFill(data.Begin(), frame_sz, frame_pitch);
 		}
 	}
 	else {

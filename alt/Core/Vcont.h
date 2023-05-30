@@ -774,6 +774,8 @@ class Map : Moveable<Map<K,V,Array>> {
 	Array<V> values;
 
 public:
+	typedef V ValueType;
+	typedef K KeyType;
 	using HashPtr = typename Index<K>::HashPtr;
 	using KeyPtr = typename Index<K>::ObjectPtr;
 	using ObjectPtr = typename Array<V>::ElPtr;

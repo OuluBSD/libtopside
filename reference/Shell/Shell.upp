@@ -1,8 +1,9 @@
 description "Libtopside main package\377";
 
 uses
-	Complete,
-	EcsComplete;
+	Complete;
+
+uses(GUI) EcsComplete;
 
 file
 	EcsShell.h,
@@ -29,7 +30,7 @@ mainconfig
 	"" = "DEBUG_RT SCREEN SDL2 OGL",
 	"" = "DEBUG_RT SCREEN SDL2 OGL FFMPEG",
 	"" = "DEBUG_RT SCREEN SDL2 OGL FFMPEG OPENCV FLUIDSYNTH",
-	"" = "DEBUG_RT BUILTIN_PORTAUDIO FLUIDSYNTH",
+	"" = "DEBUG_RT FLUIDSYNTH BUILTIN_PORTAUDIO PORTMIDI",
 	"" = "SDL2",
 	"" = "FFMPEG",
 	"" = "BUILTIN_PORTAUDIO BUILTIN_PORTMIDI FLUIDLITE ",

@@ -1,5 +1,7 @@
 #include "ParallelLib.h"
 
+#ifdef flagGUI
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -215,3 +217,5 @@ PLIB_TYPE_EXCPLICIT_INITIALIZE_CLASS(HandleSystemT)
 
 
 NAMESPACE_PARALLEL_END
+
+#endif

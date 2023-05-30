@@ -19,6 +19,10 @@ void Renderable::Uninitialize() {
 		rend->RemoveRenderable(AsRef<ComponentBase>());
 }
 
+void Renderable::Etherize(Ether& e) {
+	e % color % offset % alpha_multiplier;
+}
+
 
 
 void RenderingSystem::AddViewable(ViewableRef v) {
@@ -62,23 +66,23 @@ void RenderingSystem::RemoveCamera(CameraBase& c) {
 
 void RenderingSystem::Update(double dt) {
 	
-	if (state) {
-		for (ModelComponentRef& m : models) {
-			
-			m->Load(*state);
-			
-		}
+}
+
+void RenderingSystem::Render(GfxDataState& state) {
+	for (ModelComponentRef& m : models) {
 		
-		for (CameraBase* cb : cams) {
-			if (calib.is_enabled) {
-				cb->calib = calib;
-				cb->UpdateCalibration();
-			}
-			
-			cb->Load(*state);
-		}
+		m->Load(state);
+		
 	}
 	
+	for (CameraBase* cb : cams) {
+		if (calib.is_enabled) {
+			cb->calib = calib;
+			cb->UpdateCalibration();
+		}
+		
+		cb->Load(state);
+	}
 }
 
 bool RenderingSystem::Initialize() {
@@ -104,12 +108,6 @@ bool RenderingSystem::Arg(String key, Object value) {
 		is_dummy = value.ToString() == "true";
 	
 	return true;
-}
-
-void RenderingSystem::Render(GfxDataState& data) {
-	
-	TODO
-	
 }
 
 void RenderingSystem::CalibrationEvent(CtrlEvent& ev) {

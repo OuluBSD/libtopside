@@ -19,6 +19,8 @@ struct ComponentFactory {
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	
+	static ComponentBase* CreateComponent(TypeCls type);
+	
 	template <class T> static void Register(String eon_id) {
 		TypeCls cls = AsTypeCls<T>();
 		ASSERT(CompDataMap().Find(cls) < 0);
@@ -34,6 +36,18 @@ struct ComponentFactory {
 	}
 	
 	static void Dump();
+	
+	template <class T>
+	static String GetComponentName() {
+		for (CompData& c : CompDataMap().GetValues()) {
+			if (c.new_fn == &CreateComp<T>)
+				return c.name;
+		}
+		return "";
+	}
+	
+	static String GetComponentName(TypeCls type);
+	static TypeCls GetComponentType(String name);
 	
 };
 

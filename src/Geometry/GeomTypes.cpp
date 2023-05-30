@@ -3,6 +3,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+void Vertex::Etherize(Ether& e) {
+	e % position
+	  % normal
+	  % tex_coord
+	  % tangent
+	  % mdl_transform_idx;
+}
+
 void Vertex::SetPosTex(vec3 pos, vec2 tex) {
     position = pos.Embed();
     tex_coord = tex;

@@ -3,6 +3,15 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+
+
+
+void PaintStrokeComponent::Etherize(Ether& e) {
+	e % squares
+	  % stroke_changed;
+}
+
 void PaintStrokeComponent::Initialize(){
 	Engine& e = GetEngine();
 	Ref<PaintStrokeSystemBase> sys = e.Get<PaintStrokeSystemBase>();

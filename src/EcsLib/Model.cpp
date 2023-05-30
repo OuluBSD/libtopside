@@ -4,6 +4,39 @@
 NAMESPACE_ECS_BEGIN
 
 
+void ModelComponent::Etherize(Ether& e) {
+	e % color
+	  % prefab_name
+	  % skybox_diffuse
+	  % skybox_irradiance
+	  % load_skybox
+	  % always_enabled
+	  % dbg
+	
+	  % gfx_hash
+	  % offset
+	  % scale
+	  % pitch
+	  % yaw
+	  % roll
+	  % ext_model
+	  % have_ext_model
+	  % model_changed;
+	
+	if (e.IsLoading()) {
+		TODO
+	}
+	else {
+		ModelRef own_model = loader.GetModel();
+		if (own_model.IsEmpty()) {
+			TODO // complicated model ref serialization (some post queue via Ether class?)
+		}
+		else {
+			e % *own_model;
+		}
+	}
+}
+
 void ModelComponent::Initialize() {
 	color = one<vec4>();
 	prefab_name.Clear();
@@ -188,19 +221,19 @@ void ModelComponent::SetModelMatrix(const mat4& m) {
 }
 
 void ModelComponent::Clear() {
-	if (gfx_state && gfx_id > 0) {
-		gfx_state->GetModel(gfx_id).Clear();
+	if (gfx_state && gfx_hash > 0) {
+		gfx_state->GetModel(gfx_hash).Clear();
 	}
 	model.Clear();
 	loader.Clear();
 	model_changed = true;
 	gfx_state = 0;
-	gfx_id = -1;
+	gfx_hash = 0;
 }
 
 bool ModelComponent::Load(GfxDataState& state) {
 	if (gfx_state) {
-		// TODO if differs, reset gfx_id etc.
+		// TODO if differs, reset gfx_hash etc.
 		ASSERT(gfx_state == &state);
 	}
 	
@@ -212,9 +245,9 @@ bool ModelComponent::Load(GfxDataState& state) {
 		load_skybox = false;
 		
 		GfxModelState& skybox = state.AddModel();
-		gfx_id = skybox.id;
+		gfx_hash = skybox.id;
+		ASSERT(skybox.id > 0);
 		
-		ASSERT(skybox.id >= 0);
 		float skybox_sz = 1e8;
 		Index<String> ext_list; ext_list << "" << ".png" << ".jpg";
 		Index<String> dir_list; dir_list << "" << "imgs" << "imgs/skybox";
@@ -251,19 +284,19 @@ bool ModelComponent::Load(GfxDataState& state) {
 	}
 	
 	// If model is not loaded to the state
-	if (gfx_id < 0) {
+	if (gfx_hash == 0) {
 		if (dbg) {
 			LOG("debug");
 		}
 		
 		if (model) {
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
+			gfx_hash = mdl.id;
 			mdl.LoadModel(*model);
 		}
 		else if (loader) {
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
+			gfx_hash = mdl.id;
 			if (!mdl.LoadModel(loader)) {
 				LOG("ModelComponent::Load: error: model loading failed");
 				return false;
@@ -273,27 +306,35 @@ bool ModelComponent::Load(GfxDataState& state) {
 		else if (!prefab_name.IsEmpty()) {
 			String path = KnownModelNames::GetPath(prefab_name);
 			auto& mdl = state.AddModel();
-			gfx_id = mdl.id;
-			if (!loader.LoadModel(path))
-				return false;
-			if (!mdl.LoadModel(loader))
-				return false;
-			model = loader.GetModel();
+			gfx_hash = mdl.id;
+			ModelCacheRef cache = GetEngine().GetMachine().Get<ModelCache>();
+			if (cache) {
+				model = cache->GetAddModelFile(path);
+			}
+			else {
+				if (!loader.LoadModel(path))
+					return false;
+				if (!mdl.LoadModel(loader))
+					return false;
+				model = loader.GetModel();
+			}
 		}
 		else {
 			return false;
 		}
+		ASSERT(gfx_hash != 0); // unsigned
 	}
 	else if (model_changed) {
 		if (dbg) {
 			LOG("debug");
 		}
 		
+		ASSERT(gfx_hash > 0);
 		if (model) {
-			state.GetModel(gfx_id).Refresh(*model);
+			state.RealizeModel(gfx_hash).Refresh(*model);
 		}
 		else {
-			state.GetModel(gfx_id).Clear();
+			state.RealizeModel(gfx_hash).Clear();
 		}
 	}
 	else {
@@ -333,7 +374,9 @@ bool ModelComponent::Load(GfxDataState& state) {
 	
 	static thread_local Vector<GfxMesh*> meshes;
 	meshes.SetCount(0);
-	auto& mdl_state = state.GetModel(gfx_id);
+	
+	ASSERT(gfx_hash > 0);
+	auto& mdl_state = state.GetModel(gfx_hash);
 	int obj_count = mdl_state.GetObjectCount();
 	for(int i = 0; i < obj_count; i++) {
 		GfxDataObject& obj = mdl_state.GetObject(i);

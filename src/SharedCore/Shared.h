@@ -59,6 +59,7 @@ public:
 		// if (r) r->Inc(); // NO! assume already referenced:
 		ASSERT(r->GetRefCount() > 0);
 	}
+	Shared(const Nuller&) {}
 	~Shared() { Clear(); }
 	
 	void Create() { Clear(); r = new RefTemplate<T>(); o = new T(); r->obj = o;}

@@ -258,7 +258,7 @@ LinkTypeCls IntervalPipeLink::GetType() {
 }
 
 void IntervalPipeLink::IntervalSinkProcess() {
-	RTLOG("IntervalPipeLink::IntervalSinkProcess: starts");
+	LOG("IntervalPipeLink::IntervalSinkProcess: starts");
 	
 	const int sink_ch_i = 0;
 	
@@ -572,11 +572,20 @@ bool JoinerLink::IsReady(PacketIO& io) {
 	
 	// require primary and single side channel
 	int src_ch_count = GetSink()->GetSinkCount();
+	if (src_ch_count == 3) {
+		LOG("");
+	}
 	if (!(io.active_sink_mask & 1))
 		return false;
-	for(int i = 1; i < src_ch_count; i++)
-		if (io.active_sink_mask & (1 << i))
+	
+	int sink_ch = scheduler_iter;
+	for(int i = 1; i < src_ch_count; i++) {
+		if (io.active_sink_mask & (1 << sink_ch))
 			return true;
+		sink_ch = (sink_ch + 1) % src_ch_count;
+		if (!sink_ch) sink_ch = 1;
+	}
+	
 	return false;
 }
 
@@ -590,18 +599,19 @@ bool JoinerLink::ProcessPackets(PacketIO& io) {
 	for (int tries = 0; tries < 3; tries++) {
 		int sink_ch = scheduler_iter;
 		
-		scheduler_iter++;
-		if (scheduler_iter >= io.sinks.GetCount())
-			scheduler_iter = 1;
-		
 		if (io.sinks[sink_ch].p) {
 			side_sink_ch = sink_ch;
 			break;
 		}
 	}
 	
+	scheduler_iter++;
+	if (scheduler_iter >= io.sinks.GetCount())
+		scheduler_iter = 1;
+	
 	ASSERT(side_sink_ch >= 0);
-	if (side_sink_ch < 0) return false;
+	if (side_sink_ch < 0)
+		return false;
 	
 	PacketIO::Sink& sink = io.sinks[side_sink_ch];
 	
@@ -652,11 +662,12 @@ bool SplitterLink::IsReady(PacketIO& io) {
 bool SplitterLink::ProcessPackets(PacketIO& io) {
 	ASSERT(io.srcs.GetCount() > 1 && io.sinks.GetCount() == 1);
 	ASSERT(io.active_sink_mask == 0x0001);
-	PacketIO::Sink& sink = io.sinks[0];
+	int sink_ch = 0;
+	PacketIO::Sink& sink = io.sinks[sink_ch];
 	sink.may_remove = true;
 	
 	PacketIO::Source& prim_src = io.srcs[0];
-	prim_src.from_sink_ch = 0;
+	prim_src.from_sink_ch = sink_ch;
 	prim_src.p = ReplyPacket(0, sink.p);
 	
 	Format in_fmt = sink.p->GetFormat();
@@ -667,8 +678,8 @@ bool SplitterLink::ProcessPackets(PacketIO& io) {
 		if (!src.val)
 			continue;
 		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
+		src.from_sink_ch = sink_ch;
 		if (src_fmt.IsCopyCompatible(in_fmt)) {
-			src.from_sink_ch = 0;
 			src.p = sink.p;
 		}
 		else {

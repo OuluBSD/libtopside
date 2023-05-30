@@ -20,6 +20,7 @@ public:
 	float damping_factor;
 	
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	
     void operator=(const RigidBody& r) {
@@ -53,6 +54,9 @@ public:
 	
     String				text = "";
     double				font_size = 60.0;
+    
+    
+	void Etherize(Ether& e) override {e % text % font_size;}
     
     
 };

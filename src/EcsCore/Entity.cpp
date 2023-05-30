@@ -14,6 +14,50 @@ Entity::~Entity() {
 	DBG_DESTRUCT
 }
 
+void Entity::Etherize(Ether& e) {
+	/*
+	EntityId id = -1;
+	int64 created = 0;
+	int64 changed = 0;
+
+	String prefab;
+	String name;
+	
+	ComponentMap comps;
+	EntityId m_id;
+	*/
+	
+	/*
+	e % freeze_bits
+	  % name
+	  % id
+	  ;
+	*/
+	
+	GeomVar type;
+	if (e.IsLoading()) {
+		TODO
+		while (!e.IsEof()) {
+			e.GetT(type);
+			
+		}
+	}
+	else {
+		for (ComponentRef c : comps) {
+			type = GEOMVAR_PUSH_COMPONENT;
+			e.PutT(type);
+			TypeCls cls = c->GetTypeId();
+			String name = ComponentFactory::GetComponentName(cls);
+			e.Put(name);
+			
+			c->Etherize(e);
+			
+			type = GEOMVAR_POP_COMPONENT;
+			e.PutT(type);
+		}
+	}
+}
+
 void Entity::UnrefDeep() {
 	RefClearVisitor vis;
 	vis.Visit(*this);
@@ -115,6 +159,10 @@ ComponentBaseRef Entity::CreateEon(String id) {
 	return GetAddTypeCls(d.rtti_cls);
 }
 
+ComponentBaseRef Entity::CreateComponent(TypeCls type) {
+	return AddPtr(ComponentFactory::CreateComponent(type));
+}
+
 void Entity::Destroy() {
 	Destroyable::Destroy();
 	
@@ -141,6 +189,29 @@ Pool& Entity::GetPool() const {
 	return *p;
 }
 
+Pool& Entity::GetRoot() {
+	Pool* p = &GetPool();
+	while (p) {
+		Pool* par = RefScopeParent<EntityParent>::GetParent().o;
+		if (!par)
+			return *p;
+		p = par;
+	}
+	return *p;
+}
+
+void Entity::GetEntityPath(Vector<String>& path) {
+	Pool* p = &GetPool();
+	while (p) {
+		Pool* par = RefScopeParent<EntityParent>::GetParent().o;
+		if (!par)
+			break;
+		path.Add(p->GetName());
+		p = par;
+	}
+	Reverse(path);
+}
+
 int Entity::GetPoolDepth() const {
 	int d = 0;
 	Pool* p = &GetPool();
@@ -160,6 +231,20 @@ bool Entity::HasPoolParent(PoolRef pool) const {
 		p = p->GetParent();
 	}
 	return false;
+}
+
+ComponentBaseRef Entity::GetAdd(String comp_name) {
+	TypeCls type = ComponentFactory::GetComponentType(comp_name);
+	if (type == TypeCls())
+		return ComponentBaseRef();
+	
+	ComponentBaseRef c = FindTypeCls(type);
+	if (c)
+		return c;
+	
+	c = this->CreateComponent(type);
+	ASSERT(c);
+	return c;
 }
 
 

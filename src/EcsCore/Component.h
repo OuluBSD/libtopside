@@ -42,6 +42,8 @@ public:
 	
 	EntityRef GetEntity();
 	
+	virtual void Etherize(Ether& e) = 0;
+	
 	virtual bool Arg(String key, Object value) {return true;}
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
@@ -60,8 +62,12 @@ public:
 			sys->Remove(ref);
 	}
 	
-	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
+	
+	template <class T> void EtherizeRef(Ether& e, Ref<T>& ref);
+	template <class T> void EtherizeRefContainer(Ether& e, T& cont);
+	
+	void GetComponentPath(Vector<String>& path);
 	
 };
 

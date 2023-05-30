@@ -53,21 +53,21 @@ public:
 	};
 	
 	int test_fn;
+	bool is_bound = false;
+	
 	Ref<Transform> trans;
 	Ref<PlayerBodyComponent> player;
-	bool is_bound = false;
 	
 public:
 	RTTI_COMP0(PhysicsBody)
 	COMP_DEF_VISIT_(vis & trans & player)
 	
+	void Etherize(Ether& e) override;
 	void Initialize() override;
 	void Uninitialize() override;
 	bool Arg(String key, Object value) override;
 	
-    void operator=(const PhysicsBody& r) {
-        
-    }
+    void operator=(const PhysicsBody& r);
     
 	bool BindDefault();
 	void UnbindDefault();

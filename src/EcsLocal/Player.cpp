@@ -2,6 +2,17 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+void PlayerHandComponent::Etherize(Ether& e) {
+	e % is_simulated
+	  % attach_ctrl_model
+	  % req_hand;
+	
+	EtherizeRef(e, body);
+	
+	// ptrs can be ignored for now
+}
+
 void PlayerHandComponent::Initialize() {
 	
 }
@@ -30,7 +41,7 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 		EntityRef e = es->FindEntity(value);
 		if (e) {
 			PlayerBodyComponentRef bc = e->Find<PlayerBodyComponent>();
-			if (bc && bc->SetHand(req_hand, AsRefT())) {
+			if (bc && bc->SetHand((PlayerHandedness)req_hand, AsRefT())) {
 				body = bc;
 			}
 		}
@@ -53,6 +64,10 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 
 
 
+
+void PlayerHeadComponent::Etherize(Ether& e) {
+	EtherizeRef(e, body);
+}
 
 void PlayerHeadComponent::Initialize() {
 	
@@ -87,6 +102,14 @@ bool PlayerHeadComponent::Arg(String key, Object value) {
 
 
 
+
+void PlayerBodyComponent::Etherize(Ether& e) {
+	e % height;
+	
+	EtherizeRef(e, hands[0]);
+	EtherizeRef(e, hands[1]);
+	EtherizeRef(e, head);
+}
 
 void PlayerBodyComponent::Initialize() {
 	Ref<PlayerBodySystem> sys = GetEngine().TryGet<PlayerBodySystem>();

@@ -20,23 +20,22 @@ INITBLOCK_(EcsLocal) {
 	Engine::Register<InteractionSystem>("interaction");
 	Engine::Register<Ecs::DesktopSuiteSystem>("desktop");
 	
-	
 	// Component
 	ComponentFactory::Register<RigidBody>("body");
-	//ComponentFactory::Register<StaticVolumeComponent>("");
 	ComponentFactory::Register<TextRenderable>("text");
 	ComponentFactory::Register<Easing>("easing");
 	ComponentFactory::Register<PhysicsBody>("physics");
 	ComponentFactory::Register<ToolComponent>("tool");
-	ComponentFactory::Register<PaintComponent>("paint");
-	ComponentFactory::Register<ShootingComponent>("shoot");
-	ComponentFactory::Register<ThrowingComponent>("throw");
+	ComponentFactory::Register<ToolSelectorKey>("tool.selector");
 	ComponentFactory::Register<PlayerHandComponent>("player.hand");
 	ComponentFactory::Register<PlayerHeadComponent>("player.head");
 	ComponentFactory::Register<PlayerBodyComponent>("player.body");
-#ifdef flagGUI
-	ComponentFactory::Register<DefaultGuiAppComponent>("");
-#endif
+	ComponentFactory::Register<PaintStrokeComponent>("paint.stroke");
+	
+	// CustomToolComponent
+	ComponentFactory::Register<PaintComponent>("paint");
+	ComponentFactory::Register<ShootingComponent>("shoot");
+	ComponentFactory::Register<ThrowingComponent>("throw");
 	
 	
 	

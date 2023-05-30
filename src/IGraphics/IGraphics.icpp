@@ -5,8 +5,8 @@ NAMESPACE_UPP_BEGIN
 
 
 INITBLOCK_(IGraphics) {
+	GfxProgramLibrary::template AddProgramClass<Parallel::EcsViewProg>("ecs_view_program");
 	GfxProgramLibrary::template AddProgramClass<Parallel::ObjViewProg>("obj_view_program");
-	GfxProgramLibrary::template AddProgramClass<Parallel::GuiProg>("gui_program");
 }
 
 

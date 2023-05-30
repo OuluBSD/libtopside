@@ -26,6 +26,7 @@ public:
     SYS_CTOR(ModelCache)
 	SYS_DEF_VISIT
 	
+	ModelRef Attach(Model* mdl);
 	ModelRef GetAddModelFile(String path);
 	
 	//void CalibrationEvent(CtrlEvent& ev);

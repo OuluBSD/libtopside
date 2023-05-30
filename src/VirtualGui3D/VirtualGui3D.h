@@ -2,6 +2,7 @@
 #define _VirtualGui3D_VirtualGui3D_h_
 
 #include <Draw/Draw.h>
+#include <Local/Local.h>
 #include <StaticInterface/Screen.h>
 
 #if IS_TS_CORE

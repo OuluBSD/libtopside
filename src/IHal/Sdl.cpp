@@ -212,7 +212,7 @@ bool HalSdl::AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase& a,
 	dword sdl_flag = SDL_INIT_AUDIO;
 	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
 	
-	//a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
+	a.SetQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	return true;
 }
@@ -224,8 +224,8 @@ bool HalSdl::AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase
 		return false;
 	}
 	
-	if (!dep->IsRunning()) {
-		LOG("HalSdl::AudioSinkDevice_PostInitialize: context is not running");
+	if (!dep->IsInitialized()) {
+		LOG("HalSdl::AudioSinkDevice_PostInitialize: context is not initialized");
 	}
 	
 	RTLOG("HalSdl::AudioSinkDevice_PostInitialize");
@@ -292,13 +292,17 @@ bool HalSdl::AudioSinkDevice_Start(NativeAudioSinkDevice& dev, AtomBase& a) {
 }
 
 void HalSdl::AudioSinkDevice_Stop(NativeAudioSinkDevice& dev, AtomBase& a) {
+	if (dev.id) {
+		SDL_PauseAudioDevice(dev.id, 1);
+		Sleep(200);
+	}
+	
 	a.ClearDependency();
 }
 
 void HalSdl::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase& a) {
 	
 	if (dev.id) {
-		SDL_PauseAudioDevice(dev.id, 1);
 		SDL_CloseAudioDevice(dev.id);
 		dev.id = 0;
 	}
@@ -567,10 +571,11 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 		const byte* mem = (const byte*)data.Begin();
 		int len = data.GetCount();
 		VideoFormat& vfmt = fmt;
+		int frame_pitch = vfmt.GetSampleSize() * vfmt.GetSize().cx;
 		int frame_size = vfmt.GetFrameSize();
 		
 		if (mem && len > 0 && len == frame_size) {
-			dev.fb.DrawFill(mem, len);
+			dev.fb.DrawFill(mem, len, frame_pitch);
 		}
 		
 		return true;
@@ -644,8 +649,18 @@ bool HalSdl::CenterVideoSinkDevice_Recv(NativeCenterVideoSinkDevice& dev, AtomBa
 				return false;
 			SDL_Surface* surf = 0;
 			SDL_Rect r {0, 0, w, h};
+			
+			#ifdef flagMSC
+			ASSERT_(0, "SDL_LockTextureToSurface not working");
+			return false;
+			#elif SDL_VERSION_ATLEAST(2,0,12)
 			if (SDL_LockTextureToSurface(fb, &r, &surf) < 0 || !surf)
 				return false;
+			#else
+			ASSERT_(0, "Too old sdl2");
+			return false;
+			#endif
+			
 			int stride = surf->format->BytesPerPixel;
 			int pitch = surf->pitch;
 			byte* pixels = (byte*)surf->pixels;

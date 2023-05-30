@@ -31,9 +31,10 @@ bool GfxAccelAtom<SdlSwGfx>::GfxRenderer() {
 
 template <>
 void GfxAccelAtom<SdlSwGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem, int len) {
+	int frame_pitch = vfmt.GetSampleSize() * vfmt.GetSize().cx;
 	int frame_size = vfmt.GetFrameSize();
 	if (mem && len > 0 && len == frame_size) {
-		rend.GetFramebuffer().DrawFill(mem, len);
+		rend.GetFramebuffer().DrawFill(mem, len, frame_pitch);
 	}
 }
 

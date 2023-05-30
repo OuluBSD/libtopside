@@ -15,6 +15,23 @@ ModelRef ModelCache::GetAddModelFile(String path) {
 	return l.GetModel();
 }
 
+ModelRef ModelCache::Attach(Model* mdl) {
+	if (!mdl)
+		return ModelRef();
+	
+	if (mdl->path.IsEmpty())
+		mdl->path = IntStr64(mdl->GetHashValue());
+	
+	int i = model_cache.Find(mdl->path);
+	if (i >= 0) {
+		delete mdl;
+		return model_cache[i].GetModel();
+	}
+	
+	ModelLoader& ml = model_cache.Add(mdl->path);
+	ml.Attach(mdl);
+	return ml.GetModel();
+}
 
 
 bool ModelCache::Initialize() {

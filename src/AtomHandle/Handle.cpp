@@ -4,8 +4,10 @@
 #include <VirtualGui/Local.h>
 #include <VirtualGui/Atom/Atom.h>
 #endif
-#include <GuboCore/GuboCore.h>
 
+#ifdef flagGUI
+#include <GuboCore/GuboCore.h>
+#endif
 
 NAMESPACE_PARALLEL_BEGIN
 

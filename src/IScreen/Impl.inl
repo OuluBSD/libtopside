@@ -634,7 +634,7 @@ HRESULT DeviceResources::ConfigureBackBuffer()
         m_pDepthStencil.Get(),
         &depthStencilViewDesc,
         &m_pDepthStencilView
-        );§
+        );
 
 
     ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));

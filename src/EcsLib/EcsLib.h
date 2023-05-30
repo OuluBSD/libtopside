@@ -12,7 +12,7 @@
 	#include <IHolograph/IHolograph.h>
 #endif
 
-#if !defined flagGUI
+#ifndef flagGUI
 	#error GUI not defined
 #endif
 

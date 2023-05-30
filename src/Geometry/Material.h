@@ -7,8 +7,8 @@ NAMESPACE_TOPSIDE_BEGIN
 class Model;
 
 struct MaterialParameters {
+    vec3 diffuse = {0.5, 0.5, 0.5};
     vec3 ambient = {0,0,0};
-    vec3 diffuse = {0,0,0};
     vec3 specular = {0,0,0};
     float shininess = 0;
     
@@ -21,6 +21,22 @@ struct MaterialParameters {
 	float occlusion_strength{ 1 };
 	
 	
+public:
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(diffuse.GetHashValue());
+        c.Put(ambient.GetHashValue());
+        c.Put(specular.GetHashValue());
+        c.Put(*(dword*)&shininess);
+        c.Put(base_clr_factor.GetHashValue());
+        c.Put(*(dword*)&metallic_factor);
+        c.Put(*(dword*)&roughness_factor);
+        c.Put(emissive_factor.GetHashValue());
+        c.Put(*(dword*)&normal_scale);
+        c.Put(*(dword*)&occlusion_strength);
+        return c;
+    }
+    void Etherize(Ether& e);
 	void Clear();
 	
 };
@@ -35,11 +51,28 @@ struct Material {
 	GVar::Filter tex_filter[TEXTYPE_COUNT];
 	
 	
+public:
 	Material();
 	
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(id);
+        c.Put(params->GetHashValue());
+        for(int i = 0; i < TEXTYPE_COUNT; i++) {
+			c.Put(tex_id[i]);
+			c.Put(tex_filter[i]);
+        }
+        return c;
+    }
+    
+    void Etherize(Ether& e);
+    
     // Create a flat (no texture) material.
+    Material& SetDiffuse(const Color& clr);
+    Material& SetDiffuse(const vec3& clr);
+    Material& SetDiffuse(const vec4& clr);
     void SetFlat(
-        const vec4&			base_color_factor,
+        const vec4&			base_color_factor = vec4{1,1,1,1},
         float				roughness_factor = 1.0f,
         float				metallic_factor = 0.0f,
         const vec4&			emissive_factor = vec4{0,0,0,1});

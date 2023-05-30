@@ -1,9 +1,13 @@
 #ifndef _Geometry_Geometry_h_
 #define _Geometry_Geometry_h_
 
-#if (defined flagMSC && !defined flagUWP) || defined flagLINUX
-	#define flagASSIMP
+#if defined flagBUILTIN_ASSIMP && !defined flagASSIMP
+	#define flagASSIMP 1
 #endif
+
+/*#if (defined flagMSC && !defined flagUWP) || defined flagLINUX
+	#define flagASSIMP
+#endif*/
 
 #ifdef flagASSIMP
 	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32 && !defined flagUWP) || flagLINUX
@@ -76,6 +80,7 @@
 #include "MeshTracker.h"
 #include "Uncamera.h"
 #include "Vr.h"
+#include "Serializer.h"
 
 
 NAMESPACE_UPP_BEGIN

@@ -76,6 +76,19 @@ NAMESPACE_TOPSIDE_END
 
 NAMESPACE_UPP
 
+void TransformMatrix::Etherize(Ether& e) {
+	e % mode
+	  % is_stereo
+	  % position
+	  % direction
+	  % up
+	  % axes
+	  % orientation
+	  % eye_dist
+	  % fov;
+	
+}
+
 void TransformMatrix::Clear() {
 	mode = MODE_POSITION;
 	is_stereo = false;
@@ -151,6 +164,15 @@ String TransformMatrix::GetAxesString() const {
 
 
 
+
+void CalibrationData::Etherize(Ether& e) {
+	e % is_enabled
+	  % axes
+	  % position
+	  % fov
+	  % scale
+	  % eye_dist;
+}
 
 String CalibrationData::ToString() const {
 	String s;

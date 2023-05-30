@@ -11,6 +11,16 @@ struct ModelNode : Moveable<ModelNode>
 	ModelNode();
 	ModelNode(const ModelNode& n);
 	
+    hash_t GetHashValue() const {
+        CombineHash c;
+        c.Put(name.GetHashValue());
+        c.Put(index);
+        c.Put(parent_node_index);
+        c.Put(local_transform.GetHashValue());
+        return c;
+    }
+    void Etherize(Ether& e);
+    
     void Set(const mat4& local_transform, String name, NodeIndex index, NodeIndex parent_node_index) {
         this->name = name;
         this->index = index;
@@ -38,6 +48,7 @@ struct ModelNode : Moveable<ModelNode>
 		local_transform = n.local_transform;
 	}
 	
+public:
     String			name;
     NodeIndex		index;
     NodeIndex		parent_node_index;
@@ -66,13 +77,31 @@ public:
 	struct Texture {
 		ByteImage img;
 		String path;
+		
+	    hash_t GetHashValue() const {
+	        CombineHash c;
+	        c.Put(img.GetHashValue());
+	        c.Put(path.GetHashValue());
+	        return c;
+	    }
+		void Etherize(Ether& e);
 	};
 	
 	struct CubeTexture {
 		ByteImage img[6];
 		String path;
+		
+	    hash_t GetHashValue() const {
+	        CombineHash c;
+	        for(int i = 0; i < 6; i++)
+				c.Put(img[i].GetHashValue());
+	        c.Put(path.GetHashValue());
+	        return c;
+	    }
+		void Etherize(Ether& e);
 	};
 	
+public:
 	Array<Mesh> meshes;
 	Vector<ModelNode> nodes;
 	ArrayMap<int, Material> materials;
@@ -82,7 +111,7 @@ public:
     String directory;
     
     
-    
+public:
 	RTTI_DECL_R0(Model)
 	Model() {}
 	Model(const Model& m) {*this = m;}
@@ -96,6 +125,26 @@ public:
 		directory.Clear();
 	}
 	
+    hash_t GetHashValue() const {
+        CombineHash ch;
+        for (auto& v : meshes) ch.Put(v.GetHashValue());
+        for (auto& v : nodes) ch.Put(v.GetHashValue());
+        for(int i = 0; i < materials.GetCount(); i++) {
+			ch.Put(materials.GetKey(i));
+			ch.Put(materials[i].GetHashValue());
+        }
+        for(int i = 0; i < textures.GetCount(); i++) {
+			ch.Put(textures.GetKey(i));
+			ch.Put(textures[i].GetHashValue());
+        }
+        for(int i = 0; i < cube_textures.GetCount(); i++) {
+			ch.Put(cube_textures.GetKey(i));
+			ch.Put(cube_textures[i].GetHashValue());
+        }
+        ch.Put(path.GetHashValue());
+        ch.Put(directory.GetHashValue());
+        return ch;
+    }
     void Visit(RuntimeVisitor& vis) {/*vis | meshes | textures;*/}
     
 	void operator=(const Model& src) {
@@ -114,12 +163,12 @@ public:
 	bool LoadCubemapFile(Mesh& mesh, TexType type, String path);
 	
 	void MakeModel(Shape2DWrapper& shape);
-	//void Refresh(GfxDataState& s, GfxDataObject& o);
-    //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
+    void Etherize(Ether& e);
     void Dump();
     void ReverseFaces();
     Mesh& AddMesh();
     Material& AddMaterial();
+    Material& RealizeMaterial(Mesh& m);
     ModelNode& AddNode(String name="", NodeIndex parent=-1);
     Optional<NodeIndex> FindFirstNode(String name, Optional<NodeIndex> const& parent_node_index = {});
     mat4 GetNodeWorldTransform(NodeIndex node_idx) const;
@@ -153,6 +202,7 @@ public:
 	
 	void Clear();
     void Set(const Model& m);
+    void Attach(Model* m);
     void operator=(const Model& m);
     void operator=(ModelBuilder& mb);
 	operator bool() const;

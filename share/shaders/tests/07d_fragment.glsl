@@ -7,7 +7,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	if (false) {
 		fragColor = vec4(255, 255, 255, 0);
 	}
-	else if (false) {
+	else if (iIsDiffuse == false) {
 		fragColor = vec4(intensity, intensity, intensity, 0);
 	}
 	else {

@@ -16,6 +16,8 @@ class Pool :
 	BitField<dword>		freeze_bits;
 	String				name;
 	PoolId				id;
+	EntityVec			objects;
+	PoolVec				pools;
 	
 protected:
 	friend class EntityStore;
@@ -38,6 +40,7 @@ public:
 		BIT_TRANSFORM,
 	} Bit;
 	
+	void Etherize(Ether& e);
 	
 	PoolId GetId() const {return id;}
 	
@@ -68,6 +71,7 @@ public:
 	EntityRef			CreateEmpty();
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
+	EntityRef			RealizeEntityPath(const Vector<String>& path);
 	
 	template<typename PrefabT>
 	EntityRef Create() {
@@ -155,13 +159,11 @@ public:
 	EntityVec::Iterator			end()			{return objects.end();}
 	PoolVec::Iterator			BeginPool()		{return pools.begin();}
 	
+	ComponentBaseRef RealizeComponentPath(const Vector<String>& path);
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis || objects || pools;
 	}
-private:
-	EntityVec				objects;
-	PoolVec					pools;
 	
 };
 
@@ -194,6 +196,66 @@ RefT_Entity<T> Entity::FindNearestEntityWith() {
 		}
 	}
 	return c;
+}
+
+
+template <>
+inline void ComponentBase::EtherizeRef(Ether& e, EntityRef& ref) {
+	thread_local static Vector<String> path;
+	bool has_ref = !ref.IsEmpty();
+	e % has_ref;
+	if (has_ref) {
+		if (e.IsLoading()) {
+			e % path;
+			ASSERT_(path.GetCount() >= 1, "Entity path is required");
+			if (path.GetCount() < 1) return;
+			Pool& root = ref->GetRoot();
+			ref = root.RealizeEntityPath(path);
+			ASSERT_(ref, "Couldn't get etherized entity from path");
+		}
+	}
+	else {
+		ref->GetEntityPath(path);
+		e % path;
+	}
+}
+
+template <class T>
+void ComponentBase::EtherizeRef(Ether& e, Ref<T>& ref) {
+	thread_local static Vector<String> path;
+	EntityRef ent = GetEntity();
+	bool has_ref = !ref.IsEmpty();
+	e % has_ref;
+	if (has_ref) {
+		if (e.IsLoading()) {
+			e % path;
+			ASSERT_(path.GetCount() >= 2, "Entity and Component paths is required");
+			if (path.GetCount() < 2) return;
+			Pool& root = ent->GetRoot();
+			ComponentBaseRef comp = root.RealizeComponentPath(path);
+			ASSERT_(comp, "Component path couldn't be realized");
+			ref = comp->AsRef<T>();
+			ASSERT_(ref, "Couldn't get etherized component from path");
+		}
+		else {
+			ref->GetComponentPath(path);
+			e % path;
+		}
+	}
+	else {
+		if (e.IsStoring())
+			ref.Clear();
+	}
+}
+
+template <class T>
+void ComponentBase::EtherizeRefContainer(Ether& e, T& cont) {
+	int d = cont.GetCount();
+	e % d;
+	cont.SetCount(d);
+	for (auto& ref : cont) {
+		EtherizeRef(e, ref);
+	}
 }
 
 

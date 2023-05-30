@@ -32,6 +32,8 @@ struct ToolSelectorKey : Component<ToolSelectorKey>
 	
     //detail::type_id type{ typeid(nullptr_t) };
     TypeCls type;
+    
+	
 };
 
 struct ToolSelectorPrefab : EntityPrefab<Transform, PbrRenderable, ToolSelectorKey, RigidBody, Easing>

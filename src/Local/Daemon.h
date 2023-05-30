@@ -7,13 +7,14 @@ NAMESPACE_TOPSIDE_BEGIN
 class DaemonBase;
 
 
-class DaemonService {
+class DaemonService : RTTIBase {
 	
 protected:
 	friend class DaemonBase;
 	DaemonBase* base;
 	
 public:
+	RTTI_DECL0(DaemonService)
 	virtual ~DaemonService() {}
 	
 	virtual bool Init(String name) = 0;
@@ -28,26 +29,44 @@ public:
 };
 
 
-class DaemonBase {
+class DaemonBase : RTTIBase {
 	ArrayMap<String, DaemonService> services;
 	Index<String> requested_services;
-	bool running = false;
+	RunningFlag flag;
+	bool inited = false;
+	int timeout = 0;
 	
 public:
+	typedef DaemonBase CLASSNAME;
+	RTTI_DECL0(DaemonBase)
 	DaemonBase();
-	virtual ~DaemonBase() {}
+	virtual ~DaemonBase();
 	
-	void Add(String svc_name) {requested_services.FindAdd(svc_name);}
+	DaemonBase& SetTimeout(int sec) {timeout = sec; return *this;}
+	void Add(String svc_name);
 	
 	virtual bool Init();
 	virtual void Run();
 	virtual void Stop();
 	virtual void Deinit();
+	void Update();
 	void DefaultProcedure();
+	void SetNotRunning();
+	
+	void RunInThread() {Thread::Start(THISBACK(Run));}
 	
 	DaemonService* FindService(String name);
+	template <class T> T* FindServiceT() {
+		for (DaemonService& svc : services.GetValues()) {
+			T* o = CastPtr<T>(&svc);
+			if (o)
+				return o;
+		}
+		return 0;
+	}
 	
 	static DaemonBase*& Latest() {static DaemonBase* p; return p;}
+	static DaemonBase& Single();
 	
 public:
 	typedef DaemonService* (*NewFn)();
@@ -67,6 +86,7 @@ struct Glib2Daemon : DaemonBase {
 	
 	
 	
+	RTTI_DECL1(Glib2Daemon, DaemonBase)
 	Glib2Daemon() {}
 	~Glib2Daemon() {}
 	

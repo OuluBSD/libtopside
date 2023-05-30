@@ -60,6 +60,11 @@ struct OffsetLoop {
 	bool operator!=(const OffsetLoop& o) const {return o.value != value;}
 	void operator+=(const OffsetLoop& o) {value += o.value;}
 	void operator-=(const OffsetLoop& o) {value -= o.value;}
+	bool operator< (const OffsetLoop& o) {return value <  o.value;}
+	bool operator<=(const OffsetLoop& o) {return value <= o.value;}
+	bool operator>=(const OffsetLoop& o) {return value >= o.value;}
+	bool operator> (const OffsetLoop& o) {return value >  o.value;}
+	
 	OffsetLoop& operator++() {++value; return *this;}
 	OffsetLoop operator++(int) {return OffsetLoop(gen, value++);}
 	operator bool() const {return value;}

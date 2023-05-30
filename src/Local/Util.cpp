@@ -265,6 +265,22 @@ void RunningFlag::Wait() {while ((int)workers_running != 0) Sleep(100);}
 
 
 
+bool CommandLineArguments::IsArg(char c) const {
+	for (const CmdInput& in : inputs) {
+		if (in.key == c)
+			return true;
+	}
+	return false;
+}
+
+String CommandLineArguments::GetArg(char c) const {
+	for (const CmdInput& in : inputs) {
+		if (in.key == c)
+			return in.value;
+	}
+	return String();
+}
+
 void CommandLineArguments::AddArg(char key, const char* desc, bool has_value, String value_desc) {
 	CmdArg& a = args.Add();
 	a.key = key;

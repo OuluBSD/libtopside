@@ -216,7 +216,7 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 		bool new_stroke_started = false;
 		Ref<Model> paint_brush_model = paint->paint_brush->Get<ModelComponent>()->GetModel();
 		
-		if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose) {
+		if (paint_brush_model && !paint->has_brush_tip_offset) {
 			Optional<NodeIndex> touch_node = paint_brush_model->FindFirstNode("PaintTip");
 			
 			if (touch_node) {
@@ -226,12 +226,13 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 				mat4 brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
 				mat4 paint_brush_world_transform = paint_brush_model->GetNode(ModelNode::RootIdx).GetTransform();
 				
+				paint->has_brush_tip_offset = true;
 				paint->brush_tip_offset_from_holding_pose =
 				        brush_tip_world_transform *
 				        paint_brush_world_transform.GetInverse();
 				
 				if (dbg_log) {
-					vec3 pos = paint->brush_tip_offset_from_holding_pose->GetTranslation();
+					vec3 pos = paint->brush_tip_offset_from_holding_pose.GetTranslation();
 					LOG("PaintingInteractionSystemBase::OnControllerUpdated: initial pos " << pos.ToString());
 				}
 			}
@@ -311,9 +312,9 @@ void PaintingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 					if (paint->stroke_in_progress) {
 						mat4 location = trans->GetMatrix();
 						mat4 paint_to_world;
-						if (paint->brush_tip_offset_from_holding_pose) {
+						if (paint->has_brush_tip_offset) {
 							paint_to_world =
-							        *paint->brush_tip_offset_from_holding_pose *
+							        paint->brush_tip_offset_from_holding_pose *
 							        location;
 						}
 						else {
@@ -456,6 +457,29 @@ vec4 PaintingInteractionSystemBase::SelectColor(double x, double y) {
 
 
 
+
+void PaintComponent::Etherize(Ether& e) {
+	CustomToolComponent::Etherize(e);
+	
+	e % selected_color
+	  % cur_state
+	  % touchpad_x
+	  % touchpad_y
+	  % thumbstick_x
+	  % thumbstick_y
+	  % wait_touchpad_release
+	  % brush_tip_offset_from_holding_pose
+	  % has_brush_tip_offset;
+	
+	EtherizeRef(e, touchpad_indicator);
+	EtherizeRef(e, stroke_in_progress);
+	EtherizeRef(e, paint_brush);
+	EtherizeRef(e, beam);
+	EtherizeRefContainer(e, clr_pick_objects);
+	EtherizeRefContainer(e, strokes);
+	
+	TODO // ptr
+}
 
 void PaintComponent::Initialize() {
 	ToolComponentRef tool = GetEntity()->Find<ToolComponent>();

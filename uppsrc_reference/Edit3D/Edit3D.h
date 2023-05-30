@@ -7,6 +7,8 @@
 #include <ComputerVision/ComputerVision.h>
 #include <Pointcloud/Pointcloud.h>
 #include <SoftRend/SoftRend.h>
+#include <ports/enet/enet.h>
+
 
 #include "SoftRendCtrl.h"
 #include "Geom.h"
@@ -14,6 +16,8 @@
 #include "VideoImporter.h"
 #include "StagedVideoImporter.h"
 #include "VideoImportCtrl.h"
+#include "Remote.h"
 #include "Editor.h"
+#include "EditClientService.h"
 
 #endif

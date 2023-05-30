@@ -19,3 +19,6 @@ share/sf2
 vs/**/.vs
 vs/**/Generated Files/**
 vs**/x64/**
+**/*.trace
+*.trace
+

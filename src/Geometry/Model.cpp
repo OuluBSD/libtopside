@@ -4,6 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
+
 ModelNode::ModelNode() {
 	local_transform = Identity<mat4>();
 	modify_count = 0;
@@ -14,8 +16,50 @@ ModelNode::ModelNode(const ModelNode& n) {
 	*this = n;
 }
 
+void ModelNode::Etherize(Ether& e) {
+	e % name
+	  % index
+	  % parent_node_index
+	  % local_transform;
+	
+	if (e.IsLoading())
+		++modify_count;
+}
 
 
+
+
+
+
+
+
+void Model::Texture::Etherize(Ether& e) {
+	e % img
+	  % path;
+}
+
+void Model::CubeTexture::Etherize(Ether& e) {
+	for(int i = 0; i < 6; i++) {
+		e % img[i];
+	}
+	e % path;
+}
+
+void Model::Etherize(Ether& e) {
+	e % meshes
+	  % nodes
+	  % materials
+	  % textures
+	  % cube_textures
+	  % path
+	  % directory;
+	if (e.IsLoading()) {
+		for (Mesh& m : meshes)
+			m.owner = this;
+		for (Material& m : materials.GetValues())
+			m.owner = this;
+	}
+}
 
 bool Model::AddTextureFile(int mesh_i, TexType type, String path) {
 	if (mesh_i < 0 || mesh_i >= meshes.GetCount())
@@ -134,6 +178,18 @@ Material& Model::AddMaterial() {
 	return m;
 }
 
+Material& Model::RealizeMaterial(Mesh& mesh) {
+	if (mesh.material < 0) {
+		Material& mat = AddMaterial();
+		mesh.material = mat.id;
+		return mat;
+	}
+	else {
+		Material& mat = materials.Get(mesh.material);
+		return mat;
+	}
+}
+
 ModelNode& Model::AddNode(String name, NodeIndex parent) {
 	ModelNode& n = nodes.Add();
 	n.name = name;
@@ -243,6 +299,13 @@ void ModelLoader::Clear() {
 void ModelLoader::Set(const Model& m) {
 	model = new Model(m);
 	model->SetParent(this);
+}
+
+void ModelLoader::Attach(Model* m) {
+	Clear();
+	model = m;
+	if (m)
+		m->SetParent(this);
 }
 
 void ModelLoader::operator=(const Model & m) {

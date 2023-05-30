@@ -117,6 +117,10 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	if (type == "stereo")
 		data.is_stereo = true;
 	
+	data.mach = &GetMachine();
+	accel_sd.SetTarget(data);
+	
+	
 	return true;
 }
 
@@ -155,6 +159,11 @@ bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 		(io.active_sink_mask & 0x1) &&
 		io.full_src_mask == 0 &&
 		binders.GetCount() > 0;
+	
+	for (BinderIfaceVideo* binder : binders)
+		if (!binder->Render(accel_sd))
+			b = false;
+	
 	RTLOG("FboAtomT::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sinks.GetCount() << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
@@ -165,11 +174,6 @@ bool FboAtomT<Gfx>::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_ch
 	 
 	if (src_type == VD(CENTER,FBO) ||
 		src_type == VD(OGL,FBO)) {
-		accel_sd.SetTarget(data);
-		for (BinderIfaceVideo* b : binders)
-			if (!b->Render(accel_sd))
-				return false;
-		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
 		
 		data.ptr = &(GfxDataState&)this->data;
