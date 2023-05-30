@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -58,19 +58,24 @@ if ((WIN32) AND (DEFINED flagCLANG OR DEFINED flagGCC) AND (DEFINED flagMSYS2))
   list ( APPEND LINK_LIST bz2 z iconv )
 endif()
 
-# library(WIN32 & MSC & !DEBUG) "libcryptoMT libsslMT Advapi32 User32";
-if ((WIN32 AND DEFINED flagMSC AND NOT DEFINED flagDEBUG))
+# library(WIN32 & MSC & !DEBUG & UPPLIB) "libcryptoMT libsslMT Advapi32 User32";
+if ((WIN32 AND DEFINED flagMSC AND NOT DEFINED flagDEBUG AND DEFINED flagUPPLIB))
   list ( APPEND LINK_LIST libcryptoMT libsslMT Advapi32 User32 )
 endif()
 
-# library(WIN32 & MSC & DEBUG) "libcryptoMTd libsslMTd Advapi32 User32";
-if ((WIN32 AND DEFINED flagMSC AND DEFINED flagDEBUG))
+# library(WIN32 & MSC & DEBUG & UPPLIB) "libcryptoMTd libsslMTd Advapi32 User32";
+if ((WIN32 AND DEFINED flagMSC AND DEFINED flagDEBUG AND DEFINED flagUPPLIB))
   list ( APPEND LINK_LIST libcryptoMTd libsslMTd Advapi32 User32 )
 endif()
 
 # library(WIN32) "Userenv Shell32";
 if ((WIN32))
   list ( APPEND LINK_LIST Userenv Shell32 )
+endif()
+
+# library(WIN32 & MSC) "libcrypto libssl Advapi32 User32";
+if ((WIN32 AND DEFINED flagMSC))
+  list ( APPEND LINK_LIST libcrypto libssl Advapi32 User32 )
 endif()
 
 # Precompiled headers file

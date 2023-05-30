@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -29,8 +29,8 @@ if ((DEFINED flagSDL2 AND WIN32 AND DEFINED flagMSC))
   list ( APPEND LINK_LIST SDL2.lib OpenGL32.lib )
 endif()
 
-# library(SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
-if ((DEFINED flagSDL2 AND WIN32) AND (DEFINED flagGCC OR DEFINED flagCLANG))
+# library(NEVER SDL2 WIN32 (GCC | CLANG)) "SDL2.lib SDL2main.lib  opengl32";
+if ((DEFINED flagNEVER AND DEFINED flagSDL2 AND WIN32) AND (DEFINED flagGCC OR DEFINED flagCLANG))
   list ( APPEND LINK_LIST SDL2.lib SDL2main.lib opengl32 )
 endif()
 

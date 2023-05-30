@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -33,8 +33,8 @@ list ( APPEND HEADER_LIST
       EonLoader.h
       Gui.h
       EventSystem.h
-      Absolute2D.h
       Geom2DComponent.h
+      Absolute2D.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
@@ -51,8 +51,8 @@ list ( APPEND SOURCE_LIST_CPP
       PhysicsSystem.cpp
       Gui.cpp
       EventSystem.cpp
-      Absolute2D.cpp
       Geom2DComponent.cpp
+      Absolute2D.cpp
 )
 
 list ( APPEND EcsLib_DEPEND_LIST

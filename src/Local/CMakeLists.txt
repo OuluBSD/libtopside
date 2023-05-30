@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -72,6 +72,7 @@ list ( APPEND HEADER_LIST
       Ctrl.h
       Ctrl.inl
       GEnums.h
+      Ether.h
       Daemon.h
       Network.h
 )
@@ -115,6 +116,7 @@ list ( APPEND SOURCE_LIST_CPP
       ProgDraw.cpp
       ProgPainter.cpp
       Graphics.cpp
+      Ether.cpp
       Daemon.cpp
       Network.cpp
 )

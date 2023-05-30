@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -24,8 +24,8 @@ if ((NOT DEFINED flagUWP))
   list ( APPEND Geometry_DEPEND_LIST ports_tiny_gltf-lib )
 endif()
 
-# uses(!UWP & (BUILTIN_ASSIMP | MSC | LINUX)) ports/assimp;
-if ((NOT DEFINED flagUWP) AND (DEFINED flagBUILTIN_ASSIMP OR DEFINED flagMSC OR DEFINED flagLINUX))
+# uses(!UWP & (BUILTIN_ASSIMP | LINUX)) ports/assimp;
+if ((NOT DEFINED flagUWP) AND (DEFINED flagBUILTIN_ASSIMP OR DEFINED flagLINUX))
   list ( APPEND Geometry_DEPEND_LIST ports_assimp-lib )
 endif()
 
@@ -63,6 +63,7 @@ list ( APPEND HEADER_LIST
       MeshTracker.h
       Uncamera.h
       Vr.h
+      Serializer.h
       ModelPainter.h
       ModelDraw.h
 )
@@ -88,6 +89,7 @@ list ( APPEND SOURCE_LIST_CPP
       MeshTracker.cpp
       Uncamera.cpp
       Vr.cpp
+      Serializer.cpp
       ModelPainter.cpp
       ModelDraw.cpp
 )

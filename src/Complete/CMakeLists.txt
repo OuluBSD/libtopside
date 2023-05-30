@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -18,6 +18,11 @@ endif()
 
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
+# uses(GUI) GuboLib;
+if ((DEFINED flagGUI))
+  list ( APPEND Complete_DEPEND_LIST GuboLib-lib )
+endif()
 
 # uses(NEVER) Physics;
 if ((DEFINED flagNEVER))
@@ -39,7 +44,6 @@ list ( APPEND Complete_DEPEND_LIST
       Shadertoy-lib
       AtomLocal-lib
       AudioHost-lib
-      GuboLib-lib
       IMidiFile-lib
       IMidiHw-lib
       SerialLib-lib

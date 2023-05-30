@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -19,24 +19,24 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
+# library(SDL2 & (!WIN32 | MSC)) "SDL2 SDL2_ttf SDL2_image";
+if ((DEFINED flagSDL2) AND (NOT WIN32 OR DEFINED flagMSC))
+  list ( APPEND LINK_LIST SDL2 SDL2_ttf SDL2_image )
+endif()
+
 # library(UWP&DX12) "D3D11 DXGI D2d1 Dwrite";
 if ((DEFINED flagUWP&DX12))
   list ( APPEND LINK_LIST D3D11 DXGI D2d1 Dwrite )
 endif()
 
-# library(SDL2) SDL2;
-if ((DEFINED flagSDL2))
-  list ( APPEND LINK_LIST SDL2 )
+# library(SDL2 & WIN32 & !MSC) "SDL2main SDL2 SDL2_image SDL2_ttf glew32 freetype harfbuzz SetupAPI jpeg jxl png tiff webp Imm32 Version OleAut32 hwy brotlidec brotlicommon graphite2 Rpcrt4  jbig deflate lzma zstd Lerc sharpyuv z";
+if ((DEFINED flagSDL2 AND WIN32 AND NOT DEFINED flagMSC))
+  list ( APPEND LINK_LIST SDL2main SDL2 SDL2_image SDL2_ttf glew32 freetype harfbuzz SetupAPI jpeg jxl png tiff webp Imm32 Version OleAut32 hwy brotlidec brotlicommon graphite2 Rpcrt4 jbig deflate lzma zstd Lerc sharpyuv z )
 endif()
 
-# library(SDL2) SDL2_ttf;
-if ((DEFINED flagSDL2))
-  list ( APPEND LINK_LIST SDL2_ttf )
-endif()
-
-# library(SDL2) SDL2_image;
-if ((DEFINED flagSDL2))
-  list ( APPEND LINK_LIST SDL2_image )
+# library(SDL2 & WIN32) Ole32;
+if ((DEFINED flagSDL2 AND WIN32))
+  list ( APPEND LINK_LIST Ole32 )
 endif()
 
 list ( APPEND HEADER_LIST

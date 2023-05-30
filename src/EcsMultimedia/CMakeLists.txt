@@ -20,33 +20,36 @@ endif()
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 list ( APPEND HEADER_LIST
-      VirtualGui3D.h
-      Keys.h
-      After.h
+      EcsMultimedia.h
 )
 
-list ( APPEND SOURCE_LIST_CPP
-      VirtualGui3D.cpp
+list ( APPEND SOURCE_LIST_ICPP
+      EcsMultimedia.icpp
+)
+
+list ( APPEND EcsMultimedia_DEPEND_LIST
+      EcsAudioCore-lib
+      EcsLib-lib
 )
 
 # Module properties
 create_cpps_from_icpps()
 set_source_files_properties ( ${HEADER_LIST} PROPERTIES HEADER_FILE_ONLY ON )
-add_library ( VirtualGui3D-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
-target_include_directories ( VirtualGui3D-lib PUBLIC ${INCLUDE_LIST} )
-set_property ( TARGET VirtualGui3D-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
+add_library ( EcsMultimedia-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
+target_include_directories ( EcsMultimedia-lib PUBLIC ${INCLUDE_LIST} )
+set_property ( TARGET EcsMultimedia-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
 
 # Module link
-if ( VirtualGui3D_DEPEND_LIST OR LINK_LIST )
-  target_link_libraries ( VirtualGui3D-lib ${VirtualGui3D_DEPEND_LIST} ${LINK_LIST} )
+if ( EcsMultimedia_DEPEND_LIST OR LINK_LIST )
+  target_link_libraries ( EcsMultimedia-lib ${EcsMultimedia_DEPEND_LIST} ${LINK_LIST} )
 endif()
 
 # Precompiled headers settings
 get_directory_property ( PCH_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-set_target_properties ( VirtualGui3D-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
+set_target_properties ( EcsMultimedia-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
+set_target_properties ( EcsMultimedia-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
+set_target_properties ( EcsMultimedia-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
+set_target_properties ( EcsMultimedia-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
 
 list ( LENGTH PCH_FILE PCH_FILE_LENGTH )
 if ( PCH_FILE_LENGTH GREATER 1 )
@@ -55,7 +58,7 @@ endif()
 
 if ( PCH_FILE AND DEFINED flagPCH )
   get_filename_component ( PCH_NAME ${PCH_FILE} NAME )
-  set ( PCH_DIR ${PROJECT_PCH_DIR}/VirtualGui3D-lib )
+  set ( PCH_DIR ${PROJECT_PCH_DIR}/EcsMultimedia-lib )
   set ( PCH_HEADER ${PCH_DIR}/${PCH_NAME} )
   if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
       if ( ${CMAKE_VERBOSE_MAKEFILE} EQUAL 1 )
@@ -68,7 +71,7 @@ if ( PCH_FILE AND DEFINED flagPCH )
       set ( PCH_INCLUDE_PARAMS " -Winvalid-pch -include-pch ${PCH_HEADER}.pch" )
   endif()
   if ( MSVC )
-      set_target_properties ( VirtualGui3D-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
+      set_target_properties ( EcsMultimedia-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
       set_source_files_properties ( ${SOURCE_LIST_CPP} PROPERTIES COMPILE_FLAGS "Yc${PCH_NAME} -Fp${PCH_HEADER}.pch" )
   endif()
   if ( PCH_INCLUDE_PARAMS )

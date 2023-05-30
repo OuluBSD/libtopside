@@ -19,34 +19,60 @@ endif()
 # Set the default library directory to store built libraries
 set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
+# library(WIN32) Winmm;
+if ((WIN32))
+  list ( APPEND LINK_LIST Winmm )
+endif()
+
 list ( APPEND HEADER_LIST
-      VirtualGui3D.h
-      Keys.h
-      After.h
+      EnetService.h
+      Service.h
+      enet.h
+      callbacks.h
+      list.h
+      protocol.h
+      time.h
+      types.h
+      unix.h
+      utility.h
+      win32.h
+)
+
+list ( APPEND SOURCE_LIST_C
+      callbacks.c
+      compress.c
+      host.c
+      list.c
+      packet.c
+      peer.c
+      protocol.c
+      unix.c
+      win32.c
 )
 
 list ( APPEND SOURCE_LIST_CPP
-      VirtualGui3D.cpp
+      Init.cpp
+      Service.cpp
 )
 
 # Module properties
 create_cpps_from_icpps()
 set_source_files_properties ( ${HEADER_LIST} PROPERTIES HEADER_FILE_ONLY ON )
-add_library ( VirtualGui3D-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
-target_include_directories ( VirtualGui3D-lib PUBLIC ${INCLUDE_LIST} )
-set_property ( TARGET VirtualGui3D-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
+add_library ( ports_enet-lib ${LIB_TYPE} ${SOURCE_LIST_CPP} ${SOURCE_LIST_C} ${HEADER_LIST} )
+target_include_directories ( ports_enet-lib PUBLIC ${INCLUDE_LIST} )
+set_property ( TARGET ports_enet-lib APPEND PROPERTY COMPILE_OPTIONS "${COMPILE_FLAGS_LIST}" )
 
 # Module link
-if ( VirtualGui3D_DEPEND_LIST OR LINK_LIST )
-  target_link_libraries ( VirtualGui3D-lib ${VirtualGui3D_DEPEND_LIST} ${LINK_LIST} )
+if ( ports_enet_DEPEND_LIST OR LINK_LIST )
+  target_link_libraries ( ports_enet-lib ${ports_enet_DEPEND_LIST} ${LINK_LIST} )
 endif()
 
 # Precompiled headers settings
 get_directory_property ( PCH_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-set_target_properties ( VirtualGui3D-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
-set_target_properties ( VirtualGui3D-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
+set_target_properties ( ports_enet-lib PROPERTIES COMPILE_FLAGS_LIST "${COMPILE_FLAGS_LIST}" )
+set_target_properties ( ports_enet-lib PROPERTIES PCH_FILE "${PCH_FILE}" )
+set_target_properties ( ports_enet-lib PROPERTIES PCH_INCLUDE_LIST "${INCLUDE_LIST}" )
+set_target_properties ( ports_enet-lib PROPERTIES PCH_COMPILE_DEFINITIONS "${PCH_COMPILE_DEFINITIONS}" )
 
 list ( LENGTH PCH_FILE PCH_FILE_LENGTH )
 if ( PCH_FILE_LENGTH GREATER 1 )
@@ -55,7 +81,7 @@ endif()
 
 if ( PCH_FILE AND DEFINED flagPCH )
   get_filename_component ( PCH_NAME ${PCH_FILE} NAME )
-  set ( PCH_DIR ${PROJECT_PCH_DIR}/VirtualGui3D-lib )
+  set ( PCH_DIR ${PROJECT_PCH_DIR}/ports_enet-lib )
   set ( PCH_HEADER ${PCH_DIR}/${PCH_NAME} )
   if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
       if ( ${CMAKE_VERBOSE_MAKEFILE} EQUAL 1 )
@@ -68,7 +94,7 @@ if ( PCH_FILE AND DEFINED flagPCH )
       set ( PCH_INCLUDE_PARAMS " -Winvalid-pch -include-pch ${PCH_HEADER}.pch" )
   endif()
   if ( MSVC )
-      set_target_properties ( VirtualGui3D-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
+      set_target_properties ( ports_enet-lib PROPERTIES COMPILE_FLAGS "-Yu${PCH_NAME} -Fp${PCH_HEADER}.pch" )
       set_source_files_properties ( ${SOURCE_LIST_CPP} PROPERTIES COMPILE_FLAGS "Yc${PCH_NAME} -Fp${PCH_HEADER}.pch" )
   endif()
   if ( PCH_INCLUDE_PARAMS )

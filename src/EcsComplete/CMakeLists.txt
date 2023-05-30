@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -36,10 +36,13 @@ endif()
 
 list ( APPEND HEADER_LIST
       EcsComplete.h
+      Service.h
 )
 
 list ( APPEND SOURCE_LIST_CPP
+      Init.cpp
       EcsComplete.cpp
+      Service.cpp
 )
 
 list ( APPEND EcsComplete_DEPEND_LIST
@@ -47,6 +50,8 @@ list ( APPEND EcsComplete_DEPEND_LIST
       EcsMinimal-lib
       EcsAudioCore-lib
       Complete-lib
+      EcsMultimedia-lib
+      EcsDummy-lib
 )
 
 # Module properties

@@ -1,4 +1,4 @@
-# CMakeLists.txt generated Sun Apr 23 22:09:00 EEST 2023
+# CMakeLists.txt generated Tue May 30 16:49:04 EEST 2023
 cmake_minimum_required ( VERSION 3.4.1 )
 
 #################################################
@@ -22,6 +22,11 @@ set ( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 # Module definitions
 add_definitions ( -DflagMAIN )
 
+# uses(GUI) EcsComplete;
+if ((DEFINED flagGUI))
+  list ( APPEND Shell_DEPEND_LIST EcsComplete-lib )
+endif()
+
 list ( APPEND HEADER_LIST
       EcsShell.h
 )
@@ -32,7 +37,6 @@ list ( APPEND SOURCE_LIST_CPP
 
 list ( APPEND Shell_DEPEND_LIST
       Complete-lib
-      EcsComplete-lib
 )
 
 # Module properties
