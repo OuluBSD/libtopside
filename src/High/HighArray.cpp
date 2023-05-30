@@ -159,7 +159,7 @@ HiValue::operator WString() const
 		for(int i = 0; i < a.GetCount(); i++) {
 			if(a[i].IsInt()) {
 				wchar_t c = a[i].GetInt();
-				if(c >= 0 && c < 65536)
+				if(c >= 0 /*&& c < 65536*/)
 					s.Add(c);
 			}
 		}

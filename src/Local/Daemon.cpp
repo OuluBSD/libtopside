@@ -5,10 +5,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 static void DaemonBase_signal_handler(int sig)
 {
-	#ifdef flagMSC
-	TODO
-	#else
+	#ifdef flagPOSIX
 	signal(sig, SIG_IGN);
+	#else
+	TODO
 	#endif
 	
 	Cout() << "DaemonBase - stopping\n";
@@ -37,16 +37,14 @@ DaemonBase::~DaemonBase() {
 }
 
 bool DaemonBase::Init() {
-	#ifdef flagMSC
-	LOG("DaemonBase::Init: warning: TODO signal handlers");
-	#else
+	#ifdef flagPOSIX
 	signal(SIGINT, DaemonBase_signal_handler);
 	signal(SIGABRT, DaemonBase_signal_handler);
 	signal(SIGTERM, DaemonBase_signal_handler);
-	#ifdef flagPOSIX
 	signal(SIGQUIT, DaemonBase_signal_handler);
 	signal(SIGHUP, DaemonBase_signal_handler);
-	#endif
+	#else
+	LOG("DaemonBase::Init: warning: TODO signal handlers");
 	#endif
 	
 	if (requested_services.IsEmpty()) {

@@ -26,11 +26,13 @@
 3. Install required packages in C:\msys64\msys2.exe shell 
  - ```pacman -S --needed base-devel mingw-w64-clang-x86_64-toolchain``` and select 1
  - ```pacman -S mingw-w64-clang-x86_64-openjpeg mingw-w64-clang-x86_64-glew mingw-w64-clang-x86_64-assimp mingw-w64-clang-x86_64-fluidsynth mingw-w64-clang-x86_64-portaudio mingw-w64-clang-x86_64-portmidi mingw-w64-clang-x86_64-SDL2_ttf mingw-w64-clang-x86_64-SDL2_image mingw-w64-clang-x86_64-assimp```
-   And in C:\msys64\mingw64.exe shell
+ 
+   For GCC instead of Clang: in C:\msys64\mingw64.exe shell
  - ```pacman -S --needed base-devel mingw-w64-x86_64-toolchain```
  - ```pacman -S mingw-w64-x86_64-openjpeg mingw-w64-x86_64-glew mingw-w64-x86_64-assimp mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-portaudio mingw-w64-x86_64-portmidi mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-assimp```
 4. Copy ```C:\git\libtopside\script\msys2\MSYS_CLANGx64.bm``` to ```C:\upp```
 Also, Check and change the .bm file include path for latest version ```C:\msys64\clang64\lib\clang\15.0.7\include```
+5. In TheIDE, open Build Methods and add ```-std=c++17``` to CLANG's Common C++ Options
 
 ### In Linux
 

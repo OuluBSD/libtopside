@@ -37,10 +37,14 @@ NAMESPACE_PARALLEL_BEGIN
 #elif defined flagSDL2
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(SdlSw) \
-	
+
 #elif defined flagPOSIX
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(X11Sw) \
+
+#elif defined flagDX11
+#define GFX_RENDSYS_LIST \
+	GFX_RSYS(WinD11) \
 
 #else
 	#define GFX_RENDSYS_LIST
@@ -460,8 +464,6 @@ struct D11GfxT {
 
 	static const GVar::GfxType Type = GVar::DX;
 	
-	using FramebufferBase = Dx11FramebufferBase;
-	using BufferBase = Dx11BufferBase;
 	
 	#include "TypeFuncList.inl"
 	
@@ -497,6 +499,7 @@ struct DxGfx {
 struct WinD11Gfx : D11GfxT<WinD11Gfx>, DxGfx {
 	using NativeSurface = void*;
 	using SoftShaderLibrary = DummySoftShaderLibrary;
+	using NativeColorBufferRef = typename D11GfxT<WinD11Gfx>::NativeColorBufferRef;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	GFX_CLS_LIST(WinD11)

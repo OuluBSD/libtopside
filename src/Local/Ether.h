@@ -76,7 +76,7 @@ DEFAULT_ETHERIZER(int64)
 DEFAULT_ETHERIZER(uint64)
 DEFAULT_ETHERIZER(float)
 DEFAULT_ETHERIZER(double)
-#if CPU_32
+#if CPU_32 || (defined WIN32 && defined flagCLANG)
 DEFAULT_ETHERIZER(unsigned long)
 #endif
 DEFAULT_ETHERIZER(Point)

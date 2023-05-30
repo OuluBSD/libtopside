@@ -1,5 +1,7 @@
 description "\37728,212,255";
 
+library(WIN32) Winmm;
+
 file
 	libtopside readonly separator,
 	Init.cpp,

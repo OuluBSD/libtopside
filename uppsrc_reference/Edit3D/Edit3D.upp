@@ -8,7 +8,6 @@ uses
 	ports/enet;
 
 file
-	Todo.txt,
 	Edit3D.h,
 	main.cpp,
 	EditClientService.h,

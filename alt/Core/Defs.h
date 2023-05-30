@@ -285,6 +285,8 @@ NAMESPACE_UPP_END
 #if /*!defined HAVE_MINGW &&*/ defined flagWIN32 && ( defined flagCLANG || defined flagGCC )
 	
 #include <sec_api/stdlib_s.h> /* errno_t, size_t */
+
+#if 0
 extern "C" {
 errno_t getenv_s(
     size_t     *ret_required_buf_size,
@@ -292,11 +294,10 @@ errno_t getenv_s(
     size_t      buf_size_in_bytes,
     const char *name
 );
-}
 
+}
 #endif
 
-
-
+#endif
 
 #endif

@@ -100,6 +100,7 @@
 	#endif
 	
 	#if  __x86_64
+		#undef  _AMD64_
 		#define CPU_LE 1
 		#define CPU_LITTLE_ENDIAN 1
 		#define CPU_UNALIGNED 1

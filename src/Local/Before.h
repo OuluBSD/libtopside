@@ -1,6 +1,14 @@
 #ifndef _Local_Before_h_
 #define _Local_Before_h_
 
+// https://social.msdn.microsoft.com/Forums/en-US/6c3b5778-0b60-4dc5-a8bd-4bc645464e4f/strsafeh-before-iostream-triggers-warnings?forum=Vsexpressvc
+#if defined flagWIN32 && !defined flagMSC
+	#define STRSAFE_NO_DEPRECATE
+	#include <tchar.h>
+	#include <strsafe.h>
+	#include <iostream>
+#endif
+
 #include <random>
 #include <memory>
 #include <cstring>

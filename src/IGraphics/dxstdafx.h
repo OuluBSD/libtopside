@@ -2,6 +2,14 @@
 
 #include <Core/config.h>
 
+// https://social.msdn.microsoft.com/Forums/en-US/6c3b5778-0b60-4dc5-a8bd-4bc645464e4f/strsafeh-before-iostream-triggers-warnings?forum=Vsexpressvc
+#if defined flagWIN32 && !defined flagMSC
+	#define STRSAFE_NO_DEPRECATE
+	#include <tchar.h>
+	#include <strsafe.h>
+	#include <iostream>
+#endif
+
 
 #ifndef STRICT
 #define STRICT
@@ -51,12 +59,14 @@
 	#error Too low version
 #endif
 
+
 #include <winapifamily.h>
 #include <sdkddkver.h>
 
 #include <guiddef.h>
 #include <windef.h>
 #include <Windows.h>
+#include <winnt.h>
 
 #include <synchapi.h>
 #include <assert.h>
@@ -101,8 +111,10 @@
 // Dimitri Includes
 #include <dshow.h>
 #include <time.h>
-#include <cstring>
-#include <cstdlib>
+#include <string.h>
+#include <stdlib.h>
+#include <tchar.h>
+
 // STL stuff
 #include <set>
 #include <list>
