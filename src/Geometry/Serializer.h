@@ -3,15 +3,16 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-
 typedef enum : byte {
 	GEOMVAR_NULL,
+#if 0
 	GEOMVAR_PUSH_POOL_REL,		// string
 	GEOMVAR_POP_POOL,
 	GEOMVAR_PUSH_ENTITY_REL,		// string
 	GEOMVAR_POP_ENTITY,
 	GEOMVAR_PUSH_COMPONENT,		// string (type)
 	GEOMVAR_POP_COMPONENT,
+#endif
 	
 	GEOMVAR_ENTITY_KEY,			// hash_t
 	GEOMVAR_RESET_ENTITY_KEY,
@@ -19,7 +20,6 @@ typedef enum : byte {
 	GEOMVAR_POSITION,			// vec3
 	GEOMVAR_MODEL,				// Model
 } GeomVar;
-
 
 class GeomSerializer {
 	

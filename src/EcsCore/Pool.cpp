@@ -19,6 +19,7 @@ Pool::~Pool() {
 }
 
 void Pool::Etherize(Ether& e) {
+	byte magic = 0, chk = 0xAF;
 	/*
 	e % freeze_bits
 	  % name
@@ -34,25 +35,27 @@ void Pool::Etherize(Ether& e) {
 		}
 	}
 	else {
+		e.PutT(chk);
+		int pc = pools.GetCount();
+		e.PutT(pc);
+		int ec = objects.GetCount();
+		e.PutT(ec);
+		
 		for (PoolRef p : pools) {
-			type = GEOMVAR_PUSH_POOL_REL;
-			e.PutT(type);
+			e.PutT(chk);
 			e.Put(p->name);
 			
 			p->Etherize(e);
 			
-			type = GEOMVAR_POP_POOL;
-			e.PutT(type);
+			e.PutT(chk);
 		}
 		for (EntityRef o : objects) {
-			type = GEOMVAR_PUSH_ENTITY_REL;
-			e.PutT(type);
+			e.PutT(chk);
 			e.Put(o->name);
 			
 			o->Etherize(e);
 			
-			type = GEOMVAR_POP_ENTITY;
-			e.PutT(type);
+			e.PutT(chk);
 		}
 	}
 }

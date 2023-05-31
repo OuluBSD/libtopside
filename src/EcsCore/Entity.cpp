@@ -15,6 +15,7 @@ Entity::~Entity() {
 }
 
 void Entity::Etherize(Ether& e) {
+	byte magic = 0, chk = 0xA0;
 	/*
 	EntityId id = -1;
 	int64 created = 0;
@@ -43,17 +44,19 @@ void Entity::Etherize(Ether& e) {
 		}
 	}
 	else {
+		e.PutT(chk);
+		int c = comps.GetCount();
+		e.PutT(c);
 		for (ComponentRef c : comps) {
-			type = GEOMVAR_PUSH_COMPONENT;
-			e.PutT(type);
+			e.PutT(chk);
+			
 			TypeCls cls = c->GetTypeId();
 			String name = ComponentFactory::GetComponentName(cls);
 			e.Put(name);
 			
 			c->Etherize(e);
 			
-			type = GEOMVAR_POP_COMPONENT;
-			e.PutT(type);
+			e.PutT(chk);
 		}
 	}
 }

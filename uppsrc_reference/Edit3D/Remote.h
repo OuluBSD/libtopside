@@ -4,11 +4,58 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class EngineSerializer {
-	
+class DbgComponent {
 	
 public:
-	void Etherize(Ether& e) {TODO}
+	Array<Object> vars;
+	String cls_name;
+	
+public:
+	
+	void Clear() {
+		vars.Clear();
+		cls_name.Clear();
+	}
+	
+};
+
+class DbgEntity {
+	
+public:
+	Array<DbgComponent> comps;
+	String name;
+	
+public:
+	
+	void Clear() {
+		name.Clear();
+	}
+};
+
+class DbgPool {
+	
+public:
+	Array<DbgPool> pools;
+	Array<DbgEntity> ents;
+	String name;
+	
+public:
+	
+	void Clear() {
+		pools.Clear();
+		ents.Clear();
+		name.Clear();
+	}
+};
+
+class EngineSerializer {
+	DbgPool pool;
+	
+public:
+	void Etherize(Ether& e);
+	static void EtherizePool(Ether& e, DbgPool& p);
+	static void EtherizeEntity(Ether& e, DbgEntity& p);
+	static void EtherizeComponent(Ether& e, DbgComponent& c);
 	
 };
 
