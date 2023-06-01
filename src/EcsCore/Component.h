@@ -69,6 +69,16 @@ public:
 	
 	void GetComponentPath(Vector<String>& path);
 	
+	template <class T> void PutAsKeyRef(Ether& e, const char* key, Ref<T>& ref) {
+		e.PutKeyType<T>(key);
+		EtherizeRef<T>(e, ref);
+	}
+	
+	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, T& ref) {
+		e.PutKeyType<T>(key);
+		EtherizeRefContainer<T>(e, ref);
+	}
+	
 };
 
 

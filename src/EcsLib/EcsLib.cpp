@@ -17,18 +17,9 @@ INITBLOCK_(EcsLib) {
 	
 	
 	// Component
-	ComponentFactory::Register<Transform>("transform3");
-	ComponentFactory::Register<Transform2D>("transform2");
-	ComponentFactory::Register<Viewable>("viewable");
-	ComponentFactory::Register<Viewport>("viewport");
-	ComponentFactory::Register<ChaseCam>("camera.chase");
-	ComponentFactory::Register<Renderable>("renderable");
-	ComponentFactory::Register<ModelComponent>("model");
-	
-	#ifdef flagGUI
-	ComponentFactory::Register<DefaultGuiAppComponent>("gui.app");
-	#endif
-	
+	#define COMP(t, k, v) ComponentFactory::Register<t>(k);
+	#include "Types.inl"
+	#undef COMP
 }
 
 END_UPP_NAMESPACE

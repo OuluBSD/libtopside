@@ -6,6 +6,7 @@
 #include <Geometry/Geometry.h>
 #include <DesktopSuite/DesktopSuite.h>
 
+#include "Defs.h"
 #include "CommonComponents.h"
 #include "Viewport.h"
 #include "EasingSystem.h"
@@ -31,6 +32,10 @@ NAMESPACE_ECS_END
 
 
 NAMESPACE_TOPSIDE_BEGIN
+
+#define COMP(t, k, v) template<> inline dword ObjectTypeNo(const Ecs::t*) {return v;}
+#include "Types.inl"
+#undef COMP
 
 void BindEcsToSerial();
 

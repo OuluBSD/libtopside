@@ -8,8 +8,8 @@ NAMESPACE_ECS_BEGIN
 
 
 void PaintStrokeComponent::Etherize(Ether& e) {
-	e % squares
-	  % stroke_changed;
+	ETH_KEYOBJ(squares);
+	ETH_KEYOBJ(stroke_changed);
 }
 
 void PaintStrokeComponent::Initialize(){

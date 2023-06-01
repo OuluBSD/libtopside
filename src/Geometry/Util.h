@@ -88,7 +88,7 @@ vec3 AxesDir(float yaw, float pitch);
 vec3 AxesDirRoll(float pitch, float roll);
 void DirAxes(vec3 dir, float& yaw, float& pitch);
 void DirAxes(vec3 dir, vec3& axes);
-vec3 GetDirAxes(const vec3& dir);
+axes3 GetDirAxes(const vec3& dir);
 axes2 GetDirAxesRoll(vec3 dir);
 vec3 GetAxesDir(const axes2& ax);
 void CameraObject(

@@ -20,7 +20,9 @@ void Renderable::Uninitialize() {
 }
 
 void Renderable::Etherize(Ether& e) {
-	e % color % offset % alpha_multiplier;
+	ETH_KEYOBJ(color);
+	ETH_KEYOBJ(offset);
+	ETH_KEYOBJ(alpha_multiplier);
 }
 
 

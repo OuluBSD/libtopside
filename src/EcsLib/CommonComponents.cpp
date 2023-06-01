@@ -31,12 +31,12 @@ void Transform::operator=(const Transform& t) {
 }
 
 void Transform::Etherize(Ether& e) {
-	e % data
-	  % size
-	  % relative_position
-	  % anchor_position
-	  % anchor_orientation
-	  % verbose;
+	ETH_KEYOBJ(data);
+	ETH_KEYOBJ(size);
+	ETH_KEYOBJ(relative_position);
+	ETH_KEYOBJ(anchor_position);
+	ETH_KEYOBJ(anchor_orientation);
+	ETH_KEYOBJ(verbose);
 }
 
 mat4 Transform::GetMatrix() const {
@@ -79,8 +79,8 @@ String Transform::ToString() const {
 
 
 void Transform2D::Etherize(Ether& e) {
-	e % position
-	  % size;
+	ETH_KEYOBJ(position);
+	ETH_KEYOBJ(size);
 }
 
 void Transform2D::operator=(const Transform2D& t) {

@@ -65,6 +65,12 @@
 #include "ProgPainter.h"
 #include "ProgDraw.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
+#include "Types.inl"
+
+NAMESPACE_TOPSIDE_END
+
 
 
 #endif

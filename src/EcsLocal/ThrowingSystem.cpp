@@ -172,10 +172,10 @@ void ThrowingInteractionSystemBase::Deactivate(EntityRef entity) {
 void ThrowingComponent::Etherize(Ether& e) {
 	CustomToolComponent::Etherize(e);
 	
-	e % distance_from_pointer
-	  % scale;
+	ETH_KEYOBJ(distance_from_pointer);
+	ETH_KEYOBJ(scale);
 	
-	EtherizeRef(e, ball_object);
+	ETH_KEYREF(ball_object);
 }
 
 void ThrowingComponent::Initialize() {

@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class Model;
 
 
-template <class T, int I> struct Vec;
+template <class T, int I, int ID=0> struct Vec;
 
 typedef Vec<float, 1> vec1;
 typedef Vec<float, 2> vec2;
@@ -16,10 +16,10 @@ typedef Vec<double, 1> dvec1;
 typedef Vec<double, 2> dvec2;
 typedef Vec<double, 3> dvec3;
 typedef Vec<double, 4> dvec4;
-typedef Vec<float, 2> axes2;
-typedef Vec<float, 3> axes3;
-typedef Vec<float, 3> axes2s; // stereo angle [left yaw, right yaw, pitch]
-typedef Vec<float, 4> axes3s; // stereo angle [left yaw, right yaw, pitch, roll]
+typedef Vec<float, 2, 1> axes2;
+typedef Vec<float, 3, 1> axes3;
+typedef Vec<float, 3, 2> axes2s; // stereo angle [left yaw, right yaw, pitch]
+typedef Vec<float, 4, 2> axes3s; // stereo angle [left yaw, right yaw, pitch, roll]
 
 typedef Vec<int, 2> ivec2;
 typedef Vec<int, 3> ivec3;

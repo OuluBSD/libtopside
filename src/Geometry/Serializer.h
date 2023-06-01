@@ -3,6 +3,9 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
+
+
 typedef enum : byte {
 	GEOMVAR_NULL,
 #if 0

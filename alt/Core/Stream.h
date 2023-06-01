@@ -136,7 +136,10 @@ public:
 	};
 	
 	FileStream() {}
-	FileStream(FILE* s) : s(s) {}
+	FileStream(FILE* s, bool storing) : s(s) {
+		this->storing = storing;
+		eof = s ? feof(s) : true;
+	}
 	~FileStream() {Close();}
 	
 	bool IsOpen() const override { return s != NULL; }
@@ -264,7 +267,7 @@ class FileIn : public FileStream {
 
 public:
 	FileIn() {}
-	FileIn(FILE* s) : FileStream(s) {}
+	FileIn(FILE* s) : FileStream(s, false) {}
 	FileIn(String path) {Open(path);}
 	
 	bool Open(String path) {return FileStream::Open(path, READ);}
@@ -275,7 +278,7 @@ class FileOut : public FileStream {
 
 public:
 	FileOut() {}
-	FileOut(FILE* s) : FileStream(s) {}
+	FileOut(FILE* s) : FileStream(s, true) {}
 	FileOut(String path) {Open(path);}
 	
 	bool Open(String path) {return FileStream::Open(path, CREATE);}
@@ -286,15 +289,17 @@ class FileAppend : public FileStream {
 
 public:
 	FileAppend() {}
-	FileAppend(FILE* s) : FileStream(s) {}
+	FileAppend(FILE* s) : FileStream(s, true) {}
 	FileAppend(String path) {Open(path);}
 	
 	bool Open(String path) {return FileStream::Open(path, APPEND);}
 	
 };
 
+#if 0
 extern FileIn cin;
 extern FileOut cout, cerr;
+#endif
 
 String LoadFile(String path);
 

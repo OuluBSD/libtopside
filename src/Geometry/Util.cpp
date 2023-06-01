@@ -580,8 +580,9 @@ void DirAxes(vec3 dir, vec3& axes) {
 	axes[2] = 0;
 }
 
-vec3 GetDirAxes(const vec3& dir) {
-	vec3 axes;
+axes3 GetDirAxes(const vec3& dir) {
+	axes3 axes;
+	axes.data[2] = 0;
 	DirAxes(dir, axes.data[0], axes.data[1]);
 	return axes;
 }
@@ -1634,8 +1635,8 @@ axes2s LookAtStereoAngles(float eye_dist, const vec3& pt) {
 	vec3 r(+eye_dist*0.5f, 0, 0);
 	vec3 pt_l = pt - l;
 	vec3 pt_r = pt - r;
-	vec3 axes_l = GetDirAxes(pt_l);
-	vec3 axes_r = GetDirAxes(pt_r);
+	axes3 axes_l = GetDirAxes(pt_l);
+	axes3 axes_r = GetDirAxes(pt_r);
 	axes2s a;
 	a.data[0] = axes_l.data[0];
 	a.data[1] = axes_r.data[0];

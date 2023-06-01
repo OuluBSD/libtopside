@@ -8,6 +8,8 @@ uses
 file
 	EcsLocal.h,
 	Init.cpp,
+	Types.inl highlight cpp,
+	Defs.h,
 	EcsLocal.cpp,
 	Viewport.h,
 	Viewport.cpp,

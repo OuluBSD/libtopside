@@ -73,69 +73,16 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 }
 
 void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
-	
-	if (c.cls_name == "transform3") {
-		TODO
+	c.Clear();
+	while (!e.IsEof()) {
+		byte more = 0;
+		e.GetT(more);
+		if (more) {
+			Object& o = c.vars.Add();
+			e % o;
+		}
+		else break;
 	}
-	else if (c.cls_name == "transform2") {
-		TODO
-	}
-	else if (c.cls_name == "viewable") {
-		TODO
-	}
-	else if (c.cls_name == "viewport") {
-		TODO
-	}
-	else if (c.cls_name == "camera.chase") {
-		TODO
-	}
-	else if (c.cls_name == "renderable") {
-		TODO
-	}
-	else if (c.cls_name == "model") {
-		TODO
-	}
-	else if (c.cls_name == "gui.app") {
-		TODO
-	}
-	else if (c.cls_name == "body") {
-		TODO
-	}
-	else if (c.cls_name == "text") {
-		TODO
-	}
-	else if (c.cls_name == "easing") {
-		TODO
-	}
-	else if (c.cls_name == "physics") {
-		TODO
-	}
-	else if (c.cls_name == "tool") {
-		TODO
-	}
-	else if (c.cls_name == "tool.selector") {
-		TODO
-	}
-	else if (c.cls_name == "player.hand") {
-		TODO
-	}
-	else if (c.cls_name == "player.head") {
-		TODO
-	}
-	else if (c.cls_name == "player.body") {
-		TODO
-	}
-	else if (c.cls_name == "paint.stroke") {
-		TODO
-	}
-	else if (c.cls_name == "paint") {
-		TODO
-	}
-	else {
-		LOG("Not implemented: " << c.cls_name);
-		TODO
-	}
-	
 }
 
 void EngineSerializer::Etherize(Ether& e) {

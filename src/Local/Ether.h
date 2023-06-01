@@ -4,6 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#define ETH_KEYOBJ(var) e.PutAsKeyObject(#var, var);
+#define ETH_KEYREF(var) this->PutAsKeyRef(e, #var, var);
+#define ETH_KEYREFCONT(var) this->PutAsKeyRefContainer(e, #var, var);
+
 class Ether;
 template <class T> void EtherizeContainer(Ether& e, T& o);
 template <class T> void EtherizeMapContainer(Ether& e, T& o);
@@ -54,6 +58,30 @@ public:
 	
 	template <class T> Ether& operator%(T& o);
 	
+	template <class T> void PutType() {
+		dword obj_type = ObjectTypeNo<T>(0);
+		PutT(obj_type);
+	}
+	inline void PutKey(const char* key) {
+		byte key_len = (byte)strnlen(key, 255);
+		PutT(key_len);
+		Put(key, key_len);
+	}
+	template <class T> void PutKeyType(const char* key) {
+		PutKey(key);
+		PutType<T>();
+	}
+	template <class T> void PutAsObject(T& o) {
+		PutType<T>();
+		Etherize(*this, o);
+	}
+	
+	
+	template <class T> void PutAsKeyObject(const char* key, T& o) {
+		PutKeyType<T>(key);
+		Etherize(*this, o);
+	}
+	
 	
 	template <class T> void GetT(T& o) {Get(&o, sizeof(o));}
 	template <class T> void PutT(T& o) {Put(&o, sizeof(o));}
@@ -79,17 +107,35 @@ DEFAULT_ETHERIZER(double)
 #if CPU_32 || (defined WIN32 && defined flagCLANG)
 DEFAULT_ETHERIZER(unsigned long)
 #endif
+DEFAULT_ETHERIZER(Date)
+DEFAULT_ETHERIZER(Time)
 DEFAULT_ETHERIZER(Point)
 DEFAULT_ETHERIZER(Size)
 DEFAULT_ETHERIZER(Rect)
 DEFAULT_ETHERIZER(RGBA)
+DEFAULT_ETHERIZER(Color)
+DEFAULT_ETHERIZER(ByteArray256)
 #if IS_UPP_CORE && defined flagMSC
 DEFAULT_ETHERIZER(dword)
 #endif
 
+template <> inline void Etherize(Ether& e, Image& i) {
+	TODO
+}
+
+template <> inline void Etherize(Ether& e, Exc& s) {
+	if (e.IsLoading()) s = e.GetString();
+	else e.Put(s);
+}
+
 template <> inline void Etherize(Ether& e, String& s) {
 	if (e.IsLoading()) s = e.GetString();
 	else e.Put(s);
+}
+
+template <> inline void Etherize(Ether& e, WString& s) {
+	if (e.IsLoading()) s = e.GetString().ToWString();
+	else e.Put(s.ToString());
 }
 
 template <class T> Ether& Ether::operator%(T& o) {Etherize(*this, o); return *this;}

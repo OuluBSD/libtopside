@@ -9,6 +9,7 @@ uses
 file
 	Local.h,
 	Local.cpp,
+	Types.inl highlight cpp,
 	Before.h,
 	Compat.h,
 	Defs.h,

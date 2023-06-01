@@ -2,6 +2,71 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+void Object::Etherize(Ether& e) {
+	if (e.IsLoading()) {
+		obj.Clear();
+		dword type = 0;
+		e.GetT(type);
+		if (type != VOID_V) {
+			bool b = CreateType(type);
+			ASSERT_(b && obj, "Could not create type " + HexStr(type));
+			if (obj) obj->Etherize(e);
+			else e.SetError();
+		}
+	}
+	else {
+		dword type = obj ? obj->GetType() : VOID_V;
+		e.PutT(type);
+		if (obj) obj->Etherize(e);
+	}
+}
+
+void ObjectArray::Etherize(Ether& e) {
+	if (e.IsLoading()) {
+		Clear();
+		dword count = 0;
+		e.GetT(count);
+		SetCount(count);
+		for (Object& o : values) {
+			e % o;
+		}
+	}
+	else {
+		dword count = values.GetCount();
+		e.PutT(count);
+		for (Object& o : values) {
+			e % o;
+		}
+	}
+}
+
+void ObjectMap::Etherize(Ether& e) {
+	if (e.IsLoading()) {
+		Clear();
+		dword count = 0;
+		e.GetT(count);
+		keys.SetCount(count);
+		values.SetCount(count);
+		for (String& s : keys) {
+			e % s;
+		}
+		for (Object& o : values) {
+			e % o;
+		}
+	}
+	else {
+		dword count = values.GetCount();
+		e.PutT(count);
+		for (String& s : keys) {
+			e % s;
+		}
+		for (Object& o : values) {
+			e % o;
+		}
+	}
+}
+
+
 void Ether::Put(const String& s) {
 	dword len = s.GetCount() + 1;
 	Put(&len, sizeof(len));

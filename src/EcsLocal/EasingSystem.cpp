@@ -8,10 +8,10 @@ NAMESPACE_ECS_BEGIN
 
 
 void Easing::Etherize(Ether& e) {
-	e % target_position
-	  % target_orientation
-	  % position_easing_factor
-	  % orientation_easing_factor;
+	ETH_KEYOBJ(target_position);
+	ETH_KEYOBJ(target_orientation);
+	ETH_KEYOBJ(position_easing_factor);
+	ETH_KEYOBJ(orientation_easing_factor);
 }
 
 void Easing::Initialize() {

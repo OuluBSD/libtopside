@@ -1,9 +1,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 #if 1
-template <class T, int I>
-Vec<T,I> Vec<T,I>::operator*(const Matrix<T,I,I>& m) const {
-	Vec<T,I> r;
+template <class T, int I, int ID>
+Vec<T,I,ID> Vec<T,I,ID>::operator*(const Matrix<T,I,I>& m) const {
+	Vec<T,I,ID> r;
 	for(int i = 0; i < I; i++) {
 		T& d = r[i];
 		d = 0;
@@ -13,9 +13,9 @@ Vec<T,I> Vec<T,I>::operator*(const Matrix<T,I,I>& m) const {
 	return r;
 }
 #else
-template <class T, int I>
-Vec<T,I> Vec<T,I>::operator*(const Matrix<T,I,I>& m) const {
-	Vec<T,I> r;
+template <class T, int I, int ID>
+Vec<T,I,ID> Vec<T,I,ID>::operator*(const Matrix<T,I,I>& m) const {
+	Vec<T,I,ID> r;
 	for(int i = 0; i < I; i++) {
 		T& d = r[i];
 		d = 0;

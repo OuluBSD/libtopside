@@ -9,6 +9,7 @@ file
 	EcsLib.h,
 	EcsLib.cpp,
 	NonGui.cpp,
+	Types.inl highlight cpp,
 	Defs.h,
 	CommonComponents.h,
 	CommonComponents.cpp,

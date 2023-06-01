@@ -24,11 +24,11 @@ void DefaultGuiAppComponent::Visit(RuntimeVisitor& vis) {
 }
 
 void DefaultGuiAppComponent::Etherize(Ether& e) {
-	e % prev_mouse;
+	ETH_KEYOBJ(prev_mouse);
 	
-	EtherizeRef(e, cw);
-	EtherizeRef(e, trans);
-	EtherizeRef(e, trans2);
+	ETH_KEYREF(cw);
+	ETH_KEYREF(trans);
+	ETH_KEYREF(trans2);
 }
 
 void DefaultGuiAppComponent::Initialize() {

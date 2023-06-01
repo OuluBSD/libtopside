@@ -5,6 +5,15 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 INITBLOCK_(Local) {
+	#define NO_CONST_V
+	#undef OBJ_TYPE_NO
+	#define OBJ_TYPE_NO(t, v) Object::RegisterType<t>(v, #t);
+	#include <SharedCore/CoreTypes.inl>
+	#include "Types.inl"
+	#undef OBJ_TYPE_NO
+	#undef NO_CONST_V
+	
+	
 	DaemonBase::Register<SerialServiceServer>("TcpServer");
 	DaemonBase::Register<SerialServiceClient>("TcpClient");
 	
@@ -85,6 +94,7 @@ INITBLOCK_(Local) {
 	for(int i = 0; i < VAR_COUNT; i++) {
 		ASSERT(gvars[i].name);
 	}
+	
 }
 
 

@@ -461,22 +461,22 @@ vec4 PaintingInteractionSystemBase::SelectColor(double x, double y) {
 void PaintComponent::Etherize(Ether& e) {
 	CustomToolComponent::Etherize(e);
 	
-	e % selected_color
-	  % cur_state
-	  % touchpad_x
-	  % touchpad_y
-	  % thumbstick_x
-	  % thumbstick_y
-	  % wait_touchpad_release
-	  % brush_tip_offset_from_holding_pose
-	  % has_brush_tip_offset;
+	ETH_KEYOBJ(selected_color);
+	ETH_KEYOBJ(cur_state);
+	ETH_KEYOBJ(touchpad_x);
+	ETH_KEYOBJ(touchpad_y);
+	ETH_KEYOBJ(thumbstick_x);
+	ETH_KEYOBJ(thumbstick_y);
+	ETH_KEYOBJ(wait_touchpad_release);
+	ETH_KEYOBJ(brush_tip_offset_from_holding_pose);
+	ETH_KEYOBJ(has_brush_tip_offset);
 	
-	EtherizeRef(e, touchpad_indicator);
-	EtherizeRef(e, stroke_in_progress);
-	EtherizeRef(e, paint_brush);
-	EtherizeRef(e, beam);
-	EtherizeRefContainer(e, clr_pick_objects);
-	EtherizeRefContainer(e, strokes);
+	ETH_KEYREF(touchpad_indicator);
+	ETH_KEYREF(stroke_in_progress);
+	ETH_KEYREF(paint_brush);
+	ETH_KEYREF(beam);
+	ETH_KEYREFCONT(clr_pick_objects);
+	ETH_KEYREFCONT(strokes);
 	
 	TODO // ptr
 }

@@ -17,7 +17,7 @@ public:
 	vec3 angular_velocity;
 	vec3 angular_acceleration;
 	
-	float damping_factor;
+	float damping_factor = 0;
 	
 	
 	void Etherize(Ether& e) override;

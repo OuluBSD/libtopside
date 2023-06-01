@@ -7,6 +7,7 @@ file
 	RTTIDummy.h,
 	Shared.h,
 	Object.h,
+	CoreTypes.inl highlight cpp,
 	Object.cpp,
 	CtrlEvent.h,
 	CtrlEvent.cpp,

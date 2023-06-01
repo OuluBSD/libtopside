@@ -42,6 +42,14 @@
 //	#error GUIPLATFORM_INCLUDE_AFTER_ECSLIB not defined
 //#endif
 
+NAMESPACE_TOPSIDE_BEGIN
+
+#define COMP(t, k, v) template<> inline dword ObjectTypeNo(const Ecs::t*) {return v;}
+#include "Types.inl"
+#undef COMP
+
+NAMESPACE_TOPSIDE_END
+
 
 #endif
 

@@ -280,6 +280,7 @@ Object Object::operator -() const {
 
 
 
+
 void ObjectArray::DeepCopyArrayMap(ObjectArray& arr) {
 	Clear();
 	SetCount(arr.GetCount());

@@ -57,38 +57,45 @@ String TrimLeft(String s);
 String TrimRight(String s);
 String TrimBoth(String s);
 
+#define DEF_LIST \
+	DEF_VAL(bool) \
+	DEF_VAL(uint8) \
+	DEF_VAL(uint16) \
+	DEF_VAL(uint32) \
+	DEF_VAL(uint64) \
+	DEF_VAL(int8) \
+	DEF_VAL(int16) \
+	DEF_VAL(int32) \
+	DEF_VAL(int64) \
+	DEF_VAL(float) \
+	DEF_VAL(double)
 
-template <class T> inline String AsString(const T& o) {return o.ToString();}
+template <class T> inline String AsString(const T& o) {return String();}
 template<> inline String AsString(const bool& o) {return o ? "true" : "false";}
-template<> inline String AsString(const int& o) {return IntStr(o);}
+template<> inline String AsString(const uint8& o) {return IntStr64(o);}
+template<> inline String AsString(const uint16& o) {return IntStr64(o);}
 template<> inline String AsString(const uint32& o) {return IntStr64(o);}
+template<> inline String AsString(const uint64& o) {return IntStr64(o);}
+template<> inline String AsString(const int8& o) {return IntStr64(o);}
+template<> inline String AsString(const int16& o) {return IntStr64(o);}
+template<> inline String AsString(const int32& o) {return IntStr64(o);}
 template<> inline String AsString(const int64& o) {return IntStr64(o);}
-template<> inline String AsString(const byte& o) {return IntStr(o);}
-template<> inline String AsString(const char& o) {String s; s.Cat(o); return s;}
 template<> inline String AsString(const float& o) {return DblStr(o);}
 template<> inline String AsString(const double& o) {return DblStr(o);}
 template<> inline String AsString(const String& o) {return o;}
 template <class T> inline WString ToWString(const T& o) {return o.ToWString();}
 
-template <class T> inline int64 ToInt(const T& o) {return o.ToInt();}
-template<> inline int64 ToInt(const bool& o) {return (int64)o;}
-template<> inline int64 ToInt(const int& o) {return (int64)o;}
-template<> inline int64 ToInt(const int64& o) {return (int64)o;}
-template<> inline int64 ToInt(const byte& o) {return (int64)o;}
-template<> inline int64 ToInt(const char& o) {return (int64)o;}
-template<> inline int64 ToInt(const float& o) {return (int64)o;}
-template<> inline int64 ToInt(const double& o) {return (int64)o;}
+template <class T> inline int64 ToInt(const T& o) {return 0;}
+#define DEF_VAL(x) template<> inline int64 ToInt(const x& o) {return (int64)o;}
+DEF_LIST
+#undef DEF_VAL
 template<> inline int64 ToInt(const String& o) {return StrInt(o);}
 template<> inline int64 ToInt(const WString& o) {return WString::StrInt(o);}
 
-template <class T> inline double ToDouble(const T& o) {return o.ToDouble();}
-template<> inline double ToDouble(const bool& o) {return (double)o;}
-template<> inline double ToDouble(const int& o) {return (double)o;}
-template<> inline double ToDouble(const int64& o) {return (double)o;}
-template<> inline double ToDouble(const byte& o) {return (double)o;}
-template<> inline double ToDouble(const char& o) {return (double)o;}
-template<> inline double ToDouble(const float& o) {return (double)o;}
-template<> inline double ToDouble(const double& o) {return (double)o;}
+template <class T> inline double ToDouble(const T& o) {return 0;}
+#define DEF_VAL(x) template<> inline double ToDouble(const x& o) {return (double)o;}
+DEF_LIST
+#undef DEF_VAL
 template<> inline double ToDouble(const String& o) {return StrDbl(o);}
 template<> inline double ToDouble(const WString& o) {return WString::StrDbl(o);}
 

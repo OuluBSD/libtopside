@@ -49,25 +49,20 @@ const dword VALUE_ARRAY_AND_MAP_V   = 13;
 
 
 class Object;
-
+class Ether;
+template <class T> void Etherize(Ether& e, T& o);
 
 #if IS_UPP_CORE
 Object ObjectFromValue(const Value& v);
 #endif
 
+// Manual _V value and init registering is required
 template <class T>
-dword ObjectTypeNo(const T *)                 { return StaticTypeNo<T>() + 0x8000000; }
+dword ObjectTypeNo(const T *); // problematic over Ether --> { return StaticTypeNo<T>() + 0x8000000; }
 
-template<> inline dword ObjectTypeNo(const void*)    { return VOID_V; }
-template<> inline dword ObjectTypeNo(const int*)     { return INT_V; }
-template<> inline dword ObjectTypeNo(const int64*)   { return INT64_V; }
-template<> inline dword ObjectTypeNo(const double*)  { return DOUBLE_V; }
-template<> inline dword ObjectTypeNo(const bool*)    { return BOOL_V; }
-template<> inline dword ObjectTypeNo(const String*)  { return STRING_V; }
-template<> inline dword ObjectTypeNo(const WString*) { return WSTRING_V; }
-template<> inline dword ObjectTypeNo(const Date*)    { return DATE_V; }
-template<> inline dword ObjectTypeNo(const Time*)    { return TIME_V; }
+#define OBJ_TYPE_NO(x, y) template<> inline dword ObjectTypeNo<x>(const x*) { return y; }
 
+#include "CoreTypes.inl"
 
 template <class T, dword type = UNKNOWN_V, class B = EmptyClass>
 class ObjectType : public B {
@@ -100,6 +95,7 @@ public:
 	virtual int64 ToInt() const {return 0;}
 	virtual double ToDouble() const {return 0;}
 	virtual hash_t GetHashValue() const {return 0;}
+	virtual void Etherize(Ether& e) {}
 	//virtual void Visit(RuntimeVisitor& vis) {}
 	dword GetType() const {return type;}
 };
@@ -120,11 +116,13 @@ public:
 	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
 	double ToDouble() const override {if (ptr) return ::UPP::ToDouble(*ptr); return 0;}
 	hash_t GetHashValue() const override {if (ptr) return UPP::GetHashValue(*ptr); return 0;}
+	void Etherize(Ether& e) override {if (ptr) TS::Etherize<T>(e, *ptr);}
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 
 class ObjectMap;
 class ObjectArray;
+class Ether;
 
 class Object : Moveable<Object>, RTTIBase {
 	Shared<ObjectInstance> obj;
@@ -190,6 +188,7 @@ public:
 	bool IsDouble() const {return !obj.IsEmpty() && obj->GetType() == DOUBLE_V;}
 	bool IsNumber() const {return !obj.IsEmpty() && (obj->GetType() == DOUBLE_V || obj->GetType() == INT_V || obj->GetType() == INT64_V);}
 	
+	void Etherize(Ether& e);
 	operator String() const {return ToString();}
 	
 	String ToString() const {if (obj) return obj->ToString(); return "NULL";}
@@ -217,6 +216,42 @@ public:
 	Object operator >>(const Object& o) const;
 	Object operator !() const;
 	Object operator -() const;
+	
+	
+private:
+	
+	template <class T> static void CreateFn(Object& o) {o.Create<T>();}
+	
+	struct RegType : Moveable<RegType> {
+		typedef void(*CreateObj)(Object&);
+		dword type;
+		const char* name;
+		CreateObj create;
+	};
+	
+	static VectorMap<dword, RegType>& Types() {static VectorMap<dword, RegType> v; return v;}
+	
+public:
+	template <class T>
+	static void RegisterType(dword type, const char* name) {
+		ASSERT_(Types().Find(type) < 0, "Type was registered twice");
+		RegType& t = Types().GetAdd(type);
+		t.type = type;
+		t.name = name;
+		t.create = &CreateFn<T>;
+	}
+	
+	bool CreateType(dword type) {
+		Clear();
+		if (type == VOID_O)
+			return true;
+		int i = Types().Find(type);
+		if (i < 0)
+			return false;
+		const RegType& t = Types()[i];
+		t.create(*this);
+		return true;
+	}
 };
 
 inline bool IsObjectMap(const Object& v) {return v.IsMap();}
@@ -279,6 +314,9 @@ public:
 	A::Iterator end() {return values.end();}
 	A::ConstIterator begin() const {return values.begin();}
 	A::ConstIterator end() const {return values.end();}
+	
+	void Etherize(Ether& e);
+	
 };
 
 
@@ -322,6 +360,9 @@ public:
 	int64			ToInt() const {return keys.GetCount();}
 	double			ToDouble() const {return keys.GetCount();}
 	operator double() const {return keys.GetCount();}
+	
+	void Etherize(Ether& e);
+	
 };
 
 struct ObjectArrayMapComb {
@@ -344,9 +385,9 @@ struct ObjectArrayMapComb {
 };
 
 
-template<> inline dword ObjectTypeNo(const ObjectArray*)          { return VALUEARRAY_V; }
-template<> inline dword ObjectTypeNo(const ObjectMap*)            { return VALUEMAP_V; }
-template<> inline dword ObjectTypeNo(const ObjectArrayMapComb*)   { return VALUE_ARRAY_AND_MAP_V; }
+template<> inline dword ObjectTypeNo(const ObjectArray*)          { return OBJECTARRAY_O; }
+template<> inline dword ObjectTypeNo(const ObjectMap*)            { return OBJECTMAP_O; }
+template<> inline dword ObjectTypeNo(const ObjectArrayMapComb*)   { return OBJECT_ARRAY_AND_MAP_O; }
 
 String GetObjectTreeString(const Object& v, String key="", int indent=0);
 
