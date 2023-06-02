@@ -186,6 +186,23 @@ void CalibrationData::Dump() {
 	DUMP(*this);
 }
 
+hash_t CalibrationData::GetHashValue() const {
+	CombineHash h;
+	h << is_enabled
+	  << axes
+	  << position
+	  << fov
+	  << scale
+	  << eye_dist;
+	return h;
+}
 
+
+
+hash_t Square::GetHashValue() const {
+	CombineHash h;
+	h << tl << tr << br << bl;
+	return h;
+}
 
 END_UPP_NAMESPACE

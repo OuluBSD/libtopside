@@ -9,6 +9,7 @@
 	COMP(PlayerHeadComponent, "player.head", PLAYERHEADCOMPONENT_O);
 	COMP(PlayerBodyComponent, "player.body", PLAYERBODYCOMPONENT_O);
 	COMP(PaintStrokeComponent, "paint.stroke", PAINTSTROKECOMPONENT_O);
+	COMP(CustomToolComponent, "custom.tool.base", CUSTOMTOOLCOMPONENT_O);
 	
 	// CustomToolComponent
 	COMP(PaintComponent, "paint", PAINTCOMPONENT_O);

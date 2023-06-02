@@ -45,7 +45,7 @@ template<> inline double ToDouble(const long& o) {return (double)o;}
 
 #endif
 
-const dword VALUE_ARRAY_AND_MAP_V   = 13;
+const dword VALUE_ARRAY_AND_MAP_O   = 13;
 
 
 class Object;
@@ -56,7 +56,7 @@ template <class T> void Etherize(Ether& e, T& o);
 Object ObjectFromValue(const Value& v);
 #endif
 
-// Manual _V value and init registering is required
+// Manual _O value and init registering is required
 template <class T>
 dword ObjectTypeNo(const T *); // problematic over Ether --> { return StaticTypeNo<T>() + 0x8000000; }
 
@@ -64,10 +64,10 @@ dword ObjectTypeNo(const T *); // problematic over Ether --> { return StaticType
 
 #include "CoreTypes.inl"
 
-template <class T, dword type = UNKNOWN_V, class B = EmptyClass>
+template <class T, dword type = UNKNOWN_O, class B = EmptyClass>
 class ObjectType : public B {
 public:
-	static dword ObjectTypeNo()                      { return type == UNKNOWN_V ? StaticTypeNo<T>() + 0x8000000 : type; }
+	static dword ObjectTypeNo()                      { return type == UNKNOWN_O ? TS::ObjectTypeNo<T>(0) : type; }
 	friend dword ObjectTypeNo(const T*)              { return T::ObjectTypeNo(); }
 	
 	bool     IsNullInstance() const                 { return false; }
@@ -86,7 +86,7 @@ public:
 
 class ObjectInstance {
 protected:
-	dword type = VOID_V;
+	dword type = VOID_O;
 	
 public:
 	virtual ~ObjectInstance() = default;
@@ -109,7 +109,7 @@ public:
 	ObjectTemplate() {ptr = new T(); is_owned = true; type = ObjectTypeNo<T>(0);}
 	ObjectTemplate(T* ptr) : ptr(ptr) {type = ObjectTypeNo<T>(0);}
 	ObjectTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ObjectTypeNo<T>(0);}
-	~ObjectTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_V;}}
+	~ObjectTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_O;}}
 	T* GetT() const {return ptr;}
 	void* Get() override {return ptr;}
 	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
@@ -148,7 +148,7 @@ public:
 	ObjectMap&   CreateMap();
 	ObjectArray& CreateArray();
 	
-	dword GetType() const {if (obj) return obj->GetType(); return VOID_V;}
+	dword GetType() const {if (obj) return obj->GetType(); return VOID_O;}
 	Object& operator=(const Nuller&) {Clear(); return *this;}
 	template <class T> Object&	operator=(const Object& v) {obj = v.obj; return *this;}
 	template <class T> Object&	operator=(T* o) {Set<T>(o); return *this;}
@@ -176,17 +176,17 @@ public:
 	ObjectInstance* GetObject() const {return obj.Get();}
 	hash_t GetHashValue() const {if (obj) return obj->GetHashValue(); return 0;}
 	
-	bool IsVoid() const {if (obj) return obj->GetType() == VOID_V; return true;}
+	bool IsVoid() const {if (obj) return obj->GetType() == VOID_O; return true;}
 	bool IsNullInstance() const {return IsVoid();}
 	bool IsArray() const;
 	bool IsMap() const;
 	bool IsArrayMapComb() const;
-	bool IsString() const {return !obj.IsEmpty() && obj->GetType() == STRING_V;}
-	bool IsWString() const {return !obj.IsEmpty() && obj->GetType() == WSTRING_V;}
-	bool IsInt() const {return !obj.IsEmpty() && obj->GetType() == INT_V;}
-	bool IsInt64() const {return !obj.IsEmpty() && obj->GetType() == INT64_V;}
-	bool IsDouble() const {return !obj.IsEmpty() && obj->GetType() == DOUBLE_V;}
-	bool IsNumber() const {return !obj.IsEmpty() && (obj->GetType() == DOUBLE_V || obj->GetType() == INT_V || obj->GetType() == INT64_V);}
+	bool IsString() const {return !obj.IsEmpty() && obj->GetType() == STRING_O;}
+	bool IsWString() const {return !obj.IsEmpty() && obj->GetType() == WSTRING_O;}
+	bool IsInt() const {return !obj.IsEmpty() && obj->GetType() == INT32_O;}
+	bool IsInt64() const {return !obj.IsEmpty() && obj->GetType() == INT64_O;}
+	bool IsDouble() const {return !obj.IsEmpty() && obj->GetType() == DOUBLE_O;}
+	bool IsNumber() const {return !obj.IsEmpty() && (obj->GetType() == DOUBLE_O || obj->GetType() == INT32_O || obj->GetType() == INT64_O);}
 	
 	void Etherize(Ether& e);
 	operator String() const {return ToString();}

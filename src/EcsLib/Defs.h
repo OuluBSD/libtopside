@@ -28,14 +28,15 @@ void Close_NonGUI_ECS();
 
 #endif
 
-const dword TRANSFORM_O      = PKG_ECS_V  | 0x200 | 0;
-const dword TRANSFORM2_O     = PKG_ECS_V  | 0x200 | 1;
-const dword VIEWABLE_O       = PKG_ECS_V  | 0x200 | 2;
-const dword VIEWPORT_O       = PKG_ECS_V  | 0x200 | 3;
-const dword CHASECAM_O       = PKG_ECS_V  | 0x200 | 4;
-const dword RENDERABLE_O     = PKG_ECS_V  | 0x200 | 5;
-const dword MODELCOMPONENT_O = PKG_ECS_V  | 0x200 | 6;
-const dword DEFGUIAPP_O      = PKG_ECS_V  | 0x200 | 7;
+const dword TRANSFORM_O       = PKG_ECS_V  | 0x200 | 0;
+const dword TRANSFORM2_O      = PKG_ECS_V  | 0x200 | 1;
+const dword VIEWABLE_O        = PKG_ECS_V  | 0x200 | 2;
+const dword VIEWPORT_O        = PKG_ECS_V  | 0x200 | 3;
+const dword CHASECAM_O        = PKG_ECS_V  | 0x200 | 4;
+const dword RENDERABLE_O      = PKG_ECS_V  | 0x200 | 5;
+const dword MODELCOMPONENT_O  = PKG_ECS_V  | 0x200 | 6;
+const dword DEFGUIAPP_O       = PKG_ECS_V  | 0x200 | 7;
+const dword GEOM2DCOMPONENT_O = PKG_ECS_V  | 0x200 | 8;
 
 
 END_UPP_NAMESPACE

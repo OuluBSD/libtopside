@@ -17,6 +17,7 @@ const dword PAINTSTROKECOMPONENT_O  = PKG_ECS_V  | 0x300 | 9;
 const dword PAINTCOMPONENT_O        = PKG_ECS_V  | 0x300 | 10;
 const dword SHOOTINGCOMPONENT_O     = PKG_ECS_V  | 0x300 | 11;
 const dword THWORINGCOMPONENT_O     = PKG_ECS_V  | 0x300 | 12;
+const dword CUSTOMTOOLCOMPONENT_O   = PKG_ECS_V  | 0x300 | 13;
 
 
 NAMESPACE_TOPSIDE_END

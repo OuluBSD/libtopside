@@ -16,6 +16,7 @@ const dword PKG_ECS_V		= 0xd000;
 
 // Core vars
 const dword VOID_O    = 0;
+const dword UNKNOWN_O = 0xFFFFFFFF;
 const dword BOOL_O    = PKG_NATIVE_V  | 1;
 const dword UINT8_O   = PKG_NATIVE_V  | 2;
 const dword INT8_O    = PKG_NATIVE_V  | 3;
@@ -36,12 +37,13 @@ const dword POINT_O   = PKG_CORE_V | 4;
 const dword SIZE_O    = PKG_CORE_V | 5;
 const dword RECT_O    = PKG_CORE_V | 6;
 const dword COLOR_O   = PKG_CORE_V | 7;
-const dword IMAGE_O   = PKG_CORE_V | 8;
-const dword ERROR_O   = PKG_CORE_V | 9;
+const dword RGBA_O    = PKG_CORE_V | 8;
+const dword IMAGE_O   = PKG_CORE_V | 9;
+const dword ERROR_O   = PKG_CORE_V | 10;
 
-const dword OBJECTARRAY_O = PKG_CORE_V | 10;
-const dword OBJECTMAP_O   = PKG_CORE_V | 11;
-const dword OBJECT_ARRAY_AND_MAP_O   = PKG_CORE_V | 12;
+const dword OBJECTARRAY_O = PKG_CORE_V | 11;
+const dword OBJECTMAP_O   = PKG_CORE_V | 12;
+const dword OBJECT_ARRAY_AND_MAP_O   = PKG_CORE_V | 13;
 
 #endif
 
@@ -66,6 +68,7 @@ OBJ_TYPE_NO(Point,    POINT_O )
 OBJ_TYPE_NO(Size,     SIZE_O )
 OBJ_TYPE_NO(Rect,     RECT_O )
 OBJ_TYPE_NO(Color,    COLOR_O )
+OBJ_TYPE_NO(RGBA,     RGBA_O )
 OBJ_TYPE_NO(Image,    IMAGE_O )
 OBJ_TYPE_NO(Exc,      ERROR_O )
 

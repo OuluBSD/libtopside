@@ -1068,6 +1068,7 @@ struct Square : Moveable<Square> {
 	vec3 tl, tr, br, bl;
 	
 	void Etherize(Ether& e) {e % tl % tr % br % bl;}
+	hash_t GetHashValue() const;
 };
 
 
@@ -1280,7 +1281,7 @@ struct CalibrationData {
 	void Etherize(Ether& e);
 	String ToString() const;
 	void Dump();
-	
+	hash_t GetHashValue() const;
 };
 
 

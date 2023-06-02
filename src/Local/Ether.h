@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #define ETH_KEYOBJ(var) e.PutAsKeyObject(#var, var);
+#define ETH_KEYOBJCONT(var) e.PutAsKeyObjectContainer(#var, var);
 #define ETH_KEYREF(var) this->PutAsKeyRef(e, #var, var);
 #define ETH_KEYREFCONT(var) this->PutAsKeyRefContainer(e, #var, var);
 
@@ -80,6 +81,14 @@ public:
 	template <class T> void PutAsKeyObject(const char* key, T& o) {
 		PutKeyType<T>(key);
 		Etherize(*this, o);
+	}
+	
+	template <class T> void PutAsKeyObjectContainer(const char* key, Vector<T>& v) {
+		PutKeyType<T>(key);
+		dword c = v.GetCount();
+		PutT(c);
+		for (T& o : v)
+			Etherize(*this, o);
 	}
 	
 	

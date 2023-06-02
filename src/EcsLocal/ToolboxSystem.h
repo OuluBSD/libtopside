@@ -20,7 +20,7 @@ public:
 	COPY_PANIC(CustomToolComponent)
 	COMP_DEF_VISIT
 	
-	virtual bool LoadModel(ModelComponent&) = 0;
+	virtual bool LoadModel(ModelComponent&) {return false;} // can't be virtual because of object type num
 	
 	void Etherize(Ether& e) override {}
 	

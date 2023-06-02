@@ -7,7 +7,7 @@ void Object::Etherize(Ether& e) {
 		obj.Clear();
 		dword type = 0;
 		e.GetT(type);
-		if (type != VOID_V) {
+		if (type != VOID_O) {
 			bool b = CreateType(type);
 			ASSERT_(b && obj, "Could not create type " + HexStr(type));
 			if (obj) obj->Etherize(e);
@@ -15,7 +15,7 @@ void Object::Etherize(Ether& e) {
 		}
 	}
 	else {
-		dword type = obj ? obj->GetType() : VOID_V;
+		dword type = obj ? obj->GetType() : VOID_O;
 		e.PutT(type);
 		if (obj) obj->Etherize(e);
 	}

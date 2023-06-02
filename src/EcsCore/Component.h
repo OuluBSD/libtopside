@@ -74,9 +74,14 @@ public:
 		EtherizeRef<T>(e, ref);
 	}
 	
-	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, T& ref) {
+	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, Array<Ref<T>>& ref) {
 		e.PutKeyType<T>(key);
-		EtherizeRefContainer<T>(e, ref);
+		EtherizeRefContainer(e, ref);
+	}
+	
+	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, LinkedList<Ref<T>>& ref) {
+		e.PutKeyType<T>(key);
+		EtherizeRefContainer(e, ref);
 	}
 	
 };
