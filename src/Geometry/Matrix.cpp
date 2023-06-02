@@ -69,12 +69,6 @@ quat quat::Mix(const quat& q, float f) const {
 }
 
 
-NAMESPACE_TOPSIDE_END
-
-
-
-
-NAMESPACE_UPP
 
 void TransformMatrix::Etherize(Ether& e) {
 	e % mode
@@ -95,7 +89,7 @@ void TransformMatrix::Clear() {
 	position = vec3(0,0,0);
 	direction = vec3(0,0,0);
 	up = VEC_UP;
-	axes = vec3(0,0,0);
+	axes = axes3(0,0,0);
 	orientation = quat(0,0,0,0);
 	eye_dist = 0;
 }
@@ -205,4 +199,4 @@ hash_t Square::GetHashValue() const {
 	return h;
 }
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END

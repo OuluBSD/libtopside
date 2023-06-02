@@ -1069,6 +1069,7 @@ struct Square : Moveable<Square> {
 	
 	void Etherize(Ether& e) {e % tl % tr % br % bl;}
 	hash_t GetHashValue() const;
+	String ToString() const {return "Square()";}
 };
 
 
@@ -1113,10 +1114,7 @@ struct Matrix4 : RTTIBase {
 
 
 
-NAMESPACE_TOPSIDE_END
 
-NAMESPACE_UPP
-using namespace TS;
 #undef TransformMatrix
 class TransformMatrix : RTTIBase {
 	
@@ -1138,7 +1136,7 @@ public:
 	vec3 position;
 	vec3 direction;
 	vec3 up = VEC_UP;
-	vec3 axes;
+	axes3 axes;
 	quat orientation;
 	//mat4 proj[2], view[2];
 	float eye_dist = 0;
@@ -1257,7 +1255,7 @@ struct ControllerMatrix : RTTIBase {
 	
 };
 
-DEFAULT_ETHERIZER(ControllerMatrix)
+DEFAULT_ETHERIZER(ControllerMatrix);
 
 struct ControllerState {
 	ControllerSource* source = 0;
@@ -1271,7 +1269,7 @@ struct ControllerState {
 
 struct CalibrationData {
 	bool is_enabled = false;
-	vec3 axes = vec3(0,0,0);
+	axes3 axes = axes3(0,0,0);
 	vec3 position = vec3(0,0,0);
 	float fov = 0;
 	float scale = 0;
@@ -1309,9 +1307,9 @@ struct OnlineAverageVector {
 	}
 };
 
-END_UPP_NAMESPACE
+
+NAMESPACE_TOPSIDE_END
 
 #include "Matrix.inl"
-
 
 #endif

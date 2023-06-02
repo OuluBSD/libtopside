@@ -434,7 +434,7 @@ quat AxesQuat(float yaw, float pitch, float roll)
 }
 
 
-quat AxesQuat(const vec3& axes) {
+quat AxesQuat(const axes3& axes) {
 	return AxesQuat(axes.data[0], axes.data[1], axes.data[2]);
 }
 
@@ -528,7 +528,7 @@ mat4 AxesMat(float yaw, float pitch, float roll) {
 	return QuatMat(AxesQuat(yaw, pitch, roll));
 }
 
-mat4 AxesMat(const vec3& axes) {
+mat4 AxesMat(const axes3& axes) {
 	return QuatMat(AxesQuat(axes));
 }
 

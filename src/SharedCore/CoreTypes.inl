@@ -71,4 +71,3 @@ OBJ_TYPE_NO(Color,    COLOR_O )
 OBJ_TYPE_NO(RGBA,     RGBA_O )
 OBJ_TYPE_NO(Image,    IMAGE_O )
 OBJ_TYPE_NO(Exc,      ERROR_O )
-

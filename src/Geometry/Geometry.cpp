@@ -9,6 +9,7 @@ INITBLOCK_(Geometry) {
 	#define OBJ_TYPE_NO(t, v) Object::RegisterType<t>(v, #t);
 	#include "Types.inl"
 	#undef OBJ_TYPE_NO
+	#define OBJ_TYPE_NO(x, y) OBJ_TYPE_NO_(x,y)
 	#undef NO_CONST_V
 	
 }

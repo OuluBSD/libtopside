@@ -127,6 +127,10 @@ DEFAULT_ETHERIZER(ByteArray256)
 #if IS_UPP_CORE && defined flagMSC
 DEFAULT_ETHERIZER(dword)
 #endif
+#if IS_UPP_CORE
+DEFAULT_ETHERIZER(signed char)
+DEFAULT_ETHERIZER(long)
+#endif
 
 template <> inline void Etherize(Ether& e, Image& i) {
 	TODO

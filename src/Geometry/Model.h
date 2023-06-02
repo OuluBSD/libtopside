@@ -183,6 +183,7 @@ public:
 
     bool IsEmpty() const {return meshes.IsEmpty();}
     operator bool() const {return !IsEmpty();}
+    String ToString() const {return String("Model()");}
     
 };
 

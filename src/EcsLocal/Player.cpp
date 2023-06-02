@@ -188,7 +188,7 @@ void PlayerBodySystem::Update(double dt) {
 		vec3 body_feet_pos = trans->data.position;
 		vec3 head_direction = VEC_FWD;
 		vec3 head_up = VEC_UP;
-		vec3 axes(0,0,0);
+		axes3 axes(0,0,0);
 		TransformMatrix tm;
 		
 		if (b->head) {

@@ -2,7 +2,8 @@
 #define _CoreAlt_Object_h_
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
+
 
 #if IS_UPP_CORE
 inline WString ToWString(String s) {return s.ToWString();}
@@ -60,7 +61,8 @@ Object ObjectFromValue(const Value& v);
 template <class T>
 dword ObjectTypeNo(const T *); // problematic over Ether --> { return StaticTypeNo<T>() + 0x8000000; }
 
-#define OBJ_TYPE_NO(x, y) template<> inline dword ObjectTypeNo<x>(const x*) { return y; }
+#define OBJ_TYPE_NO_(x, y) template<> inline dword ObjectTypeNo<x>(const x*) { return y; }
+#define OBJ_TYPE_NO(x, y) OBJ_TYPE_NO_(x,y)
 
 #include "CoreTypes.inl"
 
@@ -113,9 +115,9 @@ public:
 	T* GetT() const {return ptr;}
 	void* Get() override {return ptr;}
 	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
-	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
-	double ToDouble() const override {if (ptr) return ::UPP::ToDouble(*ptr); return 0;}
-	hash_t GetHashValue() const override {if (ptr) return UPP::GetHashValue(*ptr); return 0;}
+	int64 ToInt() const override {if (ptr) return ::TS::ToInt(*ptr); return 0;}
+	double ToDouble() const override {if (ptr) return ::TS::ToDouble(*ptr); return 0;}
+	hash_t GetHashValue() const override {if (ptr) return ::UPP::GetHashValue(*ptr); return 0;}
 	void Etherize(Ether& e) override {if (ptr) TS::Etherize<T>(e, *ptr);}
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
@@ -192,7 +194,7 @@ public:
 	operator String() const {return ToString();}
 	
 	String ToString() const {if (obj) return obj->ToString(); return "NULL";}
-	WString ToWString() const {WString* w=Try<WString>(); if (w) return *w; return ::UPP::ToWString(ToString());}
+	WString ToWString() const {WString* w=Try<WString>(); if (w) return *w; return ::TS::ToWString(ToString());}
 	int64 ToInt() const {if (obj) return obj->ToInt(); return 0;}
 	int ToInt32() const {if (obj) return (int)obj->ToInt(); return 0;}
 	double ToDouble() const {if (obj) return obj->ToDouble(); return 0;}
@@ -392,7 +394,7 @@ template<> inline dword ObjectTypeNo(const ObjectArrayMapComb*)   { return OBJEC
 String GetObjectTreeString(const Object& v, String key="", int indent=0);
 
 
+NAMESPACE_TOPSIDE_END
 
-END_UPP_NAMESPACE
 
 #endif

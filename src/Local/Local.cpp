@@ -11,6 +11,7 @@ INITBLOCK_(Local) {
 	#include <SharedCore/CoreTypes.inl>
 	#include "Types.inl"
 	#undef OBJ_TYPE_NO
+	#define OBJ_TYPE_NO(x, y) OBJ_TYPE_NO_(x,y)
 	#undef NO_CONST_V
 	
 	

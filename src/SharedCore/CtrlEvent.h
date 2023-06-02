@@ -1,7 +1,8 @@
 #ifndef _CoreAlt_CtrlEvent_h_
 #define _CoreAlt_CtrlEvent_h_
 
-NAMESPACE_UPP
+
+NAMESPACE_TOPSIDE_BEGIN
 
 enum {
 	HOLO_CALIB_FOV,
@@ -227,6 +228,6 @@ inline double ResetSeconds(TimeStop& ts) {double s = ts.Seconds(); ts.Reset(); r
 #include "Keycodes.inl"
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END
 
 #endif
