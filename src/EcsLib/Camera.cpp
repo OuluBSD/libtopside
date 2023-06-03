@@ -69,6 +69,12 @@ bool Viewport::Arg(String key, Object value) {
 	return false;
 }
 
+void Viewport::Etherize(Ether& e) {
+	ETH_KEYOBJ(target);
+	ETH_KEYOBJ(fov);
+	ETH_KEYOBJ(angle);
+}
+
 
 
 

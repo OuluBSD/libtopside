@@ -13,7 +13,7 @@ public:
 	RTTI_COMP0(Viewable)
 	COMP_DEF_VISIT
 	
-	void Etherize(Ether& e) override {}
+	void Etherize(Ether& e) override {} // USE ETH_KEYOBJ !
 	void Initialize() override;
 	void Uninitialize() override;
 	
@@ -39,7 +39,7 @@ public:
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}
 	
-	void Etherize(Ether& e) override {e % target % fov % angle;}
+	void Etherize(Ether& e) override;
 	bool Arg(String key, Object value) override;
 	
 	void operator=(const Viewport& vp) {

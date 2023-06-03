@@ -59,8 +59,8 @@ public:
 	
 	template <class T> Ether& operator%(T& o);
 	
-	template <class T> void PutType() {
-		dword obj_type = ObjectTypeNo<T>(0);
+	template <class T> void PutType(bool ref) {
+		dword obj_type = (ref ? 0x80000000 : 0) | ObjectTypeNo<T>(0);
 		PutT(obj_type);
 	}
 	inline void PutKey(const char* key) {
@@ -68,27 +68,29 @@ public:
 		PutT(key_len);
 		Put(key, key_len);
 	}
-	template <class T> void PutKeyType(const char* key) {
+	template <class T> void PutKeyType(const char* key, bool ref) {
+		PutType<T>(ref);
 		PutKey(key);
-		PutType<T>();
 	}
-	template <class T> void PutAsObject(T& o) {
-		PutType<T>();
+	template <class T> void PutAsObject(T& o, bool ref) {
+		PutType<T>(ref);
 		Etherize(*this, o);
 	}
 	
 	
 	template <class T> void PutAsKeyObject(const char* key, T& o) {
-		PutKeyType<T>(key);
+		PutKeyType<T>(key, false);
 		Etherize(*this, o);
+		byte chk = 0xFF; PutT(chk);
 	}
 	
 	template <class T> void PutAsKeyObjectContainer(const char* key, Vector<T>& v) {
-		PutKeyType<T>(key);
+		PutKeyType<T>(key, false);
 		dword c = v.GetCount();
 		PutT(c);
 		for (T& o : v)
 			Etherize(*this, o);
+		byte chk = 0xFF; PutT(chk);
 	}
 	
 	
@@ -157,15 +159,15 @@ template <class T> Ether& Ether::operator%(T& o) {Etherize(*this, o); return *th
 template <class T> void EtherizeContainer(Ether& e, T& v) {
 	if (e.IsLoading()) {
 		v.Clear();
-		dword c;
-		e.Get(&c, sizeof(c));
+		dword c = 0;
+		e.GetT(c);
 		v.SetCount(c);
 		for (auto& o : v)
 			Etherize(e, o);
 	}
 	else {
 		dword c = v.GetCount();
-		e.Put(&c, sizeof(c));
+		e.PutT(c);
 		for (auto& o : v)
 			Etherize(e, o);
 	}

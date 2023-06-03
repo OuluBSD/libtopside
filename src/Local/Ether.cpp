@@ -68,18 +68,18 @@ void ObjectMap::Etherize(Ether& e) {
 
 
 void Ether::Put(const String& s) {
-	dword len = s.GetCount() + 1;
+	dword len = s.GetCount();
 	Put(&len, sizeof(len));
 	Put(s.Begin(), len);
 }
 
 String Ether::GetString() {
-	dword len;
+	dword len = 0;
 	Get(&len, sizeof(len));
 	thread_local static Vector<char> buf;
 	buf.SetCount(len);
 	Get(buf.Begin(), len);
-	return String(buf.Begin());
+	return String(buf.Begin(), len);
 }
 
 

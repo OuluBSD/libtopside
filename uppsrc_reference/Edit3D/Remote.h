@@ -7,13 +7,20 @@ NAMESPACE_TOPSIDE_BEGIN
 class DbgComponent {
 	
 public:
-	Array<Object> vars;
+	struct RefLink : Moveable<RefLink> {
+		Vector<String> path;
+		dword type;
+	};
+	
+	ArrayMap<String, Object> vars;
+	Vector<RefLink> refs;
 	String cls_name;
 	
 public:
 	
 	void Clear() {
 		vars.Clear();
+		refs.Clear();
 		cls_name.Clear();
 	}
 	

@@ -56,8 +56,14 @@ void Entity::Etherize(Ether& e) {
 			
 			c->Etherize(e);
 			
+			// Required for reading, see Object::PutKeyType
+			dword end_obj_type = 0;
+			e.PutT(end_obj_type);
+			
 			e.PutT(chk);
 		}
+		
+		e.PutT(chk);
 	}
 }
 

@@ -213,11 +213,13 @@ inline void ComponentBase::EtherizeRef(Ether& e, EntityRef& ref) {
 			ref = root.RealizeEntityPath(path);
 			ASSERT_(ref, "Couldn't get etherized entity from path");
 		}
+		else {
+			ref->GetEntityPath(path);
+			e % path;
+		}
 	}
-	else {
-		ref->GetEntityPath(path);
-		e % path;
-	}
+	else if (e.IsStoring())
+		ref.Clear();
 }
 
 template <class T>

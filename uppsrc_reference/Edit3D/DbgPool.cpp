@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 void EngineSerializer::EtherizePool(Ether& e, DbgPool& p) {
 	byte magic = 0, chk = 0xaf;
+	int dbg_i = 0;
 	
 	if (e.IsLoading()) {
 		e.GetT(magic);
@@ -27,8 +28,10 @@ void EngineSerializer::EtherizePool(Ether& e, DbgPool& p) {
 			
 			e.GetT(magic);
 			ASSERT(magic == chk);
+			dbg_i++;
 		}
 		
+		dbg_i = 0;
 		for (DbgEntity& o0 : p.ents) {
 			e.GetT(magic);
 			ASSERT(magic == chk);
@@ -38,6 +41,7 @@ void EngineSerializer::EtherizePool(Ether& e, DbgPool& p) {
 			
 			e.GetT(magic);
 			ASSERT(magic == chk);
+			dbg_i++;
 		}
 		
 	}
@@ -48,6 +52,7 @@ void EngineSerializer::EtherizePool(Ether& e, DbgPool& p) {
 
 void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 	byte magic = 0, chk = 0xA0;
+	int dbg_i = 0;
 	
 	if (e.IsLoading()) {
 		e.GetT(magic);
@@ -65,7 +70,12 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 			
 			e.GetT(magic);
 			ASSERT(magic == chk);
+			
+			dbg_i++;
 		}
+		
+		e.GetT(magic);
+		ASSERT(magic == chk);
 	}
 	else {
 		TODO
@@ -74,14 +84,50 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 
 void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
 	c.Clear();
+	int dbg_i = 0;
 	while (!e.IsEof()) {
-		byte more = 0;
-		e.GetT(more);
-		if (more) {
-			Object& o = c.vars.Add();
-			e % o;
+		dword obj_type = 0;
+		e.GetT(obj_type);
+		if (!obj_type)
+			break;
+		
+		bool is_ref = obj_type & (1ULL << 31);
+		obj_type &= ~(1ULL << 31);
+		
+		byte key_len = 0;
+		e.GetT(key_len);
+		char key[256];
+		e.Get(key, key_len);
+		key[key_len] = 0;
+		String key_str(key, key_len);
+		
+		if (is_ref) {
+			DbgComponent::RefLink& link = c.refs.Add();
+			link.type = obj_type;
+			
+			bool has_ref_value = false;
+			e.GetT(has_ref_value);
+			
+			if (has_ref_value) {
+				e % link.path;
+			}
 		}
-		else break;
+		else {
+			Object& o = c.vars.Add(key_str);
+			if (o.CreateType(obj_type)) {
+				o.GetObjectA()->Etherize(e);
+			}
+			else {
+				LOG("EngineSerializer::EtherizeComponent: error: could not create type " << IntStr64(obj_type));
+				break;
+			}
+		}
+		
+		byte chk = 0;
+		e.GetT(chk);
+		ASSERT(chk == 0xFF);
+		
+		dbg_i++;
 	}
 }
 
