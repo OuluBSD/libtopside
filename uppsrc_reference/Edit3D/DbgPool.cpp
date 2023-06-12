@@ -65,6 +65,7 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 			e.GetT(magic);
 			ASSERT(magic == chk);
 			
+			c.Clear();
 			c.cls_name = e.GetString();
 			EtherizeComponent(e, c);
 			
@@ -83,7 +84,6 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 }
 
 void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
-	c.Clear();
 	int dbg_i = 0;
 	while (!e.IsEof()) {
 		dword obj_type = 0;
@@ -132,7 +132,17 @@ void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
 }
 
 void EngineSerializer::Etherize(Ether& e) {
+	if (e.IsLoading())
+		lock.EnterWrite();
+	else
+		lock.EnterRead();
+	
 	EtherizePool(e, pool);
+	
+	if (e.IsLoading())
+		lock.LeaveWrite();
+	else
+		lock.LeaveRead();
 }
 
 

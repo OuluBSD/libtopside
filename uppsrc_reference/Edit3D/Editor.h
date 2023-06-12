@@ -97,6 +97,7 @@ public:
 	void RefrehToolbar();
 	void OnSceneEnd();
 	void OnDebugMetadata();
+	void RefreshRemote();
 	void Toolbar(Bar& bar);
 	
 	void LoadEmptyProject();

@@ -65,8 +65,10 @@ void Edit3D::SetView(ViewType view) {
 		Add(v0.hsplit.SizePos());
 	else if (this->view == VIEW_VIDEOIMPORT)
 		Add(v1.SizePos());
-	else if (this->view == VIEW_REMOTE_DEBUG)
+	else if (this->view == VIEW_REMOTE_DEBUG) {
 		Add(v_rdbg.SizePos());
+		RefreshRemote();
+	}
 	
 }
 
@@ -275,6 +277,8 @@ void Edit3D::LoadRemote(EditClientService* svc, bool debug) {
 	this->svc = svc;
 	this->debug_remote = debug;
 	
+	v_rdbg.SetRemoteData(svc->sync);
+	
 	if (svc) {
 		svc->sync.SetTarget(prj, state, anim, video);
 	}
@@ -291,14 +295,20 @@ void Edit3D::LoadRemote(EditClientService* svc, bool debug) {
 	svc->edit = this;
 	svc->sync.SetRequireAllSync();
 	svc->SetReady();
+	
+	
 }
 
 void Edit3D::OnDebugMetadata() {
 	
-	TODO
+	if (this->view == VIEW_REMOTE_DEBUG)
+		PostCallback(THISBACK(RefreshRemote));
 	
 }
 
+void Edit3D::RefreshRemote() {
+	v_rdbg.Data();
+}
 
 
 EditConfiguration::EditConfiguration() {

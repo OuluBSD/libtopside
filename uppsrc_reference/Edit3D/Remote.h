@@ -56,6 +56,7 @@ public:
 };
 
 class EngineSerializer {
+public:
 	DbgPool pool;
 	
 public:
@@ -63,6 +64,8 @@ public:
 	static void EtherizePool(Ether& e, DbgPool& p);
 	static void EtherizeEntity(Ether& e, DbgEntity& p);
 	static void EtherizeComponent(Ether& e, DbgComponent& c);
+	
+	RWMutex lock;
 	
 };
 
@@ -101,12 +104,14 @@ public:
 
 class RemoteDebugCtrl : public Ctrl {
 	Edit3D* e;
+	RemoteExchange* ex = 0;
 	
 	TabCtrl tabs;
 	
-	Splitter eng_vert, eng_horz;
-	ArrayCtrl eng_entities, eng_components, eng_compdata;
-	DocEdit eng_log;
+	Splitter vert, horz;
+	TreeCtrl tree;
+	ArrayCtrl entities, components, compdata;
+	DocEdit log;
 	
 public:
 	typedef RemoteDebugCtrl CLASSNAME;
@@ -114,7 +119,14 @@ public:
 	RemoteDebugCtrl(Edit3D* e);
 	void Update(double dt);
 	void Data();
+	void SetRemoteData(RemoteExchange& e) {ex = &e;}
+	void RefreshPools(bool has_lock);
+	void RefreshTreePool(int tree_id, DbgPool& pool);
+	void RefreshPool(bool has_lock);
+	void RefreshEntity(bool has_lock);
+	void RefreshComponent(bool has_lock);
 	
+	DbgPool* GetPool(int tree_id);
 	
 };
 
