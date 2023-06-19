@@ -90,6 +90,8 @@ class EnetServiceClient : public SerialServiceBase {
 	ENetAddress addr;
 	
 	double timeout = 3.000;
+	double dconn_timeout = 1.0;
+	bool wait_dconn = false;
 	int port = 0;
 	String addrname;
 	
@@ -156,7 +158,8 @@ public:
 	
 	void SetAddress(String s) {addrname = s;}
 	void SetPort(int i) {port = i;}
-	void SetTimeout(int i) {timeout = i;}
+	void SetTimeout(double sec) {timeout = sec;}
+	void SetDisconnectionTimeout(double sec) {dconn_timeout = sec;}
 	
 	bool Connect(String addr, uint16 port);
 	void Close();

@@ -39,6 +39,9 @@ Edit3D::Edit3D() :
 			bar.Add(t_("Video import"), THISBACK1(SetView, VIEW_VIDEOIMPORT)).Key(K_ALT|K_2);
 			bar.Add(t_("Remote debug"), THISBACK1(SetView, VIEW_REMOTE_DEBUG)).Key(K_ALT|K_3);
 		});
+		bar.Sub(t_("Debug"), [this](Bar& bar) {
+			bar.Add(t_("Load scene to debugger"), THISBACK(LoadSceneToDebugger)).Key(K_ALT|K_D);
+		});
 		
 	});
 	
@@ -308,6 +311,13 @@ void Edit3D::OnDebugMetadata() {
 
 void Edit3D::RefreshRemote() {
 	v_rdbg.Data();
+}
+
+void Edit3D::LoadSceneToDebugger() {
+	RemoteExchange* ex = v_rdbg.GetExchange();
+	if (ex) {
+		ex->UpdateEcsEngine();
+	}
 }
 
 

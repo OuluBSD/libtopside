@@ -48,6 +48,9 @@ DbgPool* RemoteDebugCtrl::GetPool(int tree_id) {
 	if (!ex || tree_id < 0)
 		return 0;
 	
+	if (!tree_id)
+		return &ex->engine.pool;
+	
 	Vector<int> path;
 	path.Add(tree_id);
 	
@@ -59,7 +62,7 @@ DbgPool* RemoteDebugCtrl::GetPool(int tree_id) {
 		path.Add(id);
 	}
 	
-	DbgPool* p = &ex->read.pool;
+	DbgPool* p = &ex->engine.pool;
 	for (int i = path.GetCount()-1; i >= 0; i--) {
 		int pos = path[i];
 		if (pos < p->pools.GetCount())
@@ -74,7 +77,7 @@ void RemoteDebugCtrl::RefreshPools(bool has_lock) {
 	if (!ex)
 		return;
 	
-	EngineSerializer& s = ex->read;
+	EngineSerializer& s = ex->engine;
 	if (!has_lock) s.lock.EnterRead();
 	
 	tree.Clear();
@@ -106,7 +109,7 @@ void RemoteDebugCtrl::RefreshPool(bool has_lock) {
 	if (!ex)
 		return;
 	
-	EngineSerializer& s = ex->read;
+	EngineSerializer& s = ex->engine;
 	if (!has_lock) s.lock.EnterRead();
 	
 	DbgPool* pool = GetPool(tree.GetCursor());
@@ -140,7 +143,7 @@ void RemoteDebugCtrl::RefreshEntity(bool has_lock) {
 	if (!ex)
 		return;
 	
-	EngineSerializer& s = ex->read;
+	EngineSerializer& s = ex->engine;
 	if (!has_lock) s.lock.EnterRead();
 	
 	DbgPool* pool = GetPool(tree.GetCursor());
@@ -174,7 +177,7 @@ void RemoteDebugCtrl::RefreshComponent(bool has_lock) {
 	if (!ex)
 		return;
 	
-	EngineSerializer& s = ex->read;
+	EngineSerializer& s = ex->engine;
 	if (!has_lock) s.lock.EnterRead();
 	
 	DbgPool* pool = GetPool(tree.GetCursor());

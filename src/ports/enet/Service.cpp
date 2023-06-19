@@ -507,12 +507,24 @@ void EnetServiceClient::Update() {
 	
 	PeerHandler();
 	
+	if (wait_dconn) {
+		if (ts.Seconds() >= dconn_timeout) {
+			wait_dconn = false;
+			ts.Reset();
+		}
+		else return;
+	}
+	
 	if (!connected && ts.Seconds() >= timeout) {
 		LOG("EnetServiceClient::Update: error: server did not respond");
 		
 		if (close_daemon_on_fail) {
 			LOG("EnetServiceClient::Update: closing daemon");
 			base->SetNotRunning();
+		}
+		else {
+			wait_dconn = true;
+			ts.Reset();
 		}
 	}
 }

@@ -37,11 +37,38 @@ void Entity::Etherize(Ether& e) {
 	
 	GeomVar type;
 	if (e.IsLoading()) {
-		TODO
-		while (!e.IsEof()) {
-			e.GetT(type);
+		e.GetT(magic);
+		ASSERT(magic == chk);
+		
+		int c = 0;
+		e.GetT(c);
+		
+		for(int i = 0; i < c; i++) {
+			e.GetT(magic);
+			ASSERT(magic == chk);
 			
+			String cls_name = e.GetString();
+			TypeCls cls = ComponentFactory::GetComponentType(cls_name);
+			
+			ComponentRef c = CreateComponent(cls);
+			if (!c) {
+				e.SetError();
+				return;
+			}
+			
+			TODO // can't etherize... must load objects to a map beforehand
+			c->Etherize(e);
+			
+			dword end_obj_type = 0;
+			e.GetT(end_obj_type);
+			ASSERT(end_obj_type == 0);
+			
+			e.GetT(magic);
+			ASSERT(magic == chk);
 		}
+		
+		e.GetT(magic);
+		ASSERT(magic == chk);
 	}
 	else {
 		e.PutT(chk);

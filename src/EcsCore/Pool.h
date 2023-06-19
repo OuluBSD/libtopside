@@ -155,6 +155,7 @@ public:
 	PoolRef FindPool(String name);
 	PoolRef AddPool(String name="");
 	PoolRef GetAddPool(String name);
+	void RemovePool(String name);
 	EntityVec::Iterator			begin()			{return objects.begin();}
 	EntityVec::Iterator			end()			{return objects.end();}
 	PoolVec::Iterator			BeginPool()		{return pools.begin();}

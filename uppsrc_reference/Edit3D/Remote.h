@@ -24,6 +24,18 @@ public:
 		cls_name.Clear();
 	}
 	
+	template <class T>
+	T& AddVar(String name) {
+		int i = vars.Find(name);
+		if (i >= 0) {
+			Object& o = vars[i];
+			if (o.Is<T>())
+				return o.Get<T>();
+			return o.Create<T>();
+		}
+		Object& o = vars.Add(name);
+		return o.Create<T>();
+	}
 };
 
 class DbgEntity {
@@ -37,6 +49,11 @@ public:
 	void Clear() {
 		name.Clear();
 	}
+	
+	void LoadObject(GeomObject& obj);
+	
+	DbgComponent& GetAddComponent(String cls_name);
+	
 };
 
 class DbgPool {
@@ -53,17 +70,26 @@ public:
 		ents.Clear();
 		name.Clear();
 	}
+	
+	void LoadScene(GeomScene& scene);
+	void LoadCamera(GeomCamera& cam);
+	
 };
 
 class EngineSerializer {
+	
+	
 public:
 	DbgPool pool;
 	
 public:
 	void Etherize(Ether& e);
+	void Load(GeomScene& scene, GeomCamera& camera);
+	
 	static void EtherizePool(Ether& e, DbgPool& p);
 	static void EtherizeEntity(Ether& e, DbgEntity& p);
 	static void EtherizeComponent(Ether& e, DbgComponent& c);
+	
 	
 	RWMutex lock;
 	
@@ -92,11 +118,13 @@ public:
 	void SetRequireKeypointSync();
 	
 	bool Update();
+	bool UpdateEcsEngine();
+	bool UpdateGeomSerializer();
 	
 	
 	
 	GeomSerializer write;
-	EngineSerializer read;
+	EngineSerializer engine;
 	
 };
 
@@ -127,6 +155,7 @@ public:
 	void RefreshComponent(bool has_lock);
 	
 	DbgPool* GetPool(int tree_id);
+	RemoteExchange* GetExchange() const {return ex;}
 	
 };
 

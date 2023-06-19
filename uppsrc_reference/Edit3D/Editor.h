@@ -80,6 +80,8 @@ struct Edit3D : TopWindow {
 	void LoadTestCirclingCube();
 	void LoadTestOctree();
 	
+	void LoadSceneToDebugger();
+	
 public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();

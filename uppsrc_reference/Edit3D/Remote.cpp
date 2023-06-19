@@ -35,6 +35,25 @@ bool RemoteExchange::Update() {
 	GeomWorldState& state = *this->state;
 	if (!state.HasActiveScene())
 		return false;
+	
+	if (1)
+		return UpdateEcsEngine();
+	else
+		return UpdateGeomSerializer();
+}
+
+bool RemoteExchange::UpdateEcsEngine() {
+	GeomWorldState& state = *this->state;
+	GeomScene& scene = state.GetActiveScene();
+	GeomCamera& camera = state.program;
+	
+	engine.Load(scene, camera);
+	
+	return true;
+}
+
+bool RemoteExchange::UpdateGeomSerializer() {
+	GeomWorldState& state = *this->state;
 	GeomScene& scene = state.GetActiveScene();
 	GeomCamera& camera = state.program;
 	

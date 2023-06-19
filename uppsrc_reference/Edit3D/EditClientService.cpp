@@ -21,19 +21,19 @@ void EditClientService::Update() {
 	
 	if (client->IsConnected()) {
 		// Update GeomSerializer
-		if (!is_calling && sync.Update()) {
+		if (!is_calling && (debug || sync.Update())) {
 			is_calling = true;
 			
 			if (debug) {
 				// Request remote ECS' metadata
-				client->CallSerialized(NET_GEOM_STORE_ENGINE, sync.write, sync.read, [this]() {
+				client->CallSerialized(NET_GEOM_STORE_ENGINE, null_value, sync.engine, [this]() {
 					is_calling = false;
 					if (edit) edit->OnDebugMetadata();
 				});
 			}
 			else {
 				// Actually send the serialized geom state vector
-				client->CallSerialized(NET_GEOM_LOAD_ENGINE, sync.write, sync.read, [this]() {
+				client->CallSerialized(NET_GEOM_LOAD_ENGINE, sync.engine, null_value, [this]() {
 					is_calling = false;
 				});
 			}
