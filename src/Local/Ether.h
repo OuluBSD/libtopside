@@ -4,11 +4,30 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#define ETH_KEYOBJ(var) e.PutAsKeyObject(#var, var);
-#define ETH_KEYOBJCONT(var) e.PutAsKeyObjectContainer(#var, var);
-#define ETH_KEYREF(var) this->PutAsKeyRef(e, #var, var);
-#define ETH_KEYREFCONT(var) this->PutAsKeyRefContainer(e, #var, var);
-
+#define ETH_KEYOBJ(var) \
+	if (e.IsStoring()) \
+		e.PutAsKeyObject(#var, var); \
+	else \
+		e.TryGetAsKeyObject(#var, var);
+	
+#define ETH_KEYOBJCONT(var) \
+	if (e.IsStoring()) \
+		e.PutAsKeyObjectContainer(#var, var); \
+	else \
+		e.TryGetAsKeyObjectContainer(#var, var);
+	
+#define ETH_KEYREF(var) \
+	if (e.IsStoring()) \
+		this->PutAsKeyRef(e, #var, var); \
+	else \
+		this->TryGetAsKeyRef(e, #var, var);
+	
+#define ETH_KEYREFCONT(var) \
+	if (e.IsStoring()) \
+		this->PutAsKeyRefContainer(e, #var, var); \
+	else \
+		this->TryGetAsKeyRefContainer(e, #var, var);
+   
 class Ether;
 template <class T> void EtherizeContainer(Ether& e, T& o);
 template <class T> void EtherizeMapContainer(Ether& e, T& o);
@@ -32,17 +51,20 @@ protected:
 protected:
 	virtual   void  _Put(const void *data, dword size) {}
 	virtual   dword _Get(void *data, dword size) { return 0; }
+	virtual   dword _Peek() {return 0;}
 	
 public:
 	virtual   void  Seek(int64 pos) {}
 	virtual   int64 GetSize() const {return 0;}
 	virtual   void  SetSize(int64 size) {}
-	
+	virtual   bool  TypeKey(dword type, bool ref, const char* key) {return false;}
+	dword     Peek() {return _Peek();}
 public:
+	
+	virtual bool IsEof() const { return eof; }
 	
 	bool IsLoading() const { return !storing; }
 	bool IsStoring() const { return storing; }
-	bool IsEof() const { return eof; }
 	bool IsError() const {return err; }
 	int64 GetCursor() { return cursor; }
 	int64 GetLeft() {return GetSize() - GetCursor();}
@@ -77,7 +99,6 @@ public:
 		Etherize(*this, o);
 	}
 	
-	
 	template <class T> void PutAsKeyObject(const char* key, T& o) {
 		PutKeyType<T>(key, false);
 		Etherize(*this, o);
@@ -93,6 +114,29 @@ public:
 		byte chk = 0xFF; PutT(chk);
 	}
 	
+	template <class T> void TryGetAsKeyObject(const char* key, T& o) {
+		ASSERT(IsLoading());
+		if (IsLoading() && TypeKey(ObjectTypeNo<T>(0), false, key)) {
+			Etherize(*this, o);
+			byte chk = 0; GetT(chk); ASSERT(chk == 0xFF);
+		}
+	}
+	
+	template <class T> void TryGetAsKeyObjectContainer(const char* key, Vector<T>& v) {
+		ASSERT(IsLoading());
+		if (IsLoading() && TypeKey(ObjectTypeNo<T>(0), false, key)) {
+			dword c = 0;
+			GetT(c);
+			v.SetCount(c);
+			for (T& o : v)
+				Etherize(*this, o);
+			byte chk = 0; GetT(chk); ASSERT(chk == 0xFF);
+		}
+	}
+	
+	template <class T> bool TypeKeyT(const char* key, bool ref) {
+		return TypeKey(ObjectTypeNo<T>(0), ref, key);
+	}
 	
 	template <class T> void GetT(T& o) {Get(&o, sizeof(o));}
 	template <class T> void PutT(T& o) {Put(&o, sizeof(o));}
@@ -204,6 +248,7 @@ class WriteEther : public Ether {
 protected:
 	void  _Put(const void *data, dword size) override;
 	dword _Get(void *data, dword size) override;
+	dword _Peek() override;
 	
 public:
 	void  Seek(int64 pos) override;
@@ -223,16 +268,20 @@ class ReadEther : public Ether {
 protected:
 	void  _Put(const void *data, dword size) override;
 	dword _Get(void *data, dword size) override;
+	dword _Peek() override;
 	
 public:
 	void  Seek(int64 pos) override;
 	int64 GetSize() const override;
 	void  SetSize(int64 size) override;
+	bool  TypeKey(dword type, bool ref, const char* key) override;
+	bool  IsEof() const override;
 	
 public:
 	ReadEther(const void* data, int len) : ss(data, len) {}
 	
 };
+
 
 
 NAMESPACE_TOPSIDE_END

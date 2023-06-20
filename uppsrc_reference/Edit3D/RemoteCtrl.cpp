@@ -52,14 +52,15 @@ DbgPool* RemoteDebugCtrl::GetPool(int tree_id) {
 		return &ex->engine.pool;
 	
 	Vector<int> path;
-	path.Add(tree_id);
 	
 	int id = tree_id;
 	while (id) {
-		id = tree.GetParent(id);
+		int par = tree.GetParent(id);
+		int pos = tree.GetChildIndex(par, id);
+		path.Add(pos);
+		id = par;
 		if (!id)
 			break;
-		path.Add(id);
 	}
 	
 	DbgPool* p = &ex->engine.pool;

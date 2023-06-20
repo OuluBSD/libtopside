@@ -129,7 +129,7 @@ void EngineSerializer::EtherizeEntity(Ether& e, DbgEntity& o) {
 }
 
 void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
-	dword chk = 0xFF, magic = 0;
+	byte chk = 0xFF, magic = 0;
 	if (e.IsLoading()) {
 		int dbg_i = 0;
 		while (!e.IsEof()) {
@@ -138,8 +138,8 @@ void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
 			if (!obj_type)
 				break;
 			
-			bool is_ref = obj_type & (1ULL << 31);
-			obj_type &= ~(1ULL << 31);
+			bool is_ref = obj_type & 0x80000000;
+			obj_type &= ~(0x80000000);
 			
 			byte key_len = 0;
 			e.GetT(key_len);
@@ -175,7 +175,9 @@ void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
 			
 			dbg_i++;
 		}
+		// trail is already read
 	}
+	// Storing
 	else {
 		for(int i = 0; i < c.vars.GetCount(); i++) {
 			Object& o = c.vars[i];
@@ -184,13 +186,13 @@ void EngineSerializer::EtherizeComponent(Ether& e, DbgComponent& c) {
 			dword type = o.GetType();
 			e.PutT(type);
 			
-			
 			byte key_len = key_str.GetCount();
 			e.PutT(key_len);
 			e.Put(key_str.Begin(), key_len);
 			
 			o.GetObjectA()->Etherize(e);
 			
+			byte chk = 0xFF;
 			e.PutT(chk);
 		}
 		
@@ -205,7 +207,10 @@ void EngineSerializer::Etherize(Ether& e) {
 	else
 		lock.EnterRead();
 	
+	pool.name = "root";
 	EtherizePool(e, pool);
+	
+	DUMP(pool);
 	
 	if (e.IsLoading())
 		lock.LeaveWrite();
@@ -272,6 +277,19 @@ void DbgPool::LoadCamera(GeomCamera& cam) {
 	}
 }
 
+String DbgPool::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << name << "\n";
+	for (const DbgPool& p : pools) {
+		s << p.GetTreeString(indent+1);
+	}
+	for (const DbgEntity& e : ents) {
+		s << e.GetTreeString(indent+1);
+	}
+	return s;
+}
+
 void DbgEntity::LoadObject(GeomObject& obj) {
 	name = obj.name;
 	
@@ -308,5 +326,29 @@ DbgComponent& DbgEntity::GetAddComponent(String cls_name) {
 	comp.cls_name = cls_name;
 	return comp;
 }
+
+String DbgEntity::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << name << "\n";
+	for (const DbgComponent& c : comps) {
+		s << c.GetTreeString(indent+1);
+	}
+	return s;
+}
+
+
+String DbgComponent::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << cls_name << "\n";
+	for(int i = 0; i < vars.GetCount(); i++) {
+		s.Cat('\t', indent+1);
+		s << vars.GetKey(i) << ": ";
+		s << vars[i].ToString() << "\n";
+	}
+	return s;
+}
+
 
 NAMESPACE_TOPSIDE_END

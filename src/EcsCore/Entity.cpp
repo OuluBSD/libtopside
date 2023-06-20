@@ -50,20 +50,26 @@ void Entity::Etherize(Ether& e) {
 			String cls_name = e.GetString();
 			TypeCls cls = ComponentFactory::GetComponentType(cls_name);
 			
-			ComponentRef c = CreateComponent(cls);
+			ComponentRef c = GetAddTypeCls(cls);
 			if (!c) {
 				e.SetError();
 				return;
 			}
 			
-			TODO // can't etherize... must load objects to a map beforehand
-			c->Etherize(e);
 			
-			dword end_obj_type = 0;
+			while (!e.IsEof()) {
+				c->Etherize(e);
+				
+				dword end_obj_type = e.Peek();
+				if (!end_obj_type)
+					break;
+			}
+			dword end_obj_type = -1;
 			e.GetT(end_obj_type);
 			ASSERT(end_obj_type == 0);
 			
 			e.GetT(magic);
+			int pos = e.GetCursor();
 			ASSERT(magic == chk);
 		}
 		

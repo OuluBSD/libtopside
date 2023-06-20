@@ -36,6 +36,9 @@ public:
 		Object& o = vars.Add(name);
 		return o.Create<T>();
 	}
+	
+	String GetTreeString(int indent=0) const;
+	
 };
 
 class DbgEntity {
@@ -53,6 +56,7 @@ public:
 	void LoadObject(GeomObject& obj);
 	
 	DbgComponent& GetAddComponent(String cls_name);
+	String GetTreeString(int indent=0) const;
 	
 };
 
@@ -73,6 +77,9 @@ public:
 	
 	void LoadScene(GeomScene& scene);
 	void LoadCamera(GeomCamera& cam);
+	
+	String ToString() const {return GetTreeString();}
+	String GetTreeString(int indent=0) const;
 	
 };
 

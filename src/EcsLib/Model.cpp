@@ -24,7 +24,11 @@ void ModelComponent::Etherize(Ether& e) {
 	ETH_KEYOBJ(model_changed);
 	
 	if (e.IsLoading()) {
-		TODO
+		ModelRef own_model = loader.GetModel();
+		if (own_model.IsEmpty())
+			own_model = loader.Create().AsRefT();
+		ETH_KEYOBJ(*own_model);
+		model = own_model;
 	}
 	else {
 		ModelRef own_model = loader.GetModel();

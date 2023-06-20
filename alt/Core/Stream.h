@@ -51,7 +51,7 @@ public:
 	void Put(const String& s) { _Put(s.Begin(), s.GetCount()); }
 	dword Get(void* mem, dword size) { return _Get(mem, size); }
 	
-	int64 GetCursor() { return cursor; }
+	int64 GetPos() const { return cursor; }
 	int Peek() {return _Term();}
 	
 	void SetError(bool b=true) {err = b;}
@@ -60,9 +60,9 @@ public:
 	int Get();
 	void PutEol();
 	void PutLine(String s) {Put(s); PutEol();}
-	void SeekCur(int64 pos) {Seek(GetCursor() + pos);}
+	void SeekCur(int64 pos) {Seek(GetPos() + pos);}
 	int64 GetLength() const {return GetSize();}
-	int64 GetLeft() {return GetSize() - GetCursor();}
+	int64 GetLeft() {return GetSize() - GetPos();}
 	
 	String GetLine(int max = UINT16_MAX) {
 		String out;
@@ -218,7 +218,7 @@ public:
 	
 	//int Get() {byte b=0; Get(&b, 1); return b;}
 	
-	//int64 GetCursor() override { if (!s) return 0; return ftell(s); }
+	//int64 GetPos() override { if (!s) return 0; return ftell(s); }
 
 	int64 GetSize() const override {
 		if (!s) return 0;
@@ -306,7 +306,6 @@ String LoadFile(String path);
 
 class StringStream : public Stream {
 	Vector<char> s;
-	int64 cursor = 0;
 	
 public:
 	StringStream() {storing = true;}
@@ -347,7 +346,7 @@ public:
 	}
 	
 	dword _Get(void* mem, dword size) override {
-		int64 sz = min((int64)size, (int64)s.GetCount() - cursor);
+		int64 sz = min<int64>((int64)size, (int64)s.GetCount() - cursor);
 		if (sz <= 0) return 0;
 		ASSERT(sz < INT_MAX);
 		char* b = (char*)mem;
@@ -372,7 +371,6 @@ public:
 #if 0
 class WStringStream : public Stream {
 	Vector<wchar_t> s;
-	int64 cursor = 0;
 	
 public:
 	WStringStream() {storing = true;}
@@ -450,7 +448,7 @@ public:
 		eof = cursor >= s.GetCount();
 		return (int)sz;
 	}
-	int64 GetCursor() override { return cursor; }
+	int64 GetPos() override { return cursor; }
 	int64 GetSize() const override {return s.GetCount();}
 
 	void Seek(int64 i) override { cursor = i; }
@@ -464,30 +462,34 @@ public:
 class MemReadStream : public Stream {
 	const byte* buf;
 	int64 size = 0;
-	int64 cursor = 0;
 	
 public:
-	MemReadStream(const void* buf, int64 size) : buf((const byte*)buf), size(size) {}
+	MemReadStream(const void* buf, int64 size) : buf((const byte*)buf), size(size) {
+		eof = size == 0;
+	}
 	
 	dword _Get(void* mem, dword size) override {
-		int64 sz = min((int64)size, this->size - cursor);
+		int64 sz = min<int64>((int64)size, (int64)this->size - (int64)cursor);
 		if (sz <= 0) return 0;
 		ASSERT(sz < INT_MAX);
 		byte* b = (byte*)mem;
 		MemoryCopy(b, buf + cursor, (int)sz);
 		cursor += sz;
-		eof = cursor >= size;
+		eof = cursor >= this->size;
 		return (dword)sz;
 	}
-	void Seek(int64 i) override { cursor = i; }
+	void Seek(int64 i) override { cursor = i; eof = cursor >= this->size; }
 	int64 GetSize() const override {return size;}
 	bool IsOpen() const override {return true;}
-	
+	int _Term() override {
+		if (cursor >= size) return 0;
+		byte b = *(buf + cursor);
+		return b;
+	}
 };
 
 class MultiStream : public Stream {
 	Vector<Stream*> streams;
-	int64 cursor = 0;
 	
 public:
 	MultiStream() {}
