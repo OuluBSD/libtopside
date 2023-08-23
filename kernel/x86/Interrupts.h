@@ -36,7 +36,6 @@
 // first parameter.
 typedef void (*isr_t)(Registers);
 void RegisterInterruptHandler(uint8 n, Callback1<Registers> handler);
-void ResetInterruptHandlers();
 
 extern "C" {
 

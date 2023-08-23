@@ -1,5 +1,7 @@
 #include "LittleLibrary.h"
 
+#if REALHW
+
 
 
 CallbackBase::CallbackBase(void) {
@@ -67,3 +69,5 @@ void CbVoidFO::Assign(const CallbackBase &rCB) {
 CallbackBase* CbVoidFO::CloneCurrentCallback(void) const {
     return pCB->Clone();
 }
+
+#endif

@@ -1,5 +1,6 @@
 #include "icxxabi.h"
 
+#if REALHW
 
 void *__dso_handle = 0;
 
@@ -16,17 +17,19 @@ int __cxa_atexit(void (*f)(void *), void *objptr, void *dso)
 	return 0; /*I would prefer if functions returned 1 on success, but the ABI says...*/
 };
 
-extern "C" {
-	void _Unwind_Resume() {
-		PanicAssert(__FILE__, __LINE__, "Trying to unwind, but standard exceptions are not supported.");
-	}
-	
-	_Unwind_Reason_Code __gxx_personality_v0
-	     (int, _Unwind_Action, _Unwind_Exception_Class,
-	      struct _Unwind_Exception *, struct _Unwind_Context *) {
-		return _URC_NO_REASON;
-	}
+EXTERN_C_BEGIN
+
+void _Unwind_Resume() {
+	PanicAssert(__FILE__, __LINE__, "Trying to unwind, but standard exceptions are not supported.");
 }
+
+_Unwind_Reason_Code __gxx_personality_v0
+     (int, _Unwind_Action, _Unwind_Exception_Class,
+      struct _Unwind_Exception *, struct _Unwind_Context *) {
+	return _URC_NO_REASON;
+}
+
+EXTERN_C_END
 
 
 namespace __cxxabiv1 {
@@ -106,3 +109,5 @@ bool __vmi_class_type_info::__do_upcast(const __class_type_info* __dst, const vo
 			__upcast_result& __restrict __result) const {return false;}
 
 }
+
+#endif

@@ -1,7 +1,7 @@
-#include "Kernel.h"
+#include "LittleKernel.h"
 
 
-extern "C" {
+EXTERN_C_BEGIN
 
 
 
@@ -18,16 +18,8 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	MON.Clear();
 	
 	
-	// Find the location of our initial ramdisk.
-	uint32 initrd_location = 0;
-	uint32 initrd_end = 0;
-	if (mboot_ptr->mods_count > 0) {
-		initrd_location = *((uint32*)mboot_ptr->mods_addr);
-		initrd_end = *(uint32*)(mboot_ptr->mods_addr+4);
-	}
-	
-	
-	InitLinkerVariables(initrd_end);
+	size_t initrd_location = 0;
+	FindRamDisk(mboot_ptr, initrd_location);
 	
 	
 	MON.Write("Enabling interrupts\n");
@@ -78,4 +70,4 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	return 0xDEADABBA;
 }
 
-}
+EXTERN_C_END

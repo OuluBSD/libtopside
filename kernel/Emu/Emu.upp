@@ -1,0 +1,15 @@
+description "\377128,0,255";
+
+file
+	Emu.h,
+	main.cpp,
+	Common.cpp,
+	Stubs.h,
+	FileSystem.cpp,
+	Monitor.h,
+	Monitor.cpp,
+	Global.h,
+	Global.cpp,
+	SysCall.h,
+	SysCall.cpp;
+

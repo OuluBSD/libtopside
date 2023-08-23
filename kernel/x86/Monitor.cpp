@@ -165,7 +165,8 @@ Monitor& Monitor::WriteDec(int i) {
 }
 
 Monitor& Monitor::WriteHex(void* p) {
-	return WriteHex((uint32)p);
+	WriteHex((uint32)p);
+	return *this;
 }
 
 Monitor& Monitor::WriteHex(uint32 n) {

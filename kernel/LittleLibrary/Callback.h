@@ -3,6 +3,7 @@
 
 // Based on public domain library libCb by John Culp.
 
+#if REALHW
 
 
 //function object plugin
@@ -314,4 +315,5 @@ private:
 
 
 
+#endif
 #endif

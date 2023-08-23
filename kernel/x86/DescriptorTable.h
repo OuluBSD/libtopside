@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Monitor.h"
 
+
 extern "C" {
 
 extern void dt_flush(uint32);
@@ -76,12 +77,12 @@ struct DescriptorEntry {
    uint8  access;              // Access flags, determine what ring this segment can be used in.
    uint8  granularity;
    uint8  base_high;           // The last 8 bits of the base.
-} __attribute__((packed));
+} PACKED;
 
 struct DescriptorPointer {
    uint16 limit;               // The upper 16 bits of all selector limits.
-   uint32 base;                // The address of the first gdt_entry_t struct.
-} __attribute__((packed));
+   size_t base;                // The address of the first gdt_entry_t struct.
+} PACKED;
 
 // A struct describing an interrupt gate.
 struct InterruptGate {
@@ -90,14 +91,14 @@ struct InterruptGate {
    uint8  always0;             // This must always be zero.
    uint8  flags;               // More flags. See documentation.
    uint16 base_hi;             // The upper 16 bits of the address to jump to.
-} __attribute__((packed));
+} PACKED;
 
 // A struct describing a pointer to an array of interrupt handlers.
 // This is in a format suitable for giving to 'lidt'.
 struct InterruptsPointer {
    uint16 limit;
-   uint32 base;                // The address of the first element in our idt_entry_t array.
-} __attribute__((packed));
+   size_t base;                // The address of the first element in our idt_entry_t array.
+} PACKED;
 
 // A struct describing a Task State Segment.
 struct InterruptEntry
@@ -130,7 +131,7 @@ struct InterruptEntry
     uint16 trap;
     uint16 iomap_base;
 
-} __attribute__((packed));
+} PACKED;
 
 typedef struct tss_entry_struct tss_entry_t;
 
@@ -153,7 +154,6 @@ struct DescriptorTable {
 	
 	
 };
-
 
 
 

@@ -1,6 +1,7 @@
 #include "Kernel.h"
 
 
+
 // Write a byte out to the specified port.
 void outb(uint16 port, uint8 value) {
     asm volatile ("outb %1, %0" : : "dN" (port), "a" (value));
@@ -16,7 +17,8 @@ uint16 inw(uint16 port) {
    uint16 ret;
    asm volatile ("inw %1, %0" : "=a" (ret) : "dN" (port));
    return ret;
-} 
+}
+
 
 
 
@@ -35,6 +37,7 @@ int Pow(int i, int exp) {
 int Pow10(int exp) {
 	return Pow(10, exp);
 }
+
 
 
 // Copy len bytes from src to dest.
@@ -161,4 +164,6 @@ void PanicAssert(const char *file, unsigned int line, const char *desc) {
 void MagicBreakpoint() {
 	asm volatile ("xchgw %bx, %bx");
 }
+
+
 

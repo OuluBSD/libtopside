@@ -39,9 +39,10 @@ struct multiboot {
 	uint32 vbe_interface_seg;
 	uint32 vbe_interface_off;
 	uint32 vbe_interface_len;
-}  __attribute__((packed));
+}  PACKED;
 
 typedef struct multiboot_header multiboot_header_t;
 
+void FindRamDisk(struct multiboot *mboot_ptr, size_t& initrd_location);
 
 #endif

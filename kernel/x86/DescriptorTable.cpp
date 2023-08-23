@@ -5,7 +5,7 @@
 
 void DescriptorTable::Init() {
 	d_ptr.limit = (sizeof(DescriptorEntry) * 5) - 1;
-	d_ptr.base  = (uint32)&entries;
+	d_ptr.base  = (size_t)&entries;
 	
 	SetGate(0, 0, 0, 0, 0);                // Null segment
 	SetGate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment

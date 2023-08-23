@@ -49,3 +49,4 @@ void Timer::InterruptCallback(Registers regs) {
 	    multiplier_tick = 0;
 	}
 }
+
