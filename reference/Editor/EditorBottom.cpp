@@ -246,8 +246,8 @@ void Editor::FoundDisplay::Paint(Draw& w, const Rect& r, const Value& q, Color i
 		int y = r.top + (r.GetHeight() - fcy) / 2;
 		int x = r.left;
 		w.DrawRect(r, paper);
-		int sl = utf8len(~h[3], atoi(h[1]));
-		int sh = utf8len(~h[3] + sl, atoi(h[2])) + sl;
+		int sl = Utf8Len(~ln, atoi(h[1]));
+		int sh = Utf8Len(~ln + sl, atoi(h[2])) + sl;
 		for(int i = 0; i < hln.GetCount(); i++) {
 			Font fnt = StdFont();
 			LineEdit::Highlight& h = hln[i];

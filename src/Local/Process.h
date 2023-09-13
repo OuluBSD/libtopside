@@ -12,6 +12,12 @@ struct FileLocation : Moveable<FileLocation> {
 	int line = -1;
 	int col = -1;
 	
+	bool operator==(const FileLocation& t) const {
+		return	file == t.file &&
+				cursor == t.cursor &&
+				line == t.line &&
+				col == t.col;
+	}
 	void Clear() {file.Clear(); cursor = -1; line = -1; col = -1;}
 	void SetFileLocation(const FileLocation& loc) {*this = loc;}
 	void operator=(const FileLocation& loc) {
@@ -20,7 +26,6 @@ struct FileLocation : Moveable<FileLocation> {
 		line = loc.line;
 		col = loc.col;
 	}
-	bool operator==(const FileLocation& loc) const {return !memcmp(this, &loc, sizeof(FileLocation));}
 	void Serialize(Stream& s) {s % file % cursor % line % col;}
 	bool operator<(const FileLocation& l) const {
 		if (file != l.file) return file < l.file;
@@ -53,7 +58,12 @@ struct ProcMsg : Moveable<ProcMsg>, public FileLocation {
 		this->msg = msg;
 	}
 	
-	IMMEDIATE_TYPES_EQUAL(ProcMsg);
+	bool operator==(const ProcMsg& t) const {
+		return	severity == t.severity &&
+				src == t.src &&
+				msg == t.msg &&
+				FileLocation::operator==(t);
+	}
 	
 	void operator=(const ProcMsg& e) {
 		FileLocation::operator=(e);
