@@ -51,11 +51,6 @@ file
 	Global.h,
 	_ readonly separator;
 
-mainconfig
-	"" = "",
-	"" = "EMU",
-	"" = "EMU GUI";
-
 custom() "asm",
 	"nasm -g -f elf32 -o $(OUTDIR)/$(TITLE)Asm.o $(PATH)\n",
 	"$(OUTDIR)/$(TITLE)Asm.o";

@@ -48,6 +48,8 @@ public:
 	void Attach(ElectricNodeBase& from, ElectricNodeBase& to);
 	void GetLinks(Array<Link>& links);
 	
+	String ToVerilog() const;
+	
 };
 
 

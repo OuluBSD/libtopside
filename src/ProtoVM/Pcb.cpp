@@ -209,5 +209,16 @@ void Pcb::GetLinks(Array<Link>& links) {
 	
 }
 
+String Pcb::ToVerilog() const {
+	String s;
+	for (const ElectricNodeBase& n : nodes) {
+		s << n.ToVerilog();
+		s << "\n\n";
+	}
+	
+	s << "<ERROR NOT IMPLEMENTED IN Pcb>\n";
+	return s;
+}
+
 
 NAMESPACE_TOPSIDE_END

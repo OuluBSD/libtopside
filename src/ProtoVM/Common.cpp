@@ -278,6 +278,9 @@ ElectricNodeBase::Connector& ElectricNodeBase::AddSink(String name) {
 	return conn;
 }
 
+String ElectricNodeBase::ToVerilog() const {
+	return "<ERROR NOT IMPLEMENTED IN " << GetClassName() << ">\n";
+}
 
 
 

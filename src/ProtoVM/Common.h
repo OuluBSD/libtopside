@@ -100,6 +100,7 @@ public:
 	ElectricNodeBase& operator[](String code);
 	ElectricNodeBase& operator[](int i);
 	
+	virtual String ToVerilog() const;
 	virtual int GetMemorySize() const {return 0;}
 	virtual int GetFixedPriority() const {return -1;}
 	virtual bool Tick() {
