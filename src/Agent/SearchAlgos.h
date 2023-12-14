@@ -489,11 +489,11 @@ public:
 	Vector<T*> GetBest() {
 		NodePtr* n = 0;
 		double best_score = DBL_MAX;
-		for (const NodePtr& p : closed_set) {
-			double score = p.g_score + p.f_score;
+		for (const NodePtr* p : closed_set) {
+			double score = p->g_score + p->f_score;
 			if (score < best_score) {
 				best_score = score;
-				n = const_cast<NodePtr*>(&p);
+				n = const_cast<NodePtr*>(p);
 			}
 		}
 		if (n)

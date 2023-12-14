@@ -322,8 +322,8 @@ public:
 typedef Node<Object> NodeValue;
 
 template <class T>
-T GenerateTree(int total, int branching_low, int branching_high, Callback1<T*> set_value) {
-	T root;
+void GenerateTree(T& root, int total, int branching_low, int branching_high, Callback1<T*> set_value) {
+	root.Clear();
 	Vector<T*> next_level;
 	
 	next_level.Add(&root);
@@ -350,8 +350,6 @@ T GenerateTree(int total, int branching_low, int branching_high, Callback1<T*> s
 			}
 		}
 	}
-	
-	return root;
 }
 
 NAMESPACE_TOPSIDE_END

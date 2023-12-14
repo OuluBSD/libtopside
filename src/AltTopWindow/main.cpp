@@ -4,5 +4,5 @@ using namespace UPP;
 
 
 GUI_APP_MAIN {
-	GuiTesterApp().Run();123
+	GuiTesterApp().Run();
 }
