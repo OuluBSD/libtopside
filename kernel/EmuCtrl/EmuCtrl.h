@@ -4,8 +4,9 @@
 #include <CtrlLib/CtrlLib.h>
 using namespace Upp;
 
-
 #include <Emu/Emu.h>
+
+#include "App.h"
 
 
 #endif

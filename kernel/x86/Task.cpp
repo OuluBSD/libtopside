@@ -48,7 +48,7 @@ void MoveStack(void *new_stack_start, uint32 size) {
 	asm volatile("mov %%ebp, %0" : "=r"(old_base_pointer));
 
 	// Offset to add to old stack addresses to get a new stack address.
-	uint32 offset            = (uint32)new_stack_start - global->initial_esp;
+	size_t offset            = (uint32)new_stack_start - global->initial_esp;
 	
 	// New ESP and EBP.
 	uint32 new_stack_pointer = old_stack_pointer + offset;

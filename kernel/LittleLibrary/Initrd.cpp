@@ -1,7 +1,8 @@
-#include "Kernel.h"
+#include "LittleLibrary.h"
 
+EXTERN_C_BEGIN
 
-static uint32 initrd_read(FsNode *node, uint32 offset, uint32 size, uint8 *buffer) {
+static size_t initrd_read(FsNode *node, size_t offset, size_t size, uint8 *buffer) {
 	InitrdFileHeader header = global->file_headers[node->inode];
 	if (offset > header.length)
 		return 0;
@@ -23,7 +24,7 @@ static struct DirectoryEntity *initrd_readdir(FsNode *node, uint32 index) {
 		return &dirent;
 	}
 	
-	if (index - 1 >= nroot_nodes)
+	if ((int)index - 1 >= (int)nroot_nodes)
 		return 0;
 	strcpy(dirent.name, root_nodes[index-1].name);
 	dirent.name[strlen(root_nodes[index-1].name)] = 0;
@@ -48,7 +49,10 @@ static FsNode *initrd_finddir(FsNode *node, char *name) {
 	return 0;
 }
 
-FsNode *InitialiseInitrd(uint32 location) {
+static_assert(sizeof(size_t) == 8, "unexpected size_t");
+
+struct FsNode* __cdecl InitialiseInitrd(size_t location) {
+	ASSERT(location);
 	auto& initrd_header = global->initrd_header;
 	auto& file_headers = global->file_headers;
 	auto& initrd_root = global->initrd_root;
@@ -92,7 +96,7 @@ FsNode *InitialiseInitrd(uint32 location) {
 	nroot_nodes = initrd_header->nfiles;
 	
 	// For every file...
-	int i;
+	uint32 i;
 	for (i = 0; i < initrd_header->nfiles; i++) {
 		// Edit the file's header - currently it holds the file offset
 		// relative to the start of the ramdisk. We want it relative to the start
@@ -115,3 +119,5 @@ FsNode *InitialiseInitrd(uint32 location) {
 	return initrd_root;
 }
 
+
+EXTERN_C_END

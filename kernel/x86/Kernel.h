@@ -14,7 +14,6 @@
 #include "Memory.h"
 #include "FileSystem.h"
 #include "Multiboot.h"
-#include "Initrd.h"
 #include "Syscall.h"
 #include "Task.h"
 #include "Global.h"

@@ -1,17 +1,16 @@
 #ifndef _LittleKernel_OrderedArray_h_
 #define _LittleKernel_OrderedArray_h_
 
-#include "Common.h"
 
-uint32 KMemoryAllocateProxy(uint32 size);
+size_t KMemoryAllocateProxy(size_t size);
 
 template <class T> class OrderedArray {
-	uint32 size, max_size;
-	T** array;
+	size_t size, max_size;
+	T** array = 0;
 	
-	bool LessThan(T& a, T& b) {return (uint32)&a < (uint32)&b;}
+	bool LessThan(T& a, T& b) {return (size_t)&a < (size_t)&b;}
 public:
-	OrderedArray& Create(uint32 max_size) {
+	OrderedArray& Create(size_t max_size) {
 		// KMemoryAllocate is not working when initializing heap
 		array = (T**)KMemoryAllocateProxy(max_size * sizeof(T*));
 	    memset(array, 0, max_size * sizeof(T*));
@@ -20,7 +19,7 @@ public:
 	    return *this;
 	}
 
-	OrderedArray& Place(void* addr, uint32 max_size) {
+	OrderedArray& Place(void* addr, size_t max_size) {
 		array = (T**)addr;
 	    //memset(array, 0, max_size * sizeof(T));
 	    memset(array, 0, max_size * sizeof(T*));
@@ -33,7 +32,7 @@ public:
 	
 	T& Insert(T& item) {
 		//ASSERT(array->less_than);
-	    uint32 iterator = 0;
+	    size_t iterator = 0;
 	    while (iterator < size && LessThan(*array[iterator], item))
 	        iterator++;
 	    if (iterator == size) // just add at the end of the array.
@@ -54,12 +53,12 @@ public:
 		return item;
 	}
 
-	T& operator [] (uint32 i) {
+	T& operator [] (size_t i) {
 		ASSERT(i < size);
 	    return *array[i];
 	}
 	
-	void Remove(uint32 i) {
+	void Remove(size_t i) {
 		while (i < size) {
 	        array[i] = array[i+1];
 	        i++;
@@ -67,7 +66,7 @@ public:
 	    size--;
 	}
 	
-	uint32 GetSize() {return size;}
+	size_t GetSize() {return size;}
 };
 
 

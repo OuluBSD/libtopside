@@ -3,54 +3,6 @@
 
 
 
-uint32 EndlessKMemoryAllocateAligned(uint32 sz) {
-	//MON.Write("EndlessKMemoryAllocateAligned: sz ").WriteDec(sz).Write(" placement_address ").WriteHex(global->placement_address).NewLine();
-	
-	if (global->placement_address & 0x00000FFF) { // If the address is not already page-aligned
-		// Align it.
-		global->placement_address &= 0xFFFFF000;
-		global->placement_address += 0x1000;
-		//MON.Write("EndlessKMemoryAllocateAligned: aligned to ").WriteHex(global->placement_address).NewLine();
-	}
-	uint32 tmp = global->placement_address;
-	//MON.Write("EndlessKMemoryAllocateAligned: returning ").WriteHex(tmp).NewLine();
-	global->placement_address += sz;
-	return tmp;
-}
-
-uint32 EndlessKMemoryAllocatePhysical(uint32 sz, uint32 *phys) {
-	if (phys) {
-		*phys = global->placement_address;
-	}
-	uint32 tmp = global->placement_address;
-	global->placement_address += sz;
-	return tmp;
-}
-
-uint32 EndlessKMemoryAllocateAlignedPhysical(uint32 sz, uint32 *phys) {
-	// If the address is not already page-aligned
-	if (global->placement_address & 0x00000FFF) {
-		// Align it.
-		global->placement_address &= 0xFFFFF000;
-		global->placement_address += 0x1000;
-	}
-	if (phys) {
-		*phys = global->placement_address;
-	}
-	uint32 tmp = global->placement_address;
-	global->placement_address += sz;
-	return tmp;
-}
-
-uint32 EndlessKMemoryAllocate(uint32 sz) {
-	//MON.Write("EndlessKMemoryAllocate: ").WriteDec(sz).NewLine();
-	uint32 tmp = global->placement_address;
-	global->placement_address += sz;
-	return tmp;
-}
-
-
-
 
 
 
@@ -322,7 +274,7 @@ extern "C" {
 	void copy_page_physical(uint32 src, uint32 dst);
 }
 
-static PageTable *CloneTable(PageTable *src, uint32 *physAddr)
+static PageTable *CloneTable(PageTable *src, size_t *physAddr)
 {
     // Make a new page table, which is page aligned.
     PageTable* table = (PageTable*)EndlessKMemoryAllocateAlignedPhysical(sizeof(PageTable), physAddr);

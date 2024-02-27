@@ -2,6 +2,7 @@
 #define _LittleCommon_Defs_h_
 
 
+#define TRACE(x)
 
 #ifdef flagEMU
 	#define EMU		1

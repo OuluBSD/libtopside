@@ -4,6 +4,8 @@ uses
 	CtrlLib;
 
 file
+	main.cpp,
 	EmuCtrl.h,
-	main.cpp;
+	App.h,
+	App.cpp;
 

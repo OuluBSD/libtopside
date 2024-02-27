@@ -16,6 +16,11 @@ file
 	Monitor.cpp,
 	Global.h,
 	Global.cpp,
+	Memory.cpp,
+	Interrupts.h,
+	Interrupts.cpp,
+	Task.cpp,
+	Multiboot.cpp,
 	SysCall.h,
 	SysCall.cpp;
 

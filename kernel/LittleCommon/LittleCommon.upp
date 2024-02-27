@@ -3,6 +3,15 @@ file
 	Defs.h,
 	Fn.h,
 	Stubs.h,
+	Initrd.h,
+	Multiboot.h,
+	Multiboot.cpp,
+	Paging.h,
+	Heap.h,
+	Memory.h,
+	FixedArray.h,
 	FileSystem.h,
-	FileSystem.cpp;
+	FileSystem.cpp,
+	OrderedArray.h,
+	OrderedArray.cpp;
 

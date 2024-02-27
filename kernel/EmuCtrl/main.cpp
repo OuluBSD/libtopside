@@ -2,7 +2,9 @@
 
 
 GUI_APP_MAIN {
+	SetupEmu();
 	
-	int ret = multiboot_main(0);
+	EmuApp app;
 	
+	app.Start();
 }

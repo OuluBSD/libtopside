@@ -1,6 +1,7 @@
 #ifndef _LittleKernel_Multiboot_h_
 #define _LittleKernel_Multiboot_h_
 
+EXTERN_C_BEGIN
 
 #define MULTIBOOT_FLAG_MEM     0x001
 #define MULTIBOOT_FLAG_DEVICE  0x002
@@ -44,5 +45,7 @@ struct multiboot {
 typedef struct multiboot_header multiboot_header_t;
 
 void FindRamDisk(struct multiboot *mboot_ptr, size_t& initrd_location);
+
+EXTERN_C_END
 
 #endif

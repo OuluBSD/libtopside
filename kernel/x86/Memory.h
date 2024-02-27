@@ -34,6 +34,5 @@ void AllocFrame(Page *page, int is_kernel, int is_writeable);
 
 
 
-void InitLinkerVariables(uint32 end=0);
 
 #endif

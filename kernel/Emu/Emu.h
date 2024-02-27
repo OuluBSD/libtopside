@@ -7,6 +7,7 @@
 #include "Stubs.h"
 #include "Monitor.h"
 #include "SysCall.h"
+#include "Interrupts.h"
 #include "Global.h"
 
 

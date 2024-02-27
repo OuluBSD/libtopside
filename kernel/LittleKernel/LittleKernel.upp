@@ -1,11 +1,6 @@
 uses
-	Core;
-
-uses(!EMU) x86;
-
-uses(EMU) Emu;
-
-uses(GUI) CtrlLib;
+	Core,
+	LittleLibrary;
 
 file
 	LittleKernel.h,

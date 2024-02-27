@@ -1,5 +1,5 @@
-#ifndef _LittleLibrary_FixedArray_h_
-#define _LittleLibrary_FixedArray_h_
+#ifndef _LittleCommon_FixedArray_h_
+#define _LittleCommon_FixedArray_h_
 
 
 

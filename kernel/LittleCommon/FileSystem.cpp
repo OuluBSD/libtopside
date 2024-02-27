@@ -1,12 +1,14 @@
 #include "LittleCommon.h"
 
+EXTERN_C_BEGIN
+
 // fs.c -- Defines the interface for and structures relating to the virtual file system.
 //         Written for JamesM's kernel development tutorials.
 
 
 FsNode *fs_root = 0; // The root of the filesystem.
 
-uint32 ReadFs(FsNode *node, uint32 offset, uint32 size, uint8 *buffer) {
+size_t ReadFs(FsNode *node, size_t offset, size_t size, uint8 *buffer) {
 	// Has the node got a read callback?
 	if (node->read != 0)
 		return node->read(node, offset, size, buffer);
@@ -14,7 +16,7 @@ uint32 ReadFs(FsNode *node, uint32 offset, uint32 size, uint8 *buffer) {
 		return 0;
 }
 
-uint32 WriteFs(FsNode *node, uint32 offset, uint32 size, uint8 *buffer) {
+size_t WriteFs(FsNode *node, size_t offset, size_t size, uint8 *buffer) {
 	// Has the node got a write callback?
 	if (node->write != 0)
 		return node->write(node, offset, size, buffer);
@@ -51,3 +53,5 @@ FsNode *FindDirFs(FsNode *node, char *name) {
 	else
 		return 0;
 }
+
+EXTERN_C_END

@@ -1,14 +1,15 @@
 #include "Kernel.h"
 
 
-void FindRamDisk(struct multiboot *mboot_ptr) {
+void FindRamDisk(struct multiboot *mboot_ptr, size_t& initrd_location) {
 	// Find the location of our initial ramdisk.
-	uint32 initrd_location = 0;
-	uint32 initrd_end = 0;
+	initrd_location = 0;
+	size_t initrd_end = 0;
 	if (mboot_ptr->mods_count > 0) {
-		initrd_location = *((uint32*)mboot_ptr->mods_addr);
-		initrd_end = *(uint32*)(mboot_ptr->mods_addr+4);
+		initrd_location = *((size_t*)mboot_ptr->mods_addr);
+		initrd_end = *(size_t*)(mboot_ptr->mods_addr+4);
 	}
 	
 	InitLinkerVariables(initrd_end);
 }
+

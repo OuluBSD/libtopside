@@ -8,7 +8,14 @@ using namespace Upp;
 #include "Defs.h"
 #include "Stubs.h"
 #include "Fn.h"
+#include "Initrd.h"
 #include "FileSystem.h"
+#include "OrderedArray.h"
+#include "Heap.h"
+#include "Memory.h"
+#include "Multiboot.h"
+#include "FixedArray.h"
+#include "Paging.h"
 
 
 #endif

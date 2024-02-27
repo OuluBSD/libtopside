@@ -1,6 +1,7 @@
-#ifndef _LittleKernel_FileSystem_h_
-#define _LittleKernel_FileSystem_h_
+#ifndef _LittleCommon_FileSystem_h_
+#define _LittleCommon_FileSystem_h_
 
+EXTERN_C_BEGIN
 
 #define FS_FILE        0x01
 #define FS_DIRECTORY   0x02
@@ -10,12 +11,11 @@
 #define FS_SYMLINK     0x06
 #define FS_MOUNTPOINT  0x08 // Is the file an active mountpoint?
 
-struct FsNode;
 
 // These typedefs define the type of callbacks - called when read/write/open/close
 // are called.
-typedef uint32(*ReadTypeFn)(struct FsNode*, uint32, uint32, uint8*);
-typedef uint32(*WriteTypeFn)(struct FsNode*, uint32, uint32, uint8*);
+typedef size_t(*ReadTypeFn)(struct FsNode*, size_t, size_t, uint8*);
+typedef size_t(*WriteTypeFn)(struct FsNode*, size_t, size_t, uint8*);
 typedef void (*OpenTypeFn)(struct FsNode*);
 typedef void (*CloseTypeFn)(struct FsNode*);
 typedef struct DirectoryEntity * (*ReadDirTypeFn)(struct FsNode*, uint32);
@@ -49,13 +49,14 @@ extern FsNode *fs_root; // The root of the filesystem.
 // Standard read/write/open/close functions. Note that these are all suffixed with
 // _fs to distinguish them from the read/write/open/close which deal with file descriptors
 // , not file nodes.
-uint32 ReadFs(FsNode *node, uint32 offset, uint32 size, uint8 *buffer);
-uint32 WriteFs(FsNode *node, uint32 offset, uint32 size, uint8 *buffer);
+size_t ReadFs(FsNode *node, size_t offset, size_t size, uint8 *buffer);
+size_t WriteFs(FsNode *node, size_t offset, size_t size, uint8 *buffer);
 void OpenFs(FsNode *node, uint8 read, uint8 write);
 void CloseFs(FsNode *node);
 struct DirectoryEntity *ReadDirFs(FsNode *node, uint32 index);
 FsNode *FindDirFs(FsNode *node, char *name);
 
 
+EXTERN_C_END
 
 #endif

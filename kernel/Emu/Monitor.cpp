@@ -1,48 +1,48 @@
 #include "Emu.h"
 
 int Monitor::Init() {
-	TODO
+	
 	return 0;
 }
 
+void Monitor::Clear() {
+	OnClear();
+}
+
 void Monitor::MoveCursor() {
-	TODO
+	OnMoveCursor();
 }
 
 void Monitor::Scroll() {
-	TODO
+	OnScroll();
 }
 
 void Monitor::Put(char c) {
-	TODO
-}
-
-void Monitor::Clear() {
-	TODO
+	OnPut(c);
 }
 
 Monitor& Monitor::Write(const char *c) {
-	TODO
+	OnWrite(c);
 	return *this;
 }
 
 Monitor& Monitor::WriteDec(int i) {
-	TODO
+	OnWriteDec(i);
 	return *this;
 }
 
-Monitor& Monitor::WriteHex(void* p) {
-	TODO
+Monitor& Monitor::WriteHexPtr(void* p) {
+	OnWriteHexPtr(p);
 	return *this;
 }
 
-Monitor& Monitor::WriteHex(uint32 i) {
-	TODO
+Monitor& Monitor::WriteHexInt(size_t i) {
+	OnWriteHexInt(i);
 	return *this;
 }
 
 Monitor& Monitor::NewLine() {
-	TODO
+	OnNewLine();
 	return *this;
 }
 

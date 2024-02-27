@@ -14,9 +14,21 @@ struct Monitor {
 	void Clear();			// Clear the screen to all black.
 	Monitor& Write(const char *c);	// Output a null-terminated ASCII string to the monitor.
 	Monitor& WriteDec(int i);
-	Monitor& WriteHex(void* p);
-	Monitor& WriteHex(uint32 i);
+	Monitor& WriteHexPtr(void* p);
+	Monitor& WriteHexInt(size_t i);
 	Monitor& NewLine();
+	
+	
+	Callback OnMoveCursor;
+	Callback OnScroll;
+	Callback1<char> OnPut;
+	Callback OnClear;
+	Callback1<const char*> OnWrite;
+	Callback1<int> OnWriteDec;
+	Callback1<void*> OnWriteHexPtr;
+	Callback1<size_t> OnWriteHexInt;
+	Callback OnNewLine;
+	
 };
 
 #define MON global->monitor

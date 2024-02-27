@@ -1,25 +1,28 @@
 #ifndef _Emu_Global_h_
 #define _Emu_Global_h_
 
+void SetupEmu();
+
+
 struct SVar {
 	DescriptorTable dt;
 	Monitor monitor;
+	Heap kheap;
 	
 	#if 0
 	Timer timer;
-	Heap kheap;
 	
 	uint32 *frames;
 	uint32 nframes;
 	PageDirectory* kernel_directory = 0;
 	PageDirectory* current_directory = 0;
-	#if 0
-	uint32 placement_address;
+	#endif
+	
+	size_t placement_address = 0;
 	
 	FixedArray<Callback1<int>, 1> cbtestarr;
 	FixedArray<Callback1<Registers>, 256 > interrupt_handlers;
 	
-	#endif
 	
 	
 	
@@ -30,7 +33,6 @@ struct SVar {
 	FsNode *initrd_dev;              // We also add a directory node for /dev, so we can mount devfs later on.
 	FsNode *root_nodes;              // List of file nodes.
 	int nroot_nodes;                 // Number of file nodes.
-	#endif
 	
 	struct DirectoryEntity dirent;
 	
@@ -50,14 +52,14 @@ struct SVar {
 	
 	// The next available process ID.
 	uint32 next_pid = 1;
-
+	#endif
+	
 	void *syscalls[3] = {
 		(void*)&syscall_MonitorWrite,
 		(void*)&syscall_MonitorWriteHex,
 		(void*)&syscall_MonitorWriteDec,
 	};
 	uint32 num_syscalls = 3;
-	#endif
 	
 };
 extern SVar* global;

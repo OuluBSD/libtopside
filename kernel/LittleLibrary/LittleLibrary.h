@@ -17,8 +17,8 @@
 
 #include "Callback.h"
 #include "Memory.h"
-#include "FixedArray.h"
 #include "icxxabi.h"
+#include "Initrd.h"
 
 #include "Common.h"
 #include "Interrupts.h"
