@@ -1,8 +1,8 @@
 #ifndef _Emu_Emu_h_
 #define _Emu_Emu_h_
 
+#include <LittleCommon/LittleCommon.h>
 
-#include <LittleLibrary/LittleLibrary.h>
 
 #include "Stubs.h"
 #include "Monitor.h"

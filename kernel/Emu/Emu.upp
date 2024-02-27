@@ -1,10 +1,16 @@
 description "\377128,0,255";
 
+uses
+	LittleCommon;
+
+uses(GUI) EmuCtrl;
+
 file
 	Emu.h,
 	main.cpp,
 	Common.cpp,
 	Stubs.h,
+	Stubs.cpp,
 	FileSystem.cpp,
 	Monitor.h,
 	Monitor.cpp,

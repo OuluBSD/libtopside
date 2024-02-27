@@ -1,4 +1,4 @@
-#include "Kernel.h"
+#include "LittleCommon.h"
 
 // fs.c -- Defines the interface for and structures relating to the virtual file system.
 //         Written for JamesM's kernel development tutorials.
