@@ -9,5 +9,6 @@ file
 mainconfig
 	"" = "",
 	"" = "EMU",
-	"" = "EMU GUI";
+	"" = "EMU GUI",
+	"" = "EMU GUI USEMALLOC";
 

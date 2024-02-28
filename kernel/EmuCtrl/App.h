@@ -11,10 +11,12 @@ class EmuApp : public TopWindow {
 public:
 	typedef EmuApp CLASSNAME;
 	EmuApp();
+	~EmuApp();
 	
 	void Data();
 	void Init();
 	void Start();
+	void Stop() {running = false; while (!stopped) Sleep(10);}
 	void EmuProcess();
 	void RefreshOutput();
 	

@@ -27,7 +27,7 @@ Heap& Heap::Create(size_t start, size_t end_addr, size_t max, uint8 supervisor, 
 
     // Make sure the start address is page-aligned.
     if ((start & 0x00000FFF) != 0) {
-        start &= 0xFFFFF000;
+        start &= ~0x00000FFF;
         start += 0x1000;
     }
     // Write the start, end and max addresses into the heap structure.
@@ -211,7 +211,7 @@ void Heap::Expand(size_t new_size) {
     // Get the nearest following page boundary.
     if ((new_size&0x00000FFF) != 0)
     {
-        new_size &= 0xFFFFF000;
+        new_size &= ~0x00000FFF;
         new_size += 0x1000;
     }
 

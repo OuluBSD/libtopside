@@ -6,7 +6,7 @@ size_t EndlessKMemoryAllocateAligned(size_t sz) {
 	
 	if (global->placement_address & 0x00000FFF) { // If the address is not already page-aligned
 		// Align it.
-		global->placement_address &= 0xFFFFF000;
+		global->placement_address &= ~0x00000FFF;
 		global->placement_address += 0x1000;
 		//MON.Write("EndlessKMemoryAllocateAligned: aligned to ").WriteHex(global->placement_address).NewLine();
 	}
@@ -29,7 +29,7 @@ size_t EndlessKMemoryAllocateAlignedPhysical(size_t sz, size_t *phys) {
 	// If the address is not already page-aligned
 	if (global->placement_address & 0x00000FFF) {
 		// Align it.
-		global->placement_address &= 0xFFFFF000;
+		global->placement_address &= ~0x00000FFF;
 		global->placement_address += 0x1000;
 	}
 	if (phys) {

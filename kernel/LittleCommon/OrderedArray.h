@@ -21,7 +21,6 @@ public:
 
 	OrderedArray& Place(void* addr, size_t max_size) {
 		array = (T**)addr;
-	    //memset(array, 0, max_size * sizeof(T));
 	    memset(array, 0, max_size * sizeof(T*));
 	    size = 0;
 	    max_size = max_size;

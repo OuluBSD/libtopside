@@ -1,5 +1,10 @@
 #include "EmuCtrl.h"
 
+#ifdef flagUSEMALLOC
+namespace Upp {
+bool NoMemoryLeaksCheck;
+}
+#endif
 
 GUI_APP_MAIN {
 	SetupEmu();
@@ -7,4 +12,6 @@ GUI_APP_MAIN {
 	EmuApp app;
 	
 	app.Start();
+	
+	CloseEmu();
 }

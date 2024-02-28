@@ -6,6 +6,10 @@ EmuApp::EmuApp() {
 	
 }
 
+EmuApp::~EmuApp() {
+	Stop();
+}
+
 void EmuApp::Init() {
 	ASSERT(global);
 	Monitor& mon = global->monitor;

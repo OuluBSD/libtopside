@@ -2,6 +2,7 @@
 #define _Emu_Global_h_
 
 void SetupEmu();
+void CloseEmu();
 
 
 struct SVar {

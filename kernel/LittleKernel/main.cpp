@@ -22,7 +22,6 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	size_t initrd_location = 0;
 	FindRamDisk(mboot_ptr, initrd_location);
 	
-	
 	MON.Write("Enabling interrupts\n");
 	EnableInterrupts();
 	
