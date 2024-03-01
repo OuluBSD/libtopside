@@ -7,7 +7,7 @@ void InitialiseTasking() {
 
 void SwitchToUserMode() {
 	TRACE(SwitchToUserMode)
-	
+	GetThreadVars().user_mode = true;
 }
 
 void SyscallHandler(struct Registers regs) {

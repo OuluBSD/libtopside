@@ -16,9 +16,7 @@
 
 
 #include "Callback.h"
-#include "Memory.h"
 #include "icxxabi.h"
-#include "Initrd.h"
 
 #include "Common.h"
 #include "Interrupts.h"

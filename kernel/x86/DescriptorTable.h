@@ -1,9 +1,6 @@
 #ifndef DESCRIPTORTABLE_H
 #define DESCRIPTORTABLE_H
 
-#include "Common.h"
-#include "Monitor.h"
-
 
 extern "C" {
 

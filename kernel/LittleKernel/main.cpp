@@ -41,10 +41,10 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	
 	syscall_MonitorWrite("Hello, user world!\n");
 	
-	#if 0
-	uint32 a = KMemoryAllocate(4);
-    uint32 b = KMemoryAllocate(8);
-    uint32 c = KMemoryAllocate(8);
+	#if 1
+	size_t a = KMemoryAllocate(4);
+    size_t b = KMemoryAllocate(8);
+    size_t c = KMemoryAllocate(8);
     MON.Write("a: ");
     MON.WriteHex(a);
     MON.Write(", b: ");
@@ -54,7 +54,7 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 
     KFree((void*)c);
     KFree((void*)b);
-    uint32 d = KMemoryAllocate(12);
+    size_t d = KMemoryAllocate(12);
     MON.Write(", d: ");
     MON.WriteHex(d).NewLine();
     

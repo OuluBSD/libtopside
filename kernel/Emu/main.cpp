@@ -7,7 +7,7 @@ Vector<byte>& FixedMem() {
 
 void SetupEmu() {
 	auto& fixed_mem = FixedMem();
-	fixed_mem.SetCount(1024 * 1024 * 65, 0);
+	fixed_mem.SetCount(1024 * 1024 * (MEMORY_LIMIT+1), 0);
 	
 	global = (SVar*)(fixed_mem.Begin() + 0x1000);
 	

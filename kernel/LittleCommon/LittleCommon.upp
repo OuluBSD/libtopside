@@ -5,7 +5,6 @@ file
 	Stubs.h,
 	Initrd.h,
 	Multiboot.h,
-	Multiboot.cpp,
 	Paging.h,
 	Heap.h,
 	Memory.h,
@@ -13,5 +12,6 @@ file
 	FileSystem.h,
 	FileSystem.cpp,
 	OrderedArray.h,
-	OrderedArray.cpp;
+	OrderedArray.cpp,
+	Timer.h;
 

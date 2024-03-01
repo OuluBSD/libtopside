@@ -226,7 +226,9 @@ void Heap::Expand(size_t new_size) {
 
     size_t i = old_size;
     #if EMU
-    TODO
+    while (i < new_size) {
+        i += 0x1000 /* page size */;
+    }
     #else
     while (i < new_size) {
         AllocFrame( GetPage(start_address+i, 1, global->kernel_directory),
@@ -255,7 +257,10 @@ size_t Heap::Contract(size_t new_size) {
     size_t old_size = end_address-start_address;
     size_t i = old_size - 0x1000;
     #if EMU
-    TODO
+    while (new_size < i)
+    {
+        i -= 0x1000;
+    }
     #else
     while (new_size < i)
     {

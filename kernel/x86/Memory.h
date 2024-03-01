@@ -1,8 +1,6 @@
 #ifndef _LittleKernel_Memory_h_
 #define _LittleKernel_Memory_h_
 
-#include "Common.h"
-#include "Heap.h"
 
 //void  operator delete(void*);
 void* operator new(unsigned int);

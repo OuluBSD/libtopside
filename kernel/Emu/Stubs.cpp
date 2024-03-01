@@ -7,7 +7,6 @@ void DescriptorTable::InterruptSetGate(uint8 num, uint32 base, uint16 sel, uint8
 void DescriptorTable::Flush() {}
 void DescriptorTable::InterruptFlush() {}
 void DescriptorTable::SetKernelStack(uint32 stack) {}
-
 void DescriptorTable::InitDescriptors() {}
 void DescriptorTable::InitInterruptGates() {}
 

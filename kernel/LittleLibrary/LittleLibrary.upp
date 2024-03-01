@@ -10,16 +10,13 @@ file
 	LittleLibrary.h,
 	Common.h,
 	Interrupts.h,
-	Initrd.h,
-	Initrd.cpp,
-	Multiboot.cpp,
 	Heap.cpp,
 	Paging.cpp,
+	"Common impl" readonly separator,
+	Initrd.cpp,
 	"Core compat" readonly separator,
 	icxxabi.h,
 	icxxabi.cpp,
-	Memory.h,
-	Memory.cpp,
 	Callback.h,
 	Callback.cpp;
 

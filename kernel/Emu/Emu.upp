@@ -6,21 +6,22 @@ uses
 uses(GUI) EmuCtrl;
 
 file
-	Emu.h,
 	main.cpp,
-	Common.cpp,
+	Emu.h,
+	Defs.h,
 	Stubs.h,
 	Stubs.cpp,
-	FileSystem.cpp,
 	Monitor.h,
 	Monitor.cpp,
 	Global.h,
 	Global.cpp,
-	Memory.cpp,
 	Interrupts.h,
 	Interrupts.cpp,
+	SysCall.h,
+	SysCall.cpp,
+	"Common impl" readonly separator,
 	Task.cpp,
 	Multiboot.cpp,
-	SysCall.h,
-	SysCall.cpp;
+	Memory.cpp,
+	Common.cpp;
 

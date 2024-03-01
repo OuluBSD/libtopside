@@ -7,5 +7,7 @@ file
 	main.cpp,
 	EmuCtrl.h,
 	App.h,
-	App.cpp;
+	App.cpp,
+	"Common impl" readonly separator,
+	Timer.cpp;
 

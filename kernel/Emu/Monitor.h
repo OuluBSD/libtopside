@@ -16,6 +16,8 @@ struct Monitor {
 	Monitor& WriteDec(int i);
 	Monitor& WriteHexPtr(void* p);
 	Monitor& WriteHexInt(size_t i);
+	Monitor& WriteHex(size_t i) {return WriteHexInt(i);}
+	Monitor& WriteHex(void* p) {return WriteHexPtr(p);}
 	Monitor& NewLine();
 	
 	

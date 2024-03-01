@@ -4,6 +4,7 @@
 #include <LittleCommon/LittleCommon.h>
 
 
+#include "Defs.h"
 #include "Stubs.h"
 #include "Monitor.h"
 #include "SysCall.h"

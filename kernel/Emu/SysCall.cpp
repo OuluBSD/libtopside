@@ -2,19 +2,19 @@
 
 
 int syscall_MonitorWrite(const char* s) {
-	// TODO ASSERT user mode
+	ASSERT_USERMODE
 	MON.Write(s);
 	return 0;
 }
 
 int syscall_MonitorWriteHex(const char* s) {
-	// TODO ASSERT user mode
+	ASSERT_USERMODE
 	MON.WriteHexPtr((void*)s);
 	return 0;
 }
 
 int syscall_MonitorWriteDec(int s) {
-	// TODO ASSERT user mode
+	ASSERT_USERMODE
 	MON.WriteDec(s);
 	return 0;
 }

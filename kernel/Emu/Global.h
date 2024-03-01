@@ -8,17 +8,15 @@ void CloseEmu();
 struct SVar {
 	DescriptorTable dt;
 	Monitor monitor;
+	Timer timer;
 	Heap kheap;
 	
 	#if 0
-	Timer timer;
-	
 	uint32 *frames;
 	uint32 nframes;
 	PageDirectory* kernel_directory = 0;
 	PageDirectory* current_directory = 0;
 	#endif
-	
 	size_t placement_address = 0;
 	
 	FixedArray<Callback1<int>, 1> cbtestarr;
@@ -64,6 +62,19 @@ struct SVar {
 	
 };
 extern SVar* global;
+
+
+// Thread variables (for emulation)
+struct TVar {
+	bool user_mode = false;
+	bool disable_interrupts = false;
+	Registers regs;
+	
+};
+
+TVar& GetThreadVars();
+
+#define ASSERT_USERMODE ASSERT_(GetThreadVars().user_mode, "Thread is not in usermode");
 
 
 #endif

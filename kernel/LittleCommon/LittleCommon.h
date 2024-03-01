@@ -16,6 +16,7 @@ using namespace Upp;
 #include "Multiboot.h"
 #include "FixedArray.h"
 #include "Paging.h"
+#include "Timer.h"
 
 
 #endif
