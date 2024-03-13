@@ -1,8 +1,12 @@
 #ifndef _LittleCommon_LittleCommon_h_
 #define _LittleCommon_LittleCommon_h_
 
+#ifdef flagEMU
 #include <Core/Core.h>
 using namespace Upp;
+#endif
+
+#include <LittleCore/LittleCore.h>
 
 
 #include "Defs.h"
@@ -17,6 +21,7 @@ using namespace Upp;
 #include "FixedArray.h"
 #include "Paging.h"
 #include "Timer.h"
+#include "TokenParser.h"
 
 
 #endif

@@ -1,6 +1,7 @@
 uses
 	Core,
-	LittleLibrary;
+	LittleLibrary,
+	LittleApps;
 
 file
 	LittleKernel.h,

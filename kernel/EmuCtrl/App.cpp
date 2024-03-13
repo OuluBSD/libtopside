@@ -94,7 +94,7 @@ void EmuApp::Write(const char *c) {
 }
 
 void EmuApp::WriteDec(int i) {
-	WriteString(IntStr(i));
+	WriteString(UPP::IntStr(i));
 }
 
 void EmuApp::WriteHexPtr(void* p) {

@@ -1,0 +1,8 @@
+file
+	LittleCore.h,
+	LittleCore.cpp,
+	String.h,
+	StringInline.cpp,
+	Object.h,
+	Stream.h;
+

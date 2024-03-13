@@ -1,3 +1,6 @@
+uses
+	LittleCore;
+
 file
 	LittleCommon.h,
 	Defs.h,
@@ -13,5 +16,7 @@ file
 	FileSystem.cpp,
 	OrderedArray.h,
 	OrderedArray.cpp,
-	Timer.h;
+	Timer.h,
+	TokenParser.h,
+	TokenParser.cpp;
 

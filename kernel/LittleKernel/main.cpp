@@ -67,6 +67,14 @@ int multiboot_main(struct multiboot *mboot_ptr) {
     global->timer.Init(1);
     #endif
     
+    
+    bool single_user = true;
+    
+    if (single_user) {
+        Run_Shell(0, 0, mboot_ptr);
+        
+    }
+    
 	return 0xDEADABBA;
 }
 

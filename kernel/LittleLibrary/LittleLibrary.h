@@ -21,6 +21,9 @@
 #include "Common.h"
 #include "Interrupts.h"
 
+#include "ProgramBase.h"
+#include "ConsoleProgram.h"
+
 
 
 #endif

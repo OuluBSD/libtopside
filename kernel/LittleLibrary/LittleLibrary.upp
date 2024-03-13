@@ -18,5 +18,11 @@ file
 	icxxabi.h,
 	icxxabi.cpp,
 	Callback.h,
-	Callback.cpp;
+	Callback.cpp,
+	Apps readonly separator,
+	ConsoleProgram.h,
+	ConsoleProgram.cpp,
+	ProgramBase.h,
+	CommandLineArguments.cpp,
+	ProgramBase.cpp;
 
