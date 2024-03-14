@@ -70,9 +70,8 @@ inline int HexInt(const char *s) {
 
 struct KString {
 	const char* str = 0;
-	int len = 0;
+	int sz = 0;
 	bool owned = false;
-	int refs = 0;
 	
 	
 	KString() {}
@@ -81,26 +80,33 @@ struct KString {
 	KString(const char* s) {Link(s);}
 	void Clear();
 	void Link(const char* s, int len=-1);
-	void Attach(const char* s, int len=-1);
+	void Set(const char* s, int len=-1);
 	void Ref(const KString& s);
-	const char* Detach();
 	
+	KString& Cat(const KString& s);
 	KString& Cat(char c);
 	
-	bool IsEmpty() const {return len <= 0;}
-	int GetLength() const {return len;}
-	int GetCount() const {return len;}
-	char operator[](int i) const {ASSERT(i >= 0 && i <= len); return str[i];}
+	const int* GetRefPtr() const {return str && owned ? (const int*)(str - sizeof(int)) : 0;}
+	int* GetRefPtr() {return str && owned ? (int*)(str - sizeof(int) * 2) : 0;}
+	unsigned int* GetReservedPtr() {return str && owned ? (unsigned int*)(str - sizeof(int) * 1) : 0;}
+	void IncRef();
+	void DecRef();
+	void Own(int extra_size);
+	void Reserve(unsigned int sz);
+	bool IsEmpty() const {return sz <= 0;}
+	size_t GetLength() const {return strnlen(str, sz);}
+	int GetCount() const {return sz;}
+	char operator[](int i) const {ASSERT(i >= 0 && i <= sz); return str[i];}
 	const char* CStr() const {return str;}
 	
 	void operator=(const KString& s) {Ref(s);}
 	void operator=(const char* s) {Link(s);}
 	
 	KString Mid(int begin) const;
-	KString Mid(int begin, int len) const;
+	KString Mid(int begin, int sz) const;
 	
 	
-	
+	static int GetReserveSize(int len);
 	static int CharOctInt(const char* s);
 	static int CharBinInt(const char* s);
 	static int64 CharBinInt64(const char* s);

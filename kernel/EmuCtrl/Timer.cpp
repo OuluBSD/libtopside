@@ -15,7 +15,7 @@ void Timer::Init(size_t frequency) {
 
     // Important to note is
     // that the divisor must be small enough to fit into 16-bits.
-    uint32 divisor = frequency;
+    size_t divisor = frequency;
 	multiplier = 1;
 	while (divisor & 0xFFFF0000 || 1000 / divisor == 0) {
 		multiplier <<= 1UL;

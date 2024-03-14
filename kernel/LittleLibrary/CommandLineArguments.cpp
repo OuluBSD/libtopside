@@ -127,4 +127,8 @@ void CommandLineArguments::AddVar(const KString& key, const Object& val) {
 	
 }
 
+CmdInput& CommandLineArguments::AddInput() {
+	return inputs[input_count++];
+}
+
 
