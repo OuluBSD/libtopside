@@ -22,6 +22,7 @@ void EmuApp::Init() {
 	LINK(Put)
 	LINK(Clear)
 	LINK(Write)
+	LINK(WriteN)
 	LINK(WriteDec)
 	LINK(WriteHexPtr)
 	LINK(WriteHexInt)
@@ -91,6 +92,12 @@ void EmuApp::WriteString(const String& s) {
 
 void EmuApp::Write(const char *c) {
 	WriteString(c);
+}
+
+void EmuApp::WriteN(const char *c, int len) {
+	String s;
+	s.Set(c, len);
+	WriteString(s);
 }
 
 void EmuApp::WriteDec(int i) {

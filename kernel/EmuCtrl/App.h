@@ -59,6 +59,7 @@ public:
 	void Clear();
 	void WriteString(const String& s);
 	void Write(const char *c);
+	void WriteN(const char *c, int len);
 	void WriteDec(int i);
 	void WriteHexPtr(void* p);
 	void WriteHexInt(size_t i);

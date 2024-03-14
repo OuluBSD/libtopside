@@ -22,7 +22,7 @@ void InitialisePaging() {
 	size_t start = EndlessKMemoryAllocateAligned(sz);
 	
 	// Initialise the kernel heap.
-	MON.Write("..Initializing kernel heap").NewLine();
+	KLOG("Initializing kernel heap");
 	global->kheap.Create(start, start + sz, -1, 0, 0);
 	
 }

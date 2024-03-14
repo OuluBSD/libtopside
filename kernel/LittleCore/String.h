@@ -126,6 +126,8 @@ struct KString {
 	
 	static KString IntStr(int i);
 	static KString IntStr64(int64 i);
+	static KString IntHex(int i);
+	static KString IntHex64(int64 i);
 	static KString DblStr(double d);
 	
 };
@@ -138,10 +140,17 @@ inline int64 BinInt64(const KString& s) { return KString::CharBinInt64(s.str); }
 inline int64 StrInt64(const KString& s) { return KString::CharInt64(s.str); }
 inline KString IntStr(int i) { return KString::IntStr(i); }
 inline KString IntStr64(int64 i) { return KString::IntStr64(i); }
+inline KString IntHex(int i) { return KString::IntHex(i); }
+inline KString IntHex64(int i) { return KString::IntHex64(i); }
 
 #ifdef flagEMU
 inline double StrDbl(const KString& s) {return StrDbl((UPP::String)s.str);}
 #endif
+
+KString HexString(void* data_, int len);
+
+inline int HexDigit(int c) {return "0123456789ABCDEF"[c & 15];}
+inline int HexDigitLower(int c) {return "0123456789abcdef"[c & 15];}
 
 
 #endif

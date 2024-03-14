@@ -11,14 +11,6 @@ Heap& Heap::Create(size_t start, size_t end_addr, size_t max, uint8 supervisor, 
     ASSERT(start%0x1000 == 0);
     ASSERT(end_addr%0x1000 == 0);
     
-    MON.Write("Heap create:");
-    MON.Write("\n    start        = "); MON.WriteHexInt(start);
-    MON.Write("\n    end          = "); MON.WriteHexInt(end_addr);
-    MON.Write("\n    max          = "); MON.WriteHexInt(max);
-    MON.Write("\n    supervisor   = "); MON.WriteHexInt(supervisor);
-    MON.Write("\n    readonly     = "); MON.WriteDec(readonly);
-    MON.Put('\n');
-    
     // Initialise the index.
     index.Place( (void*)start, HEAP_INDEX_SIZE);
     
@@ -43,6 +35,14 @@ Heap& Heap::Create(size_t start, size_t end_addr, size_t max, uint8 supervisor, 
     hole->magic = HEAP_MAGIC;
     hole->is_hole = 1;
     index.Insert(*hole);
+    
+    KLOG("Heap create:");
+    KLOG("    start        = " << IntHex(start));
+    KLOG("    end          = " << IntHex(end_addr));
+    KLOG("    max          = " << IntHex(max));
+    KLOG("    supervisor   = " << IntHex(supervisor));
+    KLOG("    readonly     = " << ::IntStr(readonly));
+    
 	return *this;
 }
 	

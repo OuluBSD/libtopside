@@ -26,6 +26,11 @@ Monitor& Monitor::Write(const char *c) {
 	return *this;
 }
 
+Monitor& Monitor::WriteN(const char *c, int n) {
+	OnWriteN(c, n);
+	return *this;
+}
+
 Monitor& Monitor::WriteDec(int i) {
 	OnWriteDec(i);
 	return *this;

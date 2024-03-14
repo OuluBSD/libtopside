@@ -292,5 +292,3 @@ TMPL(void) Copy(char* dst, const char* src)
 #undef TMPL
 #undef TMPL_THIS
 #undef TMPL_NEW
-
-

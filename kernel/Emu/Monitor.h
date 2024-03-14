@@ -13,6 +13,7 @@ struct Monitor {
 	void Put(char c);		// Write a single character out to the screen.
 	void Clear();			// Clear the screen to all black.
 	Monitor& Write(const char *c);	// Output a null-terminated ASCII string to the monitor.
+	Monitor& WriteN(const char *c, int n);
 	Monitor& WriteDec(int i);
 	Monitor& WriteHexPtr(void* p);
 	Monitor& WriteHexInt(size_t i);
@@ -26,6 +27,7 @@ struct Monitor {
 	Callback1<char> OnPut;
 	Callback OnClear;
 	Callback1<const char*> OnWrite;
+	Callback2<const char*, int> OnWriteN;
 	Callback1<int> OnWriteDec;
 	Callback1<void*> OnWriteHexPtr;
 	Callback1<size_t> OnWriteHexInt;

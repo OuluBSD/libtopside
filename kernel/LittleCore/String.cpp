@@ -202,3 +202,38 @@ int KString::GetReserveSize(int len) {
 	return new_alloc;
 }
 
+
+
+KString HexString(void* data_, int len) {
+	const char* data = (const char*)data_;
+	KString s = "0x";
+	for(int i = 0; i < len; i++) {
+		char c = data[len-1-i];
+		byte low = (byte)c & 0xF;
+		byte high = ((byte)c >> 4) & 0xF;
+		s.Cat(HexDigit(high));
+		s.Cat(HexDigit(low));
+	}
+	return s;
+}
+
+
+KString KString::IntHex(int i) {
+	return HexString((void*)&i, sizeof(int));
+}
+
+KString KString::IntHex64(int64 i) {
+	return HexString((void*)&i, sizeof(int64));
+}
+
+KString KString::IntStr(int i) {
+	char buf[10];
+	const char* value = IntChar(buf, 10, i);
+	return KString(value);
+}
+
+KString KString::IntStr64(int64 i) {
+	char buf[30];
+	const char* value = IntChar64(buf, 30, i);
+	return KString(value);
+}

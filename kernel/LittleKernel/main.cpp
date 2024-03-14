@@ -4,6 +4,10 @@
 EXTERN_C_BEGIN
 
 
+void WriteMonitor(const char* s, int n, void* arg) {
+	struct multiboot* mboot_ptr = (struct multiboot*)arg;
+	MON.WriteN(s,n);
+}
 
 int multiboot_main(struct multiboot *mboot_ptr) {
 	
@@ -17,31 +21,34 @@ int multiboot_main(struct multiboot *mboot_ptr) {
     if (mboot_ptr) mboot_ptr->OnMonitorCreate();
     MON.Init();
 	MON.Clear();
+	KCout().SetCallback(WriteMonitor, mboot_ptr);
 	
 	
 	size_t initrd_location = 0;
 	FindRamDisk(mboot_ptr, initrd_location);
 	
-	MON.Write("Enabling interrupts\n");
+	KLOG("Enabling interrupts");
 	EnableInterrupts();
 	
-	MON.Write("Enabling paging\n");
+	KLOG("Enabling paging");
 	InitialisePaging();
 	
-	MON.Write("Initialising tasking\n");
+	KLOG("Initialising tasking");
 	InitialiseTasking();
 	
-	MON.Write("Initialising initrd\n");
+	KLOG("Initialising initrd");
 	fs_root = InitialiseInitrd(initrd_location);
 	
-	MON.Write("Initialising syscalls\n");
+	KLOG("Initialising syscalls");
 	InitialiseSyscalls();
 
 	SwitchToUserMode();
 	
+	
+	
 	syscall_MonitorWrite("Hello, user world!\n");
 	
-	#if 1
+	#if 0
 	size_t a = KMemoryAllocate(4);
     size_t b = KMemoryAllocate(8);
     size_t c = KMemoryAllocate(8);
