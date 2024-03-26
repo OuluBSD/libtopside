@@ -63,6 +63,7 @@ protected:
 public:
 	typedef ProgramBase CLASSNAME;
 	ProgramBase();
+	virtual ~ProgramBase();
 	
 	virtual bool Init(int argc, const char** argv);
 	virtual void Run();
@@ -71,7 +72,7 @@ public:
 	
 	void SetExitCode(int c) {exit_code = c;}
 	
-
+	virtual bool Key(dword key, int count) {return false;}
 	
 };
 

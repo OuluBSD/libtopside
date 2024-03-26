@@ -2,6 +2,8 @@
 #define _EmuCtrl_App_h_
 
 
+#define KB_QUEUE_LENGTH 16
+
 class EmuApp;
 
 class EmuScreen : public Ctrl {
@@ -30,6 +32,9 @@ public:
 	void Refresh0() {Refresh();}
 	
 	Size GetPreferredSize() const;
+	
+	bool Key(dword key, int count) override;
+	
 };
 
 class EmuApp : public TopWindow {
@@ -46,6 +51,7 @@ public:
 	EmuApp();
 	~EmuApp();
 	
+	void OnClose();
 	void Data();
 	void Init();
 	void Start();
@@ -64,7 +70,6 @@ public:
 	void WriteHexPtr(void* p);
 	void WriteHexInt(size_t i);
 	void NewLine();
-	
 	
 	
 };

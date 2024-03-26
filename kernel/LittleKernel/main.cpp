@@ -41,7 +41,14 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 	
 	KLOG("Initialising syscalls");
 	InitialiseSyscalls();
-
+	
+	// Virtual device drivers
+	global->input.Init();
+	
+	// Device drivers
+	
+	
+	
 	SwitchToUserMode();
 	
 	

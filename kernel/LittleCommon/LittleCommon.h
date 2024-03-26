@@ -21,6 +21,7 @@ using namespace Upp;
 #include "FixedArray.h"
 #include "Paging.h"
 #include "Timer.h"
+#include "InputDevice.h"
 #include "TokenParser.h"
 
 

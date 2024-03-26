@@ -11,6 +11,10 @@ struct SVar {
 	Timer timer;
 	Heap kheap;
 	
+	// Drivers
+	InputDevice input;
+	
+	
 	#if 0
 	uint32 *frames;
 	uint32 nframes;
@@ -21,6 +25,7 @@ struct SVar {
 	
 	FixedArray<Callback1<int>, 1> cbtestarr;
 	FixedArray<Callback1<Registers>, 256 > interrupt_handlers;
+	//bool interrupt_handlers_enabled[256];
 	
 	
 	

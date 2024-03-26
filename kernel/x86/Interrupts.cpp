@@ -16,38 +16,6 @@
 }*/
 
 
-
-
-void RegisterInterruptHandler(uint8 n, Callback1<Registers> handler) {
-	global->interrupt_handlers[n] = handler;
-	//interrupt_handlers[n].Copy(handler);
-}
-
-void ResetInterruptHandlers() {
-	for (int i = 0; i < global->interrupt_handlers.GetCount(); i++)
-		global->interrupt_handlers[i].Reset();
-}
-
-
-// This gets called from our ASM interrupt handler stub.
-void isr_handler(Registers regs) {
-	MON.Write("recieved interrupt: ");
-	MON.WriteDec(regs.int_no);
-	MON.Write(" (").WriteDec(regs.err_code).Write(")");
-	MON.Put('\n');
-	
-	//if (regs.int_no == 6)
-	//	PANIC("id 6 is stuck");
-		
-	if (global->interrupt_handlers[regs.int_no].IsNull() == false) {
-		//isr_t handler = interrupt_handlers[regs.int_no];
-		//handler(regs);
-		//MON.WriteDec(regs.int_no); MON.Write(" interrupted\n");
-		
-		global->interrupt_handlers[regs.int_no].Execute(regs);
-	}
-}
-
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(Registers regs) {
 	if (regs.int_no != 32)
@@ -72,6 +40,7 @@ void irq_handler(Registers regs) {
 	}
 	
 }
+
 
 
 void EnableInterrupts() {

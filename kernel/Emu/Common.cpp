@@ -12,4 +12,3 @@ void MagicBreakpoint() {
 	__BREAK__;
 }
 
-void ResetInterruptHandlers() {}

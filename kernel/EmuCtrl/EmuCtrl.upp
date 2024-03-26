@@ -9,5 +9,6 @@ file
 	App.h,
 	App.cpp,
 	"Common impl" readonly separator,
+	InputDevice.cpp,
 	Timer.cpp;
 

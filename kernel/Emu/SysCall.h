@@ -5,6 +5,8 @@
 EXTERN_C_BEGIN
 
 struct Registers {
+   byte int_no;
+   size_t err_code;
    size_t eax;
 };
 

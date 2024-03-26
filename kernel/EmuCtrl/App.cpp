@@ -6,10 +6,16 @@ EmuApp::EmuApp() : scr(*this) {
 	Add(scr.SizePos());
 	
 	SetRect(scr.GetPreferredSize());
+	
+	WhenClose << THISBACK(OnClose);
 }
 
 EmuApp::~EmuApp() {
 	Stop();
+}
+
+void EmuApp::OnClose() {
+	Thread::ShutdownThreads();
 }
 
 void EmuApp::Init() {
@@ -75,7 +81,7 @@ void EmuApp::Scroll() {
 }
 
 void EmuApp::Put(char c) {
-	
+	scr.Put(c);
 }
 
 void EmuApp::Clear() {
@@ -199,4 +205,34 @@ Size EmuScreen::GetPreferredSize() const {
 	return Size(
 		scr_txt_sz.cx * grid.cx,
 		scr_txt_sz.cy * grid.cy);
+}
+
+int __emu_kb_char_queue[KB_QUEUE_LENGTH];
+
+bool EmuScreen::Key(dword key, int count) {
+	if (key & K_KEYUP || key & K_DELTA) {
+		
+	}
+	else {
+		String desc = GetKeyDesc(key);
+		int chr = desc.GetCount() == 1 ? desc[0] : 0;
+		if (chr && chr >= 0x20 && chr < 0x80) {
+			//Put(chr);
+			for(int i = 0; i < KB_QUEUE_LENGTH; i++) {
+				int& e = __emu_kb_char_queue[i];
+				if (e == 0) {
+					e = chr;
+					break;
+				}
+			}
+			Registers r;
+			memset(&r, 0, sizeof(r));
+			r.int_no = IRQ1;
+			r.eax = chr;
+			isr_handler(r);
+			return true;
+		}
+	}
+	
+	return false;
 }
