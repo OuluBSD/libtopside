@@ -12,7 +12,7 @@ struct Monitor {
 	
 	void MoveCursor();
 	void Scroll();
-	void Put(char c);		// Write a single character out to the screen.
+	void Put(dword d, int count);		// Write a single character out to the screen.
 	void Clear();			// Clear the screen to all black.
 	Monitor& Write(const char *c);	// Output a null-terminated ASCII string to the monitor.
 	Monitor& WriteDec(int i);

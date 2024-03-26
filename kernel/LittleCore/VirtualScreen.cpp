@@ -44,57 +44,117 @@ void VirtualScreen::MoveCursor() {
 }
 
 void VirtualScreen::Scroll() {
-	for(int i = 0; i < height-1; i++) {
-		int j = i+1;
+	int scroll = max(0, min(height, cursor_y - height));
+	for(int i = 0; i < height-scroll; i++) {
+		int j = i+scroll;
 		byte* dst = mem + i * pitch;
-		byte* frm = dst + pitch;
+		byte* frm = mem + j * pitch;
 		memcpy(dst, frm, pitch);
 	}
-	byte* dst = mem + (height - 1) * pitch;
-	memset(dst, 0, pitch);
+	for(int i = height-scroll; i < height; i++) {
+		byte* dst = mem + i * pitch;
+		memset(dst, 0, pitch);
+	}
 }
 
-void VirtualScreen::Put(char c) {
-	if (mem &&
-		cursor_x >= 0 && cursor_x < width &&
-		cursor_y >= 0 && cursor_y < height) {
-		int pos = cursor_y * pitch + cursor_x;
-		mem[pos] = c;
+void VirtualScreen::Put(dword d, int count) {
+	char c = (char)d;
+	for(int i = 0; i < count; i++) {
+		// Handle a backspace, by moving the cursor back one space
+		if (c == 0x08 && cursor_x) {
+			cursor_x--;
+		}
+		
+		// Handle a tab by increasing the cursor's X, but only to a point
+		// where it is divisible by 8.
+		else if (c == 0x09) {
+			cursor_x = (cursor_x + 8) & ~(8 - 1);
+		}
+		
+		// Handle carriage return
+		else if (c == '\r') {
+			cursor_x = 0;
+		}
+		
+		// Handle newline by moving cursor back to left and increasing the row
+		else if (c == '\n') {
+			cursor_x = 0;
+			cursor_y++;
+		}
+		// Handle any other printable character.
+		else {
+			if (mem && cursor_x >= 0 && cursor_x < width &&
+				cursor_y >= 0 && cursor_y < height) {
+				int pos = cursor_y * pitch + cursor_x;
+				mem[pos] = c;
+			}
+			cursor_x++;
+			if (cursor_x >= width) {
+				cursor_y++;
+			}
+		}
 	}
+	
+	// Scroll the screen if needed.
+	Scroll();
+	// Move the hardware cursor.
+	MoveCursor();
 }
 
 void VirtualScreen::Clear() {
 	if (mem)
 		memset(mem, 0, sz);
+	
+	// Move the hardware cursor back to the start.
+	cursor_x = 0;
+	cursor_y = 0;
+	MoveCursor();
 }
 
 void VirtualScreen::Write(const char *c) {
-	
-	
+	int i = 0;
+	while (c[i]) {
+		Put(c[i++]);
+	}
 }
 
 void VirtualScreen::WriteN(const char *c, int n) {
-	
-	
+	int i = 0;
+	while (i < n && c[i]) {
+		Put(c[i++]);
+	}
 }
 
 void VirtualScreen::WriteDec(int i) {
-	
-	
+	if (i < 0)
+		Put('-');
+	bool foundfirst = 0;
+	for (int j = 9; j >= 0; j--) {
+		int pow = Pow10(j);
+		int k = i / pow;
+		i = i % pow;
+		if (k < 0)
+			k *= -1;
+		if (!foundfirst && k)
+			foundfirst = 1;
+		if (foundfirst)
+			Put('0' + k);
+	}
+	if (!foundfirst)
+		Put('0');
 }
 
 void VirtualScreen::WriteHexPtr(void* p) {
-	
-	
+	String s = Format("%X", (int64)p);
+	Write(s);
 }
 
 void VirtualScreen::WriteHexInt(size_t i) {
-	
-	
+	String s = Format("%X", (int64)i);
+	Write(s);
 }
 
 void VirtualScreen::NewLine() {
-	
-	
+	Put('\n');
 }
 

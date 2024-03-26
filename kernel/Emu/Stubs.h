@@ -2,7 +2,9 @@
 #define _Emu_Stubs_h_
 
 
-#define TODO Panic("TODO");
+#ifndef TODO
+	#define TODO Panic("TODO");
+#endif
 
 
 EXTERN_C_BEGIN

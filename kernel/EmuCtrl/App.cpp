@@ -22,7 +22,7 @@ void EmuApp::Init() {
 	ASSERT(global);
 	Monitor& mon = global->monitor;
 	
-	mon.SetTarget(*this);
+	mon.SetTarget(scr.vscr);
 }
 
 void EmuApp::Data() {
@@ -60,55 +60,6 @@ void EmuApp::RefreshOutput() {
 	Refresh();
 }
 
-void EmuApp::MoveCursor() {
-	
-}
-
-void EmuApp::Scroll() {
-	
-}
-
-void EmuApp::Put(char c) {
-	scr.Put(c);
-}
-
-void EmuApp::Clear() {
-	scr.ClearScreen();
-}
-
-void EmuApp::WriteString(const String& s) {
-	WString ws = s.ToWString();
-	for(int i = 0; i < ws.GetCount(); i++) {
-		wchar chr = ws[i];
-		scr.Put(chr);
-	}
-}
-
-void EmuApp::Write(const char *c) {
-	WriteString(c);
-}
-
-void EmuApp::WriteN(const char *c, int len) {
-	String s;
-	s.Set(c, len);
-	WriteString(s);
-}
-
-void EmuApp::WriteDec(int i) {
-	WriteString(UPP::IntStr(i));
-}
-
-void EmuApp::WriteHexPtr(void* p) {
-	WriteString(Format("%X", (int64)p));
-}
-
-void EmuApp::WriteHexInt(size_t i) {
-	WriteString(Format("%X", (int64)i));
-}
-
-void EmuApp::NewLine() {
-	scr.NewLine();
-}
 
 
 
@@ -121,8 +72,6 @@ EmuScreen::EmuScreen(EmuApp& a) : app(a) {
 	int expected_h = expected_w * 3 / 4;
 	int rows = expected_h / grid.cy;
 	
-	ResizeTxt(Size(cols, rows));
-	cur = Point(0,0);
 	bg = Black();
 	fg = White();
 	
@@ -142,57 +91,46 @@ EmuScreen::EmuScreen(EmuApp& a) : app(a) {
 }
 
 void EmuScreen::ClearScreen() {
-	memset(scr_txt.Begin(), 0, scr_txt.GetCount() * sizeof(wchar));
+	vscr.Clear();
 }
 
 void EmuScreen::NewLine() {
-	cur.y++;
-	cur.x = 0;
+	vscr.NewLine();
 }
 
-void EmuScreen::Put(wchar w) {
-	if (w == '\n') {
-		cur.y++;
-		cur.x = 0;
-	}
-	else if (w == '\r')
-		cur.x = 0;
-	else if (cur.x >= 0 && cur.y < scr_txt_sz.cx &&
-			 cur.y >= 0 && cur.y < scr_txt_sz.cy) {
-		int pos = cur.y * scr_txt_sz.cx + cur.x;
-		scr_txt[pos] = w;
-		cur.x++;
-	}
+void EmuScreen::Put(dword d, int count) {
+	vscr.Put(d, count);
 }
 	
 void EmuScreen::Paint(Draw& d) {
 	Size sz(GetSize());
 	d.DrawRect(sz, bg);
 	
-	int len = scr_txt_sz.cx * scr_txt_sz.cy;
-	ASSERT(scr_txt.GetCount() == len);
-	wchar* it = scr_txt.Begin();
-	int gy = 0;
-	for (int y = 0; y < scr_txt_sz.cy; y++) {
-		int gx = 0;
-		for (int x = 0; x < scr_txt_sz.cx; x++) {
-			wchar w = *it++;
-			if (w > 0) {
-				wchar txt[2];
-				txt[0] = w;
-				txt[1] = 0;
-				d.DrawText(gx, gy, txt, fnt, fg);
+	if (vscr.mem  && vscr.sz > 0) {
+		ASSERT(vscr.stride == 1);
+		byte* it = vscr.mem;
+		int gy = 0;
+		for (int y = 0; y < vscr.height; y++) {
+			int gx = 0;
+			for (int x = 0; x < vscr.width; x++) {
+				byte w = *it++;
+				if (w > 0) {
+					char txt[2];
+					txt[0] = w;
+					txt[1] = 0;
+					d.DrawText(gx, gy, txt, fnt, fg);
+				}
+				gx += grid.cx;
 			}
-			gx += grid.cx;
+			gy += grid.cy;
 		}
-		gy += grid.cy;
 	}
 }
 
 Size EmuScreen::GetPreferredSize() const {
 	return Size(
-		scr_txt_sz.cx * grid.cx,
-		scr_txt_sz.cy * grid.cy);
+		vscr.width * grid.cx,
+		vscr.height * grid.cy);
 }
 
 int __emu_kb_char_queue[KB_QUEUE_LENGTH];

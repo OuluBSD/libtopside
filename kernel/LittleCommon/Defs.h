@@ -25,8 +25,10 @@
 #endif
 
 #if EMU
-	#define EXTERN_C_BEGIN
-	#define EXTERN_C_END
+	#ifndef EXTERN_C_BEGIN
+		#define EXTERN_C_BEGIN
+		#define EXTERN_C_END
+	#endif
 #endif
 
 

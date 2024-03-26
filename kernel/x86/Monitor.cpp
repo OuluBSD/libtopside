@@ -53,7 +53,8 @@ void Monitor::Scroll() {
 
 
 // Writes a single character out to the screen.
-void Monitor::Put(char c) {
+void Monitor::Put(dword d, int count) {
+	char c = (char)d;
 	// The background colour is black (0), the foreground is white (15).
 	//uint8 backColour = 0;
 	//uint8 foreColour = 15;
@@ -75,30 +76,26 @@ void Monitor::Put(char c) {
 	
 	// Handle a tab by increasing the cursor's X, but only to a point
 	// where it is divisible by 8.
-	else
-		if (c == 0x09) {
-			cursor_x = (cursor_x + 8) & ~(8 - 1);
-		}
-		
+	else if (c == 0x09) {
+		cursor_x = (cursor_x + 8) & ~(8 - 1);
+	}
+	
 	// Handle carriage return
-		else
-			if (c == '\r') {
-				cursor_x = 0;
-			}
-			
+	else if (c == '\r') {
+		cursor_x = 0;
+	}
+	
 	// Handle newline by moving cursor back to left and increasing the row
-			else
-				if (c == '\n') {
-					cursor_x = 0;
-					cursor_y++;
-				}
+	else if (c == '\n') {
+		cursor_x = 0;
+		cursor_y++;
+	}
 	// Handle any other printable character.
-				else
-					if (c >= ' ') {
-						location = video_memory + (cursor_y * 80 + cursor_x);
-						*location = c | attribute;
-						cursor_x++;
-					}
+	else if (c >= ' ') {
+		location = video_memory + (cursor_y * 80 + cursor_x);
+		*location = c | attribute;
+		cursor_x++;
+	}
 					
 	// Check if we need to insert a new line because we have reached the end
 	// of the screen.

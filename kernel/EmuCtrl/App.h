@@ -10,22 +10,23 @@ class EmuScreen : public Ctrl {
 	EmuApp& app;
 	
 	// State
-	Size scr_txt_sz;
 	Size grid;
-	Point cur;
 	Color bg, fg;
 	Font fnt;
-	Vector<wchar> scr_txt;
 	
-	void ResizeTxt(Size sz) {scr_txt_sz = sz; scr_txt.SetCount(sz.cx * sz.cy, 0);}
 	
 	TimeCallback tc;
+	
+protected:
+	friend class EmuApp;
+	VirtualScreen vscr;
+	
 public:
 	typedef EmuScreen CLASSNAME;
 	EmuScreen(EmuApp& a);
 	
 	void Paint(Draw& d) override;
-	void Put(wchar w);
+	void Put(dword d, int count=1);
 	void NewLine();
 	void ClearScreen();
 	void PostRefresh() {PostCallback(THISBACK(Refresh0));}
@@ -58,18 +59,6 @@ public:
 	void Stop() {running = false; while (!stopped) Sleep(10);}
 	void EmuProcess();
 	void RefreshOutput();
-	
-	void MoveCursor() override;
-	void Scroll() override;
-	void Put(char c) override;
-	void Clear() override;
-	void WriteString(const String& s);
-	void Write(const char *c) override;
-	void WriteN(const char *c, int len) override;
-	void WriteDec(int i) override;
-	void WriteHexPtr(void* p) override;
-	void WriteHexInt(size_t i) override;
-	void NewLine() override;
 	
 	
 };

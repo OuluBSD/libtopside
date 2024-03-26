@@ -16,8 +16,8 @@ void ScreenProxy::Scroll() {
 	if (target) target->Scroll();
 }
 
-void ScreenProxy::Put(char c) {
-	if (target) target->Put(c);
+void ScreenProxy::Put(dword d, int count) {
+	if (target) target->Put(d, count);
 }
 
 void ScreenProxy::Write(const char *c) {
