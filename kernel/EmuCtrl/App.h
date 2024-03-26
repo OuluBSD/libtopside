@@ -37,7 +37,7 @@ public:
 	
 };
 
-class EmuApp : public TopWindow {
+class EmuApp : public TopWindow, public Screen {
 	bool running = false, stopped = false;
 	
 	
@@ -59,17 +59,17 @@ public:
 	void EmuProcess();
 	void RefreshOutput();
 	
-	void MoveCursor();
-	void Scroll();
-	void Put(char c);
-	void Clear();
+	void MoveCursor() override;
+	void Scroll() override;
+	void Put(char c) override;
+	void Clear() override;
 	void WriteString(const String& s);
-	void Write(const char *c);
-	void WriteN(const char *c, int len);
-	void WriteDec(int i);
-	void WriteHexPtr(void* p);
-	void WriteHexInt(size_t i);
-	void NewLine();
+	void Write(const char *c) override;
+	void WriteN(const char *c, int len) override;
+	void WriteDec(int i) override;
+	void WriteHexPtr(void* p) override;
+	void WriteHexInt(size_t i) override;
+	void NewLine() override;
 	
 	
 };

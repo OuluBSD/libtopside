@@ -20,6 +20,7 @@ file
 	icxxabi.cpp,
 	Callback.h,
 	Callback.cpp,
+	"Support lib" readonly separator,
 	Apps readonly separator,
 	ConsoleProgram.h,
 	ConsoleProgram.cpp,

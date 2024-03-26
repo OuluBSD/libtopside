@@ -10,6 +10,9 @@ using namespace Upp;
 #include "String.h"
 #include "Object.h"
 #include "Stream.h"
+#include "Screen.h"
+#include "VirtualScreen.h"
+#include "ScreenProxy.h"
 
 
 #endif

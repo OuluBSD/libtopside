@@ -19,8 +19,8 @@ int multiboot_main(struct multiboot *mboot_ptr) {
     
     // All our initialisation calls will go in here.
     if (mboot_ptr) mboot_ptr->OnMonitorCreate();
-    MON.Init();
-	MON.Clear();
+    Screen& scr = global->monitor;
+    scr.Clear();
 	KCout().SetCallback(WriteMonitor, mboot_ptr);
 	
 	

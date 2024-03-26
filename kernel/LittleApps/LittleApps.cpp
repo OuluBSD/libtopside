@@ -2,7 +2,7 @@
 
 
 class ShellProg : public ConsoleProgram {
-	
+	VirtualScreen vscreen;
 	
 public:
 	

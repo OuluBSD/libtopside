@@ -6,5 +6,11 @@ file
 	StringInline.cpp,
 	Object.h,
 	Stream.h,
-	Stream.cpp;
+	Stream.cpp,
+	Screen.h,
+	Screen.cpp,
+	ScreenProxy.h,
+	ScreenProxy.cpp,
+	VirtualScreen.h,
+	VirtualScreen.cpp;
 

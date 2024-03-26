@@ -22,19 +22,7 @@ void EmuApp::Init() {
 	ASSERT(global);
 	Monitor& mon = global->monitor;
 	
-	#define LINK(x) mon.On##x << THISBACK(x);
-	LINK(MoveCursor)
-	LINK(Scroll)
-	LINK(Put)
-	LINK(Clear)
-	LINK(Write)
-	LINK(WriteN)
-	LINK(WriteDec)
-	LINK(WriteHexPtr)
-	LINK(WriteHexInt)
-	LINK(NewLine)
-	#undef LINK
-	
+	mon.SetTarget(*this);
 }
 
 void EmuApp::Data() {

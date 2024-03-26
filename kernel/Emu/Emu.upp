@@ -12,7 +12,6 @@ file
 	Stubs.h,
 	Stubs.cpp,
 	Monitor.h,
-	Monitor.cpp,
 	Global.h,
 	Global.cpp,
 	Interrupts.h,
