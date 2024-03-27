@@ -18,6 +18,7 @@ file
 	Interrupts.cpp,
 	SysCall.h,
 	SysCall.cpp,
+	DescriptorTable.h,
 	"Common impl" readonly separator,
 	Task.cpp,
 	Multiboot.cpp,

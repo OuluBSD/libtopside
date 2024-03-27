@@ -20,6 +20,7 @@ class EmuScreen : public Ctrl {
 protected:
 	friend class EmuApp;
 	VirtualScreen vscr;
+	int cols = 0, rows = 0;
 	
 public:
 	typedef EmuScreen CLASSNAME;

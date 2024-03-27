@@ -1,11 +1,13 @@
 uses
-	Core,
 	LittleLibrary,
 	LittleApps;
 
+uses(EMU) Core;
+
 file
 	LittleKernel.h,
-	main.cpp;
+	main.cpp,
+	link.ld;
 
 mainconfig
 	"" = "",

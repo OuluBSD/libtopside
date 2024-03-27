@@ -21,8 +21,10 @@ void EmuApp::OnClose() {
 void EmuApp::Init() {
 	ASSERT(global);
 	Monitor& mon = global->monitor;
-	
 	mon.SetTarget(scr.vscr);
+	
+	
+	scr.vscr.Init(scr.cols, scr.rows, true);
 }
 
 void EmuApp::Data() {
@@ -67,10 +69,10 @@ EmuScreen::EmuScreen(EmuApp& a) : app(a) {
 	int grid_w = 14;
 	grid = Size(grid_w, grid_w*4/3);
 	
-	int cols = 80;
+	cols = 80;
 	int expected_w = cols * grid_w;
 	int expected_h = expected_w * 3 / 4;
-	int rows = expected_h / grid.cy;
+	rows = expected_h / grid.cy;
 	
 	bg = Black();
 	fg = White();

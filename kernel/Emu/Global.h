@@ -7,7 +7,7 @@ void CloseEmu();
 
 struct SVar {
 	DescriptorTable dt;
-	Monitor monitor;
+	ScreenProxy monitor;
 	Timer timer;
 	Heap kheap;
 	

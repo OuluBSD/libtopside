@@ -10,22 +10,25 @@ void WriteMonitor(const char* s, int n, void* arg) {
 }
 
 int multiboot_main(struct multiboot *mboot_ptr) {
+	// Construct global
+	new (global) SVar;
 	
     ResetInterruptHandlers();
     
     // Descriptor table
     global->dt.Init();
     
-    
-    // All our initialisation calls will go in here.
-    if (mboot_ptr) mboot_ptr->OnMonitorCreate();
-    Screen& scr = global->monitor;
-    //scr.Clear();
-	KCout().SetCallback(WriteMonitor, mboot_ptr);
-	
-	
 	size_t initrd_location = 0;
 	FindRamDisk(mboot_ptr, initrd_location);
+	
+    // All our initialisation calls will go in here.
+    // - Requires: InitLinkerVariables / FindRamDisk
+    #if EMU
+    if (mboot_ptr) mboot_ptr->OnMonitorCreate();
+    #endif
+    global->monitor.Clear();
+	KCout().SetCallback(WriteMonitor, mboot_ptr);
+	
 	
 	KLOG("Enabling interrupts");
 	EnableInterrupts();

@@ -3,7 +3,8 @@ description "My Little Kernel\377128,0,0";
 noblitz;
 
 uses
-	LittleLibrary;
+	LittleLibrary,
+	HW;
 
 file
 	Readme.md,

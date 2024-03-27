@@ -5,6 +5,9 @@
 //void  operator delete(void*);
 void* operator new(unsigned int);
 
+template <class T>
+void* operator new(unsigned int, T*);
+
 extern "C" {
 
 	

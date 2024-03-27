@@ -141,7 +141,7 @@ void InitialisePaging() {
 	// to be created where necessary. We can't allocate frames yet because they
 	// they need to be identity mapped first below, and yet we can't increase
 	// placement_address between identity mapping and enabling the heap!
-	MON.Write("..Mapping pages").NewLine();
+	KLOG("..Mapping pages");
 	int i = 0;
 	for (i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += 0x1000)
 		GetPage(i, 1, global->kernel_directory, true);
@@ -155,7 +155,7 @@ void InitialisePaging() {
 	// inside the loop body we actually change placement_address
 	// by calling KMemoryAllocate(). A while loop causes this to be
 	// computed on-the-fly rather than once at the start.
-	MON.Write("..Allocating kernel program pages").NewLine();
+	KLOG("..Allocating kernel program pages");
 	i = 0;
 	while (i < global->placement_address) {
 		// Kernel code is readable but not writeable from userspace.
@@ -165,22 +165,22 @@ void InitialisePaging() {
 	
 	
 	// Now allocate those pages we mapped earlier.
-	MON.Write("..Allocating kernel heap pages").NewLine();
+	KLOG("..Allocating kernel heap pages");
 	for (i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += 0x1000)
 		AllocFrame(GetPage(i, 1, global->kernel_directory), 0, 0);
 		
 		
 	
 	// Before we enable paging, we must register our page fault handler.
-	MON.Write("..Registering interrupt handlers").NewLine();
+	KLOG("..Registering interrupt handlers");
 	RegisterInterruptHandler(14, PageFault);
 	
 	// Now, enable paging!
-	MON.Write("..Switching page directory").NewLine();
+	KLOG("..Switching page directory");
 	SwitchPageDirectory(global->kernel_directory);
 	
 	// Initialise the kernel heap.
-	MON.Write("..Initializing kernel heap").NewLine();
+	KLOG("..Initializing kernel heap");
 	global->kheap.Create(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xCFFFF000, 0, 0);
 	
 }
@@ -216,7 +216,7 @@ Page *GetPage(uint32 address, bool make, PageDirectory *dir, bool zero) {
 	}
 	else if (make) {
 		////MON.Write("  assigning table: ").WriteDec(address).NewLine();
-		uint32 tmp;
+		size_t tmp;
 		dir->tables[table_idx] = (PageTable*)EndlessKMemoryAllocateAlignedPhysical(sizeof(PageTable), &tmp);
 		if (zero)
 			memset(dir->tables[table_idx], 0, 0x1000);
@@ -274,7 +274,7 @@ extern "C" {
 	void copy_page_physical(uint32 src, uint32 dst);
 }
 
-static PageTable *CloneTable(PageTable *src, size_t *physAddr)
+static PageTable *CloneDirectory(PageTable *src, size_t *physAddr)
 {
     // Make a new page table, which is page aligned.
     PageTable* table = (PageTable*)EndlessKMemoryAllocateAlignedPhysical(sizeof(PageTable), physAddr);

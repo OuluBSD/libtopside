@@ -15,7 +15,7 @@ public:
 	VirtualScreen();
 	~VirtualScreen();
 	
-	bool Init(int w=80, int h=24);
+	bool Init(int w=80, int h=24, bool endless=false);
 	void Free();
 	
 	void MoveCursor() override;

@@ -7,9 +7,9 @@ int syscall_MonitorWrite(const char* s) {
 	return 0;
 }
 
-int syscall_MonitorWriteHex(const char* s) {
+int syscall_MonitorWriteHex(void* s) {
 	ASSERT_USERMODE
-	MON.WriteHexPtr((void*)s);
+	MON.WriteHexPtr(s);
 	return 0;
 }
 

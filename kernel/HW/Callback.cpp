@@ -1,6 +1,5 @@
-#include "LittleLibrary.h"
+#include "Callback.h"
 
-#if REALHW
 
 
 
@@ -56,7 +55,7 @@ void CbVoidFO::operator()(void) const {
     pCB->Execute();
 }
 
-void CbVoidFO::Reset(void) {
+void CbVoidFO::Clear(void) {
     delete pCB;
     pCB = new CallbackBase();
 }
@@ -70,4 +69,3 @@ CallbackBase* CbVoidFO::CloneCurrentCallback(void) const {
     return pCB->Clone();
 }
 
-#endif

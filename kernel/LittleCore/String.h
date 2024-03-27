@@ -1,8 +1,6 @@
 #ifndef _LittleCore_String_h_
 #define _LittleCore_String_h_
 
-
-
 inline bool IsOctDigit(int c) { return c >= '0' && c <= '7'; }
 inline bool IsHexDigit(int c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
 inline bool IsBinDigit(int c) { return c == '0' || c == '1'; }

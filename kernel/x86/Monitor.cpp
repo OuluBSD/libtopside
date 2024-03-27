@@ -131,17 +131,16 @@ void Monitor::Clear() {
 
 
 // Outputs a null-terminated ASCII string to the MON.
-Monitor& Monitor::Write(const char *c) {
+void Monitor::Write(const char *c) {
 	int i = 0;
 	while (c[i]) {
 		Put(c[i++]);
 	}
-	return *this;
 }
 
 
 
-Monitor& Monitor::WriteDec(int i) {
+void Monitor::WriteDec(int i) {
 	if (i < 0)
 		Put('-');
 	bool foundfirst = 0;
@@ -158,15 +157,13 @@ Monitor& Monitor::WriteDec(int i) {
 	}
 	if (!foundfirst)
 		Put('0');
-	return *this;
 }
 
-Monitor& Monitor::WriteHex(void* p) {
-	WriteHex((uint32)p);
-	return *this;
+void Monitor::WriteHexPtr(void* p) {
+	WriteHexInt((size_t)p);
 }
 
-Monitor& Monitor::WriteHex(uint32 n) {
+void Monitor::WriteHexInt(size_t n) {
 	//WriteDec(n); Put('\n');
 	Put('0');
 	Put('x');
@@ -179,11 +176,9 @@ Monitor& Monitor::WriteHex(uint32 n) {
 			Put('A' + j - 10);
 		n = n << 4;
 	}
-	return *this;
 }
 
-Monitor& Monitor::NewLine() {
+void Monitor::NewLine() {
 	Write("\n");
-	return *this;
 };
 

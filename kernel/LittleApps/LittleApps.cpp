@@ -13,12 +13,13 @@ public:
 	}
 	
 	void Run() override {
-		
+		#if EMU
 		while (!IS_SHUTDOWN_THREADS) {
 			
 			
 			Sleep(10);
 		}
+		#endif
 	}
 };
 

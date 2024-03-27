@@ -49,9 +49,8 @@ static FsNode *initrd_finddir(FsNode *node, char *name) {
 	return 0;
 }
 
-static_assert(sizeof(size_t) == 8, "unexpected size_t");
 
-struct FsNode* __cdecl InitialiseInitrd(size_t location) {
+struct FsNode* InitialiseInitrd(size_t location) {
 	ASSERT(location);
 	auto& initrd_header = global->initrd_header;
 	auto& file_headers = global->file_headers;

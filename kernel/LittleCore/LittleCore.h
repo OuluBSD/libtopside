@@ -7,6 +7,8 @@ using namespace UPP;
 #endif
 
 
+#include "Defs.h"
+#include "Fn.h"
 #include "String.h"
 #include "Object.h"
 #include "Stream.h"

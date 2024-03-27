@@ -10,6 +10,7 @@
 #include "SysCall.h"
 #include "Interrupts.h"
 #include "Global.h"
+#include "DescriptorTable.h"
 
 
 #endif

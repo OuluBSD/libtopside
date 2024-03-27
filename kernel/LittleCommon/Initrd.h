@@ -18,7 +18,6 @@ typedef struct {
 } InitrdFileHeader;
 
 
-static_assert(sizeof(size_t) == 8, "unexpected size_t");
 
 // Initialises the initial ramdisk. It gets passed the address of the multiboot module,
 // and returns a completed filesystem node.

@@ -4,9 +4,12 @@
 
 struct SVar {
 	DescriptorTable dt;
-	Monitor monitor;
+	ScreenProxy monitor;
 	Timer timer;
 	Heap kheap;
+	
+	// Drivers
+	InputDevice input;
 	
 	uint32 *frames;
 	uint32 nframes;

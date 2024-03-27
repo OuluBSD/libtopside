@@ -18,8 +18,6 @@ file
 	"Core compat" readonly separator,
 	icxxabi.h,
 	icxxabi.cpp,
-	Callback.h,
-	Callback.cpp,
 	"Support lib" readonly separator,
 	Apps readonly separator,
 	ConsoleProgram.h,

@@ -21,7 +21,7 @@ void VirtualScreen::Free() {
 	pitch = 0;
 }
 
-bool VirtualScreen::Init(int w, int h) {
+bool VirtualScreen::Init(int w, int h, bool endless) {
 	Free();
 	
 	width = w;
@@ -34,7 +34,10 @@ bool VirtualScreen::Init(int w, int h) {
 	if (sz >= 1920*1080*3)
 		return false;
 	
-	mem = (byte*)global->kheap.Allocate(sz, 0);
+	if (endless)
+		mem = (byte*)EndlessKMemoryAllocate(sz);
+	else
+		mem = (byte*)global->kheap.Allocate(sz, 0);
 	
 	return true;
 }
@@ -44,6 +47,8 @@ void VirtualScreen::MoveCursor() {
 }
 
 void VirtualScreen::Scroll() {
+	if (!mem)
+		return;
 	int scroll = max(0, min(height, cursor_y - height));
 	for(int i = 0; i < height-scroll; i++) {
 		int j = i+scroll;

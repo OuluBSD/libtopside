@@ -1,6 +1,9 @@
 file
 	LittleCore.h,
 	LittleCore.cpp,
+	Defs.h,
+	Fn.h,
+	Fn.cpp,
 	String.h,
 	String.cpp,
 	StringInline.cpp,

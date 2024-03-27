@@ -3,23 +3,25 @@
 
 
 
-struct Monitor {
+struct Monitor : Screen {
 	uint16 *video_memory;
 	uint8 cursor_x, cursor_y;
 	uint16 cursorLocation;
 	
 	int Init();
 	
-	void MoveCursor();
-	void Scroll();
-	void Put(dword d, int count);		// Write a single character out to the screen.
-	void Clear();			// Clear the screen to all black.
-	Monitor& Write(const char *c);	// Output a null-terminated ASCII string to the monitor.
-	Monitor& WriteDec(int i);
-	Monitor& WriteHex(void* p);
-	Monitor& WriteHex(uint32 i);
-	Monitor& NewLine();
+	void MoveCursor() override;
+	void Scroll() override;
+	void Put(dword d, int count=1) override;			// Write a single character out to the screen.
+	void Clear() override;				// Clear the screen to all black.
+	void Write(const char *c) override;	// Output a null-terminated ASCII string to the monitor.
+	void WriteN(const char *c, int n) override;
+	void WriteDec(int i) override;
+	void WriteHexPtr(void* p) override;
+	void WriteHexInt(size_t i) override;
+	void NewLine() override;
 };
+
 
 #define PANIC(x) MON.Write("\n --> "); \
 	MON.Write(__FILE__); MON.Write(":"); \
@@ -28,7 +30,7 @@ struct Monitor {
 
 #define MON global->monitor
 
-#define KDUMPI(x) MON.Write(#x ": ").WriteDec(x).Write("\n");
-#define KDUMPH(x) MON.Write(#x ": ").WriteHex((uint32)x).Write("\n");
+#define KDUMPI(x) MON.Write(#x ": "); MON.WriteDec(x);            MON.Write("\n");
+#define KDUMPH(x) MON.Write(#x ": "); MON.WriteHexInt((size_t)x); MON.Write("\n");
 
 #endif

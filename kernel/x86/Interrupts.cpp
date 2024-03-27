@@ -18,8 +18,13 @@
 
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(Registers regs) {
-	if (regs.int_no != 32)
-		MON.Write("irq_handler: int_no=").WriteDec(regs.int_no).Write(", err_code=").WriteDec(regs.err_code).NewLine();
+	if (regs.int_no != 32) {
+		MON.Write("irq_handler: int_no=");
+		MON.WriteDec(regs.int_no);
+		MON.Write(", err_code=");
+		MON.WriteDec(regs.err_code);
+		MON.NewLine();
+	}
 	
 	// Send an EOI (end of interrupt) signal to the PICs.
 	// If this interrupt involved the slave.

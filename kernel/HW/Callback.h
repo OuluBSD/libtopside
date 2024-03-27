@@ -3,7 +3,6 @@
 
 // Based on public domain library libCb by John Culp.
 
-#if REALHW
 
 
 //function object plugin
@@ -15,6 +14,9 @@ public:
     virtual void Execute(void);
 
     virtual CallbackBase* Clone(void) const;
+    
+	virtual operator bool() const {return false;}
+	
 };
 
 template <class T>
@@ -31,7 +33,9 @@ public:
     virtual CallbackBase* Clone(void) const {
         return (CallbackBase*) new CALLBACK<T>(pObj, pFun);
     }
-
+	
+	virtual operator bool() const {return pFun;}
+	
 private:
     T* pObj;
     void (T::*pFun)(void);
@@ -51,7 +55,9 @@ public:
     virtual CallbackBase* Clone(void) const {
         return (CallbackBase*) new CALLBACK1<T,OBJ>(pObj, pFun, cbObj);
     }
-
+	
+	virtual operator bool() const {return pFun;}
+	
 private:
     T* pObj;
     void (T::*pFun)(OBJ);
@@ -73,6 +79,8 @@ public:
         return (CallbackBase*) new callback1<OBJ>(pFun, cbObj);
     };
 
+	virtual operator bool() const {return pFun;}
+	
 private:
     void (*pFun)(OBJ);
     OBJ cbObj;
@@ -86,7 +94,9 @@ public:
     virtual void Execute(void);
 
     virtual CallbackBase* Clone(void) const;
-
+	
+	virtual operator bool() const {return pFun;}
+	
 private:
     void (*pFun)(void);
 };
@@ -129,7 +139,9 @@ public:
     virtual Callback1Base<ARG>* Clone(void) const {
         return (Callback1Base<ARG>*) new CallbackClass1<ARG,T>(pObj, pFun);
     };
-
+	
+	virtual operator bool() const {return pFun;}
+	
 private:
     T* pObj;
     void (T::*pFun)(ARG);
@@ -149,7 +161,9 @@ public:
     virtual Callback1Base<ARG>* Clone(void) const {
         return (Callback1Base<ARG>*) new CbOneMemberObj<ARG,T,OBJ>(pObj, pFun, cbObj);
     };
-
+	
+	virtual operator bool() const {return pFun;}
+	
 private:
     T* pObj;
     void (T::*pFun)(ARG, OBJ);
@@ -169,9 +183,15 @@ public:
         if (!IsNull()) (*pFun)(arg);
     };
 
+    void operator()(ARG arg) {
+        if (!IsNull()) (*pFun)(arg);
+    };
+
     virtual Callback1Base<ARG>* Clone(void) const {
         return (Callback1Base<ARG>*) new Callback1<ARG>(pFun);
     };
+	
+	virtual operator bool() const {return pFun;}
 	
 	Callback1<ARG>& operator = (Callback1<ARG>& src) {
 		pFun = src.pFun; return *this;
@@ -182,7 +202,7 @@ public:
 	}
 	
 	bool IsNull() {return pFun == 0;}
-	void Reset() {pFun = 0;}
+	void Clear() {pFun = 0;}
 	
 //private:
     void (*pFun)(ARG);
@@ -196,7 +216,7 @@ public:
     ~CbVoidFO(void);
 
     void operator()(void) const;
-    void Reset(void); //add to others.
+    void Clear(void); //add to others.
     void Assign(const CallbackBase &rCB);
     CallbackBase* CloneCurrentCallback(void) const; //add to others
 
@@ -315,5 +335,4 @@ private:
 
 
 
-#endif
 #endif
