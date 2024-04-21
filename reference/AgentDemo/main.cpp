@@ -27,7 +27,7 @@ struct SimpleGeneratorNode : RTTIBase {
 };
 
 // Use TerminalTest to generate sub nodes
-template <>	inline bool TerminalTest<SimpleGeneratorNode>(Node<SimpleGeneratorNode>& n, Node<SimpleGeneratorNode>* prev) {
+template <>	inline bool TerminalTest<SimpleGeneratorNode>(Node<SimpleGeneratorNode>& n, Node<SimpleGeneratorNode>** prev) {
 	int depth = n.GetDepth();
 	if (depth >= 3 || n.GetCount()) return !n.GetCount();
 	int sub_node_count = 1 + Random(2);
@@ -55,7 +55,7 @@ struct RouteGeneratorNode : RTTIBase {
 };
 
 // Use TerminalTest to generate sub nodes
-template <>	inline bool TerminalTest<RouteGeneratorNode>(Node<RouteGeneratorNode>& n, Node<RouteGeneratorNode>* prev) {
+template <>	inline bool TerminalTest<RouteGeneratorNode>(Node<RouteGeneratorNode>& n, Node<RouteGeneratorNode>** prev) {
 	if (n.GetCount()) return !n.GetCount();
 	int goal = 0;
 	if (n.estimate_to_goal <= goal) return true;
@@ -254,7 +254,8 @@ CONSOLE_APP_MAIN {
 	
 	// Simple game algorithms
 	if (true) {
-		NodeValue n = GenerateTree<NodeValue>(25, 2, 3, callback(SetValue));
+		NodeValue n;
+		GenerateTree<NodeValue>(n, 25, 2, 3, callback(SetValue));
 		LOG(n.AsString());
 		
 		MiniMax<Object> mm;
@@ -320,7 +321,7 @@ CONSOLE_APP_MAIN {
 		
 		BestFirst<RouteGeneratorNode> bf;
 		AStar<RouteGeneratorNode> as;
-		as.TrimWorst(0);
+		as.TrimWorst(0,0);
 		
 		Vector<RouteGeneratorNode*> ans;
 		
