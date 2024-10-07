@@ -1,0 +1,11 @@
+description "\377B0,0,128";
+
+file
+	Notes.txt,
+	TextDataCtrl.h,
+	TextDataCtrl.lay,
+	TextDataCtrl.cpp,
+	Loader.h,
+	Loader.cpp,
+	"Database pipeline" readonly separator;
+

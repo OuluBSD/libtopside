@@ -1,0 +1,11 @@
+description "\377B128,0,0";
+
+file
+	ToolBase.h,
+	TranslatorToolBase.h,
+	TranslatorToolBase.cpp,
+	ChecklistBase.h,
+	ChecklistBase.cpp,
+	ImagePlayerBase.h,
+	ImagePlayerBase.cpp;
+

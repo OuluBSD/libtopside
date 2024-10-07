@@ -1,0 +1,22 @@
+description "\377B128,0,0";
+
+uses(LLAMACPP) LlamaCpp;
+
+library(WIN32 & CLANG) "curl libcurl.dll.a";
+
+library(POSIX) curl;
+
+library(WIN32 & MSC) libcurl;
+
+file
+	Task.h,
+	TaskMgr.h,
+	TaskMgr.cpp,
+	AiTask.h,
+	AiTask.cpp,
+	CreateInput.cpp,
+	Process.cpp,
+	Prompt.h,
+	Prompt.cpp,
+	Common.h;
+

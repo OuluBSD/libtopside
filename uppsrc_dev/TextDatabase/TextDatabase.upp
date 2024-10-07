@@ -1,0 +1,40 @@
+description "\377B128,0,0";
+
+uses
+	ToolCore,
+	Painter,
+	plugin/png,
+	RichEdit,
+	plugin/jpg;
+
+file
+	Info.txt,
+	TextDatabase.h,
+	"Gpt helpers.txt",
+	Common.h,
+	Common.cpp,
+	Database.h,
+	Database.cpp,
+	SourceData.h,
+	SourceData.cpp,
+	Browser.h,
+	Browser.cpp,
+	Browser0.cpp,
+	Product readonly separator,
+	MetaEntity.h,
+	MetaEntity.cpp,
+	Entity.h,
+	Entity.cpp,
+	Snapshot.h,
+	Snapshot.cpp,
+	Component.h,
+	Component.cpp,
+	Script.h,
+	Script.cpp,
+	Organization readonly separator,
+	OrgCommon.h,
+	OrgCommon.cpp,
+	Package.h,
+	Package.cpp,
+	_ readonly separator;
+

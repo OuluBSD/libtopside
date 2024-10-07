@@ -1,0 +1,20 @@
+description "\377B128,0,0";
+
+file
+	ToolCore.h,
+	App.iml,
+	Utils.h,
+	Utils.cpp,
+	OpenAI.h,
+	Json.h,
+	Optimizer.h,
+	Common.h,
+	Common.cpp,
+	Db.cpp,
+	Color.cpp,
+	ColorFn.cpp,
+	FileClasses.h,
+	FileClasses.cpp,
+	Tokenizer.h,
+	Tokenizer.cpp;
+

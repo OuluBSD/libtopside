@@ -1,0 +1,48 @@
+LAYOUT(OwnerInfo, 672, 292)
+	ITEM(Upp::LabelBox, lbl_owner, SetLabel(t_("Owner")).LeftPosZ(4, 664).TopPosZ(0, 288))
+	ITEM(Upp::Label, lbl_name, SetLabel(t_("Name:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 148).TopPosZ(16, 20))
+	ITEM(Upp::EditString, name, LeftPosZ(164, 252).TopPosZ(16, 20))
+END_LAYOUT
+
+LAYOUT(ProfileInfo, 672, 292)
+	ITEM(Upp::LabelBox, lbl_profile, SetLabel(t_("Profile")).LeftPosZ(4, 664).TopPosZ(0, 288))
+	ITEM(Upp::Label, lbl_name, SetLabel(t_("Name:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 148).TopPosZ(16, 20))
+	ITEM(Upp::EditString, name, LeftPosZ(164, 252).TopPosZ(16, 20))
+END_LAYOUT
+
+LAYOUT(EntityInfo, 672, 292)
+	ITEM(Upp::LabelBox, lbl_entity, SetLabel(t_("Entity")).LeftPosZ(4, 664).TopPosZ(0, 288))
+	ITEM(Upp::Label, lbl_name, SetLabel(t_("Name:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(16, 20))
+	ITEM(Upp::EditString, name, LeftPosZ(136, 252).TopPosZ(16, 20))
+END_LAYOUT
+
+LAYOUT(SnapshotInfo, 672, 320)
+	ITEM(Upp::LabelBox, lbl_snapshot, SetLabel(t_("Snapshot")).LeftPosZ(4, 664).TopPosZ(4, 308))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Title:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(16, 20))
+	ITEM(Upp::EditString, title, LeftPosZ(136, 252).TopPosZ(16, 20))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Date:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(40, 20))
+	ITEM(Upp::EditDate, date, LeftPosZ(136, 252).TopPosZ(40, 19))
+	ITEM(Upp::Label, dv___5, SetLabel(t_("Cover image:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(64, 20))
+	ITEM(Ctrl, cover_image, LeftPosZ(136, 252).TopPosZ(64, 196))
+END_LAYOUT
+
+LAYOUT(ComponentInfo, 940, 472)
+	ITEM(Upp::LabelBox, lbl_component, SetLabel(t_("Component")).LeftPosZ(4, 932).TopPosZ(4, 464))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Name:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(44, 20))
+	ITEM(Upp::EditString, name, LeftPosZ(136, 256).TopPosZ(44, 20))
+	ITEM(Upp::Label, lbl_ref_comp, SetLabel(t_("Reference component:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(68, 20))
+	ITEM(Upp::EditString, reference, LeftPosZ(136, 256).TopPosZ(68, 20))
+	ITEM(Upp::Label, lbl_script, SetLabel(t_("Script:")).LeftPosZ(404, 120).TopPosZ(16, 20))
+	ITEM(Upp::ArrayCtrl, scripts, LeftPosZ(404, 524).TopPosZ(36, 200))
+	ITEM(Upp::DocEdit, scripts_text, SetEditable(false).LeftPosZ(404, 524).TopPosZ(240, 200))
+	ITEM(Upp::Button, set, SetLabel(t_("Set")).LeftPosZ(836, 92).TopPosZ(444, 20))
+END_LAYOUT
+
+LAYOUT(ScriptInfo, 404, 292)
+	ITEM(Upp::LabelBox, lbl_script, SetLabel(t_("Script")).LeftPosZ(4, 396).TopPosZ(4, 280))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Copyright:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(20, 20))
+	ITEM(Upp::EditString, copyright, LeftPosZ(136, 256).TopPosZ(20, 20))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Title:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 120).TopPosZ(44, 20))
+	ITEM(Upp::EditString, title, LeftPosZ(136, 256).TopPosZ(44, 20))
+END_LAYOUT
+

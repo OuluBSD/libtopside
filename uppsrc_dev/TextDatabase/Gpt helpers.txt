@@ -1,0 +1,234 @@
+For adding appmodes and finding good terms, use some completion AI:
+
+	A person, who talks pre-written dialog is called "reciter" or "presenter." 
+	One discussion of multiple people, who talks pre-written dialog is called "scripted dialogue" or "rehearsed conversation."
+	Multiple related pre-written "dialogs" and "conversations", which can be grouped to one packade, can be called "scriptbook" or "dialogue set." 
+	Like actors and artists have typecasts, "presenters" will have stereotypical "characters" or "personalities."
+	Like song lyrics have "archetype" or stereotypical contents, "conversations" have "common tropes" or "clichés" that are often used in scripted dialogues.
+	Like rap-songs are unsafe compared to normal safe songs, unsafe "conversations" can be called "controversial dialogues" or "provocative discussions."
+	Like songs have lyrics, "conversations" have "scripts" or "dialogue lines." English idioms can also be used in "conversations" to add color and expression to the dialogue.
+	
+	A person, who writes a blog is called "blogger," and a person who writes a book is called "author." 
+	One blog entry is called "post," and a collection of posts can be referred to as "blog series" or "blog articles." 
+	Like actors and artists have typecasts, "bloggers" will have stereotypical "topics" they typically write about. 
+	Like song lyrics have "archetype" or stereotypical contents, "posts" will have stereotypical "themes" or "narratives" that are commonly seen in blog writing. 
+	Like songs have lyrics, "posts" have "written content" or "written material." 
+	Like rap-songs are unsafe compared to normal safe songs, unsafe "posts" can be called "controversial entries" or "provocative articles." 
+	English idioms can also be used in blog writing to add color and expressiveness to the content.
+	
+	A person, who talks about party politics is called "politician" or "political commentator." 
+	One discussion about party politics can be referred to as a "political debate" or "political conversation." 
+	Multiple related discussions on different topics within party politics can be called a "political discourse" or "political dialogue." 
+	Like actors and artists have typecasts, "politicians" and "political commentators" may have stereotypical political beliefs or ideologies. 
+	Like songs have lyrics, "political discussions" have "talking points" or "political statements." 
+	English idioms can also be used in political discourse to add rhetorical flair and persuasion to the conversation. 
+	Controversial political discussions may be referred to as "heated debates" or "provocative conversations."
+	Like song lyrics have "archetype" or stereotypical contents, "debate" has "common topics" or "polemical issues" that are frequently discussed in political conversations.
+	
+	A person, who talks about life as an animal is called "human" or "animal communicator." 
+	One story about life as an animal would be referred to as a "experience." 
+	Multiple related experiences could be called a "collection" .
+	Like actors and artists have typecasts, "human" or "animal communicators" have "animal personas" or "animal characteristics." 
+	Like songs have lyrics, "experiences" have "moral or emotional messages" or "life lessons." 
+	English idioms can also be used in storytelling about life as an animal to add depth and meaning to the experiences shared. 
+	Controversial discussions about animal rights or treatment could be called "contentious conversations" or "provocative storytelling." 
+	Like song lyrics have "archetype" or stereotypical contents, "experiences" have "common themes" or "universal struggles" that are seen in animal stories.
+	
+	A person, who talks about business as a profit driven person is called "entrepreneur" or "business person." 
+	One discussion about business or a specific business topic is called a "meeting" or "conference." 
+	A group of related discussions or meetings can be referred to as a "business forum" or "business summit." 
+	Like actors and artists have typecasts, "entrepreneurs" and "business people" may have stereotypical business strategies or approaches. 
+	Like songs have lyrics, "business discussions" have "talking points" or "business strategies." 
+	English idioms can also be used in business conversations to add persuasive language and professionalism. 
+	Controversial discussions about questionable business practises or ethics can be called "contentious meetings" or "provocative debates." 
+	Like song lyrics have "archetype" or stereotypical contents, "business discussions" have "common topics" or "recurring issues" that are often discussed in the business world.
+	
+	A man, who talks with a woman in flirtatious manner is called "flirt" or "charmer." 
+	One interaction between two people flirting could be called a "flirtatious conversation" or "folly." 
+	Multiple related interactions could be called a "flirting game" or "courtship ritual." 
+	Like actors and artists have typecasts, "flirts" and "charmers" may have stereotypical flirting techniques or personalities. 
+	Like songs have lyrics, "flirtatious conversations" have "pickup lines" or "flirty banter." 
+	English idioms can also be used in flirtatious conversations to add charm and wit. 
+	Controversial flirting could be referred to as "provocative interactions" or "risqué courtship." 
+	Like song lyrics have "archetype" or stereotypical contents, "flirtatious conversations" often have "common themes" or "recurring topics" such as attraction and seduction.
+	Like rap-songs are unsafe compared to normal safe songs, unsafe "pickup lines" or flirtatious behaviors can be referred to as "risqué tactics" or "provocative advances."
+
+	A person, who shows a storyboard of a upcoming movie is called "storyboard artist" or "director." 
+	A storyboard is referred to as a "visual narrative" or "illustrated sequence." 
+	Multiple related storyboards can be called a "storyboard reel" or "visual planning." 
+	Like actors and artists have typecasts, "storyboard artists" and "directors" may have a specific visual style or storytelling approach. 
+	Like songs have lyrics, a "storyboard" has "visual cues" or "scene descriptions." 
+	English idioms can also be used in storyboards to add depth and creativity to the visuals. 
+	Controversial storyboards could be referred to as "provocative concepts" or "contentious visuals." 
+	Like song lyrics have "archetype" or stereotypical contents, "storyboards" often have "common themes" or "recurring plot points" that are seen in movies. 
+	Like rap-songs are unsafe compared to normal safe songs, unsafe "storyboard sketches" can be referred to as "risqué scenes" or "provocative depictions."
+	Like music genres have pop/rock/edm, storyboards have different genres such as action/adventure/romance, and each genre has its own visual styles and techniques.
+	Like songs have chorus/verse/bridge/prechorus, storyboards have key frames/action sequences/cinematic shots/dialogue scenes.
+
+
+switch (appmode) {
+		case DB_SONG:		return "Song";
+		case DB_TWITTER: 	return "Twitter";
+		case DB_BLOG:		return "Blog";
+		case DB_DIALOG:		return "Dialog";
+		case DB_POLITICS:	return "Politics";
+		case DB_LIFE:		return "Life (nothing new happens)";
+		case DB_BUSINESS:	return "Business";
+
+		case DB_STORYBOARD :  return "Story Board";
+		case DB_MUSIC_ARTIST_GIG: return "Music Artist Gig";
+		case DB_MUSIC_VIDEO_STORYBOARD: return "Music Video Storyboard";
+		case DB_MUSIC_COVER_DESIGN: return "Music Cover Design";
+		case DB_MUSIC_PROMOTION: return "Music Promotion";
+		case DB_STAGE_DESIGN: return "Stage Design";
+		case DB_DECORATIONS: return "Decorative";
+		case DB_EVENT_PROMO: return "Event Promo";
+		case DB_MUSIC_FRIEND_REQUEST: return "Friend request";
+		case DB_PERSONALITYCREATION: return "Personality Creation";
+		case DB_MUSIC_EVENT: return "Music Event";
+		case DB_EVENT_PRESENTER: return "Event Presenter";
+		case DB_EVENT_PROMO: return "Event Promo";
+
+		case DB_WEBSHOW:	return "Webshow";
+		case DB_YOUTUBE:    return "YouTube";
+		case DB_MUSICAL: return "Musical";
+		case DB_DANCE:		return "Dance";
+
+		case DB_FLIRT:		return "Flirt";
+		case DB_SPEEDDATING:return "Speed Dating";
+		case DB_DATING:		return "Dating";
+		case DB_RELATIONSHIP: return "Relationship";
+
+		case DB_ADULT_FICTION: return "Erotica";// (nothing new happens)
+		case DB_ADULT_GAME_LEARN: return "Beauty and Love";
+		case DB_ADULT_GAME_FUCK: return "Fuck Zone";
+		case DB_ADULT_XXX : return "XXX";
+		case DB_ADULT_PROMO: return "Adult Promo";
+		case DB_ADULT_DATE_MISSION: return "Date Mission";
+		case DB_ADULT_MEETING: return "Online Meeting";
+		case DB_ADULT_FAQ: return "Adult FAQ";
+		case DB_ADULT_LOVE_STORIES: return "Adult Love Stories";// (nothing new happens)
+		case DB_ADULT_GAME : return "Adult Game";
+		case DB_ADULT_DOM: return "Adult Dom";// (nothing new happens)
+		case DB_ADULT_SUB: return "Adult Sub";// (nothing new happens)
+		case DB_ADULT_COMIC: return "Adult Comic";// (nothing new happens)
+		case DB_ADULT_CHARGE_FLIRT: return "XXX";
+		case DB_ADULT_DANCE: return "Adult Dance";
+
+		case DB_HUMOR:		return "Humor";
+		case DB_STANDUP_COMEDY: return "Standup Comedy";
+		case DB_PODCAST:	return "Podcast";
+		case DB_SPEECH:		return "Speech";
+		case DB_DIARY:		return "Diary";
+		case DB_CARTOONS :  return "Cartoons";
+		case DB_GOSSIP: return "Gossip";
+		case DB_CARTOON_VOICE: return "Cartoon Voice";
+		case DB_MAGIC: return "Magic";
+		case DB_SOAP_OPERA: return "Soap Opera";
+		case DB_CELEBRITY: return "Celebrity";
+		case DB_GIFT_GIVING_OCCASION: return "Gift Giving Occasion";
+
+		case DB_FOREX: return "Forex";
+		case DB_STOCKS: return "Stocks";
+		case DB_INVESTING:	return "Investing";
+		case DB_FINANCE_SENTIMENT_ANALYSIS: return "Financial Sentiment Analysis";
+		case DB_INVESTMENT_ADVICE: return "Investment Advice";
+
+		case DB_CHANNELING : return "Channeling (nothing new happens)";
+		case DB_ESOTERIC :return "Esoteric";
+		case DB_HEALING: return "Healing";
+
+		case DB_HISTORY: return "History Happennings";
+		case DB_HISTORYLINE: return "History Timeline";
+		case DB_CHAOTIC: return "Chaotic:- isn't something that can be named, but it is the climate in which you run";
+		case DB_FAITH: return "Faith:- isn't something that can be named, but it is the climate in which you run";
+
+		case DB_PRODUCT: return "Product Design";
+		case DB_APP:		return "Application"; 
+		case DB_GAME:		return "Game";
+		case DB_TVSHOW:		return "TVshow";
+		case DB_GAMESHOW:	return "Gameshow";
+		case DB_TALK_SHOW :return "Talk Show";
+		case DB_PRIZE: return "Prize Show (nothing new happens)";
+		case DB_QUIZ:		return "Quiz (nothing new happens)";
+		case DB_QUIZ_OPT:	return "Quiz Options";
+
+		case DB_RADIO_HOST: return "Radio Host";
+		case DB_DJ: return "DJ";
+		case DB_BROADCASTER: return "Broadcaster";
+		case DB_INTERVIEW : return "Interview";
+
+		case DB_CLEAR_FACTS: return "Clear Facts";
+		case DB_ELFEXPLORER: return "elfexplorer (nothing new happens)"; // elfexplorers are independent businesses from elf. a clear line is drawn between them.
+		case DB_COACHING:	return "Coaching";
+		case DB_TUTORING:	return "Tutoring";
+		case DB_LECTURE:	return "Lecture";
+		case DB_LEARNING:	return "Learning";
+		case DB_EDU: return "Education";
+		case DB_TRAINING: return "Training";
+		case DB_WORKSHOP: return "Workshop";
+		case DB_LIFE_COACHING: return "Life Coaching";
+		case DB_WISDOMSAYING: return "Wisdomsaying"
+		case DB_CLASSROOM: return "Classroom";
+		case DB_WEALTH: return "Wealth Tips";
+		case DB_ASK_ELF: return "Ask Elf";
+		case DB_WELLNESS_TIPS: return "Wellness Tips";
+		case DB_GURU: return "Guru Tips";
+		case DB_MEDICINAL: return "Medicinal";
+
+		case DB_ADVERTISEMENT : return "Advertisement";
+		case DB_MARKETING: return "Marketing";
+		case DB_FRONT_PAGE: return "Front Page";
+		case DB_ABOUTYOU: return "About You";
+		case DB_HP: return "Health Product";
+		case DB_GREETING: return "Holiday/Personal Greeting";
+		case DB_CLUB_PROMO: return "Club Promo";
+
+		case DB_YOURWALL: return "Your Wall";
+		case DB_FEED_FB: return "Facebook Feed"
+		case DB_JOB:      return "Job Application";
+		case DB_TRAVEL:		return "Travel";
+
+		case DB_COMMUNITY:	return "Community";
+		case DB_EVENT:		return "Event";
+		case DB_MEETING:	return "Meeting";
+		case DB_FRIENDLY_MEETING:  return "Friendy Meeting";
+		case DB_FRIENDLY_LECTURE:  return "Friendy Lecture";
+		case DB_BILL:		return "Bill";
+		case DB_CHAT:		return "Chat";
+		case DB_FORUM:     return "Forum";
+		case DB_DEBATE:		return "Debate";
+		case DB_WEDDING: return "Wedding";
+		case DB_ELF_MARRIED: return "Marriage";
+
+		case DB_FICTION:		return "FIC (nothing new happens)";
+		case DB_BOOKS:		return "Book";
+		case DB_POETRY:		return "Poetry";
+		case DB_TECHNEWS:	return "Tech News";
+		case DB_NEWS:      return "News";
+		case DB_WEBFORUM:     return "Web Forum";
+		case DB_DAILY_READING: return "Daily Reading";
+		case DB_NOTICES: return "Notices";
+		case DB_TOP_STORIES: return "Top News";
+		case DB_FAME: return "Fame (nothing new happens)";
+		case DB_ULTIMATE: return "Ultimate Interview";
+
+		case DB_FOOD: return "Food";
+		case DB_ART: return "Art";
+		case DB_RESTAURANT: return "Restaurant";
+		case DB_RESTAURANT_MENU: return "Restaurant Menu";
+
+		case DB_GAMEPLAY: return "Game Messenger";
+		case DB_NARRATOR_SPORTS : return "Sports Narrator";
+		case DB_NARRATOR_FIGHT : return "Fight Narrator";
+		case DB_GAME_REVIEWS: return "Game Reviews";
+		case DB_MUSIC_REVIEW: return "Music Reviews";
+		case DB_USER_REVIEWS: return "User Reviews";
+		case DB_LEAGUE: return "Sports Competition";
+
+		case DB_VISUAL_3D: return "3D Visual";
+		case DB_VISUAL_2D: return "2D Visual";
+		case DB_VISUAL_DESIGN: return "Visual Design";
+		case DB_ROOM_DESIGN: return "Room Design";
+		case DB_HOME_DESIGN: return "Home Design";
+		case DB_INTERIOR_DESIGN: return "Interior Design";

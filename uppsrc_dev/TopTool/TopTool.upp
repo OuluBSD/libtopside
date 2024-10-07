@@ -1,0 +1,43 @@
+uses
+	CtrlLib,
+	CodeEditor,
+	Esc,
+	plugin/jpg,
+	plugin/jpg,
+	plugin/gif,
+	BlueBar,
+	RedBar,
+	ToolBase,
+	Task,
+	TextDatabase,
+	TextDataCtrl,
+	ToolCtrl,
+	TextCtrl,
+	OrgCtrl;
+
+library(WIN32 & CLANG) "curl libcurl.dll.a";
+
+library(POSIX) curl;
+
+library(WIN32 & MSC) libcurl;
+
+file
+	TopTool.h,
+	TopTool.cpp,
+	TopTool.rc,
+	TopTool.t,
+	TopTool.iml,
+	App.h,
+	App.cpp,
+	View readonly separator,
+	Base.h,
+	Base.cpp,
+	Leads.h,
+	Leads.cpp,
+	Editor.h,
+	Editor.cpp;
+
+mainconfig
+	"" = "GUI",
+	"" = "GUI X11";
+
