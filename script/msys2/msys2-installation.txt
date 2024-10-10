@@ -10,11 +10,8 @@
 
 3
 	- Install required packages
-		pacman -S --needed base-devel mingw-w64-clang-x86_64-toolchain
-		pacman -S mingw-w64-clang-x86_64-portaudio mingw-w64-clang-x86_64-portmidi mingw-w64-clang-x86_64-assimp mingw-w64-clang-x86_64-fluidsynth mingw-w64-clang-x86_64-ffmpeg mingw-w64-clang-x86_64-openjpeg2 mingw-w64-clang-x86_64-glew mingw-w64-clang-x86_64-SDL2_ttf mingw-w64-clang-x86_64-SDL2_image
-	- or for gcc mingw64 env
 		pacman -S --needed base-devel mingw-w64-x86_64-toolchain
-		pacman -S mingw-w64-x86_64-portaudio mingw-w64-x86_64-portmidi mingw-w64-x86_64-assimp mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-openjpeg2 mingw-w64-x86_64-glew
+		pacman -S mingw-w64-x86_64-portaudio mingw-w64-x86_64-portmidi mingw-w64-x86_64-assimp mingw-w64-x86_64-fluidsynth mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-openjpeg2 mingw-w64-x86_64-glew mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-curl
 
 3
 	- Copy .var and .bm files to "C:\upp"
