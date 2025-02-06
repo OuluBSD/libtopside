@@ -107,17 +107,17 @@ bool ScrWin::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	
 	a.SetDependency(&*ctx_);
 	
-	#if VIRTUALGUI
+	/*#if VIRTUALGUI
 	HINSTANCE instance = 0;
 	LOG("ScrWin::SinkDevice_Initialize: error: can't access window instance with VIRTUALGUI");
 	return false;
-	#else
+	#else*/
 	HINSTANCE instance = (HINSTANCE)GetWin32Instance();
 	if (!instance) {
 		LOG("ScrWin::SinkDevice_Initialize: error: no gui instance");
 		return false;
 	}
-	#endif
+	//#endif
 	
 	dev.title = ws.GetString(".title", "libtopside");
 	dev.wc.lpfnWndProc   = Win_WindowProc;

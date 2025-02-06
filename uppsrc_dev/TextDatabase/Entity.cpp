@@ -187,7 +187,7 @@ Color ConceptStory::GetAverageColor() const {
 
 double ConceptStory::GetAverageScore() const {
 	if (ELEMENTS_VAR.IsEmpty()) return 0;
-	int sum = 0;
+	double sum = 0;
 	for (const auto& el : ELEMENTS_VAR)
 		sum += el.GetAverageScore();
 	return sum / (double)ELEMENTS_VAR.GetCount();

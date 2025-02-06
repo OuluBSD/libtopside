@@ -36,5 +36,6 @@ file
 	Geom2DComponent.cpp,
 	Trash readonly separator,
 	Absolute2D.h,
-	Absolute2D.cpp;
+	Absolute2D.cpp,
+	srcimp.tpp;
 

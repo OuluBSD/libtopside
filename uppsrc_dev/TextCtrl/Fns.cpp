@@ -11,9 +11,9 @@ void MetaStartup(bool my_data) {
 	if (my_data) {
 		// Load Database
 		#ifdef flagWIN32
-		mdb.dir = AppendFileName(GetHomeDirectory(), "MyTopside");
+		mdb.dir = AppendFileName(GetHomeDirectory(), "MyTextTool" DIR_SEPS "Topside");
 		#else
-		mdb.dir = GetHomeDirFile("MyTopside");
+		mdb.dir = GetHomeDirFile("MyTextTool" DIR_SEPS "Topside");
 		#endif
 	}
 	else {
