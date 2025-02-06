@@ -776,7 +776,11 @@ void ScopeT<Dim>::AddInterface(TopContainer& tw)
 	h.Layout();
 	h.Refresh();
 	
+	#if IS_TS_CORE
 	tw.SetTopFrame(h);
+	#else
+	Panic("TODO");
+	#endif
 }
 
 template <class Dim>

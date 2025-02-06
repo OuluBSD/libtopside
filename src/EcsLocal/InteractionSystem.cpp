@@ -26,10 +26,6 @@ void InteractionListener::Uninitialize(Engine& e, Ref<InteractionListener, RefPa
 }
 
 bool InteractionListener::IsEnabled() const {
-	ComponentBase* cb = CastPtr<ComponentBase>(this);
-	if(cb)
-		return cb->GetEntity()->IsEnabled();
-	
 	return true;
 }
 
@@ -80,7 +76,7 @@ bool InteractionSystem::Arg(String key, Object value) {
 	}
 	
 	if (key == "env") {
-		env_name = value;
+		env_name = (String)value;
 	}
 	
 	if (key == "hmd") {

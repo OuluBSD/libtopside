@@ -13,7 +13,7 @@ uses(WIN32 & GCC) ports/glew;
 
 uses(WIN32 & MSC & !UWP) ports/glext;
 
-library(MSC) glew32;
+library(MSC|(WIN32&CLANG)) glew32;
 
 library(MSC) "OpenGL32 Gdi32";
 

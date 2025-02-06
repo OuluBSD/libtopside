@@ -299,8 +299,12 @@ void HandleVideoBase::Finalize(RealtimeSourceConfig& cfg) {
 					//      also, put Ctrl::desktop etc to own class and instance
 					ASSERT(scope_count == 1);
 					
+					#ifdef flagVIRTUALGUI
 					Ctrl::EventLoopIteration(NULL);
 					//Ctrl::PaintAll(); // -> public Ctrl::DoPaint();
+					#else
+					Panic("TODO");
+					#endif
 				}
 			}
 			#endif
@@ -392,6 +396,7 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 				
 				pd.Realize(this, w.GetSize());
 				
+				#ifdef flagVIRTUALGUI
 				UPP::AtomVirtualGui* vgui = CastPtr<AtomVirtualGui>(VirtualGuiPtr);
 				ASSERT(VirtualGuiPtr && vgui);
 				vgui->SetTarget(pd);
@@ -402,6 +407,9 @@ bool HandleVideoBase::Send(RealtimeSourceConfig& cfg, PacketValue& out, int src_
 				if (!pp.GetCurrentBegin()) {
 					Ctrl::PaintAll(true);
 				}
+				#else
+				Panic("TODO");
+				#endif
 				
 				data.ptr = pp.GetCurrentBegin();
 				ASSERT(data.ptr);

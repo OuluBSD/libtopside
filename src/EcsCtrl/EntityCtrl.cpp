@@ -110,7 +110,7 @@ void EntityDataCtrl::UpdateEntityData(Entity& e) {
 	ent_cursor = 0;
 	
 	AddEntityDataRow("created", e.GetCreatedTick());
-	AddEntityDataRow("id", e.GetId());
+	AddEntityDataRow("id", (int)e.GetId());
 	AddEntityDataRow("prefab", e.GetPrefab());
 	
 	const auto& comps = e.GetComponents();

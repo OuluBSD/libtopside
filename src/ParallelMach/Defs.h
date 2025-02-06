@@ -2,19 +2,28 @@
 #define _ParallelMach_Defs_h_
 
 #if defined(flagWIN32) && defined(flagGUI)
-	#define PARALLEL_APP_MAIN_(arg_fn) \
-	void GuiMainFn_(); \
-	\
-	int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
-		::UPP::SetWin32Instances(hinst, hprev, show); \
-		char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
-		::UPP::AppInit__(0, (const char **)cmdline); \
-		TS::SingleMachine().Run(GuiMainFn_, arg_fn); \
-		::UPP::AppExit__(); \
-		return ::UPP::GetExitCode(); \
-	} \
-	\
-	void GuiMainFn_()
+	#if IS_UPP_CORE
+		#define PARALLEL_APP_MAIN_(arg_fn) \
+		void GuiMainFn__(); \
+		GUI_APP_MAIN { \
+			TS::SingleMachine().Run(GuiMainFn__, arg_fn); \
+		} \
+		void GuiMainFn__()
+	#else
+		#define PARALLEL_APP_MAIN_(arg_fn) \
+		void GuiMainFn_(); \
+		\
+		int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
+			::UPP::SetWin32Instances(hinst, hprev, show); \
+			char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
+			::UPP::AppInit__(0, (const char **)cmdline); \
+			TS::SingleMachine().Run(GuiMainFn_, arg_fn); \
+			::UPP::AppExit__(); \
+			return ::UPP::GetExitCode(); \
+		} \
+		\
+		void GuiMainFn_()
+	#endif
 #else
 	#define PARALLEL_APP_MAIN_(arg_fn) \
 	void GuiMainFn_(); \

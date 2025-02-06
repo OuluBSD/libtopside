@@ -294,8 +294,8 @@ ComponentBaseRef Pool::RealizeComponentPath(const Vector<String>& path) {
 	
 	String ent_name = path[c-2];
 	String comp_name = path[c-1];
-	ASSERT(!ent_name.IsEmpty())
-	ASSERT(!comp_name.IsEmpty())
+	ASSERT(!ent_name.IsEmpty());
+	ASSERT(!comp_name.IsEmpty());
 	
 	Pool* pool = this;
 	for(int i = 0; i < c-2; i++) {
@@ -318,7 +318,7 @@ EntityRef Pool::RealizeEntityPath(const Vector<String>& path) {
 	if (c < 1) return EntityRef();
 	
 	String ent_name = path[c-1];
-	ASSERT(!ent_name.IsEmpty())
+	ASSERT(!ent_name.IsEmpty());
 	
 	Pool* pool = this;
 	for(int i = 0; i < c-1; i++) {

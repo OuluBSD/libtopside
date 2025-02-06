@@ -4,3 +4,4 @@ pacman -Sy
 pacman -Su
 pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 
+See file script\msys2\msys2-installation.txt

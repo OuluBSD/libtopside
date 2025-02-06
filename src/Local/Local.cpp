@@ -1,6 +1,15 @@
 #include "Local.h"
 
 
+#ifndef flagVIRTUALBOX
+NAMESPACE_UPP
+#define IMAGECLASS FBImg
+#define IMAGEFILE <VirtualGui/FB.iml>
+#include <Draw/iml_source.h>
+END_UPP_NAMESPACE
+#endif
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 

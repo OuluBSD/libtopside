@@ -113,10 +113,10 @@ bool ModelComponent::Arg(String key, Object value) {
 		model = loader.GetModel();
 	}
 	else if (key == "skybox.diffuse") {
-		skybox_diffuse = value;
+		skybox_diffuse = (String)value;
 	}
 	else if (key == "skybox.irradiance") {
-		skybox_irradiance = value;
+		skybox_irradiance = (String)value;
 	}
 	else if (key == "texture") {
 		Ref<Model> mdl = loader.GetModel();

@@ -93,4 +93,15 @@ NAMESPACE_TOPSIDE_END
 
 
 
+#ifndef flagVIRTUALBOX
+NAMESPACE_UPP
+#define IMAGECLASS FBImg
+#define IMAGEFILE <VirtualGui/FB.iml>
+#include <Draw/iml_header.h>
+END_UPP_NAMESPACE
+#endif
+
+
+
+
 #endif

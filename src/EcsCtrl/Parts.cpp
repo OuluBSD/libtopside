@@ -172,7 +172,7 @@ void EntityListCtrl::Data() {
 		if (e) {
 			list.Set(i, 1, e->GetCreatedTick());
 			list.Set(i, 2, e->GetPrefab());
-			list.Set(i, 3, e->GetId());
+			list.Set(i, 3, (int)e->GetId());
 		}
 		else {
 			list.Set(i, 1, UPP::Value());

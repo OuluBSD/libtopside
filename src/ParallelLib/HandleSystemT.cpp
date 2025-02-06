@@ -113,6 +113,7 @@ void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
 			this->GetMachine().SetNotRunning();
 			break;
 		
+		#if IS_TS_CORE
 		case EVENT_KEYDOWN:
 			Ctrl::DoKeyFB(e.value, e.n);
 			break;
@@ -132,6 +133,7 @@ void HandleSystemT<Dim>::DoEvents(const EventCollection& ev) {
 		case EVENT_MOUSE_EVENT:
 			Ctrl::DoMouseFB(e.n, e.pt, e.value);
 			break;
+		#endif
 		
 		default:
 			TODO

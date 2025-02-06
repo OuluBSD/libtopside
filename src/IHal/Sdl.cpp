@@ -10,7 +10,7 @@
 
 NAMESPACE_UPP
 
-#if IS_UPP_CORE
+#if IS_UPP_CORE && defined flagVIRTUALGUI
 extern VirtualGui *VirtualGuiPtr;
 #endif
 
@@ -1791,11 +1791,16 @@ bool HalSdl::UppOglDevice_Recv(NativeUppOglDevice&, AtomBase&, int, const Packet
 void HalSdl::UppOglDevice_Finalize(NativeUppOglDevice& dev, AtomBase& a, RealtimeSourceConfig&) {
 	ASSERT(!dev.sz.IsEmpty());
 	dev.gldraw.Init(dev.sz, (uint64)dev.gl_ctx);
+	
+	#if IS_TS_CORE
 	SystemDraw& sysdraw = UPP::VirtualGuiPtr->BeginDraw();
 	sysdraw.SetTarget(&dev.gldraw);
 	
 	//Ctrl::PaintAll();
 	Ctrl::EventLoopIteration(NULL);
+	#else
+	Panic("TODO");
+	#endif
 	
 	dev.gldraw.Finish();
 	SDL_GL_SwapWindow(dev.win);
@@ -1985,6 +1990,7 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 	auto& lastbdowntime = dev.lastbdowntime;
 	#endif
 	
+	#if IS_TS_CORE
 	LLOG("HandleSDLEvent " << event->type);
 	SDL_Event next_event;
 	dword keycode;
@@ -1993,14 +1999,15 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 //			break;
 	case SDL_TEXTINPUT: {
 			//send respective keyup things as char events as well
-		WString text = String(event->text.text).ToWString();
-		for(int i = 0; i < text.GetCount(); i++) {
-			int c = text[i];
-			if(c != 127)
-				Ctrl::DoKeyFB(c, 1);
+			WString text = String(event->text.text).ToWString();
+			for(int i = 0; i < text.GetCount(); i++) {
+				int c = text[i];
+				if(c != 127) {
+					Ctrl::DoKeyFB(c, 1);
+				}
+			}
+			break;
 		}
-		break;
-	}
 	case SDL_KEYDOWN:
 		switch(event->key.keysym.sym) {
 			case SDLK_LSHIFT: modkeys |= KM_LSHIFT; break;
@@ -2141,7 +2148,9 @@ void HalSdl__HandleSDLEvent(HalSdl::NativeUppEventsBase& dev, SDL_Event* event)
 		Ctrl::EndSession();
 		break;
 	}
-	
+	#else
+	Panic("TODO");
+	#endif
 	
 	
 }

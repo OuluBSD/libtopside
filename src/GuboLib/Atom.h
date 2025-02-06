@@ -27,7 +27,9 @@ struct AtomVirtualGui3D : VirtualGui3D {
 	virtual void        Quit();
 	//virtual void        HandleSDLEvent(SDL_Event* event);
 	
+	#if IS_TS_CORE
 	SystemDraw          sysdraw;
+	#endif
 	
 	Gu::SurfaceSystemRef	wins;
 	Gu::SurfaceManagerRef	mgr;
