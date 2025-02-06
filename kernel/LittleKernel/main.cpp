@@ -1,58 +1,67 @@
-#include "Kernel.h"
+#include "LittleKernel.h"
 
 
-extern "C" {
+EXTERN_C_BEGIN
 
 
+void WriteMonitor(const char* s, int n, void* arg) {
+	struct multiboot* mboot_ptr = (struct multiboot*)arg;
+	MON.WriteN(s,n);
+}
 
 int multiboot_main(struct multiboot *mboot_ptr) {
+	// Construct global
+	new (global) SVar;
 	
     ResetInterruptHandlers();
     
     // Descriptor table
     global->dt.Init();
     
-    
+	size_t initrd_location = 0;
+	FindRamDisk(mboot_ptr, initrd_location);
+	
     // All our initialisation calls will go in here.
-    MON.Init();
-	MON.Clear();
+    // - Requires: InitLinkerVariables / FindRamDisk
+    #if EMU
+    if (mboot_ptr) mboot_ptr->OnMonitorCreate();
+    #endif
+    global->monitor.Clear();
+	KCout().SetCallback(WriteMonitor, mboot_ptr);
 	
 	
-	// Find the location of our initial ramdisk.
-	uint32 initrd_location = 0;
-	uint32 initrd_end = 0;
-	if (mboot_ptr->mods_count > 0) {
-		initrd_location = *((uint32*)mboot_ptr->mods_addr);
-		initrd_end = *(uint32*)(mboot_ptr->mods_addr+4);
-	}
-	
-	
-	InitLinkerVariables(initrd_end);
-	
-	
-	MON.Write("Enabling interrupts\n");
+	KLOG("Enabling interrupts");
 	EnableInterrupts();
 	
-	MON.Write("Enabling paging\n");
+	KLOG("Enabling paging");
 	InitialisePaging();
 	
-	MON.Write("Initialising tasking\n");
+	KLOG("Initialising tasking");
 	InitialiseTasking();
 	
-	MON.Write("Initialising initrd\n");
+	KLOG("Initialising initrd");
 	fs_root = InitialiseInitrd(initrd_location);
 	
-	MON.Write("Initialising syscalls\n");
+	KLOG("Initialising syscalls");
 	InitialiseSyscalls();
-
+	
+	// Virtual device drivers
+	global->input.Init();
+	
+	// Device drivers
+	
+	
+	
 	SwitchToUserMode();
+	
+	
 	
 	syscall_MonitorWrite("Hello, user world!\n");
 	
 	#if 0
-	uint32 a = KMemoryAllocate(4);
-    uint32 b = KMemoryAllocate(8);
-    uint32 c = KMemoryAllocate(8);
+	size_t a = KMemoryAllocate(4);
+    size_t b = KMemoryAllocate(8);
+    size_t c = KMemoryAllocate(8);
     MON.Write("a: ");
     MON.WriteHex(a);
     MON.Write(", b: ");
@@ -62,7 +71,7 @@ int multiboot_main(struct multiboot *mboot_ptr) {
 
     KFree((void*)c);
     KFree((void*)b);
-    uint32 d = KMemoryAllocate(12);
+    size_t d = KMemoryAllocate(12);
     MON.Write(", d: ");
     MON.WriteHex(d).NewLine();
     
@@ -75,7 +84,15 @@ int multiboot_main(struct multiboot *mboot_ptr) {
     global->timer.Init(1);
     #endif
     
+    
+    bool single_user = true;
+    
+    if (single_user) {
+        Run_Shell(0, 0, mboot_ptr);
+        
+    }
+    
 	return 0xDEADABBA;
 }
 
-}
+EXTERN_C_END

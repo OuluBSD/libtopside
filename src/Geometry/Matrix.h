@@ -65,8 +65,8 @@ template <class T> struct PartVec<T, 4> {
 	static inline T GetCrossProduct(const T& a, const T& b);
 };
 
-template <class T, int I>
-struct Vec : Moveable<Vec<T, I> > {
+template <class T, int I, int ID>
+struct Vec : Moveable<Vec<T, I, ID> > {
 	static const int size = I;
 	using Unit = T;
 	
@@ -117,7 +117,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec& operator=(const Vec& v) {for(int i = 0; i < I; i++) data[i] = v.data[i]; return *this;}
 	Vec& operator*=(T v) {for(int i = 0; i < I; i++) data[i] *= v; return *this;}
 	Vec& operator/=(T v) {for(int i = 0; i < I; i++) data[i] /= v; return *this;}
-	template<int J> Vec& operator+=(const Vec<T,J>& v) {for(int i = 0; i < std::min(I,J); i++) data[i] += v.data[i]; return *this;}
+	template<int J> Vec& operator+=(const Vec<T,J,ID>& v) {for(int i = 0; i < std::min(I,J); i++) data[i] += v.data[i]; return *this;}
 	
 	Vec operator-()             const {Vec r; for(int i = 0; i < I; i++) r.data[i] = -data[i]; return r;}
 	Vec operator-(const Vec& v) const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] - v.data[i]; return r;}
@@ -161,7 +161,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	
 	Vec& SetConst(const T& value) {for(int i = 0; i < I; i++) data[i] = value; return *this;}
 	Vec& SetIdentity() {for(int i = 0; i < I; i++) data[i] = (T)(i == 0 ? 1 : 0); return *this;}
-	template <int begin=0, int end=I-1> Vec& SetFromSplice(const Vec<T, end - begin>& src) {
+	template <int begin=0, int end=I-1> Vec& SetFromSplice(const Vec<T,end-begin,ID>& src) {
 		static_assert(begin < end, "Splicing area must be positive");
 		static_assert(end - begin <= I, "Splicing area must be less or equal to source area");
 		for(int i = begin, j = 0; i < end; i++, j++) data[i] = src.data[j];
@@ -169,22 +169,22 @@ struct Vec : Moveable<Vec<T, I> > {
 	}
 	template <int from_i=I-1> Vec& Project() {ASSERT(data[from_i] != 0.0); static_assert(from_i >= 0 && from_i < I, "Invalid project pos");for(int i = 0; i < I; i++) if (i != from_i) data[i] /= data[from_i]; data[from_i] = 1.0; return *this;}
 	
-	Vec<T, I-1> Cut(int c) {
-		Vec<T, I-1> v;
+	Vec<T, I-1,ID> Cut(int c) {
+		Vec<T, I-1,ID> v;
 		for(int i = 0, j = 0; i < I && j < I; i++)
 			if (i != c) v.data[j++] = data[i];
 		return v;
 	}
-	template <int begin=0, int end=I-1> Vec<T, end - begin> Splice() const {
+	template <int begin=0, int end=I-1> Vec<T, end - begin,ID> Splice() const {
 		static_assert(begin < end, "Splicing area must be positive");
 		static_assert(end - begin <= I, "Splicing area must be less or equal to source area");
-		Vec<T, end - begin> ret;
+		Vec<T, end - begin,ID> ret;
 		for(int i = begin, j = 0; i < end; i++, j++) ret.data[j] = data[i];
 		return ret;
 	}
-	template <int J=I+1> Vec<T,J> Embed() const {return Extend<J>(1.0f);}
-	template <int J=I+1> Vec<T,J> Extend(float value=0.0) const {
-		Vec<T,J> ret;
+	template <int J=I+1> Vec<T,J,ID> Embed() const {return Extend<J>(1.0f);}
+	template <int J=I+1> Vec<T,J,ID> Extend(float value=0.0) const {
+		Vec<T,J,ID> ret;
 		for(int i = 0; i < I; i++) ret[i] = data[i];
 		for(int j = I; j < J; j++) ret[j] = value;
 		return ret;
@@ -244,10 +244,10 @@ typedef Vec<double, 1> dvec1;
 typedef Vec<double, 2> dvec2;
 typedef Vec<double, 3> dvec3;
 typedef Vec<double, 4> dvec4;
-typedef Vec<float, 2> axes2;
-typedef Vec<float, 3> axes3;
-typedef Vec<float, 3> axes2s; // stereo angle [left yaw, right yaw, pitch]
-typedef Vec<float, 4> axes3s; // stereo angle [left yaw, right yaw, pitch, roll]
+typedef Vec<float, 2, 1> axes2;
+typedef Vec<float, 3, 1> axes3;
+typedef Vec<float, 3, 2> axes2s; // stereo angle [left yaw, right yaw, pitch]
+typedef Vec<float, 4, 2> axes3s; // stereo angle [left yaw, right yaw, pitch, roll]
 
 typedef Vec<int, 2> ivec2;
 typedef Vec<int, 3> ivec3;
@@ -1068,6 +1068,8 @@ struct Square : Moveable<Square> {
 	vec3 tl, tr, br, bl;
 	
 	void Etherize(Ether& e) {e % tl % tr % br % bl;}
+	hash_t GetHashValue() const;
+	String ToString() const {return "Square()";}
 };
 
 
@@ -1112,10 +1114,7 @@ struct Matrix4 : RTTIBase {
 
 
 
-NAMESPACE_TOPSIDE_END
 
-NAMESPACE_UPP
-using namespace TS;
 #undef TransformMatrix
 class TransformMatrix : RTTIBase {
 	
@@ -1137,7 +1136,7 @@ public:
 	vec3 position;
 	vec3 direction;
 	vec3 up = VEC_UP;
-	vec3 axes;
+	axes3 axes;
 	quat orientation;
 	//mat4 proj[2], view[2];
 	float eye_dist = 0;
@@ -1256,6 +1255,8 @@ struct ControllerMatrix : RTTIBase {
 	
 };
 
+DEFAULT_ETHERIZER(ControllerMatrix);
+
 struct ControllerState {
 	ControllerSource* source = 0;
 	ControllerMatrix props;
@@ -1268,7 +1269,7 @@ struct ControllerState {
 
 struct CalibrationData {
 	bool is_enabled = false;
-	vec3 axes = vec3(0,0,0);
+	axes3 axes = axes3(0,0,0);
 	vec3 position = vec3(0,0,0);
 	float fov = 0;
 	float scale = 0;
@@ -1278,7 +1279,7 @@ struct CalibrationData {
 	void Etherize(Ether& e);
 	String ToString() const;
 	void Dump();
-	
+	hash_t GetHashValue() const;
 };
 
 
@@ -1306,9 +1307,9 @@ struct OnlineAverageVector {
 	}
 };
 
-END_UPP_NAMESPACE
+
+NAMESPACE_TOPSIDE_END
 
 #include "Matrix.inl"
-
 
 #endif

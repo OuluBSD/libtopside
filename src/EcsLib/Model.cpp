@@ -5,26 +5,30 @@ NAMESPACE_ECS_BEGIN
 
 
 void ModelComponent::Etherize(Ether& e) {
-	e % color
-	  % prefab_name
-	  % skybox_diffuse
-	  % skybox_irradiance
-	  % load_skybox
-	  % always_enabled
-	  % dbg
+	ETH_KEYOBJ(color);
+	ETH_KEYOBJ(prefab_name);
+	ETH_KEYOBJ(skybox_diffuse);
+	ETH_KEYOBJ(skybox_irradiance);
+	ETH_KEYOBJ(load_skybox);
+	ETH_KEYOBJ(always_enabled);
+	ETH_KEYOBJ(dbg);
 	
-	  % gfx_hash
-	  % offset
-	  % scale
-	  % pitch
-	  % yaw
-	  % roll
-	  % ext_model
-	  % have_ext_model
-	  % model_changed;
+	ETH_KEYOBJ(gfx_hash);
+	ETH_KEYOBJ(offset);
+	ETH_KEYOBJ(scale);
+	ETH_KEYOBJ(pitch);
+	ETH_KEYOBJ(yaw);
+	ETH_KEYOBJ(roll);
+	ETH_KEYOBJ(ext_model);
+	ETH_KEYOBJ(have_ext_model);
+	ETH_KEYOBJ(model_changed);
 	
 	if (e.IsLoading()) {
-		TODO
+		ModelRef own_model = loader.GetModel();
+		if (own_model.IsEmpty())
+			own_model = loader.Create().AsRefT();
+		ETH_KEYOBJ(*own_model);
+		model = own_model;
 	}
 	else {
 		ModelRef own_model = loader.GetModel();
@@ -32,7 +36,7 @@ void ModelComponent::Etherize(Ether& e) {
 			TODO // complicated model ref serialization (some post queue via Ether class?)
 		}
 		else {
-			e % *own_model;
+			ETH_KEYOBJ(*own_model);
 		}
 	}
 }

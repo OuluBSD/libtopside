@@ -1,0 +1,13 @@
+description "Organizational management and demands\377B128,0,0";
+
+file
+	OrgLib.h,
+	"Project file formats" readonly separator,
+	Upp.h,
+	Upp.cpp,
+	Parser.h,
+	Parser.cpp,
+	FileWriter.h,
+	FileWriter.cpp,
+	_ readonly separator;
+

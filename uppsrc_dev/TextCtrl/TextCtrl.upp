@@ -1,0 +1,29 @@
+description "\377B0,0,128";
+
+uses
+	TextLib;
+
+file
+	TextCtrl.h,
+	TextCtrl.lay,
+	Fns.h,
+	Fns.cpp,
+	MetaEntity readonly separator,
+	Owner.h,
+	Owner.cpp,
+	Profile.h,
+	Profile.cpp,
+	Entity readonly separator,
+	EntityInfoCtrl.h,
+	EntityInfoCtrl.cpp,
+	Snapshot readonly separator,
+	SnapInfoCtrl.h,
+	SnapInfoCtrl.cpp,
+	Component readonly separator,
+	CompInfoCtrl.h,
+	CompInfoCtrl.cpp,
+	Script readonly separator,
+	ScriptInfoCtrl.h,
+	ScriptInfoCtrl.cpp,
+	TRASH readonly separator;
+

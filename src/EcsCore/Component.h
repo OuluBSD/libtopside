@@ -69,6 +69,45 @@ public:
 	
 	void GetComponentPath(Vector<String>& path);
 	
+	template <class T> void PutAsKeyRef(Ether& e, const char* key, Ref<T>& ref) {
+		e.PutKeyType<T>(key, true);
+		EtherizeRef<T>(e, ref);
+		byte chk = 0xFF; e.PutT(chk);
+	}
+	
+	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, Array<Ref<T>>& ref) {
+		e.PutKeyType<T>(key, true);
+		EtherizeRefContainer(e, ref);
+		byte chk = 0xFF; e.PutT(chk);
+	}
+	
+	template <class T> void PutAsKeyRefContainer(Ether& e, const char* key, LinkedList<Ref<T>>& ref) {
+		e.PutKeyType<T>(key, true);
+		EtherizeRefContainer(e, ref);
+		byte chk = 0xFF; e.PutT(chk);
+	}
+	
+	template <class T> void TryGetAsKeyRef(Ether& e, const char* key, Ref<T>& ref) {
+		if (e.IsLoading() && e.TypeKeyT<T>(key, true)) {
+			EtherizeRef<T>(e, ref);
+			byte chk = 0; e.GetT(chk); ASSERT(chk == 0xFF);
+		}
+	}
+	
+	template <class T> void TryGetAsKeyRefContainer(Ether& e, const char* key, Array<Ref<T>>& ref) {
+		if (e.IsLoading() && e.TypeKeyT<T>(key, true)) {
+			EtherizeRefContainer(e, ref);
+			byte chk = 0; e.GetT(chk); ASSERT(chk == 0xFF);
+		}
+	}
+	
+	template <class T> void TryGetAsKeyRefContainer(Ether& e, const char* key, LinkedList<Ref<T>>& ref) {
+		if (e.IsLoading() && e.TypeKeyT<T>(key, true)) {
+			EtherizeRefContainer(e, ref);
+			byte chk = 0; e.GetT(chk); ASSERT(chk == 0xFF);
+		}
+	}
+	
 };
 
 

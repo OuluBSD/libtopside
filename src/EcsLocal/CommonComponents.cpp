@@ -7,11 +7,11 @@ NAMESPACE_ECS_BEGIN
 	
 
 void RigidBody::Etherize(Ether& e) {
-	e % velocity
-	  % acceleration
-	  % angular_velocity
-	  % angular_acceleration
-	  % damping_factor;
+	ETH_KEYOBJ(velocity);
+	ETH_KEYOBJ(acceleration);
+	ETH_KEYOBJ(angular_velocity);
+	ETH_KEYOBJ(angular_acceleration);
+	ETH_KEYOBJ(damping_factor);
 }
 
 void RigidBody::Initialize() {

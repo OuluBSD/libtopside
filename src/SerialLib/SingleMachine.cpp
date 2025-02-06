@@ -7,6 +7,8 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	using namespace Parallel;
 	using namespace Serial;
 	
+	SetCoutLog();
+	
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
@@ -42,9 +44,13 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     if (arg_fn)
         arg_fn();
     
-    if (!mach.Start())
+    if (!mach.Start()) {
+		#ifdef flagDEBUG
+        LOG("SingleMachine::Open: error: machine failed to start");
+        #endif
 		return false;
-    
+    }
+	
 	return true;
 }
 

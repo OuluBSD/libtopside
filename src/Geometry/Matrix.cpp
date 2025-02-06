@@ -69,12 +69,6 @@ quat quat::Mix(const quat& q, float f) const {
 }
 
 
-NAMESPACE_TOPSIDE_END
-
-
-
-
-NAMESPACE_UPP
 
 void TransformMatrix::Etherize(Ether& e) {
 	e % mode
@@ -95,7 +89,7 @@ void TransformMatrix::Clear() {
 	position = vec3(0,0,0);
 	direction = vec3(0,0,0);
 	up = VEC_UP;
-	axes = vec3(0,0,0);
+	axes = axes3(0,0,0);
 	orientation = quat(0,0,0,0);
 	eye_dist = 0;
 }
@@ -186,6 +180,23 @@ void CalibrationData::Dump() {
 	DUMP(*this);
 }
 
+hash_t CalibrationData::GetHashValue() const {
+	CombineHash h;
+	h << is_enabled
+	  << axes
+	  << position
+	  << fov
+	  << scale
+	  << eye_dist;
+	return h;
+}
 
 
-END_UPP_NAMESPACE
+
+hash_t Square::GetHashValue() const {
+	CombineHash h;
+	h << tl << tr << br << bl;
+	return h;
+}
+
+NAMESPACE_TOPSIDE_END

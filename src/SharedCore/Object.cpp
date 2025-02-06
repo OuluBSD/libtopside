@@ -4,7 +4,7 @@
 #endif
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ObjectMap& Object::CreateMap() {
@@ -140,11 +140,11 @@ void Object::DeepCopyArrayMap(Object v) {
 bool Object::ToBool() const {
 	bool b = false;
 	dword type = GetType();
-	if (type == BOOL_V)
+	if (type == BOOL_O)
 		b = Get<bool>();
-	else if (type == INT_V || type == INT64_V)
+	else if (type == INT32_O || type == INT64_O)
 		b = ToInt();
-	else if (type == DOUBLE_V)
+	else if (type == DOUBLE_O)
 		b = ToDouble();
 	return b;
 }
@@ -276,6 +276,7 @@ Object Object::operator -() const {
 	if (IsNumber()) return -ToDouble();
 	return Object(false);
 }
+
 
 
 
@@ -422,7 +423,7 @@ String GetObjectTreeString(const Object& v, String key, int indent) {
 Object ObjectFromValue(const Value& v) {
 	#define SIMPLE(x) else if (type == GetValueTypeNo<x>()) return v.Get<x>();
 	dword type = v.GetType();
-	if (type == VALUEMAP_V) {
+	if (type == OBJECTMAP_O) {
 		Object o;
 		ObjectMap& om = o.CreateMap();
 		const ValueMap& m = v;
@@ -430,7 +431,7 @@ Object ObjectFromValue(const Value& v) {
 			om.Add(m.GetKey(i), ObjectFromValue(m.GetValue(i)));
 		return o;
 	}
-	else if (type == VALUEARRAY_V) {
+	else if (type == OBJECTARRAY_O) {
 		Object o;
 		ObjectArray& oa = o.CreateArray();
 		const ValueArray& a = v;
@@ -460,5 +461,5 @@ template<> StringT<char>& StringT<char>::operator=(const Object& c) {return *thi
 template<> StringT<wchar_t>& StringT<wchar_t>::operator=(const Object& c) {return *this = c.ToString().ToWString();}
 #endif
 
-END_UPP_NAMESPACE
 
+NAMESPACE_TOPSIDE_END

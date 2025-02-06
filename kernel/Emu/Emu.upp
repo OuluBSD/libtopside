@@ -1,0 +1,27 @@
+description "\377128,0,255";
+
+uses
+	LittleCommon;
+
+uses(GUI) EmuCtrl;
+
+file
+	main.cpp,
+	Emu.h,
+	Defs.h,
+	Stubs.h,
+	Stubs.cpp,
+	Monitor.h,
+	Global.h,
+	Global.cpp,
+	Interrupts.h,
+	Interrupts.cpp,
+	SysCall.h,
+	SysCall.cpp,
+	DescriptorTable.h,
+	"Common impl" readonly separator,
+	Task.cpp,
+	Multiboot.cpp,
+	Memory.cpp,
+	Common.cpp;
+

@@ -1,0 +1,74 @@
+LAYOUT(UppExporter, 472, 200)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Upp project")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::EditString, assembly, HSizePosZ(116, 8).TopPosZ(24, 19))
+	ITEM(Upp::Button, make_files, SetLabel(t_("Make files")).LeftPosZ(116, 124).TopPosZ(72, 19))
+	ITEM(Upp::Button, update, SetLabel(t_("Update")).LeftPosZ(244, 124).TopPosZ(72, 19))
+	ITEM(Upp::Label, dv___4, SetLabel(t_("Assembly path:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(24, 19))
+	ITEM(Upp::EditString, main_pkg, HSizePosZ(116, 8).TopPosZ(48, 19))
+	ITEM(Upp::Label, dv___6, SetLabel(t_("Main package:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(48, 19))
+END_LAYOUT
+
+LAYOUT(System, 400, 200)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("System")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::DropList, platform, HSizePosZ(116, 8).TopPosZ(24, 19))
+	ITEM(Upp::Label, dv___2, SetLabel(t_("Platform:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(24, 19))
+	ITEM(Upp::DropList, os, HSizePosZ(116, 8).TopPosZ(48, 19))
+	ITEM(Upp::Label, dv___4, SetLabel(t_("Operating system:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(48, 19))
+	ITEM(Upp::DropList, lang, HSizePosZ(116, 8).TopPosZ(72, 19))
+	ITEM(Upp::Label, dv___6, SetLabel(t_("Language:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(72, 19))
+	ITEM(Upp::DropList, ide, HSizePosZ(116, 8).TopPosZ(96, 19))
+	ITEM(Upp::Label, dv___8, SetLabel(t_("Project file:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(96, 19))
+	ITEM(Upp::DropList, framework, HSizePosZ(116, 8).TopPosZ(120, 19))
+	ITEM(Upp::Label, dv___10, SetLabel(t_("Framework:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 100).TopPosZ(120, 19))
+END_LAYOUT
+
+LAYOUT(Features, 400, 200)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Features")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+END_LAYOUT
+
+LAYOUT(FileList, 400, 200)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("File list")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+END_LAYOUT
+
+LAYOUT(File, 400, 200)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("File")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::DocEdit, description, HSizePosZ(92, 8).TopPosZ(20, 160))
+	ITEM(Upp::Label, dv___2, SetLabel(t_("Description:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(8, 80).TopPosZ(20, 24))
+END_LAYOUT
+
+LAYOUT(Class, 472, 228)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Class")).HSizePosZ(4, 4).VSizePosZ(8, 4))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Max depth:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(24, 24))
+	ITEM(Upp::EditInt, max_depth, SetEditable(false).LeftPosZ(96, 60).TopPosZ(24, 24))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Description:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(52, 24))
+	ITEM(Upp::DocEdit, description, SetEditable(false).HSizePosZ(96, 8).TopPosZ(52, 68))
+	ITEM(Upp::Label, dv___5, SetLabel(t_("Dependencies:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(124, 24))
+	ITEM(Upp::ArrayCtrl, deps, LeftPosZ(96, 116).VSizePosZ(124, 8))
+	ITEM(Upp::Label, dv___7, SetLabel(t_("Dependend by:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(216, 80).TopPosZ(124, 24))
+	ITEM(Upp::ArrayCtrl, dep_bys, LeftPosZ(300, 116).VSizePosZ(124, 8))
+END_LAYOUT
+
+LAYOUT(Package, 472, 228)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Package")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Description:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(24, 24))
+	ITEM(Upp::DocEdit, description, SetEditable(false).HSizePosZ(96, 8).TopPosZ(24, 68))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Dependencies:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(96, 24))
+	ITEM(Upp::ArrayCtrl, deps, LeftPosZ(96, 116).VSizePosZ(96, 36))
+END_LAYOUT
+
+LAYOUT(Meta, 472, 228)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Meta")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Description:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(24, 24))
+	ITEM(Upp::DocEdit, description, SetEditable(false).HSizePosZ(96, 8).TopPosZ(24, 68))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Dependencies:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(96, 24))
+	ITEM(Upp::ArrayCtrl, deps, LeftPosZ(96, 116).VSizePosZ(96, 36))
+END_LAYOUT
+
+LAYOUT(MetaWizard, 472, 228)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Meta Wizard")).HSizePosZ(4, 4).VSizePosZ(4, 4))
+	ITEM(Upp::Label, dv___1, SetLabel(t_("Description:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(24, 24))
+	ITEM(Upp::DocEdit, description, SetEditable(false).HSizePosZ(96, 8).TopPosZ(24, 68))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Dependencies:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 80).TopPosZ(96, 24))
+	ITEM(Upp::ArrayCtrl, deps, LeftPosZ(96, 116).VSizePosZ(96, 36))
+END_LAYOUT
+

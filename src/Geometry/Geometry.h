@@ -83,6 +83,14 @@
 #include "Serializer.h"
 
 
+NAMESPACE_TOPSIDE_BEGIN
+
+#include "Types.inl"
+
+NAMESPACE_TOPSIDE_END
+
+
+
 NAMESPACE_UPP_BEGIN
 
 NTL_MOVEABLE(TS::Circle);

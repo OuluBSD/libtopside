@@ -1,0 +1,55 @@
+
+
+Order:
+- "Components" text data, import scripts (F5)
+	--> makes tokens from source text
+- tokens, Process using other DBs (F5)
+	--> makes words from tokens
+	--> makes translations
+
+- tokens, Process (F6)
+	--> makes words from tokens using AI
+
+- words, get all details (F6)
+	- required for virtual phrases (type is required)
+- words, syllables (F7)
+	(unnecessary?)
+
+- token phrases, Get unknown pairs (F5)
+	< req tokens, words, word classes (types)
+	--> searches for ambiguous word class usage
+
+- ambiguous word pairs, process using existing (F5)
+- ambiguous word pairs, process (F6)
+	- required for virtual phrases (clarifies the type)
+
+// NOTE: virtual phrases shows error until you press F5, F6 & F7 to process
+- virtual phrases (F5) "token texts to virtual phrases"
+	- requires "word types" and "ambiguous word pairs"
+- virtual phrases, get virtual_phrase_parts using existing (F6)
+- virtual phrases, get virtual_phrase_parts using AI (F7)
+
+- virtual phrase, virtual phrases using existing (F6)
+- virtual phrase, virtual phrases (F7) Diag: "virtual phrases"
+
+- virtual phrase parts, process using existing (F5)
+- virtual phrase parts, process (F6) "virtual phrase structs"
+
+- virtual phrase structs, process (F5) "token text to phrase"
+	- requires "token texts to virtual phrases"
+
+- phrase parts, get line actions (F5)
+	- (unnecessary?) required by transitions, parallels
+- phrase parts, process using existing (F6)
+- phrase parts, process (F7) Diag: "Get line change scores"
+
+- phrase part analysis (F5) "phrase part color"
+- phrase part analysis (F6) "phrase part attr"
+- phrase part analysis (F7) "phrase part actions"
+- phrase part analysis (F8) "phrase part scores"
+- PhrasePartAnalysis2 (F5) "(typecasts):"
+- PhrasePartAnalysis2 (F6) "(contents):"
+- Rhyme Container (F5) "rhyme container:"
+- Rhyme Container (F6) "rhyme container nana:"
+	(unnecessary?)
+

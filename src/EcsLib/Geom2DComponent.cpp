@@ -48,12 +48,12 @@ Geom2DComponent::Geom2DComponent() :
 }
 
 void Geom2DComponent::Etherize(Ether& e) {
-	e % stored_rect
-	  % id
-	  % pending_partial_redraw;
+	ETH_KEYOBJ(stored_rect);
+	ETH_KEYOBJ(id);
+	ETH_KEYOBJ(pending_partial_redraw);
 	
-	EtherizeRef(e, transform);
-	EtherizeRef(e, transform2d);
+	ETH_KEYREF(transform);
+	ETH_KEYREF(transform2d);
 	
 	if ((reset_fn || linked) && e.IsStoring()) {
 		TODO

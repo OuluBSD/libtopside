@@ -44,6 +44,27 @@ ICMem8Base::ICMem8Base(byte* data, int size, bool writable) {
 	
 }
 
+String ICMem8Base::ToVerilog() const {
+	return R"VERILOG(
+module {$NAME}(clk, wr, a, di, do);
+	input clk;
+	input wr;
+	input [7:0] a;
+	input [7:0] di;
+	output [7:0] do;
+
+	reg [7:0] ram [31:0];
+
+	always @(posedge clk) begin
+		if (wr)
+			ram[a] <= di;
+	end
+
+	assign do = ram[a];
+
+endmodule
+)VERILOG";
+}
 bool ICMem8Base::Tick() {
 	bool verbose = 1;
 	addr = in_addr;

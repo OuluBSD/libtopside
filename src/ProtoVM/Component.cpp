@@ -8,6 +8,14 @@ Pin::Pin() {
 	
 }
 
+String Pin::ToVerilog() const {
+	return R"VERILOG(
+module Pin_{$NAME} ( output o );
+	o <= {$VALUE};
+endmodule
+)VERILOG";
+}
+
 
 
 

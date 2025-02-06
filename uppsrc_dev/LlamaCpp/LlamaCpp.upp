@@ -1,0 +1,24 @@
+description "\377B141,42,150";
+
+library
+	llama;
+
+file
+	LlamaCpp.h,
+	LlamaCpp.cpp,
+	main.cpp,
+	base64.hpp,
+	build-info.cpp,
+	common.h,
+	common.cpp,
+	console.h,
+	console.cpp,
+	grammar-parser.h,
+	grammar-parser.cpp,
+	log.h,
+	sampling.h,
+	sampling.cpp,
+	stb_image.h,
+	train.h,
+	train.cpp;
+

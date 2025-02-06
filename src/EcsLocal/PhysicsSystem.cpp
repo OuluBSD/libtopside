@@ -123,10 +123,10 @@ void PhysicsSystem::TestPlayerMoveFn(PhysicsBody& b, vec3 rel_dir, float step) {
 
 
 void PhysicsBody::Etherize(Ether& e) {
-	e % test_fn
-	  % is_bound;
-	EtherizeRef(e, trans);
-	EtherizeRef(e, player);
+	ETH_KEYOBJ(test_fn);
+	ETH_KEYOBJ(is_bound);
+	ETH_KEYREF(trans);
+	ETH_KEYREF(player);
 }
 
 void PhysicsBody::operator=(const PhysicsBody& r) {

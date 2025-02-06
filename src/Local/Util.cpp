@@ -405,6 +405,8 @@ String FindShareDir() {
 	String home_upphub_share = "C:\\git\\libtopside\\share";
 	if (!DirectoryExists(home_upphub_share))
 		home_upphub_share = "C:\\libtopside\\share";
+	if (!DirectoryExists(home_upphub_share))
+		home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
 	#else
 	String home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
 	#endif

@@ -65,6 +65,16 @@
 #include "ProgPainter.h"
 #include "ProgDraw.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+
+#include "Types.inl"
+
+#if IS_UPP_CORE
+OBJ_TYPE_NO(int, INT32_O )
+#endif
+
+NAMESPACE_TOPSIDE_END
+
 
 
 #endif

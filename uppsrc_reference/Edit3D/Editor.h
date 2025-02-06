@@ -80,6 +80,8 @@ struct Edit3D : TopWindow {
 	void LoadTestCirclingCube();
 	void LoadTestOctree();
 	
+	void LoadSceneToDebugger();
+	
 public:
 	typedef Edit3D CLASSNAME;
 	Edit3D();
@@ -97,6 +99,7 @@ public:
 	void RefrehToolbar();
 	void OnSceneEnd();
 	void OnDebugMetadata();
+	void RefreshRemote();
 	void Toolbar(Bar& bar);
 	
 	void LoadEmptyProject();

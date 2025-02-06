@@ -140,8 +140,8 @@ void ShootingInteractionSystemBase::OnControllerUpdated(const CtrlEvent& e) {
 void ShootingComponent::Etherize(Ether& e) {
 	CustomToolComponent::Etherize(e);
 	
-	e % bullet_speed
-	  % barrel_to_ctrl;
+	ETH_KEYOBJ(bullet_speed);
+	ETH_KEYOBJ(barrel_to_ctrl);
 	
 }
 

@@ -1,0 +1,19 @@
+file
+	LittleCore.h,
+	LittleCore.cpp,
+	Defs.h,
+	Fn.h,
+	Fn.cpp,
+	String.h,
+	String.cpp,
+	StringInline.cpp,
+	Object.h,
+	Stream.h,
+	Stream.cpp,
+	Screen.h,
+	Screen.cpp,
+	ScreenProxy.h,
+	ScreenProxy.cpp,
+	VirtualScreen.h,
+	VirtualScreen.cpp;
+

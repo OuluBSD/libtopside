@@ -105,6 +105,8 @@ struct FixedArray : RTTIBase {
 	
 };
 
+using ByteArray256 = FixedArray<unsigned char, 256>;
+
 template <class T, int I>
 struct ReservedArray {
 	static const int size = I;

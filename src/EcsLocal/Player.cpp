@@ -4,11 +4,11 @@ NAMESPACE_ECS_BEGIN
 
 
 void PlayerHandComponent::Etherize(Ether& e) {
-	e % is_simulated
-	  % attach_ctrl_model
-	  % req_hand;
+	ETH_KEYOBJ(is_simulated);
+	ETH_KEYOBJ(attach_ctrl_model);
+	ETH_KEYOBJ(req_hand);
 	
-	EtherizeRef(e, body);
+	ETH_KEYREF(body);
 	
 	// ptrs can be ignored for now
 }
@@ -66,7 +66,7 @@ bool PlayerHandComponent::Arg(String key, Object value) {
 
 
 void PlayerHeadComponent::Etherize(Ether& e) {
-	EtherizeRef(e, body);
+	ETH_KEYREF(body);
 }
 
 void PlayerHeadComponent::Initialize() {
@@ -104,11 +104,11 @@ bool PlayerHeadComponent::Arg(String key, Object value) {
 
 
 void PlayerBodyComponent::Etherize(Ether& e) {
-	e % height;
+	ETH_KEYOBJ(height);
 	
-	EtherizeRef(e, hands[0]);
-	EtherizeRef(e, hands[1]);
-	EtherizeRef(e, head);
+	ETH_KEYREF(hands[0]);
+	ETH_KEYREF(hands[1]);
+	ETH_KEYREF(head);
 }
 
 void PlayerBodyComponent::Initialize() {
@@ -188,7 +188,7 @@ void PlayerBodySystem::Update(double dt) {
 		vec3 body_feet_pos = trans->data.position;
 		vec3 head_direction = VEC_FWD;
 		vec3 head_up = VEC_UP;
-		vec3 axes(0,0,0);
+		axes3 axes(0,0,0);
 		TransformMatrix tm;
 		
 		if (b->head) {

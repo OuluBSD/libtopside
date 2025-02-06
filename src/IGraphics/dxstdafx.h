@@ -79,6 +79,8 @@
 #include <limits.h>
 #include <stdio.h>
 #include <xinput.h>
+
+// If wrl missings are missing: add to include path C:\Program Files (x86)\Windows Kits\10\Include\[your version]\winrt
 #include <wrl/wrappers/corewrappers.h>
 #include <wrl/client.h>
 

@@ -19,6 +19,7 @@ Pool::~Pool() {
 }
 
 void Pool::Etherize(Ether& e) {
+	byte magic = 0, chk = 0xAF;
 	/*
 	e % freeze_bits
 	  % name
@@ -27,32 +28,70 @@ void Pool::Etherize(Ether& e) {
 	*/
 	GeomVar type;
 	if (e.IsLoading()) {
-		TODO
-		while (!e.IsEof()) {
-			e.GetT(type);
+		e.GetT(magic);
+		ASSERT(magic == chk);
+		
+		int pc = 0, ec = 0;
+		e.GetT(pc);
+		e.GetT(ec);
+		
+		// Don't destroy objects during loading.
+		// Remove non-loaded pools afterwards.
+		thread_local static Index<String> rem_pool;
+		rem_pool.Clear();
+		for (PoolRef p : pools)
+			rem_pool.Add(p->name);
+		for(int i = 0; i < pc; i++) {
+			e.GetT(magic);
+			ASSERT(magic == chk);
+			// Realize pool and remove name from to-be-removed list
+			String name = e.GetString();
+			rem_pool.RemoveKey(name);
+			PoolRef p = GetAddPool(name);
 			
+			p->Etherize(e);
+			
+			// Check again
+			e.GetT(magic);
+			ASSERT(magic == chk);
+		}
+		for (String rem : rem_pool.GetKeys())
+			RemovePool(rem);
+		
+		for(int i = 0; i < ec; i++) {
+			e.GetT(magic);
+			ASSERT(magic == chk);
+			String name = e.GetString();
+			EntityRef o = GetAddEmpty(name);
+			
+			o->Etherize(e);
+			
+			e.GetT(magic);
+			ASSERT(magic == chk);
 		}
 	}
 	else {
+		e.PutT(chk);
+		int pc = pools.GetCount();
+		e.PutT(pc);
+		int ec = objects.GetCount();
+		e.PutT(ec);
+		
 		for (PoolRef p : pools) {
-			type = GEOMVAR_PUSH_POOL_REL;
-			e.PutT(type);
+			e.PutT(chk);
 			e.Put(p->name);
 			
 			p->Etherize(e);
 			
-			type = GEOMVAR_POP_POOL;
-			e.PutT(type);
+			e.PutT(chk);
 		}
 		for (EntityRef o : objects) {
-			type = GEOMVAR_PUSH_ENTITY_REL;
-			e.PutT(type);
+			e.PutT(chk);
 			e.Put(o->name);
 			
 			o->Etherize(e);
 			
-			type = GEOMVAR_POP_ENTITY;
-			e.PutT(type);
+			e.PutT(chk);
 		}
 	}
 }
@@ -223,6 +262,15 @@ PoolRef Pool::GetAddPool(String name) {
 		if (pool->GetName() == name)
 			return pool;
 	return AddPool(name);
+}
+
+void Pool::RemovePool(String name) {
+	for (PoolVec::Iterator iter = pools.begin(); iter; ++iter) {
+		if (iter->GetName() == name) {
+			iter->ClearDeep();
+			pools.Remove(iter);
+		}
+	}
 }
 
 void Pool::RemoveEntity(Entity* e) {

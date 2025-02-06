@@ -20,12 +20,12 @@ bool HitTest(vec3 positionA, vec3 positionB, float diameter) {
 
 
 void ToolComponent::Etherize(Ether& e) {
-	e % title
-	  % description;
+	ETH_KEYOBJ(title);
+	ETH_KEYOBJ(description);
 	
-	EtherizeRef(e, active_tool);
-	EtherizeRefContainer(e, tools);
-	EtherizeRef(e, active_hand);
+	ETH_KEYREF(active_tool);
+	ETH_KEYREFCONT(tools);
+	ETH_KEYREF(active_hand);
 	
 	TODO // tool_type TypeCId
 }

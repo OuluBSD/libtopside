@@ -1,0 +1,24 @@
+description "\377B0,0,128";
+
+uses
+	ToolBase,
+	Task,
+	CodeEditor,
+	ToolCore;
+
+file
+	ToolCtrl.h,
+	ToolCtrl.lay,
+	ImageViewer.h,
+	ImageViewer.cpp,
+	Fns.h,
+	Fns.cpp,
+	ImageGenTool.h,
+	ImageGenTool.cpp,
+	ImageAspectFixerTool.h,
+	ImageAspectFixerTool.cpp,
+	TaskCtrl.h,
+	TaskCtrl.cpp,
+	ImageUtils.h,
+	ImageUtils.cpp;
+

@@ -34,9 +34,10 @@ NAMESPACE_UPP_BEGIN
 
 
 
-
+#if 0
 FileIn cin(stdin);
 FileOut cout(stdout), cerr(stderr);
+#endif
 
 void LogCString(const char* c) {
 	LOG(c);

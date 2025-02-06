@@ -1,0 +1,23 @@
+uses
+	LittleCore;
+
+file
+	LittleCommon.h,
+	Defs.h,
+	Fn.h,
+	Stubs.h,
+	Initrd.h,
+	Multiboot.h,
+	Paging.h,
+	Heap.h,
+	Memory.h,
+	FixedArray.h,
+	FileSystem.h,
+	FileSystem.cpp,
+	OrderedArray.h,
+	OrderedArray.cpp,
+	Timer.h,
+	InputDevice.h,
+	TokenParser.h,
+	TokenParser.cpp;
+

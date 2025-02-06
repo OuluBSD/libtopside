@@ -1,0 +1,5 @@
+LAYOUT(TextDataLoader, 408, 56)
+	ITEM(Upp::Label, message, SetLabel(t_("Loading")).LeftPosZ(4, 400).TopPosZ(4, 20))
+	ITEM(Upp::ProgressIndicator, prog, HSizePosZ(4, 4).TopPosZ(28, 24))
+END_LAYOUT
+

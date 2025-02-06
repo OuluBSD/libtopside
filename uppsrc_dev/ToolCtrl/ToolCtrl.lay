@@ -1,0 +1,26 @@
+LAYOUT(FrontPage, 400, 200)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("FrontPage")).LeftPosZ(12, 144).VSizePosZ(8, 173))
+END_LAYOUT
+
+LAYOUT(ImageAspectForm, 912, 176)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Image aspect ratio changer")).HSizePosZ(4, 180).VSizePosZ(4, 4))
+	ITEM(Upp::Button, load, SetLabel(t_("Load Image")).LeftPosZ(12, 200).TopPosZ(20, 24))
+	ITEM(Upp::EditString, path, SetEditable(false).WantFocus(false).HSizePosZ(216, 184).TopPosZ(20, 24))
+	ITEM(Upp::EditString, safe_prompt, SetEditable(false).WantFocus(false).HSizePosZ(216, 184).TopPosZ(144, 24))
+	ITEM(Upp::EditString, prompt, SetEditable(false).WantFocus(false).HSizePosZ(216, 184).TopPosZ(116, 24))
+	ITEM(Upp::Label, dv___5, SetLabel(t_("Width:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 84).TopPosZ(48, 19))
+	ITEM(Upp::EditIntSpin, width, LeftPosZ(100, 112).TopPosZ(48, 19))
+	ITEM(Upp::Label, dv___7, SetLabel(t_("Height:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 84).TopPosZ(72, 19))
+	ITEM(Upp::EditIntSpin, height, LeftPosZ(100, 112).TopPosZ(72, 19))
+	ITEM(Upp::Label, dv___9, SetLabel(t_("Extra width (%):")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 84).TopPosZ(96, 19))
+	ITEM(Upp::EditIntSpin, extra_width, LeftPosZ(100, 112).TopPosZ(96, 19))
+	ITEM(Upp::Label, dv___11, SetLabel(t_("Extra height (%):")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(12, 84).TopPosZ(120, 19))
+	ITEM(Upp::EditIntSpin, extra_height, LeftPosZ(100, 112).TopPosZ(120, 19))
+	ITEM(Upp::Label, dv___13, SetLabel(t_("Original size:")).SetAlign(Upp::ALIGN_RIGHT).LeftPosZ(212, 84).TopPosZ(48, 19))
+	ITEM(Upp::EditString, orig_sz, SetEditable(false).WantFocus(false).LeftPosZ(300, 112).TopPosZ(48, 19))
+	ITEM(Upp::Button, process, SetLabel(t_("Process")).LeftPosZ(12, 200).TopPosZ(144, 24))
+	ITEM(Upp::ArrayCtrl, queue, RightPosZ(0, 176).VSizePosZ(4, 24))
+	ITEM(Upp::Button, load_dir, SetLabel(t_("Load dir")).RightPosZ(92, 84).BottomPosZ(0, 24))
+	ITEM(Upp::Button, process_all, SetLabel(t_("Process all")).RightPosZ(4, 84).BottomPosZ(0, 24))
+END_LAYOUT
+

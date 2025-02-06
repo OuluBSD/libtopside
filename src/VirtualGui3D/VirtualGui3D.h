@@ -76,7 +76,7 @@ NAMESPACE_UPP
 struct VirtualGui3D : RTTIBase {
 	RTTI_DECL0(VirtualGui3D)
 	
-	virtual bool        Poll(UPP::CtrlEvent& e) = 0;
+	virtual bool        Poll(TS::CtrlEvent& e) = 0;
 	virtual Size        GetSize() = 0;
 	virtual void        SetTitle(String title) = 0;
 	virtual SystemDraw& BeginDraw() = 0;

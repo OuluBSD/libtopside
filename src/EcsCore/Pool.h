@@ -155,6 +155,7 @@ public:
 	PoolRef FindPool(String name);
 	PoolRef AddPool(String name="");
 	PoolRef GetAddPool(String name);
+	void RemovePool(String name);
 	EntityVec::Iterator			begin()			{return objects.begin();}
 	EntityVec::Iterator			end()			{return objects.end();}
 	PoolVec::Iterator			BeginPool()		{return pools.begin();}
@@ -213,11 +214,13 @@ inline void ComponentBase::EtherizeRef(Ether& e, EntityRef& ref) {
 			ref = root.RealizeEntityPath(path);
 			ASSERT_(ref, "Couldn't get etherized entity from path");
 		}
+		else {
+			ref->GetEntityPath(path);
+			e % path;
+		}
 	}
-	else {
-		ref->GetEntityPath(path);
-		e % path;
-	}
+	else if (e.IsStoring())
+		ref.Clear();
 }
 
 template <class T>

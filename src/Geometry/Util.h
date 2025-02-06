@@ -88,7 +88,7 @@ vec3 AxesDir(float yaw, float pitch);
 vec3 AxesDirRoll(float pitch, float roll);
 void DirAxes(vec3 dir, float& yaw, float& pitch);
 void DirAxes(vec3 dir, vec3& axes);
-vec3 GetDirAxes(const vec3& dir);
+axes3 GetDirAxes(const vec3& dir);
 axes2 GetDirAxesRoll(vec3 dir);
 vec3 GetAxesDir(const axes2& ax);
 void CameraObject(
@@ -273,7 +273,7 @@ mat4 Rotate(mat4 const& m, float angle, vec3 const& v);
 quat AxisAngleQuat(const vec3& v, float angle);
 //mat4 QuatMat(const quat& q);
 quat AxesQuat(float yaw, float pitch, float roll);
-quat AxesQuat(const vec3& axes);
+quat AxesQuat(const axes3& axes);
 mat4 XRotation(float angle);
 mat4 YRotation(float angle);
 mat4 ZRotation(float angle);
@@ -281,7 +281,7 @@ mat4 Translate(const vec3& position);
 mat4 Scale(const vec3& scale);
 //mat4 Rotate(const quat& q);
 mat4 AxesMat(float yaw, float pitch, float roll);
-mat4 AxesMat(const vec3& axes);
+mat4 AxesMat(const axes3& axes);
 
 //quat make_rotation_direction(const vec3& dir, const vec3& up);
 

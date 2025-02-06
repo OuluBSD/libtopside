@@ -15,7 +15,7 @@ public:
 	RemoteExchange sync;
 	bool debug = false;
 	bool ready = false;
-	
+	int null_value = 0;
 	
 public:
 	RTTI_DECL1(EditClientService, DaemonService);
@@ -27,6 +27,7 @@ public:
 	
 	void SetReady(bool b=true) {ready = b;}
 	void SetDebuggingMode() {debug = true;}
+	bool IsDebuggingMode() const {return debug;}
 	
 };
 

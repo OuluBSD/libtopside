@@ -1,0 +1,15 @@
+description "\377B128,0,0";
+
+uses
+	TextDatabase,
+	Core/SSL;
+
+file
+	TextLib.h,
+	SolverBase.h options(BUILDER_OPTION) PCH,
+	SolverBase.cpp,
+	"Processing pipeline" readonly separator,
+	ExampleProcess.h,
+	ExampleProcess.cpp,
+	TRASH readonly separator;
+

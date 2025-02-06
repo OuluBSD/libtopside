@@ -69,6 +69,12 @@ bool Viewport::Arg(String key, Object value) {
 	return false;
 }
 
+void Viewport::Etherize(Ether& e) {
+	ETH_KEYOBJ(target);
+	ETH_KEYOBJ(fov);
+	ETH_KEYOBJ(angle);
+}
+
 
 
 
@@ -79,35 +85,35 @@ bool Viewport::Arg(String key, Object value) {
 
 
 void CameraBase::Etherize(Ether& e) {
-	e % use_stereo
-	  % calib;
+	ETH_KEYOBJ(use_stereo);
+	ETH_KEYOBJ(calib);
 	
 	for(int i = 0; i < 2; i++) {
-		e % view_stereo[i]
-		  % proj_stereo[i]
-		  % mvp_stereo[i];
+		ETH_KEYOBJ(view_stereo[i]);
+		ETH_KEYOBJ(proj_stereo[i]);
+		ETH_KEYOBJ(mvp_stereo[i]);
 	}
 }
 
 void ChaseCam::Etherize(Ether& e) {
 	CameraBase::Etherize(e);
 	
-	e % view
-	  % projection
-	  % port
-	  % port_stereo
-	  % viewport_sz
+	ETH_KEYOBJ(view);
+	ETH_KEYOBJ(projection);
+	ETH_KEYOBJ(port);
+	ETH_KEYOBJ(port_stereo);
+	ETH_KEYOBJ(viewport_sz);
 	  
-	  % test_log
-	  % time
-	  % phase_time
-	  % fov
-	  % used_fov;
+	ETH_KEYOBJ(test_log);
+	ETH_KEYOBJ(time);
+	ETH_KEYOBJ(phase_time);
+	ETH_KEYOBJ(fov);
+	ETH_KEYOBJ(used_fov);
 	
-	EtherizeRef(e, trans);
-	EtherizeRef(e, target);
-	EtherizeRef(e, viewable);
-	EtherizeRef(e, vport);
+	ETH_KEYREF(trans);
+	ETH_KEYREF(target);
+	ETH_KEYREF(viewable);
+	ETH_KEYREF(vport);
 }
 
 void ChaseCam::Initialize() {

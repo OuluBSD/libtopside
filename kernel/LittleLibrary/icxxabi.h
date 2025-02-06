@@ -2,6 +2,9 @@
 #define _LittleLibrary_icxxabi_h_
 
 
+#if REALHW
+
+
 // source http://wiki.osdev.org/C%2B%2B
 
 
@@ -24,34 +27,34 @@ struct atexit_func_entry_t
 void PanicAssert(const char *file, unsigned int line, const char *desc);
 
 
-extern "C" {
-	
-	extern void *__dso_handle;
-	
-	int __cxa_atexit(void (*f)(void *), void *objptr, void *dso);
-	
-	
-	typedef int _Unwind_Action;
-	typedef unsigned _Unwind_Exception_Class;
-	
-	typedef enum
-	{
-	  _URC_NO_REASON = 0,
-	  _URC_FOREIGN_EXCEPTION_CAUGHT = 1,
-	  _URC_FATAL_PHASE2_ERROR = 2,
-	  _URC_FATAL_PHASE1_ERROR = 3,
-	  _URC_NORMAL_STOP = 4,
-	  _URC_END_OF_STACK = 5,
-	  _URC_HANDLER_FOUND = 6,
-	  _URC_INSTALL_CONTEXT = 7,
-	  _URC_CONTINUE_UNWIND = 8
-	} _Unwind_Reason_Code;
-	
-	_Unwind_Reason_Code __gxx_personality_v0
-	     (int, _Unwind_Action, _Unwind_Exception_Class,
-	      struct _Unwind_Exception *, struct _Unwind_Context *);
-	      
-}
+EXTERN_C_BEGIN
+
+extern void *__dso_handle;
+
+int __cxa_atexit(void (*f)(void *), void *objptr, void *dso);
+
+
+typedef int _Unwind_Action;
+typedef unsigned _Unwind_Exception_Class;
+
+typedef enum
+{
+  _URC_NO_REASON = 0,
+  _URC_FOREIGN_EXCEPTION_CAUGHT = 1,
+  _URC_FATAL_PHASE2_ERROR = 2,
+  _URC_FATAL_PHASE1_ERROR = 3,
+  _URC_NORMAL_STOP = 4,
+  _URC_END_OF_STACK = 5,
+  _URC_HANDLER_FOUND = 6,
+  _URC_INSTALL_CONTEXT = 7,
+  _URC_CONTINUE_UNWIND = 8
+} _Unwind_Reason_Code;
+
+_Unwind_Reason_Code __gxx_personality_v0
+     (int, _Unwind_Action, _Unwind_Exception_Class,
+      struct _Unwind_Exception *, struct _Unwind_Context *);
+      
+EXTERN_C_END
 
 namespace std {
 
@@ -195,4 +198,5 @@ protected:
 }
 
 
+#endif
 #endif

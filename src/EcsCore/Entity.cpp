@@ -15,6 +15,7 @@ Entity::~Entity() {
 }
 
 void Entity::Etherize(Ether& e) {
+	byte magic = 0, chk = 0xA0;
 	/*
 	EntityId id = -1;
 	int64 created = 0;
@@ -36,25 +37,66 @@ void Entity::Etherize(Ether& e) {
 	
 	GeomVar type;
 	if (e.IsLoading()) {
-		TODO
-		while (!e.IsEof()) {
-			e.GetT(type);
+		e.GetT(magic);
+		ASSERT(magic == chk);
+		
+		int c = 0;
+		e.GetT(c);
+		
+		for(int i = 0; i < c; i++) {
+			e.GetT(magic);
+			ASSERT(magic == chk);
 			
+			String cls_name = e.GetString();
+			TypeCls cls = ComponentFactory::GetComponentType(cls_name);
+			
+			ComponentRef c = GetAddTypeCls(cls);
+			if (!c) {
+				e.SetError();
+				return;
+			}
+			
+			
+			while (!e.IsEof()) {
+				c->Etherize(e);
+				
+				dword end_obj_type = e.Peek();
+				if (!end_obj_type)
+					break;
+			}
+			dword end_obj_type = -1;
+			e.GetT(end_obj_type);
+			ASSERT(end_obj_type == 0);
+			
+			e.GetT(magic);
+			int pos = e.GetCursor();
+			ASSERT(magic == chk);
 		}
+		
+		e.GetT(magic);
+		ASSERT(magic == chk);
 	}
 	else {
+		e.PutT(chk);
+		int c = comps.GetCount();
+		e.PutT(c);
 		for (ComponentRef c : comps) {
-			type = GEOMVAR_PUSH_COMPONENT;
-			e.PutT(type);
+			e.PutT(chk);
+			
 			TypeCls cls = c->GetTypeId();
 			String name = ComponentFactory::GetComponentName(cls);
 			e.Put(name);
 			
 			c->Etherize(e);
 			
-			type = GEOMVAR_POP_COMPONENT;
-			e.PutT(type);
+			// Required for reading, see Object::PutKeyType
+			dword end_obj_type = 0;
+			e.PutT(end_obj_type);
+			
+			e.PutT(chk);
 		}
+		
+		e.PutT(chk);
 	}
 }
 

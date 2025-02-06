@@ -26,4 +26,20 @@
 #define NAMESPACE_PBR_END }}
 
 
+NAMESPACE_UPP
+
+const dword POOL_O        = PKG_ECS_V  | 0x100 | 1;
+const dword ENTITY_O      = PKG_ECS_V  | 0x100 | 0;
+
+END_UPP_NAMESPACE
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+template<> inline dword ObjectTypeNo(const Ecs::Entity*) {return ENTITY_O;}
+template<> inline dword ObjectTypeNo(const Ecs::Pool*) {return POOL_O;}
+
+NAMESPACE_TOPSIDE_END
+
+
 #endif

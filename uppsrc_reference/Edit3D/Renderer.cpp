@@ -250,7 +250,7 @@ void EditRenderer::MouseMove(Point p, dword keyflags) {
 		switch (cap_mode) {
 			case CAPMODE_MOVE_XY: MoveRel(vec3(-diff.x * s, diff.y * s, 0)); break;
 			case CAPMODE_MOVE_YZ: MoveRel(vec3(-diff.x * s, 0, -diff.y * s * SCALAR_FWD_Z)); break;
-			case CAPMODE_ROTATE: RotateRel(vec3(-diff.x * s, -diff.y * s, 0)); break;
+			case CAPMODE_ROTATE: RotateRel(axes3(-diff.x * s, -diff.y * s, 0)); break;
 			default: break;
 		}
 	}

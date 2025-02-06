@@ -17,6 +17,7 @@ file
 	GeomProjectCtrl.cpp,
 	Remote.h,
 	Remote.cpp,
+	DbgPool.cpp,
 	RemoteCtrl.cpp,
 	Geom.h,
 	Geom.cpp,

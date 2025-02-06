@@ -1,0 +1,1547 @@
+#include "OrgCtrl.h"
+
+#define IMAGECLASS OrgLibImgs
+#define IMAGEFILE <OrgCtrl/OrgLibImages.iml>
+#include <Draw/iml_source.h>
+
+
+void InitDummy();
+void InitGoalBased();
+void InitMetaBased();
+void InitMarketBased();
+void InitClassBased();
+
+INITBLOCK {
+	using namespace TextLib;
+	
+	// NOTE: this order can't be changed or data breaks!
+	NodeFactory::Register<UppExporterCtrl,UppExporterView>("U++ project", NODE_EXPORTER);
+	NodeFactory::Register<SystemCtrl,SystemView>("System", NODE_SYSTEM);
+	NodeFactory::Register<FeaturesCtrl,FeaturesView>("Features", NODE_FEATURES);
+	NodeFactory::Register<FileListCtrl,FileListView>("File list", NODE_FILE_LIST);
+	NodeFactory::Register<FileCtrl,FileView>("File", NODE_FILE);
+	NodeFactory::Register<DebugCtrl,DebugView>("Debug", NODE_DEBUG);
+	NodeFactory::Register<ProjectWizardCtrl,ProjectWizardView>("Project Wizard", NODE_WIZARD);
+	NodeFactory::Register<DirectoryCtrl,DirectoryView>("Directory", NODE_DIRECTORY);
+	NodeFactory::Register<ModuleCtrl,ModuleView>("Module", NODE_MODULE);
+	NodeFactory::Register<ClassCtrl,ClassView>("Class", NODE_CLASS);
+	NodeFactory::Register<PackageCtrl,PackageView>("Package", NODE_PACKAGE);
+	NodeFactory::Register<MetaCtrl,MetaView>("Meta", NODE_META);
+	NodeFactory::Register<MetaWizardCtrl,MetaWizardView>("Meta Wizard", NODE_METAWIZARD);
+	
+	
+	//InitDummy();
+	InitMarketBased();
+	InitGoalBased();
+	InitMetaBased();
+	//InitClassBased();
+}
+
+void InitDummy() {
+	ProjectWizardView::RegisterCategory("dummy", "Dummy values for testing only");
+	ProjectWizardView::Register("/dummy 0/example0:item 0", "3 fixed options")
+		.OptionFixed("A")
+		.OptionFixed("B")
+		.OptionFixed("C");
+	ProjectWizardView::Register("/dummy 0/example0:item 1", "3 random strings")
+		.OptionValueArray()
+		.PromptInput("/dummy 0/example0:item 0")
+		.PromptResponse("List of 3 random dummy string values");
+	ProjectWizardView::Register("/dummy 0/example1:item 1", "3 characters")
+		.OptionFixed("x")
+		.OptionFixed("y")
+		.OptionFixed("z")
+		.PromptInputOptionsLocalFixed()
+		.PromptInputOptions("/dummy 0/example0:item 0")
+		.PromptInput("/dummy 0/example0:item 0")
+		.PromptInput("/dummy 0/example0:item 1")
+		.PromptInputUserText("Some random seed text")
+		.PromptResponse("List of 3 random dummy boolean values");
+	ProjectWizardView::Register("/dummy 1/example0:item 0", "Select 1 from 3 fixed options")
+		.OptionFixed("q")
+		.OptionFixed("w")
+		.OptionFixed("e");
+	ProjectWizardView::Register("/dummy 1/example1:item 0", "Select 1 from 3 fixed options")
+		.OptionFixed("a")
+		.OptionFixed("s")
+		.OptionFixed("d")
+		.OptionFixed("f");
+	
+}
+
+void InitGoalBased() {
+	
+	
+	/*
+	- goal
+		- purpose
+		- goal parts
+			- error/exception prediction and preparation (goal)
+			- data input (nämä on omat goal:it)
+				- reference fetching goal
+				- temporary variable construction goal
+			- context state and variable assertion before processing (goal)
+			- data processing (multiple goals)
+			- data output (goal)
+			- data cleanup (goal)
+			- logging (goal)
+	*/
+	
+	ProjectWizardView::Register("/Idea/Purpose:The initial purpose", "The initial purpose for the software codebase")
+		.OptionUserInputText();
+	
+	ProjectWizardView::Register("/Idea/Purpose:Reference", "The purpose of being the reference/tutorial/example code inside developer community")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible purposes of being the reference/tutorial/example code inside developer community");
+	
+	ProjectWizardView::Register("/Idea/Purpose:Technical", "The technical purpose from developer's perspective")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of target technical purposes for the software project from developer's perspective");
+	
+	ProjectWizardView::Register("/Idea/Purpose:Technical demand", "The technical or reference/tutorial/example demand from developer's perspective")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of target technical or reference/tutorial/example demands for the software project from developer's perspective");
+	
+	ProjectWizardView::Register("/Idea/Purpose:Project name")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible name for this software project");
+	
+	ProjectWizardView::Register("/Idea/Purpose:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("Consider all previous informations and write a short statement, which combines all the information");
+	
+	
+	#if 0
+	ProjectWizardView::Register("/Time-domain/Program:Goal definition")
+		.DefaultReadOptions()
+		.OptionFixed("goal/purpose")
+		.OptionFixed("goal/goal parts/")
+		.OptionFixed("goal/goal parts/error and exception prediction and preparation (sub-goal)")
+		.OptionFixed("goal/goal parts/data input/reference fetching (sub-goal)")
+		.OptionFixed("goal/goal parts/data input/temporary variable construction (sub-goal)")
+		.OptionFixed("goal/goal parts/context state and variable assertion before processing (sub-goal)")
+		.OptionFixed("goal/goal parts/data processing (sub-goal or multiple sub-goals)")
+		.OptionFixed("goal/goal parts/data output (sub-goal)")
+		.OptionFixed("goal/goal parts/data cleanup (sub-goal)")
+		.OptionFixed("goal/goal parts/logging (sub-goal)");
+	
+	ProjectWizardView::Register("/Time-domain/Program:Main function")
+		.DefaultReadOptions()
+		//.OptionButton("Clear tasks and classes", &ProjectWizardView::ClearAllDynamic)
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main goals for the code of the main function of the program (goal: purpose)")
+		//.OptionButton("Split response to components", &ProjectWizardView::SplitComponents)
+		//.OptionButton("Split components' responses to tasks and classes", &ProjectWizardView::SplitAllSubComponents)
+		;
+	
+	#endif
+}
+
+void InitMetaBased() {
+	ProjectWizardView::Register("/Meta/Reference:Example 1 (Console): packages and their dependencies", "List of packages inside the \"TopTool\" application. This doesn't include external library usage/dependencies")
+		.DefaultReadOptions()
+		.OptionFixed("TopTool -> Base, TextLib, OrgLib, Script // Main application")
+		.OptionFixed("TextDatabase -> ToolBase // Library of TopTool's database")
+		.OptionFixed("TextElements -> TextDatabase // Library of core functionalities of the TopTool")
+		.OptionFixed("Task -> ToolBase, Base/SSL // Tasks to run external processes")
+		.OptionFixed("ToolBase -> Base // Generic base classes for core functionalities")
+		.OptionFixed("Base -> ext/z // Non-GUI code. Streams, NTL containers, concrete types, Value, XML, C parsing etc...")
+		.OptionFixed("Base/SSL // OpenSSL based SSL support for Base")
+		.OptionFixed("Draw -> Base // Fundamental graphics operations, including raster image processing")
+		.OptionFixed("Script -> Base // Scripting language interpreter")
+		.OptionFixed("ext/z // zlib compressor/decompressor and its U++ encapsulation.")
+		;
+	
+	ProjectWizardView::Register("/Meta/Reference:Example 2 (GUI): packages and their dependencies", "List of packages inside the \"TopTool\" application. This doesn't include external library usage/dependencies")
+		.DefaultReadOptions()
+		.OptionFixed("TopTool -> GUIElements, TextDatabaseElements, TextElements, OrgElements, Scripting // Main application")
+		.OptionFixed("TextElements -> Base, TextLibrary, ToolElements // Library of TopTool's GUI elements")
+		.OptionFixed("TextDatabaseElements -> Agents, ToolElements // Library of TopTool Database's GUI elements")
+		.OptionFixed("TextDatabase -> ToolBase // Library of TopTool's database")
+		.OptionFixed("TextLibrary -> TextDatabase // Library of core functionalities of the TopTool")
+		.OptionFixed("Tasks -> ToolBase, Base/SSL // Tasks to run external processes")
+		.OptionFixed("ToolBase // Generic base classes for core functionalities")
+		.OptionFixed("Base -> ext/z // Non-GUI code. Streams, NTL containers, concrete types, Value, XML, C parsing etc...")
+		.OptionFixed("Base/SSL // OpenSSL based SSL support for Base")
+		.OptionFixed("GUIElements -> Draw, ext/bmp, RichText, Painter // GUI core system")
+		.OptionFixed("ToolElements -> Tasks, GUIElements, CodeEditor, ext/png, RichEdit, ext/jpg, Scripting // Core GUI elements as an extension to GUIElements")
+		.OptionFixed("OrgElements -> OrgLibrary, GUIElements // GUI elements of the Organizational part of the TopTool")
+		.OptionFixed("OrgLibrary -> Base // functional elements of the Organizational part of the TopTool")
+		.OptionFixed("CodeEditor -> GUIElements, ext/pcre // The source files edit, derived from GUIElements's LineEdit")
+		.OptionFixed("Draw -> Base // Fundamental graphics operations, including raster image processing")
+		.OptionFixed("Scripting -> Base // Scripting language interpreter")
+		.OptionFixed("Painter -> Draw // 2D software rendering with PDF/SVG strength")
+		.OptionFixed("ext/bmp -> Draw // BMP image file format")
+		.OptionFixed("ext/jpg -> Draw // JPEG image file format")
+		.OptionFixed("ext/png -> Draw // PNG image file format")
+		.OptionFixed("ext/pcre -> Base // PCRE regular expressions library")
+		.OptionFixed("ext/z // zlib compressor/decompressor and its U++ encapsulation")
+		;
+	
+	ProjectWizardView::Register("/Meta/Reference:Example of virtual module importing")
+		.DefaultReadOptions()
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"GUI/Core\" // because the app uses OS with gui windows")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Standard/TextProcessing\" // because the app prints text to terminal or reads terminal text input")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Standard/Threading\" // because the program runs in multiple threads or forks itself")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"CLI/CommandLineArguments\" // because calls the app in terminal and adds program params, which needs to be parsed")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"System/SubProcess\" // because the program runs another program executable as a sub-process")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Audio/Output\" // because the program plays a sound effect or raw sound data")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Audio/Synthesis\" // because the program wants to play music using midi")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Network/TCP\" // because the program uses standard tcp sockets")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Network/UDP\" // because the program uses standard udp sockets")
+		.OptionFixed("IMPORT_VIRTUAL_MODULE \"Network/CustomOverUDP\" // because the program has custom persistent connection over standard udp packets")
+		.OptionFixed("etc.")
+		;
+	
+	ProjectWizardView::Register("/Meta/Reference:Example1", "Natural language meta-programming example")
+		.DefaultReadOptions()
+		.OptionFixed("include libraries")
+		.OptionFixed("begin defining main function (entry point of the program)")
+		.OptionFixed("initialize the libraries that this program depends on")
+		.OptionFixed("parse main function's/program's arguments (possibly using the libraries)")
+		.OptionFixed("end defining main function")
+		;
+	
+	ProjectWizardView::Register("/Meta/Reference:Example of meta instructions", "Hard coded meta-instructions")
+		.DefaultReadOptions()
+		.OptionFixed(">IMPORT_VIRTUAL_MODULE \"GUI\" // because the program uses Desktop OS windows")
+		.OptionFixed(">IMPORT_MODULE \"<Name>\" // Includes the actual library (e.g. Qt, SWT, MSC)")
+		.OptionFixed(">BEGIN_MODULE \"std\" // Begins defining local partial module (or namespace depending on the language)")
+		.OptionFixed(">>DECLARE_CLASS \"<ClassName>\"")
+		.OptionFixed(">>DECLARE_FUNCTION \"<Name>\", argv: char**, argv: int -> string // Declares the function with parameter(s)")
+		.OptionFixed(">>BEGIN_CLASS \"<ClassName>\"")
+		.OptionFixed(">>>DECLARE_METHOD \"<SomeMethodFunction>\", param0: int -> double // Only declares that the method exists (with parameter(s))")
+		.OptionFixed(">>>DECLARE_FUNCTION_VIRTUAL \"OnEvent\" -> int")
+		.OptionFixed(">>>DECLARE_FUNCTION_OVERRIDE \"OnEvent\" -> int // Binds a virtual function")
+		.OptionFixed("<<END_CLASS")
+/*		.OptionFixed(">>BEGIN_FUNCTION \"main\", argv: char**, argv: int -> int // Begins defining the function with parameter(s)")
+		.OptionFixed(">>>CALL_FUNCTION \"FunctionName\", 4, \"some string arg\" -> stack0// a standalone call statement calling a function and stores return value to stack variable #0")
+		.OptionFixed(">>>BEGIN_EXPRESSION // an expression inside a function or in a global scope as initializer")
+		.OptionFixed(">>>>ADD [stack0], 5 -> [temp0] // add stack variable to integer constant 5 and save the result in temporary expression variable")
+		.OptionFixed(">>>>MOVE [temp0] -> [stack1] // move temporary expression variable to stack variable")
+		.OptionFixed(">>>>CALL_FUNCTION \"Other function\", [stack1], 0 // Function name, argument(s)")
+		.OptionFixed("<<<END_EXPRESSION")
+		.OptionFixed("<<END_FUNCTION")*/
+		.OptionFixed(">>BEGIN_METHOD \"ClassName::SomeMethodFunction\", param0: int -> double // Begins to define the Methos")
+		.OptionFixed("<<END_METHOD")
+		/*
+>DECLARE_META_FUNCTION "CallModuleFeature", template_type: meta typename-> meta function // Declares existance of Macro/Meta function
+>BEGIN_META_FUNCTION "CallModuleFeature", template_type: meta typename-> meta function // Macro/Meta function, which can e.g. resolve the name of the actual function, and returns meta string
+>>BEGIN_META_STATEMENT
+>>>IF template_type == #int
+>>>>RETURN "<NameOfSomeFunctionThatReturnsInt>"
+>>>END_IF
+<<END_META_STATEMENT
+<END_META_FUNCTION
+*/
+
+		.OptionFixed(">>DECLARE_META_FUNCTION \"CallModuleFeature\", text: string -> string // Declares existance of Macro/Meta function")
+		.OptionFixed(">>BEGIN_META_FUNCTION \"CallModuleFeature\", text: string -> string // Macro/Meta function, which can e.g. resolve the name of the actual function, and returns meta string")
+		.OptionFixed(">>>DECLARE_META_STATEMENT \"text parameter is processed in a custom way and returned\" // Description of the statement inside the meta-function")
+		.OptionFixed("<<END_META_FUNCTION ")
+		.OptionFixed("<END_MODULE")
+		;
+	
+	ProjectWizardView::Register("/Meta/Reference:Example of instructions of a implementation", "Hard coded meta-instructions")
+		.DefaultReadOptions()
+		/*.OptionFixed(">>BEGIN_FUNCTION \"main\", argv: char**, argv: int -> int // Begins defining the function with parameter(s)")
+		.OptionFixed(">>>DECLARE_VARIABLE some_number: int (0) // variable, which exists during the function")
+		.OptionFixed(">>>DECLARE_VARIABLE some_other_number: int (3)")
+		.OptionFixed(">>>CALL_FUNCTION \"FunctionName\", 4, \"some string arg\" -> some_number // a standalone call statement calling a function and stores return value to stack variable #0")
+		.OptionFixed(">>>BEGIN_STATEMENT // an expression inside a function or in a global scope as initializer")
+		.OptionFixed(">>>>DECLARE_VARIABLE temp0: int:  // temporary variable, which exists only during the statement")
+		.OptionFixed(">>>>ADD some_number, 5 -> temp0 // add stack variable to integer constant 5 and save the result in temporary expression variable")
+		.OptionFixed(">>>>MOVE temp0 -> some_other_number // move temporary expression variable to stack variable")
+		.OptionFixed(">>>>CALL_FUNCTION \"Other function\", some_other_number, 0 // Function name, argument(s)")
+		.OptionFixed("<<<END_STATEMENT")
+		.OptionFixed("<<END_FUNCTION")*/
+		.OptionFixed("main(argv: char**, argv: int) -> int { // Begins defining the function with parameter(s)")
+		.OptionFixed("	var some_number: int (0) // variable, which exists during the function")
+		.OptionFixed("	var some_other_number: int (3)")
+		.OptionFixed("	var temp0: int")
+		.OptionFixed("	some_number = SomeFunction(4, \"some string arg\") // a standalone call statement calling a function and stores return value to stack variable #0")
+		.OptionFixed("	temp0 = some_number + 5 // add variable to integer constant 5 and save the result in temporary expression variable")
+		.OptionFixed("	some_other_number = temp0 // move temporary expression variable to stack variable")
+		.OptionFixed("	OtherFunction(&some_other_number, 0) // Function name, argument(s)")
+		.OptionFixed("	if (some_other_number == (temp0 + 1)) {")
+		.OptionFixed("		while (true) {")
+		.OptionFixed("			temp0 = temp0 + 2")
+		.OptionFixed("			if (temp0 > 10) {")
+		.OptionFixed("				break")
+		.OptionFixed("			}")
+		.OptionFixed("		}")
+		.OptionFixed("	}")
+		.OptionFixed("}")
+		;
+	
+	ProjectWizardView::Register("/Meta/Headers:Clear assembly")
+		.OptionButton("Clear", &ProjectWizardView::ClearAssembly, true)
+		.SkipValue()
+		;
+	
+	ProjectWizardView::Register("/Meta/Headers:Clear dynamic")
+		.OptionButton("Clear", &ProjectWizardView::ClearAllDynamic, true)
+		.SkipValue()
+		;
+	
+	ProjectWizardView::Register("/Meta/Headers:Packages of the app")
+		.DefaultReadOptions()
+		.PromptInput("/Meta/Reference:Example 1 (Console): packages and their dependencies")
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptResponse("List of packages and their dependencies of the given application")
+		;
+	
+	ProjectWizardView::Register("/Meta/Headers:Split packages")
+		.OptionButton("Split", &ProjectWizardView::SplitPackages, true)
+		.SkipValue()
+	;
+	
+	ProjectWizardView::RegisterDynamic("/Meta/Headers:Package includes")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInputAllPrevious()
+		.PromptInputUserText("The package in focus")
+		.PromptResponse("List of external C++-like file includes (with reasoning)")
+		;
+	
+	ProjectWizardView::RegisterDynamic("/Meta/Headers:Virtual package")
+		.DefaultReadOptions()
+		.PromptInput("/Meta/Reference:Example of meta instructions")
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInput("/Meta/Headers:Package includes")
+		.PromptInputUserText("The package in focus")
+		.PromptResponse("List of DECLARE_FUNCTION and DECLARE_CLASS  inside the package in focus. These DECLARE_META_FUNCTION don't fit in other virtual modules")
+		;
+	
+	ProjectWizardView::Register("/Meta/Headers:Parse virtual package data")
+		.OptionButton("Parse", &ProjectWizardView::ParseVirtualPackageData, true)
+		;
+		
+	ProjectWizardView::Register("/Meta/Implementation:Read node-tree")
+		.PromptInput("/Meta/Reference:Example of meta instructions")
+		.PromptInput("/Meta/Reference:Example of instructions of a implementation")
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInput("/Meta/Headers:Virtual package")
+		.PromptResponse("List of instructions of the implementation of the main function following 'main(argv: char**, argv: int) -> int'", false)
+		.OptionButton("Read", &ProjectWizardView::ReadNodeTree, true)
+		;
+	/*
+	NOTE: seems like these must be solved after the virtual implementation
+	
+	ProjectWizardView::RegisterDynamic("/Meta/Headers:External virtual modules")
+		.DefaultReadOptions()
+		//.OptionFixed("IMPORT_VIRTUAL_MODULE \"Main Application\"")
+		//.PromptInput("/Meta/Reference:Example of virtual module importing")
+		.PromptInput("/Meta/Reference:Example of meta instructions")
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInput("/Meta/Headers:Packages of the app")
+		.PromptInput("/Meta/Headers:Virtual package")
+		.PromptInputUserText("The package in focus")
+		.PromptResponse("List of IMPORT_VIRTUAL_MODULE meta instructions in the main application module based on external library dependencies of the app. Don't include packages the project")
+		//.OptionButton("Split virtual modules", &ProjectWizardView::SplitVirtualModules)
+		;
+	
+	ProjectWizardView::RegisterDynamic("/Meta/Headers:Virtual module")
+		.PromptInput("/Meta/Reference:Example of meta instructions")
+		.PromptInput("/Idea/Purpose:Statement")
+		.PromptInput("/Meta/Headers:Package includes")
+		.PromptInputUserText("The package in focus")
+		.PromptResponse("List of DECLARE_META_FUNCTION  inside the package in focus. These DECLARE_META_FUNCTION don't fit in other virtual modules")
+		;*/
+	
+	/*
+/Idea/Purpose: Statement:
+- EasyDraw is a GUI program created as a technology demonstration that allows users to draw 2D primitives and programmatically animate images in a single window. It also serves as a reference and tutorial for developers new to GUI programming, showcasing techniques like object-oriented programming and event handling. Its purpose is to help developers understand GUI concepts and principles through a hands-on example.
+
+
+Meta-programming of the given "EasyDraw" program:
+- include necessary libraries, such as GUI and graphics libraries
+- begin defining EasyDraw class
+- inside the class, define and initialize necessary variables and data structures for drawing and animating
+- create methods for drawing different 2D primitives (e.g. rectangles, circles, lines)
+- create methods for animating images, such as moving, rotating, and resizing them
+- create event handlers for user input, such as mouse clicks and key presses
+- initialize the main GUI window
+- inside the main function, create an instance of the EasyDraw class
+- call methods to draw and animate objects based on user input
+- handle user events using the event handlers created in the EasyDraw class
+- end the main function and exit the program gracefully. 
+
+Hard-coded instructions of the given "EasyDraw" program:
+- IMPORT_MODULE "GUI"
+- IMPORT_MODULE "graphics"
+- BEGIN_CLASS "EasyDraw"
+		- CREATE_VARIABLE "canvas" // Creates an empty canvas to draw on
+		- CREATE_VARIABLE "shapes" // Stores all drawn objects
+		- CREATE_VARIABLE "animations" // Stores all animations
+		- BEGIN_METHOD "drawRectangle", x, y, width, height // Draws a rectangle at given coordinates and size
+				- BEGIN_STATEMENT
+						- FILL_RECTANGLE x, y, width, height // Draws a filled rectangle at given coordinates and size
+						- PUSH_OBJECT shapes // Adds the drawn rectangle to the list of shapes
+					- END_STATEMENT
+			- END_METHOD
+		- BEGIN_METHOD "animateObject", object, animationType, animationParameters // Animates an object based on given parameters and type
+				- BEGIN_STATEMENT
+						- IF animationType == "move"
+								- CALL_FUNCTION "moveObject", object, x, y // Moves the object to new coordinates
+						- ELSE IF animationType == "rotate"
+								- CALL_FUNCTION "rotateObject", object, angle // Rotates the object by a given angle
+						- ELSE IF animationType == "resize"
+								- CALL_FUNCTION "resizeObject", object, newWidth, newHeight // Resizes the object to new dimensions
+						- PUSH_OBJECT animations // Adds the animation to the list of animations
+					- END_STATEMENT
+			- END_METHOD
+		- BEGIN_METHOD "onMouseClick", mouseX, mouseY // Event handler for mouse clicks
+				- BEGIN_STATEMENT
+						- CALL_FUNCTION "createRectangle", mouseX, mouseY, 50, 50 // Calls the method to draw a rectangle at the click location
+					- END_STATEMENT
+			- END_METHOD
+		- BEGIN_METHOD "onKeyPress", key // Event handler for key presses
+				- BEGIN_STATEMENT
+						- IF key == "left arrow"
+								- CALL_FUNCTION "moveObject", shapes[-1], -10, 0 // Moves the last drawn object to the left
+						- ELSE IF key == "right arrow"
+								- CALL_FUNCTION "moveObject", shapes[-1], 10, 0 // Moves the last drawn object to the right
+					- END_STATEMENT
+			- END_METHOD
+		- BEGIN_FUNCTION "main"
+				- INITIALIZE_MODULE "GUI"
+				- INITIALIZE_MODULE "graphics"
+				- CREATE_VARIABLE "myEasyDraw" // Creates an instance of EasyDraw class
+				- WHILE true // Program runs continuously until user closes the window
+						- IF MOUSE_CLICK // Checks for mouse clicks
+								- CALL_FUNCTION "onMouseClick", mouseX, mouseY // Calls the event handler method for mouse clicks
+						- ELSE IF KEY_PRESS // Checks for key presses
+								- CALL_FUNCTION "onKeyPress", key // Calls the event handler method for key presses
+						- CALL_FUNCTION "animateObject", animations[-1], 0.5 // Animates the last added animation with a given duration
+				- END_STATEMENT
+				- END_FUNCTION
+	- END_CLASS
+
+TODO
+	- meta-wizard:
+		- programming-language level (verilog,assembly,c,c++,javascript,java)
+		- library levels (e.g. gui level (extensive (qt), basic(??? some X-gui lib), built-in(DIY) )
+		- ring-level: hardware, kernel, system program (root/user), vm
+		- user entry point:
+			- device usage (driver), cmd-line, gui
+			- remote-call (at web server), dll-call (add-on module)
+			- page layout file-system (web server)
+			- inside multimedia engine (2D/3D/VR)
+			- headless (e.g. game controller drives a robotic car)
+	- recursive "IMPORT_VIRTUAL_MODULE"
+		- separate project wizard to generic wizard base class and project wizards --> use base
+		  class in meta wizard
+	- main loop
+	- construct variable
+	
+*/
+}
+
+void InitMarketBased() {
+	
+	// Which software project to invest (games, apps, virtual instruments, etc.):
+	
+	//// Determine the overall budget available for the investment.
+	//// Identify the target market for the software project.
+	ProjectWizardView::Register("/Idea/Product:The initial idea", "The initial idea for the software project")
+		.OptionUserInputText();
+	
+	ProjectWizardView::Register("/Idea/Product:The target market", "The target market for the software project")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of target markets for a software projects");
+	
+	//// Research the current market trends and demands.
+	ProjectWizardView::Register("/Idea/Product:The market trend to follow")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of target trends for the software projects");
+	
+	ProjectWizardView::Register("/Idea/Product:The market demand to fulfill")
+		.DefaultReadOptions()
+		.PromptInputAllPrevious()
+		.PromptResponse("List of market demands to fulfill for the software project");
+	
+	//// Evaluate the potential profitability and return on investment.
+	ProjectWizardView::Register("/Idea/Product:Profitability", "The expected or estimated profitability of this kind of software project")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of reasons for potential outcomes for the total profitability of the software project");
+	
+	//// Assess the competition in the market.
+	ProjectWizardView::Register("/Idea/Product:Relationship to competition", "Assessment of the competition in the market")
+		.DefaultReadOptions()
+		.PromptInputAllPrevious()
+		.PromptResponse("List of competing products and assessment as competitor");
+	
+	//// Gather feedback from potential users or investors.
+	ProjectWizardView::Register("/Idea/Product:Target feedback from potential users or investors")
+		.DefaultReadOptions()
+		.PromptInputAllPrevious()
+		.PromptResponse("List feedback from potential users or investors");
+	
+	//// Develop a marketing strategy for the project.
+	ProjectWizardView::Register("/Idea/Product:Core marketing idea")
+		.DefaultReadOptions()
+		.PromptInputAllPrevious()
+		.PromptResponse("Develop a marketing strategy for the project");
+	
+	//// Identify potential collaborators or partners.
+	ProjectWizardView::Register("/Idea/Product:Potential collaborators or partners")
+		.PromptInputAllPrevious()
+		.PromptResponse("Identify potential collaborators or partners");
+	
+	//// Consider the target pricing for the software product.
+	ProjectWizardView::Register("/Idea/Product:Target pricing")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of potential pricing targets for the software product");
+	
+	//// Consider the sales volume of the product
+	ProjectWizardView::Register("/Idea/Product:Sales volume target")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible sale volumes from best to worst (based on the marketing and winning of the competition)");
+	
+	ProjectWizardView::Register("/Idea/Product:Project name")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible name for this software project");
+	
+	
+	ProjectWizardView::Register("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("Consider all previous informations and write a short statement, which combines all the information");
+	
+	
+	#if 0
+	
+	
+	// Define project requirements and scope
+	
+	//// Identify key stakeholders and project goals
+	
+		//Example answers for "What are the stakeholders' specific needs and goals for this project?":
+		//1. Increase efficiency in data processing
+		//2. Improve user experience
+		//3. Ensure data security and privacy
+		//4. Integrate with existing software systems
+		//5. Provide a user-friendly interface
+		//6. Reduce manual tasks and improve automation
+		//7. Increase productivity
+		//8. Stay within budget and timeline
+		//9. Scalability for future growth
+		//10. Improve collaboration and communication.
+	ProjectWizardView::Register("/Requirements/Specific needs:Stakeholders")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptResponse("List of possible stakeholders for the software project");
+	
+		//Feedback from potential users or investors for the market target "Musicians - for a virtual instrument or music production software." in the market trend "Focus on user experience - there is a growing emphasis on creating user-friendly and seamless experiences in software projects.":
+		//1. "The user interface is very intuitive and easy to navigate."
+		//2. "I appreciate the low latency for a real-time playing experience."
+		//3. "The sounds are incredibly realistic and high-quality."
+		//4. "It seamlessly integrates with my current DAW."
+		//5. "I love the versatility - I can use it for any genre of music."
+		//6. "The customization options allow me to make the sounds unique to my preferences."
+		//7. "It runs smoothly without causing any lag or crashes on my computer."
+		//8. "The customer support team was very helpful and responsive to my inquiries."
+		//9. "The tutorials and training resources are very helpful for beginners like me."
+		//10. "There is a wide range of instruments and effects to choose from."
+		//11. "I appreciate the MIDI compatibility for easy control of instruments."
+		//12. "It's great that it is cross-platform compatible, so I can use it on both my laptop and desktop."
+		//13. "It's reliable and I haven't experienced any technical issues so far."
+		//14. "The price is reasonable and affordable for the quality of the software."
+		//15. "I can easily connect my external controllers and hardware devices for a better user experience."
+	ProjectWizardView::Register("/Requirements/Specific needs:Potential users or investors")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.DefaultReadOptions()
+		.PromptResponse("List of possible potential users and investors for the software project");
+			
+		//----> features, classes, data, assets
+	ProjectWizardView::Register("/Requirements/Specific needs:Features")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible features for the software project");
+	
+	ProjectWizardView::Register("/Requirements/Specific needs:Assets")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible assets for the software project");
+	
+	ProjectWizardView::Register("/Requirements/Specific needs:Data")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible data for the software project");
+	
+	ProjectWizardView::Register("/Requirements/Specific needs:User entry points")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible technical user entry points for the software project");
+	
+	ProjectWizardView::Register("/Requirements/Specific needs:Statement")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("Consider all previous informations and write a short summary text of project goals and specific needs");
+	
+	
+	//// Gather and analyze user requirements
+	
+		// List of steps:
+		//1. Conduct user interviews
+		//2. Create user personas
+		//3. Gather feedback from potential users
+		//4. Analyze existing systems or processes
+		//5. Identify pain points and improvement opportunities
+		//6. Consider scalability and future needs
+		//7. Prioritize user requirements.
+	ProjectWizardView::Register("/Requirements/User experience:User interview target")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptResponse("Lisft of potential user interviews of the users of the software");
+	
+	ProjectWizardView::Register("/Requirements/User experience:User persona target")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("Lisft of potential user personas what the software could target");
+	
+	ProjectWizardView::Register("/Requirements/User experience:User feedback target")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of potential user feedbacks what the software could target");
+	
+	ProjectWizardView::Register("/Requirements/User experience:State-of-the-art user experience to have")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of features of the state-of-the-art user experience to have with similar software");
+	
+	ProjectWizardView::Register("/Requirements/User experience:The best UX features of competition to have")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of the best UX features of competition to have");
+	
+	ProjectWizardView::Register("/Requirements/User experience:The most unique UX features of competition to have")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of the most unique UX features of the competition");
+	
+	ProjectWizardView::Register("/Requirements/User experience:The worst UX features of competition to avoid")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of the worst unique UX features of the competition");
+	
+	ProjectWizardView::Register("/Requirements/User experience:In-game shopping")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of in-game products to sell, advertise and offer");
+	
+	ProjectWizardView::Register("/Requirements/User experience:Future needs")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of features what might be needed in the future");
+	
+	ProjectWizardView::Register("/Requirements/User experience:Feature prioritization")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of the 5 most important features");
+	
+	ProjectWizardView::Register("/Requirements/User experience:Statement")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("Consider all previous informations and write a full summary text about the user experience");
+	
+	
+	//// Prioritize and document project features and functionalities
+	
+		// Example answers
+		//1. Managing and importing large datasets
+		//2. User authentication and access control
+		//3. Data analysis and visualization
+		//4. Data filtering and manipulation
+		//5. Integration with external APIs
+		//6. Error handling and debugging
+		//7. Exporting data in different formats
+		//8. Responsive design for multiple devices
+		//9. Automated backups and data recovery
+		//10. Secure storage of sensitive information.
+		//11. Real-time updates and notifications
+		//12. Customizable user preferences
+		//13. Integration with social media platforms
+		//14. Support for multiple languages.
+		//15. User feedback and customer support.
+		//16. Integration with payment processing system.
+		//17. Data encryption and secure transmission.
+		//18. Integration with third-party plugins or extensions.
+		//19. Generation of reports and statistics.
+		//20. Collaboration and sharing capabilities.
+	ProjectWizardView::Register("/Requirements/Features:Functionalities of the client application")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main functionalities of the client application");
+	
+	ProjectWizardView::Register("/Requirements/Features:Functionalities of the supporting server program")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main functionalities of the supporting server program");
+	
+	#endif
+	
+}
+
+void InitClassBased() {
+	ProjectWizardView::Register("/Requirements/Features:Classes and functions of the client program")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main modules, classes and functions of the client program");
+	
+	ProjectWizardView::Register("/Requirements/Features:Classes and functions of the server program")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main modules, classes and functions of the server program");
+	
+
+	//// Storyline
+	ProjectWizardView::Register("/Requirements/Storyline:Storyline in the experience")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible different storylines (and protagonist) to include in the content the software");
+
+	//// Define project scope and constraints
+	
+		// Example answers
+		//1. Development will focus on the desktop application only.
+		//2. The application will only support specific operating systems.
+		//3. Features and functionalities will be limited to the agreed upon list.
+		//4. The project budget is fixed and should not exceed a certain amount.
+		//5. The project must be completed within a specified timeline.
+		//6. The application will be accessible and usable for people with disabilities.
+		//7. The project will not involve any third-party vendors or contractors.
+		//8. The application will not have advertising features.
+		//9. The project scope does not include multilingual support.
+		//10. The application will only support a specific number of users.
+	ProjectWizardView::Register("/Requirements/Constraints:The marketplace", "The marketplace where the software is sold or distributed")
+		.OptionUserInputText();
+	
+	ProjectWizardView::Register("/Requirements/Constraints:Supported hardware platform")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptResponse("List of 10 possible different hardware platforms to target with the software project");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Supported software platform")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible different software platforms to target with the software project");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Maximum expected user skills")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible different maximum expected user skills to target");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Average expected user skills")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible different average expected user skills to target");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Minimum expected user skills")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible different minimum expected user skills to target");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Advertisement providers")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Constraints:The marketplace")
+		.PromptInput("/Requirements/Constraints:Supported software platform")
+		.PromptInputAllPrevious()
+		.PromptInputUserText("Preferred advertisement service provider")
+		.PromptResponse("List of 10 possible advertisement software library api and service providers to target (and short descriptions and reasons)");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:In-game purchasing providers")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Constraints:The marketplace")
+		.PromptInput("/Requirements/Constraints:Supported software platform")
+		.PromptInputUserText("Preferred in-game purchasing service provider")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible in-game purchasing software library api and service providers to target (and short descriptions and reasons)");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Server scalability")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptInputAllPrevious()
+		.PromptInput("/Requirements/Constraints:The marketplace")
+		.PromptResponse("List of 10 possible levels of scalability for the backend server infrastructure");
+		
+	ProjectWizardView::Register("/Requirements/Constraints:Treshold between free and premium features")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Constraints:The marketplace")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible treshold levels between free and premium features (at what point you expect the user to pay)");
+		
+	
+	//// Determine project deliverables and timeline
+	
+		// Example answers
+		//1. A fully functional desktop application with all the agreed upon features and functionalities to be delivered within 6 months.
+		//2. User documentation and training materials to be provided upon completion of the project.
+		//3. A final report detailing the project development process and any challenges faced.
+		//4. Regular progress updates to key stakeholders every 2 weeks.
+		//5. Project budget review at the end of every month.
+		//6. A beta version of the application for user testing to be delivered in 4 months.
+		//7. Final delivery and implementation of the application in 6 months.
+	ProjectWizardView::Register("/Requirements/Deliverables:User documentation")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 different possible completeness of user documentation (what text files or html pages to include for user manual)");
+		
+	ProjectWizardView::Register("/Requirements/Deliverables:Developer documentation")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 different possible completeness of developer documentation (what text files or html pages to include for developers)");
+		
+	ProjectWizardView::Register("/Requirements/Deliverables:Marketing material")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 possible styles or approaches for marketing material");
+		
+	ProjectWizardView::Register("/Requirements/Deliverables:Beta release packages")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 different possible completeness of beta release software to test with users (how incomplete the software can be)");
+		
+	ProjectWizardView::Register("/Requirements/Deliverables:Final release packages")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Requirements/Features:Classes and functions of the server program")
+		.PromptInput("/Requirements/Storyline:Storyline in the experience")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of 10 different possible completeness of final release software to sell (how complete the software can be before any updates)");
+		
+	
+	//// Validate and finalize project requirements and scope.
+
+	
+	
+	
+	
+	
+	
+
+	// Identify necessary tools and technologies
+	
+	//// Consider the project requirements and objectives
+	
+		//Examples of steps
+		//1. Identify the type of software being developed (e.g. web application, mobile app, desktop application)
+	ProjectWizardView::Register("/Technologies/Requirements:Type of software")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("Identify the type of software being developed (e.g. web application, mobile app, desktop application)");
+	
+		//2. Determine the programming languages and frameworks needed
+	ProjectWizardView::Register("/Technologies/Requirements:Type of persistent data")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible combinations of the needed frameworks and programming languages");
+	
+		//3. Consider data storage and manipulation needs
+	ProjectWizardView::Register("/Technologies/Requirements:Type of persistent data")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of data storage and manipulation needs");
+	
+		//4. Evaluate user interface design and user experience requirements
+	ProjectWizardView::Register("/Technologies/Requirements:User interface library features")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of interface design and user experience requirements");
+	
+		//5. Determine if any specific hardware or operating system is needed
+	ProjectWizardView::Register("/Technologies/Requirements:Special hardware features")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of any specific hardware or operating system needs");
+	
+	
+	ProjectWizardView::Register("/Technologies/Requirements:Cross-platform compatibility")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible cross-platform compatibility features");
+	
+	//7. Identify any specific security or privacy requirements
+	ProjectWizardView::Register("/Technologies/Requirements:Security protection features")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of specific security or privacy requirements");
+	
+	ProjectWizardView::Register("/Technologies/Requirements:Statement")
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("Consider all previous informations and write a full summary text of project's technology requirements");
+	
+	
+	//// Research and evaluate different tools and technologies
+	
+		//Examples of steps
+		//1. Look for reviews and comparisons of popular tools and technologies
+	ProjectWizardView::Register("/Technologies/Providers:Primary programming language")
+		.PromptInputUserText("Primary programming language user input")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Technologies/Requirements:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible primary programming languages");
+	
+	ProjectWizardView::Register("/Technologies/Providers:Secondary programming language")
+		.PromptInputUserText("Secondary programming language user input")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Technologies/Requirements:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possible secondary programming languages");
+	
+	ProjectWizardView::Register("/Technologies/Providers:Categories")
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Technologies/Requirements:Statement")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of possibly required categories of libraries and frameworks (name: description)")
+		.OptionButton("Split response to components", &ProjectWizardView::SplitTechnologyCategories);
+	
+	ProjectWizardView::RegisterDynamic("/Technologies/Providers:Libraries")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptInputUserText("The category of library in focus")
+			.PromptResponse("List of frameworks and libraries in the category in focus for the given primary or secondary programming language");
+	
+		//2. Ask for recommendations from other developers or experts in the field
+	ProjectWizardView::Register("/Technologies/Providers:Expert opinions")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("List of expert opinions of this technology usage plan");
+	
+		//3. Attend conferences or workshops related to the project topic
+		//4. Explore online communities and forums to gather insights and feedback
+	ProjectWizardView::Register("/Technologies/Providers:Similar software")
+			.DefaultReadOptions()
+			.PromptInputAllPrevious()
+			.PromptInputUserText("Similar software as this")
+			.PromptResponse("List of software made with similar technology stack");
+	
+	
+	//// Determine which tools and technologies best fit the project requirements
+	ProjectWizardView::Register("/Technologies/Providers:Score of plan")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("List of scores of the fit of programming language, libraries and framework for this software product (is it good fit?)");
+	
+	//// Consider compatibility and integration with other systems
+	//// Consider budget and cost of tools and technologies
+	//// Obtain necessary licenses or permissions for using certain tools and technologies
+	ProjectWizardView::Register("/Technologies/Providers:Score of license freedom")
+			.DefaultReadOptions()
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("Consider the score of license freedom. Are these dependencies (libraries and frameworks) free and open source (as in beer)? Which given libraries are non-free?");
+	
+	
+	
+	// Set up a development environment
+	
+	// Choose a programming language
+	
+	//// Consider the project requirements and objectives
+	//// Research popular and well-supported programming languages
+	//// Evaluate the learning curve and availability of resources for different languages
+	//ProjectWizardView::Register("/Technologies/Language:Programming language");
+	//// Consider compatibility with necessary tools and technologies
+	//// Determine if the chosen language has libraries or frameworks that can aid in development
+	//ProjectWizardView::Register("/Technologies/Language:Supported features");
+	//// Consider the long-term maintenance and support for the chosen language
+	ProjectWizardView::Register("/Technologies/Providers:Required self-made supporting libaries")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("List of modules and classes which can't be get from given libraries");
+	
+	
+	//// Establish coding conventions and standards
+		//1. Research industry standards and best practices
+		//2. Determine coding conventions and standards that align with the chosen programming language
+		//3. Document and communicate these coding conventions and standards to team members
+		//4. Consider tools and frameworks that can help enforce coding conventions and standards
+		//5. Continuously review and update coding conventions and standards as needed.
+	ProjectWizardView::Register("/Technologies/Providers:Coding conventions")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("List of potential coding conventions (e.g. google, camelCase, java, etc.)");
+	
+	
+	ProjectWizardView::Register("/Technologies/Providers:Entity-Component-System (ECS) usage")
+			.DefaultReadOptions()
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("Is Entity-Component-System (ECS) useful anywhere in this software project? Explain.");
+	
+	ProjectWizardView::Register("/Technologies/Providers:Entity-Component-System (ECS) libraries")
+			.DefaultReadOptions()
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Technologies/Requirements:Statement")
+			.PromptInputAllPrevious()
+			.PromptResponse("List of potential Entity-Component-System (ECS) libraries and self-made modules to use");
+	
+	
+	
+	
+	// Create a project plan and timeline
+	
+	//// Break down project deliverables into smaller tasks
+	
+		//Examples of steps
+		//1. Identify the main components or modules of the project
+	ProjectWizardView::Register("/Plan/Client program:Main modules")
+		.DefaultReadOptions()
+		.OptionButton("Clear tasks and classes", &ProjectWizardView::ClearAllDynamic)
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of main modules for the code of the client program")
+		.OptionButton("Split response to components", &ProjectWizardView::SplitComponents)
+		//.OptionButton("Split components' responses to tasks and classes", &ProjectWizardView::SplitAllSubComponents)
+		;
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Client program:Components")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInputAllPrevious()
+			.PromptInputUserText("The main module in focus, which requires components to be defined")
+			.PromptResponse("List of components of the given main module")
+			//.OptionButton("Split response to tasks and classes", &ProjectWizardView::SplitSubComponents)
+			;
+	
+	ProjectWizardView::Register("/Plan/Client program:Unique components")
+			.DefaultReadOptions()
+			.PromptInputAllPrevious()
+			//.PromptInputUserText("The main module in focus, which requires components to be defined")
+			.PromptResponse("List of every module and their every unique component (module: component(s) (in one line)). A component can only belong to one module")
+			.OptionButton("Split response to tasks and classes", &ProjectWizardView::SplitUniqueComponents)
+			;
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Client program:UniqueComponents")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInputAllPrevious()
+			//.PromptInputUserText("The main module in focus, which requires components to be defined")
+			.PromptResponse("List of components of the given main module", false)
+			;
+	
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Client program:Tasks")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Plan/Client program:Unique components")
+			//.PromptInputAllPrevious()
+			.PromptInputUserText("The main module in focus, which requires tasks to be defined")
+			.PromptResponse("List of tasks of the given main module");
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Client program:Classes")
+			.DefaultReadOptions()
+			.PromptInput("/Idea/Product:Statement")
+			.PromptInput("/Requirements/Specific needs:Statement")
+			.PromptInput("/Requirements/User experience:Statement")
+			.PromptInput("/Requirements/Features:Functionalities of the client application")
+			.PromptInput("/Requirements/Features:Classes and functions of the client program")
+			.PromptInput("/Plan/Client program:Unique components")
+			.PromptInput("/Plan/Client program:Tasks")
+			//.PromptInputAllPrevious()
+			.PromptInputUserText("The main component in focus, which requires classes to be defined")
+			.PromptResponse("List of classes of the given component module (name (in UpperCamelCase): description)");
+	
+	ProjectWizardView::Register("/Plan/Client program:All classes")
+			.DefaultReadOptions()
+			.OptionButton("Get all classes", &ProjectWizardView::GetAllClasses, true)
+			.PromptResponse("List of all classes", false);
+	
+	#if 0
+	ProjectWizardView::Register("/Plan/Client program:Unique classes")
+			.DefaultReadOptions()
+			.PromptInput("/Plan/Client program:All classes")
+			.PromptResponse("List of all unique classes (names only). Merge almost same classes to one");
+	#endif
+	
+		//5. Consider any potential sub-tasks or sub-components
+	
+	//// Assign resources and team roles to each task
+	//// Estimate time and effort requirements for each task
+	//// Create a project timeline or schedule
+	//// Identify dependencies between tasks
+	ProjectWizardView::Register("/Plan/Hierarchy:Dependencies between modules")
+		.OptionButton("Clear tasks and classes", &ProjectWizardView::ClearAllDynamic)
+		.OptionButton("Make tasks and classes", &ProjectWizardView::SplitDependencies)
+		.DefaultReadOptions()
+		.PromptInput("/Idea/Product:Statement")
+		.PromptInput("/Requirements/Specific needs:Statement")
+		.PromptInput("/Requirements/User experience:Statement")
+		.PromptInput("/Requirements/Features:Functionalities of the client application")
+		.PromptInput("/Requirements/Features:Classes and functions of the client program")
+		.PromptInput("/Plan/Client program:Main modules")
+		.PromptInputAllPrevious()
+		.PromptResponse("List of hierarchical dependencies between main modules (a -> b: description)");
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Hierarchy:Tasks")
+		.DefaultReadOptions()
+		.PromptInput("/Plan/Client program:Main modules")
+		.PromptInput("/Plan/Client program:Tasks")
+		//.PromptInputAllPrevious()
+		.PromptInputUserText("The module in focus, which requires order of processing dependencies to be defined")
+		.PromptResponse("List of every order-of-processing dependency between items in the given Tasks list (task a -> task b: description)");
+	
+	ProjectWizardView::RegisterDynamic("/Plan/Hierarchy:Classes")
+		.DefaultReadOptions()
+		//.PromptInput("/Plan/Client program:Main modules")
+		.PromptInput("/Plan/Client program:Classes")
+		.PromptInput("/Plan/Hierarchy:Tasks")
+		//.PromptInputAllPrevious()
+		.PromptInputUserText("The module in focus, which requires hierarchical dependencies to be defined")
+		.PromptResponse("List of every hierarchical dependency between items in the given Classes list (class a (in UpperCamelCase) -> class b (in UpperCamelCase): description). Ignore hierarchy in");
+	
+		//Examples of steps
+		//1. Determine which tasks are dependent on each other
+		//2. Identify any tasks that can be worked on simultaneously
+		//3. Consider any external dependencies, such as third party tools or APIs
+		//4. Determine any potential delays or bottlenecks caused by dependencies
+		//5. Explore ways to mitigate the impact of dependencies on the project timeline
+	
+	#if 0
+	//// Determine milestones and checkpoints for measuring progress
+	ProjectWizardView::Register("/Plan/Progress:Milestones");
+	ProjectWizardView::Register("/Plan/Progress:Checkpoints");
+	ProjectWizardView::Register("/Plan/Progress:Version targets");
+	
+	//// Consider potential risks and contingency plans
+	//// Share and review project plan with key stakeholders
+	//// Make any necessary adjustments or revisions
+	//// Obtain final approval from stakeholders.
+	
+	#endif
+	
+	
+	ProjectWizardView::Register("/File tree/Builder:All components")
+		.DefaultReadOptions()
+		.OptionButton("Get all components", &ProjectWizardView::GetAllComponents, true)
+		.PromptResponse("", false);
+	
+	ProjectWizardView::Register("/File tree/Builder:All components (filenames)")
+		.DefaultReadOptions()
+		.PromptInput("/File tree/Builder:All components")
+		.PromptResponse("List of all components in UpperCamelCase");
+	
+	ProjectWizardView::Register("/File tree/Builder:Package components")
+		.DefaultReadOptions()
+		.PromptInput("/File tree/Builder:All components (filenames)")
+		.PromptResponse("List of packages with their components (package: component(s))");
+	
+	ProjectWizardView::Register("/File tree/Builder:Packages")
+		.DefaultReadOptions()
+		.PromptInput("/File tree/Builder:Package components")
+		//.OptionButton("Get package names", &ProjectWizardView::GetPackageNames, true)
+		.PromptResponse("", false);
+	
+	ProjectWizardView::Register("/File tree/Builder:Package dependencies")
+		.DefaultReadOptions()
+		.PromptInput("/File tree/Builder:Packages")
+		.PromptResponse("List of hierarchical dependencies of packages (package a -> requires package b)");
+	
+	ProjectWizardView::Register("/File tree/Builder:Build structure")
+		//.OptionButton("Build structure", &ProjectWizardView::BuildStructure, true)
+		;
+	
+	
+	// Determine project structure and organization
+	
+	//// Consider the size and complexity of the project
+	ProjectWizardView::Register("/Project structure/Organization:Class structure estimation");
+	//// Determine if the project will be split into different modules or components
+	ProjectWizardView::Register("/Project structure/Organization:Runtime module structure estimation");
+	//// Decide on a file and folder structure for the project
+	ProjectWizardView::Register("/Project structure/Organization:File structure estimation");
+	//// Document the project structure and organization for future reference
+	ProjectWizardView::Register("/Project structure/Organization:Documentation index estimation");
+	//// Determine how code will be organized and managed within the project structure.
+	ProjectWizardView::Register("/Project structure/Organization:Code test index estimation");
+
+
+	// Declare dependencies and libraries
+	ProjectWizardView::Register("/Project structure/Organization:Code dependency estimation");
+	
+	// Consider program architecture and design patterns
+	
+		//What other design patterns are related to ECS?
+	
+	ProjectWizardView::Register("/Project structure/Architecture:Entity-Component-System (ECS) integration with external library");
+		//1. Object-Oriented Design: ECS is often compared to object-oriented design, as both patterns use a composition-based approach to organizing and managing code.
+	ProjectWizardView::Register("/Project structure/Architecture:Object-Oriented design features");
+		//2. Composition pattern: ECS heavily relies on the composition pattern, which is a structural design pattern that allows objects to be composed of smaller, reusable components.
+	ProjectWizardView::Register("/Project structure/Architecture:Composition pattern design features");
+		//3. Factory pattern: ECS can be implemented with the factory pattern, where a factory class is responsible for creating and initializing entities and their associated components.
+	ProjectWizardView::Register("/Project structure/Architecture:Factory pattern design features");
+		//4. Observer pattern: ECS systems can be seen as observers, as they react to changes in entities and their components.
+	ProjectWizardView::Register("/Project structure/Architecture:Observer pattern design features");
+		//5. Command pattern: Changes or updates to components in the ECS can be seen as commands that are executed by the systems.
+	ProjectWizardView::Register("/Project structure/Architecture:Command pattern design features");
+		//6. Event-driven architecture: ECS can be seen as a form of an event-driven architecture, where changes in the state of entities and components trigger events that are handled by systems.
+	ProjectWizardView::Register("/Project structure/Architecture:Event-driven architecture design features");
+		//7. Dependency Injection: ECS can be implemented with the use of dependency injection, where the systems and components are injected into the entities at runtime.
+	ProjectWizardView::Register("/Project structure/Architecture:Dependency injection design features");
+	
+		//List of design patterns in software development:
+		//1. Creational Patterns: These patterns focus on creating objects in a flexible, scalable, and efficient manner. Examples include the Factory pattern, Singleton pattern, and Prototype pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Creational patterns");
+		//2. Structural Patterns: These patterns provide ways to organize classes, objects, and interfaces to form larger structures while keeping the relationships between them flexible. Examples include the Adapter pattern, Facade pattern, and Decorator pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Structural patterns");
+		//3. Behavioral Patterns: These patterns focus on the communication and interaction between objects and classes. Examples include the Observer pattern, Command pattern, and Mediator pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Behavioral patterns");
+		//4. Concurrency Patterns: These patterns deal with managing and coordinating multiple tasks or threads in a distributed system. Examples include the Thread Pool pattern, Barrier pattern, and Monitor pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Concurrency patterns");
+		//5. Architectural Patterns: These patterns provide high-level guidelines for designing and organizing large-scale software systems. Examples include the Model-View-Controller pattern, Layered Architecture pattern, and Microservices pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Architectural patterns");
+		//6. Integration Patterns: These patterns deal with integrating multiple systems or components to work together seamlessly. Examples include the Adapter pattern, Bridge pattern, and Broker pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Integration patterns");
+		//7. Big Data Patterns: These patterns focus on handling and processing large volumes of data efficiently. Examples include the MapReduce pattern, Bulk Synchronous Parallel pattern, and Pipes and Filters pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Big data patterns");
+		//8. Domain-Specific Patterns: These patterns are specific to a particular domain or industry. Examples include the Blackboard pattern in artificial intelligence and the Model-View-ViewModel pattern in user interface design.
+	ProjectWizardView::Register("/Implementation/Design patterns:Domain-specific patterns");
+		//9. Anti-patterns: These are common mistakes or pitfalls in software design that should be avoided. Examples include the God Object anti-pattern and the Spaghetti Code anti-pattern.
+	ProjectWizardView::Register("/Implementation/Design patterns:Anti-patterns");
+		
+		//>>>>> classes, program structure, functions
+	ProjectWizardView::Register("/Implementation/Static dependencies:Module dependencies");
+	ProjectWizardView::Register("/Implementation/Static dependencies:Class dependencies");
+	ProjectWizardView::Register("/Implementation/Static dependencies:Data dependencies");
+	ProjectWizardView::Register("/Implementation/Runtime dependencies:Program state dependencies");
+	ProjectWizardView::Register("/Implementation/Runtime dependencies:Object state dependencies");
+	ProjectWizardView::Register("/Implementation/Runtime dependencies:User interface state dependencies");
+	ProjectWizardView::Register("/Implementation/Interface dependencies:Interface visibility dependencies");
+	ProjectWizardView::Register("/Implementation/Interface dependencies:User action dependencies");
+	
+		//Hierarchy of the software using Entity-Component-System design pattern:
+		//1. Entity: An Entity is a basic representation of an object in the game that can have various components attached to it. It serves as a container for components and does not contain any logic or behavior of its own.
+	ProjectWizardView::Register("/Implementation/ECS:Entity");
+		//2. Component: A Component is a modular building block that represents a specific feature or behavior of an Entity. Examples of components could include Position, Sprite, Health, and Movement. Components only hold data and do not contain any logic.
+	ProjectWizardView::Register("/Implementation/ECS:Component");
+		//3. System: Systems are responsible for performing specific actions or logic on Entities that have certain components. For example, a Render System would update the position of entities with a Position component and display the corresponding sprite from the Sprite component.
+	ProjectWizardView::Register("/Implementation/ECS:System");
+		//4. Entity-Component Manager: The Entity-Component Manager is responsible for managing all entities, components, and systems in the game. It serves as the main interface for creating, deleting, and accessing entities and their components.
+	ProjectWizardView::Register("/Implementation/ECS:Entity-Component Manager");
+		//5. Input System: The Input System is responsible for handling player input and updating the corresponding components, such as" a Movement component. It takes user input and translates it into actions that affect the game entities.
+	ProjectWizardView::Register("/Implementation/ECS:Input System");
+		//6. Collision Detection System: The Collision Detection System is responsible for detecting collisions between entities and updating the appropriate components, such as Health or Movement, of the affected entities. It checks for collisions every frame and applies changes accordingly.
+	ProjectWizardView::Register("/Implementation/ECS:Collision Detection System");
+		//7. AI System: The AI System is responsible for controlling the behavior of non-player entities in the game. It uses data from components, such as Position and Movement, to determine the actions of these entities.
+	ProjectWizardView::Register("/Implementation/ECS:AI System");
+		//8. Audio System: The Audio System is responsible for playing sound effects and background music in the game. It communicates with the components, such as Audio, of entities that require audio playback.
+	ProjectWizardView::Register("/Implementation/ECS:Audio System");
+		//9. Game Interface System: The Game Interface System is responsible for displaying and managing the user interface elements of the game. It works with components, such as Text and Button, to update and display relevant information to the player.
+	ProjectWizardView::Register("/Implementation/ECS:Game Interface System");
+		//10. Save/Load System: The Save/Load System handles saving and loading game progress and data. It communicates with components, such as SaveData and LoadData, to store and retrieve information about the game state.
+	ProjectWizardView::Register("/Implementation/ECS:Save & Load System");
+		//11. Event System: The Event System handles events and notifications within the game. Components can subscribe to events and be notified when they occur. It allows for communication and interaction between different parts of the game without tight coupling.
+	ProjectWizardView::Register("/Implementation/ECS:Event System");
+		//12. Physics System: The Physics System is responsible for simulating physical interactions between objects in the game. It works with components, such as Rigidbody, to apply forces, calculate collisions, and update positions and velocities of entities.
+	ProjectWizardView::Register("/Implementation/ECS:Physics System");
+		//13. Animation System: The Animation System handles the animation of entities in the game. It updates the states of components, such as Animation, based on the game logic and input from other systems.
+	ProjectWizardView::Register("/Implementation/ECS:Animation System");
+		//14. Resource Manager: The Resource Manager is responsible for loading and managing game assets, such as graphics, sounds, and music. It works with components that require these resources and ensures they are loaded and available when needed.
+	ProjectWizardView::Register("/Implementation/ECS:Resource Manager");
+		//15. Debug System: The Debug System is responsible for displaying debug information while the game is running, such as the state of entities and components. It works with other systems to collect and display relevant data for debugging purposes.
+	ProjectWizardView::Register("/Implementation/ECS:Debug System");
+	
+	ProjectWizardView::Register("/Implementation/ECS:Graphics System");
+	ProjectWizardView::Register("/Implementation/ECS:Network System");
+		
+		//>>>>> classes, program structure, functions
+
+	// Consider performance and efficiency
+	
+	
+	
+	// Consider user interface design and user experience
+	
+	//// User requirements and expectations
+	ProjectWizardView::Register("/Implementation/User interface:Requirements");
+	ProjectWizardView::Register("/Implementation/User interface:Expectations");
+	//// Platform or device compatibility
+	ProjectWizardView::Register("/Implementation/User interface:Platform compatibility");
+	//// Design standards and guidelines
+	ProjectWizardView::Register("/Implementation/User interface:Design standards and guidelines");
+	//// User interaction and navigation needs
+	ProjectWizardView::Register("/Implementation/User interface:User interaction and navigation needs");
+	//// Visual aesthetics and branding
+	ProjectWizardView::Register("/Implementation/User interface:Visual aesthetics and branding");
+	//// Integration with other system components
+	ProjectWizardView::Register("/Implementation/User interface:Integration with other system components");
+	//// Accessibility and usability considerations
+	ProjectWizardView::Register("/Implementation/User interface:Accessibility and usability considerations");
+	//// Time and budget constraints
+	//// Potential for future updates and changes
+	//// Testing and feedback from user experience testing.
+	ProjectWizardView::Register("/Implementation/User interface:Testing and feedback from user experience testing");
+
+
+
+	// Consider data structures, classes, and functions needed
+	ProjectWizardView::Register("/Implementation/Code:Database structure");
+	ProjectWizardView::Register("/Implementation/Code:Class structure");
+	ProjectWizardView::Register("/Implementation/Code:Class fields");
+	ProjectWizardView::Register("/Implementation/Code:Class methods");
+	ProjectWizardView::Register("/Implementation/Code:Static functions");
+	ProjectWizardView::Register("/Implementation/Code:Static variables");
+	ProjectWizardView::Register("/Implementation/Code:Scope variables"); // functions, methods, etc.
+	
+		//List of things to consider before deciding game structures, classes and functions:
+		//1. Game genre and gameplay mechanics
+		//2. Target audience and their preferences
+		//3. Design and visual style
+		//4. Compatibility with platforms or devices
+		//5. Performance and optimization needs
+		//6. Integration with other game systems
+		//7. Resource management and asset loading
+	ProjectWizardView::Register("/Implementation/Resources:Images");
+	ProjectWizardView::Register("/Implementation/Resources:Textures");
+	ProjectWizardView::Register("/Implementation/Resources:2D Models");
+	ProjectWizardView::Register("/Implementation/Resources:3D Models");
+	ProjectWizardView::Register("/Implementation/Resources:Audio");
+	ProjectWizardView::Register("/Implementation/Resources:Text");
+	ProjectWizardView::Register("/Implementation/Resources:Script");
+		//8. User interface and user experience design
+		//9. Multiplayer or online capabilities
+		//10. Potential for future updates and expansions.
+
+	
+	// Consider data security and privacy
+	// Consider integration with other systems or platforms
+	// Consider maintenance and future updates
+	// Consider error handling and debugging strategies
+	
+	// Create source code file(s).
+
+		//Project files of "Visual Studio Code":
+		//1. .vscode folder - contains project-specific settings and configurations for Visual Studio Code
+		//2. .gitignore - stores a list of files and folders to be ignored by Git
+		//3. .editorconfig - used to maintain consistent coding styles across different editors
+		//4. package.json - contains information about the project dependencies
+		//5. launch.json - defines configurations for debugging the project
+		//6. tasks.json - used to define tasks and scripts to be executed in the project
+		//7. settings.json - contains user preferences and settings for Visual Studio Code
+		//8. node_modules - folder that contains the project dependencies installed using Node Package Manager
+		//9. src folder - typically contains the source code files for the project
+		//10. .git folder - contains Git repository information.
+	ProjectWizardView::Register("/Implementation/Files:Project files");
+		
+		//Solution files of "Visual studio code":
+		//1. .sln file - contains solution-level information and references to project files
+		//2. .vcxproj file - contains project-specific configurations and settings in XML format
+		//3. .vcxproj.filters file - stores information about project files and their filters within the solution explorer
+		//4. .suo file - contains user-specific solution settings
+		//5. .user file - stores user-specific project settings and configurations
+		//6. .vssscc file - used by Team Foundation Server for source control operations
+		//7. .vspscc file - used by Visual Studio for source control operations
+		//8. .nuget folder - contains information about project dependencies installed using NuGet package manager
+		//9. obj folder - contains temporary object files used during the build process
+		//10. bin folder - contains the final compiled output of the project.
+	ProjectWizardView::Register("/Implementation/Files:Solution files");
+		
+		//Compiled/product/export files of "Visual studio code" in platform "Desktop: Windows PC":
+		//1. .exe file - executable file that can be run on the Windows operating system
+		//2. .dll file - dynamic link library that contains reusable code and can be loaded and executed by programs
+		//3. .pdb file - program database file used for debugging purposes
+		//4. .lib file - library file that contains functions and data for use by other programs
+		//5. .obj file - object file that has been compiled from source code but not yet linked
+		//6. .map file - map file that shows the memory layout of the compiled program
+		//7. .res file - resource file that contains non-textual data used by the program
+		//8. .manifest file - contains information about the program's dependencies and compatibility
+		//9. .appx file - application package file used for Windows apps
+		//10. .ico file - icon file used for the program's icon in the Windows operating system.
+	ProjectWizardView::Register("/Implementation/Files:Export files");
+	
+}

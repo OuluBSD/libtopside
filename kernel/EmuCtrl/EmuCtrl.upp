@@ -1,0 +1,14 @@
+description "\3770,0,128";
+
+uses
+	CtrlLib;
+
+file
+	main.cpp,
+	EmuCtrl.h,
+	App.h,
+	App.cpp,
+	"Common impl" readonly separator,
+	InputDevice.cpp,
+	Timer.cpp;
+

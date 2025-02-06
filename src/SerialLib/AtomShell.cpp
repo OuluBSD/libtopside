@@ -27,6 +27,11 @@ bool IsEmptyShellMode() {
 
 bool DefaultInitializer(bool skip_eon_file) {
 	SetCoutLog();
+	
+	#ifdef flagDEBUG
+	Cout() << "DefaultInitializer begin\n";
+	#endif
+	
 	CommandLineArguments cmd;
 	DaemonBase& daemon = DaemonBase::Single();
 	
@@ -91,8 +96,10 @@ bool DefaultInitializer(bool skip_eon_file) {
 		
 		if (GetFileExt(eon_file) != ".eon") {
 			eon_script = SerialLoaderFactory::LoadFile(eon_file);
-			if (eon_script.IsEmpty())
+			if (eon_script.IsEmpty()) {
+				LOG("DefaultInitializer: error: Empty script in " << eon_file);
 				return false;
+			}
 		}
 	}
 	
@@ -102,6 +109,10 @@ bool DefaultInitializer(bool skip_eon_file) {
 		return false;
 	}
 	
+	
+	#ifdef flagDEBUG
+	Cout() << "DefaultInitializer end\n";
+	#endif
 	
 	return true;
 }

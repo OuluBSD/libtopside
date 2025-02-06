@@ -1,0 +1,4 @@
+
+To implement backend for a new DB_xxxxx:
+- ToolCore: See Db.cpp and other Db files
+- TextDatabase: See beginning of Common.cpp

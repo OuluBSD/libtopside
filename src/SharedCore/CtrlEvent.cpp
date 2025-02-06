@@ -4,7 +4,7 @@
 #endif
 
 
-NAMESPACE_UPP
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void RandomizeEvent(CtrlEvent& ev) {
@@ -50,4 +50,4 @@ void RandomizeEvent(CtrlEvent& ev) {
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END

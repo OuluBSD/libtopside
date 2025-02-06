@@ -1,0 +1,12 @@
+description "Visual style for ToolBar and MenuBar\3770,128,128";
+
+uses
+	CtrlLib;
+
+file
+	RedBar.h,
+	RedSkin.iml,
+	RedSkin.cpp,
+	Info readonly separator,
+	Copying;
+
