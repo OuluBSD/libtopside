@@ -45,7 +45,7 @@
 #include <Core/config.h>
 
 #ifndef _ZLIB_H
-	#ifdef LIBTOPSIDE
+	#if LIBTOPSIDE
 		#include <plugin/z/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else

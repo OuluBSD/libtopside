@@ -1,8 +1,4 @@
-#ifdef LIBTOPSIDE
-	#include <Esc/Esc.h>
-#else
-	#include <Esc/Esc.h>
-#endif
+#include <Esc/Esc.h>
 
 using namespace UPP;
 

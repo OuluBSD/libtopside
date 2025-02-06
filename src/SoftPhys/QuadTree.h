@@ -17,7 +17,7 @@ struct QuadTreeData {
 struct QuadTreeNode : Moveable<QuadTreeNode> {
 	
 protected:
-	Vector<QuadTreeNode> children;
+	Array<QuadTreeNode> children;
 	Vector<QuadTreeData*> contents;
 	int cur_depth;
 	static int max_depth;

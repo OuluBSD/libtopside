@@ -293,7 +293,7 @@ bool VoidPollerSinkBase::Recv(int sink_ch, const Packet& p) {
 	Parallel::Format fmt = in.GetFormat();
 	if (fmt.IsAudio()) {
 		Serial::AudioFormat& afmt = fmt;
-		uint32 thrd_id = 0;
+		uint64 thrd_id = 0;
 		#if HAVE_PACKETTRACKER
 		thrd_id = route_desc;
 		#else

@@ -3,7 +3,7 @@
 
 #include <Core/config.h>
 
-#ifdef LIBTOPSIDE
+#if LIBTOPSIDE
 	#include <plugin/z/zlib.h>
 #else
 	#include <plugin/z/lib/zlib.h>

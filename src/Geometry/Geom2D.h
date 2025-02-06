@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-struct Circle {
+struct Circle : Moveable<Circle> {
 	typedef float F;
 	
 	union {
@@ -41,7 +41,7 @@ struct Circle {
 //	- it's origin + size, not min + max
 //  - it's positive y value upwards, not downwards (as is easier in 2d gui)
 
-struct FixedRectangle {
+struct FixedRectangle : Moveable<FixedRectangle> {
 	typedef float F;
 	typedef Vec<F, 2> vec2;
 	
@@ -89,7 +89,7 @@ struct FixedRectangle {
 
 // OrientedRectangle differs from Rectangle by:
 //  - having center point and half-extents instead of origin and size
-struct OrientedRectangle {
+struct OrientedRectangle : Moveable<OrientedRectangle> {
 	typedef float F;
 	typedef Vec<F, 2> vec2;
 	

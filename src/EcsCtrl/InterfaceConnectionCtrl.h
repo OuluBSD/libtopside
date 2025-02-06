@@ -4,7 +4,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class InterfaceConnectionGraph : public Ctrl {
+class InterfaceConnectionGraph : public Ctrl
+#if IS_UPP_CORE
+	, public RTTI
+#endif
+{
 	
 	
 public:

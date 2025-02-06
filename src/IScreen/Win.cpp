@@ -92,6 +92,10 @@ void ScrWin::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisitor& 
 	
 }
 
+HINSTANCE GetWin32Instance() {
+	return Ctrl::hInstance;
+}
+
 bool ScrWin::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<WinContext>(1);
 	if (!ctx_) {RTLOG("error: could not find Win context"); return false;}

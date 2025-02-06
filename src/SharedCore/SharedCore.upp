@@ -4,6 +4,7 @@ file
 	SharedCore.h,
 	SharedDefs.h,
 	Policies.h,
+	Defs.h,
 	RTTIDummy.h,
 	Shared.h,
 	Object.h,

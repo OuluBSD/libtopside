@@ -2,7 +2,9 @@
 #include <SerialLib/SerialLib.h>
 #if IS_UPP_CORE
 #include <VirtualGui/Local.h>
+#ifdef flagVIRTUALGUI
 #include <VirtualGui/Atom/Atom.h>
+#endif
 #endif
 
 #ifdef flagGUI

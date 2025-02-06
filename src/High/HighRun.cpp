@@ -47,7 +47,7 @@ void LambdaArgs(CParser& p, HiLambda& l)
 	l.arg.Shrink();
 }
 
-HiValue ReadLambda(CParser& p)
+HiValue ReadLambdaVM(CParser& p)
 {
 	HiValue lambda;
 	HiLambda& l = lambda.CreateLambda();
@@ -62,10 +62,10 @@ HiValue ReadLambda(CParser& p)
 	return lambda;
 }
 
-HiValue ReadLambda(const char *s)
+HiValue ReadLambdaVM(const char *s)
 {
 	CParser p(s);
-	return ReadLambda(p);
+	return ReadLambdaVM(p);
 }
 
 void HiEscape::Throw(const FileLocation& loc, String msg) {
@@ -168,7 +168,7 @@ void Scan(ArrayMap<String, HiValue>& global, const char *file, const char *filen
 	CParser p(file, filename);
 	while(!p.IsEof()) {
 		HiValue& v = global.GetAdd(p.ReadId());
-		v = ReadLambda(p);
+		v = ReadLambdaVM(p);
 	}
 }
 
@@ -269,7 +269,7 @@ String   Expand(const String& doc, ArrayMap<String, HiValue>& global,
 				else
 				if(sub.Char('!')) {
 					HiValue& v = global.GetAdd(sub.ReadId());
-					v = ReadLambda(sub);
+					v = ReadLambdaVM(sub);
 				}
 				else
 				if(sub.Char('?'))

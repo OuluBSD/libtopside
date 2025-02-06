@@ -47,6 +47,7 @@ class Geom2DComponent :
 	/*public Absolute2D,*/
 	public Component<Geom2DComponent>
 {
+public:
 	RTTI_COMP1(Geom2DComponent, GeomInteraction2D)
 	
 	#if 0

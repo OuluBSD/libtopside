@@ -13,7 +13,7 @@ NAMESPACE_UPP
 struct RTTI;
 class Nuller;
 
-struct TypeCls : std::reference_wrapper<const std::type_info> {
+struct TypeCls : std::reference_wrapper<const std::type_info>, Moveable<TypeCls> {
 	using ti = std::reference_wrapper<const std::type_info>;
 	TypeCls() : ti(typeid(void)) {}
 	TypeCls(const TypeCls& t) : ti(t) {}
@@ -76,50 +76,54 @@ template <class T> const char* GetTypeNameT() {return typeid(T).name();}
 #ifdef flagSTDRTTI
 #define RTTIBase virtual public RTTI
 
-#define DEF_RTTI \
+
+#define DEF_RTTI(Type) \
 	TypeCls GetTypeId() const override {return typeid(*this);} \
-	const char* GetDynamicName() const override {return typeid(*this).name();}
+	const char* GetDynamicName() const override {return typeid(*this).name();} \
+	static ::UPP::TypeCls TypeIdClass() {return typeid(Type);} \
+    static const char* GetTypeName() {return #Type;} \
 
-#define DEF_RTTI_ \
+#define DEF_RTTI_(Type) \
 	virtual TypeCls GetTypeId() const {return typeid(*this);} \
-	virtual const char* GetDynamicName() const {return typeid(*this).name();}
+	virtual const char* GetDynamicName() const {return typeid(*this).name();} \
+    static ::UPP::TypeCls TypeIdClass() {return typeid(Type);} \
+    static const char* GetTypeName() {return #Type;} \
 
-#define RTTI_DECL0(Type) DEF_RTTI
-#define RTTI_DECL1(Type, ParentType) DEF_RTTI
-#define RTTI_DECL2(Type, ParentType0, ParentType1) DEF_RTTI
-#define RTTI_DECL3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI
-#define RTTI_DECL4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI
-#define RTTI_DECL5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) DEF_RTTI
+#define RTTI_DECL0(Type) DEF_RTTI(Type)
+#define RTTI_DECL1(Type, ParentType) DEF_RTTI(Type)
+#define RTTI_DECL2(Type, ParentType0, ParentType1) DEF_RTTI(Type)
+#define RTTI_DECL3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI(Type)
+#define RTTI_DECL4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI(Type)
+#define RTTI_DECL5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) DEF_RTTI(Type)
 
-#define RTTI_DECL0_(Type) DEF_RTTI_
-#define RTTI_DECL1_(Type, ParentType) DEF_RTTI_
-#define RTTI_DECL2_(Type, ParentType0, ParentType1) DEF_RTTI_
-#define RTTI_DECL3_(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI_
-#define RTTI_DECL4_(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI_
-#define RTTI_DECL5_(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) DEF_RTTI_
+#define RTTI_DECL0_(Type) DEF_RTTI_(Type)
+#define RTTI_DECL1_(Type, ParentType) DEF_RTTI_(Type)
+#define RTTI_DECL2_(Type, ParentType0, ParentType1) DEF_RTTI_(Type)
+#define RTTI_DECL3_(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI_(Type)
+#define RTTI_DECL4_(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI_(Type)
+#define RTTI_DECL5_(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4) DEF_RTTI_(Type)
 
-#define RTTI_DECL_T0(Type) DEF_RTTI
-#define RTTI_DECL_T1(Type, ParentType) DEF_RTTI
-#define RTTI_DECL_T2(Type, ParentType0, ParentType1) DEF_RTTI
-#define RTTI_DECL_T3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI
-#define RTTI_DECL_T4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI
+#define RTTI_DECL_T0(Type) DEF_RTTI(Type)
+#define RTTI_DECL_T1(Type, ParentType) DEF_RTTI(Type)
+#define RTTI_DECL_T2(Type, ParentType0, ParentType1) DEF_RTTI(Type)
+#define RTTI_DECL_T3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI(Type)
+#define RTTI_DECL_T4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI(Type)
 
-#define RTTI_DECL_R0(Type) DEF_RTTI
-#define RTTI_DECL_R1(Type, ParentType) DEF_RTTI
-#define RTTI_DECL_R2(Type, ParentType0, ParentType1) DEF_RTTI
-#define RTTI_DECL_R3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI
-#define RTTI_DECL_R4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI
+#define RTTI_DECL_R0(Type) DEF_RTTI(Type)
+#define RTTI_DECL_R1(Type, ParentType) DEF_RTTI(Type)
+#define RTTI_DECL_R2(Type, ParentType0, ParentType1) DEF_RTTI(Type)
+#define RTTI_DECL_R3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI(Type)
+#define RTTI_DECL_R4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI(Type)
 
-#define RTTI_DECL_TR0(Type) DEF_RTTI
-#define RTTI_DECL_TR1(Type, ParentType) DEF_RTTI
-#define RTTI_DECL_TR2(Type, ParentType0, ParentType1) DEF_RTTI
-#define RTTI_DECL_TR3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI
-#define RTTI_DECL_TR4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI
+#define RTTI_DECL_TR0(Type) DEF_RTTI(Type)
+#define RTTI_DECL_TR1(Type, ParentType) DEF_RTTI(Type)
+#define RTTI_DECL_TR2(Type, ParentType0, ParentType1) DEF_RTTI(Type)
+#define RTTI_DECL_TR3(Type, ParentType0, ParentType1, ParentType2) DEF_RTTI(Type)
+#define RTTI_DECL_TR4(Type, ParentType0, ParentType1, ParentType2, ParentType3) DEF_RTTI(Type)
+
+template <class T> String AsTypeString() {return AsTypeName<T>();}
 
 #endif
-
-
-
 
 #ifdef flagSTDRTTI
 #ifdef NTL_MOVEABLE

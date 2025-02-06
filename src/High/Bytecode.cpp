@@ -179,7 +179,7 @@ void HiCompiler::Term()
 		return;
 	}
 	if(Char('@')) {
-		Emit1(IR_ASSIGN_R, ReadLambda(*this));
+		Emit1(IR_ASSIGN_R, ReadLambdaVM(*this));
 		Subscript();
 		return;
 	}

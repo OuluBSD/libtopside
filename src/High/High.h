@@ -100,9 +100,9 @@ public:
 	operator int() const                       { return GetInt(); }
 	operator double() const                    { return GetNumber(); }
 	
-	HiValue(const char *s)                     { InitString(::UPP::ToWString(String(s))); }
+	HiValue(const char *s)                     { InitString(String(s).ToWString()); }
 	HiValue(const WString& s)                  { InitString(s); }
-	HiValue(const String& s)                   { InitString(::UPP::ToWString(s)); }
+	HiValue(const String& s)                   { InitString(String(s).ToWString()); }
 	HiValue(AtomBase& a);
 	
 	bool                                IsMap() const        { return type == HIGH_MAP; }
@@ -226,8 +226,8 @@ inline hash_t GetHashValue(const HiValue& v)
 bool     IsTrue(const HiValue& a);
 
 void     SkipBlock(CParser& p);
-HiValue ReadLambda(CParser& p);
-HiValue ReadLambda(const char *s);
+HiValue ReadLambdaVM(CParser& p);
+HiValue ReadLambdaVM(const char *s);
 
 }
 

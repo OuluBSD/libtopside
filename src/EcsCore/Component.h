@@ -177,7 +177,9 @@ public:
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		TypeCls type = ComponentT::TypeIdClass();
+		#if IS_TS_CORE
 		ASSERT(type != 0);
+		#endif
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it), "Cannot have duplicate componnets");
 		ComponentMapBase::Add(type, component);

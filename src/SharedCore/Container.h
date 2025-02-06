@@ -18,7 +18,7 @@ public:
 template <class T> Pick<T> PickFn(T& o) {return Pick<T>(o);}
 
 // The file is included in Topside and this is required to prevent regular U++ errors
-#ifdef LIBTOPSIDE
+#if LIBTOPSIDE
 template <class T> Pick<T> pick(T& o) {return Pick<T>(o);}
 #endif
 #endif

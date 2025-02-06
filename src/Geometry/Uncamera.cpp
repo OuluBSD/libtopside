@@ -16,7 +16,7 @@ VirtualStereoUncamera::VirtualStereoUncamera() {
 }
 
 void VirtualStereoUncamera::Unrender(const UncameraFrame& from, UncameraFrame& to) {
-	ASSERT(from.l_img.GetResolution() == from.r_img.GetResolution());
+	ASSERT(from.l_img.GetSize() == from.r_img.GetSize());
 	StageStereoKeypoints(from, to);
 	MeshTracker::SolveTransform(from, to);
 	StageProcessTransform(from, to);

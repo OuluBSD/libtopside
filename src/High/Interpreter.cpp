@@ -340,7 +340,7 @@ void Hi::Term(SRVal& r)
 		return;
 	}
 	if(Char('@')) {
-		r = ReadLambda(*this);
+		r = ReadLambdaVM(*this);
 		Subscript(r);
 		return;
 	}
@@ -1241,7 +1241,7 @@ void  Hi::DoStatement()
 		if(Char(':'))
 			type = 2;
 		String id = ReadId();
-		HiValue l = ReadLambda(*this);
+		HiValue l = ReadLambdaVM(*this);
 		if(type == 1) {
 			if(self.IsVoid())
 				ThrowError("no instance");

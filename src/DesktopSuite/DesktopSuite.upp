@@ -2,8 +2,9 @@ description "\377B84,84,84";
 
 uses
 	CtrlLib,
-	VirtualGui/Atom,
 	LocalCtrl;
+
+uses(VIRTUALGUI) VirtualGui/Atom;
 
 file
 	Notes.txt,

@@ -84,7 +84,7 @@ public:
     template<typename SystemT>
     Ref<SystemT> Get() {
         auto system = Find<SystemT>();
-        ASSERT_(system, "System " << AsTypeName<SystemT>() << " was not found in the Machine");
+        ASSERT_(system, (String)"System " << AsTypeName<SystemT>() << " was not found in the Machine");
         return system;
     }
 

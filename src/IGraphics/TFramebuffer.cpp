@@ -9,7 +9,7 @@ void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz, int mem_pitch) {
 	SDL_Texture* tex = color_buf[0];
 	ASSERT(tex);
 	
-	uint32 fmt = 0;
+	Uint32 fmt = 0;
 	int access, w = 0, h = 0;
 	if (SDL_QueryTexture(tex, &fmt, &access, &w, &h) < 0 || w == 0 || h == 0)
 		return;

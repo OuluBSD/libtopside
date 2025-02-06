@@ -17,6 +17,8 @@ extern char **environ;
 
 #ifdef UPP_VERSION
 
+#define LIBTOPSIDE 0
+
 #if __GNUC__
 	#define UNREACHABLE __builtin_unreachable()
 #endif
@@ -262,6 +264,10 @@ inline WString FromUtf8(String s) {return s.ToWString();}
 
 
 END_UPP_NAMESPACE
+
+
+#include <SharedCore/Defs.h>
+
 
 #else
 

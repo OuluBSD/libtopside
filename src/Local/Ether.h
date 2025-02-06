@@ -35,6 +35,7 @@ template <class T> void Etherize(Ether& e, T& o) {o.Etherize(e);}
 template <class T> void Etherize(Ether& e, Vector<T>& o) {EtherizeContainer(e, o);}
 template <class T> void Etherize(Ether& e, Array<T>& o) {EtherizeContainer(e, o);}
 template <class T> void Etherize(Ether& e, LinkedList<T>& o) {EtherizeContainer(e, o);}
+template <> void Etherize<Value>(Ether& e, Value& o) {Panic("TODO");}
 template <class K, class V> void Etherize(Ether& e, VectorMap<K,V>& o) {EtherizeMapContainer(e, o);}
 template <class K, class V> void Etherize(Ether& e, ArrayMap<K,V>& o)  {EtherizeMapContainer(e, o);}
 template <class K, class V> void Etherize(Ether& e, LinkedMap<K,V>& o) {EtherizeMapContainer(e, o);}

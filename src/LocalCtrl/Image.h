@@ -3,7 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-#ifndef LIBTOPSIDE
+#if !LIBTOPSIDE
 
 #define IMAGECLASS Images
 #define IMAGEFILE <LocalCtrl/Images.iml>

@@ -4,7 +4,7 @@
 Install normal Ultimate++ TheIDE and vcpkg. Google them.
 
 Install dependency libraries using vcpkg:
-```./vcpkg install glew ffmpeg assimp sdl2 sdl2-ttf```
+```./vcpkg install glew ffmpeg assimp sdl2 sdl2-ttf sdl2-image```
 
 Add vcpkg include directory to your build method.
 Create assembly with reference, src and either alt or U++'s uppsrc.

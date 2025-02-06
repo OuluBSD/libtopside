@@ -475,7 +475,7 @@ public:
 		byte* b = (byte*)mem;
 		MemoryCopy(b, buf + cursor, (int)sz);
 		cursor += sz;
-		eof = cursor >= this->size;
+		eof = cursor >= 0 && (dword)cursor >= this->size;
 		return (dword)sz;
 	}
 	void Seek(int64 i) override { cursor = i; eof = cursor >= this->size; }
