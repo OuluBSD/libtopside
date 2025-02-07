@@ -12,13 +12,6 @@ SystemBase::~SystemBase() {
 }
 
 
-Callback Machine::WhenUserProgram;
-Callback Machine::WhenInitialize;
-Callback Machine::WhenPostInitialize;
-Callback Machine::WhenPreFirstUpdate;
-
-
-
 
 Machine::Machine() {
 	DBG_CONSTRUCT
@@ -32,13 +25,14 @@ Machine::~Machine() {
 
 
 bool Machine::Start() {
+	auto& s = Static();
 	ASSERT_(!is_initialized && !is_started, "Shouldn't call Start if we already started");
 	ASSERT_(!is_failed, "Machine have already failed");
 	if (is_failed)
 		return false;
 	
-	Cout() << "Machine::Start " << ((bool)WhenInitialize ? "with" : "without") << " initializer callback\n";
-	WhenInitialize();
+	Cout() << "Machine::Start " << ((bool)s.WhenInitialize ? "with" : "without") << " initializer callback\n";
+	s.WhenInitialize();
 	
 	if (is_failed)
 		return false;
@@ -52,7 +46,7 @@ bool Machine::Start() {
 		}
 	}
 	
-	WhenPostInitialize();
+	s.WhenPostInitialize();
 	
 	is_initialized = true;
 	
@@ -67,6 +61,7 @@ bool Machine::Start() {
 }
 
 void Machine::Update(double dt) {
+	auto& s = Static();
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
 	
 	warning_age += dt;
@@ -76,7 +71,7 @@ void Machine::Update(double dt) {
 	}
 	
 	if (!ticks)
-		WhenPreFirstUpdate();
+		s.WhenPreFirstUpdate();
 	
 	WhenEnterUpdate();
 	

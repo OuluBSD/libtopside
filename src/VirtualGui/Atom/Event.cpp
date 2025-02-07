@@ -6,13 +6,6 @@ namespace UPP {
 
 extern dword fbKEYtoK(dword chr);
 
-dword lastbdowntime[8] = {0};
-dword isdblclick[8] = {0};
-
-dword mouseb;
-dword modkeys;
-bool  sdlMouseIsIn;
-
 bool AtomVirtualGui::IsMouseIn()
 {
 	return sdlMouseIsIn;

@@ -163,10 +163,13 @@ public:
 	Callback WhenLeaveUpdate;
 	Callback WhenLeaveSystemUpdate;
 	
-	static Callback WhenInitialize;
-	static Callback WhenUserProgram;
-	static Callback WhenPostInitialize;
-	static Callback WhenPreFirstUpdate;
+	struct StaticEvents {
+		Callback WhenInitialize;
+		Callback WhenUserProgram;
+		Callback WhenPostInitialize;
+		Callback WhenPreFirstUpdate;
+	};
+	static StaticEvents& Static() {static StaticEvents e; return e;}
 	
 private:
     using SystemCollection = RefTypeMapIndirect<SystemBase> ;

@@ -9,10 +9,13 @@
 #include <Local/Before.h>
 
 #if defined flagOGL
-	#if UPP_OLD_VERSION || (defined flagWIN32 && defined flagGCC)
+	#if UPP_OLD_VERSION
 		#define GLEW_STATIC 1
 		#include <ports/glew/glew.h>
 	#else
+		#ifdef flagBUILTIN_GLEW
+			#error Builtin glew support has broken!
+		#endif
 		#include <GL/glew.h>
 	#endif
 	

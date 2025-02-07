@@ -462,4 +462,6 @@ template<> StringT<wchar_t>& StringT<wchar_t>::operator=(const Object& c) {retur
 #endif
 
 
+template <> dword ObjectTypeNo<const char*>(const char* const*) {Panic("TODO"); return 0;}
+
 NAMESPACE_TOPSIDE_END

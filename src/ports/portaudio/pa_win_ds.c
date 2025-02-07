@@ -281,7 +281,11 @@ typedef struct PaWinDsStream
     UINT                 inputBufferSizeBytes;
 
     
+    #if defined flagWIN32 && defined flagGCC
+    unsigned long    hostBufferSizeFrames; /* input and output host ringbuffers have the same number of frames */
+    #else
     int              hostBufferSizeFrames; /* input and output host ringbuffers have the same number of frames */
+    #endif
     double           framesWritten;
     double           secondsPerHostByte; /* Used to optimize latency calculation for outTime */
     double           pollingPeriodSeconds;

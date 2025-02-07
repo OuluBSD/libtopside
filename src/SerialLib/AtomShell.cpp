@@ -324,7 +324,7 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 		        if (main_loop)
 					DebugMainLoop();
 		        else
-		            Serial::Machine::WhenUserProgram();
+		            Serial::Machine::Static().WhenUserProgram();
 		    }
 		#ifdef flagSTDEXC
 	    }

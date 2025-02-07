@@ -65,11 +65,6 @@ Engine& SystemBase::GetEngine() const {
 }
 
 
-Callback Engine::WhenGuiProgram;
-Callback Engine::WhenInitialize;
-Callback Engine::WhenPreFirstUpdate;
-
-
 
 
 Engine::Engine() {
@@ -86,7 +81,7 @@ Engine::~Engine() {
 bool Engine::Start() {
 	ASSERT_(!is_initialized && !is_started, "Shouldn't call Start if we already started");
 	
-	WhenInitialize();
+	Static().WhenInitialize();
 	
 	is_looping_systems = true;
 	
@@ -112,9 +107,10 @@ bool Engine::Start() {
 
 void Engine::Update(double dt) {
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
+	auto& s = Static();
 	
 	if (!ticks)
-		WhenPreFirstUpdate();
+		s.WhenPreFirstUpdate();
 	
 	WhenEnterUpdate();
 	

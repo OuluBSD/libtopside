@@ -9,6 +9,21 @@ NAMESPACE_UPP
 END_UPP_NAMESPACE
 #endif
 
+NAMESPACE_UPP
+
+dword mouseb = 0;
+dword modkeys = 0;
+dword lastbdowntime[8] = {0};
+dword isdblclick[8] = {0};
+bool  sdlMouseIsIn;
+
+#if defined flagWIN32 && (defined flagCLANG || defined flagGCC)
+#undef GetFileTitle
+String GetFileTitle(char const* fileName) {return GetFileTitleA((const char*)fileName);}
+#endif
+
+END_UPP_NAMESPACE
+
 
 NAMESPACE_TOPSIDE_BEGIN
 

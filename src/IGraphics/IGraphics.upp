@@ -9,13 +9,15 @@ uses
 	ports/MingwDx,
 	SoftRend;
 
-uses(WIN32 & GCC) ports/glew;
+uses(NEVER&WIN32&GCC) ports/glew;
 
 uses(WIN32 & MSC & !UWP) ports/glext;
 
-library(MSC|(WIN32&CLANG)) glew32;
+library(WIN32) glew32;
 
 library(MSC) "OpenGL32 Gdi32";
+
+library(WIN32&(CLANG|GCC)) libglew32.dll.a;
 
 file
 	IGraphics.h,

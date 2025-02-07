@@ -20,7 +20,7 @@ void MachineEcsInit() {
 	#endif
 	#endif
 	
-	Ecs::Engine::WhenInitialize << callback(EngineEcsInit);
+	Ecs::Engine::Static().WhenInitialize << callback(EngineEcsInit);
 }
 
 void EngineEcsInit() {

@@ -1,7 +1,7 @@
 #ifndef _EcsLib_Geom2DComponent_h_
 #define _EcsLib_Geom2DComponent_h_
 
-#ifdef flagGUI
+#if defined flagGUI
 
 NAMESPACE_ECS_BEGIN
 

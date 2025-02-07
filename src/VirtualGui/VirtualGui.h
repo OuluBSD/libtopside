@@ -1,3 +1,7 @@
+#ifndef flagVIRTUALGUI
+	#error No VIRTUALGUI flag defined
+#endif
+
 #ifdef PLATFORM_POSIX
 #include <CtrlCore/stdids.h>
 #endif

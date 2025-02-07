@@ -10,7 +10,7 @@
 
 
 #if defined flagOGL
-	#if UPP_OLD_VERSION || (defined flagGCC && defined flagWIN32)
+	#if UPP_OLD_VERSION
 		#define GLEW_STATIC 1
 		#include <ports/glew/glew.h>
 	#else

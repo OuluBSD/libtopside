@@ -178,6 +178,9 @@ DEFAULT_ETHERIZER(dword)
 DEFAULT_ETHERIZER(signed char)
 DEFAULT_ETHERIZER(long)
 #endif
+#if IS_UPP_CORE && defined flagGCC
+DEFAULT_ETHERIZER(long unsigned int)
+#endif
 
 template <> inline void Etherize(Ether& e, Image& i) {
 	TODO

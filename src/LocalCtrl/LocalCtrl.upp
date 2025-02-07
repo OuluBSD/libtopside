@@ -4,7 +4,7 @@ uses
 	Local,
 	CtrlLib;
 
-uses(WIN32 & GCC) ports/glew;
+uses(NEVER&WIN32&GCC) ports/glew;
 
 library(POSIX) "GL GLEW glut";
 
@@ -12,7 +12,9 @@ library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";
 
 library(NEVER) libglew32mx.a;
 
-library(WIN32 & MSC & OGL) glew32;
+library(WIN32 & OGL) glew32;
+
+library(WIN32&(CLANG|GCC)) libglew32.dll.a;
 
 library(WIN32) opengl32;
 

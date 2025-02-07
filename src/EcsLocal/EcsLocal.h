@@ -26,7 +26,7 @@
 NAMESPACE_ECS_BEGIN
 
 template <class T> void DefaultCreate() {Ecs::GetActiveEngine().Get<EntityStore>()->GetRoot()->Create<T>();}
-template <class T> void DefaultCreateOnStart() {Ecs::Engine::WhenPreFirstUpdate << callback(DefaultCreate<T>);}
+template <class T> void DefaultCreateOnStart() {Ecs::Engine::Static().WhenPreFirstUpdate << callback(DefaultCreate<T>);}
 
 NAMESPACE_ECS_END
 

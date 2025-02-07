@@ -4,7 +4,8 @@ uses
 	Core,
 	Draw,
 	SharedCore,
-	StaticInterface;
+	StaticInterface,
+	plugin/bz2;
 
 file
 	Local.h,

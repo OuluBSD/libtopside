@@ -94,14 +94,7 @@ InputIterator FindIf(InputIterator first, InputIterator last, UnaryPredicate pre
 	return std::find_if(first, last, pred);
 }
 
-void sSeed(uint64 *s);
-
-inline void GetSysSeedValues(int64* a, int64* b, int64* c) {
-	if(a) sSeed((uint64*)a);
-	if(b) sSeed((uint64*)b);
-	if(c) sSeed((uint64*)c);
-}
-
+void GetSysSeedValues(int64* a, int64* b, int64* c);
 inline String HexStr(int64 i) {return Format("0x%X", i);}
 inline String HexStr(void* i) {return Format("0x%X", (int64)i);}
 

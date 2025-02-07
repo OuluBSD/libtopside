@@ -156,9 +156,12 @@ public:
 	Callback WhenLeaveUpdate;
 	Callback WhenLeaveSystemUpdate;
 	
-	static Callback WhenGuiProgram;
-	static Callback WhenInitialize;
-	static Callback WhenPreFirstUpdate;
+	struct StaticEvents {
+		Callback WhenGuiProgram;
+		Callback WhenInitialize;
+		Callback WhenPreFirstUpdate;
+	};
+	static StaticEvents& Static() {static StaticEvents e; return e;}
 	
 	Serial::EntitySystem& GetEntitySystem() {ASSERT(sys); return *sys;}
 	Serial::Machine& GetMachine() {return sys->GetMachine();}

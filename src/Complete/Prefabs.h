@@ -38,7 +38,7 @@ void UserGuiMainFn_(); \
 \
 APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializer, TS::DefaultStartup) \
 RENDER_APP_MAIN { \
-	TS::Serial::Machine::WhenUserProgram << Callback(UserGuiMainFn_); \
+	TS::Serial::Machine::Static().WhenUserProgram << Callback(UserGuiMainFn_); \
 	TS::DefaultRunner(0, "Gui App", GUI_EON);} \
 \
 void UserGuiMainFn_()*/
@@ -48,7 +48,7 @@ void UserGuiMainFn_(); \
 \
 APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializer, TS::DefaultStartup) \
 RENDER_APP_MAIN { \
-	TS::Serial::Machine::WhenUserProgram << Callback(UserGuiMainFn_); \
+	TS::Serial::Machine::Static().WhenUserProgram << Callback(UserGuiMainFn_); \
 	TS::DefaultRunner(0, "Gui App", GUBO_EON);} \
 \
 void UserGuiMainFn_()

@@ -3,14 +3,9 @@
 
 #ifdef VIRTUALGUI
 
-NAMESPACE_TOPSIDE_BEGIN
-
-static dword mouseb = 0;
-static dword modkeys = 0;
-
-NAMESPACE_TOPSIDE_END
-
 NAMESPACE_UPP
+
+
 using namespace ::TS;
 
 #define LLOG(x)  // LOG(x)

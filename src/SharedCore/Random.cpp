@@ -6,9 +6,50 @@
 
 NAMESPACE_UPP_BEGIN
 
+#if IS_TS_CORE
 void sSeed(uint64 *s) {
 	RNG::sSeed(s);
 }
+#else
+// NOTE: duplicate code from U++, BUT this must be duplicate
+//       reason: CoCreateGuid seems to require never_inline static qualifiers
+//               and without them it overwrites stack variables
+never_inline
+static void sSeed(uint64 *s)
+{
+#ifdef PLATFORM_POSIX
+	int fd = open("/dev/urandom", O_RDONLY);
+	if(fd != -1) {
+		IGNORE_RESULT(
+			read(fd, s, 4 * sizeof(uint64))
+		);
+		close(fd);
+	}
+#else
+	for(int pass = 0; pass < 4; pass++) {
+		for(int i = 0; i < 4; i++) {
+			CombineHash h[2];
+			for(int j = 0; j < 2; j++) {
+				h[j] << GetSysTime().Get() << usecs() << msecs() << j << pass << i;
+				for(int p = 0; p < 2; p++) {
+					Uuid uuid;
+					CoCreateGuid((GUID *)&uuid); // GUID is basically a random number...
+					h[j] << uuid.v[0] << uuid.v[1];
+				}
+			}
+			s[i] ^= MAKEQWORD(h[0], h[1]);
+		}
+	}
+#endif
+}
+#endif
+
+void GetSysSeedValues(int64* a, int64* b, int64* c) {
+	if(a) sSeed((uint64*)a);
+	if(b) sSeed((uint64*)b);
+	if(c) sSeed((uint64*)c);
+}
+
 
 RNG::RNG() {
 	Seed();
