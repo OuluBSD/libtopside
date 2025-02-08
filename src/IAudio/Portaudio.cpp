@@ -226,7 +226,6 @@ GLOBAL_VAR(PortaudioStatic, PaStatic);
 
 
 
-#if (defined flagBUILTIN_PORTAUDIO) || (defined flagWIN32 && defined flagMSC)
 struct AudPortaudio::NativeSinkDevice {
 	PaStream* p;
 };
@@ -380,7 +379,6 @@ bool AudPortaudio::SourceDevice_Send(NativeSourceDevice& dev, AtomBase&, Realtim
 	TODO
 }
 
-#endif
 
 
 

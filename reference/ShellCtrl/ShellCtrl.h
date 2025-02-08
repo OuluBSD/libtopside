@@ -6,6 +6,9 @@ using namespace Upp;
 
 NAMESPACE_UPP_BEGIN
 
+#if !defined flagSCREEN || !defined flagFFMPEG || !defined flagOGL || (!defined flagPORTAUDIO && !defined flagBUILTIN_PORTAUDIO )
+	#error ShellCtrl requires following flags: SCREEN FFMPEG OGL PORTAUDIO (or BUILTIN_PORTAUDIO)
+#endif
 
 /*
 ShellCtrl
@@ -24,6 +27,7 @@ public:
 	
 	void Start();
 	void Stop();
+	void Paint(Draw& d) override;
 	
 };
 

@@ -17,7 +17,16 @@ void ShellCtrl::Stop() {
 }
 
 void ShellCtrl::Update() {
-	
+	Refresh();
+}
+
+void ShellCtrl::Paint(Draw& d) {
+	Size sz = GetSize();
+	#ifdef flagDEBUG
+	d.DrawRect(sz, Color(Random(256), Random(256), Random(256)));
+	#else
+	d.DrawRect(sz, White());
+	#endif
 }
 
 

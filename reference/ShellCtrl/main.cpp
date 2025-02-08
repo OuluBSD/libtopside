@@ -10,6 +10,8 @@ public:
 	typedef TestApp CLASSNAME;
 	TestApp() {
 		Title("TestApp");
+		Sizeable().MaximizeBox(1).MinimizeBox(1);
+		Maximize();
 		Add(sc.SizePos());
 		sc.Start();
 	}
