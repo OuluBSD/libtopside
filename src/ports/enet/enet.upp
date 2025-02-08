@@ -4,7 +4,7 @@ library(WIN32) Winmm;
 
 file
 	libtopside readonly separator,
-	Init.cpp,
+	Init.icpp,
 	EnetService.h,
 	Service.h,
 	Service.cpp,

@@ -1,0 +1,14 @@
+description "Embed libtopside features to a U++ application.\377";
+
+uses
+	CtrlLib,
+	EcsComplete;
+
+file
+	ShellCtrl.h,
+	ShellCtrl.cpp,
+	main.cpp;
+
+mainconfig
+	"" = "GUI";
+

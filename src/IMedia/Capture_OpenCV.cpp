@@ -27,8 +27,7 @@
 #if flagOPENCV
 
 
-
-#if defined flagGCC && flagFREEBSD && 0
+#if defined flagGCC && defined flagFREEBSD
 bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const& a, int b) {
 	return false;
 }

@@ -6,7 +6,7 @@ uses
 	ports/enet;
 
 file
-	Init.cpp,
+	Init.icpp,
 	SerialLib.h,
 	Types.h,
 	SingleMachine.cpp,

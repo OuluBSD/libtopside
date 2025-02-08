@@ -9,7 +9,7 @@ uses(VIRTUALGUI) VirtualGui/Atom;
 file
 	Notes.txt,
 	DesktopSuite.h,
-	Init.cpp,
+	Init.icpp,
 	Factory.h,
 	Factory.cpp,
 	TaskBar.h,

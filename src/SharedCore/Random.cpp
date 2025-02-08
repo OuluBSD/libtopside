@@ -101,7 +101,7 @@ RNG::operator uint64() {
 }
 
 void RNG::Seed() {
-	sSeed(state);
+	::UPP::sSeed(state);
 }
 
 void RNG::Seed(uint32 seed) {

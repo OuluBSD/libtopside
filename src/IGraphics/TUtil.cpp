@@ -5,6 +5,11 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
+TextureT<Gfx>::TextureT() {
+	tex = 0;
+}
+
+template <class Gfx>
 void TextureT<Gfx>::Clear() {
 	if (tex) {
 		Gfx::DeleteTexture(tex);

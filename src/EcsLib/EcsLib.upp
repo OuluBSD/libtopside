@@ -7,7 +7,7 @@ uses
 file
 	TODO.txt,
 	EcsLib.h,
-	EcsLib.cpp,
+	EcsLib.icpp,
 	NonGui.cpp,
 	Types.inl highlight cpp,
 	Defs.h,

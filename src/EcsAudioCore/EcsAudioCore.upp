@@ -6,5 +6,5 @@ uses
 
 file
 	EcsAudioCore.h,
-	EcsAudioCore.cpp;
+	EcsAudioCore.icpp;
 

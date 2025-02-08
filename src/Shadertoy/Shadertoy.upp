@@ -5,7 +5,7 @@ uses
 
 file
 	Shadertoy.h,
-	Shadertoy.cpp,
+	Shadertoy.icpp,
 	Loader.h,
 	Loader.cpp;
 

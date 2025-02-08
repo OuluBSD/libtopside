@@ -31,26 +31,6 @@ class RNG : Moveable<RNG> {
 	}
 	
 public:
-	
-	static void sSeed(uint64 *s) {
-		for(int pass = 0; pass < 4; pass++) {
-			for(int i = 0; i < 4; i++) {
-				int64 a;
-				int64 b;
-				int64 c;
-				GetSysSeedValues(&a, &b, &c);
-				CombineHash h;
-				h << a;
-				h << b;
-				h << c;
-				uint64 v = h;
-				uint64 v64 = v | (v << 32ULL);
-				s[i] ^= v64;
-			}
-		}
-	}
-	
-public:
 	RNG();
 	float  Randomf();
 	double Randomd();

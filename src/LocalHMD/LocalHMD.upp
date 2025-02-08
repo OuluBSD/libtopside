@@ -15,7 +15,7 @@ file
 	README.md,
 	Copying,
 	LocalHMD.h,
-	LocalHMD.cpp,
+	LocalHMD.icpp,
 	Daemon.h,
 	Daemon.cpp,
 	System.h,

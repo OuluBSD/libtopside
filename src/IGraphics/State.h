@@ -12,7 +12,7 @@ struct GfxShaderState : RTTIBase {
 	virtual ~GfxShaderState() {}
 	
 	// meta
-	bool enabled;
+	bool enabled = false;
 	
 	// shader stage
 	ShaderType	type = GVar::SHADERTYPE_NULL;

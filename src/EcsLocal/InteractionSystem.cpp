@@ -76,7 +76,7 @@ bool InteractionSystem::Arg(String key, Object value) {
 	}
 	
 	if (key == "env") {
-		env_name = (String)value;
+		env_name = value.ToString();
 	}
 	
 	if (key == "hmd") {

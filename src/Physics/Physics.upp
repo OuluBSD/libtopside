@@ -8,6 +8,7 @@ library(ODE & !WIN32 & !EMSCRIPTEN) ode;
 
 file
 	Physics.h,
+	Physics.icpp,
 	Enums.h,
 	Types.h,
 	Functions.inl highlight cpp,

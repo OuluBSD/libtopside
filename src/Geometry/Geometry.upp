@@ -14,7 +14,7 @@ library(!BUILTIN_ASSIMP & WIN32 & (CLANG | GCC)) libassimp.dll.a;
 
 file
 	Geometry.h,
-	Geometry.cpp,
+	Geometry.icpp,
 	Types.inl highlight cpp,
 	Common.h,
 	Matrix.h,
