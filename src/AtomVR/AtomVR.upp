@@ -6,7 +6,7 @@ uses
 
 file
 	AtomVR.h,
-	Init.cpp,
+	Init.icpp,
 	Generated.h,
 	Generated.cpp;
 

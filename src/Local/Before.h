@@ -89,6 +89,10 @@ static constexpr bool is_in_parallel = true;
 
 NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;
+using ::UPP::int64;
+using ::UPP::uint64;
+using ::UPP::Time;
+using ::UPP::Font;
 NAMESPACE_TOPSIDE_END
 
 

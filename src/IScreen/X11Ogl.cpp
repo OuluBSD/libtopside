@@ -2,7 +2,10 @@
 
 
 		
-#if defined flagPOSIXDESKTOP && defined flagSCREEN && defined flagOGL
+#if PLATFORM_POSIX_DESKTOP && defined flagSCREEN && defined flagOGL
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <GL/glx.h>
 NAMESPACE_PARALLEL_BEGIN
 
 struct ScrX11Ogl::NativeContext {

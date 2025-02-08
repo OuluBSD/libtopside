@@ -69,7 +69,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #include "Types.inl"
 
-#if IS_UPP_CORE
+#if IS_UPP_CORE && defined PLATFORM_WIN32
 OBJ_TYPE_NO(int, INT32_O )
 #endif
 

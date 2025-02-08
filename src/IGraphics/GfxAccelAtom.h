@@ -14,11 +14,11 @@ template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return va
 #endif
 #endif
 
-#if defined flagSCREEN && defined flagPOSIXDESKTOP && defined flagOGL
+#if defined flagSCREEN && PLATFORM_POSIX_DESKTOP && defined flagOGL
 template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #endif
 
-#if defined flagSCREEN && defined flagPOSIXDESKTOP
+#if defined flagSCREEN && PLATFORM_POSIX_DESKTOP
 template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #endif
 

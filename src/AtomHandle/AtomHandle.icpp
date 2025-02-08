@@ -3,7 +3,7 @@
 NAMESPACE_UPP_BEGIN
 
 
-INITBLOCK_(AtomHandle) {
+INITBLOCK_(AtomHandleManual) {
 	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;

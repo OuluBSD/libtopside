@@ -10,7 +10,7 @@ pkg install upp
 Install dependency libraries:
 
 ```
-pkg install glew ffmpeg assimp sdl2 sdl2_ttf sdl2_image hidapi
+pkg install glew ffmpeg assimp sdl2 sdl2_ttf sdl2_image hidapi OpenHMD opencv
 ```
 
 Install the latest clang, but check your latest version:
@@ -28,5 +28,5 @@ Open TheIDE. At menu bar, choose Setup->Build methods. Update your CLANG configu
 
 - Set compiler name (depending on your clang version) e.g. ```clang++19```
 - Add ```/usr/local/bin``` to build method's *PATH* list.
-
+- Add ```/usr/local/include/opencv4``` to build method's include list
 

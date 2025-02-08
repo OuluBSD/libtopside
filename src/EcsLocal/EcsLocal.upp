@@ -7,7 +7,7 @@ uses
 
 file
 	EcsLocal.h,
-	Init.cpp,
+	Init.icpp,
 	Types.inl highlight cpp,
 	Defs.h,
 	EcsLocal.cpp,

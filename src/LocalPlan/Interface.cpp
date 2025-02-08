@@ -642,7 +642,7 @@ void InterfaceBuilder::Generate(bool write_actually) {
 			String atom_dir = AppendFileName(par_dir, k);
 			String genh_path = AppendFileName(atom_dir, "Generated.h");
 			String genc_path = AppendFileName(atom_dir, "Generated.cpp");
-			String icpp_path = AppendFileName(atom_dir, "Init.cpp");
+			String icpp_path = AppendFileName(atom_dir, "Init.icpp");
 			
 			{
 				String s;

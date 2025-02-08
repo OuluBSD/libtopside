@@ -280,7 +280,7 @@ struct GfxContextState : RTTIBase {
 	int		frames = 0;
 	double	time_us = 0;
 	double	sample_rate = 0;
-	Time	time;
+	::UPP::Time	time;
 	
 	
 };

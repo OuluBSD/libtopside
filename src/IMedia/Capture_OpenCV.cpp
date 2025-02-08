@@ -28,7 +28,7 @@
 
 
 
-#if defined flagGCC && flagFREEBSD
+#if defined flagGCC && flagFREEBSD && 0
 bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const& a, int b) {
 	return false;
 }
@@ -36,7 +36,6 @@ bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<ch
 
 
 NAMESPACE_PARALLEL_BEGIN
-
 
 class OpenCVCaptureDevice::Data {
 	off32_gen	gen;

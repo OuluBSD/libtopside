@@ -1,7 +1,10 @@
 #include "IScreen.h"
 
 
-#if (defined flagPOSIXDESKTOP && defined flagSCREEN)
+#if (PLATFORM_POSIX_DESKTOP && defined flagSCREEN)
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 NAMESPACE_PARALLEL_BEGIN
 
 struct ScrX11::NativeContext {

@@ -261,7 +261,7 @@ void System::UpdateData() {
 	
 	trans.orientation = MatQuat(QuatMat(trans.orientation) * QuatMat(initial_orient));
 	
-	trans.mode = UPP::TransformMatrix::MODE_AXES;
+	trans.mode = TS::TransformMatrix::MODE_AXES;
 	trans.is_stereo = true;
 	trans.position = vec3(0,0,0);
 	trans.FillFromOrientation();

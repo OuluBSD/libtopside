@@ -1,6 +1,6 @@
 #include "IGraphics.h"
 
-#if defined flagSCREEN && defined flagPOSIXDESKTOP
+#if defined flagSCREEN && PLATFORM_POSIX_DESKTOP
 
 NAMESPACE_PARALLEL_BEGIN
 

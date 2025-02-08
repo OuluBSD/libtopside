@@ -3,7 +3,9 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
-
+using ::UPP::Time;
+using ::UPP::Font;
+using ::UPP::int64;
 
 #if IS_UPP_CORE
 inline WString ToWString(String s) {return s.ToWString();}

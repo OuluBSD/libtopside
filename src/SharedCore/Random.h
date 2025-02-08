@@ -67,7 +67,7 @@ public:
 	
 	void WriteMemory(void* mem, int bytes);
 	
-	static RNG& Local() {static thread_local RNG r; return r;}
+	static RNG& Local();
 };
 
 END_UPP_NAMESPACE

@@ -181,7 +181,7 @@ bool FfmpegMedia::InitParser(AVCodec& c, AVCodecParserContextRef& parser) {
 }
 
 bool FfmpegMedia::FindDecoder(AVFormatContext& ctx, AVCodec& codec, int stream_i) {
-	codec = avcodec_find_decoder(ctx.streams[stream_i]->codecpar->codec_id);
+	codec = const_cast<::AVCodec*>(avcodec_find_decoder(ctx.streams[stream_i]->codecpar->codec_id));
 	return codec != NULL;
 }
 
@@ -216,7 +216,7 @@ void FfmpegMedia::CopyFramePixels(const Format& fmt, const AVFrame& frame, Vecto
 			LOG("fmt:          " << fmt.ToString());
 			LOG("f-nb-samples: " << frame.nb_samples);
 			LOG("f-channels:   " << frame.channels);
-			if (0) __BREAK__
+			if (0) __BREAK__;
 		}
 		
 		data.SetCount(frame_sz, 0);

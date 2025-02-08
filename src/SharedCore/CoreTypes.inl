@@ -49,17 +49,17 @@ const dword OBJECT_ARRAY_AND_MAP_O   = PKG_CORE_V | 14;
 #endif
 
 
-OBJ_TYPE_NO(bool,     BOOL_O )
-OBJ_TYPE_NO(uint8,    UINT8_O )
-OBJ_TYPE_NO(uint16,   UINT16_O )
-OBJ_TYPE_NO(uint32,   UINT32_O )
-OBJ_TYPE_NO(uint64,   UINT64_O )
-OBJ_TYPE_NO(int8,     INT8_O )
-OBJ_TYPE_NO(int16,    INT16_O )
-OBJ_TYPE_NO(int32,    INT32_O )
-OBJ_TYPE_NO(int64,    INT64_O )
-OBJ_TYPE_NO(double,   DOUBLE_O )
-OBJ_TYPE_NO(float,    FLOAT_O )
+OBJ_TYPE_NO(bool,            BOOL_O )
+OBJ_TYPE_NO(::UPP::uint8,    UINT8_O )
+OBJ_TYPE_NO(::UPP::uint16,   UINT16_O )
+OBJ_TYPE_NO(::UPP::uint32,   UINT32_O )
+OBJ_TYPE_NO(::UPP::uint64,   UINT64_O )
+OBJ_TYPE_NO(::UPP::int8,     INT8_O )
+OBJ_TYPE_NO(::UPP::int16,    INT16_O )
+OBJ_TYPE_NO(::UPP::int32,    INT32_O )
+OBJ_TYPE_NO(::UPP::int64,    INT64_O )
+OBJ_TYPE_NO(double,          DOUBLE_O )
+OBJ_TYPE_NO(float,           FLOAT_O )
 
 OBJ_TYPE_NO(String,   STRING_O )
 OBJ_TYPE_NO(WString,  WSTRING_O )

@@ -135,4 +135,10 @@ void RNG::WriteMemory(void* mem_, int bytes) {
 }
 
 
+RNG& RNG::Local() {
+	static thread_local RNG r;
+	return r;
+}
+
+
 NAMESPACE_UPP_END

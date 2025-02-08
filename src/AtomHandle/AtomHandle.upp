@@ -5,8 +5,8 @@ uses
 
 file
 	AtomHandle.h,
-	AtomHandle.cpp,
-	Init.cpp,
+	AtomHandle.icpp,
+	Init.icpp,
 	Generated.h,
 	Generated.cpp,
 	Handle.h,

@@ -45,7 +45,7 @@ struct StateDrawT : GfxStateDraw {
 	//void SetSize(Size sz) override {TODO}
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override {TODO}
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override {TODO}
-	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+	void DrawTextOp(int x, int y, int angle, const wchar *text, ::UPP::Font font,
 		            Color ink, int n, const int *dx) override {TODO}
 	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                        const int *counts, int count_count,
