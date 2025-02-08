@@ -890,6 +890,7 @@ AtomTypeCls SdlOglProgAtomPipe::GetType() const {
 
 
 #if (PLATFORM_POSIX_DESKTOP && defined flagSCREEN)
+
 String X11ContextAtom::GetAction() {
 	return "x11.context";
 }

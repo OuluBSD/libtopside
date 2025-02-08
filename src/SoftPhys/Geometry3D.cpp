@@ -124,7 +124,7 @@ bool MeshAABB(const Mesh& mesh, const AABB& aabb) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -163,7 +163,7 @@ bool Linetest(const Mesh& mesh, const line3& line) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -202,7 +202,7 @@ bool MeshSphere(const Mesh& mesh, const Sphere& sphere) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -241,7 +241,7 @@ bool MeshOBB(const Mesh& mesh, const OBB& obb) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -280,7 +280,7 @@ bool MeshPlane(const Mesh& mesh, const Plane& plane) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -319,7 +319,7 @@ bool MeshTriangle(const Mesh& mesh, const tri3& triangle) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node
@@ -369,7 +369,7 @@ float MeshRay(const Mesh& mesh, const Ray& ray) {
 
 		// Recursivley walk the BVH tree
 		while (!toProcess.IsEmpty()) {
-			BVHNode* iterator = toProcess.PopFirst();
+			BVHNode* iterator = toProcess.PopFirst(0);
 
 			if (iterator->triangle_count >= 0) {
 				// Iterate trough all triangles of the node

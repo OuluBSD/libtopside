@@ -301,7 +301,7 @@ Vector<Model*> Scene::Cull(const Frustum& f) {
 		nodes.Add(octree);
 
 		while (nodes.GetCount() > 0) {
-			OctreeNode* active = nodes.PopFirst();
+			OctreeNode* active = nodes.PopFirst(0);
 
 			// Has child nodes
 			if (active->children != 0) {

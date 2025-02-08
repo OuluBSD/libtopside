@@ -534,11 +534,11 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 		frame->format == AV_SAMPLE_FMT_DBLP;*/
 	ASSERT(fmt.IsValid());
 	ASSERT(frame->sample_rate == afmt.freq);
-	ASSERT(frame->channels == afmt.res[0]);
+	ASSERT(frame->ch_layout.nb_channels == afmt.res[0]);
 	ASSERT(var_size == afmt.GetSampleSize());
 	#endif
 	
-	int frame_sz = frame->nb_samples * frame->channels * var_size;
+	int frame_sz = frame->nb_samples * frame->ch_layout.nb_channels * var_size;
 	
 	buf.EnterWrite();
 	auto& p = buf.Add();

@@ -122,7 +122,7 @@ LightSampleFD::Type FfmpegMedia::GetVideoSampleType(const AVCodecParameters& c) 
 }
 
 int FfmpegMedia::GetChannels(const AVCodecParameters& c) {
-	return c.channels;
+	return c.ch_layout.nb_channels;
 }
 
 int FfmpegMedia::GetSampleRate(const AVCodecParameters& c) {
@@ -215,18 +215,18 @@ void FfmpegMedia::CopyFramePixels(const Format& fmt, const AVFrame& frame, Vecto
 			LOG("frame-sz:     " << frame_sz);
 			LOG("fmt:          " << fmt.ToString());
 			LOG("f-nb-samples: " << frame.nb_samples);
-			LOG("f-channels:   " << frame.channels);
+			LOG("f-channels:   " << frame.ch_layout.nb_channels);
 			if (0) __BREAK__;
 		}
 		
 		data.SetCount(frame_sz, 0);
 		byte* dst = data.Begin();
 		
-		for(int i = 0; i < frame.channels; i++)
+		for(int i = 0; i < frame.ch_layout.nb_channels; i++)
 			srcn[i] = frame.data[i];
 		
 		for (int i = 0; i < frame.nb_samples; i++) {
-			for(int j = 0; j < frame.channels; j++) {
+			for(int j = 0; j < frame.ch_layout.nb_channels; j++) {
 				byte*& src = srcn[j];
 				for(int k = 0; k < var_size; k++)
 					*dst++ = *src++;

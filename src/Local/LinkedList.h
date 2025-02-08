@@ -113,7 +113,7 @@ public:
 	
 	T& First() {return first->value;}
 	const T& First() const {return first->value;}
-	T PopFirst() {if (!first) return Null; T o = First(); RemoveFirst(); return o;}
+	T PopFirst(const T& def=Null) {if (!first) return def; T o = First(); RemoveFirst(); return o;}
 	
 	T& Top() {return last->value;}
 	const T& Top() const {return last->value;}
