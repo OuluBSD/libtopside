@@ -12,6 +12,7 @@ library(WIN32 & DX11) D3D11;
 
 file
 	IScreen.h,
+	UppCtrl.cpp,
 	X11.cpp,
 	X11Sw.cpp,
 	X11Ogl.cpp,

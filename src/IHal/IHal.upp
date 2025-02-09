@@ -2,20 +2,17 @@ description "\377B198,127,200";
 
 uses
 	ParallelLib,
-	IGraphics,
-	GLDraw;
+	IGraphics;
 
-library(SDL2 & (!WIN32 | MSC)) "SDL2 SDL2_ttf SDL2_image";
+uses(OGL & SDL2) GLDraw;
+
+library(SDL2) SDL2;
+
+library(SDL2) SDL2_ttf;
+
+library(SDL2) SDL2_image;
 
 library(UWP&DX12) "D3D11 DXGI D2d1 Dwrite";
-
-library(SDL2 & WIN32 & !MSC) "SDL2main SDL2 SDL2_image SDL2_ttf SDL2_mixer glew32 freetype harfbuzz SetupAPI jpeg jxl png tiff webp Imm32 Version OleAut32 hwy brotlidec brotlicommon graphite2 Rpcrt4  jbig deflate lzma zstd Lerc sharpyuv z webp webpdemux avif aom dav1d rav1e vpx avrt avutil SvtAv1Enc yuv pthread NtosKrnl ";
-
-library(SDL2 & WIN32) Ole32;
-
-library(WIN32) glew32;
-
-library(WIN32&(CLANG|GCC)) libglew32.dll.a;
 
 file
 	IHal.h,

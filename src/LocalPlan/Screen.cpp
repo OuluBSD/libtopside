@@ -19,6 +19,7 @@ void InterfaceBuilder::AddScreen() {
 	Interface("Context");
 	Interface("EventsBase");
 	
+	Vendor("UppCtrl",	"GUI&UPPCORE");
 	Vendor("X11",		"POSIXDESKTOP&SCREEN");
 	Vendor("X11Sw",		"POSIXDESKTOP&SCREEN");
 	Vendor("X11Ogl",	"POSIXDESKTOP&SCREEN&OGL");

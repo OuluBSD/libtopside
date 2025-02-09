@@ -152,17 +152,23 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 struct V4L2Media {
 	
 };
-#endif
-
-
-
-#if defined flagOPENCV && defined flagPOSIX
+#if defined flagOPENCV
 struct V4L2OpenCVMedia : V4L2Media {
-	
 	
 };
 #endif
-
+using OpenCVSourceFormat = V4L2Media;
+#elif defined flagWIN32
+struct Win32Media {
+	
+};
+#if defined flagOPENCV
+struct Win32OpenCVMedia : Win32Media {
+	
+};
+using OpenCVSourceFormat = Win32Media;
+#endif
+#endif
 
 
 NAMESPACE_PARALLEL_END

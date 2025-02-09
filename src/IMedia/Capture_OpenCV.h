@@ -14,8 +14,8 @@ class OpenCVCaptureDevice :
 protected:
 	friend class V4L2_DeviceManager;
 	
-	using VideoSourceFormat = VideoSourceFormatT<V4L2Media>;
-	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<V4L2Media>;
+	using VideoSourceFormat = VideoSourceFormatT<OpenCVSourceFormat>;
+	using VideoSourceFormatResolution = VideoSourceFormatResolutionT<OpenCVSourceFormat>;
 	
 	Array<VideoSourceFormat>	fmts;
 	

@@ -401,14 +401,14 @@ String FindShareDir() {
 	String home_upphub_share = "ms-appx://share";
 	#elif defined flagUWP && !defined flagRELPKG
 	String home_upphub_share = ConfigFile("share");
-	#elif defined flagWIN32
-	String home_upphub_share = "C:\\git\\libtopside\\share";
-	if (!DirectoryExists(home_upphub_share))
-		home_upphub_share = "C:\\libtopside\\share";
+	#else
+	String home_upphub_share;
+	String cur_dir = GetDataFile("");
+	int i = cur_dir.Find("libtopside");
+	if (i >= 0)
+		home_upphub_share = cur_dir.Left(i) + "libtopside" DIR_SEPS "share";
 	if (!DirectoryExists(home_upphub_share))
 		home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
-	#else
-	String home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
 	#endif
 	
 	if (DirectoryExists(home_upphub_share))

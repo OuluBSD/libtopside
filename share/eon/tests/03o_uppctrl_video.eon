@@ -1,0 +1,12 @@
+machine win.app:
+	
+	driver context:
+		win.context
+	
+	chain program:
+		
+		loop video:
+			center.customer
+			center.video.src.dbg_generator:
+				mode = "noise"
+			win.video.pipe

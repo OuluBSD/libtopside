@@ -127,11 +127,17 @@ InterfaceBuilder::Header& InterfaceBuilder::Header::Link(String type, String rol
 void InterfaceBuilder::Generate(bool write_actually) {
 	VectorMap<String, String> outputs;
 	
-	#ifdef flagWIN32
-	String prj_dir = "C:\\git\\libtopside";
-	#else
-	String prj_dir = AppendFileName(GetHomeDirectory(), "libtopside");
-	#endif
+	String prj_dir;
+	{
+		String cur_dir = GetDataFile("");
+		int i = cur_dir.Find("libtopside");
+		if (i >= 0)
+			prj_dir = cur_dir.Left(i) + "libtopside";
+	}
+	if (!DirectoryExists(prj_dir))
+		prj_dir = GetHomeDirFile("libtopside");
+	ASSERT(DirectoryExists(prj_dir));
+	
 	String par_dir = AppendFileName(prj_dir, "src");
 	
 	String pm_file = AppendFileName(par_dir, "ParallelMach" DIR_SEPS "Generated.h");

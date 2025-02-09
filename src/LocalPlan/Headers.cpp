@@ -359,6 +359,13 @@ void InterfaceBuilder::Headers() {
 		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
+	AddHeader("UppCtrlContextAtom", "UppCtrlContext", "driver")
+		.In("CenterReceipt").Out("CenterReceipt")
+		.Action("upp.context")
+		.Link("DRIVER", "DRIVER")
+		.Arg("HINT_PKG", "AtomMinimal")
+	;
+	
 	AddHeader("X11ContextAtom", "X11Context", "driver")
 		.In("CenterReceipt").Out("CenterReceipt")
 		.Action("x11.context")
@@ -579,6 +586,21 @@ void InterfaceBuilder::Headers() {
 		.Action("center.volume.loader")
 		.Link("PIPE_OPTSIDE", "PROCESS")
 		.Arg("HINT_PKG", "AtomMinimal")
+	;
+	
+	AddHeader("UppCtrlEventAtomPipe", "UppCtrlEventsBase", "pipe")
+		.In("CenterOrder").Out("CenterEvent")
+		.Action("upp.event.pipe")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
+	;
+	
+	AddHeader("UppCtrlVideoAtomPipe", "UppCtrlSinkDevice", "pipe")
+		.In("CenterVideo").Out("CenterReceipt")
+		.Action("upp.video.pipe")
+		//.Arg("reqdef_flagSCREEN", "1")
+		.Arg("HINT_PKG", "AtomMinimal")
+		.Link("POLLER_PIPE", "PROCESS")
 	;
 	
 	AddHeader("X11VideoAtomPipe", "X11SinkDevice", "pipe")

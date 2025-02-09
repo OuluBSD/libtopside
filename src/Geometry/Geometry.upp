@@ -8,9 +8,11 @@ uses(!UWP) ports/tiny_gltf;
 
 uses(!UWP & (BUILTIN_ASSIMP | LINUX)) ports/assimp;
 
-library(!BUILTIN_ASSIMP & POSIX & !LINUX) assimp;
+library(!BUILTIN_ASSIMP & POSIX & FREEBSD) assimp;
 
 library(!BUILTIN_ASSIMP & WIN32 & (CLANG | GCC)) libassimp.dll.a;
+
+library(!BUILTIN_ASSIMP & WIN32 & MSC) assimp-vc143-mt;
 
 file
 	Geometry.h,
