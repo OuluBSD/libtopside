@@ -254,10 +254,14 @@ void DebugMain(bool main_loop, String script_content, String script_file, Vector
 			{
 				if (!mach.IsStarted()) {
 					RegistrySystemRef reg	= mach.FindAdd<RegistrySystem>();
-					LoopStoreRef ls			= mach.FindAdd<LoopStore>();
 					AtomStoreRef as			= mach.FindAdd<AtomStore>();
+											  mach.FindAdd<LinkStore>();
+					SpaceStoreRef ss		= mach.FindAdd<SpaceStore>();
+					LoopStoreRef ls			= mach.FindAdd<LoopStore>();
 				    AtomSystemRef asys		= mach.FindAdd<AtomSystem>();
+											  mach.FindAdd<LinkSystem>();
 				    ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
+											  mach.FindAdd<ModelCache>();
 					
 					#ifdef flagGUI
 				    Gu::GuboSystemRef gubo	= mach.FindAdd<Gu::GuboSystem>();

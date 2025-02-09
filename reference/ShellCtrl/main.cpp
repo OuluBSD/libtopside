@@ -20,8 +20,11 @@ public:
 
 GUI_APP_MAIN
 {
-	TestApp app;
-	app.Run();
+	{
+		TestApp app;
+		app.Run();
+	}
+	SingleMachine::Static().Stop();
 }
 
 #endif

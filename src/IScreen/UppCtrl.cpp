@@ -51,7 +51,7 @@ void ScrUppCtrl::SinkDevice_Visit(NativeSinkDevice& dev, AtomBase&, RuntimeVisit
 bool ScrUppCtrl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	Panic("TODO");
 	#if 0
-	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<X11Context>(1);
+	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<UppCtrlContext>(1);
 	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
 	auto& ctx = *ctx_->dev;
 	dev.ctx = &ctx;
@@ -464,7 +464,7 @@ void ScrUppCtrl::EventsBase_Visit(NativeEventsBase& dev, AtomBase&, RuntimeVisit
 bool ScrUppCtrl::EventsBase_Initialize(NativeEventsBase& ev, AtomBase& a, const Script::WorldState& ws) {
 	auto ctx_ = a.GetSpace()->template FindNearestAtomCast<UppCtrlContext>(1);
 	ASSERT(ctx_);
-	if (!ctx_) {RTLOG("error: could not find X11 context"); return false;}
+	if (!ctx_) {RTLOG("error: could not find UppCtrl context"); return false;}
 	
 	TODO
 	#if 0
@@ -520,15 +520,7 @@ bool ScrUppCtrl::EventsBase_Recv(NativeEventsBase& ev, AtomBase& a, int sink_ch,
 	return true;
 }
 
-int ConvertX11Keycode(ScrUppCtrl::NativeEventsBase&, int key);
-
-void X11Events__PutKeyFlags(ScrUppCtrl::NativeEventsBase& dev, dword& key) {
-	if (dev.is_lalt   || dev.is_ralt)		key |= K_ALT;
-	if (dev.is_lshift || dev.is_rshift)		key |= K_SHIFT;
-	if (dev.is_lctrl  || dev.is_rctrl)		key |= K_CTRL;
-}
-
-bool X11Events__Poll(ScrUppCtrl::NativeEventsBase& dev, AtomBase& a) {
+bool UppCoreEvents__Poll(ScrUppCtrl::NativeEventsBase& dev, AtomBase& a) {
 	Vector<UPP::CtrlEvent>& evec = dev.ev;
 	evec.SetCount(0);
 	evec.Reserve(100);
@@ -666,7 +658,7 @@ bool X11Events__Poll(ScrUppCtrl::NativeEventsBase& dev, AtomBase& a) {
 bool ScrUppCtrl::EventsBase_IsReady(NativeEventsBase& dev, AtomBase& a, PacketIO& io) {
 	bool b = io.full_src_mask == 0;
 	if (b) {
-		if (X11Events__Poll(dev, a)) {
+		if (UppCoreEvents__Poll(dev, a)) {
 			dev.ev_sendable = true;
 		}
 		else {

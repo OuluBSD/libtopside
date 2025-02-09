@@ -1,7 +1,7 @@
-machine win.app:
+machine upp.app:
 	
 	driver context:
-		win.context
+		upp.context
 	
 	chain program:
 		
@@ -9,4 +9,4 @@ machine win.app:
 			center.customer
 			center.video.src.dbg_generator:
 				mode = "noise"
-			win.video.pipe
+			upp.video.pipe

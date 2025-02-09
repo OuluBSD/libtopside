@@ -225,6 +225,12 @@ public:
 	
 	bool Start() {return Open(0);}
 	void Stop() {Close();}
+	
+	Parallel::Machine& GetMachine() {return mach;}
+	operator Parallel::Machine&() {return mach;}
+	
+	static SingleMachine& Static() {static SingleMachine m; return m;}
+	
 };
 
 

@@ -19,12 +19,16 @@ ShellCtrl
 
 class ShellCtrl : public Ctrl {
 	TimeCallback tc;
+	TimeStop ts;
 	
 	void Update();
 public:
 	typedef ShellCtrl CLASSNAME;
 	ShellCtrl();
+	~ShellCtrl();
 	
+	void PollMachine();
+	void RealizeMachine();
 	void Start();
 	void Stop();
 	void Paint(Draw& d) override;
