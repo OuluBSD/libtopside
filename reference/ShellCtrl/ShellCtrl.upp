@@ -7,7 +7,10 @@ uses
 file
 	ShellCtrl.h,
 	ShellCtrl.cpp,
-	main.cpp;
+	ShellCtrl.lay,
+	main.cpp,
+	VideoPlayer.h,
+	VideoPlayer.cpp;
 
 mainconfig
 	"" = "GUI SCREEN FFMPEG OGL PORTAUDIO";

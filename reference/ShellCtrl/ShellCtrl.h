@@ -5,6 +5,10 @@
 #include <IScreen/IScreen.h>
 using namespace Upp;
 
+#define LAYOUTFILE <ShellCtrl/ShellCtrl.lay>
+#include <CtrlCore/lay.h>
+
+
 NAMESPACE_UPP_BEGIN
 
 #if !defined flagSCREEN || !defined flagFFMPEG || !defined flagOGL || (!defined flagPORTAUDIO && !defined flagBUILTIN_PORTAUDIO )
@@ -42,5 +46,7 @@ public:
 
 
 NAMESPACE_UPP_END
+
+#include "VideoPlayer.h"
 
 #endif

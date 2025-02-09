@@ -1,0 +1,23 @@
+LAYOUT(VideoPlayerLayout, 676, 284)
+	ITEM(Splitter, hsplit, HSizePosZ(0, 4).VSizePosZ(0, 40))
+	ITEM(Upp::Button, play, SetLabel(t_("Play")).LeftPosZ(4, 68).BottomPosZ(5, 31))
+	ITEM(Upp::Button, stop, SetLabel(t_("Stop")).LeftPosZ(76, 68).BottomPosZ(5, 31))
+	ITEM(Upp::Button, rewind, SetLabel(t_("<<")).HCenterPosZ(32, -138).BottomPosZ(5, 31))
+	ITEM(Upp::SliderCtrl, time, HCenterPosZ(208, -14).BottomPosZ(4, 32))
+	ITEM(Upp::Button, fastforward, SetLabel(t_(">>")).HCenterPosZ(32, 110).BottomPosZ(5, 31))
+	ITEM(Upp::Button, fullscreen, SetLabel(t_("FullScreen")).RightPosZ(104, 68).BottomPosZ(5, 31))
+	ITEM(Upp::SliderCtrl, volume, RightPosZ(4, 96).BottomPosZ(4, 32))
+END_LAYOUT
+
+LAYOUT(PlaylistLayout, 196, 200)
+	ITEM(Upp::ArrayCtrl, dv___0, HSizePosZ(0, 0).VSizePosZ(0, 56))
+	ITEM(Upp::Option, shuffle, SetLabel(t_("Shuffle")).HCenterPosZ(56, -66).BottomPosZ(32, 16))
+	ITEM(Upp::Option, repeat, SetLabel(t_("Repeat")).HCenterPosZ(56, -6).BottomPosZ(32, 16))
+	ITEM(Upp::Button, playlist, SetLabel(t_("PL")).HCenterPosZ(28, -80).BottomPosZ(4, 24))
+	ITEM(Upp::Button, add, SetLabel(t_("ADD")).HCenterPosZ(28, -48).BottomPosZ(4, 24))
+	ITEM(Upp::Button, del, SetLabel(t_("DEL")).HCenterPosZ(28, -16).BottomPosZ(4, 24))
+	ITEM(Upp::Button, play, SetLabel(t_("PLAY")).HCenterPosZ(28, 16).BottomPosZ(4, 24))
+	ITEM(Upp::Button, prev, SetLabel(t_("PREV")).HCenterPosZ(28, 48).BottomPosZ(4, 24))
+	ITEM(Upp::Button, next, SetLabel(t_("NEXT")).HCenterPosZ(28, 80).BottomPosZ(4, 24))
+END_LAYOUT
+
