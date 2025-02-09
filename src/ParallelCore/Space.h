@@ -73,6 +73,7 @@ public:
 	AtomBaseRef			AddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type);
+	AtomBaseRef			FindTypeClsSub(SubAtomCls sub);
 	SpaceRef			FindSpaceByName(String name);
 	AtomBaseRef			FindAtom(TypeCls type);
 	AtomBaseRef			FindDeepCls(TypeCls type);

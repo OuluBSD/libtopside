@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 bool ProgramStateT<Gfx>::LoadShaderContent(GVar::ShaderType shader_type, String content) {
-	DLOG("ProgramStateT::LoadShaderContent");
+	RLOG("ProgramStateT::LoadShaderContent");
 	
 	ASSERT(shader_type > GVar::SHADERTYPE_NULL && shader_type < GVar::SHADERTYPE_COUNT);
 	ShaderState& shader = shaders[shader_type];
@@ -19,7 +19,7 @@ bool ProgramStateT<Gfx>::LoadShaderContent(GVar::ShaderType shader_type, String 
 
 template <class Gfx>
 bool ProgramStateT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path) {
-	DLOG("ProgramStateT::LoadShaderFile: " << shader_path);
+	RLOG("ProgramStateT::LoadShaderFile: " << shader_path);
 	
 	ASSERT(shader_type > GVar::SHADERTYPE_NULL && shader_type < GVar::SHADERTYPE_COUNT);
 	ShaderState& shader = shaders[shader_type];
@@ -610,7 +610,7 @@ void ProgramStateT<Gfx>::RefreshProgramStages() {
 template <class Gfx>
 TNG NativeColorBufferConstRef ProgramStateT<Gfx>::GetInputTex(int input_i) const {
 	const char* fn_name = "GetInputTex";
-	//DLOG("BufferT::GetInputTex");
+	RLOG("BufferT::GetInputTex");
 	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
 		return 0;
 	

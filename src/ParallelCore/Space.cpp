@@ -64,9 +64,20 @@ AtomBaseRef Space::GetAddTypeCls(AtomTypeCls cls) {
 }
 
 AtomBaseRef Space::FindTypeCls(AtomTypeCls atom_type) {
+	//LOG(atom_type.ToString());
 	for (AtomBaseRef& comp : atoms) {
 		AtomTypeCls type = comp->GetType();
+		//LOG(type.ToString());
 		if (type == atom_type)
+			return comp;
+	}
+	return AtomBaseRef();
+}
+
+AtomBaseRef Space::FindTypeClsSub(SubAtomCls sub) {
+	for (AtomBaseRef& comp : atoms) {
+		AtomTypeCls type = comp->GetType();
+		if (type.sub == sub)
 			return comp;
 	}
 	return AtomBaseRef();
@@ -286,9 +297,7 @@ void Space::Dump() {
 
 String Space::GetTreeString(int indent) {
 	String s;
-	
-	String pre;
-	pre.Cat('\t', indent);
+	s.Cat('\t', indent);
 	
 	s << ".." << (name.IsEmpty() ? (String)"unnamed" : "\"" + name + "\"") << "[" << (int)id << "]\n";
 	

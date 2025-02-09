@@ -2,6 +2,7 @@
 #define _ShellCtrl_ShellCtrl_h
 
 #include <EcsComplete/EcsComplete.h>
+#include <IScreen/IScreen.h>
 using namespace Upp;
 
 NAMESPACE_UPP_BEGIN
@@ -20,8 +21,12 @@ ShellCtrl
 class ShellCtrl : public Ctrl {
 	TimeCallback tc;
 	TimeStop ts;
+	bool found = false;
+	RefT_Atom<Parallel::UppCtrlSinkDevice> sink;
+	Image img;
 	
 	void Update();
+	void OnFrame();
 public:
 	typedef ShellCtrl CLASSNAME;
 	ShellCtrl();

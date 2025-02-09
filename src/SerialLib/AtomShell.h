@@ -10,6 +10,7 @@ typedef enum {
 } ShellMode;
 
 bool IsShellMode(ShellMode m);
+void SetShellMode(ShellMode m);
 
 
 void DefaultStartup();

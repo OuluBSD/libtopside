@@ -52,6 +52,7 @@ public:
 	
 	LoopRef				CreateEmpty();
 	LoopRef				GetAddEmpty(String name);
+	LoopRef				Get(String path);
 	
 	bool				MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom);
 	

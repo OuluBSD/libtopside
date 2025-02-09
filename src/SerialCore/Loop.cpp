@@ -83,6 +83,17 @@ LoopRef Loop::GetAddEmpty(String name) {
 	return l;
 }
 
+LoopRef Loop::Get(String path) {
+	Vector<String> parts = Split(path, ".");
+	LoopRef l = AsRefT();
+	for(int i = 0; i < parts.GetCount(); i++) {
+		l = l->FindLoopByName(parts[i]);
+		if (l.IsEmpty())
+			return l;
+	}
+	return l;
+}
+
 LoopRef Loop::CreateEmpty() {
 	Loop& l = loops.Add();
 	l.SetParent(this);
@@ -150,9 +161,7 @@ void Loop::InitializeLink(LinkBase& comp) {
 
 String Loop::GetTreeString(int indent) {
 	String s;
-	
-	String pre;
-	pre.Cat('\t', indent);
+	s.Cat('\t', indent);
 	
 	s << ".." << (name.IsEmpty() ? (String)"unnamed" : "\"" + name + "\"") << "[" << (int)id << "]\n";
 	

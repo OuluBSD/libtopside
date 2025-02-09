@@ -82,7 +82,7 @@ bool ShadertoyContextLoader::LoadFileToy(String path, Object& dst) {
 void ShadertoyContextLoader::MakeUniqueIds(Object& v) {
 	if (!v.IsMap())
 		return;
-	//DLOG(GetObjectTreeString(v));
+	RLOG(GetObjectTreeString(v));
 	ObjectMap& map = v.GetMap();
 	Object& stages = map.GetAdd("stages", ObjectArray());
 	if (!stages.IsArray())
@@ -151,10 +151,10 @@ void ShadertoyContextLoader::MakeUniqueIds(Object& v) {
 	}
 	
 	if (0) {
-		DLOG("ShadertoyContextLoader::MakeUniqueIds: result");
-		DLOG(GetObjectTreeString(v));
+		RLOG("ShadertoyContextLoader::MakeUniqueIds: result");
+		RLOG(GetObjectTreeString(v));
 		for(int i = 0; i < stage_ids.GetCount(); i++) {
-			DLOG("\t" << stage_ids.GetKey(i) << ": <source>");
+			RLOG("\t" << stage_ids.GetKey(i) << ": <source>");
 		}
 	}
 	

@@ -427,7 +427,7 @@ DriverLink::~DriverLink() {
 }
 
 bool DriverLink::Initialize(const Script::WorldState& ws) {
-	DLOG("DriverLink::Initialize");
+	RLOG("DriverLink::Initialize");
 	return true;
 }
 
